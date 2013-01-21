@@ -1,145 +1,102 @@
-Return-Path: <linux@roeck-us.net>
-From: Guenter Roeck <linux@roeck-us.net>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [RFC 08/11] iio: Update iio_channel_get_all and iio_channel_get_all_cb API
-Date: Thu, 31 Jan 2013 13:43:05 -0800
-Message-Id: <1359668588-13678-9-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:43439 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750848Ab3AUVgF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2013 16:36:05 -0500
+Message-ID: <50FDB517.700@metafoo.de>
+Date: Mon, 21 Jan 2013 22:37:27 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Marek Vasut <marex@denx.de>
+CC: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirqus@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] iio: mxs: Add MX23 support into the IIO driver
+References: <1358798722-25102-1-git-send-email-marex@denx.de> <201301212200.36917.marex@denx.de> <CAHXqBFKzMgX48EJL_f6RF1tZYkdPLCZhip7M9jNuFkY+wjeQqA@mail.gmail.com> <201301212232.52161.marex@denx.de>
+In-Reply-To: <201301212232.52161.marex@denx.de>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Pass device pointer instead of device name as parameter to iio_channel_get_all
-and iio_channel_get_all_cb. This will enable us to use OF information to
-retrieve consumer channel information.
+On 01/21/2013 10:32 PM, Marek Vasut wrote:
+> Dear Michał Mirosław,
+> 
+>> 2013/1/21 Marek Vasut <marex@denx.de>:
+>>> Dear Michał Mirosław,
+>>>
+>>>> 2013/1/21 Marek Vasut <marex@denx.de>:
+>>>>> This patch adds support for i.MX23 into the LRADC driver. The LRADC
+>>>>> block on MX23 is not much different from the one on MX28, thus this
+>>>>> is only a few changes fixing the parts that are specific to MX23.
+>>>>
+>>>> [...]
+>>>>
+>>>>> +struct mxs_lradc_of_config {
+>>>>> +       const int               irq_count;
+>>>>> +       const char * const      *irq_name;
+>>>>> +};
+>>>>> +
+>>>>> +static const struct mxs_lradc_of_config const mxs_lradc_of_config[] =
+>>>>> { +       [IMX23_LRADC] = {
+>>>>> +               .irq_count      = ARRAY_SIZE(mx23_lradc_irq_names),
+>>>>> +               .irq_name       = mx23_lradc_irq_names,
+>>>>> +       },
+>>>>> +       [IMX28_LRADC] = {
+>>>>> +               .irq_count      = ARRAY_SIZE(mx28_lradc_irq_names),
+>>>>> +               .irq_name       = mx28_lradc_irq_names,
+>>>>> +       },
+>>>>> +};
+>>>>> +
+>>>>>
+>>>>>  enum mxs_lradc_ts {
+>>>>>  
+>>>>>         MXS_LRADC_TOUCHSCREEN_NONE = 0,
+>>>>>         MXS_LRADC_TOUCHSCREEN_4WIRE,
+>>>>>
+>>>>> @@ -857,8 +890,19 @@ static void mxs_lradc_hw_stop(struct mxs_lradc
+>>>>> *lradc)
+>>>>>
+>>>>>                 writel(0, lradc->base + LRADC_DELAY(i));
+>>>>>  
+>>>>>  }
+>>>>>
+>>>>> +static const struct of_device_id mxs_lradc_dt_ids[] = {
+>>>>> +       { .compatible = "fsl,imx23-lradc", .data = (void
+>>>>> *)IMX23_LRADC, }, +       { .compatible = "fsl,imx28-lradc", .data =
+>>>>> (void
+>>>>> *)IMX28_LRADC, }, +       { /* sentinel */ }
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
+>>>>> +
+>>>>
+>>>> Why not s/(void \*)\(IMX.._LRADC\)/\&mxs_lradc_of_config[\1]/ ?
+>>>
+>>> Check the register layout, it differs between MX23 and MX28, that's one
+>>> reason, since were we to access differently placed registers, we can do
+>>> it easily as in the SSP/I2C drivers.
+>>>
+>>> Moreover, there are some features on the MX28 that are not on the MX23
+>>> (like voltage treshold triggers and touchbuttons), with this setup, we
+>>> can easily check what we're running at at runtime and determine to
+>>> disallow these.
+>>>
+>>> From my point of view, using the number (IMX23_LRADC / IMX28_LRADC) is
+>>> much more convenient in the long run.
+>>
+>> I'm asking, because you don't use this number anywhere other than in
+>> mxs_lradc_probe()
+>> and there only to dereference the irq-names table. After that the
+>> structure and number
+>> are forgotten.
+> 
+> Certainly, so far it's used only this way. But please see my argument about 
+> register layout, that's why I went down this road of abstraction.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/iio/buffer_cb.c         |    4 ++--
- drivers/iio/inkern.c            |    6 ++++--
- drivers/staging/iio/iio_hwmon.c |   10 +++++++---
- include/linux/iio/consumer.h    |    8 ++++----
- 4 files changed, 17 insertions(+), 11 deletions(-)
+You'll probably be better of by putting these differences into the
+mxs_lradc_of_config struct as well, instead of adding switch statements here
+and there throughout the code.
 
-diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
-index 4d40e24..9201022 100644
---- a/drivers/iio/buffer_cb.c
-+++ b/drivers/iio/buffer_cb.c
-@@ -25,7 +25,7 @@ static struct iio_buffer_access_funcs iio_cb_access = {
- 	.store_to = &iio_buffer_cb_store_to,
- };
- 
--struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
-+struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
- 					     int (*cb)(u8 *data,
- 						       void *private),
- 					     void *private)
-@@ -46,7 +46,7 @@ struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
- 	cb_buff->buffer.access = &iio_cb_access;
- 	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
- 
--	cb_buff->channels = iio_channel_get_all(name);
-+	cb_buff->channels = iio_channel_get_all(dev);
- 	if (IS_ERR(cb_buff->channels)) {
- 		ret = PTR_ERR(cb_buff->channels);
- 		goto error_free_cb_buff;
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index d55e98f..58d0ffe 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -167,16 +167,18 @@ void iio_channel_release(struct iio_channel *channel)
- }
- EXPORT_SYMBOL_GPL(iio_channel_release);
- 
--struct iio_channel *iio_channel_get_all(const char *name)
-+struct iio_channel *iio_channel_get_all(struct device *dev)
- {
-+	const char *name;
- 	struct iio_channel *chans;
- 	struct iio_map_internal *c = NULL;
- 	int nummaps = 0;
- 	int mapind = 0;
- 	int i, ret;
- 
--	if (name == NULL)
-+	if (dev == NULL)
- 		return ERR_PTR(-EINVAL);
-+	name = dev_name(dev);
- 
- 	mutex_lock(&iio_map_list_lock);
- 	/* first count the matching maps */
-diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
-index 6a5bc5f..a4fce64 100644
---- a/drivers/staging/iio/iio_hwmon.c
-+++ b/drivers/staging/iio/iio_hwmon.c
-@@ -71,14 +71,18 @@ static int iio_hwmon_probe(struct platform_device *pdev)
- 	int ret, i;
- 	int in_i = 1, temp_i = 1, curr_i = 1;
- 	enum iio_chan_type type;
-+	struct iio_channel *channels;
-+	const __be32 *list;
-+
-+	channels = iio_channel_get_all(dev);
-+	if (IS_ERR(channels))
-+		return PTR_ERR(channels);
- 
- 	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
- 	if (st == NULL)
- 		return -ENOMEM;
- 
--	st->channels = iio_channel_get_all(dev_name(dev));
--	if (IS_ERR(st->channels))
--		return PTR_ERR(st->channels);
-+	st->channels = channels;
- 
- 	/* count how many attributes we have */
- 	while (st->channels[st->num_channels].indio_dev)
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index 16c35ac..6c44167 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -48,14 +48,14 @@ void iio_channel_release(struct iio_channel *chan);
- 
- /**
-  * iio_channel_get_all() - get all channels associated with a client
-- * @name:		name of consumer device.
-+ * @dev:		Pointer to consumer device.
-  *
-  * Returns an array of iio_channel structures terminated with one with
-  * null iio_dev pointer.
-  * This function is used by fairly generic consumers to get all the
-  * channels registered as having this consumer.
-  */
--struct iio_channel *iio_channel_get_all(const char *name);
-+struct iio_channel *iio_channel_get_all(struct device *dev);
- 
- /**
-  * iio_channel_release_all() - reverse iio_channel_get_all
-@@ -66,7 +66,7 @@ void iio_channel_release_all(struct iio_channel *chan);
- struct iio_cb_buffer;
- /**
-  * iio_channel_get_all_cb() - register callback for triggered capture
-- * @name:		Name of client device.
-+ * @dev:		Pointer to client device.
-  * @cb:			Callback function.
-  * @private:		Private data passed to callback.
-  *
-@@ -74,7 +74,7 @@ struct iio_cb_buffer;
-  * So if the channels requested come from different devices this will
-  * fail.
-  */
--struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
-+struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
- 					     int (*cb)(u8 *data,
- 						       void *private),
- 					     void *private);
--- 
-1.7.9.7
+- Lars
