@@ -1,46 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38783 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932467Ab3AIUJH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2013 15:09:07 -0500
-Message-ID: <50EDCE61.8000001@kernel.org>
-Date: Wed, 09 Jan 2013 20:09:05 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Received: from aserp1040.oracle.com ([141.146.126.69]:45948 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752160Ab3AVIFc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 03:05:32 -0500
+Date: Tue, 22 Jan 2013 11:05:26 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/7] staging:iio:adis16080: Perform sign extension
-References: <1357740079-12326-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1357740079-12326-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Cc: devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] staging/iio: Use correct argument for sizeof
+Message-ID: <20130122080525.GX4584@mwanda>
+References: <1358802842-27614-1-git-send-email-peterhuewe@gmx.de>
+ <20130122064351.GV4584@mwanda>
+ <50FE477D.7060401@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <50FE477D.7060401@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/2013 02:01 PM, Lars-Peter Clausen wrote:
-> The adis16080 reports sample values in twos complement. So we need to perform a
-> sign extension on the result, otherwise negative values will be reported
-> incorrectly as large positive values.
+On Tue, Jan 22, 2013 at 09:02:05AM +0100, Lars-Peter Clausen wrote:
+> On 01/22/2013 07:43 AM, Dan Carpenter wrote:
+> > On Mon, Jan 21, 2013 at 10:14:02PM +0100, Peter Huewe wrote:
+> >> found with coccicheck
+> >> sizeof when applied to a pointer typed expression gives the size of
+> >> the pointer
+> >>
+> > 
+> > The original code is correct, in this case.  We're storing an array
+> > of pointers and the last element in the array is a NULL.
+> > 
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Added to fixes-togreg branch of iio.git
+> The patch changed sizeof(st->attrs) to sizeof(*st->attrs). The type of
+> st->attrs is struct attribute **, so both sizeofs return the same value (the
+> size of an pointer) and the code happens to work, still the later is
+> semantically more correct.
 > 
-> ---
-> This one should go into 3.8 if possible, the rest of the series is for 3.9
-> ---
->  drivers/staging/iio/gyro/adis16080_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/gyro/adis16080_core.c b/drivers/staging/iio/gyro/adis16080_core.c
-> index 3525a68..149ff99 100644
-> --- a/drivers/staging/iio/gyro/adis16080_core.c
-> +++ b/drivers/staging/iio/gyro/adis16080_core.c
-> @@ -69,7 +69,7 @@ static int adis16080_spi_read(struct iio_dev *indio_dev,
->  	ret = spi_read(st->us, st->buf, 2);
->  
->  	if (ret == 0)
-> -		*val = ((st->buf[0] & 0xF) << 8) | st->buf[1];
-> +		*val = sign_extend32(12, ((st->buf[0] & 0xF) << 8) | st->buf[1]);
->  	mutex_unlock(&st->buf_lock);
->  
->  	return ret;
-> 
+
+Yeah.  You're right, my bad.  The patch is fine.
+
+regards,
+dan carpenter
+
