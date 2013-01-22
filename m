@@ -1,45 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:38516 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754255Ab3AKXgE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2013 18:36:04 -0500
-From: Marek Vasut <marex@denx.de>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH 1/2 V3] iio: mxs: Implement support for touchscreen
-Date: Sat, 12 Jan 2013 00:36:03 +0100
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Shawn Guo <shawn.guo@linaro.org>
-References: <1357861431-8978-1-git-send-email-marex@denx.de> <20130111165420.GA11224@core.coreip.homeip.net>
-In-Reply-To: <20130111165420.GA11224@core.coreip.homeip.net>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201301120036.03499.marex@denx.de>
+Received: from ppsw-43.csi.cam.ac.uk ([131.111.8.143]:42656 "EHLO
+	ppsw-43.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754363Ab3AVQQr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 11:16:47 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, denis.ciocca@st.com,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 08/10] iio:accel:st_accel drop incorrect line from kconfig comment
+Date: Tue, 22 Jan 2013 16:16:37 +0000
+Message-Id: <1358871399-11216-9-git-send-email-jic23@kernel.org>
+In-Reply-To: <1358871399-11216-1-git-send-email-jic23@kernel.org>
+References: <50FEBB20.7070407@kernel.org>
+ <1358871399-11216-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Dmitry,
+---
+ drivers/iio/accel/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-> Hi Marek,
-> 
-> On Fri, Jan 11, 2013 at 12:43:50AM +0100, Marek Vasut wrote:
-> > This patch implements support for sampling of a touchscreen into
-> > the MXS LRADC driver. The LRADC block allows configuring some of
-> > it's channels into special mode where they either output the drive
-> > voltage or sample it, allowing it to operate a 4-wire or 5-wire
-> > resistive touchscreen.
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 52b8956..bb59496 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -39,7 +39,6 @@ config IIO_ST_ACCEL_3AXIS
+ 	  - st_accel (core functions for the driver [it is mandatory]);
+ 	  - st_accel_i2c (necessary for the I2C devices [optional*]);
+ 	  - st_accel_spi (necessary for the SPI devices [optional*]);
+-	  - st_accel_buffer (necessary for triggered buffer [optional]);
+ 
+ 	  (*) one of these is necessary to do something.
+ 
+-- 
+1.8.1.1
 
-[...]
-
-> Besides the minor nits above,
-> 
-> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> 
-> Thanks!
-
-Fixed the issues and rolled V4. Thank you for the reviews and the help!
-
-Best regards,
-Marek Vasut
