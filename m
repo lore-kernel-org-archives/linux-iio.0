@@ -1,44 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:51236 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756137Ab3AUUFa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2013 15:05:30 -0500
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH 2/2] ARM: mxs: Add OF props for MX23 LRADC
-Date: Mon, 21 Jan 2013 21:05:22 +0100
-Message-Id: <1358798722-25102-2-git-send-email-marex@denx.de>
-In-Reply-To: <1358798722-25102-1-git-send-email-marex@denx.de>
-References: <1358798722-25102-1-git-send-email-marex@denx.de>
+Received: from aserp1040.oracle.com ([141.146.126.69]:42744 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750942Ab3AVGoE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 01:44:04 -0500
+Date: Tue, 22 Jan 2013 09:43:51 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Peter Huewe <peterhuewe@gmx.de>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging/iio: Use correct argument for sizeof
+Message-ID: <20130122064351.GV4584@mwanda>
+References: <1358802842-27614-1-git-send-email-peterhuewe@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1358802842-27614-1-git-send-email-peterhuewe@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add interrupt mapping and compatible string for MX23 LRADC.
+On Mon, Jan 21, 2013 at 10:14:02PM +0100, Peter Huewe wrote:
+> found with coccicheck
+> sizeof when applied to a pointer typed expression gives the size of
+> the pointer
+> 
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>
----
- arch/arm/boot/dts/imx23.dtsi |    2 ++
- 1 file changed, 2 insertions(+)
+The original code is correct, in this case.  We're storing an array
+of pointers and the last element in the array is a NULL.
 
-diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
-index 65415c5..56afcf4 100644
---- a/arch/arm/boot/dts/imx23.dtsi
-+++ b/arch/arm/boot/dts/imx23.dtsi
-@@ -391,7 +391,9 @@
- 			};
- 
- 			lradc@80050000 {
-+				compatible = "fsl,imx23-lradc";
- 				reg = <0x80050000 0x2000>;
-+				interrupts = <36 37 38 39 40 41 42 43 44>;
- 				status = "disabled";
- 			};
- 
--- 
-1.7.10.4
+> The semantic patch that makes this output is available
+> in scripts/coccinelle/misc/noderef.cocci.
+> 
+> More information about semantic patching is available at
+> http://coccinelle.lip6.fr/
+
+Can you remove those two boiler plate lines?  We all have google.
+
+regards,
+dan carpenter
 
