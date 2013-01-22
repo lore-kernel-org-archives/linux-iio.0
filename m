@@ -1,67 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2.gnudd.com ([213.203.150.91]:35093 "EHLO mail.gnudd.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:60617 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750946Ab3AQRLK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 17 Jan 2013 12:11:10 -0500
-Date: Thu, 17 Jan 2013 18:11:00 +0100
-From: Alessandro Rubini <rubini@gnudd.com>
-To: lars@metafoo.de
-Cc: christophe.leroy@c-s.fr, jic23@cam.ac.uk,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	patrick.vasseur@c-s.fr
-Subject: Re: [PATCH] IIO ADC support for AD7923
-Message-ID: <20130117171100.GA24398@mail.gnudd.com>
+	id S1750813Ab3AVJbi convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 04:31:38 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	"Cousson, Benoit" <b-cousson@ti.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Landley <rob@landley.net>,
+	Russell King <linux@arm.linux.org.uk>
+Subject: RE: [PATCH v3 4/8] MFD: ti_am335x_tscadc: add device tree binding
+ information
+Date: Tue, 22 Jan 2013 09:31:02 +0000
+Message-ID: <4CE347531D4CA947960AF71FF095B9323E9AFB02@DBDE01.ent.ti.com>
+References: <cover.1358502134.git.rachna@ti.com>
+ <daf18b4779ac3c6b69b1e7e2d1a4abd18b13fee5.1358502134.git.rachna@ti.com>
+ <50FB1DFE.6090805@metafoo.de>
+In-Reply-To: <50FB1DFE.6090805@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <50F199F7.7020600@metafoo.de>
-References: <50F199F7.7020600@metafoo.de>
-  <201301080842.r088gKWO031124@localhost.localdomain>
- <20130108091414.GA28404@mail.gnudd.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
->> I wonder if IIO config symbols should have IIO_ in their name, so
->> people looking at config files knows what they actually are.
->> Actually, all USB drivers have USB in their config name, which is
->> useful even if e.g. "PL2303" cannot be but USB.
->> 
->> On the other hand, AD7923 and all the others can well be driven by
->> something else than IIO, even if currently this is the only mainstream
->> option.
+Hi,
+
+On Sun, Jan 20, 2013 at 03:58:14, Lars-Peter Clausen wrote:
+> Hi,
 > 
-> No, IIO is and should be the only option for these devices. We really don't
-> want to drivers for the same device in different subsystems of the kernel.
+> On 01/18/2013 11:48 AM, Patil, Rachna wrote:
+> > From: "Patil, Rachna" <rachna@ti.com>
+> > 
+> > Signed-off-by: Patil, Rachna <rachna@ti.com>
+> > ---
+> >  .../devicetree/bindings/mfd/ti_am335x_tscadc.txt   |   35 ++++++++++++++++++++
+> >  1 file changed, 35 insertions(+)
+> >  create mode 100644 
+> > Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
+> > 
+> > diff --git 
+> > a/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt 
+> > b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
+> > new file mode 100644
+> > index 0000000..c13c492
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
+> > @@ -0,0 +1,35 @@
+> > +Texas Instruments - TSC / ADC multi-functional device
+> > +
+> > +ti_tscadc is a multi-function device with touchscreen and ADC on chip.
+> > +This document describes the binding for mfd device.
+> > +
+> > +Required properties:
+> > +- compatible: "ti,ti-tscadc"
+> > +- reg: Specifies the address of MFD block
+> > +- interrupts: IRQ line connected to the main SoC
+> > +- interrupt-parent: The parent interrupt controller
+> 
+> The subnodes and their properties also need documentation.
 
-We really don't want a non-USB driver for a USB device, but still the
-name is in the config symbol and is useful. And this is an hardware
-constraint.
+Ok. I Will add this.
 
-And your argument may well have applied to comedi. But they wisely
-made the right choice and allowed iio to take over and possibly drive
-the same devices.
+> 
+> > +
+> > +Optional properties:
+> > +- ti,hwmods: Hardware information related to TSC/ADC MFD device
+> > +
+> > +Example:
+> > +
+> > +	tscadc: tscadc@44e0d000 {
+> > +		compatible = "ti,ti-tscadc";
+> > +		reg = <0x44e0d000 0x1000>;
+> > +
+> > +		interrupt-parent = <&intc>;
+> > +		interrupts = <16>;
+> > +		ti,hwmods = "adc_tsc";
+> > +
+> > +		tsc {
+> > +			wires = <4>;
+> > +			x-plate-resistance = <200>;
+> > +			steps-to-configure = <5>;
+> > +			wire-config = <0x00 0x11 0x22 0x33>;
+> 
+> Non-standard properties should have a vendor prefix.
 
-But sure your code is perfect and no other subsystem will ever be needed.
+Ok. I will fix this in the next version of the patch set.
 
+Regards,
+Rachna
 
-To explain, this is the problem I had: IIO was still in staging, and I
-had to use the ADC in the at91sam9g20.  The platform data there was
-protected by "IS_ENABLED(CONFIG_AT91_ADC)", which is actually only
-selectable if IIO is configured in.
-
-What should I do if I wanted to drive directly the hardware with a
-simple custom thing, because, for example, my target board is very
-small?  Currently I run a patched kernel, because otherwise I can't
-load my custom module and use the already-available platform data.
-No, it's not only a name change, it's that the description of the
-hardware should not depend on which subsystems are selected.
-
-
-But yes, you are right. I'm working on another I/O subsystem. We are
-gong to release zio-1.0 in a few days, because the thing is mature
-and used in production.
-
-I hope to meet you in person at fosdem and be able to talk over a beer
-or two.
-
-regards
-/alessandro
