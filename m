@@ -1,293 +1,590 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-073.synserver.de ([212.40.185.73]:1049 "EHLO
-	smtp-out-073.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753641Ab3AWJcV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 04:32:21 -0500
-Message-ID: <50FFAE56.4070803@metafoo.de>
-Date: Wed, 23 Jan 2013 10:33:10 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio:common: Add STMicroelectronics common library
-References: <1358757380-3187-1-git-send-email-denis.ciocca@st.com> <1358757380-3187-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358757380-3187-2-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mailout4.samsung.com ([203.254.224.34]:56771 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753770Ab3AWE70 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jan 2013 23:59:26 -0500
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de
+Subject: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
+Date: Wed, 23 Jan 2013 10:28:06 +0530
+Message-id: <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+This patch add an ADC IP found on EXYNOS5 series socs from Samsung.
+Also adds the Documentation for device tree bindings.
 
-I guess we are almost there now. A couple of small things, which need to be
-fixed though.
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+---
+Changes since v1:
 
-On 01/21/2013 09:36 AM, Denis CIOCCA wrote:
-> This patch add a generic library for STMicroelectronics 3-axis sensors.
-> 
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-> ---
->  drivers/iio/common/Kconfig                         |   1 +
->  drivers/iio/common/Makefile                        |   1 +
->  drivers/iio/common/st_sensors/Kconfig              |  14 +
->  drivers/iio/common/st_sensors/Makefile             |  10 +
->  drivers/iio/common/st_sensors/st_sensors_buffer.c  | 115 ++++++
->  drivers/iio/common/st_sensors/st_sensors_core.c    | 411 +++++++++++++++++++++
->  drivers/iio/common/st_sensors/st_sensors_i2c.c     |  81 ++++
->  drivers/iio/common/st_sensors/st_sensors_spi.c     | 128 +++++++
->  drivers/iio/common/st_sensors/st_sensors_trigger.c |  77 ++++
->  include/linux/iio/common/st_sensors.h              | 266 +++++++++++++
->  include/linux/iio/common/st_sensors_i2c.h          |  20 +
->  include/linux/iio/common/st_sensors_spi.h          |  20 +
->  12 files changed, 1144 insertions(+)
->  create mode 100644 drivers/iio/common/st_sensors/Kconfig
->  create mode 100644 drivers/iio/common/st_sensors/Makefile
->  create mode 100644 drivers/iio/common/st_sensors/st_sensors_buffer.c
->  create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.c
->  create mode 100644 drivers/iio/common/st_sensors/st_sensors_i2c.c
->  create mode 100644 drivers/iio/common/st_sensors/st_sensors_spi.c
->  create mode 100644 drivers/iio/common/st_sensors/st_sensors_trigger.c
->  create mode 100644 include/linux/iio/common/st_sensors.h
->  create mode 100644 include/linux/iio/common/st_sensors_i2c.h
->  create mode 100644 include/linux/iio/common/st_sensors_spi.h
-> 
-> diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
-> index ed45ee5..0b6e97d 100644
-> --- a/drivers/iio/common/Kconfig
-> +++ b/drivers/iio/common/Kconfig
-> @@ -3,3 +3,4 @@
->  #
->  
->  source "drivers/iio/common/hid-sensors/Kconfig"
-> +source "drivers/iio/common/st_sensors/Kconfig"
-> diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
-> index 8158400..c2352be 100644
-> --- a/drivers/iio/common/Makefile
-> +++ b/drivers/iio/common/Makefile
-> @@ -7,3 +7,4 @@
->  #
->  
->  obj-y += hid-sensors/
-> +obj-y += st_sensors/
-> diff --git a/drivers/iio/common/st_sensors/Kconfig b/drivers/iio/common/st_sensors/Kconfig
-> new file mode 100644
-> index 0000000..84b2dca
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/Kconfig
-> @@ -0,0 +1,14 @@
-> +#
-> +# Hid Sensor common modules
-> +#
-> +
-> +config IIO_ST_SENSORS_I2C
-> +	tristate
-> +
-> +config IIO_ST_SENSORS_SPI
-> +	tristate
-> +
-> +config IIO_ST_SENSORS_CORE
-> +	tristate
-> +	select IIO_ST_SENSORS_I2C if I2C
-> +	select IIO_ST_SENSORS_SPI if SPI_MASTER
-> diff --git a/drivers/iio/common/st_sensors/Makefile b/drivers/iio/common/st_sensors/Makefile
-> new file mode 100644
-> index 0000000..9f3e24f
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/Makefile
-> @@ -0,0 +1,10 @@
-> +#
-> +# Makefile for the STMicroelectronics sensor common modules.
-> +#
-> +
-> +obj-$(CONFIG_IIO_ST_SENSORS_I2C) += st_sensors_i2c.o
-> +obj-$(CONFIG_IIO_ST_SENSORS_SPI) += st_sensors_spi.o
-> +obj-$(CONFIG_IIO_ST_SENSORS_CORE) += st_sensors.o
-> +st_sensors-y := st_sensors_core.o
-> +st_sensors-$(CONFIG_IIO_BUFFER) += st_sensors_buffer.o
-> +st_sensors-$(CONFIG_IIO_TRIGGER) += st_sensors_trigger.o
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> new file mode 100644
-> index 0000000..f4a5adc
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -0,0 +1,115 @@
-> +/*
-> + * STMicroelectronics sensors buffer library driver
-> + *
-> + * Copyright 2012-2013 STMicroelectronics Inc.
-> + *
-> + * Denis Ciocca <denis.ciocca@st.com>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/irqreturn.h>
-> +
-> +#include <linux/iio/common/st_sensors.h>
-> +
-> +int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
-> +{
-> +	int i, n = 0, len;
-> +	u8 addr[ST_SENSORS_NUMBER_DATA_CHANNELS];
-> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +
-> +	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++) {
-> +		if (test_bit(i, indio_dev->active_scan_mask)) {
-> +			addr[n] = indio_dev->channels[i].address;
-> +			n++;
-> +		}
-> +	}
-> +	switch (n) {
-> +	case 1:
-> +		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> +			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL, buf,
-> +			sdata->multiread_bit);
-> +		break;
-> +	case 2:
-> +		if ((addr[1] - addr[0]) == ST_SENSORS_BYTE_FOR_CHANNEL) {
-> +			len = sdata->tf->read_multiple_byte(&sdata->tb,
-> +					sdata->dev, addr[0],
-> +					ST_SENSORS_BYTE_FOR_CHANNEL*n,
-> +					buf, sdata->multiread_bit);
-> +		} else {
-> +			u8 rx_array[ST_SENSORS_BYTE_FOR_CHANNEL*
-> +				    ST_SENSORS_NUMBER_DATA_CHANNELS];
-> +			len = sdata->tf->read_multiple_byte(&sdata->tb,
-> +				sdata->dev, addr[0],
-> +				ST_SENSORS_BYTE_FOR_CHANNEL*
-> +				ST_SENSORS_NUMBER_DATA_CHANNELS,
-> +				rx_array, sdata->multiread_bit);
-> +			if (len < 0)
-> +				goto read_data_channels_error;
-> +
-> +			for (i = 0; i < n * ST_SENSORS_NUMBER_DATA_CHANNELS;
-> +									i++) {
-> +				if (i < n)
-> +					buf[i] = rx_array[i];
-> +				else
-> +					buf[i] = rx_array[n + i];
-> +			}
-> +			len = ST_SENSORS_BYTE_FOR_CHANNEL*n;
-> +		}
-> +		break;
-> +	case 3:
-> +		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> +			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL*
-> +			ST_SENSORS_NUMBER_DATA_CHANNELS,
-> +			buf, sdata->multiread_bit);
-> +		break;
-> +	default:
-> +		len = -EINVAL;
-> +		goto read_data_channels_error;
-> +	}
-> +	if (len != ST_SENSORS_BYTE_FOR_CHANNEL*n) {
-> +		len = -EIO;
-> +		goto read_data_channels_error;
-> +	}
-> +
-> +read_data_channels_error:
-> +	return len;
-> +}
-> +EXPORT_SYMBOL(st_sensors_get_buffer_element);
-> +
-> +irqreturn_t st_sensors_trigger_handler(int irq, void *p)
-> +{
-> +	int len;
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +
-> +	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
-> +	if (len < 0)
-> +		goto st_sensors_get_buffer_element_error;
-> +
-> +	if (indio_dev->scan_timestamp)
-> +		*(s64 *)((u8 *)sdata->buffer_data +
-> +				ALIGN(len, sizeof(s64))) = pf->timestamp;
-> +
-> +	iio_push_to_buffers(indio_dev, sdata->buffer_data);
-> +
-> +st_sensors_get_buffer_element_error:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +EXPORT_SYMBOL(st_sensors_trigger_handler);
-> +
-> +MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-> +MODULE_DESCRIPTION("STMicroelectronics ST-sensors buffer");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> new file mode 100644
-> index 0000000..661cc2b
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -0,0 +1,411 @@
-> +/*
-> + * STMicroelectronics sensors core library driver
-> + *
-> + * Copyright 2012-2013 STMicroelectronics Inc.
-> + *
-> + * Denis Ciocca <denis.ciocca@st.com>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/delay.h>
-> +#include <linux/unaligned/le_byteshift.h>
+1. Fixed comments from Lars
+2. Added support for ADC on EXYNOS5410
 
-Never include that file directly. Use asm/unaligned.h, it will provide the
-best suited implementation of the unaligned functions for the current
-architecture.
+Changes since v2:
 
-> +#include <linux/iio/iio.h>
-> +
-> +#include <linux/iio/common/st_sensors.h>
-> +
-> +
-[...]
+1. Changed the instance name for (struct iio_dev *) to indio_dev
+2. Changed devm_request_irq to request_irq
 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> new file mode 100644
-> index 0000000..9c62c6a
-> --- /dev/null
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -0,0 +1,77 @@
-> +/*
-> + * STMicroelectronics sensors trigger library driver
-> + *
-> + * Copyright 2012-2013 STMicroelectronics Inc.
-> + *
-> + * Denis Ciocca <denis.ciocca@st.com>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/interrupt.h>
-> +
-> +#include <linux/iio/common/st_sensors.h>
-> +
-> +
-> +int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-> +					struct iio_trigger_ops *trigger_ops)
+Few doubts regarding the mappings and child device handling.
+Kindly, suggest me better methods.
 
-const
+ .../bindings/arm/samsung/exynos5-adc.txt           |   37 ++
+ drivers/iio/adc/Kconfig                            |    7 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/exynos5_adc.c                      |  464 ++++++++++++++++++++
+ 4 files changed, 509 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+ create mode 100644 drivers/iio/adc/exynos5_adc.c
 
-> +{
-[...]
+diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+new file mode 100644
+index 0000000..9a5b515
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+@@ -0,0 +1,37 @@
++Samsung Exynos5 Analog to Digital Converter bindings
++
++Required properties:
++- compatible:		Must be "samsung,exynos5250-adc" for exynos5250 controllers.
++- reg:			Contains ADC register address range (base address and
++			length).
++- interrupts: 		Contains the interrupt information for the timer. The
++			format is being dependent on which interrupt controller
++			the Samsung device uses.
++
++Note: child nodes can be added for auto probing from device tree.
++
++Example: adding device info in dtsi file
++
++adc@12D10000 {
++	compatible = "samsung,exynos5250-adc";
++	reg = <0x12D10000 0x100>;
++	interrupts = <0 106 0>;
++	#address-cells = <1>;
++	#size-cells = <1>;
++	ranges;
++};
++
++
++Example: Adding child nodes in dts file
++
++adc@12D10000 {
++
++	/* NTC thermistor is a hwmon device */
++	ncp15wb473@0 {
++		compatible = "ntc,ncp15wb473";
++		reg = <0x0>;
++		pullup-uV = <1800000>;
++		pullup-ohm = <47000>;
++		pulldown-ohm = <0>;
++	};
++};
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index fe822a1..33ceabf 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -91,6 +91,13 @@ config AT91_ADC
+ 	help
+ 	  Say yes here to build support for Atmel AT91 ADC.
+ 
++config EXYNOS5_ADC
++	bool "Exynos5 ADC driver support"
++	help
++	  Core support for the ADC block found in the Samsung EXYNOS5 series
++	  of SoCs for drivers such as the touchscreen and hwmon to use to share
++	  this resource.
++
+ config LP8788_ADC
+ 	bool "LP8788 ADC driver"
+ 	depends on MFD_LP8788
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 2d5f100..5b4a4f6 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
++obj-$(CONFIG_EXYNOS5_ADC) += exynos5_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+diff --git a/drivers/iio/adc/exynos5_adc.c b/drivers/iio/adc/exynos5_adc.c
+new file mode 100644
+index 0000000..8982675
+--- /dev/null
++++ b/drivers/iio/adc/exynos5_adc.c
+@@ -0,0 +1,464 @@
++/*
++ *  exynos5_adc.c - Support for ADC in EXYNOS5 SoCs
++ *
++ *  8 ~ 10 channel, 10/12-bit ADC
++ *
++ *  Copyright (C) 2013 Naveen Krishna Chatradhi <ch.naveen@samsung.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to the Free Software
++ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/io.h>
++#include <linux/clk.h>
++#include <linux/completion.h>
++#include <linux/of.h>
++#include <linux/of_irq.h>
++#include <linux/regulator/consumer.h>
++#include <linux/of_platform.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
++
++enum adc_version {
++	ADC_V1,
++	ADC_V2
++};
++
++/* EXYNOS5250 ADC_V1 registers definitions */
++#define ADC_V1_CON(x)		((x) + 0x00)
++#define ADC_V1_DLY(x)		((x) + 0x08)
++#define ADC_V1_DATX(x)		((x) + 0x0C)
++#define ADC_V1_INTCLR(x)	((x) + 0x18)
++#define ADC_V1_MUX(x)		((x) + 0x1c)
++
++/* EXYNOS5410 ADC_V2 registers definitions */
++#define ADC_V2_CON1(x)		((x) + 0x00)
++#define ADC_V2_CON2(x)		((x) + 0x04)
++#define ADC_V2_STAT(x)		((x) + 0x08)
++#define ADC_V2_INT_EN(x)	((x) + 0x10)
++#define ADC_V2_INT_ST(x)	((x) + 0x14)
++#define ADC_V2_VER(x)		((x) + 0x20)
++
++/* Bit definitions for ADC_V1 */
++#define ADC_V1_CON_RES		(1u << 16)
++#define ADC_V1_CON_PRSCEN	(1u << 14)
++#define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
++#define ADC_V1_CON_STANDBY	(1u << 2)
++
++/* Bit definitions for ADC_V2 */
++#define ADC_V2_CON1_SOFT_RESET	(1u << 2)
++
++#define ADC_V2_CON2_OSEL	(1u << 10)
++#define ADC_V2_CON2_ESEL	(1u << 9)
++#define ADC_V2_CON2_HIGHF	(1u << 8)
++#define ADC_V2_CON2_C_TIME(x)	(((x) & 7) << 4)
++#define ADC_V2_CON2_ACH_SEL(x)	(((x) & 0xF) << 0)
++#define ADC_V2_CON2_ACH_MASK	0xF
++
++/* Bit definitions common for ADC_V1 and ADC_V2 */
++#define ADC_V1_CON_EN_START		(1u << 0)
++#define ADC_V1_DATX_MASK	0xFFF
++
++struct exynos5_adc {
++	void __iomem		*regs;
++	struct clk		*clk;
++	unsigned int		irq;
++	struct regulator	*vdd;
++
++	struct completion	completion;
++
++	struct iio_map		*map;
++	u32			value;
++	unsigned int            version;
++};
++
++static const struct of_device_id exynos5_adc_match[] = {
++	{ .compatible = "samsung,exynos5250-adc", .data = (void *)ADC_V1 },
++	{ .compatible = "samsung,exynos5410-adc", .data = (void *)ADC_V2 },
++	{},
++};
++MODULE_DEVICE_TABLE(of, exynos5_adc_match);
++
++static inline unsigned int exynos5_adc_get_version(struct platform_device *pdev)
++{
++	const struct of_device_id *match;
++
++	match = of_match_node(exynos5_adc_match, pdev->dev.of_node);
++	return (unsigned int)match->data;
++}
++
++/* default maps used by iio consumer (ex: ntc-thermistor driver) */
++static struct iio_map exynos5_adc_iio_maps[] = {
++	{
++		.consumer_dev_name = "0.ncp15wb473",
++		.consumer_channel = "adc3",
++		.adc_channel_label = "adc3",
++	},
++	{
++		.consumer_dev_name = "1.ncp15wb473",
++		.consumer_channel = "adc4",
++		.adc_channel_label = "adc4",
++	},
++	{
++		.consumer_dev_name = "2.ncp15wb473",
++		.consumer_channel = "adc5",
++		.adc_channel_label = "adc5",
++	},
++	{
++		.consumer_dev_name = "3.ncp15wb473",
++		.consumer_channel = "adc6",
++		.adc_channel_label = "adc6",
++	},
++	{},
++};
++
++static int exynos5_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val,
++				int *val2,
++				long mask)
++{
++	struct exynos5_adc *info = iio_priv(indio_dev);
++	u32 con1, con2;
++
++	if (mask == IIO_CHAN_INFO_RAW) {
++		mutex_lock(&indio_dev->mlock);
++
++		/* Select the channel to be used and Trigger conversion */
++		if (info->version == ADC_V2) {
++			con2 = readl(ADC_V2_CON2(info->regs));
++			con2 &= ~ADC_V2_CON2_ACH_MASK;
++			con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
++			writel(con2, ADC_V2_CON2(info->regs));
++
++			con1 = readl(ADC_V2_CON1(info->regs));
++			writel(con1 | ADC_V1_CON_EN_START,
++					ADC_V2_CON1(info->regs));
++		} else {
++			writel(chan->address, ADC_V1_MUX(info->regs));
++
++			con1 = readl(ADC_V1_CON(info->regs));
++			writel(con1 | ADC_V1_CON_EN_START,
++					ADC_V1_CON(info->regs));
++		}
++
++		wait_for_completion(&info->completion);
++		*val = info->value;
++
++		mutex_unlock(&indio_dev->mlock);
++
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static irqreturn_t exynos5_adc_isr(int irq, void *dev_id)
++{
++	struct exynos5_adc *info = (struct exynos5_adc *)dev_id;
++
++	/* Read value */
++	info->value = readl(ADC_V1_DATX(info->regs)) &
++						ADC_V1_DATX_MASK;
++	/* clear irq */
++	if (info->version == ADC_V2)
++		writel(1, ADC_V2_INT_ST(info->regs));
++	else
++		writel(1, ADC_V1_INTCLR(info->regs));
++
++	complete(&info->completion);
++
++	return IRQ_HANDLED;
++}
++
++static int exynos5_adc_reg_access(struct iio_dev *indio_dev,
++			      unsigned reg, unsigned writeval,
++			      unsigned *readval)
++{
++	struct exynos5_adc *info = iio_priv(indio_dev);
++	u32 ret;
++
++	mutex_lock(&indio_dev->mlock);
++
++	if (readval != NULL) {
++		ret = readl(info->regs + reg);
++		*readval = ret;
++	} else
++		ret = -EINVAL;
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static const struct iio_info exynos5_adc_iio_info = {
++	.read_raw = &exynos5_read_raw,
++	.debugfs_reg_access = &exynos5_adc_reg_access,
++	.driver_module = THIS_MODULE,
++};
++
++#define ADC_V1_CHANNEL(_index, _id) {		\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = _index,				\
++	.address = _index,				\
++	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
++	.datasheet_name = _id,				\
++}
++
++/** ADC core in EXYNOS5410 has 10 channels,
++ * ADC core in EXYNOS5250 has 8 channels
++*/
++static const struct iio_chan_spec exynos5_adc_iio_channels[] = {
++	ADC_V1_CHANNEL(0, "adc0"),
++	ADC_V1_CHANNEL(1, "adc1"),
++	ADC_V1_CHANNEL(2, "adc2"),
++	ADC_V1_CHANNEL(3, "adc3"),
++	ADC_V1_CHANNEL(4, "adc4"),
++	ADC_V1_CHANNEL(5, "adc5"),
++	ADC_V1_CHANNEL(6, "adc6"),
++	ADC_V1_CHANNEL(7, "adc7"),
++	ADC_V1_CHANNEL(8, "adc8"),
++	ADC_V1_CHANNEL(9, "adc9"),
++};
++
++static int exynos5_adc_remove_devices(struct device *dev, void *c)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++
++	platform_device_unregister(pdev);
++
++	return 0;
++}
++
++static void exynos5_adc_hw_init(struct exynos5_adc *info)
++{
++	u32 con1, con2;
++
++	if (info->version == ADC_V2) {
++		con1 = ADC_V2_CON1_SOFT_RESET;
++		writel(con1, ADC_V2_CON1(info->regs));
++
++		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
++			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
++		writel(con2, ADC_V2_CON2(info->regs));
++
++		/* Enable interrupts */
++		writel(1, ADC_V2_INT_EN(info->regs));
++	} else {
++		/* set default prescaler values and Enable prescaler */
++		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
++
++		/* Enable 12-bit ADC resolution */
++		con1 |= ADC_V1_CON_RES;
++		writel(con1, ADC_V1_CON(info->regs));
++	}
++}
++
++static int exynos5_adc_probe(struct platform_device *pdev)
++{
++	struct exynos5_adc *info = NULL;
++	struct device_node *np = pdev->dev.of_node;
++	struct iio_dev *indio_dev = NULL;
++	struct resource	*mem;
++	int ret = -ENODEV;
++	int irq;
++
++	if (!np)
++		return ret;
++
++	indio_dev = iio_device_alloc(sizeof(struct exynos5_adc));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
++		return -ENOMEM;
++	}
++
++	info = iio_priv(indio_dev);
++
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++
++	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		ret = irq;
++		goto err_iio;
++	}
++
++	info->irq = irq;
++
++	ret = request_irq(info->irq, exynos5_adc_isr,
++					0, dev_name(&pdev->dev), info);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
++							info->irq);
++		goto err_iio;
++	}
++
++	info->clk = devm_clk_get(&pdev->dev, "adc");
++	if (IS_ERR(info->clk)) {
++		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
++							PTR_ERR(info->clk));
++		ret = PTR_ERR(info->clk);
++		goto err_irq;
++	}
++
++	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
++	if (IS_ERR(info->vdd)) {
++		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
++							PTR_ERR(info->vdd));
++		ret = PTR_ERR(info->vdd);
++		goto err_irq;
++	}
++
++	info->version = exynos5_adc_get_version(pdev);
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	init_completion(&info->completion);
++
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->info = &exynos5_adc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = exynos5_adc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(exynos5_adc_iio_channels);
++
++	info->map = exynos5_adc_iio_maps;
++
++	ret = iio_map_array_register(indio_dev, info->map);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed mapping iio, err: %d\n", ret);
++		goto err_irq;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_map;
++
++	ret = regulator_enable(info->vdd);
++	if (ret)
++		goto err_iio_dev;
++
++	clk_prepare_enable(info->clk);
++
++	exynos5_adc_hw_init(info);
++
++	ret = of_platform_populate(np, exynos5_adc_match, NULL, &pdev->dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed adding child nodes\n");
++		goto err_of_populate;
++	}
++
++	return 0;
++
++err_of_populate:
++	device_for_each_child(&pdev->dev, NULL, exynos5_adc_remove_devices);
++err_iio_dev:
++	iio_device_unregister(indio_dev);
++err_map:
++	iio_map_array_unregister(indio_dev, info->map);
++err_irq:
++	free_irq(info->irq, info);
++err_iio:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int exynos5_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct exynos5_adc *info = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_map_array_unregister(indio_dev, info->map);
++	free_irq(info->irq, info);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int exynos5_adc_suspend(struct device *dev)
++{
++	struct exynos5_adc *info = dev_get_data(dev);
++	u32 con;
++
++	if (info->version == ADC_V2) {
++		con = readl(ADC_V2_CON1(info->regs));
++		con &= ~ADC_V1_CON_EN_START;
++		writel(con, ADC_V2_CON1(info->regs));
++	} else {
++		con = readl(ADC_V1_CON(info->regs));
++		con |= ADC_V1_CON_STANDBY;
++		writel(con, ADC_V1_CON(info->regs));
++	}
++
++	clk_unprepare_disable(info->clk);
++	regulator_disable(info->vdd);
++
++	return 0;
++}
++
++static int exynos5_adc_resume(struct device *dev)
++{
++	struct exynos5_adc *info = dev_get_data(dev);
++	int ret;
++
++	ret = regulator_enable(info->vdd);
++	if (ret)
++		return ret;
++
++	clk_prepare_enable(info->clk);
++
++	exynos5_adc_hw_init(info);
++
++	return 0;
++}
++
++#else
++#define exynos5_adc_suspend NULL
++#define exynos5_adc_resume NULL
++#endif
++
++static SIMPLE_DEV_PM_OPS(exynos5_adc_pm_ops,
++			exynos5_adc_suspend,
++			exynos5_adc_resume);
++
++static struct platform_driver exynos5_adc_driver = {
++	.probe		= exynos5_adc_probe,
++	.remove		= exynos5_adc_remove,
++	.driver		= {
++		.name	= "exynos5-adc",
++		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(exynos5_adc_match),
++		.pm	= &exynos5_adc_pm_ops,
++	},
++};
++
++module_platform_driver(exynos5_adc_driver);
++
++MODULE_AUTHOR("Naveen Krishna Chatradhi <ch.naveen@samsung.com>");
++MODULE_DESCRIPTION("Samsung EXYNOS5 ADC driver");
++MODULE_LICENSE("GPL");
+-- 
+1.7.9.5
+
