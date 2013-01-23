@@ -1,56 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f43.google.com ([209.85.215.43]:56844 "EHLO
-	mail-la0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752554Ab3AXAm6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 19:42:58 -0500
-Received: by mail-la0-f43.google.com with SMTP id ek20so1388505lab.2
-        for <linux-iio@vger.kernel.org>; Wed, 23 Jan 2013 16:42:57 -0800 (PST)
-Received: by mail-lb0-f180.google.com with SMTP id q12so1570227lbc.11
-        for <linux-iio@vger.kernel.org>; Wed, 23 Jan 2013 16:42:54 -0800 (PST)
+Received: from sting.hengli.com.au ([178.18.18.71]:33686 "EHLO
+	fornost.hengli.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751143Ab3AWXXc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 18:23:32 -0500
+Date: Thu, 24 Jan 2013 10:23:16 +1100
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+	linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	Artem Bityutskiy <dedekind1@gmail.com>,
+	linux-mtd@lists.infradead.org, linux-crypto@vger.kernel.org
+Subject: Re: linux-next: Tree for Jan 23 (mtd/ubi and iio and
+ crypto/crc32[c])
+Message-ID: <20130123232316.GB25726@gondor.apana.org.au>
+References: <20130123174336.47c0113740a14da7f6a92187@canb.auug.org.au>
+ <51006DC9.30802@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <50FFDD2A.9040102@metafoo.de>
-References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
-	<1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
-	<50FFDD2A.9040102@metafoo.de>
-Date: Wed, 23 Jan 2013 16:42:54 -0800
-Message-ID: <CAD=FV=VgrpPSLrwwrzFDFLBXTw+-t3C=UwnS6b53o41hxM_AyQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
-From: Doug Anderson <dianders@chromium.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org, gregkh@linuxfoundation.org,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51006DC9.30802@infradead.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Lars,
+On Wed, Jan 23, 2013 at 03:10:01PM -0800, Randy Dunlap wrote:
+> On 01/22/13 22:43, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Changes since 20130122:
+> > 
+> 
+> 
+> on i386:
+> 
+> ERROR: "crc32_le" [drivers/mtd/ubi/ubi.ko] undefined!
+> ERROR: "iio_triggered_buffer_setup" [drivers/iio/adc/max1363.ko] undefined!
+> ERROR: "iio_triggered_buffer_cleanup" [drivers/iio/adc/max1363.ko] undefined!
+> ERROR: "__crc32c_le" [crypto/crc32c.ko] undefined!
+> ERROR: "crc32_le" [crypto/crc32.ko] undefined!
 
-On Wed, Jan 23, 2013 at 4:52 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> Few doubts regarding the mappings and child device handling.
->> Kindly, suggest me better methods.
->
-> The patch looks mostly good now. As for the mappings, the problem is that we
-> currently do not have any device tree bindings for IIO. So a proper solution
-> would be to add dt bindings for IIO.
+Weird.  You do have CONFIG_CRC32 selected, so did it compile
+a lib/crc32.ko or not?
 
-Can you explain more how you think this would work?  It seems like
-just having child nodes as platform drivers would be OK (to me) and
-having them instantiated with of_platform_populate() seems reasonable.
-
-...but the one thing that is missing is a way for children to get
-access to the channel properly.
-
-The children have access to the ADC "struct device" (it is their
-parent device) and have a channel number (their "reg" field), but
-there is no API call to map this to a "struct iio_channel".  Is that
-all that's needed in this case?  ...or are you envisioning something
-more?
-
-
-Thanks!  :)
-
-
--Doug
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
