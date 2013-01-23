@@ -1,144 +1,196 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:39701 "EHLO
-	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752934Ab3AXOVJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Jan 2013 09:21:09 -0500
+Received: from smtp-out-073.synserver.de ([212.40.185.73]:1434 "EHLO
+	smtp-out-073.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754847Ab3AWMwH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 07:52:07 -0500
+Message-ID: <50FFDD2A.9040102@metafoo.de>
+Date: Wed, 23 Jan 2013 13:52:58 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <510104BD.2020500@metafoo.de>
-References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
- <1358917086-4148-1-git-send-email-ch.naveen@samsung.com> <50FFDD2A.9040102@metafoo.de>
- <CAD=FV=VgrpPSLrwwrzFDFLBXTw+-t3C=UwnS6b53o41hxM_AyQ@mail.gmail.com> <510104BD.2020500@metafoo.de>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Thu, 24 Jan 2013 19:50:48 +0530
-Message-ID: <CAHfPSqC90LwqEZ2kQdWY94CQHeqvCTYmw-WkAqBBNQui7wkKZQ@mail.gmail.com>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, dianders@chromium.org,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com
 Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Doug Anderson <dianders@chromium.org>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, gregkh@linuxfoundation.org
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com> <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24 January 2013 15:24, Lars-Peter Clausen <lars@metafoo.de> wrote:
->
-> On 01/24/2013 01:42 AM, Doug Anderson wrote:
-> > Lars,
-> >
-> > On Wed, Jan 23, 2013 at 4:52 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> >>> Few doubts regarding the mappings and child device handling.
-> >>> Kindly, suggest me better methods.
-> >>
-> >> The patch looks mostly good now. As for the mappings, the problem is that we
-> >> currently do not have any device tree bindings for IIO. So a proper solution
-> >> would be to add dt bindings for IIO.
-> >
-> > Can you explain more how you think this would work?  It seems like
-> > just having child nodes as platform drivers would be OK (to me) and
-> > having them instantiated with of_platform_populate() seems reasonable.
-> >
-> > ...but the one thing that is missing is a way for children to get
-> > access to the channel properly.
-> >
-> > The children have access to the ADC "struct device" (it is their
-> > parent device) and have a channel number (their "reg" field), but
-> > there is no API call to map this to a "struct iio_channel".  Is that
-> > all that's needed in this case?  ...or are you envisioning something
-> > more?
->
-> Well, the idea is that the consumer doesn't need to know the channel number.
-> That's what the mapping takes care of. It basically creates a consumer alias
-> for the channel. When requesting the channel the consumer always uses the
-> same name.
->
-> iio_channel_get(dev_name(&pdev->dev), "voltage");
->
-> And the mapping contains an entry which maps the tuple of device name and
-> channel name to a real IIO channel which as been registered by a IIO device.
-> Note if there is only one channel you can also just use NULL for the channel
-> name. This is similar to how clocks are managed with the clk framework.
->
-> Now for the dt bindings I think we should stick to something similar to what
-> the clk framework does.
->
-> E.g.
->
-> adc: adc@12D10000 {
->
->         #io-channel-cells = <1>;
->         io-channel-output-names = "adc1", "adc2", ...;
->
->         ncp15wb473@0 {
->                 compatible = "ntc,ncp15wb473";
->                 ...
->                 io-channels = <&adc 0>; // First ADC channel
->                 io-channel-names = "voltage";
->         };
->
->         ncp15wb473@0 {
->                 compatible = "ntc,ncp15wb473";
->                 ...
->                 io-channels = <&adc 1>; // Second ADC channel
->                 io-channel-names = "voltage";
->         }
-> };
->
-Hello Lars,
+On 01/23/2013 05:58 AM, Naveen Krishna Chatradhi wrote:
+> This patch add an ADC IP found on EXYNOS5 series socs from Samsung.
+> Also adds the Documentation for device tree bindings.
+> 
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> ---
+> Changes since v1:
+> 
+> 1. Fixed comments from Lars
+> 2. Added support for ADC on EXYNOS5410
+> 
+> Changes since v2:
+> 
+> 1. Changed the instance name for (struct iio_dev *) to indio_dev
+> 2. Changed devm_request_irq to request_irq
+> 
+> Few doubts regarding the mappings and child device handling.
+> Kindly, suggest me better methods.
+> 
 
-I've a doubt here
+Hi,
 
-How do i find the child dev_name for iio_map_array_register();
+The patch looks mostly good now. As for the mappings, the problem is that we
+currently do not have any device tree bindings for IIO. So a proper solution
+would be to add dt bindings for IIO.
 
-cause the child devices are probed during of_platform_populate();
+[...]
+> diff --git a/drivers/iio/adc/exynos5_adc.c b/drivers/iio/adc/exynos5_adc.c
+> new file mode 100644
+> index 0000000..8982675
+> --- /dev/null
+> +++ b/drivers/iio/adc/exynos5_adc.c
+[...]
+> +
+> +/** ADC core in EXYNOS5410 has 10 channels,
+> + * ADC core in EXYNOS5250 has 8 channels
+> +*/
 
-and during the probe the child calls
-iio_channel_get(dev_name(&pdev->dev), "voltage");
+Minor nitpick, according to Documentation/Codingsytle multi-line comments
+should look like this:
 
-The child device nodes are ncp15wb473.0 and ncp15wb473.1 in this case.
-But, this may change.
+/*
+ * Text
+ * Text
+ */
 
-Kindly, help.
+[...]
+> +static int exynos5_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct exynos5_adc *info = NULL;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct iio_dev *indio_dev = NULL;
+> +	struct resource	*mem;
+> +	int ret = -ENODEV;
+> +	int irq;
+> +
+> +	if (!np)
+> +		return ret;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(struct exynos5_adc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	info = iio_priv(indio_dev);
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +
+> +	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
 
-Assume we have a device tree like this
+While devm_request_and_ioremap takes care of the printing and error you
+still need to check whether regs is non NULL.
 
-        adc@12D10000 {
-                #io-channel-cells = <1>;
-                io-channel-output-names = "adc0", "adc1", "adc2",
-                                        "adc3", "adc4", "adc5",
-                                "adc6", "adc7", "adc8", "adc9";
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		ret = irq;
+> +		goto err_iio;
+> +	}
+> +
+> +	info->irq = irq;
+> +
+> +	ret = request_irq(info->irq, exynos5_adc_isr,
+> +					0, dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+> +							info->irq);
+> +		goto err_iio;
+> +	}
+> +
+> +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(info->clk)) {
+> +		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+> +							PTR_ERR(info->clk));
+> +		ret = PTR_ERR(info->clk);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+> +	if (IS_ERR(info->vdd)) {
+> +		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+> +							PTR_ERR(info->vdd));
+> +		ret = PTR_ERR(info->vdd);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->version = exynos5_adc_get_version(pdev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	init_completion(&info->completion);
 
-                ncp15wb473@0 {
-                        compatible = "ntc,ncp15wb473";
-                        reg = <0x0>;
-                        io-channel-names = "voltage";
-                        pullup-uV = <1800000>;
-                        pullup-ohm = <47000>;
-                        pulldown-ohm = <0>;
-                };
-                ncp15wb473@1 {
-                        compatible = "ntc,ncp15wb473";
-                        reg = <0x1>;
-                        io-channel-names = "voltage";
-                        pullup-uV = <1800000>;
-                        pullup-ohm = <47000>;
-                        pulldown-ohm = <0>;
-                };
+Since the completion is used in the IRQ handler it should be initialized
+before the IRQ is requested.
 
-      };
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &exynos5_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = exynos5_adc_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(exynos5_adc_iio_channels);
 
+Shouldn't the number of channels depend on the ADC version? E.g. 8 for v1
+and 10 for v2?
 
-> io-channel-output-names and io-channel-names can be optional. In the case
-> where there is only one channel it's not really necessary to use
-> io-channel-names.
->
-> - Lars
+> +
+> +	info->map = exynos5_adc_iio_maps;
+> +
+> +	ret = iio_map_array_register(indio_dev, info->map);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "failed mapping iio, err: %d\n", ret);
+> +		goto err_irq;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_map;
+> +
+> +	ret = regulator_enable(info->vdd);
+> +	if (ret)
+> +		goto err_iio_dev;
 
+You never disable the regulator again. I think you need to do that before it
+is freed.
 
-
-
---
-Shine bright,
-(: Nav :)
+> +
+> +	clk_prepare_enable(info->clk);
+> +
+> +	exynos5_adc_hw_init(info);
+> +
+> +	ret = of_platform_populate(np, exynos5_adc_match, NULL, &pdev->dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed adding child nodes\n");
+> +		goto err_of_populate;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_of_populate:
+> +	device_for_each_child(&pdev->dev, NULL, exynos5_adc_remove_devices);
+> +err_iio_dev:
+> +	iio_device_unregister(indio_dev);
+> +err_map:
+> +	iio_map_array_unregister(indio_dev, info->map);
+> +err_irq:
+> +	free_irq(info->irq, info);
+> +err_iio:
+> +	iio_device_free(indio_dev);
+> +	return ret;
+> +}
+> +
+[..]
