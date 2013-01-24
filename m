@@ -1,57 +1,72 @@
-Return-Path: <dianders@chromium.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:38586 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753575Ab3AXDp1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Jan 2013 22:45:27 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Benit Cousson <b-cousson@ti.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Landley <rob@landley.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	<gururaja.hebbar@ti.com>, "Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH v4 3/8] input: touchscreen: ti_tsc: remove unwanted fifo flush
+Date: Thu, 24 Jan 2013 09:15:07 +0530
+Message-ID: <1358999112-31192-4-git-send-email-rachna@ti.com>
+In-Reply-To: <1358999112-31192-1-git-send-email-rachna@ti.com>
+References: <1358999112-31192-1-git-send-email-rachna@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <51083D3E.7090008@metafoo.de>
-References: <20121124052707.GA17392@roeck-us.net>
-	<50B09EDC.4020200@kernel.org>
-	<20130116054918.GA7056@roeck-us.net>
-	<50F667C9.6000106@jic23.retrosnub.co.uk>
-	<20130117204549.GB22045@roeck-us.net>
-	<8649d873-66ef-4b0f-a22d-8480e5aa1ead@email.android.com>
-	<20130118220922.GB12459@roeck-us.net>
-	<5103BD2F.30405@kernel.org>
-	<20130129200055.GA18207@roeck-us.net>
-	<51082CB1.1050401@metafoo.de>
-	<20130129210550.GA18566@roeck-us.net>
-	<51083D3E.7090008@metafoo.de>
-Date: Tue, 29 Jan 2013 13:46:52 -0800
-Message-ID: <CAD=FV=U1mNJE--S0QrYUe6T5k4B-RNm4xc2WWOrYoR1iuvBABA@mail.gmail.com>
-Subject: Re: MAX1363 IIO driver questions
-From: Doug Anderson <dianders@chromium.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, linux-iio <linux-iio@vger.kernel.org>,
-	Jean Delvare <khali@linux-fr.org>, lm-sensors@lm-sensors.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Lars / Guenter,
+From: "Patil, Rachna" <rachna@ti.com>
 
-On Tue, Jan 29, 2013 at 1:21 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 01/29/2013 10:05 PM, Guenter Roeck wrote:
->> On Tue, Jan 29, 2013 at 09:10:25PM +0100, Lars-Peter Clausen wrote:
->>> I wrote in another mail a few days ago, how I think dt bindings for IIO could
->>> be implemented. The basic idea was to simply use bindings very similar to what
->>> the clk API uses, since its provider/consumer structure actually matches what
->>> we do in IIO pretty good.
->>>
->>> The full mail can be found here:
->>> http://marc.info/?l=linux-iio&m=135902119507483&w=2
->>>
->> Hi Lars,
->>
->> looks like a good idea.
->>
->> Do you know if anyone is working on an implementation ?
->> Otherwise I'll give it a shot.
->
-> I unfortunately dont have time for this atm, but maybe Naveen or Dou is working
-> on it. Added them to Cc.
+When touchscreen and ADC are used together, this
+unwanted fifo flush leads to loss of ADC data.
 
-I believe Naveen was going to work on this but I found out this
-morning that he had to go on leave for some days so I'm not sure when
-he might respond.  If you want to take a whack at implementing the
-bindings I don't think he would mind, though.  ...then he'd be able to
-build on the same bindings to get the Samsung ADC working.  :)
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
--Doug
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 0c460f9..064d2b2 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -308,8 +308,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int x = 0, y = 0;
+ 	unsigned int z1, z2, z;
+ 	unsigned int fsm;
+-	unsigned int fifo1count, fifo0count;
+-	int i;
+ 
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+ 	if (status & IRQENB_FIFO0THRES) {
+@@ -318,14 +316,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
+ 		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
+ 
+-		fifo1count = titsc_readl(ts_dev, REG_FIFO1CNT);
+-		for (i = 0; i < fifo1count; i++)
+-			titsc_readl(ts_dev, REG_FIFO1);
+-
+-		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
+-		for (i = 0; i < fifo0count; i++)
+-			titsc_readl(ts_dev, REG_FIFO0);
+-
+ 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+ 			/*
+ 			 * Calculate pressure using formula
+-- 
+1.7.9.5
+
