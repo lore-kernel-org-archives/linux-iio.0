@@ -1,104 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:59121 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754356Ab3AXDpZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 22:45:25 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	<gururaja.hebbar@ti.com>, "Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v4 4/8] MFD: ti_am335x_tscadc: add device tree binding information
-Date: Thu, 24 Jan 2013 09:15:08 +0530
-Message-ID: <1358999112-31192-5-git-send-email-rachna@ti.com>
-In-Reply-To: <1358999112-31192-1-git-send-email-rachna@ti.com>
-References: <1358999112-31192-1-git-send-email-rachna@ti.com>
+Received: from mail-la0-f43.google.com ([209.85.215.43]:56844 "EHLO
+	mail-la0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752554Ab3AXAm6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 19:42:58 -0500
+Received: by mail-la0-f43.google.com with SMTP id ek20so1388505lab.2
+        for <linux-iio@vger.kernel.org>; Wed, 23 Jan 2013 16:42:57 -0800 (PST)
+Received: by mail-lb0-f180.google.com with SMTP id q12so1570227lbc.11
+        for <linux-iio@vger.kernel.org>; Wed, 23 Jan 2013 16:42:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <50FFDD2A.9040102@metafoo.de>
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
+	<1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
+	<50FFDD2A.9040102@metafoo.de>
+Date: Wed, 23 Jan 2013 16:42:54 -0800
+Message-ID: <CAD=FV=VgrpPSLrwwrzFDFLBXTw+-t3C=UwnS6b53o41hxM_AyQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
+From: Doug Anderson <dianders@chromium.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc@vger.kernel.org, gregkh@linuxfoundation.org,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+Lars,
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
-Changes in v4:
-	Subnodes and their properties documentation added.
-	Non-standard properties prefixed with vendor name.
+On Wed, Jan 23, 2013 at 4:52 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> Few doubts regarding the mappings and child device handling.
+>> Kindly, suggest me better methods.
+>
+> The patch looks mostly good now. As for the mappings, the problem is that we
+> currently do not have any device tree bindings for IIO. So a proper solution
+> would be to add dt bindings for IIO.
 
- .../devicetree/bindings/mfd/ti_am335x_tscadc.txt   |   52 ++++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
+Can you explain more how you think this would work?  It seems like
+just having child nodes as platform drivers would be OK (to me) and
+having them instantiated with of_platform_populate() seems reasonable.
 
-diff --git a/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-new file mode 100644
-index 0000000..0100771
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-@@ -0,0 +1,52 @@
-+Texas Instruments - TSC / ADC multi-functional device
-+
-+ti_tscadc is a multi-function device with touchscreen and ADC on chip.
-+This document describes the binding for mfd device.
-+
-+Required properties:
-+- compatible: "ti,ti-tscadc"
-+- reg: Specifies the address of MFD block
-+- interrupts: IRQ line connected to the main SoC
-+- interrupt-parent: The parent interrupt controller
-+
-+Optional properties:
-+- ti,hwmods: Hardware information related to TSC/ADC MFD device
-+
-+Sub-nodes:
-+Device			Description
-+------			-----------
-+tsc			Touchscreen
-+adc			Analog to digital converter
-+
-+Sub-node device required properties:
-+tsc:
-+- ti,wires:  4/5/8 wire touchscreen support on the platform.
-+- ti,x-plate-resistance: X plate resistance.
-+- ti,steps-to-configure: A step is configured to read a single co-ordinate value,
-+			can be applied more number of times for better results.
-+- ti,wire-config: Order for connecting wires on touchscreen.
-+
-+adc:
-+- ti,adc-channels: Number of ADC channels used.
-+
-+Example:
-+
-+	tscadc: tscadc@44e0d000 {
-+		compatible = "ti,ti-tscadc";
-+		reg = <0x44e0d000 0x1000>;
-+
-+		interrupt-parent = <&intc>;
-+		interrupts = <16>;
-+		ti,hwmods = "adc_tsc";
-+
-+		tsc {
-+			ti,wires = <4>;
-+			ti,x-plate-resistance = <200>;
-+			ti,steps-to-configure = <5>;
-+			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		};
-+
-+		adc {
-+			ti,adc-channels = <4>;
-+		};
-+	};
--- 
-1.7.9.5
+...but the one thing that is missing is a way for children to get
+access to the channel properly.
 
+The children have access to the ADC "struct device" (it is their
+parent device) and have a channel number (their "reg" field), but
+there is no API call to map this to a "struct iio_channel".  Is that
+all that's needed in this case?  ...or are you envisioning something
+more?
+
+
+Thanks!  :)
+
+
+-Doug
