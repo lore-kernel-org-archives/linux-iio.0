@@ -1,205 +1,174 @@
-Return-Path: <linux@roeck-us.net>
-From: Guenter Roeck <linux@roeck-us.net>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:38594 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753630Ab3AXDpe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Jan 2013 22:45:34 -0500
+From: "Patil, Rachna" <rachna@ti.com>
+To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
+	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
 	Rob Herring <rob.herring@calxeda.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [RFC 11/11] iio/adc: (max1363) Add basic OF bindings and external vref support
-Date: Thu, 31 Jan 2013 13:43:08 -0800
-Message-Id: <1359668588-13678-12-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-List-ID: <linux-iio@vger.kernel.org>
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Benit Cousson <b-cousson@ti.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Landley <rob@landley.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	<gururaja.hebbar@ti.com>, "Patil, Rachna" <rachna@ti.com>
+Subject: [PATCH v4 6/8] input: ti_am335x_tsc: Add DT support
+Date: Thu, 24 Jan 2013 09:15:10 +0530
+Message-ID: <1358999112-31192-7-git-send-email-rachna@ti.com>
+In-Reply-To: <1358999112-31192-1-git-send-email-rachna@ti.com>
+References: <1358999112-31192-1-git-send-email-rachna@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+From: "Patil, Rachna" <rachna@ti.com>
+
+Add DT support for client touchscreen driver
+
+Signed-off-by: Patil, Rachna <rachna@ti.com>
 ---
- Documentation/devicetree/bindings/iio/max1363.txt |   54 +++++++++++++++++++++
- drivers/iio/adc/max1363.c                         |   54 ++++++++++++++++-----
- 2 files changed, 95 insertions(+), 13 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/max1363.txt
+Changes in v4:
+	Non-standard properties prefixed with vendor name.
 
-diff --git a/Documentation/devicetree/bindings/iio/max1363.txt b/Documentation/devicetree/bindings/iio/max1363.txt
-new file mode 100644
-index 0000000..6d22861
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/max1363.txt
-@@ -0,0 +1,54 @@
-+Device Tree bindings for MAX1363 and compatible ADC controllers
-+
-+This binding uses the common IIO binding[1].
-+
-+[1] Documentation/devicetree/bindings/iio/iio-bindings.txt
-+
-+Required properties:
-+
-+- compatible, shall be one of the following:
-+	"maxim,max1361"
-+	"maxim,max1362"
-+	"maxim,max1363"
-+	"maxim,max1364"
-+	"maxim,max1036"
-+	"maxim,max1037"
-+	"maxim,max1038"
-+	"maxim,max1039"
-+	"maxim,max1136"
-+	"maxim,max1137"
-+	"maxim,max1138"
-+	"maxim,max1139"
-+	"maxim,max1236"
-+	"maxim,max1237"
-+	"maxim,max1238"
-+	"maxim,max1239"
-+	"maxim,max11600"
-+	"maxim,max11601"
-+	"maxim,max11602"
-+	"maxim,max11603"
-+	"maxim,max11604"
-+	"maxim,max11605"
-+	"maxim,max11606"
-+	"maxim,max11607"
-+	"maxim,max11608"
-+	"maxim,max11609"
-+	"maxim,max11610"
-+	"maxim,max11611"
-+	"maxim,max11612"
-+	"maxim,max11613"
-+	"maxim,max11614"
-+	"maxim,max11615"
-+	"maxim,max11616"
-+	"maxim,max11617"
-+
-+- reg: shall be the I2C device address
-+
-+Required properties for IIO bindings:
-+- #io-channel-cells: from common IIO bindings; shall be set to 1.
-+
-+Optional properties:
-+- vref: Reference voltage in mV. If the provided reference voltage matches
-+	the internal reference voltage, the internal reference voltage is used.
-+	Otherwise it is assumed that an external reference voltage is used,
-+	and the chip is programmed accordingly.
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 51165d6..cf49a20 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -31,6 +31,7 @@
- #include <linux/slab.h>
- #include <linux/err.h>
- #include <linux/module.h>
+ drivers/input/touchscreen/ti_am335x_tsc.c |   94 +++++++++++++++++++++++++----
+ 1 file changed, 81 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 064d2b2..6ff5a76 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -26,6 +26,8 @@
+ #include <linux/io.h>
+ #include <linux/input/ti_am335x_tsc.h>
+ #include <linux/delay.h>
 +#include <linux/of.h>
++#include <linux/of_device.h>
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -162,6 +163,7 @@ struct max1363_chip_info {
-  * @mask_low:		bitmask for enabled low thresholds
-  * @thresh_high:	high threshold values
-  * @thresh_low:		low threshold values
-+ * @vref_mv:		Actual (external or internal) reference voltage
-  */
- struct max1363_state {
- 	struct i2c_client		*client;
-@@ -181,6 +183,7 @@ struct max1363_state {
- 	/* 4x unipolar first then the fours bipolar ones */
- 	s16				thresh_high[8];
- 	s16				thresh_low[8];
-+	u16				vref_mv;
- };
+ #include <linux/mfd/ti_am335x_tscadc.h>
  
- #define MAX1363_MODE_SINGLE(_num, _mask) {				\
-@@ -392,6 +395,8 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
- {
- 	struct max1363_state *st = iio_priv(indio_dev);
- 	int ret;
-+	unsigned long scale_uv;
-+
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = max1363_read_single_chan(indio_dev, chan, val, m);
-@@ -399,16 +404,10 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		if ((1 << (st->chip_info->bits + 1)) >
--		    st->chip_info->int_vref_mv) {
--			*val = 0;
--			*val2 = 500000;
--			return IIO_VAL_INT_PLUS_MICRO;
--		} else {
--			*val = (st->chip_info->int_vref_mv)
--				>> st->chip_info->bits;
--			return IIO_VAL_INT;
--		}
-+		scale_uv = (st->vref_mv * 1000) >> st->chip_info->bits;
-+		*val = scale_uv / 1000;
-+		*val2 = (scale_uv % 1000) * 1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1389,12 +1388,16 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 
- static int max1363_initial_setup(struct max1363_state *st)
- {
--	st->setupbyte = MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_VDD
--		| MAX1363_SETUP_POWER_UP_INT_REF
--		| MAX1363_SETUP_INT_CLOCK
-+	st->setupbyte = MAX1363_SETUP_INT_CLOCK
- 		| MAX1363_SETUP_UNIPOLAR
- 		| MAX1363_SETUP_NORESET;
- 
-+	if (st->vref_mv != st->chip_info->int_vref_mv)
-+		st->setupbyte |= MAX1363_SETUP_AIN3_IS_REF_EXT_TO_REF;
-+	else
-+		st->setupbyte |= MAX1363_SETUP_POWER_UP_INT_REF
-+		  | MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_INT;
-+
- 	/* Set scan mode writes the config anyway so wait until then*/
- 	st->setupbyte = MAX1363_SETUP_BYTE(st->setupbyte);
- 	st->current_mode = &max1363_mode_table[st->chip_info->default_mode];
-@@ -1526,6 +1529,26 @@ static void max1363_buffer_cleanup(struct iio_dev *indio_dev)
- 	iio_kfifo_free(indio_dev->buffer);
+@@ -366,6 +368,74 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	return IRQ_HANDLED;
  }
  
-+#ifdef CONFIG_OF
-+static int max1363_parse_of(struct device *dev, struct max1363_state *st)
++static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
++					struct titsc *ts_dev)
 +{
-+	struct device_node *np = dev->of_node;
-+	u32 vref_mv;
++	struct device_node *node = tscadc_dev->dev->of_node;
++	int err, i;
++	u32 val32, wires_conf[4];
 +
-+	if (!of_property_read_u32(np, "vref", &vref_mv)) {
-+		if (vref_mv == 0 || vref_mv > USHRT_MAX)
++	if (!node)
++		return -EINVAL;
++	else {
++		node = of_find_node_by_name(node, "tsc");
++		if (!node)
 +			return -EINVAL;
-+		st->vref_mv = vref_mv;
++		else {
++			err = of_property_read_u32(node, "ti,wires", &val32);
++			if (err < 0)
++				goto error_ret;
++			else
++				ts_dev->wires = val32;
++
++			err = of_property_read_u32(node,
++					"ti,x-plate-resistance", &val32);
++			if (err < 0)
++				goto error_ret;
++			else
++				ts_dev->x_plate_resistance = val32;
++
++			err = of_property_read_u32(node,
++					"ti,steps-to-configure", &val32);
++			if (err < 0)
++				goto error_ret;
++			else
++				ts_dev->steps_to_configure = val32;
++
++			err = of_property_read_u32_array(node, "ti,wire-config",
++					wires_conf, ARRAY_SIZE(wires_conf));
++			if (err < 0)
++				goto error_ret;
++			else {
++				for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
++					ts_dev->config_inp[i] = wires_conf[i];
++			}
++		}
 +	}
 +	return 0;
++
++error_ret:
++	return err;
 +}
-+#else
-+static int max1363_parse_of(struct device *dev, struct max1363_state *st)
++
++static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
++					struct titsc *ts_dev)
 +{
++	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
++
++	if (!pdata)
++		return -EINVAL;
++
++	ts_dev->wires = pdata->tsc_init->wires;
++	ts_dev->x_plate_resistance =
++		pdata->tsc_init->x_plate_resistance;
++	ts_dev->steps_to_configure =
++		pdata->tsc_init->steps_to_configure;
++	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
++		sizeof(pdata->tsc_init->wire_config));
 +	return 0;
 +}
-+#endif
 +
- static int max1363_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
-@@ -1562,6 +1585,11 @@ static int max1363_probe(struct i2c_client *client,
- 	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
- 	st->client = client;
+ /*
+  * The functions for inserting/removing driver as a module.
+  */
+@@ -375,16 +445,8 @@ static int titsc_probe(struct platform_device *pdev)
+ 	struct titsc *ts_dev;
+ 	struct input_dev *input_dev;
+ 	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
+-	struct mfd_tscadc_board	*pdata;
+ 	int err;
  
-+	st->vref_mv = st->chip_info->int_vref_mv;
-+	ret = max1363_parse_of(&client->dev, st);
-+	if (ret)
-+		goto error_disable_reg;
+-	pdata = tscadc_dev->dev->platform_data;
+-
+-	if (!pdata) {
+-		dev_err(&pdev->dev, "Could not find platform data\n");
+-		return -EINVAL;
+-	}
+-
+ 	/* Allocate memory for device */
+ 	ts_dev = kzalloc(sizeof(struct titsc), GFP_KERNEL);
+ 	input_dev = input_allocate_device();
+@@ -398,11 +460,17 @@ static int titsc_probe(struct platform_device *pdev)
+ 	ts_dev->mfd_tscadc = tscadc_dev;
+ 	ts_dev->input = input_dev;
+ 	ts_dev->irq = tscadc_dev->irq;
+-	ts_dev->wires = pdata->tsc_init->wires;
+-	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
+-	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
+-	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
+-			sizeof(pdata->tsc_init->wire_config));
 +
- 	ret = max1363_alloc_scan_masks(indio_dev);
- 	if (ret)
- 		goto error_disable_reg;
++	if (tscadc_dev->dev->platform_data)
++		err = titsc_parse_pdata(tscadc_dev, ts_dev);
++	else
++		err = titsc_parse_dt(tscadc_dev, ts_dev);
++
++	if (err) {
++		dev_err(&pdev->dev, "Could not find platform data\n");
++		err = -EINVAL;
++		goto err_free_mem;
++	}
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+ 			  0, pdev->dev.driver->name, ts_dev);
 -- 
-1.7.9.7
+1.7.9.5
+
