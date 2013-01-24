@@ -1,48 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45027 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754247Ab3ALWCt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2013 17:02:49 -0500
-Message-ID: <50F1DD83.2080301@kernel.org>
-Date: Sat, 12 Jan 2013 22:02:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-079.synserver.de ([212.40.185.79]:1092 "EHLO
+	smtp-out-078.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753190Ab3AXSTC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Jan 2013 13:19:02 -0500
+Message-ID: <51017B4D.7000105@metafoo.de>
+Date: Thu, 24 Jan 2013 19:19:57 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: iio: STMicroelectronics iio drivers bugfix
-References: <1357733221-6248-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1357733221-6248-1-git-send-email-denis.ciocca@st.com>
+To: Doug Anderson <dianders@chromium.org>
+CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc@vger.kernel.org, gregkh@linuxfoundation.org,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>
+Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com> <1358917086-4148-1-git-send-email-ch.naveen@samsung.com> <50FFDD2A.9040102@metafoo.de> <CAD=FV=VgrpPSLrwwrzFDFLBXTw+-t3C=UwnS6b53o41hxM_AyQ@mail.gmail.com> <510104BD.2020500@metafoo.de> <CAD=FV=VRKqeRxvcV1-aQCbu0FoTpMiVVXoNiVEx5SxLe3N_tgQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=VRKqeRxvcV1-aQCbu0FoTpMiVVXoNiVEx5SxLe3N_tgQ@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/2013 12:06 PM, Denis CIOCCA wrote:
-> Hi guys,
+On 01/24/2013 05:12 PM, Doug Anderson wrote:
+> Lars,
 > 
-> sorry but yesterday I sended to you the wrong patch! I attach the last (correct) patchs for the linux-next kernel and I have modified the config names in according with Alessandro suggestion.
-> Thanks
+> Thank you for your comments / thoughts...
 > 
-> Denis
+
+Hi,
+
 > 
-Hi Denis,
+> On Thu, Jan 24, 2013 at 1:54 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> adc: adc@12D10000 {
+>>
+>>         #io-channel-cells = <1>;
+>>         io-channel-output-names = "adc1", "adc2", ...;
+>>
+>>         ncp15wb473@0 {
+>>                 compatible = "ntc,ncp15wb473";
+>>                 ...
+>>                 io-channels = <&adc 0>; // First ADC channel
+> 
+> I'm not an expert, but I think the typical way is:
+> * No need to include a handle to &adc.  It's logically our parent.  In
+> a similar way i2c devices don't specify their parent bus--they are
+> just listed under it.
+> * The "0" should be specified with reg = <0>
 
-Just a quick email to say I'm very happy with the state these patches are
-now in.  I have one utterly trivial point on patch 1 but am happy to fix
-that up during the merge.  (Basically you type cast a parameter to u16 instead
-of __le16).
+The relationship between the IIO sensor device and the consumer device is
+not always a parent child relationship. In this case it makes sense to have
+the ADC as the parent for the thermistors. But for other cases this may not
+be true. E.g. take a touchscreen or power monitoring platform device which
+uses the IIO device to do measurements.
 
-However, given the size of the series I would like to leave them sitting
-on the mailing list for a little while (maybe until next Saturday given
-my usual timetable for such things) in case anyone else wants to review
-them.  Also right now I've only looked at 1 and 2 (assuming the others are
-very similar for obvious reasons!) I will give them a look before merging
-just in case anything slipped by.
+> 
+> To implement this I'd imagine that we'll need a new API call, right?
+> In this case the thermistor driver won't know the name of the channel.
+>  It can find the ADC (the struct device and probably other things) and
+> knows a channel index.  Am I understanding properly?
 
-Thanks for all your work on these. When I get some time I'll see what is needed
-to add support for the lis3l02dq to this driver.  From what I recall that
-chip is a little dumber than some of the newer ones and needs some uggly
-interrupt handling trickery.  Given it's an ancient chip I doubt it is
-terribly high on your list to support.  I just happen to have one on my
-test board so it's always been of inordinate interest to me ;)
+This can be done by adding a new api call, but it would be best if both dt
+and non-dt based consumers can use the same function. I outlined one
+possible solution how this can be done in the previous mail to Naveen.
 
-Jonathan
+- Lars
+
