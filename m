@@ -1,968 +1,636 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog108.obsmtp.com ([207.126.144.125]:42219 "EHLO
-	eu1sys200aog108.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753562Ab3AOIbS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2013 03:31:18 -0500
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 4/9] iio:magnetometer: Add STMicroelectronics magnetometers driver
-Date: Tue, 15 Jan 2013 09:31:00 +0100
-Message-Id: <1358238660-14929-5-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
-References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45227 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750887Ab3AZK5e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Jan 2013 05:57:34 -0500
+Message-ID: <5103B69A.501@kernel.org>
+Date: Sat, 26 Jan 2013 10:57:30 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, dianders@chromium.org,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de
+Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com> <1359003514-1646-1-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1359003514-1646-1-git-send-email-ch.naveen@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds generic magnetometer driver for STMicroelectronics
-magnetometers, currently it supports:
-LSM303DLHC, LSM303DLM, LIS3MDL.
+On 01/24/2013 04:58 AM, Naveen Krishna Chatradhi wrote:
+> This patch adds driver for ADC IP found on EXYNOS5250 and EXYNOS5410
+> from Samsung. Also adds the Documentation for device tree bindings.
+> 
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Just a quick general comment on patch formatting. For later versions give
+a title of
+[PATCH V5]...
+to the email as then it's easy for those of us who have been sitting
+back and quitely not reading the thread to figure out which the latest
+patch is.
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/magnetometer/Kconfig          |   40 +++
- drivers/iio/magnetometer/Makefile         |    6 +
- drivers/iio/magnetometer/st_magn_buffer.c |  102 ++++++
- drivers/iio/magnetometer/st_magn_core.c   |  526 +++++++++++++++++++++++++++++
- drivers/iio/magnetometer/st_magn_i2c.c    |   81 +++++
- drivers/iio/magnetometer/st_magn_spi.c    |   80 +++++
- include/linux/iio/magnetometer/st_magn.h  |   47 +++
- 7 files changed, 882 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/magnetometer/st_magn_buffer.c
- create mode 100644 drivers/iio/magnetometer/st_magn_core.c
- create mode 100644 drivers/iio/magnetometer/st_magn_i2c.c
- create mode 100644 drivers/iio/magnetometer/st_magn_spi.c
- create mode 100644 include/linux/iio/magnetometer/st_magn.h
+Thanks
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index ff11d68..02e1273 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -14,4 +14,44 @@ config HID_SENSOR_MAGNETOMETER_3D
- 	  Say yes here to build support for the HID SENSOR
- 	  Magnetometer 3D.
- 
-+config IIO_ST_MAGN_3AXIS
-+	tristate "STMicroelectronics magnetometers 3-Axis Driver"
-+	depends on (I2C || SPI_MASTER) && SYSFS
-+	select IIO_ST_SENSORS_CORE
-+	help
-+	  Say yes here to build support for STMicroelectronics magnetometers:
-+	  LSM303DLHC, LSM303DLM, LIS3MDL.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called st_magn.
-+
-+config IIO_ST_MAGN_3AXIS_I2C
-+	tristate "support I2C bus connection"
-+	depends on IIO_ST_MAGN_3AXIS && I2C
-+	select IIO_ST_SENSORS_I2C
-+	help
-+	  Say yes here to build I2C support for STMicroelectronics magnetometers.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called st_magn_i2c.
-+
-+config IIO_ST_MAGN_3AXIS_SPI
-+	tristate "support SPI bus connection"
-+	depends on IIO_ST_MAGN_3AXIS && SPI_MASTER
-+	select IIO_ST_SENSORS_SPI
-+	help
-+	  Say yes here to build SPI support for STMicroelectronics magnetometers.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called st_magn_spi.
-+
-+config IIO_ST_MAGN_3AXIS_TRIGGERED_BUFFER
-+	tristate "support triggered buffer"
-+	depends on IIO_ST_MAGN_3AXIS
-+	select IIO_TRIGGERED_BUFFER
-+	select IIO_BUFFER
-+	select IIO_ST_SENSORS_TRIGGERED_BUFFER
-+	help
-+	  Default trigger and buffer for STMicroelectronics magnetometers driver.
-+
- endmenu
-diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-index 60dc4f2..33d42e5 100644
---- a/drivers/iio/magnetometer/Makefile
-+++ b/drivers/iio/magnetometer/Makefile
-@@ -3,3 +3,9 @@
- #
- 
- obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
-+
-+st_magn-y := st_magn_core.o
-+obj-$(CONFIG_IIO_ST_MAGN_3AXIS_I2C) += st_magn_i2c.o
-+obj-$(CONFIG_IIO_ST_MAGN_3AXIS_SPI) += st_magn_spi.o
-+obj-$(CONFIG_IIO_ST_MAGN_3AXIS_TRIGGERED_BUFFER) += st_magn_buffer.o
-+obj-$(CONFIG_IIO_ST_MAGN_3AXIS) += st_magn.o
-diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
-new file mode 100644
-index 0000000..2a59d86
---- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_buffer.c
-@@ -0,0 +1,102 @@
-+/*
-+ * STMicroelectronics magnetometers driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/interrupt.h>
-+#include <linux/byteorder/generic.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#include <linux/iio/magnetometer/st_magn.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+
-+	err = st_magn_set_enable(indio_dev, true);
-+	if (err < 0)
-+		goto st_magn_set_enable_error;
-+
-+	err = iio_sw_buffer_preenable(indio_dev);
-+
-+st_magn_set_enable_error:
-+	return err;
-+}
-+
-+static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (mdata->buffer_data == NULL) {
-+		err = -ENOMEM;
-+		goto allocate_memory_error;
-+	}
-+
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err < 0)
-+		goto st_magn_buffer_postenable_error;
-+
-+	return err;
-+
-+st_magn_buffer_postenable_error:
-+	kfree(mdata->buffer_data);
-+allocate_memory_error:
-+	return err;
-+}
-+
-+static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	err = iio_triggered_buffer_predisable(indio_dev);
-+	if (err < 0)
-+		goto st_magn_buffer_predisable_error;
-+
-+	err = st_magn_set_enable(indio_dev, false);
-+
-+st_magn_buffer_predisable_error:
-+	kfree(mdata->buffer_data);
-+	return err;
-+}
-+
-+static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
-+	.preenable = &st_magn_buffer_preenable,
-+	.postenable = &st_magn_buffer_postenable,
-+	.predisable = &st_magn_buffer_predisable,
-+};
-+
-+int st_magn_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		&st_sensors_trigger_handler, &st_magn_buffer_setup_ops);
-+}
-+EXPORT_SYMBOL(st_magn_allocate_ring);
-+
-+void st_magn_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+	iio_triggered_buffer_cleanup(indio_dev);
-+}
-+EXPORT_SYMBOL(st_magn_deallocate_ring);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers buffer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-new file mode 100644
-index 0000000..0dd7f0c
---- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -0,0 +1,526 @@
-+/*
-+ * STMicroelectronics magnetometers driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
-+#include <linux/interrupt.h>
-+#include <linux/i2c.h>
-+#include <linux/gpio.h>
-+#include <linux/irq.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/buffer.h>
-+
-+#include <linux/iio/magnetometer/st_magn.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+/* DEFAULT VALUE FOR SENSORS */
-+#define ST_MAGN_DEFAULT_OUT_X_L_ADDR		0X04
-+#define ST_MAGN_DEFAULT_OUT_Y_L_ADDR		0X08
-+#define ST_MAGN_DEFAULT_OUT_Z_L_ADDR		0X06
-+
-+/* FULLSCALE */
-+#define ST_MAGN_FS_AVL_1300MG			1300
-+#define ST_MAGN_FS_AVL_1900MG			1900
-+#define ST_MAGN_FS_AVL_2500MG			2500
-+#define ST_MAGN_FS_AVL_4000MG			4000
-+#define ST_MAGN_FS_AVL_4700MG			4700
-+#define ST_MAGN_FS_AVL_5600MG			5600
-+#define ST_MAGN_FS_AVL_8000MG			8000
-+#define ST_MAGN_FS_AVL_8100MG			8100
-+#define ST_MAGN_FS_AVL_10000MG			10000
-+
-+/* CUSTOM VALUES FOR SENSOR 1 */
-+#define ST_MAGN_1_WAI_EXP			0x3c
-+#define ST_MAGN_1_ODR_ADDR			0x00
-+#define ST_MAGN_1_ODR_MASK			0x1c
-+#define ST_MAGN_1_ODR_N_BIT			3
-+#define ST_MAGN_1_ODR_AVL_1HZ_VAL		0x00
-+#define ST_MAGN_1_ODR_AVL_2HZ_VAL		0x01
-+#define ST_MAGN_1_ODR_AVL_3HZ_VAL		0x02
-+#define ST_MAGN_1_ODR_AVL_8HZ_VAL		0x03
-+#define ST_MAGN_1_ODR_AVL_15HZ_VAL		0x04
-+#define ST_MAGN_1_ODR_AVL_30HZ_VAL		0x05
-+#define ST_MAGN_1_ODR_AVL_75HZ_VAL		0x06
-+#define ST_MAGN_1_ODR_AVL_220HZ_VAL		0x07
-+#define ST_MAGN_1_PW_ADDR			0x02
-+#define ST_MAGN_1_PW_MASK			0x03
-+#define ST_MAGN_1_PW_N_BIT			2
-+#define ST_MAGN_1_PW_ON				0x00
-+#define ST_MAGN_1_PW_OFF			0x03
-+#define ST_MAGN_1_FS_N_BIT			3
-+#define ST_MAGN_1_FS_ADDR			0x01
-+#define ST_MAGN_1_FS_MASK			0xe0
-+#define ST_MAGN_1_FS_AVL_1300_VAL		0x01
-+#define ST_MAGN_1_FS_AVL_1900_VAL		0x02
-+#define ST_MAGN_1_FS_AVL_2500_VAL		0x03
-+#define ST_MAGN_1_FS_AVL_4000_VAL		0x04
-+#define ST_MAGN_1_FS_AVL_4700_VAL		0x05
-+#define ST_MAGN_1_FS_AVL_5600_VAL		0x06
-+#define ST_MAGN_1_FS_AVL_8100_VAL		0x07
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
-+#define ST_MAGN_1_MULTIREAD_BIT			false
-+
-+/* CUSTOM VALUES FOR SENSOR 2 */
-+#define ST_MAGN_2_WAI_EXP			0x3d
-+#define ST_MAGN_2_ODR_ADDR			0x20
-+#define ST_MAGN_2_ODR_MASK			0x1c
-+#define ST_MAGN_2_ODR_N_BIT			3
-+#define ST_MAGN_2_ODR_AVL_1HZ_VAL		0x00
-+#define ST_MAGN_2_ODR_AVL_2HZ_VAL		0x01
-+#define ST_MAGN_2_ODR_AVL_3HZ_VAL		0x02
-+#define ST_MAGN_2_ODR_AVL_5HZ_VAL		0x03
-+#define ST_MAGN_2_ODR_AVL_10HZ_VAL		0x04
-+#define ST_MAGN_2_ODR_AVL_20HZ_VAL		0x05
-+#define ST_MAGN_2_ODR_AVL_40HZ_VAL		0x06
-+#define ST_MAGN_2_ODR_AVL_80HZ_VAL		0x07
-+#define ST_MAGN_2_PW_ADDR			0x22
-+#define ST_MAGN_2_PW_MASK			0x03
-+#define ST_MAGN_2_PW_N_BIT			2
-+#define ST_MAGN_2_PW_ON				0x00
-+#define ST_MAGN_2_PW_OFF			0x03
-+#define ST_MAGN_2_FS_N_BIT			2
-+#define ST_MAGN_2_FS_ADDR			0x21
-+#define ST_MAGN_2_FS_MASK			0x60
-+#define ST_MAGN_2_FS_AVL_4000_VAL		0x00
-+#define ST_MAGN_2_FS_AVL_8000_VAL		0x01
-+#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
-+#define ST_MAGN_2_FS_AVL_4000_GAIN		430
-+#define ST_MAGN_2_FS_AVL_8000_GAIN		230
-+#define ST_MAGN_2_FS_AVL_10000_GAIN		230
-+#define ST_MAGN_2_MULTIREAD_BIT			false
-+#define ST_MAGN_2_OUT_X_L_ADDR			0x28
-+#define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
-+#define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
-+
-+static const struct iio_chan_spec st_magn_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
-+		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct st_sensors st_magn_sensors[] = {
-+	{
-+		.wai = ST_MAGN_1_WAI_EXP,
-+		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
-+		.odr = {
-+			.addr = ST_MAGN_1_ODR_ADDR,
-+			.mask = ST_MAGN_1_ODR_MASK,
-+			.num_bit = ST_MAGN_1_ODR_N_BIT,
-+			.odr_avl = {
-+				{ 1, ST_MAGN_1_ODR_AVL_1HZ_VAL, },
-+				{ 2, ST_MAGN_1_ODR_AVL_2HZ_VAL, },
-+				{ 3, ST_MAGN_1_ODR_AVL_3HZ_VAL, },
-+				{ 8, ST_MAGN_1_ODR_AVL_8HZ_VAL, },
-+				{ 15, ST_MAGN_1_ODR_AVL_15HZ_VAL, },
-+				{ 30, ST_MAGN_1_ODR_AVL_30HZ_VAL, },
-+				{ 75, ST_MAGN_1_ODR_AVL_75HZ_VAL, },
-+				{ 220, ST_MAGN_1_ODR_AVL_220HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_MAGN_1_PW_ADDR,
-+			.mask = ST_MAGN_1_PW_MASK,
-+			.num_bit = ST_MAGN_1_PW_N_BIT,
-+			.value_on = ST_MAGN_1_PW_ON,
-+			.value_off = ST_MAGN_1_PW_OFF,
-+		},
-+		.fs = {
-+			.addr = ST_MAGN_1_FS_ADDR,
-+			.mask = ST_MAGN_1_FS_MASK,
-+			.num_bit = ST_MAGN_1_FS_N_BIT,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_MAGN_FS_AVL_1300MG,
-+					.value = ST_MAGN_1_FS_AVL_1300_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_1300_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_1300_GAIN_Z,
-+				},
-+				[1] = {
-+					.num = ST_MAGN_FS_AVL_1900MG,
-+					.value = ST_MAGN_1_FS_AVL_1900_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_1900_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_1900_GAIN_Z,
-+				},
-+				[2] = {
-+					.num = ST_MAGN_FS_AVL_2500MG,
-+					.value = ST_MAGN_1_FS_AVL_2500_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_2500_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_2500_GAIN_Z,
-+				},
-+				[3] = {
-+					.num = ST_MAGN_FS_AVL_4000MG,
-+					.value = ST_MAGN_1_FS_AVL_4000_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_4000_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_4000_GAIN_Z,
-+				},
-+				[4] = {
-+					.num = ST_MAGN_FS_AVL_4700MG,
-+					.value = ST_MAGN_1_FS_AVL_4700_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_4700_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_4700_GAIN_Z,
-+				},
-+				[5] = {
-+					.num = ST_MAGN_FS_AVL_5600MG,
-+					.value = ST_MAGN_1_FS_AVL_5600_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_5600_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_5600_GAIN_Z,
-+				},
-+				[6] = {
-+					.num = ST_MAGN_FS_AVL_8100MG,
-+					.value = ST_MAGN_1_FS_AVL_8100_VAL,
-+					.gain = ST_MAGN_1_FS_AVL_8100_GAIN_XY,
-+					.gain2 = ST_MAGN_1_FS_AVL_8100_GAIN_Z,
-+				},
-+			},
-+		},
-+		.multi_read_bit = ST_MAGN_1_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+	{
-+		.wai = ST_MAGN_2_WAI_EXP,
-+		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
-+		.odr = {
-+			.addr = ST_MAGN_2_ODR_ADDR,
-+			.mask = ST_MAGN_2_ODR_MASK,
-+			.num_bit = ST_MAGN_2_ODR_N_BIT,
-+			.odr_avl = {
-+				{ 1, ST_MAGN_2_ODR_AVL_1HZ_VAL, },
-+				{ 2, ST_MAGN_2_ODR_AVL_2HZ_VAL, },
-+				{ 3, ST_MAGN_2_ODR_AVL_3HZ_VAL, },
-+				{ 5, ST_MAGN_2_ODR_AVL_5HZ_VAL, },
-+				{ 10, ST_MAGN_2_ODR_AVL_10HZ_VAL, },
-+				{ 20, ST_MAGN_2_ODR_AVL_20HZ_VAL, },
-+				{ 40, ST_MAGN_2_ODR_AVL_40HZ_VAL, },
-+				{ 80, ST_MAGN_2_ODR_AVL_80HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_MAGN_2_PW_ADDR,
-+			.mask = ST_MAGN_2_PW_MASK,
-+			.num_bit = ST_MAGN_2_PW_N_BIT,
-+			.value_on = ST_MAGN_2_PW_ON,
-+			.value_off = ST_MAGN_2_PW_OFF,
-+		},
-+		.fs = {
-+			.addr = ST_MAGN_2_FS_ADDR,
-+			.mask = ST_MAGN_2_FS_MASK,
-+			.num_bit = ST_MAGN_2_FS_N_BIT,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_MAGN_FS_AVL_4000MG,
-+					.value = ST_MAGN_2_FS_AVL_4000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_4000_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_MAGN_FS_AVL_8000MG,
-+					.value = ST_MAGN_2_FS_AVL_8000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_MAGN_FS_AVL_10000MG,
-+					.value = ST_MAGN_2_FS_AVL_10000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
-+				},
-+			},
-+		},
-+		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+};
-+
-+static int st_magn_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+							int *val2, long mask)
-+{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&indio_dev->mlock);
-+		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+			err = -EBUSY;
-+			goto read_error;
-+		} else {
-+			err = st_sensors_set_enable(indio_dev,
-+					&st_magn_sensors[mdata->index], true);
-+			if (err < 0)
-+				goto read_error;
-+
-+			msleep((st_magn_sensors[mdata->index].bootime * 1000)
-+								/ mdata->odr);
-+			err = st_sensors_read_axis_data(indio_dev,
-+							ch->address, val);
-+			if (err < 0)
-+				goto read_error;
-+
-+			*val = *val >> ch->scan_type.shift;
-+		}
-+		mutex_unlock(&indio_dev->mlock);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		if (ch->scan_index != ST_SENSORS_SCAN_Z)
-+			*val2 = mdata->current_fullscale->gain;
-+		else
-+			*val2 = mdata->current_fullscale->gain2;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+read_error:
-+	mutex_unlock(&indio_dev->mlock);
-+	return err;
-+}
-+
-+static int st_magn_write_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan, int val, int val2, long mask)
-+{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		err = st_sensors_set_fullscale_by_gain(indio_dev,
-+					&st_magn_sensors[mdata->index], val2);
-+		break;
-+	default:
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
-+int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(st_magn_set_axis_enable);
-+
-+static int st_magn_check_device_support(struct iio_dev *indio_dev)
-+{
-+	int i, err;
-+	u8 wai;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	err = mdata->tf->read_byte(&mdata->tb, mdata->dev,
-+					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
-+		goto read_wai_error;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(st_magn_sensors); i++) {
-+		if (st_magn_sensors[i].wai == wai)
-+			break;
-+	}
-+	if (i == ARRAY_SIZE(st_magn_sensors))
-+		goto check_device_error;
-+
-+	mdata->index = i;
-+
-+	return i;
-+
-+check_device_error:
-+	dev_err(&indio_dev->dev, "device not supported -> wai (0x%x).\n", wai);
-+	err = -ENODEV;
-+read_wai_error:
-+	return err;
-+}
-+
-+int st_magn_set_enable(struct iio_dev *indio_dev, bool enable)
-+{
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_enable(indio_dev,
-+				&st_magn_sensors[mdata->index], enable);
-+}
-+EXPORT_SYMBOL(st_magn_set_enable);
-+
-+static ssize_t st_magn_sysfs_set_sampling_frequency(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	int err;
-+	unsigned int odr;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	err = kstrtoint(buf, 10, &odr);
-+	if (err < 0)
-+		goto conversion_error;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	err = st_sensors_set_odr(indio_dev,
-+					&st_magn_sensors[mdata->index], odr);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+conversion_error:
-+	return err < 0 ? err : size;
-+}
-+
-+static ssize_t st_magn_sysfs_get_sampling_frequency(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n", mdata->odr);
-+}
-+
-+static ssize_t st_magn_sysfs_scale_available(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_scale_avl(indio_dev,
-+				st_magn_sensors[mdata->index].fs.fs_avl, buf);
-+}
-+
-+static ssize_t st_magn_sysfs_sampling_frequency_available(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_sampling_frequency_avl(indio_dev,
-+				st_magn_sensors[mdata->index].odr.odr_avl, buf);
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_magn_sysfs_sampling_frequency_available);
-+
-+static IIO_DEVICE_ATTR(in_magn_scale_available, S_IRUGO,
-+				st_magn_sysfs_scale_available, NULL , 0);
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			st_magn_sysfs_get_sampling_frequency,
-+					st_magn_sysfs_set_sampling_frequency);
-+
-+static struct attribute *st_magn_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_magn_scale_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_magn_attribute_group = {
-+	.attrs = st_magn_attributes,
-+};
-+
-+static const struct iio_info magn_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &st_magn_attribute_group,
-+	.read_raw = &st_magn_read_raw,
-+	.write_raw = &st_magn_write_raw,
-+};
-+
-+int st_magn_common_probe(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &magn_info;
-+
-+	err = st_magn_check_device_support(indio_dev);
-+	if (err < 0)
-+		goto st_magn_common_probe_error;
-+
-+	mdata->multiread_bit = st_magn_sensors[mdata->index].multi_read_bit;
-+	indio_dev->channels = st_magn_sensors[mdata->index].ch;
-+	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-+
-+	mdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-+				&st_magn_sensors[mdata->index].fs.fs_avl[0];
-+	mdata->odr = st_magn_sensors[mdata->index].odr.odr_avl[0].hz;
-+
-+	err = st_sensors_init_sensor(indio_dev,
-+					&st_magn_sensors[mdata->index]);
-+	if (err < 0)
-+		goto st_magn_common_probe_error;
-+
-+	if (mdata->get_irq_data_ready(indio_dev) > 0) {
-+		err = st_magn_allocate_ring(indio_dev);
-+		if (err < 0)
-+			goto st_magn_common_probe_error;
-+		err = st_sensors_allocate_trigger(indio_dev, NULL, NULL);
-+		if (err < 0)
-+			goto st_magn_probe_trigger_error;
-+	}
-+
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto st_magn_device_register_error;
-+
-+	return err;
-+
-+st_magn_device_register_error:
-+	if (mdata->get_irq_data_ready(indio_dev) > 0)
-+		st_sensors_deallocate_trigger(indio_dev);
-+st_magn_probe_trigger_error:
-+	if (mdata->get_irq_data_ready(indio_dev) > 0)
-+		st_magn_deallocate_ring(indio_dev);
-+st_magn_common_probe_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_magn_common_probe);
-+
-+void st_magn_common_remove(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *mdata = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	if (mdata->get_irq_data_ready(indio_dev) > 0) {
-+		st_sensors_deallocate_trigger(indio_dev);
-+		st_magn_deallocate_ring(indio_dev);
-+	}
-+	iio_device_free(indio_dev);
-+}
-+EXPORT_SYMBOL(st_magn_common_remove);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-new file mode 100644
-index 0000000..d090104
---- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -0,0 +1,81 @@
-+/*
-+ * STMicroelectronics magnetometers driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/magnetometer/st_magn.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+static int st_magn_i2c_probe(struct i2c_client *client,
-+						const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *mdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*mdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	mdata = iio_priv(indio_dev);
-+	mdata->dev = &client->dev;
-+
-+	st_sensors_i2c_configure(indio_dev, client, mdata);
-+
-+	err = st_magn_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_magn_common_probe_error;
-+
-+	return 0;
-+
-+st_magn_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_magn_i2c_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	st_magn_common_remove(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id st_magn_id_table[] = {
-+	{ LSM303DLHC_MAGN_DEV_NAME },
-+	{ LSM303DLM_MAGN_DEV_NAME },
-+	{ LIS3MDL_MAGN_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
-+
-+static struct i2c_driver st_magn_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-magn-i2c",
-+	},
-+	.probe = st_magn_i2c_probe,
-+	.remove = st_magn_i2c_remove,
-+	.id_table = st_magn_id_table,
-+};
-+module_i2c_driver(st_magn_driver);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-new file mode 100644
-index 0000000..3d3cdc7
---- /dev/null
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -0,0 +1,80 @@
-+/*
-+ * STMicroelectronics magnetometers driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/magnetometer/st_magn.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+static int st_magn_spi_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *mdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*mdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	mdata = iio_priv(indio_dev);
-+	mdata->dev = &spi->dev;
-+
-+	st_sensors_spi_configure(indio_dev, spi, mdata);
-+
-+	err = st_magn_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_magn_common_probe_error;
-+
-+	return 0;
-+
-+st_magn_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_magn_spi_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	st_magn_common_remove(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id st_magn_id_table[] = {
-+	{ LSM303DLHC_MAGN_DEV_NAME },
-+	{ LSM303DLM_MAGN_DEV_NAME },
-+	{ LIS3MDL_MAGN_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, st_magn_id_table);
-+
-+static struct spi_driver st_magn_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-magn-spi",
-+	},
-+	.probe = st_magn_spi_probe,
-+	.remove = st_magn_spi_remove,
-+	.id_table = st_magn_id_table,
-+};
-+module_spi_driver(st_magn_driver);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics magnetometers spi driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/magnetometer/st_magn.h b/include/linux/iio/magnetometer/st_magn.h
-new file mode 100644
-index 0000000..bba0d1d
---- /dev/null
-+++ b/include/linux/iio/magnetometer/st_magn.h
-@@ -0,0 +1,47 @@
-+/*
-+ * STMicroelectronics magnetometers driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ * v. 1.0.0
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_MAGN_H
-+#define ST_MAGN_H
-+
-+#include <linux/types.h>
-+#include "../common/st_sensors.h"
-+
-+#define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
-+#define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
-+#define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
-+
-+int st_magn_common_probe(struct iio_dev *indio_dev);
-+void st_magn_common_remove(struct iio_dev *indio_dev);
-+int st_magn_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
-+int st_magn_set_enable(struct iio_dev *indio_dev, bool enable);
-+
-+#ifdef CONFIG_IIO_ST_MAGN_3AXIS_TRIGGERED_BUFFER
-+int st_magn_allocate_ring(struct iio_dev *indio_dev);
-+void st_magn_deallocate_ring(struct iio_dev *indio_dev);
-+#else /* CONFIG_IIO_ST_MAGN_3AXIS_TRIGGERED_BUFFER */
-+static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
-+{
-+	return 0;
-+}
-+static inline void st_magn_remove_trigger(struct iio_dev *indio_dev, int irq)
-+{
-+	return;
-+}
-+static inline int st_magn_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+static inline void st_magn_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+}
-+#endif /* CONFIG_IIO_ST_MAGN_3AXIS_TRIGGERED_BUFFER */
-+
-+#endif /* ST_MAGN_H */
--- 
-1.7.0.4
+Jonathan
 
+> ---
+> Changes since v1:
+> 
+> 1. Fixed comments from Lars
+> 2. Added support for ADC on EXYNOS5410
+> 
+> Changes since v2:
+> 
+> 1. Changed the instance name for (struct iio_dev *) to indio_dev
+> 2. Changed devm_request_irq to request_irq
+> 
+> Few doubts regarding the mappings and child device handling.
+> Kindly, suggest me better methods.
+> 
+> Changes since v3:
+> 
+> 1. Added clk_prepare_disable and regulator_disable calls in _remove()
+> 2. Moved init_completion before irq_request
+> 3. Added NULL pointer check for devm_request_and_ioremap() return value.
+> 4. Use number of channels as per the ADC version 
+> 5. Change the define ADC_V1_CHANNEL to ADC_CHANNEL
+> 6. Update the Documentation to include EXYNOS5410 compatible
+> 
+> Doug, i've used
+> 	chan = iio_channel_get(dev_name(&pdev->dev), "adc3");
+> in ntc thermistor driver during probe and
+> 	iio_read_channel_raw(chan, &val);
+> for read.
+> 
+> But, then the drivers become kind of coupled. Right.
+> 
+> Lars, Is there an other way.
+> 
+> Thanks for the comments
+> 
+>  .../bindings/arm/samsung/exynos5-adc.txt           |   38 ++
+>  drivers/iio/adc/Kconfig                            |    7 +
+>  drivers/iio/adc/Makefile                           |    1 +
+>  drivers/iio/adc/exynos5_adc.c                      |  475 ++++++++++++++++++++
+>  4 files changed, 521 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+>  create mode 100644 drivers/iio/adc/exynos5_adc.c
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+> new file mode 100644
+> index 0000000..0f281d9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+> @@ -0,0 +1,38 @@
+> +Samsung Exynos5 Analog to Digital Converter bindings
+> +
+> +Required properties:
+> +- compatible:		Must be "samsung,exynos5250-adc" for exynos5250 controllers.
+> +			Must be "samsung,exynos5410-adc" for exynos5410 controllers.
+> +- reg:			Contains ADC register address range (base address and
+> +			length).
+> +- interrupts: 		Contains the interrupt information for the timer. The
+> +			format is being dependent on which interrupt controller
+> +			the Samsung device uses.
+> +
+> +Note: child nodes can be added for auto probing from device tree.
+> +
+> +Example: adding device info in dtsi file
+> +
+> +adc@12D10000 {
+> +	compatible = "samsung,exynos5250-adc";
+> +	reg = <0x12D10000 0x100>;
+> +	interrupts = <0 106 0>;
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+> +	ranges;
+> +};
+> +
+> +
+> +Example: Adding child nodes in dts file
+> +
+> +adc@12D10000 {
+> +
+> +	/* NTC thermistor is a hwmon device */
+> +	ncp15wb473@0 {
+> +		compatible = "ntc,ncp15wb473";
+> +		reg = <0x0>;
+> +		pullup-uV = <1800000>;
+> +		pullup-ohm = <47000>;
+> +		pulldown-ohm = <0>;
+> +	};
+> +};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index fe822a1..33ceabf 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -91,6 +91,13 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+>  
+> +config EXYNOS5_ADC
+> +	bool "Exynos5 ADC driver support"
+> +	help
+> +	  Core support for the ADC block found in the Samsung EXYNOS5 series
+> +	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+> +	  this resource.
+> +
+>  config LP8788_ADC
+>  	bool "LP8788 ADC driver"
+>  	depends on MFD_LP8788
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 2d5f100..5b4a4f6 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_AD7791) += ad7791.o
+>  obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_EXYNOS5_ADC) += exynos5_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+> diff --git a/drivers/iio/adc/exynos5_adc.c b/drivers/iio/adc/exynos5_adc.c
+> new file mode 100644
+> index 0000000..4963649
+> --- /dev/null
+> +++ b/drivers/iio/adc/exynos5_adc.c
+> @@ -0,0 +1,475 @@
+> +/*
+> + *  exynos5_adc.c - Support for ADC in EXYNOS5 SoCs
+> + *
+> + *  8 ~ 10 channel, 10/12-bit ADC
+> + *
+> + *  Copyright (C) 2013 Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + *
+> + *  You should have received a copy of the GNU General Public License
+> + *  along with this program; if not, write to the Free Software
+> + *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/delay.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/io.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/of_platform.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +
+> +enum adc_version {
+> +	ADC_V1,
+> +	ADC_V2
+> +};
+> +
+> +/* EXYNOS5250 ADC_V1 registers definitions */
+> +#define ADC_V1_CON(x)		((x) + 0x00)
+> +#define ADC_V1_DLY(x)		((x) + 0x08)
+> +#define ADC_V1_DATX(x)		((x) + 0x0C)
+> +#define ADC_V1_INTCLR(x)	((x) + 0x18)
+> +#define ADC_V1_MUX(x)		((x) + 0x1c)
+> +
+> +/* EXYNOS5410 ADC_V2 registers definitions */
+> +#define ADC_V2_CON1(x)		((x) + 0x00)
+> +#define ADC_V2_CON2(x)		((x) + 0x04)
+> +#define ADC_V2_STAT(x)		((x) + 0x08)
+> +#define ADC_V2_INT_EN(x)	((x) + 0x10)
+> +#define ADC_V2_INT_ST(x)	((x) + 0x14)
+> +#define ADC_V2_VER(x)		((x) + 0x20)
+> +
+> +/* Bit definitions for ADC_V1 */
+> +#define ADC_V1_CON_RES		(1u << 16)
+> +#define ADC_V1_CON_PRSCEN	(1u << 14)
+> +#define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
+> +#define ADC_V1_CON_STANDBY	(1u << 2)
+> +
+> +/* Bit definitions for ADC_V2 */
+> +#define ADC_V2_CON1_SOFT_RESET	(1u << 2)
+> +
+> +#define ADC_V2_CON2_OSEL	(1u << 10)
+> +#define ADC_V2_CON2_ESEL	(1u << 9)
+> +#define ADC_V2_CON2_HIGHF	(1u << 8)
+> +#define ADC_V2_CON2_C_TIME(x)	(((x) & 7) << 4)
+> +#define ADC_V2_CON2_ACH_SEL(x)	(((x) & 0xF) << 0)
+> +#define ADC_V2_CON2_ACH_MASK	0xF
+> +
+> +/* Bit definitions common for ADC_V1 and ADC_V2 */
+> +#define ADC_V1_CON_EN_START		(1u << 0)
+> +#define ADC_V1_DATX_MASK	0xFFF
+> +
+> +struct exynos5_adc {
+> +	void __iomem		*regs;
+> +	struct clk		*clk;
+> +	unsigned int		irq;
+> +	struct regulator	*vdd;
+> +
+> +	struct completion	completion;
+> +
+> +	struct iio_map		*map;
+> +	u32			value;
+> +	unsigned int            version;
+> +};
+> +
+> +static const struct of_device_id exynos5_adc_match[] = {
+> +	{ .compatible = "samsung,exynos5250-adc", .data = (void *)ADC_V1 },
+> +	{ .compatible = "samsung,exynos5410-adc", .data = (void *)ADC_V2 },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, exynos5_adc_match);
+> +
+> +static inline unsigned int exynos5_adc_get_version(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *match;
+> +
+> +	match = of_match_node(exynos5_adc_match, pdev->dev.of_node);
+> +	return (unsigned int)match->data;
+> +}
+> +
+> +/* default maps used by iio consumer (ex: ntc-thermistor driver) */
+> +static struct iio_map exynos5_adc_iio_map[] = {
+> +	{
+> +		.consumer_dev_name = "0.ncp15wb473",
+> +		.consumer_channel = "adc3",
+> +		.adc_channel_label = "adc3",
+> +	},
+> +	{
+> +		.consumer_dev_name = "1.ncp15wb473",
+> +		.consumer_channel = "adc4",
+> +		.adc_channel_label = "adc4",
+> +	},
+> +	{
+> +		.consumer_dev_name = "2.ncp15wb473",
+> +		.consumer_channel = "adc5",
+> +		.adc_channel_label = "adc5",
+> +	},
+> +	{
+> +		.consumer_dev_name = "3.ncp15wb473",
+> +		.consumer_channel = "adc6",
+> +		.adc_channel_label = "adc6",
+> +	},
+> +	{},
+> +};
+> +
+> +static int exynos5_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val,
+> +				int *val2,
+> +				long mask)
+> +{
+> +	struct exynos5_adc *info = iio_priv(indio_dev);
+> +	u32 con1, con2;
+> +
+> +	if (mask == IIO_CHAN_INFO_RAW) {
+> +		mutex_lock(&indio_dev->mlock);
+> +
+> +		/* Select the channel to be used and Trigger conversion */
+> +		if (info->version == ADC_V2) {
+> +			con2 = readl(ADC_V2_CON2(info->regs));
+> +			con2 &= ~ADC_V2_CON2_ACH_MASK;
+> +			con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
+> +			writel(con2, ADC_V2_CON2(info->regs));
+> +
+> +			con1 = readl(ADC_V2_CON1(info->regs));
+> +			writel(con1 | ADC_V1_CON_EN_START,
+> +					ADC_V2_CON1(info->regs));
+> +		} else {
+> +			writel(chan->address, ADC_V1_MUX(info->regs));
+> +
+> +			con1 = readl(ADC_V1_CON(info->regs));
+> +			writel(con1 | ADC_V1_CON_EN_START,
+> +					ADC_V1_CON(info->regs));
+> +		}
+> +
+> +		wait_for_completion(&info->completion);
+> +		*val = info->value;
+> +
+> +		mutex_unlock(&indio_dev->mlock);
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static irqreturn_t exynos5_adc_isr(int irq, void *dev_id)
+> +{
+> +	struct exynos5_adc *info = (struct exynos5_adc *)dev_id;
+> +
+> +	/* Read value */
+> +	info->value = readl(ADC_V1_DATX(info->regs)) &
+> +						ADC_V1_DATX_MASK;
+> +	/* clear irq */
+> +	if (info->version == ADC_V2)
+> +		writel(1, ADC_V2_INT_ST(info->regs));
+> +	else
+> +		writel(1, ADC_V1_INTCLR(info->regs));
+> +
+> +	complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int exynos5_adc_reg_access(struct iio_dev *indio_dev,
+> +			      unsigned reg, unsigned writeval,
+> +			      unsigned *readval)
+> +{
+> +	struct exynos5_adc *info = iio_priv(indio_dev);
+> +	u32 ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	if (readval != NULL) {
+> +		ret = readl(info->regs + reg);
+> +		*readval = ret;
+> +	} else
+> +		ret = -EINVAL;
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info exynos5_adc_iio_info = {
+> +	.read_raw = &exynos5_read_raw,
+> +	.debugfs_reg_access = &exynos5_adc_reg_access,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define ADC_CHANNEL(_index, _id) {			\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.channel = _index,				\
+> +	.address = _index,				\
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
+> +	.datasheet_name = _id,				\
+> +}
+> +
+> +static const struct iio_chan_spec exynos5_adc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +	ADC_CHANNEL(2, "adc2"),
+> +	ADC_CHANNEL(3, "adc3"),
+> +	ADC_CHANNEL(4, "adc4"),
+> +	ADC_CHANNEL(5, "adc5"),
+> +	ADC_CHANNEL(6, "adc6"),
+> +	ADC_CHANNEL(7, "adc7"),
+> +	ADC_CHANNEL(8, "adc8"),
+> +	ADC_CHANNEL(9, "adc9"),
+> +};
+> +
+> +static int exynos5_adc_remove_devices(struct device *dev, void *c)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +
+> +	platform_device_unregister(pdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void exynos5_adc_hw_init(struct exynos5_adc *info)
+> +{
+> +	u32 con1, con2;
+> +
+> +	if (info->version == ADC_V2) {
+> +		con1 = ADC_V2_CON1_SOFT_RESET;
+> +		writel(con1, ADC_V2_CON1(info->regs));
+> +
+> +		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+> +			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+> +		writel(con2, ADC_V2_CON2(info->regs));
+> +
+> +		/* Enable interrupts */
+> +		writel(1, ADC_V2_INT_EN(info->regs));
+> +	} else {
+> +		/* set default prescaler values and Enable prescaler */
+> +		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> +
+> +		/* Enable 12-bit ADC resolution */
+> +		con1 |= ADC_V1_CON_RES;
+> +		writel(con1, ADC_V1_CON(info->regs));
+> +	}
+> +}
+> +
+> +static int exynos5_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct exynos5_adc *info = NULL;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct iio_dev *indio_dev = NULL;
+> +	struct resource	*mem;
+> +	int ret = -ENODEV;
+> +	int irq;
+> +
+> +	if (!np)
+> +		return ret;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(struct exynos5_adc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	info = iio_priv(indio_dev);
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +
+> +	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+> +	if (!info->regs)
+> +		return -ENOMEM;
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		ret = irq;
+> +		goto err_iio;
+> +	}
+> +
+> +	info->irq = irq;
+> +
+> +	init_completion(&info->completion);
+> +
+> +	ret = request_irq(info->irq, exynos5_adc_isr,
+> +					0, dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+> +							info->irq);
+> +		goto err_iio;
+> +	}
+> +
+> +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(info->clk)) {
+> +		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+> +							PTR_ERR(info->clk));
+> +		ret = PTR_ERR(info->clk);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+> +	if (IS_ERR(info->vdd)) {
+> +		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+> +							PTR_ERR(info->vdd));
+> +		ret = PTR_ERR(info->vdd);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->version = exynos5_adc_get_version(pdev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &exynos5_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = exynos5_adc_iio_channels;
+> +
+> +	if (info->version == ADC_V1)
+> +		/* ADC core in EXYNOS5250 has 8 channels */
+> +		indio_dev->num_channels =
+> +				ARRAY_SIZE(exynos5_adc_iio_channels) - 2;
+> +	else
+> +		/* ADC core in EXYNOS5410 has 10 channels */
+> +		indio_dev->num_channels =
+> +				ARRAY_SIZE(exynos5_adc_iio_channels);
+> +
+> +	info->map = exynos5_adc_iio_map;
+> +
+> +	ret = iio_map_array_register(indio_dev, info->map);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "failed mapping iio, err: %d\n", ret);
+> +		goto err_irq;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_map;
+> +
+> +	ret = regulator_enable(info->vdd);
+> +	if (ret)
+> +		goto err_iio_dev;
+> +
+> +	clk_prepare_enable(info->clk);
+> +
+> +	exynos5_adc_hw_init(info);
+> +
+> +	ret = of_platform_populate(np, exynos5_adc_match, NULL, &pdev->dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed adding child nodes\n");
+> +		goto err_of_populate;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_of_populate:
+> +	device_for_each_child(&pdev->dev, NULL, exynos5_adc_remove_devices);
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vdd);
+> +err_iio_dev:
+> +	iio_device_unregister(indio_dev);
+> +err_map:
+> +	iio_map_array_unregister(indio_dev, info->map);
+> +err_irq:
+> +	free_irq(info->irq, info);
+> +err_iio:
+> +	iio_device_free(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int exynos5_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct exynos5_adc *info = iio_priv(indio_dev);
+> +
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vdd);
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev, info->map);
+> +	free_irq(info->irq, info);
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int exynos5_adc_suspend(struct device *dev)
+> +{
+> +	struct exynos5_adc *info = dev_get_data(dev);
+> +	u32 con;
+> +
+> +	if (info->version == ADC_V2) {
+> +		con = readl(ADC_V2_CON1(info->regs));
+> +		con &= ~ADC_V1_CON_EN_START;
+> +		writel(con, ADC_V2_CON1(info->regs));
+> +	} else {
+> +		con = readl(ADC_V1_CON(info->regs));
+> +		con |= ADC_V1_CON_STANDBY;
+> +		writel(con, ADC_V1_CON(info->regs));
+> +	}
+> +
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vdd);
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos5_adc_resume(struct device *dev)
+> +{
+> +	struct exynos5_adc *info = dev_get_data(dev);
+> +	int ret;
+> +
+> +	ret = regulator_enable(info->vdd);
+> +	if (ret)
+> +		return ret;
+> +
+> +	clk_prepare_enable(info->clk);
+> +
+> +	exynos5_adc_hw_init(info);
+> +
+> +	return 0;
+> +}
+> +
+> +#else
+> +#define exynos5_adc_suspend NULL
+> +#define exynos5_adc_resume NULL
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(exynos5_adc_pm_ops,
+> +			exynos5_adc_suspend,
+> +			exynos5_adc_resume);
+> +
+> +static struct platform_driver exynos5_adc_driver = {
+> +	.probe		= exynos5_adc_probe,
+> +	.remove		= exynos5_adc_remove,
+> +	.driver		= {
+> +		.name	= "exynos5-adc",
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = of_match_ptr(exynos5_adc_match),
+> +		.pm	= &exynos5_adc_pm_ops,
+> +	},
+> +};
+> +
+> +module_platform_driver(exynos5_adc_driver);
+> +
+> +MODULE_AUTHOR("Naveen Krishna Chatradhi <ch.naveen@samsung.com>");
+> +MODULE_DESCRIPTION("Samsung EXYNOS5 ADC driver");
+> +MODULE_LICENSE("GPL");
+> 
