@@ -1,50 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:51098 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752250Ab3AUVLA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 21 Jan 2013 16:11:00 -0500
-Received: from mailout-de.gmx.net ([10.1.76.34]) by mrigmx.server.lan
- (mrigmx002) with ESMTP (Nemesis) id 0Lgbwh-1T9Sxq12yj-00nylM for
- <linux-iio@vger.kernel.org>; Mon, 21 Jan 2013 22:10:59 +0100
-From: Peter Huewe <peterhuewe@gmx.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>
-Subject: [PATCH] staging/iio: Use correct argument for sizeof
-Date: Mon, 21 Jan 2013 22:14:02 +0100
-Message-Id: <1358802842-27614-1-git-send-email-peterhuewe@gmx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@hermes.cam.ac.uk>
+From: Jonathan Cameron <jic23@kernel.org>
+To: fengguang.wu@intel.com
+Cc: changlongx.xie@intel.com,
+	yuheng.chen@intel.com,
+	arnd@arndb.de,
+	tony@atomide.com,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] ARM: OMAP: rx51: Fix include path for tsl2563.h
+Date: Sun, 27 Jan 2013 17:32:44 +0000
+Message-Id: <1359307964-23970-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <51056392.7070808@jic23.retrosnub.co.uk>
+References: <51056392.7070808@jic23.retrosnub.co.uk>
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-found with coccicheck
-sizeof when applied to a pointer typed expression gives the size of
-the pointer
+A file in staging was included here to get at some platform data
+structures.  The tsl2563 is now moving out of staging and
+so the path to the include must be updated.
 
-The semantic patch that makes this output is available
-in scripts/coccinelle/misc/noderef.cocci.
-
-More information about semantic patching is available at
-http://coccinelle.lip6.fr/
-
-Signed-off-by: Peter Huewe <peterhuewe@gmx.de>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
 ---
- drivers/staging/iio/iio_hwmon.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/arm/mach-omap2/board-rx51-peripherals.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
-index c7a5f97..97ad645 100644
---- a/drivers/staging/iio/iio_hwmon.c
-+++ b/drivers/staging/iio/iio_hwmon.c
-@@ -93,7 +93,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
- 	while (st->channels[st->num_channels].indio_dev)
- 		st->num_channels++;
+diff --git a/arch/arm/mach-omap2/board-rx51-peripherals.c b/arch/arm/mach-omap2/board-rx51-peripherals.c
+index cf07e28..f3d075b 100644
+--- a/arch/arm/mach-omap2/board-rx51-peripherals.c
++++ b/arch/arm/mach-omap2/board-rx51-peripherals.c
+@@ -42,7 +42,7 @@
+ #include <media/si4713.h>
+ #include <linux/leds-lp5523.h>
  
--	st->attrs = kzalloc(sizeof(st->attrs) * (st->num_channels + 1),
-+	st->attrs = kzalloc(sizeof(*st->attrs) * (st->num_channels + 1),
- 			    GFP_KERNEL);
- 	if (st->attrs == NULL) {
- 		ret = -ENOMEM;
+-#include <../drivers/staging/iio/light/tsl2563.h>
++#include <linux/platform_data/tsl2563.h>
+ #include <linux/lis3lv02d.h>
+ 
+ #if defined(CONFIG_IR_RX51) || defined(CONFIG_IR_RX51_MODULE)
 -- 
-1.7.8.6
-
+1.8.1.1
