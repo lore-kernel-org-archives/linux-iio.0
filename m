@@ -1,390 +1,178 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: Martin Liska <marxin.liska@gmail.com>,
-	Marek Vasut <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>
-Subject: [PATCH V4] iio: acpi: Add ACPI0008 ALS driver
-Date: Sun, 27 Jan 2013 02:29:27 +0100
-Message-Id: <1359250167-782-1-git-send-email-marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59586 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756165Ab3A0U7T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2013 15:59:19 -0500
+Message-ID: <51059524.4030707@kernel.org>
+Date: Sun, 27 Jan 2013 20:59:16 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL V2] IIO cleanups, new drivers and fixes (IIO set 2 for the
+ 3.9 cycle)
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Martin Liska <marxin.liska@gmail.com>
+ The following changes since commit 8f5f90a872c38b4e78f3cc95e8a25434b98e4db2:
 
-Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
-This driver currently supports only the ALI property, yet is ready to
-be easily extended to handle ALC, ALT, ALP ones as well.
+  Merge 3.8-rc5 into staging-next (2013-01-25 21:25:02 -0800)
 
-Signed-off-by: Martin Liska <marxin.liska@gmail.com>
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
----
- drivers/staging/iio/light/Kconfig    |   10 ++
- drivers/staging/iio/light/Makefile   |    1 +
- drivers/staging/iio/light/acpi-als.c |  320 ++++++++++++++++++++++++++++++++++
- 3 files changed, 331 insertions(+)
- create mode 100644 drivers/staging/iio/light/acpi-als.c
+are available in the git repository at:
 
-V2: Fix the channel mask, so it's really reading RAW data.
-V3: Put scan timestamp into the buffer only when enabled,
-    Set the light sensor ID to 0 instead of 1
-V4: Select IIO_TRIGGERED_BUFFER as we need it here
 
-diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index 4bed30e..9c3d146 100644
---- a/drivers/staging/iio/light/Kconfig
-+++ b/drivers/staging/iio/light/Kconfig
-@@ -50,4 +50,14 @@ config TSL2x7x
- 	 tmd2672, tsl2772, tmd2772 devices.
- 	 Provides iio_events and direct access via sysfs.
- 
-+config ACPI_ALS
-+	tristate "ACPI Ambient Light Sensor"
-+	depends on ACPI
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	 Support for the ACPI0008 Ambient Light Sensor.
-+
-+	 This driver can also be built as a module.  If so, the module
-+	 will be called acpi-als.
-+
- endmenu
-diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-index 141af1e..13090e6 100644
---- a/drivers/staging/iio/light/Makefile
-+++ b/drivers/staging/iio/light/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
- obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
- obj-$(CONFIG_TSL2583)	+= tsl2583.o
- obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-+obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
-diff --git a/drivers/staging/iio/light/acpi-als.c b/drivers/staging/iio/light/acpi-als.c
-new file mode 100644
-index 0000000..6140613
---- /dev/null
-+++ b/drivers/staging/iio/light/acpi-als.c
-@@ -0,0 +1,320 @@
-+/*
-+ * ACPI Ambient Light Sensor Driver
-+ *
-+ * Based on ALS driver:
-+ * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
-+ *
-+ * Rework for IIO subsystem:
-+ * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
-+ *
-+ * Final cleanup and debugging:
-+ * Copyright (C) 2013 Marek Vasut <marex@denx.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <acpi/acpi_bus.h>
-+#include <acpi/acpi_drivers.h>
-+#include <linux/err.h>
-+#include <linux/mutex.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define ACPI_ALS_CLASS			"als"
-+#define ACPI_ALS_DEVICE_NAME		"acpi-als"
-+#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
-+
-+ACPI_MODULE_NAME("acpi-als");
-+
-+struct acpi_als {
-+	struct acpi_device	*device;
-+	struct iio_trigger	*trig;
-+	struct mutex		lock;
-+
-+	uint16_t		*evt_buffer;
-+	unsigned int		evt_buffer_len;
-+};
-+
-+/*
-+ * All types of properties the ACPI0008 block can report. The ALI, ALC, ALT
-+ * and ALP can all be handled by als_read_value() below, while the ALR is
-+ * special.
-+ *
-+ * The _ALR property returns tables that can be used to fine-tune the values
-+ * reported by the other props based on the particular hardware type and it's
-+ * location (it contains tables for "rainy", "bright inhouse lighting" etc.).
-+ *
-+ * So far, we support only ALI (illuminance).
-+ */
-+#define ACPI_ALS_ILLUMINANCE	"_ALI"
-+#define ACPI_ALS_CHROMATICITY	"_ALC"
-+#define ACPI_ALS_COLOR_TEMP	"_ALT"
-+#define ACPI_ALS_POLLING	"_ALP"
-+#define ACPI_ALS_TABLES		"_ALR"
-+
-+static int32_t als_read_value(struct acpi_als *als, char *prop)
-+{
-+	unsigned long long illuminance;
-+	acpi_status status;
-+
-+	status = acpi_evaluate_integer(als->device->handle,
-+				prop, NULL, &illuminance);
-+
-+	if (ACPI_FAILURE(status)) {
-+		ACPI_EXCEPTION((AE_INFO, status,
-+				"Error reading ALS illuminance"));
-+		/* Something went wrong, it's pitch black outside! */
-+		illuminance = 0;
-+	}
-+
-+	return illuminance;
-+}
-+
-+static void acpi_als_notify(struct acpi_device *device, u32 event)
-+{
-+	struct iio_dev *iio = acpi_driver_data(device);
-+	struct acpi_als *als = iio_priv(iio);
-+	uint16_t *buffer = als->evt_buffer;
-+	s64 time_ns = iio_get_time_ns();
-+
-+	mutex_lock(&als->lock);
-+
-+	memset(buffer, 0, als->evt_buffer_len);
-+
-+	switch (event) {
-+	case ACPI_ALS_NOTIFY_ILLUMINANCE:
-+		*buffer++ = als_read_value(als, ACPI_ALS_ILLUMINANCE);
-+		break;
-+	default:
-+		/* Unhandled event */
-+		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
-+			event);
-+		return;
-+	}
-+
-+	if (iio->scan_timestamp)
-+		*(s64 *)ALIGN((uintptr_t)buffer, sizeof(s64)) = time_ns;
-+
-+	if (iio_buffer_enabled(iio))
-+		iio_push_to_buffer(iio->buffer, (uint8_t *)als->evt_buffer);
-+
-+	mutex_unlock(&als->lock);
-+}
-+
-+static int acpi_als_read_raw(struct iio_dev *iio,
-+			struct iio_chan_spec const *chan, int *val,
-+			int *val2, long mask)
-+{
-+	struct acpi_als *als = iio_priv(iio);
-+
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	/* we support only illumination (_ALI) so far. */
-+	if (chan->type != IIO_LIGHT)
-+		return -EINVAL;
-+
-+	*val = als_read_value(als, ACPI_ALS_ILLUMINANCE);
-+	return IIO_VAL_INT;
-+}
-+
-+/*
-+ * So far, there's only one channel in here, but the specification for
-+ * ACPI0008 says there can be more to what the block can report. Like
-+ * chromaticity and such. We are ready for incoming additions!
-+ */
-+static const struct iio_chan_spec acpi_als_channels[] = {
-+	{
-+		.type		= IIO_LIGHT,
-+		.indexed	= 0,
-+		.channel	= 0,
-+		.scan_index	= 0,
-+		.scan_type	= {
-+			.sign 		= 'u',
-+			.realbits	= 10,
-+			.storagebits	= 16,
-+		},
-+		.info_mask	= IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+	},
-+};
-+
-+static const struct iio_info acpi_als_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw	= &acpi_als_read_raw,
-+};
-+
-+static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
-+{
-+
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *iio = pf->indio_dev;
-+	struct acpi_als *als = iio_priv(iio);
-+
-+	iio_trigger_notify_done(als->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct iio_trigger_ops acpi_als_trigger_ops = {
-+	.owner = THIS_MODULE,
-+};
-+
-+static int acpi_als_trigger_init(struct iio_dev *iio)
-+{
-+	struct iio_trigger *trig;
-+	int ret;
-+
-+	trig = iio_trigger_alloc("%s-dev%i", iio->name, iio->id);
-+	if (!trig)
-+		return -ENOMEM;
-+
-+	trig->dev.parent = iio->dev.parent;
-+	trig->private_data = iio;
-+	trig->ops = &acpi_als_trigger_ops;
-+
-+	ret = iio_trigger_register(trig);
-+	if (ret) {
-+		iio_trigger_free(trig);
-+		return ret;
-+	}
-+
-+	iio->trig = trig;
-+
-+	return 0;
-+}
-+
-+static void acpi_als_trigger_remove(struct iio_dev *iio)
-+{
-+	iio_trigger_unregister(iio->trig);
-+	iio_trigger_free(iio->trig);
-+}
-+
-+static int acpi_als_add(struct acpi_device *device)
-+{
-+	struct acpi_als *als;
-+	struct iio_dev *iio;
-+	struct device *dev = &device->dev;
-+	int ret;
-+
-+	/*
-+	 * The event buffer contains timestamp and all the data from
-+	 * the ACPI0008 block. There are multiple, but so far we only
-+	 * support _ALI (illuminance). Yes, we're ready for more!
-+	 */
-+	uint16_t *evt_buffer;
-+	const unsigned int evt_sources = 1;
-+	const unsigned int evt_buffer_size = sizeof(int64_t) +
-+				(sizeof(uint16_t) * evt_sources);
-+
-+	evt_buffer = devm_kzalloc(dev, evt_buffer_size, GFP_KERNEL);
-+	if (!evt_buffer)
-+		return -ENOMEM;
-+
-+	iio = iio_device_alloc(sizeof(*als));
-+	if (!iio) {
-+		dev_err(dev, "Failed to allocate IIO device\n");
-+		return -ENOMEM;
-+	}
-+
-+	als = iio_priv(iio);
-+
-+	device->driver_data = iio;
-+	als->device = device;
-+	als->evt_buffer = evt_buffer;
-+	mutex_init(&als->lock);
-+
-+	iio->name = ACPI_ALS_DEVICE_NAME;
-+	iio->dev.parent = dev;
-+	iio->info = &acpi_als_info;
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->channels = acpi_als_channels;
-+	iio->num_channels = ARRAY_SIZE(acpi_als_channels);
-+
-+	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
-+					&acpi_als_trigger_handler, NULL);
-+	if (ret)
-+		goto err_iio;
-+
-+	ret = acpi_als_trigger_init(iio);
-+	if (ret)
-+		goto err_trig;
-+
-+	ret = iio_device_register(iio);
-+	if (ret < 0)
-+		goto err_dev;
-+
-+	return 0;
-+
-+err_dev:
-+	acpi_als_trigger_remove(iio);
-+err_trig:
-+	iio_triggered_buffer_cleanup(iio);
-+err_iio:
-+	iio_device_free(iio);
-+	return ret;
-+}
-+
-+static int acpi_als_remove(struct acpi_device *device, int type)
-+{
-+	struct iio_dev *iio = acpi_driver_data(device);
-+
-+	iio_device_unregister(iio);
-+	iio_triggered_buffer_cleanup(iio);
-+	acpi_als_trigger_remove(iio);
-+	iio_device_free(iio);
-+
-+	return 0;
-+}
-+
-+static const struct acpi_device_id acpi_als_device_ids[] = {
-+	{"ACPI0008", 0},
-+	{"", 0},
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
-+
-+static struct acpi_driver acpi_als_driver = {
-+	.name	= "acpi_als",
-+	.class	= ACPI_ALS_CLASS,
-+	.ids	= acpi_als_device_ids,
-+	.ops = {
-+		.add	= acpi_als_add,
-+		.remove	= acpi_als_remove,
-+		.notify	= acpi_als_notify,
-+	},
-+};
-+
-+static int acpi_als_init(void)
-+{
-+	return acpi_bus_register_driver(&acpi_als_driver);
-+}
-+
-+static void acpi_als_exit(void)
-+{
-+	acpi_bus_unregister_driver(&acpi_als_driver);
-+}
-+
-+module_init(acpi_als_init);
-+module_exit(acpi_als_exit);
-+
-+MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
-+MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
-+MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
-+MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
-+MODULE_LICENSE("GPL");
--- 
-1.7.10.4
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.9b-v2
+
+for you to fetch changes up to 9c2251dd4b7feba14d35835c6835024840b1f76b:
+
+  iio:light:tsl2563 move out of staging (2013-01-27 17:37:24 +0000)
+
+----------------------------------------------------------------
+Second set of IIO new drivers, cleanups and fixes for the 3.9 cycle.
+
+This second version is due to a little fixup for an include
+path being added to the tsl2563 move out of staging after
+a report from Fengguang Wu and the 0-day kernel build testing
+backend.
+
+Minor bits:
+1) A Kconfig dependency fix for the max1363 driver that
+has been causing some autobuilder fails in Linux Next.
+2) Removal of a stale makefile entry
+3) Fix an incorrect arguement for a sizeof call
+4) Duplicate code removal in tsl2x7x driver
+5) A missing spin lock init in hid-sensor-time
+
+New features:
+1) mxs adc driver gains support for touchscreen special functions
+2) mxs driver gainst supprot for the MX23 and dt entries added
+3) adis16400 gains adis16448 support and some additional bells and whistles
+
+Moves out of staging.
+1) adis16400 - a venerable driver gets a make over and moves
+   out of staging.
+2) Kxsd9 moved out fo staging
+3) adis16080 gets cleaned up and moved out of staging
+4) tsl2563 gets a little cleaned up and move out of staging
+
+Removals
+1) sw_ring is killed off with all remaining drivers converted to kfifo.
+   This has been scheduled for a long time since we switched to kfifo.
+   There is demand for a high performance alternative, but this was
+   never it and I'm glad to see this vestage of IIOs youth gone once
+   and for all!
+
+----------------------------------------------------------------
+Axel Lin (1):
+      rtc: hid-sensor-time: Add missing spin_lock_init
+
+Jonathan Cameron (11):
+      staging:iio:accel:lis3l02dq remove sw_ring support.
+      staging:iio:impedance-analyzer switch from sw_ring to kfifo.
+      staging:iio:meter:ade7758 switch from sw_ring to kfifo
+      staging:iio: drop sw_ring buffer implementation.
+      staging:iio:accel:kxsd9
+      iio:accel:kxsd9 move out of staging
+      staging:iio:light:tsl2563 drop unnecessary brackets around constants.
+      staging:iio:light:tsl2563 clean comments up.
+      staging:iio:tsl2563 Simplify exit path on error in read_interrupt_config.
+      staging:iio:tsl2563 drop pointless forward declaration
+      iio:light:tsl2563 move out of staging
+
+Lars-Peter Clausen (23):
+      staging:iio:gyro: Remove stale Makefile entry
+      staging:iio:tsl2x7x: Use iio_str_to_fixedpoint instead of open-coding it
+      staging:iio:adis16400: Don't pass 0 to ilog2
+      staging:iio:adis16400: Fix and cleanup 3db filter setting
+      staging:iio:adis16400: Remove unused default_scan_mask
+      staging:iio:adis16400: Use adis library
+      staging:iio:adis16400: Use triggered buffer setup helper function
+      staging:iio:adis16400: Add helper macros for channel declaration
+      staging:iio:adis16400: Preallocate transfer message
+      staging:iio:adis16400: Remove unit suffix from samplerate attribute
+      staging:iio:adis16400: Remove samplerate_available attribute
+      staging:iio:adis16400: Code style cleanup
+      staging:iio: Move adis16400 out of staging
+      iio:adis16400: Increase samplerate precession
+      iio:adis16400: Add support for the 52.85 Hz base sampling rate
+      iio:adis16400: Expose some debug information in debugfs
+      iio:adis16400: Add support for the adis16448
+      staging:iio:adis16080: Add device id table entry for the adis16100
+      staging:iio:adis16080: Cleanup SPI transfer
+      staging:iio:adis16080: be16 cleanups
+      staging:iio:adis16080: Remove unnecessary lock
+      staging:iio:adis16080: Add scale and offset attributes
+      staging:iio:adis16080: Move out of staging
+
+Marek Vasut (3):
+      iio: mxs: Implement support for touchscreen
+      iio: mxs: Add MX23 support into the IIO driver
+      ARM: mxs: Add OF props for MX23 LRADC
+
+Peter Huewe (1):
+      staging/iio: Use correct argument for sizeof
+
+Peter Meerwald (1):
+      iio: fix Kconfig for max1363
+
+ .../bindings/staging/iio/adc/mxs-lradc.txt         |    6 +
+ arch/arm/boot/dts/imx23.dtsi                       |    2 +
+ arch/arm/mach-omap2/board-rx51-peripherals.c       |    2 +-
+ drivers/iio/accel/Kconfig                          |    7 +
+ drivers/iio/accel/Makefile                         |    1 +
+ drivers/{staging => }/iio/accel/kxsd9.c            |   10 +-
+ drivers/iio/adc/Kconfig                            |    4 +-
+ drivers/iio/gyro/Kconfig                           |    7 +
+ drivers/iio/gyro/Makefile                          |    1 +
+ .../gyro/adis16080_core.c => iio/gyro/adis16080.c} |  154 ++-
+ drivers/iio/imu/Kconfig                            |   11 +
+ drivers/iio/imu/Makefile                           |    3 +
+ drivers/{staging => }/iio/imu/adis16400.h          |  141 +--
+ drivers/iio/imu/adis16400_buffer.c                 |   96 ++
+ drivers/iio/imu/adis16400_core.c                   |  965 ++++++++++++++
+ drivers/iio/light/Kconfig                          |   10 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/{staging => }/iio/light/tsl2563.c          |   96 +-
+ drivers/rtc/rtc-hid-sensor-time.c                  |    1 +
+ drivers/staging/iio/Kconfig                        |   14 -
+ drivers/staging/iio/Makefile                       |    3 -
+ drivers/staging/iio/accel/Kconfig                  |   30 +-
+ drivers/staging/iio/accel/Makefile                 |    2 -
+ drivers/staging/iio/accel/lis3l02dq.h              |    8 -
+ drivers/staging/iio/accel/lis3l02dq_ring.c         |    7 +-
+ drivers/staging/iio/adc/Kconfig                    |    4 +-
+ drivers/staging/iio/adc/mxs-lradc.c                |  522 +++++++-
+ drivers/staging/iio/gyro/Kconfig                   |    7 -
+ drivers/staging/iio/gyro/Makefile                  |    6 -
+ drivers/staging/iio/iio_hwmon.c                    |    2 +-
+ drivers/staging/iio/impedance-analyzer/Kconfig     |    2 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |    8 +-
+ drivers/staging/iio/imu/Kconfig                    |   17 -
+ drivers/staging/iio/imu/Makefile                   |    7 -
+ drivers/staging/iio/imu/adis16400_core.c           | 1320 --------------------
+ drivers/staging/iio/imu/adis16400_ring.c           |  204 ---
+ drivers/staging/iio/imu/adis16400_trigger.c        |   74 --
+ drivers/staging/iio/light/Kconfig                  |   10 -
+ drivers/staging/iio/light/Makefile                 |    1 -
+ drivers/staging/iio/light/tsl2x7x_core.c           |   78 +-
+ drivers/staging/iio/meter/Kconfig                  |    2 +-
+ drivers/staging/iio/meter/ade7758_ring.c           |   12 +-
+ drivers/staging/iio/ring_sw.c                      |  366 ------
+ drivers/staging/iio/ring_sw.h                      |   30 -
+ .../linux/platform_data}/tsl2563.h                 |    1 -
+ 45 files changed, 1846 insertions(+), 2409 deletions(-)
+ rename drivers/{staging => }/iio/accel/kxsd9.c (99%)
+ rename drivers/{staging/iio/gyro/adis16080_core.c => iio/gyro/adis16080.c} (55%)
+ rename drivers/{staging => }/iio/imu/adis16400.h (68%)
+ create mode 100644 drivers/iio/imu/adis16400_buffer.c
+ create mode 100644 drivers/iio/imu/adis16400_core.c
+ rename drivers/{staging => }/iio/light/tsl2563.c (91%)
+ delete mode 100644 drivers/staging/iio/imu/Kconfig
+ delete mode 100644 drivers/staging/iio/imu/Makefile
+ delete mode 100644 drivers/staging/iio/imu/adis16400_core.c
+ delete mode 100644 drivers/staging/iio/imu/adis16400_ring.c
+ delete mode 100644 drivers/staging/iio/imu/adis16400_trigger.c
+ delete mode 100644 drivers/staging/iio/ring_sw.c
+ delete mode 100644 drivers/staging/iio/ring_sw.h
+ rename {drivers/staging/iio/light => include/linux/platform_data}/tsl2563.h (99%)
