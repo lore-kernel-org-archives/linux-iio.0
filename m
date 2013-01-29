@@ -1,817 +1,134 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f180.google.com ([209.85.215.180]:59779 "EHLO
-	mail-ea0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753837Ab3AYXpH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2013 18:45:07 -0500
-Received: by mail-ea0-f180.google.com with SMTP id c1so381372eaa.39
-        for <linux-iio@vger.kernel.org>; Fri, 25 Jan 2013 15:45:05 -0800 (PST)
-From: Denis Ciocca <denis.ciocca@gmail.com>
-To: denis.ciocca@gmail.com, jic23@kernel.org, lars@metafoo.de,
-	linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 3/4] iio:gyro: Add STMicroelectronics gyroscopes driver
-Date: Sat, 26 Jan 2013 00:44:47 +0100
-Message-Id: <1359157488-15969-4-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1359157488-15969-1-git-send-email-denis.ciocca@st.com>
-References: <1359157488-15969-1-git-send-email-denis.ciocca@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linux@roeck-us.net>
+Date: Tue, 29 Jan 2013 12:00:55 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
+	lm-sensors@lm-sensors.org
+Subject: Re: MAX1363 IIO driver questions
+Message-ID: <20130129200055.GA18207@roeck-us.net>
+References: <20121124052707.GA17392@roeck-us.net>
+ <50B09EDC.4020200@kernel.org>
+ <20130116054918.GA7056@roeck-us.net>
+ <50F667C9.6000106@jic23.retrosnub.co.uk>
+ <20130117204549.GB22045@roeck-us.net>
+ <8649d873-66ef-4b0f-a22d-8480e5aa1ead@email.android.com>
+ <20130118220922.GB12459@roeck-us.net>
+ <5103BD2F.30405@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5103BD2F.30405@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds a generic gyroscope driver for STMicroelectronics
-gyroscopes, currently it supports:
-L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+On Sat, Jan 26, 2013 at 11:25:35AM +0000, Jonathan Cameron wrote:
+> On 01/18/2013 10:09 PM, Guenter Roeck wrote:
+> > On Thu, Jan 17, 2013 at 09:03:58PM +0000, Jonathan Cameron wrote:
+> >>
+> >> Good point. New use case for us so suggestions on how to do the association cleanly would be most welcome. Is there anything similar out there? We could add a per iio device sysfs interface to add additional mappings but it is a little uggly...
+> >>
+> > 
+> > Best idea I can come up with is to disconnect iio_hwmon from the requirement to
+> > instantiate it explicitly. There might be two sysfs entries - one to
+> > attach it to a specific iio device, and one to attach it to individual channels
+> > of an iio device. Similar like the new_device interface on i2c adapters, and
+> > along the line of
+> > 
+> > echo max1139 something > /sys/module/iio_hwmon/something_else
+> 
+> We'll have to have something more specific or the common case of more than
+> one instance of an adc will cause trouble.  Obviously this doesn't matter
+> doing by adding the map from the IIO side.
+> 
+> > 
+> > and/or
+> > 
+> > echo max1139 something channel > /sys/module/iio_hwmon/something_else
+> > 
+> > ie sysfs attributes associated with iio_hwmon, not with the iio device itself.
+> > 
+> This will play havock with the way the internal mappings work.  Originally
+> we had it mapped from both sides by name (e.g. the map wasn't in any way
+> handled by either driver) but that got an awful lot of flack and really
+> wasn't considered acceptable.  The current version of treating it much like
+> regulators etc is much cleaner.
+> 
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/gyro/Kconfig          |   30 +++
- drivers/iio/gyro/Makefile         |    7 +
- drivers/iio/gyro/st_gyro.h        |   45 +++++
- drivers/iio/gyro/st_gyro_buffer.c |  114 ++++++++++++
- drivers/iio/gyro/st_gyro_core.c   |  363 +++++++++++++++++++++++++++++++++++++
- drivers/iio/gyro/st_gyro_i2c.c    |   85 +++++++++
- drivers/iio/gyro/st_gyro_spi.c    |   84 +++++++++
- 7 files changed, 728 insertions(+)
- create mode 100644 drivers/iio/gyro/st_gyro.h
- create mode 100644 drivers/iio/gyro/st_gyro_buffer.c
- create mode 100644 drivers/iio/gyro/st_gyro_core.c
- create mode 100644 drivers/iio/gyro/st_gyro_i2c.c
- create mode 100644 drivers/iio/gyro/st_gyro_spi.c
+I think I am giving up on testing the code on a non-embedded system;
+I would need/use manual instantiation only for testing, and it seems too
+difficult to implement and not really worth it. I'll focus on getting it
+to work with OF.
 
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index 96b68f6..e852a202 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -23,4 +23,34 @@ config HID_SENSOR_GYRO_3D
- 	  Say yes here to build support for the HID SENSOR
- 	  Gyroscope 3D.
- 
-+config IIO_ST_GYRO_3AXIS
-+	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
-+	depends on (I2C || SPI_MASTER) && SYSFS
-+	select IIO_ST_SENSORS_CORE
-+	select IIO_ST_GYRO_I2C_3AXIS if (I2C)
-+	select IIO_ST_GYRO_SPI_3AXIS if (SPI_MASTER)
-+	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-+	select IIO_ST_GYRO_BUFFER if (IIO_TRIGGERED_BUFFER)
-+	help
-+	  Say yes here to build support for STMicroelectronics gyroscopes:
-+	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-+
-+	  This driver can also be built as a module. If so, will be created
-+	  these modules:
-+	  - st_gyro (core functions for the driver [it is mandatory]);
-+	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
-+	  - st_gyro_spi (necessary for the SPI devices [optional*]);
-+
-+	  (*) one of these is necessary to do something.
-+
-+config IIO_ST_GYRO_I2C_3AXIS
-+	tristate
-+	depends on IIO_ST_GYRO_3AXIS
-+	depends on IIO_ST_SENSORS_I2C
-+
-+config IIO_ST_GYRO_SPI_3AXIS
-+	tristate
-+	depends on IIO_ST_GYRO_3AXIS
-+	depends on IIO_ST_SENSORS_SPI
-+
- endmenu
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 702a058..b932f17 100644
---- a/drivers/iio/gyro/Makefile
-+++ b/drivers/iio/gyro/Makefile
-@@ -4,3 +4,10 @@
- 
- obj-$(CONFIG_ADIS16136) += adis16136.o
- obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
-+
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS) += st_gyro.o
-+st_gyro-y := st_gyro_core.o
-+st_gyro-$(CONFIG_IIO_BUFFER) += st_gyro_buffer.o
-+
-+obj-$(CONFIG_IIO_ST_GYRO_I2C_3AXIS) += st_gyro_i2c.o
-+obj-$(CONFIG_IIO_ST_GYRO_SPI_3AXIS) += st_gyro_spi.o
-diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-new file mode 100644
-index 0000000..3ad9907
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro.h
-@@ -0,0 +1,45 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ * v. 1.0.0
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef ST_GYRO_H
-+#define ST_GYRO_H
-+
-+#include <linux/types.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+#define L3G4200D_GYRO_DEV_NAME		"l3g4200d"
-+#define LSM330D_GYRO_DEV_NAME		"lsm330d_gyro"
-+#define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
-+#define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
-+#define L3GD20_GYRO_DEV_NAME		"l3gd20"
-+#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
-+#define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
-+#define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
-+
-+int st_gyro_common_probe(struct iio_dev *indio_dev);
-+void st_gyro_common_remove(struct iio_dev *indio_dev);
-+
-+#ifdef CONFIG_IIO_BUFFER
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev);
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev);
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state);
-+#define ST_GYRO_TRIGGER_SET_STATE (&st_gyro_trig_set_state)
-+#else /* CONFIG_IIO_BUFFER */
-+static inline int st_gyro_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+static inline void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+}
-+#define ST_GYRO_TRIGGER_SET_STATE NULL
-+#endif /* CONFIG_IIO_BUFFER */
-+
-+#endif /* ST_GYRO_H */
-diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
-new file mode 100644
-index 0000000..da4d122
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_buffer.c
-@@ -0,0 +1,114 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/interrupt.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+#include "st_gyro.h"
-+
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *indio_dev = trig->private_data;
-+
-+	return st_sensors_set_dataready_irq(indio_dev, state);
-+}
-+
-+static int st_gyro_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+
-+	err = st_sensors_set_enable(indio_dev, true);
-+	if (err < 0)
-+		goto st_gyro_set_enable_error;
-+
-+	err = iio_sw_buffer_preenable(indio_dev);
-+
-+st_gyro_set_enable_error:
-+	return err;
-+}
-+
-+static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	gdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (gdata->buffer_data == NULL) {
-+		err = -ENOMEM;
-+		goto allocate_memory_error;
-+	}
-+
-+	err = st_sensors_set_axis_enable(indio_dev,
-+					(u8)indio_dev->active_scan_mask[0]);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
-+
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
-+
-+	return err;
-+
-+st_gyro_buffer_postenable_error:
-+	kfree(gdata->buffer_data);
-+allocate_memory_error:
-+	return err;
-+}
-+
-+static int st_gyro_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	err = iio_triggered_buffer_predisable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
-+
-+	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
-+
-+	err = st_sensors_set_enable(indio_dev, false);
-+
-+st_gyro_buffer_predisable_error:
-+	kfree(gdata->buffer_data);
-+	return err;
-+}
-+
-+static const struct iio_buffer_setup_ops st_gyro_buffer_setup_ops = {
-+	.preenable = &st_gyro_buffer_preenable,
-+	.postenable = &st_gyro_buffer_postenable,
-+	.predisable = &st_gyro_buffer_predisable,
-+};
-+
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev)
-+{
-+	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		&st_sensors_trigger_handler, &st_gyro_buffer_setup_ops);
-+}
-+
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+	iio_triggered_buffer_cleanup(indio_dev);
-+}
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes buffer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-new file mode 100644
-index 0000000..0a09998
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -0,0 +1,363 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
-+#include <linux/interrupt.h>
-+#include <linux/i2c.h>
-+#include <linux/gpio.h>
-+#include <linux/irq.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/buffer.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+#include "st_gyro.h"
-+
-+/* DEFAULT VALUE FOR SENSORS */
-+#define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
-+#define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
-+#define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
-+
-+/* FULLSCALE */
-+#define ST_GYRO_FS_AVL_250DPS			250
-+#define ST_GYRO_FS_AVL_500DPS			500
-+#define ST_GYRO_FS_AVL_2000DPS			2000
-+
-+/* CUSTOM VALUES FOR SENSOR 1 */
-+#define ST_GYRO_1_WAI_EXP			0xd3
-+#define ST_GYRO_1_ODR_ADDR			0x20
-+#define ST_GYRO_1_ODR_MASK			0xc0
-+#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
-+#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
-+#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
-+#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
-+#define ST_GYRO_1_PW_ADDR			0x20
-+#define ST_GYRO_1_PW_MASK			0x08
-+#define ST_GYRO_1_FS_ADDR			0x23
-+#define ST_GYRO_1_FS_MASK			0x30
-+#define ST_GYRO_1_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_1_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_1_BDU_ADDR			0x23
-+#define ST_GYRO_1_BDU_MASK			0x80
-+#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_1_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_1_MULTIREAD_BIT			true
-+
-+/* CUSTOM VALUES FOR SENSOR 2 */
-+#define ST_GYRO_2_WAI_EXP			0xd4
-+#define ST_GYRO_2_ODR_ADDR			0x20
-+#define ST_GYRO_2_ODR_MASK			0xc0
-+#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
-+#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
-+#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
-+#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
-+#define ST_GYRO_2_PW_ADDR			0x20
-+#define ST_GYRO_2_PW_MASK			0x08
-+#define ST_GYRO_2_FS_ADDR			0x23
-+#define ST_GYRO_2_FS_MASK			0x30
-+#define ST_GYRO_2_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_2_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_2_BDU_ADDR			0x23
-+#define ST_GYRO_2_BDU_MASK			0x80
-+#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_2_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_2_MULTIREAD_BIT			true
-+
-+static const struct iio_chan_spec st_gyro_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
-+		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
-+		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
-+		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct st_sensors st_gyro_sensors[] = {
-+	{
-+		.wai = ST_GYRO_1_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3G4200D_GYRO_DEV_NAME,
-+			[1] = LSM330DL_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_1_ODR_ADDR,
-+			.mask = ST_GYRO_1_ODR_MASK,
-+			.odr_avl = {
-+				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
-+				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
-+				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
-+				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_1_PW_ADDR,
-+			.mask = ST_GYRO_1_PW_MASK,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_1_FS_ADDR,
-+			.mask = ST_GYRO_1_FS_MASK,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_1_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_1_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_1_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_1_BDU_ADDR,
-+			.mask = ST_GYRO_1_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_1_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+	{
-+		.wai = ST_GYRO_2_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3GD20_GYRO_DEV_NAME,
-+			[1] = L3GD20H_GYRO_DEV_NAME,
-+			[2] = LSM330D_GYRO_DEV_NAME,
-+			[3] = LSM330DLC_GYRO_DEV_NAME,
-+			[4] = L3G4IS_GYRO_DEV_NAME,
-+			[5] = LSM330_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_2_ODR_ADDR,
-+			.mask = ST_GYRO_2_ODR_MASK,
-+			.odr_avl = {
-+				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
-+				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
-+				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
-+				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_2_PW_ADDR,
-+			.mask = ST_GYRO_2_PW_MASK,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_2_FS_ADDR,
-+			.mask = ST_GYRO_2_FS_MASK,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_2_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_2_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_2_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_2_BDU_ADDR,
-+			.mask = ST_GYRO_2_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_2_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+};
-+
-+static int st_gyro_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+							int *val2, long mask)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		err = st_sensors_read_info_raw(indio_dev, ch, val);
-+		if (err < 0)
-+			goto read_error;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = gdata->current_fullscale->gain;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+read_error:
-+	return err;
-+}
-+
-+static int st_gyro_write_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan, int val, int val2, long mask)
-+{
-+	int err;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
-+		break;
-+	default:
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
-+static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
-+static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
-+static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_anglvel_scale_available);
-+
-+static struct attribute *st_gyro_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_gyro_attribute_group = {
-+	.attrs = st_gyro_attributes,
-+};
-+
-+static const struct iio_info gyro_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &st_gyro_attribute_group,
-+	.read_raw = &st_gyro_read_raw,
-+	.write_raw = &st_gyro_write_raw,
-+};
-+
-+static const struct iio_trigger_ops st_gyro_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = ST_GYRO_TRIGGER_SET_STATE,
-+};
-+
-+int st_gyro_common_probe(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &gyro_info;
-+
-+	err = st_sensors_check_device_support(indio_dev,
-+				ARRAY_SIZE(st_gyro_sensors), st_gyro_sensors);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	gdata->multiread_bit = gdata->sensor->multi_read_bit;
-+	indio_dev->channels = gdata->sensor->ch;
-+	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-+
-+	gdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-+						&gdata->sensor->fs.fs_avl[0];
-+	gdata->odr = gdata->sensor->odr.odr_avl[0].hz;
-+
-+	err = st_sensors_init_sensor(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		err = st_gyro_allocate_ring(indio_dev);
-+		if (err < 0)
-+			goto st_gyro_common_probe_error;
-+
-+		err = st_sensors_allocate_trigger(indio_dev,
-+							&st_gyro_trigger_ops);
-+		if (err < 0)
-+			goto st_gyro_probe_trigger_error;
-+	}
-+
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto st_gyro_device_register_error;
-+
-+	return err;
-+
-+st_gyro_device_register_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_sensors_deallocate_trigger(indio_dev);
-+st_gyro_probe_trigger_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_gyro_deallocate_ring(indio_dev);
-+st_gyro_common_probe_error:
-+	return err;
-+}
-+EXPORT_SYMBOL(st_gyro_common_probe);
-+
-+void st_gyro_common_remove(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		st_sensors_deallocate_trigger(indio_dev);
-+		st_gyro_deallocate_ring(indio_dev);
-+	}
-+	iio_device_free(indio_dev);
-+}
-+EXPORT_SYMBOL(st_gyro_common_remove);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-new file mode 100644
-index 0000000..a44b5b4
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -0,0 +1,85 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+#include <linux/iio/common/st_sensors_i2c.h>
-+#include "st_gyro.h"
-+
-+static int st_gyro_i2c_probe(struct i2c_client *client,
-+						const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &client->dev;
-+
-+	st_sensors_i2c_configure(indio_dev, client, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_gyro_i2c_remove(struct i2c_client *client)
-+{
-+	st_gyro_common_remove(i2c_get_clientdata(client));
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
-+
-+static struct i2c_driver st_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-i2c",
-+	},
-+	.probe = st_gyro_i2c_probe,
-+	.remove = st_gyro_i2c_remove,
-+	.id_table = st_gyro_id_table,
-+};
-+module_i2c_driver(st_gyro_driver);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-new file mode 100644
-index 0000000..8b4dcc5
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -0,0 +1,84 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012-2013 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/common/st_sensors.h>
-+#include <linux/iio/common/st_sensors_spi.h>
-+#include "st_gyro.h"
-+
-+static int st_gyro_spi_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &spi->dev;
-+
-+	st_sensors_spi_configure(indio_dev, spi, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_gyro_spi_remove(struct spi_device *spi)
-+{
-+	st_gyro_common_remove(spi_get_drvdata(spi));
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
-+
-+static struct spi_driver st_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-spi",
-+	},
-+	.probe = st_gyro_spi_probe,
-+	.remove = st_gyro_spi_remove,
-+	.id_table = st_gyro_id_table,
-+};
-+module_spi_driver(st_gyro_driver);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes spi driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.9.5
+The current approach, with iio_hwmon requesting its assigned mappings through 
+io_channel_get_all(), does not work well for me for a number of reasons.
 
+First, it is difficult to associate device references in OF with actual device
+names. I don't know if you have tried, but while a reference to &iio_hwmon can
+uniquely identify the device name for an OF entry such as
+
+	iio_hwmon: iio_hwmon@0 {
+		compatible = "iio-hwmon";
+	};
+
+it is difficult to predict how the actual iio_hwmon device name looks like.
+Amongst others, it depends if there are additional attributes such as "reg = <>",
+on the value of "@x" (if specified) and other attributes I have not really tracked
+down yet. In other words, when I tried to create a device named "iio_hwmon.0",
+I managed to get all kinds of device names except for "iio_hwmon.0".
+
+Also, the iio_hwmon driver does not know which consumers are assigned to it.
+If it is instantiated before the ADC driver (which happens all the time for me,
+as iio_hwmon does not have to wait for the i2c bus adapter), its call to
+iio_channel_get_all() returns nothing. Even if it does return some mappings,
+there is no guarantee that the mappings are complete (eg if an instance of
+iio_hwmon is mapped to ADC channels from multiple chips).
+
+Other subsystems solve that problem by having the consumer request the resources
+it needs. The leds-gpio driver is an excellent example: It knows from its OF data
+which gpio pins it needs and requests those. If the pins are not available,
+it gets an -EPROBE_DEFER error from the gpio subsystem, and simply defers
+its probe until the missing pins are available.
+
+The question for me is really if it would be possible to implement the same
+approach for the iio subsystem. I would then specify something like
+
+	max1139: max1139@35 {
+        	compatible = "maxim,max1139";
+		reg = <0x35>;
+	};
+
+...
+	iio_hwmon {
+		compatible = "iio-hwmon";
+
+		in0 {
+			label = "vin";
+			iio-map = { &max1139 0 }; /* adc channel 0 */
+		};
+		in1 {
+			label = "vout";
+			iio-map = { &max1139 1 }; /* adc channel 1 */
+		};
+		...
+	};
+
+which would then map into in0/in1 hwmon attributes (with optional "vin" and
+"vout" labels if specified).
+
+Problem here is that io_channel_get() currently does not use the provider name
+as argument to find the resource. Instead, it uses consumer_dev_name and/or
+consumer_channel. I am not sure how to solve that problem. It would be much more
+helpful if the provider would not be tied to the consumer from provider side,
+but from consumer side, and the mapping would be based on provider device and
+index (or something else such as ADC channel name if that is preferred).
+
+Would this kind of solution be acceptable for the iio maintainers ? Is it
+even possible, given that the provider has to currently provide the mapping
+to its intended consumers using iio_map_array_register() ?
+
+I have a number of additional questions regarding the max1363 driver (eg how to
+initialize the chip from of data, and if the regulator always _has_ to be vcc),
+but those are really minor problems we can address later. Right now I'll have to
+find a solution for the above problems.
+
+Thanks,
+Guenter
