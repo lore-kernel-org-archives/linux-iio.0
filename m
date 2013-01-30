@@ -1,359 +1,370 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:58175 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751596Ab3ARKrM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Jan 2013 05:47:12 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 2/8] input: ti_am335x_tsc: Order of TSC wires, made configurable
-Date: Fri, 18 Jan 2013 16:17:55 +0530
-Message-ID: <5f8e85b7554c6a8e4d1575b2e5ce1e3cec0c8ade.1358502134.git.rachna@ti.com>
-In-Reply-To: <cover.1358502134.git.rachna@ti.com>
-References: <cover.1358502134.git.rachna@ti.com>
+Received: from smtp-out-090.synserver.de ([212.40.185.90]:1092 "EHLO
+	smtp-out-088.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751124Ab3A3PVd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jan 2013 10:21:33 -0500
+Message-ID: <51093AB8.2070809@metafoo.de>
+Date: Wed, 30 Jan 2013 16:22:32 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
+Subject: Re: [PATCH] iio: gyro: Add itg3200
+References: <1345192038-5665-1-git-send-email-not@iis.fhg.de> <1359471547-32178-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1359471547-32178-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On 01/29/2013 03:59 PM, Manuel Stahl wrote:
+> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 
-The current driver expected touchscreen input
-wires(XP,XN,YP,YN) to be connected in a particular order.
-Making changes to accept this as platform data.
+Hi,
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |  156 ++++++++++++++++++++++++++---
- include/linux/input/ti_am335x_tsc.h       |   12 +++
- include/linux/mfd/ti_am335x_tscadc.h      |   10 +-
- 3 files changed, 159 insertions(+), 19 deletions(-)
+Looks mostly good. One usage of outdated API and otherwise mostly just minor
+style issues.
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index da652e0..0c460f9 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -33,6 +33,17 @@
- #define SEQ_SETTLE		275
- #define MAX_12BIT		((1 << 12) - 1)
- 
-+/*
-+ * Refer to function regbit_map() to
-+ * map the values in the matrix.
-+ */
-+static int config[4][4] = {
-+		{1,	0,	1,	0},
-+		{2,	3,	2,	3},
-+		{4,	5,	4,	5},
-+		{0,	6,	0,	6}
-+};
-+
- struct titsc {
- 	struct input_dev	*input;
- 	struct ti_tscadc_dev	*mfd_tscadc;
-@@ -42,6 +53,9 @@ struct titsc {
- 	unsigned int		enable_bits;
- 	bool			pen_down;
- 	int			steps_to_configure;
-+	int			config_inp[20];
-+	int			bit_xp, bit_xn, bit_yp, bit_yn;
-+	int			inp_xp, inp_xn, inp_yp, inp_yn;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -55,6 +69,107 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
- 	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
- }
- 
-+/*
-+ * Each of the analog lines are mapped
-+ * with one or two register bits,
-+ * which can be either pulled high/low
-+ * depending on the value to be read.
-+ */
-+static int regbit_map(int val)
-+{
-+	int map_bits = 0;
-+
-+	switch (val) {
-+	case 1:
-+		map_bits = XPP;
-+		break;
-+	case 2:
-+		map_bits = XNP;
-+		break;
-+	case 3:
-+		map_bits = XNN;
-+		break;
-+	case 4:
-+		map_bits = YPP;
-+		break;
-+	case 5:
-+		map_bits = YPN;
-+		break;
-+	case 6:
-+		map_bits = YNN;
-+		break;
-+	}
-+
-+	return map_bits;
-+}
-+
-+static int titsc_config_wires(struct titsc *ts_dev)
-+{
-+	int		analog_line[10], wire_order[10];
-+	int		i, temp_bits, err;
-+
-+	for (i = 0; i < 4; i++) {
-+		/*
-+		 * Get the order in which TSC wires are attached
-+		 * w.r.t. each of the analog input lines on the EVM.
-+		 */
-+		analog_line[i] = ts_dev->config_inp[i] & 0xF0;
-+		analog_line[i] = analog_line[i] >> 4;
-+
-+		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
-+	}
-+
-+	for (i = 0; i < 4; i++) {
-+		switch (wire_order[i]) {
-+		case 0:
-+			temp_bits = config[analog_line[i]][0];
-+			if (temp_bits == 0) {
-+				err = -EINVAL;
-+				goto ret;
-+			} else {
-+				ts_dev->bit_xp = regbit_map(temp_bits);
-+				ts_dev->inp_xp = analog_line[i];
-+				break;
-+			}
-+		case 1:
-+			temp_bits = config[analog_line[i]][1];
-+			if (temp_bits == 0) {
-+				err = -EINVAL;
-+				goto ret;
-+			} else {
-+				ts_dev->bit_xn = regbit_map(temp_bits);
-+				ts_dev->inp_xn = analog_line[i];
-+				break;
-+			}
-+		case 2:
-+			temp_bits = config[analog_line[i]][2];
-+			if (temp_bits == 0) {
-+				err = -EINVAL;
-+				goto ret;
-+			} else {
-+				ts_dev->bit_yp = regbit_map(temp_bits);
-+				ts_dev->inp_yp = analog_line[i];
-+				break;
-+			}
-+		case 3:
-+			temp_bits = config[analog_line[i]][3];
-+			if (temp_bits == 0) {
-+				err = -EINVAL;
-+				goto ret;
-+			} else {
-+				ts_dev->bit_yn = regbit_map(temp_bits);
-+				ts_dev->inp_yn = analog_line[i];
-+				break;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+
-+ret:
-+	return err;
-+}
-+
- static void titsc_step_config(struct titsc *ts_dev)
- {
- 	unsigned int	config;
-@@ -65,18 +180,18 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	total_steps = 2 * ts_dev->steps_to_configure;
- 
- 	config = STEPCONFIG_MODE_HWSYNC |
--			STEPCONFIG_AVG_16 | STEPCONFIG_XPP;
-+			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
- 	switch (ts_dev->wires) {
- 	case 4:
--		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
-+		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
- 		break;
- 	case 5:
--		config |= STEPCONFIG_YNN |
--				STEPCONFIG_INP_AN4 | STEPCONFIG_XNN |
--				STEPCONFIG_YPP;
-+		config |= ts_dev->bit_yn |
-+				STEPCONFIG_INP_AN4 | ts_dev->bit_xn |
-+				ts_dev->bit_yp;
- 		break;
- 	case 8:
--		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
-+		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
- 		break;
- 	}
- 
-@@ -87,18 +202,18 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	config = 0;
- 	config = STEPCONFIG_MODE_HWSYNC |
--			STEPCONFIG_AVG_16 | STEPCONFIG_YNN |
-+			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
- 			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
- 	switch (ts_dev->wires) {
- 	case 4:
--		config |= STEPCONFIG_YPP;
-+		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
- 		break;
- 	case 5:
--		config |= STEPCONFIG_XPP | STEPCONFIG_INP_AN4 |
--				STEPCONFIG_XNP | STEPCONFIG_YPN;
-+		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
-+				ts_dev->bit_xn | ts_dev->bit_yp;
- 		break;
- 	case 8:
--		config |= STEPCONFIG_YPP;
-+		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
- 		break;
- 	}
- 
-@@ -109,9 +224,9 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	config = 0;
- 	/* Charge step configuration */
--	config = STEPCONFIG_XPP | STEPCONFIG_YNN |
-+	config = ts_dev->bit_xp | ts_dev->bit_yn |
- 			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
--			STEPCHARGE_INM_AN1 | STEPCHARGE_INP_AN1;
-+			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
- 
- 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
- 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
-@@ -119,13 +234,14 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	config = 0;
- 	/* Configure to calculate pressure */
- 	config = STEPCONFIG_MODE_HWSYNC |
--			STEPCONFIG_AVG_16 | STEPCONFIG_YPP |
--			STEPCONFIG_XNN | STEPCONFIG_INM_ADCREFM;
-+			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
-+			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
-+			STEPCONFIG_INP(ts_dev->inp_xp);
- 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 1), config);
- 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 1),
- 			STEPCONFIG_OPENDLY);
- 
--	config |= STEPCONFIG_INP_AN3 | STEPCONFIG_FIFO1;
-+	config |= STEPCONFIG_INP(ts_dev->inp_yn) | STEPCONFIG_FIFO1;
- 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 2), config);
- 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
- 			STEPCONFIG_OPENDLY);
-@@ -295,6 +411,8 @@ static int titsc_probe(struct platform_device *pdev)
- 	ts_dev->wires = pdata->tsc_init->wires;
- 	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
- 	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
-+	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
-+			sizeof(pdata->tsc_init->wire_config));
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
- 			  0, pdev->dev.driver->name, ts_dev);
-@@ -304,6 +422,11 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
-+	err = titsc_config_wires(ts_dev);
-+	if (err) {
-+		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
-+		goto err_free_irq;
-+	}
- 	titsc_step_config(ts_dev);
- 	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
- 
-@@ -373,6 +496,7 @@ static int titsc_resume(struct device *dev)
- 				0x00);
- 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
- 	}
-+	titsc_config_wires(ts_dev);
- 	titsc_step_config(ts_dev);
- 	titsc_writel(ts_dev, REG_FIFO0THR,
- 			ts_dev->steps_to_configure);
-diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
-index 49269a2..6a66b4d 100644
---- a/include/linux/input/ti_am335x_tsc.h
-+++ b/include/linux/input/ti_am335x_tsc.h
-@@ -12,12 +12,24 @@
-  *			A step configured to read a single
-  *			co-ordinate value, can be applied
-  *			more number of times for better results.
-+ * @wire_config:	Different EVM's could have a different order
-+ *			for connecting wires on touchscreen.
-+ *			We need to provide an 8 bit number where in
-+ *			the 1st four bits represent the analog lines
-+ *			and the next 4 bits represent positive/
-+ *			negative terminal on that input line.
-+ *			Notations to represent the input lines and
-+ *			terminals resoectively is as follows:
-+ *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-+ *			XP  = 0, XN = 1, YP = 2, YN = 3.
-+ *
-  */
- 
- struct tsc_data {
- 	int wires;
- 	int x_plate_resistance;
- 	int steps_to_configure;
-+	int wire_config[10];
- };
- 
- #endif
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 23e4f33..9624fea 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -72,8 +72,6 @@
- #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
- #define STEPCONFIG_INP_MASK	(0xF << 19)
- #define STEPCONFIG_INP(val)	((val) << 19)
--#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
--#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
- #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
- #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
- #define STEPCONFIG_FIFO1	BIT(26)
-@@ -95,7 +93,6 @@
- #define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
- #define STEPCHARGE_INP_MASK	(0xF << 19)
- #define STEPCHARGE_INP(val)	((val) << 19)
--#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
- #define STEPCHARGE_RFM_MASK	(3 << 23)
- #define STEPCHARGE_RFM(val)	((val) << 23)
- #define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
-@@ -117,6 +114,13 @@
- #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
- #define CNTRLREG_TSCENB		BIT(7)
- 
-+#define XPP			STEPCONFIG_XPP
-+#define XNP			STEPCONFIG_XNP
-+#define XNN			STEPCONFIG_XNN
-+#define YPP			STEPCONFIG_YPP
-+#define YPN			STEPCONFIG_YPN
-+#define YNN			STEPCONFIG_YNN
-+
- #define ADC_CLK			3000000
- #define	MAX_CLK_DIV		7
- #define TOTAL_STEPS		16
--- 
-1.7.9.5
+[...]
+> +obj-$(CONFIG_ITG3200)   += itg3200.o
+> diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
+> new file mode 100644
+> index 0000000..6242705
+> --- /dev/null
+> +++ b/drivers/iio/gyro/itg3200_buffer.c
+> @@ -0,0 +1,83 @@
+> +/*
+> + * itg3200_ring.c -- support InvenSense ITG3200
+> + *                   Digital 3-Axis Gyroscope driver
+> + *
+> + * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
+> + * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+> + * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/gyro/itg3200.h>
+> +
+> +static irqreturn_t itg3200_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct itg3200 *st = iio_priv(indio_dev);
+> +	struct iio_buffer *buffer = indio_dev->buffer;
+> +	__be16 buf[ITG3200_SCAN_ELEMENTS + sizeof(s64)/sizeof(u16)];
+> +
+> +	/* Clear IRQ */
+> +	itg3200_read_irq_status(indio_dev);
+> +
+> +	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)) {
+> +		int ret;
+> +		unsigned i, j = 0;
+> +
+> +		ret = itg3200_read_all_channels(st->i2c, buf);
+> +		if (ret < 0)
+> +			goto error_ret;
+> +
+> +		/* Select only active scan elements */
+> +		for (i = 0; i < ITG3200_SCAN_ELEMENTS; i++)
+> +			if (iio_scan_mask_query(indio_dev, buffer, i))
+> +				buf[j++] = buf[i];
 
+The IIO core can take care of this kind of demuxing for you. If you set
+available_scan_masks to { 0xffff..., 0x0 } it will know that the device will
+only be able to sample all channels at once. A user will still be able to
+select a subset of channels and the IIO core will take care of picking the
+right samples.
+
+> +	}
+> +
+> +	if (indio_dev->scan_timestamp)
+> +		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
+> +				&pf->timestamp, sizeof(pf->timestamp));
+> +
+> +	iio_push_to_buffer(buffer, (u8 *)buf, pf->timestamp);
+
+This won't work in the latest version of IIO, use
+
+iio_push_to_buffers(indio_dev, (u8 *)buf); instead
+
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +error_ret:
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +
+> +int itg3200_buffer_configure(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> +		itg3200_trigger_handler, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set default scan mode */
+> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_TEMP);
+> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_X);
+> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_Y);
+> +	iio_scan_mask_set(indio_dev, indio_dev->buffer, ITG3200_SCAN_GYRO_Z);
+
+I think it's better to be consistent with other IIO device driver and just
+leave the default to all disabled.
+
+> +
+> +	return 0;
+> +}
+> +
+> +void itg3200_buffer_unconfigure(struct iio_dev *indio_dev)
+> +{
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +}
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> new file mode 100644
+> index 0000000..e1e835e
+> --- /dev/null
+> +++ b/drivers/iio/gyro/itg3200_core.c
+[...]
+> +
+> +static int itg3200_read_raw(struct iio_dev *indio_dev,
+> +		const struct iio_chan_spec *chan,
+> +		int *val, int *val2, long info)
+> +{
+> +	ssize_t ret = 0;
+
+The return type of the function is ssize_t.
+
+> +	u8 reg;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		reg = (u8)chan->address;
+> +		ret = itg3200_read_reg_s16(indio_dev, reg, val);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		if (chan->type == IIO_TEMP)
+> +			*val2 = 1000000000/280;
+> +		else
+> +			*val2 = 1214142; /* (1 / 14,375) * (PI / 180) */
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/* Only the temperature channel has an offset */
+> +		*val = 23000;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static ssize_t itg3200_read_frequency(struct device *dev,
+> +		struct device_attribute *attr, char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	int ret, len = 0;
+> +	u8 val;
+> +	int sps;
+> +
+> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	sps = (val & ITG3200_DLPF_CFG_MASK) ? 1000 : 8000;
+> +
+> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_SAMPLE_RATE_DIV, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	sps /= val + 1;
+> +
+> +	len = sprintf(buf, "%d\n", sps);
+> +	return len;
+
+A bit shorter:
+
+return sprintf(buf, "%d\n", sps);
+
+> +}
+> +
+[...]
+> +
+> +/* Reset device and internal registers to the power-up-default settings
+> + * Use the gyro clock as reference, as suggested by the datasheet */
+
+Normally multi-line comments look like:
+
+/*
+ * ...
+ * ...
+ */
+
+> +static int itg3200_reset(struct iio_dev *indio_dev)
+> +{
+> +	struct itg3200 *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	dev_dbg(&st->i2c->dev, "reset device");
+> +
+> +	ret = itg3200_write_reg_8(indio_dev,
+> +			ITG3200_REG_POWER_MANAGEMENT,
+> +			ITG3200_RESET);
+> +	if (ret) {
+> +		dev_err(&st->i2c->dev, "error resetting device");
+> +		goto error_ret;
+> +	}
+> +
+> +	/* Wait for PLL (1ms according to datasheet) */
+> +	udelay(1500);
+> +
+> +	ret = itg3200_write_reg_8(indio_dev,
+> +			ITG3200_REG_IRQ_CONFIG,
+> +			ITG3200_IRQ_ACTIVE_HIGH |
+> +			ITG3200_IRQ_PUSH_PULL |
+> +			ITG3200_IRQ_LATCH_50US_PULSE |
+> +			ITG3200_IRQ_LATCH_CLEAR_ANY);
+> +
+> +	if (ret)
+> +		dev_err(&st->i2c->dev, "error init device");
+> +
+> +error_ret:
+> +	return ret;
+> +}
+> +
+> +/** itg3200_enable_full_scale() - Disables the digital low pass filter */
+
+'/**' is used for kernel doc comments.
+
+> +static int itg3200_enable_full_scale(struct iio_dev *indio_dev)
+> +{
+[...]
+> +}
+> +
+> +static int itg3200_initial_setup(struct iio_dev *indio_dev)
+> +{
+> +	struct itg3200 *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	u8 val;
+> +	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
+> +	if (ret)
+> +		goto err_ret;
+> +
+> +	if (((val >> 1) & 0x3f) != 0x34) {
+> +		dev_err(&st->i2c->dev, "invalid reg value 0x%02x", val);
+> +		ret = -ENXIO;
+> +		goto err_ret;
+> +	}
+> +
+> +	ret = itg3200_reset(indio_dev);
+> +	if (ret)
+> +		goto err_ret;
+> +
+> +	ret = itg3200_enable_full_scale(indio_dev);
+> +
+> +	pr_info("%s initialized", indio_dev->name);
+
+This line is just noise, please remove it.
+
+> +err_ret:
+> +	return ret;
+> +}
+> +
+[...]
+> +static struct i2c_driver itg3200_driver = {
+> +	.driver = {
+> +		.owner  = THIS_MODULE,
+> +		.name	= "itg3200",
+> +	},
+> +	.id_table	= itg3200_id,
+> +	.probe		= itg3200_probe,
+> +	.remove		= itg3200_remove,
+> +};
+> +
+> +static int __init itg3200_init(void)
+> +{
+> +	return i2c_add_driver(&itg3200_driver);
+> +}
+> +module_init(itg3200_init);
+> +
+> +static void __exit itg3200_exit(void)
+> +{
+> +	i2c_del_driver(&itg3200_driver);
+> +}
+> +module_exit(itg3200_exit);
+
+module_i2c_driver(itg3200_driver);
+
+> +
+> +MODULE_AUTHOR("Christian Strobel <christian.strobel@iis.fraunhofer.de>");
+> +MODULE_DESCRIPTION("ITG3200 Gyroscope I2C driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/gyro/itg3200_trigger.c b/drivers/iio/gyro/itg3200_trigger.c
+> new file mode 100644
+> index 0000000..bb72eab
+> --- /dev/null
+> +++ b/drivers/iio/gyro/itg3200_trigger.c
+> @@ -0,0 +1,78 @@
+> +/*
+> + * itg3200_trigger.c -- support InvenSense ITG3200
+> + *                      Digital 3-Axis Gyroscope driver
+> + *
+> + * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
+> + * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+> + * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/gyro/itg3200.h>
+> +
+> +
+> +static int itg3200_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +		bool state)
+> +{
+> +	return itg3200_set_irq_data_rdy(trig->private_data, state);
+> +}
+
+Do we really need this wrapper? I think it might be better to move
+itg3200_set_irq_data_rdy here, especially considering that it is unused in
+case buffer support is not enabled.
+
+Similar I think it makes sense to move itg3200_read_all_channels and
+itg3200_read_irq_status to tg3200_buffer.c
+
+[...]
+> diff --git a/include/linux/iio/gyro/itg3200.h b/include/linux/iio/gyro/itg3200.h
+> new file mode 100644
+> index 0000000..8e79074
+> --- /dev/null
+> +++ b/include/linux/iio/gyro/itg3200.h
+> @@ -0,0 +1,78 @@
+[...]
+> +#define itg3200_free_buf iio_sw_rb_free
+> +#define itg3200_alloc_buf iio_sw_rb_allocate
+> +#define itg3200_access_funcs ring_sw_access_funcs
+
+These three don't seem to be used anywhere.
+
+[...]
