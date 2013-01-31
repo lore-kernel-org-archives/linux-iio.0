@@ -1,38 +1,71 @@
-Return-Path: <linux@roeck-us.net>
-From: Guenter Roeck <linux@roeck-us.net>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 05/11] iio/adc: (max1363) Provide OF node information to iio device
-Date: Thu, 31 Jan 2013 13:43:02 -0800
-Message-Id: <1359668588-13678-6-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:45151 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751945Ab3AaTMt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 14:12:49 -0500
+Message-ID: <510AC28D.3050603@metafoo.de>
+Date: Thu, 31 Jan 2013 20:14:21 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
+Subject: Re: [PATCH V3] iio: gyro: Add itg3200
+References: <201301311254.49626.manuel.stahl@iis.fraunhofer.de> <1359634652-25868-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <510A8BF6.2070701@metafoo.de> <201301311937.10124.manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201301311937.10124.manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/iio/adc/max1363.c |    1 +
- 1 file changed, 1 insertion(+)
+On 01/31/2013 07:37 PM, Manuel Stahl wrote:
+> Am Donnerstag, 31. Januar 2013, 16:21:26 schrieb Lars-Peter Clausen:
+>> On 01/31/2013 01:17 PM, Manuel Stahl wrote:
+>>> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+>>
+>> Having at least a short commit message wouldn't hurt. E.g. something along
+>> the lines of: "This patch adds support for the InvenSense itg3200. The
+>> itg3200 is a three-axis gyro and ..."
+> 
+> OK, no problem.
+>  
+>> I get one build warning:
+>> 	CC      drivers/iio/gyro/itg3200_core.o
+>> 	drivers/iio/gyro/itg3200_core.c:302: warning: initialization from
+>> 	incompatible pointer type
+> 
+> [...]
+> 
+>>> +static ssize_t itg3200_read_raw(struct iio_dev *indio_dev,
+>>
+>> This triggers the build warning, the return type should be int.
+>>
+>>> +		const struct iio_chan_spec *chan,
+>>> +		int *val, int *val2, long info)
+>>> +{
+>>> +	ssize_t ret = 0;
+>>
+>> What I meant with the comment in my previous mail was make ret int.
+> 
+> Sorry, I should do more exhaustive tests...
+> 
+> [...]
+> 
+>>> +static int itg3200_probe(struct i2c_client *client,
+>>> +		const struct i2c_device_id *id)
+>>> +{
+>>> +	int ret;
+>>> +	struct itg3200 *st;
+>>> +	struct iio_dev *indio_dev;
+>>> +	const unsigned long avail_scan_masks[] = { 0xffffffff, 0x0 };
+>>
+>> This needs to be static. Right now it is on the stack and well gone after
+>> probe has been run.
+> 
+> Is it OK to make it static inside itg3200_probe() or should it be global?
+> 
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 03b25b3..ca8bbc1 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -1538,6 +1538,7 @@ static int max1363_probe(struct i2c_client *client,
- 		goto error_out;
- 	}
- 
-+	indio_dev->dev.of_node = client->dev.of_node;
- 	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
- 	if (ret < 0)
- 		goto error_free_device;
--- 
-1.7.9.7
+Does not really matter, but I guess I'd make it global (and add the itg3200
+prefix to the variable's name).
+
+- Lars
+
