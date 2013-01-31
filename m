@@ -1,196 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-073.synserver.de ([212.40.185.73]:1434 "EHLO
-	smtp-out-073.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754847Ab3AWMwH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2013 07:52:07 -0500
-Message-ID: <50FFDD2A.9040102@metafoo.de>
-Date: Wed, 23 Jan 2013 13:52:58 +0100
+Received: from smtp-out-108.synserver.de ([212.40.185.108]:1083 "EHLO
+	smtp-out-108.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753266Ab3AaO07 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 09:26:59 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, dianders@chromium.org,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com
-Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
-References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com> <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
-In-Reply-To: <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 01/11] Partially revert "staging:iio:gyro:adxrs450 make more use of spi_read and spi_write."
+Date: Thu, 31 Jan 2013 15:27:48 +0100
+Message-Id: <1359642478-9622-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/23/2013 05:58 AM, Naveen Krishna Chatradhi wrote:
-> This patch add an ADC IP found on EXYNOS5 series socs from Samsung.
-> Also adds the Documentation for device tree bindings.
-> 
-> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-> ---
-> Changes since v1:
-> 
-> 1. Fixed comments from Lars
-> 2. Added support for ADC on EXYNOS5410
-> 
-> Changes since v2:
-> 
-> 1. Changed the instance name for (struct iio_dev *) to indio_dev
-> 2. Changed devm_request_irq to request_irq
-> 
-> Few doubts regarding the mappings and child device handling.
-> Kindly, suggest me better methods.
-> 
+This partially reverts commit cb4496876f03631eff913b3c608c964d48d61eb9. There is
+no apparent reason why we should split a transaction which consists out of
+multiple transfers into multiple transactions each having one transfer. While
+this works it introduces a bunch of unnecessary context switch and additional
+setup costs.
 
-Hi,
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adxrs450_core.c | 48 ++++++++++++++++++++++----------
+ 1 file changed, 34 insertions(+), 14 deletions(-)
 
-The patch looks mostly good now. As for the mappings, the problem is that we
-currently do not have any device tree bindings for IIO. So a proper solution
-would be to add dt bindings for IIO.
+diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
+index f0ce81d..318e8c9 100644
+--- a/drivers/staging/iio/gyro/adxrs450_core.c
++++ b/drivers/staging/iio/gyro/adxrs450_core.c
+@@ -34,8 +34,21 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
+ 				    u8 reg_address,
+ 				    u16 *val)
+ {
++	struct spi_message msg;
+ 	struct adxrs450_state *st = iio_priv(indio_dev);
+ 	int ret;
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = st->tx,
++			.bits_per_word = 8,
++			.len = 4,
++			.cs_change = 1,
++		}, {
++			.rx_buf = st->rx,
++			.bits_per_word = 8,
++			.len = 4,
++		},
++	};
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADXRS450_READ_DATA | (reg_address >> 7);
+@@ -46,13 +59,10 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
+ 	if (!(hweight32(be32_to_cpu(*(u32 *)st->tx)) & 1))
+ 		st->tx[3]  |= ADXRS450_P;
+ 
+-	ret = spi_write(st->us, st->tx, 4);
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
+-			reg_address);
+-		goto error_ret;
+-	}
+-	ret = spi_read(st->us, st->rx, 4);
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++	ret = spi_sync(st->us, &msg);
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "problem while reading 16 bit register 0x%02x\n",
+ 				reg_address);
+@@ -105,8 +115,21 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
+  **/
+ static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
+ {
++	struct spi_message msg;
+ 	struct adxrs450_state *st = iio_priv(indio_dev);
+ 	int ret;
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = st->tx,
++			.bits_per_word = 8,
++			.len = 4,
++			.cs_change = 1,
++		}, {
++			.rx_buf = st->rx,
++			.bits_per_word = 8,
++			.len = 4,
++		},
++	};
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADXRS450_SENSOR_DATA;
+@@ -114,13 +137,10 @@ static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
+ 	st->tx[2] = 0;
+ 	st->tx[3] = 0;
+ 
+-	ret = spi_write(st->us, st->tx, 4);
+-	if (ret) {
+-		dev_err(&st->us->dev, "Problem while reading sensor data\n");
+-		goto error_ret;
+-	}
+-
+-	ret = spi_read(st->us, st->rx, 4);
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfers[0], &msg);
++	spi_message_add_tail(&xfers[1], &msg);
++	ret = spi_sync(st->us, &msg);
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "Problem while reading sensor data\n");
+ 		goto error_ret;
+-- 
+1.8.0
 
-[...]
-> diff --git a/drivers/iio/adc/exynos5_adc.c b/drivers/iio/adc/exynos5_adc.c
-> new file mode 100644
-> index 0000000..8982675
-> --- /dev/null
-> +++ b/drivers/iio/adc/exynos5_adc.c
-[...]
-> +
-> +/** ADC core in EXYNOS5410 has 10 channels,
-> + * ADC core in EXYNOS5250 has 8 channels
-> +*/
-
-Minor nitpick, according to Documentation/Codingsytle multi-line comments
-should look like this:
-
-/*
- * Text
- * Text
- */
-
-[...]
-> +static int exynos5_adc_probe(struct platform_device *pdev)
-> +{
-> +	struct exynos5_adc *info = NULL;
-> +	struct device_node *np = pdev->dev.of_node;
-> +	struct iio_dev *indio_dev = NULL;
-> +	struct resource	*mem;
-> +	int ret = -ENODEV;
-> +	int irq;
-> +
-> +	if (!np)
-> +		return ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(struct exynos5_adc));
-> +	if (!indio_dev) {
-> +		dev_err(&pdev->dev, "failed allocating iio device\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	info = iio_priv(indio_dev);
-> +
-> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +
-> +	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
-
-While devm_request_and_ioremap takes care of the printing and error you
-still need to check whether regs is non NULL.
-
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev, "no irq resource?\n");
-> +		ret = irq;
-> +		goto err_iio;
-> +	}
-> +
-> +	info->irq = irq;
-> +
-> +	ret = request_irq(info->irq, exynos5_adc_isr,
-> +					0, dev_name(&pdev->dev), info);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
-> +							info->irq);
-> +		goto err_iio;
-> +	}
-> +
-> +	info->clk = devm_clk_get(&pdev->dev, "adc");
-> +	if (IS_ERR(info->clk)) {
-> +		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
-> +							PTR_ERR(info->clk));
-> +		ret = PTR_ERR(info->clk);
-> +		goto err_irq;
-> +	}
-> +
-> +	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
-> +	if (IS_ERR(info->vdd)) {
-> +		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
-> +							PTR_ERR(info->vdd));
-> +		ret = PTR_ERR(info->vdd);
-> +		goto err_irq;
-> +	}
-> +
-> +	info->version = exynos5_adc_get_version(pdev);
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	init_completion(&info->completion);
-
-Since the completion is used in the IRQ handler it should be initialized
-before the IRQ is requested.
-
-> +
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->dev.of_node = pdev->dev.of_node;
-> +	indio_dev->info = &exynos5_adc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = exynos5_adc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(exynos5_adc_iio_channels);
-
-Shouldn't the number of channels depend on the ADC version? E.g. 8 for v1
-and 10 for v2?
-
-> +
-> +	info->map = exynos5_adc_iio_maps;
-> +
-> +	ret = iio_map_array_register(indio_dev, info->map);
-> +	if (ret) {
-> +		dev_err(&indio_dev->dev, "failed mapping iio, err: %d\n", ret);
-> +		goto err_irq;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto err_map;
-> +
-> +	ret = regulator_enable(info->vdd);
-> +	if (ret)
-> +		goto err_iio_dev;
-
-You never disable the regulator again. I think you need to do that before it
-is freed.
-
-> +
-> +	clk_prepare_enable(info->clk);
-> +
-> +	exynos5_adc_hw_init(info);
-> +
-> +	ret = of_platform_populate(np, exynos5_adc_match, NULL, &pdev->dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed adding child nodes\n");
-> +		goto err_of_populate;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_of_populate:
-> +	device_for_each_child(&pdev->dev, NULL, exynos5_adc_remove_devices);
-> +err_iio_dev:
-> +	iio_device_unregister(indio_dev);
-> +err_map:
-> +	iio_map_array_unregister(indio_dev, info->map);
-> +err_irq:
-> +	free_irq(info->irq, info);
-> +err_iio:
-> +	iio_device_free(indio_dev);
-> +	return ret;
-> +}
-> +
-[..]
