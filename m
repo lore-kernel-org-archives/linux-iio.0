@@ -1,133 +1,145 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51082CB1.1050401@metafoo.de>
-Date: Tue, 29 Jan 2013 21:10:25 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
- lm-sensors@lm-sensors.org
-Subject: Re: MAX1363 IIO driver questions
-References: <20121124052707.GA17392@roeck-us.net> <50B09EDC.4020200@kernel.org> <20130116054918.GA7056@roeck-us.net> <50F667C9.6000106@jic23.retrosnub.co.uk> <20130117204549.GB22045@roeck-us.net> <8649d873-66ef-4b0f-a22d-8480e5aa1ead@email.android.com> <20130118220922.GB12459@roeck-us.net> <5103BD2F.30405@kernel.org> <20130129200055.GA18207@roeck-us.net>
-In-Reply-To: <20130129200055.GA18207@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <linux@roeck-us.net>
+From: Guenter Roeck <linux@roeck-us.net>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [RFC 08/11] iio: Update iio_channel_get_all and iio_channel_get_all_cb API
+Date: Thu, 31 Jan 2013 13:43:05 -0800
+Message-Id: <1359668588-13678-9-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
+References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/29/2013 09:00 PM, Guenter Roeck wrote:
-> On Sat, Jan 26, 2013 at 11:25:35AM +0000, Jonathan Cameron wrote:
->> On 01/18/2013 10:09 PM, Guenter Roeck wrote:
->>> On Thu, Jan 17, 2013 at 09:03:58PM +0000, Jonathan Cameron wrote:
->>>>
->>>> Good point. New use case for us so suggestions on how to do the association cleanly would be most welcome. Is there anything similar out there? We could add a per iio device sysfs interface to add additional mappings but it is a little uggly...
->>>>
->>>
->>> Best idea I can come up with is to disconnect iio_hwmon from the requirement to
->>> instantiate it explicitly. There might be two sysfs entries - one to
->>> attach it to a specific iio device, and one to attach it to individual channels
->>> of an iio device. Similar like the new_device interface on i2c adapters, and
->>> along the line of
->>>
->>> echo max1139 something > /sys/module/iio_hwmon/something_else
->>
->> We'll have to have something more specific or the common case of more than
->> one instance of an adc will cause trouble.  Obviously this doesn't matter
->> doing by adding the map from the IIO side.
->>
->>>
->>> and/or
->>>
->>> echo max1139 something channel > /sys/module/iio_hwmon/something_else
->>>
->>> ie sysfs attributes associated with iio_hwmon, not with the iio device itself.
->>>
->> This will play havock with the way the internal mappings work.  Originally
->> we had it mapped from both sides by name (e.g. the map wasn't in any way
->> handled by either driver) but that got an awful lot of flack and really
->> wasn't considered acceptable.  The current version of treating it much like
->> regulators etc is much cleaner.
->>
-> 
-> I think I am giving up on testing the code on a non-embedded system;
-> I would need/use manual instantiation only for testing, and it seems too
-> difficult to implement and not really worth it. I'll focus on getting it
-> to work with OF.
-> 
-> The current approach, with iio_hwmon requesting its assigned mappings through 
-> io_channel_get_all(), does not work well for me for a number of reasons.
-> 
-> First, it is difficult to associate device references in OF with actual device
-> names. I don't know if you have tried, but while a reference to &iio_hwmon can
-> uniquely identify the device name for an OF entry such as
-> 
-> 	iio_hwmon: iio_hwmon@0 {
-> 		compatible = "iio-hwmon";
-> 	};
-> 
-> it is difficult to predict how the actual iio_hwmon device name looks like.
-> Amongst others, it depends if there are additional attributes such as "reg = <>",
-> on the value of "@x" (if specified) and other attributes I have not really tracked
-> down yet. In other words, when I tried to create a device named "iio_hwmon.0",
-> I managed to get all kinds of device names except for "iio_hwmon.0".
-> 
-> Also, the iio_hwmon driver does not know which consumers are assigned to it.
-> If it is instantiated before the ADC driver (which happens all the time for me,
-> as iio_hwmon does not have to wait for the i2c bus adapter), its call to
-> iio_channel_get_all() returns nothing. Even if it does return some mappings,
-> there is no guarantee that the mappings are complete (eg if an instance of
-> iio_hwmon is mapped to ADC channels from multiple chips).
-> 
-> Other subsystems solve that problem by having the consumer request the resources
-> it needs. The leds-gpio driver is an excellent example: It knows from its OF data
-> which gpio pins it needs and requests those. If the pins are not available,
-> it gets an -EPROBE_DEFER error from the gpio subsystem, and simply defers
-> its probe until the missing pins are available.
-> 
-> The question for me is really if it would be possible to implement the same
-> approach for the iio subsystem. I would then specify something like
-> 
-> 	max1139: max1139@35 {
->         	compatible = "maxim,max1139";
-> 		reg = <0x35>;
-> 	};
-> 
-> ...
-> 	iio_hwmon {
-> 		compatible = "iio-hwmon";
-> 
-> 		in0 {
-> 			label = "vin";
-> 			iio-map = { &max1139 0 }; /* adc channel 0 */
-> 		};
-> 		in1 {
-> 			label = "vout";
-> 			iio-map = { &max1139 1 }; /* adc channel 1 */
-> 		};
-> 		...
-> 	};
-> 
-> which would then map into in0/in1 hwmon attributes (with optional "vin" and
-> "vout" labels if specified).
-> 
-> Problem here is that io_channel_get() currently does not use the provider name
-> as argument to find the resource. Instead, it uses consumer_dev_name and/or
-> consumer_channel. I am not sure how to solve that problem. It would be much more
-> helpful if the provider would not be tied to the consumer from provider side,
-> but from consumer side, and the mapping would be based on provider device and
-> index (or something else such as ADC channel name if that is preferred).
-> 
-> Would this kind of solution be acceptable for the iio maintainers ? Is it
-> even possible, given that the provider has to currently provide the mapping
-> to its intended consumers using iio_map_array_register() ?
+Pass device pointer instead of device name as parameter to iio_channel_get_all
+and iio_channel_get_all_cb. This will enable us to use OF information to
+retrieve consumer channel information.
 
-Hi Guenter,
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/iio/buffer_cb.c         |    4 ++--
+ drivers/iio/inkern.c            |    6 ++++--
+ drivers/staging/iio/iio_hwmon.c |   10 +++++++---
+ include/linux/iio/consumer.h    |    8 ++++----
+ 4 files changed, 17 insertions(+), 11 deletions(-)
 
-I wrote in another mail a few days ago, how I think dt bindings for IIO could
-be implemented. The basic idea was to simply use bindings very similar to what
-the clk API uses, since its provider/consumer structure actually matches what
-we do in IIO pretty good.
-
-The full mail can be found here:
-http://marc.info/?l=linux-iio&m=135902119507483&w=2
-
-- Lars
+diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
+index 4d40e24..9201022 100644
+--- a/drivers/iio/buffer_cb.c
++++ b/drivers/iio/buffer_cb.c
+@@ -25,7 +25,7 @@ static struct iio_buffer_access_funcs iio_cb_access = {
+ 	.store_to = &iio_buffer_cb_store_to,
+ };
+ 
+-struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
++struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+ 					     int (*cb)(u8 *data,
+ 						       void *private),
+ 					     void *private)
+@@ -46,7 +46,7 @@ struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
+ 	cb_buff->buffer.access = &iio_cb_access;
+ 	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
+ 
+-	cb_buff->channels = iio_channel_get_all(name);
++	cb_buff->channels = iio_channel_get_all(dev);
+ 	if (IS_ERR(cb_buff->channels)) {
+ 		ret = PTR_ERR(cb_buff->channels);
+ 		goto error_free_cb_buff;
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index d55e98f..58d0ffe 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -167,16 +167,18 @@ void iio_channel_release(struct iio_channel *channel)
+ }
+ EXPORT_SYMBOL_GPL(iio_channel_release);
+ 
+-struct iio_channel *iio_channel_get_all(const char *name)
++struct iio_channel *iio_channel_get_all(struct device *dev)
+ {
++	const char *name;
+ 	struct iio_channel *chans;
+ 	struct iio_map_internal *c = NULL;
+ 	int nummaps = 0;
+ 	int mapind = 0;
+ 	int i, ret;
+ 
+-	if (name == NULL)
++	if (dev == NULL)
+ 		return ERR_PTR(-EINVAL);
++	name = dev_name(dev);
+ 
+ 	mutex_lock(&iio_map_list_lock);
+ 	/* first count the matching maps */
+diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
+index 6a5bc5f..a4fce64 100644
+--- a/drivers/staging/iio/iio_hwmon.c
++++ b/drivers/staging/iio/iio_hwmon.c
+@@ -71,14 +71,18 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 	int ret, i;
+ 	int in_i = 1, temp_i = 1, curr_i = 1;
+ 	enum iio_chan_type type;
++	struct iio_channel *channels;
++	const __be32 *list;
++
++	channels = iio_channel_get_all(dev);
++	if (IS_ERR(channels))
++		return PTR_ERR(channels);
+ 
+ 	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+ 	if (st == NULL)
+ 		return -ENOMEM;
+ 
+-	st->channels = iio_channel_get_all(dev_name(dev));
+-	if (IS_ERR(st->channels))
+-		return PTR_ERR(st->channels);
++	st->channels = channels;
+ 
+ 	/* count how many attributes we have */
+ 	while (st->channels[st->num_channels].indio_dev)
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 16c35ac..6c44167 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -48,14 +48,14 @@ void iio_channel_release(struct iio_channel *chan);
+ 
+ /**
+  * iio_channel_get_all() - get all channels associated with a client
+- * @name:		name of consumer device.
++ * @dev:		Pointer to consumer device.
+  *
+  * Returns an array of iio_channel structures terminated with one with
+  * null iio_dev pointer.
+  * This function is used by fairly generic consumers to get all the
+  * channels registered as having this consumer.
+  */
+-struct iio_channel *iio_channel_get_all(const char *name);
++struct iio_channel *iio_channel_get_all(struct device *dev);
+ 
+ /**
+  * iio_channel_release_all() - reverse iio_channel_get_all
+@@ -66,7 +66,7 @@ void iio_channel_release_all(struct iio_channel *chan);
+ struct iio_cb_buffer;
+ /**
+  * iio_channel_get_all_cb() - register callback for triggered capture
+- * @name:		Name of client device.
++ * @dev:		Pointer to client device.
+  * @cb:			Callback function.
+  * @private:		Private data passed to callback.
+  *
+@@ -74,7 +74,7 @@ struct iio_cb_buffer;
+  * So if the channels requested come from different devices this will
+  * fail.
+  */
+-struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
++struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+ 					     int (*cb)(u8 *data,
+ 						       void *private),
+ 					     void *private);
+-- 
+1.7.9.7
