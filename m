@@ -1,212 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-108.synserver.de ([212.40.185.108]:1117 "EHLO
-	smtp-out-108.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753372Ab3AaO1A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 09:27:00 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 02/11] staging:iio:adxrs450: Make transfer buffers __be32
-Date: Thu, 31 Jan 2013 15:27:49 +0100
-Message-Id: <1359642478-9622-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1359642478-9622-1-git-send-email-lars@metafoo.de>
-References: <1359642478-9622-1-git-send-email-lars@metafoo.de>
+Received: from mx-relay12-muc.antispameurope.com ([217.64.175.212]:46529 "EHLO
+	mx-relay12-muc.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750978Ab3AaLy4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 06:54:56 -0500
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: "Lars-Peter Clausen" <lars@metafoo.de>
+Subject: Re: [PATCH] iio: gyro: Add itg3200
+Date: Thu, 31 Jan 2013 12:54:49 +0100
+Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
+References: <1345192038-5665-1-git-send-email-not@iis.fhg.de> <1359471547-32178-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <51093AB8.2070809@metafoo.de>
+In-Reply-To: <51093AB8.2070809@metafoo.de>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201301311254.49626.manuel.stahl@iis.fraunhofer.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixes the following sparse warnings:
+Am Mittwoch, 30. Januar 2013, 16:22:32 schrieb Lars-Peter Clausen:
+> On 01/29/2013 03:59 PM, Manuel Stahl wrote:
+> > Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+> 
+> Hi,
+> 
+> Looks mostly good. One usage of outdated API and otherwise mostly just minor
+> style issues.
 
-	drivers/staging/iio/gyro/adxrs450_core.c:46:15: warning: cast to restricted __be32
-	drivers/staging/iio/gyro/adxrs450_core.c:62:17: warning: cast to restricted __be32
-	drivers/staging/iio/gyro/adxrs450_core.c:89:15: warning: cast to restricted __be32
-	drivers/staging/iio/gyro/adxrs450_core.c:129:17: warning: cast to restricted __be32
-	drivers/staging/iio/gyro/adxrs450_core.c:168:16: warning: cast to restricted __be32
+Ah sorry, I used 3.7 as reference.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/gyro/adxrs450.h      | 10 ++---
- drivers/staging/iio/gyro/adxrs450_core.c | 66 +++++++++++++++-----------------
- 2 files changed, 35 insertions(+), 41 deletions(-)
+[...]
 
-diff --git a/drivers/staging/iio/gyro/adxrs450.h b/drivers/staging/iio/gyro/adxrs450.h
-index f8cf21f..97abea3 100644
---- a/drivers/staging/iio/gyro/adxrs450.h
-+++ b/drivers/staging/iio/gyro/adxrs450.h
-@@ -4,9 +4,9 @@
- #define ADXRS450_STARTUP_DELAY	50 /* ms */
- 
- /* The MSB for the spi commands */
--#define ADXRS450_SENSOR_DATA    0x20
--#define ADXRS450_WRITE_DATA	0x40
--#define ADXRS450_READ_DATA	0x80
-+#define ADXRS450_SENSOR_DATA    (0x20 << 24)
-+#define ADXRS450_WRITE_DATA	(0x40 << 24)
-+#define ADXRS450_READ_DATA	(0x80 << 24)
- 
- #define ADXRS450_RATE1	0x00	/* Rate Registers */
- #define ADXRS450_TEMP1	0x02	/* Temperature Registers */
-@@ -54,8 +54,8 @@ enum {
- struct adxrs450_state {
- 	struct spi_device	*us;
- 	struct mutex		buf_lock;
--	u8			tx[ADXRS450_MAX_RX] ____cacheline_aligned;
--	u8			rx[ADXRS450_MAX_TX];
-+	__be32			tx ____cacheline_aligned;
-+	__be32			rx;
- 
- };
- 
-diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
-index 318e8c9..91a2fae 100644
---- a/drivers/staging/iio/gyro/adxrs450_core.c
-+++ b/drivers/staging/iio/gyro/adxrs450_core.c
-@@ -36,29 +36,28 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
- {
- 	struct spi_message msg;
- 	struct adxrs450_state *st = iio_priv(indio_dev);
-+	u32 tx;
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
--			.tx_buf = st->tx,
-+			.tx_buf = &st->tx,
- 			.bits_per_word = 8,
--			.len = 4,
-+			.len = sizeof(st->tx),
- 			.cs_change = 1,
- 		}, {
--			.rx_buf = st->rx,
-+			.rx_buf = &st->rx,
- 			.bits_per_word = 8,
--			.len = 4,
-+			.len = sizeof(st->rx),
- 		},
- 	};
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADXRS450_READ_DATA | (reg_address >> 7);
--	st->tx[1] = reg_address << 1;
--	st->tx[2] = 0;
--	st->tx[3] = 0;
-+	tx = ADXRS450_READ_DATA | (reg_address << 17);
- 
--	if (!(hweight32(be32_to_cpu(*(u32 *)st->tx)) & 1))
--		st->tx[3]  |= ADXRS450_P;
-+	if (!(hweight32(tx) & 1))
-+		tx |= ADXRS450_P;
- 
-+	st->tx = cpu_to_be32(tx);
- 	spi_message_init(&msg);
- 	spi_message_add_tail(&xfers[0], &msg);
- 	spi_message_add_tail(&xfers[1], &msg);
-@@ -69,7 +68,7 @@ static int adxrs450_spi_read_reg_16(struct iio_dev *indio_dev,
- 		goto error_ret;
- 	}
- 
--	*val = (be32_to_cpu(*(u32 *)st->rx) >> 5) & 0xFFFF;
-+	*val = (be32_to_cpu(st->rx) >> 5) & 0xFFFF;
- 
- error_ret:
- 	mutex_unlock(&st->buf_lock);
-@@ -88,18 +87,17 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
- 				     u16 val)
- {
- 	struct adxrs450_state *st = iio_priv(indio_dev);
-+	u32 tx;
- 	int ret;
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADXRS450_WRITE_DATA | reg_address >> 7;
--	st->tx[1] = reg_address << 1 | val >> 15;
--	st->tx[2] = val >> 7;
--	st->tx[3] = val << 1;
-+	tx = ADXRS450_WRITE_DATA | (reg_address << 17) | (val << 1);
- 
--	if (!(hweight32(be32_to_cpu(*(u32 *)st->tx)) & 1))
--		st->tx[3] |= ADXRS450_P;
-+	if (!(hweight32(tx) & 1))
-+		tx |= ADXRS450_P;
- 
--	ret = spi_write(st->us, st->tx, 4);
-+	st->tx = cpu_to_be32(tx);
-+	ret = spi_write(st->us, &st->tx, sizeof(st->tx));
- 	if (ret)
- 		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02x\n",
- 			reg_address);
-@@ -120,22 +118,19 @@ static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
- 	int ret;
- 	struct spi_transfer xfers[] = {
- 		{
--			.tx_buf = st->tx,
-+			.tx_buf = &st->tx,
- 			.bits_per_word = 8,
--			.len = 4,
-+			.len = sizeof(st->tx),
- 			.cs_change = 1,
- 		}, {
--			.rx_buf = st->rx,
-+			.rx_buf = &st->rx,
- 			.bits_per_word = 8,
--			.len = 4,
-+			.len = sizeof(st->rx),
- 		},
- 	};
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADXRS450_SENSOR_DATA;
--	st->tx[1] = 0;
--	st->tx[2] = 0;
--	st->tx[3] = 0;
-+	st->tx = cpu_to_be32(ADXRS450_SENSOR_DATA);
- 
- 	spi_message_init(&msg);
- 	spi_message_add_tail(&xfers[0], &msg);
-@@ -146,7 +141,7 @@ static int adxrs450_spi_sensor_data(struct iio_dev *indio_dev, s16 *val)
- 		goto error_ret;
- 	}
- 
--	*val = (be32_to_cpu(*(u32 *)st->rx) >> 10) & 0xFFFF;
-+	*val = (be32_to_cpu(st->rx) >> 10) & 0xFFFF;
- 
- error_ret:
- 	mutex_unlock(&st->buf_lock);
-@@ -163,20 +158,19 @@ static int adxrs450_spi_initial(struct adxrs450_state *st,
- {
- 	struct spi_message msg;
- 	int ret;
-+	u32 tx;
- 	struct spi_transfer xfers = {
--		.tx_buf = st->tx,
--		.rx_buf = st->rx,
-+		.tx_buf = &st->tx,
-+		.rx_buf = &st->rx,
- 		.bits_per_word = 8,
--		.len = 4,
-+		.len = sizeof(st->tx),
- 	};
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADXRS450_SENSOR_DATA;
--	st->tx[1] = 0;
--	st->tx[2] = 0;
--	st->tx[3] = 0;
-+	tx = ADXRS450_SENSOR_DATA;
- 	if (chk)
--		st->tx[3] |= (ADXRS450_CHK | ADXRS450_P);
-+		tx |= (ADXRS450_CHK | ADXRS450_P);
-+	st->tx = cpu_to_be32(tx);
- 	spi_message_init(&msg);
- 	spi_message_add_tail(&xfers, &msg);
- 	ret = spi_sync(st->us, &msg);
-@@ -185,7 +179,7 @@ static int adxrs450_spi_initial(struct adxrs450_state *st,
- 		goto error_ret;
- 	}
- 
--	*val = be32_to_cpu(*(u32 *)st->rx);
-+	*val = be32_to_cpu(st->rx);
- 
- error_ret:
- 	mutex_unlock(&st->buf_lock);
+> > +static irqreturn_t itg3200_trigger_handler(int irq, void *p)
+> > +{
+> > +	struct iio_poll_func *pf = p;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct itg3200 *st = iio_priv(indio_dev);
+> > +	struct iio_buffer *buffer = indio_dev->buffer;
+> > +	__be16 buf[ITG3200_SCAN_ELEMENTS + sizeof(s64)/sizeof(u16)];
+> > +
+> > +	/* Clear IRQ */
+> > +	itg3200_read_irq_status(indio_dev);
+> > +
+> > +	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)) {
+> > +		int ret;
+> > +		unsigned i, j = 0;
+> > +
+> > +		ret = itg3200_read_all_channels(st->i2c, buf);
+> > +		if (ret < 0)
+> > +			goto error_ret;
+> > +
+> > +		/* Select only active scan elements */
+> > +		for (i = 0; i < ITG3200_SCAN_ELEMENTS; i++)
+> > +			if (iio_scan_mask_query(indio_dev, buffer, i))
+> > +				buf[j++] = buf[i];
+> 
+> The IIO core can take care of this kind of demuxing for you. If you set
+> available_scan_masks to { 0xffff..., 0x0 } it will know that the device will
+> only be able to sample all channels at once. A user will still be able to
+> select a subset of channels and the IIO core will take care of picking the
+> right samples.
+
+Where do I set the available_scan_masks?
+
+> 
+> > +	}
+> > +
+> > +	if (indio_dev->scan_timestamp)
+> > +		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
+> > +				&pf->timestamp, sizeof(pf->timestamp));
+> > +
+> > +	iio_push_to_buffer(buffer, (u8 *)buf, pf->timestamp);
+> 
+> This won't work in the latest version of IIO, use
+> 
+> iio_push_to_buffers(indio_dev, (u8 *)buf); instead
+
+[...]
+
+> Do we really need this wrapper? I think it might be better to move
+> itg3200_set_irq_data_rdy here, especially considering that it is unused in
+> case buffer support is not enabled.
+> 
+> Similar I think it makes sense to move itg3200_read_all_channels and
+> itg3200_read_irq_status to tg3200_buffer.c
+
+That's OK, I just need to put the register definitions into the header file.
+Actually itg3200_read_irq_status is not needed anyway since we use a
+non latched IRQ line.
+
+I would also combine itg3200_buffer.c and itg3200_trigger.c into a single file.
+Any suggestions for the name?
+
 -- 
-1.8.0
-
+Regards,
+Manuel Stahl
