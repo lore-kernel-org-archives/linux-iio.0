@@ -1,151 +1,172 @@
-Return-Path: <linux@roeck-us.net>
-Date: Tue, 29 Jan 2013 13:05:50 -0800
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:54937 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754892Ab3AaVnN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 16:43:13 -0500
 From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	linux-iio@vger.kernel.org, Jean Delvare <khali@linux-fr.org>,
-	lm-sensors@lm-sensors.org
-Subject: Re: MAX1363 IIO driver questions
-Message-ID: <20130129210550.GA18566@roeck-us.net>
-References: <20121124052707.GA17392@roeck-us.net>
- <50B09EDC.4020200@kernel.org>
- <20130116054918.GA7056@roeck-us.net>
- <50F667C9.6000106@jic23.retrosnub.co.uk>
- <20130117204549.GB22045@roeck-us.net>
- <8649d873-66ef-4b0f-a22d-8480e5aa1ead@email.android.com>
- <20130118220922.GB12459@roeck-us.net>
- <5103BD2F.30405@kernel.org>
- <20130129200055.GA18207@roeck-us.net>
- <51082CB1.1050401@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51082CB1.1050401@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Cc: devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 01/11] staging/iio: (iio_hwmon) Use devm_kzalloc
+Date: Thu, 31 Jan 2013 13:42:58 -0800
+Message-Id: <1359668588-13678-2-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
+References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jan 29, 2013 at 09:10:25PM +0100, Lars-Peter Clausen wrote:
-> On 01/29/2013 09:00 PM, Guenter Roeck wrote:
-> > On Sat, Jan 26, 2013 at 11:25:35AM +0000, Jonathan Cameron wrote:
-> >> On 01/18/2013 10:09 PM, Guenter Roeck wrote:
-> >>> On Thu, Jan 17, 2013 at 09:03:58PM +0000, Jonathan Cameron wrote:
-> >>>>
-> >>>> Good point. New use case for us so suggestions on how to do the association cleanly would be most welcome. Is there anything similar out there? We could add a per iio device sysfs interface to add additional mappings but it is a little uggly...
-> >>>>
-> >>>
-> >>> Best idea I can come up with is to disconnect iio_hwmon from the requirement to
-> >>> instantiate it explicitly. There might be two sysfs entries - one to
-> >>> attach it to a specific iio device, and one to attach it to individual channels
-> >>> of an iio device. Similar like the new_device interface on i2c adapters, and
-> >>> along the line of
-> >>>
-> >>> echo max1139 something > /sys/module/iio_hwmon/something_else
-> >>
-> >> We'll have to have something more specific or the common case of more than
-> >> one instance of an adc will cause trouble.  Obviously this doesn't matter
-> >> doing by adding the map from the IIO side.
-> >>
-> >>>
-> >>> and/or
-> >>>
-> >>> echo max1139 something channel > /sys/module/iio_hwmon/something_else
-> >>>
-> >>> ie sysfs attributes associated with iio_hwmon, not with the iio device itself.
-> >>>
-> >> This will play havock with the way the internal mappings work.  Originally
-> >> we had it mapped from both sides by name (e.g. the map wasn't in any way
-> >> handled by either driver) but that got an awful lot of flack and really
-> >> wasn't considered acceptable.  The current version of treating it much like
-> >> regulators etc is much cleaner.
-> >>
-> > 
-> > I think I am giving up on testing the code on a non-embedded system;
-> > I would need/use manual instantiation only for testing, and it seems too
-> > difficult to implement and not really worth it. I'll focus on getting it
-> > to work with OF.
-> > 
-> > The current approach, with iio_hwmon requesting its assigned mappings through 
-> > io_channel_get_all(), does not work well for me for a number of reasons.
-> > 
-> > First, it is difficult to associate device references in OF with actual device
-> > names. I don't know if you have tried, but while a reference to &iio_hwmon can
-> > uniquely identify the device name for an OF entry such as
-> > 
-> > 	iio_hwmon: iio_hwmon@0 {
-> > 		compatible = "iio-hwmon";
-> > 	};
-> > 
-> > it is difficult to predict how the actual iio_hwmon device name looks like.
-> > Amongst others, it depends if there are additional attributes such as "reg = <>",
-> > on the value of "@x" (if specified) and other attributes I have not really tracked
-> > down yet. In other words, when I tried to create a device named "iio_hwmon.0",
-> > I managed to get all kinds of device names except for "iio_hwmon.0".
-> > 
-> > Also, the iio_hwmon driver does not know which consumers are assigned to it.
-> > If it is instantiated before the ADC driver (which happens all the time for me,
-> > as iio_hwmon does not have to wait for the i2c bus adapter), its call to
-> > iio_channel_get_all() returns nothing. Even if it does return some mappings,
-> > there is no guarantee that the mappings are complete (eg if an instance of
-> > iio_hwmon is mapped to ADC channels from multiple chips).
-> > 
-> > Other subsystems solve that problem by having the consumer request the resources
-> > it needs. The leds-gpio driver is an excellent example: It knows from its OF data
-> > which gpio pins it needs and requests those. If the pins are not available,
-> > it gets an -EPROBE_DEFER error from the gpio subsystem, and simply defers
-> > its probe until the missing pins are available.
-> > 
-> > The question for me is really if it would be possible to implement the same
-> > approach for the iio subsystem. I would then specify something like
-> > 
-> > 	max1139: max1139@35 {
-> >         	compatible = "maxim,max1139";
-> > 		reg = <0x35>;
-> > 	};
-> > 
-> > ...
-> > 	iio_hwmon {
-> > 		compatible = "iio-hwmon";
-> > 
-> > 		in0 {
-> > 			label = "vin";
-> > 			iio-map = { &max1139 0 }; /* adc channel 0 */
-> > 		};
-> > 		in1 {
-> > 			label = "vout";
-> > 			iio-map = { &max1139 1 }; /* adc channel 1 */
-> > 		};
-> > 		...
-> > 	};
-> > 
-> > which would then map into in0/in1 hwmon attributes (with optional "vin" and
-> > "vout" labels if specified).
-> > 
-> > Problem here is that io_channel_get() currently does not use the provider name
-> > as argument to find the resource. Instead, it uses consumer_dev_name and/or
-> > consumer_channel. I am not sure how to solve that problem. It would be much more
-> > helpful if the provider would not be tied to the consumer from provider side,
-> > but from consumer side, and the mapping would be based on provider device and
-> > index (or something else such as ADC channel name if that is preferred).
-> > 
-> > Would this kind of solution be acceptable for the iio maintainers ? Is it
-> > even possible, given that the provider has to currently provide the mapping
-> > to its intended consumers using iio_map_array_register() ?
-> 
-> Hi Guenter,
-> 
-> I wrote in another mail a few days ago, how I think dt bindings for IIO could
-> be implemented. The basic idea was to simply use bindings very similar to what
-> the clk API uses, since its provider/consumer structure actually matches what
-> we do in IIO pretty good.
-> 
-> The full mail can be found here:
-> http://marc.info/?l=linux-iio&m=135902119507483&w=2
-> 
-Hi Lars,
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/staging/iio/iio_hwmon.c |   70 ++++++++++++---------------------------
+ 1 file changed, 22 insertions(+), 48 deletions(-)
 
-looks like a good idea.
+diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
+index c7a5f97..5456272 100644
+--- a/drivers/staging/iio/iio_hwmon.c
++++ b/drivers/staging/iio/iio_hwmon.c
+@@ -55,63 +55,47 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+ 	return sprintf(buf, "%d\n", result);
+ }
+ 
+-static void iio_hwmon_free_attrs(struct iio_hwmon_state *st)
+-{
+-	int i;
+-	struct sensor_device_attribute *a;
+-	for (i = 0; i < st->num_channels; i++)
+-		if (st->attrs[i]) {
+-			a = to_sensor_dev_attr(
+-				container_of(st->attrs[i],
+-					     struct device_attribute,
+-					     attr));
+-			kfree(a);
+-		}
+-}
+-
+ static int iio_hwmon_probe(struct platform_device *pdev)
+ {
++	struct device *dev = &pdev->dev;
+ 	struct iio_hwmon_state *st;
+ 	struct sensor_device_attribute *a;
+ 	int ret, i;
+ 	int in_i = 1, temp_i = 1, curr_i = 1;
+ 	enum iio_chan_type type;
+ 
+-	st = kzalloc(sizeof(*st), GFP_KERNEL);
+-	if (st == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
++	if (st == NULL)
++		return -ENOMEM;
+ 
+-	st->channels = iio_channel_get_all(dev_name(&pdev->dev));
+-	if (IS_ERR(st->channels)) {
+-		ret = PTR_ERR(st->channels);
+-		goto error_free_state;
+-	}
++	st->channels = iio_channel_get_all(dev_name(dev));
++	if (IS_ERR(st->channels))
++		return PTR_ERR(st->channels);
+ 
+ 	/* count how many attributes we have */
+ 	while (st->channels[st->num_channels].indio_dev)
+ 		st->num_channels++;
+ 
+-	st->attrs = kzalloc(sizeof(st->attrs) * (st->num_channels + 1),
+-			    GFP_KERNEL);
++	st->attrs = devm_kzalloc(dev,
++				 sizeof(st->attrs) * (st->num_channels + 1),
++				 GFP_KERNEL);
+ 	if (st->attrs == NULL) {
+ 		ret = -ENOMEM;
+ 		goto error_release_channels;
+ 	}
++
+ 	for (i = 0; i < st->num_channels; i++) {
+-		a = kzalloc(sizeof(*a), GFP_KERNEL);
++		a = devm_kzalloc(dev, sizeof(*a), GFP_KERNEL);
+ 		if (a == NULL) {
+ 			ret = -ENOMEM;
+-			goto error_free_attrs;
++			goto error_release_channels;
+ 		}
+ 
+ 		sysfs_attr_init(&a->dev_attr.attr);
+ 		ret = iio_get_channel_type(&st->channels[i], &type);
+-		if (ret < 0) {
+-			kfree(a);
+-			goto error_free_attrs;
+-		}
++		if (ret < 0)
++			goto error_release_channels;
++
+ 		switch (type) {
+ 		case IIO_VOLTAGE:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+@@ -130,13 +114,11 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+-			kfree(a);
+-			goto error_free_attrs;
++			goto error_release_channels;
+ 		}
+ 		if (a->dev_attr.attr.name == NULL) {
+-			kfree(a);
+ 			ret = -ENOMEM;
+-			goto error_free_attrs;
++			goto error_release_channels;
+ 		}
+ 		a->dev_attr.show = iio_hwmon_read_val;
+ 		a->dev_attr.attr.mode = S_IRUGO;
+@@ -146,11 +128,11 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 
+ 	st->attr_group.attrs = st->attrs;
+ 	platform_set_drvdata(pdev, st);
+-	ret = sysfs_create_group(&pdev->dev.kobj, &st->attr_group);
++	ret = sysfs_create_group(&dev->kobj, &st->attr_group);
+ 	if (ret < 0)
+-		goto error_free_attrs;
++		goto error_release_channels;
+ 
+-	st->hwmon_dev = hwmon_device_register(&pdev->dev);
++	st->hwmon_dev = hwmon_device_register(dev);
+ 	if (IS_ERR(st->hwmon_dev)) {
+ 		ret = PTR_ERR(st->hwmon_dev);
+ 		goto error_remove_group;
+@@ -158,15 +140,9 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ error_remove_group:
+-	sysfs_remove_group(&pdev->dev.kobj, &st->attr_group);
+-error_free_attrs:
+-	iio_hwmon_free_attrs(st);
+-	kfree(st->attrs);
++	sysfs_remove_group(&dev->kobj, &st->attr_group);
+ error_release_channels:
+ 	iio_channel_release_all(st->channels);
+-error_free_state:
+-	kfree(st);
+-error_ret:
+ 	return ret;
+ }
+ 
+@@ -176,8 +152,6 @@ static int iio_hwmon_remove(struct platform_device *pdev)
+ 
+ 	hwmon_device_unregister(st->hwmon_dev);
+ 	sysfs_remove_group(&pdev->dev.kobj, &st->attr_group);
+-	iio_hwmon_free_attrs(st);
+-	kfree(st->attrs);
+ 	iio_channel_release_all(st->channels);
+ 
+ 	return 0;
+-- 
+1.7.9.7
 
-Do you know if anyone is working on an implementation ?
-Otherwise I'll give it a shot.
-
-Thanks,
-Guenter
