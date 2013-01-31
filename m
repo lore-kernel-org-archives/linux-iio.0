@@ -1,74 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:51328 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751177Ab3ARKog (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Jan 2013 05:44:36 -0500
-From: "Patil, Rachna" <rachna@ti.com>
-To: <linux-doc@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Dmitry Torokhov <dtor@mail.ru>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Benit Cousson <b-cousson@ti.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	"Patil, Rachna" <rachna@ti.com>
-Subject: [PATCH v3 0/8] MFD: ti_am335x_tscadc: DT support and TSC features addition
-Date: Fri, 18 Jan 2013 16:14:57 +0530
-Message-ID: <cover.1358502134.git.rachna@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from smtp-out-108.synserver.de ([212.40.185.108]:1089 "EHLO
+	smtp-out-108.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753624Ab3AaO1G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 09:27:06 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 08/11] staging:iio:adxrs450: Use usleep_range for the sequential transfer dealy
+Date: Thu, 31 Jan 2013 15:27:55 +0100
+Message-Id: <1359642478-9622-8-git-send-email-lars@metafoo.de>
+In-Reply-To: <1359642478-9622-1-git-send-email-lars@metafoo.de>
+References: <1359642478-9622-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+The adxrs450 requires a delay of at least 0.1 ms between register writes.  Using
+msleep() for such small delays is not recommended. So use usleep_range instead.
 
-This patch set is a cumulative set of [1] and [2] sent earlier.
+Fixes the following checkpatch warning:
+	WARNING: msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.txt
+	+	msleep(1);
 
-Note that there are no code changes in either of the patch set,
-only rebased on top of Linus's v3.8-rc3 tag to make sure that
-all the patches apply without any conflicts.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adxrs450_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This patch set has been tested on AM335x EVM.
-
-[1] http://www.spinics.net/lists/linux-input/msg23060.html
-[2] http://www.spinics.net/lists/linux-input/msg23090.html
-
-Changes in v3:
-	No code change.
-
-Changes in v2:
-	Patch "input: ti_am335x_tsc: Add variance filter"
-	from v1 has been dropped.
-	Add MFD device DT node in AM335x EVM.
-
-Patil, Rachna (8):
-  input: ti_am335x_tsc: Step enable bits made configurable
-  input: ti_am335x_tsc: Order of TSC wires, made configurable
-  input: touchscreen: ti_tsc: remove unwanted fifo flush
-  MFD: ti_am335x_tscadc: add device tree binding information
-  MFD: ti_am335x_tscadc: Add DT support
-  input: ti_am335x_tsc: Add DT support
-  IIO: ti_am335x_adc: Add DT support
-  arm/dts: AM335x-evm: Add TSC/ADC MFD device support
-
- .../devicetree/bindings/mfd/ti_am335x_tscadc.txt   |   35 +++
- arch/arm/boot/dts/am335x-evm.dts                   |   13 +
- arch/arm/boot/dts/am33xx.dtsi                      |    8 +
- drivers/iio/adc/ti_am335x_adc.c                    |   26 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          |  266 +++++++++++++++++---
- drivers/mfd/ti_am335x_tscadc.c                     |   28 ++-
- include/linux/input/ti_am335x_tsc.h                |   12 +
- include/linux/mfd/ti_am335x_tscadc.h               |   11 +-
- 8 files changed, 347 insertions(+), 52 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/ti_am335x_tscadc.txt
-
+diff --git a/drivers/staging/iio/gyro/adxrs450_core.c b/drivers/staging/iio/gyro/adxrs450_core.c
+index ea10f84..4115fe1 100644
+--- a/drivers/staging/iio/gyro/adxrs450_core.c
++++ b/drivers/staging/iio/gyro/adxrs450_core.c
+@@ -101,7 +101,7 @@ static int adxrs450_spi_write_reg_16(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		dev_err(&st->us->dev, "problem while writing 16 bit register 0x%02x\n",
+ 			reg_address);
+-	msleep(1); /* enforce sequential transfer delay 0.1ms */
++	usleep_range(100, 1000); /* enforce sequential transfer delay 0.1ms */
+ 	mutex_unlock(&st->buf_lock);
+ 	return ret;
+ }
 -- 
-1.7.9.5
+1.8.0
 
