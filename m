@@ -1,980 +1,798 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog105.obsmtp.com ([207.126.144.119]:51561 "EHLO
-	eu1sys200aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756446Ab3AOIbS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2013 03:31:18 -0500
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 3/9] iio:gyro: Add STMicroelectronics gyroscopes driver
-Date: Tue, 15 Jan 2013 09:30:59 +0100
-Message-Id: <1358238660-14929-4-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
-References: <1358238660-14929-1-git-send-email-denis.ciocca@st.com>
+Received: from mx-relay04-haj2.antispameurope.com ([83.246.65.204]:38987 "EHLO
+	mx-relay04-haj2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751688Ab3AaMRz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2013 07:17:55 -0500
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: linux-iio@vger.kernel.org
+Cc: Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: [PATCH V3] iio: gyro: Add itg3200
+Date: Thu, 31 Jan 2013 13:17:32 +0100
+Message-Id: <1359634652-25868-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201301311254.49626.manuel.stahl@iis.fraunhofer.de>
+References: <201301311254.49626.manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201301311254.49626.manuel.stahl@iis.fraunhofer.de>
+References: <201301311254.49626.manuel.stahl@iis.fraunhofer.de>
+To: jic23@cam.ac.uk
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds generic gyroscope driver for STMicroelectronics
-gyroscopes, currently it supports:
-L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 ---
- drivers/iio/gyro/Kconfig          |   40 +++
- drivers/iio/gyro/Makefile         |    6 +
- drivers/iio/gyro/st_gyro_buffer.c |  119 +++++++++
- drivers/iio/gyro/st_gyro_core.c   |  513 +++++++++++++++++++++++++++++++++++++
- drivers/iio/gyro/st_gyro_i2c.c    |   84 ++++++
- drivers/iio/gyro/st_gyro_spi.c    |   83 ++++++
- include/linux/iio/gyro/st_gyro.h  |   49 ++++
- 7 files changed, 894 insertions(+), 0 deletions(-)
- create mode 100644 drivers/iio/gyro/st_gyro_buffer.c
- create mode 100644 drivers/iio/gyro/st_gyro_core.c
- create mode 100644 drivers/iio/gyro/st_gyro_i2c.c
- create mode 100644 drivers/iio/gyro/st_gyro_spi.c
- create mode 100644 include/linux/iio/gyro/st_gyro.h
+ drivers/iio/gyro/Kconfig          |    8 +
+ drivers/iio/gyro/Makefile         |    4 +
+ drivers/iio/gyro/itg3200_buffer.c |  159 +++++++++++++++
+ drivers/iio/gyro/itg3200_core.c   |  402 +++++++++++++++++++++++++++++++++++++
+ include/linux/iio/gyro/itg3200.h  |  154 ++++++++++++++
+ 5 files changed, 727 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/iio/gyro/itg3200_buffer.c
+ create mode 100644 drivers/iio/gyro/itg3200_core.c
+ create mode 100644 include/linux/iio/gyro/itg3200.h
 
 diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index 96b68f6..7a7eef5 100644
+index 752ac8a..343a3e0 100644
 --- a/drivers/iio/gyro/Kconfig
 +++ b/drivers/iio/gyro/Kconfig
-@@ -23,4 +23,44 @@ config HID_SENSOR_GYRO_3D
+@@ -30,4 +30,12 @@ config HID_SENSOR_GYRO_3D
  	  Say yes here to build support for the HID SENSOR
  	  Gyroscope 3D.
  
-+config IIO_ST_GYRO_3AXIS
-+	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
-+	depends on (I2C || SPI_MASTER) && SYSFS
-+	select IIO_ST_SENSORS_CORE
++config ITG3200
++	tristate "InvenSense ITG3200 Digital 3-Axis Gyroscope I2C driver"
++	depends on I2C
++	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
 +	help
-+	  Say yes here to build support for STMicroelectronics gyroscopes:
-+	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called st_gyro.
-+
-+config IIO_ST_GYRO_3AXIS_I2C
-+	tristate "support I2C bus connection"
-+	depends on IIO_ST_GYRO_3AXIS && I2C
-+	select IIO_ST_SENSORS_I2C
-+	help
-+	  Say yes here to build I2C support for STMicroelectronics gyroscopes.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called st_gyro_i2c.
-+
-+config IIO_ST_GYRO_3AXIS_SPI
-+	tristate "support SPI bus connection"
-+	depends on IIO_ST_GYRO_3AXIS && SPI_MASTER
-+	select IIO_ST_SENSORS_SPI
-+	help
-+	  Say yes here to build SPI support for STMicroelectronics gyroscopes.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called st_gyro_spi.
-+
-+config IIO_ST_GYRO_3AXIS_TRIGGERED_BUFFER
-+	tristate "support triggered buffer"
-+	depends on IIO_ST_GYRO_3AXIS
-+	select IIO_TRIGGERED_BUFFER
-+	select IIO_BUFFER
-+	select IIO_ST_SENSORS_TRIGGERED_BUFFER
-+	help
-+	  Default trigger and buffer for STMicroelectronics gyroscopes driver.
++	  Say yes here to add support for the InvenSense ITG3200 digital
++	  3-axis gyroscope sensor.
 +
  endmenu
 diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 702a058..61d43ba 100644
+index 9b090ee..99ae7d6 100644
 --- a/drivers/iio/gyro/Makefile
 +++ b/drivers/iio/gyro/Makefile
-@@ -4,3 +4,9 @@
- 
+@@ -5,3 +5,7 @@
+ obj-$(CONFIG_ADIS16080) += adis16080.o
  obj-$(CONFIG_ADIS16136) += adis16136.o
  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
 +
-+st_gyro-y := st_gyro_core.o
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS_I2C) += st_gyro_i2c.o
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS_SPI) += st_gyro_spi.o
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS_TRIGGERED_BUFFER) += st_gyro_buffer.o
-+obj-$(CONFIG_IIO_ST_GYRO_3AXIS) += st_gyro.o
-diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
++itg3200-y               := itg3200_core.o
++itg3200-$(CONFIG_IIO_BUFFER) += itg3200_buffer.o
++obj-$(CONFIG_ITG3200)   += itg3200.o
+diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
 new file mode 100644
-index 0000000..1293ca5
+index 0000000..d9efa56
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_buffer.c
-@@ -0,0 +1,119 @@
++++ b/drivers/iio/gyro/itg3200_buffer.c
+@@ -0,0 +1,159 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * itg3200_buffer.c -- support InvenSense ITG3200
++ *                     Digital 3-Axis Gyroscope driver
 + *
-+ * Copyright 2012 STMicroelectronics Inc.
++ * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
++ * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
++ * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
 + *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
-+#include <linux/module.h>
-+#include <linux/kernel.h>
 +#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/interrupt.h>
-+#include <linux/byteorder/generic.h>
 +#include <linux/i2c.h>
-+#include <linux/delay.h>
++#include <linux/interrupt.h>
++
 +#include <linux/iio/iio.h>
 +#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
 +#include <linux/iio/trigger_consumer.h>
 +#include <linux/iio/triggered_buffer.h>
-+
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
++#include <linux/iio/gyro/itg3200.h>
 +
 +
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state)
++static int itg3200_read_all_channels(struct i2c_client *i2c, __be16 *buf)
 +{
-+	struct iio_dev *indio_dev = trig->private_data;
-+	return st_gyro_set_dataready_irq(indio_dev, state);
-+}
-+EXPORT_SYMBOL(st_gyro_trig_set_state);
++	u8 tx = 0x80 | ITG3200_REG_TEMP_OUT_H;
++	struct i2c_msg msg[2] = {
++		{
++			.addr = i2c->addr,
++			.flags = i2c->flags,
++			.len = 1,
++			.buf = &tx,
++		},
++		{
++			.addr = i2c->addr,
++			.flags = i2c->flags | I2C_M_RD,
++			.len = ITG3200_SCAN_ELEMENTS * sizeof(s16),
++			.buf = (char *)&buf,
++		},
++	};
 +
-+static int st_gyro_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+
-+	err = st_gyro_set_enable(indio_dev, true);
-+	if (err < 0)
-+		goto st_gyro_set_enable_error;
-+
-+	err = iio_sw_buffer_preenable(indio_dev);
-+
-+st_gyro_set_enable_error:
-+	return err;
++	return i2c_transfer(i2c->adapter, msg, 2);
 +}
 +
-+static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
++static irqreturn_t itg3200_trigger_handler(int irq, void *p)
 +{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct itg3200 *st = iio_priv(indio_dev);
++	__be16 buf[ITG3200_SCAN_ELEMENTS + sizeof(s64)/sizeof(u16)];
 +
-+	gdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (gdata->buffer_data == NULL) {
-+		err = -ENOMEM;
-+		goto allocate_memory_error;
++	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)) {
++		int ret = itg3200_read_all_channels(st->i2c, buf);
++		if (ret < 0)
++			goto error_ret;
 +	}
 +
-+	err = st_gyro_set_axis_enable(indio_dev,
-+					(u8)indio_dev->active_scan_mask[0]);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
++	if (indio_dev->scan_timestamp)
++		memcpy(buf + indio_dev->scan_bytes - sizeof(s64),
++				&pf->timestamp, sizeof(pf->timestamp));
 +
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_postenable_error;
++	iio_push_to_buffers(indio_dev, (u8 *)buf);
 +
-+	return err;
++	iio_trigger_notify_done(indio_dev->trig);
 +
-+st_gyro_buffer_postenable_error:
-+	kfree(gdata->buffer_data);
-+allocate_memory_error:
-+	return err;
++error_ret:
++	return IRQ_HANDLED;
 +}
 +
-+static int st_gyro_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	err = iio_triggered_buffer_predisable(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
-+
-+	err = st_gyro_set_axis_enable(indio_dev,
-+						ST_SENSORS_ENABLE_ALL_CHANNELS);
-+	if (err < 0)
-+		goto st_gyro_buffer_predisable_error;
-+
-+	err = st_gyro_set_enable(indio_dev, false);
-+
-+st_gyro_buffer_predisable_error:
-+	kfree(gdata->buffer_data);
-+	return err;
-+}
-+
-+static const struct iio_buffer_setup_ops st_gyro_buffer_setup_ops = {
-+	.preenable = &st_gyro_buffer_preenable,
-+	.postenable = &st_gyro_buffer_postenable,
-+	.predisable = &st_gyro_buffer_predisable,
-+};
-+
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev)
++int itg3200_buffer_configure(struct iio_dev *indio_dev)
 +{
 +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+		&st_sensors_trigger_handler, &st_gyro_buffer_setup_ops);
++		itg3200_trigger_handler, NULL);
 +}
-+EXPORT_SYMBOL(st_gyro_allocate_ring);
 +
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
++void itg3200_buffer_unconfigure(struct iio_dev *indio_dev)
 +{
 +	iio_triggered_buffer_cleanup(indio_dev);
 +}
-+EXPORT_SYMBOL(st_gyro_deallocate_ring);
 +
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes buffer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
++
++static int itg3200_data_rdy_trigger_set_state(struct iio_trigger *trig,
++		bool state)
++{
++	struct iio_dev *indio_dev = trig->private_data;
++	int ret;
++	u8 msc;
++
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_IRQ_CONFIG, &msc);
++	if (ret)
++		goto error_ret;
++
++	if (state)
++		msc |= ITG3200_IRQ_DATA_RDY_ENABLE;
++	else
++		msc &= ~ITG3200_IRQ_DATA_RDY_ENABLE;
++
++	ret = itg3200_write_reg_8(indio_dev, ITG3200_REG_IRQ_CONFIG, msc);
++	if (ret)
++		goto error_ret;
++
++error_ret:
++	return ret;
++
++}
++
++static const struct iio_trigger_ops itg3200_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = &itg3200_data_rdy_trigger_set_state,
++};
++
++int itg3200_probe_trigger(struct iio_dev *indio_dev)
++{
++	int ret;
++	struct itg3200 *st = iio_priv(indio_dev);
++
++	st->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
++				     indio_dev->id);
++	if (!st->trig)
++		return -ENOMEM;
++
++	ret = request_irq(st->i2c->irq,
++			  &iio_trigger_generic_data_rdy_poll,
++			  IRQF_TRIGGER_RISING,
++			  "itg3200_data_rdy",
++			  st->trig);
++	if (ret)
++		goto error_free_trig;
++
++
++	st->trig->dev.parent = &st->i2c->dev;
++	st->trig->ops = &itg3200_trigger_ops;
++	st->trig->private_data = indio_dev;
++	ret = iio_trigger_register(st->trig);
++	if (ret)
++		goto error_free_irq;
++
++	/* select default trigger */
++	indio_dev->trig = st->trig;
++
++	return 0;
++
++error_free_irq:
++	free_irq(st->i2c->irq, st->trig);
++error_free_trig:
++	iio_trigger_free(st->trig);
++	return ret;
++}
++
++void itg3200_remove_trigger(struct iio_dev *indio_dev)
++{
++	struct itg3200 *st = iio_priv(indio_dev);
++
++	iio_trigger_unregister(st->trig);
++	free_irq(st->i2c->irq, st->trig);
++	iio_trigger_free(st->trig);
++}
+diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
 new file mode 100644
-index 0000000..d4b6c82
+index 0000000..91ec7f4
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -0,0 +1,513 @@
++++ b/drivers/iio/gyro/itg3200_core.c
+@@ -0,0 +1,402 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * itg3200_core.c -- support InvenSense ITG3200
++ *                   Digital 3-Axis Gyroscope driver
 + *
-+ * Copyright 2012 STMicroelectronics Inc.
++ * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
++ * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
++ * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
 + *
-+ * Denis Ciocca <denis.ciocca@st.com>
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + *
-+ * Licensed under the GPL-2.
++ * TODO:
++ * - Support digital low pass filter
++ * - Support power management
 + */
 +
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/errno.h>
-+#include <linux/types.h>
-+#include <linux/mutex.h>
 +#include <linux/interrupt.h>
++#include <linux/irq.h>
 +#include <linux/i2c.h>
 +#include <linux/gpio.h>
-+#include <linux/irq.h>
++#include <linux/slab.h>
++#include <linux/stat.h>
++#include <linux/module.h>
 +#include <linux/delay.h>
++
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/events.h>
 +#include <linux/iio/buffer.h>
 +
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
++#include <linux/iio/gyro/itg3200.h>
 +
 +
-+/* DEFAULT VALUE FOR SENSORS */
-+#define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
-+#define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
-+#define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
-+
-+/* FULLSCALE */
-+#define ST_GYRO_FS_AVL_250DPS			250
-+#define ST_GYRO_FS_AVL_500DPS			500
-+#define ST_GYRO_FS_AVL_2000DPS			2000
-+
-+/* CUSTOM VALUES FOR SENSOR 1 */
-+#define ST_GYRO_1_WAI_EXP			0xd3
-+#define ST_GYRO_1_ODR_ADDR			0x20
-+#define ST_GYRO_1_ODR_MASK			0xc0
-+#define ST_GYRO_1_ODR_N_BIT			2
-+#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
-+#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
-+#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
-+#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
-+#define ST_GYRO_1_PW_ADDR			0x20
-+#define ST_GYRO_1_PW_MASK			0x08
-+#define ST_GYRO_1_PW_N_BIT			1
-+#define ST_GYRO_1_FS_N_BIT			2
-+#define ST_GYRO_1_FS_ADDR			0x23
-+#define ST_GYRO_1_FS_MASK			0x30
-+#define ST_GYRO_1_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_1_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_1_BDU_ADDR			0x23
-+#define ST_GYRO_1_BDU_MASK			0x80
-+#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_1_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_1_MULTIREAD_BIT			true
-+
-+/* CUSTOM VALUES FOR SENSOR 2 */
-+#define ST_GYRO_2_WAI_EXP			0xd4
-+#define ST_GYRO_2_ODR_ADDR			0x20
-+#define ST_GYRO_2_ODR_MASK			0xc0
-+#define ST_GYRO_2_ODR_N_BIT			2
-+#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
-+#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
-+#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
-+#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
-+#define ST_GYRO_2_PW_ADDR			0x20
-+#define ST_GYRO_2_PW_MASK			0x08
-+#define ST_GYRO_2_PW_N_BIT			1
-+#define ST_GYRO_2_FS_N_BIT			2
-+#define ST_GYRO_2_FS_ADDR			0x23
-+#define ST_GYRO_2_FS_MASK			0x30
-+#define ST_GYRO_2_FS_AVL_250_VAL		0x00
-+#define ST_GYRO_2_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_2_BDU_ADDR			0x23
-+#define ST_GYRO_2_BDU_MASK			0x80
-+#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_2_DRDY_IRQ_MASK			0x08
-+#define ST_GYRO_2_MULTIREAD_BIT			true
-+
-+static const struct iio_chan_spec st_gyro_16bit_channels[] = {
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
-+		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
-+		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
-+		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
-+						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
-+};
-+
-+static const struct st_sensors st_gyro_sensors[] = {
-+	{
-+		.wai = ST_GYRO_1_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3G4200D_GYRO_DEV_NAME,
-+			[1] = LSM330DL_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_1_ODR_ADDR,
-+			.mask = ST_GYRO_1_ODR_MASK,
-+			.num_bit = ST_GYRO_1_ODR_N_BIT,
-+			.odr_avl = {
-+				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
-+				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
-+				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
-+				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_1_PW_ADDR,
-+			.mask = ST_GYRO_1_PW_MASK,
-+			.num_bit = ST_GYRO_1_PW_N_BIT,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_1_FS_ADDR,
-+			.mask = ST_GYRO_1_FS_MASK,
-+			.num_bit = ST_GYRO_1_FS_N_BIT,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_1_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_1_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_1_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_1_BDU_ADDR,
-+			.mask = ST_GYRO_1_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_1_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+	{
-+		.wai = ST_GYRO_2_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3GD20_GYRO_DEV_NAME,
-+			[1] = L3GD20H_GYRO_DEV_NAME,
-+			[2] = LSM330DLC_GYRO_DEV_NAME,
-+			[3] = L3G4IS_GYRO_DEV_NAME,
-+			[4] = LSM330_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_2_ODR_ADDR,
-+			.mask = ST_GYRO_2_ODR_MASK,
-+			.num_bit = ST_GYRO_2_ODR_N_BIT,
-+			.odr_avl = {
-+				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
-+				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
-+				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
-+				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_2_PW_ADDR,
-+			.mask = ST_GYRO_2_PW_MASK,
-+			.num_bit = ST_GYRO_2_PW_N_BIT,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_2_FS_ADDR,
-+			.mask = ST_GYRO_2_FS_MASK,
-+			.num_bit = ST_GYRO_2_FS_N_BIT,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_250DPS,
-+					.value = ST_GYRO_2_FS_AVL_250_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_2_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_2_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_2_BDU_ADDR,
-+			.mask = ST_GYRO_2_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
-+			.mask = ST_GYRO_2_DRDY_IRQ_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
-+};
-+
-+static int st_gyro_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *ch, int *val,
-+							int *val2, long mask)
++int itg3200_write_reg_8(struct iio_dev *indio_dev,
++		u8 reg_address, u8 val)
 +{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	struct itg3200 *st = iio_priv(indio_dev);
 +
-+	switch (mask) {
++	return i2c_smbus_write_byte_data(st->i2c, 0x80 | reg_address, val);
++}
++
++int itg3200_read_reg_8(struct iio_dev *indio_dev,
++		u8 reg_address, u8 *val)
++{
++	struct itg3200 *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(st->i2c, reg_address);
++	if (ret < 0)
++		return ret;
++	*val = ret;
++	return 0;
++}
++
++static int itg3200_read_reg_s16(struct iio_dev *indio_dev, u8 lower_reg_address,
++		int *val)
++{
++	struct itg3200 *st = iio_priv(indio_dev);
++	struct i2c_client *client = st->i2c;
++	int ret;
++	s16 out;
++
++	struct i2c_msg msg[2] = {
++		{
++			.addr = client->addr,
++			.flags = client->flags,
++			.len = 1,
++			.buf = (char *)&lower_reg_address,
++		},
++		{
++			.addr = client->addr,
++			.flags = client->flags | I2C_M_RD,
++			.len = 2,
++			.buf = (char *)&out,
++		},
++	};
++
++	lower_reg_address |= 0x80;
++	ret = i2c_transfer(client->adapter, msg, 2);
++	be16_to_cpus(&out);
++	*val = out;
++
++	return (ret == 2) ? 0 : ret;
++}
++
++
++static ssize_t itg3200_read_raw(struct iio_dev *indio_dev,
++		const struct iio_chan_spec *chan,
++		int *val, int *val2, long info)
++{
++	ssize_t ret = 0;
++	u8 reg;
++
++	switch (info) {
 +	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&indio_dev->mlock);
-+		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+			err = -EBUSY;
-+			goto read_error;
-+		} else {
-+			err = st_sensors_set_enable(indio_dev,
-+					&st_gyro_sensors[gdata->index], true);
-+			if (err < 0)
-+				goto read_error;
-+
-+			msleep((st_gyro_sensors[gdata->index].bootime * 1000)
-+								/ gdata->odr);
-+			err = st_sensors_read_axis_data(indio_dev,
-+							ch->address, val);
-+			if (err < 0)
-+				goto read_error;
-+
-+			*val = *val >> ch->scan_type.shift;
-+		}
-+		mutex_unlock(&indio_dev->mlock);
++		reg = (u8)chan->address;
++		ret = itg3200_read_reg_s16(indio_dev, reg, val);
 +		return IIO_VAL_INT;
 +	case IIO_CHAN_INFO_SCALE:
 +		*val = 0;
-+		*val2 = gdata->current_fullscale->gain;
-+		return IIO_VAL_INT_PLUS_MICRO;
++		if (chan->type == IIO_TEMP)
++			*val2 = 1000000000/280;
++		else
++			*val2 = 1214142; /* (1 / 14,375) * (PI / 180) */
++		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_OFFSET:
++		/* Only the temperature channel has an offset */
++		*val = 23000;
++		return IIO_VAL_INT;
 +	default:
 +		return -EINVAL;
 +	}
 +
-+read_error:
-+	mutex_unlock(&indio_dev->mlock);
-+	return err;
++	return ret;
 +}
 +
-+static int st_gyro_write_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan, int val, int val2, long mask)
++static ssize_t itg3200_read_frequency(struct device *dev,
++		struct device_attribute *attr, char *buf)
 +{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		err = st_sensors_set_fullscale_by_gain(indio_dev,
-+					&st_gyro_sensors[gdata->index], val2);
-+		break;
-+	default:
-+		err = -EINVAL;
-+	}
-+
-+	return err;
-+}
-+
-+int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_dataready_irq(indio_dev,
-+					&st_gyro_sensors[gdata->index], state);
-+}
-+EXPORT_SYMBOL(st_gyro_set_dataready_irq);
-+
-+int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_axis_enable(indio_dev,
-+				&st_gyro_sensors[gdata->index], active_bit);
-+}
-+EXPORT_SYMBOL(st_gyro_set_axis_enable);
-+
-+static int st_gyro_check_device_support(struct iio_dev *indio_dev)
-+{
-+	int i, n, err;
-+	u8 wai;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	err = gdata->tf->read_byte(&gdata->tb, gdata->dev,
-+					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
-+		goto read_wai_error;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(st_gyro_sensors); i++) {
-+		if (st_gyro_sensors[i].wai == wai)
-+			break;
-+	}
-+	if (i == ARRAY_SIZE(st_gyro_sensors))
-+		goto device_not_supported;
-+
-+	for (n = 0; n < ARRAY_SIZE(st_gyro_sensors[i].sensors_supported);
-+									n++) {
-+		if (strcmp(indio_dev->name,
-+			&st_gyro_sensors[i].sensors_supported[n][0]) == 0)
-+			break;
-+	}
-+	if (n == ARRAY_SIZE(st_gyro_sensors[i].sensors_supported)) {
-+		dev_err(&indio_dev->dev, "device name and WhoAmI mismatch.\n");
-+		goto sensor_name_mismatch;
-+	}
-+
-+	gdata->index = i;
-+
-+	return i;
-+
-+device_not_supported:
-+	dev_err(&indio_dev->dev, "device not supported: WhoAmI (0x%x).\n", wai);
-+sensor_name_mismatch:
-+	err = -ENODEV;
-+read_wai_error:
-+	return err;
-+}
-+
-+int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable)
-+{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_set_enable(indio_dev,
-+				&st_gyro_sensors[gdata->index], enable);
-+}
-+EXPORT_SYMBOL(st_gyro_set_enable);
-+
-+static ssize_t st_gyro_sysfs_set_sampling_frequency(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t size)
-+{
-+	int err;
-+	unsigned int odr;
 +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	int ret;
++	u8 val;
++	int sps;
 +
-+	err = kstrtoint(buf, 10, &odr);
-+	if (err < 0)
-+		goto conversion_error;
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &val);
++	if (ret)
++		return ret;
++
++	sps = (val & ITG3200_DLPF_CFG_MASK) ? 1000 : 8000;
++
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_SAMPLE_RATE_DIV, &val);
++	if (ret)
++		return ret;
++
++	sps /= val + 1;
++
++	return sprintf(buf, "%d\n", sps);
++}
++
++static ssize_t itg3200_write_frequency(struct device *dev,
++		struct device_attribute *attr,
++		const char *buf,
++		size_t len)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	long val;
++	int ret;
++	u8 t;
++
++	ret = kstrtol(buf, 10, &val);
++	if (ret)
++		return ret;
 +
 +	mutex_lock(&indio_dev->mlock);
-+	err = st_sensors_set_odr(indio_dev,
-+					&st_gyro_sensors[gdata->index], odr);
++
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &t);
++	if (ret)
++		goto err_ret;
++
++	if (val == 0) {
++		ret = -EINVAL;
++		goto err_ret;
++	}
++	t = ((t & ITG3200_DLPF_CFG_MASK) ? 1000 : 8000) / val - 1;
++
++	ret = itg3200_write_reg_8(indio_dev, ITG3200_REG_SAMPLE_RATE_DIV, t);
++
++err_ret:
 +	mutex_unlock(&indio_dev->mlock);
 +
-+conversion_error:
-+	return err < 0 ? err : size;
++	return ret ? ret : len;
 +}
 +
-+static ssize_t st_gyro_sysfs_get_sampling_frequency(struct device *dev,
-+				struct device_attribute *attr, char *buf)
++/*
++ *  Reset device and internal registers to the power-up-default settings
++ * Use the gyro clock as reference, as suggested by the datasheet
++ */
++static int itg3200_reset(struct iio_dev *indio_dev)
 +{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	struct itg3200 *st = iio_priv(indio_dev);
++	int ret;
 +
-+	return sprintf(buf, "%d\n", gdata->odr);
-+}
++	dev_dbg(&st->i2c->dev, "reset device");
 +
-+static ssize_t st_gyro_sysfs_scale_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_scale_avl(indio_dev,
-+				st_gyro_sensors[gdata->index].fs.fs_avl, buf);
-+}
-+
-+static ssize_t st_gyro_sysfs_sampling_frequency_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	return st_sensors_get_sampling_frequency_avl(indio_dev,
-+			st_gyro_sensors[gdata->index].odr.odr_avl, buf);
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_gyro_sysfs_sampling_frequency_avail);
-+
-+static IIO_DEVICE_ATTR(in_anglvel_scale_available, S_IRUGO,
-+					st_gyro_sysfs_scale_avail, NULL , 0);
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			st_gyro_sysfs_get_sampling_frequency,
-+					st_gyro_sysfs_set_sampling_frequency);
-+
-+static struct attribute *st_gyro_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_gyro_attribute_group = {
-+	.attrs = st_gyro_attributes,
-+};
-+
-+static const struct iio_info gyro_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &st_gyro_attribute_group,
-+	.read_raw = &st_gyro_read_raw,
-+	.write_raw = &st_gyro_write_raw,
-+};
-+
-+int st_gyro_common_probe(struct iio_dev *indio_dev)
-+{
-+	int err;
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
-+
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &gyro_info;
-+
-+	err = st_gyro_check_device_support(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	gdata->multiread_bit = st_gyro_sensors[gdata->index].multi_read_bit;
-+	indio_dev->channels = st_gyro_sensors[gdata->index].ch;
-+	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-+
-+	gdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-+				&st_gyro_sensors[gdata->index].fs.fs_avl[0];
-+	gdata->odr = st_gyro_sensors[gdata->index].odr.odr_avl[0].hz;
-+
-+	err = st_sensors_init_sensor(indio_dev, &st_gyro_sensors[gdata->index]);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		err = st_gyro_allocate_ring(indio_dev);
-+		if (err < 0)
-+			goto st_gyro_common_probe_error;
-+
-+		err = st_sensors_allocate_trigger(indio_dev,
-+						&st_gyro_trig_set_state, NULL);
-+		if (err < 0)
-+			goto st_gyro_probe_trigger_error;
++	ret = itg3200_write_reg_8(indio_dev,
++			ITG3200_REG_POWER_MANAGEMENT,
++			ITG3200_RESET);
++	if (ret) {
++		dev_err(&st->i2c->dev, "error resetting device");
++		goto error_ret;
 +	}
 +
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto st_gyro_device_register_error;
++	/* Wait for PLL (1ms according to datasheet) */
++	udelay(1500);
 +
-+	return err;
++	ret = itg3200_write_reg_8(indio_dev,
++			ITG3200_REG_IRQ_CONFIG,
++			ITG3200_IRQ_ACTIVE_HIGH |
++			ITG3200_IRQ_PUSH_PULL |
++			ITG3200_IRQ_LATCH_50US_PULSE |
++			ITG3200_IRQ_LATCH_CLEAR_ANY);
 +
-+st_gyro_device_register_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_sensors_deallocate_trigger(indio_dev);
-+st_gyro_probe_trigger_error:
-+	if (gdata->get_irq_data_ready(indio_dev) > 0)
-+		st_gyro_deallocate_ring(indio_dev);
-+st_gyro_common_probe_error:
-+	return err;
++	if (ret)
++		dev_err(&st->i2c->dev, "error init device");
++
++error_ret:
++	return ret;
 +}
-+EXPORT_SYMBOL(st_gyro_common_probe);
 +
-+void st_gyro_common_remove(struct iio_dev *indio_dev)
++/* itg3200_enable_full_scale() - Disables the digital low pass filter */
++static int itg3200_enable_full_scale(struct iio_dev *indio_dev)
 +{
-+	struct st_sensor_data *gdata = iio_priv(indio_dev);
++	u8 val;
++	int ret;
++
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_DLPF, &val);
++	if (ret)
++		goto err_ret;
++
++	val |= ITG3200_DLPF_FS_SEL_2000;
++	return itg3200_write_reg_8(indio_dev, ITG3200_REG_DLPF, val);
++
++err_ret:
++	return ret;
++}
++
++static int itg3200_initial_setup(struct iio_dev *indio_dev)
++{
++	struct itg3200 *st = iio_priv(indio_dev);
++	int ret;
++
++	u8 val;
++	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
++	if (ret)
++		goto err_ret;
++
++	if (((val >> 1) & 0x3f) != 0x34) {
++		dev_err(&st->i2c->dev, "invalid reg value 0x%02x", val);
++		ret = -ENXIO;
++		goto err_ret;
++	}
++
++	ret = itg3200_reset(indio_dev);
++	if (ret)
++		goto err_ret;
++
++	ret = itg3200_enable_full_scale(indio_dev);
++err_ret:
++	return ret;
++}
++
++#define ITG3200_TEMP_INFO_MASK	(IIO_CHAN_INFO_OFFSET_SHARED_BIT | \
++				 IIO_CHAN_INFO_SCALE_SHARED_BIT | \
++				 IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++#define ITG3200_GYRO_INFO_MASK	(IIO_CHAN_INFO_SCALE_SHARED_BIT | \
++				 IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++
++#define ITG3200_ST						\
++	{ .sign = 's', .realbits = 16, .storagebits = 16, .endianness = IIO_BE }
++
++#define ITG3200_GYRO_CHAN(_mod) { \
++	.type = IIO_ANGL_VEL, \
++	.modified = 1, \
++	.channel2 = IIO_MOD_ ## _mod, \
++	.info_mask = ITG3200_GYRO_INFO_MASK, \
++	.address = ITG3200_REG_GYRO_ ## _mod ## OUT_H, \
++	.scan_index = ITG3200_SCAN_GYRO_ ## _mod, \
++	.scan_type = ITG3200_ST, \
++}
++
++static const struct iio_chan_spec itg3200_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.channel2 = IIO_NO_MOD,
++		.info_mask = ITG3200_TEMP_INFO_MASK,
++		.address = ITG3200_REG_TEMP_OUT_H,
++		.scan_index = ITG3200_SCAN_TEMP,
++		.scan_type = ITG3200_ST,
++	},
++	ITG3200_GYRO_CHAN(X),
++	ITG3200_GYRO_CHAN(Y),
++	ITG3200_GYRO_CHAN(Z),
++	IIO_CHAN_SOFT_TIMESTAMP(ITG3200_SCAN_ELEMENTS),
++};
++
++/* IIO device attributes */
++static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO, itg3200_read_frequency,
++		itg3200_write_frequency);
++
++static struct attribute *itg3200_attributes[] = {
++	&iio_dev_attr_sampling_frequency.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group itg3200_attribute_group = {
++	.attrs = itg3200_attributes,
++};
++
++static const struct iio_info itg3200_info = {
++	.attrs = &itg3200_attribute_group,
++	.read_raw = &itg3200_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int itg3200_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	int ret;
++	struct itg3200 *st;
++	struct iio_dev *indio_dev;
++	const unsigned long avail_scan_masks[] = { 0xffffffff, 0x0 };
++
++	dev_dbg(&client->dev, "probe I2C dev with IRQ %i", client->irq);
++
++	indio_dev = iio_device_alloc(sizeof(*st));
++	if (indio_dev == NULL) {
++		ret =  -ENOMEM;
++		goto error_ret;
++	}
++
++	st = iio_priv(indio_dev);
++
++	i2c_set_clientdata(client, indio_dev);
++	st->i2c = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = client->dev.driver->name;
++	indio_dev->channels = itg3200_channels;
++	indio_dev->num_channels = ARRAY_SIZE(itg3200_channels);
++	indio_dev->available_scan_masks = avail_scan_masks;
++	indio_dev->info = &itg3200_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = itg3200_buffer_configure(indio_dev);
++	if (ret)
++		goto error_free_dev;
++
++	if (client->irq) {
++		ret = itg3200_probe_trigger(indio_dev);
++		if (ret)
++			goto error_unconfigure_buffer;
++	}
++
++	ret = itg3200_initial_setup(indio_dev);
++	if (ret)
++		goto error_remove_trigger;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_remove_trigger;
++
++	return 0;
++
++error_remove_trigger:
++	if (client->irq)
++		itg3200_remove_trigger(indio_dev);
++error_unconfigure_buffer:
++	itg3200_buffer_unconfigure(indio_dev);
++error_free_dev:
++	iio_device_free(indio_dev);
++error_ret:
++	return ret;
++}
++
++static int itg3200_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 +
 +	iio_device_unregister(indio_dev);
-+	if (gdata->get_irq_data_ready(indio_dev) > 0) {
-+		st_sensors_deallocate_trigger(indio_dev);
-+		st_gyro_deallocate_ring(indio_dev);
-+	}
++
++	if (client->irq)
++		itg3200_remove_trigger(indio_dev);
++
++	itg3200_buffer_unconfigure(indio_dev);
++
 +	iio_device_free(indio_dev);
-+}
-+EXPORT_SYMBOL(st_gyro_common_remove);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-new file mode 100644
-index 0000000..24cead1
---- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -0,0 +1,84 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
-+
-+
-+static int st_gyro_i2c_probe(struct i2c_client *client,
-+						const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &client->dev;
-+
-+	st_sensors_i2c_configure(indio_dev, client, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_gyro_i2c_remove(struct i2c_client *client)
-+{
-+	st_gyro_common_remove(i2c_get_clientdata(client));
 +
 +	return 0;
 +}
 +
-+static const struct i2c_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
++static const struct i2c_device_id itg3200_id[] = {
++	{ "itg3200", 0 },
++	{ }
 +};
-+MODULE_DEVICE_TABLE(i2c, st_gyro_id_table);
++MODULE_DEVICE_TABLE(i2c, itg3200_id);
 +
-+static struct i2c_driver st_gyro_driver = {
++static struct i2c_driver itg3200_driver = {
 +	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-i2c",
++		.owner  = THIS_MODULE,
++		.name	= "itg3200",
 +	},
-+	.probe = st_gyro_i2c_probe,
-+	.remove = st_gyro_i2c_remove,
-+	.id_table = st_gyro_id_table,
++	.id_table	= itg3200_id,
++	.probe		= itg3200_probe,
++	.remove		= itg3200_remove,
 +};
-+module_i2c_driver(st_gyro_driver);
 +
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes i2c driver");
++module_i2c_driver(itg3200_driver);
++
++MODULE_AUTHOR("Christian Strobel <christian.strobel@iis.fraunhofer.de>");
++MODULE_DESCRIPTION("ITG3200 Gyroscope I2C driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+diff --git a/include/linux/iio/gyro/itg3200.h b/include/linux/iio/gyro/itg3200.h
 new file mode 100644
-index 0000000..38775e3
+index 0000000..c53f169
 --- /dev/null
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -0,0 +1,83 @@
++++ b/include/linux/iio/gyro/itg3200.h
+@@ -0,0 +1,154 @@
 +/*
-+ * STMicroelectronics gyroscopes driver
++ * itg3200.h -- support InvenSense ITG3200
++ *              Digital 3-Axis Gyroscope driver
 + *
-+ * Copyright 2012 STMicroelectronics Inc.
++ * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
++ * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
++ * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
 + *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/spi/spi.h>
++#ifndef I2C_ITG3200_H_
++#define I2C_ITG3200_H_
++
 +#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
 +
-+#include <linux/iio/gyro/st_gyro.h>
-+#include <linux/iio/common/st_sensors.h>
++/* Register with I2C address (34h) */
++#define ITG3200_REG_ADDRESS		0x00
++
++/* Sample rate divider
++ * Range: 0 to 255
++ * Default value: 0x00 */
++#define ITG3200_REG_SAMPLE_RATE_DIV	0x15
++
++/* Digital low pass filter settings */
++#define ITG3200_REG_DLPF		0x16
++/* DLPF full scale range */
++#define ITG3200_DLPF_FS_SEL_2000	0x18
++/* Bandwidth (Hz) and internal sample rate
++ * (kHz) of DLPF */
++#define ITG3200_DLPF_256_8		0x00
++#define ITG3200_DLPF_188_1		0x01
++#define ITG3200_DLPF_98_1		0x02
++#define ITG3200_DLPF_42_1		0x03
++#define ITG3200_DLPF_20_1		0x04
++#define ITG3200_DLPF_10_1		0x05
++#define ITG3200_DLPF_5_1		0x06
++
++#define ITG3200_DLPF_CFG_MASK		0x07
++
++/* Configuration for interrupt operations */
++#define ITG3200_REG_IRQ_CONFIG		0x17
++/* Logic level */
++#define ITG3200_IRQ_ACTIVE_LOW		0x80
++#define ITG3200_IRQ_ACTIVE_HIGH		0x00
++/* Drive type */
++#define ITG3200_IRQ_OPEN_DRAIN		0x40
++#define ITG3200_IRQ_PUSH_PULL		0x00
++/* Latch mode */
++#define ITG3200_IRQ_LATCH_UNTIL_CLEARED	0x20
++#define ITG3200_IRQ_LATCH_50US_PULSE	0x00
++/* Latch clear method */
++#define ITG3200_IRQ_LATCH_CLEAR_ANY	0x10
++#define ITG3200_IRQ_LATCH_CLEAR_STATUS	0x00
++/* Enable interrupt when device is ready */
++#define ITG3200_IRQ_DEVICE_RDY_ENABLE	0x04
++/* Enable interrupt when data is available */
++#define ITG3200_IRQ_DATA_RDY_ENABLE	0x01
++
++/* Determine the status of ITG-3200 interrupts */
++#define ITG3200_REG_IRQ_STATUS		0x1A
++/* Status of 'device is ready'-interrupt */
++#define ITG3200_IRQ_DEVICE_RDY_STATUS	0x04
++/* Status of 'data is available'-interrupt */
++#define ITG3200_IRQ_DATA_RDY_STATUS	0x01
++
++/* Sensor registers */
++#define ITG3200_REG_TEMP_OUT_H		0x1B
++#define ITG3200_REG_TEMP_OUT_L		0x1C
++#define ITG3200_REG_GYRO_XOUT_H		0x1D
++#define ITG3200_REG_GYRO_XOUT_L		0x1E
++#define ITG3200_REG_GYRO_YOUT_H		0x1F
++#define ITG3200_REG_GYRO_YOUT_L		0x20
++#define ITG3200_REG_GYRO_ZOUT_H		0x21
++#define ITG3200_REG_GYRO_ZOUT_L		0x22
++
++/* Power management */
++#define ITG3200_REG_POWER_MANAGEMENT	0x3E
++/* Reset device and internal registers to the
++ * power-up-default settings */
++#define ITG3200_RESET			0x80
++/* Enable low power sleep mode */
++#define ITG3200_SLEEP			0x40
++/* Put according gyroscope in standby mode */
++#define ITG3200_STANDBY_GYRO_X		0x20
++#define ITG3200_STANDBY_GYRO_Y		0x10
++#define ITG3200_STANDBY_GYRO_Z		0x08
++/* Determine the device clock source */
++#define ITG3200_CLK_INTERNAL		0x00
++#define ITG3200_CLK_GYRO_X		0x01
++#define ITG3200_CLK_GYRO_Y		0x02
++#define ITG3200_CLK_GYRO_Z		0x03
++#define ITG3200_CLK_EXT_32K		0x04
++#define ITG3200_CLK_EXT_19M		0x05
 +
 +
-+static int st_gyro_spi_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *gdata;
-+	int err;
-+
-+	indio_dev = iio_device_alloc(sizeof(*gdata));
-+	if (indio_dev == NULL) {
-+		err = -ENOMEM;
-+		goto iio_device_alloc_error;
-+	}
-+
-+	gdata = iio_priv(indio_dev);
-+	gdata->dev = &spi->dev;
-+
-+	st_sensors_spi_configure(indio_dev, spi, gdata);
-+
-+	err = st_gyro_common_probe(indio_dev);
-+	if (err < 0)
-+		goto st_gyro_common_probe_error;
-+
-+	return 0;
-+
-+st_gyro_common_probe_error:
-+	iio_device_free(indio_dev);
-+iio_device_alloc_error:
-+	return err;
-+}
-+
-+static int st_gyro_spi_remove(struct spi_device *spi)
-+{
-+	st_gyro_common_remove(spi_get_drvdata(spi));
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id st_gyro_id_table[] = {
-+	{ L3G4200D_GYRO_DEV_NAME },
-+	{ LSM330DL_GYRO_DEV_NAME },
-+	{ L3GD20_GYRO_DEV_NAME },
-+	{ L3GD20H_GYRO_DEV_NAME },
-+	{ LSM330DLC_GYRO_DEV_NAME },
-+	{ L3G4IS_GYRO_DEV_NAME },
-+	{ LSM330_GYRO_DEV_NAME },
-+	{},
++/**
++ * struct itg3200 - device instance specific data
++ * @i2c:    actual i2c_client
++ * @trig:   data ready trigger from itg3200 pin
++ **/
++struct itg3200 {
++	struct i2c_client	*i2c;
++	struct iio_trigger	*trig;
 +};
-+MODULE_DEVICE_TABLE(spi, st_gyro_id_table);
 +
-+static struct spi_driver st_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = "st-gyro-spi",
-+	},
-+	.probe = st_gyro_spi_probe,
-+	.remove = st_gyro_spi_remove,
-+	.id_table = st_gyro_id_table,
++enum ITG3200_SCAN_INDEX {
++	ITG3200_SCAN_TEMP,
++	ITG3200_SCAN_GYRO_X,
++	ITG3200_SCAN_GYRO_Y,
++	ITG3200_SCAN_GYRO_Z,
++	ITG3200_SCAN_ELEMENTS,
 +};
-+module_spi_driver(st_gyro_driver);
 +
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics gyroscopes spi driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/gyro/st_gyro.h b/include/linux/iio/gyro/st_gyro.h
-new file mode 100644
-index 0000000..d7613ca
---- /dev/null
-+++ b/include/linux/iio/gyro/st_gyro.h
-@@ -0,0 +1,49 @@
-+/*
-+ * STMicroelectronics gyroscopes driver
-+ *
-+ * Copyright 2012 STMicroelectronics Inc.
-+ *
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ * v. 1.0.0
-+ * Licensed under the GPL-2.
-+ */
++int itg3200_write_reg_8(struct iio_dev *indio_dev,
++		u8 reg_address, u8 val);
 +
-+#ifndef ST_GYRO_H
-+#define ST_GYRO_H
++int itg3200_read_reg_8(struct iio_dev *indio_dev,
++		u8 reg_address, u8 *val);
 +
-+#include <linux/types.h>
-+#include "../common/st_sensors.h"
 +
-+#define L3G4200D_GYRO_DEV_NAME		"l3g4200d"
-+#define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
-+#define L3GD20_GYRO_DEV_NAME		"l3gd20"
-+#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
-+#define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
-+#define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
-+#define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
++#ifdef CONFIG_IIO_BUFFER
 +
-+int st_gyro_common_probe(struct iio_dev *indio_dev);
-+void st_gyro_common_remove(struct iio_dev *indio_dev);
-+int st_gyro_set_dataready_irq(struct iio_dev *indio_dev, bool state);
-+int st_gyro_set_axis_enable(struct iio_dev *indio_dev, u8 active_bit);
-+int st_gyro_set_enable(struct iio_dev *indio_dev, bool enable);
++void itg3200_remove_trigger(struct iio_dev *indio_dev);
++int itg3200_probe_trigger(struct iio_dev *indio_dev);
 +
-+#ifdef CONFIG_IIO_ST_GYRO_3AXIS_TRIGGERED_BUFFER
-+int st_gyro_allocate_ring(struct iio_dev *indio_dev);
-+void st_gyro_deallocate_ring(struct iio_dev *indio_dev);
-+int st_gyro_trig_set_state(struct iio_trigger *trig, bool state);
-+#else /* CONFIG_IIO_ST_GYRO_3AXIS_TRIGGERED_BUFFER */
-+static inline int st_gyro_allocate_ring(struct iio_dev *indio_dev)
++int itg3200_buffer_configure(struct iio_dev *indio_dev);
++void itg3200_buffer_unconfigure(struct iio_dev *indio_dev);
++
++#else /* CONFIG_IIO_BUFFER */
++
++static inline void itg3200_remove_trigger(struct iio_dev *indio_dev)
++{
++}
++
++static inline int itg3200_probe_trigger(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
-+static inline void st_gyro_deallocate_ring(struct iio_dev *indio_dev)
-+{
-+}
-+static inline int st_gyro_trig_set_state(struct iio_trigger *trig, bool state)
++
++static inline int itg3200_buffer_configure(struct iio_dev *indio_dev)
 +{
 +	return 0;
 +}
-+#endif /* CONFIG_IIO_ST_GYRO_3AXIS_TRIGGERED_BUFFER */
 +
-+#endif /* ST_GYRO_H */
++static inline void itg3200_buffer_unconfigure(struct iio_dev *indio_dev)
++{
++}
++
++#endif  /* CONFIG_IIO_RING_BUFFER */
++
++#endif /* ITG3200_H_ */
 -- 
-1.7.0.4
+1.7.2.3
 
