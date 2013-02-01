@@ -1,80 +1,50 @@
-Return-Path: <linux@roeck-us.net>
-Date: Fri, 1 Feb 2013 11:42:13 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [RFC 10/11] iio: Add OF support
-Message-ID: <20130201194213.GA17968@roeck-us.net>
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net>
- <1359668588-13678-11-git-send-email-linux@roeck-us.net>
- <510BADCA.1030407@metafoo.de>
- <20130201143307.GB20767@roeck-us.net>
- <510BD845.1010200@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-51.csi.cam.ac.uk ([131.111.8.151]:40573 "EHLO
+	ppsw-51.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755941Ab3BAMAR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2013 07:00:17 -0500
+Message-ID: <510BAE4D.6090802@jic23.retrosnub.co.uk>
+Date: Fri, 01 Feb 2013 12:00:13 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <510BD845.1010200@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: jic23@cam.ac.uk, Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>,
+	Denis CIOCCA <denis.ciocca@st.com>
+Subject: Re: [RFC] Driver for lis331dlh
+References: <1359719147-30231-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1359719147-30231-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 01, 2013 at 03:59:17PM +0100, Lars-Peter Clausen wrote:
-> On 02/01/2013 03:33 PM, Guenter Roeck wrote:
-> > On Fri, Feb 01, 2013 at 12:58:02PM +0100, Lars-Peter Clausen wrote:
-> >> 013 10:43 PM, Guenter Roeck wrote:
-> >>> Provide bindings, new API access functions, and parse OF data
-> >>> during initialization.
-> >>>
-> >>
-> >> Hi Guenter,
-> >>
-> >> Thanks for taking care of this.
-> >>
-> >> I'd prefer to have only one iio_get_channel which handles both the dt and the
-> >> non-dt case. Otherwise we'll soon have constructs like
-> >>
-> >> if (dev->of_node)
-> >> 	chan = of_iio_get_channel(dev->of_node, 1);
-> >> else
-> >> 	chan = iio_get_channel(dev_name(dev), "vcc");
-> >>
+On 01/02/13 11:45, Manuel Stahl wrote:
+> The following patch adds support for the ST Microelectronics lis331dlh accelerometer.
+> It is very similar to the lis3l02dq driver in staging (but updated to the current API)
+> and there is also a driver in misc supporting a larger range of these devices.
+> So sure, these should be merged, but I'm not sure how to do it properly.
+Just to make it more 'exciting' I have a driver from Denis queued up to
+handle a whole load of ST sensors. The intent there is to eventually 
+cover all this sort of part.  So Denis, what is needed to add support 
+for this chip? I would imagine, not a whole lot.
+>
+> Manuel Stahl (1):
+>    iio: accel: Add driver for lis331dlh
+>
+>   drivers/iio/Kconfig                  |    1 +
+>   drivers/iio/accel/Kconfig            |   16 ++
+>   drivers/iio/accel/Makefile           |    5 +
+>   drivers/iio/accel/lis331dlh_buffer.c |  132 +++++++++++
+>   drivers/iio/accel/lis331dlh_core.c   |  429 ++++++++++++++++++++++++++++++++++
+>   drivers/iio/accel/lis331dlh_i2c.c    |  150 ++++++++++++
+>   drivers/iio/accel/lis331dlh_spi.c    |  129 ++++++++++
+>   include/linux/iio/accel/lis331dlh.h  |  243 +++++++++++++++++++
+>   8 files changed, 1105 insertions(+), 0 deletions(-)
+>   create mode 100644 drivers/iio/accel/lis331dlh_buffer.c
+>   create mode 100644 drivers/iio/accel/lis331dlh_core.c
+>   create mode 100644 drivers/iio/accel/lis331dlh_i2c.c
+>   create mode 100644 drivers/iio/accel/lis331dlh_spi.c
+>   create mode 100644 include/linux/iio/accel/lis331dlh.h
+>
 
-Clock code has of_clk_get_by_name(node *, name), clk_get(dev, name), and
-of_clk_get(node *, index). Right now of_iio_get_channel matches of_clk_get,
-and iio_get_channel matches clk_get.
-
-Question is really how we want to API to look like. I am open to suggestions.
-
-> >> appearing all over the place in drivers code. I'd keep the actual
-> >> implementation pretty close to what the clk framework does. E.g. take a look at
-> >> of_clk_get_by_name() and clk_get() in clkdev.c. And don't take a detour via the
-> >> iio_map lookup for the devicetree case, just loop over all IIO devices and
-> >> match by of_node. This should allow us to simplify the code quite a bit.
-> >>
-> > Yes, I just could not figure out how to loop over the list of iio devices. That
-> > is why I hijacked iio_map which does provide a list.
-> > 
-> > Any hints ?
-> 
-> Yes, use bus_find_device on iio_bus_type. A nice example how to use this to
-> lookup device by of node is of_find_i2c_device_by_node. For IIO you also need
-> to make sure that dev->type is iio_dev_type, since both devices and triggers
-> are registered on the same bus.
-> 
-Great, that works nicely, and, yes, the code is now much simpler.
-
-> >>> +static struct iio_map *iio_map_of_init(struct iio_dev *idev)
-> >>> +{
-> >>
-> >> To be honest I find this whole function a bit confusing. If we are using
-> >> devicetree, we shouldn't need to register iio_map. Maybe just skip over
-> >> io-channel-output-names for now, until we figure out if we really need this and
-> >> what for.
-> >>
-Correct, I don't need this anymore after implementing the above.
-
-Thanks,
-Guenter
