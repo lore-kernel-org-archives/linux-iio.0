@@ -1,47 +1,144 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43376 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43497 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753645Ab3BBJzr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2013 04:55:47 -0500
-Message-ID: <510CE2A2.9060004@kernel.org>
-Date: Sat, 02 Feb 2013 09:55:46 +0000
+	with ESMTP id S1753661Ab3BBKGE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2013 05:06:04 -0500
+Message-ID: <510CE50A.1080703@kernel.org>
+Date: Sat, 02 Feb 2013 10:06:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH 04/11] iio/adc: (lp8788) Provide OF node information to
- iio device
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net> <1359668588-13678-5-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359668588-13678-5-git-send-email-linux@roeck-us.net>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:common: removed unused functions outside st_sensors
+ library
+References: <1359537358-28899-1-git-send-email-denis.ciocca@st.com> <1359537358-28899-2-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1359537358-28899-2-git-send-email-denis.ciocca@st.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/31/2013 09:43 PM, Guenter Roeck wrote:
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-applied to togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+On 01/30/2013 09:15 AM, Denis CIOCCA wrote:
+> This patch remove st_sensors_get_sampling_frequency_avl and st_sensors_get_scale_avl functions used only in st_sensors_sysfs_sampling_frequency_avail and st_sensors_sysfs_scale_avail sysfs functions.
+
+I added your sign off to this on the assumption it was intended and
+applied to togreg branch of iio.git
 
 > ---
->  drivers/iio/adc/lp8788_adc.c |    1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/common/st_sensors/st_sensors_core.c |   70 +++++++++--------------
+>  include/linux/iio/common/st_sensors.h           |    4 --
+>  2 files changed, 28 insertions(+), 46 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-> index 72955e4..e5293d0 100644
-> --- a/drivers/iio/adc/lp8788_adc.c
-> +++ b/drivers/iio/adc/lp8788_adc.c
-> @@ -208,6 +208,7 @@ static int lp8788_adc_probe(struct platform_device *pdev)
->  	adc->lp = lp;
->  	platform_set_drvdata(pdev, indio_dev);
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index fba6d68..0198324 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -38,46 +38,6 @@ st_sensors_write_data_with_mask_error:
+>  	return err;
+>  }
 >  
-> +	indio_dev->dev.of_node = pdev->dev.of_node;
->  	ret = lp8788_iio_map_register(indio_dev, lp->pdata, adc);
->  	if (ret)
->  		goto err_iio_map;
+> -int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev, char *buf)
+> -{
+> -	int i, len = 0;
+> -	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> -
+> -	mutex_lock(&indio_dev->mlock);
+> -	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
+> -		if (sdata->sensor->odr.odr_avl[i].hz == 0)
+> -			break;
+> -
+> -		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
+> -					sdata->sensor->odr.odr_avl[i].hz);
+> -	}
+> -	mutex_unlock(&indio_dev->mlock);
+> -	buf[len - 1] = '\n';
+> -
+> -	return len;
+> -}
+> -EXPORT_SYMBOL(st_sensors_get_sampling_frequency_avl);
+> -
+> -int st_sensors_get_scale_avl(struct iio_dev *indio_dev, char *buf)
+> -{
+> -	int i, len = 0;
+> -	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> -
+> -	mutex_lock(&indio_dev->mlock);
+> -	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+> -		if (sdata->sensor->fs.fs_avl[i].num == 0)
+> -			break;
+> -
+> -		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
+> -					sdata->sensor->fs.fs_avl[i].gain);
+> -	}
+> -	mutex_unlock(&indio_dev->mlock);
+> -	buf[len - 1] = '\n';
+> -
+> -	return len;
+> -}
+> -EXPORT_SYMBOL(st_sensors_get_scale_avl);
+> -
+>  static int st_sensors_match_odr(struct st_sensors *sensor,
+>  			unsigned int odr, struct st_sensor_odr_avl *odr_out)
+>  {
+> @@ -440,18 +400,44 @@ EXPORT_SYMBOL(st_sensors_sysfs_set_sampling_frequency);
+>  ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
+>  				struct device_attribute *attr, char *buf)
+>  {
+> +	int i, len = 0;
+>  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
+> +		if (sdata->sensor->odr.odr_avl[i].hz == 0)
+> +			break;
+> +
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
+> +					sdata->sensor->odr.odr_avl[i].hz);
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +	buf[len - 1] = '\n';
+>  
+> -	return st_sensors_get_sampling_frequency_avl(indio_dev, buf);
+> +	return len;
+>  }
+>  EXPORT_SYMBOL(st_sensors_sysfs_sampling_frequency_avail);
+>  
+>  ssize_t st_sensors_sysfs_scale_avail(struct device *dev,
+>  				struct device_attribute *attr, char *buf)
+>  {
+> +	int i, len = 0;
+>  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+> +		if (sdata->sensor->fs.fs_avl[i].num == 0)
+> +			break;
+> +
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
+> +					sdata->sensor->fs.fs_avl[i].gain);
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +	buf[len - 1] = '\n';
+>  
+> -	return st_sensors_get_scale_avl(indio_dev, buf);
+> +	return len;
+>  }
+>  EXPORT_SYMBOL(st_sensors_sysfs_scale_avail);
+>  
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+> index 3cc8571..c40fdf5 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -243,10 +243,6 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
+>  
+>  int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
+>  
+> -int st_sensors_get_sampling_frequency_avl(struct iio_dev *indio_dev, char *buf);
+> -
+> -int st_sensors_get_scale_avl(struct iio_dev *indio_dev, char *buf);
+> -
+>  int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
+>  
+>  int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
 > 
