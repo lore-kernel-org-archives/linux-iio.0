@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43559 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43640 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754586Ab3BBKIt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2013 05:08:49 -0500
-Message-ID: <510CE5B0.3050207@kernel.org>
-Date: Sat, 02 Feb 2013 10:08:48 +0000
+	with ESMTP id S1753714Ab3BBKOg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2013 05:14:36 -0500
+Message-ID: <510CE70A.60002@kernel.org>
+Date: Sat, 02 Feb 2013 10:14:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Guenter Roeck <linux@roeck-us.net>
@@ -15,51 +15,138 @@ CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
 	Tomasz Figa <tomasz.figa@gmail.com>,
 	Grant Likely <grant.likely@secretlab.ca>,
 	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH 07/11] iio/adc: (max1363) Fix data conversion problems
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net> <1359668588-13678-8-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359668588-13678-8-git-send-email-linux@roeck-us.net>
+Subject: Re: [RFC 08/11] iio: Update iio_channel_get_all and iio_channel_get_all_cb
+ API
+References: <1359668588-13678-1-git-send-email-linux@roeck-us.net> <1359668588-13678-9-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1359668588-13678-9-git-send-email-linux@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/31/2013 09:43 PM, Guenter Roeck wrote:
-> For chips with more than 8 bit ADC resolution, received data was always
-> masked against 0xfff, ie with a 12 bit mask. This can result in bad data
-> for chips with 10 bit resolution if those chips have higher bits set
-> (seen with MAX1139).
-> 
-> The receive buffer was defined as char array. This could result in
-> unintentional sign extensions if the upper bit in a received byte
-> was set. Since the chip is configured for unipolar mode, we never
-> have to handle negative values, and sign extensions are never needed.
+> Pass device pointer instead of device name as parameter to iio_channel_get_all
+> and iio_channel_get_all_cb. This will enable us to use OF information to
+> retrieve consumer channel information.
 > 
 > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Applied to togreg branch of iio.git
+Applied with unused 'lists' variable dropped.
 > ---
->  drivers/iio/adc/max1363.c |    5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  drivers/iio/buffer_cb.c         |    4 ++--
+>  drivers/iio/inkern.c            |    6 ++++--
+>  drivers/staging/iio/iio_hwmon.c |   10 +++++++---
+>  include/linux/iio/consumer.h    |    8 ++++----
+>  4 files changed, 17 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index 2c773b4..fdc8be9 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -334,7 +334,7 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
->  {
->  	int ret = 0;
->  	s32 data;
-> -	char rxbuf[2];
-> +	u8 rxbuf[2];
->  	struct max1363_state *st = iio_priv(indio_dev);
->  	struct i2c_client *client = st->client;
+> diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
+> index 4d40e24..9201022 100644
+> --- a/drivers/iio/buffer_cb.c
+> +++ b/drivers/iio/buffer_cb.c
+> @@ -25,7 +25,7 @@ static struct iio_buffer_access_funcs iio_cb_access = {
+>  	.store_to = &iio_buffer_cb_store_to,
+>  };
 >  
-> @@ -366,7 +366,8 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
->  			ret = data;
->  			goto error_ret;
->  		}
-> -		data = (s32)(rxbuf[1]) | ((s32)(rxbuf[0] & 0x0F)) << 8;
-> +		data = (rxbuf[1] | rxbuf[0] << 8) &
-> +		  ((1 << st->chip_info->bits) - 1);
->  	} else {
->  		/* Get reading */
->  		data = i2c_master_recv(client, rxbuf, 1);
+> -struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
+> +struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+>  					     int (*cb)(u8 *data,
+>  						       void *private),
+>  					     void *private)
+> @@ -46,7 +46,7 @@ struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
+>  	cb_buff->buffer.access = &iio_cb_access;
+>  	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
+>  
+> -	cb_buff->channels = iio_channel_get_all(name);
+> +	cb_buff->channels = iio_channel_get_all(dev);
+>  	if (IS_ERR(cb_buff->channels)) {
+>  		ret = PTR_ERR(cb_buff->channels);
+>  		goto error_free_cb_buff;
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index d55e98f..58d0ffe 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -167,16 +167,18 @@ void iio_channel_release(struct iio_channel *channel)
+>  }
+>  EXPORT_SYMBOL_GPL(iio_channel_release);
+>  
+> -struct iio_channel *iio_channel_get_all(const char *name)
+> +struct iio_channel *iio_channel_get_all(struct device *dev)
+>  {
+> +	const char *name;
+>  	struct iio_channel *chans;
+>  	struct iio_map_internal *c = NULL;
+>  	int nummaps = 0;
+>  	int mapind = 0;
+>  	int i, ret;
+>  
+> -	if (name == NULL)
+> +	if (dev == NULL)
+>  		return ERR_PTR(-EINVAL);
+> +	name = dev_name(dev);
+>  
+>  	mutex_lock(&iio_map_list_lock);
+>  	/* first count the matching maps */
+> diff --git a/drivers/staging/iio/iio_hwmon.c b/drivers/staging/iio/iio_hwmon.c
+> index 6a5bc5f..a4fce64 100644
+> --- a/drivers/staging/iio/iio_hwmon.c
+> +++ b/drivers/staging/iio/iio_hwmon.c
+> @@ -71,14 +71,18 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  	int ret, i;
+>  	int in_i = 1, temp_i = 1, curr_i = 1;
+>  	enum iio_chan_type type;
+> +	struct iio_channel *channels;
+> +	const __be32 *list;
+> +
+> +	channels = iio_channel_get_all(dev);
+> +	if (IS_ERR(channels))
+> +		return PTR_ERR(channels);
+>  
+>  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+>  	if (st == NULL)
+>  		return -ENOMEM;
+>  
+> -	st->channels = iio_channel_get_all(dev_name(dev));
+> -	if (IS_ERR(st->channels))
+> -		return PTR_ERR(st->channels);
+> +	st->channels = channels;
+>  
+>  	/* count how many attributes we have */
+>  	while (st->channels[st->num_channels].indio_dev)
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 16c35ac..6c44167 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -48,14 +48,14 @@ void iio_channel_release(struct iio_channel *chan);
+>  
+>  /**
+>   * iio_channel_get_all() - get all channels associated with a client
+> - * @name:		name of consumer device.
+> + * @dev:		Pointer to consumer device.
+>   *
+>   * Returns an array of iio_channel structures terminated with one with
+>   * null iio_dev pointer.
+>   * This function is used by fairly generic consumers to get all the
+>   * channels registered as having this consumer.
+>   */
+> -struct iio_channel *iio_channel_get_all(const char *name);
+> +struct iio_channel *iio_channel_get_all(struct device *dev);
+>  
+>  /**
+>   * iio_channel_release_all() - reverse iio_channel_get_all
+> @@ -66,7 +66,7 @@ void iio_channel_release_all(struct iio_channel *chan);
+>  struct iio_cb_buffer;
+>  /**
+>   * iio_channel_get_all_cb() - register callback for triggered capture
+> - * @name:		Name of client device.
+> + * @dev:		Pointer to client device.
+>   * @cb:			Callback function.
+>   * @private:		Private data passed to callback.
+>   *
+> @@ -74,7 +74,7 @@ struct iio_cb_buffer;
+>   * So if the channels requested come from different devices this will
+>   * fail.
+>   */
+> -struct iio_cb_buffer *iio_channel_get_all_cb(const char *name,
+> +struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+>  					     int (*cb)(u8 *data,
+>  						       void *private),
+>  					     void *private);
 > 
