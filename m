@@ -1,49 +1,234 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758905Ab3B0UkO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:14 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 21/67] iio:dac:ad5421 move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:27 +0000
-Message-Id: <1361997553-31058-22-git-send-email-jic23@kernel.org>
-In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
-References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <510E5694.3000304@metafoo.de>
+Date: Sun, 03 Feb 2013 13:22:44 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Tomasz Figa <tomasz.figa@gmail.com>
+CC: Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>,
+ devicetree-discuss@lists.ozlabs.org,
+ Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+ Doug Anderson <dianders@chromium.org>,
+ Grant Likely <grant.likely@secretlab.ca>,
+ Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCH v2 4/4] iio: Add OF support
+References: <1359853180-5664-1-git-send-email-linux@roeck-us.net> <20130203020651.GA7655@roeck-us.net> <510E4A13.3080800@metafoo.de> <1915802.t7OItgMRJy@flatron>
+In-Reply-To: <1915802.t7OItgMRJy@flatron>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-The original info_mask is going away in favour of the broken out versions.
+On 02/03/2013 12:52 PM, Tomasz Figa wrote:
+> On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
+>> On 02/03/2013 03:06 AM, Guenter Roeck wrote:
+>>> On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
+>>>> Hi Guenter,
+>>>>
+>>>> Some comments inline.
+>>>>
+>>>> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
+>>>>> Provide bindings and parse OF data during initialization.
+>>>>>
+>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>>>>> ---
+>>>>> - Documentation update per feedback
+>>>>> - Dropped io-channel-output-names from the bindings document. The
+>>>>> property is not used in the code, and it is not entirely clear what
+>>>>> it
+>>>>> would be used for. If there is a need for it, we can add it back in
+>>>>> later on.
+>>>>> - Don't export OF specific API calls
+>>>>> - For OF support, no longer depend on iio_map
+>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the code
+>>>>> still builds if it is not selected.
+>>>>> - Change iio_channel_get to take device pointer as argument instead
+>>>>> of
+>>>>> device name. Retain old API as of_iio_channel_get_sys.
+>>>>> - iio_channel_get now works for both OF and non-OF configurations.
+>>>>>
+>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76 ++++++++
+>>>>>  drivers/iio/inkern.c                               |  186
+>>>>>
+>>>>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
+>>>>>
+>>>>>  create mode 100644
+>>>>>
+>>>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new file
+>>>>> mode
+>>>>> 100644
+>>>>> index 0000000..58df5f6
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>> @@ -0,0 +1,76 @@
+>>>>> +This binding is a work-in-progress. It is derived from clock
+>>>>> bindings,
+>>>>> +and based on suggestions from Lars-Peter Clausen [1].
+>>>>> +
+>>>>> +Sources of IIO channels can be represented by any node in the
+>>>>> device
+>>>>> +tree.  Those nodes are designated as IIO providers.  IIO consumer
+>>>>> +nodes use a phandle and IIO specifier pair to connect IIO provider
+>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
+>>>>> +specifier is an array of one or more cells identifying the IIO
+>>>>> +output on a device.  The length of an IIO specifier is defined by
+>>>>> the
+>>>>> +value of a #io-channel-cells property in the clock provider node.
+>>>>> +
+>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+>>>>> +
+>>>>> +==IIO providers==
+>>>>> +
+>>>>> +Required properties:
+>>>>> +#io-channel-cells: Number of cells in an IIO specifier; Typically 0
+>>>>> for nodes +		   with a single IIO output and 1 for nodes with
+>>>>> multiple +		   IIO outputs.
+>>>>> +
+>>>>> +For example:
+>>>>> +
+>>>>> +    adc: adc@35 {
+>>>>> +	compatible = "maxim,max1139";
+>>>>> +	reg = <0x35>;
+>>>>> +        #io-channel-cells = <1>;
+>>>>> +    };
+>>>>> +
+>>>>> +==IIO consumers==
+>>>>> +
+>>>>> +Required properties:
+>>>>> +io-channels:	List of phandle and IIO specifier pairs, one pair
+>>>>> +		for each IIO input to the device.  Note: if the
+>>>>> +		IIO provider specifies '0' for #clock-cells, then
+>>>>> +		only the phandle portion of the pair will appear.
+>>>>> +
+>>>>> +Optional properties:
+>>>>> +io-channel-names:
+>>>>> +		List of IIO input name strings sorted in the same
+>>>>> +		order as the io-channels property.  Consumers drivers
+>>>>> +		will use io-channel-names to match IIO input names
+>>>>> +		with IIO specifiers.
+>>>>> +io-channel-ranges:
+>>>>> +		Empty property indicating that child nodes can inherit 
+> named
+>>>>> +		IIO channels from this node. Useful for bus nodes to 
+> provide
+>>>>> +		and IIO channel to their children.
+>>>>> +
+>>>>> +For example:
+>>>>> +
+>>>>> +    device {
+>>>>> +        io-channels = <&adc 1>, <&ref 0>;
+>>>>> +        io-channel-names = "vcc", "vdd";
+>>>>> +    };
+>>>>> +
+>>>>> +This represents a device with two IIO inputs, named "vcc" and
+>>>>> "vdd".
+>>>>> +The vcc channel is connected to output 1 of the &adc device, and
+>>>>> the
+>>>>> +vdd channel is connected to output 0 of the &ref device.
+>>>>> +
+>>>>> +==Example==
+>>>>> +
+>>>>> +	adc: max1139@35 {
+>>>>> +		compatible = "maxim,max1139";
+>>>>> +		reg = <0x35>;
+>>>>> +		#io-channel-cells = <1>;
+>>>>> +	};
+>>>>> +
+>>>>> +	...
+>>>>> +
+>>>>> +	iio_hwmon {
+>>>>> +		compatible = "iio-hwmon";
+>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
+>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
+>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
+>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
+>>>>> +	};
+>>>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+>>>>> index b289915..d48f2a8 100644
+>>>>> --- a/drivers/iio/inkern.c
+>>>>> +++ b/drivers/iio/inkern.c
+>>>>> @@ -10,6 +10,7 @@
+>>>>>
+>>>>>  #include <linux/export.h>
+>>>>>  #include <linux/slab.h>
+>>>>>  #include <linux/mutex.h>
+>>>>>
+>>>>> +#include <linux/of.h>
+>>>>>
+>>>>>  #include <linux/iio/iio.h>
+>>>>>  #include "iio_core.h"
+>>>>>
+>>>>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
+>>>>>
+>>>>>  	return chan;
+>>>>>  
+>>>>>  }
+>>>>>
+>>>>> +#ifdef CONFIG_OF
+>>>>> +
+>>>>> +static int iio_dev_node_match(struct device *dev, void *data)
+>>>>> +{
+>>>>> +	return !strcmp(dev->type->name, "iio_device") && dev->of_node 
+> ==
+>>>>
+>>>> data;
+>>>>
+>>>> Hmm, do you need to check type name here? One device node should
+>>>> rather
+>>>> represent only one device, making node an unique identifier.
+>>>>
+>>>> It this is meant to be a sanity check, it could be done one time
+>>>> after
+>>>> finding the device.
+>>>
+>>> Hi Tomasz,
+>>>
+>>> This is what Lars had suggested earlier:
+>>>> Yes, use bus_find_device on iio_bus_type. A nice example how to use
+>>>> this to lookup device by of node is of_find_i2c_device_by_node. For
+>>>> IIO you also need to make sure that dev->type is iio_dev_type, since
+>>>> both devices and triggers are registered on the same bus.
+>>>
+>>> Is it really needed, or in other words would it be sufficient to check
+>>> if of_node and data match each other ? Your reasoning makes sense to
+>>> me, and I had thought about it as well, but I don't really know, and
+>>> I don't know how I could test it and guarantee correctness either.
+>>> I'll be happy to take the strcmp() out if someone tells me that it is
+>>> definitely not needed ...
+>>
+>> A IIO trigger and a IIO device may have the same of_node, e.g. if they
+>> both belong to the same physical device. But you don't need to do the
+>> strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
+>> &iio_dev_type. Although it doesn't really matter in practice first
+>> check for the of_node then check for the type, since the of_node will
+>> only match for a few devices at most, the type will match for quite a
+>> few.
+> 
+> I must disagree.
+> 
+> If you have two IIO devices provided by one physical device, then in 
+> device tree they should be represented as follows:
+> 
+> 	phys-dev@12345678 {
+> 		compatible = "some-physical-device";
+> 		/* ... */
+> 
+> 		my_trig: iio-trigger {
+> 			/* ... */
+> 		};
+> 
+> 		my_dev: iio-device {
+> 			/* ... */
+> 		};
+> 	};
+> 
+> Notice that phys-dev works here as an IIO bus on which its IIO devices are 
+> available. This is related to the convention that single OF device node 
+> represents single device, which would be violated otherwise.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5421.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+But we do some_dev->of_node = some_other_dev->of_node, all over the place. How
+is that different?
 
-diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
-index 6b86a63..903c18d 100644
---- a/drivers/iio/dac/ad5421.c
-+++ b/drivers/iio/dac/ad5421.c
-@@ -86,11 +86,11 @@ static const struct iio_chan_spec ad5421_channels[] = {
- 		.indexed = 1,
- 		.output = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SHARED_BIT |
--			IIO_CHAN_INFO_OFFSET_SHARED_BIT |
--			IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
--			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-+		.info_mask_separate = IIO_CHAN_INFO_RAW |
-+			IIO_CHAN_INFO_CALIBSCALE |
-+			IIO_CHAN_INFO_CALIBBIAS,
-+		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE |
-+			IIO_CHAN_INFO_OFFSET,
- 		.scan_type = IIO_ST('u', 16, 16, 0),
- 		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
- 			IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
--- 
-1.8.1.1
-
+- Lars
