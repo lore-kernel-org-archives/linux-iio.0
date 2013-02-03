@@ -1,156 +1,68 @@
-Return-Path: <linux@roeck-us.net>
-From: Guenter Roeck <linux@roeck-us.net>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree-discuss@lists.ozlabs.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55639 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753305Ab3BCSDL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 13:03:11 -0500
+Message-ID: <510EA651.6040509@kernel.org>
+Date: Sun, 03 Feb 2013 18:02:57 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Guenter Roeck <linux@roeck-us.net>
+CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
 	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Doug Anderson <dianders@chromium.org>,
 	Tomasz Figa <tomasz.figa@gmail.com>,
 	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 2/4] iio/adc: (max1363) Add support for external reference voltage
-Date: Sat,  2 Feb 2013 16:59:38 -0800
-Message-Id: <1359853180-5664-3-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
-List-ID: <linux-iio@vger.kernel.org>
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCH 1/4] iio: max1363: Use devm_ functions whereever possible
+ to allocate resources
+References: <1359853180-5664-1-git-send-email-linux@roeck-us.net> <1359853180-5664-2-git-send-email-linux@roeck-us.net> <510E53B8.40803@kernel.org> <20130203171852.GA29574@roeck-us.net>
+In-Reply-To: <20130203171852.GA29574@roeck-us.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Implement external reference voltage as regulator named "vref".
+On 02/03/2013 05:18 PM, Guenter Roeck wrote:
+> On Sun, Feb 03, 2013 at 12:10:32PM +0000, Jonathan Cameron wrote:
+>> On 02/03/2013 12:59 AM, Guenter Roeck wrote:
+>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>> Applied to togreg branch of iio.git.
+>>
+>> Note I'll probably rebase the togreg branch if / when Greg has pulled
+>> last pull request (sent a few mins ago) so as to get a directly
+>> applied fix for this driver.
+>>
+> No problem.
+> 
+> There is some dead code in the max1363 driver.
+> 
+> drivers/iio/adc/max1363.c:1492:12: warning: 'max1363_register_buffered_funcs_and_init' defined but not used [-Wunused-function]
+> drivers/iio/adc/max1363.c:1527:13: warning: 'max1363_buffer_cleanup' defined but not used [-Wunused-function]
+> 
+> I thought I had seen a note on the iio mailing list that you wanted to submit a patch for it,
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v2: Use regulator API to specify vref instead of creating new devicetree
-    bindings.
-    Keep reference voltage internally in uV, as this is the scale provided
-    by the regulator subsystem. We need the value in uV anyway, so that does
-    make some sense.
+Went out yesterday as [PATCH] iio:max1363 remove some functions left after merge
 
- drivers/iio/adc/max1363.c |   52 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 39 insertions(+), 13 deletions(-)
+> but I didn't see it yet. Or maybe my memory is wrong, or you were talking about
+> something else.
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 1353fda..cac73d7 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -163,6 +163,8 @@ struct max1363_chip_info {
-  * @mask_low:		bitmask for enabled low thresholds
-  * @thresh_high:	high threshold values
-  * @thresh_low:		low threshold values
-+ * @vref:		Reference voltage regulator
-+ * @vref_uv:		Actual (external or internal) reference voltage
-  */
- struct max1363_state {
- 	struct i2c_client		*client;
-@@ -182,6 +184,8 @@ struct max1363_state {
- 	/* 4x unipolar first then the fours bipolar ones */
- 	s16				thresh_high[8];
- 	s16				thresh_low[8];
-+	struct regulator		*vref;
-+	u32				vref_uv;
- };
- 
- #define MAX1363_MODE_SINGLE(_num, _mask) {				\
-@@ -393,6 +397,8 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
- {
- 	struct max1363_state *st = iio_priv(indio_dev);
- 	int ret;
-+	unsigned long scale_uv;
-+
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = max1363_read_single_chan(indio_dev, chan, val, m);
-@@ -400,16 +406,10 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		if ((1 << (st->chip_info->bits + 1)) >
--		    st->chip_info->int_vref_mv) {
--			*val = 0;
--			*val2 = 500000;
--			return IIO_VAL_INT_PLUS_MICRO;
--		} else {
--			*val = (st->chip_info->int_vref_mv)
--				>> st->chip_info->bits;
--			return IIO_VAL_INT;
--		}
-+		scale_uv = st->vref_uv >> st->chip_info->bits;
-+		*val = scale_uv / 1000;
-+		*val2 = (scale_uv % 1000) * 1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1390,12 +1390,16 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 
- static int max1363_initial_setup(struct max1363_state *st)
- {
--	st->setupbyte = MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_VDD
--		| MAX1363_SETUP_POWER_UP_INT_REF
--		| MAX1363_SETUP_INT_CLOCK
-+	st->setupbyte = MAX1363_SETUP_INT_CLOCK
- 		| MAX1363_SETUP_UNIPOLAR
- 		| MAX1363_SETUP_NORESET;
- 
-+	if (st->vref)
-+		st->setupbyte |= MAX1363_SETUP_AIN3_IS_REF_EXT_TO_REF;
-+	else
-+		st->setupbyte |= MAX1363_SETUP_POWER_UP_INT_REF
-+		  | MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_INT;
-+
- 	/* Set scan mode writes the config anyway so wait until then */
- 	st->setupbyte = MAX1363_SETUP_BYTE(st->setupbyte);
- 	st->current_mode = &max1363_mode_table[st->chip_info->default_mode];
-@@ -1533,6 +1537,7 @@ static int max1363_probe(struct i2c_client *client,
- 	int ret;
- 	struct max1363_state *st;
- 	struct iio_dev *indio_dev;
-+	struct regulator *vref;
- 
- 	indio_dev = iio_device_alloc(sizeof(struct max1363_state));
- 	if (indio_dev == NULL) {
-@@ -1563,6 +1568,23 @@ static int max1363_probe(struct i2c_client *client,
- 	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
- 	st->client = client;
- 
-+	st->vref_uv = st->chip_info->int_vref_mv * 1000;
-+	vref = devm_regulator_get(&client->dev, "vref");
-+	if (!IS_ERR(vref)) {
-+		int vref_uv;
-+
-+		ret = regulator_enable(vref);
-+		if (ret)
-+			goto error_disable_reg;
-+		st->vref = vref;
-+		vref_uv = regulator_get_voltage(vref);
-+		if (vref_uv <= 0) {
-+			ret = -EINVAL;
-+			goto error_disable_reg;
-+		}
-+		st->vref_uv = vref_uv;
-+	}
-+
- 	ret = max1363_alloc_scan_masks(indio_dev);
- 	if (ret)
- 		goto error_disable_reg;
-@@ -1604,6 +1626,8 @@ static int max1363_probe(struct i2c_client *client,
- error_uninit_buffer:
- 	iio_triggered_buffer_cleanup(indio_dev);
- error_disable_reg:
-+	if (st->vref)
-+		regulator_disable(st->vref);
- 	regulator_disable(st->reg);
- error_unregister_map:
- 	iio_map_array_unregister(indio_dev);
-@@ -1620,6 +1644,8 @@ static int max1363_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
-+	if (st->vref)
-+		regulator_disable(st->vref);
- 	regulator_disable(st->reg);
- 	iio_map_array_unregister(indio_dev);
- 	iio_device_free(indio_dev);
--- 
-1.7.9.7
+It's gone to Greg who added it staging-next yesterday (rather than throw the iio tree).
+I actually intended to get his Ack on it (as the merge that caused it was I think
+his), but he applied it directly. Anyhow, that's the reason staging-next with that patch
+will differ from iio.git and hence why I'll rebase once the current pull request is
+dealt with.
+
+> 
+> Want me to submit a patch (assuming the fix is simply to remove the above functions) ?
+
+All sorted if via an indirect route.
+
+> 
+> Thanks,
+> Guenter
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
