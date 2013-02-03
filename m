@@ -1,48 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43654 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753836Ab3BIK7L (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2013 05:59:11 -0500
-Message-ID: <51162BF7.1040107@kernel.org>
-Date: Sat, 09 Feb 2013 10:59:03 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Grant Likely <grant.likely@secretlab.ca>
-CC: Mark Brown <broonie@opensource.wolfsonmicro.com>,
+Return-Path: <linux@roeck-us.net>
+From: Guenter Roeck <linux@roeck-us.net>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <20130127033358.GA20672@sirena.org.uk> <20130205140755.33FCD3E1265@localhost>
-In-Reply-To: <20130205140755.33FCD3E1265@localhost>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [RFC v2 0/4] iio: Devicetree support
+Date: Sat,  2 Feb 2013 16:59:36 -0800
+Message-Id: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/05/2013 02:07 PM, Grant Likely wrote:
-> On Sun, 27 Jan 2013 03:33:59 +0000, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
->> On Wed, Jan 09, 2013 at 06:31:09PM +0100, Lars-Peter Clausen wrote:
->>
->>> The second function spi_sync_transfer() takes a SPI device and an array of
->>> spi_transfers. It will allocate a new spi_message (on the stack) and add all
->>> transfers in the array to the message. Finally it will call spi_sync() on the
->>> message.
->>
->> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
-> 
-> Looks good to me also. Go ahead and merge this series through the iio
-> tree since it is the first user.
-Grant, can I take that as an Acked-by?  Its going to touch your tree so
-that would probably reduce questions as this goes up stream.
+This patch set adds basic device tree support to the IIO subsystem. It is the
+result of the [1] and [2] discussions.
 
+The first two patches are actually updates to the MAX1363 driver. The first
+patch updates the driver to use devm_ functions, and the second patch adds
+support for an external reference voltage.
 
-> 
-> g.
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Patch 3 changes the first parameter to iio_channel_get() to be the pointer to
+the consumer device instead of the consumer device name.
+
+Patch 4 adds basic OF support to the IIO subsystem. Support is modeled after
+the clock subsystem.
+
+The patches are now based on the to togreg branch of iio kernel repository.
+Several patches were already applied and are no longer part of the patch set.
+
+Guenter
+
+---
+[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+[2] http://marc.info/?l=lm-sensors&m=135375101529918&w=1
