@@ -1,178 +1,286 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52792 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752151Ab3BCLwi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 06:52:38 -0500
-Message-ID: <510E4F84.2080909@kernel.org>
-Date: Sun, 03 Feb 2013 11:52:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:46356 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753040Ab3BCLut (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 06:50:49 -0500
+Message-ID: <510E4F76.1030702@metafoo.de>
+Date: Sun, 03 Feb 2013 12:52:22 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO cleanups, new drivers and fixes (IIO set 3 for the 3.9
- cycle)
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [RFC 10/11] iio: Add OF support
+References: <1359668588-13678-1-git-send-email-linux@roeck-us.net> <1359668588-13678-11-git-send-email-linux@roeck-us.net> <510CEA6E.9010708@kernel.org> <20130202161054.GA10386@roeck-us.net> <510E4C85.9060507@kernel.org> <510E4E36.8090409@metafoo.de>
+In-Reply-To: <510E4E36.8090409@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 085494ac2039433a5df9fdd6fb653579e18b8c71:
+On 02/03/2013 12:47 PM, Lars-Peter Clausen wrote:
+> On 02/03/2013 12:39 PM, Jonathan Cameron wrote:
+>> On 02/02/2013 04:10 PM, Guenter Roeck wrote:
+>>> On Sat, Feb 02, 2013 at 10:29:02AM +0000, Jonathan Cameron wrote:
+>>>> On 01/31/2013 09:43 PM, Guenter Roeck wrote:
+>>>>> Provide bindings, new API access functions, and parse OF data
+>>>>> during initialization.
+>>>>>
+>>>> Firstly thanks for working on this Guenter, it's been a big hole
+>>>> for a while largely because non of our largest developers were
+>>>> actually using development platforms with device tree support.
+>>>>
+>>>> Given my knowledge of device tree is based on the odd article
+>>>> and looking at similar sets of bindings this morning, my comments
+>>>> are likely to be somewhat superficial and uninformed ;)
+>>>>
+>>>> Mostly on this one I'll take a back seat and let those who
+>>>> know this stuff better come to a consensus.
+>>>>
+>>>> Jonathan
+>>>>
+>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>>>>> ---
+>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   97 ++++++++
+>>>>>  drivers/iio/inkern.c                               |  241 ++++++++++++++++----
+>>>>>  include/linux/iio/consumer.h                       |    8 +
+>>>>>  3 files changed, 299 insertions(+), 47 deletions(-)
+>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>> new file mode 100644
+>>>>> index 0000000..0f51c95
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+>>>>> @@ -0,0 +1,97 @@
+>>>>> +This binding is a work-in-progress, and are based on clock bindings and
+>>>>> +suggestions from Lars-Peter Clausen [1].
+>>>>> +
+>>>>> +Sources of IIO channels can be represented by any node in the device
+>>>>> +tree.  Those nodes are designated as IIO providers.  IIO consumer
+>>>>> +nodes use a phandle and IIO specifier pair to connect IIO provider
+>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
+>>>>> +specifier is an array of one more more cells identifying the IIO
+>>>>> +output on a device.  The length of an IIO specifier is defined by the
+>>>>> +value of a #io-channel-cells property in the clock provider node.
+>>>>> +
+>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+>>>>> +
+>>>>> +==IIO providers==
+>>>>> +
+>>>>> +Required properties:
+>>>>> +#io-channel-cells: Number of cells in an IIO specifier; Typically 0 for nodes
+>>>>> +		   with a single IIO output and 1 for nodes with multiple
+>>>>> +		   IIO outputs.
+>>>>> +
+>>>>> +Optional properties:
+>>>>> +io-channel-output-names:
+>>>>> +		    Recommended to be a list of strings of IIO output signal
+>>>>> +		    names indexed by the first cell in the IIO specifier.
+>>>>> +		    However, the meaning of io-channel-output-names is domain
+>>>>> +		    specific to the IIO provider, and is only provided to
+>>>>> +		    encourage using the same meaning for the majority of IIO
+>>>>> +		    providers.  This format may not work for IIO providers
+>>>>> +		    using a complex IIO specifier format.  In those cases it
+>>>>> +		    is recommended to omit this property and create a binding
+>>>>> +		    specific names property.
+>>>>> +
+>>>>> +		    IIO consumer nodes must never directly reference
+>>>>> +		    the provider's io-channel-output-names property.
+>>>>> +
+>>>>> +For example:
+>>>>> +
+>>>>> +    adc: adc@35 {
+>>>>> +	compatible = "maxim,max1139";
+>>>>> +	reg = <0x35>;
+>>>>> +        #io-channel-cells = <1>;
+>>>>> +        io-channel-output-names = "adc1", "adc2";
+>>>>> +    };
+>>>>> +
+>>>>> +- this node defines a device with two named IIO outputs, the first named
+>>>>> +  "adc1" and the second named "adc2".  Consumer nodes always reference
+>>>>> +  IIO channels by index. The names should reflect the IIO output signal
+>>>>> +  names for the device.
+>>>>> +
+>>>>> +==IIO consumers==
+>>>>> +
+>>>>> +Required properties:
+>>>>> +io-channels:	List of phandle and IIO specifier pairs, one pair
+>>>>> +		for each IIO input to the device.  Note: if the
+>>>>> +		IIO provider specifies '0' for #clock-cells, then
+>>>>> +		only the phandle portion of the pair will appear.
+>>>>> +
+>>>>> +Optional properties:
+>>>>> +io-channel-names:
+>>>>> +		List of IIO input name strings sorted in the same
+>>>>> +		order as the io-channels property.  Consumers drivers
+>>>>> +		will use io-channel-names to match IIO input names
+>>>>> +		with IIO specifiers.
+>>>>> +io-channel-ranges:
+>>>>> +		Empty property indicating that child nodes can inherit named
+>>>>> +		IIO channels from this node. Useful for bus nodes to provide
+>>>>> +		and IIO channel to their children.
+>>>>> +
+>>>>> +For example:
+>>>>> +
+>>>>> +    device {
+>>>>> +        io-channels = <&adc 1>, <&ref 0>;
+>>>>> +        io-channel-names = "vcc", "vdd";
+>>>>> +    };
+>>>>> +
+>>>>> +This represents a device with two IIO inputs, named "vcc" and "vdd".
+>>>>> +The vcc channel is connected to output 1 of the &adc device, and the
+>>>>> +vdd channel is connected to output 0 of the &ref device.
+>>>>> +
+>>>>> +==Example==
+>>>>> +
+>>>>> +	adc: max1139@35 {
+>>>>> +		compatible = "maxim,max1139";
+>>>>> +		reg = <0x35>;
+>>>>> +		#io-channel-cells = <1>;
+>>>>> +	};
+>>>>> +
+>>>>> +	...
+>>>>> +
+>>>>> +	iio_hwmon {
+>>>>> +		compatible = "iio-hwmon";
+>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
+>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
+>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
+>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
+>>>> Having different numbers of channels and channel names seems
+>>>> unusual... Deliberate or you got bored making up channel names?
+>>>>
+>>>> Why use indexed values for <&adc 0> etc rather than the output
+>>>> channel names on adc?  For the iio_map stuff we initialy used
+>>>> indexes but got a lot of responses that it was a silly idea and
+>>>> naming was much more consistent and easy to follow.
+>>>>
+>>>> Is there a fundamental reason for it here?
+>>>>
+>>>> (note I don't mind either way as this seems more compact and cleaner
+>>>> in some ways)
+>>>>
+>>>
+>>> It follows the structure used by clocks, which uses the provided name(s) to
+>>> calculate an index into io-channels. This way, the provider does not have to
+>>> provide the mapping, the consumer does not have to know the io-channel index,
+>>> and the consumer code can call something like
+>>>
+>>> 	channel = iio_get_channel(dev, "vcc");
+>>>
+>>> In the above example, "vcc" will map to "<&adc, 0>", and "vref" to "<&adc, 2>".
+>>>
+>>> This works for both platform data and OF data (though platform data will
+>>> still need provider-based mapping, at least for now).
+>>>
+>>> This lets the code use a static name (eg "vcc"), and the mapping to the actual
+>>> provider happens through devicetree. Since the name is only used locally and
+>>> consumer driver specific, there is no need to define globally unique names.
+>>>
+>>> With this approach, the io channel map is not needed at all for the OF case.
+>>> I had used it in this version of the patch set, but got rid of it now.
+>>>
+>>> Actually, provider based mapping doesn't even work. If the consumer is
+>>> instantiated before the provider, the mapping doesn't exist yet, and the
+>>> call to iio_channel_get_all will fail. There is no way to prevent this,
+>>> as providers can come online at any time and there is no means to enforce that
+>>> all providers are already active by the time the consumers are instantiated.
+>>> Even if a mapping exists, there is no way to know if it is complete, if a
+>>> consumer is mapped to multiple providers.
+>>>
+>>> With the consumer based mapping, iio_channel_get_all 'knows' that not all
+>>> requested providers are available and can return -EPROBEDEFER in that case.
+>> Thanks. That makes sense.  At the moment iio_hwmon is the only case that
+>> does a 'get all'. Clearly things are easier when the driver is requesting a
+>> specific set and we can do the back off much more easily.
+>>
+>>>
+>>> As a side effect, we can also use the names - if provided - as channel
+>>> labels in iio_hwmon.
+>>>
+>>> Note this will require the iio_get_channel API to change from taking the
+>>> consumer device name to taking the consumer device pointer as argument.
+>>> This will enable it to work for both OF and non-OF cases, should address Lars'
+>>> concerns about duplicate API functions, and synchronize the code to match how
+>>> the clock framework works.
+>>
+>> Agreed, doing this gives us a cleaner syntax as well.  Note there are other
+>> users of that function in tree so be sure to get them all!
+>>
+>>>
+>>> Thanks,
+>>> Guenter
+>> Thanks for the explanation.  What I was actually suggesting was something
+>> like:
+>>
+>> adc: max1139@35 {
+>> 		compatible = "maxim,max1139";
+>> 		reg = <0x35>;
+>> 		#io-channel-cells = <1>;
+>> 		io-channel-output-names = "adc1", "adc2", "adc3"				
+>> 	};
+>>
+>> iio_hwmon {
+>> 	compatible = "iio-hwmon";
+>> 	io-channels = <&adc "adc1">, <&adc "adc2">, <&adc "adc3">,
+>> 	io-channel-names = "vcc", "vdd", "vref";
+>> }
+>>
+>> Having taken a look at the available syntax, those <> pairs have
+>> to be unsigned integers?  Hence the additional level of indirection?
+> 
+> Yea, I think mixing phandles and strings simply doesn't work, due how
+> devicetree stores things.
+> 
 
-  staging: comedi: don't expose comedi_proc_{init,cleanup} (2013-01-31 10:40:41 +0100)
+Another possibility would beto do things the way the regulator framework does
+an have each channel as a subnode to the converter devices eg.
 
-are available in the git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.9c
+adc: max1139@35 {
+ 		compatible = "maxim,max1139";
+ 		reg = <0x35>;
+		adc0: adc@0 {
+			reg = <0>;
+		};
+		adc1: adc@1 {
+			reg = <1>;
+		};
+		adc2: adc@2 {
+			reg = <2>;
+		};
 
-for you to fetch changes up to 6cb2afd7c0abb93bd9dc6d36b858b1e312e2407d:
+ 	};
 
-  iio: Simplify iio_map_array_unregister API (2013-02-02 12:02:20 +0000)
 
-----------------------------------------------------------------
-Third set of IIO new drivers, cleanups and fixes for the 3.9 cycle
+iio_hwmon {
+ 	compatible = "iio-hwmon";
+ 	io-channels = <&adc0>, <&adc1>, <&adc2>;
+ 	io-channel-names = "vcc", "vdd", "vref";
+};
 
-New drivers
-1) A driver for ST microelectronics sensors.  This driver already covers
-   a large set of new parts (20 gyros, accelerometer and magnetometers)
-   not currently covered by the existing drivers.  The intent moving forward
-   is to merge this with the other drivers for similar parts already in tree.
-   The lis3l02dq driver currently in staging/iio will be trivial, the lis3
-   driver in misc more complex as it has a number of additional interfaces.
-   Any merging in of the lis3 driver will rely on the not currently
-   merged iio_input bridge driver and handling of freefall notifications
-   etc.
+But I'm not sure how much sense this makes for IIO.
 
-2) A driver for the itg3200 gyroscope.
+- Lars
 
-Graduations from staging
-1) Cleanup and move out of staging of the adxrs450 gyroscope driver.  The
-   cleanup required was all minor but there were a couple of fixes hidden in
-   there.
+>>
+>> (sorry, I'm getting you to give me a tutorial on device tree syntax rather
+>> than the actual issue here!)
+>>
+>> I guess it was desirable to keep the syntax relatively simple but that occasionally
+>> adds the requirement for a bit of indirection.
+>>
+>>
+>>
+>> Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-Core and driver additions
-1) Initial work from Guenter Roeck on device tree support for IIO's provider/
-   consumer code. Focuses on the iio_hwmon driver and the max1363 adc driver.
-   The full device tree syntax is currently under discussion but should
-   follow shortly.
-
-Cleanups and fixes
-1) Remove a noop function __iio_update_buffer
-2) Couple of small fixes and cleanups for the max1363
-
-----------------------------------------------------------------
-Denis CIOCCA (1):
-      iio:common: removed unused functions outside st_sensors library
-
-Denis Ciocca (4):
-      iio:common: Add STMicroelectronics common library
-      iio:accel: Add STMicroelectronics accelerometers driver
-      iio:gyro: Add STMicroelectronics gyroscopes driver
-      iio:magnetometer: Add STMicroelectronics magnetometers driver
-
-Guenter Roeck (9):
-      staging/iio: (iio_hwmon) Use devm_kzalloc
-      staging/iio: (iio_hwmon) Add support for sysfs name attribute
-      staging/iio: (iio_hwmon) Basic devicetree support
-      iio/adc: (lp8788) Provide OF node information to iio device
-      iio/adc: (max1363) Provide OF node information to iio device
-      iio/adc: (max1363) Remove duplicate code
-      iio/adc: (max1363) Fix data conversion problems
-      iio: Update iio_channel_get_all and iio_channel_get_all_cb API
-      iio: Simplify iio_map_array_unregister API
-
-Lars-Peter Clausen (12):
-      staging:iio: Remove noop call to __iio_update_buffer
-      Partially revert "staging:iio:gyro:adxrs450 make more use of spi_read and spi_write."
-      staging:iio:adxrs450: Make transfer buffers __be32
-      staging:iio:adxrs450: Perform sign extension for the calibbias register
-      staging:iio:adxrs450: Reject out of range calibscale values
-      staging:iio:adxrs450: Don't spam the bootlog
-      staging:iio:adxrs450: Reflow overlong lines
-      staging:iio:adxrs450: Don't split string across multiple lines
-      staging:iio:adxrs450: Use usleep_range for the sequential transfer dealy
-      staging:iio:adxrs450: Fixup kernel doc comments
-      staging:iio:adxrs450: Move header file contents to main file
-      staging:iio: Move adxrs450 driver out of staging
-
-Manuel Stahl (1):
-      iio: gyro: Add itg3200
-
- drivers/iio/accel/Kconfig                          |  31 ++
- drivers/iio/accel/Makefile                         |   8 +
- drivers/iio/accel/st_accel.h                       |  47 ++
- drivers/iio/accel/st_accel_buffer.c                | 114 +++++
- drivers/iio/accel/st_accel_core.c                  | 495 +++++++++++++++++++++
- drivers/iio/accel/st_accel_i2c.c                   |  87 ++++
- drivers/iio/accel/st_accel_spi.c                   |  86 ++++
- drivers/iio/adc/lp8788_adc.c                       |  12 +-
- drivers/iio/adc/max1363.c                          |  12 +-
- drivers/iio/buffer_cb.c                            |   4 +-
- drivers/iio/common/Kconfig                         |   1 +
- drivers/iio/common/Makefile                        |   1 +
- drivers/iio/common/st_sensors/Kconfig              |  14 +
- drivers/iio/common/st_sensors/Makefile             |  10 +
- drivers/iio/common/st_sensors/st_sensors_buffer.c  | 116 +++++
- drivers/iio/common/st_sensors/st_sensors_core.c    | 446 +++++++++++++++++++
- drivers/iio/common/st_sensors/st_sensors_i2c.c     |  81 ++++
- drivers/iio/common/st_sensors/st_sensors_spi.c     | 128 ++++++
- drivers/iio/common/st_sensors/st_sensors_trigger.c |  77 ++++
- drivers/iio/gyro/Kconfig                           |  48 ++
- drivers/iio/gyro/Makefile                          |  13 +
- .../gyro/adxrs450_core.c => iio/gyro/adxrs450.c}   | 197 +++++---
- drivers/iio/gyro/itg3200_buffer.c                  | 156 +++++++
- drivers/iio/gyro/itg3200_core.c                    | 401 +++++++++++++++++
- drivers/iio/gyro/st_gyro.h                         |  45 ++
- drivers/iio/gyro/st_gyro_buffer.c                  | 114 +++++
- drivers/iio/gyro/st_gyro_core.c                    | 363 +++++++++++++++
- drivers/iio/gyro/st_gyro_i2c.c                     |  85 ++++
- drivers/iio/gyro/st_gyro_spi.c                     |  84 ++++
- drivers/iio/inkern.c                               |  42 +-
- drivers/iio/kfifo_buf.c                            |   1 -
- drivers/iio/magnetometer/Kconfig                   |  30 ++
- drivers/iio/magnetometer/Makefile                  |   7 +
- drivers/iio/magnetometer/st_magn.h                 |  45 ++
- drivers/iio/magnetometer/st_magn_buffer.c          |  98 ++++
- drivers/iio/magnetometer/st_magn_core.c            | 401 +++++++++++++++++
- drivers/iio/magnetometer/st_magn_i2c.c             |  81 ++++
- drivers/iio/magnetometer/st_magn_spi.c             |  80 ++++
- drivers/staging/iio/gyro/Kconfig                   |  10 -
- drivers/staging/iio/gyro/Makefile                  |   3 -
- drivers/staging/iio/gyro/adxrs450.h                |  62 ---
- drivers/staging/iio/iio_hwmon.c                    |  83 ++--
- include/linux/iio/buffer.h                         |  13 -
- include/linux/iio/common/st_sensors.h              | 270 +++++++++++
- include/linux/iio/common/st_sensors_i2c.h          |  20 +
- include/linux/iio/common/st_sensors_spi.h          |  20 +
- include/linux/iio/consumer.h                       |   9 +-
- include/linux/iio/driver.h                         |   9 +-
- include/linux/iio/gyro/itg3200.h                   | 154 +++++++
- 49 files changed, 4455 insertions(+), 259 deletions(-)
- create mode 100644 drivers/iio/accel/st_accel.h
- create mode 100644 drivers/iio/accel/st_accel_buffer.c
- create mode 100644 drivers/iio/accel/st_accel_core.c
- create mode 100644 drivers/iio/accel/st_accel_i2c.c
- create mode 100644 drivers/iio/accel/st_accel_spi.c
- create mode 100644 drivers/iio/common/st_sensors/Kconfig
- create mode 100644 drivers/iio/common/st_sensors/Makefile
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_buffer.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_core.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_i2c.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_spi.c
- create mode 100644 drivers/iio/common/st_sensors/st_sensors_trigger.c
- rename drivers/{staging/iio/gyro/adxrs450_core.c => iio/gyro/adxrs450.c} (68%)
- create mode 100644 drivers/iio/gyro/itg3200_buffer.c
- create mode 100644 drivers/iio/gyro/itg3200_core.c
- create mode 100644 drivers/iio/gyro/st_gyro.h
- create mode 100644 drivers/iio/gyro/st_gyro_buffer.c
- create mode 100644 drivers/iio/gyro/st_gyro_core.c
- create mode 100644 drivers/iio/gyro/st_gyro_i2c.c
- create mode 100644 drivers/iio/gyro/st_gyro_spi.c
- create mode 100644 drivers/iio/magnetometer/st_magn.h
- create mode 100644 drivers/iio/magnetometer/st_magn_buffer.c
- create mode 100644 drivers/iio/magnetometer/st_magn_core.c
- create mode 100644 drivers/iio/magnetometer/st_magn_i2c.c
- create mode 100644 drivers/iio/magnetometer/st_magn_spi.c
- delete mode 100644 drivers/staging/iio/gyro/adxrs450.h
- create mode 100644 include/linux/iio/common/st_sensors.h
- create mode 100644 include/linux/iio/common/st_sensors_i2c.h
- create mode 100644 include/linux/iio/common/st_sensors_spi.h
- create mode 100644 include/linux/iio/gyro/itg3200.h
