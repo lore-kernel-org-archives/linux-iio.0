@@ -1,178 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:33813 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753406Ab3BPPyl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Feb 2013 10:54:41 -0500
-Message-ID: <511FAC29.5090407@metafoo.de>
-Date: Sat, 16 Feb 2013 16:56:25 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Jean Delvare <khali@linux-fr.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/9] hwmon: (adt7410) Don't re-read non-volatile registers
-References: <1360947438-2550-1-git-send-email-lars@metafoo.de> <1360947438-2550-6-git-send-email-lars@metafoo.de> <20130215202002.GF32433@roeck-us.net>
-In-Reply-To: <20130215202002.GF32433@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ns.pmeerw.net ([87.118.82.44]:53512 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753267Ab3BDLgq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 4 Feb 2013 06:36:46 -0500
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: tweak language in industrialio-trigger comments
+Date: Mon,  4 Feb 2013 12:36:41 +0100
+Message-Id: <1359977801-19202-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/15/2013 09:20 PM, Guenter Roeck wrote:
-> On Fri, Feb 15, 2013 at 05:57:15PM +0100, Lars-Peter Clausen wrote:
->> Currently each time the temperature register is read the driver also reads the
->> threshold and hysteresis registers. This increases the amount of I2C traffic and
->> time needed to read the temperature by a factor of ~5. Neither the threshold nor
->> the hysteresis change on their own, so once we've read them, we should be able
->> to just use the cached value of the registers. This patch modifies the code
->> accordingly and only reads the threshold and hysteresis registers once during
->> probe.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->>  drivers/hwmon/adt7410.c | 89 +++++++++++++++++++++++++++++++------------------
->>  1 file changed, 56 insertions(+), 33 deletions(-)
->>
->> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
->> index 99a7290..5de0376 100644
->> --- a/drivers/hwmon/adt7410.c
->> +++ b/drivers/hwmon/adt7410.c
->> @@ -119,45 +119,31 @@ static int adt7410_temp_ready(struct i2c_client *client)
->>  	return -ETIMEDOUT;
->>  }
->>  
->> -static struct adt7410_data *adt7410_update_device(struct device *dev)
->> +static int adt7410_update_temp(struct device *dev)
->>  {
->>  	struct i2c_client *client = to_i2c_client(dev);
->>  	struct adt7410_data *data = i2c_get_clientdata(client);
->> -	struct adt7410_data *ret = data;
->> +	int ret = 0;
->> +
->>  	mutex_lock(&data->update_lock);
->>  
->>  	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
->>  	    || !data->valid) {
->> -		int i, status;
->>  
->>  		dev_dbg(&client->dev, "Starting update\n");
->>  
->> -		status = adt7410_temp_ready(client); /* check for new value */
->> -		if (unlikely(status)) {
->> -			ret = ERR_PTR(status);
->> +		ret = adt7410_temp_ready(client); /* check for new value */
->> +		if (ret)
->>  			goto abort;
->> -		}
->> -		for (i = 0; i < ARRAY_SIZE(data->temp); i++) {
->> -			status = i2c_smbus_read_word_swapped(client,
->> -							ADT7410_REG_TEMP[i]);
->> -			if (unlikely(status < 0)) {
->> -				dev_dbg(dev,
->> -					"Failed to read value: reg %d, error %d\n",
->> -					ADT7410_REG_TEMP[i], status);
->> -				ret = ERR_PTR(status);
->> -				goto abort;
->> -			}
->> -			data->temp[i] = status;
->> -		}
->> -		status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
->> -		if (unlikely(status < 0)) {
->> -			dev_dbg(dev,
->> -				"Failed to read value: reg %d, error %d\n",
->> -				ADT7410_T_HYST, status);
->> -			ret = ERR_PTR(status);
->> +
->> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[0]);
->> +		if (ret) {
-> 
-> Should be
-> 		if (ret < 0) {
-> 
-> or non-zero temperatures always create an error condition.
-> 
->> +			dev_dbg(dev, "Failed to read value: reg %d, error %d\n",
->> +				ADT7410_REG_TEMP[0], ret);
->>  			goto abort;
->>  		}
->> -		data->hyst = status;
->> +		data->temp[0] = ret;
->> +
->>  		data->last_updated = jiffies;
->>  		data->valid = true;
->>  	}
->> @@ -167,6 +153,35 @@ abort:
->>  	return ret;
-> 
-> 	ret can be > 0 as no-error return. So you'll either have to
-> 	change the no-error return case to always return 0, or change the
-> 	return value check when the function is called.
->>  }
->>  
->> +static int adt7410_fill_cache(struct i2c_client *client)
->> +{
->> +	struct adt7410_data *data = i2c_get_clientdata(client);
->> +	int ret;
->> +	int i;
->> +
->> +	for (i = 1; i < 3; i++) {
-> 
-> I think using ARRAY_SIZE would be better here. With "i < 3" you don't read the
-> critical temperature, which proves the point (unless I am missing something).
-> 
->> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[i]);
->> +		if (ret) {
-> 
-> 		ret < 0
-> 
->> +			dev_dbg(&client->dev,
->> +				"Failed to read value: reg %d, error %d\n",
->> +				ADT7410_REG_TEMP[0], ret);
->> +			return ret;
->> +		}
->> +		data->temp[i] = ret;
->> +	}
->> +
->> +	ret = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
->> +	if (ret) {
-> 
-> 	ret < 0
-> 
->> +		dev_dbg(&client->dev,
->> +			"Failed to read value: hyst reg, error %d\n",
->> +			ret);
->> +		return ret;
->> +	}
->> +	data->hyst = ret;
->> +
->> +	return 0;
->> +}
->> +
->>  static s16 ADT7410_TEMP_TO_REG(long temp)
->>  {
->>  	return DIV_ROUND_CLOSEST(clamp_val(temp, ADT7410_TEMP_MIN,
->> @@ -193,10 +208,16 @@ static ssize_t adt7410_show_temp(struct device *dev,
->>  				 struct device_attribute *da, char *buf)
->>  {
->>  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
->> -	struct adt7410_data *data = adt7410_update_device(dev);
->> +	struct i2c_client *client = to_i2c_client(dev);
->> +	struct adt7410_data *data = i2c_get_clientdata(client);
->>  
->> -	if (IS_ERR(data))
->> -		return PTR_ERR(data);
->> +	if (attr->index == 0) {
->> +		int ret;
->> +
->> +		ret = adt7410_update_temp(dev);
->> +		if (ret)
-> 
-> Problematic; see above.
-> 
+From: Peter Meerwald <p.meerwald@bct-electronic.com>
 
-Yep all correct, I somehow mixed up a few things between patch 6 and 7. Will
-fix it for v2.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/industrialio-trigger.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Thanks,
-- Lars
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 4fe0ead..4d6c7d8 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -160,7 +160,7 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
+ 	trig->use_count--;
+ 	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
+ 		if (trig->ops->try_reenable(trig))
+-			/* Missed and interrupt so launch new poll now */
++			/* Missed an interrupt so launch new poll now */
+ 			iio_trigger_poll(trig, 0);
+ }
+ EXPORT_SYMBOL(iio_trigger_notify_done);
+@@ -193,7 +193,7 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+  * This is not currently handled.  Alternative of not enabling trigger unless
+  * the relevant function is in there may be the best option.
+  */
+-/* Worth protecting against double additions?*/
++/* Worth protecting against double additions? */
+ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 					struct iio_poll_func *pf)
+ {
+@@ -201,7 +201,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 	bool notinuse
+ 		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ 
+-	/* Prevent the module being removed whilst attached to a trigger */
++	/* Prevent the module from being removed whilst attached to a trigger */
+ 	__module_get(pf->indio_dev->info->driver_module);
+ 	pf->irq = iio_trigger_get_irq(trig);
+ 	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
+@@ -288,7 +288,7 @@ void iio_dealloc_pollfunc(struct iio_poll_func *pf)
+ EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
+ 
+ /**
+- * iio_trigger_read_current() - trigger consumer sysfs query which trigger
++ * iio_trigger_read_current() - trigger consumer sysfs query current trigger
+  *
+  * For trigger consumers the current_trigger interface allows the trigger
+  * used by the device to be queried.
+@@ -305,7 +305,7 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+ }
+ 
+ /**
+- * iio_trigger_write_current() trigger consumer sysfs set current trigger
++ * iio_trigger_write_current() - trigger consumer sysfs set current trigger
+  *
+  * For trigger consumers the current_trigger interface allows the trigger
+  * used for this device to be specified at run time based on the triggers
+@@ -476,7 +476,7 @@ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+ 
+ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+ {
+-	/* Clean up and associated but not attached triggers references */
++	/* Clean up an associated but not attached trigger reference */
+ 	if (indio_dev->trig)
+ 		iio_trigger_put(indio_dev->trig);
+ }
+-- 
+1.7.9.5
+
