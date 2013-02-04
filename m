@@ -1,142 +1,420 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-42.csi.cam.ac.uk ([131.111.8.142]:56487 "EHLO
-	ppsw-42.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759571Ab3BZQNp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Feb 2013 11:13:45 -0500
-Message-ID: <512CDF35.8070204@jic23.retrosnub.co.uk>
-Date: Tue, 26 Feb 2013 16:13:41 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mail.active-venture.com ([67.228.131.205]:57477 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753561Ab3BDRMG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2013 12:12:06 -0500
+Date: Mon, 4 Feb 2013 09:12:14 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCH v2 4/4] iio: Add OF support
+Message-ID: <20130204171214.GA23170@roeck-us.net>
+References: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
+ <2327792.dx5ptVD6je@flatron>
+ <510EB2B3.7090503@metafoo.de>
+ <226658056.N7afTOqvFB@flatron>
 MIME-Version: 1.0
-To: Carsten Frank <Carsten.Frank@haw-hamburg.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: driver interface for usb spectrometer (like OceanOptics)
-References: <5127353B.1040801@haw-hamburg.de> <512B381C.1030201@metafoo.de> <512C904A.10703@haw-hamburg.de>
-In-Reply-To: <512C904A.10703@haw-hamburg.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <226658056.N7afTOqvFB@flatron>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/02/13 10:36, Carsten Frank wrote:
-> Hi,
->
-> I have now uploaded the files for one spectrometer to sourceforge
-> (documentation is still quite weak) ...
->
-> http://sourceforge.net/projects/usbspecdrivers/files/
->
-> These spectrometers usually take at least one input parameter which is the
-> - integration time (float or integer)
-> others also take:
-> - gain (integer)
-> - number of flashes (integer) (which is referred to a xenon flash lamp
-> and the number of flashes per spectrum)
-> - start pixel (integer)
-> - stop pixel (integer)
->
-> Typical output parameters are:
-> - the integration time (float or integer)
-> - temperature (char string)
-> - sensor name (char string)
-> - serial number (char string)
-> - a0 to a5 (float or char string) which are the wavelength calibration
-> parameters
-> and of course the spectral information from the CCD line which is usually
-> - 2048 times 16 bit values delivered as bulk (usually embedded in a
-> somewhat larger data stream which contains additional information)
->
-> I did look up the IIO API and userspace ABI and I do not see a good fit.
-> However,
-> 1. I may be wrong
-My gut feeling is that there 'ought to be a better option'.  It almost 
-looks like a line scan camera, but then they aren't particularly well 
-supported (from what I recall).
+On Mon, Feb 04, 2013 at 12:14:52AM +0100, Tomasz Figa wrote:
+> On Sunday 03 of February 2013 19:55:47 Lars-Peter Clausen wrote:
+> > On 02/03/2013 06:30 PM, Tomasz Figa wrote:
+> > > On Sunday 03 of February 2013 09:01:07 Guenter Roeck wrote:
+> > >> On Sun, Feb 03, 2013 at 12:52:40PM +0100, Tomasz Figa wrote:
+> > >>> On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
+> > >>>> On 02/03/2013 03:06 AM, Guenter Roeck wrote:
+> > >>>>> On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
+> > >>>>>> Hi Guenter,
+> > >>>>>> 
+> > >>>>>> Some comments inline.
+> > >>>>>> 
+> > >>>>>> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
+> > >>>>>>> Provide bindings and parse OF data during initialization.
+> > >>>>>>> 
+> > >>>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > >>>>>>> ---
+> > >>>>>>> - Documentation update per feedback
+> > >>>>>>> - Dropped io-channel-output-names from the bindings document.
+> > >>>>>>> The
+> > >>>>>>> property is not used in the code, and it is not entirely clear
+> > >>>>>>> what
+> > >>>>>>> it
+> > >>>>>>> would be used for. If there is a need for it, we can add it back
+> > >>>>>>> in
+> > >>>>>>> later on.
+> > >>>>>>> - Don't export OF specific API calls
+> > >>>>>>> - For OF support, no longer depend on iio_map
+> > >>>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the
+> > >>>>>>> code
+> > >>>>>>> still builds if it is not selected.
+> > >>>>>>> - Change iio_channel_get to take device pointer as argument
+> > >>>>>>> instead
+> > >>>>>>> of
+> > >>>>>>> device name. Retain old API as of_iio_channel_get_sys.
+> > >>>>>>> - iio_channel_get now works for both OF and non-OF
+> > >>>>>>> configurations.
+> > >>>>>>> 
+> > >>>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76
+> > >>>>>>>  ++++++++
+> > >>>>>>>  drivers/iio/inkern.c                               |  186
+> > >>>>>>> 
+> > >>>>>>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
+> > >>>>>>> 
+> > >>>>>>>  create mode 100644
+> > >>>>>>> 
+> > >>>>>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
+> > >>>>>>> 
+> > >>>>>>> diff --git
+> > >>>>>>> a/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> > >>>>>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new
+> > >>>>>>> file
+> > >>>>>>> mode
+> > >>>>>>> 100644
+> > >>>>>>> index 0000000..58df5f6
+> > >>>>>>> --- /dev/null
+> > >>>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> > >>>>>>> @@ -0,0 +1,76 @@
+> > >>>>>>> +This binding is a work-in-progress. It is derived from clock
+> > >>>>>>> bindings,
+> > >>>>>>> +and based on suggestions from Lars-Peter Clausen [1].
+> > >>>>>>> +
+> > >>>>>>> +Sources of IIO channels can be represented by any node in the
+> > >>>>>>> device
+> > >>>>>>> +tree.  Those nodes are designated as IIO providers.  IIO
+> > >>>>>>> consumer
+> > >>>>>>> +nodes use a phandle and IIO specifier pair to connect IIO
+> > >>>>>>> provider
+> > >>>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
+> > >>>>>>> +specifier is an array of one or more cells identifying the IIO
+> > >>>>>>> +output on a device.  The length of an IIO specifier is defined
+> > >>>>>>> by
+> > >>>>>>> the
+> > >>>>>>> +value of a #io-channel-cells property in the clock provider
+> > >>>>>>> node.
+> > >>>>>>> +
+> > >>>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+> > >>>>>>> +
+> > >>>>>>> +==IIO providers==
+> > >>>>>>> +
+> > >>>>>>> +Required properties:
+> > >>>>>>> +#io-channel-cells: Number of cells in an IIO specifier;
+> > >>>>>>> Typically 0
+> > >>>>>>> for nodes +		   with a single IIO output and 1 for nodes
+> > > 
+> > > with
+> > > 
+> > >>>>>>> multiple +		   IIO outputs.
+> > >>>>>>> +
+> > >>>>>>> +For example:
+> > >>>>>>> +
+> > >>>>>>> +    adc: adc@35 {
+> > >>>>>>> +	compatible = "maxim,max1139";
+> > >>>>>>> +	reg = <0x35>;
+> > >>>>>>> +        #io-channel-cells = <1>;
+> > >>>>>>> +    };
+> > >>>>>>> +
+> > >>>>>>> +==IIO consumers==
+> > >>>>>>> +
+> > >>>>>>> +Required properties:
+> > >>>>>>> +io-channels:	List of phandle and IIO specifier pairs, one
+> > > 
+> > > pair
+> > > 
+> > >>>>>>> +		for each IIO input to the device.  Note: if the
+> > >>>>>>> +		IIO provider specifies '0' for #clock-cells, then
+> > >>>>>>> +		only the phandle portion of the pair will appear.
+> > >>>>>>> +
+> > >>>>>>> +Optional properties:
+> > >>>>>>> +io-channel-names:
+> > >>>>>>> +		List of IIO input name strings sorted in the same
+> > >>>>>>> +		order as the io-channels property.  Consumers 
+> drivers
+> > >>>>>>> +		will use io-channel-names to match IIO input names
+> > >>>>>>> +		with IIO specifiers.
+> > >>>>>>> +io-channel-ranges:
+> > >>>>>>> +		Empty property indicating that child nodes can 
+> inherit
+> > >>> 
+> > >>> named
+> > >>> 
+> > >>>>>>> +		IIO channels from this node. Useful for bus nodes 
+> to
+> > >>> 
+> > >>> provide
+> > >>> 
+> > >>>>>>> +		and IIO channel to their children.
+> > >>>>>>> +
+> > >>>>>>> +For example:
+> > >>>>>>> +
+> > >>>>>>> +    device {
+> > >>>>>>> +        io-channels = <&adc 1>, <&ref 0>;
+> > >>>>>>> +        io-channel-names = "vcc", "vdd";
+> > >>>>>>> +    };
+> > >>>>>>> +
+> > >>>>>>> +This represents a device with two IIO inputs, named "vcc" and
+> > >>>>>>> "vdd".
+> > >>>>>>> +The vcc channel is connected to output 1 of the &adc device,
+> > >>>>>>> and
+> > >>>>>>> the
+> > >>>>>>> +vdd channel is connected to output 0 of the &ref device.
+> > >>>>>>> +
+> > >>>>>>> +==Example==
+> > >>>>>>> +
+> > >>>>>>> +	adc: max1139@35 {
+> > >>>>>>> +		compatible = "maxim,max1139";
+> > >>>>>>> +		reg = <0x35>;
+> > >>>>>>> +		#io-channel-cells = <1>;
+> > >>>>>>> +	};
+> > >>>>>>> +
+> > >>>>>>> +	...
+> > >>>>>>> +
+> > >>>>>>> +	iio_hwmon {
+> > >>>>>>> +		compatible = "iio-hwmon";
+> > >>>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+> > >>>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
+> > >>>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
+> > >>>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
+> > >>>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
+> > >>>>>>> +	};
+> > >>>>>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > >>>>>>> index b289915..d48f2a8 100644
+> > >>>>>>> --- a/drivers/iio/inkern.c
+> > >>>>>>> +++ b/drivers/iio/inkern.c
+> > >>>>>>> @@ -10,6 +10,7 @@
+> > >>>>>>> 
+> > >>>>>>>  #include <linux/export.h>
+> > >>>>>>>  #include <linux/slab.h>
+> > >>>>>>>  #include <linux/mutex.h>
+> > >>>>>>> 
+> > >>>>>>> +#include <linux/of.h>
+> > >>>>>>> 
+> > >>>>>>>  #include <linux/iio/iio.h>
+> > >>>>>>>  #include "iio_core.h"
+> > >>>>>>> 
+> > >>>>>>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
+> > >>>>>>> 
+> > >>>>>>>  	return chan;
+> > >>>>>>>  
+> > >>>>>>>  }
+> > >>>>>>> 
+> > >>>>>>> +#ifdef CONFIG_OF
+> > >>>>>>> +
+> > >>>>>>> +static int iio_dev_node_match(struct device *dev, void *data)
+> > >>>>>>> +{
+> > >>>>>>> +	return !strcmp(dev->type->name, "iio_device") && dev-
+> >of_node
+> > >>> 
+> > >>> ==
+> > >>> 
+> > >>>>>> data;
+> > >>>>>> 
+> > >>>>>> Hmm, do you need to check type name here? One device node should
+> > >>>>>> rather
+> > >>>>>> represent only one device, making node an unique identifier.
+> > >>>>>> 
+> > >>>>>> It this is meant to be a sanity check, it could be done one time
+> > >>>>>> after
+> > >>>>>> finding the device.
+> > >>>>> 
+> > >>>>> Hi Tomasz,
+> > >>>>> 
+> > >>>>> This is what Lars had suggested earlier:
+> > >>>>>> Yes, use bus_find_device on iio_bus_type. A nice example how to
+> > >>>>>> use
+> > >>>>>> this to lookup device by of node is of_find_i2c_device_by_node.
+> > >>>>>> For
+> > >>>>>> IIO you also need to make sure that dev->type is iio_dev_type,
+> > >>>>>> since
+> > >>>>>> both devices and triggers are registered on the same bus.
+> > >>>>> 
+> > >>>>> Is it really needed, or in other words would it be sufficient to
+> > >>>>> check
+> > >>>>> if of_node and data match each other ? Your reasoning makes sense
+> > >>>>> to
+> > >>>>> me, and I had thought about it as well, but I don't really know,
+> > >>>>> and
+> > >>>>> I don't know how I could test it and guarantee correctness either.
+> > >>>>> I'll be happy to take the strcmp() out if someone tells me that it
+> > >>>>> is
+> > >>>>> definitely not needed ...
+> > >>>> 
+> > >>>> A IIO trigger and a IIO device may have the same of_node, e.g. if
+> > >>>> they
+> > >>>> both belong to the same physical device. But you don't need to do
+> > >>>> the
+> > >>>> strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
+> > >>>> &iio_dev_type. Although it doesn't really matter in practice first
+> > >>>> check for the of_node then check for the type, since the of_node
+> > >>>> will
+> > >>>> only match for a few devices at most, the type will match for quite
+> > >>>> a
+> > >>>> few.
+> > >>> 
+> > >>> I must disagree.
+> > >>> 
+> > >>> If you have two IIO devices provided by one physical device, then in
+> > >>> 
+> > >>> device tree they should be represented as follows:
+> > >>> 	phys-dev@12345678 {
+> > >>> 	
+> > >>> 		compatible = "some-physical-device";
+> > >>> 		/* ... */
+> > >>> 		
+> > >>> 		my_trig: iio-trigger {
+> > >>> 		
+> > >>> 			/* ... */
+> > >>> 		
+> > >>> 		};
+> > >>> 		
+> > >>> 		my_dev: iio-device {
+> > >>> 		
+> > >>> 			/* ... */
+> > >>> 		
+> > >>> 		};
+> > >>> 	
+> > >>> 	};
+> > >>> 
+> > >>> Notice that phys-dev works here as an IIO bus on which its IIO
+> > >>> devices
+> > >>> are available. This is related to the convention that single OF
+> > >>> device node represents single device, which would be violated
+> > >>> otherwise.
+> > >> 
+> > >> Right now the iio device is a child of the physical device, and I am
+> > >> simply passing of_node on to it. guess you are saying that is not
+> > >> correct ?
+> > >> 
+> > >> If so, what would be the correct approach ? Something like the
+> > >> following ?
+> > >> 
+> > >> 	voltage-sensor@35 {
+> > >> 	
+> > >> 		compatible = "maxim,max1139";
+> > >> 		reg = <0x35>;
+> > >> 		vcc-supply = <&reg_3p3v>;
+> > >> 		vref-supply = <&reg_3p3v>;
+> > >> 		
+> > >> 		max1139-iio: iio-device {
+> > >> 		
+> > >> 			device_type = "iio_device";
+> > >> 			#io-channel-cells = <1>;
+> > >> 		
+> > >> 		};
+> > >> 	
+> > >> 	};
+> > >> 
+> > >> and in the driver probe function:
+> > >> 	if (parent->of_node)
+> > >> 	
+> > >> 		iio_dev->dev.of_node = of_find_node_by_type(parent-
+> >of_node,
+> > >> 
+> > >> "iio_device");
+> > >> 
+> > >> Another option would be to use of_find_compatible_node() and
+> > >> something
+> > >> like compatible = "iio-device";
+> > >> in the iio-device node.
+> > > 
+> > > A device node is defined as a node having compatible property. Other
+> > > nodes should be seen as helper nodes, which do not represent devices
+> > > (although they all have struct device_node in Linux).
+> > > 
+> > > Also, AFAIK, device_type is a deprecated property used by some legacy
+> > > PowerPC machines and for current machines only compatible should be
+> > > used.
+> > > 
+> > > So I guess the approach with compatible would be appropriate here.
+> > > 
+> > > However for physical devices providing only a single IIO device it
+> > > might> 
+> > > be better to allow simpler specification, like:
+> > >  	max1139-iio: voltage-sensor@35 {
+> > >  	
+> > >  		compatible = "maxim,max1139", "iio_device";
+> > 
+> > I don't think this makes a lot of sense. First of all iio_device an
+> > artificial Linux term, while the device tree should describe the
+> > hardware.
+> 
+> Well, if you look at an iio_device as a subdevice of a physical device 
+> then it should make a bit more sense. (See nodes of GPIO/pinctrl pin banks 
+> or regulators of a PMIC chip.)
+> 
+> > Secondly there is no generic iio driver which could match on
+> > a node with a "iio_device" compability string and stuff would just
+> > work. I mean we don't do
+> > 
+> > compatible = "atmel,at91sam9260-i2c", "i2c-master";
+> > 
+> > or similar either.
+> 
+> Right. We don't need the other compatible for simple devices with single 
+> subdevice. This is implied by the driver registering a single IIO driver 
+> using the node of physical device.
+> 
+> > >  		reg = <0x35>;
+> > >  		vcc-supply = <&reg_3p3v>;
+> > >  		vref-supply = <&reg_3p3v>;
+> > > 		
+> > > 		device_type = "iio_device";
+> 
+> Also we don't need this device_type. Basically we don't need to specify 
+> whether given node is an iio_device or an iio_trigger. It's up to the 
+> driver to register the node as a device or a trigger by setting dev.of_node 
+> field properly.
+> 
+> So my suggestion would be to make the bindings as following. For single 
+> subdevice:
+> 
+> 	voltage-sensor@35 {
+> 		compatible = "maxim,max1139";
+> 		reg = <0x35>;
+> 		vcc-supply = <&reg_3p3v>;
+> 		vref-supply = <&reg_3p3v>;
+> 		#io-channel-cells = <1>;
+> 	};
+> 
+> For multiple subdevices:
+> 
+> 	voltage-sensor@35 {
+> 		compatible = "maxim,max1139";
+> 		reg = <0x35>;
+> 		vcc-supply = <&reg_3p3v>;
+> 		vref-supply = <&reg_3p3v>;
+> 
+> 		subdevice1 {
+> 			/* Subdevice specific data */
+> 			#io-channel-cells = <1>;
+> 		};
+> 
+> 		subdevice2 {
+> 			/* Subdevice specific data */
+> 			#io-channel-cells = <1>;
+> 		}
 
-Having said that, if there isn't a better option then IIO does define
-interfaces that would allow you to handle such a dataflow.  Two options
-occur to me.
+Please provide an example how to parse that. Obviously now I can not look for
+"compatible" anymore. Sure, I can use of_get_child_by_name, but that means
+the sub-device names would have to be well defined. Or I could use
+of_find_node_by_name, but then I would need something like 
 
-1) Treat all the 'pixels' as individual adc channels and the whole
-thing as a scan.  This is going to result in a seriously large pile
-of attributes in sysfs, so probably isn't feasible.
+ 	voltage-sensor@35 {
+ 		compatible = "maxim,max1139";
+		iio-device;
+ 		reg = <0x35>;
+ 		vcc-supply = <&reg_3p3v>;
+ 		vref-supply = <&reg_3p3v>;
+ 		#io-channel-cells = <1>;
+ 	};
 
-2) Treat the device as one adc that happens to take 2048 readings
-every time it is 'triggered' and have wavelength parameters as 
-appropriately defined attributes of this channel.  If you did that
-I can see we would benefit from support for describing just how
-many samples are taken per trigger. (makes sense in other cases rather
-than just here - I have normal adc's that will do this sort of capture).
-
-If you handled this in IIO I think you'd have to have a matched chunk
-of userspace code that knows rather a lot about the sensor.  Normally
-we'd do a our best to avoid this and as such I suspect that
-these devices really deserve a more specific home.
-
-What sort of sampling rate are we talking about and it is something
-you would run continuously or would you just be polling for a reading?
-
-Having said all of this, whilst these are some of the more interesting
-sensors we have dealt with, I'm happy to work with you on the IIO 
-interface extensions needed etc if you decide IIO is the way to go.
-Jonathan
-
-
-> 2. someone already saw a kernel driver for such spectrometers and may
-> have an idea for an implementation.
->
-> Carsten
->
->
-> On 25.02.2013 11:08, Lars-Peter Clausen wrote:
->> On 02/22/2013 10:07 AM, Carsten Frank wrote:
->>> Hi all.
->>>
->>> I have written drivers to access Hamamatsu and Avantes usb-spectrometers
->>> which express the the following interfaces:
->>> One is located in a subdiretory in the the "/sys/bus/usb/drivers/"
->>> tree and
->>> the other on can be foud in the /dev/ directory.
->>>
->>> The first is used to configure the spectrometer (e.g. integration_time,
->>> gain, etc.) and used to show information like the temperature or the
->>> wavelength calibration parameters.
->>>
->>> The interface in /dev/ is used to aquire the data from the spectrometer
->>> (typically 2048 x 2 bytes).
->>>
->>> Greg (K-H) suggests that the iio interface may be an option so I
->>> would like
->>> to get some opinions.
->>>
->>> Thank you very much in advance,
->>>
->>> Carsten
->> Hi,
->>
->> I don't think we have any spectrometer devices in IIO yet. But it
->> could be a
->> fit, maybe requires some extensions to the current IIO API though.
->> Have you
->> looked at the IIO API and userspace ABI to see how your device could
->> fit in
->> there?
->>
->> Also what does the data returned by the spectrometer look like?
->> Usually the
->> data returned by an IIO device is in some kind of standardized form, so
->> generic applications can be written without having to know the exact data
->> layout the device uses.
->>
->> I'm not an expert on how spectrometers work, what kind of parameters they
->> have and what the result of a 'conversion' looks like. Maybe you could
->> give
->> a short introduction, this would certainly make it easier to figure
->> out how
->> this would fit into IIO.
->> A pointer to the sourcecode of the current driver could also be useful.
->>
->> - Lars
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+Thanks,
+Guenter
