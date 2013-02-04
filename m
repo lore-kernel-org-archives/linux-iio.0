@@ -1,49 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-084.synserver.de ([212.40.185.84]:1170 "EHLO
-	smtp-out-083.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1757189Ab3BMODu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Feb 2013 09:03:50 -0500
-Message-ID: <511B9D95.2030803@metafoo.de>
-Date: Wed, 13 Feb 2013 15:05:09 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-CC: Guenter Roeck <linux@roeck-us.net>,
+Return-Path: <linux@roeck-us.net>
+From: Guenter Roeck <linux@roeck-us.net>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: devicetree-discuss@lists.ozlabs.org,
 	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, dianders@chromium.org,
-	gregkh@linuxfoundation.org
-Subject: Re: iio: adc: add exynos5 adc driver under iio framwork
-References: <1358917086-4148-1-git-send-email-ch.naveen@samsung.com> <20130212210732.GA8634@roeck-us.net> <CAHfPSqCwqD2gzB9eiTi1hSQvRgwbsjp9NfEb3RKpy+_+DbdhzQ@mail.gmail.com> <CAHfPSqAJN8C6d6Oa=1UDpJ+hTXbEOGBio4Ob__ZphsKq=Rvppg@mail.gmail.com> <511B9575.1050506@metafoo.de> <CAHfPSqD3-sxJANEznbuvL0in4ObPSStgCJHVLucMdzz-jVa1Fw@mail.gmail.com>
-In-Reply-To: <CAHfPSqD3-sxJANEznbuvL0in4ObPSStgCJHVLucMdzz-jVa1Fw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Anton Vorontsov <cbou@mail.ru>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v3 0/2] iio: Devicetree support
+Date: Mon,  4 Feb 2013 12:26:04 -0800
+Message-Id: <1360009566-26347-1-git-send-email-linux@roeck-us.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/13/2013 02:53 PM, Naveen Krishna Ch wrote:
-[...]
->>> ADC driver will use of_platform_populate() to populate the child nodes
->>> (ntc thermistors in my case)
->>>
->>> I've modified the NTC driver to support DT. in probe
->>> chan = iio_channel_get(&pdev->dev, "adcX");
->>> and using "id" field to use respective ADC channel to do the raw_read()
->>
->> The beauty of the interface is that the consumer doesn't need to know the
->> number of the channel it is using. This is already fully described in the
->> io-channels property. Since you only have one channel per consumer just use
->>
->>         iio_chanel_get(&pdev->dev, NULL)
-> Right this helped me get the channels properly.
-> 
-> I've a doubt in the driver posted at https://lkml.org/lkml/2013/1/24/2
-> i don't need to use this anymore right use iio_map_array_register() Right.
-> 
-> Thats so simple then.. Thanks
+This patch set adds basic device tree support to the IIO subsystem. It is the
+result of discussions [1] and [2].
 
-Yes, if you are using devicetree you don't need to use
-iio_map_array_register() anymore :)
+Patch 1 changes the first parameter to iio_channel_get() to be the pointer to
+the consumer device instead of the consumer device name.
 
-- Lars
+Patch 2 adds basic OF support to the IIO subsystem. Support is modeled after
+the clock subsystem.
 
+The patches are now based on the to togreg branch of iio kernel repository.
+Already applied patches are no longer part of the patch set.
+
+I increased the audience to all affected subsystems. Sorry for missing out
+power and extcon earlier, which are both affected by the first patch.
+
+Guenter
+
+---
+[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+[2] http://marc.info/?l=lm-sensors&m=135375101529918&w=1
