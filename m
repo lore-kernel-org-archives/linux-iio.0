@@ -1,37 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:44693 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754516Ab3BEONZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2013 09:13:25 -0500
-Received: by mail-wg0-f44.google.com with SMTP id dr12so155565wgb.23
-        for <linux-iio@vger.kernel.org>; Tue, 05 Feb 2013 06:13:23 -0800 (PST)
-From: Grant Likely <grant.likely@secretlab.ca>
-Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Cc: Julia Lawall <Julia.Lawall@lip6.fr>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-In-Reply-To: <20130127033358.GA20672@sirena.org.uk>
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <20130127033358.GA20672@sirena.org.uk>
-Date: Tue, 05 Feb 2013 14:07:55 +0000
-Message-Id: <20130205140755.33FCD3E1265@localhost>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:47445 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754448Ab3BDVmb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2013 16:42:31 -0500
+Received: by mail-pa0-f48.google.com with SMTP id hz10so687559pad.7
+        for <linux-iio@vger.kernel.org>; Mon, 04 Feb 2013 13:42:30 -0800 (PST)
+Date: Mon, 4 Feb 2013 13:38:48 -0800
+From: Anton Vorontsov <anton@enomsg.org>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	devicetree-discuss@lists.ozlabs.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH 1/2] iio: Update iio_channel_get API to use consumer
+ device pointer as argument
+Message-ID: <20130204213848.GA2358@lizard.fhda.edu>
+References: <1360009566-26347-1-git-send-email-linux@roeck-us.net>
+ <1360009566-26347-2-git-send-email-linux@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1360009566-26347-2-git-send-email-linux@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 27 Jan 2013 03:33:59 +0000, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
-> On Wed, Jan 09, 2013 at 06:31:09PM +0100, Lars-Peter Clausen wrote:
+On Mon, Feb 04, 2013 at 12:26:05PM -0800, Guenter Roeck wrote:
+> For iio_channel_get to work with OF based configurations, it needs the
+> consumer device pointer instead of the consumer device name as argument.
 > 
-> > The second function spi_sync_transfer() takes a SPI device and an array of
-> > spi_transfers. It will allocate a new spi_message (on the stack) and add all
-> > transfers in the array to the message. Finally it will call spi_sync() on the
-> > message.
-> 
-> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>  drivers/extcon/extcon-adc-jack.c    |    3 +--
+>  drivers/iio/inkern.c                |   11 ++++++++++-
+>  drivers/power/generic-adc-battery.c |    4 ++--
+>  drivers/power/lp8788-charger.c      |    8 ++++----
+>  include/linux/iio/consumer.h        |    5 +++--
+>  5 files changed, 20 insertions(+), 11 deletions(-)
 
-Looks good to me also. Go ahead and merge this series through the iio
-tree since it is the first user.
+Looks OK to me, Ack for drivers/power part.
 
-g.
-
+Thanks.
+Anton
