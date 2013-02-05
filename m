@@ -1,49 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:47445 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754448Ab3BDVmb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2013 16:42:31 -0500
-Received: by mail-pa0-f48.google.com with SMTP id hz10so687559pad.7
-        for <linux-iio@vger.kernel.org>; Mon, 04 Feb 2013 13:42:30 -0800 (PST)
-Date: Mon, 4 Feb 2013 13:38:48 -0800
-From: Anton Vorontsov <anton@enomsg.org>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	Chanwoo Choi <cw00.choi@samsung.com>,
-	David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH 1/2] iio: Update iio_channel_get API to use consumer
- device pointer as argument
-Message-ID: <20130204213848.GA2358@lizard.fhda.edu>
-References: <1360009566-26347-1-git-send-email-linux@roeck-us.net>
- <1360009566-26347-2-git-send-email-linux@roeck-us.net>
+Received: from mail-vc0-f178.google.com ([209.85.220.178]:51975 "EHLO
+	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754793Ab3BESgF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2013 13:36:05 -0500
+Received: by mail-vc0-f178.google.com with SMTP id m8so274891vcd.9
+        for <linux-iio@vger.kernel.org>; Tue, 05 Feb 2013 10:36:04 -0800 (PST)
+From: Ge Gao <ggao@invensense.com>
+References: <52d13e205f916eefa0b7fda2c8d0f20a@mail.gmail.com>
+ <2b0b8fba-fc2c-44fb-9512-d86e87b698c1@email.android.com> <51101648.7000205@metafoo.de>
+ <4781ec0fc6f6eb18cc8470fabce3e2a6@mail.gmail.com> <5110D84D.9030308@metafoo.de>
+In-Reply-To: <5110D84D.9030308@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1360009566-26347-2-git-send-email-linux@roeck-us.net>
+Date: Tue, 5 Feb 2013 10:36:03 -0800
+Message-ID: <5f06a44b95d69cb71424a59ce4f461f2@mail.gmail.com>
+Subject: RE: [PATCH] [V9] Invensense MPU6050 Device Driver.
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Feb 04, 2013 at 12:26:05PM -0800, Guenter Roeck wrote:
-> For iio_channel_get to work with OF based configurations, it needs the
-> consumer device pointer instead of the consumer device name as argument.
-> 
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
->  drivers/extcon/extcon-adc-jack.c    |    3 +--
->  drivers/iio/inkern.c                |   11 ++++++++++-
->  drivers/power/generic-adc-battery.c |    4 ++--
->  drivers/power/lp8788-charger.c      |    8 ++++----
->  include/linux/iio/consumer.h        |    5 +++--
->  5 files changed, 20 insertions(+), 11 deletions(-)
+Dear Lars-Peter,
+	I am using iio_get_time_ns() to get the timestamp. The variation
+is big. For example, the frequency is 10Hz, which translates into 100ms
+per interrupt. However, I get something like 100, 100, 40, 160, 100,
+100...... When a smaller timestamp happens, a big one follows to
+compensates it. So on average, it is hard to tell.. Only on per interrupt
+basis, you can tell it. While on an oscilloscope, I can see interrupts
+come at a very regular and precise pace. The hardware I am using Panda
+board.  However, I don't think it is the hardware problem. The time
+function is updated via a timer interrupt. On a dual core system, it might
+be possible that one core cache get updated while the other is not. When
+interrupt happens, if the "wrong" CPU takes the interrupt, it might cause
+the problem. The iio_get_time_ns() is calling ktime_get_real_ts(), which
+calls getnstimeofday(). This function basically uses a static variable to
+get time. If the static variable is not updated, which could happen on an
+interrupt environment, and CPU is just using its cached version, it is
+quite possible that the data is wrong.
+	Thanks.
 
-Looks OK to me, Ack for drivers/power part.
+Best Regards,
 
-Thanks.
-Anton
+GE GAO
+
+-----Original Message-----
+From: Lars-Peter Clausen [mailto:lars@metafoo.de]
+Sent: Tuesday, February 05, 2013 2:01 AM
+To: Ge Gao
+Cc: Jonathan Cameron; linux-iio@vger.kernel.org
+Subject: Re: [PATCH] [V9] Invensense MPU6050 Device Driver.
+
+On 02/05/2013 02:28 AM, Ge Gao wrote:
+> Dear Lars and Jonanthan,
+> 	I have one question regarding the timestamp inside IRQ. I found
+that
+> the timestamp taken during IRQ is not accurate and it varies a lot. I
+> can see the hardware interrupt came in a regular pace while the
+> timestamp taken varies violently(up to 50% or more). It seems that it
+> is because the data cache that stores the timestamp(xtime) is not
+> updated when there is interrupt. So it actually takes the wrong
+> timestamp. I searched online and didn't find any useful ideas. I think
+> taking timestamp during IRQ is a common practice. Is there any
+> existing solution for this or did I do anything wrong? The code in the
+> current patch is inv_mpu6050_irq_handler() of inv_mpu_ring.c. Thanks.
+
+What kind of time variation are we talking about? nanosecons,
+microseconds, milliseconds? iio_get_time_ns should query the systems
+clockchip and so the result should be pretty precise.
+
+- Lars
