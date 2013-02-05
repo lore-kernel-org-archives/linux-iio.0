@@ -1,42 +1,31 @@
-Return-Path: <linux@roeck-us.net>
-Date: Mon, 4 Feb 2013 08:37:04 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH v2 4/4] iio: Add OF support
-Message-ID: <20130204163704.GA18187@roeck-us.net>
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
- <1359853180-5664-5-git-send-email-linux@roeck-us.net>
- <510E7195.4070803@metafoo.de>
- <20130203162213.GA21576@roeck-us.net>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5110D84D.9030308@metafoo.de>
+Date: Tue, 05 Feb 2013 11:00:45 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20130203162213.GA21576@roeck-us.net>
+To: Ge Gao <ggao@invensense.com>
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] [V9] Invensense MPU6050 Device Driver.
+References: <52d13e205f916eefa0b7fda2c8d0f20a@mail.gmail.com> <2b0b8fba-fc2c-44fb-9512-d86e87b698c1@email.android.com> <51101648.7000205@metafoo.de> <4781ec0fc6f6eb18cc8470fabce3e2a6@mail.gmail.com>
+In-Reply-To: <4781ec0fc6f6eb18cc8470fabce3e2a6@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Feb 03, 2013 at 08:22:13AM -0800, Guenter Roeck wrote:
-[ ... ]
+On 02/05/2013 02:28 AM, Ge Gao wrote:
+> Dear Lars and Jonanthan,
+> 	I have one question regarding the timestamp inside IRQ. I found that the
+> timestamp taken during IRQ is not accurate and it varies a lot. I can see
+> the hardware interrupt came in a regular pace while the timestamp taken
+> varies violently(up to 50% or more). It seems that it is because the data
+> cache that stores the timestamp(xtime) is not updated when there is
+> interrupt. So it actually takes the wrong timestamp. I searched online and
+> didn't find any useful ideas. I think taking timestamp during IRQ is a
+> common practice. Is there any existing solution for this or did I do
+> anything wrong? The code in the current patch is inv_mpu6050_irq_handler()
+> of inv_mpu_ring.c. Thanks.
 
-> > > +
-> > > +	/* NULL terminated array to save passing size */
-> > > +	chans = kzalloc(sizeof(*chans)*(nummaps + 1), GFP_KERNEL);
-> > 
-> > I think using kcalloc makes sense here.
-> > 
-> that would leave chan->data uninitialized, and I would have to initialize it
-> explicitly. also, if additional fields are ever added, we would risk having
-> uninitialized fields. Using kzalloc avoids a potential future error case, so I
-> would prefer to keep it.
-> 
-Please ignore this one.
+What kind of time variation are we talking about? nanosecons, microseconds,
+milliseconds? iio_get_time_ns should query the systems clockchip and so the
+result should be pretty precise.
 
-Looks like my brain was too flu-foggy to realize that kcalloc does clear the
-memory.
-
-Guenter
+- Lars
