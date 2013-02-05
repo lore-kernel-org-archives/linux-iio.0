@@ -1,58 +1,37 @@
-Return-Path: <linux@roeck-us.net>
-Date: Tue, 5 Feb 2013 07:22:19 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	Chanwoo Choi <cw00.choi@samsung.com>,
-	Anton Vorontsov <cbou@mail.ru>,
-	David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH v3 2/2] iio: Add OF support
-Message-ID: <20130205152219.GA15057@roeck-us.net>
-References: <1360009566-26347-1-git-send-email-linux@roeck-us.net>
- <1360009566-26347-3-git-send-email-linux@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1360009566-26347-3-git-send-email-linux@roeck-us.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:44693 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754516Ab3BEONZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2013 09:13:25 -0500
+Received: by mail-wg0-f44.google.com with SMTP id dr12so155565wgb.23
+        for <linux-iio@vger.kernel.org>; Tue, 05 Feb 2013 06:13:23 -0800 (PST)
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Cc: Julia Lawall <Julia.Lawall@lip6.fr>,
+	spi-devel-general@lists.sourceforge.net,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio@vger.kernel.org
+In-Reply-To: <20130127033358.GA20672@sirena.org.uk>
+References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <20130127033358.GA20672@sirena.org.uk>
+Date: Tue, 05 Feb 2013 14:07:55 +0000
+Message-Id: <20130205140755.33FCD3E1265@localhost>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Feb 04, 2013 at 12:26:06PM -0800, Guenter Roeck wrote:
-> Provide bindings and parse OF data during initialization.
+On Sun, 27 Jan 2013 03:33:59 +0000, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
+> On Wed, Jan 09, 2013 at 06:31:09PM +0100, Lars-Peter Clausen wrote:
 > 
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
-> One open question is how to assign of_node to the iio device. We can either do it
-> in each driver (which turns out to be a huge patchset), or add something like the
-> following to iio_device_register.
+> > The second function spi_sync_transfer() takes a SPI device and an array of
+> > spi_transfers. It will allocate a new spi_message (on the stack) and add all
+> > transfers in the array to the message. Finally it will call spi_sync() on the
+> > message.
 > 
-> 	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
-> 		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
-> 
-[ ... ]
-> +
-> +#else /* CONFIG_OF */
-> +
-> +static inline struct iio_channel *
-> +of_iio_channel_get_by_name(struct device *dev, const char *name)
-> +{
-> +	return ERR_PTR(-ENOENT);
-> +}
-> +
+> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
 
-The above should be
+Looks good to me also. Go ahead and merge this series through the iio
+tree since it is the first user.
 
-static inline struct iio_channel *
-of_iio_channel_get_by_name(struct device_node *np, const char *name)
-{
-	return NULL;
-}
+g.
 
-Will be fixed in the next version.
-
-Guenter
