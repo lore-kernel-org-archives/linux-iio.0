@@ -1,38 +1,87 @@
-Return-Path: <manuel.stahl@iis.fraunhofer.de>
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-To: "Getz, Robin" <robin.getz@analog.com>
-Subject: Re: Userspace libs
-Date: Tue, 19 Feb 2013 09:38:33 +0100
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- "Clausen, Lars-Peter" <Lars-Peter.Clausen@analog.com>,
- "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <201302131412.58742.robin.getz@analog.com> <511F7FA5.7060805@kernel.org> <201302181515.36379.robin.getz@analog.com>
-In-Reply-To: <201302181515.36379.robin.getz@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39311 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755389Ab3BFSkl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Feb 2013 13:40:41 -0500
+Message-ID: <5112A3A2.1070306@kernel.org>
+Date: Wed, 06 Feb 2013 18:40:34 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201302190938.33405.manuel.stahl@iis.fraunhofer.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: tweak language in industrialio-trigger comments
+References: <1359977801-19202-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1359977801-19202-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Robin,
-
-On Monday, 18. February 2013 21:15:35 Getz, Robin wrote:
-> On Sat 16 Feb 2013 07:46, Jonathan Cameron pondered:
-> > On 02/13/2013 07:12 PM, Getz, Robin wrote:
-> > > Jonathan:
-> [snip]
-> > The original plan was to have a separately maintained 
-> > userspace library to do things 'properly'.
+On 02/04/2013 11:36 AM, Peter Meerwald wrote:
+> From: Peter Meerwald <p.meerwald@bct-electronic.com>
 > 
-> Where was this suppost to live?
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Thanks, applied to togreg  branch of iio.git
 
-We started a project on sourceforge some time ago. It's currently a bit out of date, but you're welcome to throw away the existing parts and replace it with your code.
-The main tool right now is called 'lsiio' and does the same as 'lsusb' or 'lspci'.
-
-http://sourceforge.net/projects/iioutils/
-
--- 
-Regards,
-Manuel Stahl
+> ---
+>  drivers/iio/industrialio-trigger.c |   12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index 4fe0ead..4d6c7d8 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -160,7 +160,7 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
+>  	trig->use_count--;
+>  	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
+>  		if (trig->ops->try_reenable(trig))
+> -			/* Missed and interrupt so launch new poll now */
+> +			/* Missed an interrupt so launch new poll now */
+>  			iio_trigger_poll(trig, 0);
+>  }
+>  EXPORT_SYMBOL(iio_trigger_notify_done);
+> @@ -193,7 +193,7 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+>   * This is not currently handled.  Alternative of not enabling trigger unless
+>   * the relevant function is in there may be the best option.
+>   */
+> -/* Worth protecting against double additions?*/
+> +/* Worth protecting against double additions? */
+>  static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  					struct iio_poll_func *pf)
+>  {
+> @@ -201,7 +201,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  	bool notinuse
+>  		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+>  
+> -	/* Prevent the module being removed whilst attached to a trigger */
+> +	/* Prevent the module from being removed whilst attached to a trigger */
+>  	__module_get(pf->indio_dev->info->driver_module);
+>  	pf->irq = iio_trigger_get_irq(trig);
+>  	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
+> @@ -288,7 +288,7 @@ void iio_dealloc_pollfunc(struct iio_poll_func *pf)
+>  EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
+>  
+>  /**
+> - * iio_trigger_read_current() - trigger consumer sysfs query which trigger
+> + * iio_trigger_read_current() - trigger consumer sysfs query current trigger
+>   *
+>   * For trigger consumers the current_trigger interface allows the trigger
+>   * used by the device to be queried.
+> @@ -305,7 +305,7 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+>  }
+>  
+>  /**
+> - * iio_trigger_write_current() trigger consumer sysfs set current trigger
+> + * iio_trigger_write_current() - trigger consumer sysfs set current trigger
+>   *
+>   * For trigger consumers the current_trigger interface allows the trigger
+>   * used for this device to be specified at run time based on the triggers
+> @@ -476,7 +476,7 @@ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+>  
+>  void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+>  {
+> -	/* Clean up and associated but not attached triggers references */
+> +	/* Clean up an associated but not attached trigger reference */
+>  	if (indio_dev->trig)
+>  		iio_trigger_put(indio_dev->trig);
+>  }
+> 
