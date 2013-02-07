@@ -1,354 +1,423 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f45.google.com ([74.125.83.45]:61827 "EHLO
-	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750944Ab3BCRas (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 12:30:48 -0500
-Received: by mail-ee0-f45.google.com with SMTP id b57so2844775eek.4
-        for <linux-iio@vger.kernel.org>; Sun, 03 Feb 2013 09:30:47 -0800 (PST)
-From: Tomasz Figa <tomasz.figa@gmail.com>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
+Return-Path: <linux@roeck-us.net>
+From: Guenter Roeck <linux@roeck-us.net>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: devicetree-discuss@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org,
 	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
 	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH v2 4/4] iio: Add OF support
-Date: Sun, 03 Feb 2013 18:30:47 +0100
-Message-ID: <2327792.dx5ptVD6je@flatron>
-In-Reply-To: <20130203170107.GD21576@roeck-us.net>
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net> <1915802.t7OItgMRJy@flatron> <20130203170107.GD21576@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Rob Herring <rob.herring@calxeda.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Anton Vorontsov <cbou@mail.ru>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v5] iio: Add OF support
+Date: Thu,  7 Feb 2013 09:09:00 -0800
+Message-Id: <1360256940-19438-1-git-send-email-linux@roeck-us.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sunday 03 of February 2013 09:01:07 Guenter Roeck wrote:
-> On Sun, Feb 03, 2013 at 12:52:40PM +0100, Tomasz Figa wrote:
-> > On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
-> > > On 02/03/2013 03:06 AM, Guenter Roeck wrote:
-> > > > On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
-> > > >> Hi Guenter,
-> > > >> 
-> > > >> Some comments inline.
-> > > >> 
-> > > >> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
-> > > >>> Provide bindings and parse OF data during initialization.
-> > > >>> 
-> > > >>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > > >>> ---
-> > > >>> - Documentation update per feedback
-> > > >>> - Dropped io-channel-output-names from the bindings document.
-> > > >>> The
-> > > >>> property is not used in the code, and it is not entirely clear
-> > > >>> what
-> > > >>> it
-> > > >>> would be used for. If there is a need for it, we can add it back
-> > > >>> in
-> > > >>> later on.
-> > > >>> - Don't export OF specific API calls
-> > > >>> - For OF support, no longer depend on iio_map
-> > > >>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the
-> > > >>> code
-> > > >>> still builds if it is not selected.
-> > > >>> - Change iio_channel_get to take device pointer as argument
-> > > >>> instead
-> > > >>> of
-> > > >>> device name. Retain old API as of_iio_channel_get_sys.
-> > > >>> - iio_channel_get now works for both OF and non-OF
-> > > >>> configurations.
-> > > >>> 
-> > > >>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76
-> > > >>>  ++++++++
-> > > >>>  drivers/iio/inkern.c                               |  186
-> > > >>> 
-> > > >>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
-> > > >>> 
-> > > >>>  create mode 100644
-> > > >>> 
-> > > >>> Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>> 
-> > > >>> diff --git
-> > > >>> a/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new
-> > > >>> file
-> > > >>> mode
-> > > >>> 100644
-> > > >>> index 0000000..58df5f6
-> > > >>> --- /dev/null
-> > > >>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>> @@ -0,0 +1,76 @@
-> > > >>> +This binding is a work-in-progress. It is derived from clock
-> > > >>> bindings,
-> > > >>> +and based on suggestions from Lars-Peter Clausen [1].
-> > > >>> +
-> > > >>> +Sources of IIO channels can be represented by any node in the
-> > > >>> device
-> > > >>> +tree.  Those nodes are designated as IIO providers.  IIO
-> > > >>> consumer
-> > > >>> +nodes use a phandle and IIO specifier pair to connect IIO
-> > > >>> provider
-> > > >>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
-> > > >>> +specifier is an array of one or more cells identifying the IIO
-> > > >>> +output on a device.  The length of an IIO specifier is defined
-> > > >>> by
-> > > >>> the
-> > > >>> +value of a #io-channel-cells property in the clock provider
-> > > >>> node.
-> > > >>> +
-> > > >>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
-> > > >>> +
-> > > >>> +==IIO providers==
-> > > >>> +
-> > > >>> +Required properties:
-> > > >>> +#io-channel-cells: Number of cells in an IIO specifier;
-> > > >>> Typically 0
-> > > >>> for nodes +		   with a single IIO output and 1 for nodes 
-with
-> > > >>> multiple +		   IIO outputs.
-> > > >>> +
-> > > >>> +For example:
-> > > >>> +
-> > > >>> +    adc: adc@35 {
-> > > >>> +	compatible = "maxim,max1139";
-> > > >>> +	reg = <0x35>;
-> > > >>> +        #io-channel-cells = <1>;
-> > > >>> +    };
-> > > >>> +
-> > > >>> +==IIO consumers==
-> > > >>> +
-> > > >>> +Required properties:
-> > > >>> +io-channels:	List of phandle and IIO specifier pairs, one 
-pair
-> > > >>> +		for each IIO input to the device.  Note: if the
-> > > >>> +		IIO provider specifies '0' for #clock-cells, then
-> > > >>> +		only the phandle portion of the pair will appear.
-> > > >>> +
-> > > >>> +Optional properties:
-> > > >>> +io-channel-names:
-> > > >>> +		List of IIO input name strings sorted in the same
-> > > >>> +		order as the io-channels property.  Consumers drivers
-> > > >>> +		will use io-channel-names to match IIO input names
-> > > >>> +		with IIO specifiers.
-> > > >>> +io-channel-ranges:
-> > > >>> +		Empty property indicating that child nodes can inherit
-> > 
-> > named
-> > 
-> > > >>> +		IIO channels from this node. Useful for bus nodes to
-> > 
-> > provide
-> > 
-> > > >>> +		and IIO channel to their children.
-> > > >>> +
-> > > >>> +For example:
-> > > >>> +
-> > > >>> +    device {
-> > > >>> +        io-channels = <&adc 1>, <&ref 0>;
-> > > >>> +        io-channel-names = "vcc", "vdd";
-> > > >>> +    };
-> > > >>> +
-> > > >>> +This represents a device with two IIO inputs, named "vcc" and
-> > > >>> "vdd".
-> > > >>> +The vcc channel is connected to output 1 of the &adc device,
-> > > >>> and
-> > > >>> the
-> > > >>> +vdd channel is connected to output 0 of the &ref device.
-> > > >>> +
-> > > >>> +==Example==
-> > > >>> +
-> > > >>> +	adc: max1139@35 {
-> > > >>> +		compatible = "maxim,max1139";
-> > > >>> +		reg = <0x35>;
-> > > >>> +		#io-channel-cells = <1>;
-> > > >>> +	};
-> > > >>> +
-> > > >>> +	...
-> > > >>> +
-> > > >>> +	iio_hwmon {
-> > > >>> +		compatible = "iio-hwmon";
-> > > >>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
-> > > >>> +			<&adc 3>, <&adc 4>, <&adc 5>,
-> > > >>> +			<&adc 6>, <&adc 7>, <&adc 8>,
-> > > >>> +			<&adc 9>, <&adc 10>, <&adc 11>;
-> > > >>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
-> > > >>> +	};
-> > > >>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > > >>> index b289915..d48f2a8 100644
-> > > >>> --- a/drivers/iio/inkern.c
-> > > >>> +++ b/drivers/iio/inkern.c
-> > > >>> @@ -10,6 +10,7 @@
-> > > >>> 
-> > > >>>  #include <linux/export.h>
-> > > >>>  #include <linux/slab.h>
-> > > >>>  #include <linux/mutex.h>
-> > > >>> 
-> > > >>> +#include <linux/of.h>
-> > > >>> 
-> > > >>>  #include <linux/iio/iio.h>
-> > > >>>  #include "iio_core.h"
-> > > >>> 
-> > > >>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
-> > > >>> 
-> > > >>>  	return chan;
-> > > >>>  
-> > > >>>  }
-> > > >>> 
-> > > >>> +#ifdef CONFIG_OF
-> > > >>> +
-> > > >>> +static int iio_dev_node_match(struct device *dev, void *data)
-> > > >>> +{
-> > > >>> +	return !strcmp(dev->type->name, "iio_device") && dev->of_node
-> > 
-> > ==
-> > 
-> > > >> data;
-> > > >> 
-> > > >> Hmm, do you need to check type name here? One device node should
-> > > >> rather
-> > > >> represent only one device, making node an unique identifier.
-> > > >> 
-> > > >> It this is meant to be a sanity check, it could be done one time
-> > > >> after
-> > > >> finding the device.
-> > > > 
-> > > > Hi Tomasz,
-> > > > 
-> > > > This is what Lars had suggested earlier:
-> > > >> Yes, use bus_find_device on iio_bus_type. A nice example how to
-> > > >> use
-> > > >> this to lookup device by of node is of_find_i2c_device_by_node.
-> > > >> For
-> > > >> IIO you also need to make sure that dev->type is iio_dev_type,
-> > > >> since
-> > > >> both devices and triggers are registered on the same bus.
-> > > > 
-> > > > Is it really needed, or in other words would it be sufficient to
-> > > > check
-> > > > if of_node and data match each other ? Your reasoning makes sense
-> > > > to
-> > > > me, and I had thought about it as well, but I don't really know,
-> > > > and
-> > > > I don't know how I could test it and guarantee correctness either.
-> > > > I'll be happy to take the strcmp() out if someone tells me that it
-> > > > is
-> > > > definitely not needed ...
-> > > 
-> > > A IIO trigger and a IIO device may have the same of_node, e.g. if
-> > > they
-> > > both belong to the same physical device. But you don't need to do
-> > > the
-> > > strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
-> > > &iio_dev_type. Although it doesn't really matter in practice first
-> > > check for the of_node then check for the type, since the of_node
-> > > will
-> > > only match for a few devices at most, the type will match for quite
-> > > a
-> > > few.
-> > 
-> > I must disagree.
-> > 
-> > If you have two IIO devices provided by one physical device, then in
-> > 
-> > device tree they should be represented as follows:
-> > 	phys-dev@12345678 {
-> > 	
-> > 		compatible = "some-physical-device";
-> > 		/* ... */
-> > 		
-> > 		my_trig: iio-trigger {
-> > 		
-> > 			/* ... */
-> > 		
-> > 		};
-> > 		
-> > 		my_dev: iio-device {
-> > 		
-> > 			/* ... */
-> > 		
-> > 		};
-> > 	
-> > 	};
-> > 
-> > Notice that phys-dev works here as an IIO bus on which its IIO devices
-> > are available. This is related to the convention that single OF
-> > device node represents single device, which would be violated
-> > otherwise.
-> 
-> Right now the iio device is a child of the physical device, and I am
-> simply passing of_node on to it. guess you are saying that is not
-> correct ?
-> 
-> If so, what would be the correct approach ? Something like the following
-> ?
-> 
-> 	voltage-sensor@35 {
-> 		compatible = "maxim,max1139";
-> 		reg = <0x35>;
-> 		vcc-supply = <&reg_3p3v>;
-> 		vref-supply = <&reg_3p3v>;
-> 
-> 		max1139-iio: iio-device {
-> 			device_type = "iio_device";
-> 			#io-channel-cells = <1>;
-> 		};
-> 	};
-> 
-> and in the driver probe function:
-> 
-> 	if (parent->of_node)
-> 		iio_dev->dev.of_node = of_find_node_by_type(parent->of_node,
-> "iio_device");
-> 
-> Another option would be to use of_find_compatible_node() and something
-> like compatible = "iio-device";
-> in the iio-device node.
+Provide bindings and parse OF data during initialization.
 
-A device node is defined as a node having compatible property. Other nodes 
-should be seen as helper nodes, which do not represent devices (although 
-they all have struct device_node in Linux).
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+v5:
+- Updated examples in bindings.
+v4:
+- Fixed wrong parameter to dummy of_iio_channel_get_by_name if CONFIG_OF is
+  undefined, and wrong return value.
+- Initialize indio_dev->of_node in iio_device_register if the calling driver
+  neglected to do it.
+v3:
+- Cleaned up documentation (formatting, left-over clock references)
+- Updated bindings description to permit sub-devices
+- When searching for iio devices, use the pointer to the iio device type instead
+  of strcmp. Rename iio_dev_type to iio_device_type (to match other device
+  types) and make it global for that purpose. Check the OF node first, then the
+  device type, as the node is less likely to match.
+- Move the common code in of_iio_channel_get and of_iio_channel_get_all to
+  __of_iio_channel_get.
+- Return NULL from of_iio_channel_get_by_name if nothing is found, or
+  an error if there is a problem with consistency or if the provider device is
+  not yet available.
+- In iio_channel_get, return if of_iio_channel_get_by_name() returns a channel
+  or an error, and continue otherwise.
+v2:
+- Rebased to iio/togreg
+- Documentation update per feedback
+- Dropped io-channel-output-names from the bindings document. The property is
+  not used in the code, and it is not entirely clear what it would be used for.
+  If there is a need for it, we can add it back in later on.
+- Don't export OF specific API calls
+- For OF support, no longer depend on iio_map
+- Add #ifdef CONFIG_OF where appropriate, and ensure that the code still builds
+  if it is not selected.
+- Change iio_channel_get to take device pointer as argument instead of device
+  name. Retain old API as of_iio_channel_get_sys.
+- iio_channel_get now works for both OF and non-OF configurations
+- Use regulator to get vref for max1363 driver.
 
-Also, AFAIK, device_type is a deprecated property used by some legacy 
-PowerPC machines and for current machines only compatible should be used.
+ .../devicetree/bindings/iio/iio-bindings.txt       |   97 +++++++++++
+ drivers/iio/iio_core.h                             |    1 +
+ drivers/iio/industrialio-core.c                    |    8 +-
+ drivers/iio/inkern.c                               |  171 ++++++++++++++++++++
+ 4 files changed, 275 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/iio-bindings.txt
 
-So I guess the approach with compatible would be appropriate here.
-
-However for physical devices providing only a single IIO device it might 
-be better to allow simpler specification, like:
-
- 	max1139-iio: voltage-sensor@35 {
- 		compatible = "maxim,max1139", "iio_device";
- 		reg = <0x35>;
- 		vcc-supply = <&reg_3p3v>;
- 		vref-supply = <&reg_3p3v>;
-		device_type = "iio_device";
- 		#io-channel-cells = <1>;
- 	};
-
-The node would be parseable using the same code as for subnodes (first try 
-to parse current node and if it fails - no iio_device in compatible list - 
-parse child nodes), but you could simplify specification of simple 
-devices.
-
-Also keep in mind that of_find_compatible_node() and friends iterate over 
-the whole flattened device tree (starting from the specified node), not 
-just over child nodes of specified node. To iterate over child nodes 
-for_each_child_of_node must be used.
-
-The code would then be something like this:
-
-	struct device_node *np;
-
-	ret = iio_of_parse_node(dev->of_node);
-	if (!ret)
-		return 0;
-
-	for_each_child_of_node(dev->of_node, np)
-		iio_of_parse_node(np);
-
-With the check for compatible property inside iio_of_parse_node().
-
-Best regards,
-Tomasz
-
+diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+new file mode 100644
+index 0000000..1182845
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+@@ -0,0 +1,97 @@
++This binding is a work-in-progress. It is derived from clock bindings,
++and based on suggestions from Lars-Peter Clausen [1].
++
++Sources of IIO channels can be represented by any node in the device
++tree. Those nodes are designated as IIO providers. IIO consumer
++nodes use a phandle and IIO specifier pair to connect IIO provider
++outputs to IIO inputs. Similar to the gpio specifiers, an IIO
++specifier is an array of one or more cells identifying the IIO
++output on a device. The length of an IIO specifier is defined by the
++value of a #io-channel-cells property in the IIO provider node.
++
++[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
++
++==IIO providers==
++
++Required properties:
++#io-channel-cells: Number of cells in an IIO specifier; Typically 0 for nodes
++		   with a single IIO output and 1 for nodes with multiple
++		   IIO outputs.
++
++Example for a simple configuration with no trigger:
++
++	adc: voltage-sensor@35 {
++		compatible = "maxim,max1139";
++		reg = <0x35>;
++		#io-channel-cells = <1>;
++	};
++
++Example for a configuration with trigger:
++
++	adc@35 {
++		compatible = "some-vendor,some-adc";
++		reg = <0x35>;
++
++		adc1: iio-device@0 {
++			#io-channel-cells = <1>;
++			/* other properties */
++		};
++		adc2: iio-device@1 {
++			#io-channel-cells = <1>;
++			/* other properties */
++		};
++	};
++
++==IIO consumers==
++
++Required properties:
++io-channels:	List of phandle and IIO specifier pairs, one pair
++		for each IIO input to the device. Note: if the
++		IIO provider specifies '0' for #io-channel-cells,
++		then only the phandle portion of the pair will appear.
++
++Optional properties:
++io-channel-names:
++		List of IIO input name strings sorted in the same
++		order as the io-channels property. Consumers drivers
++		will use io-channel-names to match IIO input names
++		with IIO specifiers.
++io-channel-ranges:
++		Empty property indicating that child nodes can inherit named
++		IIO channels from this node. Useful for bus nodes to provide
++		and IIO channel to their children.
++
++For example:
++
++	device {
++		io-channels = <&adc 1>, <&ref 0>;
++		io-channel-names = "vcc", "vdd";
++	};
++
++This represents a device with two IIO inputs, named "vcc" and "vdd".
++The vcc channel is connected to output 1 of the &adc device, and the
++vdd channel is connected to output 0 of the &ref device.
++
++==Example==
++
++	adc: max1139@35 {
++		compatible = "maxim,max1139";
++		reg = <0x35>;
++		#io-channel-cells = <1>;
++	};
++
++	...
++
++	iio_hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
++			<&adc 3>, <&adc 4>, <&adc 5>,
++			<&adc 6>, <&adc 7>, <&adc 8>,
++			<&adc 9>;
++	};
++
++	some_consumer {
++		compatible = "some-consumer";
++		io-channels = <&adc 10>, <&adc 11>;
++		io-channel-names = "adc1", "adc2";
++	};
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index f652e6a..05c1b74 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -18,6 +18,7 @@
+ struct iio_chan_spec;
+ struct iio_dev;
+ 
++extern struct device_type iio_device_type;
+ 
+ int __iio_add_chan_devattr(const char *postfix,
+ 			   struct iio_chan_spec const *chan,
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 8848f16..6d8b027 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -847,7 +847,7 @@ static void iio_dev_release(struct device *device)
+ 	kfree(indio_dev);
+ }
+ 
+-static struct device_type iio_dev_type = {
++struct device_type iio_device_type = {
+ 	.name = "iio_device",
+ 	.release = iio_dev_release,
+ };
+@@ -869,7 +869,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+ 
+ 	if (dev) {
+ 		dev->dev.groups = dev->groups;
+-		dev->dev.type = &iio_dev_type;
++		dev->dev.type = &iio_device_type;
+ 		dev->dev.bus = &iio_bus_type;
+ 		device_initialize(&dev->dev);
+ 		dev_set_drvdata(&dev->dev, (void *)dev);
+@@ -960,6 +960,10 @@ int iio_device_register(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+ 
++	/* If the calling driver did not initialize of_node, do it here */
++	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
++		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
++
+ 	/* configure elements for the chrdev */
+ 	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+ 
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index b289915..795d100 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -10,6 +10,7 @@
+ #include <linux/export.h>
+ #include <linux/slab.h>
+ #include <linux/mutex.h>
++#include <linux/of.h>
+ 
+ #include <linux/iio/iio.h>
+ #include "iio_core.h"
+@@ -92,6 +93,164 @@ static const struct iio_chan_spec
+ 	return chan;
+ }
+ 
++#ifdef CONFIG_OF
++
++static int iio_dev_node_match(struct device *dev, void *data)
++{
++	return dev->of_node == data && dev->type == &iio_device_type;
++}
++
++static int __of_iio_channel_get(struct iio_channel *channel,
++				struct device_node *np, int index)
++{
++	struct device *idev;
++	struct iio_dev *indio_dev;
++	int err;
++	struct of_phandle_args iiospec;
++
++	err = of_parse_phandle_with_args(np, "io-channels",
++					 "#io-channel-cells",
++					 index, &iiospec);
++	if (err)
++		return err;
++
++	idev = bus_find_device(&iio_bus_type, NULL, iiospec.np,
++			       iio_dev_node_match);
++	of_node_put(iiospec.np);
++	if (idev == NULL)
++		return -EPROBE_DEFER;
++
++	indio_dev = dev_to_iio_dev(idev);
++	channel->indio_dev = indio_dev;
++	index = iiospec.args_count ? iiospec.args[0] : 0;
++	if (index >= indio_dev->num_channels) {
++		return -EINVAL;
++		goto err_put;
++	}
++	channel->channel = &indio_dev->channels[index];
++
++	return 0;
++
++err_put:
++	iio_device_put(indio_dev);
++	return err;
++}
++
++static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
++{
++	struct iio_channel *channel;
++	int err;
++
++	if (index < 0)
++		return ERR_PTR(-EINVAL);
++
++	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
++	if (channel == NULL)
++		return ERR_PTR(-ENOMEM);
++
++	err = __of_iio_channel_get(channel, np, index);
++	if (err)
++		goto err_free_channel;
++
++	return channel;
++
++err_free_channel:
++	kfree(channel);
++	return ERR_PTR(err);
++}
++
++static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
++						      const char *name)
++{
++	struct iio_channel *chan = NULL;
++
++	/* Walk up the tree of devices looking for a matching iio channel */
++	while (np) {
++		int index = 0;
++
++		/*
++		 * For named iio channels, first look up the name in the
++		 * "io-channel-names" property.  If it cannot be found, the
++		 * index will be an error code, and of_iio_channel_get()
++		 * will fail.
++		 */
++		if (name)
++			index = of_property_match_string(np, "io-channel-names",
++							 name);
++		chan = of_iio_channel_get(np, index);
++		if (!IS_ERR(chan))
++			break;
++		else if (name && index >= 0) {
++			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
++				np->full_name, name ? name : "", index);
++			return chan;
++		}
++
++		/*
++		 * No matching IIO channel found on this node.
++		 * If the parent node has a "io-channel-ranges" property,
++		 * then we can try one of its channels.
++		 */
++		np = np->parent;
++		if (np && !of_get_property(np, "io-channel-ranges", NULL))
++			break;
++	}
++	return chan;
++}
++
++static struct iio_channel *of_iio_channel_get_all(struct device *dev)
++{
++	struct iio_channel *chans;
++	int i, mapind, nummaps = 0;
++	int ret;
++
++	do {
++		ret = of_parse_phandle_with_args(dev->of_node,
++						 "io-channels",
++						 "#io-channel-cells",
++						 nummaps, NULL);
++		if (ret < 0)
++			break;
++	} while (++nummaps);
++
++	if (nummaps == 0)	/* no error, return NULL to search map table */
++		return NULL;
++
++	/* NULL terminated array to save passing size */
++	chans = kcalloc(nummaps + 1, sizeof(*chans), GFP_KERNEL);
++	if (chans == NULL)
++		return ERR_PTR(-ENOMEM);
++
++	/* Search for OF matches */
++	for (mapind = 0; mapind < nummaps; mapind++) {
++		ret = __of_iio_channel_get(&chans[mapind], dev->of_node,
++					   mapind);
++		if (ret)
++			goto error_free_chans;
++	}
++	return chans;
++
++error_free_chans:
++	for (i = 0; i < mapind; i++)
++		iio_device_put(chans[i].indio_dev);
++	kfree(chans);
++	return ERR_PTR(ret);
++}
++
++#else /* CONFIG_OF */
++
++static inline struct iio_channel *
++of_iio_channel_get_by_name(struct device_node *np, const char *name)
++{
++	return NULL;
++}
++
++static inline struct iio_channel *of_iio_channel_get_all(struct device *dev)
++{
++	return NULL;
++}
++
++#endif /* CONFIG_OF */
+ 
+ static struct iio_channel *iio_channel_get_sys(const char *name,
+ 					       const char *channel_name)
+@@ -150,7 +309,14 @@ struct iio_channel *iio_channel_get(struct device *dev,
+ 				    const char *channel_name)
+ {
+ 	const char *name = dev ? dev_name(dev) : NULL;
++	struct iio_channel *channel;
+ 
++	if (dev) {
++		channel = of_iio_channel_get_by_name(dev->of_node,
++						     channel_name);
++		if (channel != NULL)
++			return channel;
++	}
+ 	return iio_channel_get_sys(name, channel_name);
+ }
+ EXPORT_SYMBOL_GPL(iio_channel_get);
+@@ -173,6 +339,11 @@ struct iio_channel *iio_channel_get_all(struct device *dev)
+ 
+ 	if (dev == NULL)
+ 		return ERR_PTR(-EINVAL);
++
++	chans = of_iio_channel_get_all(dev);
++	if (chans)
++		return chans;
++
+ 	name = dev_name(dev);
+ 
+ 	mutex_lock(&iio_map_list_lock);
+-- 
+1.7.9.7
