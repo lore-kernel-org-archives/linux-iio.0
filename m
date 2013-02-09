@@ -1,184 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55372 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43725 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754742Ab3BJRpa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Feb 2013 12:45:30 -0500
-Message-ID: <5117DCB0.3030809@kernel.org>
-Date: Sun, 10 Feb 2013 17:45:20 +0000
+	with ESMTP id S1752640Ab3BILOP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2013 06:14:15 -0500
+Message-ID: <51162F84.8050706@kernel.org>
+Date: Sat, 09 Feb 2013 11:14:12 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Ge GAO <ggao@invensense.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] [V9] Invensense MPU6050 Device Driver.
-References: <1359764808-20168-1-git-send-email-ggao@invensense.com> <5117D94F.3010000@metafoo.de>
-In-Reply-To: <5117D94F.3010000@metafoo.de>
+To: Grant Likely <grant.likely@secretlab.ca>
+CC: Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Julia Lawall <Julia.Lawall@lip6.fr>,
+	spi-devel-general@lists.sourceforge.net,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
+References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <20130127033358.GA20672@sirena.org.uk> <20130205140755.33FCD3E1265@localhost> <5112ACF5.3020906@kernel.org>
+In-Reply-To: <5112ACF5.3020906@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/10/2013 05:30 PM, Lars-Peter Clausen wrote:
-> On 02/02/2013 01:26 AM, Ge GAO wrote:
->> From: Ge Gao <ggao@invensense.com>
+On 02/06/2013 07:20 PM, Jonathan Cameron wrote:
+> On 02/05/2013 02:07 PM, Grant Likely wrote:
+>> On Sun, 27 Jan 2013 03:33:59 +0000, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
+>>> On Wed, Jan 09, 2013 at 06:31:09PM +0100, Lars-Peter Clausen wrote:
+>>>
+>>>> The second function spi_sync_transfer() takes a SPI device and an array of
+>>>> spi_transfers. It will allocate a new spi_message (on the stack) and add all
+>>>> transfers in the array to the message. Finally it will call spi_sync() on the
+>>>> message.
+>>>
+>>> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
 >>
->> --This the basic function of Invensense MPU6050 Deivce driver.
->> --align coding style.
->> --rearrange function from ring to trigger.
->> --other cleanup.
->>
->> Signed-off-by: Ge Gao <ggao@invensense.com>
+>> Looks good to me also. Go ahead and merge this series through the iio
+>> tree since it is the first user.
 > 
-> Looks good to me:
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-Thanks, added to togreg branch of iio.git. Editted the description a fair
-bit as the changes above should be below the --- rather than above it
-(and hence not turn up in the eventual description in tree).
+> Lars, when you are back on your feet, could you respin this series against
+> the latest iio tree please.  2 drivers have moved which messes up patches
+> 2 and 3. Now I could fix it up, but it's your patch series and I'm lazy ;)
+
+I had a few spare minutes so I've respun the series with the driver moves.
+I have also, dropped the coccinelle script from the first patch.
+I was unclear on whether the questions about that had been resolved.
+
+Anyhow, I've temporarily pushed out to togreg branch of iio.git.
+If Grant wants to add an ack, I'll pop that in before sending upstream
+if not I'll just put a note in the tag message (or if he is too slow
+for my arbitrary definition fo too slow ;)
 
 
-> A few minor things inline, but these can all be fixed in a follow up patch.
+
+Jonathan
 > 
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio-mpu6050  |   14 +
->>  drivers/iio/imu/Kconfig                          |    2 +
->>  drivers/iio/imu/Makefile                         |    2 +
->>  drivers/iio/imu/inv_mpu6050/Kconfig              |   13 +
->>  drivers/iio/imu/inv_mpu6050/Makefile             |    6 +
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c       |  786 ++++++++++++++++++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h        |  247 +++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c       |  194 ++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c    |  153 +++++
->>  include/linux/platform_data/invensense_mpu6050.h |   32 +
->>  10 files changed, 1449 insertions(+), 0 deletions(-)
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-mpu6050
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/Kconfig
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/Makefile
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->>  create mode 100644 include/linux/platform_data/invensense_mpu6050.h
+> 
 >>
-> [...]
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->> new file mode 100644
->> index 0000000..e1deee4
->> --- /dev/null
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->> @@ -0,0 +1,194 @@
->> +/*
->> + *  inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
->> + */
->> +irqreturn_t inv_mpu6050_irq_handler(int irq, void *p)
->> +{
->> +	struct iio_poll_func *pf = p;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->> +	s64 timestamp;
->> +
->> +	timestamp = iio_get_time_ns();
->> +	spin_lock(&st->time_stamp_lock);
->> +	kfifo_in(&st->timestamps, &timestamp, 1);
->> +	spin_unlock(&st->time_stamp_lock);
-> 
-> 
-> There is kfifo_in_spinlocked, which takes a pointer to the lock as the last
-> parameter and takes care of the locking.
-> 
->> +
->> +	return IRQ_WAKE_THREAD;
->> +}
->> +
->> +/*
->> + *  inv_mpu6050_read_fifo() - Transfer data from hardware FIFO to KFIFO.
->> + */
->> +irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->> +{
->> +	struct iio_poll_func *pf = p;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->> +	size_t bytes_per_datum;
->> +	int result;
->> +	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
->> +	u16 fifo_count;
->> +	s64 timestamp;
->> +	u64 *tmp;
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +	if (!(st->chip_config.accl_fifo_enable |
->> +		st->chip_config.gyro_fifo_enable))
->> +		goto end_session;
->> +	bytes_per_datum = 0;
->> +	if (st->chip_config.accl_fifo_enable)
->> +		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
->> +
->> +	if (st->chip_config.gyro_fifo_enable)
->> +		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
->> +
->> +	/* read fifo_count register to know how many bytes inside FIFO
->> +	   right now */
->> +	result = i2c_smbus_read_i2c_block_data(st->client,
->> +				       st->reg->fifo_count_h,
->> +				       INV_MPU6050_FIFO_COUNT_BYTE, data);
->> +	if (result != INV_MPU6050_FIFO_COUNT_BYTE)
->> +		goto end_session;
->> +	fifo_count = be16_to_cpup((__be16 *)(&data[0]));
->> +	if (fifo_count < bytes_per_datum)
->> +		goto end_session;
->> +	/* fifo count can't be odd number, if it is odd, reset fifo*/
->> +	if (fifo_count & 1)
->> +		goto flush_fifo;
->> +	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
->> +		goto flush_fifo;
->> +	/* Timestamp mismatch. */
->> +	if (kfifo_len(&st->timestamps) >
->> +		fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
->> +			goto flush_fifo;
->> +	while (fifo_count >= bytes_per_datum) {
->> +		result = i2c_smbus_read_i2c_block_data(st->client,
->> +						       st->reg->fifo_r_w,
->> +						       bytes_per_datum, data);
->> +		if (result != bytes_per_datum)
->> +			goto flush_fifo;
->> +
->> +		result = kfifo_out(&st->timestamps, &timestamp, 1);
-> 
-> Do you need to take the timestamp lock while reading from the fifo?
-> 
->> +		/* when there is no timestamp, put timestamp as 0 */
->> +		if (0 == result)
->> +			timestamp = 0;
->> +
->> +		tmp = (u64 *)data;
->> +		tmp[DIV_ROUND_UP(bytes_per_datum, 8)] = timestamp;
->> +		result = iio_push_to_buffers(indio_dev, data);
->> +		if (result)
->> +			goto flush_fifo;
->> +		fifo_count -= bytes_per_datum;
->> +	}
->> +
->> +end_session:
->> +	mutex_unlock(&indio_dev->mlock);
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +
->> +flush_fifo:
->> +	/* Flush HW and SW FIFOs. */
->> +	inv_reset_fifo(indio_dev);
->> +	inv_clear_kfifo(st);
->> +	mutex_unlock(&indio_dev->mlock);
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> new file mode 100644
->> index 0000000..6f62caf
->> --- /dev/null
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> @@ -0,0 +1,153 @@
-> [...]
+>> g.
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
