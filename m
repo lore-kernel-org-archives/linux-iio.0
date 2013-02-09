@@ -1,109 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-045.synserver.de ([212.40.185.45]:1068 "EHLO
-	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756435Ab3BONYt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 08:24:49 -0500
-Message-ID: <511E3772.7000605@metafoo.de>
-Date: Fri, 15 Feb 2013 14:26:10 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46002 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760756Ab3BIQz1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2013 11:55:27 -0500
+Message-ID: <51167F7E.8020701@kernel.org>
+Date: Sat, 09 Feb 2013 16:55:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, dianders@chromium.org,
-	gregkh@linuxfoundation.org
-Subject: Re: [PATCH v7] iio: adc: add exynos adc driver under iio framwork
-References: <1360843890-28466-1-git-send-email-ch.naveen@samsung.com> <1360911394-19873-1-git-send-email-ch.naveen@samsung.com> <511E346C.3060701@metafoo.de> <CAHfPSqAQd7TJqX2FVmkvy_aX0yXm25qLu3A9kPoteUGaBLZPQQ@mail.gmail.com>
-In-Reply-To: <CAHfPSqAQd7TJqX2FVmkvy_aX0yXm25qLu3A9kPoteUGaBLZPQQ@mail.gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
+Subject: Re: [PATCH 0/2] iio:st_sensors more fixes when !IIO_CONFIG_TRIGGER
+References: <1360428867-5040-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1360428867-5040-1-git-send-email-jic23@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/15/2013 02:17 PM, Naveen Krishna Ch wrote:
-> On 15 February 2013 18:43, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 02/15/2013 07:56 AM, Naveen Krishna Chatradhi wrote:
->>> This patch adds New driver to support:
->>> 1. Supports ADC IF found on EXYNOS4412/EXYNOS5250
->>>    and future SoCs from Samsung
->>> 2. Add ADC driver under iio/adc framework
->>> 3. Also adds the Documentation for device tree bindings
->>>
->>> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
->>
->> Looks good.
->>
->> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
->>
->> One minor thing though, there are a couple of places where you break a line
->> into multiple lines, even though the line fits easily inside the 80 chars
->> per line limit. In my opinion this doesn't help the legibility of the code.
->> E.g.:
->>
->> +       info->value = readl(ADC_V1_DATX(info->regs)) &
->> +                                               ADC_DATX_MASK;
->>
->> There is no need to respin the patch just for this, but if you happen to
->> make another version of the patch, that's something to consider.
->>
->>> ---
->>> Changes since v1:
->>>
->>> 1. Fixed comments from Lars
->>> 2. Added support for ADC on EXYNOS5410
->>>
->>> Changes since v2:
->>>
->>> 1. Changed the instance name for (struct iio_dev *) to indio_dev
->>> 2. Changed devm_request_irq to request_irq
->>>
->>> Few doubts regarding the mappings and child device handling.
->>> Kindly, suggest me better methods.
->>>
->>> Changes since v3:
->>>
->>> 1. Added clk_prepare_disable and regulator_disable calls in _remove()
->>> 2. Moved init_completion before irq_request
->>> 3. Added NULL pointer check for devm_request_and_ioremap() return value.
->>> 4. Use number of channels as per the ADC version
->>> 5. Change the define ADC_V1_CHANNEL to ADC_CHANNEL
->>> 6. Update the Documentation to include EXYNOS5410 compatible
->>>
->>> Changes since v4:
->>>
->>> 1. if devm_request_and_ioremap() failes, free iio_device before returning
->>>
->>> Changes since v5:
->>>
->>> 1. Fixed comments from Olof (ADC hardware version handling)
->>> 2. Rebased on top of comming OF framework for IIO by "Guenter Roeck".
->>>
->>> Changes since v6:
->>>
->>> 1. Addressed comments from Lars-Peter Clausen
->>
->>
->> btw. these kind of change logs are not really helpful, it would be better to
->> list the actual changes made.
-> Hello Lars,
+On 02/09/2013 04:54 PM, Jonathan Cameron wrote:
+> Here is how I would suggest dealing with the issues pointed out by
+> Randy when buildling without trigger support.
+
+Sorry, miss send of this patch when I meant the ak8975 one that will
+follow in a mo.
 > 
-> No other changes from my side. But, I can send another version.
-> Do you want me to list the latest change alone instead of the whole
-> change list ?
-
-Hi,
-
-No need to resend the patch, this is just something to consider for the
-future. A changelog entry which reads like "Addressed Jon Does comments" is
-not really useful since most people will probably not know or not longer
-remember all the details of those comments, instead a nice list of all the
-changes which have been made is much better. E.g.:
-
-Changes since v6:
-	* Fixed debugfs_read_reg
-	* Introduced timeout when waiting for the data ready IRQ
-	* Slightly reformatted exynos_read_raw for better legibility
-
-- Lars
-
-
+> Jonathan
+> 
+> Jonathan Cameron (2):
+>   iio:triggers Protect functions in triggers.h from use when not
+>     compiled
+>   iio:st_sensors fix build when !CONFIG_IIO_TRIGGER
+> 
+>  drivers/iio/accel/st_accel_core.c       | 9 +++++++--
+>  drivers/iio/accel/st_accel_i2c.c        | 1 -
+>  drivers/iio/accel/st_accel_spi.c        | 1 -
+>  drivers/iio/gyro/st_gyro_core.c         | 9 +++++++--
+>  drivers/iio/gyro/st_gyro_i2c.c          | 1 -
+>  drivers/iio/gyro/st_gyro_spi.c          | 1 -
+>  drivers/iio/magnetometer/st_magn_core.c | 1 -
+>  drivers/iio/magnetometer/st_magn_i2c.c  | 1 -
+>  drivers/iio/magnetometer/st_magn_spi.c  | 1 -
+>  include/linux/iio/trigger.h             | 5 +++++
+>  10 files changed, 19 insertions(+), 11 deletions(-)
+> 
