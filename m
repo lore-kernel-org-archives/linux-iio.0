@@ -1,69 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43725 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752640Ab3BILOP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2013 06:14:15 -0500
-Message-ID: <51162F84.8050706@kernel.org>
-Date: Sat, 09 Feb 2013 11:14:12 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5117BBDA.4010901@metafoo.de>
+Date: Sun, 10 Feb 2013 16:25:14 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Grant Likely <grant.likely@secretlab.ca>
-CC: Mark Brown <broonie@opensource.wolfsonmicro.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Julia Lawall <Julia.Lawall@lip6.fr>,
-	spi-devel-general@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] spi: Add helper functions for setting up transfers
-References: <1357752671-30222-1-git-send-email-lars@metafoo.de> <20130127033358.GA20672@sirena.org.uk> <20130205140755.33FCD3E1265@localhost> <5112ACF5.3020906@kernel.org>
-In-Reply-To: <5112ACF5.3020906@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
+Subject: Re: [PATCH] iio:magnetometer:ak8975 move out of staging
+References: <1360428941-5130-1-git-send-email-jic23@kernel.org> <51178F13.7000104@kernel.org>
+In-Reply-To: <51178F13.7000104@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/06/2013 07:20 PM, Jonathan Cameron wrote:
-> On 02/05/2013 02:07 PM, Grant Likely wrote:
->> On Sun, 27 Jan 2013 03:33:59 +0000, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
->>> On Wed, Jan 09, 2013 at 06:31:09PM +0100, Lars-Peter Clausen wrote:
->>>
->>>> The second function spi_sync_transfer() takes a SPI device and an array of
->>>> spi_transfers. It will allocate a new spi_message (on the stack) and add all
->>>> transfers in the array to the message. Finally it will call spi_sync() on the
->>>> message.
->>>
->>> Reviewed-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+On 02/10/2013 01:14 PM, Jonathan Cameron wrote:
+> On 02/09/2013 04:55 PM, Jonathan Cameron wrote:
+>> This driver has been clean and correct for quite some time.
+>> It is simple and uses only straight forward standard
+>> interfaces.
 >>
->> Looks good to me also. Go ahead and merge this series through the iio
->> tree since it is the first user.
+> I'm starting this branch of the thread to ask about the weird
+> manging of i2c in the read function.
+> ...
 > 
-> Lars, when you are back on your feet, could you respin this series against
-> the latest iio tree please.  2 drivers have moved which messes up patches
-> 2 and 3. Now I could fix it up, but it's your patch series and I'm lazy ;)
-
-I had a few spare minutes so I've respun the series with the driver moves.
-I have also, dropped the coccinelle script from the first patch.
-I was unclear on whether the questions about that had been resolved.
-
-Anyhow, I've temporarily pushed out to togreg branch of iio.git.
-If Grant wants to add an ack, I'll pop that in before sending upstream
-if not I'll just put a note in the tag message (or if he is too slow
-for my arbitrary definition fo too slow ;)
-
-
-
-Jonathan
+>> +/*
+>> + * Helper function to write to the I2C device's registers.
+>> + */
+>> +static int ak8975_write_data(struct i2c_client *client,
+>> +			     u8 reg, u8 val, u8 mask, u8 shift)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +	struct ak8975_data *data = iio_priv(indio_dev);
+>> +	u8 regval;
+>> +	int ret;
+>> +
+>> +	regval = (data->reg_cache[reg] & ~mask) | (val << shift);
+>> +	ret = i2c_smbus_write_byte_data(client, reg, regval);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "Write to device fails status %x\n", ret);
+>> +		return ret;
+>> +	}
+>> +	data->reg_cache[reg] = regval;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * Helper function to read a contiguous set of the I2C device's registers.
+>> + */
+>> +static int ak8975_read_data(struct i2c_client *client,
+>> +			    u8 reg, u8 length, u8 *buffer)
+>> +{
+>> +	int ret;
+>> +	struct i2c_msg msg[2] = {
+>> +		{
+>> +			.addr = client->addr,
+>> +			.flags = I2C_M_NOSTART,
+> This is 'unusual'.  The result as I read it is that we get
+> something like
 > 
+> START REG  [ACK] START ADDR [DATA] STOP
+> (where [] denotes from device)
 > 
+> The i2c docs specifically tell you that having this flag in the
+> first msg is a bad idea.
+> 
+>>   Flag I2C_M_NOSTART: 
+>>     In a combined transaction, no 'S Addr Wr/Rd [A]' is generated at some
+>>     point. For example, setting I2C_M_NOSTART on the second partial message
+>>     generates something like:
+>>       S Addr Rd [A] [Data] NA Data [A] P
+>>     If you set the I2C_M_NOSTART variable for the first partial message,
+>>     we do not generate Addr, but we do generate the startbit S. This will
+>>     probably confuse all other clients on your bus, so don't try this.
 >>
->> g.
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>     This is often used to gather transmits from multiple data buffers in
+>>     system memory into something that appears as a single transfer to the
+>>     I2C device but may also be used between direction changes by some
+>>     rare devices.
 > 
+> A far as I can tell this function as it stands doesn't make sense for either
+> of the AK8975 read protocols.
+
+Yea, this doesn't make much sense. I suppose this got added by accident and
+only was tested with a I2C host driver that does not support I2C_M_NOSTART
+and simply ignored the flag and did a normal transfer.
+
+- Lars
+
+> 
+>> +			.len = 1,
+>> +			.buf = &reg,
+>> +		}, {
+>> +			.addr = client->addr,
+>> +			.flags = I2C_M_RD,
+>> +			.len = length,
+>> +			.buf = buffer,
+>> +		}
+>> +	};
+>> +
+>> +	ret = i2c_transfer(client->adapter, msg, 2);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "Read from device fails\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> [...]
