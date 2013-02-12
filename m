@@ -1,297 +1,664 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52849 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751321Ab3BCL55 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 06:57:57 -0500
-Message-ID: <510E50C1.2010909@kernel.org>
-Date: Sun, 03 Feb 2013 11:57:53 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:60209 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932929Ab3BLBWM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2013 20:22:12 -0500
+Received: by mail-pa0-f53.google.com with SMTP id bg4so3307790pad.26
+        for <linux-iio@vger.kernel.org>; Mon, 11 Feb 2013 17:22:11 -0800 (PST)
+Date: Mon, 11 Feb 2013 17:22:14 -0800
+From: Olof Johansson <olof@lixom.net>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, dianders@chromium.org,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de
+Subject: Re: [PATCH] iio: adc: add exynos5 adc driver under iio framwork
+Message-ID: <20130212012214.GA13188@quad.lixom.net>
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
+ <1359003932-3306-1-git-send-email-ch.naveen@samsung.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [RFC 10/11] iio: Add OF support
-References: <1359668588-13678-1-git-send-email-linux@roeck-us.net> <1359668588-13678-11-git-send-email-linux@roeck-us.net> <510CEA6E.9010708@kernel.org> <20130202161054.GA10386@roeck-us.net> <510E4C85.9060507@kernel.org> <510E4E36.8090409@metafoo.de> <510E4F76.1030702@metafoo.de>
-In-Reply-To: <510E4F76.1030702@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1359003932-3306-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/03/2013 11:52 AM, Lars-Peter Clausen wrote:
-> On 02/03/2013 12:47 PM, Lars-Peter Clausen wrote:
->> On 02/03/2013 12:39 PM, Jonathan Cameron wrote:
->>> On 02/02/2013 04:10 PM, Guenter Roeck wrote:
->>>> On Sat, Feb 02, 2013 at 10:29:02AM +0000, Jonathan Cameron wrote:
->>>>> On 01/31/2013 09:43 PM, Guenter Roeck wrote:
->>>>>> Provide bindings, new API access functions, and parse OF data
->>>>>> during initialization.
->>>>>>
->>>>> Firstly thanks for working on this Guenter, it's been a big hole
->>>>> for a while largely because non of our largest developers were
->>>>> actually using development platforms with device tree support.
->>>>>
->>>>> Given my knowledge of device tree is based on the odd article
->>>>> and looking at similar sets of bindings this morning, my comments
->>>>> are likely to be somewhat superficial and uninformed ;)
->>>>>
->>>>> Mostly on this one I'll take a back seat and let those who
->>>>> know this stuff better come to a consensus.
->>>>>
->>>>> Jonathan
->>>>>
->>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>>>>> ---
->>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   97 ++++++++
->>>>>>  drivers/iio/inkern.c                               |  241 ++++++++++++++++----
->>>>>>  include/linux/iio/consumer.h                       |    8 +
->>>>>>  3 files changed, 299 insertions(+), 47 deletions(-)
->>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>> new file mode 100644
->>>>>> index 0000000..0f51c95
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>> @@ -0,0 +1,97 @@
->>>>>> +This binding is a work-in-progress, and are based on clock bindings and
->>>>>> +suggestions from Lars-Peter Clausen [1].
->>>>>> +
->>>>>> +Sources of IIO channels can be represented by any node in the device
->>>>>> +tree.  Those nodes are designated as IIO providers.  IIO consumer
->>>>>> +nodes use a phandle and IIO specifier pair to connect IIO provider
->>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
->>>>>> +specifier is an array of one more more cells identifying the IIO
->>>>>> +output on a device.  The length of an IIO specifier is defined by the
->>>>>> +value of a #io-channel-cells property in the clock provider node.
->>>>>> +
->>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
->>>>>> +
->>>>>> +==IIO providers==
->>>>>> +
->>>>>> +Required properties:
->>>>>> +#io-channel-cells: Number of cells in an IIO specifier; Typically 0 for nodes
->>>>>> +		   with a single IIO output and 1 for nodes with multiple
->>>>>> +		   IIO outputs.
->>>>>> +
->>>>>> +Optional properties:
->>>>>> +io-channel-output-names:
->>>>>> +		    Recommended to be a list of strings of IIO output signal
->>>>>> +		    names indexed by the first cell in the IIO specifier.
->>>>>> +		    However, the meaning of io-channel-output-names is domain
->>>>>> +		    specific to the IIO provider, and is only provided to
->>>>>> +		    encourage using the same meaning for the majority of IIO
->>>>>> +		    providers.  This format may not work for IIO providers
->>>>>> +		    using a complex IIO specifier format.  In those cases it
->>>>>> +		    is recommended to omit this property and create a binding
->>>>>> +		    specific names property.
->>>>>> +
->>>>>> +		    IIO consumer nodes must never directly reference
->>>>>> +		    the provider's io-channel-output-names property.
->>>>>> +
->>>>>> +For example:
->>>>>> +
->>>>>> +    adc: adc@35 {
->>>>>> +	compatible = "maxim,max1139";
->>>>>> +	reg = <0x35>;
->>>>>> +        #io-channel-cells = <1>;
->>>>>> +        io-channel-output-names = "adc1", "adc2";
->>>>>> +    };
->>>>>> +
->>>>>> +- this node defines a device with two named IIO outputs, the first named
->>>>>> +  "adc1" and the second named "adc2".  Consumer nodes always reference
->>>>>> +  IIO channels by index. The names should reflect the IIO output signal
->>>>>> +  names for the device.
->>>>>> +
->>>>>> +==IIO consumers==
->>>>>> +
->>>>>> +Required properties:
->>>>>> +io-channels:	List of phandle and IIO specifier pairs, one pair
->>>>>> +		for each IIO input to the device.  Note: if the
->>>>>> +		IIO provider specifies '0' for #clock-cells, then
->>>>>> +		only the phandle portion of the pair will appear.
->>>>>> +
->>>>>> +Optional properties:
->>>>>> +io-channel-names:
->>>>>> +		List of IIO input name strings sorted in the same
->>>>>> +		order as the io-channels property.  Consumers drivers
->>>>>> +		will use io-channel-names to match IIO input names
->>>>>> +		with IIO specifiers.
->>>>>> +io-channel-ranges:
->>>>>> +		Empty property indicating that child nodes can inherit named
->>>>>> +		IIO channels from this node. Useful for bus nodes to provide
->>>>>> +		and IIO channel to their children.
->>>>>> +
->>>>>> +For example:
->>>>>> +
->>>>>> +    device {
->>>>>> +        io-channels = <&adc 1>, <&ref 0>;
->>>>>> +        io-channel-names = "vcc", "vdd";
->>>>>> +    };
->>>>>> +
->>>>>> +This represents a device with two IIO inputs, named "vcc" and "vdd".
->>>>>> +The vcc channel is connected to output 1 of the &adc device, and the
->>>>>> +vdd channel is connected to output 0 of the &ref device.
->>>>>> +
->>>>>> +==Example==
->>>>>> +
->>>>>> +	adc: max1139@35 {
->>>>>> +		compatible = "maxim,max1139";
->>>>>> +		reg = <0x35>;
->>>>>> +		#io-channel-cells = <1>;
->>>>>> +	};
->>>>>> +
->>>>>> +	...
->>>>>> +
->>>>>> +	iio_hwmon {
->>>>>> +		compatible = "iio-hwmon";
->>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
->>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
->>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
->>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
->>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
->>>>> Having different numbers of channels and channel names seems
->>>>> unusual... Deliberate or you got bored making up channel names?
->>>>>
->>>>> Why use indexed values for <&adc 0> etc rather than the output
->>>>> channel names on adc?  For the iio_map stuff we initialy used
->>>>> indexes but got a lot of responses that it was a silly idea and
->>>>> naming was much more consistent and easy to follow.
->>>>>
->>>>> Is there a fundamental reason for it here?
->>>>>
->>>>> (note I don't mind either way as this seems more compact and cleaner
->>>>> in some ways)
->>>>>
->>>>
->>>> It follows the structure used by clocks, which uses the provided name(s) to
->>>> calculate an index into io-channels. This way, the provider does not have to
->>>> provide the mapping, the consumer does not have to know the io-channel index,
->>>> and the consumer code can call something like
->>>>
->>>> 	channel = iio_get_channel(dev, "vcc");
->>>>
->>>> In the above example, "vcc" will map to "<&adc, 0>", and "vref" to "<&adc, 2>".
->>>>
->>>> This works for both platform data and OF data (though platform data will
->>>> still need provider-based mapping, at least for now).
->>>>
->>>> This lets the code use a static name (eg "vcc"), and the mapping to the actual
->>>> provider happens through devicetree. Since the name is only used locally and
->>>> consumer driver specific, there is no need to define globally unique names.
->>>>
->>>> With this approach, the io channel map is not needed at all for the OF case.
->>>> I had used it in this version of the patch set, but got rid of it now.
->>>>
->>>> Actually, provider based mapping doesn't even work. If the consumer is
->>>> instantiated before the provider, the mapping doesn't exist yet, and the
->>>> call to iio_channel_get_all will fail. There is no way to prevent this,
->>>> as providers can come online at any time and there is no means to enforce that
->>>> all providers are already active by the time the consumers are instantiated.
->>>> Even if a mapping exists, there is no way to know if it is complete, if a
->>>> consumer is mapped to multiple providers.
->>>>
->>>> With the consumer based mapping, iio_channel_get_all 'knows' that not all
->>>> requested providers are available and can return -EPROBEDEFER in that case.
->>> Thanks. That makes sense.  At the moment iio_hwmon is the only case that
->>> does a 'get all'. Clearly things are easier when the driver is requesting a
->>> specific set and we can do the back off much more easily.
->>>
->>>>
->>>> As a side effect, we can also use the names - if provided - as channel
->>>> labels in iio_hwmon.
->>>>
->>>> Note this will require the iio_get_channel API to change from taking the
->>>> consumer device name to taking the consumer device pointer as argument.
->>>> This will enable it to work for both OF and non-OF cases, should address Lars'
->>>> concerns about duplicate API functions, and synchronize the code to match how
->>>> the clock framework works.
->>>
->>> Agreed, doing this gives us a cleaner syntax as well.  Note there are other
->>> users of that function in tree so be sure to get them all!
->>>
->>>>
->>>> Thanks,
->>>> Guenter
->>> Thanks for the explanation.  What I was actually suggesting was something
->>> like:
->>>
->>> adc: max1139@35 {
->>> 		compatible = "maxim,max1139";
->>> 		reg = <0x35>;
->>> 		#io-channel-cells = <1>;
->>> 		io-channel-output-names = "adc1", "adc2", "adc3"				
->>> 	};
->>>
->>> iio_hwmon {
->>> 	compatible = "iio-hwmon";
->>> 	io-channels = <&adc "adc1">, <&adc "adc2">, <&adc "adc3">,
->>> 	io-channel-names = "vcc", "vdd", "vref";
->>> }
->>>
->>> Having taken a look at the available syntax, those <> pairs have
->>> to be unsigned integers?  Hence the additional level of indirection?
->>
->> Yea, I think mixing phandles and strings simply doesn't work, due how
->> devicetree stores things.
->>
-> 
-> Another possibility would beto do things the way the regulator framework does
-> an have each channel as a subnode to the converter devices eg.
-> 
-> 
-> adc: max1139@35 {
->  		compatible = "maxim,max1139";
->  		reg = <0x35>;
-> 		adc0: adc@0 {
-> 			reg = <0>;
-> 		};
-> 		adc1: adc@1 {
-> 			reg = <1>;
-> 		};
-> 		adc2: adc@2 {
-> 			reg = <2>;
-> 		};
-> 
->  	};
-> 
-> 
-> iio_hwmon {
->  	compatible = "iio-hwmon";
->  	io-channels = <&adc0>, <&adc1>, <&adc2>;
->  	io-channel-names = "vcc", "vdd", "vref";
-> };
-> 
-> But I'm not sure how much sense this makes for IIO.
-> 
-The original approach is cleaner to my mind despite the indirection
-(which is an indirection because often the channel indexing is non obvious
-for a given device)
+Hi,
 
-Lets just 'strongly' encourage the presences of io-channel-names and
-io-channel-output-names even when not used by the particular drivers.
-(though as Guenter said, they have uses even when not directly 'necessary')
+It looks like the bindings here are still completely unsettled, or at least
+unimplemented -- there seems to be a preference for an encoding similar to how
+interrupts/gpios/clks work. I think that wouldn't be a bad idea.
 
-Jonathan
+For the case of this particular driver and connections, it'd just mean you
+would need to do the binding slightly differently. You can still have some of
+the sensors under the ADC node if they're not sitting on another bus where it
+makes sense to locate them.
 
-> - Lars
+
+Some further comments below.
+
+
+On Thu, Jan 24, 2013 at 10:35:32AM +0530, Naveen Krishna Chatradhi wrote:
+> This patch add an ADC IP found on EXYNOS5250 and EXYNOS5410 SoCs
+> from Samsung. Also adds the Documentation for device tree bindings.
 > 
->>>
->>> (sorry, I'm getting you to give me a tutorial on device tree syntax rather
->>> than the actual issue here!)
->>>
->>> I guess it was desirable to keep the syntax relatively simple but that occasionally
->>> adds the requirement for a bit of indirection.
->>>
->>>
->>>
->>> Jonathan
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> ---
+> Changes since v1:
 > 
+> 1. Fixed comments from Lars
+> 2. Added support for ADC on EXYNOS5410
+> 
+> Changes since v2:
+> 
+> 1. Changed the instance name for (struct iio_dev *) to indio_dev
+> 2. Changed devm_request_irq to request_irq
+> 
+> Few doubts regarding the mappings and child device handling.
+> Kindly, suggest me better methods.
+> 
+> Changes since v3:
+> 
+> 1. Added clk_prepare_disable and regulator_disable calls in _remove()
+> 2. Moved init_completion before irq_request
+> 3. Added NULL pointer check for devm_request_and_ioremap() return value.
+> 4. Use number of channels as per the ADC version 
+> 5. Change the define ADC_V1_CHANNEL to ADC_CHANNEL
+> 6. Update the Documentation to include EXYNOS5410 compatible
+> 
+> Changes since v4:
+> 
+> 1. if devm_request_and_ioremap() failes, free iio_device before returning 
+> 
+> Doug, i've used
+> 	chan = iio_channel_get(dev_name(&pdev->dev), "adc3");
+> in ntc thermistor driver during probe and
+> 	iio_read_channel_raw(chan, &val);
+> for read.
+> 
+> But, then the drivers become kind of coupled. Right.
+> 
+> Lars, Is there an other way.
+> 
+> Thanks for the comments
+> 
+>  .../bindings/arm/samsung/exynos5-adc.txt           |   38 ++
+>  drivers/iio/adc/Kconfig                            |    7 +
+>  drivers/iio/adc/Makefile                           |    1 +
+>  drivers/iio/adc/exynos5_adc.c                      |  477 ++++++++++++++++++++
+>  4 files changed, 523 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+>  create mode 100644 drivers/iio/adc/exynos5_adc.c
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+> new file mode 100644
+> index 0000000..0f281d9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos5-adc.txt
+> @@ -0,0 +1,38 @@
+> +Samsung Exynos5 Analog to Digital Converter bindings
+> +
+> +Required properties:
+> +- compatible:		Must be "samsung,exynos5250-adc" for exynos5250 controllers.
+> +			Must be "samsung,exynos5410-adc" for exynos5410 controllers.
+
+Looking at the out-of-tree patch we have that adds exynos5 support to
+arch/arm/plat-samsung/adc.c, this looks like it should be:
+
+samsung,exynos4412-adc should be the base case (this was the first chip with
+the new "version 4" ADC hardware). Then for 5250 the chip-specific
+prefixes should also be there for compatible in case there are SoC-specific
+bugs or quirks or features that the driver in the future might need to care
+about.
+
+Based on the code below, it looks like 5410 isn't compatible with 4412, since
+it needs special init sequences. So that means 5410 shouldn't be claimed to be
+compatible.
+
+
+> +- reg:			Contains ADC register address range (base address and
+> +			length).
+> +- interrupts: 		Contains the interrupt information for the timer. The
+> +			format is being dependent on which interrupt controller
+> +			the Samsung device uses.
+> +
+> +Note: child nodes can be added for auto probing from device tree.
+> +
+> +Example: adding device info in dtsi file
+> +
+> +adc@12D10000 {
+> +	compatible = "samsung,exynos5250-adc";
+> +	reg = <0x12D10000 0x100>;
+> +	interrupts = <0 106 0>;
+> +	#address-cells = <1>;
+> +	#size-cells = <1>;
+
+This is where something like #channel-cells or something else would be needed
+-- not address cells and size cells. And then (see below)...
+
+> +	ranges;
+> +};
+> +
+> +
+> +Example: Adding child nodes in dts file
+> +
+> +adc@12D10000 {
+> +
+> +	/* NTC thermistor is a hwmon device */
+> +	ncp15wb473@0 {
+> +		compatible = "ntc,ncp15wb473";
+> +		reg = <0x0>;
+> +		pullup-uV = <1800000>;
+> +		pullup-ohm = <47000>;
+> +		pulldown-ohm = <0>;
+
+So, here is where the reference to channel should be specified. Even for those
+who are located as children to the adc node.
+
+Something like (naming is up in the air):
+io-channel = <&adc 0>;
+
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index fe822a1..33ceabf 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -91,6 +91,13 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+>  
+> +config EXYNOS5_ADC
+> +	bool "Exynos5 ADC driver support"
+> +	help
+> +	  Core support for the ADC block found in the Samsung EXYNOS5 series
+> +	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+> +	  this resource.
+
+Given the out-of-tree patch that enables EXYNOS5250 (and 4412) support to
+arch/arm/plat-samsung/adc.c, it seems shortsighted to name this driver exynos5.
+The driver should be able to handle older versions of the Samsung chipsets
+without too much work.
+
+Initial versions could be contained to only support EXYNOS5 and 4412, that'd be
+fine. But to avoid future renames, keep the name generic (exynos_adc)
+
+> diff --git a/drivers/iio/adc/exynos5_adc.c b/drivers/iio/adc/exynos5_adc.c
+> new file mode 100644
+> index 0000000..197d622
+> --- /dev/null
+> +++ b/drivers/iio/adc/exynos5_adc.c
+> @@ -0,0 +1,477 @@
+> +/*
+> + *  exynos5_adc.c - Support for ADC in EXYNOS5 SoCs
+
+So all these kind of references would need to be changed too.
+
+> + *
+> + *  8 ~ 10 channel, 10/12-bit ADC
+> + *
+> + *  Copyright (C) 2013 Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + *
+> + *  You should have received a copy of the GNU General Public License
+> + *  along with this program; if not, write to the Free Software
+> + *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/delay.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/io.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/of_platform.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +
+> +enum adc_version {
+> +	ADC_V1,
+> +	ADC_V2
+> +};
+> +
+> +/* EXYNOS5250 ADC_V1 registers definitions */
+
+Given that the arch/arm/plat-samsung/adc.c driver is already in the tree, and
+it uses ADCV1..3 already for even older platforms, it seems awkward to reuse
+the same numbering scheme but for other chips here. Maybe use 4412 as prefix
+here, and 5410 for V2? Where does 5440 fall into this, is it compatible with
+5250 or with 5410?
+
+> +#define ADC_V1_CON(x)		((x) + 0x00)
+> +#define ADC_V1_DLY(x)		((x) + 0x08)
+> +#define ADC_V1_DATX(x)		((x) + 0x0C)
+> +#define ADC_V1_INTCLR(x)	((x) + 0x18)
+> +#define ADC_V1_MUX(x)		((x) + 0x1c)
+> +
+> +/* EXYNOS5410 ADC_V2 registers definitions */
+> +#define ADC_V2_CON1(x)		((x) + 0x00)
+> +#define ADC_V2_CON2(x)		((x) + 0x04)
+> +#define ADC_V2_STAT(x)		((x) + 0x08)
+> +#define ADC_V2_INT_EN(x)	((x) + 0x10)
+> +#define ADC_V2_INT_ST(x)	((x) + 0x14)
+> +#define ADC_V2_VER(x)		((x) + 0x20)
+> +
+> +/* Bit definitions for ADC_V1 */
+> +#define ADC_V1_CON_RES		(1u << 16)
+> +#define ADC_V1_CON_PRSCEN	(1u << 14)
+> +#define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
+> +#define ADC_V1_CON_STANDBY	(1u << 2)
+> +
+> +/* Bit definitions for ADC_V2 */
+> +#define ADC_V2_CON1_SOFT_RESET	(1u << 2)
+> +
+> +#define ADC_V2_CON2_OSEL	(1u << 10)
+> +#define ADC_V2_CON2_ESEL	(1u << 9)
+> +#define ADC_V2_CON2_HIGHF	(1u << 8)
+> +#define ADC_V2_CON2_C_TIME(x)	(((x) & 7) << 4)
+> +#define ADC_V2_CON2_ACH_SEL(x)	(((x) & 0xF) << 0)
+> +#define ADC_V2_CON2_ACH_MASK	0xF
+> +
+> +/* Bit definitions common for ADC_V1 and ADC_V2 */
+> +#define ADC_V1_CON_EN_START		(1u << 0)
+> +#define ADC_V1_DATX_MASK	0xFFF
+> +
+> +struct exynos5_adc {
+> +	void __iomem		*regs;
+> +	struct clk		*clk;
+> +	unsigned int		irq;
+> +	struct regulator	*vdd;
+> +
+> +	struct completion	completion;
+> +
+> +	struct iio_map		*map;
+> +	u32			value;
+> +	unsigned int            version;
+> +};
+> +
+> +static const struct of_device_id exynos5_adc_match[] = {
+> +	{ .compatible = "samsung,exynos5250-adc", .data = (void *)ADC_V1 },
+> +	{ .compatible = "samsung,exynos5410-adc", .data = (void *)ADC_V2 },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, exynos5_adc_match);
+> +
+> +static inline unsigned int exynos5_adc_get_version(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *match;
+> +
+> +	match = of_match_node(exynos5_adc_match, pdev->dev.of_node);
+> +	return (unsigned int)match->data;
+> +}
+> +
+> +/* default maps used by iio consumer (ex: ntc-thermistor driver) */
+> +static struct iio_map exynos5_adc_iio_map[] = {
+> +	{
+> +		.consumer_dev_name = "0.ncp15wb473",
+> +		.consumer_channel = "adc3",
+> +		.adc_channel_label = "adc3",
+> +	},
+> +	{
+> +		.consumer_dev_name = "1.ncp15wb473",
+> +		.consumer_channel = "adc4",
+> +		.adc_channel_label = "adc4",
+> +	},
+> +	{
+> +		.consumer_dev_name = "2.ncp15wb473",
+> +		.consumer_channel = "adc5",
+> +		.adc_channel_label = "adc5",
+> +	},
+> +	{
+> +		.consumer_dev_name = "3.ncp15wb473",
+> +		.consumer_channel = "adc6",
+> +		.adc_channel_label = "adc6",
+> +	},
+> +	{},
+> +};
+
+Does it really make sense to have these default sensors here? How many boards
+will have these vs those who will need something else? What happens if someone
+enables the driver without specifying correctly what sensors they have on their
+hardware? Seems suboptimal to provide a default that doesn't always match
+reality.
+
+> +static irqreturn_t exynos5_adc_isr(int irq, void *dev_id)
+> +{
+> +	struct exynos5_adc *info = (struct exynos5_adc *)dev_id;
+> +
+> +	/* Read value */
+> +	info->value = readl(ADC_V1_DATX(info->regs)) &
+> +						ADC_V1_DATX_MASK;
+
+You read _V1 registers on both versions of hardware here (and some other
+places). I guess register definitions (and offset) are compatible, but it's
+a little confusing given that pretty much everything else seems to be
+separate/different.
+
+Either keep them completely separate, or rename the register something that's
+not versioned.
+
+> +	/* clear irq */
+> +	if (info->version == ADC_V2)
+> +		writel(1, ADC_V2_INT_ST(info->regs));
+> +	else
+> +		writel(1, ADC_V1_INTCLR(info->regs));
+> +
+> +	complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int exynos5_adc_reg_access(struct iio_dev *indio_dev,
+> +			      unsigned reg, unsigned writeval,
+> +			      unsigned *readval)
+> +{
+> +	struct exynos5_adc *info = iio_priv(indio_dev);
+> +	u32 ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	if (readval != NULL) {
+> +		ret = readl(info->regs + reg);
+> +		*readval = ret;
+> +	} else
+> +		ret = -EINVAL;
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info exynos5_adc_iio_info = {
+> +	.read_raw = &exynos5_read_raw,
+> +	.debugfs_reg_access = &exynos5_adc_reg_access,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define ADC_CHANNEL(_index, _id) {			\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.channel = _index,				\
+> +	.address = _index,				\
+> +	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
+> +	.datasheet_name = _id,				\
+> +}
+> +
+> +static const struct iio_chan_spec exynos5_adc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +	ADC_CHANNEL(2, "adc2"),
+> +	ADC_CHANNEL(3, "adc3"),
+> +	ADC_CHANNEL(4, "adc4"),
+> +	ADC_CHANNEL(5, "adc5"),
+> +	ADC_CHANNEL(6, "adc6"),
+> +	ADC_CHANNEL(7, "adc7"),
+> +	ADC_CHANNEL(8, "adc8"),
+> +	ADC_CHANNEL(9, "adc9"),
+> +};
+> +
+> +static int exynos5_adc_remove_devices(struct device *dev, void *c)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +
+> +	platform_device_unregister(pdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void exynos5_adc_hw_init(struct exynos5_adc *info)
+> +{
+> +	u32 con1, con2;
+> +
+> +	if (info->version == ADC_V2) {
+> +		con1 = ADC_V2_CON1_SOFT_RESET;
+> +		writel(con1, ADC_V2_CON1(info->regs));
+> +
+> +		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+> +			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+> +		writel(con2, ADC_V2_CON2(info->regs));
+> +
+> +		/* Enable interrupts */
+> +		writel(1, ADC_V2_INT_EN(info->regs));
+> +	} else {
+> +		/* set default prescaler values and Enable prescaler */
+> +		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> +
+> +		/* Enable 12-bit ADC resolution */
+> +		con1 |= ADC_V1_CON_RES;
+> +		writel(con1, ADC_V1_CON(info->regs));
+> +	}
+> +}
+> +
+> +static int exynos5_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct exynos5_adc *info = NULL;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct iio_dev *indio_dev = NULL;
+> +	struct resource	*mem;
+> +	int ret = -ENODEV;
+> +	int irq;
+> +
+> +	if (!np)
+> +		return ret;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(struct exynos5_adc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	info = iio_priv(indio_dev);
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +
+> +	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+> +	if (!info->regs) {
+> +		ret = -ENOMEM;
+> +		goto err_iio;
+> +	}
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		ret = irq;
+> +		goto err_iio;
+> +	}
+> +
+> +	info->irq = irq;
+> +
+> +	init_completion(&info->completion);
+> +
+> +	ret = request_irq(info->irq, exynos5_adc_isr,
+> +					0, dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+> +							info->irq);
+> +		goto err_iio;
+> +	}
+> +
+> +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(info->clk)) {
+> +		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+> +							PTR_ERR(info->clk));
+> +		ret = PTR_ERR(info->clk);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+> +	if (IS_ERR(info->vdd)) {
+> +		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+> +							PTR_ERR(info->vdd));
+> +		ret = PTR_ERR(info->vdd);
+> +		goto err_irq;
+> +	}
+> +
+> +	info->version = exynos5_adc_get_version(pdev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &exynos5_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = exynos5_adc_iio_channels;
+> +
+> +	if (info->version == ADC_V1)
+> +		/* ADC core in EXYNOS5250 has 8 channels */
+> +		indio_dev->num_channels =
+> +				ARRAY_SIZE(exynos5_adc_iio_channels) - 2;
+
+This is fragile code, it'll break (or need changing) if V3 has even more
+channels. Just set the value instead of doing a delta. Via a define if you
+prefer.
+
+> +	else
+> +		/* ADC core in EXYNOS5410 has 10 channels */
+> +		indio_dev->num_channels =
+> +				ARRAY_SIZE(exynos5_adc_iio_channels);
+> +
+> +	info->map = exynos5_adc_iio_map;
+> +
+> +	ret = iio_map_array_register(indio_dev, info->map);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "failed mapping iio, err: %d\n", ret);
+> +		goto err_irq;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_map;
+> +
+> +	ret = regulator_enable(info->vdd);
+> +	if (ret)
+> +		goto err_iio_dev;
+> +
+> +	clk_prepare_enable(info->clk);
+> +
+> +	exynos5_adc_hw_init(info);
+> +
+> +	ret = of_platform_populate(np, exynos5_adc_match, NULL, &pdev->dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed adding child nodes\n");
+> +		goto err_of_populate;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_of_populate:
+> +	device_for_each_child(&pdev->dev, NULL, exynos5_adc_remove_devices);
+> +	regulator_disable(info->vdd);
+> +	clk_disable_unprepare(info->clk);
+> +err_iio_dev:
+> +	iio_device_unregister(indio_dev);
+> +err_map:
+> +	iio_map_array_unregister(indio_dev, info->map);
+> +err_irq:
+> +	free_irq(info->irq, info);
+> +err_iio:
+> +	iio_device_free(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int exynos5_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct exynos5_adc *info = iio_priv(indio_dev);
+> +
+> +	regulator_disable(info->vdd);
+> +	clk_disable_unprepare(info->clk);
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev, info->map);
+> +	free_irq(info->irq, info);
+> +	iio_device_free(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int exynos5_adc_suspend(struct device *dev)
+> +{
+> +	struct exynos5_adc *info = dev_get_data(dev);
+> +	u32 con;
+> +
+> +	if (info->version == ADC_V2) {
+> +		con = readl(ADC_V2_CON1(info->regs));
+> +		con &= ~ADC_V1_CON_EN_START;
+> +		writel(con, ADC_V2_CON1(info->regs));
+> +	} else {
+> +		con = readl(ADC_V1_CON(info->regs));
+> +		con |= ADC_V1_CON_STANDBY;
+> +		writel(con, ADC_V1_CON(info->regs));
+> +	}
+> +
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vdd);
+> +
+> +	return 0;
+> +}
+> +
+> +static int exynos5_adc_resume(struct device *dev)
+> +{
+> +	struct exynos5_adc *info = dev_get_data(dev);
+> +	int ret;
+> +
+> +	ret = regulator_enable(info->vdd);
+> +	if (ret)
+> +		return ret;
+> +
+> +	clk_prepare_enable(info->clk);
+> +
+> +	exynos5_adc_hw_init(info);
+> +
+> +	return 0;
+> +}
+> +
+> +#else
+> +#define exynos5_adc_suspend NULL
+> +#define exynos5_adc_resume NULL
+> +#endif
+
+with SIMPLE_DEV_PM_OPS, you don't need the else case above.
+
+> +
+> +static SIMPLE_DEV_PM_OPS(exynos5_adc_pm_ops,
+> +			exynos5_adc_suspend,
+> +			exynos5_adc_resume);
+> +
+> +static struct platform_driver exynos5_adc_driver = {
+> +	.probe		= exynos5_adc_probe,
+> +	.remove		= exynos5_adc_remove,
+> +	.driver		= {
+> +		.name	= "exynos5-adc",
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = of_match_ptr(exynos5_adc_match),
+> +		.pm	= &exynos5_adc_pm_ops,
+> +	},
+> +};
+> +
+> +module_platform_driver(exynos5_adc_driver);
+> +
+> +MODULE_AUTHOR("Naveen Krishna Chatradhi <ch.naveen@samsung.com>");
+> +MODULE_DESCRIPTION("Samsung EXYNOS5 ADC driver");
+> +MODULE_LICENSE("GPL");
+> -- 
+> 1.7.9.5
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
