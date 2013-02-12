@@ -1,214 +1,355 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f47.google.com ([74.125.83.47]:61616 "EHLO
-	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758456Ab3BKSH5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2013 13:07:57 -0500
-Received: by mail-ee0-f47.google.com with SMTP id e52so3311719eek.20
-        for <linux-iio@vger.kernel.org>; Mon, 11 Feb 2013 10:07:54 -0800 (PST)
-From: Ge Gao <ggao@invensense.com>
-References: <1359764808-20168-1-git-send-email-ggao@invensense.com>
- <5117D94F.3010000@metafoo.de> <5117DCB0.3030809@kernel.org>
-In-Reply-To: <5117DCB0.3030809@kernel.org>
-MIME-Version: 1.0
-Date: Mon, 11 Feb 2013 10:07:51 -0800
-Message-ID: <2fae542f3324283c57ccb58fdc3c2fd7@mail.gmail.com>
-Subject: RE: [PATCH] [V9] Invensense MPU6050 Device Driver.
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from pegase1.c-s.fr ([93.17.236.30]:36393 "EHLO mailhub1.si.c-s.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932327Ab3BLRKp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 12 Feb 2013 12:10:45 -0500
+Date: Tue, 12 Feb 2013 18:10:32 +0100
+Message-Id: <201302121710.r1CHAWES027406@localhost.localdomain>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	patrick.vasseur@c-s.fr
+Subject: [PATCH v2] IIO ADC support for AD7923
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Jonanthan and Lars,
-	Thanks for the comments. I am glad it has been accepted and very
-thankful for the valuable advice during the process. I will add the
-kfifo_in_spinlocked. However, for the kfifo_out, do I need lock? I thought
-KFIFO is a two-way FIFO, which usually does not need the locking mechanism
-unless it is the reset process, which clear the whole KFIFO.
+This patch adds support for Analog Devices AD7923 ADC in the IIO Subsystem.
 
-Best Regards,
+Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-Ge GOA
-
-
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@kernel.org]
-Sent: Sunday, February 10, 2013 9:45 AM
-To: Lars-Peter Clausen
-Cc: Ge GAO; linux-iio@vger.kernel.org
-Subject: Re: [PATCH] [V9] Invensense MPU6050 Device Driver.
-
-On 02/10/2013 05:30 PM, Lars-Peter Clausen wrote:
-> On 02/02/2013 01:26 AM, Ge GAO wrote:
->> From: Ge Gao <ggao@invensense.com>
->>
->> --This the basic function of Invensense MPU6050 Deivce driver.
->> --align coding style.
->> --rearrange function from ring to trigger.
->> --other cleanup.
->>
->> Signed-off-by: Ge Gao <ggao@invensense.com>
->
-> Looks good to me:
->
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
->
-Thanks, added to togreg branch of iio.git. Editted the description a fair
-bit as the changes above should be below the --- rather than above it (and
-hence not turn up in the eventual description in tree).
-
-
-> A few minor things inline, but these can all be fixed in a follow up
-patch.
->
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio-mpu6050  |   14 +
->>  drivers/iio/imu/Kconfig                          |    2 +
->>  drivers/iio/imu/Makefile                         |    2 +
->>  drivers/iio/imu/inv_mpu6050/Kconfig              |   13 +
->>  drivers/iio/imu/inv_mpu6050/Makefile             |    6 +
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c       |  786
-++++++++++++++++++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h        |  247 +++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c       |  194 ++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c    |  153 +++++
->>  include/linux/platform_data/invensense_mpu6050.h |   32 +
->>  10 files changed, 1449 insertions(+), 0 deletions(-)  create mode
->> 100644 Documentation/ABI/testing/sysfs-bus-iio-mpu6050
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/Kconfig
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/Makefile
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->>  create mode 100644 include/linux/platform_data/invensense_mpu6050.h
->>
-> [...]
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->> b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->> new file mode 100644
->> index 0000000..e1deee4
->> --- /dev/null
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->> @@ -0,0 +1,194 @@
->> +/*
->> + *  inv_mpu6050_irq_handler() - Cache a timestamp at each data ready
-interrupt.
->> + */
->> +irqreturn_t inv_mpu6050_irq_handler(int irq, void *p) {
->> +	struct iio_poll_func *pf = p;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->> +	s64 timestamp;
->> +
->> +	timestamp = iio_get_time_ns();
->> +	spin_lock(&st->time_stamp_lock);
->> +	kfifo_in(&st->timestamps, &timestamp, 1);
->> +	spin_unlock(&st->time_stamp_lock);
->
->
-> There is kfifo_in_spinlocked, which takes a pointer to the lock as the
-> last parameter and takes care of the locking.
->
->> +
->> +	return IRQ_WAKE_THREAD;
->> +}
->> +
->> +/*
->> + *  inv_mpu6050_read_fifo() - Transfer data from hardware FIFO to
-KFIFO.
->> + */
->> +irqreturn_t inv_mpu6050_read_fifo(int irq, void *p) {
->> +	struct iio_poll_func *pf = p;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->> +	size_t bytes_per_datum;
->> +	int result;
->> +	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
->> +	u16 fifo_count;
->> +	s64 timestamp;
->> +	u64 *tmp;
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +	if (!(st->chip_config.accl_fifo_enable |
->> +		st->chip_config.gyro_fifo_enable))
->> +		goto end_session;
->> +	bytes_per_datum = 0;
->> +	if (st->chip_config.accl_fifo_enable)
->> +		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
->> +
->> +	if (st->chip_config.gyro_fifo_enable)
->> +		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
->> +
->> +	/* read fifo_count register to know how many bytes inside FIFO
->> +	   right now */
->> +	result = i2c_smbus_read_i2c_block_data(st->client,
->> +				       st->reg->fifo_count_h,
->> +				       INV_MPU6050_FIFO_COUNT_BYTE, data);
->> +	if (result != INV_MPU6050_FIFO_COUNT_BYTE)
->> +		goto end_session;
->> +	fifo_count = be16_to_cpup((__be16 *)(&data[0]));
->> +	if (fifo_count < bytes_per_datum)
->> +		goto end_session;
->> +	/* fifo count can't be odd number, if it is odd, reset fifo*/
->> +	if (fifo_count & 1)
->> +		goto flush_fifo;
->> +	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
->> +		goto flush_fifo;
->> +	/* Timestamp mismatch. */
->> +	if (kfifo_len(&st->timestamps) >
->> +		fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
->> +			goto flush_fifo;
->> +	while (fifo_count >= bytes_per_datum) {
->> +		result = i2c_smbus_read_i2c_block_data(st->client,
->> +						       st->reg->fifo_r_w,
->> +						       bytes_per_datum,
-data);
->> +		if (result != bytes_per_datum)
->> +			goto flush_fifo;
->> +
->> +		result = kfifo_out(&st->timestamps, &timestamp, 1);
->
-> Do you need to take the timestamp lock while reading from the fifo?
->
->> +		/* when there is no timestamp, put timestamp as 0 */
->> +		if (0 == result)
->> +			timestamp = 0;
->> +
->> +		tmp = (u64 *)data;
->> +		tmp[DIV_ROUND_UP(bytes_per_datum, 8)] = timestamp;
->> +		result = iio_push_to_buffers(indio_dev, data);
->> +		if (result)
->> +			goto flush_fifo;
->> +		fifo_count -= bytes_per_datum;
->> +	}
->> +
->> +end_session:
->> +	mutex_unlock(&indio_dev->mlock);
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +
->> +flush_fifo:
->> +	/* Flush HW and SW FIFOs. */
->> +	inv_reset_fifo(indio_dev);
->> +	inv_clear_kfifo(st);
->> +	mutex_unlock(&indio_dev->mlock);
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> new file mode 100644
->> index 0000000..6f62caf
->> --- /dev/null
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> @@ -0,0 +1,153 @@
-> [...]
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio"
-> in the body of a message to majordomo@vger.kernel.org More majordomo
-> info at  http://vger.kernel.org/majordomo-info.html
->
+diff -urN linux-next-e347c98/drivers/iio/adc/Kconfig linux-next-e347c98.new/drivers/iio/adc/Kconfig
+--- linux-next-e347c98/drivers/iio/adc/Kconfig	2013-02-08 05:22:35.000000000 +0100
++++ linux-next-e347c98.new/drivers/iio/adc/Kconfig	2013-02-12 13:02:52.000000000 +0100
+@@ -30,6 +30,18 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7298.
+ 
++config AD7923
++	tristate "Analog Devices AD7923 ADC driver"
++	depends on SPI
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Analog Devices AD7923
++	  4 Channel ADC with temperature sensor.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7923.
++
+ config AD7791
+ 	tristate "Analog Devices AD7791 ADC driver"
+ 	depends on SPI
+diff -urN linux-next-e347c98/drivers/iio/adc/Makefile linux-next-e347c98.new/drivers/iio/adc/Makefile
+--- linux-next-e347c98/drivers/iio/adc/Makefile	2013-02-08 05:22:35.000000000 +0100
++++ linux-next-e347c98.new/drivers/iio/adc/Makefile	2013-02-12 13:03:02.000000000 +0100
+@@ -5,6 +5,7 @@
+ obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+ obj-$(CONFIG_AD7266) += ad7266.o
+ obj-$(CONFIG_AD7298) += ad7298.o
++obj-$(CONFIG_AD7923) += ad7923.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+diff -urN linux-next-e347c98/drivers/iio/adc/ad7923.c linux-next-e347c98.new/drivers/iio/adc/ad7923.c
+--- linux-next-e347c98/drivers/iio/adc/ad7923.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-next-e347c98.new/drivers/iio/adc/ad7923.c	2013-02-12 15:16:29.000000000 +0100
+@@ -0,0 +1,298 @@
++/*
++ * AD7923 SPI ADC driver
++ *
++ * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
++ * Copyright 2012 CS Systemes d'Information
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define AD7923_WRITE_CR		(1 << 11)	/* write control register */
++#define AD7923_RANGE		(1 << 1)	/* range to REFin */
++#define AD7923_CODING		(1 << 0)	/* coding is straight binary */
++#define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
++#define AD7923_PM_MODE_FS	(2)		/* full shutdown */
++#define AD7923_PM_MODE_OPS	(3)		/* normal operation */
++#define AD7923_CHANNEL_0	(0)		/* analog input 0 */
++#define AD7923_CHANNEL_1	(1)		/* analog input 1 */
++#define AD7923_CHANNEL_2	(2)		/* analog input 2 */
++#define AD7923_CHANNEL_3	(3)		/* analog input 3 */
++#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
++#define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
++#define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
++
++#define AD7923_MAX_CHAN		4
++
++#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
++#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
++#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
++					+ ((sequence & 2) << 9))
++						/* write sequence fonction */
++/* left shift for CR : bit 11 transmit in first */
++#define AD7923_SHIFT_REGISTER	4
++
++/* val = value, dec = left shift, bits = number of bits of the mask */
++#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
++
++struct ad7923_state {
++	struct spi_device		*spi;
++	struct spi_transfer		ring_xfer[6];
++	struct spi_transfer		scan_single_xfer[2];
++	struct spi_message		ring_msg;
++	struct spi_message		scan_single_msg;
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	__be16				rx_buf[4] ____cacheline_aligned;
++	__be16				tx_buf[2];
++};
++
++#define AD7923_V_CHAN(index)						\
++	{								\
++		.type = IIO_VOLTAGE,					\
++		.indexed = 1,						\
++		.channel = index,					\
++		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
++		IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
++		.address = index,					\
++		.scan_index = index,					\
++		.scan_type = {						\
++			.sign = 'u',					\
++			.realbits = 12,					\
++			.storagebits = 16,				\
++			.endianness = IIO_BE,				\
++		},							\
++	}
++
++static const struct iio_chan_spec ad7923_channels[] = {
++	AD7923_V_CHAN(0),
++	AD7923_V_CHAN(1),
++	AD7923_V_CHAN(2),
++	AD7923_V_CHAN(3),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++};
++
++/**
++ * ad7923_update_scan_mode() setup the spi transfer buffer for the new scan mask
++ **/
++static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
++	const unsigned long *active_scan_mask)
++{
++	struct ad7923_state *st = iio_priv(indio_dev);
++	int i, cmd, len;
++
++	len = 0;
++	for_each_set_bit(i, active_scan_mask, AD7923_MAX_CHAN) {
++		cmd = AD7923_WRITE_CR | AD7923_CODING | AD7923_RANGE |
++			AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
++			AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) |
++			AD7923_CHANNEL_WRITE(i);
++		cmd <<= AD7923_SHIFT_REGISTER;
++		st->tx_buf[len++] = cpu_to_be16(cmd);
++	}
++	/* build spi ring message */
++	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
++	st->ring_xfer[0].len = len;
++	st->ring_xfer[0].cs_change = 1;
++
++	spi_message_init(&st->ring_msg);
++	spi_message_add_tail(&st->ring_xfer[0], &st->ring_msg);
++
++	for (i = 0; i < len; i++) {
++		st->ring_xfer[i + 1].rx_buf = &st->rx_buf[i];
++		st->ring_xfer[i + 1].len = 2;
++		st->ring_xfer[i + 1].cs_change = 1;
++		spi_message_add_tail(&st->ring_xfer[i + 1], &st->ring_msg);
++	}
++	/* make sure last transfer cs_change is not set */
++	st->ring_xfer[i + 1].cs_change = 0;
++
++	return 0;
++}
++
++/**
++ * ad7923_trigger_handler() bh of trigger launched polling to ring buffer
++ *
++ * Currently there is no option in this driver to disable the saving of
++ * timestamps within the ring.
++ **/
++static irqreturn_t ad7923_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7923_state *st = iio_priv(indio_dev);
++	s64 time_ns = 0;
++	int b_sent;
++
++	b_sent = spi_sync(st->spi, &st->ring_msg);
++	if (b_sent)
++		goto done;
++
++	if (indio_dev->scan_timestamp) {
++		time_ns = iio_get_time_ns();
++		memcpy((u8 *)st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
++			&time_ns, sizeof(time_ns));
++	}
++
++	iio_push_to_buffers(indio_dev, (u8 *)st->rx_buf);
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ad7923_scan_direct(struct ad7923_state *st, unsigned ch)
++{
++	int ret, cmd;
++
++	cmd = AD7923_WRITE_CR | AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS) |
++		AD7923_SEQUENCE_WRITE(AD7923_SEQUENCE_OFF) | AD7923_CODING |
++		AD7923_CHANNEL_WRITE(ch) | AD7923_RANGE;
++	cmd <<= AD7923_SHIFT_REGISTER;
++	st->tx_buf[0] = cpu_to_be16(cmd);
++
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++	if (ret)
++		return ret;
++
++	return be16_to_cpu(st->rx_buf[0]);
++}
++
++static int ad7923_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	int ret;
++	struct ad7923_state *st = iio_priv(indio_dev);
++
++	switch (m) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		if (iio_buffer_enabled(indio_dev))
++			ret = -EBUSY;
++		else
++			ret = ad7923_scan_direct(st, chan->address);
++		mutex_unlock(&indio_dev->mlock);
++
++		if (ret < 0)
++			return ret;
++
++		if (chan->address == EXTRACT(ret, 12, 4))
++			*val = EXTRACT(ret, 0, 12);
++
++		return IIO_VAL_INT;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info ad7923_info = {
++	.read_raw = &ad7923_read_raw,
++	.update_scan_mode = ad7923_update_scan_mode,
++	.driver_module = THIS_MODULE,
++};
++
++static int ad7923_probe(struct spi_device *spi)
++{
++	struct ad7923_state *st;
++	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	int ret;
++
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	spi_set_drvdata(spi, indio_dev);
++
++	st->spi = spi;
++
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad7923_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad7923_channels);
++	indio_dev->info = &ad7923_info;
++
++	/* Setup default message */
++
++	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
++	st->scan_single_xfer[0].len = 2;
++	st->scan_single_xfer[0].cs_change = 1;
++	st->scan_single_xfer[1].rx_buf = &st->rx_buf[0];
++	st->scan_single_xfer[1].len = 2;
++
++	spi_message_init(&st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++			&ad7923_trigger_handler, NULL);
++	if (ret)
++		goto error_free;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_cleanup_ring;
++
++	return 0;
++
++error_cleanup_ring:
++	iio_triggered_buffer_cleanup(indio_dev);
++error_free:
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int ad7923_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static const struct spi_device_id ad7923_id[] = {
++	{"ad7923", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad7923_id);
++
++static struct spi_driver ad7923_driver = {
++	.driver = {
++		.name	= "ad7923",
++		.owner	= THIS_MODULE,
++	},
++	.probe		= ad7923_probe,
++	.remove		= ad7923_remove,
++	.id_table	= ad7923_id,
++};
++module_spi_driver(ad7923_driver);
++
++MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
++MODULE_AUTHOR("Patrick Vasseur <patrick.vasseur@c-s.fr>");
++MODULE_DESCRIPTION("Analog Devices AD7923 ADC");
++MODULE_LICENSE("GPL v2");
