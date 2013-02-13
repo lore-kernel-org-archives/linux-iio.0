@@ -1,136 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:58641 "EHLO
+Received: from mail.active-venture.com ([67.228.131.205]:61343 "EHLO
 	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933012Ab3BSRKP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Feb 2013 12:10:15 -0500
-Date: Tue, 19 Feb 2013 09:10:44 -0800
+	with ESMTP id S1759328Ab3BMPui (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Feb 2013 10:50:38 -0500
+Date: Wed, 13 Feb 2013 07:51:00 -0800
 From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] hwmon: (adt7x10) Add alarm interrupt support
-Message-ID: <20130219171044.GD19550@roeck-us.net>
-References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
- <1361194739-16525-3-git-send-email-lars@metafoo.de>
- <20130219013933.GD25124@roeck-us.net>
- <51236A96.3040000@metafoo.de>
+To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>, dianders@chromium.org,
+	gregkh@linuxfoundation.org, lars@metafoo.de
+Subject: Re: iio: adc: add exynos5 adc driver under iio framwork
+Message-ID: <20130213155100.GA7198@roeck-us.net>
+References: <1358917086-4148-1-git-send-email-ch.naveen@samsung.com>
+ <20130212210732.GA8634@roeck-us.net>
+ <CAHfPSqCwqD2gzB9eiTi1hSQvRgwbsjp9NfEb3RKpy+_+DbdhzQ@mail.gmail.com>
+ <CAHfPSqAJN8C6d6Oa=1UDpJ+hTXbEOGBio4Ob__ZphsKq=Rvppg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51236A96.3040000@metafoo.de>
+In-Reply-To: <CAHfPSqAJN8C6d6Oa=1UDpJ+hTXbEOGBio4Ob__ZphsKq=Rvppg@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 19, 2013 at 01:05:42PM +0100, Lars-Peter Clausen wrote:
-> On 02/19/2013 02:39 AM, Guenter Roeck wrote:
-> > On Mon, Feb 18, 2013 at 02:38:58PM +0100, Lars-Peter Clausen wrote:
-> >> This allows a userspace application to poll() on the alarm files to get notified
-> >> in case of an temperature threshold event.
-> >>
-> >> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> >>
-> [...]
-> >>  
-> >> +static irqreturn_t adt7410_irq_handler(int irq, void *private)
-> >> +{
-> >> +	struct device *dev = private;
-> >> +	int status;
-> >> +
-> >> +	status = adt7410_read_byte(dev, ADT7410_STATUS);
-> >> +	if (status < 0)
-> >> +		return IRQ_HANDLED;
-> >> +
-> >> +	if (status & ADT7410_STAT_T_HIGH)
-> >> +		sysfs_notify(&dev->kobj, NULL, "temp1_max_alarm");
-> >> +	if (status & ADT7410_STAT_T_LOW)
-> >> +		sysfs_notify(&dev->kobj, NULL, "temp1_min_alarm");
-> >> +	if (status & ADT7410_STAT_T_CRIT)
-> >> +		sysfs_notify(&dev->kobj, NULL, "temp1_crit_alarm");
-> >> +
-> > Question about semantics: Do you want a notification on all attributes each time
-> > one is set during an interrupt, or do you want a notification each time an
-> > attribute changes state ? With the above code, the 1->0 transition does not
-> > result in a notification. Is that on purpose ?
-> > 
+On Wed, Feb 13, 2013 at 06:46:01PM +0530, Naveen Krishna Ch wrote:
+[ ... ]
 > 
-> Now that the code uses an edge triggered IRQ and comparator mode it would
-> actually be possible to also generate an event for a 1->0 transition, but
-> I'm not sure how much sense that makes. Usually you'd only want to respond
-> quickly to the case where a threshold event happens.
+> Hello Guenter,
 > 
-I am not sure if it would make sense either. I am fine either way - this is
-quite new functionality for hwmon, and we can add support for two-way
-notification later if it turns out to be needed.
+> I've rebase my adc driver on top of your (OF for IIO patch)
+> 
+> My setup is like the below one. kindly, help me find the right device
+> tree node params
+> 
+> One ADC controller with 8 channels,
+>   4 NTC thermistors are connected to channel 3, 4, 5 and 6 of ADC respectively
+> 
+> ADC ch - 0
+> ADC ch - 1
+> ADC ch - 2
+> ADC ch - 3 ------------------NTC
+> ADC ch - 4 ------------------NTC
+> ADC ch - 5 ------------------NTC
+> ADC ch - 6 ------------------NTC
+> ADC ch - 7
+> 
+> I've started off with something like this.
+> 
+>         adc0: adc@12D10000 {
+>                 compatible = "samsung,exynos5250-adc";
+>                 reg = <0x12D10000 0x100>;
+>                 interrupts = <0 106 0>;
+>                 #io-channel-cells = <1>;
+>         };
+> 
+>         adc0: adc@12D10000 {
+>                 vdd-supply = <&buck5_reg>;
+> 
+>                 ncp15wb473@0 {
+>                         compatible = "ntc,ncp15wb473";
+>                         io-channels = <&adc0 3>;
+>                         io-channel-names = "adc3";
+>                         pullup-uV = <1800000>;
+>                         pullup-ohm = <47000>;
+>                         pulldown-ohm = <0>;
+>                         id = <3>;
+>                 };
+> 
+>                 ncp15wb473@1 {
+>                         compatible = "ntc,ncp15wb473";
+>                         pullup-uV = <1800000>;
+>                         pullup-ohm = <47000>;
+>                         pulldown-ohm = <0>;
+>                         io-channels = <&adc0 4>;
+>                         io-channel-names = "adc4";
+>                         id = <4>;
+>                 };
+>                 ncp15wb473@2 {
+>                         compatible = "ntc,ncp15wb473";
+>                         pullup-uV = <1800000>;
+>                         pullup-ohm = <47000>;
+>                         pulldown-ohm = <0>;
+>                         io-channels = <&adc0 5>;
+>                         io-channel-names = "adc5";
+>                         id = <5>;
+>                 };
+>                 ncp15wb473@3 {
+>                         compatible = "ntc,ncp15wb473";
+>                         pullup-uV = <1800000>;
+>                         pullup-ohm = <47000>;
+>                         pulldown-ohm = <0>;
+>                         io-channels = <&adc0 6>;
+>                         io-channel-names = "adc6";
+>                         id = <6>;
+>                 };
+>         };
+> 
+> ADC driver will use of_platform_populate() to populate the child nodes
+> (ntc thermistors in my case)
+> 
+> I've modified the NTC driver to support DT. in probe
+> chan = iio_channel_get(&pdev->dev, "adcX");
+> and using "id" field to use respective ADC channel to do the raw_read()
+> 
+> Issue:
+> 1. I get weird device names for thermistors starting from ncp15wb473.2
+> to ncp15wb473.5
 
-> >> +	return IRQ_HANDLED;
-> >> +}
-> >> +
-> >>  static int adt7410_temp_ready(struct device *dev)
-> >>  {
-> >>  	int i, status;
-> >> @@ -357,7 +377,7 @@ static const struct attribute_group adt7410_group = {
-> >>  	.attrs = adt7410_attributes,
-> >>  };
-> >>  
-> >> -int adt7410_probe(struct device *dev, const char *name,
-> >> +int adt7410_probe(struct device *dev, const char *name, int irq,
-> >>  	const struct adt7410_ops *ops)
-> >>  {
-> >>  	struct adt7410_data *data;
-> >> @@ -383,11 +403,13 @@ int adt7410_probe(struct device *dev, const char *name,
-> >>  	data->oldconfig = ret;
-> >>  
-> >>  	/*
-> >> -	 * Set to 16 bit resolution, continous conversion and comparator mode.
-> >> +	 * Set to 16 bit resolution and continous conversion
-> >>  	 */
-> >>  	data->config = data->oldconfig;
-> >> -	data->config &= ~ADT7410_MODE_MASK;
-> >> +	data->config &= ~(ADT7410_MODE_MASK | ADT7410_CT_POLARITY |
-> >> +			ADT7410_INT_POLARITY);
-> >>  	data->config |= ADT7410_FULL | ADT7410_RESOLUTION | ADT7410_EVENT_MODE;
-> >> +
-> >>  	if (data->config != data->oldconfig) {
-> >>  		ret = adt7410_write_byte(dev, ADT7410_CONFIG, data->config);
-> >>  		if (ret)
-> >> @@ -421,8 +443,18 @@ int adt7410_probe(struct device *dev, const char *name,
-> >>  		goto exit_remove_name;
-> >>  	}
-> >>  
-> >> +	if (irq > 0) {
-> >> +		ret = request_threaded_irq(irq, NULL, adt7410_irq_handler,
-> >> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> >> +				dev_name(dev), dev);
-> > 
-> > If you use devm_request_threaded_irq, you don't have to release it on remove.
-> 
-> devm_request_threaded_irq is tricky, since the IRQ will only be freed after
-> the drivers remove callback has been run. This can cause race conditions,
-> since the IRQ handler often access resources already freed in the remove
-> callback. In this case it will work fine since sysfs_notify handles the case
-> where the files are already gone gracefully and just does nothing in that
-> case. I'd still prefer to keep the explicit free, so things are cleaned up
-> in the reverse order to the way they were set up.
-> 
-Ok, makes sense.
+I noticed that device IDs and names created when OF is active are sometimes
+not as one would expect. I never managed to get the device IDs I tried to
+configure. Ultimately, it did not matter and I never bothered to track it down.
 
-> > 
-> >> +		if (ret)
-> >> +			goto exit_hwmon_device_unregister;
-> >> +	}
-> >> +
-> > 
-> > This code should be before hwmon registration.
-> 
-> Why? It doesn't make sense to signal an event before userspace can actually
-> discover the device.
-> 
-You are right. Historically we keep hwmon registration as last operation to
-avoid user-space confusion if the attributes are gone by the time user-space
-tries to access them. Getting a notification prior to registration is just as
-bad, and would be "normal" operation instead of error handling, so your code
-makes sense.
-
-Thanks,
 Guenter
