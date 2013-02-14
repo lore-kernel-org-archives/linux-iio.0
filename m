@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:53002 "EHLO
+Received: from mailout2.samsung.com ([203.254.224.25]:53219 "EHLO
 	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964931Ab3BOG6T (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 01:58:19 -0500
+	with ESMTP id S933987Ab3BNMOP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Feb 2013 07:14:15 -0500
 From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 To: linux-iio@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
 	dianders@chromium.org, gregkh@linuxfoundation.org,
 	naveenkrishna.ch@gmail.com, lars@metafoo.de
-Subject: [PATCH v7] iio: adc: add exynos adc driver under iio framwork
-Date: Fri, 15 Feb 2013 12:26:34 +0530
-Message-id: <1360911394-19873-1-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1360843890-28466-1-git-send-email-ch.naveen@samsung.com>
-References: <1360843890-28466-1-git-send-email-ch.naveen@samsung.com>
+Subject: [PATCH v6] iio: adc: add exynos adc driver under iio framwork
+Date: Thu, 14 Feb 2013 17:41:30 +0530
+Message-id: <1360843890-28466-1-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
+References: <1358775470-21278-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -55,10 +55,6 @@ Changes since v5:
 1. Fixed comments from Olof (ADC hardware version handling)
 2. Rebased on top of comming OF framework for IIO by "Guenter Roeck".
 
-Changes since v6:
-
-1. Addressed comments from Lars-Peter Clausen
-
  .../bindings/arm/samsung/exynos5-adc.txt           |   42 ++
  drivers/iio/adc/Kconfig                            |    7 +
  drivers/iio/adc/Makefile                           |    1 +
@@ -67,8 +63,8 @@ Changes since v6:
  .../devicetree/bindings/arm/samsung/exynos-adc.txt |   52 +++
  drivers/iio/adc/Kconfig                            |    7 +
  drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/exynos_adc.c                       |  440 ++++++++++++++++++++
- 4 files changed, 500 insertions(+)
+ drivers/iio/adc/exynos_adc.c                       |  437 ++++++++++++++++++++
+ 4 files changed, 497 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
  create mode 100644 drivers/iio/adc/exynos_adc.c
 
@@ -162,10 +158,10 @@ index 2d5f100..fabac2c 100644
  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
 diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
 new file mode 100644
-index 0000000..ed6fdd7
+index 0000000..144a9e2
 --- /dev/null
 +++ b/drivers/iio/adc/exynos_adc.c
-@@ -0,0 +1,440 @@
+@@ -0,0 +1,437 @@
 +/*
 + *  exynos_adc.c - Support for ADC in EXYNOS SoCs
 + *
@@ -249,8 +245,6 @@ index 0000000..ed6fdd7
 +#define ADC_CON_EN_START	(1u << 0)
 +#define ADC_DATX_MASK		0xFFF
 +
-+#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
-+
 +struct exynos_adc {
 +	void __iomem		*regs;
 +	struct clk		*clk;
@@ -285,42 +279,38 @@ index 0000000..ed6fdd7
 +				long mask)
 +{
 +	struct exynos_adc *info = iio_priv(indio_dev);
-+	unsigned long timeout;
 +	u32 con1, con2;
 +
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
++	if (mask == IIO_CHAN_INFO_RAW) {
++		mutex_lock(&indio_dev->mlock);
 +
-+	mutex_lock(&indio_dev->mlock);
++		/* Select the channel to be used and Trigger conversion */
++		if (info->version == ADC_V2) {
++			con2 = readl(ADC_V2_CON2(info->regs));
++			con2 &= ~ADC_V2_CON2_ACH_MASK;
++			con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
++			writel(con2, ADC_V2_CON2(info->regs));
 +
-+	/* Select the channel to be used and Trigger conversion */
-+	if (info->version == ADC_V2) {
-+		con2 = readl(ADC_V2_CON2(info->regs));
-+		con2 &= ~ADC_V2_CON2_ACH_MASK;
-+		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
-+		writel(con2, ADC_V2_CON2(info->regs));
++			con1 = readl(ADC_V2_CON1(info->regs));
++			writel(con1 | ADC_CON_EN_START,
++					ADC_V2_CON1(info->regs));
++		} else {
++			writel(chan->address, ADC_V1_MUX(info->regs));
 +
-+		con1 = readl(ADC_V2_CON1(info->regs));
-+		writel(con1 | ADC_CON_EN_START,
-+				ADC_V2_CON1(info->regs));
-+	} else {
-+		writel(chan->address, ADC_V1_MUX(info->regs));
++			con1 = readl(ADC_V1_CON(info->regs));
++			writel(con1 | ADC_CON_EN_START,
++					ADC_V1_CON(info->regs));
++		}
 +
-+		con1 = readl(ADC_V1_CON(info->regs));
-+		writel(con1 | ADC_CON_EN_START,
-+				ADC_V1_CON(info->regs));
++		wait_for_completion(&info->completion);
++		*val = info->value;
++
++		mutex_unlock(&indio_dev->mlock);
++
++		return IIO_VAL_INT;
 +	}
 +
-+	timeout = wait_for_completion_interruptible_timeout
-+			(&info->completion, EXYNOS_ADC_TIMEOUT);
-+	*val = info->value;
-+
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	if (timeout == 0)
-+		return -ETIMEDOUT;
-+
-+	return IIO_VAL_INT;
++	return -EINVAL;
 +}
 +
 +static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
@@ -346,13 +336,19 @@ index 0000000..ed6fdd7
 +			      unsigned *readval)
 +{
 +	struct exynos_adc *info = iio_priv(indio_dev);
++	u32 ret;
 +
-+	if (readval == NULL)
-+		return -EINVAL;
++	mutex_lock(&indio_dev->mlock);
 +
-+	*readval = readl(info->regs + reg);
++	if (readval != NULL) {
++		ret = readl(info->regs + reg);
++		*readval = ret;
++	} else
++		ret = -EINVAL;
 +
-+	return 0;
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
 +}
 +
 +static const struct iio_info exynos_adc_iio_info = {
@@ -516,8 +512,7 @@ index 0000000..ed6fdd7
 +	return 0;
 +
 +err_of_populate:
-+	device_for_each_child(&pdev->dev, NULL,
-+				exynos_adc_remove_devices);
++	device_for_each_child(&pdev->dev, NULL, exynos_adc_remove_devices);
 +	regulator_disable(info->vdd);
 +	clk_disable_unprepare(info->clk);
 +err_iio_dev:
@@ -534,8 +529,6 @@ index 0000000..ed6fdd7
 +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +	struct exynos_adc *info = iio_priv(indio_dev);
 +
-+	device_for_each_child(&pdev->dev, NULL,
-+				exynos_adc_remove_devices);
 +	regulator_disable(info->vdd);
 +	clk_disable_unprepare(info->clk);
 +	iio_device_unregister(indio_dev);
