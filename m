@@ -1,458 +1,1171 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:55682 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753654Ab3BDRv0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2013 12:51:26 -0500
-Date: Mon, 4 Feb 2013 09:51:34 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH v2 4/4] iio: Add OF support
-Message-ID: <20130204175134.GA17776@roeck-us.net>
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net>
- <2327792.dx5ptVD6je@flatron>
- <510EB2B3.7090503@metafoo.de>
- <226658056.N7afTOqvFB@flatron>
- <20130204171214.GA23170@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20130204171214.GA23170@roeck-us.net>
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1142 "EHLO
+	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754261Ab3BOQ4L (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:11 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 9/9] staging:iio: Remove adt7410 driver
+Date: Fri, 15 Feb 2013 17:57:18 +0100
+Message-Id: <1360947438-2550-9-git-send-email-lars@metafoo.de>
+In-Reply-To: <1360947438-2550-1-git-send-email-lars@metafoo.de>
+References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Feb 04, 2013 at 09:12:14AM -0800, Guenter Roeck wrote:
-> On Mon, Feb 04, 2013 at 12:14:52AM +0100, Tomasz Figa wrote:
-> > On Sunday 03 of February 2013 19:55:47 Lars-Peter Clausen wrote:
-> > > On 02/03/2013 06:30 PM, Tomasz Figa wrote:
-> > > > On Sunday 03 of February 2013 09:01:07 Guenter Roeck wrote:
-> > > >> On Sun, Feb 03, 2013 at 12:52:40PM +0100, Tomasz Figa wrote:
-> > > >>> On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
-> > > >>>> On 02/03/2013 03:06 AM, Guenter Roeck wrote:
-> > > >>>>> On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
-> > > >>>>>> Hi Guenter,
-> > > >>>>>> 
-> > > >>>>>> Some comments inline.
-> > > >>>>>> 
-> > > >>>>>> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
-> > > >>>>>>> Provide bindings and parse OF data during initialization.
-> > > >>>>>>> 
-> > > >>>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > > >>>>>>> ---
-> > > >>>>>>> - Documentation update per feedback
-> > > >>>>>>> - Dropped io-channel-output-names from the bindings document.
-> > > >>>>>>> The
-> > > >>>>>>> property is not used in the code, and it is not entirely clear
-> > > >>>>>>> what
-> > > >>>>>>> it
-> > > >>>>>>> would be used for. If there is a need for it, we can add it back
-> > > >>>>>>> in
-> > > >>>>>>> later on.
-> > > >>>>>>> - Don't export OF specific API calls
-> > > >>>>>>> - For OF support, no longer depend on iio_map
-> > > >>>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the
-> > > >>>>>>> code
-> > > >>>>>>> still builds if it is not selected.
-> > > >>>>>>> - Change iio_channel_get to take device pointer as argument
-> > > >>>>>>> instead
-> > > >>>>>>> of
-> > > >>>>>>> device name. Retain old API as of_iio_channel_get_sys.
-> > > >>>>>>> - iio_channel_get now works for both OF and non-OF
-> > > >>>>>>> configurations.
-> > > >>>>>>> 
-> > > >>>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76
-> > > >>>>>>>  ++++++++
-> > > >>>>>>>  drivers/iio/inkern.c                               |  186
-> > > >>>>>>> 
-> > > >>>>>>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
-> > > >>>>>>> 
-> > > >>>>>>>  create mode 100644
-> > > >>>>>>> 
-> > > >>>>>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>>>>>> 
-> > > >>>>>>> diff --git
-> > > >>>>>>> a/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>>>>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new
-> > > >>>>>>> file
-> > > >>>>>>> mode
-> > > >>>>>>> 100644
-> > > >>>>>>> index 0000000..58df5f6
-> > > >>>>>>> --- /dev/null
-> > > >>>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > > >>>>>>> @@ -0,0 +1,76 @@
-> > > >>>>>>> +This binding is a work-in-progress. It is derived from clock
-> > > >>>>>>> bindings,
-> > > >>>>>>> +and based on suggestions from Lars-Peter Clausen [1].
-> > > >>>>>>> +
-> > > >>>>>>> +Sources of IIO channels can be represented by any node in the
-> > > >>>>>>> device
-> > > >>>>>>> +tree.  Those nodes are designated as IIO providers.  IIO
-> > > >>>>>>> consumer
-> > > >>>>>>> +nodes use a phandle and IIO specifier pair to connect IIO
-> > > >>>>>>> provider
-> > > >>>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
-> > > >>>>>>> +specifier is an array of one or more cells identifying the IIO
-> > > >>>>>>> +output on a device.  The length of an IIO specifier is defined
-> > > >>>>>>> by
-> > > >>>>>>> the
-> > > >>>>>>> +value of a #io-channel-cells property in the clock provider
-> > > >>>>>>> node.
-> > > >>>>>>> +
-> > > >>>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
-> > > >>>>>>> +
-> > > >>>>>>> +==IIO providers==
-> > > >>>>>>> +
-> > > >>>>>>> +Required properties:
-> > > >>>>>>> +#io-channel-cells: Number of cells in an IIO specifier;
-> > > >>>>>>> Typically 0
-> > > >>>>>>> for nodes +		   with a single IIO output and 1 for nodes
-> > > > 
-> > > > with
-> > > > 
-> > > >>>>>>> multiple +		   IIO outputs.
-> > > >>>>>>> +
-> > > >>>>>>> +For example:
-> > > >>>>>>> +
-> > > >>>>>>> +    adc: adc@35 {
-> > > >>>>>>> +	compatible = "maxim,max1139";
-> > > >>>>>>> +	reg = <0x35>;
-> > > >>>>>>> +        #io-channel-cells = <1>;
-> > > >>>>>>> +    };
-> > > >>>>>>> +
-> > > >>>>>>> +==IIO consumers==
-> > > >>>>>>> +
-> > > >>>>>>> +Required properties:
-> > > >>>>>>> +io-channels:	List of phandle and IIO specifier pairs, one
-> > > > 
-> > > > pair
-> > > > 
-> > > >>>>>>> +		for each IIO input to the device.  Note: if the
-> > > >>>>>>> +		IIO provider specifies '0' for #clock-cells, then
-> > > >>>>>>> +		only the phandle portion of the pair will appear.
-> > > >>>>>>> +
-> > > >>>>>>> +Optional properties:
-> > > >>>>>>> +io-channel-names:
-> > > >>>>>>> +		List of IIO input name strings sorted in the same
-> > > >>>>>>> +		order as the io-channels property.  Consumers 
-> > drivers
-> > > >>>>>>> +		will use io-channel-names to match IIO input names
-> > > >>>>>>> +		with IIO specifiers.
-> > > >>>>>>> +io-channel-ranges:
-> > > >>>>>>> +		Empty property indicating that child nodes can 
-> > inherit
-> > > >>> 
-> > > >>> named
-> > > >>> 
-> > > >>>>>>> +		IIO channels from this node. Useful for bus nodes 
-> > to
-> > > >>> 
-> > > >>> provide
-> > > >>> 
-> > > >>>>>>> +		and IIO channel to their children.
-> > > >>>>>>> +
-> > > >>>>>>> +For example:
-> > > >>>>>>> +
-> > > >>>>>>> +    device {
-> > > >>>>>>> +        io-channels = <&adc 1>, <&ref 0>;
-> > > >>>>>>> +        io-channel-names = "vcc", "vdd";
-> > > >>>>>>> +    };
-> > > >>>>>>> +
-> > > >>>>>>> +This represents a device with two IIO inputs, named "vcc" and
-> > > >>>>>>> "vdd".
-> > > >>>>>>> +The vcc channel is connected to output 1 of the &adc device,
-> > > >>>>>>> and
-> > > >>>>>>> the
-> > > >>>>>>> +vdd channel is connected to output 0 of the &ref device.
-> > > >>>>>>> +
-> > > >>>>>>> +==Example==
-> > > >>>>>>> +
-> > > >>>>>>> +	adc: max1139@35 {
-> > > >>>>>>> +		compatible = "maxim,max1139";
-> > > >>>>>>> +		reg = <0x35>;
-> > > >>>>>>> +		#io-channel-cells = <1>;
-> > > >>>>>>> +	};
-> > > >>>>>>> +
-> > > >>>>>>> +	...
-> > > >>>>>>> +
-> > > >>>>>>> +	iio_hwmon {
-> > > >>>>>>> +		compatible = "iio-hwmon";
-> > > >>>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
-> > > >>>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
-> > > >>>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
-> > > >>>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
-> > > >>>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
-> > > >>>>>>> +	};
-> > > >>>>>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > > >>>>>>> index b289915..d48f2a8 100644
-> > > >>>>>>> --- a/drivers/iio/inkern.c
-> > > >>>>>>> +++ b/drivers/iio/inkern.c
-> > > >>>>>>> @@ -10,6 +10,7 @@
-> > > >>>>>>> 
-> > > >>>>>>>  #include <linux/export.h>
-> > > >>>>>>>  #include <linux/slab.h>
-> > > >>>>>>>  #include <linux/mutex.h>
-> > > >>>>>>> 
-> > > >>>>>>> +#include <linux/of.h>
-> > > >>>>>>> 
-> > > >>>>>>>  #include <linux/iio/iio.h>
-> > > >>>>>>>  #include "iio_core.h"
-> > > >>>>>>> 
-> > > >>>>>>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
-> > > >>>>>>> 
-> > > >>>>>>>  	return chan;
-> > > >>>>>>>  
-> > > >>>>>>>  }
-> > > >>>>>>> 
-> > > >>>>>>> +#ifdef CONFIG_OF
-> > > >>>>>>> +
-> > > >>>>>>> +static int iio_dev_node_match(struct device *dev, void *data)
-> > > >>>>>>> +{
-> > > >>>>>>> +	return !strcmp(dev->type->name, "iio_device") && dev-
-> > >of_node
-> > > >>> 
-> > > >>> ==
-> > > >>> 
-> > > >>>>>> data;
-> > > >>>>>> 
-> > > >>>>>> Hmm, do you need to check type name here? One device node should
-> > > >>>>>> rather
-> > > >>>>>> represent only one device, making node an unique identifier.
-> > > >>>>>> 
-> > > >>>>>> It this is meant to be a sanity check, it could be done one time
-> > > >>>>>> after
-> > > >>>>>> finding the device.
-> > > >>>>> 
-> > > >>>>> Hi Tomasz,
-> > > >>>>> 
-> > > >>>>> This is what Lars had suggested earlier:
-> > > >>>>>> Yes, use bus_find_device on iio_bus_type. A nice example how to
-> > > >>>>>> use
-> > > >>>>>> this to lookup device by of node is of_find_i2c_device_by_node.
-> > > >>>>>> For
-> > > >>>>>> IIO you also need to make sure that dev->type is iio_dev_type,
-> > > >>>>>> since
-> > > >>>>>> both devices and triggers are registered on the same bus.
-> > > >>>>> 
-> > > >>>>> Is it really needed, or in other words would it be sufficient to
-> > > >>>>> check
-> > > >>>>> if of_node and data match each other ? Your reasoning makes sense
-> > > >>>>> to
-> > > >>>>> me, and I had thought about it as well, but I don't really know,
-> > > >>>>> and
-> > > >>>>> I don't know how I could test it and guarantee correctness either.
-> > > >>>>> I'll be happy to take the strcmp() out if someone tells me that it
-> > > >>>>> is
-> > > >>>>> definitely not needed ...
-> > > >>>> 
-> > > >>>> A IIO trigger and a IIO device may have the same of_node, e.g. if
-> > > >>>> they
-> > > >>>> both belong to the same physical device. But you don't need to do
-> > > >>>> the
-> > > >>>> strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
-> > > >>>> &iio_dev_type. Although it doesn't really matter in practice first
-> > > >>>> check for the of_node then check for the type, since the of_node
-> > > >>>> will
-> > > >>>> only match for a few devices at most, the type will match for quite
-> > > >>>> a
-> > > >>>> few.
-> > > >>> 
-> > > >>> I must disagree.
-> > > >>> 
-> > > >>> If you have two IIO devices provided by one physical device, then in
-> > > >>> 
-> > > >>> device tree they should be represented as follows:
-> > > >>> 	phys-dev@12345678 {
-> > > >>> 	
-> > > >>> 		compatible = "some-physical-device";
-> > > >>> 		/* ... */
-> > > >>> 		
-> > > >>> 		my_trig: iio-trigger {
-> > > >>> 		
-> > > >>> 			/* ... */
-> > > >>> 		
-> > > >>> 		};
-> > > >>> 		
-> > > >>> 		my_dev: iio-device {
-> > > >>> 		
-> > > >>> 			/* ... */
-> > > >>> 		
-> > > >>> 		};
-> > > >>> 	
-> > > >>> 	};
-> > > >>> 
-> > > >>> Notice that phys-dev works here as an IIO bus on which its IIO
-> > > >>> devices
-> > > >>> are available. This is related to the convention that single OF
-> > > >>> device node represents single device, which would be violated
-> > > >>> otherwise.
-> > > >> 
-> > > >> Right now the iio device is a child of the physical device, and I am
-> > > >> simply passing of_node on to it. guess you are saying that is not
-> > > >> correct ?
-> > > >> 
-> > > >> If so, what would be the correct approach ? Something like the
-> > > >> following ?
-> > > >> 
-> > > >> 	voltage-sensor@35 {
-> > > >> 	
-> > > >> 		compatible = "maxim,max1139";
-> > > >> 		reg = <0x35>;
-> > > >> 		vcc-supply = <&reg_3p3v>;
-> > > >> 		vref-supply = <&reg_3p3v>;
-> > > >> 		
-> > > >> 		max1139-iio: iio-device {
-> > > >> 		
-> > > >> 			device_type = "iio_device";
-> > > >> 			#io-channel-cells = <1>;
-> > > >> 		
-> > > >> 		};
-> > > >> 	
-> > > >> 	};
-> > > >> 
-> > > >> and in the driver probe function:
-> > > >> 	if (parent->of_node)
-> > > >> 	
-> > > >> 		iio_dev->dev.of_node = of_find_node_by_type(parent-
-> > >of_node,
-> > > >> 
-> > > >> "iio_device");
-> > > >> 
-> > > >> Another option would be to use of_find_compatible_node() and
-> > > >> something
-> > > >> like compatible = "iio-device";
-> > > >> in the iio-device node.
-> > > > 
-> > > > A device node is defined as a node having compatible property. Other
-> > > > nodes should be seen as helper nodes, which do not represent devices
-> > > > (although they all have struct device_node in Linux).
-> > > > 
-> > > > Also, AFAIK, device_type is a deprecated property used by some legacy
-> > > > PowerPC machines and for current machines only compatible should be
-> > > > used.
-> > > > 
-> > > > So I guess the approach with compatible would be appropriate here.
-> > > > 
-> > > > However for physical devices providing only a single IIO device it
-> > > > might> 
-> > > > be better to allow simpler specification, like:
-> > > >  	max1139-iio: voltage-sensor@35 {
-> > > >  	
-> > > >  		compatible = "maxim,max1139", "iio_device";
-> > > 
-> > > I don't think this makes a lot of sense. First of all iio_device an
-> > > artificial Linux term, while the device tree should describe the
-> > > hardware.
-> > 
-> > Well, if you look at an iio_device as a subdevice of a physical device 
-> > then it should make a bit more sense. (See nodes of GPIO/pinctrl pin banks 
-> > or regulators of a PMIC chip.)
-> > 
-> > > Secondly there is no generic iio driver which could match on
-> > > a node with a "iio_device" compability string and stuff would just
-> > > work. I mean we don't do
-> > > 
-> > > compatible = "atmel,at91sam9260-i2c", "i2c-master";
-> > > 
-> > > or similar either.
-> > 
-> > Right. We don't need the other compatible for simple devices with single 
-> > subdevice. This is implied by the driver registering a single IIO driver 
-> > using the node of physical device.
-> > 
-> > > >  		reg = <0x35>;
-> > > >  		vcc-supply = <&reg_3p3v>;
-> > > >  		vref-supply = <&reg_3p3v>;
-> > > > 		
-> > > > 		device_type = "iio_device";
-> > 
-> > Also we don't need this device_type. Basically we don't need to specify 
-> > whether given node is an iio_device or an iio_trigger. It's up to the 
-> > driver to register the node as a device or a trigger by setting dev.of_node 
-> > field properly.
-> > 
-> > So my suggestion would be to make the bindings as following. For single 
-> > subdevice:
-> > 
-> > 	voltage-sensor@35 {
-> > 		compatible = "maxim,max1139";
-> > 		reg = <0x35>;
-> > 		vcc-supply = <&reg_3p3v>;
-> > 		vref-supply = <&reg_3p3v>;
-> > 		#io-channel-cells = <1>;
-> > 	};
-> > 
-> > For multiple subdevices:
-> > 
-> > 	voltage-sensor@35 {
-> > 		compatible = "maxim,max1139";
-> > 		reg = <0x35>;
-> > 		vcc-supply = <&reg_3p3v>;
-> > 		vref-supply = <&reg_3p3v>;
-> > 
-> > 		subdevice1 {
-> > 			/* Subdevice specific data */
-> > 			#io-channel-cells = <1>;
-> > 		};
-> > 
-> > 		subdevice2 {
-> > 			/* Subdevice specific data */
-> > 			#io-channel-cells = <1>;
-> > 		}
-> 
-> Please provide an example how to parse that. Obviously now I can not look for
-> "compatible" anymore. Sure, I can use of_get_child_by_name, but that means
-> the sub-device names would have to be well defined. Or I could use
-> of_find_node_by_name, but then I would need something like 
-> 
->  	voltage-sensor@35 {
->  		compatible = "maxim,max1139";
-> 		iio-device;
->  		reg = <0x35>;
->  		vcc-supply = <&reg_3p3v>;
->  		vref-supply = <&reg_3p3v>;
->  		#io-channel-cells = <1>;
->  	};
+The adt7410 hwmon driver is feature wise more or less on par with the IIO
+driver. So we can finally remove the IIO driver.
 
-Never mind. My brain is really too flu-foggy to do anything.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/Kconfig   |    7 -
+ drivers/staging/iio/adc/Makefile  |    1 -
+ drivers/staging/iio/adc/adt7410.c | 1102 -------------------------------------
+ 3 files changed, 1110 deletions(-)
+ delete mode 100644 drivers/staging/iio/adc/adt7410.c
 
-Looks like I can use of_find_node_by_name if subdevice1 and subdevice2 have well defined
-names such as iio-device or iio-trigger. It might even be possible to encode
-multiple iio subdevices in names such as iio-device@0 and iio-device@1. But that
-would (or not ?) mean that the names should be something like the following for
-consistency.
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index fb8c239..029ae54 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -90,13 +90,6 @@ config AD7192
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7192.
+ 
+-config ADT7410
+-	tristate "Analog Devices ADT7310/ADT7410 temperature sensor driver"
+-	depends on I2C || SPI_MASTER
+-	help
+-	  Say yes here to build support for Analog Devices ADT7310/ADT7410
+-	  temperature sensors.
+-
+ config AD7280
+ 	tristate "Analog Devices AD7280A Lithium Ion Battery Monitoring System"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index d285596..3e9fb14 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -16,7 +16,6 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
+-obj-$(CONFIG_ADT7410) += adt7410.o
+ obj-$(CONFIG_AD7280) += ad7280a.o
+ obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+ obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
+diff --git a/drivers/staging/iio/adc/adt7410.c b/drivers/staging/iio/adc/adt7410.c
+deleted file mode 100644
+index 35455e1..0000000
+--- a/drivers/staging/iio/adc/adt7410.c
++++ /dev/null
+@@ -1,1102 +0,0 @@
+-/*
+- * ADT7410 digital temperature sensor driver supporting ADT7310/ADT7410
+- *
+- * Copyright 2010 Analog Devices Inc.
+- *
+- * Licensed under the GPL-2 or later.
+- */
+-
+-#include <linux/interrupt.h>
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+-#include <linux/i2c.h>
+-#include <linux/spi/spi.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+-
+-/*
+- * ADT7410 registers definition
+- */
+-
+-#define ADT7410_TEMPERATURE		0
+-#define ADT7410_STATUS			2
+-#define ADT7410_CONFIG			3
+-#define ADT7410_T_ALARM_HIGH		4
+-#define ADT7410_T_ALARM_LOW		6
+-#define ADT7410_T_CRIT			8
+-#define ADT7410_T_HYST			0xA
+-#define ADT7410_ID			0xB
+-#define ADT7410_RESET			0x2F
+-
+-/*
+- * ADT7310 registers definition
+- */
+-
+-#define ADT7310_STATUS			0
+-#define ADT7310_CONFIG			1
+-#define ADT7310_TEMPERATURE		2
+-#define ADT7310_ID			3
+-#define ADT7310_T_CRIT			4
+-#define ADT7310_T_HYST			5
+-#define ADT7310_T_ALARM_HIGH		6
+-#define ADT7310_T_ALARM_LOW		7
+-
+-/*
+- * ADT7410 status
+- */
+-#define ADT7410_STAT_T_LOW		0x10
+-#define ADT7410_STAT_T_HIGH		0x20
+-#define ADT7410_STAT_T_CRIT		0x40
+-#define ADT7410_STAT_NOT_RDY		0x80
+-
+-/*
+- * ADT7410 config
+- */
+-#define ADT7410_FAULT_QUEUE_MASK	0x3
+-#define ADT7410_CT_POLARITY		0x4
+-#define ADT7410_INT_POLARITY		0x8
+-#define ADT7410_EVENT_MODE		0x10
+-#define ADT7410_MODE_MASK		0x60
+-#define ADT7410_ONESHOT			0x20
+-#define ADT7410_SPS			0x40
+-#define ADT7410_PD			0x60
+-#define ADT7410_RESOLUTION		0x80
+-
+-/*
+- * ADT7410 masks
+- */
+-#define ADT7410_T16_VALUE_SIGN			0x8000
+-#define ADT7410_T16_VALUE_FLOAT_OFFSET		7
+-#define ADT7410_T16_VALUE_FLOAT_MASK		0x7F
+-#define ADT7410_T13_VALUE_SIGN			0x1000
+-#define ADT7410_T13_VALUE_OFFSET		3
+-#define ADT7410_T13_VALUE_FLOAT_OFFSET		4
+-#define ADT7410_T13_VALUE_FLOAT_MASK		0xF
+-#define ADT7410_T_HYST_MASK			0xF
+-#define ADT7410_DEVICE_ID_MASK			0xF
+-#define ADT7410_MANUFACTORY_ID_MASK		0xF0
+-#define ADT7410_MANUFACTORY_ID_OFFSET		4
+-
+-
+-#define ADT7310_CMD_REG_MASK			0x28
+-#define ADT7310_CMD_REG_OFFSET			3
+-#define ADT7310_CMD_READ			0x40
+-#define ADT7310_CMD_CON_READ			0x4
+-
+-#define ADT7410_IRQS				2
+-
+-/*
+- * struct adt7410_chip_info - chip specifc information
+- */
+-
+-struct adt7410_chip_info;
+-
+-struct adt7410_ops {
+-	int (*read_word)(struct adt7410_chip_info *, u8 reg, u16 *data);
+-	int (*write_word)(struct adt7410_chip_info *, u8 reg, u16 data);
+-	int (*read_byte)(struct adt7410_chip_info *, u8 reg, u8 *data);
+-	int (*write_byte)(struct adt7410_chip_info *, u8 reg, u8 data);
+-};
+-
+-struct adt7410_chip_info {
+-	struct device *dev;
+-	u8  config;
+-
+-	const struct adt7410_ops *ops;
+-};
+-
+-static int adt7410_read_word(struct adt7410_chip_info *chip, u8 reg, u16 *data)
+-{
+-	return chip->ops->read_word(chip, reg, data);
+-}
+-
+-static int adt7410_write_word(struct adt7410_chip_info *chip, u8 reg, u16 data)
+-{
+-	return chip->ops->write_word(chip, reg, data);
+-}
+-
+-static int adt7410_read_byte(struct adt7410_chip_info *chip, u8 reg, u8 *data)
+-{
+-	return chip->ops->read_byte(chip, reg, data);
+-}
+-
+-static int adt7410_write_byte(struct adt7410_chip_info *chip, u8 reg, u8 data)
+-{
+-	return chip->ops->write_byte(chip, reg, data);
+-}
+-
+-static ssize_t adt7410_show_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u8 config;
+-
+-	config = chip->config & ADT7410_MODE_MASK;
+-
+-	switch (config) {
+-	case ADT7410_PD:
+-		return sprintf(buf, "power-down\n");
+-	case ADT7410_ONESHOT:
+-		return sprintf(buf, "one-shot\n");
+-	case ADT7410_SPS:
+-		return sprintf(buf, "sps\n");
+-	default:
+-		return sprintf(buf, "full\n");
+-	}
+-}
+-
+-static ssize_t adt7410_store_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u16 config;
+-	int ret;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	config = chip->config & (~ADT7410_MODE_MASK);
+-	if (strcmp(buf, "power-down"))
+-		config |= ADT7410_PD;
+-	else if (strcmp(buf, "one-shot"))
+-		config |= ADT7410_ONESHOT;
+-	else if (strcmp(buf, "sps"))
+-		config |= ADT7410_SPS;
+-
+-	ret = adt7410_write_byte(chip, ADT7410_CONFIG, config);
+-	if (ret)
+-		return -EIO;
+-
+-	chip->config = config;
+-
+-	return len;
+-}
+-
+-static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
+-		adt7410_show_mode,
+-		adt7410_store_mode,
+-		0);
+-
+-static ssize_t adt7410_show_available_modes(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return sprintf(buf, "full\none-shot\nsps\npower-down\n");
+-}
+-
+-static IIO_DEVICE_ATTR(available_modes, S_IRUGO, adt7410_show_available_modes, NULL, 0);
+-
+-static ssize_t adt7410_show_resolution(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	int ret;
+-	int bits;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	if (chip->config & ADT7410_RESOLUTION)
+-		bits = 16;
+-	else
+-		bits = 13;
+-
+-	return sprintf(buf, "%d bits\n", bits);
+-}
+-
+-static ssize_t adt7410_store_resolution(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	u16 config;
+-	int ret;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-	if (ret)
+-		return -EINVAL;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	config = chip->config & (~ADT7410_RESOLUTION);
+-	if (data)
+-		config |= ADT7410_RESOLUTION;
+-
+-	ret = adt7410_write_byte(chip, ADT7410_CONFIG, config);
+-	if (ret)
+-		return -EIO;
+-
+-	chip->config = config;
+-
+-	return len;
+-}
+-
+-static IIO_DEVICE_ATTR(resolution, S_IRUGO | S_IWUSR,
+-		adt7410_show_resolution,
+-		adt7410_store_resolution,
+-		0);
+-
+-static ssize_t adt7410_show_id(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u8 id;
+-	int ret;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_ID, &id);
+-	if (ret)
+-		return -EIO;
+-
+-	return sprintf(buf, "device id: 0x%x\nmanufactory id: 0x%x\n",
+-			id & ADT7410_DEVICE_ID_MASK,
+-			(id & ADT7410_MANUFACTORY_ID_MASK) >> ADT7410_MANUFACTORY_ID_OFFSET);
+-}
+-
+-static IIO_DEVICE_ATTR(id, S_IRUGO | S_IWUSR,
+-		adt7410_show_id,
+-		NULL,
+-		0);
+-
+-static ssize_t adt7410_convert_temperature(struct adt7410_chip_info *chip,
+-		u16 data, char *buf)
+-{
+-	char sign = ' ';
+-
+-	if (!(chip->config & ADT7410_RESOLUTION))
+-		data &= ~0x7;
+-
+-	if (data & ADT7410_T16_VALUE_SIGN) {
+-		/* convert supplement to positive value */
+-		data = (u16)((ADT7410_T16_VALUE_SIGN << 1) - (u32)data);
+-		sign = '-';
+-	}
+-	return sprintf(buf, "%c%d.%.7d\n", sign,
+-			(data >> ADT7410_T16_VALUE_FLOAT_OFFSET),
+-			(data & ADT7410_T16_VALUE_FLOAT_MASK) * 78125);
+-}
+-
+-static ssize_t adt7410_show_value(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u8 status;
+-	u16 data;
+-	int ret, i = 0;
+-
+-	do {
+-		ret = adt7410_read_byte(chip, ADT7410_STATUS, &status);
+-		if (ret)
+-			return -EIO;
+-		i++;
+-		if (i == 10000)
+-			return -EIO;
+-	} while (status & ADT7410_STAT_NOT_RDY);
+-
+-	ret = adt7410_read_word(chip, ADT7410_TEMPERATURE, &data);
+-	if (ret)
+-		return -EIO;
+-
+-	return adt7410_convert_temperature(chip, data, buf);
+-}
+-
+-static IIO_DEVICE_ATTR(value, S_IRUGO, adt7410_show_value, NULL, 0);
+-
+-static struct attribute *adt7410_attributes[] = {
+-	&iio_dev_attr_available_modes.dev_attr.attr,
+-	&iio_dev_attr_mode.dev_attr.attr,
+-	&iio_dev_attr_resolution.dev_attr.attr,
+-	&iio_dev_attr_id.dev_attr.attr,
+-	&iio_dev_attr_value.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group adt7410_attribute_group = {
+-	.attrs = adt7410_attributes,
+-};
+-
+-static irqreturn_t adt7410_event_handler(int irq, void *private)
+-{
+-	struct iio_dev *indio_dev = private;
+-	struct adt7410_chip_info *chip = iio_priv(indio_dev);
+-	s64 timestamp = iio_get_time_ns();
+-	u8 status;
+-
+-	if (adt7410_read_byte(chip, ADT7410_STATUS, &status))
+-		return IRQ_HANDLED;
+-
+-	if (status & ADT7410_STAT_T_HIGH)
+-		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+-						    IIO_EV_TYPE_THRESH,
+-						    IIO_EV_DIR_RISING),
+-			       timestamp);
+-	if (status & ADT7410_STAT_T_LOW)
+-		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+-						    IIO_EV_TYPE_THRESH,
+-						    IIO_EV_DIR_FALLING),
+-			       timestamp);
+-	if (status & ADT7410_STAT_T_CRIT)
+-		iio_push_event(indio_dev,
+-			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+-						    IIO_EV_TYPE_THRESH,
+-						    IIO_EV_DIR_RISING),
+-			       timestamp);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static ssize_t adt7410_show_event_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	int ret;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	if (chip->config & ADT7410_EVENT_MODE)
+-		return sprintf(buf, "interrupt\n");
+-	else
+-		return sprintf(buf, "comparator\n");
+-}
+-
+-static ssize_t adt7410_set_event_mode(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u16 config;
+-	int ret;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	config = chip->config &= ~ADT7410_EVENT_MODE;
+-	if (strcmp(buf, "comparator") != 0)
+-		config |= ADT7410_EVENT_MODE;
+-
+-	ret = adt7410_write_byte(chip, ADT7410_CONFIG, config);
+-	if (ret)
+-		return -EIO;
+-
+-	chip->config = config;
+-
+-	return ret;
+-}
+-
+-static ssize_t adt7410_show_available_event_modes(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return sprintf(buf, "comparator\ninterrupt\n");
+-}
+-
+-static ssize_t adt7410_show_fault_queue(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	int ret;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	return sprintf(buf, "%d\n", chip->config & ADT7410_FAULT_QUEUE_MASK);
+-}
+-
+-static ssize_t adt7410_set_fault_queue(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	unsigned long data;
+-	int ret;
+-	u8 config;
+-
+-	ret = strict_strtoul(buf, 10, &data);
+-	if (ret || data > 3)
+-		return -EINVAL;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret)
+-		return -EIO;
+-
+-	config = chip->config & ~ADT7410_FAULT_QUEUE_MASK;
+-	config |= data;
+-	ret = adt7410_write_byte(chip, ADT7410_CONFIG, config);
+-	if (ret)
+-		return -EIO;
+-
+-	chip->config = config;
+-
+-	return ret;
+-}
+-
+-static inline ssize_t adt7410_show_t_bound(struct device *dev,
+-		struct device_attribute *attr,
+-		u8 bound_reg,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	u16 data;
+-	int ret;
+-
+-	ret = adt7410_read_word(chip, bound_reg, &data);
+-	if (ret)
+-		return -EIO;
+-
+-	return adt7410_convert_temperature(chip, data, buf);
+-}
+-
+-static inline ssize_t adt7410_set_t_bound(struct device *dev,
+-		struct device_attribute *attr,
+-		u8 bound_reg,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	long tmp1, tmp2;
+-	u16 data;
+-	char *pos;
+-	int ret;
+-
+-	pos = strchr(buf, '.');
+-
+-	ret = strict_strtol(buf, 10, &tmp1);
+-
+-	if (ret || tmp1 > 127 || tmp1 < -128)
+-		return -EINVAL;
+-
+-	if (pos) {
+-		len = strlen(pos);
+-
+-		if (chip->config & ADT7410_RESOLUTION) {
+-			if (len > ADT7410_T16_VALUE_FLOAT_OFFSET)
+-				len = ADT7410_T16_VALUE_FLOAT_OFFSET;
+-			pos[len] = 0;
+-			ret = strict_strtol(pos, 10, &tmp2);
+-
+-			if (!ret)
+-				tmp2 = (tmp2 / 78125) * 78125;
+-		} else {
+-			if (len > ADT7410_T13_VALUE_FLOAT_OFFSET)
+-				len = ADT7410_T13_VALUE_FLOAT_OFFSET;
+-			pos[len] = 0;
+-			ret = strict_strtol(pos, 10, &tmp2);
+-
+-			if (!ret)
+-				tmp2 = (tmp2 / 625) * 625;
+-		}
+-	}
+-
+-	if (tmp1 < 0)
+-		data = (u16)(-tmp1);
+-	else
+-		data = (u16)tmp1;
+-
+-	if (chip->config & ADT7410_RESOLUTION) {
+-		data = (data << ADT7410_T16_VALUE_FLOAT_OFFSET) |
+-			(tmp2 & ADT7410_T16_VALUE_FLOAT_MASK);
+-
+-		if (tmp1 < 0)
+-			/* convert positive value to supplyment */
+-			data = (u16)((ADT7410_T16_VALUE_SIGN << 1) - (u32)data);
+-	} else {
+-		data = (data << ADT7410_T13_VALUE_FLOAT_OFFSET) |
+-			(tmp2 & ADT7410_T13_VALUE_FLOAT_MASK);
+-
+-		if (tmp1 < 0)
+-			/* convert positive value to supplyment */
+-			data = (ADT7410_T13_VALUE_SIGN << 1) - data;
+-		data <<= ADT7410_T13_VALUE_OFFSET;
+-	}
+-
+-	ret = adt7410_write_word(chip, bound_reg, data);
+-	if (ret)
+-		return -EIO;
+-
+-	return ret;
+-}
+-
+-static ssize_t adt7410_show_t_alarm_high(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return adt7410_show_t_bound(dev, attr,
+-			ADT7410_T_ALARM_HIGH, buf);
+-}
+-
+-static inline ssize_t adt7410_set_t_alarm_high(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return adt7410_set_t_bound(dev, attr,
+-			ADT7410_T_ALARM_HIGH, buf, len);
+-}
+-
+-static ssize_t adt7410_show_t_alarm_low(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return adt7410_show_t_bound(dev, attr,
+-			ADT7410_T_ALARM_LOW, buf);
+-}
+-
+-static inline ssize_t adt7410_set_t_alarm_low(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return adt7410_set_t_bound(dev, attr,
+-			ADT7410_T_ALARM_LOW, buf, len);
+-}
+-
+-static ssize_t adt7410_show_t_crit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	return adt7410_show_t_bound(dev, attr,
+-			ADT7410_T_CRIT, buf);
+-}
+-
+-static inline ssize_t adt7410_set_t_crit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	return adt7410_set_t_bound(dev, attr,
+-			ADT7410_T_CRIT, buf, len);
+-}
+-
+-static ssize_t adt7410_show_t_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	int ret;
+-	u8 t_hyst;
+-
+-	ret = adt7410_read_byte(chip, ADT7410_T_HYST, &t_hyst);
+-	if (ret)
+-		return -EIO;
+-
+-	return sprintf(buf, "%d\n", t_hyst & ADT7410_T_HYST_MASK);
+-}
+-
+-static inline ssize_t adt7410_set_t_hyst(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+-	struct adt7410_chip_info *chip = iio_priv(dev_info);
+-	int ret;
+-	unsigned long data;
+-	u8 t_hyst;
+-
+-	ret = strict_strtol(buf, 10, &data);
+-
+-	if (ret || data > ADT7410_T_HYST_MASK)
+-		return -EINVAL;
+-
+-	t_hyst = (u8)data;
+-
+-	ret = adt7410_write_byte(chip, ADT7410_T_HYST, t_hyst);
+-	if (ret)
+-		return -EIO;
+-
+-	return ret;
+-}
+-
+-static IIO_DEVICE_ATTR(event_mode,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_event_mode, adt7410_set_event_mode, 0);
+-static IIO_DEVICE_ATTR(available_event_modes,
+-		       S_IRUGO,
+-		       adt7410_show_available_event_modes, NULL, 0);
+-static IIO_DEVICE_ATTR(fault_queue,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_fault_queue, adt7410_set_fault_queue, 0);
+-static IIO_DEVICE_ATTR(t_alarm_high,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_t_alarm_high, adt7410_set_t_alarm_high, 0);
+-static IIO_DEVICE_ATTR(t_alarm_low,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_t_alarm_low, adt7410_set_t_alarm_low, 0);
+-static IIO_DEVICE_ATTR(t_crit,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_t_crit, adt7410_set_t_crit, 0);
+-static IIO_DEVICE_ATTR(t_hyst,
+-		       S_IRUGO | S_IWUSR,
+-		       adt7410_show_t_hyst, adt7410_set_t_hyst, 0);
+-
+-static struct attribute *adt7410_event_int_attributes[] = {
+-	&iio_dev_attr_event_mode.dev_attr.attr,
+-	&iio_dev_attr_available_event_modes.dev_attr.attr,
+-	&iio_dev_attr_fault_queue.dev_attr.attr,
+-	&iio_dev_attr_t_alarm_high.dev_attr.attr,
+-	&iio_dev_attr_t_alarm_low.dev_attr.attr,
+-	&iio_dev_attr_t_crit.dev_attr.attr,
+-	&iio_dev_attr_t_hyst.dev_attr.attr,
+-	NULL,
+-};
+-
+-static struct attribute_group adt7410_event_attribute_group = {
+-	.attrs = adt7410_event_int_attributes,
+-	.name = "events",
+-};
+-
+-static const struct iio_info adt7410_info = {
+-	.attrs = &adt7410_attribute_group,
+-	.event_attrs = &adt7410_event_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-/*
+- * device probe and remove
+- */
+-
+-static int adt7410_probe(struct device *dev, int irq,
+-	const char *name, const struct adt7410_ops *ops)
+-{
+-	unsigned long *adt7410_platform_data = dev->platform_data;
+-	unsigned long local_pdata[] = {0, 0};
+-	struct adt7410_chip_info *chip;
+-	struct iio_dev *indio_dev;
+-	int ret = 0;
+-
+-	indio_dev = iio_device_alloc(sizeof(*chip));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	chip = iio_priv(indio_dev);
+-	/* this is only used for device removal purposes */
+-	dev_set_drvdata(dev, indio_dev);
+-
+-	chip->dev = dev;
+-	chip->ops = ops;
+-
+-	indio_dev->name = name;
+-	indio_dev->dev.parent = dev;
+-	indio_dev->info = &adt7410_info;
+-	indio_dev->modes = INDIO_DIRECT_MODE;
+-
+-	if (!adt7410_platform_data)
+-		adt7410_platform_data = local_pdata;
+-
+-	/* CT critcal temperature event. line 0 */
+-	if (irq) {
+-		ret = request_threaded_irq(irq,
+-					   NULL,
+-					   &adt7410_event_handler,
+-					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+-					   name,
+-					   indio_dev);
+-		if (ret)
+-			goto error_free_dev;
+-	}
+-
+-	/* INT bound temperature alarm event. line 1 */
+-	if (adt7410_platform_data[0]) {
+-		ret = request_threaded_irq(adt7410_platform_data[0],
+-					   NULL,
+-					   &adt7410_event_handler,
+-					   adt7410_platform_data[1] |
+-					   IRQF_ONESHOT,
+-					   name,
+-					   indio_dev);
+-		if (ret)
+-			goto error_unreg_ct_irq;
+-	}
+-
+-	ret = adt7410_read_byte(chip, ADT7410_CONFIG, &chip->config);
+-	if (ret) {
+-		ret = -EIO;
+-		goto error_unreg_int_irq;
+-	}
+-
+-	chip->config |= ADT7410_RESOLUTION;
+-
+-	if (irq && adt7410_platform_data[0]) {
+-
+-		/* set irq polarity low level */
+-		chip->config &= ~ADT7410_CT_POLARITY;
+-
+-		if (adt7410_platform_data[1] & IRQF_TRIGGER_HIGH)
+-			chip->config |= ADT7410_INT_POLARITY;
+-		else
+-			chip->config &= ~ADT7410_INT_POLARITY;
+-	}
+-
+-	ret = adt7410_write_byte(chip, ADT7410_CONFIG, chip->config);
+-	if (ret) {
+-		ret = -EIO;
+-		goto error_unreg_int_irq;
+-	}
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_unreg_int_irq;
+-
+-	dev_info(dev, "%s temperature sensor registered.\n",
+-			 name);
+-
+-	return 0;
+-
+-error_unreg_int_irq:
+-	free_irq(adt7410_platform_data[0], indio_dev);
+-error_unreg_ct_irq:
+-	free_irq(irq, indio_dev);
+-error_free_dev:
+-	iio_device_free(indio_dev);
+-error_ret:
+-	return ret;
+-}
+-
+-static int adt7410_remove(struct device *dev, int irq)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	unsigned long *adt7410_platform_data = dev->platform_data;
+-
+-	iio_device_unregister(indio_dev);
+-	if (adt7410_platform_data[0])
+-		free_irq(adt7410_platform_data[0], indio_dev);
+-	if (irq)
+-		free_irq(irq, indio_dev);
+-	iio_device_free(indio_dev);
+-
+-	return 0;
+-}
+-
+-#if IS_ENABLED(CONFIG_I2C)
+-
+-static int adt7410_i2c_read_word(struct adt7410_chip_info *chip, u8 reg,
+-	u16 *data)
+-{
+-	struct i2c_client *client = to_i2c_client(chip->dev);
+-	int ret = 0;
+-
+-	ret = i2c_smbus_read_word_data(client, reg);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "I2C read error\n");
+-		return ret;
+-	}
+-
+-	*data = swab16((u16)ret);
+-
+-	return 0;
+-}
+-
+-static int adt7410_i2c_write_word(struct adt7410_chip_info *chip, u8 reg,
+-	u16 data)
+-{
+-	struct i2c_client *client = to_i2c_client(chip->dev);
+-	int ret = 0;
+-
+-	ret = i2c_smbus_write_word_data(client, reg, swab16(data));
+-	if (ret < 0)
+-		dev_err(&client->dev, "I2C write error\n");
+-
+-	return ret;
+-}
+-
+-static int adt7410_i2c_read_byte(struct adt7410_chip_info *chip, u8 reg,
+-	u8 *data)
+-{
+-	struct i2c_client *client = to_i2c_client(chip->dev);
+-	int ret = 0;
+-
+-	ret = i2c_smbus_read_byte_data(client, reg);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "I2C read error\n");
+-		return ret;
+-	}
+-
+-	*data = (u8)ret;
+-
+-	return 0;
+-}
+-
+-static int adt7410_i2c_write_byte(struct adt7410_chip_info *chip, u8 reg,
+-	u8 data)
+-{
+-	struct i2c_client *client = to_i2c_client(chip->dev);
+-	int ret = 0;
+-
+-	ret = i2c_smbus_write_byte_data(client, reg, data);
+-	if (ret < 0)
+-		dev_err(&client->dev, "I2C write error\n");
+-
+-	return ret;
+-}
+-
+-static const struct adt7410_ops adt7410_i2c_ops = {
+-	.read_word = adt7410_i2c_read_word,
+-	.write_word = adt7410_i2c_write_word,
+-	.read_byte = adt7410_i2c_read_byte,
+-	.write_byte = adt7410_i2c_write_byte,
+-};
+-
+-static int adt7410_i2c_probe(struct i2c_client *client,
+-	const struct i2c_device_id *id)
+-{
+-	return adt7410_probe(&client->dev, client->irq, id->name,
+-		&adt7410_i2c_ops);
+-}
+-
+-static int adt7410_i2c_remove(struct i2c_client *client)
+-{
+-	return adt7410_remove(&client->dev, client->irq);
+-}
+-
+-static const struct i2c_device_id adt7410_id[] = {
+-	{ "adt7410", 0 },
+-	{}
+-};
+-
+-MODULE_DEVICE_TABLE(i2c, adt7410_id);
+-
+-static struct i2c_driver adt7410_driver = {
+-	.driver = {
+-		.name = "adt7410",
+-	},
+-	.probe = adt7410_i2c_probe,
+-	.remove = adt7410_i2c_remove,
+-	.id_table = adt7410_id,
+-};
+-
+-static int __init adt7410_i2c_init(void)
+-{
+-	return i2c_add_driver(&adt7410_driver);
+-}
+-
+-static void __exit adt7410_i2c_exit(void)
+-{
+-	i2c_del_driver(&adt7410_driver);
+-}
+-
+-#else
+-
+-static int  __init adt7410_i2c_init(void) { return 0; };
+-static void __exit adt7410_i2c_exit(void) {};
+-
+-#endif
+-
+-#if IS_ENABLED(CONFIG_SPI_MASTER)
+-
+-static const u8 adt7371_reg_table[] = {
+-	[ADT7410_TEMPERATURE]   = ADT7310_TEMPERATURE,
+-	[ADT7410_STATUS]	= ADT7310_STATUS,
+-	[ADT7410_CONFIG]	= ADT7310_CONFIG,
+-	[ADT7410_T_ALARM_HIGH]	= ADT7310_T_ALARM_HIGH,
+-	[ADT7410_T_ALARM_LOW]	= ADT7310_T_ALARM_LOW,
+-	[ADT7410_T_CRIT]	= ADT7310_T_CRIT,
+-	[ADT7410_T_HYST]	= ADT7310_T_HYST,
+-	[ADT7410_ID]		= ADT7310_ID,
+-};
+-
+-#define AD7310_COMMAND(reg) (adt7371_reg_table[(reg)] << ADT7310_CMD_REG_OFFSET)
+-
+-static int adt7310_spi_read_word(struct adt7410_chip_info *chip,
+-	u8 reg, u16 *data)
+-{
+-	struct spi_device *spi = to_spi_device(chip->dev);
+-	u8 command = AD7310_COMMAND(reg);
+-	int ret = 0;
+-
+-	command |= ADT7310_CMD_READ;
+-	ret = spi_write(spi, &command, sizeof(command));
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI write command error\n");
+-		return ret;
+-	}
+-
+-	ret = spi_read(spi, (u8 *)data, sizeof(*data));
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI read word error\n");
+-		return ret;
+-	}
+-
+-	*data = be16_to_cpu(*data);
+-
+-	return 0;
+-}
+-
+-static int adt7310_spi_write_word(struct adt7410_chip_info *chip, u8 reg,
+-	u16 data)
+-{
+-	struct spi_device *spi = to_spi_device(chip->dev);
+-	u8 buf[3];
+-	int ret = 0;
+-
+-	buf[0] = AD7310_COMMAND(reg);
+-	buf[1] = (u8)(data >> 8);
+-	buf[2] = (u8)(data & 0xFF);
+-
+-	ret = spi_write(spi, buf, 3);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI write word error\n");
+-		return ret;
+-	}
+-
+-	return ret;
+-}
+-
+-static int adt7310_spi_read_byte(struct adt7410_chip_info *chip, u8 reg,
+-	u8 *data)
+-{
+-	struct spi_device *spi = to_spi_device(chip->dev);
+-	u8 command = AD7310_COMMAND(reg);
+-	int ret = 0;
+-
+-	command |= ADT7310_CMD_READ;
+-	ret = spi_write(spi, &command, sizeof(command));
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI write command error\n");
+-		return ret;
+-	}
+-
+-	ret = spi_read(spi, data, sizeof(*data));
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI read byte error\n");
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+-static int adt7310_spi_write_byte(struct adt7410_chip_info *chip, u8 reg,
+-	u8 data)
+-{
+-	struct spi_device *spi = to_spi_device(chip->dev);
+-	u8 buf[2];
+-	int ret = 0;
+-
+-	buf[0] = AD7310_COMMAND(reg);
+-	buf[1] = data;
+-
+-	ret = spi_write(spi, buf, 2);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "SPI write byte error\n");
+-		return ret;
+-	}
+-
+-	return ret;
+-}
+-
+-static const struct adt7410_ops adt7310_spi_ops = {
+-	.read_word = adt7310_spi_read_word,
+-	.write_word = adt7310_spi_write_word,
+-	.read_byte = adt7310_spi_read_byte,
+-	.write_byte = adt7310_spi_write_byte,
+-};
+-
+-static int adt7310_spi_probe(struct spi_device *spi)
+-{
+-	return adt7410_probe(&spi->dev, spi->irq,
+-		spi_get_device_id(spi)->name, &adt7310_spi_ops);
+-}
+-
+-static int adt7310_spi_remove(struct spi_device *spi)
+-{
+-	return adt7410_remove(&spi->dev, spi->irq);
+-}
+-
+-static const struct spi_device_id adt7310_id[] = {
+-	{ "adt7310", 0 },
+-	{}
+-};
+-MODULE_DEVICE_TABLE(spi, adt7310_id);
+-
+-static struct spi_driver adt7310_driver = {
+-	.driver = {
+-		.name = "adt7310",
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = adt7310_spi_probe,
+-	.remove = adt7310_spi_remove,
+-	.id_table = adt7310_id,
+-};
+-
+-static int __init adt7310_spi_init(void)
+-{
+-	return spi_register_driver(&adt7310_driver);
+-}
+-
+-static void adt7310_spi_exit(void)
+-{
+-	spi_unregister_driver(&adt7310_driver);
+-}
+-
+-#else
+-
+-static int __init adt7310_spi_init(void) { return 0; };
+-static void adt7310_spi_exit(void) {};
+-
+-#endif
+-
+-static int __init adt7410_init(void)
+-{
+-	int ret;
+-
+-	ret = adt7310_spi_init();
+-	if (ret)
+-		return ret;
+-
+-	ret = adt7410_i2c_init();
+-	if (ret)
+-		adt7310_spi_exit();
+-
+-	return ret;
+-}
+-module_init(adt7410_init);
+-
+-static void __exit adt7410_exit(void)
+-{
+-	adt7410_i2c_exit();
+-	adt7310_spi_exit();
+-}
+-module_exit(adt7410_exit);
+-
+-MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
+-MODULE_DESCRIPTION("Analog Devices ADT7310/ADT7410 digital temperature sensor driver");
+-MODULE_LICENSE("GPL v2");
+-- 
+1.8.0
 
-	iio-device@35 {
-		compatible = "maxim,max1139";
-		reg = <0x35>;
-		vcc-supply = <&reg_3p3v>;
-		vref-supply = <&reg_3p3v>;
-		#io-channel-cells = <1>;
-	};
-
-For multiple subdevices:
-
-	voltage-sensor@35 {
-		compatible = "maxim,max1139";
-		reg = <0x35>;
-		vcc-supply = <&reg_3p3v>;
-		vref-supply = <&reg_3p3v>;
-
-		iio-device {
-			/* Subdevice specific data */
-			#io-channel-cells = <1>;
-		};
-
-		iio-trigger {
-			/* Subdevice specific data */
-			#io-channel-cells = <1>;
-		}
-
-Does that make sense ?
-
-Thanks,
-Guenter
