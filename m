@@ -1,54 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:47072 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753885Ab3BAMBU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2013 07:01:20 -0500
-Message-ID: <510BAEE6.2060600@metafoo.de>
-Date: Fri, 01 Feb 2013 13:02:46 +0100
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1028 "EHLO
+	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752006Ab3BOR1D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 12:27:03 -0500
+Message-ID: <511E7038.9010205@metafoo.de>
+Date: Fri, 15 Feb 2013 18:28:24 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-CC: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
-	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>,
-	Denis Ciocca <denis.ciocca@gmail.com>
-Subject: Re: [RFC] Driver for lis331dlh
-References: <1359719147-30231-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-In-Reply-To: <1359719147-30231-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Priyaranjan Das <priyaranjan456789@gmail.com>
+CC: Greg KH <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, mankad.maulik@gmail.com
+Subject: Re: Query related to MSR(Magnetic Stripe Reader) Device Driver
+References: <CAMNxYswRsYtRF3kXKR676TZMCUsZPvk0auYTxpGVS2mRLmS8xw@mail.gmail.com> <20130122163655.GA21090@kroah.com> <CAMNxYswbiH-fW6YVvtWEr1W+SWRBU6ELv1bVRfNawpwcy+PZsA@mail.gmail.com> <20130129133346.GA1505@kroah.com> <CAMNxYszZNTh69-y+5RFVC9c5kgcyPaVET7784OPsTarB0fWm5w@mail.gmail.com> <CAMNxYszE+qQv2vVw6DqNGuow+30K-=+S8TfgyNJwFeEN=EfEsA@mail.gmail.com>
+In-Reply-To: <CAMNxYszE+qQv2vVw6DqNGuow+30K-=+S8TfgyNJwFeEN=EfEsA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/01/2013 12:45 PM, Manuel Stahl wrote:
-> The following patch adds support for the ST Microelectronics lis331dlh accelerometer.
-> It is very similar to the lis3l02dq driver in staging (but updated to the current API)
-> and there is also a driver in misc supporting a larger range of these devices.
-> So sure, these should be merged, but I'm not sure how to do it properly.
+On 02/15/2013 12:18 PM, Priyaranjan Das wrote:
+> Hi Greg,
 > 
-
-Hi Manuel,
-
-We recently merged the generic ST Microelectronics accelerometer driver, which
-also has, as far as I can see, support for the lis331dlh.
-
-See http://www.spinics.net/lists/linux-iio/msg07608.html
-
-
-> Manuel Stahl (1):
->   iio: accel: Add driver for lis331dlh
+> On Thu, Jan 31, 2013 at 11:09 AM, Priyaranjan Das
+> <priyaranjan456789@gmail.com> wrote:
+>> Hi Greg,
+>>
+>> On Tue, Jan 29, 2013 at 7:03 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>>> On Mon, Jan 28, 2013 at 03:25:08PM +0530, Priyaranjan Das wrote:
+>>>> Hi Greg,
+>>>>
+>>>> On Tue, Jan 22, 2013 at 10:06 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>>>>> On Tue, Jan 22, 2013 at 03:02:32PM +0530, Priyaranjan Das wrote:
+>>>>>> Hi All,
+>>>>>>
+>>>>>> I am working on MSR(Magnetic Stripe Reader) for a product . I wish to
+>>>>>> know whether any MSR( Magnetic Stripe/card Reader) driver is available
+>>>>>> in the current source or not. I need this for reference. Could anyone
+>>>>>> please help me?
+>>>>>
+>>>>> Most of these types of devices that I have worked with always show up as
+>>>>> a keyboard device (ps/2 pass-through or a USB hid device.)  What type of
+>>>>> interface does your device present to the operating system?
+>>>>>
+>>>>
+>>>> The MSR will be a part of a SoC. It is  a memory mapped device hence
+>>>> there is no interface like USB.
+>>>
+>>> Ok, that's different.  But how will your driver want to communicate the
+>>> reader data to userspace?  That will probably determine where you want
+>>> to put it.
+>>>
+>>> I would recommend making it an input device and sending keystrokes that
+>>> you read from the card, so you can properly integrate into userspace
+>>> applications that are used to using a card reader.
+>>>
+>>>> MSR IP contains an ADC which the driver will read and interpret the
+>>>> data. I am planning to write a Driver for the same. Will this driver
+>>>> fall under drivers/mfd/* ?
+>>>
+>>> As per the above, I would think drivers/input/ wouldn't you?
+>>>
+>>> Hope this helps,
+>>>
+>>
+>> Thanks for your help!.
+>>
+>> Yes, you are right, it should be under drivers/input.
+>> I am trying to prepare the design right now.
+>>
+>>
 > 
->  drivers/iio/Kconfig                  |    1 +
->  drivers/iio/accel/Kconfig            |   16 ++
->  drivers/iio/accel/Makefile           |    5 +
->  drivers/iio/accel/lis331dlh_buffer.c |  132 +++++++++++
->  drivers/iio/accel/lis331dlh_core.c   |  429 ++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/lis331dlh_i2c.c    |  150 ++++++++++++
->  drivers/iio/accel/lis331dlh_spi.c    |  129 ++++++++++
->  include/linux/iio/accel/lis331dlh.h  |  243 +++++++++++++++++++
->  8 files changed, 1105 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/iio/accel/lis331dlh_buffer.c
->  create mode 100644 drivers/iio/accel/lis331dlh_core.c
->  create mode 100644 drivers/iio/accel/lis331dlh_i2c.c
->  create mode 100644 drivers/iio/accel/lis331dlh_spi.c
->  create mode 100644 include/linux/iio/accel/lis331dlh.h
+> The MSR IP can be also be used either as a general purpose ADC or in
+> Magnetic stripe card reader mode.The IP supports both the modes and
+> provides FIFO for storing ADC data.
 > 
+> I also got to know about IIO subsystem where  ADC drivers are
+> implemented. Our use-case will be to use either Magnetic Stripe reader
+> mode or general purpose ADC mode in a given configuration. Can I use
+> IIO subsystem for the Magnetic Stripe driver?
+
+Hi,
+
+Well for the ADC functionality it certainly makes sense to use the IIO
+framework. The magnetic stripe reader functionality should probably go into
+drivers/input. How to do this exactly depends a bit on how exactly the
+hardware works. A good idea is probably to use a mfd driver which
+instantiates both the input and the IIO driver and does some arbitration
+between them. If the magnetic stripe reader is a feature that's build on top
+of the ADC functionality you could use the IIO in-kernel API to do ADC
+conversions from your input driver. If the ADC and magnetic stripe reader
+mode are exclusive-or it probably makes sense to only instantiate one of
+them at a time from the MFD driver.
+
+- Lars
 
