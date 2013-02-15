@@ -1,44 +1,180 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-045.synserver.de ([212.40.185.45]:1074 "EHLO
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1117 "EHLO
 	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755615Ab3BOQ4C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:02 -0500
+	with ESMTP id S1754261Ab3BOQ4F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:05 -0500
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jean Delvare <khali@linux-fr.org>,
 	Guenter Roeck <linux@roeck-us.net>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
 	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/9] hwmon: (adt7410) Let suspend/resume depend on CONFIG_PM_SLEEP
-Date: Fri, 15 Feb 2013 17:57:11 +0100
-Message-Id: <1360947438-2550-2-git-send-email-lars@metafoo.de>
+Subject: [PATCH 6/9] hwmon: (adt7410) Don't re-read non-volatile registers
+Date: Fri, 15 Feb 2013 17:57:15 +0100
+Message-Id: <1360947438-2550-6-git-send-email-lars@metafoo.de>
 In-Reply-To: <1360947438-2550-1-git-send-email-lars@metafoo.de>
 References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Only build the suspend/resume code if CONFIG_PM_SLEEP is selected. Currently the
-code is built if CONFIG_PM is selected, but it will also be selected if only
-runtime PM support is built into the kernel.
+Currently each time the temperature register is read the driver also reads the
+threshold and hysteresis registers. This increases the amount of I2C traffic and
+time needed to read the temperature by a factor of ~5. Neither the threshold nor
+the hysteresis change on their own, so once we've read them, we should be able
+to just use the cached value of the registers. This patch modifies the code
+accordingly and only reads the threshold and hysteresis registers once during
+probe.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/hwmon/adt7410.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwmon/adt7410.c | 89 +++++++++++++++++++++++++++++++------------------
+ 1 file changed, 56 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
-index 4ccee4f..ae80815 100644
+index 99a7290..5de0376 100644
 --- a/drivers/hwmon/adt7410.c
 +++ b/drivers/hwmon/adt7410.c
-@@ -415,7 +415,7 @@ static const struct i2c_device_id adt7410_ids[] = {
- };
- MODULE_DEVICE_TABLE(i2c, adt7410_ids);
+@@ -119,45 +119,31 @@ static int adt7410_temp_ready(struct i2c_client *client)
+ 	return -ETIMEDOUT;
+ }
  
--#ifdef CONFIG_PM
-+#ifdef CONFIG_PM_SLEEP
- static int adt7410_suspend(struct device *dev)
+-static struct adt7410_data *adt7410_update_device(struct device *dev)
++static int adt7410_update_temp(struct device *dev)
  {
- 	int ret;
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 	struct adt7410_data *data = i2c_get_clientdata(client);
+-	struct adt7410_data *ret = data;
++	int ret = 0;
++
+ 	mutex_lock(&data->update_lock);
+ 
+ 	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+ 	    || !data->valid) {
+-		int i, status;
+ 
+ 		dev_dbg(&client->dev, "Starting update\n");
+ 
+-		status = adt7410_temp_ready(client); /* check for new value */
+-		if (unlikely(status)) {
+-			ret = ERR_PTR(status);
++		ret = adt7410_temp_ready(client); /* check for new value */
++		if (ret)
+ 			goto abort;
+-		}
+-		for (i = 0; i < ARRAY_SIZE(data->temp); i++) {
+-			status = i2c_smbus_read_word_swapped(client,
+-							ADT7410_REG_TEMP[i]);
+-			if (unlikely(status < 0)) {
+-				dev_dbg(dev,
+-					"Failed to read value: reg %d, error %d\n",
+-					ADT7410_REG_TEMP[i], status);
+-				ret = ERR_PTR(status);
+-				goto abort;
+-			}
+-			data->temp[i] = status;
+-		}
+-		status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
+-		if (unlikely(status < 0)) {
+-			dev_dbg(dev,
+-				"Failed to read value: reg %d, error %d\n",
+-				ADT7410_T_HYST, status);
+-			ret = ERR_PTR(status);
++
++		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[0]);
++		if (ret) {
++			dev_dbg(dev, "Failed to read value: reg %d, error %d\n",
++				ADT7410_REG_TEMP[0], ret);
+ 			goto abort;
+ 		}
+-		data->hyst = status;
++		data->temp[0] = ret;
++
+ 		data->last_updated = jiffies;
+ 		data->valid = true;
+ 	}
+@@ -167,6 +153,35 @@ abort:
+ 	return ret;
+ }
+ 
++static int adt7410_fill_cache(struct i2c_client *client)
++{
++	struct adt7410_data *data = i2c_get_clientdata(client);
++	int ret;
++	int i;
++
++	for (i = 1; i < 3; i++) {
++		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[i]);
++		if (ret) {
++			dev_dbg(&client->dev,
++				"Failed to read value: reg %d, error %d\n",
++				ADT7410_REG_TEMP[0], ret);
++			return ret;
++		}
++		data->temp[i] = ret;
++	}
++
++	ret = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
++	if (ret) {
++		dev_dbg(&client->dev,
++			"Failed to read value: hyst reg, error %d\n",
++			ret);
++		return ret;
++	}
++	data->hyst = ret;
++
++	return 0;
++}
++
+ static s16 ADT7410_TEMP_TO_REG(long temp)
+ {
+ 	return DIV_ROUND_CLOSEST(clamp_val(temp, ADT7410_TEMP_MIN,
+@@ -193,10 +208,16 @@ static ssize_t adt7410_show_temp(struct device *dev,
+ 				 struct device_attribute *da, char *buf)
+ {
+ 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+-	struct adt7410_data *data = adt7410_update_device(dev);
++	struct i2c_client *client = to_i2c_client(dev);
++	struct adt7410_data *data = i2c_get_clientdata(client);
+ 
+-	if (IS_ERR(data))
+-		return PTR_ERR(data);
++	if (attr->index == 0) {
++		int ret;
++
++		ret = adt7410_update_temp(dev);
++		if (ret)
++			return ret;
++	}
+ 
+ 	return sprintf(buf, "%d\n", ADT7410_REG_TO_TEMP(data,
+ 		       data->temp[attr->index]));
+@@ -232,13 +253,11 @@ static ssize_t adt7410_show_t_hyst(struct device *dev,
+ 				   char *buf)
+ {
+ 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+-	struct adt7410_data *data;
++	struct i2c_client *client = to_i2c_client(dev);
++	struct adt7410_data *data = i2c_get_clientdata(client);
+ 	int nr = attr->index;
+ 	int hyst;
+ 
+-	data = adt7410_update_device(dev);
+-	if (IS_ERR(data))
+-		return PTR_ERR(data);
+ 	hyst = (data->hyst & ADT7410_T_HYST_MASK) * 1000;
+ 
+ 	/*
+@@ -371,6 +390,10 @@ static int adt7410_probe(struct i2c_client *client,
+ 	}
+ 	dev_dbg(&client->dev, "Config %02x\n", data->config);
+ 
++	ret = adt7410_fill_cache(client);
++	if (ret)
++		goto exit_restore;
++
+ 	/* Register sysfs hooks */
+ 	ret = sysfs_create_group(&client->dev.kobj, &adt7410_group);
+ 	if (ret)
 -- 
 1.8.0
 
