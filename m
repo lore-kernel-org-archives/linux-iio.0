@@ -1,73 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:62536 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757515Ab3BWUSR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Feb 2013 15:18:17 -0500
-Date: Sat, 23 Feb 2013 12:18:53 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Jean Delvare <khali@linux-fr.org>,
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1081 "EHLO
+	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755637Ab3BOQ4C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:02 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] hwmon: (adt7410) Don't re-read non-volatile
- registers
-Message-ID: <20130223201853.GA11055@roeck-us.net>
-References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
- <51228D7A.8030608@gmx.de>
- <20130219010229.GA25124@roeck-us.net>
- <5123D4F5.5030001@gmx.de>
- <20130220012249.GA15948@roeck-us.net>
- <5128112C.4080909@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5128112C.4080909@gmx.de>
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/9] hwmon: (adt7410) Use the SIMPLE_DEV_PM_OPS helper macro
+Date: Fri, 15 Feb 2013 17:57:12 +0100
+Message-Id: <1360947438-2550-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1360947438-2550-1-git-send-email-lars@metafoo.de>
+References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Feb 23, 2013 at 01:45:32AM +0100, Hartmut Knaack wrote:
-> Guenter Roeck schrieb:
-> > On Tue, Feb 19, 2013 at 08:39:33PM +0100, Hartmut Knaack wrote:
-> >> Guenter Roeck schrieb:
-> >>> On Mon, Feb 18, 2013 at 09:22:18PM +0100, Hartmut Knaack wrote:
-> >>>> Lars-Peter Clausen schrieb:
-> >>>>> Currently each time the temperature register is read the driver also reads the
-> >>>>> threshold and hysteresis registers. This increases the amount of I2C traffic and
-> >>>>> time needed to read the temperature by a factor of ~5. Neither the threshold nor
-> >>>>> the hysteresis change on their own, so once we've read them, we should be able
-> >>>>> to just use the cached value of the registers. This patch modifies the code
-> >>>>> accordingly and only reads the threshold and hysteresis registers once during
-> >>>>> probe.
-> >>>> I have been thinking about this a lot, and I am concerned about data integrity. From what I know about I2C, there is no data integrity verification specified in the protocol. So, what the master sends is not necessarily what the slave receives (not to mention other devices on the bus, which could potentially mess around with the slaves, or even reset of the slave). Reading back just cached values makes it pretty hard to verify, if there are issues. I think it might be better to call a read-temperature function with a parameter that indicates, which temperature register is required.
-> >>> I am not concerned about that, unless there is a known issue with the chip
-> >>> and it is known to return bad data under some circumstances. I am doing the
-> >>> same in the PMBus drivers, since there are simply too many limit registers
-> >>> to read on some of the chips (there may literally be more than a hundred).
-> >>> That works fine most of the time; if it does not work, it is a chip problem,
-> >>> an i2c bus master problem, a hardware signal problem, or a combination of all.
-> >>> I actually think it is better if the problem is exposed by cached bad readings.
-> >> Could you please outline the last sentence? I'm having trouble to understand your intention with cached bad readings.
-> > Someone will actually notice it (hopefully while testing) and provide feedback.
-> > This gives a chance to fix the problem instead of having it linger around ...
-> > which would likely be the case if the problem is not persistent.
-> >
-> > Guenter
-> Well, think about a use case where you optically decouple your master and slave using PCA9600 (may it be using optical fibers to cover a big distance, or just to operate the slave in a hazardous environment), where the slave is powered from a different source. Now, if the slaves Vcc drops for a certain time, all its registers get reset (especially min, max and crit) - without the master noticing anything.
-> Therefor I would prefer something like the following solution, where unnecessary load on the bus gets avoided and the cached values get used, until they expire and get read again from the sensor. This is mainly a draft, but do you see any reason against it?
+Use the SIMPLE_DEV_PM_OPS macro to declare the driver's pm_ops.
 
-Yes, it adds a lot of complexity. Also, at least in theory it would apply to all
-i2c drivers, so solving the problem for one chip doesn't help much.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/hwmon/adt7410.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-A somewhat cleanly designed hardware should inform the software that a device went
-offline, for example with an interrupt; otherwise its operation could be severely
-affected and system behavior would be unpredictable.
+diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
+index ae80815..4ae16e0 100644
+--- a/drivers/hwmon/adt7410.c
++++ b/drivers/hwmon/adt7410.c
+@@ -437,10 +437,8 @@ static int adt7410_resume(struct device *dev)
+ 	return ret;
+ }
+ 
+-static const struct dev_pm_ops adt7410_dev_pm_ops = {
+-	.suspend	= adt7410_suspend,
+-	.resume		= adt7410_resume,
+-};
++static SIMPLE_DEV_PM_OPS(adt7410_dev_pm_ops, adt7410_suspend, adt7410_resume);
++
+ #define ADT7410_DEV_PM_OPS (&adt7410_dev_pm_ops)
+ #else
+ #define ADT7410_DEV_PM_OPS NULL
+-- 
+1.8.0
 
-So the question here is if this is a practical problem in your use case, or a
-theoretical problem. If it is a theoretical problem, we can address it for
-affected drivers as it is seen. If it is a practical problem, I think we'll need
-to come up with a simpler solution. The only one I can think of right now would
-be a module parameter. If set, it the driver could re-load the cache each time
-the temperature sensor is updated.
-
-Thanks,
-Guenter
