@@ -1,32 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:60985 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750729Ab3BOUII (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 15:08:08 -0500
-Date: Fri, 15 Feb 2013 12:08:28 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1089 "EHLO
+	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755684Ab3BOQ4C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:02 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/9] hwmon: (adt7410) Add device table entry for the
- adt7420
-Message-ID: <20130215200828.GE32433@roeck-us.net>
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/9] hwmon: (adt7410) Use I2C_ADDRS helper macro
+Date: Fri, 15 Feb 2013 17:57:13 +0100
+Message-Id: <1360947438-2550-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1360947438-2550-1-git-send-email-lars@metafoo.de>
 References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
- <1360947438-2550-5-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1360947438-2550-5-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 15, 2013 at 05:57:14PM +0100, Lars-Peter Clausen wrote:
-> The adt7420 is software compatible to the adt7410.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Use the I2C_ADDRS macro to initialize the I2C device's address_list. Doing so
+saves a few lines of boilerplate code.
 
-Applied to hwmon-next.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/hwmon/adt7410.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Thanks,
-Guenter
+diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
+index 4ae16e0..99f6d32 100644
+--- a/drivers/hwmon/adt7410.c
++++ b/drivers/hwmon/adt7410.c
+@@ -78,10 +78,6 @@ enum adt7410_type {		/* keep sorted in alphabetical order */
+ 	adt7410,
+ };
+ 
+-/* Addresses scanned */
+-static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b,
+-					I2C_CLIENT_END };
+-
+ static const u8 ADT7410_REG_TEMP[4] = {
+ 	ADT7410_TEMPERATURE,		/* input */
+ 	ADT7410_T_ALARM_HIGH,		/* high */
+@@ -453,7 +449,7 @@ static struct i2c_driver adt7410_driver = {
+ 	.probe		= adt7410_probe,
+ 	.remove		= adt7410_remove,
+ 	.id_table	= adt7410_ids,
+-	.address_list	= normal_i2c,
++	.address_list	= I2C_ADDRS(0x48, 0x49, 0x4a, 0x4b),
+ };
+ 
+ module_i2c_driver(adt7410_driver);
+-- 
+1.8.0
+
