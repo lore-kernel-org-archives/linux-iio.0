@@ -1,88 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qe0-f52.google.com ([209.85.128.52]:64967 "EHLO
-	mail-qe0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751196Ab3B0Tu4 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 14:50:56 -0500
-Received: by mail-qe0-f52.google.com with SMTP id s14so411020qeb.39
-        for <linux-iio@vger.kernel.org>; Wed, 27 Feb 2013 11:50:55 -0800 (PST)
-Date: Wed, 27 Feb 2013 14:50:51 -0500
-From: Chris Micali <chrismicali@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"=?utf-8?Q?linux-iio=40vger.kernel.org?=" <linux-iio@vger.kernel.org>
-Message-ID: <69F22814D4E34BA292A240F114EAA970@gmail.com>
-In-Reply-To: <5CCB32D4B146494F902390C27F8216A8@gmail.com>
-References: <26387F1A648A4D3D9BB4142C4F0AAE98@gmail.com>
- <512E2F31.8000604@metafoo.de>
- <B42F83EDFE8B4D2D8D46B6241B49B4E8@gmail.com>
- <512E3592.4020702@metafoo.de>
- <4AEA8015FE824807B3CF62B7B35FC5D3@gmail.com>
- <512E43A9.4090301@metafoo.de>
- <5277B88AB1FF4E6A83920766C0BE13F7@gmail.com>
- <512E5054.8030905@kernel.org> <512E55AA.6050203@metafoo.de>
- <5CCB32D4B146494F902390C27F8216A8@gmail.com>
-Subject: Re: IIO Drivers
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:33593 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753479Ab3BPPwi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Feb 2013 10:52:38 -0500
+Message-ID: <511FABAA.90400@metafoo.de>
+Date: Sat, 16 Feb 2013 16:54:18 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+To: Hartmut Knaack <knaack.h@gmx.de>
+CC: Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 7/9] hwmon: (adt7410) Add support for the adt7310/adt7320
+References: <1360947438-2550-1-git-send-email-lars@metafoo.de> <1360947438-2550-7-git-send-email-lars@metafoo.de> <511E951C.6090604@gmx.de>
+In-Reply-To: <511E951C.6090604@gmx.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Last question :)  I'd like to sample from this device as quickly as possible - so I'm assuming I need to trigger quickly?  Should I use iio-trig-periodic-rtc?  Any hints/instructions on how to use that?  Should the driver supply it's own trigger that uses an hrtimer instead?
+On 02/15/2013 09:05 PM, Hartmut Knaack wrote:
+> I had a quick look over your patches and found some minor typo, see below. I will apply all the patches to see the result.
+> Also keep in mind to add some changes to Documentation/hwmon/adt7410 (and add an adt7310 as well?).
 
-Thanks!
-Chris
+yep, forgot about the documentation, will do this in v2. But I don't think it
+makes sense to have to separate documents for the adt7410 and adt7310, the
+devices really only differ in their interface and all of the real driver logic
+is implemented in the common code.
 
+> 
+> Lars-Peter Clausen schrieb:
+> <...>
+>> diff --git a/drivers/hwmon/adt7310.c b/drivers/hwmon/adt7310.c
+>> new file mode 100644
+>> index 0000000..0483e6c
+>> --- /dev/null
+>> +++ b/drivers/hwmon/adt7310.c
+>> @@ -0,0 +1,160 @@
+>> +/*
+>> + * ADT7310/ADT7310 digital temperature sensor driver
+>> + *
+>> + * Copyright 2010-2013 Analog Devices Inc.
+>> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
+>> + *
+>> + * Licensed under the GPL-2 or later.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/spi/spi.h>
+>> +
+>> +#include "adt7x10.h"
+>> +
+>> +static const u8 adt7371_reg_table[] = {
+>> +	[ADT7410_TEMPERATURE]   = ADT7310_TEMPERATURE,
+>> +	[ADT7410_STATUS]	= ADT7310_STATUS,
+>> +	[ADT7410_CONFIG]	= ADT7310_CONFIG,
+>> +	[ADT7410_T_ALARM_HIGH]	= ADT7310_T_ALARM_HIGH,
+>> +	[ADT7410_T_ALARM_LOW]	= ADT7310_T_ALARM_LOW,
+>> +	[ADT7410_T_CRIT]	= ADT7310_T_CRIT,
+>> +	[ADT7410_T_HYST]	= ADT7310_T_HYST,
+>> +	[ADT7410_ID]		= ADT7310_ID,
+>> +};
+> Just out of curiousity, whats the reason for the name adt7371 here?
 
-On Wednesday, February 27, 2013 at 2:32 PM, Chris Micali wrote:  
-> Guys,  
->  
-> Thanks a lot for the help! I finally tracked down issues, it was a combination of a few things:
->  
-> 1. The .channel had to be 0, not 1 in the driver (scan_index didn't matter)
-> 2. 1 or more scan_elements have to be enabled as you mentioned
-> 2. When echoing into the sysfs files it has to have a space after the number (cat 1 > in_voltage0_en and not cat 1>in_vo…) (duh!)
-> 3. The generic_buffer.c program had a few bugs in it causing crashes. I updated the iio_utils.h to a newer version I found here: https://github.com/analogdevicesinc/iio-oscilloscope and then made a few modifications (the newer iio_utils did not parse a few things right in the channel details like bigendian/littleendian)
->  
-> So generic_buffer is now correctly sampling (although it crashes after a couple, it's probably another iio_utils issue)
->  
-> Thanks!!
->  
-> -chris
->  
->  
-> On Wednesday, February 27, 2013 at 1:51 PM, Lars-Peter Clausen wrote:
->  
-> > On 02/27/2013 07:28 PM, Jonathan Cameron wrote:
-> > > On 02/27/2013 05:36 PM, Chris Micali wrote:
-> > > > lars,  
-> > > >  
-> > > > I was under the impression that flag gets added automatically by iio_triggered_buffer_setup (industrialiio-triggers.c:77) - I actually am now able to enable the scan_element after changing my channel .channel and .scan_index to 0 (trying to match exactly the other drivers.)
-> >  
-> >  
-> > Yea, you are right I missed the iio_triggered_buffer_setup part.
-> >  
-> > > Strange, scan_index should have defaulted to zero and the .channel value shouldn't have mattered
-> > > for buffered reads (just effects naming). Might have caused issues with userspace expecting a channel 0
-> > > though...
-> >  
-> >  
-> >  
-> >  
-> >  
-> > I guess the scan_index had nothing to do with this, but I suggested to set
-> > scan_elements/in_voltage0_en to 1, so this clearly wouldn't have worked with
-> > .channel being 1.
-> >  
-> > >  
-> > > > When i run general_buffer (from the docs dir) with that scan element enabled it can no longer read the trigger (Could not open /trigger/current_trigger Failed to write current_trigger file) - this succeeds if that scan_element is not enabled.  
-> >  
-> >  
-> > You can't change the trigger if the buffer is currently enabled. Make sure that
-> > he buffer is disabled (check the buffer/enable attribute).
-> >  
-> > - Lars
-> > u
->  
+That's also a typo. And don't ask we how I got from adt7310 to adt7371, I have
+no idea.
 
+[...]
+>> +
+>> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+>> +MODULE_DESCRIPTION("ADT7310/ADT7420 driver");
+> This should be ADT7310/ADT7320, right?
 
+Yes, fixed.
 
+>> +MODULE_LICENSE("GPL");
+> <...>
+>> --- /dev/null
+>> +++ b/drivers/hwmon/adt7x10.c
+>> @@ -0,0 +1,476 @@
+[...]
+>> +
+>> +MODULE_AUTHOR("Hartmut Knaack");
+>> +MODULE_DESCRIPTION("ADT7410 driver");
+> This description does not seem appropriate any longer.
+
+Changed it to "ADT7410/ADT7420, ADT7310/ADT7320 common code".
+
+Thanks,
+- Lars
