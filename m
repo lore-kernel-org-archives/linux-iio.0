@@ -1,137 +1,89 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 03/67] staging:iio:dummy move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:09 +0000
-Message-Id: <1361997553-31058-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
-References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+Return-Path: <Robin.Getz@analog.com>
+From: "Getz, Robin" <robin.getz@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: Userspace libs
+Date: Mon, 18 Feb 2013 15:15:35 -0500
+CC: Jonathan Cameron <jic23@cam.ac.uk>, "Clausen, Lars-Peter"
+	<Lars-Peter.Clausen@analog.com>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+References: <201302131412.58742.robin.getz@analog.com> <511F7FA5.7060805@kernel.org>
+In-Reply-To: <511F7FA5.7060805@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Message-ID: <201302181515.36379.robin.getz@analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The original info_mask is going away in favour of the broken out versions.
+On Sat 16 Feb 2013 07:46, Jonathan Cameron pondered:
+> On 02/13/2013 07:12 PM, Getz, Robin wrote:
+> > Jonathan:
+[snip]
+> > I would like to re-write some of the existing iio-utils.h (so iio device
+> > context is managed by the application), to become a little more thread
+> > friendly, and also merge in some of the networking piece - so when using
+> > a headless embedded device - userspace doesn't need to change/manage
+> > things much.
+>
+> All the above looks good and it is very nice to have some non trivial
+> userspace support. I'll be happy to see any updates/cleanups to iio-utils.h
+> but keep in mind that it is only really meant to be a trivial in kernel
+> tree example. 
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/iio_simple_dummy.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
+is there any performance metrics that we want the in-tree version to hit?
 
-diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index aee76c7..abfee6d 100644
---- a/drivers/staging/iio/iio_simple_dummy.c
-+++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -71,25 +71,25 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 		.indexed = 1,
- 		.channel = 0,
- 		/* What other information is available? */
--		.info_mask =
-+		.info_mask_separate =
- 		/*
- 		 * in_voltage0_raw
- 		 * Raw (unscaled no bias removal etc) measurement
- 		 * from the device.
- 		 */
--		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		IIO_CHAN_INFO_RAW |
- 		/*
- 		 * in_voltage0_offset
- 		 * Offset for userspace to apply prior to scale
- 		 * when converting to standard units (microvolts)
- 		 */
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
-+		IIO_CHAN_INFO_OFFSET |
- 		/*
- 		 * in_voltage0_scale
- 		 * Multipler for userspace to apply post offset
- 		 * when converting to standard units (microvolts)
- 		 */
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+		IIO_CHAN_INFO_SCALE,
- 		/* The ordering of elements in the buffer via an enum */
- 		.scan_index = voltage0,
- 		.scan_type = { /* Description of storage in buffer */
-@@ -118,19 +118,18 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 		.indexed = 1,
- 		.channel = 1,
- 		.channel2 = 2,
--		.info_mask =
- 		/*
- 		 * in_voltage1-voltage2_raw
- 		 * Raw (unscaled no bias removal etc) measurement
- 		 * from the device.
- 		 */
--		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		.info_mask_separate = IIO_CHAN_INFO_RAW,
- 		/*
- 		 * in_voltage-voltage_scale
- 		 * Shared version of scale - shared by differential
- 		 * input channels of type IIO_VOLTAGE.
- 		 */
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,
- 		.scan_index = diffvoltage1m2,
- 		.scan_type = { /* Description of storage in buffer */
- 			.sign = 's', /* signed */
-@@ -146,9 +145,8 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 		.indexed = 1,
- 		.channel = 3,
- 		.channel2 = 4,
--		.info_mask =
--		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = IIO_CHAN_INFO_RAW,
-+		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,
- 		.scan_index = diffvoltage3m4,
- 		.scan_type = {
- 			.sign = 's',
-@@ -166,15 +164,14 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 		.modified = 1,
- 		/* Channel 2 is use for modifiers */
- 		.channel2 = IIO_MOD_X,
--		.info_mask =
--		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
-+		.info_mask_separate = IIO_CHAN_INFO_RAW |
- 		/*
- 		 * Internal bias correction value. Applied
- 		 * by the hardware or driver prior to userspace
- 		 * seeing the readings. Typically part of hardware
- 		 * calibration.
- 		 */
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
-+		IIO_CHAN_INFO_CALIBBIAS,
- 		.scan_index = accelx,
- 		.scan_type = { /* Description of storage in buffer */
- 			.sign = 's', /* signed */
-@@ -191,7 +188,7 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 	/* DAC channel out_voltage0_raw */
- 	{
- 		.type = IIO_VOLTAGE,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+		.info_mask_separate = IIO_CHAN_INFO_RAW,
- 		.output = 1,
- 		.indexed = 1,
- 		.channel = 0,
-@@ -204,8 +201,8 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
-  * @chan:	the channel whose data is to be read
-  * @val:	first element of returned value (typically INT)
-  * @val2:	second element of returned value (typically MICRO)
-- * @mask:	what we actually want to read. 0 is the channel, everything else
-- *		is as per the info_mask in iio_chan_spec.
-+ * @mask:	what we actually want to read as per the info_mask_*
-+ *		in iio_chan_spec.
-  */
- static int iio_dummy_read_raw(struct iio_dev *indio_dev,
- 			      struct iio_chan_spec const *chan,
-@@ -287,8 +284,8 @@ static int iio_dummy_read_raw(struct iio_dev *indio_dev,
-  * @chan:	the channel whose data is to be written
-  * @val:	first element of value to set (typically INT)
-  * @val2:	second element of value to set (typically MICRO)
-- * @mask:	what we actually want to write. 0 is the channel, everything else
-- *		is as per the info_mask in iio_chan_spec.
-+ * @mask:	what we actually want to write as per the info_mask_*
-+ *		in iio_chan_spec.
-  *
-  * Note that all raw writes are assumed IIO_VAL_INT and info mask elements
-  * are assumed to be IIO_INT_PLUS_MICRO unless the callback write_raw_get_fmt
--- 
-1.8.1.1
+The existing versions are certainly slim on memory, but use malloc, which may 
+cause memory leaks if the person on the application side isn't careful 
+freeing things, or cause performance issues, or just cause plain failures in 
+low memory embedded systems...
+
+> The original plan was to have a separately maintained 
+> userspace library to do things 'properly'.
+
+Where was this suppost to live?
+
+> I guess it depends on exactly what changes you are thinking of. 
+
+There are some features which we use to "self-discover" the installed 
+devices/drivers.
+
+return a string of names
+
+handle unsigned ints in the read/write functions
+
+Some minor stuff.
+
+> The networking stuff in particular 
+> might introduce some non kernel dependencies that may or may not be a
+> problem.
+
+Ack - I think that sits beside yours. iio_utils_attach.h and the network one 
+is iio_utils_net.h (ot something like that). It's the same structures, 
+similar function names, it's does it include a IP address, or a path...
+
+> > Is there a list of other things people want to see from userspace? [2]
+>
+> Nope.  Probably should be though. Well volunteered!
+> Right now we don't really have a clean list of what people want on the
+> kernel side, just a lot of randomly scattered mailing list threads.
+
+Any in specific stand out?
+
+
+> >
+> > [1] Which reminds me - is this planned on moving out
+> > of ./drivres/staging/iio/Documentation  into ./Documentation/iio ?
+>
+> err.  Yes.  Keep forgetting to do it.  Ah well next cycle ;)
+> Lots of stuff still to move in general.
+
+Thanks.
+
+> > [2] I have been going through:
+> >   - zio-dump   http://www.ohwr.org/projects/zio/wiki/Readme
+> >   - Comedilib  various
+> > ?
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
