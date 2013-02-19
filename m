@@ -1,67 +1,58 @@
-Return-Path: <priyaranjan456789@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:61519 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757400Ab3BSBbf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2013 20:31:35 -0500
+Date: Mon, 18 Feb 2013 17:32:04 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jean Delvare <khali@linux-fr.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] hwmon: (adt7410) Don't re-read non-volatile
+ registers
+Message-ID: <20130219013204.GC25124@roeck-us.net>
+References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <511E7038.9010205@metafoo.de>
-References: <CAMNxYswRsYtRF3kXKR676TZMCUsZPvk0auYTxpGVS2mRLmS8xw@mail.gmail.com>
-	<20130122163655.GA21090@kroah.com>
-	<CAMNxYswbiH-fW6YVvtWEr1W+SWRBU6ELv1bVRfNawpwcy+PZsA@mail.gmail.com>
-	<20130129133346.GA1505@kroah.com>
-	<CAMNxYszZNTh69-y+5RFVC9c5kgcyPaVET7784OPsTarB0fWm5w@mail.gmail.com>
-	<CAMNxYszE+qQv2vVw6DqNGuow+30K-=+S8TfgyNJwFeEN=EfEsA@mail.gmail.com>
-	<511E7038.9010205@metafoo.de>
-Date: Tue, 19 Feb 2013 18:13:37 +0530
-Message-ID: <CAMNxYszHu7SDSGk_FJ6A=VPEGu46NCRpgqFX3vcGS+=2fXEyqw@mail.gmail.com>
-Subject: Re: Query related to MSR(Magnetic Stripe Reader) Device Driver
-From: Priyaranjan Das <priyaranjan456789@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, mankad.maulik@gmail.com,
-	linux-input@vger.kernel.org, sameo@linux.intel.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1361194739-16525-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,Lars,
+On Mon, Feb 18, 2013 at 02:38:56PM +0100, Lars-Peter Clausen wrote:
+> Currently each time the temperature register is read the driver also reads the
+> threshold and hysteresis registers. This increases the amount of I2C traffic and
+> time needed to read the temperature by a factor of ~5. Neither the threshold nor
+> the hysteresis change on their own, so once we've read them, we should be able
+> to just use the cached value of the registers. This patch modifies the code
+> accordingly and only reads the threshold and hysteresis registers once during
+> probe.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Just one comment (thanks to Hartmut), otherwise looks good.
 
->>>
->>
->> The MSR IP can be also be used either as a general purpose ADC or in
->> Magnetic stripe card reader mode.The IP supports both the modes and
->> provides FIFO for storing ADC data.
->>
->> I also got to know about IIO subsystem where  ADC drivers are
->> implemented. Our use-case will be to use either Magnetic Stripe reader
->> mode or general purpose ADC mode in a given configuration. Can I use
->> IIO subsystem for the Magnetic Stripe driver?
->
-> Hi,
->
-> Well for the ADC functionality it certainly makes sense to use the IIO
-> framework. The magnetic stripe reader functionality should probably go into
-> drivers/input. How to do this exactly depends a bit on how exactly the
-> hardware works. A good idea is probably to use a mfd driver which
-> instantiates both the input and the IIO driver and does some arbitration
-> between them. If the magnetic stripe reader is a feature that's build on top
-> of the ADC functionality you could use the IIO in-kernel API to do ADC
-> conversions from your input driver. If the ADC and magnetic stripe reader
-> mode are exclusive-or it probably makes sense to only instantiate one of
-> them at a time from the MFD driver.
->
+> ---
+> Changes since v1:
+> 	* Fix error checking for i2c reads
+> ---
+[ ... ]
 
-The Hardware consists of an ADC and an in-built FIFO in it. The Device
-can either be configured  as a Magnetic stripe reader or a GPADC.
-After the ADC conversion,the data will be saved in the FIFO and the
-driver has to read it and send it to the upper layers.Here the ADC and
-Magnetic Stripe reader functionality are exclusively-or. In MSR mode,
-the FIFO shall contain the track data for magnetic stripe card. This
-data will be given to input subsystem.
+> +static int adt7410_fill_cache(struct i2c_client *client)
+> +{
+> +	struct adt7410_data *data = i2c_get_clientdata(client);
+> +	int ret;
+> +	int i;
+> +
+> +	for (i = 1; i < ARRAY_SIZE(ADT7410_REG_TEMP); i++) {
+> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[i]);
+> +		if (ret < 0) {
+> +			dev_dbg(&client->dev,
+> +				"Failed to read value: reg %d, error %d\n",
+> +				ADT7410_REG_TEMP[0], ret);
 
-To summarize below is my understanding:
-1) drivers/input/misc: shall have the MSR driver.
-2) drivers/iio/adc:   shall have the GPADC driver.
-3) drivers/mfd:     shall support both above drivers and does arbitration.
+	ADT7410_REG_TEMP[i]
 
-Regards,
-Priyaranjan
-
-PS: Complete discussion can be found at [1]
-
-[1] http://marc.info/?t=135884722400002&r=1&w=2
+Thanks,
+Guenter
