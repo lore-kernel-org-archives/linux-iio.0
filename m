@@ -1,66 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59139 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758615Ab3B0UkS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:18 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Subject: [PATCH 36/67] iio:gyro:itg3200_core move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:42 +0000
-Message-Id: <1361997553-31058-37-git-send-email-jic23@kernel.org>
-In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
-References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.15.18]:57437 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932846Ab3BSXHq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Feb 2013 18:07:46 -0500
+Received: from mailout-de.gmx.net ([10.1.76.17]) by mrigmx.server.lan
+ (mrigmx002) with ESMTP (Nemesis) id 0M0NrX-1V0JrR3K2P-00uduJ for
+ <linux-iio@vger.kernel.org>; Wed, 20 Feb 2013 00:07:44 +0100
+Message-ID: <512405BD.9030505@gmx.de>
+Date: Wed, 20 Feb 2013 00:07:41 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/9] hwmon: (adt7410) Let suspend/resume depend on CONFIG_PM_SLEEP
+References: <1360947438-2550-1-git-send-email-lars@metafoo.de> <1360947438-2550-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1360947438-2550-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
----
- drivers/iio/gyro/itg3200_core.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
-index df2e6aa..6b8071b 100644
---- a/drivers/iio/gyro/itg3200_core.c
-+++ b/drivers/iio/gyro/itg3200_core.c
-@@ -248,12 +248,6 @@ err_ret:
- 	return ret;
- }
- 
--#define ITG3200_TEMP_INFO_MASK	(IIO_CHAN_INFO_OFFSET_SHARED_BIT | \
--				 IIO_CHAN_INFO_SCALE_SHARED_BIT | \
--				 IIO_CHAN_INFO_RAW_SEPARATE_BIT)
--#define ITG3200_GYRO_INFO_MASK	(IIO_CHAN_INFO_SCALE_SHARED_BIT | \
--				 IIO_CHAN_INFO_RAW_SEPARATE_BIT)
--
- #define ITG3200_ST						\
- 	{ .sign = 's', .realbits = 16, .storagebits = 16, .endianness = IIO_BE }
- 
-@@ -261,7 +255,8 @@ err_ret:
- 	.type = IIO_ANGL_VEL, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_ ## _mod, \
--	.info_mask = ITG3200_GYRO_INFO_MASK, \
-+	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE, \
-+	.info_mask_separate = IIO_CHAN_INFO_RAW, \
- 	.address = ITG3200_REG_GYRO_ ## _mod ## OUT_H, \
- 	.scan_index = ITG3200_SCAN_GYRO_ ## _mod, \
- 	.scan_type = ITG3200_ST, \
-@@ -271,7 +266,9 @@ static const struct iio_chan_spec itg3200_channels[] = {
- 	{
- 		.type = IIO_TEMP,
- 		.channel2 = IIO_NO_MOD,
--		.info_mask = ITG3200_TEMP_INFO_MASK,
-+		.info_mask_separate = IIO_CHAN_INFO_RAW,
-+		.info_mask_shared_by_type = IIO_CHAN_INFO_OFFSET |
-+		IIO_CHAN_INFO_SCALE,
- 		.address = ITG3200_REG_TEMP_OUT_H,
- 		.scan_index = ITG3200_SCAN_TEMP,
- 		.scan_type = ITG3200_ST,
--- 
-1.8.1.1
+Lars-Peter Clausen schrieb:
+> Only build the suspend/resume code if CONFIG_PM_SLEEP is selected. Currently the
+> code is built if CONFIG_PM is selected, but it will also be selected if only
+> runtime PM support is built into the kernel.
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+>  drivers/hwmon/adt7410.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
+> index 4ccee4f..ae80815 100644
+> --- a/drivers/hwmon/adt7410.c
+> +++ b/drivers/hwmon/adt7410.c
+> @@ -415,7 +415,7 @@ static const struct i2c_device_id adt7410_ids[] = {
+>  };
+>  MODULE_DEVICE_TABLE(i2c, adt7410_ids);
+>  
+> -#ifdef CONFIG_PM
+> +#ifdef CONFIG_PM_SLEEP
+>  static int adt7410_suspend(struct device *dev)
+>  {
+>  	int ret;
 
