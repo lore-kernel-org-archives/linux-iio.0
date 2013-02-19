@@ -1,426 +1,210 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-164.synserver.de ([212.40.185.164]:1028 "EHLO
-	smtp-out-164.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750773Ab3BDRkw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2013 12:40:52 -0500
-Message-ID: <510FF2E5.7070706@metafoo.de>
-Date: Mon, 04 Feb 2013 18:41:57 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.active-venture.com ([67.228.131.205]:50953 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755798Ab3BSBjE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2013 20:39:04 -0500
+Date: Mon, 18 Feb 2013 17:39:33 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jean Delvare <khali@linux-fr.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] hwmon: (adt7x10) Add alarm interrupt support
+Message-ID: <20130219013933.GD25124@roeck-us.net>
+References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
+ <1361194739-16525-3-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Tomasz Figa <tomasz.figa@gmail.com>, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH v2 4/4] iio: Add OF support
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net> <2327792.dx5ptVD6je@flatron> <510EB2B3.7090503@metafoo.de> <226658056.N7afTOqvFB@flatron> <20130204171214.GA23170@roeck-us.net>
-In-Reply-To: <20130204171214.GA23170@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1361194739-16525-3-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/04/2013 06:12 PM, Guenter Roeck wrote:
-> On Mon, Feb 04, 2013 at 12:14:52AM +0100, Tomasz Figa wrote:
->> On Sunday 03 of February 2013 19:55:47 Lars-Peter Clausen wrote:
->>> On 02/03/2013 06:30 PM, Tomasz Figa wrote:
->>>> On Sunday 03 of February 2013 09:01:07 Guenter Roeck wrote:
->>>>> On Sun, Feb 03, 2013 at 12:52:40PM +0100, Tomasz Figa wrote:
->>>>>> On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
->>>>>>> On 02/03/2013 03:06 AM, Guenter Roeck wrote:
->>>>>>>> On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
->>>>>>>>> Hi Guenter,
->>>>>>>>>
->>>>>>>>> Some comments inline.
->>>>>>>>>
->>>>>>>>> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
->>>>>>>>>> Provide bindings and parse OF data during initialization.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>>>>>>>>> ---
->>>>>>>>>> - Documentation update per feedback
->>>>>>>>>> - Dropped io-channel-output-names from the bindings document.
->>>>>>>>>> The
->>>>>>>>>> property is not used in the code, and it is not entirely clear
->>>>>>>>>> what
->>>>>>>>>> it
->>>>>>>>>> would be used for. If there is a need for it, we can add it back
->>>>>>>>>> in
->>>>>>>>>> later on.
->>>>>>>>>> - Don't export OF specific API calls
->>>>>>>>>> - For OF support, no longer depend on iio_map
->>>>>>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the
->>>>>>>>>> code
->>>>>>>>>> still builds if it is not selected.
->>>>>>>>>> - Change iio_channel_get to take device pointer as argument
->>>>>>>>>> instead
->>>>>>>>>> of
->>>>>>>>>> device name. Retain old API as of_iio_channel_get_sys.
->>>>>>>>>> - iio_channel_get now works for both OF and non-OF
->>>>>>>>>> configurations.
->>>>>>>>>>
->>>>>>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76
->>>>>>>>>>  ++++++++
->>>>>>>>>>  drivers/iio/inkern.c                               |  186
->>>>>>>>>>
->>>>>>>>>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
->>>>>>>>>>
->>>>>>>>>>  create mode 100644
->>>>>>>>>>
->>>>>>>>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>>>
->>>>>>>>>> diff --git
->>>>>>>>>> a/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new
->>>>>>>>>> file
->>>>>>>>>> mode
->>>>>>>>>> 100644
->>>>>>>>>> index 0000000..58df5f6
->>>>>>>>>> --- /dev/null
->>>>>>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>>> @@ -0,0 +1,76 @@
->>>>>>>>>> +This binding is a work-in-progress. It is derived from clock
->>>>>>>>>> bindings,
->>>>>>>>>> +and based on suggestions from Lars-Peter Clausen [1].
->>>>>>>>>> +
->>>>>>>>>> +Sources of IIO channels can be represented by any node in the
->>>>>>>>>> device
->>>>>>>>>> +tree.  Those nodes are designated as IIO providers.  IIO
->>>>>>>>>> consumer
->>>>>>>>>> +nodes use a phandle and IIO specifier pair to connect IIO
->>>>>>>>>> provider
->>>>>>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
->>>>>>>>>> +specifier is an array of one or more cells identifying the IIO
->>>>>>>>>> +output on a device.  The length of an IIO specifier is defined
->>>>>>>>>> by
->>>>>>>>>> the
->>>>>>>>>> +value of a #io-channel-cells property in the clock provider
->>>>>>>>>> node.
->>>>>>>>>> +
->>>>>>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
->>>>>>>>>> +
->>>>>>>>>> +==IIO providers==
->>>>>>>>>> +
->>>>>>>>>> +Required properties:
->>>>>>>>>> +#io-channel-cells: Number of cells in an IIO specifier;
->>>>>>>>>> Typically 0
->>>>>>>>>> for nodes +		   with a single IIO output and 1 for nodes
->>>>
->>>> with
->>>>
->>>>>>>>>> multiple +		   IIO outputs.
->>>>>>>>>> +
->>>>>>>>>> +For example:
->>>>>>>>>> +
->>>>>>>>>> +    adc: adc@35 {
->>>>>>>>>> +	compatible = "maxim,max1139";
->>>>>>>>>> +	reg = <0x35>;
->>>>>>>>>> +        #io-channel-cells = <1>;
->>>>>>>>>> +    };
->>>>>>>>>> +
->>>>>>>>>> +==IIO consumers==
->>>>>>>>>> +
->>>>>>>>>> +Required properties:
->>>>>>>>>> +io-channels:	List of phandle and IIO specifier pairs, one
->>>>
->>>> pair
->>>>
->>>>>>>>>> +		for each IIO input to the device.  Note: if the
->>>>>>>>>> +		IIO provider specifies '0' for #clock-cells, then
->>>>>>>>>> +		only the phandle portion of the pair will appear.
->>>>>>>>>> +
->>>>>>>>>> +Optional properties:
->>>>>>>>>> +io-channel-names:
->>>>>>>>>> +		List of IIO input name strings sorted in the same
->>>>>>>>>> +		order as the io-channels property.  Consumers 
->> drivers
->>>>>>>>>> +		will use io-channel-names to match IIO input names
->>>>>>>>>> +		with IIO specifiers.
->>>>>>>>>> +io-channel-ranges:
->>>>>>>>>> +		Empty property indicating that child nodes can 
->> inherit
->>>>>>
->>>>>> named
->>>>>>
->>>>>>>>>> +		IIO channels from this node. Useful for bus nodes 
->> to
->>>>>>
->>>>>> provide
->>>>>>
->>>>>>>>>> +		and IIO channel to their children.
->>>>>>>>>> +
->>>>>>>>>> +For example:
->>>>>>>>>> +
->>>>>>>>>> +    device {
->>>>>>>>>> +        io-channels = <&adc 1>, <&ref 0>;
->>>>>>>>>> +        io-channel-names = "vcc", "vdd";
->>>>>>>>>> +    };
->>>>>>>>>> +
->>>>>>>>>> +This represents a device with two IIO inputs, named "vcc" and
->>>>>>>>>> "vdd".
->>>>>>>>>> +The vcc channel is connected to output 1 of the &adc device,
->>>>>>>>>> and
->>>>>>>>>> the
->>>>>>>>>> +vdd channel is connected to output 0 of the &ref device.
->>>>>>>>>> +
->>>>>>>>>> +==Example==
->>>>>>>>>> +
->>>>>>>>>> +	adc: max1139@35 {
->>>>>>>>>> +		compatible = "maxim,max1139";
->>>>>>>>>> +		reg = <0x35>;
->>>>>>>>>> +		#io-channel-cells = <1>;
->>>>>>>>>> +	};
->>>>>>>>>> +
->>>>>>>>>> +	...
->>>>>>>>>> +
->>>>>>>>>> +	iio_hwmon {
->>>>>>>>>> +		compatible = "iio-hwmon";
->>>>>>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
->>>>>>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
->>>>>>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
->>>>>>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
->>>>>>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
->>>>>>>>>> +	};
->>>>>>>>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>>>>>>>>> index b289915..d48f2a8 100644
->>>>>>>>>> --- a/drivers/iio/inkern.c
->>>>>>>>>> +++ b/drivers/iio/inkern.c
->>>>>>>>>> @@ -10,6 +10,7 @@
->>>>>>>>>>
->>>>>>>>>>  #include <linux/export.h>
->>>>>>>>>>  #include <linux/slab.h>
->>>>>>>>>>  #include <linux/mutex.h>
->>>>>>>>>>
->>>>>>>>>> +#include <linux/of.h>
->>>>>>>>>>
->>>>>>>>>>  #include <linux/iio/iio.h>
->>>>>>>>>>  #include "iio_core.h"
->>>>>>>>>>
->>>>>>>>>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
->>>>>>>>>>
->>>>>>>>>>  	return chan;
->>>>>>>>>>  
->>>>>>>>>>  }
->>>>>>>>>>
->>>>>>>>>> +#ifdef CONFIG_OF
->>>>>>>>>> +
->>>>>>>>>> +static int iio_dev_node_match(struct device *dev, void *data)
->>>>>>>>>> +{
->>>>>>>>>> +	return !strcmp(dev->type->name, "iio_device") && dev-
->>> of_node
->>>>>>
->>>>>> ==
->>>>>>
->>>>>>>>> data;
->>>>>>>>>
->>>>>>>>> Hmm, do you need to check type name here? One device node should
->>>>>>>>> rather
->>>>>>>>> represent only one device, making node an unique identifier.
->>>>>>>>>
->>>>>>>>> It this is meant to be a sanity check, it could be done one time
->>>>>>>>> after
->>>>>>>>> finding the device.
->>>>>>>>
->>>>>>>> Hi Tomasz,
->>>>>>>>
->>>>>>>> This is what Lars had suggested earlier:
->>>>>>>>> Yes, use bus_find_device on iio_bus_type. A nice example how to
->>>>>>>>> use
->>>>>>>>> this to lookup device by of node is of_find_i2c_device_by_node.
->>>>>>>>> For
->>>>>>>>> IIO you also need to make sure that dev->type is iio_dev_type,
->>>>>>>>> since
->>>>>>>>> both devices and triggers are registered on the same bus.
->>>>>>>>
->>>>>>>> Is it really needed, or in other words would it be sufficient to
->>>>>>>> check
->>>>>>>> if of_node and data match each other ? Your reasoning makes sense
->>>>>>>> to
->>>>>>>> me, and I had thought about it as well, but I don't really know,
->>>>>>>> and
->>>>>>>> I don't know how I could test it and guarantee correctness either.
->>>>>>>> I'll be happy to take the strcmp() out if someone tells me that it
->>>>>>>> is
->>>>>>>> definitely not needed ...
->>>>>>>
->>>>>>> A IIO trigger and a IIO device may have the same of_node, e.g. if
->>>>>>> they
->>>>>>> both belong to the same physical device. But you don't need to do
->>>>>>> the
->>>>>>> strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
->>>>>>> &iio_dev_type. Although it doesn't really matter in practice first
->>>>>>> check for the of_node then check for the type, since the of_node
->>>>>>> will
->>>>>>> only match for a few devices at most, the type will match for quite
->>>>>>> a
->>>>>>> few.
->>>>>>
->>>>>> I must disagree.
->>>>>>
->>>>>> If you have two IIO devices provided by one physical device, then in
->>>>>>
->>>>>> device tree they should be represented as follows:
->>>>>> 	phys-dev@12345678 {
->>>>>> 	
->>>>>> 		compatible = "some-physical-device";
->>>>>> 		/* ... */
->>>>>> 		
->>>>>> 		my_trig: iio-trigger {
->>>>>> 		
->>>>>> 			/* ... */
->>>>>> 		
->>>>>> 		};
->>>>>> 		
->>>>>> 		my_dev: iio-device {
->>>>>> 		
->>>>>> 			/* ... */
->>>>>> 		
->>>>>> 		};
->>>>>> 	
->>>>>> 	};
->>>>>>
->>>>>> Notice that phys-dev works here as an IIO bus on which its IIO
->>>>>> devices
->>>>>> are available. This is related to the convention that single OF
->>>>>> device node represents single device, which would be violated
->>>>>> otherwise.
->>>>>
->>>>> Right now the iio device is a child of the physical device, and I am
->>>>> simply passing of_node on to it. guess you are saying that is not
->>>>> correct ?
->>>>>
->>>>> If so, what would be the correct approach ? Something like the
->>>>> following ?
->>>>>
->>>>> 	voltage-sensor@35 {
->>>>> 	
->>>>> 		compatible = "maxim,max1139";
->>>>> 		reg = <0x35>;
->>>>> 		vcc-supply = <&reg_3p3v>;
->>>>> 		vref-supply = <&reg_3p3v>;
->>>>> 		
->>>>> 		max1139-iio: iio-device {
->>>>> 		
->>>>> 			device_type = "iio_device";
->>>>> 			#io-channel-cells = <1>;
->>>>> 		
->>>>> 		};
->>>>> 	
->>>>> 	};
->>>>>
->>>>> and in the driver probe function:
->>>>> 	if (parent->of_node)
->>>>> 	
->>>>> 		iio_dev->dev.of_node = of_find_node_by_type(parent-
->>> of_node,
->>>>>
->>>>> "iio_device");
->>>>>
->>>>> Another option would be to use of_find_compatible_node() and
->>>>> something
->>>>> like compatible = "iio-device";
->>>>> in the iio-device node.
->>>>
->>>> A device node is defined as a node having compatible property. Other
->>>> nodes should be seen as helper nodes, which do not represent devices
->>>> (although they all have struct device_node in Linux).
->>>>
->>>> Also, AFAIK, device_type is a deprecated property used by some legacy
->>>> PowerPC machines and for current machines only compatible should be
->>>> used.
->>>>
->>>> So I guess the approach with compatible would be appropriate here.
->>>>
->>>> However for physical devices providing only a single IIO device it
->>>> might> 
->>>> be better to allow simpler specification, like:
->>>>  	max1139-iio: voltage-sensor@35 {
->>>>  	
->>>>  		compatible = "maxim,max1139", "iio_device";
->>>
->>> I don't think this makes a lot of sense. First of all iio_device an
->>> artificial Linux term, while the device tree should describe the
->>> hardware.
->>
->> Well, if you look at an iio_device as a subdevice of a physical device 
->> then it should make a bit more sense. (See nodes of GPIO/pinctrl pin banks 
->> or regulators of a PMIC chip.)
->>
->>> Secondly there is no generic iio driver which could match on
->>> a node with a "iio_device" compability string and stuff would just
->>> work. I mean we don't do
->>>
->>> compatible = "atmel,at91sam9260-i2c", "i2c-master";
->>>
->>> or similar either.
->>
->> Right. We don't need the other compatible for simple devices with single 
->> subdevice. This is implied by the driver registering a single IIO driver 
->> using the node of physical device.
->>
->>>>  		reg = <0x35>;
->>>>  		vcc-supply = <&reg_3p3v>;
->>>>  		vref-supply = <&reg_3p3v>;
->>>> 		
->>>> 		device_type = "iio_device";
->>
->> Also we don't need this device_type. Basically we don't need to specify 
->> whether given node is an iio_device or an iio_trigger. It's up to the 
->> driver to register the node as a device or a trigger by setting dev.of_node 
->> field properly.
->>
->> So my suggestion would be to make the bindings as following. For single 
->> subdevice:
->>
->> 	voltage-sensor@35 {
->> 		compatible = "maxim,max1139";
->> 		reg = <0x35>;
->> 		vcc-supply = <&reg_3p3v>;
->> 		vref-supply = <&reg_3p3v>;
->> 		#io-channel-cells = <1>;
->> 	};
->>
->> For multiple subdevices:
->>
->> 	voltage-sensor@35 {
->> 		compatible = "maxim,max1139";
->> 		reg = <0x35>;
->> 		vcc-supply = <&reg_3p3v>;
->> 		vref-supply = <&reg_3p3v>;
->>
->> 		subdevice1 {
->> 			/* Subdevice specific data */
->> 			#io-channel-cells = <1>;
->> 		};
->>
->> 		subdevice2 {
->> 			/* Subdevice specific data */
->> 			#io-channel-cells = <1>;
->> 		}
+On Mon, Feb 18, 2013 at 02:38:58PM +0100, Lars-Peter Clausen wrote:
+> This allows a userspace application to poll() on the alarm files to get notified
+> in case of an temperature threshold event.
 > 
-> Please provide an example how to parse that. Obviously now I can not look for
-> "compatible" anymore. Sure, I can use of_get_child_by_name, but that means
-> the sub-device names would have to be well defined. Or I could use
-> of_find_node_by_name, but then I would need something like
-
-Do you actually need to parse this in the generic code? It would be up to
-the device driver to parse this and hook up the of_node to the of_node of
-the iio device. Your code should just work fine already with multiple
-subdevices.
-
-- Lars
-
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > 
->  	voltage-sensor@35 {
->  		compatible = "maxim,max1139";
-> 		iio-device;
->  		reg = <0x35>;
->  		vcc-supply = <&reg_3p3v>;
->  		vref-supply = <&reg_3p3v>;
->  		#io-channel-cells = <1>;
->  	};
+> ---
+> Changes since v1:
+> 	* Switch from level triggered and interrupt mode to edge triggered and
+> 	  comparator mode. In interrupt mode the status register get's cleared after
+> 	  the first read and so the _alarm files will always read 0, which is not
+> 	  really what we want.
+> 	* Use dev_name(dev) for the interrupt name, instead of 'name' which will be
+> 	  NULL for I2C devices
+> ---
+>  drivers/hwmon/adt7310.c |  4 ++--
+>  drivers/hwmon/adt7410.c |  4 ++--
+>  drivers/hwmon/adt7x10.c | 43 +++++++++++++++++++++++++++++++++++++++----
+>  drivers/hwmon/adt7x10.h |  4 ++--
+>  4 files changed, 45 insertions(+), 10 deletions(-)
 > 
-> Thanks,
-> Guenter
+> diff --git a/drivers/hwmon/adt7310.c b/drivers/hwmon/adt7310.c
+> index 2196ac3..e58bb68 100644
+> --- a/drivers/hwmon/adt7310.c
+> +++ b/drivers/hwmon/adt7310.c
+> @@ -82,13 +82,13 @@ static const struct adt7410_ops adt7310_spi_ops = {
+>  
+>  static int adt7310_spi_probe(struct spi_device *spi)
+>  {
+> -	return adt7410_probe(&spi->dev, spi_get_device_id(spi)->name,
+> +	return adt7410_probe(&spi->dev, spi_get_device_id(spi)->name, spi->irq,
+>  			&adt7310_spi_ops);
+>  }
+>  
+>  static int adt7310_spi_remove(struct spi_device *spi)
+>  {
+> -	return adt7410_remove(&spi->dev);
+> +	return adt7410_remove(&spi->dev, spi->irq);
+>  }
+>  
+>  static const struct spi_device_id adt7310_id[] = {
+> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
+> index b500ab3..3a7d905 100644
+> --- a/drivers/hwmon/adt7410.c
+> +++ b/drivers/hwmon/adt7410.c
+> @@ -48,12 +48,12 @@ static int adt7410_i2c_probe(struct i2c_client *client,
+>  			I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA))
+>  		return -ENODEV;
+>  
+> -	return adt7410_probe(&client->dev, NULL, &adt7410_i2c_ops);
+> +	return adt7410_probe(&client->dev, NULL, client->irq, &adt7410_i2c_ops);
+>  }
+>  
+>  static int adt7410_i2c_remove(struct i2c_client *client)
+>  {
+> -	return adt7410_remove(&client->dev);
+> +	return adt7410_remove(&client->dev, client->irq);
+>  }
+>  
+>  static const struct i2c_device_id adt7410_ids[] = {
+> diff --git a/drivers/hwmon/adt7x10.c b/drivers/hwmon/adt7x10.c
+> index eeff198c..2340a70 100644
+> --- a/drivers/hwmon/adt7x10.c
+> +++ b/drivers/hwmon/adt7x10.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/err.h>
+>  #include <linux/mutex.h>
+>  #include <linux/delay.h>
+> +#include <linux/interrupt.h>
+>  
+>  #include "adt7x10.h"
+>  
+> @@ -112,6 +113,25 @@ static const u8 ADT7410_REG_TEMP[4] = {
+>  	ADT7410_T_CRIT,			/* critical */
+>  };
+>  
+> +static irqreturn_t adt7410_irq_handler(int irq, void *private)
+> +{
+> +	struct device *dev = private;
+> +	int status;
+> +
+> +	status = adt7410_read_byte(dev, ADT7410_STATUS);
+> +	if (status < 0)
+> +		return IRQ_HANDLED;
+> +
+> +	if (status & ADT7410_STAT_T_HIGH)
+> +		sysfs_notify(&dev->kobj, NULL, "temp1_max_alarm");
+> +	if (status & ADT7410_STAT_T_LOW)
+> +		sysfs_notify(&dev->kobj, NULL, "temp1_min_alarm");
+> +	if (status & ADT7410_STAT_T_CRIT)
+> +		sysfs_notify(&dev->kobj, NULL, "temp1_crit_alarm");
+> +
+Question about semantics: Do you want a notification on all attributes each time
+one is set during an interrupt, or do you want a notification each time an
+attribute changes state ? With the above code, the 1->0 transition does not
+result in a notification. Is that on purpose ?
+
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static int adt7410_temp_ready(struct device *dev)
+>  {
+>  	int i, status;
+> @@ -357,7 +377,7 @@ static const struct attribute_group adt7410_group = {
+>  	.attrs = adt7410_attributes,
+>  };
+>  
+> -int adt7410_probe(struct device *dev, const char *name,
+> +int adt7410_probe(struct device *dev, const char *name, int irq,
+>  	const struct adt7410_ops *ops)
+>  {
+>  	struct adt7410_data *data;
+> @@ -383,11 +403,13 @@ int adt7410_probe(struct device *dev, const char *name,
+>  	data->oldconfig = ret;
+>  
+>  	/*
+> -	 * Set to 16 bit resolution, continous conversion and comparator mode.
+> +	 * Set to 16 bit resolution and continous conversion
+>  	 */
+>  	data->config = data->oldconfig;
+> -	data->config &= ~ADT7410_MODE_MASK;
+> +	data->config &= ~(ADT7410_MODE_MASK | ADT7410_CT_POLARITY |
+> +			ADT7410_INT_POLARITY);
+>  	data->config |= ADT7410_FULL | ADT7410_RESOLUTION | ADT7410_EVENT_MODE;
+> +
+>  	if (data->config != data->oldconfig) {
+>  		ret = adt7410_write_byte(dev, ADT7410_CONFIG, data->config);
+>  		if (ret)
+> @@ -421,8 +443,18 @@ int adt7410_probe(struct device *dev, const char *name,
+>  		goto exit_remove_name;
+>  	}
+>  
+> +	if (irq > 0) {
+> +		ret = request_threaded_irq(irq, NULL, adt7410_irq_handler,
+> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +				dev_name(dev), dev);
+
+If you use devm_request_threaded_irq, you don't have to release it on remove.
+
+> +		if (ret)
+> +			goto exit_hwmon_device_unregister;
+> +	}
+> +
+
+This code should be before hwmon registration.
+
+>  	return 0;
+>  
+> +exit_hwmon_device_unregister:
+> +	hwmon_device_unregister(data->hwmon_dev);
+>  exit_remove_name:
+>  	if (name)
+>  		device_remove_file(dev, &dev_attr_name);
+> @@ -434,10 +466,13 @@ exit_restore:
+>  }
+>  EXPORT_SYMBOL_GPL(adt7410_probe);
+>  
+> -int adt7410_remove(struct device *dev)
+> +int adt7410_remove(struct device *dev, int irq)
+>  {
+>  	struct adt7410_data *data = dev_get_drvdata(dev);
+>  
+> +	if (irq > 0)
+> +		free_irq(irq, dev);
+> +
+>  	hwmon_device_unregister(data->hwmon_dev);
+>  	if (data->name)
+>  		device_remove_file(dev, &dev_attr_name);
+> diff --git a/drivers/hwmon/adt7x10.h b/drivers/hwmon/adt7x10.h
+> index a7165e6..d67badf 100644
+> --- a/drivers/hwmon/adt7x10.h
+> +++ b/drivers/hwmon/adt7x10.h
+> @@ -33,9 +33,9 @@ struct adt7410_ops {
+>  	int (*write_word)(struct device *, u8 reg, u16 data);
+>  };
+>  
+> -int adt7410_probe(struct device *dev, const char *name,
+> +int adt7410_probe(struct device *dev, const char *name, int irq,
+>  	const struct adt7410_ops *ops);
+> -int adt7410_remove(struct device *dev);
+> +int adt7410_remove(struct device *dev, int irq);
+>  
+>  
+>  #ifdef CONFIG_PM_SLEEP
+> -- 
+> 1.8.0
+> 
+> 
