@@ -1,339 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:61294 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753380Ab3BCWmg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Feb 2013 17:42:36 -0500
-Message-ID: <510EE838.7040205@metafoo.de>
-Date: Sun, 03 Feb 2013 23:44:08 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.active-venture.com ([67.228.131.205]:49999 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758479Ab3BSQvw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Feb 2013 11:51:52 -0500
+Date: Tue, 19 Feb 2013 08:52:21 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jean Delvare <khali@linux-fr.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] hwmon: (adt7410) Add support for the
+ adt7310/adt7320
+Message-ID: <20130219165221.GC19550@roeck-us.net>
+References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
+ <1361194739-16525-2-git-send-email-lars@metafoo.de>
+ <20130219013003.GB25124@roeck-us.net>
+ <512368B7.5060003@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Tomasz Figa <tomasz.figa@gmail.com>,
-	Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH v2 4/4] iio: Add OF support
-References: <1359853180-5664-1-git-send-email-linux@roeck-us.net> <1915802.t7OItgMRJy@flatron> <20130203170107.GD21576@roeck-us.net> <2327792.dx5ptVD6je@flatron> <510EB2B3.7090503@metafoo.de> <510ECF91.8020800@kernel.org>
-In-Reply-To: <510ECF91.8020800@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <512368B7.5060003@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/03/2013 09:58 PM, Jonathan Cameron wrote:
-> On 02/03/2013 06:55 PM, Lars-Peter Clausen wrote:
->> On 02/03/2013 06:30 PM, Tomasz Figa wrote:
->>> On Sunday 03 of February 2013 09:01:07 Guenter Roeck wrote:
->>>> On Sun, Feb 03, 2013 at 12:52:40PM +0100, Tomasz Figa wrote:
->>>>> On Sunday 03 of February 2013 12:29:23 Lars-Peter Clausen wrote:
->>>>>> On 02/03/2013 03:06 AM, Guenter Roeck wrote:
->>>>>>> On Sun, Feb 03, 2013 at 02:30:24AM +0100, Tomasz Figa wrote:
->>>>>>>> Hi Guenter,
->>>>>>>>
->>>>>>>> Some comments inline.
->>>>>>>>
->>>>>>>> On Saturday 02 of February 2013 16:59:40 Guenter Roeck wrote:
->>>>>>>>> Provide bindings and parse OF data during initialization.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>>>>>>>> ---
->>>>>>>>> - Documentation update per feedback
->>>>>>>>> - Dropped io-channel-output-names from the bindings document.
->>>>>>>>> The
->>>>>>>>> property is not used in the code, and it is not entirely clear
->>>>>>>>> what
->>>>>>>>> it
->>>>>>>>> would be used for. If there is a need for it, we can add it back
->>>>>>>>> in
->>>>>>>>> later on.
->>>>>>>>> - Don't export OF specific API calls
->>>>>>>>> - For OF support, no longer depend on iio_map
->>>>>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the
->>>>>>>>> code
->>>>>>>>> still builds if it is not selected.
->>>>>>>>> - Change iio_channel_get to take device pointer as argument
->>>>>>>>> instead
->>>>>>>>> of
->>>>>>>>> device name. Retain old API as of_iio_channel_get_sys.
->>>>>>>>> - iio_channel_get now works for both OF and non-OF
->>>>>>>>> configurations.
->>>>>>>>>
->>>>>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   76
->>>>>>>>>  ++++++++
->>>>>>>>>  drivers/iio/inkern.c                               |  186
->>>>>>>>>
->>>>>>>>> ++++++++++++++++++++ 2 files changed, 262 insertions(+)
->>>>>>>>>
->>>>>>>>>  create mode 100644
->>>>>>>>>
->>>>>>>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>>
->>>>>>>>> diff --git
->>>>>>>>> a/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt new
->>>>>>>>> file
->>>>>>>>> mode
->>>>>>>>> 100644
->>>>>>>>> index 0000000..58df5f6
->>>>>>>>> --- /dev/null
->>>>>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>>>> @@ -0,0 +1,76 @@
->>>>>>>>> +This binding is a work-in-progress. It is derived from clock
->>>>>>>>> bindings,
->>>>>>>>> +and based on suggestions from Lars-Peter Clausen [1].
->>>>>>>>> +
->>>>>>>>> +Sources of IIO channels can be represented by any node in the
->>>>>>>>> device
->>>>>>>>> +tree.  Those nodes are designated as IIO providers.  IIO
->>>>>>>>> consumer
->>>>>>>>> +nodes use a phandle and IIO specifier pair to connect IIO
->>>>>>>>> provider
->>>>>>>>> +outputs to IIO inputs.  Similar to the gpio specifiers, an IIO
->>>>>>>>> +specifier is an array of one or more cells identifying the IIO
->>>>>>>>> +output on a device.  The length of an IIO specifier is defined
->>>>>>>>> by
->>>>>>>>> the
->>>>>>>>> +value of a #io-channel-cells property in the clock provider
->>>>>>>>> node.
->>>>>>>>> +
->>>>>>>>> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
->>>>>>>>> +
->>>>>>>>> +==IIO providers==
->>>>>>>>> +
->>>>>>>>> +Required properties:
->>>>>>>>> +#io-channel-cells: Number of cells in an IIO specifier;
->>>>>>>>> Typically 0
->>>>>>>>> for nodes +		   with a single IIO output and 1 for nodes 
->>> with
->>>>>>>>> multiple +		   IIO outputs.
->>>>>>>>> +
->>>>>>>>> +For example:
->>>>>>>>> +
->>>>>>>>> +    adc: adc@35 {
->>>>>>>>> +	compatible = "maxim,max1139";
->>>>>>>>> +	reg = <0x35>;
->>>>>>>>> +        #io-channel-cells = <1>;
->>>>>>>>> +    };
->>>>>>>>> +
->>>>>>>>> +==IIO consumers==
->>>>>>>>> +
->>>>>>>>> +Required properties:
->>>>>>>>> +io-channels:	List of phandle and IIO specifier pairs, one 
->>> pair
->>>>>>>>> +		for each IIO input to the device.  Note: if the
->>>>>>>>> +		IIO provider specifies '0' for #clock-cells, then
->>>>>>>>> +		only the phandle portion of the pair will appear.
->>>>>>>>> +
->>>>>>>>> +Optional properties:
->>>>>>>>> +io-channel-names:
->>>>>>>>> +		List of IIO input name strings sorted in the same
->>>>>>>>> +		order as the io-channels property.  Consumers drivers
->>>>>>>>> +		will use io-channel-names to match IIO input names
->>>>>>>>> +		with IIO specifiers.
->>>>>>>>> +io-channel-ranges:
->>>>>>>>> +		Empty property indicating that child nodes can inherit
->>>>>
->>>>> named
->>>>>
->>>>>>>>> +		IIO channels from this node. Useful for bus nodes to
->>>>>
->>>>> provide
->>>>>
->>>>>>>>> +		and IIO channel to their children.
->>>>>>>>> +
->>>>>>>>> +For example:
->>>>>>>>> +
->>>>>>>>> +    device {
->>>>>>>>> +        io-channels = <&adc 1>, <&ref 0>;
->>>>>>>>> +        io-channel-names = "vcc", "vdd";
->>>>>>>>> +    };
->>>>>>>>> +
->>>>>>>>> +This represents a device with two IIO inputs, named "vcc" and
->>>>>>>>> "vdd".
->>>>>>>>> +The vcc channel is connected to output 1 of the &adc device,
->>>>>>>>> and
->>>>>>>>> the
->>>>>>>>> +vdd channel is connected to output 0 of the &ref device.
->>>>>>>>> +
->>>>>>>>> +==Example==
->>>>>>>>> +
->>>>>>>>> +	adc: max1139@35 {
->>>>>>>>> +		compatible = "maxim,max1139";
->>>>>>>>> +		reg = <0x35>;
->>>>>>>>> +		#io-channel-cells = <1>;
->>>>>>>>> +	};
->>>>>>>>> +
->>>>>>>>> +	...
->>>>>>>>> +
->>>>>>>>> +	iio_hwmon {
->>>>>>>>> +		compatible = "iio-hwmon";
->>>>>>>>> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
->>>>>>>>> +			<&adc 3>, <&adc 4>, <&adc 5>,
->>>>>>>>> +			<&adc 6>, <&adc 7>, <&adc 8>,
->>>>>>>>> +			<&adc 9>, <&adc 10>, <&adc 11>;
->>>>>>>>> +		io-channel-names = "vcc", "vdd", "vref", "1.2V";
->>>>>>>>> +	};
->>>>>>>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>>>>>>>> index b289915..d48f2a8 100644
->>>>>>>>> --- a/drivers/iio/inkern.c
->>>>>>>>> +++ b/drivers/iio/inkern.c
->>>>>>>>> @@ -10,6 +10,7 @@
->>>>>>>>>
->>>>>>>>>  #include <linux/export.h>
->>>>>>>>>  #include <linux/slab.h>
->>>>>>>>>  #include <linux/mutex.h>
->>>>>>>>>
->>>>>>>>> +#include <linux/of.h>
->>>>>>>>>
->>>>>>>>>  #include <linux/iio/iio.h>
->>>>>>>>>  #include "iio_core.h"
->>>>>>>>>
->>>>>>>>> @@ -92,6 +93,179 @@ static const struct iio_chan_spec
->>>>>>>>>
->>>>>>>>>  	return chan;
->>>>>>>>>  
->>>>>>>>>  }
->>>>>>>>>
->>>>>>>>> +#ifdef CONFIG_OF
->>>>>>>>> +
->>>>>>>>> +static int iio_dev_node_match(struct device *dev, void *data)
->>>>>>>>> +{
->>>>>>>>> +	return !strcmp(dev->type->name, "iio_device") && dev->of_node
->>>>>
->>>>> ==
->>>>>
->>>>>>>> data;
->>>>>>>>
->>>>>>>> Hmm, do you need to check type name here? One device node should
->>>>>>>> rather
->>>>>>>> represent only one device, making node an unique identifier.
->>>>>>>>
->>>>>>>> It this is meant to be a sanity check, it could be done one time
->>>>>>>> after
->>>>>>>> finding the device.
->>>>>>>
->>>>>>> Hi Tomasz,
->>>>>>>
->>>>>>> This is what Lars had suggested earlier:
->>>>>>>> Yes, use bus_find_device on iio_bus_type. A nice example how to
->>>>>>>> use
->>>>>>>> this to lookup device by of node is of_find_i2c_device_by_node.
->>>>>>>> For
->>>>>>>> IIO you also need to make sure that dev->type is iio_dev_type,
->>>>>>>> since
->>>>>>>> both devices and triggers are registered on the same bus.
->>>>>>>
->>>>>>> Is it really needed, or in other words would it be sufficient to
->>>>>>> check
->>>>>>> if of_node and data match each other ? Your reasoning makes sense
->>>>>>> to
->>>>>>> me, and I had thought about it as well, but I don't really know,
->>>>>>> and
->>>>>>> I don't know how I could test it and guarantee correctness either.
->>>>>>> I'll be happy to take the strcmp() out if someone tells me that it
->>>>>>> is
->>>>>>> definitely not needed ...
->>>>>>
->>>>>> A IIO trigger and a IIO device may have the same of_node, e.g. if
->>>>>> they
->>>>>> both belong to the same physical device. But you don't need to do
->>>>>> the
->>>>>> strcmp just compare dev->type to iio_dev_type i.e. dev->type ==
->>>>>> &iio_dev_type. Although it doesn't really matter in practice first
->>>>>> check for the of_node then check for the type, since the of_node
->>>>>> will
->>>>>> only match for a few devices at most, the type will match for quite
->>>>>> a
->>>>>> few.
->>>>>
->>>>> I must disagree.
->>>>>
->>>>> If you have two IIO devices provided by one physical device, then in
->>>>>
->>>>> device tree they should be represented as follows:
->>>>> 	phys-dev@12345678 {
->>>>> 	
->>>>> 		compatible = "some-physical-device";
->>>>> 		/* ... */
->>>>> 		
->>>>> 		my_trig: iio-trigger {
->>>>> 		
->>>>> 			/* ... */
->>>>> 		
->>>>> 		};
->>>>> 		
->>>>> 		my_dev: iio-device {
->>>>> 		
->>>>> 			/* ... */
->>>>> 		
->>>>> 		};
->>>>> 	
->>>>> 	};
->>>>>
->>>>> Notice that phys-dev works here as an IIO bus on which its IIO devices
->>>>> are available. This is related to the convention that single OF
->>>>> device node represents single device, which would be violated
->>>>> otherwise.
->>>>
->>>> Right now the iio device is a child of the physical device, and I am
->>>> simply passing of_node on to it. guess you are saying that is not
->>>> correct ?
->>>>
->>>> If so, what would be the correct approach ? Something like the following
->>>> ?
->>>>
->>>> 	voltage-sensor@35 {
->>>> 		compatible = "maxim,max1139";
->>>> 		reg = <0x35>;
->>>> 		vcc-supply = <&reg_3p3v>;
->>>> 		vref-supply = <&reg_3p3v>;
->>>>
->>>> 		max1139-iio: iio-device {
->>>> 			device_type = "iio_device";
->>>> 			#io-channel-cells = <1>;
->>>> 		};
->>>> 	};
->>>>
->>>> and in the driver probe function:
->>>>
->>>> 	if (parent->of_node)
->>>> 		iio_dev->dev.of_node = of_find_node_by_type(parent->of_node,
->>>> "iio_device");
->>>>
->>>> Another option would be to use of_find_compatible_node() and something
->>>> like compatible = "iio-device";
->>>> in the iio-device node.
->>>
->>> A device node is defined as a node having compatible property. Other nodes 
->>> should be seen as helper nodes, which do not represent devices (although 
->>> they all have struct device_node in Linux).
->>>
->>> Also, AFAIK, device_type is a deprecated property used by some legacy 
->>> PowerPC machines and for current machines only compatible should be used.
->>>
->>> So I guess the approach with compatible would be appropriate here.
->>>
->>> However for physical devices providing only a single IIO device it might 
->>> be better to allow simpler specification, like:
->>>
->>>  	max1139-iio: voltage-sensor@35 {
->>>  		compatible = "maxim,max1139", "iio_device";
->>
->> I don't think this makes a lot of sense. First of all iio_device an artificial
->> Linux term, while the device tree should describe the hardware. Secondly there
->> is no generic iio driver which could match on a node with a "iio_device"
->> compability string and stuff would just work. I mean we don't do
->>
->> compatible = "atmel,at91sam9260-i2c", "i2c-master";
->>
->> or similar either.
-> Lars, what you say here doesn't cover one 'interesting' case.
+On Tue, Feb 19, 2013 at 12:57:43PM +0100, Lars-Peter Clausen wrote:
+> On 02/19/2013 02:30 AM, Guenter Roeck wrote:
+> > On Mon, Feb 18, 2013 at 02:38:57PM +0100, Lars-Peter Clausen wrote:
+> [...]
+> >> diff --git a/drivers/hwmon/adt7310.c b/drivers/hwmon/adt7310.c
+> >> new file mode 100644
+> >> index 0000000..2196ac3
+> >> --- /dev/null
+> >> +++ b/drivers/hwmon/adt7310.c
+> >> @@ -0,0 +1,115 @@
+> >> +/*
+> >> + * ADT7310/ADT7310 digital temperature sensor driver
+> >> + *
+> >> + * Copyright 2010-2013 Analog Devices Inc.
+> > 
+> > Not really; copyright is yours, unless you are signing it off to analog or if
+> > you are working for them and have permission (or the duty) to sign off the
+> > copyright. Even then it should be 2013 only for this file.
 > 
-> An iio_device has one aspect in which it is not artificial. It represents
-> a group of channels that may be sampled at 'one instance' on a given device.
+> I work for them. The copyright notice comes from the IIO adt7410/adt7310
+> driver, where also this code comes from. Although this portion of the code
+> was written in 2012, so maybe change it to 2012-2013.
+> 
+Ok.
 
-I primarily meant the term IIO.
+> [...]
+> >> diff --git a/drivers/hwmon/adt7x10.h b/drivers/hwmon/adt7x10.h
+> >> new file mode 100644
+> >> index 0000000..a7165e6
+> >> --- /dev/null
+> >> +++ b/drivers/hwmon/adt7x10.h
+> >> @@ -0,0 +1,48 @@
+> >> +#ifndef __HWMON_ADT7X10_H__
+> >> +#define __HWMON_ADT7X10_H__
+> >> +
+> >> +#include <linux/types.h>
+> >> +#include <linux/pm.h>
+> >> +
+> >> +/* ADT7410 registers definition */
+> >> +#define ADT7410_TEMPERATURE		0
+> >> +#define ADT7410_STATUS			2
+> >> +#define ADT7410_CONFIG			3
+> >> +#define ADT7410_T_ALARM_HIGH		4
+> >> +#define ADT7410_T_ALARM_LOW		6
+> >> +#define ADT7410_T_CRIT			8
+> >> +#define ADT7410_T_HYST			0xA
+> >> +#define ADT7410_ID			0xB
+> >> +
+> >> +/* ADT7310 registers definition */
+> >> +#define ADT7310_STATUS			0
+> >> +#define ADT7310_CONFIG			1
+> >> +#define ADT7310_TEMPERATURE		2
+> >> +#define ADT7310_ID			3
+> >> +#define ADT7310_T_CRIT			4
+> >> +#define ADT7310_T_HYST			5
+> >> +#define ADT7310_T_ALARM_HIGH		6
+> >> +#define ADT7310_T_ALARM_LOW		7
+> >> +
+> >> +struct device;
+> >> +
+> >> +struct adt7410_ops {
+> >> +	int (*read_byte)(struct device *, u8 reg);
+> >> +	int (*write_byte)(struct device *, u8 reg, u8 data);
+> >> +	int (*read_word)(struct device *, u8 reg);
+> >> +	int (*write_word)(struct device *, u8 reg, u16 data);
+> >> +};
+> >> +
+> >> +int adt7410_probe(struct device *dev, const char *name,
+> >> +	const struct adt7410_ops *ops);
+> >> +int adt7410_remove(struct device *dev);
+> >> +
+> > 
+> > I think the above should be adt7x10_ops, adt7x10_probe and adt7x10_remove, to
+> > indicate that those are common functions.
+> > 
+> > I would actually suggest to rename all functions in adt7x10.c (not just the
+> > exported ones).
+> 
+> I normally don't like to rename all the symbols in one file just because
+> support for another part is added, since it just cause lots of noise in the
+> diff. My initial plan was to call the two new modules adt7410-i2c and
+> adt7410-spi, but then though it is probably going to be confusing to have
+> the driver for the adt7310 called adt7410-spi. In this case the renaming
+> probably doesn't hurt since we already have lots of diff noise anyway. It
+> probably would have made sense to make the review easier to split this up in
+> two patches, one which renames adt7410 to adt7x10 and a second one which
+> adds the new functionality.
+> 
+In general I agree, but the diff shows the renamed file as all-new code anyway,
+so I figured renaming the functions doesn't really create additional noise. I'll
+leave it up to you how to handle it in detail, but the exported common functions
+and defines should really not be named adt7410. After all, future developers
+won't know the history.
 
-- Lars
+Thanks,
+Guenter
