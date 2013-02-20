@@ -1,158 +1,509 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qe0-f50.google.com ([209.85.128.50]:41230 "EHLO
-	mail-qe0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750711Ab3B0QVF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 11:21:05 -0500
-Received: by mail-qe0-f50.google.com with SMTP id w7so591461qeb.9
-        for <linux-iio@vger.kernel.org>; Wed, 27 Feb 2013 08:21:04 -0800 (PST)
-Date: Wed, 27 Feb 2013 11:21:01 -0500
-From: Chris Micali <chrismicali@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: "=?utf-8?Q?linux-iio=40vger.kernel.org?=" <linux-iio@vger.kernel.org>
-Message-ID: <B42F83EDFE8B4D2D8D46B6241B49B4E8@gmail.com>
-In-Reply-To: <512E2F31.8000604@metafoo.de>
-References: <26387F1A648A4D3D9BB4142C4F0AAE98@gmail.com>
- <512E2F31.8000604@metafoo.de>
-Subject: Re: IIO Drivers
+Received: from mail.active-venture.com ([67.228.131.205]:62616 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759228Ab3BTTY0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2013 14:24:26 -0500
+Date: Wed, 20 Feb 2013 11:24:58 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robherring2@gmail.com>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Anton Vorontsov <cbou@mail.ru>,
+	David Woodhouse <dwmw2@infradead.org>,
+	devicetree-discuss@lists.ozlabs.org,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Rob Herring <rob.herring@calxeda.com>,
+	linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Subject: Re: [PATCH v5] iio: Add OF support
+Message-ID: <20130220192458.GA29247@roeck-us.net>
+References: <1360256940-19438-1-git-send-email-linux@roeck-us.net>
+ <51250A0E.80806@gmail.com>
+ <20130220181148.GA19278@roeck-us.net>
+ <2dada206-6401-4a35-85d8-298dd08b0420@email.android.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="512e326d_1f48eaa1_5f2e"
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <2dada206-6401-4a35-85d8-298dd08b0420@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---512e326d_1f48eaa1_5f2e
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi Lars,
-Thanks a lot for getting back to me. I've attached my code - it's pretty simple, I just copied an existing driver. As I mentioned individual reads are working fine (if i cat in_voltage0_raw) but buffered reads are failing. I've tracked the issue to industrialio-buffer.c in iio_compute_scan_bytes() which always returns zero because, i believe, the mask is 0. I haven't been able to find any docs on what 'scan masks' mean but I have seen a few drivers that supply available scan masks. Should I be specifying scan masks? 
-Thanks!
--chris
-
-
-
-On Wednesday, February 27, 2013 at 11:07 AM, Lars-Peter Clausen wrote:
-
-> On 02/26/2013 08:56 PM, Chris Micali wrote:
-> > Hello Lars,
-> > 
-> > I'm doing a bit of hacking on a IIO driver based on some of your drivers on a 3.8 kernel (specifically writing a driver for a TI SPI adc.) I've been able to get a driver up and working such that I can read directly from the in_voltage0_raw on sysfs and get the correct values but I can't seem to get buffered access working (via iio_cmdsrv.) I've had a hard time finding any docs on this stuff and I was wondering if you could give me any pointers on where to look or who else perhaps to ask about this stuff? Any pointers would be very much appreciated!
-> > 
-> > Thanks,
-> > Chris
+On Wed, Feb 20, 2013 at 06:51:08PM +0000, Jonathan Cameron wrote:
 > 
 > 
+> Guenter Roeck <linux@roeck-us.net> wrote:
 > 
-> Hi,
+> >On Wed, Feb 20, 2013 at 11:38:22AM -0600, Rob Herring wrote:
+> >> On 02/07/2013 11:09 AM, Guenter Roeck wrote:
+> >> > Provide bindings and parse OF data during initialization.
+> >> > 
+> >> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> >> > ---
+> >> > v5:
+> >> > - Updated examples in bindings.
+> >> > v4:
+> >> > - Fixed wrong parameter to dummy of_iio_channel_get_by_name if
+> >CONFIG_OF is
+> >> >   undefined, and wrong return value.
+> >> > - Initialize indio_dev->of_node in iio_device_register if the
+> >calling driver
+> >> >   neglected to do it.
+> >> > v3:
+> >> > - Cleaned up documentation (formatting, left-over clock references)
+> >> > - Updated bindings description to permit sub-devices
+> >> > - When searching for iio devices, use the pointer to the iio device
+> >type instead
+> >> >   of strcmp. Rename iio_dev_type to iio_device_type (to match other
+> >device
+> >> >   types) and make it global for that purpose. Check the OF node
+> >first, then the
+> >> >   device type, as the node is less likely to match.
+> >> > - Move the common code in of_iio_channel_get and
+> >of_iio_channel_get_all to
+> >> >   __of_iio_channel_get.
+> >> > - Return NULL from of_iio_channel_get_by_name if nothing is found,
+> >or
+> >> >   an error if there is a problem with consistency or if the
+> >provider device is
+> >> >   not yet available.
+> >> > - In iio_channel_get, return if of_iio_channel_get_by_name()
+> >returns a channel
+> >> >   or an error, and continue otherwise.
+> >> > v2:
+> >> > - Rebased to iio/togreg
+> >> > - Documentation update per feedback
+> >> > - Dropped io-channel-output-names from the bindings document. The
+> >property is
+> >> >   not used in the code, and it is not entirely clear what it would
+> >be used for.
+> >> >   If there is a need for it, we can add it back in later on.
+> >> > - Don't export OF specific API calls
+> >> > - For OF support, no longer depend on iio_map
+> >> > - Add #ifdef CONFIG_OF where appropriate, and ensure that the code
+> >still builds
+> >> >   if it is not selected.
+> >> > - Change iio_channel_get to take device pointer as argument instead
+> >of device
+> >> >   name. Retain old API as of_iio_channel_get_sys.
+> >> > - iio_channel_get now works for both OF and non-OF configurations
+> >> > - Use regulator to get vref for max1363 driver.
+> >> > 
+> >> >  .../devicetree/bindings/iio/iio-bindings.txt       |   97
+> >+++++++++++
+> >> >  drivers/iio/iio_core.h                             |    1 +
+> >> >  drivers/iio/industrialio-core.c                    |    8 +-
+> >> >  drivers/iio/inkern.c                               |  171
+> >++++++++++++++++++++
+> >> >  4 files changed, 275 insertions(+), 2 deletions(-)
+> >> >  create mode 100644
+> >Documentation/devicetree/bindings/iio/iio-bindings.txt
+> >> > 
+> >> > diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> >b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> >> > new file mode 100644
+> >> > index 0000000..1182845
+> >> > --- /dev/null
+> >> > +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> >> > @@ -0,0 +1,97 @@
+> >> > +This binding is a work-in-progress. It is derived from clock
+> >bindings,
+> >> > +and based on suggestions from Lars-Peter Clausen [1].
+> >> 
+> >> Bindings are an ABI. It should not be a WIP. What part is a WIP?
+> >> 
+> >The text is copied from clock bindings. I do not claim to be better
+> >than the clock subsystem is doing in respect to its bindings.
+> >
+> >I'll be more than happy to take this text out if it is a source of
+> >contention,
+> >even more so if that is what is holding up the patch. Jonathan ?
+> I don't really care about the wording though can see why Rob asked!
+> We will probably have other stuff to add anyway.
 > 
-> I'm afraid except for the the documentation in
-> drivers/staging/iio/Documentation/, the kernel doc comments and the skeleton
-> driver (drivers/staging/iio/iio_simple_dummy*) there is not much additional
-> documentation available.
-> 
-> The general place to ask questions about IIO is the IIO mailinglist. I've
-> put it on CC, hope you don't mind.
-> 
-> I think we can help you best if you post your code.
-> 
-> - Lars 
---512e326d_1f48eaa1_5f2e
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="ads7945.c"
 
-LyoKICogQURTNzk0NSBTUEkgQURDIGRyaXZlcgogKi8KCiNpbmNsdWRlIDxsaW51eC9kZXZpY2Uu
-aD4KI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPgojaW5jbHVkZSA8bGludXgvc2xhYi5oPgojaW5j
-bHVkZSA8bGludXgvc3lzZnMuaD4KI2luY2x1ZGUgPGxpbnV4L3NwaS9zcGkuaD4KI2luY2x1ZGUg
-PGxpbnV4L3JlZ3VsYXRvci9jb25zdW1lci5oPgojaW5jbHVkZSA8bGludXgvZXJyLmg+CiNpbmNs
-dWRlIDxsaW51eC9tb2R1bGUuaD4KCiNpbmNsdWRlIDxsaW51eC9paW8vaWlvLmg+CiNpbmNsdWRl
-IDxsaW51eC9paW8vc3lzZnMuaD4KI2luY2x1ZGUgPGxpbnV4L2lpby9idWZmZXIuaD4KI2luY2x1
-ZGUgPGxpbnV4L2lpby90cmlnZ2VyX2NvbnN1bWVyLmg+CiNpbmNsdWRlIDxsaW51eC9paW8vdHJp
-Z2dlcmVkX2J1ZmZlci5oPgoKI2RlZmluZSBSRVNfTUFTSyhiaXRzKQkoKDEgPDwgKGJpdHMpKSAt
-IDEpCgpzdHJ1Y3QgYWRzNzk0NV9zdGF0ZTsKCnN0cnVjdCBhZHM3OTQ1X2NoaXBfaW5mbyB7Cgl1
-bnNpZ25lZCBpbnQJCQlpbnRfdnJlZl91djsKCXN0cnVjdCBpaW9fY2hhbl9zcGVjCQljaGFubmVs
-c1syXTsKCXZvaWQgKCpyZXNldCkoc3RydWN0IGFkczc5NDVfc3RhdGUgKik7Cn07CgpzdHJ1Y3Qg
-YWRzNzk0NV9zdGF0ZSB7CglzdHJ1Y3Qgc3BpX2RldmljZQkJKnNwaTsKCgljb25zdCBzdHJ1Y3Qg
-YWRzNzk0NV9jaGlwX2luZm8JKmNoaXBfaW5mbzsKCglzdHJ1Y3Qgc3BpX3RyYW5zZmVyCQl4ZmVy
-OwoJc3RydWN0IHNwaV9tZXNzYWdlCQltc2c7CgkvKgoJICogRE1BICh0aHVzIGNhY2hlIGNvaGVy
-ZW5jeSBtYWludGVuYW5jZSkgcmVxdWlyZXMgdGhlCgkgKiB0cmFuc2ZlciBidWZmZXJzIHRvIGxp
-dmUgaW4gdGhlaXIgb3duIGNhY2hlIGxpbmVzLgoJICogTWFrZSB0aGUgYnVmZmVyIGxhcmdlIGVu
-b3VnaCBmb3Igb25lIDE2IGJpdCBzYW1wbGUgYW5kIG9uZSA2NCBiaXQKCSAqIGFsaWduZWQgNjQg
-Yml0IHRpbWVzdGFtcC4KCSAqLwoJdW5zaWduZWQgY2hhciBkYXRhW0FMSUdOKDIsIHNpemVvZihz
-NjQpKSArIHNpemVvZihzNjQpXQoJCQlfX19fY2FjaGVsaW5lX2FsaWduZWQ7Cn07CgplbnVtIGFk
-czc5NDVfc3VwcG9ydGVkX2RldmljZV9pZHMgewoJSURfQURTNzk0NSwKfTsKCnN0YXRpYyBpcnFy
-ZXR1cm5fdCBhZHM3OTQ1X3RyaWdnZXJfaGFuZGxlcihpbnQgaXJxLCB2b2lkICAqcCkKewoJc3Ry
-dWN0IGlpb19wb2xsX2Z1bmMgKnBmID0gcDsKCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBw
-Zi0+aW5kaW9fZGV2OwoJc3RydWN0IGFkczc5NDVfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9f
-ZGV2KTsKCXM2NCB0aW1lX25zOwoJaW50IGJfc2VudDsKCgliX3NlbnQgPSBzcGlfc3luYyhzdC0+
-c3BpLCAmc3QtPm1zZyk7CglpZiAoYl9zZW50IDwgMCkKCQlnb3RvIGRvbmU7CgoJdGltZV9ucyA9
-IGlpb19nZXRfdGltZV9ucygpOwoKCWlmIChpbmRpb19kZXYtPnNjYW5fdGltZXN0YW1wKQoJCSgo
-czY0ICopc3QtPmRhdGEpWzFdID0gdGltZV9uczsKCglpaW9fcHVzaF90b19idWZmZXJzKGluZGlv
-X2Rldiwgc3QtPmRhdGEpOwpkb25lOgoJaWlvX3RyaWdnZXJfbm90aWZ5X2RvbmUoaW5kaW9fZGV2
-LT50cmlnKTsKCglyZXR1cm4gSVJRX0hBTkRMRUQ7Cn0KCnN0YXRpYyBpbnQgYWRzNzk0NV9zY2Fu
-X2RpcmVjdChzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAqc3QpCnsKCWludCByZXQ7CgoJcmV0ID0gc3Bp
-X3N5bmMoc3QtPnNwaSwgJnN0LT5tc2cpOwoJaWYgKHJldCkKCQlyZXR1cm4gcmV0OwoKCXJldHVy
-biBiZTE2X3RvX2NwdXAoKF9fYmUxNiAqKXN0LT5kYXRhKTsKfQoKc3RhdGljIGludCBhZHM3OTQ1
-X3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsCgkJCSAgIHN0cnVjdCBpaW9fY2hh
-bl9zcGVjIGNvbnN0ICpjaGFuLAoJCQkgICBpbnQgKnZhbCwKCQkJICAgaW50ICp2YWwyLAoJCQkg
-ICBsb25nIG0pCnsKCWludCByZXQ7CglzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAqc3QgPSBpaW9fcHJp
-dihpbmRpb19kZXYpOwoJaW50IHNjYWxlX3V2OwoKCXN3aXRjaCAobSkgewoJY2FzZSBJSU9fQ0hB
-Tl9JTkZPX1JBVzoKCQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsKCQlpZiAoaWlvX2J1
-ZmZlcl9lbmFibGVkKGluZGlvX2RldikpCgkJCXJldCA9IC1FQlVTWTsKCQllbHNlCgkJCXJldCA9
-IGFkczc5NDVfc2Nhbl9kaXJlY3Qoc3QpOwoJCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5tbG9j
-ayk7CgoJCWlmIChyZXQgPCAwKQoJCQlyZXR1cm4gcmV0OwoJCSp2YWwgPSAocmV0ID4+IHN0LT5j
-aGlwX2luZm8tPmNoYW5uZWxzWzBdLnNjYW5fdHlwZS5zaGlmdCkgJgoJCQlSRVNfTUFTSyhzdC0+
-Y2hpcF9pbmZvLT5jaGFubmVsc1swXS5zY2FuX3R5cGUucmVhbGJpdHMpOwoJCXJldHVybiBJSU9f
-VkFMX0lOVDsKCWNhc2UgSUlPX0NIQU5fSU5GT19TQ0FMRToKCQlzY2FsZV91diA9IHN0LT5jaGlw
-X2luZm8tPmludF92cmVmX3V2OwoJCXNjYWxlX3V2ID4+PSBjaGFuLT5zY2FuX3R5cGUucmVhbGJp
-dHM7CgkJKnZhbCA9ICBzY2FsZV91diAvIDEwMDA7CgkJKnZhbDIgPSAoc2NhbGVfdXYgJSAxMDAw
-KSAqIDEwMDA7CgkJcmV0dXJuIElJT19WQUxfSU5UX1BMVVNfTUlDUk87Cgl9CglyZXR1cm4gLUVJ
-TlZBTDsKfQoKc3RhdGljIGNvbnN0IHN0cnVjdCBhZHM3OTQ1X2NoaXBfaW5mbyBhZHM3OTQ1X2No
-aXBfaW5mb190YmxbXSA9IHsKCVtJRF9BRFM3OTQ1XSA9IHsKCQkuY2hhbm5lbHNbMF0gPSB7CgkJ
-CQkudHlwZSA9IElJT19WT0xUQUdFLAoJCQkJLmluZGV4ZWQgPSAxLAoJCQkJLmNoYW5uZWwgPSAx
-LAoJCQkJLnNjYW5fdHlwZSA9IHsKCQkJCQkJLnNpZ24gPSAncycsCgkJCQkJCS5yZWFsYml0cyA9
-IDE0LAoJCQkJCQkuc3RvcmFnZWJpdHMgPSAxNiwKCQkJCQkJLnNoaWZ0ID0gMiwKCQkJCQkJLmVu
-ZGlhbm5lc3MgPSBJSU9fQkUsCgkJCQl9LAoJCQkJLmluZm9fbWFzayA9IElJT19DSEFOX0lORk9f
-UkFXX1NFUEFSQVRFX0JJVCwKCQl9LAoJCS5jaGFubmVsc1sxXSA9IElJT19DSEFOX1NPRlRfVElN
-RVNUQU1QKDEpLAoJCS5pbnRfdnJlZl91diA9IDI1MDAKCX0sCn07CgpzdGF0aWMgY29uc3Qgc3Ry
-dWN0IGlpb19pbmZvIGFkczc5NDVfaW5mbyA9IHsKCS5kcml2ZXJfbW9kdWxlID0gVEhJU19NT0RV
-TEUsCgkucmVhZF9yYXcgPSAmYWRzNzk0NV9yZWFkX3JhdywKfTsKCnN0YXRpYyBpbnQgYWRzNzk0
-NV9wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQp7CglzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAq
-c3Q7CglzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2OwoJaW50IHJldDsKCglpbmRpb19kZXYgPSBp
-aW9fZGV2aWNlX2FsbG9jKHNpemVvZigqc3QpKTsKCWlmIChpbmRpb19kZXYgPT0gTlVMTCkgewoJ
-CXJldCA9IC1FTk9NRU07CgkJZ290byBlcnJvcl9yZXQ7Cgl9CgoJc3QgPSBpaW9fcHJpdihpbmRp
-b19kZXYpOwoJc3QtPmNoaXBfaW5mbyA9CgkJJmFkczc5NDVfY2hpcF9pbmZvX3RibFtzcGlfZ2V0
-X2RldmljZV9pZChzcGkpLT5kcml2ZXJfZGF0YV07CgoJc3BpX3NldF9kcnZkYXRhKHNwaSwgaW5k
-aW9fZGV2KTsKCglzdC0+c3BpID0gc3BpOwoKCS8qIEVzdGFibGlzaCB0aGF0IHRoZSBpaW9fZGV2
-IGlzIGEgY2hpbGQgb2YgdGhlIHNwaSBkZXZpY2UgKi8KCWluZGlvX2Rldi0+ZGV2LnBhcmVudCA9
-ICZzcGktPmRldjsKCWluZGlvX2Rldi0+bmFtZSA9IHNwaV9nZXRfZGV2aWNlX2lkKHNwaSktPm5h
-bWU7CglpbmRpb19kZXYtPm1vZGVzID0gSU5ESU9fRElSRUNUX01PREU7IC8vIHwgSU5ESU9fQlVG
-RkVSX1RSSUdHRVJFRDsKCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSBzdC0+Y2hpcF9pbmZvLT5jaGFu
-bmVsczsKCWluZGlvX2Rldi0+bnVtX2NoYW5uZWxzID0gMjsKCWluZGlvX2Rldi0+aW5mbyA9ICZh
-ZHM3OTQ1X2luZm87CgoJLyogU2V0dXAgZGVmYXVsdCBtZXNzYWdlICovCgoJc3QtPnhmZXIucnhf
-YnVmID0gJnN0LT5kYXRhOwoJc3QtPnhmZXIubGVuID0gc3QtPmNoaXBfaW5mby0+Y2hhbm5lbHNb
-MF0uc2Nhbl90eXBlLnN0b3JhZ2ViaXRzIC8gODsKCglzcGlfbWVzc2FnZV9pbml0KCZzdC0+bXNn
-KTsKCXNwaV9tZXNzYWdlX2FkZF90YWlsKCZzdC0+eGZlciwgJnN0LT5tc2cpOwoKCXJldCA9IGlp
-b190cmlnZ2VyZWRfYnVmZmVyX3NldHVwKGluZGlvX2RldiwgTlVMTCwKCQkJJmFkczc5NDVfdHJp
-Z2dlcl9oYW5kbGVyLCBOVUxMKTsKCglpZiAocmV0KQoJCWdvdG8gZXJyb3JfZnJlZV9kZXY7CgoJ
-aWYgKHN0LT5jaGlwX2luZm8tPnJlc2V0KQoJCXN0LT5jaGlwX2luZm8tPnJlc2V0KHN0KTsKCgly
-ZXQgPSBpaW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlvX2Rldik7CglpZiAocmV0KQoJCWdvdG8gZXJy
-b3JfcmluZ191bnJlZ2lzdGVyOwoKCXJldHVybiAwOwoKZXJyb3JfcmluZ191bnJlZ2lzdGVyOgoJ
-aWlvX3RyaWdnZXJlZF9idWZmZXJfY2xlYW51cChpbmRpb19kZXYpOwplcnJvcl9mcmVlX2RldjoK
-CWlpb19kZXZpY2VfZnJlZShpbmRpb19kZXYpOwplcnJvcl9yZXQ6CglyZXR1cm4gcmV0Owp9Cgpz
-dGF0aWMgaW50IGFkczc5NDVfcmVtb3ZlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpCnsKCXN0cnVj
-dCBpaW9fZGV2ICppbmRpb19kZXYgPSBzcGlfZ2V0X2RydmRhdGEoc3BpKTsKCglpaW9fZGV2aWNl
-X3VucmVnaXN0ZXIoaW5kaW9fZGV2KTsKCWlpb190cmlnZ2VyZWRfYnVmZmVyX2NsZWFudXAoaW5k
-aW9fZGV2KTsKCglpaW9fZGV2aWNlX2ZyZWUoaW5kaW9fZGV2KTsKCglyZXR1cm4gMDsKfQoKc3Rh
-dGljIGNvbnN0IHN0cnVjdCBzcGlfZGV2aWNlX2lkIGFkczc5NDVfaWRbXSA9IHsKCXsiYWRzNzk0
-NSIsIElEX0FEUzc5NDV9LAoJe30KfTsKTU9EVUxFX0RFVklDRV9UQUJMRShzcGksIGFkczc5NDVf
-aWQpOwoKc3RhdGljIHN0cnVjdCBzcGlfZHJpdmVyIGFkczc5NDVfZHJpdmVyID0gewoJLmRyaXZl
-ciA9IHsKCQkubmFtZQk9ICJhZHM3OTQ1IiwKCQkub3duZXIJPSBUSElTX01PRFVMRSwKCX0sCgku
-cHJvYmUJCT0gYWRzNzk0NV9wcm9iZSwKCS5yZW1vdmUJCT0gYWRzNzk0NV9yZW1vdmUsCgkuaWRf
-dGFibGUJPSBhZHM3OTQ1X2lkLAp9Owptb2R1bGVfc3BpX2RyaXZlcihhZHM3OTQ1X2RyaXZlcik7
-CgpNT0RVTEVfQVVUSE9SKCJjbSIpOwpNT0RVTEVfREVTQ1JJUFRJT04oIlRleGFzIEluc3RydW1l
-bnRzIEFEUzc5NDUgYW5kIHNpbWlsYXIgMS1jaGFubmVsIEFEQ3MiKTsKTU9EVUxFX0xJQ0VOU0Uo
-IkdQTCB2MiIpOwo=
+Quite likely - for example, I did not add io-output-names since I did not
+know what to do with it.
 
---512e326d_1f48eaa1_5f2e--
+What do you want me to do ? Submit another version with the sentence deleted,
+or keep it as-is ?
 
+Thanks,
+Guenter
+
+> Jonathan
+> >
+> >Thanks,
+> >Guenter
+> >
+> >> Knowing nothing about IIO, the binding seems sane.
+> >> 
+> >> Rob
+> >> 
+> >> > +Sources of IIO channels can be represented by any node in the
+> >device
+> >> > +tree. Those nodes are designated as IIO providers. IIO consumer
+> >> > +nodes use a phandle and IIO specifier pair to connect IIO provider
+> >> > +outputs to IIO inputs. Similar to the gpio specifiers, an IIO
+> >> > +specifier is an array of one or more cells identifying the IIO
+> >> > +output on a device. The length of an IIO specifier is defined by
+> >the
+> >> > +value of a #io-channel-cells property in the IIO provider node.
+> >> > +
+> >> > +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+> >> > +
+> >> > +==IIO providers==
+> >> > +
+> >> > +Required properties:
+> >> > +#io-channel-cells: Number of cells in an IIO specifier; Typically
+> >0 for nodes
+> >> > +		   with a single IIO output and 1 for nodes with multiple
+> >> > +		   IIO outputs.
+> >> > +
+> >> > +Example for a simple configuration with no trigger:
+> >> > +
+> >> > +	adc: voltage-sensor@35 {
+> >> > +		compatible = "maxim,max1139";
+> >> > +		reg = <0x35>;
+> >> > +		#io-channel-cells = <1>;
+> >> > +	};
+> >> > +
+> >> > +Example for a configuration with trigger:
+> >> > +
+> >> > +	adc@35 {
+> >> > +		compatible = "some-vendor,some-adc";
+> >> > +		reg = <0x35>;
+> >> > +
+> >> > +		adc1: iio-device@0 {
+> >> > +			#io-channel-cells = <1>;
+> >> > +			/* other properties */
+> >> > +		};
+> >> > +		adc2: iio-device@1 {
+> >> > +			#io-channel-cells = <1>;
+> >> > +			/* other properties */
+> >> > +		};
+> >> > +	};
+> >> > +
+> >> > +==IIO consumers==
+> >> > +
+> >> > +Required properties:
+> >> > +io-channels:	List of phandle and IIO specifier pairs, one pair
+> >> > +		for each IIO input to the device. Note: if the
+> >> > +		IIO provider specifies '0' for #io-channel-cells,
+> >> > +		then only the phandle portion of the pair will appear.
+> >> > +
+> >> > +Optional properties:
+> >> > +io-channel-names:
+> >> > +		List of IIO input name strings sorted in the same
+> >> > +		order as the io-channels property. Consumers drivers
+> >> > +		will use io-channel-names to match IIO input names
+> >> > +		with IIO specifiers.
+> >> > +io-channel-ranges:
+> >> > +		Empty property indicating that child nodes can inherit named
+> >> > +		IIO channels from this node. Useful for bus nodes to provide
+> >> > +		and IIO channel to their children.
+> >> > +
+> >> > +For example:
+> >> > +
+> >> > +	device {
+> >> > +		io-channels = <&adc 1>, <&ref 0>;
+> >> > +		io-channel-names = "vcc", "vdd";
+> >> > +	};
+> >> > +
+> >> > +This represents a device with two IIO inputs, named "vcc" and
+> >"vdd".
+> >> > +The vcc channel is connected to output 1 of the &adc device, and
+> >the
+> >> > +vdd channel is connected to output 0 of the &ref device.
+> >> > +
+> >> > +==Example==
+> >> > +
+> >> > +	adc: max1139@35 {
+> >> > +		compatible = "maxim,max1139";
+> >> > +		reg = <0x35>;
+> >> > +		#io-channel-cells = <1>;
+> >> > +	};
+> >> > +
+> >> > +	...
+> >> > +
+> >> > +	iio_hwmon {
+> >> > +		compatible = "iio-hwmon";
+> >> > +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+> >> > +			<&adc 3>, <&adc 4>, <&adc 5>,
+> >> > +			<&adc 6>, <&adc 7>, <&adc 8>,
+> >> > +			<&adc 9>;
+> >> > +	};
+> >> > +
+> >> > +	some_consumer {
+> >> > +		compatible = "some-consumer";
+> >> > +		io-channels = <&adc 10>, <&adc 11>;
+> >> > +		io-channel-names = "adc1", "adc2";
+> >> > +	};
+> >> > diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> >> > index f652e6a..05c1b74 100644
+> >> > --- a/drivers/iio/iio_core.h
+> >> > +++ b/drivers/iio/iio_core.h
+> >> > @@ -18,6 +18,7 @@
+> >> >  struct iio_chan_spec;
+> >> >  struct iio_dev;
+> >> >  
+> >> > +extern struct device_type iio_device_type;
+> >> >  
+> >> >  int __iio_add_chan_devattr(const char *postfix,
+> >> >  			   struct iio_chan_spec const *chan,
+> >> > diff --git a/drivers/iio/industrialio-core.c
+> >b/drivers/iio/industrialio-core.c
+> >> > index 8848f16..6d8b027 100644
+> >> > --- a/drivers/iio/industrialio-core.c
+> >> > +++ b/drivers/iio/industrialio-core.c
+> >> > @@ -847,7 +847,7 @@ static void iio_dev_release(struct device
+> >*device)
+> >> >  	kfree(indio_dev);
+> >> >  }
+> >> >  
+> >> > -static struct device_type iio_dev_type = {
+> >> > +struct device_type iio_device_type = {
+> >> >  	.name = "iio_device",
+> >> >  	.release = iio_dev_release,
+> >> >  };
+> >> > @@ -869,7 +869,7 @@ struct iio_dev *iio_device_alloc(int
+> >sizeof_priv)
+> >> >  
+> >> >  	if (dev) {
+> >> >  		dev->dev.groups = dev->groups;
+> >> > -		dev->dev.type = &iio_dev_type;
+> >> > +		dev->dev.type = &iio_device_type;
+> >> >  		dev->dev.bus = &iio_bus_type;
+> >> >  		device_initialize(&dev->dev);
+> >> >  		dev_set_drvdata(&dev->dev, (void *)dev);
+> >> > @@ -960,6 +960,10 @@ int iio_device_register(struct iio_dev
+> >*indio_dev)
+> >> >  {
+> >> >  	int ret;
+> >> >  
+> >> > +	/* If the calling driver did not initialize of_node, do it here
+> >*/
+> >> > +	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+> >> > +		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+> >> > +
+> >> >  	/* configure elements for the chrdev */
+> >> >  	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+> >> >  
+> >> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> >> > index b289915..795d100 100644
+> >> > --- a/drivers/iio/inkern.c
+> >> > +++ b/drivers/iio/inkern.c
+> >> > @@ -10,6 +10,7 @@
+> >> >  #include <linux/export.h>
+> >> >  #include <linux/slab.h>
+> >> >  #include <linux/mutex.h>
+> >> > +#include <linux/of.h>
+> >> >  
+> >> >  #include <linux/iio/iio.h>
+> >> >  #include "iio_core.h"
+> >> > @@ -92,6 +93,164 @@ static const struct iio_chan_spec
+> >> >  	return chan;
+> >> >  }
+> >> >  
+> >> > +#ifdef CONFIG_OF
+> >> > +
+> >> > +static int iio_dev_node_match(struct device *dev, void *data)
+> >> > +{
+> >> > +	return dev->of_node == data && dev->type == &iio_device_type;
+> >> > +}
+> >> > +
+> >> > +static int __of_iio_channel_get(struct iio_channel *channel,
+> >> > +				struct device_node *np, int index)
+> >> > +{
+> >> > +	struct device *idev;
+> >> > +	struct iio_dev *indio_dev;
+> >> > +	int err;
+> >> > +	struct of_phandle_args iiospec;
+> >> > +
+> >> > +	err = of_parse_phandle_with_args(np, "io-channels",
+> >> > +					 "#io-channel-cells",
+> >> > +					 index, &iiospec);
+> >> > +	if (err)
+> >> > +		return err;
+> >> > +
+> >> > +	idev = bus_find_device(&iio_bus_type, NULL, iiospec.np,
+> >> > +			       iio_dev_node_match);
+> >> > +	of_node_put(iiospec.np);
+> >> > +	if (idev == NULL)
+> >> > +		return -EPROBE_DEFER;
+> >> > +
+> >> > +	indio_dev = dev_to_iio_dev(idev);
+> >> > +	channel->indio_dev = indio_dev;
+> >> > +	index = iiospec.args_count ? iiospec.args[0] : 0;
+> >> > +	if (index >= indio_dev->num_channels) {
+> >> > +		return -EINVAL;
+> >> > +		goto err_put;
+> >> > +	}
+> >> > +	channel->channel = &indio_dev->channels[index];
+> >> > +
+> >> > +	return 0;
+> >> > +
+> >> > +err_put:
+> >> > +	iio_device_put(indio_dev);
+> >> > +	return err;
+> >> > +}
+> >> > +
+> >> > +static struct iio_channel *of_iio_channel_get(struct device_node
+> >*np, int index)
+> >> > +{
+> >> > +	struct iio_channel *channel;
+> >> > +	int err;
+> >> > +
+> >> > +	if (index < 0)
+> >> > +		return ERR_PTR(-EINVAL);
+> >> > +
+> >> > +	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+> >> > +	if (channel == NULL)
+> >> > +		return ERR_PTR(-ENOMEM);
+> >> > +
+> >> > +	err = __of_iio_channel_get(channel, np, index);
+> >> > +	if (err)
+> >> > +		goto err_free_channel;
+> >> > +
+> >> > +	return channel;
+> >> > +
+> >> > +err_free_channel:
+> >> > +	kfree(channel);
+> >> > +	return ERR_PTR(err);
+> >> > +}
+> >> > +
+> >> > +static struct iio_channel *of_iio_channel_get_by_name(struct
+> >device_node *np,
+> >> > +						      const char *name)
+> >> > +{
+> >> > +	struct iio_channel *chan = NULL;
+> >> > +
+> >> > +	/* Walk up the tree of devices looking for a matching iio channel
+> >*/
+> >> > +	while (np) {
+> >> > +		int index = 0;
+> >> > +
+> >> > +		/*
+> >> > +		 * For named iio channels, first look up the name in the
+> >> > +		 * "io-channel-names" property.  If it cannot be found, the
+> >> > +		 * index will be an error code, and of_iio_channel_get()
+> >> > +		 * will fail.
+> >> > +		 */
+> >> > +		if (name)
+> >> > +			index = of_property_match_string(np, "io-channel-names",
+> >> > +							 name);
+> >> > +		chan = of_iio_channel_get(np, index);
+> >> > +		if (!IS_ERR(chan))
+> >> > +			break;
+> >> > +		else if (name && index >= 0) {
+> >> > +			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+> >> > +				np->full_name, name ? name : "", index);
+> >> > +			return chan;
+> >> > +		}
+> >> > +
+> >> > +		/*
+> >> > +		 * No matching IIO channel found on this node.
+> >> > +		 * If the parent node has a "io-channel-ranges" property,
+> >> > +		 * then we can try one of its channels.
+> >> > +		 */
+> >> > +		np = np->parent;
+> >> > +		if (np && !of_get_property(np, "io-channel-ranges", NULL))
+> >> > +			break;
+> >> > +	}
+> >> > +	return chan;
+> >> > +}
+> >> > +
+> >> > +static struct iio_channel *of_iio_channel_get_all(struct device
+> >*dev)
+> >> > +{
+> >> > +	struct iio_channel *chans;
+> >> > +	int i, mapind, nummaps = 0;
+> >> > +	int ret;
+> >> > +
+> >> > +	do {
+> >> > +		ret = of_parse_phandle_with_args(dev->of_node,
+> >> > +						 "io-channels",
+> >> > +						 "#io-channel-cells",
+> >> > +						 nummaps, NULL);
+> >> > +		if (ret < 0)
+> >> > +			break;
+> >> > +	} while (++nummaps);
+> >> > +
+> >> > +	if (nummaps == 0)	/* no error, return NULL to search map table */
+> >> > +		return NULL;
+> >> > +
+> >> > +	/* NULL terminated array to save passing size */
+> >> > +	chans = kcalloc(nummaps + 1, sizeof(*chans), GFP_KERNEL);
+> >> > +	if (chans == NULL)
+> >> > +		return ERR_PTR(-ENOMEM);
+> >> > +
+> >> > +	/* Search for OF matches */
+> >> > +	for (mapind = 0; mapind < nummaps; mapind++) {
+> >> > +		ret = __of_iio_channel_get(&chans[mapind], dev->of_node,
+> >> > +					   mapind);
+> >> > +		if (ret)
+> >> > +			goto error_free_chans;
+> >> > +	}
+> >> > +	return chans;
+> >> > +
+> >> > +error_free_chans:
+> >> > +	for (i = 0; i < mapind; i++)
+> >> > +		iio_device_put(chans[i].indio_dev);
+> >> > +	kfree(chans);
+> >> > +	return ERR_PTR(ret);
+> >> > +}
+> >> > +
+> >> > +#else /* CONFIG_OF */
+> >> > +
+> >> > +static inline struct iio_channel *
+> >> > +of_iio_channel_get_by_name(struct device_node *np, const char
+> >*name)
+> >> > +{
+> >> > +	return NULL;
+> >> > +}
+> >> > +
+> >> > +static inline struct iio_channel *of_iio_channel_get_all(struct
+> >device *dev)
+> >> > +{
+> >> > +	return NULL;
+> >> > +}
+> >> > +
+> >> > +#endif /* CONFIG_OF */
+> >> >  
+> >> >  static struct iio_channel *iio_channel_get_sys(const char *name,
+> >> >  					       const char *channel_name)
+> >> > @@ -150,7 +309,14 @@ struct iio_channel *iio_channel_get(struct
+> >device *dev,
+> >> >  				    const char *channel_name)
+> >> >  {
+> >> >  	const char *name = dev ? dev_name(dev) : NULL;
+> >> > +	struct iio_channel *channel;
+> >> >  
+> >> > +	if (dev) {
+> >> > +		channel = of_iio_channel_get_by_name(dev->of_node,
+> >> > +						     channel_name);
+> >> > +		if (channel != NULL)
+> >> > +			return channel;
+> >> > +	}
+> >> >  	return iio_channel_get_sys(name, channel_name);
+> >> >  }
+> >> >  EXPORT_SYMBOL_GPL(iio_channel_get);
+> >> > @@ -173,6 +339,11 @@ struct iio_channel *iio_channel_get_all(struct
+> >device *dev)
+> >> >  
+> >> >  	if (dev == NULL)
+> >> >  		return ERR_PTR(-EINVAL);
+> >> > +
+> >> > +	chans = of_iio_channel_get_all(dev);
+> >> > +	if (chans)
+> >> > +		return chans;
+> >> > +
+> >> >  	name = dev_name(dev);
+> >> >  
+> >> >  	mutex_lock(&iio_map_list_lock);
+> >> > 
+> >> 
+> >> 
+> 
+> -- 
+> Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+> 
