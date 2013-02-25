@@ -1,103 +1,189 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52671 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751052Ab3BJL6U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Feb 2013 06:58:20 -0500
-Message-ID: <51178B58.20603@kernel.org>
-Date: Sun, 10 Feb 2013 11:58:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.15.18]:50850 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759750Ab3BYVah (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 25 Feb 2013 16:30:37 -0500
+Received: from mailout-de.gmx.net ([10.1.76.12]) by mrigmx.server.lan
+ (mrigmx001) with ESMTP (Nemesis) id 0MH2cu-1U59fV1fIw-00DoAX for
+ <linux-iio@vger.kernel.org>; Mon, 25 Feb 2013 22:30:35 +0100
+Message-ID: <512BD7F6.6040105@gmx.de>
+Date: Mon, 25 Feb 2013 22:30:30 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Laxman Dewangan <ldewangan@nvidia.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:magnetometer:ak8975 move out of staging
-References: <1360428941-5130-1-git-send-email-jic23@kernel.org> <51177476.3010307@metafoo.de>
-In-Reply-To: <51177476.3010307@metafoo.de>
+CC: Guenter Roeck <linux@roeck-us.net>,
+	Jean Delvare <khali@linux-fr.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] hwmon: (adt7410) Don't re-read non-volatile registers
+References: <1361194739-16525-1-git-send-email-lars@metafoo.de> <51228D7A.8030608@gmx.de> <20130219010229.GA25124@roeck-us.net> <5123D4F5.5030001@gmx.de> <20130220012249.GA15948@roeck-us.net> <5128112C.4080909@gmx.de> <512B34E2.70709@metafoo.de>
+In-Reply-To: <512B34E2.70709@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/10/2013 10:20 AM, Lars-Peter Clausen wrote:
-> On 02/09/2013 05:55 PM, Jonathan Cameron wrote:
->> This driver has been clean and correct for quite some time.
->> It is simple and uses only straight forward standard
->> interfaces.
+Lars-Peter Clausen schrieb:
+> On 02/23/2013 01:45 AM, Hartmut Knaack wrote:
+>> Guenter Roeck schrieb:
+>>> On Tue, Feb 19, 2013 at 08:39:33PM +0100, Hartmut Knaack wrote:
+>>>> Guenter Roeck schrieb:
+>>>>> On Mon, Feb 18, 2013 at 09:22:18PM +0100, Hartmut Knaack wrote:
+>>>>>> Lars-Peter Clausen schrieb:
+>>>>>>> Currently each time the temperature register is read the driver also reads the
+>>>>>>> threshold and hysteresis registers. This increases the amount of I2C traffic and
+>>>>>>> time needed to read the temperature by a factor of ~5. Neither the threshold nor
+>>>>>>> the hysteresis change on their own, so once we've read them, we should be able
+>>>>>>> to just use the cached value of the registers. This patch modifies the code
+>>>>>>> accordingly and only reads the threshold and hysteresis registers once during
+>>>>>>> probe.
+>>>>>> I have been thinking about this a lot, and I am concerned about data integrity. From what I know about I2C, there is no data integrity verification specified in the protocol. So, what the master sends is not necessarily what the slave receives (not to mention other devices on the bus, which could potentially mess around with the slaves, or even reset of the slave). Reading back just cached values makes it pretty hard to verify, if there are issues. I think it might be better to call a read-temperature function with a parameter that indicates, which temperature register is required.
+>>>>> I am not concerned about that, unless there is a known issue with the chip
+>>>>> and it is known to return bad data under some circumstances. I am doing the
+>>>>> same in the PMBus drivers, since there are simply too many limit registers
+>>>>> to read on some of the chips (there may literally be more than a hundred).
+>>>>> That works fine most of the time; if it does not work, it is a chip problem,
+>>>>> an i2c bus master problem, a hardware signal problem, or a combination of all.
+>>>>> I actually think it is better if the problem is exposed by cached bad readings.
+>>>> Could you please outline the last sentence? I'm having trouble to understand your intention with cached bad readings.
+>>> Someone will actually notice it (hopefully while testing) and provide feedback.
+>>> This gives a chance to fix the problem instead of having it linger around ...
+>>> which would likely be the case if the problem is not persistent.
+>>>
+>>> Guenter
+>> Well, think about a use case where you optically decouple your master and slave using PCA9600 (may it be using optical fibers to cover a big distance, or just to operate the slave in a hazardous environment), where the slave is powered from a different source. Now, if the slaves Vcc drops for a certain time, all its registers get reset (especially min, max and crit) - without the master noticing anything.
+>> Therefor I would prefer something like the following solution, where unnecessary load on the bus gets avoided and the cached values get used, until they expire and get read again from the sensor. This is mainly a draft, but do you see any reason against it?
+>> Thanks
 >>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> 
-> Two comments, which don't necessarily need to be addressed before moving it
-> out of staging, but should probably should be fixed at some point.
-> 
->> ---
->>  drivers/iio/magnetometer/Kconfig          |  11 +
->>  drivers/iio/magnetometer/Makefile         |   1 +
->>  drivers/iio/magnetometer/ak8975.c         | 520 ++++++++++++++++++++++++++++++
->>  drivers/staging/iio/magnetometer/Kconfig  |  11 -
->>  drivers/staging/iio/magnetometer/Makefile |   1 -
->>  drivers/staging/iio/magnetometer/ak8975.c | 520 ------------------------------
->>  6 files changed, 532 insertions(+), 532 deletions(-)
+> That's a bit of an artificially constructed situation, isn't it? Anyway,
+> wouldn't it be better to not cache at all in that case. For the cache to be
+> useful userspace would have to poll the file with period of less than 1.5
+> seconds. I don't think anybody is going to do this for the threshold properties.
+>
+> - Lars
+I could agree with not caching those registers - nobody would probably want to read them too often, intentionally (although bugged userspace code might DoS the bus). The other few i2c drivers I know also do uncached reads.
+>
+>
+>> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
+>> old mode 100644
+>> new mode 100755
+>> index 99a7290..dc11cac
+>> --- a/drivers/hwmon/adt7410.c
+>> +++ b/drivers/hwmon/adt7410.c
+>> @@ -91,8 +91,13 @@ struct adt7410_data {
+>>  	struct mutex		update_lock;
+>>  	u8			config;
+>>  	u8			oldconfig;
+>> -	bool			valid;		/* true if registers valid */
+>> -	unsigned long		last_updated;	/* In jiffies */
+>> +	u8			valid;		/* true if registers valid */
+>> +	unsigned long		last_updated[5];	/* In jiffies
+>> +							   0 = input
+>> +							   1 = high
+>> +							   2 = low
+>> +							   3 = critical
+>> +							   4 = hysteresis */
+>>  	s16			temp[4];	/* Register values,
+>>  						   0 = input
+>>  						   1 = high
+>> @@ -119,25 +124,27 @@ static int adt7410_temp_ready(struct i2c_client *client)
+>>  	return -ETIMEDOUT;
+>>  }
+>>  
+>> -static struct adt7410_data *adt7410_update_device(struct device *dev)
+>> +static struct adt7410_data *adt7410_update_device(struct device *dev, int i)
+>>  {
+>>  	struct i2c_client *client = to_i2c_client(dev);
+>>  	struct adt7410_data *data = i2c_get_clientdata(client);
+>>  	struct adt7410_data *ret = data;
+>>  	mutex_lock(&data->update_lock);
+>>  
+>> -	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+>> -	    || !data->valid) {
+>> -		int i, status;
+>> +	if (time_after(jiffies, data->last_updated[i] + HZ + HZ / 2)
+>> +	    || !(data->valid & ~(1 << i))) {
+>> +		int status;
+>>  
+>>  		dev_dbg(&client->dev, "Starting update\n");
+>>  
+>> -		status = adt7410_temp_ready(client); /* check for new value */
+>> -		if (unlikely(status)) {
+>> -			ret = ERR_PTR(status);
+>> -			goto abort;
+>> -		}
+>> -		for (i = 0; i < ARRAY_SIZE(data->temp); i++) {
+>> +		if (i >= 0 && i <=3) {
+>> +			if (!i) {
+>> +				status = adt7410_temp_ready(client); /* check for new value */
+>> +				if (unlikely(status)) {
+>> +					ret = ERR_PTR(status);
+>> +					goto abort;
+>> +				}
+>> +			}
+>>  			status = i2c_smbus_read_word_swapped(client,
+>>  							ADT7410_REG_TEMP[i]);
+>>  			if (unlikely(status < 0)) {
+>> @@ -148,18 +155,24 @@ static struct adt7410_data *adt7410_update_device(struct device *dev)
+>>  				goto abort;
+>>  			}
+>>  			data->temp[i] = status;
+>> +			data->last_updated[i] = jiffies;
+>> +			data->valid |= 1 << i;
+>>  		}
+>> -		status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
+>> -		if (unlikely(status < 0)) {
+>> -			dev_dbg(dev,
+>> -				"Failed to read value: reg %d, error %d\n",
+>> -				ADT7410_T_HYST, status);
+>> -			ret = ERR_PTR(status);
+>> -			goto abort;
+>> +		else if (i == 4) {
+>> +			status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
+>> +			if (unlikely(status < 0)) {
+>> +				dev_dbg(dev,
+>> +					"Failed to read value: reg %d, error %d\n",
+>> +					ADT7410_T_HYST, status);
+>> +				ret = ERR_PTR(status);
+>> +				goto abort;
+>> +			}
+>> +			data->hyst = status;
+>> +			data->last_updated[i] = jiffies;
+>> +			data->valid |= 1 << i;
+>>  		}
+>> -		data->hyst = status;
+>> -		data->last_updated = jiffies;
+>> -		data->valid = true;
+>> +		else
+>> +			ret = ERR_PTR(-EINVAL);
+>>  	}
+>>  
+>>  abort:
+>> @@ -193,7 +206,7 @@ static ssize_t adt7410_show_temp(struct device *dev,
+>>  				 struct device_attribute *da, char *buf)
+>>  {
+>>  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+>> -	struct adt7410_data *data = adt7410_update_device(dev);
+>> +	struct adt7410_data *data = adt7410_update_device(dev, attr->index);
+>>  
+>>  	if (IS_ERR(data))
+>>  		return PTR_ERR(data);
+>> @@ -236,7 +249,10 @@ static ssize_t adt7410_show_t_hyst(struct device *dev,
+>>  	int nr = attr->index;
+>>  	int hyst;
+>>  
+>> -	data = adt7410_update_device(dev);
+>> +	data = adt7410_update_device(dev, nr);
+>> +	if (IS_ERR(data))
+>> +		return PTR_ERR(data);
+>> +	data = adt7410_update_device(dev, 4);
+>>  	if (IS_ERR(data))
+>>  		return PTR_ERR(data);
+>>  	hyst = (data->hyst & ADT7410_T_HYST_MASK) * 1000;
 >>
-> [...]
->> +struct ak8975_data {
->> +	struct i2c_client	*client;
->> +	struct attribute_group	attrs;
->> +	struct mutex		lock;
->> +	u8			asa[3];
->> +	long			raw_to_gauss[3];
->> +	u8			reg_cache[AK8975_MAX_REGS];
->> +	int			eoc_gpio;
->> +	int			eoc_irq;
-> 
-> eoc_irq is never really used.
-Good spot, I'll put out a trivial patch to remove that before move
-this driver.
-> 
->> +};
->> +
->> +static const int ak8975_index_to_reg[] = {
->> +	AK8975_REG_HXL, AK8975_REG_HYL, AK8975_REG_HZL,
->> +};
->> +
->> +/*
->> + * Helper function to write to the I2C device's registers.
->> + */
->> +static int ak8975_write_data(struct i2c_client *client,
->> +			     u8 reg, u8 val, u8 mask, u8 shift)
->> +{
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +	struct ak8975_data *data = iio_priv(indio_dev);
->> +	u8 regval;
->> +	int ret;
->> +
->> +	regval = (data->reg_cache[reg] & ~mask) | (val << shift);
->> +	ret = i2c_smbus_write_byte_data(client, reg, regval);
->> +	if (ret < 0) {
->> +		dev_err(&client->dev, "Write to device fails status %x\n", ret);
->> +		return ret;
->> +	}
->> +	data->reg_cache[reg] = regval;
-> 
-> The reg cache is written to here, but it is never read from again. It may
-> make sense to convert the driver to using regmap instead of open-coding the
-> register read/write functions.
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-It is used just above in this function to avoid a read when doing masked writes.
-Using regmap might make sense but is not something I'm going to do without
-hardware and in this case the gains will be pretty small.
-
-Laxman, do you recall why we have the I2C_M_NOSTART in the driver?  If nothing
-else the ability to do that should be checked for as it's in the category of
-protocol mangling.
-
-
-> 
->> +
->> +	return 0;
->> +}
->> +
-> [...]
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
