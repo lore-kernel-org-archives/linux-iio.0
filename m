@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59134 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758894Ab3B0UkN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:13 -0500
+	with ESMTP id S1758651Ab3B0UkV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:21 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 18/67] iio:dac:ad5064 move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:24 +0000
-Message-Id: <1361997553-31058-19-git-send-email-jic23@kernel.org>
+Subject: [PATCH 45/67] staging:iio:accel:adis16220 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:51 +0000
+Message-Id: <1361997553-31058-46-git-send-email-jic23@kernel.org>
 In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,24 +20,59 @@ The original info_mask is going away in favour of the broken out versions.
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/dac/ad5064.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/accel/adis16220_core.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 2fe1d4e..76e0836 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -297,8 +297,8 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	.indexed = 1,						\
- 	.output = 1,						\
- 	.channel = (chan),					\
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--	IIO_CHAN_INFO_SCALE_SEPARATE_BIT,			\
-+	.info_mask_separate = IIO_CHAN_INFO_RAW |		\
-+	IIO_CHAN_INFO_SCALE,					\
- 	.address = AD5064_ADDR_DAC(chan),			\
- 	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits)),	\
- 	.ext_info = ad5064_ext_info,				\
+diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
+index 370b01a..0f0fb81 100644
+--- a/drivers/staging/iio/accel/adis16220_core.c
++++ b/drivers/staging/iio/accel/adis16220_core.c
+@@ -344,37 +344,32 @@ static const struct iio_chan_spec adis16220_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "supply",
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_SCALE,
+ 		.address = in_supply,
+ 	}, {
+ 		.type = IIO_ACCEL,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_PEAK_SEPARATE_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET |
++			     IIO_CHAN_INFO_SCALE | IIO_CHAN_INFO_PEAK,
+ 		.address = accel,
+ 	}, {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET |
++			     IIO_CHAN_INFO_SCALE,
+ 		.address = temp,
+ 	}, {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET |
++			     IIO_CHAN_INFO_SCALE,
+ 		.address = in_1,
+ 	}, {
+ 		.type = IIO_VOLTAGE,
+ 		.indexed = 1,
+ 		.channel = 2,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW,
+ 		.address = in_2,
+ 	}
+ };
 -- 
 1.8.1.1
 
