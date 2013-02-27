@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59139 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59136 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758662Ab3B0UkM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:12 -0500
+	with ESMTP id S1759437Ab3B0UkZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:25 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 12/67] iio:adc:at91_adc move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:18 +0000
-Message-Id: <1361997553-31058-13-git-send-email-jic23@kernel.org>
+	Jon Brenner <jon.brenner@ams.com>
+Subject: [PATCH 60/67] staging:iio:light:tsl2x7x move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:39:06 +0000
+Message-Id: <1361997553-31058-61-git-send-email-jic23@kernel.org>
 In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,26 +18,120 @@ List-Id: linux-iio@vger.kernel.org
 The original info_mask is going away in favour of the broken out versions.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+cc: Jon Brenner <jon.brenner@ams.com>
 ---
- drivers/iio/adc/at91_adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/light/tsl2x7x_core.c | 40 ++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index a526c0e..65095a0 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -140,8 +140,8 @@ static int at91_adc_channel_init(struct iio_dev *idev)
- 		chan->scan_type.sign = 'u';
- 		chan->scan_type.realbits = 10;
- 		chan->scan_type.storagebits = 16;
--		chan->info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
--			IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-+		chan->info_mask_shared_by_type = IIO_CHAN_INFO_SCALE;
-+		chan->info_mask_separate = IIO_CHAN_INFO_RAW;
- 		idx++;
- 	}
- 	timestamp = chan_array + idx;
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index a58731e..3c38534 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -1733,14 +1733,14 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_PROCESSED,
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++				IIO_CHAN_INFO_CALIBSCALE |
++				IIO_CHAN_INFO_CALIBBIAS,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+@@ -1757,7 +1757,7 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1770,25 +1770,25 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT
++			.info_mask_separate = IIO_CHAN_INFO_PROCESSED
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++				IIO_CHAN_INFO_CALIBSCALE |
++				IIO_CHAN_INFO_CALIBBIAS,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW,
+ 			}, {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1801,8 +1801,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++				IIO_CHAN_INFO_CALIBSCALE,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1815,26 +1815,26 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_PROCESSED,
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++				IIO_CHAN_INFO_CALIBSCALE |
++				IIO_CHAN_INFO_CALIBBIAS,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW,
+ 			}, {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++				IIO_CHAN_INFO_CALIBSCALE,
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
 -- 
 1.8.1.1
 
