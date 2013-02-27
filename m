@@ -1,153 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48764 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59134 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753394Ab3BUVte (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2013 16:49:34 -0500
-Message-ID: <51269668.90809@kernel.org>
-Date: Thu, 21 Feb 2013 21:49:28 +0000
+	with ESMTP id S1758636Ab3B0UkL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:11 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Rob Herring <robherring2@gmail.com>
-CC: Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Anton Vorontsov <cbou@mail.ru>,
-	David Woodhouse <dwmw2@infradead.org>,
-	devicetree-discuss@lists.ozlabs.org,
-	Tomasz Figa <tomasz.figa@gmail.com>,
-	linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Subject: Re: [PATCH v5] iio: Add OF support
-References: <1360256940-19438-1-git-send-email-linux@roeck-us.net> <51250A0E.80806@gmail.com> <20130220181148.GA19278@roeck-us.net> <2dada206-6401-4a35-85d8-298dd08b0420@email.android.com> <20130220192458.GA29247@roeck-us.net> <51263441.90300@gmail.com>
-In-Reply-To: <51263441.90300@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 10/67] iio:adc:ad7476 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:16 +0000
+Message-Id: <1361997553-31058-11-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/21/2013 02:50 PM, Rob Herring wrote:
-> On 02/20/2013 01:24 PM, Guenter Roeck wrote:
->> On Wed, Feb 20, 2013 at 06:51:08PM +0000, Jonathan Cameron wrote:
->>>
->>>
->>> Guenter Roeck <linux@roeck-us.net> wrote:
->>>
->>>> On Wed, Feb 20, 2013 at 11:38:22AM -0600, Rob Herring wrote:
->>>>> On 02/07/2013 11:09 AM, Guenter Roeck wrote:
->>>>>> Provide bindings and parse OF data during initialization.
->>>>>>
->>>>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>>>>> ---
->>>>>> v5:
->>>>>> - Updated examples in bindings.
->>>>>> v4:
->>>>>> - Fixed wrong parameter to dummy of_iio_channel_get_by_name if
->>>> CONFIG_OF is
->>>>>>   undefined, and wrong return value.
->>>>>> - Initialize indio_dev->of_node in iio_device_register if the
->>>> calling driver
->>>>>>   neglected to do it.
->>>>>> v3:
->>>>>> - Cleaned up documentation (formatting, left-over clock references)
->>>>>> - Updated bindings description to permit sub-devices
->>>>>> - When searching for iio devices, use the pointer to the iio device
->>>> type instead
->>>>>>   of strcmp. Rename iio_dev_type to iio_device_type (to match other
->>>> device
->>>>>>   types) and make it global for that purpose. Check the OF node
->>>> first, then the
->>>>>>   device type, as the node is less likely to match.
->>>>>> - Move the common code in of_iio_channel_get and
->>>> of_iio_channel_get_all to
->>>>>>   __of_iio_channel_get.
->>>>>> - Return NULL from of_iio_channel_get_by_name if nothing is found,
->>>> or
->>>>>>   an error if there is a problem with consistency or if the
->>>> provider device is
->>>>>>   not yet available.
->>>>>> - In iio_channel_get, return if of_iio_channel_get_by_name()
->>>> returns a channel
->>>>>>   or an error, and continue otherwise.
->>>>>> v2:
->>>>>> - Rebased to iio/togreg
->>>>>> - Documentation update per feedback
->>>>>> - Dropped io-channel-output-names from the bindings document. The
->>>> property is
->>>>>>   not used in the code, and it is not entirely clear what it would
->>>> be used for.
->>>>>>   If there is a need for it, we can add it back in later on.
->>>>>> - Don't export OF specific API calls
->>>>>> - For OF support, no longer depend on iio_map
->>>>>> - Add #ifdef CONFIG_OF where appropriate, and ensure that the code
->>>> still builds
->>>>>>   if it is not selected.
->>>>>> - Change iio_channel_get to take device pointer as argument instead
->>>> of device
->>>>>>   name. Retain old API as of_iio_channel_get_sys.
->>>>>> - iio_channel_get now works for both OF and non-OF configurations
->>>>>> - Use regulator to get vref for max1363 driver.
->>>>>>
->>>>>>  .../devicetree/bindings/iio/iio-bindings.txt       |   97
->>>> +++++++++++
->>>>>>  drivers/iio/iio_core.h                             |    1 +
->>>>>>  drivers/iio/industrialio-core.c                    |    8 +-
->>>>>>  drivers/iio/inkern.c                               |  171
->>>> ++++++++++++++++++++
->>>>>>  4 files changed, 275 insertions(+), 2 deletions(-)
->>>>>>  create mode 100644
->>>> Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>> b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>> new file mode 100644
->>>>>> index 0000000..1182845
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
->>>>>> @@ -0,0 +1,97 @@
->>>>>> +This binding is a work-in-progress. It is derived from clock
->>>> bindings,
->>>>>> +and based on suggestions from Lars-Peter Clausen [1].
->>>>>
->>>>> Bindings are an ABI. It should not be a WIP. What part is a WIP?
->>>>>
->>>> The text is copied from clock bindings. I do not claim to be better
->>>> than the clock subsystem is doing in respect to its bindings.
-> 
-> That should be fixed. The clock bindings are fixed.
->
-I'll delete it from this patch when merging.  Don't think anyone
-will mind.
+The original info_mask is going away in favour of the broken out versions.
 
-Jonathan
->>>>
->>>> I'll be more than happy to take this text out if it is a source of
->>>> contention,
->>>> even more so if that is what is holding up the patch. Jonathan ?
->>> I don't really care about the wording though can see why Rob asked!
->>> We will probably have other stuff to add anyway.
->>>
->>
->> Quite likely - for example, I did not add io-output-names since I did not
->> know what to do with it.
-> 
-> Good because name strings are typically optional.
-> 
-> Adding to bindings is fine. Changing what's already there should be
-> avoided. New kernels need to work with old DTBs and vice-versa.
-> 
-> Rob
-> 
->> What do you want me to do ? Submit another version with the sentence deleted,
->> or keep it as-is ?
->>
->> Thanks,
->> Guenter
->>
->>> Jonathan
->>>>
->>>> Thanks,
->>>> Guenter
->>>>
->>>>> Knowing nothing about IIO, the binding seems sane.
->>>>>
->>>>> Rob
->>>>>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad7476.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 1491fa6..688a114 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -140,12 +140,12 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
+-#define _AD7476_CHAN(bits, _shift, _info_mask)			\
++#define _AD7476_CHAN(bits, _shift, _info_mask_sep)		\
+ 	{							\
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+-	.info_mask = _info_mask |				\
+-	IIO_CHAN_INFO_SCALE_SHARED_BIT,				\
++	.info_mask_separate = _info_mask_sep,			\
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,	\
+ 	.scan_type = {						\
+ 		.sign = 'u',					\
+ 		.realbits = (bits),				\
+@@ -156,9 +156,9 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ #define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
+-		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++		IIO_CHAN_INFO_RAW)
+ #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+-		IIO_CHAN_INFO_RAW_SEPARATE_BIT)
++		IIO_CHAN_INFO_RAW)
+ #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+ 
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+-- 
+1.8.1.1
+
