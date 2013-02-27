@@ -1,56 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:57872 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932825Ab3BSTjk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Feb 2013 14:39:40 -0500
-Received: from mailout-de.gmx.net ([10.1.76.1]) by mrigmx.server.lan
- (mrigmx001) with ESMTP (Nemesis) id 0LbfGf-1UZZGz0v7L-00lEsM for
- <linux-iio@vger.kernel.org>; Tue, 19 Feb 2013 20:39:38 +0100
-Message-ID: <5123D4F5.5030001@gmx.de>
-Date: Tue, 19 Feb 2013 20:39:33 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Jean Delvare <khali@linux-fr.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] hwmon: (adt7410) Don't re-read non-volatile registers
-References: <1361194739-16525-1-git-send-email-lars@metafoo.de> <51228D7A.8030608@gmx.de> <20130219010229.GA25124@roeck-us.net>
-In-Reply-To: <20130219010229.GA25124@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59136 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758967Ab3B0UkS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:18 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 35/67] iio:gyro:adxrs450 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:41 +0000
+Message-Id: <1361997553-31058-36-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Guenter Roeck schrieb:
-> On Mon, Feb 18, 2013 at 09:22:18PM +0100, Hartmut Knaack wrote:
->> Lars-Peter Clausen schrieb:
->>> Currently each time the temperature register is read the driver also reads the
->>> threshold and hysteresis registers. This increases the amount of I2C traffic and
->>> time needed to read the temperature by a factor of ~5. Neither the threshold nor
->>> the hysteresis change on their own, so once we've read them, we should be able
->>> to just use the cached value of the registers. This patch modifies the code
->>> accordingly and only reads the threshold and hysteresis registers once during
->>> probe.
->> I have been thinking about this a lot, and I am concerned about data integrity. From what I know about I2C, there is no data integrity verification specified in the protocol. So, what the master sends is not necessarily what the slave receives (not to mention other devices on the bus, which could potentially mess around with the slaves, or even reset of the slave). Reading back just cached values makes it pretty hard to verify, if there are issues. I think it might be better to call a read-temperature function with a parameter that indicates, which temperature register is required.
-> I am not concerned about that, unless there is a known issue with the chip
-> and it is known to return bad data under some circumstances. I am doing the
-> same in the PMBus drivers, since there are simply too many limit registers
-> to read on some of the chips (there may literally be more than a hundred).
-> That works fine most of the time; if it does not work, it is a chip problem,
-> an i2c bus master problem, a hardware signal problem, or a combination of all.
-> I actually think it is better if the problem is exposed by cached bad readings.
-Could you please outline the last sentence? I'm having trouble to understand your intention with cached bad readings.
-> Then there is a chance to do something about it. This would be much better
-> than just re-reading the value next time and ignoring the problem.
->
-> Something else - the commit window just opened (a week earlier than I guessed),
-> so this part of the series is going to miss 3.9. Hartmut, if you plan to provide
-> an Acked-by or Reviewed-by or Tested-by for the first part of the series, you'll
-> have to do it soon, as I plan to send my push request to Linus around Thursday.
-OK
->
-> Thanks,
-> Guenter
->
+The original info_mask is going away in favour of the broken out versions.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/gyro/adxrs450.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
+index 5b79953..101a71b 100644
+--- a/drivers/iio/gyro/adxrs450.c
++++ b/drivers/iio/gyro/adxrs450.c
+@@ -383,16 +383,16 @@ static const struct iio_chan_spec adxrs450_channels[2][2] = {
+ 			.type = IIO_ANGL_VEL,
+ 			.modified = 1,
+ 			.channel2 = IIO_MOD_Z,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+-			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++			IIO_CHAN_INFO_CALIBBIAS |
++			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW |
++			IIO_CHAN_INFO_SCALE,
+ 		}, {
+ 			.type = IIO_TEMP,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++			IIO_CHAN_INFO_SCALE,
+ 		}
+ 	},
+ 	[ID_ADXRS453] = {
+@@ -400,15 +400,15 @@ static const struct iio_chan_spec adxrs450_channels[2][2] = {
+ 			.type = IIO_ANGL_VEL,
+ 			.modified = 1,
+ 			.channel2 = IIO_MOD_Z,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
+-			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++			IIO_CHAN_INFO_SCALE |
++			IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 		}, {
+ 			.type = IIO_TEMP,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++			.info_mask_separate = IIO_CHAN_INFO_RAW |
++			IIO_CHAN_INFO_SCALE,
+ 		}
+ 	},
+ };
+-- 
+1.8.1.1
 
