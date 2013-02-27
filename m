@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59250 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759275Ab3B0UkX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:23 -0500
+	with ESMTP id S1758636Ab3B0UkW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:22 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 51/67] staging:iio:adc:ad799x move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:38:57 +0000
-Message-Id: <1361997553-31058-52-git-send-email-jic23@kernel.org>
+Subject: [PATCH 48/67] staging:iio:adc:ad7280a move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:54 +0000
+Message-Id: <1361997553-31058-49-git-send-email-jic23@kernel.org>
 In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,355 +20,39 @@ The original info_mask is going away in favour of the broken out versions.
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad799x_core.c | 76 +++++++++++++++++------------------
- 1 file changed, 38 insertions(+), 38 deletions(-)
+ drivers/staging/iio/adc/ad7280a.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 077eedb..5ceaf04 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -467,7 +467,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -475,7 +475,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -483,7 +483,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -491,7 +491,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -507,7 +507,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -515,7 +515,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -523,7 +523,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -531,7 +531,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -547,7 +547,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 8, 16, 4),
- 			},
-@@ -555,7 +555,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 8, 16, 4),
- 			},
-@@ -563,7 +563,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 8, 16, 4),
- 			},
-@@ -571,7 +571,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 8, 16, 4),
- 			},
-@@ -587,7 +587,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -596,7 +596,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -614,7 +614,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -624,7 +624,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.indexed = 1,
- 				.channel = 1,
- 				.scan_index = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
- 			},
-@@ -632,7 +632,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -641,7 +641,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -659,7 +659,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -668,7 +668,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -677,7 +677,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -686,7 +686,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -704,7 +704,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -713,7 +713,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -722,7 +722,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -731,7 +731,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 				.event_mask = AD799X_EV_MASK,
-@@ -740,7 +740,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 4,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 4,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -748,7 +748,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 5,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 5,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -756,7 +756,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 6,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 6,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -764,7 +764,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 7,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 7,
- 				.scan_type = IIO_ST('u', 10, 16, 2),
- 			},
-@@ -781,7 +781,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 0,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 0,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -790,7 +790,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 1,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 1,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -799,7 +799,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 2,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 2,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -808,7 +808,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 3,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 3,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 				.event_mask = AD799X_EV_MASK,
-@@ -817,7 +817,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 4,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 4,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -825,7 +825,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 5,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 5,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -833,7 +833,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 6,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW,
- 				.scan_index = 6,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
-@@ -841,7 +841,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				.type = IIO_VOLTAGE,
- 				.indexed = 1,
- 				.channel = 7,
--				.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+				.info_mask_separate = IIO_CHAN_INFO_RAW ,
- 				.scan_index = 7,
- 				.scan_type = IIO_ST('u', 12, 16, 0),
- 			},
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 1f190c1..41a791a 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -503,9 +503,10 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 				st->channels[cnt].channel = (dev * 6) + ch - 6;
+ 			}
+ 			st->channels[cnt].indexed = 1;
+-			st->channels[cnt].info_mask =
+-				IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_SCALE_SHARED_BIT;
++			st->channels[cnt].info_mask_separate =
++				IIO_CHAN_INFO_RAW;
++			st->channels[cnt].info_mask_shared_by_type =
++				IIO_CHAN_INFO_SCALE;
+ 			st->channels[cnt].address =
+ 				AD7280A_DEVADDR(dev) << 8 | ch;
+ 			st->channels[cnt].scan_index = cnt;
+@@ -521,9 +522,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 	st->channels[cnt].channel2 = dev * 6;
+ 	st->channels[cnt].address = AD7280A_ALL_CELLS;
+ 	st->channels[cnt].indexed = 1;
+-	st->channels[cnt].info_mask =
+-		IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT;
++	st->channels[cnt].info_mask_separate = IIO_CHAN_INFO_RAW;
++	st->channels[cnt].info_mask_shared_by_type = IIO_CHAN_INFO_SCALE;
+ 	st->channels[cnt].scan_index = cnt;
+ 	st->channels[cnt].scan_type.sign = 'u';
+ 	st->channels[cnt].scan_type.realbits = 32;
 -- 
 1.8.1.1
 
