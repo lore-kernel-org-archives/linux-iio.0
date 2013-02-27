@@ -1,190 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:58046 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753991Ab3BRUWZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 18 Feb 2013 15:22:25 -0500
-Received: from mailout-de.gmx.net ([10.1.76.35]) by mrigmx.server.lan
- (mrigmx002) with ESMTP (Nemesis) id 0MH2QW-1U2dfJ0XZq-00Dkya for
- <linux-iio@vger.kernel.org>; Mon, 18 Feb 2013 21:22:23 +0100
-Message-ID: <51228D7A.8030608@gmx.de>
-Date: Mon, 18 Feb 2013 21:22:18 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
+Received: from mail-qe0-f50.google.com ([209.85.128.50]:41230 "EHLO
+	mail-qe0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750711Ab3B0QVF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 11:21:05 -0500
+Received: by mail-qe0-f50.google.com with SMTP id w7so591461qeb.9
+        for <linux-iio@vger.kernel.org>; Wed, 27 Feb 2013 08:21:04 -0800 (PST)
+Date: Wed, 27 Feb 2013 11:21:01 -0500
+From: Chris Micali <chrismicali@gmail.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jean Delvare <khali@linux-fr.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] hwmon: (adt7410) Don't re-read non-volatile registers
-References: <1361194739-16525-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1361194739-16525-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-15
+Cc: "=?utf-8?Q?linux-iio=40vger.kernel.org?=" <linux-iio@vger.kernel.org>
+Message-ID: <B42F83EDFE8B4D2D8D46B6241B49B4E8@gmail.com>
+In-Reply-To: <512E2F31.8000604@metafoo.de>
+References: <26387F1A648A4D3D9BB4142C4F0AAE98@gmail.com>
+ <512E2F31.8000604@metafoo.de>
+Subject: Re: IIO Drivers
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="512e326d_1f48eaa1_5f2e"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Lars-Peter Clausen schrieb:
-> Currently each time the temperature register is read the driver also reads the
-> threshold and hysteresis registers. This increases the amount of I2C traffic and
-> time needed to read the temperature by a factor of ~5. Neither the threshold nor
-> the hysteresis change on their own, so once we've read them, we should be able
-> to just use the cached value of the registers. This patch modifies the code
-> accordingly and only reads the threshold and hysteresis registers once during
-> probe.
-I have been thinking about this a lot, and I am concerned about data integrity. From what I know about I2C, there is no data integrity verification specified in the protocol. So, what the master sends is not necessarily what the slave receives (not to mention other devices on the bus, which could potentially mess around with the slaves, or even reset of the slave). Reading back just cached values makes it pretty hard to verify, if there are issues. I think it might be better to call a read-temperature function with a parameter that indicates, which temperature register is required.
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->
-> ---
-> Changes since v1:
-> 	* Fix error checking for i2c reads
-> ---
->  drivers/hwmon/adt7410.c | 91 +++++++++++++++++++++++++++++++------------------
->  1 file changed, 58 insertions(+), 33 deletions(-)
->
-> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
-> index 99a7290..b6acfa4 100644
-> --- a/drivers/hwmon/adt7410.c
-> +++ b/drivers/hwmon/adt7410.c
-> @@ -119,45 +119,33 @@ static int adt7410_temp_ready(struct i2c_client *client)
->  	return -ETIMEDOUT;
->  }
->  
-> -static struct adt7410_data *adt7410_update_device(struct device *dev)
-> +static int adt7410_update_temp(struct device *dev)
->  {
->  	struct i2c_client *client = to_i2c_client(dev);
->  	struct adt7410_data *data = i2c_get_clientdata(client);
-> -	struct adt7410_data *ret = data;
-> +	int ret = 0;
-> +
->  	mutex_lock(&data->update_lock);
->  
->  	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
->  	    || !data->valid) {
-> -		int i, status;
-> +		int temp;
->  
->  		dev_dbg(&client->dev, "Starting update\n");
->  
-> -		status = adt7410_temp_ready(client); /* check for new value */
-> -		if (unlikely(status)) {
-> -			ret = ERR_PTR(status);
-> +		ret = adt7410_temp_ready(client); /* check for new value */
-> +		if (ret)
->  			goto abort;
-> -		}
-> -		for (i = 0; i < ARRAY_SIZE(data->temp); i++) {
-> -			status = i2c_smbus_read_word_swapped(client,
-> -							ADT7410_REG_TEMP[i]);
-> -			if (unlikely(status < 0)) {
-> -				dev_dbg(dev,
-> -					"Failed to read value: reg %d, error %d\n",
-> -					ADT7410_REG_TEMP[i], status);
-> -				ret = ERR_PTR(status);
-> -				goto abort;
-> -			}
-> -			data->temp[i] = status;
-> -		}
-> -		status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
-> -		if (unlikely(status < 0)) {
-> -			dev_dbg(dev,
-> -				"Failed to read value: reg %d, error %d\n",
-> -				ADT7410_T_HYST, status);
-> -			ret = ERR_PTR(status);
-> +
-> +		temp = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[0]);
-> +		if (temp < 0) {
-> +			ret = temp;
-> +			dev_dbg(dev, "Failed to read value: reg %d, error %d\n",
-> +				ADT7410_REG_TEMP[0], ret);
->  			goto abort;
->  		}
-> -		data->hyst = status;
-> +		data->temp[0] = temp;
-> +
->  		data->last_updated = jiffies;
->  		data->valid = true;
->  	}
-> @@ -167,6 +155,35 @@ abort:
->  	return ret;
->  }
->  
-> +static int adt7410_fill_cache(struct i2c_client *client)
-> +{
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
-> +	int ret;
-> +	int i;
-> +
-> +	for (i = 1; i < ARRAY_SIZE(ADT7410_REG_TEMP); i++) {
-> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[i]);
-> +		if (ret < 0) {
-> +			dev_dbg(&client->dev,
-> +				"Failed to read value: reg %d, error %d\n",
-> +				ADT7410_REG_TEMP[0], ret);
-> +			return ret;
-> +		}
-> +		data->temp[i] = ret;
-> +	}
-> +
-> +	ret = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
-> +	if (ret < 0) {
-> +		dev_dbg(&client->dev,
-> +			"Failed to read value: hyst reg, error %d\n",
-> +			ret);
-> +		return ret;
-> +	}
-> +	data->hyst = ret;
-> +
-> +	return 0;
-> +}
-> +
->  static s16 ADT7410_TEMP_TO_REG(long temp)
->  {
->  	return DIV_ROUND_CLOSEST(clamp_val(temp, ADT7410_TEMP_MIN,
-> @@ -193,10 +210,16 @@ static ssize_t adt7410_show_temp(struct device *dev,
->  				 struct device_attribute *da, char *buf)
->  {
->  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
-> -	struct adt7410_data *data = adt7410_update_device(dev);
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
->  
-> -	if (IS_ERR(data))
-> -		return PTR_ERR(data);
-> +	if (attr->index == 0) {
-> +		int ret;
-> +
-> +		ret = adt7410_update_temp(dev);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	return sprintf(buf, "%d\n", ADT7410_REG_TO_TEMP(data,
->  		       data->temp[attr->index]));
-> @@ -232,13 +255,11 @@ static ssize_t adt7410_show_t_hyst(struct device *dev,
->  				   char *buf)
->  {
->  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
-> -	struct adt7410_data *data;
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
->  	int nr = attr->index;
->  	int hyst;
->  
-> -	data = adt7410_update_device(dev);
-> -	if (IS_ERR(data))
-> -		return PTR_ERR(data);
->  	hyst = (data->hyst & ADT7410_T_HYST_MASK) * 1000;
->  
->  	/*
-> @@ -371,6 +392,10 @@ static int adt7410_probe(struct i2c_client *client,
->  	}
->  	dev_dbg(&client->dev, "Config %02x\n", data->config);
->  
-> +	ret = adt7410_fill_cache(client);
-> +	if (ret)
-> +		goto exit_restore;
-> +
->  	/* Register sysfs hooks */
->  	ret = sysfs_create_group(&client->dev.kobj, &adt7410_group);
->  	if (ret)
+--512e326d_1f48eaa1_5f2e
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi Lars,
+Thanks a lot for getting back to me. I've attached my code - it's pretty simple, I just copied an existing driver. As I mentioned individual reads are working fine (if i cat in_voltage0_raw) but buffered reads are failing. I've tracked the issue to industrialio-buffer.c in iio_compute_scan_bytes() which always returns zero because, i believe, the mask is 0. I haven't been able to find any docs on what 'scan masks' mean but I have seen a few drivers that supply available scan masks. Should I be specifying scan masks? 
+Thanks!
+-chris
+
+
+
+On Wednesday, February 27, 2013 at 11:07 AM, Lars-Peter Clausen wrote:
+
+> On 02/26/2013 08:56 PM, Chris Micali wrote:
+> > Hello Lars,
+> > 
+> > I'm doing a bit of hacking on a IIO driver based on some of your drivers on a 3.8 kernel (specifically writing a driver for a TI SPI adc.) I've been able to get a driver up and working such that I can read directly from the in_voltage0_raw on sysfs and get the correct values but I can't seem to get buffered access working (via iio_cmdsrv.) I've had a hard time finding any docs on this stuff and I was wondering if you could give me any pointers on where to look or who else perhaps to ask about this stuff? Any pointers would be very much appreciated!
+> > 
+> > Thanks,
+> > Chris
+> 
+> 
+> 
+> Hi,
+> 
+> I'm afraid except for the the documentation in
+> drivers/staging/iio/Documentation/, the kernel doc comments and the skeleton
+> driver (drivers/staging/iio/iio_simple_dummy*) there is not much additional
+> documentation available.
+> 
+> The general place to ask questions about IIO is the IIO mailinglist. I've
+> put it on CC, hope you don't mind.
+> 
+> I think we can help you best if you post your code.
+> 
+> - Lars 
+--512e326d_1f48eaa1_5f2e
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="ads7945.c"
+
+LyoKICogQURTNzk0NSBTUEkgQURDIGRyaXZlcgogKi8KCiNpbmNsdWRlIDxsaW51eC9kZXZpY2Uu
+aD4KI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPgojaW5jbHVkZSA8bGludXgvc2xhYi5oPgojaW5j
+bHVkZSA8bGludXgvc3lzZnMuaD4KI2luY2x1ZGUgPGxpbnV4L3NwaS9zcGkuaD4KI2luY2x1ZGUg
+PGxpbnV4L3JlZ3VsYXRvci9jb25zdW1lci5oPgojaW5jbHVkZSA8bGludXgvZXJyLmg+CiNpbmNs
+dWRlIDxsaW51eC9tb2R1bGUuaD4KCiNpbmNsdWRlIDxsaW51eC9paW8vaWlvLmg+CiNpbmNsdWRl
+IDxsaW51eC9paW8vc3lzZnMuaD4KI2luY2x1ZGUgPGxpbnV4L2lpby9idWZmZXIuaD4KI2luY2x1
+ZGUgPGxpbnV4L2lpby90cmlnZ2VyX2NvbnN1bWVyLmg+CiNpbmNsdWRlIDxsaW51eC9paW8vdHJp
+Z2dlcmVkX2J1ZmZlci5oPgoKI2RlZmluZSBSRVNfTUFTSyhiaXRzKQkoKDEgPDwgKGJpdHMpKSAt
+IDEpCgpzdHJ1Y3QgYWRzNzk0NV9zdGF0ZTsKCnN0cnVjdCBhZHM3OTQ1X2NoaXBfaW5mbyB7Cgl1
+bnNpZ25lZCBpbnQJCQlpbnRfdnJlZl91djsKCXN0cnVjdCBpaW9fY2hhbl9zcGVjCQljaGFubmVs
+c1syXTsKCXZvaWQgKCpyZXNldCkoc3RydWN0IGFkczc5NDVfc3RhdGUgKik7Cn07CgpzdHJ1Y3Qg
+YWRzNzk0NV9zdGF0ZSB7CglzdHJ1Y3Qgc3BpX2RldmljZQkJKnNwaTsKCgljb25zdCBzdHJ1Y3Qg
+YWRzNzk0NV9jaGlwX2luZm8JKmNoaXBfaW5mbzsKCglzdHJ1Y3Qgc3BpX3RyYW5zZmVyCQl4ZmVy
+OwoJc3RydWN0IHNwaV9tZXNzYWdlCQltc2c7CgkvKgoJICogRE1BICh0aHVzIGNhY2hlIGNvaGVy
+ZW5jeSBtYWludGVuYW5jZSkgcmVxdWlyZXMgdGhlCgkgKiB0cmFuc2ZlciBidWZmZXJzIHRvIGxp
+dmUgaW4gdGhlaXIgb3duIGNhY2hlIGxpbmVzLgoJICogTWFrZSB0aGUgYnVmZmVyIGxhcmdlIGVu
+b3VnaCBmb3Igb25lIDE2IGJpdCBzYW1wbGUgYW5kIG9uZSA2NCBiaXQKCSAqIGFsaWduZWQgNjQg
+Yml0IHRpbWVzdGFtcC4KCSAqLwoJdW5zaWduZWQgY2hhciBkYXRhW0FMSUdOKDIsIHNpemVvZihz
+NjQpKSArIHNpemVvZihzNjQpXQoJCQlfX19fY2FjaGVsaW5lX2FsaWduZWQ7Cn07CgplbnVtIGFk
+czc5NDVfc3VwcG9ydGVkX2RldmljZV9pZHMgewoJSURfQURTNzk0NSwKfTsKCnN0YXRpYyBpcnFy
+ZXR1cm5fdCBhZHM3OTQ1X3RyaWdnZXJfaGFuZGxlcihpbnQgaXJxLCB2b2lkICAqcCkKewoJc3Ry
+dWN0IGlpb19wb2xsX2Z1bmMgKnBmID0gcDsKCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBw
+Zi0+aW5kaW9fZGV2OwoJc3RydWN0IGFkczc5NDVfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9f
+ZGV2KTsKCXM2NCB0aW1lX25zOwoJaW50IGJfc2VudDsKCgliX3NlbnQgPSBzcGlfc3luYyhzdC0+
+c3BpLCAmc3QtPm1zZyk7CglpZiAoYl9zZW50IDwgMCkKCQlnb3RvIGRvbmU7CgoJdGltZV9ucyA9
+IGlpb19nZXRfdGltZV9ucygpOwoKCWlmIChpbmRpb19kZXYtPnNjYW5fdGltZXN0YW1wKQoJCSgo
+czY0ICopc3QtPmRhdGEpWzFdID0gdGltZV9uczsKCglpaW9fcHVzaF90b19idWZmZXJzKGluZGlv
+X2Rldiwgc3QtPmRhdGEpOwpkb25lOgoJaWlvX3RyaWdnZXJfbm90aWZ5X2RvbmUoaW5kaW9fZGV2
+LT50cmlnKTsKCglyZXR1cm4gSVJRX0hBTkRMRUQ7Cn0KCnN0YXRpYyBpbnQgYWRzNzk0NV9zY2Fu
+X2RpcmVjdChzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAqc3QpCnsKCWludCByZXQ7CgoJcmV0ID0gc3Bp
+X3N5bmMoc3QtPnNwaSwgJnN0LT5tc2cpOwoJaWYgKHJldCkKCQlyZXR1cm4gcmV0OwoKCXJldHVy
+biBiZTE2X3RvX2NwdXAoKF9fYmUxNiAqKXN0LT5kYXRhKTsKfQoKc3RhdGljIGludCBhZHM3OTQ1
+X3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsCgkJCSAgIHN0cnVjdCBpaW9fY2hh
+bl9zcGVjIGNvbnN0ICpjaGFuLAoJCQkgICBpbnQgKnZhbCwKCQkJICAgaW50ICp2YWwyLAoJCQkg
+ICBsb25nIG0pCnsKCWludCByZXQ7CglzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAqc3QgPSBpaW9fcHJp
+dihpbmRpb19kZXYpOwoJaW50IHNjYWxlX3V2OwoKCXN3aXRjaCAobSkgewoJY2FzZSBJSU9fQ0hB
+Tl9JTkZPX1JBVzoKCQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsKCQlpZiAoaWlvX2J1
+ZmZlcl9lbmFibGVkKGluZGlvX2RldikpCgkJCXJldCA9IC1FQlVTWTsKCQllbHNlCgkJCXJldCA9
+IGFkczc5NDVfc2Nhbl9kaXJlY3Qoc3QpOwoJCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5tbG9j
+ayk7CgoJCWlmIChyZXQgPCAwKQoJCQlyZXR1cm4gcmV0OwoJCSp2YWwgPSAocmV0ID4+IHN0LT5j
+aGlwX2luZm8tPmNoYW5uZWxzWzBdLnNjYW5fdHlwZS5zaGlmdCkgJgoJCQlSRVNfTUFTSyhzdC0+
+Y2hpcF9pbmZvLT5jaGFubmVsc1swXS5zY2FuX3R5cGUucmVhbGJpdHMpOwoJCXJldHVybiBJSU9f
+VkFMX0lOVDsKCWNhc2UgSUlPX0NIQU5fSU5GT19TQ0FMRToKCQlzY2FsZV91diA9IHN0LT5jaGlw
+X2luZm8tPmludF92cmVmX3V2OwoJCXNjYWxlX3V2ID4+PSBjaGFuLT5zY2FuX3R5cGUucmVhbGJp
+dHM7CgkJKnZhbCA9ICBzY2FsZV91diAvIDEwMDA7CgkJKnZhbDIgPSAoc2NhbGVfdXYgJSAxMDAw
+KSAqIDEwMDA7CgkJcmV0dXJuIElJT19WQUxfSU5UX1BMVVNfTUlDUk87Cgl9CglyZXR1cm4gLUVJ
+TlZBTDsKfQoKc3RhdGljIGNvbnN0IHN0cnVjdCBhZHM3OTQ1X2NoaXBfaW5mbyBhZHM3OTQ1X2No
+aXBfaW5mb190YmxbXSA9IHsKCVtJRF9BRFM3OTQ1XSA9IHsKCQkuY2hhbm5lbHNbMF0gPSB7CgkJ
+CQkudHlwZSA9IElJT19WT0xUQUdFLAoJCQkJLmluZGV4ZWQgPSAxLAoJCQkJLmNoYW5uZWwgPSAx
+LAoJCQkJLnNjYW5fdHlwZSA9IHsKCQkJCQkJLnNpZ24gPSAncycsCgkJCQkJCS5yZWFsYml0cyA9
+IDE0LAoJCQkJCQkuc3RvcmFnZWJpdHMgPSAxNiwKCQkJCQkJLnNoaWZ0ID0gMiwKCQkJCQkJLmVu
+ZGlhbm5lc3MgPSBJSU9fQkUsCgkJCQl9LAoJCQkJLmluZm9fbWFzayA9IElJT19DSEFOX0lORk9f
+UkFXX1NFUEFSQVRFX0JJVCwKCQl9LAoJCS5jaGFubmVsc1sxXSA9IElJT19DSEFOX1NPRlRfVElN
+RVNUQU1QKDEpLAoJCS5pbnRfdnJlZl91diA9IDI1MDAKCX0sCn07CgpzdGF0aWMgY29uc3Qgc3Ry
+dWN0IGlpb19pbmZvIGFkczc5NDVfaW5mbyA9IHsKCS5kcml2ZXJfbW9kdWxlID0gVEhJU19NT0RV
+TEUsCgkucmVhZF9yYXcgPSAmYWRzNzk0NV9yZWFkX3JhdywKfTsKCnN0YXRpYyBpbnQgYWRzNzk0
+NV9wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQp7CglzdHJ1Y3QgYWRzNzk0NV9zdGF0ZSAq
+c3Q7CglzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2OwoJaW50IHJldDsKCglpbmRpb19kZXYgPSBp
+aW9fZGV2aWNlX2FsbG9jKHNpemVvZigqc3QpKTsKCWlmIChpbmRpb19kZXYgPT0gTlVMTCkgewoJ
+CXJldCA9IC1FTk9NRU07CgkJZ290byBlcnJvcl9yZXQ7Cgl9CgoJc3QgPSBpaW9fcHJpdihpbmRp
+b19kZXYpOwoJc3QtPmNoaXBfaW5mbyA9CgkJJmFkczc5NDVfY2hpcF9pbmZvX3RibFtzcGlfZ2V0
+X2RldmljZV9pZChzcGkpLT5kcml2ZXJfZGF0YV07CgoJc3BpX3NldF9kcnZkYXRhKHNwaSwgaW5k
+aW9fZGV2KTsKCglzdC0+c3BpID0gc3BpOwoKCS8qIEVzdGFibGlzaCB0aGF0IHRoZSBpaW9fZGV2
+IGlzIGEgY2hpbGQgb2YgdGhlIHNwaSBkZXZpY2UgKi8KCWluZGlvX2Rldi0+ZGV2LnBhcmVudCA9
+ICZzcGktPmRldjsKCWluZGlvX2Rldi0+bmFtZSA9IHNwaV9nZXRfZGV2aWNlX2lkKHNwaSktPm5h
+bWU7CglpbmRpb19kZXYtPm1vZGVzID0gSU5ESU9fRElSRUNUX01PREU7IC8vIHwgSU5ESU9fQlVG
+RkVSX1RSSUdHRVJFRDsKCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSBzdC0+Y2hpcF9pbmZvLT5jaGFu
+bmVsczsKCWluZGlvX2Rldi0+bnVtX2NoYW5uZWxzID0gMjsKCWluZGlvX2Rldi0+aW5mbyA9ICZh
+ZHM3OTQ1X2luZm87CgoJLyogU2V0dXAgZGVmYXVsdCBtZXNzYWdlICovCgoJc3QtPnhmZXIucnhf
+YnVmID0gJnN0LT5kYXRhOwoJc3QtPnhmZXIubGVuID0gc3QtPmNoaXBfaW5mby0+Y2hhbm5lbHNb
+MF0uc2Nhbl90eXBlLnN0b3JhZ2ViaXRzIC8gODsKCglzcGlfbWVzc2FnZV9pbml0KCZzdC0+bXNn
+KTsKCXNwaV9tZXNzYWdlX2FkZF90YWlsKCZzdC0+eGZlciwgJnN0LT5tc2cpOwoKCXJldCA9IGlp
+b190cmlnZ2VyZWRfYnVmZmVyX3NldHVwKGluZGlvX2RldiwgTlVMTCwKCQkJJmFkczc5NDVfdHJp
+Z2dlcl9oYW5kbGVyLCBOVUxMKTsKCglpZiAocmV0KQoJCWdvdG8gZXJyb3JfZnJlZV9kZXY7CgoJ
+aWYgKHN0LT5jaGlwX2luZm8tPnJlc2V0KQoJCXN0LT5jaGlwX2luZm8tPnJlc2V0KHN0KTsKCgly
+ZXQgPSBpaW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlvX2Rldik7CglpZiAocmV0KQoJCWdvdG8gZXJy
+b3JfcmluZ191bnJlZ2lzdGVyOwoKCXJldHVybiAwOwoKZXJyb3JfcmluZ191bnJlZ2lzdGVyOgoJ
+aWlvX3RyaWdnZXJlZF9idWZmZXJfY2xlYW51cChpbmRpb19kZXYpOwplcnJvcl9mcmVlX2RldjoK
+CWlpb19kZXZpY2VfZnJlZShpbmRpb19kZXYpOwplcnJvcl9yZXQ6CglyZXR1cm4gcmV0Owp9Cgpz
+dGF0aWMgaW50IGFkczc5NDVfcmVtb3ZlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpCnsKCXN0cnVj
+dCBpaW9fZGV2ICppbmRpb19kZXYgPSBzcGlfZ2V0X2RydmRhdGEoc3BpKTsKCglpaW9fZGV2aWNl
+X3VucmVnaXN0ZXIoaW5kaW9fZGV2KTsKCWlpb190cmlnZ2VyZWRfYnVmZmVyX2NsZWFudXAoaW5k
+aW9fZGV2KTsKCglpaW9fZGV2aWNlX2ZyZWUoaW5kaW9fZGV2KTsKCglyZXR1cm4gMDsKfQoKc3Rh
+dGljIGNvbnN0IHN0cnVjdCBzcGlfZGV2aWNlX2lkIGFkczc5NDVfaWRbXSA9IHsKCXsiYWRzNzk0
+NSIsIElEX0FEUzc5NDV9LAoJe30KfTsKTU9EVUxFX0RFVklDRV9UQUJMRShzcGksIGFkczc5NDVf
+aWQpOwoKc3RhdGljIHN0cnVjdCBzcGlfZHJpdmVyIGFkczc5NDVfZHJpdmVyID0gewoJLmRyaXZl
+ciA9IHsKCQkubmFtZQk9ICJhZHM3OTQ1IiwKCQkub3duZXIJPSBUSElTX01PRFVMRSwKCX0sCgku
+cHJvYmUJCT0gYWRzNzk0NV9wcm9iZSwKCS5yZW1vdmUJCT0gYWRzNzk0NV9yZW1vdmUsCgkuaWRf
+dGFibGUJPSBhZHM3OTQ1X2lkLAp9Owptb2R1bGVfc3BpX2RyaXZlcihhZHM3OTQ1X2RyaXZlcik7
+CgpNT0RVTEVfQVVUSE9SKCJjbSIpOwpNT0RVTEVfREVTQ1JJUFRJT04oIlRleGFzIEluc3RydW1l
+bnRzIEFEUzc5NDUgYW5kIHNpbWlsYXIgMS1jaGFubmVsIEFEQ3MiKTsKTU9EVUxFX0xJQ0VOU0Uo
+IkdQTCB2MiIpOwo=
+
+--512e326d_1f48eaa1_5f2e--
 
