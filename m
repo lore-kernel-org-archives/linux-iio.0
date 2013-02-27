@@ -1,124 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33969 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59136 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752152Ab3BOR0V (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 12:26:21 -0500
-In-Reply-To: <20130215163628.GA23971@kroah.com>
-References: <CAMNxYswRsYtRF3kXKR676TZMCUsZPvk0auYTxpGVS2mRLmS8xw@mail.gmail.com> <20130122163655.GA21090@kroah.com> <CAMNxYswbiH-fW6YVvtWEr1W+SWRBU6ELv1bVRfNawpwcy+PZsA@mail.gmail.com> <20130129133346.GA1505@kroah.com> <CAMNxYszZNTh69-y+5RFVC9c5kgcyPaVET7784OPsTarB0fWm5w@mail.gmail.com> <CAMNxYszE+qQv2vVw6DqNGuow+30K-=+S8TfgyNJwFeEN=EfEsA@mail.gmail.com> <20130215163628.GA23971@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: Query related to MSR(Magnetic Stripe Reader) Device Driver
+	with ESMTP id S1759552Ab3B0UkV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:21 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 15 Feb 2013 17:25:49 +0000
-To: Greg KH <gregkh@linuxfoundation.org>,
-	Priyaranjan Das <priyaranjan456789@gmail.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	mankad.maulik@gmail.com
-Message-ID: <965893bd-a2f7-428e-b84f-e19f5fb7bde8@email.android.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 47/67] staging:iio:accel:sca3000 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:53 +0000
+Message-Id: <1361997553-31058-48-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The original info_mask is going away in favour of the broken out versions.
 
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/accel/sca3000_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Greg KH <gregkh@linuxfoundation.org> wrote:
-
->On Fri, Feb 15, 2013 at 04:48:33PM +0530, Priyaranjan Das wrote:
->> Hi Greg,
->> 
->> On Thu, Jan 31, 2013 at 11:09 AM, Priyaranjan Das
->> <priyaranjan456789@gmail.com> wrote:
->> > Hi Greg,
->> >
->> > On Tue, Jan 29, 2013 at 7:03 PM, Greg KH
-><gregkh@linuxfoundation.org> wrote:
->> >> On Mon, Jan 28, 2013 at 03:25:08PM +0530, Priyaranjan Das wrote:
->> >>> Hi Greg,
->> >>>
->> >>> On Tue, Jan 22, 2013 at 10:06 PM, Greg KH
-><gregkh@linuxfoundation.org> wrote:
->> >>> > On Tue, Jan 22, 2013 at 03:02:32PM +0530, Priyaranjan Das
->wrote:
->> >>> >> Hi All,
->> >>> >>
->> >>> >> I am working on MSR(Magnetic Stripe Reader) for a product . I
->wish to
->> >>> >> know whether any MSR( Magnetic Stripe/card Reader) driver is
->available
->> >>> >> in the current source or not. I need this for reference. Could
->anyone
->> >>> >> please help me?
->> >>> >
->> >>> > Most of these types of devices that I have worked with always
->show up as
->> >>> > a keyboard device (ps/2 pass-through or a USB hid device.) 
->What type of
->> >>> > interface does your device present to the operating system?
->> >>> >
->> >>>
->> >>> The MSR will be a part of a SoC. It is  a memory mapped device
->hence
->> >>> there is no interface like USB.
->> >>
->> >> Ok, that's different.  But how will your driver want to
->communicate the
->> >> reader data to userspace?  That will probably determine where you
->want
->> >> to put it.
->> >>
->> >> I would recommend making it an input device and sending keystrokes
->that
->> >> you read from the card, so you can properly integrate into
->userspace
->> >> applications that are used to using a card reader.
->> >>
->> >>> MSR IP contains an ADC which the driver will read and interpret
->the
->> >>> data. I am planning to write a Driver for the same. Will this
->driver
->> >>> fall under drivers/mfd/* ?
->> >>
->> >> As per the above, I would think drivers/input/ wouldn't you?
->> >>
->> >> Hope this helps,
->> >>
->> >
->> > Thanks for your help!.
->> >
->> > Yes, you are right, it should be under drivers/input.
->> > I am trying to prepare the design right now.
->> >
->> >
->> 
->> The MSR IP can be also be used either as a general purpose ADC or in
->> Magnetic stripe card reader mode.The IP supports both the modes and
->> provides FIFO for storing ADC data.
->> 
->> I also got to know about IIO subsystem where  ADC drivers are
->> implemented. Our use-case will be to use either Magnetic Stripe
->reader
->> mode or general purpose ADC mode in a given configuration. Can I use
->> IIO subsystem for the Magnetic Stripe driver?
->
->The IIO developers would know best about this, not I, sorry.
-
-The gp ADC stuff will fit nicely in IIO. I am afraid I don't know
- much about these devices. Could you give a brief description 
-of what the hardware does and what processing and outputs 
-you would want from the driver.
-
-
-That separation between what is in hardware and what software may dictate how the driver is broken up.
-
-Thanks
-
-Jonathan
->
->greg k-h
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index 14683f5..68c8b7b 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -419,8 +419,6 @@ static IIO_DEVICE_ATTR(measurement_mode, S_IRUGO | S_IWUSR,
+ 
+ static IIO_DEVICE_ATTR(revision, S_IRUGO, sca3000_show_rev, NULL, 0);
+ 
+-#define SCA3000_INFO_MASK			\
+-	IIO_CHAN_INFO_RAW_SEPARATE_BIT | IIO_CHAN_INFO_SCALE_SHARED_BIT
+ #define SCA3000_EVENT_MASK					\
+ 	(IIO_EV_BIT(IIO_EV_TYPE_MAG, IIO_EV_DIR_RISING))
+ 
+@@ -429,7 +427,8 @@ static IIO_DEVICE_ATTR(revision, S_IRUGO, sca3000_show_rev, NULL, 0);
+ 		.type = IIO_ACCEL,				\
+ 		.modified = 1,					\
+ 		.channel2 = mod,				\
+-		.info_mask = SCA3000_INFO_MASK,			\
++		.info_mask_separate = IIO_CHAN_INFO_RAW,	\
++		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,\
+ 		.address = index,				\
+ 		.scan_index = index,				\
+ 		.scan_type = {					\
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.8.1.1
+
