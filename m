@@ -1,59 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.20]:55952 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933194Ab3BSXRN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Feb 2013 18:17:13 -0500
-Received: from mailout-de.gmx.net ([10.1.76.31]) by mrigmx.server.lan
- (mrigmx002) with ESMTP (Nemesis) id 0MHJXh-1U4Pmd0n5v-00E1tP for
- <linux-iio@vger.kernel.org>; Wed, 20 Feb 2013 00:17:12 +0100
-Message-ID: <512407F5.2050802@gmx.de>
-Date: Wed, 20 Feb 2013 00:17:09 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jean Delvare <khali@linux-fr.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/9] hwmon: (adt7410) Use I2C_ADDRS helper macro
-References: <1360947438-2550-1-git-send-email-lars@metafoo.de> <1360947438-2550-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1360947438-2550-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-15
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59061 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757491Ab3B0Ujo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:39:44 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 01/67] iio: Add broken out info_mask fields for shared_by_type and separate
+Date: Wed, 27 Feb 2013 20:38:07 +0000
+Message-Id: <1361997553-31058-2-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Lars-Peter Clausen schrieb:
-> Use the I2C_ADDRS macro to initialize the I2C device's address_list. Doing so
-> saves a few lines of boilerplate code.
->
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/hwmon/adt7410.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->
-> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
-> index 4ae16e0..99f6d32 100644
-> --- a/drivers/hwmon/adt7410.c
-> +++ b/drivers/hwmon/adt7410.c
-> @@ -78,10 +78,6 @@ enum adt7410_type {		/* keep sorted in alphabetical order */
->  	adt7410,
->  };
->  
-> -/* Addresses scanned */
-> -static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b,
-> -					I2C_CLIENT_END };
-> -
->  static const u8 ADT7410_REG_TEMP[4] = {
->  	ADT7410_TEMPERATURE,		/* input */
->  	ADT7410_T_ALARM_HIGH,		/* high */
-> @@ -453,7 +449,7 @@ static struct i2c_driver adt7410_driver = {
->  	.probe		= adt7410_probe,
->  	.remove		= adt7410_remove,
->  	.id_table	= adt7410_ids,
-> -	.address_list	= normal_i2c,
-> +	.address_list	= I2C_ADDRS(0x48, 0x49, 0x4a, 0x4b),
->  };
->  
->  module_i2c_driver(adt7410_driver);
+This simplifies the code, removes an extensive layer of 'helper' macros
+and gives us twice as much room to play with in these masks before we
+have any need to be clever.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+
+---
+ drivers/iio/industrialio-core.c | 30 ++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         | 10 +++++++++-
+ 2 files changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 8848f16..bfb9ccb 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -708,6 +708,36 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 			goto error_ret;
+ 		attrcount++;
+ 	}
++	for_each_set_bit(i, &chan->info_mask_separate, sizeof(long)*8) {
++		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
++					     chan,
++					     &iio_read_channel_info,
++					     &iio_write_channel_info,
++					     i,
++					     1,
++					     &indio_dev->dev,
++					     &indio_dev->channel_attr_list);
++		if (ret < 0)
++			goto error_ret;
++		attrcount++;
++	}
++	for_each_set_bit(i, &chan->info_mask_shared_by_type, sizeof(long)*8) {
++		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
++					     chan,
++					     &iio_read_channel_info,
++					     &iio_write_channel_info,
++					     i,
++					     0,
++					     &indio_dev->dev,
++					     &indio_dev->channel_attr_list);
++		if (ret == -EBUSY) {
++			ret = 0;
++			continue;
++		} else if (ret < 0) {
++			goto error_ret;
++		}
++		attrcount++;
++	}
+ 
+ 	if (chan->ext_info) {
+ 		unsigned int i = 0;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index da8c776..7697650 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -218,6 +218,10 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  *			endianness:	little or big endian
+  * @info_mask:		What information is to be exported about this channel.
+  *			This includes calibbias, scale etc.
++ * @info_mask_separate: What information is to be exported that is specific to
++ *			this channel.
++ * @info_mask_shared_by_type: What information is to be exported that is shared
++*			by all channels of the same type.
+  * @event_mask:		What events can this channel produce.
+  * @ext_info:		Array of extended info attributes for this channel.
+  *			The array is NULL terminated, the last element should
+@@ -253,6 +257,8 @@ struct iio_chan_spec {
+ 		enum iio_endian endianness;
+ 	} scan_type;
+ 	long			info_mask;
++	long			info_mask_separate;
++	long			info_mask_shared_by_type;
+ 	long			event_mask;
+ 	const struct iio_chan_spec_ext_info *ext_info;
+ 	const char		*extend_name;
+@@ -275,7 +281,9 @@ struct iio_chan_spec {
+ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+ 	enum iio_chan_info_enum type)
+ {
+-	return chan->info_mask & IIO_CHAN_INFO_BITS(type);
++	return (chan->info_mask & IIO_CHAN_INFO_BITS(type)) |
++	       (chan->info_mask_separate & type) |
++	       (chan->info_mask_shared_by_type & type);
+ }
+ 
+ #define IIO_ST(si, rb, sb, sh)						\
+-- 
+1.8.1.1
 
