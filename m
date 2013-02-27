@@ -1,59 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-129.synserver.de ([212.40.185.129]:1191 "EHLO
-	smtp-out-124.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S932363Ab3BYKGx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2013 05:06:53 -0500
-Message-ID: <512B381C.1030201@metafoo.de>
-Date: Mon, 25 Feb 2013 11:08:28 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Carsten Frank <Carsten.Frank@haw-hamburg.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: driver interface for usb spectrometer (like OceanOptics)
-References: <5127353B.1040801@haw-hamburg.de>
-In-Reply-To: <5127353B.1040801@haw-hamburg.de>
-Content-Type: text/plain; charset=ISO-8859-15
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757491Ab3B0UkT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:19 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 37/67] iio:imu:adis16400 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:43 +0000
+Message-Id: <1361997553-31058-38-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/22/2013 10:07 AM, Carsten Frank wrote:
-> Hi all.
-> 
-> I have written drivers to access Hamamatsu and Avantes usb-spectrometers
-> which express the the following interfaces:
-> One is located in a subdiretory in the the "/sys/bus/usb/drivers/" tree and
-> the other on can be foud in the /dev/ directory.
-> 
-> The first is used to configure the spectrometer (e.g. integration_time,
-> gain, etc.) and used to show information like the temperature or the
-> wavelength calibration parameters.
-> 
-> The interface in /dev/ is used to aquire the data from the spectrometer
-> (typically 2048 x 2 bytes).
-> 
-> Greg (K-H) suggests that the iio interface may be an option so I would like
-> to get some opinions.
-> 
-> Thank you very much in advance,
-> 
-> Carsten
+The original info_mask is going away in favour of the broken out versions.
 
-Hi,
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
 
-I don't think we have any spectrometer devices in IIO yet. But it could be a
-fit, maybe requires some extensions to the current IIO API though. Have you
-looked at the IIO API and userspace ABI to see how your device could fit in
-there?
+---
+ drivers/iio/imu/adis16400_core.c | 44 ++++++++++++++++++----------------------
+ 1 file changed, 20 insertions(+), 24 deletions(-)
 
-Also what does the data returned by the spectrometer look like? Usually the
-data returned by an IIO device is in some kind of standardized form, so
-generic applications can be written without having to know the exact data
-layout the device uses.
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index b7f215e..1a993af 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -484,8 +484,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.indexed = 1, \
+ 	.channel = 0, \
+ 	.extend_name = name, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_SCALE, \
+ 	.address = (addr), \
+ 	.scan_index = (si), \
+ 	.scan_type = { \
+@@ -507,10 +506,9 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_ANGL_VEL, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_CALIBBIAS,  \
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE | \
++		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY, \
+ 	.address = addr, \
+ 	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
+ 	.scan_type = { \
+@@ -526,10 +524,9 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_CALIBBIAS, \
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE | \
++		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
+ 	.scan_type = { \
+@@ -545,9 +542,9 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_MAGN, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW, \
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE | \
++		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
+ 	.scan_type = { \
+@@ -568,10 +565,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.indexed = 1, \
+ 	.channel = 0, \
+ 	.extend_name = ADIS16400_MOD_TEMP_NAME_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET | \
++		IIO_CHAN_INFO_SCALE, \
++	.info_mask_shared_by_type = \
++		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
+ 	.scan_type = { \
+@@ -587,9 +584,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_TEMP, \
+ 	.indexed = 1, \
+ 	.channel = 0, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET | \
++		IIO_CHAN_INFO_SCALE, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16350_SCAN_TEMP_X, \
+ 	.scan_type = { \
+@@ -605,8 +601,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_INCLI, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW, \
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
+ 	.scan_type = { \
+@@ -646,8 +642,8 @@ static const struct iio_chan_spec adis16448_channels[] = {
+ 	ADIS16400_MAGN_CHAN(Z, ADIS16400_ZMAGN_OUT, 16),
+ 	{
+ 		.type = IIO_PRESSURE,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate = IIO_CHAN_INFO_RAW,
++		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,
+ 		.address = ADIS16448_BARO_OUT,
+ 		.scan_index = ADIS16400_SCAN_BARO,
+ 		.scan_type = IIO_ST('s', 16, 16, 0),
+-- 
+1.8.1.1
 
-I'm not an expert on how spectrometers work, what kind of parameters they
-have and what the result of a 'conversion' looks like. Maybe you could give
-a short introduction, this would certainly make it easier to figure out how
-this would fit into IIO.
-A pointer to the sourcecode of the current driver could also be useful.
-
-- Lars
