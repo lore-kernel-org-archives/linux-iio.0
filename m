@@ -1,34 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:62307 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750729Ab3BOUGp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 15:06:45 -0500
-Date: Fri, 15 Feb 2013 12:07:08 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/9] hwmon: (adt7410) Let suspend/resume depend on
- CONFIG_PM_SLEEP
-Message-ID: <20130215200708.GB32433@roeck-us.net>
-References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
- <1360947438-2550-2-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1360947438-2550-2-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758636Ab3B0UkQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:16 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 29/67] iio:dac:ad5791 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:35 +0000
+Message-Id: <1361997553-31058-30-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 15, 2013 at 05:57:11PM +0100, Lars-Peter Clausen wrote:
-> Only build the suspend/resume code if CONFIG_PM_SLEEP is selected. Currently the
-> code is built if CONFIG_PM is selected, but it will also be selected if only
-> runtime PM support is built into the kernel.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+The original info_mask is going away in favour of the broken out versions.
 
-Applied to hwmon-next.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/ad5791.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks,
-Guenter
+diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
+index 8dfd3da..1fbccd3 100644
+--- a/drivers/iio/dac/ad5791.c
++++ b/drivers/iio/dac/ad5791.c
+@@ -302,9 +302,9 @@ static const struct iio_chan_spec_ext_info ad5791_ext_info[] = {
+ 	.indexed = 1,					\
+ 	.address = AD5791_ADDR_DAC0,			\
+ 	.channel = 0,					\
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT |	\
+-		IIO_CHAN_INFO_OFFSET_SHARED_BIT,	\
++	.info_mask_separate = IIO_CHAN_INFO_RAW,	\
++	.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE |	\
++		IIO_CHAN_INFO_OFFSET,			\
+ 	.scan_type = IIO_ST('u', bits, 24, shift),	\
+ 	.ext_info = ad5791_ext_info,			\
+ }
+-- 
+1.8.1.1
+
