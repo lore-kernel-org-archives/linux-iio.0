@@ -1,208 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:52413 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750781Ab3BOUTl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 15:19:41 -0500
-Date: Fri, 15 Feb 2013 12:20:02 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/9] hwmon: (adt7410) Don't re-read non-volatile registers
-Message-ID: <20130215202002.GF32433@roeck-us.net>
-References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
- <1360947438-2550-6-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1360947438-2550-6-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59134 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759596Ab3B0UkW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:22 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 50/67] staging:iio:ad7606 move to info_mask_(shared_by_type/separate)
+Date: Wed, 27 Feb 2013 20:38:56 +0000
+Message-Id: <1361997553-31058-51-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 15, 2013 at 05:57:15PM +0100, Lars-Peter Clausen wrote:
-> Currently each time the temperature register is read the driver also reads the
-> threshold and hysteresis registers. This increases the amount of I2C traffic and
-> time needed to read the temperature by a factor of ~5. Neither the threshold nor
-> the hysteresis change on their own, so once we've read them, we should be able
-> to just use the cached value of the registers. This patch modifies the code
-> accordingly and only reads the threshold and hysteresis registers once during
-> probe.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/hwmon/adt7410.c | 89 +++++++++++++++++++++++++++++++------------------
->  1 file changed, 56 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
-> index 99a7290..5de0376 100644
-> --- a/drivers/hwmon/adt7410.c
-> +++ b/drivers/hwmon/adt7410.c
-> @@ -119,45 +119,31 @@ static int adt7410_temp_ready(struct i2c_client *client)
->  	return -ETIMEDOUT;
->  }
->  
-> -static struct adt7410_data *adt7410_update_device(struct device *dev)
-> +static int adt7410_update_temp(struct device *dev)
->  {
->  	struct i2c_client *client = to_i2c_client(dev);
->  	struct adt7410_data *data = i2c_get_clientdata(client);
-> -	struct adt7410_data *ret = data;
-> +	int ret = 0;
-> +
->  	mutex_lock(&data->update_lock);
->  
->  	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
->  	    || !data->valid) {
-> -		int i, status;
->  
->  		dev_dbg(&client->dev, "Starting update\n");
->  
-> -		status = adt7410_temp_ready(client); /* check for new value */
-> -		if (unlikely(status)) {
-> -			ret = ERR_PTR(status);
-> +		ret = adt7410_temp_ready(client); /* check for new value */
-> +		if (ret)
->  			goto abort;
-> -		}
-> -		for (i = 0; i < ARRAY_SIZE(data->temp); i++) {
-> -			status = i2c_smbus_read_word_swapped(client,
-> -							ADT7410_REG_TEMP[i]);
-> -			if (unlikely(status < 0)) {
-> -				dev_dbg(dev,
-> -					"Failed to read value: reg %d, error %d\n",
-> -					ADT7410_REG_TEMP[i], status);
-> -				ret = ERR_PTR(status);
-> -				goto abort;
-> -			}
-> -			data->temp[i] = status;
-> -		}
-> -		status = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
-> -		if (unlikely(status < 0)) {
-> -			dev_dbg(dev,
-> -				"Failed to read value: reg %d, error %d\n",
-> -				ADT7410_T_HYST, status);
-> -			ret = ERR_PTR(status);
-> +
-> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[0]);
-> +		if (ret) {
+The original info_mask is going away in favour of the broken out versions.
 
-Should be
-		if (ret < 0) {
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad7606_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-or non-zero temperatures always create an error condition.
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index bae61cb..023a677 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -235,8 +235,8 @@ static const struct attribute_group ad7606_attribute_group_range = {
+ 		.indexed = 1,					\
+ 		.channel = num,					\
+ 		.address = num,					\
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-				IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++		.info_mask_separate = IIO_CHAN_INFO_RAW,	\
++		.info_mask_shared_by_type = IIO_CHAN_INFO_SCALE,\
+ 		.scan_index = num,				\
+ 		.scan_type = IIO_ST('s', 16, 16, 0),		\
+ 	}
+-- 
+1.8.1.1
 
-> +			dev_dbg(dev, "Failed to read value: reg %d, error %d\n",
-> +				ADT7410_REG_TEMP[0], ret);
->  			goto abort;
->  		}
-> -		data->hyst = status;
-> +		data->temp[0] = ret;
-> +
->  		data->last_updated = jiffies;
->  		data->valid = true;
->  	}
-> @@ -167,6 +153,35 @@ abort:
->  	return ret;
-
-	ret can be > 0 as no-error return. So you'll either have to
-	change the no-error return case to always return 0, or change the
-	return value check when the function is called.
->  }
->  
-> +static int adt7410_fill_cache(struct i2c_client *client)
-> +{
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
-> +	int ret;
-> +	int i;
-> +
-> +	for (i = 1; i < 3; i++) {
-
-I think using ARRAY_SIZE would be better here. With "i < 3" you don't read the
-critical temperature, which proves the point (unless I am missing something).
-
-> +		ret = i2c_smbus_read_word_swapped(client, ADT7410_REG_TEMP[i]);
-> +		if (ret) {
-
-		ret < 0
-
-> +			dev_dbg(&client->dev,
-> +				"Failed to read value: reg %d, error %d\n",
-> +				ADT7410_REG_TEMP[0], ret);
-> +			return ret;
-> +		}
-> +		data->temp[i] = ret;
-> +	}
-> +
-> +	ret = i2c_smbus_read_byte_data(client, ADT7410_T_HYST);
-> +	if (ret) {
-
-	ret < 0
-
-> +		dev_dbg(&client->dev,
-> +			"Failed to read value: hyst reg, error %d\n",
-> +			ret);
-> +		return ret;
-> +	}
-> +	data->hyst = ret;
-> +
-> +	return 0;
-> +}
-> +
->  static s16 ADT7410_TEMP_TO_REG(long temp)
->  {
->  	return DIV_ROUND_CLOSEST(clamp_val(temp, ADT7410_TEMP_MIN,
-> @@ -193,10 +208,16 @@ static ssize_t adt7410_show_temp(struct device *dev,
->  				 struct device_attribute *da, char *buf)
->  {
->  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
-> -	struct adt7410_data *data = adt7410_update_device(dev);
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
->  
-> -	if (IS_ERR(data))
-> -		return PTR_ERR(data);
-> +	if (attr->index == 0) {
-> +		int ret;
-> +
-> +		ret = adt7410_update_temp(dev);
-> +		if (ret)
-
-Problematic; see above.
-
-> +			return ret;
-> +	}
->  
->  	return sprintf(buf, "%d\n", ADT7410_REG_TO_TEMP(data,
->  		       data->temp[attr->index]));
-> @@ -232,13 +253,11 @@ static ssize_t adt7410_show_t_hyst(struct device *dev,
->  				   char *buf)
->  {
->  	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
-> -	struct adt7410_data *data;
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct adt7410_data *data = i2c_get_clientdata(client);
->  	int nr = attr->index;
->  	int hyst;
->  
-> -	data = adt7410_update_device(dev);
-> -	if (IS_ERR(data))
-> -		return PTR_ERR(data);
->  	hyst = (data->hyst & ADT7410_T_HYST_MASK) * 1000;
->  
->  	/*
-> @@ -371,6 +390,10 @@ static int adt7410_probe(struct i2c_client *client,
->  	}
->  	dev_dbg(&client->dev, "Config %02x\n", data->config);
->  
-> +	ret = adt7410_fill_cache(client);
-> +	if (ret)
-> +		goto exit_restore;
-> +
->  	/* Register sysfs hooks */
->  	ret = sysfs_create_group(&client->dev.kobj, &adt7410_group);
->  	if (ret)
-> -- 
-> 1.8.0
-> 
-> 
