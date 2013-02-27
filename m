@@ -1,190 +1,147 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-045.synserver.de ([212.40.185.45]:1129 "EHLO
-	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752714Ab3BOQ4I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2013 11:56:08 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jean Delvare <khali@linux-fr.org>,
-	Guenter Roeck <linux@roeck-us.net>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 8/9] hwmon: (adt7x10) Add alarm interrupt support
-Date: Fri, 15 Feb 2013 17:57:17 +0100
-Message-Id: <1360947438-2550-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1360947438-2550-1-git-send-email-lars@metafoo.de>
-References: <1360947438-2550-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59306 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759680Ab3B0Uk1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:27 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 67/67] iio:core drop info_mask from struct iio_info
+Date: Wed, 27 Feb 2013 20:39:13 +0000
+Message-Id: <1361997553-31058-68-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This allows a userspace application to poll() on the alarm files to get notified
-in case of an temperature threshold event.
+This has been replaced by the pair of masks info_mask_separate
+and info_mask_shared_by_type.  Other variants may follow.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/hwmon/adt7310.c |  4 ++--
- drivers/hwmon/adt7410.c |  4 ++--
- drivers/hwmon/adt7x10.c | 49 ++++++++++++++++++++++++++++++++++++++++++++-----
- drivers/hwmon/adt7x10.h |  4 ++--
- 4 files changed, 50 insertions(+), 11 deletions(-)
+ drivers/iio/industrialio-core.c | 17 ----------
+ include/linux/iio/iio.h         | 73 +----------------------------------------
+ 2 files changed, 1 insertion(+), 89 deletions(-)
 
-diff --git a/drivers/hwmon/adt7310.c b/drivers/hwmon/adt7310.c
-index 0483e6c..dcd8d5a 100644
---- a/drivers/hwmon/adt7310.c
-+++ b/drivers/hwmon/adt7310.c
-@@ -127,13 +127,13 @@ static const struct adt7410_ops adt7310_spi_ops = {
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index bfb9ccb..feb29ff 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -691,23 +691,6 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
  
- static int adt7310_spi_probe(struct spi_device *spi)
- {
--	return adt7410_probe(&spi->dev, spi_get_device_id(spi)->name,
-+	return adt7410_probe(&spi->dev, spi_get_device_id(spi)->name, spi->irq,
- 			&adt7310_spi_ops);
- }
- 
- static int adt7310_spi_remove(struct spi_device *spi)
- {
--	return adt7410_remove(&spi->dev);
-+	return adt7410_remove(&spi->dev, spi->irq);
- }
- 
- static const struct spi_device_id adt7310_id[] = {
-diff --git a/drivers/hwmon/adt7410.c b/drivers/hwmon/adt7410.c
-index 13734c5..35880c6 100644
---- a/drivers/hwmon/adt7410.c
-+++ b/drivers/hwmon/adt7410.c
-@@ -84,12 +84,12 @@ static int adt7410_i2c_probe(struct i2c_client *client,
- 			I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA))
- 		return -ENODEV;
- 
--	return adt7410_probe(&client->dev, NULL, &adt7410_i2c_ops);
-+	return adt7410_probe(&client->dev, NULL, client->irq, &adt7410_i2c_ops);
- }
- 
- static int adt7410_i2c_remove(struct i2c_client *client)
- {
--	return adt7410_remove(&client->dev);
-+	return adt7410_remove(&client->dev, client->irq);
- }
- 
- static const struct i2c_device_id adt7410_id[] = {
-diff --git a/drivers/hwmon/adt7x10.c b/drivers/hwmon/adt7x10.c
-index 2598aaf..d042596 100644
---- a/drivers/hwmon/adt7x10.c
-+++ b/drivers/hwmon/adt7x10.c
-@@ -30,6 +30,7 @@
- #include <linux/err.h>
- #include <linux/mutex.h>
- #include <linux/delay.h>
-+#include <linux/interrupt.h>
- 
- #include "adt7x10.h"
- 
-@@ -112,6 +113,26 @@ static const u8 ADT7410_REG_TEMP[4] = {
- 	ADT7410_T_CRIT,			/* critical */
+ 	if (chan->channel < 0)
+ 		return 0;
+-	for_each_set_bit(i, &chan->info_mask, sizeof(long)*8) {
+-		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
+-					     chan,
+-					     &iio_read_channel_info,
+-					     &iio_write_channel_info,
+-					     i/2,
+-					     !(i%2),
+-					     &indio_dev->dev,
+-					     &indio_dev->channel_attr_list);
+-		if (ret == -EBUSY && (i%2 == 0)) {
+-			ret = 0;
+-			continue;
+-		}
+-		if (ret < 0)
+-			goto error_ret;
+-		attrcount++;
+-	}
+ 	for_each_set_bit(i, &chan->info_mask_separate, sizeof(long)*8) {
+ 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+ 					     chan,
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 7697650..8d171f4 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -38,76 +38,6 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_HYSTERESIS,
  };
  
-+static irqreturn_t adt7410_irq_handler(int irq, void *private)
-+{
-+	struct device *dev = private;
-+	u8 status;
-+	int ret;
-+
-+	ret = adt7410_read_byte(dev, ADT7410_STATUS, &status);
-+	if (ret)
-+		return IRQ_HANDLED;
-+
-+	if (status & ADT7410_STAT_T_HIGH)
-+		sysfs_notify(&dev->kobj, NULL, "temp1_max_alarm");
-+	if (status & ADT7410_STAT_T_LOW)
-+		sysfs_notify(&dev->kobj, NULL, "temp1_min_alarm");
-+	if (status & ADT7410_STAT_T_CRIT)
-+		sysfs_notify(&dev->kobj, NULL, "temp1_crit_alarm");
-+
-+	return IRQ_HANDLED;
-+}
-+
- /*
-  * adt7410 register access by I2C
-  */
-@@ -359,7 +380,7 @@ static const struct attribute_group adt7410_group = {
- 	.attrs = adt7410_attributes,
- };
- 
--int adt7410_probe(struct device *dev, const char *name,
-+int adt7410_probe(struct device *dev, const char *name, int irq,
- 	const struct adt7410_ops *ops)
+-#define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+-#define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
+-#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
+-				    IIO_CHAN_INFO_SEPARATE_BIT(type))
+-
+-#define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
+-#define IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PROCESSED)
+-#define IIO_CHAN_INFO_SCALE_SEPARATE_BIT		\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_SCALE)
+-#define IIO_CHAN_INFO_SCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_SCALE)
+-#define IIO_CHAN_INFO_OFFSET_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_OFFSET)
+-#define IIO_CHAN_INFO_OFFSET_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_OFFSET)
+-#define IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_CALIBSCALE)
+-#define IIO_CHAN_INFO_CALIBSCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_CALIBSCALE)
+-#define IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_CALIBBIAS)
+-#define IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_CALIBBIAS)
+-#define IIO_CHAN_INFO_PEAK_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PEAK)
+-#define IIO_CHAN_INFO_PEAK_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PEAK)
+-#define IIO_CHAN_INFO_PEAKSCALE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PEAKSCALE)
+-#define IIO_CHAN_INFO_PEAKSCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PEAKSCALE)
+-#define IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT	\
+-	IIO_CHAN_INFO_SEPARATE_BIT(				\
+-		IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW)
+-#define IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SHARED_BIT	\
+-	IIO_CHAN_INFO_SHARED_BIT(				\
+-		IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW)
+-#define IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
+-#define IIO_CHAN_INFO_AVERAGE_RAW_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
+-#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT \
+-	IIO_CHAN_INFO_SHARED_BIT(			       \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
+-#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT \
+-	IIO_CHAN_INFO_SEPARATE_BIT(			       \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
+-#define IIO_CHAN_INFO_SAMP_FREQ_SEPARATE_BIT		\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_SAMP_FREQ)
+-#define IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_SAMP_FREQ)
+-#define IIO_CHAN_INFO_FREQUENCY_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_FREQUENCY)
+-#define IIO_CHAN_INFO_FREQUENCY_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_FREQUENCY)
+-#define IIO_CHAN_INFO_PHASE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PHASE)
+-#define IIO_CHAN_INFO_PHASE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PHASE)
+-#define IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+-#define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+-#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
+-#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
+-
+ enum iio_endian {
+ 	IIO_CPU,
+ 	IIO_BE,
+@@ -281,8 +211,7 @@ struct iio_chan_spec {
+ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+ 	enum iio_chan_info_enum type)
  {
- 	struct adt7410_data *data;
-@@ -383,11 +404,17 @@ int adt7410_probe(struct device *dev, const char *name,
- 		return ret;
- 	}
- 	/*
--	 * Set to 16 bit resolution, continous conversion and comparator mode.
-+	 * Set to 16 bit resolution and continous conversion
- 	 */
- 	data->config = data->oldconfig;
--	data->config &= ~ADT7410_MODE_MASK;
--	data->config |= ADT7410_FULL | ADT7410_RESOLUTION | ADT7410_EVENT_MODE;
-+	data->config &= ~(ADT7410_MODE_MASK | ADT7410_CT_POLARITY |
-+			ADT7410_INT_POLARITY);
-+	data->config |= ADT7410_FULL | ADT7410_RESOLUTION;
-+
-+	/* If we are not using interrupts use comperator mode */
-+	if (irq <= 0)
-+		data->config |= ADT7410_EVENT_MODE;
-+
- 	if (data->config != data->oldconfig) {
- 		ret = adt7410_write_byte(dev, ADT7410_CONFIG, data->config);
- 		if (ret)
-@@ -421,8 +448,17 @@ int adt7410_probe(struct device *dev, const char *name,
- 		goto exit_remove_name;
- 	}
- 
-+	if (irq > 0) {
-+		ret = request_threaded_irq(irq, NULL, adt7410_irq_handler,
-+				IRQF_TRIGGER_LOW | IRQF_ONESHOT, name, dev);
-+		if (ret)
-+			goto exit_hwmon_device_unregister;
-+	}
-+
- 	return 0;
- 
-+exit_hwmon_device_unregister:
-+	hwmon_device_unregister(data->hwmon_dev);
- exit_remove_name:
- 	if (name)
- 		device_remove_file(dev, &dev_attr_name);
-@@ -434,10 +470,13 @@ exit_restore:
+-	return (chan->info_mask & IIO_CHAN_INFO_BITS(type)) |
+-	       (chan->info_mask_separate & type) |
++	return (chan->info_mask_separate & type) |
+ 	       (chan->info_mask_shared_by_type & type);
  }
- EXPORT_SYMBOL_GPL(adt7410_probe);
  
--int adt7410_remove(struct device *dev)
-+int adt7410_remove(struct device *dev, int irq)
- {
- 	struct adt7410_data *data = dev_get_drvdata(dev);
- 
-+	if (irq > 0)
-+		free_irq(irq, dev);
-+
- 	hwmon_device_unregister(data->hwmon_dev);
- 	if (data->name)
- 		device_remove_file(dev, &dev_attr_name);
-diff --git a/drivers/hwmon/adt7x10.h b/drivers/hwmon/adt7x10.h
-index 17c8053..173b094 100644
---- a/drivers/hwmon/adt7x10.h
-+++ b/drivers/hwmon/adt7x10.h
-@@ -32,9 +32,9 @@ struct adt7410_ops {
- 	int (*write_byte)(struct device *, u8 reg, u8 data);
- };
- 
--int adt7410_probe(struct device *dev, const char *name,
-+int adt7410_probe(struct device *dev, const char *name, int irq,
- 	const struct adt7410_ops *ops);
--int adt7410_remove(struct device *dev);
-+int adt7410_remove(struct device *dev, int irq);
- 
- 
- #ifdef CONFIG_PM_SLEEP
 -- 
-1.8.0
+1.8.1.1
 
