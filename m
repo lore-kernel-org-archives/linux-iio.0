@@ -1,54 +1,160 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:37173 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S933849Ab3BLSxN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2013 13:53:13 -0500
-Message-ID: <511A8FFF.8020807@metafoo.de>
-Date: Tue, 12 Feb 2013 19:54:55 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <Michael.Hennerich@analog.com>
+From: "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>
+Date: Thu, 28 Feb 2013 09:25:37 +0000
+Subject: RE: [PATCH 54/67] staging:iio:cdc:ad7746 move to
+ info_mask_(shared_by_type/separate)
+Message-ID: <544AC56F16B56944AEC3BD4E3D591771602C51E75D@LIMKCMBX1.ad.analog.com>
+References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+ <1361997553-31058-55-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-55-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Christophe Leroy <christophe.leroy@c-s.fr>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, patrick.vasseur@c-s.fr
-Subject: Re: [PATCH v2] IIO ADC support for AD7923
-References: <201302121710.r1CHAWES027406@localhost.localdomain>
-In-Reply-To: <201302121710.r1CHAWES027406@localhost.localdomain>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/12/2013 06:10 PM, Christophe Leroy wrote:
-> This patch adds support for Analog Devices AD7923 ADC in the IIO Subsystem.
-> 
-> Signed-off-by: Patrick Vasseur <patrick.vasseur@c-s.fr>
-> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-Looks good to me except for one small, but important issue.
 
-[...]
-> diff -urN linux-next-e347c98/drivers/iio/adc/ad7923.c linux-next-e347c98.new/drivers/iio/adc/ad7923.c
-> --- linux-next-e347c98/drivers/iio/adc/ad7923.c	1970-01-01 01:00:00.000000000 +0100
-> +++ linux-next-e347c98.new/drivers/iio/adc/ad7923.c	2013-02-12 15:16:29.000000000 +0100
-[...]
-> +
-> +struct ad7923_state {
-> +	struct spi_device		*spi;
-> +	struct spi_transfer		ring_xfer[6];
+-----Original Message-----
+From: Jonathan Cameron [mailto:jic23@kernel.org]=20
+Sent: Mittwoch, 27. Februar 2013 21:39
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron; Hennerich, Michael; Lars-Peter Clausen
+Subject: [PATCH 54/67] staging:iio:cdc:ad7746 move to info_mask_(shared_by_=
+type/separate)
 
-I think 5 is the max number of transfers, one for each channel and one extra to
-read the last result.
+The original info_mask is going away in favour of the broken out versions.
 
-> +	struct spi_transfer		scan_single_xfer[2];
-> +	struct spi_message		ring_msg;
-> +	struct spi_message		scan_single_msg;
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	__be16				rx_buf[4] ____cacheline_aligned;
-> +	__be16				tx_buf[2];
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Michael Hennerich <michael.hennerich@analog.com>
+cc: Lars-Peter Clausen <lars@metafoo.de>
 
-The tx buffer also needs to be 4 elements.
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
 
-> +};
-[...]
+All CC: me
+
+---
+ drivers/staging/iio/cdc/ad7746.c | 48 ++++++++++++++++++------------------=
+----
+ 1 file changed, 22 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7=
+746.c
+index 466b82e..2789839 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -123,8 +123,8 @@ static const struct iio_chan_spec ad7746_channels[] =3D=
+ {
+ 		.type =3D IIO_VOLTAGE,
+ 		.indexed =3D 1,
+ 		.channel =3D 0,
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_EXT_VIN,
+ 	},
+@@ -133,8 +133,8 @@ static const struct iio_chan_spec ad7746_channels[] =3D=
+ {
+ 		.indexed =3D 1,
+ 		.channel =3D 1,
+ 		.extend_name =3D "supply",
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_VDD_MON,
+ 	},
+@@ -142,7 +142,7 @@ static const struct iio_chan_spec ad7746_channels[] =3D=
+ {
+ 		.type =3D IIO_TEMP,
+ 		.indexed =3D 1,
+ 		.channel =3D 0,
+-		.info_mask =3D IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_PROCESSED,
+ 		.address =3D AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_INT_TEMP,
+ 	},
+@@ -150,7 +150,7 @@ static const struct iio_chan_spec ad7746_channels[] =3D=
+ {
+ 		.type =3D IIO_TEMP,
+ 		.indexed =3D 1,
+ 		.channel =3D 1,
+-		.info_mask =3D IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_PROCESSED,
+ 		.address =3D AD7746_REG_VT_DATA_HIGH << 8 |
+ 			AD7746_VTSETUP_VTMD_EXT_TEMP,
+ 	},
+@@ -158,11 +158,10 @@ static const struct iio_chan_spec ad7746_channels[] =
+=3D {
+ 		.type =3D IIO_CAPACITANCE,
+ 		.indexed =3D 1,
+ 		.channel =3D 0,
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW |
++		IIO_CHAN_INFO_CALIBSCALE | IIO_CHAN_INFO_OFFSET,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_CALIBBIAS |
++		IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_CAP_DATA_HIGH << 8,
+ 	},
+ 	[CIN1_DIFF] =3D {
+@@ -171,11 +170,10 @@ static const struct iio_chan_spec ad7746_channels[] =
+=3D {
+ 		.indexed =3D 1,
+ 		.channel =3D 0,
+ 		.channel2 =3D 2,
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW |
++		IIO_CHAN_INFO_CALIBSCALE | IIO_CHAN_INFO_OFFSET,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_CALIBBIAS |
++		IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_CAP_DATA_HIGH << 8 |
+ 			AD7746_CAPSETUP_CAPDIFF
+ 	},
+@@ -183,11 +181,10 @@ static const struct iio_chan_spec ad7746_channels[] =
+=3D {
+ 		.type =3D IIO_CAPACITANCE,
+ 		.indexed =3D 1,
+ 		.channel =3D 1,
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW |
++		IIO_CHAN_INFO_CALIBSCALE | IIO_CHAN_INFO_OFFSET,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_CALIBBIAS |
++		IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_CAP_DATA_HIGH << 8 |
+ 			AD7746_CAPSETUP_CIN2,
+ 	},
+@@ -197,11 +194,10 @@ static const struct iio_chan_spec ad7746_channels[] =
+=3D {
+ 		.indexed =3D 1,
+ 		.channel =3D 1,
+ 		.channel2 =3D 3,
+-		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate =3D IIO_CHAN_INFO_RAW |
++		IIO_CHAN_INFO_CALIBSCALE | IIO_CHAN_INFO_OFFSET,
++		.info_mask_shared_by_type =3D IIO_CHAN_INFO_CALIBBIAS |
++		IIO_CHAN_INFO_SCALE,
+ 		.address =3D AD7746_REG_CAP_DATA_HIGH << 8 |
+ 			AD7746_CAPSETUP_CAPDIFF | AD7746_CAPSETUP_CIN2,
+ 	}
+--=20
+1.8.1.1
