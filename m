@@ -1,41 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59304 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759599Ab3B0Uk1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Feb 2013 15:40:27 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 66/67] staging:iio:ad2s90 move to info_mask_(shared_by_type/separate)
-Date: Wed, 27 Feb 2013 20:39:12 +0000
-Message-Id: <1361997553-31058-67-git-send-email-jic23@kernel.org>
-In-Reply-To: <1361997553-31058-1-git-send-email-jic23@kernel.org>
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Thu, 28 Feb 2013 09:32:20 +0100
+Subject: Re: [PATCH 06/67] iio:st_sensors move to
+ info_mask_(shared_by_type/separate)
+Message-ID: <512F1614.9020501@st.com>
 References: <1361997553-31058-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <1361997553-31058-7-git-send-email-jic23@kernel.org>
+In-Reply-To: <1361997553-31058-7-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-The original info_mask is going away in favour of the broken out versions.
+On 02/27/2013 09:38 PM, Jonathan Cameron wrote:
+> The original info_mask is going away in favour of the broken out versions=
+.
+>
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> cc: Denis Ciocca <denis.ciocca@st.com>
+> ---
+>   include/linux/iio/common/st_sensors.h | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/co=
+mmon/st_sensors.h
+> index 1f86a97..0894b3e 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -45,8 +45,8 @@
+>   { \
+>   	.type =3D device_type, \
+>   	.modified =3D 1, \
+> -	.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+> -			IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
+> +	.info_mask_separate =3D IIO_CHAN_INFO_RAW | \
+> +			IIO_CHAN_INFO_SCALE, \
+>   	.scan_index =3D index, \
+>   	.channel2 =3D mod, \
+>   	.address =3D addr, \
+>
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Michael Hennerich <michael.hennerich@analog.com>
----
- drivers/staging/iio/resolver/ad2s90.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index 0aecfbc..ea55158 100644
---- a/drivers/staging/iio/resolver/ad2s90.c
-+++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -55,7 +55,7 @@ static const struct iio_chan_spec ad2s90_chan = {
- 	.type = IIO_ANGL,
- 	.indexed = 1,
- 	.channel = 0,
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
-+	.info_mask_separate = IIO_CHAN_INFO_RAW,
- };
- 
- static int ad2s90_probe(struct spi_device *spi)
--- 
-1.8.1.1
-
+Looks good to me.
+Acked-by: Denis Ciocca <denis.ciocca@st.com>=
