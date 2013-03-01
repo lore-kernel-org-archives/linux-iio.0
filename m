@@ -1,155 +1,55 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/3] iio:ad5064: Fix address of the second channel for ad5065/ad5045/ad5025
-Date: Fri,  1 Mar 2013 14:07:17 +0100
-Message-Id: <1362143239-891-1-git-send-email-lars@metafoo.de>
+Date: Fri, 1 Mar 2013 17:15:58 +0100
+Subject: Re: [PATCH] iio: Fix build error seen if IIO_TRIGGER is defined but
+ IIO_BUFFER is not
+Message-ID: <5130D43E.4010800@st.com>
+References: <1362153448-16259-1-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1362153448-16259-1-git-send-email-linux@roeck-us.net>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-The ad5065, ad5045, ad5025 use address '3' for the second channel, so they need
-their own channel spec.
-
-Note that ad5064_sync_powerdown_mode() also needs to be slightly updated since
-it was relying on the fact that chan->address always equaled chan->channel.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5064.c | 49 ++++++++++++++++++++++++++++--------------------
- 1 file changed, 29 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index eb281a2..e19b73f 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -27,7 +27,6 @@
- #define AD5064_ADDR(x)				((x) << 20)
- #define AD5064_CMD(x)				((x) << 24)
- 
--#define AD5064_ADDR_DAC(chan)			(chan)
- #define AD5064_ADDR_ALL_DAC			0xF
- 
- #define AD5064_CMD_WRITE_INPUT_N		0x0
-@@ -131,15 +130,15 @@ static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
- }
- 
- static int ad5064_sync_powerdown_mode(struct ad5064_state *st,
--	unsigned int channel)
-+	const struct iio_chan_spec *chan)
- {
- 	unsigned int val;
- 	int ret;
- 
--	val = (0x1 << channel);
-+	val = (0x1 << chan->address);
- 
--	if (st->pwr_down[channel])
--		val |= st->pwr_down_mode[channel] << 8;
-+	if (st->pwr_down[chan->channel])
-+		val |= st->pwr_down_mode[chan->channel] << 8;
- 
- 	ret = ad5064_write(st, AD5064_CMD_POWERDOWN_DAC, 0, val, 0);
- 
-@@ -169,7 +168,7 @@ static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
- 	st->pwr_down_mode[chan->channel] = mode + 1;
- 
--	ret = ad5064_sync_powerdown_mode(st, chan->channel);
-+	ret = ad5064_sync_powerdown_mode(st, chan);
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret;
-@@ -205,7 +204,7 @@ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
- 	st->pwr_down[chan->channel] = pwr_down;
- 
--	ret = ad5064_sync_powerdown_mode(st, chan->channel);
-+	ret = ad5064_sync_powerdown_mode(st, chan);
- 	mutex_unlock(&indio_dev->mlock);
- 	return ret ? ret : len;
- }
-@@ -292,34 +291,44 @@ static const struct iio_chan_spec_ext_info ad5064_ext_info[] = {
- 	{ },
- };
- 
--#define AD5064_CHANNEL(chan, bits) {				\
-+#define AD5064_CHANNEL(chan, addr, bits) {			\
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.output = 1,						\
- 	.channel = (chan),					\
- 	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
- 	IIO_CHAN_INFO_SCALE_SEPARATE_BIT,			\
--	.address = AD5064_ADDR_DAC(chan),			\
-+	.address = addr,					\
- 	.scan_type = IIO_ST('u', (bits), 16, 20 - (bits)),	\
- 	.ext_info = ad5064_ext_info,				\
- }
- 
- #define DECLARE_AD5064_CHANNELS(name, bits) \
- const struct iio_chan_spec name[] = { \
--	AD5064_CHANNEL(0, bits), \
--	AD5064_CHANNEL(1, bits), \
--	AD5064_CHANNEL(2, bits), \
--	AD5064_CHANNEL(3, bits), \
--	AD5064_CHANNEL(4, bits), \
--	AD5064_CHANNEL(5, bits), \
--	AD5064_CHANNEL(6, bits), \
--	AD5064_CHANNEL(7, bits), \
-+	AD5064_CHANNEL(0, 0, bits), \
-+	AD5064_CHANNEL(1, 1, bits), \
-+	AD5064_CHANNEL(2, 2, bits), \
-+	AD5064_CHANNEL(3, 3, bits), \
-+	AD5064_CHANNEL(4, 4, bits), \
-+	AD5064_CHANNEL(5, 5, bits), \
-+	AD5064_CHANNEL(6, 6, bits), \
-+	AD5064_CHANNEL(7, 7, bits), \
-+}
-+
-+#define DECLARE_AD5065_CHANNELS(name, bits) \
-+const struct iio_chan_spec name[] = { \
-+	AD5064_CHANNEL(0, 0, bits), \
-+	AD5064_CHANNEL(1, 3, bits), \
- }
- 
- static DECLARE_AD5064_CHANNELS(ad5024_channels, 12);
- static DECLARE_AD5064_CHANNELS(ad5044_channels, 14);
- static DECLARE_AD5064_CHANNELS(ad5064_channels, 16);
- 
-+static DECLARE_AD5065_CHANNELS(ad5025_channels, 12);
-+static DECLARE_AD5065_CHANNELS(ad5045_channels, 14);
-+static DECLARE_AD5065_CHANNELS(ad5065_channels, 16);
-+
- static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	[ID_AD5024] = {
- 		.shared_vref = false,
-@@ -328,7 +337,7 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	},
- 	[ID_AD5025] = {
- 		.shared_vref = false,
--		.channels = ad5024_channels,
-+		.channels = ad5025_channels,
- 		.num_channels = 2,
- 	},
- 	[ID_AD5044] = {
-@@ -338,7 +347,7 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	},
- 	[ID_AD5045] = {
- 		.shared_vref = false,
--		.channels = ad5044_channels,
-+		.channels = ad5045_channels,
- 		.num_channels = 2,
- 	},
- 	[ID_AD5064] = {
-@@ -353,7 +362,7 @@ static const struct ad5064_chip_info ad5064_chip_info_tbl[] = {
- 	},
- 	[ID_AD5065] = {
- 		.shared_vref = false,
--		.channels = ad5064_channels,
-+		.channels = ad5065_channels,
- 		.num_channels = 2,
- 	},
- 	[ID_AD5628_1] = {
--- 
-1.8.0
+T2sgVGhhbmtzLg0KDQpBY2tlZC1ieTogRGVuaXMgQ2lvY2NhIDxkZW5pcy5jaW9jY2FAc3QuY29t
+Pg0KDQoNCkRlbmlzDQoNCg0KT24gMDMvMDEvMjAxMyAwNDo1NyBQTSwgR3VlbnRlciBSb2VjayB3
+cm90ZToNCj4gSWYgQ09ORklHX0lJT19UUklHR0VSIGlzIGRlZmluZWQgYnV0IENPTkZJR19JSU9f
+QlVGRkVSIGlzIG5vdCwgdGhlIGZvbGxvd2luZw0KPiBidWlsZCBlcnJvciBpcyBzZWVuLg0KPg0K
+PiBkcml2ZXJzL2lpby9jb21tb24vc3Rfc2Vuc29ycy9zdF9zZW5zb3JzX3RyaWdnZXIuYzoyMTo1
+OiBlcnJvcjoNCj4gcmVkZWZpbml0aW9uIG9mIOKAmHN0X3NlbnNvcnNfYWxsb2NhdGVfdHJpZ2dl
+cuKAmQ0KPiBJbiBmaWxlIGluY2x1ZGVkIGZyb20NCj4gZHJpdmVycy9paW8vY29tbW9uL3N0X3Nl
+bnNvcnMvc3Rfc2Vuc29yc190cmlnZ2VyLmM6MTg6MDoNCj4gaW5jbHVkZS9saW51eC9paW8vY29t
+bW9uL3N0X3NlbnNvcnMuaDoyMzk6MTk6IG5vdGU6IHByZXZpb3VzDQo+IGRlZmluaXRpb24gb2Yg
+4oCYc3Rfc2Vuc29yc19hbGxvY2F0ZV90cmlnZ2Vy4oCZIHdhcyBoZXJlDQo+IGRyaXZlcnMvaWlv
+L2NvbW1vbi9zdF9zZW5zb3JzL3N0X3NlbnNvcnNfdHJpZ2dlci5jOjY1OjY6IGVycm9yOg0KPiBy
+ZWRlZmluaXRpb24gb2Yg4oCYc3Rfc2Vuc29yc19kZWFsbG9jYXRlX3RyaWdnZXLigJkNCj4gSW4g
+ZmlsZSBpbmNsdWRlZCBmcm9tDQo+IGRyaXZlcnMvaWlvL2NvbW1vbi9zdF9zZW5zb3JzL3N0X3Nl
+bnNvcnNfdHJpZ2dlci5jOjE4OjA6DQo+IGluY2x1ZGUvbGludXgvaWlvL2NvbW1vbi9zdF9zZW5z
+b3JzLmg6MjQ0OjIwOiBub3RlOiBwcmV2aW91cw0KPiBkZWZpbml0aW9uIG9mIOKAmHN0X3NlbnNv
+cnNfZGVhbGxvY2F0ZV90cmlnZ2Vy4oCZIHdhcyBoZXJlDQo+DQo+IFRoaXMgb2NjdXJzIGJlY2F1
+c2Ugc3Rfc2Vuc29yc19kZWFsbG9jYXRlX3RyaWdnZXIgaXMgYnVpbHQgaWYgQ09ORklHX0lJT19U
+UklHR0VSDQo+IGlzIGRlZmluZWQsIGJ1dCB0aGUgZHVtbXkgZnVuY3Rpb24gaXMgY29tcGlsZWQg
+aWYgQ09ORklHX0lJT19CVUZGRVIgaXMgZGVmaW5lZC4NCj4NCj4gU2lnbmVkLW9mZi1ieTogR3Vl
+bnRlciBSb2VjayA8bGludXhAcm9lY2stdXMubmV0Pg0KPiAtLS0NCj4gICBpbmNsdWRlL2xpbnV4
+L2lpby9jb21tb24vc3Rfc2Vuc29ycy5oIHwgICAgOSArKysrKystLS0NCj4gICAxIGZpbGUgY2hh
+bmdlZCwgNiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPg0KPiBkaWZmIC0tZ2l0IGEv
+aW5jbHVkZS9saW51eC9paW8vY29tbW9uL3N0X3NlbnNvcnMuaCBiL2luY2x1ZGUvbGludXgvaWlv
+L2NvbW1vbi9zdF9zZW5zb3JzLmgNCj4gaW5kZXggMWY4NmE5Ny4uOGJkMTJiZSAxMDA2NDQNCj4g
+LS0tIGEvaW5jbHVkZS9saW51eC9paW8vY29tbW9uL3N0X3NlbnNvcnMuaA0KPiArKysgYi9pbmNs
+dWRlL2xpbnV4L2lpby9jb21tb24vc3Rfc2Vuc29ycy5oDQo+IEBAIC0yMjcsMTQgKzIyNywxNyBA
+QCBzdHJ1Y3Qgc3Rfc2Vuc29yX2RhdGEgew0KPiAgIH07DQo+DQo+ICAgI2lmZGVmIENPTkZJR19J
+SU9fQlVGRkVSDQo+ICtpcnFyZXR1cm5fdCBzdF9zZW5zb3JzX3RyaWdnZXJfaGFuZGxlcihpbnQg
+aXJxLCB2b2lkICpwKTsNCj4gKw0KPiAraW50IHN0X3NlbnNvcnNfZ2V0X2J1ZmZlcl9lbGVtZW50
+KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsIHU4ICpidWYpOw0KPiArI2VuZGlmDQo+ICsNCj4g
+KyNpZmRlZiBDT05GSUdfSUlPX1RSSUdHRVINCj4gICBpbnQgc3Rfc2Vuc29yc19hbGxvY2F0ZV90
+cmlnZ2VyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAgCQkJCWNvbnN0IHN0cnVjdCBp
+aW9fdHJpZ2dlcl9vcHMgKnRyaWdnZXJfb3BzKTsNCj4NCj4gICB2b2lkIHN0X3NlbnNvcnNfZGVh
+bGxvY2F0ZV90cmlnZ2VyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpOw0KPg0KPiAtaXJxcmV0
+dXJuX3Qgc3Rfc2Vuc29yc190cmlnZ2VyX2hhbmRsZXIoaW50IGlycSwgdm9pZCAqcCk7DQo+IC0N
+Cj4gLWludCBzdF9zZW5zb3JzX2dldF9idWZmZXJfZWxlbWVudChzdHJ1Y3QgaWlvX2RldiAqaW5k
+aW9fZGV2LCB1OCAqYnVmKTsNCj4gICAjZWxzZQ0KPiAgIHN0YXRpYyBpbmxpbmUgaW50IHN0X3Nl
+bnNvcnNfYWxsb2NhdGVfdHJpZ2dlcihzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2LA0KPiAgIAkJ
+CQljb25zdCBzdHJ1Y3QgaWlvX3RyaWdnZXJfb3BzICp0cmlnZ2VyX29wcykNCj4=
