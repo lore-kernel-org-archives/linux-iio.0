@@ -1,42 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35731 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752580Ab3CBQRr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:47 -0500
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:57297 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750983Ab3CAP53 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2013 10:57:29 -0500
+From: Guenter Roeck <linux@roeck-us.net>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Andrew Chew <achew@nvidia.com>
-Subject: [PATCH 61/67] staging:iio:mag:ak8975 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:17:18 +0000
-Message-Id: <1362241044-3534-62-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] iio: Fix build error seen if IIO_TRIGGER is defined but IIO_BUFFER is not
+Date: Fri,  1 Mar 2013 07:57:28 -0800
+Message-Id: <1362153448-16259-1-git-send-email-linux@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+If CONFIG_IIO_TRIGGER is defined but CONFIG_IIO_BUFFER is not, the following
+build error is seen.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Andrew Chew <achew@nvidia.com>
+drivers/iio/common/st_sensors/st_sensors_trigger.c:21:5: error:
+redefinition of ‘st_sensors_allocate_trigger’
+In file included from
+drivers/iio/common/st_sensors/st_sensors_trigger.c:18:0:
+include/linux/iio/common/st_sensors.h:239:19: note: previous
+definition of ‘st_sensors_allocate_trigger’ was here
+drivers/iio/common/st_sensors/st_sensors_trigger.c:65:6: error:
+redefinition of ‘st_sensors_deallocate_trigger’
+In file included from
+drivers/iio/common/st_sensors/st_sensors_trigger.c:18:0:
+include/linux/iio/common/st_sensors.h:244:20: note: previous
+definition of ‘st_sensors_deallocate_trigger’ was here
+
+This occurs because st_sensors_deallocate_trigger is built if CONFIG_IIO_TRIGGER
+is defined, but the dummy function is compiled if CONFIG_IIO_BUFFER is defined.
+
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/staging/iio/magnetometer/ak8975.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/iio/common/st_sensors.h |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/iio/magnetometer/ak8975.c b/drivers/staging/iio/magnetometer/ak8975.c
-index 28f080e..b614da1 100644
---- a/drivers/staging/iio/magnetometer/ak8975.c
-+++ b/drivers/staging/iio/magnetometer/ak8975.c
-@@ -395,8 +395,8 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
- 		.type = IIO_MAGN,					\
- 		.modified = 1,						\
- 		.channel2 = IIO_MOD_##axis,				\
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--			     IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+			     BIT(IIO_CHAN_INFO_SCALE),			\
- 		.address = index,					\
- 	}
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 1f86a97..8bd12be 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -227,14 +227,17 @@ struct st_sensor_data {
+ };
  
+ #ifdef CONFIG_IIO_BUFFER
++irqreturn_t st_sensors_trigger_handler(int irq, void *p);
++
++int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
++#endif
++
++#ifdef CONFIG_IIO_TRIGGER
+ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 				const struct iio_trigger_ops *trigger_ops);
+ 
+ void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
+ 
+-irqreturn_t st_sensors_trigger_handler(int irq, void *p);
+-
+-int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
+ #else
+ static inline int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 				const struct iio_trigger_ops *trigger_ops)
 -- 
-1.8.1.4
+1.7.9.7
 
