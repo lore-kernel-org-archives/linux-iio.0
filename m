@@ -1,40 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-170.synserver.de ([212.40.185.170]:1063 "EHLO
-	smtp-out-170.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750708Ab3CANFw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2013 08:05:52 -0500
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/3] iio:ad5064: Fix off by one in DAC value range check
-Date: Fri,  1 Mar 2013 14:07:18 +0100
-Message-Id: <1362143239-891-2-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/3] iio:ad5064: Initialize register cache correctly
+Date: Fri,  1 Mar 2013 14:07:19 +0100
+Message-Id: <1362143239-891-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1362143239-891-1-git-send-email-lars@metafoo.de>
 References: <1362143239-891-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-The DAC value range check allows values one larger than the maximum value, which
-effectively results in setting the DAC value to 0. This patch fixes the issue.
+Initialize the register cache to the proper mid-scale value based on the
+resolution of the device.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/dac/ad5064.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5064.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index e19b73f..a491976 100644
+index a491976..0c8d03a 100644
 --- a/drivers/iio/dac/ad5064.c
 +++ b/drivers/iio/dac/ad5064.c
-@@ -257,7 +257,7 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
+@@ -438,6 +438,7 @@ static int __devinit ad5064_probe(struct device *dev, enum ad5064_type type,
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct ad5064_state *st;
++	unsigned int midscale;
+ 	unsigned int i;
+ 	int ret;
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > (1 << chan->scan_type.realbits) || val < 0)
-+		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
+@@ -474,11 +475,6 @@ static int __devinit ad5064_probe(struct device *dev, enum ad5064_type type,
+ 			goto error_free_reg;
+ 	}
  
- 		mutex_lock(&indio_dev->mlock);
+-	for (i = 0; i < st->chip_info->num_channels; ++i) {
+-		st->pwr_down_mode[i] = AD5064_LDAC_PWRDN_1K;
+-		st->dac_cache[i] = 0x8000;
+-	}
+-
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->name = name;
+ 	indio_dev->info = &ad5064_info;
+@@ -486,6 +482,13 @@ static int __devinit ad5064_probe(struct device *dev, enum ad5064_type type,
+ 	indio_dev->channels = st->chip_info->channels;
+ 	indio_dev->num_channels = st->chip_info->num_channels;
+ 
++	midscale = (1 << indio_dev->channels[0].scan_type.realbits) /  2;
++
++	for (i = 0; i < st->chip_info->num_channels; ++i) {
++		st->pwr_down_mode[i] = AD5064_LDAC_PWRDN_1K;
++		st->dac_cache[i] = midscale;
++	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
 -- 
 1.8.0
-
