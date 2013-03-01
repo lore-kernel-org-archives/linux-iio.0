@@ -1,55 +1,40 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Date: Fri, 1 Mar 2013 17:15:58 +0100
-Subject: Re: [PATCH] iio: Fix build error seen if IIO_TRIGGER is defined but
- IIO_BUFFER is not
-Message-ID: <5130D43E.4010800@st.com>
-References: <1362153448-16259-1-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1362153448-16259-1-git-send-email-linux@roeck-us.net>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-170.synserver.de ([212.40.185.170]:1063 "EHLO
+	smtp-out-170.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750708Ab3CANFw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2013 08:05:52 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/3] iio:ad5064: Fix off by one in DAC value range check
+Date: Fri,  1 Mar 2013 14:07:18 +0100
+Message-Id: <1362143239-891-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1362143239-891-1-git-send-email-lars@metafoo.de>
+References: <1362143239-891-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T2sgVGhhbmtzLg0KDQpBY2tlZC1ieTogRGVuaXMgQ2lvY2NhIDxkZW5pcy5jaW9jY2FAc3QuY29t
-Pg0KDQoNCkRlbmlzDQoNCg0KT24gMDMvMDEvMjAxMyAwNDo1NyBQTSwgR3VlbnRlciBSb2VjayB3
-cm90ZToNCj4gSWYgQ09ORklHX0lJT19UUklHR0VSIGlzIGRlZmluZWQgYnV0IENPTkZJR19JSU9f
-QlVGRkVSIGlzIG5vdCwgdGhlIGZvbGxvd2luZw0KPiBidWlsZCBlcnJvciBpcyBzZWVuLg0KPg0K
-PiBkcml2ZXJzL2lpby9jb21tb24vc3Rfc2Vuc29ycy9zdF9zZW5zb3JzX3RyaWdnZXIuYzoyMTo1
-OiBlcnJvcjoNCj4gcmVkZWZpbml0aW9uIG9mIOKAmHN0X3NlbnNvcnNfYWxsb2NhdGVfdHJpZ2dl
-cuKAmQ0KPiBJbiBmaWxlIGluY2x1ZGVkIGZyb20NCj4gZHJpdmVycy9paW8vY29tbW9uL3N0X3Nl
-bnNvcnMvc3Rfc2Vuc29yc190cmlnZ2VyLmM6MTg6MDoNCj4gaW5jbHVkZS9saW51eC9paW8vY29t
-bW9uL3N0X3NlbnNvcnMuaDoyMzk6MTk6IG5vdGU6IHByZXZpb3VzDQo+IGRlZmluaXRpb24gb2Yg
-4oCYc3Rfc2Vuc29yc19hbGxvY2F0ZV90cmlnZ2Vy4oCZIHdhcyBoZXJlDQo+IGRyaXZlcnMvaWlv
-L2NvbW1vbi9zdF9zZW5zb3JzL3N0X3NlbnNvcnNfdHJpZ2dlci5jOjY1OjY6IGVycm9yOg0KPiBy
-ZWRlZmluaXRpb24gb2Yg4oCYc3Rfc2Vuc29yc19kZWFsbG9jYXRlX3RyaWdnZXLigJkNCj4gSW4g
-ZmlsZSBpbmNsdWRlZCBmcm9tDQo+IGRyaXZlcnMvaWlvL2NvbW1vbi9zdF9zZW5zb3JzL3N0X3Nl
-bnNvcnNfdHJpZ2dlci5jOjE4OjA6DQo+IGluY2x1ZGUvbGludXgvaWlvL2NvbW1vbi9zdF9zZW5z
-b3JzLmg6MjQ0OjIwOiBub3RlOiBwcmV2aW91cw0KPiBkZWZpbml0aW9uIG9mIOKAmHN0X3NlbnNv
-cnNfZGVhbGxvY2F0ZV90cmlnZ2Vy4oCZIHdhcyBoZXJlDQo+DQo+IFRoaXMgb2NjdXJzIGJlY2F1
-c2Ugc3Rfc2Vuc29yc19kZWFsbG9jYXRlX3RyaWdnZXIgaXMgYnVpbHQgaWYgQ09ORklHX0lJT19U
-UklHR0VSDQo+IGlzIGRlZmluZWQsIGJ1dCB0aGUgZHVtbXkgZnVuY3Rpb24gaXMgY29tcGlsZWQg
-aWYgQ09ORklHX0lJT19CVUZGRVIgaXMgZGVmaW5lZC4NCj4NCj4gU2lnbmVkLW9mZi1ieTogR3Vl
-bnRlciBSb2VjayA8bGludXhAcm9lY2stdXMubmV0Pg0KPiAtLS0NCj4gICBpbmNsdWRlL2xpbnV4
-L2lpby9jb21tb24vc3Rfc2Vuc29ycy5oIHwgICAgOSArKysrKystLS0NCj4gICAxIGZpbGUgY2hh
-bmdlZCwgNiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPg0KPiBkaWZmIC0tZ2l0IGEv
-aW5jbHVkZS9saW51eC9paW8vY29tbW9uL3N0X3NlbnNvcnMuaCBiL2luY2x1ZGUvbGludXgvaWlv
-L2NvbW1vbi9zdF9zZW5zb3JzLmgNCj4gaW5kZXggMWY4NmE5Ny4uOGJkMTJiZSAxMDA2NDQNCj4g
-LS0tIGEvaW5jbHVkZS9saW51eC9paW8vY29tbW9uL3N0X3NlbnNvcnMuaA0KPiArKysgYi9pbmNs
-dWRlL2xpbnV4L2lpby9jb21tb24vc3Rfc2Vuc29ycy5oDQo+IEBAIC0yMjcsMTQgKzIyNywxNyBA
-QCBzdHJ1Y3Qgc3Rfc2Vuc29yX2RhdGEgew0KPiAgIH07DQo+DQo+ICAgI2lmZGVmIENPTkZJR19J
-SU9fQlVGRkVSDQo+ICtpcnFyZXR1cm5fdCBzdF9zZW5zb3JzX3RyaWdnZXJfaGFuZGxlcihpbnQg
-aXJxLCB2b2lkICpwKTsNCj4gKw0KPiAraW50IHN0X3NlbnNvcnNfZ2V0X2J1ZmZlcl9lbGVtZW50
-KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsIHU4ICpidWYpOw0KPiArI2VuZGlmDQo+ICsNCj4g
-KyNpZmRlZiBDT05GSUdfSUlPX1RSSUdHRVINCj4gICBpbnQgc3Rfc2Vuc29yc19hbGxvY2F0ZV90
-cmlnZ2VyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAgCQkJCWNvbnN0IHN0cnVjdCBp
-aW9fdHJpZ2dlcl9vcHMgKnRyaWdnZXJfb3BzKTsNCj4NCj4gICB2b2lkIHN0X3NlbnNvcnNfZGVh
-bGxvY2F0ZV90cmlnZ2VyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpOw0KPg0KPiAtaXJxcmV0
-dXJuX3Qgc3Rfc2Vuc29yc190cmlnZ2VyX2hhbmRsZXIoaW50IGlycSwgdm9pZCAqcCk7DQo+IC0N
-Cj4gLWludCBzdF9zZW5zb3JzX2dldF9idWZmZXJfZWxlbWVudChzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2LCB1OCAqYnVmKTsNCj4gICAjZWxzZQ0KPiAgIHN0YXRpYyBpbmxpbmUgaW50IHN0X3Nl
-bnNvcnNfYWxsb2NhdGVfdHJpZ2dlcihzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2LA0KPiAgIAkJ
-CQljb25zdCBzdHJ1Y3QgaWlvX3RyaWdnZXJfb3BzICp0cmlnZ2VyX29wcykNCj4=
+The DAC value range check allows values one larger than the maximum value, which
+effectively results in setting the DAC value to 0. This patch fixes the issue.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/ad5064.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index e19b73f..a491976 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -257,7 +257,7 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val > (1 << chan->scan_type.realbits) || val < 0)
++		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+ 		mutex_lock(&indio_dev->mlock);
+-- 
+1.8.0
+
