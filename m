@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35722 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35736 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752310Ab3CBQRj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:39 -0500
+	with ESMTP id S1752301Ab3CBQRf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:35 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 32/67] iio:freq:ad9523 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:49 +0000
-Message-Id: <1362241044-3534-33-git-send-email-jic23@kernel.org>
+	"Milo(Woogyom) Kim" <milo.kim@ti.com>
+Subject: [PATCH 13/67] iio:adc:lp8778_adc move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:30 +0000
+Message-Id: <1362241044-3534-14-git-send-email-jic23@kernel.org>
 In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,29 +18,25 @@ List-Id: linux-iio@vger.kernel.org
 The original info_mask is going away in favour of the broken out versions.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Lars-Peter Clausen <lars@metafoo.de>
+cc: Milo(Woogyom) Kim <milo.kim@ti.com>
 ---
- drivers/iio/frequency/ad9523.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/lp8788_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 1ea132e..92276de 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -920,10 +920,10 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 			st->ad9523_channels[i].channel = chan->channel_num;
- 			st->ad9523_channels[i].extend_name =
- 				chan->extended_name;
--			st->ad9523_channels[i].info_mask =
--				IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--				IIO_CHAN_INFO_PHASE_SEPARATE_BIT |
--				IIO_CHAN_INFO_FREQUENCY_SEPARATE_BIT;
-+			st->ad9523_channels[i].info_mask_separate =
-+				BIT(IIO_CHAN_INFO_RAW) |
-+				BIT(IIO_CHAN_INFO_PHASE) |
-+				BIT(IIO_CHAN_INFO_FREQUENCY);
- 		}
- 	}
+diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
+index 763f575..62bc39e 100644
+--- a/drivers/iio/adc/lp8788_adc.c
++++ b/drivers/iio/adc/lp8788_adc.c
+@@ -132,8 +132,8 @@ static const struct iio_info lp8788_adc_info = {
+ 		.type = _type,					\
+ 		.indexed = 1,					\
+ 		.channel = LPADC_##_id,				\
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++			BIT(IIO_CHAN_INFO_SCALE),		\
+ 		.datasheet_name = #_id,				\
+ }
  
 -- 
 1.8.1.4
