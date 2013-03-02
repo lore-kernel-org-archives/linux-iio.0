@@ -1,41 +1,43 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: devicetree-discuss@lists.ozlabs.org
-Cc: jic23@kernel.org,
-	rob.herring@calxeda.com,
-	grant.likely@secretlab.ca,
-	linux-iio@vger.kernel.org,
-	sachin.kamat@linaro.org,
-	patches@linaro.org
-Subject: [PATCH 1/1] iio: exynos-adc: Fix typo in DT documentation
-Date: Tue, 26 Mar 2013 17:22:57 +0530
-Message-Id: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35731 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752461Ab3CBQRj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:39 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Roland Stigge <stigge@antcom.de>
+Subject: [PATCH 30/67] iio:dac:max517 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:47 +0000
+Message-Id: <1362241044-3534-31-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fixes some typos in the documentation of exynos-adc.txt.
+The original info_mask is going away in favour of the broken out versions.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Roland Stigge <stigge@antcom.de>
 ---
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/max517.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-index 05e9d95..1fc744b 100644
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-@@ -1,6 +1,6 @@
- Samsung Exynos Analog to Digital Converter bindings
+diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+index 352abe2..ebfaa41 100644
+--- a/drivers/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -146,8 +146,8 @@ static const struct iio_info max517_info = {
+ 	.indexed = 1,					\
+ 	.output = 1,					\
+ 	.channel = (chan),				\
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-	IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++	BIT(IIO_CHAN_INFO_SCALE),			\
+ 	.scan_type = IIO_ST('u', 8, 8, 0),		\
+ }
  
--This devicetree binding are for the new adc driver written fori
-+The devicetree bindings are for the new ADC driver written for
- Exynos4 and upward SoCs from Samsung.
- 
- New driver handles the following
-@@ -49,4 +49,4 @@ adc@12D10000 {
- };
- 
- Note: Does not apply to ADC driver under arch/arm/plat-samsung/
--Note: The child node can be added under the adc node or seperately.
-+Note: The child node can be added under the adc node or separately.
 -- 
-1.7.4.1
+1.8.1.4
+
