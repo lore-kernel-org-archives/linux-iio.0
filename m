@@ -1,47 +1,135 @@
-Return-Path: <iwamatsu@nigauri.org>
-MIME-Version: 1.0
-In-Reply-To: <CAHfPSqCyn=Q_zH11=pRjP3rY69xbHDnRSwBmiA4fGmz62hV-Vg@mail.gmail.com>
-References: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org> <CAHfPSqCyn=Q_zH11=pRjP3rY69xbHDnRSwBmiA4fGmz62hV-Vg@mail.gmail.com>
-From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Date: Wed, 27 Mar 2013 09:19:44 +0900
-Message-ID: <CABMQnVLnj3CphEuAo_JVesNkT3VNZkhKy_J1URhooxw5zs0Otg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: exynos-adc: Fix typo in DT documentation
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Cc: Sachin Kamat <sachin.kamat@linaro.org>, patches@linaro.org, linux-iio@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org, rob.herring@calxeda.com,
-	jic23@kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35735 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751926Ab3CBQRl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:41 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 37/67] iio:imu:adis16400 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:54 +0000
+Message-Id: <1362241044-3534-38-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 27, 2013 at 8:55 AM, Naveen Krishna Ch
-<naveenkrishna.ch@gmail.com> wrote:
-> On 26 March 2013 04:52, Sachin Kamat <sachin.kamat@linaro.org> wrote:
->> Fixes some typos in the documentation of exynos-adc.txt.
->>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> ---
->>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    4 ++--
->>  1 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> index 05e9d95..1fc744b 100644
->> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> @@ -1,6 +1,6 @@
->>  Samsung Exynos Analog to Digital Converter bindings
->>
->> -This devicetree binding are for the new adc driver written fori
->> +The devicetree bindings are for the new ADC driver written for
-> Thanks for the correction
->>  Exynos4 and upward SoCs from Samsung.
->>
->>  New driver handles the following
->> @@ -49,4 +49,4 @@ adc@12D10000 {
->>  };
->>
->>  Note: Does not apply to ADC driver under arch/arm/plat-samsung/
->> -Note: The child node can be added under the adc node or seperately.
->> +Note: The child node can be added under the adc node or separately.
-> Sorry, but i cant see whats the difference here.
+The original info_mask is going away in favour of the broken out versions.
 
-This changed from sep*e*rately to sep*a*rately.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/imu/adis16400_core.c | 47 ++++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index b7f215e..2111068 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -484,8 +484,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.indexed = 1, \
+ 	.channel = 0, \
+ 	.extend_name = name, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_SCALE, \
+ 	.address = (addr), \
+ 	.scan_index = (si), \
+ 	.scan_type = { \
+@@ -507,10 +506,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_ANGL_VEL, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_CALIBBIAS),		  \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+ 	.address = addr, \
+ 	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
+ 	.scan_type = { \
+@@ -526,10 +525,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_CALIBBIAS), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
+ 	.scan_type = { \
+@@ -545,9 +544,9 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_MAGN, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
+ 	.scan_type = { \
+@@ -568,10 +567,11 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.indexed = 1, \
+ 	.channel = 0, \
+ 	.extend_name = ADIS16400_MOD_TEMP_NAME_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_OFFSET) | \
++		BIT(IIO_CHAN_INFO_SCALE), \
++	.info_mask_shared_by_type = \
++		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
+ 	.scan_type = { \
+@@ -587,9 +587,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_TEMP, \
+ 	.indexed = 1, \
+ 	.channel = 0, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
++	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET | \
++		IIO_CHAN_INFO_SCALE, \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16350_SCAN_TEMP_X, \
+ 	.scan_type = { \
+@@ -605,8 +604,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 	.type = IIO_INCLI, \
+ 	.modified = 1, \
+ 	.channel2 = IIO_MOD_ ## mod, \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+ 	.address = (addr), \
+ 	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
+ 	.scan_type = { \
+@@ -646,8 +645,8 @@ static const struct iio_chan_spec adis16448_channels[] = {
+ 	ADIS16400_MAGN_CHAN(Z, ADIS16400_ZMAGN_OUT, 16),
+ 	{
+ 		.type = IIO_PRESSURE,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-		IIO_CHAN_INFO_SCALE_SHARED_BIT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = ADIS16448_BARO_OUT,
+ 		.scan_index = ADIS16400_SCAN_BARO,
+ 		.scan_type = IIO_ST('s', 16, 16, 0),
+-- 
+1.8.1.4
+
