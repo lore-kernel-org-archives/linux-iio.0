@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35725 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35722 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752051Ab3CBQRk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:40 -0500
+	with ESMTP id S1752310Ab3CBQRj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:39 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 33/67] iio:gyro:adis16080 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:50 +0000
-Message-Id: <1362241044-3534-34-git-send-email-jic23@kernel.org>
+Subject: [PATCH 32/67] iio:freq:ad9523 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:49 +0000
+Message-Id: <1362241044-3534-33-git-send-email-jic23@kernel.org>
 In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,57 +20,28 @@ The original info_mask is going away in favour of the broken out versions.
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/gyro/adis16080.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iio/frequency/ad9523.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/gyro/adis16080.c b/drivers/iio/gyro/adis16080.c
-index 1861287..e1bb5f9 100644
---- a/drivers/iio/gyro/adis16080.c
-+++ b/drivers/iio/gyro/adis16080.c
-@@ -136,32 +136,32 @@ static const struct iio_chan_spec adis16080_channels[] = {
- 		.type = IIO_ANGL_VEL,
- 		.modified = 1,
- 		.channel2 = IIO_MOD_Z,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
- 		.address = ADIS16080_DIN_GYRO,
- 	}, {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
--			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
- 		.address = ADIS16080_DIN_AIN1,
- 	}, {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 1,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
--			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
- 		.address = ADIS16080_DIN_AIN2,
- 	}, {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--			IIO_CHAN_INFO_SCALE_SEPARATE_BIT |
--			IIO_CHAN_INFO_OFFSET_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
- 		.address = ADIS16080_DIN_TEMP,
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 1ea132e..92276de 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -920,10 +920,10 @@ static int ad9523_setup(struct iio_dev *indio_dev)
+ 			st->ad9523_channels[i].channel = chan->channel_num;
+ 			st->ad9523_channels[i].extend_name =
+ 				chan->extended_name;
+-			st->ad9523_channels[i].info_mask =
+-				IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_PHASE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_FREQUENCY_SEPARATE_BIT;
++			st->ad9523_channels[i].info_mask_separate =
++				BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_PHASE) |
++				BIT(IIO_CHAN_INFO_FREQUENCY);
+ 		}
  	}
- };
+ 
 -- 
 1.8.1.4
 
