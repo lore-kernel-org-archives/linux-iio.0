@@ -1,43 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:59556 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750879Ab3CAPVx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2013 10:21:53 -0500
-From: Guenter Roeck <linux@roeck-us.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35722 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752501Ab3CBQRr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:47 -0500
+From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Ge Gao <ggao@invensense.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] iio/imu: inv_mpu6050 depends on IIO_BUFFER
-Date: Fri,  1 Mar 2013 07:21:26 -0800
-Message-Id: <1362151286-7338-1-git-send-email-linux@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Jon Brenner <jon.brenner@ams.com>
+Subject: [PATCH 60/67] staging:iio:light:tsl2x7x move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:17:17 +0000
+Message-Id: <1362241044-3534-61-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix:
+The original info_mask is going away in favour of the broken out versions.
 
-drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c: In function ‘inv_mpu6050_read_fifo’:
-drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c:176:3: error: implicit declaration of
-function ‘iio_push_to_buffers’ [-Werror=implicit-function-declaration]
-
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Jon Brenner <jon.brenner@ams.com>
 ---
- drivers/iio/imu/inv_mpu6050/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/iio/light/tsl2x7x_core.c | 40 ++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-index b5cfa3a..361b232 100644
---- a/drivers/iio/imu/inv_mpu6050/Kconfig
-+++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-@@ -5,6 +5,7 @@
- config INV_MPU6050_IIO
- 	tristate "Invensense MPU6050 devices"
- 	depends on I2C && SYSFS
-+	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	  This driver supports the Invensense MPU6050 devices.
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index a58731e..d060f25 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -1733,14 +1733,14 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE) |
++				BIT(IIO_CHAN_INFO_CALIBBIAS),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+@@ -1757,7 +1757,7 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1770,25 +1770,25 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT
++			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED)
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE) |
++				BIT(IIO_CHAN_INFO_CALIBBIAS),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 			}, {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1801,8 +1801,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
+@@ -1815,26 +1815,26 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ 			.type = IIO_LIGHT,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE) |
++				BIT(IIO_CHAN_INFO_CALIBBIAS),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			}, {
+ 			.type = IIO_INTENSITY,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 			}, {
+ 			.type = IIO_PROXIMITY,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-				IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE),
+ 			.event_mask = TSL2X7X_EVENT_MASK
+ 			},
+ 		},
 -- 
-1.7.9.7
+1.8.1.4
 
