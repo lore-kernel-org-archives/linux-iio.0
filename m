@@ -1,54 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36701 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35724 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751486Ab3CBQcg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:32:36 -0500
-Message-ID: <513229A2.6070700@kernel.org>
-Date: Sat, 02 Mar 2013 16:32:34 +0000
+	with ESMTP id S1752595Ab3CBQRs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:48 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Ge Gao <ggao@invensense.com>
-Subject: Re: [PATCH] iio/imu: inv_mpu6050 depends on IIO_BUFFER
-References: <1362151286-7338-1-git-send-email-linux@roeck-us.net> <51322924.7010001@kernel.org>
-In-Reply-To: <51322924.7010001@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 64/67] staging:iio:resolver:ad2s1200 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:17:21 +0000
+Message-Id: <1362241044-3534-65-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/2013 04:30 PM, Jonathan Cameron wrote:
-> On 03/01/2013 03:21 PM, Guenter Roeck wrote:
->> Fix:
->>
->> drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c: In function ‘inv_mpu6050_read_fifo’:
->> drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c:176:3: error: implicit declaration of
->> function ‘iio_push_to_buffers’ [-Werror=implicit-function-declaration]
->>
->> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> Thanks, applied to togreg branch of iio.git
-sorry I mean the fixes-togreg branch of iio.git
+The original info_mask is going away in favour of the broken out versions.
 
-> 
->> ---
->>  drivers/iio/imu/inv_mpu6050/Kconfig |    1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
->> index b5cfa3a..361b232 100644
->> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
->> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
->> @@ -5,6 +5,7 @@
->>  config INV_MPU6050_IIO
->>  	tristate "Invensense MPU6050 devices"
->>  	depends on I2C && SYSFS
->> +	select IIO_BUFFER
->>  	select IIO_TRIGGERED_BUFFER
->>  	help
->>  	  This driver supports the Invensense MPU6050 devices.
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/staging/iio/resolver/ad2s1200.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index 4fe3499..7122116 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -85,12 +85,12 @@ static const struct iio_chan_spec ad2s1200_channels[] = {
+ 		.type = IIO_ANGL,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 	}, {
+ 		.type = IIO_ANGL_VEL,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 	}
+ };
+ 
+-- 
+1.8.1.4
+
