@@ -1,124 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:30186 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750939Ab3CMEvQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2013 00:51:16 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, dan.carpenter@oracle.com
-Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de
-Subject: [PATCH v3] iio: adc: exynos5_adc: fix compilation warnings
-Date: Wed, 13 Mar 2013 10:18:58 +0530
-Message-id: <1363150138-20819-1-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
-References: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35724 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752345Ab3CBQRk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:40 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 34/67] iio:gyro:adis16136 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:51 +0000
+Message-Id: <1362241044-3534-35-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixes the compilation warnings and potential NULL pointer
-dereferencing pointed out by "Dan Carpenter".
+The original info_mask is going away in favour of the broken out versions.
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Series-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-To: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
-Changes since v2:
-1. Timeout should be long not int
-2. Remove unnecessary variable version, use ret instead.
+ drivers/iio/gyro/adis16136.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-Apologize me for top posting.
-
-Doug, There was a comment from Lars regarding the match not
-being NULL, if driver depends on CONFIG_OF. So, i've removed
-the NULL check in v2 of this patch.
-	https://patchwork.kernel.org/patch/2222841/
-
-I'm checking the return value of get_version() for -ve values before
-assigning to info->version. So, i left the (unsigned int) unchanged.
-
-If required, I will resubmit with both these comments addressed.
-
- drivers/iio/adc/Kconfig      |    1 +
- drivers/iio/adc/exynos_adc.c |   18 ++++++++++++------
- 2 files changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 04311f8..da67626 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -93,6 +93,7 @@ config AT91_ADC
- 
- config EXYNOS_ADC
- 	bool "Exynos ADC driver support"
-+	depends on OF
- 	help
- 	  Core support for the ADC block found in the Samsung EXYNOS series
- 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index ed6fdd7..2d41bb5 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -92,7 +92,7 @@ struct exynos_adc {
- 	struct completion	completion;
- 
- 	u32			value;
--	unsigned int            version;
-+	unsigned int		version;
- };
- 
- static const struct of_device_id exynos_adc_match[] = {
-@@ -102,12 +102,12 @@ static const struct of_device_id exynos_adc_match[] = {
- };
- MODULE_DEVICE_TABLE(of, exynos_adc_match);
- 
--static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
-+static inline int exynos_adc_get_version(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
- 
- 	match = of_match_node(exynos_adc_match, pdev->dev.of_node);
--	return (unsigned int)match->data;
-+	return (int)match->data;
- }
- 
- static int exynos_read_raw(struct iio_dev *indio_dev,
-@@ -117,7 +117,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 				long mask)
- {
- 	struct exynos_adc *info = iio_priv(indio_dev);
--	unsigned long timeout;
-+	long timeout;
- 	u32 con1, con2;
- 
- 	if (mask != IIO_CHAN_INFO_RAW)
-@@ -268,6 +268,14 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 
- 	info = iio_priv(indio_dev);
- 
-+	ret = exynos_adc_get_version(pdev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "no matching of_node, err = %d\n", ret);
-+		goto err_iio;
-+	}
+diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+index 8cb0bcb..058e6d5 100644
+--- a/drivers/iio/gyro/adis16136.c
++++ b/drivers/iio/gyro/adis16136.c
+@@ -357,10 +357,11 @@ static const struct iio_chan_spec adis16136_channels[] = {
+ 		.type = IIO_ANGL_VEL,
+ 		.modified = 1,
+ 		.channel2 = IIO_MOD_X,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SHARED_BIT |
+-			IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_CALIBBIAS) |
++			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
 +
-+	info->version = ret;
-+
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 
- 	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
-@@ -311,8 +319,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 		goto err_irq;
- 	}
- 
--	info->version = exynos_adc_get_version(pdev);
--
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	indio_dev->name = dev_name(&pdev->dev);
+ 		.address = ADIS16136_REG_GYRO_OUT2,
+ 		.scan_index = ADIS16136_SCAN_GYRO,
+ 		.scan_type = {
+@@ -373,8 +374,8 @@ static const struct iio_chan_spec adis16136_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = ADIS16136_REG_TEMP_OUT,
+ 		.scan_index = ADIS16136_SCAN_TEMP,
+ 		.scan_type = {
 -- 
-1.7.9.5
+1.8.1.4
 
