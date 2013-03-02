@@ -1,64 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:65021 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750779Ab3CAOlI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2013 09:41:08 -0500
-Date: Fri, 1 Mar 2013 06:41:11 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: IIO_BUFFER - IIO_TRIGGERED_BUFFER circular dependency
-Message-ID: <20130301144111.GA31945@roeck-us.net>
-References: <20130301043222.GA5606@roeck-us.net>
- <5130AF56.8020407@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5130AF56.8020407@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35730 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752261Ab3CBQRf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:35 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 11/67] iio:adc:ad7887 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:28 +0000
+Message-Id: <1362241044-3534-12-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Mar 01, 2013 at 02:38:30PM +0100, Lars-Peter Clausen wrote:
-> On 03/01/2013 05:32 AM, Guenter Roeck wrote:
-> > Hi all,
-> > 
-> > IIO_TRIGGERED_BUFFER depends on IIO_BUFFER because of:
-> > 
-> > drivers/iio/industrialio-triggered-buffer.c:20:16: error:
-> > ‘iio_sw_buffer_preenable’ undeclared here (not in a function)
-> > 
-> > On the other side, it is often selected as follows.
-> > 
-> > 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> > 
-> > For that reason, selecting IIO_BUFFER in the IIO_TRIGGERED_BUFFER declaration
-> > results in a circular dependency. Sometimes the "if (IIO_BUFFER)" when selecting
-> > IIO_TRIGGERED_BUFFER is missing, though, which can result in the compile error.
-> > 
-> > What is the proper solution ?
-> > - Add "if (IIO_BUFFER)" whenever IIO_TRIGGERED_BUFFER is selected
-> > or
-> > - Remove "if (IIO_BUFFER)" from IIO_TRIGGERED_BUFFER selection and add "select
-> >   IIO_BUFFER" to the IIO_TRIGGERED_BUFFER declaration
-> > 
-> > I would prefer the latter to solve the problem for good.
-> 
-> Hi,
-> 
-> This is a bit tricky, some drivers have optional buffer support, so they
-> only select the helper module if buffer support is enabled, since they don't
-> use the helper module if buffer support is disabled. Other driver though
-> always want buffer support so they select the helper module unconditionally.
-> So far it was the responsibility of the driver's Kconfig entry to make sure
-> that if it selects IIO_TRIGGERED_BUFFER it needs to make sure that
-> IIO_BUFFER is also selected. As far as I can see all drivers do this
-> currently. Which one breaks things for you?
-> 
-It is a randconfig thing, so it breaks in some of my nightly randconfig builds,
-and it has also been reported as build failure in the official builds. I can dig
-out some affected configurations and send it to you if you like, but the gist of
-it is that IIO_TRIGGERED_BUFFER can be selected without IIO_BUFFER, but depends
-on it. That just isn't correct. Of course, the other option might be to make
-IIO_TRIGGERED_BUFFER dependent on IIO_BUFFER. Would that be acceptable ?
+The original info_mask is going away in favour of the broken out versions.
 
-Thanks,
-Guenter
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad7887.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index a33d5cd..dd15a5b 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -207,8 +207,8 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 1,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 			.address = 1,
+ 			.scan_index = 1,
+ 			.scan_type = IIO_ST('u', 12, 16, 0),
+@@ -217,8 +217,8 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
+ 			.type = IIO_VOLTAGE,
+ 			.indexed = 1,
+ 			.channel = 0,
+-			.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
+-			IIO_CHAN_INFO_SCALE_SHARED_BIT,
++			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 			.address = 0,
+ 			.scan_index = 0,
+ 			.scan_type = IIO_ST('u', 12, 16, 0),
+-- 
+1.8.1.4
+
