@@ -1,44 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f46.google.com ([209.85.215.46]:46555 "EHLO
-	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933096Ab3CMSBF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2013 14:01:05 -0400
-Received: by mail-la0-f46.google.com with SMTP id fq12so1479116lab.33
-        for <linux-iio@vger.kernel.org>; Wed, 13 Mar 2013 11:01:03 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1363150138-20819-1-git-send-email-ch.naveen@samsung.com>
-References: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
-	<1363150138-20819-1-git-send-email-ch.naveen@samsung.com>
-Date: Wed, 13 Mar 2013 11:01:03 -0700
-Message-ID: <CAD=FV=XoE6NCruDUv2UajaP+LWDCp+pgaZJsEKpkoxy3tZNeAw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: adc: exynos5_adc: fix compilation warnings
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>, dan.carpenter@oracle.com,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35722 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751896Ab3CBQRi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:38 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: [PATCH 25/67] iio:dac:ad5624r move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:42 +0000
+Message-Id: <1362241044-3534-26-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Naveen,
+The original info_mask is going away in favour of the broken out versions.
 
-On Tue, Mar 12, 2013 at 9:48 PM, Naveen Krishna Chatradhi
-<ch.naveen@samsung.com> wrote:
-> Doug, There was a comment from Lars regarding the match not
-> being NULL, if driver depends on CONFIG_OF. So, i've removed
-> the NULL check in v2 of this patch.
->         https://patchwork.kernel.org/patch/2222841/
->
-> I'm checking the return value of get_version() for -ve values before
-> assigning to info->version. So, i left the (unsigned int) unchanged.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/ad5624r_spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Hmmm, I guess this was the point that confused me.  I went back and
-agree with Lars--it can't be NULL.  ...but that means that
-exynos_adc_get_version() can't return an error, so why are we checking
-for an error?
+diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
+index f6e1166..bb298aa 100644
+--- a/drivers/iio/dac/ad5624r_spi.c
++++ b/drivers/iio/dac/ad5624r_spi.c
+@@ -174,8 +174,8 @@ static const struct iio_chan_spec_ext_info ad5624r_ext_info[] = {
+ 	.indexed = 1, \
+ 	.output = 1, \
+ 	.channel = (_chan), \
+-	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
+-		     IIO_CHAN_INFO_SCALE_SHARED_BIT, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+ 	.address = (_chan), \
+ 	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits)), \
+ 	.ext_info = ad5624r_ext_info, \
+-- 
+1.8.1.4
 
--Doug
