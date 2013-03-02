@@ -1,63 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49139 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932570Ab3CQWm2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2013 18:42:28 -0400
-Message-ID: <51461D17.4050902@kernel.org>
-Date: Sun, 17 Mar 2013 19:44:23 +0000
+Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-CC: linux-iio@vger.kernel.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Subject: Re: [PATCH 1/2] iio:adc:exynos move to info_mask_(shared_by_type/separate)
-References: <1362341033-9506-1-git-send-email-jic23@kernel.org> <1362341033-9506-2-git-send-email-jic23@kernel.org> <CAHfPSqC95ahh6O9Fk0N06gw9tQxGPKsU943KNYTXCM+vP465Eg@mail.gmail.com>
-In-Reply-To: <CAHfPSqC95ahh6O9Fk0N06gw9tQxGPKsU943KNYTXCM+vP465Eg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 02/67] iio:adc:max1363 move to info_mask_(shared_by_type/separate)
+Date: Sat,  2 Mar 2013 16:16:19 +0000
+Message-Id: <1362241044-3534-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/05/2013 11:44 PM, Naveen Krishna Ch wrote:
-> On 4 March 2013 05:03, Jonathan Cameron <jic23@kernel.org> wrote:
->> The original info_mask is going away in favour of the broken out versions.
->>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-> Thanks, Jonathan.
-While thanks is always nice, I took that as counting as an Acked-by tag.
-Shout if you would rather I didn't!
->> ---
->>  drivers/iio/adc/exynos_adc.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->> index ed6fdd7..6e968ae 100644
->> --- a/drivers/iio/adc/exynos_adc.c
->> +++ b/drivers/iio/adc/exynos_adc.c
->> @@ -198,7 +198,7 @@ static const struct iio_info exynos_adc_iio_info = {
->>         .indexed = 1,                                   \
->>         .channel = _index,                              \
->>         .address = _index,                              \
->> -       .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,    \
->> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
->>         .datasheet_name = _id,                          \
->>  }
->>
->> --
->> 1.8.1.4
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
-> 
-> --
-> Shine bright,
-> (: Nav :)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+The original info_mask is going away in favour of the broken out versions.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/adc/max1363.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 6c1cfb7..9e6da72 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -427,15 +427,15 @@ static const enum max1363_modes max1363_mode_list[] = {
+ #define MAX1363_EV_M						\
+ 	(IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING)	\
+ 	 | IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
+-#define MAX1363_INFO_MASK (IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+-			   IIO_CHAN_INFO_SCALE_SHARED_BIT)
++
+ #define MAX1363_CHAN_U(num, addr, si, bits, evmask)			\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+ 		.channel = num,						\
+ 		.address = addr,					\
+-		.info_mask = MAX1363_INFO_MASK,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+ 		.datasheet_name = "AIN"#num,				\
+ 		.scan_type = {						\
+ 			.sign = 'u',					\
+@@ -456,7 +456,8 @@ static const enum max1363_modes max1363_mode_list[] = {
+ 		.channel = num,						\
+ 		.channel2 = num2,					\
+ 		.address = addr,					\
+-		.info_mask = MAX1363_INFO_MASK,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+ 		.datasheet_name = "AIN"#num"-AIN"#num2,			\
+ 		.scan_type = {						\
+ 			.sign = 's',					\
+-- 
+1.8.1.4
