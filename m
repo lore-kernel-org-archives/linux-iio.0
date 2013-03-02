@@ -1,244 +1,448 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-082.synserver.de ([212.40.185.82]:1180 "EHLO
-	smtp-out-082.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755793Ab3CDJIQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 04:08:16 -0500
-Message-ID: <513464DE.8040709@metafoo.de>
-Date: Mon, 04 Mar 2013 10:09:50 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36920 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751982Ab3CBQ6C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:58:02 -0500
+Message-ID: <51322F93.7050803@kernel.org>
+Date: Sat, 02 Mar 2013 16:57:55 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/67 V2] IIO break info_mask into a pair of masks
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+To: Guenter Roeck <linux@roeck-us.net>
+CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>,
+	Tomasz Figa <tomasz.figa@gmail.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Anton Vorontsov <cbou@mail.ru>,
+	David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH v5] iio: Add OF support
+References: <1360256940-19438-1-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1360256940-19438-1-git-send-email-linux@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/2013 05:16 PM, Jonathan Cameron wrote:
-> As Lars-Peter noticed, I was being an idiot and the original set would
-> never have worked.  Actually it turned out that they would have also
-> gotten the handling of shared and separate the wrong way around and there
-> were a few other minor issues elsewhere.
+On 02/07/2013 05:09 PM, Guenter Roeck wrote:
+> Provide bindings and parse OF data during initialization.
 > 
-> Now a lot of people were kind enough to take a look at the original patches
-> and provide Acks on the mistaken assumption that the basic principle worked.
-> (given the cc list would have been huge many people probably never saw
-> anything other than the individual driver patches which in of themselves
-> appeared sane).
-> If people do not reply this time around I'll assume their acks are good
-> for this set and apply them.  (Of course if anyone want so re ack the
-> corrected patches that is great as well!).  Any tested-by's would also
-> be great as right now I've only actually tested with one driver.
-> 
-> Well that was an 'interesting' way to start off this cycle :(
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Applied to the togreg branch of iio.git with a small edit wrt
+to removing the WIP line in the binding documenation.
 
-Hi Jonathan,
+I thought about putting something about subject to extension
+but decided that was obviously the case so just removed the statement
+and editting the next bit to make that work without it.
 
-Looks good on a first glimpse. Can you push this to a branch on your repo?
-Makes testing things easier.
+Thanks for your work on this Guenter.  Looks very good to me and
+is clearly useful to have.
 
-Thanks,
-- Lars
+Will be in the togreg branch of
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+shortly.
+(I'll send a pull request to Greg in a week or so depending on
+what else comes along, at that point it will be in the staging-next
+tree and show up in Linux next.)
 
-
+Jonathan
+> ---
+> v5:
+> - Updated examples in bindings.
+> v4:
+> - Fixed wrong parameter to dummy of_iio_channel_get_by_name if CONFIG_OF is
+>   undefined, and wrong return value.
+> - Initialize indio_dev->of_node in iio_device_register if the calling driver
+>   neglected to do it.
+> v3:
+> - Cleaned up documentation (formatting, left-over clock references)
+> - Updated bindings description to permit sub-devices
+> - When searching for iio devices, use the pointer to the iio device type instead
+>   of strcmp. Rename iio_dev_type to iio_device_type (to match other device
+>   types) and make it global for that purpose. Check the OF node first, then the
+>   device type, as the node is less likely to match.
+> - Move the common code in of_iio_channel_get and of_iio_channel_get_all to
+>   __of_iio_channel_get.
+> - Return NULL from of_iio_channel_get_by_name if nothing is found, or
+>   an error if there is a problem with consistency or if the provider device is
+>   not yet available.
+> - In iio_channel_get, return if of_iio_channel_get_by_name() returns a channel
+>   or an error, and continue otherwise.
+> v2:
+> - Rebased to iio/togreg
+> - Documentation update per feedback
+> - Dropped io-channel-output-names from the bindings document. The property is
+>   not used in the code, and it is not entirely clear what it would be used for.
+>   If there is a need for it, we can add it back in later on.
+> - Don't export OF specific API calls
+> - For OF support, no longer depend on iio_map
+> - Add #ifdef CONFIG_OF where appropriate, and ensure that the code still builds
+>   if it is not selected.
+> - Change iio_channel_get to take device pointer as argument instead of device
+>   name. Retain old API as of_iio_channel_get_sys.
+> - iio_channel_get now works for both OF and non-OF configurations
+> - Use regulator to get vref for max1363 driver.
 > 
-> Version 1 message:
+>  .../devicetree/bindings/iio/iio-bindings.txt       |   97 +++++++++++
+>  drivers/iio/iio_core.h                             |    1 +
+>  drivers/iio/industrialio-core.c                    |    8 +-
+>  drivers/iio/inkern.c                               |  171 ++++++++++++++++++++
+>  4 files changed, 275 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/iio-bindings.txt
 > 
-> Hi All,
+> diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> new file mode 100644
+> index 0000000..1182845
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
+> @@ -0,0 +1,97 @@
+> +This binding is a work-in-progress. It is derived from clock bindings,
+> +and based on suggestions from Lars-Peter Clausen [1].
+> +
+> +Sources of IIO channels can be represented by any node in the device
+> +tree. Those nodes are designated as IIO providers. IIO consumer
+> +nodes use a phandle and IIO specifier pair to connect IIO provider
+> +outputs to IIO inputs. Similar to the gpio specifiers, an IIO
+> +specifier is an array of one or more cells identifying the IIO
+> +output on a device. The length of an IIO specifier is defined by the
+> +value of a #io-channel-cells property in the IIO provider node.
+> +
+> +[1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
+> +
+> +==IIO providers==
+> +
+> +Required properties:
+> +#io-channel-cells: Number of cells in an IIO specifier; Typically 0 for nodes
+> +		   with a single IIO output and 1 for nodes with multiple
+> +		   IIO outputs.
+> +
+> +Example for a simple configuration with no trigger:
+> +
+> +	adc: voltage-sensor@35 {
+> +		compatible = "maxim,max1139";
+> +		reg = <0x35>;
+> +		#io-channel-cells = <1>;
+> +	};
+> +
+> +Example for a configuration with trigger:
+> +
+> +	adc@35 {
+> +		compatible = "some-vendor,some-adc";
+> +		reg = <0x35>;
+> +
+> +		adc1: iio-device@0 {
+> +			#io-channel-cells = <1>;
+> +			/* other properties */
+> +		};
+> +		adc2: iio-device@1 {
+> +			#io-channel-cells = <1>;
+> +			/* other properties */
+> +		};
+> +	};
+> +
+> +==IIO consumers==
+> +
+> +Required properties:
+> +io-channels:	List of phandle and IIO specifier pairs, one pair
+> +		for each IIO input to the device. Note: if the
+> +		IIO provider specifies '0' for #io-channel-cells,
+> +		then only the phandle portion of the pair will appear.
+> +
+> +Optional properties:
+> +io-channel-names:
+> +		List of IIO input name strings sorted in the same
+> +		order as the io-channels property. Consumers drivers
+> +		will use io-channel-names to match IIO input names
+> +		with IIO specifiers.
+> +io-channel-ranges:
+> +		Empty property indicating that child nodes can inherit named
+> +		IIO channels from this node. Useful for bus nodes to provide
+> +		and IIO channel to their children.
+> +
+> +For example:
+> +
+> +	device {
+> +		io-channels = <&adc 1>, <&ref 0>;
+> +		io-channel-names = "vcc", "vdd";
+> +	};
+> +
+> +This represents a device with two IIO inputs, named "vcc" and "vdd".
+> +The vcc channel is connected to output 1 of the &adc device, and the
+> +vdd channel is connected to output 0 of the &ref device.
+> +
+> +==Example==
+> +
+> +	adc: max1139@35 {
+> +		compatible = "maxim,max1139";
+> +		reg = <0x35>;
+> +		#io-channel-cells = <1>;
+> +	};
+> +
+> +	...
+> +
+> +	iio_hwmon {
+> +		compatible = "iio-hwmon";
+> +		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+> +			<&adc 3>, <&adc 4>, <&adc 5>,
+> +			<&adc 6>, <&adc 7>, <&adc 8>,
+> +			<&adc 9>;
+> +	};
+> +
+> +	some_consumer {
+> +		compatible = "some-consumer";
+> +		io-channels = <&adc 10>, <&adc 11>;
+> +		io-channel-names = "adc1", "adc2";
+> +	};
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index f652e6a..05c1b74 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -18,6 +18,7 @@
+>  struct iio_chan_spec;
+>  struct iio_dev;
+>  
+> +extern struct device_type iio_device_type;
+>  
+>  int __iio_add_chan_devattr(const char *postfix,
+>  			   struct iio_chan_spec const *chan,
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 8848f16..6d8b027 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -847,7 +847,7 @@ static void iio_dev_release(struct device *device)
+>  	kfree(indio_dev);
+>  }
+>  
+> -static struct device_type iio_dev_type = {
+> +struct device_type iio_device_type = {
+>  	.name = "iio_device",
+>  	.release = iio_dev_release,
+>  };
+> @@ -869,7 +869,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+>  
+>  	if (dev) {
+>  		dev->dev.groups = dev->groups;
+> -		dev->dev.type = &iio_dev_type;
+> +		dev->dev.type = &iio_device_type;
+>  		dev->dev.bus = &iio_bus_type;
+>  		device_initialize(&dev->dev);
+>  		dev_set_drvdata(&dev->dev, (void *)dev);
+> @@ -960,6 +960,10 @@ int iio_device_register(struct iio_dev *indio_dev)
+>  {
+>  	int ret;
+>  
+> +	/* If the calling driver did not initialize of_node, do it here */
+> +	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+> +		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+> +
+>  	/* configure elements for the chrdev */
+>  	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+>  
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index b289915..795d100 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/export.h>
+>  #include <linux/slab.h>
+>  #include <linux/mutex.h>
+> +#include <linux/of.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include "iio_core.h"
+> @@ -92,6 +93,164 @@ static const struct iio_chan_spec
+>  	return chan;
+>  }
+>  
+> +#ifdef CONFIG_OF
+> +
+> +static int iio_dev_node_match(struct device *dev, void *data)
+> +{
+> +	return dev->of_node == data && dev->type == &iio_device_type;
+> +}
+> +
+> +static int __of_iio_channel_get(struct iio_channel *channel,
+> +				struct device_node *np, int index)
+> +{
+> +	struct device *idev;
+> +	struct iio_dev *indio_dev;
+> +	int err;
+> +	struct of_phandle_args iiospec;
+> +
+> +	err = of_parse_phandle_with_args(np, "io-channels",
+> +					 "#io-channel-cells",
+> +					 index, &iiospec);
+> +	if (err)
+> +		return err;
+> +
+> +	idev = bus_find_device(&iio_bus_type, NULL, iiospec.np,
+> +			       iio_dev_node_match);
+> +	of_node_put(iiospec.np);
+> +	if (idev == NULL)
+> +		return -EPROBE_DEFER;
+> +
+> +	indio_dev = dev_to_iio_dev(idev);
+> +	channel->indio_dev = indio_dev;
+> +	index = iiospec.args_count ? iiospec.args[0] : 0;
+> +	if (index >= indio_dev->num_channels) {
+> +		return -EINVAL;
+> +		goto err_put;
+> +	}
+> +	channel->channel = &indio_dev->channels[index];
+> +
+> +	return 0;
+> +
+> +err_put:
+> +	iio_device_put(indio_dev);
+> +	return err;
+> +}
+> +
+> +static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
+> +{
+> +	struct iio_channel *channel;
+> +	int err;
+> +
+> +	if (index < 0)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	channel = kzalloc(sizeof(*channel), GFP_KERNEL);
+> +	if (channel == NULL)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	err = __of_iio_channel_get(channel, np, index);
+> +	if (err)
+> +		goto err_free_channel;
+> +
+> +	return channel;
+> +
+> +err_free_channel:
+> +	kfree(channel);
+> +	return ERR_PTR(err);
+> +}
+> +
+> +static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> +						      const char *name)
+> +{
+> +	struct iio_channel *chan = NULL;
+> +
+> +	/* Walk up the tree of devices looking for a matching iio channel */
+> +	while (np) {
+> +		int index = 0;
+> +
+> +		/*
+> +		 * For named iio channels, first look up the name in the
+> +		 * "io-channel-names" property.  If it cannot be found, the
+> +		 * index will be an error code, and of_iio_channel_get()
+> +		 * will fail.
+> +		 */
+> +		if (name)
+> +			index = of_property_match_string(np, "io-channel-names",
+> +							 name);
+> +		chan = of_iio_channel_get(np, index);
+> +		if (!IS_ERR(chan))
+> +			break;
+> +		else if (name && index >= 0) {
+> +			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+> +				np->full_name, name ? name : "", index);
+> +			return chan;
+> +		}
+> +
+> +		/*
+> +		 * No matching IIO channel found on this node.
+> +		 * If the parent node has a "io-channel-ranges" property,
+> +		 * then we can try one of its channels.
+> +		 */
+> +		np = np->parent;
+> +		if (np && !of_get_property(np, "io-channel-ranges", NULL))
+> +			break;
+> +	}
+> +	return chan;
+> +}
+> +
+> +static struct iio_channel *of_iio_channel_get_all(struct device *dev)
+> +{
+> +	struct iio_channel *chans;
+> +	int i, mapind, nummaps = 0;
+> +	int ret;
+> +
+> +	do {
+> +		ret = of_parse_phandle_with_args(dev->of_node,
+> +						 "io-channels",
+> +						 "#io-channel-cells",
+> +						 nummaps, NULL);
+> +		if (ret < 0)
+> +			break;
+> +	} while (++nummaps);
+> +
+> +	if (nummaps == 0)	/* no error, return NULL to search map table */
+> +		return NULL;
+> +
+> +	/* NULL terminated array to save passing size */
+> +	chans = kcalloc(nummaps + 1, sizeof(*chans), GFP_KERNEL);
+> +	if (chans == NULL)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	/* Search for OF matches */
+> +	for (mapind = 0; mapind < nummaps; mapind++) {
+> +		ret = __of_iio_channel_get(&chans[mapind], dev->of_node,
+> +					   mapind);
+> +		if (ret)
+> +			goto error_free_chans;
+> +	}
+> +	return chans;
+> +
+> +error_free_chans:
+> +	for (i = 0; i < mapind; i++)
+> +		iio_device_put(chans[i].indio_dev);
+> +	kfree(chans);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +#else /* CONFIG_OF */
+> +
+> +static inline struct iio_channel *
+> +of_iio_channel_get_by_name(struct device_node *np, const char *name)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline struct iio_channel *of_iio_channel_get_all(struct device *dev)
+> +{
+> +	return NULL;
+> +}
+> +
+> +#endif /* CONFIG_OF */
+>  
+>  static struct iio_channel *iio_channel_get_sys(const char *name,
+>  					       const char *channel_name)
+> @@ -150,7 +309,14 @@ struct iio_channel *iio_channel_get(struct device *dev,
+>  				    const char *channel_name)
+>  {
+>  	const char *name = dev ? dev_name(dev) : NULL;
+> +	struct iio_channel *channel;
+>  
+> +	if (dev) {
+> +		channel = of_iio_channel_get_by_name(dev->of_node,
+> +						     channel_name);
+> +		if (channel != NULL)
+> +			return channel;
+> +	}
+>  	return iio_channel_get_sys(name, channel_name);
+>  }
+>  EXPORT_SYMBOL_GPL(iio_channel_get);
+> @@ -173,6 +339,11 @@ struct iio_channel *iio_channel_get_all(struct device *dev)
+>  
+>  	if (dev == NULL)
+>  		return ERR_PTR(-EINVAL);
+> +
+> +	chans = of_iio_channel_get_all(dev);
+> +	if (chans)
+> +		return chans;
+> +
+>  	name = dev_name(dev);
+>  
+>  	mutex_lock(&iio_map_list_lock);
 > 
-> This has been on my todo list for a while.  I'm not sure how we ever ended
-> up with the mess that is the current info_mask bitmap of which properties
-> exist for a given channel.  Anyhow currently you have two types of bit
-> in there, IIO_CHAN_INFO_SHARED_BIT (even) and IIO_CHAN_INFO_SEPARATE_BIT (odd).
-> Whether we have odd or even elements is used to indicate whether we
-> want an associated attribute specific to the channel, or one that is shared.
-> E.g.
-> 
-> in_accel_x_scale (for just the x accel channel)
-> or
-> in_accel_scale (for all accel channels)
-> 
-> in_illuminance0_calibbias
-> or
-> in_illuminance_calibbias
-> 
-> This led to a horrible mess in iio.h where we had macros for each
-> option of every element added to the info_mask.  Also, a while
-> back it became apparent that sometimes we have attributes shared across
-> all channels irrespective of their type (sampling_frequency for example).
-> Now the obvious solution to this would be to add a third type of info_mask
-> element, but then things are getting rather silly.
-> 
-> Hence the proposed solution.  Have separate info_mask elements for each of the
-> two types of bit we had previously (others may follow).
-> 
-> Advantages:
-> 
-> 1) More consise naming of elements
-> 2) Drop all those hideous macros
-> 3) More space (admitedly there are lots of other ways we could have
-> gotten that).
-> 
-> Can't immediately think of any disadvantages other than the fact that
-> we now have so many drivers this was rather time consuming to actually
-> put together and almost certainly has some errors somewhere. 
-> 
-> Jonathan
-> 
-> Jonathan Cameron (67):
->   iio: Add broken out info_mask fields for shared_by_type and separate
->   iio:adc:max1363 move to info_mask_(shared_by_type/separate)
->   staging:iio:dummy move to info_mask_(shared_by_type/separate)
->   iio:hid_sensors move to info_mask_(shared_by_type/separate)
->   iio:accel:kxsd9 move to info_mask_(shared_by_type/separate)
->   iio:st_sensors move to info_mask_(shared_by_type/separate)
->   iio:adc:ad_sigma_delta move to info_mask_(shared_by_type/separate)
->   iio:adc:ad7266 move to info_mask_(shared_by_type/separate)
->   iio:adc:ad7298 move to info_mask_(shared_by_type/separate)
->   iio:adc:ad7476 move to info_mask_(shared_by_type/separate)
->   iio:adc:ad7887 move to info_mask_(shared_by_type/separate)
->   iio:adc:at91_adc move to info_mask_(shared_by_type/separate)
->   iio:adc:lp8778_adc move to info_mask_(shared_by_type/separate)
->   iio:adc:ti-adc081 move to info_mask_(shared_by_type/separate)
->   iio:adc:ti_am335x_adc move to info_mask_(shared_by_type/separate)
->   iio:adc:viperboard_adc move to info_mask_(shared_by_type/separate)
->   iio:amplifiers:ad8366 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5064 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5360 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5380 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5421 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5446 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5449 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5504 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5624r move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5686 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5755 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5764 move to info_mask_(shared_by_type/separate)
->   iio:dac:ad5791 move to info_mask_(shared_by_type/separate)
->   iio:dac:max517 move to info_mask_(shared_by_type/separate)
->   iio:dac:mcp4725 move to info_mask_(shared_by_type/separate)
->   iio:freq:ad9523 move to info_mask_(shared_by_type/separate)
->   iio:gyro:adis16080 move to info_mask_(shared_by_type/separate)
->   iio:gyro:adis16136 move to info_mask_(shared_by_type/separate)
->   iio:gyro:adxrs450 move to info_mask_(shared_by_type/separate)
->   iio:gyro:itg3200_core move to info_mask_(shared_by_type/separate)
->   iio:imu:adis16400 move to info_mask_(shared_by_type/separate)
->   iio:imu:adis16480 move to info_mask_(shared_by_type/separate)
->   iio:imu:mpu6050 move to info_mask_(shared_by_type/separate)
->   iio:light:adjd_s311 move to info_mask_(shared_by_type/separate)
->   iio:light:lm3533 move to info_mask_(shared_by_type/separate)
->   iio:light:tsl2563 move to info_mask_(shared_by_type/separate)
->   iio:light:vcnl4000 move to info_mask_(shared_by_type/separate)
->   staging:iio:accel:adis move to info_mask_(shared_by_type/separate)
->   staging:iio:accel:adis16220 move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:accel:lis3l02dq move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:accel:sca3000 move to info_mask_(shared_by_type/separate)
->   staging:iio:adc:ad7280a move to info_mask_(shared_by_type/separate)
->   staging:iio:adc:ad7291 move to info_mask_(shared_by_type/separate)
->   staging:iio:adc:ad7606 move to info_mask_(shared_by_type/separate)
->   staging:iio:adc:ad799x move to info_mask_(shared_by_type/separate)
->   staging:iio:cdc:ad7150 move to info_mask_(shared_by_type/separate)
->   staging:iio:cdc:ad7152 move to info_mask_(shared_by_type/separate)
->   staging:iio:cdc:ad7746 move to info_mask_(shared_by_type/separate)
->   staging:iio:gyro:adis16060 move to info_mask_(shared_by_type/separate)
->   staging:iio:gyro:adis16130 move to info_mask_(shared_by_type/separate)
->   staging:iio:impedance:ad5933 move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:light:isl29018 move to info_mask_(shared_by_type/separate)
->   staging:iio:light:isl29028 move to info_mask_(shared_by_type/separate)
->   staging:iio:light:tsl2x7x move to info_mask_(shared_by_type/separate)
->   staging:iio:mag:ak8975 move to info_mask_(shared_by_type/separate)
->   staging:iio:magnetometer:hmc5843 move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:meter:ade7758 move to info_mask_(shared_by_type/separate)
->   staging:iio:resolver:ad2s1200 move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:resolver:ad2s1210 move to
->     info_mask_(shared_by_type/separate)
->   staging:iio:resolver:ad2s90 move to
->     info_mask_(shared_by_type/separate)
->   iio:core drop info_mask from struct iio_info
-> 
->  drivers/iio/accel/hid-sensor-accel-3d.c         | 24 ++++----
->  drivers/iio/accel/kxsd9.c                       |  6 +-
->  drivers/iio/adc/ad7266.c                        | 12 ++--
->  drivers/iio/adc/ad7298.c                        | 10 ++--
->  drivers/iio/adc/ad7476.c                        | 10 ++--
->  drivers/iio/adc/ad7887.c                        |  8 +--
->  drivers/iio/adc/at91_adc.c                      |  4 +-
->  drivers/iio/adc/lp8788_adc.c                    |  4 +-
->  drivers/iio/adc/max1363.c                       |  9 +--
->  drivers/iio/adc/ti-adc081c.c                    |  4 +-
->  drivers/iio/adc/ti_am335x_adc.c                 |  2 +-
->  drivers/iio/adc/viperboard_adc.c                |  2 +-
->  drivers/iio/amplifiers/ad8366.c                 |  2 +-
->  drivers/iio/dac/ad5064.c                        |  4 +-
->  drivers/iio/dac/ad5360.c                        | 10 ++--
->  drivers/iio/dac/ad5380.c                        |  8 +--
->  drivers/iio/dac/ad5421.c                        | 10 ++--
->  drivers/iio/dac/ad5446.c                        |  4 +-
->  drivers/iio/dac/ad5449.c                        |  4 +-
->  drivers/iio/dac/ad5504.c                        |  4 +-
->  drivers/iio/dac/ad5624r_spi.c                   |  4 +-
->  drivers/iio/dac/ad5686.c                        |  6 +-
->  drivers/iio/dac/ad5755.c                        | 10 ++--
->  drivers/iio/dac/ad5764.c                        | 10 ++--
->  drivers/iio/dac/ad5791.c                        |  6 +-
->  drivers/iio/dac/max517.c                        |  4 +-
->  drivers/iio/dac/mcp4725.c                       |  4 +-
->  drivers/iio/frequency/ad9523.c                  |  8 +--
->  drivers/iio/gyro/adis16080.c                    | 22 +++----
->  drivers/iio/gyro/adis16136.c                    | 13 ++--
->  drivers/iio/gyro/adxrs450.c                     | 22 +++----
->  drivers/iio/gyro/hid-sensor-gyro-3d.c           | 24 ++++----
->  drivers/iio/gyro/itg3200_core.c                 | 13 ++--
->  drivers/iio/imu/adis16400_core.c                | 47 +++++++--------
->  drivers/iio/imu/adis16480.c                     | 32 +++++-----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c      | 10 ++--
->  drivers/iio/industrialio-core.c                 | 27 ++++++---
->  drivers/iio/light/adjd_s311.c                   |  4 +-
->  drivers/iio/light/hid-sensor-als.c              |  8 +--
->  drivers/iio/light/lm3533-als.c                  |  6 +-
->  drivers/iio/light/tsl2563.c                     | 10 ++--
->  drivers/iio/light/vcnl4000.c                    |  6 +-
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c   | 24 ++++----
->  drivers/staging/iio/accel/adis16201_core.c      |  8 +--
->  drivers/staging/iio/accel/adis16203_core.c      |  2 +-
->  drivers/staging/iio/accel/adis16204_core.c      |  8 +--
->  drivers/staging/iio/accel/adis16209_core.c      |  4 +-
->  drivers/staging/iio/accel/adis16220_core.c      | 26 ++++----
->  drivers/staging/iio/accel/adis16240_core.c      |  9 +--
->  drivers/staging/iio/accel/lis3l02dq_core.c      | 11 ++--
->  drivers/staging/iio/accel/sca3000_core.c        |  5 +-
->  drivers/staging/iio/adc/ad7280a.c               | 12 ++--
->  drivers/staging/iio/adc/ad7291.c                | 10 ++--
->  drivers/staging/iio/adc/ad7606_core.c           |  4 +-
->  drivers/staging/iio/adc/ad799x_core.c           | 76 ++++++++++++------------
->  drivers/staging/iio/cdc/ad7150.c                |  8 +--
->  drivers/staging/iio/cdc/ad7152.c                | 32 +++++-----
->  drivers/staging/iio/cdc/ad7746.c                | 48 +++++++--------
->  drivers/staging/iio/gyro/adis16060_core.c       | 11 ++--
->  drivers/staging/iio/gyro/adis16130_core.c       |  4 +-
->  drivers/staging/iio/gyro/adis16260_core.c       |  4 +-
->  drivers/staging/iio/iio_simple_dummy.c          | 33 +++++------
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 10 ++--
->  drivers/staging/iio/light/isl29018.c            |  8 +--
->  drivers/staging/iio/light/isl29028.c            | 10 ++--
->  drivers/staging/iio/light/tsl2x7x_core.c        | 40 ++++++-------
->  drivers/staging/iio/magnetometer/ak8975.c       |  4 +-
->  drivers/staging/iio/magnetometer/hmc5843.c      |  4 +-
->  drivers/staging/iio/meter/ade7758_core.c        | 60 +++++++++----------
->  drivers/staging/iio/resolver/ad2s1200.c         |  4 +-
->  drivers/staging/iio/resolver/ad2s1210.c         |  4 +-
->  drivers/staging/iio/resolver/ad2s90.c           |  2 +-
->  include/linux/iio/adc/ad_sigma_delta.h          |  6 +-
->  include/linux/iio/common/st_sensors.h           |  5 +-
->  include/linux/iio/iio.h                         | 79 +++----------------------
->  include/linux/iio/imu/adis.h                    | 34 +++++------
->  76 files changed, 489 insertions(+), 557 deletions(-)
-> 
-
