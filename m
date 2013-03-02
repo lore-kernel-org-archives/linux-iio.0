@@ -1,73 +1,147 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43370 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35728 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753070Ab3CCMNj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2013 07:13:39 -0500
-Message-ID: <51333E72.40308@kernel.org>
-Date: Sun, 03 Mar 2013 12:13:38 +0000
+	with ESMTP id S1752303Ab3CBQRt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:49 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Denis Ciocca <denis.ciocca@gmail.com>
-CC: lars@metafoo.de, linux-iio@vger.kernel.org,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH] iio:common: Use spi_sync_transfer() in STMicroelectronics
- common library
-References: <1360426103-3333-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1360426103-3333-1-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 67/67] iio:core drop info_mask from struct iio_info
+Date: Sat,  2 Mar 2013 16:17:24 +0000
+Message-Id: <1362241044-3534-68-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/09/2013 04:08 PM, Denis Ciocca wrote:
-> Use the new spi_sync_transfer() helper function instead of open-coding it.
-> 
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-Applied to togreg branch of iio.git
-> ---
->  drivers/iio/common/st_sensors/st_sensors_spi.c |   11 ++---------
->  1 file changed, 2 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-> index f0aa2f1..251baf6 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-> @@ -29,7 +29,6 @@ static unsigned int st_sensors_spi_get_irq(struct iio_dev *indio_dev)
->  static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
->  	struct device *dev, u8 reg_addr, int len, u8 *data, bool multiread_bit)
->  {
-> -	struct spi_message msg;
->  	int err;
->  
->  	struct spi_transfer xfers[] = {
-> @@ -51,10 +50,7 @@ static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
->  	else
->  		tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_READ;
->  
-> -	spi_message_init(&msg);
-> -	spi_message_add_tail(&xfers[0], &msg);
-> -	spi_message_add_tail(&xfers[1], &msg);
-> -	err = spi_sync(to_spi_device(dev), &msg);
-> +	err = spi_sync_transfer(to_spi_device(dev), xfers, ARRAY_SIZE(xfers));
->  	if (err)
->  		goto acc_spi_read_error;
->  
-> @@ -83,7 +79,6 @@ static int st_sensors_spi_read_multiple_byte(
->  static int st_sensors_spi_write_byte(struct st_sensor_transfer_buffer *tb,
->  				struct device *dev, u8 reg_addr, u8 data)
->  {
-> -	struct spi_message msg;
->  	int err;
->  
->  	struct spi_transfer xfers = {
-> @@ -96,9 +91,7 @@ static int st_sensors_spi_write_byte(struct st_sensor_transfer_buffer *tb,
->  	tb->tx_buf[0] = reg_addr;
->  	tb->tx_buf[1] = data;
->  
-> -	spi_message_init(&msg);
-> -	spi_message_add_tail(&xfers, &msg);
-> -	err = spi_sync(to_spi_device(dev), &msg);
-> +	err = spi_sync_transfer(to_spi_device(dev), &xfers, 1);
->  	mutex_unlock(&tb->buf_lock);
->  
->  	return err;
-> 
+This has been replaced by the pair of masks info_mask_separate
+and info_mask_shared_by_type.  Other variants may follow.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/industrialio-core.c | 17 ----------
+ include/linux/iio/iio.h         | 73 +----------------------------------------
+ 2 files changed, 1 insertion(+), 89 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 6f1a998..7f09958 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -691,23 +691,6 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 
+ 	if (chan->channel < 0)
+ 		return 0;
+-	for_each_set_bit(i, &chan->info_mask, sizeof(long)*8) {
+-		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i/2],
+-					     chan,
+-					     &iio_read_channel_info,
+-					     &iio_write_channel_info,
+-					     i/2,
+-					     !(i%2),
+-					     &indio_dev->dev,
+-					     &indio_dev->channel_attr_list);
+-		if (ret == -EBUSY && (i%2 == 0)) {
+-			ret = 0;
+-			continue;
+-		}
+-		if (ret < 0)
+-			goto error_ret;
+-		attrcount++;
+-	}
+ 	for_each_set_bit(i, &chan->info_mask_separate, sizeof(long)*8) {
+ 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+ 					     chan,
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 7697650..8d171f4 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -38,76 +38,6 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_HYSTERESIS,
+ };
+ 
+-#define IIO_CHAN_INFO_SHARED_BIT(type) BIT(type*2)
+-#define IIO_CHAN_INFO_SEPARATE_BIT(type) BIT(type*2 + 1)
+-#define IIO_CHAN_INFO_BITS(type) (IIO_CHAN_INFO_SHARED_BIT(type) | \
+-				    IIO_CHAN_INFO_SEPARATE_BIT(type))
+-
+-#define IIO_CHAN_INFO_RAW_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_RAW)
+-#define IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PROCESSED)
+-#define IIO_CHAN_INFO_SCALE_SEPARATE_BIT		\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_SCALE)
+-#define IIO_CHAN_INFO_SCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_SCALE)
+-#define IIO_CHAN_INFO_OFFSET_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_OFFSET)
+-#define IIO_CHAN_INFO_OFFSET_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_OFFSET)
+-#define IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_CALIBSCALE)
+-#define IIO_CHAN_INFO_CALIBSCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_CALIBSCALE)
+-#define IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_CALIBBIAS)
+-#define IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_CALIBBIAS)
+-#define IIO_CHAN_INFO_PEAK_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PEAK)
+-#define IIO_CHAN_INFO_PEAK_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PEAK)
+-#define IIO_CHAN_INFO_PEAKSCALE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PEAKSCALE)
+-#define IIO_CHAN_INFO_PEAKSCALE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PEAKSCALE)
+-#define IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SEPARATE_BIT	\
+-	IIO_CHAN_INFO_SEPARATE_BIT(				\
+-		IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW)
+-#define IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW_SHARED_BIT	\
+-	IIO_CHAN_INFO_SHARED_BIT(				\
+-		IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW)
+-#define IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
+-#define IIO_CHAN_INFO_AVERAGE_RAW_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_AVERAGE_RAW)
+-#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT \
+-	IIO_CHAN_INFO_SHARED_BIT(			       \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
+-#define IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SEPARATE_BIT \
+-	IIO_CHAN_INFO_SEPARATE_BIT(			       \
+-		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)
+-#define IIO_CHAN_INFO_SAMP_FREQ_SEPARATE_BIT		\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_SAMP_FREQ)
+-#define IIO_CHAN_INFO_SAMP_FREQ_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_SAMP_FREQ)
+-#define IIO_CHAN_INFO_FREQUENCY_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_FREQUENCY)
+-#define IIO_CHAN_INFO_FREQUENCY_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_FREQUENCY)
+-#define IIO_CHAN_INFO_PHASE_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_PHASE)
+-#define IIO_CHAN_INFO_PHASE_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_PHASE)
+-#define IIO_CHAN_INFO_HARDWAREGAIN_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+-#define IIO_CHAN_INFO_HARDWAREGAIN_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HARDWAREGAIN)
+-#define IIO_CHAN_INFO_HYSTERESIS_SEPARATE_BIT			\
+-	IIO_CHAN_INFO_SEPARATE_BIT(IIO_CHAN_INFO_HYSTERESIS)
+-#define IIO_CHAN_INFO_HYSTERESIS_SHARED_BIT			\
+-	IIO_CHAN_INFO_SHARED_BIT(IIO_CHAN_INFO_HYSTERESIS)
+-
+ enum iio_endian {
+ 	IIO_CPU,
+ 	IIO_BE,
+@@ -281,8 +211,7 @@ struct iio_chan_spec {
+ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+ 	enum iio_chan_info_enum type)
+ {
+-	return (chan->info_mask & IIO_CHAN_INFO_BITS(type)) |
+-	       (chan->info_mask_separate & type) |
++	return (chan->info_mask_separate & type) |
+ 	       (chan->info_mask_shared_by_type & type);
+ }
+ 
+-- 
+1.8.1.4
+
