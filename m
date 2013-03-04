@@ -1,77 +1,171 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f47.google.com ([209.85.215.47]:58755 "EHLO
-	mail-la0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932454Ab3CLQOg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2013 12:14:36 -0400
-Received: by mail-la0-f47.google.com with SMTP id fj20so15446lab.6
-        for <linux-iio@vger.kernel.org>; Tue, 12 Mar 2013 09:14:35 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
-References: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
-Date: Tue, 12 Mar 2013 09:14:34 -0700
-Message-ID: <CAD=FV=W4yYZYBT5=PY2VUsdz-zNAm=jnnw_SZzwjWzm_FuViLQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: adc: exynos5_adc: fix compilation warnings
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org, gregkh@linuxfoundation.org,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Patrick Vasseur <patrick.vasseur@c-s.fr>,
+	Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: [PATCH 3/3] iio:adc:ad7923: Add support for the ad7904/ad7914/ad7924
+Date: Mon,  4 Mar 2013 20:30:31 +0100
+Message-Id: <1362425431-24725-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1362425431-24725-1-git-send-email-lars@metafoo.de>
+References: <1362425431-24725-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Naveen,
+The ad7924 is software compatible with the ad7923. The ad7904 and ad7914 are the
+8 and 10 bit version of the ad7924.
 
-On Wed, Mar 6, 2013 at 7:09 PM, Naveen Krishna Chatradhi
-<ch.naveen@samsung.com> wrote:
-> -       unsigned int            version;
-> +       unsigned int            version;
+While we are at it also drop the "with temperature sensor" from the Kconfig
+entry, since the chips do not have a temperature sensor.
 
-Given that you've changed exynos_adc_get_version() to return an int,
-shouldn't this be an int too (not unsigned)?
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Patrick Vasseur <patrick.vasseur@c-s.fr>
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>
+---
+ drivers/iio/adc/Kconfig  |  6 ++---
+ drivers/iio/adc/ad7923.c | 63 ++++++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 53 insertions(+), 16 deletions(-)
 
-
-> -static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
-> +static inline int exynos_adc_get_version(struct platform_device *pdev)
->  {
->         const struct of_device_id *match;
->
->         match = of_match_node(exynos_adc_match, pdev->dev.of_node);
-> -       return (unsigned int)match->data;
-> +       return (int)match->data;
-
-Given that you're now checking for an error code below it seems like
-you ought to generate one here.  ;)
-...AKA: return an error if match is NULL--don't dereference NULL.
-
-
->  static int exynos_read_raw(struct iio_dev *indio_dev,
-> @@ -117,7 +117,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->                                 long mask)
->  {
->         struct exynos_adc *info = iio_priv(indio_dev);
-> -       unsigned long timeout;
-> +       int timeout;
-
-Why change this to an "int" when
-wait_for_completion_interruptible_timeout() returns a long?  I agree
-with the removal of the "unsigned", though.
-
-
-> +       version = exynos_adc_get_version(pdev);
-> +       if (version < 0) {
-> +               dev_err(&pdev->dev, "no matching of_node, err = %d\n", version);
-> +               ret = version;
-> +               goto err_iio;
-> +       }
-> +
-> +       info->version = version;
-
-Optional (and perhaps a matter of preference): I'd eliminate the
-"version" variable here and just re-use "ret" for storing the result
-of exynos_adc_get_version().
-
-
--Doug
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a40d3c2..3f05834 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -31,13 +31,13 @@ config AD7298
+ 	  module will be called ad7298.
+ 
+ config AD7923
+-	tristate "Analog Devices AD7923 ADC driver"
++	tristate "Analog Devices AD7923 and similar ADCs driver"
+ 	depends on SPI
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+-	  Say yes here to build support for Analog Devices AD7923
+-	  4 Channel ADC with temperature sensor.
++	  Say yes here to build support for Analog Devices
++	  AD7904, AD7914, AD7923, AD7924 4 Channel ADCs.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7923.
+diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
+index 11ccc42..97fa0d3 100644
+--- a/drivers/iio/adc/ad7923.c
++++ b/drivers/iio/adc/ad7923.c
+@@ -1,5 +1,5 @@
+ /*
+- * AD7923 SPI ADC driver
++ * AD7904/AD7914/AD7923/AD7924 SPI ADC driver
+  *
+  * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
+  * Copyright 2012 CS Systemes d'Information
+@@ -70,7 +70,18 @@ struct ad7923_state {
+ 	__be16				tx_buf[4];
+ };
+ 
+-#define AD7923_V_CHAN(index)						\
++struct ad7923_chip_info {
++	const struct iio_chan_spec *channels;
++	unsigned int num_channels;
++};
++
++enum ad7923_id {
++	AD7904,
++	AD7914,
++	AD7924,
++};
++
++#define AD7923_V_CHAN(index, bits)					\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+@@ -81,18 +92,38 @@ struct ad7923_state {
+ 		.scan_index = index,					\
+ 		.scan_type = {						\
+ 			.sign = 'u',					\
+-			.realbits = 12,					\
++			.realbits = (bits),				\
+ 			.storagebits = 16,				\
+ 			.endianness = IIO_BE,				\
+ 		},							\
+ 	}
+ 
+-static const struct iio_chan_spec ad7923_channels[] = {
+-	AD7923_V_CHAN(0),
+-	AD7923_V_CHAN(1),
+-	AD7923_V_CHAN(2),
+-	AD7923_V_CHAN(3),
+-	IIO_CHAN_SOFT_TIMESTAMP(4),
++#define DECLARE_AD7923_CHANNELS(name, bits) \
++const struct iio_chan_spec name ## _channels[] = { \
++	AD7923_V_CHAN(0, bits), \
++	AD7923_V_CHAN(1, bits), \
++	AD7923_V_CHAN(2, bits), \
++	AD7923_V_CHAN(3, bits), \
++	IIO_CHAN_SOFT_TIMESTAMP(4), \
++}
++
++static DECLARE_AD7923_CHANNELS(ad7904, 8);
++static DECLARE_AD7923_CHANNELS(ad7914, 10);
++static DECLARE_AD7923_CHANNELS(ad7924, 12);
++
++static const struct ad7923_chip_info ad7923_chip_info[] = {
++	[AD7904] = {
++		.channels = ad7904_channels,
++		.num_channels = ARRAY_SIZE(ad7904_channels),
++	},
++	[AD7914] = {
++		.channels = ad7914_channels,
++		.num_channels = ARRAY_SIZE(ad7914_channels),
++	},
++	[AD7924] = {
++		.channels = ad7924_channels,
++		.num_channels = ARRAY_SIZE(ad7924_channels),
++	},
+ };
+ 
+ /**
+@@ -245,6 +276,7 @@ static int ad7923_probe(struct spi_device *spi)
+ {
+ 	struct ad7923_state *st;
+ 	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	const struct ad7923_chip_info *info;
+ 	int ret;
+ 
+ 	if (indio_dev == NULL)
+@@ -258,11 +290,13 @@ static int ad7923_probe(struct spi_device *spi)
+ 	st->settings = AD7923_CODING | AD7923_RANGE |
+ 			AD7923_PM_MODE_WRITE(AD7923_PM_MODE_OPS);
+ 
++	info = &ad7923_chip_info[spi_get_device_id(spi)->driver_data];
++
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = ad7923_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(ad7923_channels);
++	indio_dev->channels = info->channels;
++	indio_dev->num_channels = info->num_channels;
+ 	indio_dev->info = &ad7923_info;
+ 
+ 	/* Setup default message */
+@@ -324,7 +358,10 @@ static int ad7923_remove(struct spi_device *spi)
+ }
+ 
+ static const struct spi_device_id ad7923_id[] = {
+-	{"ad7923", 0},
++	{"ad7904", AD7904},
++	{"ad7914", AD7914},
++	{"ad7923", AD7924},
++	{"ad7924", AD7924},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, ad7923_id);
+@@ -342,5 +379,5 @@ module_spi_driver(ad7923_driver);
+ 
+ MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+ MODULE_AUTHOR("Patrick Vasseur <patrick.vasseur@c-s.fr>");
+-MODULE_DESCRIPTION("Analog Devices AD7923 ADC");
++MODULE_DESCRIPTION("Analog Devices AD7904/AD7914/AD7923/AD7924 ADC");
+ MODULE_LICENSE("GPL v2");
+-- 
+1.8.0
