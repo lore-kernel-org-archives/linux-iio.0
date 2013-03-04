@@ -1,38 +1,44 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 0/2] IIO break info_mask into a pair of masks - Additional drivers
-Date: Sun,  3 Mar 2013 20:03:51 +0000
-Message-Id: <1362341033-9506-1-git-send-email-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-108.synserver.de ([212.40.185.108]:1089 "EHLO
+	smtp-out-103.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1758158Ab3CDTNW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 14:13:22 -0500
+Message-ID: <5134F2B9.2060605@metafoo.de>
+Date: Mon, 04 Mar 2013 20:15:05 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Randy Dunlap <rdunlap@infradead.org>
+CC: Stephen Rothwell <sfr@canb.auug.org.au>,
+	linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: Re: linux-next: Tree for Mar 4 (iio)
+References: <20130304144358.bd62a57601d4d4793921213e@canb.auug.org.au> <5134EAB7.1040004@infradead.org>
+In-Reply-To: <5134EAB7.1040004@infradead.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi All,
+On 03/04/2013 07:40 PM, Randy Dunlap wrote:
+> On 03/03/13 19:43, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> Changes since 20130301:
+>>
+> 
+> on x86_64:
+> 
+> warning: (AD7606 && AD799X_RING_BUFFER && MXS_LRADC && IIO_ADIS_LIB_BUFFER && INV_MPU6050_IIO && HID_SENSOR_ACCEL_3D && AD_SIGMA_DELTA && AD7266 && AD7298 && AD7476 && AD7887 && AT91_ADC && MAX1363 && HID_SENSOR_GYRO_3D && ADJD_S311 && HID_SENSOR_ALS && HID_SENSOR_MAGNETOMETER_3D) selects IIO_TRIGGERED_BUFFER which has unmet direct dependencies (IIO && IIO_BUFFER)
+> 
+> and then:
+> 
+> drivers/iio/industrialio-triggered-buffer.c:20:16: error: 'iio_sw_buffer_preenable' undeclared here (not in a function)
+> make[3]: *** [drivers/iio/industrialio-triggered-buffer.o] Error 1
+> 
 
-This short series applies the equivalent changes to the two new drivers
-to enter the IIO tree whilst the series in
+Hi,
 
-[PATCH 00/67 V2] IIO break info_mask into a pair of masks
-was under way.
+Thanks for the report. Guenter already fixed the problem last Friday, so the
+patch should hopefully show up in next soon.
 
-If there are no issues, I'll slot these in just before patch 67 of that
-series.
-
-As a quick summary for anyone just looking at these, I am proposing to
-split info_mask into info_mask_separate and info_mask_shared_by_type
-so as to simplify the handling, shorten the code and make more space
-for new elements.  With the benefit of hindsight info_mask should
-have been done like this in the first place.
-
-Jonathan
-
-Jonathan Cameron (2):
-  iio:adc:exynos move to info_mask_(shared_by_type/separate)
-  iio:adc:ad7923 move to info_mask_(shared_by_type/separate)
-
- drivers/iio/adc/ad7923.c     | 4 ++--
- drivers/iio/adc/exynos_adc.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
--- 
-1.8.1.4
+- Lars
