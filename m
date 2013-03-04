@@ -1,40 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-011.synserver.de ([212.40.185.11]:1097 "EHLO
-	smtp-out-226.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1760137Ab3CZSlO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2013 14:41:14 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from hqemgate03.nvidia.com ([216.228.121.140]:8547 "EHLO
+	hqemgate03.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756760Ab3CDQrN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 11:47:13 -0500
+Message-ID: <5134D00F.5090106@nvidia.com>
+Date: Mon, 4 Mar 2013 11:47:11 -0500
+From: Rhyland Klein <rklein@nvidia.com>
+MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/6] staging:iio:ad799x: Set IIO_CHAN_INFO_SCALE mask
-Date: Tue, 26 Mar 2013 19:43:03 +0100
-Message-Id: <1364323384-30863-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1364323384-30863-1-git-send-email-lars@metafoo.de>
-References: <1364323384-30863-1-git-send-email-lars@metafoo.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 58/67] staging:iio:light:isl29018 move to info_mask_(shared_by_type/separate)
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org> <1362241044-3534-59-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-59-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The driver has support for reporting a channels scale, but none of the channels
-set the IIO_CHAN_INFO_SCALE mask. Add the IIO_CHAN_INFO_SCALE to all channels to
-indicate that the drivers supports reporting the scale.
+On 3/2/2013 11:17 AM, Jonathan Cameron wrote:
+> The original info_mask is going away in favour of the broken out versions.
+>
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> cc: Rhyland Klein <rklein@nvidia.com>
+> ---
+>   drivers/staging/iio/light/isl29018.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index b0adac0..82478a5 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -412,17 +412,17 @@ static const struct iio_chan_spec isl29018_channels[] = {
+>   		.type = IIO_LIGHT,
+>   		.indexed = 1,
+>   		.channel = 0,
+> -		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT |
+> -		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +		BIT(IIO_CHAN_INFO_CALIBSCALE),
+>   	}, {
+>   		.type = IIO_INTENSITY,
+>   		.modified = 1,
+> -		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>   		.channel2 = IIO_MOD_LIGHT_IR,
+>   	}, {
+>   		/* Unindexed in current ABI.  But perhaps it should be. */
+>   		.type = IIO_PROXIMITY,
+> -		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>   	}
+>   };
+>   
+Ack-ed-by: Rhyland Klein <rklein@nvidia.com>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad799x_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 49972e1..b751055 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -465,6 +465,7 @@ static const struct iio_info ad7993_4_7_8_info = {
- 	.indexed = 1, \
- 	.channel = (_index), \
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
- 	.scan_index = (_index), \
- 	.scan_type = IIO_ST('u', _realbits, 16, 12 - (_realbits)), \
- 	.event_mask = (_evmask), \
 -- 
-1.8.0
+nvpublic
 
