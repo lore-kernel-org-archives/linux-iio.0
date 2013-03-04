@@ -1,56 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45836 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755845Ab3CEU76 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Mar 2013 15:59:58 -0500
-Message-ID: <51365CCB.9020105@kernel.org>
-Date: Tue, 05 Mar 2013 20:59:55 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:41940 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932236Ab3CDVXy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 16:23:54 -0500
+From: Marek Vasut <marex@denx.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 2/3] staging:iio:adc:mxs move to info_mask_(shared_by_type/separate)
+Date: Mon, 4 Mar 2013 22:23:50 +0100
+Cc: linux-iio@vger.kernel.org
+References: <1362431780-27682-1-git-send-email-jic23@kernel.org> <1362431780-27682-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362431780-27682-3-git-send-email-jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for 3.9 post merge window
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201303042223.50819.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 76426daf50d5df38893cc189e9ccd026093debc8:
+Dear Jonathan Cameron,
 
-  staging/zcache: Fix/improve zcache writeback code, tie to a config option (2013-02-11 14:58:56 -0800)
+> The original info_mask is going away in favour of the broken out versions.
+> 
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> cc: Marek Vasut <marex@denx.de>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> b/drivers/staging/iio/adc/mxs-lradc.c index f5fb0df..4ef3070 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -821,7 +821,7 @@ static const struct iio_buffer_setup_ops
+> mxs_lradc_buffer_ops = { .type = (chan_type),					
+\
+>  	.indexed = 1,						\
+>  	.scan_index = (idx),					\
+> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,		\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>  	.channel = (idx),					\
+>  	.scan_type = {						\
+>  		.sign = 'u',					\
 
-are available in the git repository at:
+Reviewed-by: Marek Vasut <marex@denx.de>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.9a
-
-for you to fetch changes up to 852afe99fc1c2d2b1376e49f128a3b929e811f2d:
-
-  iio:common:st_sensors fixed all warning messages about uninitialized variables (2013-03-05 18:14:13 +0000)
-
-----------------------------------------------------------------
-First round of iio fixes post the 3.9 merge window.
-
-1) Some little fixes for the ad5064 dac driver.
-2) A build warning 'fix' for a false positive in st_sensors
-3) A couple of missing dependencies on IIO_BUFFER.
-
-So nothing major and these mostly showed the advantages of the randconfig
-builds various people have performed.
-
-----------------------------------------------------------------
-Denis CIOCCA (1):
-      iio:common:st_sensors fixed all warning messages about uninitialized variables
-
-Guenter Roeck (2):
-      iio/imu: inv_mpu6050 depends on IIO_BUFFER
-      iio: Fix build error seen if IIO_TRIGGER is defined but IIO_BUFFER is not
-
-Lars-Peter Clausen (3):
-      iio:ad5064: Fix address of the second channel for ad5065/ad5045/ad5025
-      iio:ad5064: Fix off by one in DAC value range check
-      iio:ad5064: Initialize register cache correctly
-
- drivers/iio/common/st_sensors/st_sensors_core.c |  9 ++--
- drivers/iio/dac/ad5064.c                        | 64 +++++++++++++++----------
- drivers/iio/imu/inv_mpu6050/Kconfig             |  1 +
- include/linux/iio/common/st_sensors.h           |  9 ++--
- 4 files changed, 49 insertions(+), 34 deletions(-)
+Best regards,
+Marek Vasut
