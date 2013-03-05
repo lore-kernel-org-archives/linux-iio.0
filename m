@@ -1,36 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60104 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758775Ab3CDVEI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 16:04:08 -0500
-Message-ID: <51350C47.5020401@kernel.org>
-Date: Mon, 04 Mar 2013 21:04:07 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Wed, 6 Mar 2013 05:57:13 +0800
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 3.9 post merge window
+Message-ID: <20130305215713.GA18450@kroah.com>
+References: <51365CCB.9020105@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Voltage scale, milli or micro?
-References: <5134E53E.1090108@metafoo.de>
-In-Reply-To: <5134E53E.1090108@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51365CCB.9020105@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/04/2013 06:17 PM, Lars-Peter Clausen wrote:
-> Hi,
+On Tue, Mar 05, 2013 at 08:59:55PM +0000, Jonathan Cameron wrote:
+> The following changes since commit 76426daf50d5df38893cc189e9ccd026093debc8:
 > 
-> So according to our documentation the voltage channel scale is in
-> microvolts, but for some odd reason almost all drivers report the scale in
-> millivolts. In the IIO hwmon bridge we also have this comment "Assumes that
-> IIO and hwmon operate in the same base units. This is supposed to be true,
-> but needs verification for new channel types." and hwmon also uses
-> millivolts. So I'm wondering should we fix all our drivers to match the
-> specification or should we update the specification to match reality.
-> I would prefer the later.
+>   staging/zcache: Fix/improve zcache writeback code, tie to a config option (2013-02-11 14:58:56 -0800)
 > 
-Definitely go with updating the spec given nothing conforms to it anyway.
-Guess we'll have to check that though.
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.9a
 
-Jonathan
-> - Lars
-> 
+Pulled and pushed out, thanks.
+
+greg k-h
