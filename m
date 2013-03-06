@@ -1,52 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35728 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752188Ab3CBQRm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:42 -0500
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:33842 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751639Ab3CFEOW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Mar 2013 23:14:22 -0500
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Johan Hovold <jhovold@gmail.com>
-Subject: [PATCH 41/67] iio:light:lm3533 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:58 +0000
-Message-Id: <1362241044-3534-42-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, dan.carpenter@oracle.com
+Subject: [PATCH] iio: adc: exynos5_adc: fix compilation warnings
+Date: Wed, 06 Mar 2013 09:41:32 +0530
+Message-id: <1362543092-6446-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+From: Naveen Krishna Ch <ch.naveen@samsung.com>
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Johan Hovold <jhovold@gmail.com>
+Fixes the compilation warnings and potential NULL pointer
+dereferencing pointed out by "Dan Carpenter".
+
+Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
 ---
- drivers/iio/light/lm3533-als.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/adc/exynos_adc.c |   24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-index 7503012..5fa31a4 100644
---- a/drivers/iio/light/lm3533-als.c
-+++ b/drivers/iio/light/lm3533-als.c
-@@ -231,7 +231,7 @@ static int lm3533_als_read_raw(struct iio_dev *indio_dev,
- 		.channel	= _channel,				\
- 		.indexed	= true,					\
- 		.output		= true,					\
--		.info_mask	= IIO_CHAN_INFO_RAW_SEPARATE_BIT,	\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index ed6fdd7..67d07aa 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -92,7 +92,7 @@ struct exynos_adc {
+ 	struct completion	completion;
+ 
+ 	u32			value;
+-	unsigned int            version;
++	unsigned int		version;
+ };
+ 
+ static const struct of_device_id exynos_adc_match[] = {
+@@ -102,12 +102,15 @@ static const struct of_device_id exynos_adc_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, exynos_adc_match);
+ 
+-static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
++static inline int exynos_adc_get_version(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *match;
+ 
+ 	match = of_match_node(exynos_adc_match, pdev->dev.of_node);
+-	return (unsigned int)match->data;
++	if (!match)
++		return -ENODEV;
++
++	return (int)match->data;
+ }
+ 
+ static int exynos_read_raw(struct iio_dev *indio_dev,
+@@ -117,7 +120,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				long mask)
+ {
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+-	unsigned long timeout;
++	int timeout;
+ 	u32 con1, con2;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+@@ -255,7 +258,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = NULL;
+ 	struct resource	*mem;
+ 	int ret = -ENODEV;
+-	int irq;
++	int irq, version;
+ 
+ 	if (!np)
+ 		return ret;
+@@ -268,6 +271,15 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 
+ 	info = iio_priv(indio_dev);
+ 
++	version = exynos_adc_get_version(pdev);
++	if (version < 0) {
++		dev_err(&pdev->dev, "no matching of_node, err = %d\n", version);
++		ret = version;
++		goto err_iio;
++	}
++
++	info->version = version;
++
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 
+ 	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+@@ -311,8 +323,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 		goto err_irq;
  	}
  
- static const struct iio_chan_spec lm3533_als_channels[] = {
-@@ -239,8 +239,8 @@ static const struct iio_chan_spec lm3533_als_channels[] = {
- 		.type		= IIO_LIGHT,
- 		.channel	= 0,
- 		.indexed	= true,
--		.info_mask	= (IIO_CHAN_INFO_AVERAGE_RAW_SEPARATE_BIT |
--				   IIO_CHAN_INFO_RAW_SEPARATE_BIT),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_AVERAGE_RAW) |
-+				   BIT(IIO_CHAN_INFO_RAW),
- 	},
- 	CHANNEL_CURRENT(0),
- 	CHANNEL_CURRENT(1),
+-	info->version = exynos_adc_get_version(pdev);
+-
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	indio_dev->name = dev_name(&pdev->dev);
 -- 
-1.8.1.4
+1.7.9.5
 
