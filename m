@@ -1,85 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36709 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751486Ab3CBQco (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:32:44 -0500
-Message-ID: <513229AB.90700@kernel.org>
-Date: Sat, 02 Mar 2013 16:32:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: Guenter Roeck <linux@roeck-us.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] iio: Fix build error seen if IIO_TRIGGER is defined but
- IIO_BUFFER is not
-References: <1362153448-16259-1-git-send-email-linux@roeck-us.net> <5130D43E.4010800@st.com>
-In-Reply-To: <5130D43E.4010800@st.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from smtp-out-243.synserver.de ([212.40.185.243]:1035 "EHLO
+	smtp-out-240.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932694Ab3CGTv2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Mar 2013 14:51:28 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: events: Make iio_push_event() IRQ context save
+Date: Thu,  7 Mar 2013 20:53:06 +0100
+Message-Id: <1362685986-18966-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/01/2013 04:15 PM, Denis CIOCCA wrote:
-> Ok Thanks.
-> 
-> Acked-by: Denis Ciocca <denis.ciocca@st.com>
-Applied to fixes-togreg branch of iio.git
+Currently it is not save to call iio_push_event() from hard IRQ context since
+the IIO event code uses spin_lock()/spin_unlock() and it is not save to mix
+calls to spin_lock()/spin_unlock() from different contexts on the same lock.
+E.g. if the lock is being held in iio_event_chrdev_read() and an interrupts
+kicks in and the interrupt handler calls iio_push_event() we end uo with a
+deadlock.
 
-Thanks,
-> 
-> 
-> Denis
-> 
-> 
-> On 03/01/2013 04:57 PM, Guenter Roeck wrote:
->> If CONFIG_IIO_TRIGGER is defined but CONFIG_IIO_BUFFER is not, the following
->> build error is seen.
->>
->> drivers/iio/common/st_sensors/st_sensors_trigger.c:21:5: error:
->> redefinition of ‘st_sensors_allocate_trigger’
->> In file included from
->> drivers/iio/common/st_sensors/st_sensors_trigger.c:18:0:
->> include/linux/iio/common/st_sensors.h:239:19: note: previous
->> definition of ‘st_sensors_allocate_trigger’ was here
->> drivers/iio/common/st_sensors/st_sensors_trigger.c:65:6: error:
->> redefinition of ‘st_sensors_deallocate_trigger’
->> In file included from
->> drivers/iio/common/st_sensors/st_sensors_trigger.c:18:0:
->> include/linux/iio/common/st_sensors.h:244:20: note: previous
->> definition of ‘st_sensors_deallocate_trigger’ was here
->>
->> This occurs because st_sensors_deallocate_trigger is built if CONFIG_IIO_TRIGGER
->> is defined, but the dummy function is compiled if CONFIG_IIO_BUFFER is defined.
->>
->> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->> ---
->>   include/linux/iio/common/st_sensors.h |    9 ++++++---
->>   1 file changed, 6 insertions(+), 3 deletions(-)
->>
->> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
->> index 1f86a97..8bd12be 100644
->> --- a/include/linux/iio/common/st_sensors.h
->> +++ b/include/linux/iio/common/st_sensors.h
->> @@ -227,14 +227,17 @@ struct st_sensor_data {
->>   };
->>
->>   #ifdef CONFIG_IIO_BUFFER
->> +irqreturn_t st_sensors_trigger_handler(int irq, void *p);
->> +
->> +int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
->> +#endif
->> +
->> +#ifdef CONFIG_IIO_TRIGGER
->>   int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
->>   				const struct iio_trigger_ops *trigger_ops);
->>
->>   void st_sensors_deallocate_trigger(struct iio_dev *indio_dev);
->>
->> -irqreturn_t st_sensors_trigger_handler(int irq, void *p);
->> -
->> -int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf);
->>   #else
->>   static inline int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
->>   				const struct iio_trigger_ops *trigger_ops)
->>
-> 
+This patch updates iio_push_event() to use spin_lock_irqsave()/
+spin_unlock_irqstrestore(), since it can be called from both IRQ and non-IRQ
+context. All other other users of the lock, which are always run in non-IRQ
+context, are updated to spin_lock_irq()/spin_unlock_irq().
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+
+---
+As far as I can see all current callers of iio_push_event() run in non-IRQ
+context, so this doesn't need to applied to the fixes branch.
+---
+ drivers/iio/industrialio-event.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 261cae0..10aa9ef8 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -46,10 +46,11 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ {
+ 	struct iio_event_interface *ev_int = indio_dev->event_interface;
+ 	struct iio_event_data ev;
++	unsigned long flags;
+ 	int copied;
+ 
+ 	/* Does anyone care? */
+-	spin_lock(&ev_int->wait.lock);
++	spin_lock_irqsave(&ev_int->wait.lock, flags);
+ 	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+ 
+ 		ev.id = ev_code;
+@@ -59,7 +60,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+ 		if (copied != 0)
+ 			wake_up_locked_poll(&ev_int->wait, POLLIN);
+ 	}
+-	spin_unlock(&ev_int->wait.lock);
++	spin_unlock_irqrestore(&ev_int->wait.lock, flags);
+ 
+ 	return 0;
+ }
+@@ -76,10 +77,10 @@ static unsigned int iio_event_poll(struct file *filep,
+ 
+ 	poll_wait(filep, &ev_int->wait, wait);
+ 
+-	spin_lock(&ev_int->wait.lock);
++	spin_lock_irq(&ev_int->wait.lock);
+ 	if (!kfifo_is_empty(&ev_int->det_events))
+ 		events = POLLIN | POLLRDNORM;
+-	spin_unlock(&ev_int->wait.lock);
++	spin_unlock_irq(&ev_int->wait.lock);
+ 
+ 	return events;
+ }
+@@ -96,14 +97,14 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+ 	if (count < sizeof(struct iio_event_data))
+ 		return -EINVAL;
+ 
+-	spin_lock(&ev_int->wait.lock);
++	spin_lock_irq(&ev_int->wait.lock);
+ 	if (kfifo_is_empty(&ev_int->det_events)) {
+ 		if (filep->f_flags & O_NONBLOCK) {
+ 			ret = -EAGAIN;
+ 			goto error_unlock;
+ 		}
+ 		/* Blocking on device; waiting for something to be there */
+-		ret = wait_event_interruptible_locked(ev_int->wait,
++		ret = wait_event_interruptible_locked_irq(ev_int->wait,
+ 					!kfifo_is_empty(&ev_int->det_events));
+ 		if (ret)
+ 			goto error_unlock;
+@@ -113,7 +114,7 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+ 	ret = kfifo_to_user(&ev_int->det_events, buf, count, &copied);
+ 
+ error_unlock:
+-	spin_unlock(&ev_int->wait.lock);
++	spin_unlock_irq(&ev_int->wait.lock);
+ 
+ 	return ret ? ret : copied;
+ }
+@@ -122,7 +123,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ {
+ 	struct iio_event_interface *ev_int = filep->private_data;
+ 
+-	spin_lock(&ev_int->wait.lock);
++	spin_lock_irq(&ev_int->wait.lock);
+ 	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+ 	/*
+ 	 * In order to maintain a clean state for reopening,
+@@ -130,7 +131,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+ 	 * any new __iio_push_event calls running.
+ 	 */
+ 	kfifo_reset_out(&ev_int->det_events);
+-	spin_unlock(&ev_int->wait.lock);
++	spin_unlock_irq(&ev_int->wait.lock);
+ 
+ 	return 0;
+ }
+@@ -151,18 +152,18 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+ 	if (ev_int == NULL)
+ 		return -ENODEV;
+ 
+-	spin_lock(&ev_int->wait.lock);
++	spin_lock_irq(&ev_int->wait.lock);
+ 	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+-		spin_unlock(&ev_int->wait.lock);
++		spin_unlock_irq(&ev_int->wait.lock);
+ 		return -EBUSY;
+ 	}
+-	spin_unlock(&ev_int->wait.lock);
++	spin_unlock_irq(&ev_int->wait.lock);
+ 	fd = anon_inode_getfd("iio:event",
+ 				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
+ 	if (fd < 0) {
+-		spin_lock(&ev_int->wait.lock);
++		spin_lock_irq(&ev_int->wait.lock);
+ 		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+-		spin_unlock(&ev_int->wait.lock);
++		spin_unlock_irq(&ev_int->wait.lock);
+ 	}
+ 	return fd;
+ }
+-- 
+1.8.0
+
