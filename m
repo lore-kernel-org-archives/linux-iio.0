@@ -1,182 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:52432 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755011Ab3C2OyX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 10:54:23 -0400
-From: <ludovic.desroches@atmel.com>
-To: <linux-iio@vger.kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <plagnioj@jcrosoft.com>,
-	<nicolas.ferre@atmel.com>, <maxime.ripard@free-electrons.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH 1/3] iio: at91_adc: add low and high res support
-Date: Fri, 29 Mar 2013 15:54:11 +0100
-Message-ID: <1364568853-18561-2-git-send-email-ludovic.desroches@atmel.com>
-In-Reply-To: <1364568853-18561-1-git-send-email-ludovic.desroches@atmel.com>
-References: <1364568853-18561-1-git-send-email-ludovic.desroches@atmel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mailout4.samsung.com ([203.254.224.34]:10466 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752713Ab3CGDLS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2013 22:11:18 -0500
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de
+Subject: [PATCH v2] iio: adc: exynos5_adc: fix compilation warnings
+Date: Thu, 07 Mar 2013 08:39:03 +0530
+Message-id: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
+Fixes the compilation warnings and potential NULL pointer
+dereferencing pointed out by "Dan Carpenter".
 
-at91 adc offers the choice between two resolutions: low and high.
-The low and high resolution values depends on adc IP version, as many IP
-properties have been exposed through device tree, these settings have also
-been added to the dt bindings.
-
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Series-to: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- .../devicetree/bindings/arm/atmel-adc.txt          | 11 ++++
- drivers/iio/adc/at91_adc.c                         | 74 ++++++++++++++++++++--
- 2 files changed, 81 insertions(+), 4 deletions(-)
+Changes since v1:
+	Made the exynos_adc driver depends on CONFIG_OF.
 
-diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-index c63097d..fd2d69e 100644
---- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-@@ -14,9 +14,17 @@ Required properties:
-   - atmel,adc-status-register: Offset of the Interrupt Status Register
-   - atmel,adc-trigger-register: Offset of the Trigger Register
-   - atmel,adc-vref: Reference voltage in millivolts for the conversions
-+  - atmel,adc-res: List of resolution in bits supported by the ADC. List size
-+		   must be two at least.
-+  - atmel,adc-res-names: Contains one identifier string for each resolution
-+			 in atmel,adc-res property. "lowres" and "highres"
-+			 identifiers are required.
+ drivers/iio/adc/Kconfig      |    1 +
+ drivers/iio/adc/exynos_adc.c |   21 ++++++++++++++-------
+ 2 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a40d3c2..9c45c0f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -105,6 +105,7 @@ config AT91_ADC
  
- Optional properties:
-   - atmel,adc-use-external: Boolean to enable of external triggers
-+  - atmel,adc-use-res: String corresponding to an identifier from
-+		       atmel,adc-res-names property. If not specified, the highest
-+		       resolution will be used.
-  
- Optional trigger Nodes:
-   - Required properties:
-@@ -40,6 +48,9 @@ adc0: adc@fffb0000 {
- 	atmel,adc-trigger-register = <0x08>;
- 	atmel,adc-use-external;
- 	atmel,adc-vref = <3300>;
-+	atmel,adc-res = <8 10>;
-+	atmel,adc-res-names = "lowres", "highres";
-+	atmel,adc-use-res = "lowres";
+ config EXYNOS_ADC
+ 	bool "Exynos ADC driver support"
++	depends on OF
+ 	help
+ 	  Core support for the ADC block found in the Samsung EXYNOS series
+ 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index ed6fdd7..4fd5e3a 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -92,7 +92,7 @@ struct exynos_adc {
+ 	struct completion	completion;
  
- 	trigger@0 {
- 		trigger-name = "external-rising";
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 83c836b..a7ad3e7 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -57,6 +57,8 @@ struct at91_adc_state {
- 	u32			trigger_number;
- 	bool			use_external;
- 	u32			vref_mv;
-+	u32			res;		/* resolution used for convertions */
-+	bool			low_res;	/* the resolution corresponds to the lowest one */
- 	wait_queue_head_t	wq_data_avail;
+ 	u32			value;
+-	unsigned int            version;
++	unsigned int		version;
  };
  
-@@ -138,7 +140,7 @@ static int at91_adc_channel_init(struct iio_dev *idev)
- 		chan->channel = bit;
- 		chan->scan_index = idx;
- 		chan->scan_type.sign = 'u';
--		chan->scan_type.realbits = 10;
-+		chan->scan_type.realbits = st->res;
- 		chan->scan_type.storagebits = 16;
- 		chan->info_mask = IIO_CHAN_INFO_SCALE_SHARED_BIT |
- 			IIO_CHAN_INFO_RAW_SEPARATE_BIT;
-@@ -372,6 +374,59 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 	return -EINVAL;
+ static const struct of_device_id exynos_adc_match[] = {
+@@ -102,12 +102,12 @@ static const struct of_device_id exynos_adc_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, exynos_adc_match);
+ 
+-static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
++static inline int exynos_adc_get_version(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *match;
+ 
+ 	match = of_match_node(exynos_adc_match, pdev->dev.of_node);
+-	return (unsigned int)match->data;
++	return (int)match->data;
  }
  
-+static int at91_adc_of_get_resolution(struct at91_adc_state *st,
-+				      struct platform_device *pdev)
-+{
-+	struct iio_dev *idev = iio_priv_to_dev(st);
-+	struct device_node *np = pdev->dev.of_node;
-+	int count, i, ret = 0;
-+	char *res_name, *s;
-+	u32 *resolutions;
-+
-+	count = of_property_count_strings(np, "atmel,adc-res-names");
-+	if (count < 2) {
-+		dev_err(&idev->dev, "You must specified at least two resolution names for "
-+				    "adc-res-names property in the DT\n");
-+		return count;
-+	}
-+
-+	resolutions = kmalloc(count * sizeof(*resolutions), GFP_KERNEL);
-+	if (!resolutions)
-+		return -ENOMEM;
-+
-+	if (of_property_read_u32_array(np, "atmel,adc-res", resolutions, count)) {
-+		dev_err(&idev->dev, "Missing adc-res property in the DT.\n");
-+		ret = -ENODEV;
-+		goto ret;
-+	}
-+
-+	if (of_property_read_string(np, "atmel,adc-use-res", (const char **)&res_name))
-+		res_name = "highres";
-+
-+	for (i = 0; i < count; i++) {
-+		if (of_property_read_string_index(np, "atmel,adc-res-names", i, (const char **)&s))
-+			continue;
-+
-+		if (strcmp(res_name, s))
-+			continue;
-+
-+		st->res = resolutions[i];
-+		if (!strcmp(res_name, "lowres"))
-+			st->low_res = true;
-+		else
-+			st->low_res = false;
-+
-+		dev_info(&idev->dev, "Resolution used: %u bits\n", st->res);
-+		goto ret;
-+	}
-+
-+	dev_err(&idev->dev, "There is no resolution for %s\n", res_name);
-+
-+ret:
-+	kfree(resolutions);
-+	return ret;
-+}
-+
- static int at91_adc_probe_dt(struct at91_adc_state *st,
- 			     struct platform_device *pdev)
+ static int exynos_read_raw(struct iio_dev *indio_dev,
+@@ -117,7 +117,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				long mask)
  {
-@@ -415,6 +470,10 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+-	unsigned long timeout;
++	int timeout;
+ 	u32 con1, con2;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+@@ -255,7 +255,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = NULL;
+ 	struct resource	*mem;
+ 	int ret = -ENODEV;
+-	int irq;
++	int irq, version;
+ 
+ 	if (!np)
+ 		return ret;
+@@ -268,6 +268,15 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 
+ 	info = iio_priv(indio_dev);
+ 
++	version = exynos_adc_get_version(pdev);
++	if (version < 0) {
++		dev_err(&pdev->dev, "no matching of_node, err = %d\n", version);
++		ret = version;
++		goto err_iio;
++	}
++
++	info->version = version;
++
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 
+ 	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+@@ -311,8 +320,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 		goto err_irq;
  	}
- 	st->vref_mv = prop;
  
-+	ret = at91_adc_of_get_resolution(st, pdev);
-+	if (ret)
-+		goto error_ret;
-+
- 	st->registers = devm_kzalloc(&idev->dev,
- 				     sizeof(struct at91_adc_reg_desc),
- 				     GFP_KERNEL);
-@@ -628,9 +687,16 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	 */
- 	ticks = round_up((st->startup_time * adc_clk /
- 			  1000000) - 1, 8) / 8;
--	at91_adc_writel(st, AT91_ADC_MR,
--			(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
--			(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
-+
-+	if (st->low_res)
-+		at91_adc_writel(st, AT91_ADC_MR,
-+				AT91_ADC_LOWRES |
-+				(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
-+				(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
-+	else
-+		at91_adc_writel(st, AT91_ADC_MR,
-+				(AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL) |
-+				(AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP));
+-	info->version = exynos_adc_get_version(pdev);
+-
+ 	platform_set_drvdata(pdev, indio_dev);
  
- 	/* Setup the ADC channels available on the board */
- 	ret = at91_adc_channel_init(idev);
+ 	indio_dev->name = dev_name(&pdev->dev);
 -- 
-1.7.11.3
+1.7.9.5
 
