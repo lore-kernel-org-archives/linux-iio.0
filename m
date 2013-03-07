@@ -1,63 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-da0-f54.google.com ([209.85.210.54]:46304 "EHLO
-	mail-da0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751212Ab3C0Alp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2013 20:41:45 -0400
-Received: by mail-da0-f54.google.com with SMTP id p1so3860149dad.41
-        for <linux-iio@vger.kernel.org>; Tue, 26 Mar 2013 17:41:45 -0700 (PDT)
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: [PATCH 13/67] iio:adc:lp8778_adc move to
+ info_mask_(shared_by_type/separate)
+Date: Thu, 7 Mar 2013 00:49:03 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E4585D@DQHE02.ent.ti.com>
+References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+ <1362241044-3534-14-git-send-email-jic23@kernel.org>
+In-Reply-To: <1362241044-3534-14-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <CABMQnVLnj3CphEuAo_JVesNkT3VNZkhKy_J1URhooxw5zs0Otg@mail.gmail.com>
-References: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org>
- <CAHfPSqCyn=Q_zH11=pRjP3rY69xbHDnRSwBmiA4fGmz62hV-Vg@mail.gmail.com> <CABMQnVLnj3CphEuAo_JVesNkT3VNZkhKy_J1URhooxw5zs0Otg@mail.gmail.com>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Tue, 26 Mar 2013 17:41:25 -0700
-Message-ID: <CAHfPSqD9K85rypFEYhQoC61F3dUOfGtu_kTfvrVFCww7cgrMQA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: exynos-adc: Fix typo in DT documentation
-To: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Cc: Sachin Kamat <sachin.kamat@linaro.org>, patches@linaro.org,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	rob.herring@calxeda.com, jic23@kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 26 March 2013 17:19, Nobuhiro Iwamatsu <iwamatsu@nigauri.org> wrote:
-> On Wed, Mar 27, 2013 at 8:55 AM, Naveen Krishna Ch
-> <naveenkrishna.ch@gmail.com> wrote:
->> On 26 March 2013 04:52, Sachin Kamat <sachin.kamat@linaro.org> wrote:
->>> Fixes some typos in the documentation of exynos-adc.txt.
->>>
->>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->>> ---
->>>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    4 ++--
->>>  1 files changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>> index 05e9d95..1fc744b 100644
->>> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>> @@ -1,6 +1,6 @@
->>>  Samsung Exynos Analog to Digital Converter bindings
->>>
->>> -This devicetree binding are for the new adc driver written fori
->>> +The devicetree bindings are for the new ADC driver written for
->> Thanks for the correction
->>>  Exynos4 and upward SoCs from Samsung.
->>>
->>>  New driver handles the following
->>> @@ -49,4 +49,4 @@ adc@12D10000 {
->>>  };
->>>
->>>  Note: Does not apply to ADC driver under arch/arm/plat-samsung/
->>> -Note: The child node can be added under the adc node or seperately.
->>> +Note: The child node can be added under the adc node or separately.
->> Sorry, but i cant see whats the difference here.
->
-> This changed from sep*e*rately to sep*a*rately.
-ohh missed it again, thanks
+Hi Jonathan,
 
+Can I get the git tree location for the IIO subsystem if available?
+It looks this patch-set has not been merged yet in the staging-next.
 
+Best Regards,
+Milo
 
---
-Shine bright,
-(: Nav :)
+> -----Original Message-----
+> From: Jonathan Cameron [mailto:jic23@kernel.org]
+> Sent: Sunday, March 03, 2013 1:17 AM
+> To: linux-iio@vger.kernel.org
+> Cc: Jonathan Cameron; Kim, Milo
+> Subject: [PATCH 13/67] iio:adc:lp8778_adc move to
+> info_mask_(shared_by_type/separate)
+>=20
+> The original info_mask is going away in favour of the broken out
+> versions.
+>=20
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> cc: Milo(Woogyom) Kim <milo.kim@ti.com>
+> ---
+>  drivers/iio/adc/lp8788_adc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/lp8788_adc.c
+> b/drivers/iio/adc/lp8788_adc.c
+> index 763f575..62bc39e 100644
+> --- a/drivers/iio/adc/lp8788_adc.c
+> +++ b/drivers/iio/adc/lp8788_adc.c
+> @@ -132,8 +132,8 @@ static const struct iio_info lp8788_adc_info =3D {
+>  		.type =3D _type,					\
+>  		.indexed =3D 1,					\
+>  		.channel =3D LPADC_##_id,				\
+> -		.info_mask =3D IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+> -			IIO_CHAN_INFO_SCALE_SEPARATE_BIT,	\
+> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |	\
+> +			BIT(IIO_CHAN_INFO_SCALE),		\
+>  		.datasheet_name =3D #_id,				\
+>  }
+>=20
+> --
+> 1.8.1.4
