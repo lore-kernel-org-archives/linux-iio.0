@@ -1,47 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58472 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758430Ab3CDSJY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Mar 2013 13:09:24 -0500
-Message-ID: <5134E351.9060704@kernel.org>
-Date: Mon, 04 Mar 2013 18:09:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/67 V2] IIO break info_mask into a pair of masks
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org> <513464DE.8040709@metafoo.de> <51346625.9050604@jic23.retrosnub.co.uk>
-In-Reply-To: <51346625.9050604@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-gg0-f202.google.com ([209.85.161.202]:43501 "EHLO
+	mail-gg0-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933392Ab3CLXTL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2013 19:19:11 -0400
+Received: by mail-gg0-f202.google.com with SMTP id l4so49444ggi.3
+        for <linux-iio@vger.kernel.org>; Tue, 12 Mar 2013 16:19:10 -0700 (PDT)
+From: Doug Anderson <dianders@chromium.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Olof Johansson <olof@lixom.net>,
+	Doug Anderson <dianders@chromium.org>,
+	Russell King <linux@arm.linux.org.uk>,
+	Rob Landley <rob@landley.net>,
+	Rahul Sharma <rahul.sharma@samsung.com>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	linux-iio@vger.kernel.org,
+	Mark Brown <broonie@opensource.wolfsonmicro.com>,
+	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Thomas Abraham <thomas.abraham@linaro.org>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	Jingoo Han <jg1.han@samsung.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Padmavathi Venna <padma.v@samsung.com>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: [PATCH 0/4] Get exynos adc driver running on on exynos5250-snow
+Date: Tue, 12 Mar 2013 16:13:10 -0700
+Message-Id: <1363129994-10438-1-git-send-email-dianders@chromium.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/04/2013 09:15 AM, Jonathan Cameron wrote:
-> On 04/03/13 09:09, Lars-Peter Clausen wrote:
->> On 03/02/2013 05:16 PM, Jonathan Cameron wrote:
->>> As Lars-Peter noticed, I was being an idiot and the original set would
->>> never have worked.  Actually it turned out that they would have also
->>> gotten the handling of shared and separate the wrong way around and there
->>> were a few other minor issues elsewhere.
->>>
->>> Now a lot of people were kind enough to take a look at the original patches
->>> and provide Acks on the mistaken assumption that the basic principle worked.
->>> (given the cc list would have been huge many people probably never saw
->>> anything other than the individual driver patches which in of themselves
->>> appeared sane).
->>> If people do not reply this time around I'll assume their acks are good
->>> for this set and apply them.  (Of course if anyone want so re ack the
->>> corrected patches that is great as well!).  Any tested-by's would also
->>> be great as right now I've only actually tested with one driver.
->>>
->>> Well that was an 'interesting' way to start off this cycle :(
->>
->> Hi Jonathan,
->>
->> Looks good on a first glimpse. Can you push this to a branch on your repo?
->> Makes testing things easier.
-> Away from my dev machine until this evening.  Will do so then.
-When it gets through from the backend these (and the extra couple in the other
-series) will be available in a branch of iio.git called info_mask_split
+This set of patches is based on Naveen Krishna Chatradhi's recent work
+(some of which is still in-flight) and does the final touches to get
+things working on exynos5250-snow (the ARM Chromebook).
 
-Jonathan
+These patches were tested on next-20130312 (which includes support for
+the common clock framework on exynos) plus the current linux-iio/togreg:
+  95783f2 iio: adc: add exynos adc driver under iio framwork
+  298489f iio:common: Use spi_sync_transfer() in STMicroelectronics ...
+  1d9a4cb IIO ADC support for AD7923
+  9a282b0 iio: Add OF support
+  3d277fc3 staging:iio: Remove adt7410 driver
+
+...plus Naveen's recent ADC cleanup and NTC thermistor patch.
+
+Doug Anderson (4):
+  iio: adc: Document the regulator/clocks for exynos-adc
+  iio: adc: Add dt support for turning on the phy in exynos-adc
+  ARM: dts: Add adc to exynos5250 device tree file
+  ARM: dts: Add adc and thermistors for exynos5250-snow
+
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt | 12 +++++++--
+ arch/arm/boot/dts/cros5250-common.dtsi             |  4 +++
+ arch/arm/boot/dts/exynos5250-snow.dts              | 31 ++++++++++++++++++++++
+ arch/arm/boot/dts/exynos5250.dtsi                  | 11 ++++++++
+ drivers/iio/adc/exynos_adc.c                       | 14 +++++++++-
+ 5 files changed, 69 insertions(+), 3 deletions(-)
+
+-- 
+1.8.1.3
+
