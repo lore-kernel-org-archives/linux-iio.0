@@ -1,138 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35724 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752558Ab3CBQRp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:45 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 54/67] staging:iio:cdc:ad7746 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:17:11 +0000
-Message-Id: <1362241044-3534-55-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Received: from smtp-out-064.synserver.de ([212.40.185.64]:1075 "EHLO
+	smtp-out-064.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933177Ab3CMSia (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2013 14:38:30 -0400
+Message-ID: <5140C816.3090008@metafoo.de>
+Date: Wed, 13 Mar 2013 19:40:22 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Doug Anderson <dianders@chromium.org>
+CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio <linux-iio@vger.kernel.org>, dan.carpenter@oracle.com,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>
+Subject: Re: [PATCH v3] iio: adc: exynos5_adc: fix compilation warnings
+References: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com> <1363150138-20819-1-git-send-email-ch.naveen@samsung.com> <CAD=FV=XoE6NCruDUv2UajaP+LWDCp+pgaZJsEKpkoxy3tZNeAw@mail.gmail.com> <5140C155.2070507@metafoo.de> <CAD=FV=XZMDrhQm+tZKL1RW35ZiT-JuDpmdGUXB9A6e9fG+54Fw@mail.gmail.com> <5140C6EE.9080802@metafoo.de>
+In-Reply-To: <5140C6EE.9080802@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+On 03/13/2013 07:35 PM, Lars-Peter Clausen wrote:
+> On 03/13/2013 07:23 PM, Doug Anderson wrote:
+>> Lars,
+>>
+>> On Wed, Mar 13, 2013 at 11:11 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> Agreed. Adding the dependency on OF in Kconfig should be all that is needed.
+>>
+>> I think changing the timeout from 'unsigned long' to 'long' is also
+>> legit (to match the actual type returned) and a good idea.
+>>
+>> -Doug
+> 
+> Yes, but that's a different issue and to be honest I didn't even realize
+> that the patch was trying to fix this as well. In my opinion it's best to
+> split this up into two patches one which fixes the OF dependency. The other
+> fixing the timeout issue. Cause there is more to it than just changing the type.
+> 
+> wait_for_completion_interruptible_timeout() may return
+> 	1) 0, if there was a timeout, waiting for the completion
+> 	2) > 0, if the completion was completeted, the returned value
+> 	   the  remaining time.
+> 	3) < 0, If it was interrupt while waiting for the completion
+> 
+> The code currently only handles 1) and 2), but it also needs to handle 3).
+> Since the completion has not been completed in case 3.
+> 
+> E.g. something like this should work:
+> 
+> 	if (timeout == 0)
+> 		return -ETIMEDOUT;
+> 	else if(timeout < 0)
+> 		return timeout;
+> 	return 0;
+> 
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Michael Hennerich <michael.hennerich@analog.com>
-cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/cdc/ad7746.c | 48 ++++++++++++++++++----------------------
- 1 file changed, 22 insertions(+), 26 deletions(-)
+I just saw, there is another issue related to this. The driver should call
+INIT_COMPLETION(&info->completion) before starting the conversion. Otherwise
+there may be a problem if we got interrupted while waiting for the
+interrupt. E.g. imagine the following sequence.
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 466b82e..94f9ca7 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -123,8 +123,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_EXT_VIN,
- 	},
-@@ -133,8 +133,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.indexed = 1,
- 		.channel = 1,
- 		.extend_name = "supply",
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_VDD_MON,
- 	},
-@@ -142,7 +142,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_INT_TEMP,
- 	},
-@@ -150,7 +150,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 1,
--		.info_mask = IIO_CHAN_INFO_PROCESSED_SEPARATE_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_EXT_TEMP,
- 	},
-@@ -158,11 +158,10 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_CAPACITANCE,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_CAP_DATA_HIGH << 8,
- 	},
- 	[CIN1_DIFF] = {
-@@ -171,11 +170,10 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.indexed = 1,
- 		.channel = 0,
- 		.channel2 = 2,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
- 			AD7746_CAPSETUP_CAPDIFF
- 	},
-@@ -183,11 +181,10 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_CAPACITANCE,
- 		.indexed = 1,
- 		.channel = 1,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
- 			AD7746_CAPSETUP_CIN2,
- 	},
-@@ -197,11 +194,10 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.indexed = 1,
- 		.channel = 1,
- 		.channel2 = 3,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |
--		IIO_CHAN_INFO_CALIBBIAS_SHARED_BIT |
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD7746_REG_CAP_DATA_HIGH << 8 |
- 			AD7746_CAPSETUP_CAPDIFF | AD7746_CAPSETUP_CIN2,
- 	}
--- 
-1.8.1.4
+1) Start conversion
+2) Wait for completion
+3) Abort waiting
+4) Interrupt kicks in and marks the completion as done
 
+Now if another conversion is started the completion will already be
+completed and wait_for_completion_interruptible_timeout() will return right
+away without waiting for the conversion to be finished.
+
+- Lars
