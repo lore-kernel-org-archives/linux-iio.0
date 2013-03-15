@@ -1,57 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f54.google.com ([209.85.160.54]:49160 "EHLO
-	mail-pb0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753448Ab3CEXoZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Mar 2013 18:44:25 -0500
-Received: by mail-pb0-f54.google.com with SMTP id rr4so5151735pbb.13
-        for <linux-iio@vger.kernel.org>; Tue, 05 Mar 2013 15:44:24 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1362341033-9506-2-git-send-email-jic23@kernel.org>
-References: <1362341033-9506-1-git-send-email-jic23@kernel.org> <1362341033-9506-2-git-send-email-jic23@kernel.org>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Wed, 6 Mar 2013 08:44:04 +0900
-Message-ID: <CAHfPSqC95ahh6O9Fk0N06gw9tQxGPKsU943KNYTXCM+vP465Eg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio:adc:exynos move to info_mask_(shared_by_type/separate)
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mailout3.samsung.com ([203.254.224.33]:12845 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750903Ab3COQ0C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Mar 2013 12:26:02 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de
+Subject: [PATCH 1/2] iio: adc: Kconfig: exynos_adc depends on CONFIG_OF
+Date: Fri, 15 Mar 2013 21:53:40 +0530
+Message-id: <1363364620-23597-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 4 March 2013 05:03, Jonathan Cameron <jic23@kernel.org> wrote:
-> The original info_mask is going away in favour of the broken out versions.
->
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Thanks, Jonathan.
-> ---
->  drivers/iio/adc/exynos_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index ed6fdd7..6e968ae 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -198,7 +198,7 @@ static const struct iio_info exynos_adc_iio_info = {
->         .indexed = 1,                                   \
->         .channel = _index,                              \
->         .address = _index,                              \
-> -       .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,    \
-> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
->         .datasheet_name = _id,                          \
->  }
->
-> --
-> 1.8.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+As the exynos_adc driver only supports device tree registration.
+Making driver depend on CONFIG_OF solves possible errors during probe.
 
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Doug Anderson <dianders@chromium.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+Discussion thread for this patch can be found at
+http://www.gossamer-threads.com/lists/linux/kernel/1693284?page=last
 
+ drivers/iio/adc/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---
-Shine bright,
-(: Nav :)
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a40d3c2..9c45c0f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -105,6 +105,7 @@ config AT91_ADC
+ 
+ config EXYNOS_ADC
+ 	bool "Exynos ADC driver support"
++	depends on OF
+ 	help
+ 	  Core support for the ADC block found in the Samsung EXYNOS series
+ 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+-- 
+1.7.9.5
+
