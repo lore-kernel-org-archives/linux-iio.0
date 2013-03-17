@@ -1,45 +1,151 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:12845 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750903Ab3COQ0C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Mar 2013 12:26:02 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de
-Subject: [PATCH 1/2] iio: adc: Kconfig: exynos_adc depends on CONFIG_OF
-Date: Fri, 15 Mar 2013 21:53:40 +0530
-Message-id: <1363364620-23597-1-git-send-email-ch.naveen@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49141 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932570Ab3CQWmY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2013 18:42:24 -0400
+Message-ID: <51461DDE.9020708@kernel.org>
+Date: Sun, 17 Mar 2013 19:47:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: events: Make iio_push_event() IRQ context save
+References: <1362685986-18966-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1362685986-18966-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-As the exynos_adc driver only supports device tree registration.
-Making driver depend on CONFIG_OF solves possible errors during probe.
+On 03/07/2013 07:53 PM, Lars-Peter Clausen wrote:
+> Currently it is not save to call iio_push_event() from hard IRQ context since
+> the IIO event code uses spin_lock()/spin_unlock() and it is not save to mix
+> calls to spin_lock()/spin_unlock() from different contexts on the same lock.
+> E.g. if the lock is being held in iio_event_chrdev_read() and an interrupts
+> kicks in and the interrupt handler calls iio_push_event() we end uo with a
+> deadlock.
+> 
+> This patch updates iio_push_event() to use spin_lock_irqsave()/
+> spin_unlock_irqstrestore(), since it can be called from both IRQ and non-IRQ
+> context. All other other users of the lock, which are always run in non-IRQ
+> context, are updated to spin_lock_irq()/spin_unlock_irq().
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+I'm assuming a driver using this is coming right up?
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Doug Anderson <dianders@chromium.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
-Discussion thread for this patch can be found at
-http://www.gossamer-threads.com/lists/linux/kernel/1693284?page=last
-
- drivers/iio/adc/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a40d3c2..9c45c0f 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -105,6 +105,7 @@ config AT91_ADC
- 
- config EXYNOS_ADC
- 	bool "Exynos ADC driver support"
-+	depends on OF
- 	help
- 	  Core support for the ADC block found in the Samsung EXYNOS series
- 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
--- 
-1.7.9.5
-
+Anyhow applied to togreg branch of iio.git
+> 
+> ---
+> As far as I can see all current callers of iio_push_event() run in non-IRQ
+> context, so this doesn't need to applied to the fixes branch.
+> ---
+>  drivers/iio/industrialio-event.c | 29 +++++++++++++++--------------
+>  1 file changed, 15 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index 261cae0..10aa9ef8 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -46,10 +46,11 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+>  {
+>  	struct iio_event_interface *ev_int = indio_dev->event_interface;
+>  	struct iio_event_data ev;
+> +	unsigned long flags;
+>  	int copied;
+>  
+>  	/* Does anyone care? */
+> -	spin_lock(&ev_int->wait.lock);
+> +	spin_lock_irqsave(&ev_int->wait.lock, flags);
+>  	if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>  
+>  		ev.id = ev_code;
+> @@ -59,7 +60,7 @@ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+>  		if (copied != 0)
+>  			wake_up_locked_poll(&ev_int->wait, POLLIN);
+>  	}
+> -	spin_unlock(&ev_int->wait.lock);
+> +	spin_unlock_irqrestore(&ev_int->wait.lock, flags);
+>  
+>  	return 0;
+>  }
+> @@ -76,10 +77,10 @@ static unsigned int iio_event_poll(struct file *filep,
+>  
+>  	poll_wait(filep, &ev_int->wait, wait);
+>  
+> -	spin_lock(&ev_int->wait.lock);
+> +	spin_lock_irq(&ev_int->wait.lock);
+>  	if (!kfifo_is_empty(&ev_int->det_events))
+>  		events = POLLIN | POLLRDNORM;
+> -	spin_unlock(&ev_int->wait.lock);
+> +	spin_unlock_irq(&ev_int->wait.lock);
+>  
+>  	return events;
+>  }
+> @@ -96,14 +97,14 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+>  	if (count < sizeof(struct iio_event_data))
+>  		return -EINVAL;
+>  
+> -	spin_lock(&ev_int->wait.lock);
+> +	spin_lock_irq(&ev_int->wait.lock);
+>  	if (kfifo_is_empty(&ev_int->det_events)) {
+>  		if (filep->f_flags & O_NONBLOCK) {
+>  			ret = -EAGAIN;
+>  			goto error_unlock;
+>  		}
+>  		/* Blocking on device; waiting for something to be there */
+> -		ret = wait_event_interruptible_locked(ev_int->wait,
+> +		ret = wait_event_interruptible_locked_irq(ev_int->wait,
+>  					!kfifo_is_empty(&ev_int->det_events));
+>  		if (ret)
+>  			goto error_unlock;
+> @@ -113,7 +114,7 @@ static ssize_t iio_event_chrdev_read(struct file *filep,
+>  	ret = kfifo_to_user(&ev_int->det_events, buf, count, &copied);
+>  
+>  error_unlock:
+> -	spin_unlock(&ev_int->wait.lock);
+> +	spin_unlock_irq(&ev_int->wait.lock);
+>  
+>  	return ret ? ret : copied;
+>  }
+> @@ -122,7 +123,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+>  {
+>  	struct iio_event_interface *ev_int = filep->private_data;
+>  
+> -	spin_lock(&ev_int->wait.lock);
+> +	spin_lock_irq(&ev_int->wait.lock);
+>  	__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>  	/*
+>  	 * In order to maintain a clean state for reopening,
+> @@ -130,7 +131,7 @@ static int iio_event_chrdev_release(struct inode *inode, struct file *filep)
+>  	 * any new __iio_push_event calls running.
+>  	 */
+>  	kfifo_reset_out(&ev_int->det_events);
+> -	spin_unlock(&ev_int->wait.lock);
+> +	spin_unlock_irq(&ev_int->wait.lock);
+>  
+>  	return 0;
+>  }
+> @@ -151,18 +152,18 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>  	if (ev_int == NULL)
+>  		return -ENODEV;
+>  
+> -	spin_lock(&ev_int->wait.lock);
+> +	spin_lock_irq(&ev_int->wait.lock);
+>  	if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+> -		spin_unlock(&ev_int->wait.lock);
+> +		spin_unlock_irq(&ev_int->wait.lock);
+>  		return -EBUSY;
+>  	}
+> -	spin_unlock(&ev_int->wait.lock);
+> +	spin_unlock_irq(&ev_int->wait.lock);
+>  	fd = anon_inode_getfd("iio:event",
+>  				&iio_event_chrdev_fileops, ev_int, O_RDONLY);
+>  	if (fd < 0) {
+> -		spin_lock(&ev_int->wait.lock);
+> +		spin_lock_irq(&ev_int->wait.lock);
+>  		__clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+> -		spin_unlock(&ev_int->wait.lock);
+> +		spin_unlock_irq(&ev_int->wait.lock);
+>  	}
+>  	return fd;
+>  }
+> 
