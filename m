@@ -1,55 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35725 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49139 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752385Ab3CBQRl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:41 -0500
+	with ESMTP id S932570Ab3CQWm2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2013 18:42:28 -0400
+Message-ID: <51461D17.4050902@kernel.org>
+Date: Sun, 17 Mar 2013 19:44:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Ge Gao <ggao@invensense.com>
-Subject: [PATCH 39/67] iio:imu:mpu6050 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:56 +0000
-Message-Id: <1362241044-3534-40-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+CC: linux-iio@vger.kernel.org,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Subject: Re: [PATCH 1/2] iio:adc:exynos move to info_mask_(shared_by_type/separate)
+References: <1362341033-9506-1-git-send-email-jic23@kernel.org> <1362341033-9506-2-git-send-email-jic23@kernel.org> <CAHfPSqC95ahh6O9Fk0N06gw9tQxGPKsU943KNYTXCM+vP465Eg@mail.gmail.com>
+In-Reply-To: <CAHfPSqC95ahh6O9Fk0N06gw9tQxGPKsU943KNYTXCM+vP465Eg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Ge Gao <ggao@invensense.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 37ca05b..fe4c61e 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -544,8 +544,8 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
- 		.type = _type,                                        \
- 		.modified = 1,                                        \
- 		.channel2 = _channel2,                                \
--		.info_mask =  IIO_CHAN_INFO_SCALE_SHARED_BIT          \
--				| IIO_CHAN_INFO_RAW_SEPARATE_BIT,     \
-+		.info_mask_shared_by_type =  BIT(IIO_CHAN_INFO_SCALE), \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
- 		.scan_index = _index,                                 \
- 		.scan_type = {                                        \
- 				.sign = 's',                          \
-@@ -564,9 +564,9 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
- 	 */
- 	{
- 		.type = IIO_TEMP,
--		.info_mask =  IIO_CHAN_INFO_RAW_SEPARATE_BIT
--				| IIO_CHAN_INFO_OFFSET_SEPARATE_BIT
--				| IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-+		.info_mask_separate =  BIT(IIO_CHAN_INFO_RAW)
-+				| BIT(IIO_CHAN_INFO_OFFSET)
-+				| BIT(IIO_CHAN_INFO_SCALE),
- 		.scan_index = -1,
- 	},
- 	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_MPU6050_SCAN_GYRO_X),
--- 
-1.8.1.4
-
+On 03/05/2013 11:44 PM, Naveen Krishna Ch wrote:
+> On 4 March 2013 05:03, Jonathan Cameron <jic23@kernel.org> wrote:
+>> The original info_mask is going away in favour of the broken out versions.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Thanks, Jonathan.
+While thanks is always nice, I took that as counting as an Acked-by tag.
+Shout if you would rather I didn't!
+>> ---
+>>  drivers/iio/adc/exynos_adc.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+>> index ed6fdd7..6e968ae 100644
+>> --- a/drivers/iio/adc/exynos_adc.c
+>> +++ b/drivers/iio/adc/exynos_adc.c
+>> @@ -198,7 +198,7 @@ static const struct iio_info exynos_adc_iio_info = {
+>>         .indexed = 1,                                   \
+>>         .channel = _index,                              \
+>>         .address = _index,                              \
+>> -       .info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,    \
+>> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
+>>         .datasheet_name = _id,                          \
+>>  }
+>>
+>> --
+>> 1.8.1.4
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> 
+> 
+> --
+> Shine bright,
+> (: Nav :)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
