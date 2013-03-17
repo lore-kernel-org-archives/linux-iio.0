@@ -1,43 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35736 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49150 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752387Ab3CBQRh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:37 -0500
+	with ESMTP id S932570Ab3CQWm3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2013 18:42:29 -0400
+Message-ID: <514623A8.5000905@kernel.org>
+Date: Sun, 17 Mar 2013 20:12:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
+MIME-Version: 1.0
+To: Doug Anderson <dianders@chromium.org>
+CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 23/67] iio:dac:ad5449 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:40 +0000
-Message-Id: <1362241044-3534-24-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Subject: Re: [PATCH 1/2] iio: adc: Kconfig: exynos_adc depends on CONFIG_OF
+References: <1363364620-23597-1-git-send-email-ch.naveen@samsung.com> <CAD=FV=W90mKzmpg4cG_JJ6R6Of1jt=TxOe_1h-nvzs7KeAvDXQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=W90mKzmpg4cG_JJ6R6Of1jt=TxOe_1h-nvzs7KeAvDXQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+On 03/15/2013 06:09 PM, Doug Anderson wrote:
+> Naveen,
+> 
+> On Fri, Mar 15, 2013 at 9:23 AM, Naveen Krishna Chatradhi
+> <ch.naveen@samsung.com> wrote:
+>> As the exynos_adc driver only supports device tree registration.
+>> Making driver depend on CONFIG_OF solves possible errors during probe.
+>>
+>> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> Cc: Doug Anderson <dianders@chromium.org>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>> Discussion thread for this patch can be found at
+>> http://www.gossamer-threads.com/lists/linux/kernel/1693284?page=last
+>>
+>>  drivers/iio/adc/Kconfig |    1 +
+>>  1 file changed, 1 insertion(+)
+> 
+> Reviewed-by: Doug Anderson <dianders@chromium.org>
+Applied to togreg branch of iio.git, thanks,
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5449.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/dac/ad5449.c b/drivers/iio/dac/ad5449.c
-index c4731b7..ba1c914 100644
---- a/drivers/iio/dac/ad5449.c
-+++ b/drivers/iio/dac/ad5449.c
-@@ -206,8 +206,8 @@ static const struct iio_info ad5449_info = {
- 	.indexed = 1,						\
- 	.output = 1,						\
- 	.channel = (chan),					\
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT,		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+		BIT(IIO_CHAN_INFO_SCALE),			\
- 	.address = (chan),					\
- 	.scan_type = IIO_ST('u', (bits), 16, 12 - (bits)),	\
- }
--- 
-1.8.1.4
-
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
