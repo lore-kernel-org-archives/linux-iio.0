@@ -1,49 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35727 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752303Ab3CBQRi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:38 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 28/67] iio:dac:ad5764 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:45 +0000
-Message-Id: <1362241044-3534-29-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:55408 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933145Ab3CTTWQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Mar 2013 15:22:16 -0400
+Date: Wed, 20 Mar 2013 12:22:16 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] staging/iio: iio_hwmon: Use device tree node name for
+ hwmon name attribute
+Message-ID: <20130320192216.GA966@roeck-us.net>
+References: <1363794751-31977-1-git-send-email-linux@roeck-us.net>
+ <5149FFC5.3040504@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5149FFC5.3040504@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+On Wed, Mar 20, 2013 at 06:28:21PM +0000, Jonathan Cameron wrote:
+> On 03/20/2013 03:52 PM, Guenter Roeck wrote:
+> > So far, all instances of iio_hwmon set their hwmon name attribute
+> > to "iio_hwmon", which is not very descriptive. Set it to the device tree
+> > node name if available, and only revert to iio_hwmon otherwise.
+> > 
+> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > ---
+> > 
+> > Jonathan, can we move this driver out of staging ?
+> > I would like to see it in 3.10 if possible.
+> 
+> Certainly. Now you've cleaned it up nicely it's ready
+> to go as far as I am concerned.  I'll put together a patch
+> on top of this sometime in the next couple of days and
+> post to the relevant lists etc and if no one shouts I'll
+> send it in a pull request to Greg around next weekend....
+> 
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dac/ad5764.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Sounds good.
 
-diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
-index 5b7acd3..7a53f7d 100644
---- a/drivers/iio/dac/ad5764.c
-+++ b/drivers/iio/dac/ad5764.c
-@@ -78,11 +78,11 @@ enum ad5764_type {
- 	.output = 1,						\
- 	.channel = (_chan),					\
- 	.address = (_chan),					\
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_OFFSET_SHARED_BIT |		\
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |		\
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT,		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+		BIT(IIO_CHAN_INFO_SCALE) |			\
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) |			\
-+		BIT(IIO_CHAN_INFO_CALIBBIAS),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET),	\
- 	.scan_type = IIO_ST('u', (_bits), 16, 16 - (_bits))	\
- }
- 
--- 
-1.8.1.4
+> Thanks for all your hard work!
+> 
+My pleasure.
 
+Thanks,
+Guenter
