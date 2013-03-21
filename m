@@ -1,49 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:55408 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933145Ab3CTTWQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Mar 2013 15:22:16 -0400
-Date: Wed, 20 Mar 2013 12:22:16 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] staging/iio: iio_hwmon: Use device tree node name for
- hwmon name attribute
-Message-ID: <20130320192216.GA966@roeck-us.net>
-References: <1363794751-31977-1-git-send-email-linux@roeck-us.net>
- <5149FFC5.3040504@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35354 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752790Ab3CUHQx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2013 03:16:53 -0400
+Message-ID: <514AB3E1.8070107@kernel.org>
+Date: Thu, 21 Mar 2013 07:16:49 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5149FFC5.3040504@kernel.org>
+To: Guenter Roeck <linux@roeck-us.net>
+CC: linux-iio@vger.kernel.org, lm-sensors@lm-sensors.org,
+	khali@linux-fr.org
+Subject: Re: [PATCH] hwmon: Move the IIO client driver for hwmon out of staging
+References: <1363818079-31470-1-git-send-email-jic23@kernel.org> <20130320234405.GA29172@roeck-us.net>
+In-Reply-To: <20130320234405.GA29172@roeck-us.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 20, 2013 at 06:28:21PM +0000, Jonathan Cameron wrote:
-> On 03/20/2013 03:52 PM, Guenter Roeck wrote:
-> > So far, all instances of iio_hwmon set their hwmon name attribute
-> > to "iio_hwmon", which is not very descriptive. Set it to the device tree
-> > node name if available, and only revert to iio_hwmon otherwise.
-> > 
-> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > ---
-> > 
-> > Jonathan, can we move this driver out of staging ?
-> > I would like to see it in 3.10 if possible.
+On 03/20/2013 11:44 PM, Guenter Roeck wrote:
+> On Wed, Mar 20, 2013 at 10:21:19PM +0000, Jonathan Cameron wrote:
+>> This driver uses channel maps, defined either through device tree
+>> or platform data, to create a hwmon driver which acts as a client
+>> for the underlying IIO device channels.  Thus a general purpose
+>> IIO adc driver can be used to provide hardware monitoring using a subset
+>> of its channels.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> cc: Guenter Roeck <linux@roeck-us.net>
 > 
-> Certainly. Now you've cleaned it up nicely it's ready
-> to go as far as I am concerned.  I'll put together a patch
-> on top of this sometime in the next couple of days and
-> post to the relevant lists etc and if no one shouts I'll
-> send it in a pull request to Greg around next weekend....
+> Acked-by: Guenter Roeck <linux@roeck-us.net>
 > 
-
-Sounds good.
-
-> Thanks for all your hard work!
+>>
+>> --
+>>  The only non move changes here concern the description and changes to the
+>>  dependencies to IIO explicit and hwmon implicit.
+>>
+>>  I'm proposing moving this into hwmon on the basis of placing drivers
+>>  based on what they provide rather than what their underlying hardware
+>>  is.
+>>
+> That is what I would suggest as well.
 > 
-My pleasure.
+> I assume you will take this through the iio tree, as it depends
+> on my previous patch, correct ?
+Yes.   All moves from staging like this one (rather than rewrites) go through
+GregKH's staging tree anyway so routing through IIO (which he pulls into there)
+is definitely the way to go.
 
-Thanks,
-Guenter
+Jonathan
