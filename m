@@ -1,39 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:50622 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758191Ab3CYRwx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Mar 2013 13:52:53 -0400
-Received: by mail-pa0-f44.google.com with SMTP id bi5so1161792pad.31
-        for <linux-iio@vger.kernel.org>; Mon, 25 Mar 2013 10:52:53 -0700 (PDT)
-Date: Mon, 25 Mar 2013 10:51:42 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO cleanups, new drivers and fixes (IIO set 1 for the
- 3.10 cycle)
-Message-ID: <20130325175142.GA19706@kroah.com>
-References: <514D89C4.60609@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <514D89C4.60609@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45949 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754123Ab3CXQ6k (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2013 12:58:40 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/4] iio:magnetometer:ak8975 cleanup and move out of staging.
+Date: Sun, 24 Mar 2013 16:58:26 +0000
+Message-Id: <1364144310-32251-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 23, 2013 at 10:53:56AM +0000, Jonathan Cameron wrote:
-> The following changes since commit a14592896023adcab12307774c89284ce0744ce2:
-> 
->   staging: comedi: ni_labpc: fix common detach (2013-03-15 09:17:21 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.10a
+When I proposed moving this out of staging a while back, Lars-Peter
+pointed out a few 'unusual' elements in the driver.  This series
+addresses those and the interesting question of what the NOSTART flag
+was doing there in the read code (came up in the dicussion of one of
+Lars-Peter's points).
 
-Note, I had to merge one of the files in this pull request, so you might
-want to verify I got it right (I did it backwards the first time, and it
-failed to build, so I'm guessing I did it correctly the second time
-around...)
+The caching in the write is a little unnecessary, but isn't technically
+incorrect so I haven't touched that.
 
-thanks,
+If anyone has one of these to test and make sure the changes haven't
+broken anything that would be great!
 
-greg k-h
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (4):
+  staging:iio:magnetometer:ak8975 drop unused eoc_irq
+  staging:iio:magnetometer:ak8975 drop I2C_M_NOSTART flag in read_data
+  staging:iio:magnetometer:ak8975 use standard i2c_smbus read functions.
+  iio:magnetometer:ak8975 move driver out of staging
+
+ drivers/iio/magnetometer/Kconfig          |  11 +
+ drivers/iio/magnetometer/Makefile         |   1 +
+ drivers/iio/magnetometer/ak8975.c         | 485 ++++++++++++++++++++++++++++
+ drivers/staging/iio/magnetometer/Kconfig  |  11 -
+ drivers/staging/iio/magnetometer/Makefile |   1 -
+ drivers/staging/iio/magnetometer/ak8975.c | 520 ------------------------------
+ 6 files changed, 497 insertions(+), 532 deletions(-)
+ create mode 100644 drivers/iio/magnetometer/ak8975.c
+ delete mode 100644 drivers/staging/iio/magnetometer/ak8975.c
+
+-- 
+1.8.1.4
 
