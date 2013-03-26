@@ -1,47 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46614 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754017Ab3C2J23 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 05:28:29 -0400
-Message-ID: <51555EBF.70308@kernel.org>
-Date: Fri, 29 Mar 2013 09:28:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Shawn Guo <shawn.guo@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 02/13] iio: mxs-lradc: remove unneeded mach header inclusion
-References: <1364547350-30498-1-git-send-email-shawn.guo@linaro.org> <1364547350-30498-3-git-send-email-shawn.guo@linaro.org>
-In-Reply-To: <1364547350-30498-3-git-send-email-shawn.guo@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: devicetree-discuss@lists.ozlabs.org
+Cc: jic23@kernel.org,
+	rob.herring@calxeda.com,
+	grant.likely@secretlab.ca,
+	linux-iio@vger.kernel.org,
+	sachin.kamat@linaro.org,
+	patches@linaro.org
+Subject: [PATCH 1/1] iio: exynos-adc: Fix typo in DT documentation
+Date: Tue, 26 Mar 2013 17:22:57 +0530
+Message-Id: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/29/2013 08:55 AM, Shawn Guo wrote:
-> Headers <mach/mxs.h> and <mach/common.h> are not used in the driver
-> at all.  Removed the inclusions.
-> 
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Fixes some typos in the documentation of exynos-adc.txt.
 
-Thanks
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c |    3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 55a459b..0eb5b4d 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -36,9 +36,6 @@
->  #include <linux/delay.h>
->  #include <linux/input.h>
->  
-> -#include <mach/mxs.h>
-> -#include <mach/common.h>
-> -
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger.h>
-> 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+index 05e9d95..1fc744b 100644
+--- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
++++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+@@ -1,6 +1,6 @@
+ Samsung Exynos Analog to Digital Converter bindings
+ 
+-This devicetree binding are for the new adc driver written fori
++The devicetree bindings are for the new ADC driver written for
+ Exynos4 and upward SoCs from Samsung.
+ 
+ New driver handles the following
+@@ -49,4 +49,4 @@ adc@12D10000 {
+ };
+ 
+ Note: Does not apply to ADC driver under arch/arm/plat-samsung/
+-Note: The child node can be added under the adc node or seperately.
++Note: The child node can be added under the adc node or separately.
+-- 
+1.7.4.1
