@@ -1,55 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35728 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752303Ab3CBQRn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:43 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 46/67] staging:iio:accel:lis3l02dq move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:17:03 +0000
-Message-Id: <1362241044-3534-47-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <naveenkrishna.ch@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org>
+References: <1364298777-8178-1-git-send-email-sachin.kamat@linaro.org>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Tue, 26 Mar 2013 16:55:13 -0700
+Message-ID: <CAHfPSqCyn=Q_zH11=pRjP3rY69xbHDnRSwBmiA4fGmz62hV-Vg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] iio: exynos-adc: Fix typo in DT documentation
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: devicetree-discuss@lists.ozlabs.org, jic23@kernel.org,
+	rob.herring@calxeda.com, grant.likely@secretlab.ca, linux-iio@vger.kernel.org,
+	patches@linaro.org
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-The original info_mask is going away in favour of the broken out versions.
+On 26 March 2013 04:52, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+> Fixes some typos in the documentation of exynos-adc.txt.
+>
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index 05e9d95..1fc744b 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -1,6 +1,6 @@
+>  Samsung Exynos Analog to Digital Converter bindings
+>
+> -This devicetree binding are for the new adc driver written fori
+> +The devicetree bindings are for the new ADC driver written for
+Thanks for the correction
+>  Exynos4 and upward SoCs from Samsung.
+>
+>  New driver handles the following
+> @@ -49,4 +49,4 @@ adc@12D10000 {
+>  };
+>
+>  Note: Does not apply to ADC driver under arch/arm/plat-samsung/
+> -Note: The child node can be added under the adc node or seperately.
+> +Note: The child node can be added under the adc node or separately.
+Sorry, but i cant see whats the difference here.
+> --
+> 1.7.4.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/accel/lis3l02dq_core.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
-index 0e01930..1bfe5d8 100644
---- a/drivers/staging/iio/accel/lis3l02dq_core.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_core.c
-@@ -501,12 +501,6 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--#define LIS3L02DQ_INFO_MASK				\
--	(IIO_CHAN_INFO_RAW_SEPARATE_BIT |		\
--	 IIO_CHAN_INFO_SCALE_SHARED_BIT |		\
--	 IIO_CHAN_INFO_CALIBSCALE_SEPARATE_BIT |	\
--	 IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT)
--
- #define LIS3L02DQ_EVENT_MASK					\
- 	(IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |	\
- 	 IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
-@@ -516,7 +510,10 @@ static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
- 		.type = IIO_ACCEL,				\
- 		.modified = 1,					\
- 		.channel2 = mod,				\
--		.info_mask =  LIS3L02DQ_INFO_MASK,		\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-+			BIT(IIO_CHAN_INFO_CALIBSCALE) |		\
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
- 		.address = index,				\
- 		.scan_index = index,				\
- 		.scan_type = {					\
--- 
-1.8.1.4
 
+--
+Shine bright,
+(: Nav :)
