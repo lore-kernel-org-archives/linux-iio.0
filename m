@@ -1,29 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo-p05-ob.rzone.de ([81.169.146.181]:12580 "EHLO
-	mo-p05-ob.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752633Ab3CEH2x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Mar 2013 02:28:53 -0500
-Message-ID: <51359EAC.2030904@gmail.com>
-Date: Tue, 05 Mar 2013 08:28:44 +0100
-From: Stefan Roese <stefan.roese@gmail.com>
-MIME-Version: 1.0
+Received: from smtp-out-011.synserver.de ([212.40.185.11]:1037 "EHLO
+	smtp-out-226.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932345Ab3CZSlJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2013 14:41:09 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] staging:iio:adc:spear move to info_mask_(shared_by_type/separate)
-References: <1362431780-27682-1-git-send-email-jic23@kernel.org> <1362431780-27682-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362431780-27682-2-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/6] staging:iio:ad799x: Remove unused ad799x_state fields
+Date: Tue, 26 Mar 2013 19:42:59 +0100
+Message-Id: <1364323384-30863-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04.03.2013 22:16, Jonathan Cameron wrote:
-> The original info_mask is going away in favour of the broken out versions.
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> cc: Stefan Roese <sr@denx.de>
+Remove fields from the ad799x_state struct which are not used.
 
-Acked-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad799x.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks,
-Stefan
+diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+index 3e363c4..9f50f93 100644
+--- a/drivers/staging/iio/adc/ad799x.h
++++ b/drivers/staging/iio/adc/ad799x.h
+@@ -104,11 +104,9 @@ struct ad799x_chip_info {
+ struct ad799x_state {
+ 	struct i2c_client		*client;
+ 	const struct ad799x_chip_info	*chip_info;
+-	struct iio_trigger		*trig;
+ 	struct regulator		*reg;
+ 	u16				int_vref_mv;
+ 	unsigned			id;
+-	char				*name;
+ 	u16				config;
+ };
+ 
+-- 
+1.8.0
 
