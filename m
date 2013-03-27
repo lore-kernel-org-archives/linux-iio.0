@@ -1,59 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46712 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752915Ab3C2Jha (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 05:37:30 -0400
-Message-ID: <515560D8.9080906@kernel.org>
-Date: Fri, 29 Mar 2013 09:37:28 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-la0-f52.google.com ([209.85.215.52]:50597 "EHLO
+	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753075Ab3C0SoH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Mar 2013 14:44:07 -0400
+Received: by mail-la0-f52.google.com with SMTP id fs12so16004180lab.25
+        for <linux-iio@vger.kernel.org>; Wed, 27 Mar 2013 11:44:04 -0700 (PDT)
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Laxman Dewangan <ldewangan@nvidia.com>
-Subject: Re: [PATCH 0/4] iio:magnetometer:ak8975 cleanup and move out of staging.
-References: <1364144310-32251-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1364144310-32251-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <CAHfPSqBfvCPCgEUNmCJowfjMrCMjzhOXLbzu9Bxq4iJD7SkMJg@mail.gmail.com>
+References: <1363129994-10438-1-git-send-email-dianders@chromium.org>
+	<1363207202-10858-1-git-send-email-dianders@chromium.org>
+	<1363207202-10858-3-git-send-email-dianders@chromium.org>
+	<CAHfPSqBfvCPCgEUNmCJowfjMrCMjzhOXLbzu9Bxq4iJD7SkMJg@mail.gmail.com>
+Date: Wed, 27 Mar 2013 11:44:04 -0700
+Message-ID: <CAD=FV=X5Zn_PF2OxFVtQWbz2zeWc0maRLPxftq8Ggwwcht7ArA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] iio: adc: Add dt support for turning on the phy in exynos-adc
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Olof Johansson <olof@lixom.net>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Rob Landley <rob@landley.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Laxman, any thoughts on these?
+Naveen,
 
-I'm not in an immediate rush with this series, but have never been in
-favour of keeping things queued up for too long!
+On Wed, Mar 27, 2013 at 11:37 AM, Naveen Krishna Ch
+<naveenkrishna.ch@gmail.com> wrote:
+> On 13 March 2013 13:40, Doug Anderson <dianders@chromium.org> wrote:
+>> Without this change the exynos adc controller needed to have its phy
+>> enabled in some out-of-driver C code.  Add support for specifying the
+>> phy enable register by listing it in the reg list.
+>>
+>> Signed-off-by: Doug Anderson <dianders@chromium.org>
+>> ---
+>> Changes in v2: None
+> Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+>
+> Lars, any update on this patch set. This change is required.
 
-Jonathan
-
-On 03/24/2013 04:58 PM, Jonathan Cameron wrote:
-> When I proposed moving this out of staging a while back, Lars-Peter
-> pointed out a few 'unusual' elements in the driver.  This series
-> addresses those and the interesting question of what the NOSTART flag
-> was doing there in the read code (came up in the dicussion of one of
-> Lars-Peter's points).
-> 
-> The caching in the write is a little unnecessary, but isn't technically
-> incorrect so I haven't touched that.
-> 
-> If anyone has one of these to test and make sure the changes haven't
-> broken anything that would be great!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> Jonathan Cameron (4):
->   staging:iio:magnetometer:ak8975 drop unused eoc_irq
->   staging:iio:magnetometer:ak8975 drop I2C_M_NOSTART flag in read_data
->   staging:iio:magnetometer:ak8975 use standard i2c_smbus read functions.
->   iio:magnetometer:ak8975 move driver out of staging
-> 
->  drivers/iio/magnetometer/Kconfig          |  11 +
->  drivers/iio/magnetometer/Makefile         |   1 +
->  drivers/iio/magnetometer/ak8975.c         | 485 ++++++++++++++++++++++++++++
->  drivers/staging/iio/magnetometer/Kconfig  |  11 -
->  drivers/staging/iio/magnetometer/Makefile |   1 -
->  drivers/staging/iio/magnetometer/ak8975.c | 520 ------------------------------
->  6 files changed, 497 insertions(+), 532 deletions(-)
->  create mode 100644 drivers/iio/magnetometer/ak8975.c
->  delete mode 100644 drivers/staging/iio/magnetometer/ak8975.c
-> 
+This particular CL is already in linux-next.
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next-history.git/commit/?id=bb916ebbeabd18f7dc3c661275d2c9d343f4fa85
