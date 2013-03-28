@@ -1,71 +1,71 @@
-Return-Path: <shawn.guo@linaro.org>
-From: Shawn Guo <shawn.guo@linaro.org>
-To: <linux-arm-kernel@lists.infradead.org>
-CC: Shawn Guo <shawn.guo@linaro.org>, Andrew Morton
-	<akpm@linux-foundation.org>, Jonathan Cameron <jic23@kernel.org>, Mark Brown
-	<broonie@opensource.wolfsonmicro.com>, <rtc-linux@googlegroups.com>,
-	<linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>
-Subject: [PATCH 00/13] mach-mxs header files cleanup
-Date: Fri, 29 Mar 2013 16:55:36 +0800
-Message-ID: <1364547350-30498-1-git-send-email-shawn.guo@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:36754 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753117Ab3C1KYt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 06:24:49 -0400
+Message-ID: <51541A6E.8060908@free-electrons.com>
+Date: Thu, 28 Mar 2013 11:24:46 +0100
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Marek Vasut <marex@denx.de>, brian@crystalfontz.com,
+	jimwall@q.com, Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iio: mxs-lradc: Do hardware initialization earlier
+References: <1364465583-19835-1-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1364465583-19835-1-git-send-email-alexandre.belloni@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The series cleans up mach-mxs headers files in order to support
-multiplatform build on mxs.
+On 28/03/2013 11:13, Alexandre Belloni wrote:
+> We need to initialize hardware before registering the touchscreen. Else,
+> we end up setting registers in mxs_lradc_ts_open(), getting called just
+> after registering the touchscreen with input_register_device() and by
+> the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
+> correct configuration.
 
-Andrew, Jonathan, Mark,
+Sorry, I fumbled and forgot my SoB:
 
-Can you please give your ACK on the patch you are copied, so that the
-series can go via arm-soc as a whole?  Thanks.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-Shawn
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Marek Vasut <marex@denx.de>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 55a459b..e927e3f 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -933,6 +933,9 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  
+>  	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+>  
+> +	/* Configure the hardware. */
+> +	mxs_lradc_hw_init(lradc);
+> +
+>  	/* Check if touchscreen is enabled in DT. */
+>  	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+>  				&ts_wires);
+> @@ -995,9 +998,6 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  		goto err_ts;
+>  	}
+>  
+> -	/* Configure the hardware. */
+> -	mxs_lradc_hw_init(lradc);
+> -
+>  	return 0;
+>  
+>  err_ts:
 
-Shawn Guo (13):
-  rtc: stmp3xxx: use stmp_reset_block() instead
-  iio: mxs-lradc: remove unneeded mach header inclusion
-  ASoC: mxs-saif: remove mach header inclusion
-  ARM: mxs: remove empty hardware.h
-  ARM: mxs: get reset address from device tree
-  ARM: mxs: remove system.c
-  ARM: mxs: get ocotp base address from device tree
-  ARM: mxs: use debug_ll_io_init for low-level debug
-  ARM: mxs: remove mm.c
-  ARM: mxs: move mxs_get_ocotp() into mach-mxs.c
-  ARM: mxs: remove common.h
-  ARM: mxs: merge imx23 and imx28 into one machine_desc
-  ARM: mxs: remove unused headers
-
- arch/arm/boot/dts/imx23.dtsi                 |    3 +-
- arch/arm/boot/dts/imx28.dtsi                 |    3 +-
- arch/arm/mach-mxs/Makefile                   |    4 -
- arch/arm/mach-mxs/include/mach/common.h      |   25 ---
- arch/arm/mach-mxs/include/mach/debug-macro.S |    9 +-
- arch/arm/mach-mxs/include/mach/digctl.h      |   22 ---
- arch/arm/mach-mxs/include/mach/hardware.h    |   23 ---
- arch/arm/mach-mxs/include/mach/mx23.h        |  169 -------------------
- arch/arm/mach-mxs/include/mach/mx28.h        |  225 --------------------------
- arch/arm/mach-mxs/include/mach/mxs.h         |  116 -------------
- arch/arm/mach-mxs/mach-mxs.c                 |  182 +++++++++++++++++----
- arch/arm/mach-mxs/mm.c                       |   52 ------
- arch/arm/mach-mxs/ocotp.c                    |   93 -----------
- arch/arm/mach-mxs/system.c                   |  139 ----------------
- drivers/rtc/rtc-stmp3xxx.c                   |    6 +-
- drivers/staging/iio/adc/mxs-lradc.c          |    3 -
- include/linux/clk/mxs.h                      |   16 ++
- sound/soc/mxs/mxs-saif.c                     |    5 +-
- 18 files changed, 180 insertions(+), 915 deletions(-)
- delete mode 100644 arch/arm/mach-mxs/include/mach/common.h
- delete mode 100644 arch/arm/mach-mxs/include/mach/digctl.h
- delete mode 100644 arch/arm/mach-mxs/include/mach/hardware.h
- delete mode 100644 arch/arm/mach-mxs/include/mach/mx23.h
- delete mode 100644 arch/arm/mach-mxs/include/mach/mx28.h
- delete mode 100644 arch/arm/mach-mxs/include/mach/mxs.h
- delete mode 100644 arch/arm/mach-mxs/mm.c
- delete mode 100644 arch/arm/mach-mxs/ocotp.c
- delete mode 100644 arch/arm/mach-mxs/system.c
- create mode 100644 include/linux/clk/mxs.h
 
 -- 
-1.7.9.5
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
