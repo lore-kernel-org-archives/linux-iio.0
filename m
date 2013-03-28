@@ -1,95 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36728 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751926Ab3CBQg1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:36:27 -0500
-Message-ID: <51322A89.7030600@kernel.org>
-Date: Sat, 02 Mar 2013 16:36:25 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:38161 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756126Ab3C1OUV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 10:20:21 -0400
+From: Marek Vasut <marex@denx.de>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Do hardware initialization earlier
+Date: Thu, 28 Mar 2013 12:59:12 +0100
+Cc: Fabio Estevam <fabio.estevam@freescale.com>,
+	brian@crystalfontz.com, linux-iio@vger.kernel.org, jimwall@q.com,
+	linux-arm-kernel@lists.infradead.org,
+	Jonathan Cameron <jic23@kernel.org>
+References: <1364465583-19835-1-git-send-email-alexandre.belloni@free-electrons.com> <201303281222.21285.marex@denx.de> <51542ED5.4090200@free-electrons.com>
+In-Reply-To: <51542ED5.4090200@free-electrons.com>
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: Re: IIO_BUFFER - IIO_TRIGGERED_BUFFER circular dependency
-References: <20130301043222.GA5606@roeck-us.net> <5130AF56.8020407@metafoo.de> <20130301144111.GA31945@roeck-us.net> <5130C37D.6050907@metafoo.de> <20130301172059.GA23500@roeck-us.net>
-In-Reply-To: <20130301172059.GA23500@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201303281259.12674.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/01/2013 05:20 PM, Guenter Roeck wrote:
-> On Fri, Mar 01, 2013 at 04:04:29PM +0100, Lars-Peter Clausen wrote:
->> On 03/01/2013 03:41 PM, Guenter Roeck wrote:
->>> On Fri, Mar 01, 2013 at 02:38:30PM +0100, Lars-Peter Clausen wrote:
->>>> On 03/01/2013 05:32 AM, Guenter Roeck wrote:
->>>>> Hi all,
->>>>>
->>>>> IIO_TRIGGERED_BUFFER depends on IIO_BUFFER because of:
->>>>>
->>>>> drivers/iio/industrialio-triggered-buffer.c:20:16: error:
->>>>> ‘iio_sw_buffer_preenable’ undeclared here (not in a function)
->>>>>
->>>>> On the other side, it is often selected as follows.
->>>>>
->>>>> 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->>>>>
->>>>> For that reason, selecting IIO_BUFFER in the IIO_TRIGGERED_BUFFER declaration
->>>>> results in a circular dependency. Sometimes the "if (IIO_BUFFER)" when selecting
->>>>> IIO_TRIGGERED_BUFFER is missing, though, which can result in the compile error.
->>>>>
->>>>> What is the proper solution ?
->>>>> - Add "if (IIO_BUFFER)" whenever IIO_TRIGGERED_BUFFER is selected
->>>>> or
->>>>> - Remove "if (IIO_BUFFER)" from IIO_TRIGGERED_BUFFER selection and add "select
->>>>>   IIO_BUFFER" to the IIO_TRIGGERED_BUFFER declaration
->>>>>
->>>>> I would prefer the latter to solve the problem for good.
->>>>
->>>> Hi,
->>>>
->>>> This is a bit tricky, some drivers have optional buffer support, so they
->>>> only select the helper module if buffer support is enabled, since they don't
->>>> use the helper module if buffer support is disabled. Other driver though
->>>> always want buffer support so they select the helper module unconditionally.
->>>> So far it was the responsibility of the driver's Kconfig entry to make sure
->>>> that if it selects IIO_TRIGGERED_BUFFER it needs to make sure that
->>>> IIO_BUFFER is also selected. As far as I can see all drivers do this
->>>> currently. Which one breaks things for you?
->>>>
->>> It is a randconfig thing, so it breaks in some of my nightly randconfig builds,
->>> and it has also been reported as build failure in the official builds. I can dig
->>> out some affected configurations and send it to you if you like.
->>
->> Yes that would be great, thanks.
->>
->>> but the gist of
->>> it is that IIO_TRIGGERED_BUFFER can be selected without IIO_BUFFER, but depends
->>> on it. That just isn't correct. Of course, the other option might be to make
->>> IIO_TRIGGERED_BUFFER dependent on IIO_BUFFER. Would that be acceptable ?
->>>
->>
->> That won't work, you can overwrite 'depends on' by selecting the symbol.
->>
->> But the reason why there is a cyclic dependency is not because of the
->> 'select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)' but rather because
->> IIO_TRIGGERED_BUFFER is in an 'if IIO_BUFFER' section. Moving it out there
->> fixes the cyclic dependency error. But creates a recursive dependency warning.
->>
->> I think we could avoid this warning by introducing a new symbol. E.g.
->> IIO_BUFFER_INTERN (bad name). IIO_BUFFER_INTERN won't be user selectable. It
->> will be selected by IIO_BUFFER and IIO_TRIGGERED_BUFFER and if it is
->> selected buffer support is built. E.g. something like this:
->>
-> Agreed, that would also solve the need of selecting IIO_BUFFER as well if
-> IIO_TRIGGERED_BUFFER is selected. For now I solved the problem with the two
-> patches I submitted, so assuming those are accepted I guess this one or
-> something similar can wait for -next.
-Agreed.  Sounds like Lars volunteered to do this to me ;) It's a little uggly
-but I can't immediately think of anything better.
+Dear Alexandre Belloni,
+
+> On 28/03/2013 12:22, Marek Vasut wrote:
+> > Dear Alexandre Belloni,
+> > 
+> >> We need to initialize hardware before registering the touchscreen. Else,
+> >> we end up setting registers in mxs_lradc_ts_open(), getting called just
+> >> after registering the touchscreen with input_register_device() and by
+> >> the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
+> >> correct configuration.
+> >> 
+> >> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> >> Cc: Jonathan Cameron <jic23@kernel.org>
+> >> Cc: Marek Vasut <marex@denx.de>
+> >> ---
+> >> 
+> >>  drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
+> >>  1 file changed, 3 insertions(+), 3 deletions(-)
+> >> 
+> >> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> >> b/drivers/staging/iio/adc/mxs-lradc.c index 55a459b..e927e3f 100644
+> >> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> >> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> >> @@ -933,6 +933,9 @@ static int mxs_lradc_probe(struct platform_device
+> >> *pdev)
+> >> 
+> >>  	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+> >> 
+> >> +	/* Configure the hardware. */
+> >> +	mxs_lradc_hw_init(lradc);
+> >> +
+> >> 
+> >>  	/* Check if touchscreen is enabled in DT. */
+> >>  	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> > 
+> > Isn't this too early? At least lradc->use_touchscreen is configured only
+> > after you call mxs_lradc_hw_init() in this case, while
+> > mxs_lradc_hw_init() uses it's value.
+> > 
+> > I think mxs_lradc_hw_init() shall be called just before
+> > mxs_lradc_ts_register().
 > 
-> Thanks,
-> Guenter
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> That's right, this would break 5 wires touchscreens. I'll fix that.
+
+Thanks!
+
+Best regards,
+Marek Vasut
