@@ -1,37 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f45.google.com ([209.85.215.45]:55862 "EHLO
-	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933129Ab3CMSYB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2013 14:24:01 -0400
-Received: by mail-la0-f45.google.com with SMTP id er20so1514365lab.32
-        for <linux-iio@vger.kernel.org>; Wed, 13 Mar 2013 11:23:59 -0700 (PDT)
+Received: from mail.free-electrons.com ([94.23.35.102]:37049 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754946Ab3C1Lvw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 07:51:52 -0400
+Message-ID: <51542ED5.4090200@free-electrons.com>
+Date: Thu, 28 Mar 2013 12:51:49 +0100
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <5140C155.2070507@metafoo.de>
-References: <1362625743-10401-1-git-send-email-ch.naveen@samsung.com>
-	<1363150138-20819-1-git-send-email-ch.naveen@samsung.com>
-	<CAD=FV=XoE6NCruDUv2UajaP+LWDCp+pgaZJsEKpkoxy3tZNeAw@mail.gmail.com>
-	<5140C155.2070507@metafoo.de>
-Date: Wed, 13 Mar 2013 11:23:59 -0700
-Message-ID: <CAD=FV=XZMDrhQm+tZKL1RW35ZiT-JuDpmdGUXB9A6e9fG+54Fw@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: adc: exynos5_adc: fix compilation warnings
-From: Doug Anderson <dianders@chromium.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio <linux-iio@vger.kernel.org>, dan.carpenter@oracle.com,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>
+To: Marek Vasut <marex@denx.de>
+CC: Fabio Estevam <fabio.estevam@freescale.com>,
+	brian@crystalfontz.com, linux-iio@vger.kernel.org, jimwall@q.com,
+	linux-arm-kernel@lists.infradead.org,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] iio: mxs-lradc: Do hardware initialization earlier
+References: <1364465583-19835-1-git-send-email-alexandre.belloni@free-electrons.com> <201303281222.21285.marex@denx.de>
+In-Reply-To: <201303281222.21285.marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Lars,
+On 28/03/2013 12:22, Marek Vasut wrote:
+> Dear Alexandre Belloni,
+>
+>> We need to initialize hardware before registering the touchscreen. Else,
+>> we end up setting registers in mxs_lradc_ts_open(), getting called just
+>> after registering the touchscreen with input_register_device() and by
+>> the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
+>> correct configuration.
+>>
+>> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Marek Vasut <marex@denx.de>
+>> ---
+>>  drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> b/drivers/staging/iio/adc/mxs-lradc.c index 55a459b..e927e3f 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -933,6 +933,9 @@ static int mxs_lradc_probe(struct platform_device
+>> *pdev)
+>>
+>>  	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+>>
+>> +	/* Configure the hardware. */
+>> +	mxs_lradc_hw_init(lradc);
+>> +
+>>  	/* Check if touchscreen is enabled in DT. */
+>>  	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> Isn't this too early? At least lradc->use_touchscreen is configured only after 
+> you call mxs_lradc_hw_init() in this case, while mxs_lradc_hw_init() uses it's 
+> value.
+>
+> I think mxs_lradc_hw_init() shall be called just before mxs_lradc_ts_register().
+>
+>
+That's right, this would break 5 wires touchscreens. I'll fix that.
 
-On Wed, Mar 13, 2013 at 11:11 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> Agreed. Adding the dependency on OF in Kconfig should be all that is needed.
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-I think changing the timeout from 'unsigned long' to 'long' is also
-legit (to match the actual type returned) and a good idea.
-
--Doug
