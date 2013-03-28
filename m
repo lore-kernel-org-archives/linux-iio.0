@@ -1,53 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f52.google.com ([209.85.215.52]:50597 "EHLO
-	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753075Ab3C0SoH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Mar 2013 14:44:07 -0400
-Received: by mail-la0-f52.google.com with SMTP id fs12so16004180lab.25
-        for <linux-iio@vger.kernel.org>; Wed, 27 Mar 2013 11:44:04 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CAHfPSqBfvCPCgEUNmCJowfjMrCMjzhOXLbzu9Bxq4iJD7SkMJg@mail.gmail.com>
-References: <1363129994-10438-1-git-send-email-dianders@chromium.org>
-	<1363207202-10858-1-git-send-email-dianders@chromium.org>
-	<1363207202-10858-3-git-send-email-dianders@chromium.org>
-	<CAHfPSqBfvCPCgEUNmCJowfjMrCMjzhOXLbzu9Bxq4iJD7SkMJg@mail.gmail.com>
-Date: Wed, 27 Mar 2013 11:44:04 -0700
-Message-ID: <CAD=FV=X5Zn_PF2OxFVtQWbz2zeWc0maRLPxftq8Ggwwcht7ArA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: adc: Add dt support for turning on the phy in exynos-adc
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Kukjin Kim <kgene.kim@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Olof Johansson <olof@lixom.net>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Rob Landley <rob@landley.net>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail.free-electrons.com ([94.23.35.102]:39802 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751453Ab3C1WFw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 18:05:52 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, jimwall@q.com,
+	brian@crystalfontz.com,
+	Maxime Rpard <maxime.ripard@free-electrons.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Marek Vasut <marex@denx.de>
+Subject: [PATCH v2] iio: mxs-lradc: Do hardware initialization earlier
+Date: Thu, 28 Mar 2013 23:04:33 +0100
+Message-Id: <1364508273-14955-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Naveen,
+We need to initialize hardware before registering the touchscreen. Else,
+we end up setting registers in mxs_lradc_ts_open(), getting called just
+after registering the touchscreen with input_register_device() and by
+the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
+correct configuration.
 
-On Wed, Mar 27, 2013 at 11:37 AM, Naveen Krishna Ch
-<naveenkrishna.ch@gmail.com> wrote:
-> On 13 March 2013 13:40, Doug Anderson <dianders@chromium.org> wrote:
->> Without this change the exynos adc controller needed to have its phy
->> enabled in some out-of-driver C code.  Add support for specifying the
->> phy enable register by listing it in the reg list.
->>
->> Signed-off-by: Doug Anderson <dianders@chromium.org>
->> ---
->> Changes in v2: None
-> Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
->
-> Lars, any update on this patch set. This change is required.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Marek Vasut <marex@denx.de>
+---
 
-This particular CL is already in linux-next.
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next-history.git/commit/?id=bb916ebbeabd18f7dc3c661275d2c9d343f4fa85
+Changes since v1:
+ - do initialization later to avoid breaking 5wires touchscreens
+
+
+ drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 55a459b..f217f06 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -983,6 +983,9 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_trig;
+ 
++	/* Configure the hardware. */
++	mxs_lradc_hw_init(lradc);
++
+ 	/* Register the touchscreen input device. */
+ 	ret = mxs_lradc_ts_register(lradc);
+ 	if (ret)
+@@ -995,9 +998,6 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 		goto err_ts;
+ 	}
+ 
+-	/* Configure the hardware. */
+-	mxs_lradc_hw_init(lradc);
+-
+ 	return 0;
+ 
+ err_ts:
+-- 
+1.7.10.4
+
