@@ -1,59 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:36702 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752521Ab3C1KNv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 06:13:51 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, jimwall@q.com,
-	brian@crystalfontz.com,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Marek Vasut <marex@denx.de>
-Subject: [PATCH] iio: mxs-lradc: Do hardware initialization earlier
-Date: Thu, 28 Mar 2013 11:13:03 +0100
-Message-Id: <1364465583-19835-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46712 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752915Ab3C2Jha (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 05:37:30 -0400
+Message-ID: <515560D8.9080906@kernel.org>
+Date: Fri, 29 Mar 2013 09:37:28 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Laxman Dewangan <ldewangan@nvidia.com>
+Subject: Re: [PATCH 0/4] iio:magnetometer:ak8975 cleanup and move out of staging.
+References: <1364144310-32251-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1364144310-32251-1-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We need to initialize hardware before registering the touchscreen. Else,
-we end up setting registers in mxs_lradc_ts_open(), getting called just
-after registering the touchscreen with input_register_device() and by
-the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
-correct configuration.
+Laxman, any thoughts on these?
 
-Cc: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Marek Vasut <marex@denx.de>
----
- drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I'm not in an immediate rush with this series, but have never been in
+favour of keeping things queued up for too long!
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 55a459b..e927e3f 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -933,6 +933,9 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 
- 	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
- 
-+	/* Configure the hardware. */
-+	mxs_lradc_hw_init(lradc);
-+
- 	/* Check if touchscreen is enabled in DT. */
- 	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
- 				&ts_wires);
-@@ -995,9 +998,6 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 		goto err_ts;
- 	}
- 
--	/* Configure the hardware. */
--	mxs_lradc_hw_init(lradc);
--
- 	return 0;
- 
- err_ts:
--- 
-1.7.10.4
+Jonathan
 
+On 03/24/2013 04:58 PM, Jonathan Cameron wrote:
+> When I proposed moving this out of staging a while back, Lars-Peter
+> pointed out a few 'unusual' elements in the driver.  This series
+> addresses those and the interesting question of what the NOSTART flag
+> was doing there in the read code (came up in the dicussion of one of
+> Lars-Peter's points).
+> 
+> The caching in the write is a little unnecessary, but isn't technically
+> incorrect so I haven't touched that.
+> 
+> If anyone has one of these to test and make sure the changes haven't
+> broken anything that would be great!
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> Jonathan Cameron (4):
+>   staging:iio:magnetometer:ak8975 drop unused eoc_irq
+>   staging:iio:magnetometer:ak8975 drop I2C_M_NOSTART flag in read_data
+>   staging:iio:magnetometer:ak8975 use standard i2c_smbus read functions.
+>   iio:magnetometer:ak8975 move driver out of staging
+> 
+>  drivers/iio/magnetometer/Kconfig          |  11 +
+>  drivers/iio/magnetometer/Makefile         |   1 +
+>  drivers/iio/magnetometer/ak8975.c         | 485 ++++++++++++++++++++++++++++
+>  drivers/staging/iio/magnetometer/Kconfig  |  11 -
+>  drivers/staging/iio/magnetometer/Makefile |   1 -
+>  drivers/staging/iio/magnetometer/ak8975.c | 520 ------------------------------
+>  6 files changed, 497 insertions(+), 532 deletions(-)
+>  create mode 100644 drivers/iio/magnetometer/ak8975.c
+>  delete mode 100644 drivers/staging/iio/magnetometer/ak8975.c
+> 
