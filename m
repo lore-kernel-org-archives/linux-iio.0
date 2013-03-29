@@ -1,66 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:39802 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751453Ab3C1WFw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2013 18:05:52 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, jimwall@q.com,
-	brian@crystalfontz.com,
-	Maxime Rpard <maxime.ripard@free-electrons.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Marek Vasut <marex@denx.de>
-Subject: [PATCH v2] iio: mxs-lradc: Do hardware initialization earlier
-Date: Thu, 28 Mar 2013 23:04:33 +0100
-Message-Id: <1364508273-14955-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46804 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754380Ab3C2Jri (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 05:47:38 -0400
+Message-ID: <5155633A.3060701@kernel.org>
+Date: Fri, 29 Mar 2013 09:47:38 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: ludovic.desroches@atmel.com
+CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	plagnioj@jcrosoft.com, nicolas.ferre@atmel.com,
+	maxime-ripard@free-electrons.com
+Subject: Re: [PATCH] ARM: at91: dts: add adc resolution stuff
+References: <1364548399-15827-1-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <1364548399-15827-1-git-send-email-ludovic.desroches@atmel.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We need to initialize hardware before registering the touchscreen. Else,
-we end up setting registers in mxs_lradc_ts_open(), getting called just
-after registering the touchscreen with input_register_device() and by
-the end of mxs_lradc_probe(), we reset the LRADC block hence losing the
-correct configuration.
+On 03/29/2013 09:13 AM, ludovic.desroches@atmel.com wrote:
+> From: Ludovic Desroches <ludovic.desroches@atmel.com>
+> 
+> Add the ADC low and high resolution configuration and which one to use.
+> 
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Marek Vasut <marex@denx.de>
----
+> ---
+> 
+> Hi,
+> 
+> This patch is a split from this set of patches:
+> http://thread.gmane.org/gmane.linux.ports.arm.kernel/206130/focus=6321
+> 
+> Then device tree changes can go through ARM-SOC and driver changes through the
+> iio subsystem.
+I am guessing the IIO side is to follow.  Even when posting series where it different
+bits are to go through different trees, it is useful to have them in one series so that
+people can see the whole result.
 
-Changes since v1:
- - do initialization later to avoid breaking 5wires touchscreens
 
-
- drivers/staging/iio/adc/mxs-lradc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 55a459b..f217f06 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -983,6 +983,9 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_trig;
- 
-+	/* Configure the hardware. */
-+	mxs_lradc_hw_init(lradc);
-+
- 	/* Register the touchscreen input device. */
- 	ret = mxs_lradc_ts_register(lradc);
- 	if (ret)
-@@ -995,9 +998,6 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 		goto err_ts;
- 	}
- 
--	/* Configure the hardware. */
--	mxs_lradc_hw_init(lradc);
--
- 	return 0;
- 
- err_ts:
--- 
-1.7.10.4
-
+> 
+> Regards
+> 
+> Ludovic
+> 
+>  arch/arm/boot/dts/at91sam9260.dtsi | 3 +++
+>  arch/arm/boot/dts/at91sam9g45.dtsi | 3 +++
+>  arch/arm/boot/dts/at91sam9x5.dtsi  | 3 +++
+>  3 files changed, 9 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/at91sam9260.dtsi b/arch/arm/boot/dts/at91sam9260.dtsi
+> index cb7bcc5..367a604 100644
+> --- a/arch/arm/boot/dts/at91sam9260.dtsi
+> +++ b/arch/arm/boot/dts/at91sam9260.dtsi
+> @@ -484,6 +484,9 @@
+>  				atmel,adc-drdy-mask = <0x10000>;
+>  				atmel,adc-status-register = <0x1c>;
+>  				atmel,adc-trigger-register = <0x04>;
+> +				atmel,adc-res = <8 10>;
+> +				atmel,adc-res-names = "lowres", "highres";
+> +				atmel,adc-use-res = "highres";
+>  
+>  				trigger@0 {
+>  					trigger-name = "timer-counter-0";
+> diff --git a/arch/arm/boot/dts/at91sam9g45.dtsi b/arch/arm/boot/dts/at91sam9g45.dtsi
+> index 6b1d4ca..0fa28af 100644
+> --- a/arch/arm/boot/dts/at91sam9g45.dtsi
+> +++ b/arch/arm/boot/dts/at91sam9g45.dtsi
+> @@ -484,6 +484,9 @@
+>  				atmel,adc-drdy-mask = <0x10000>;
+>  				atmel,adc-status-register = <0x1c>;
+>  				atmel,adc-trigger-register = <0x08>;
+> +				atmel,adc-res = <8 10>;
+> +				atmel,adc-res-names = "lowres", "highres";
+> +				atmel,adc-use-res = "highres";
+>  
+>  				trigger@0 {
+>  					trigger-name = "external-rising";
+> diff --git a/arch/arm/boot/dts/at91sam9x5.dtsi b/arch/arm/boot/dts/at91sam9x5.dtsi
+> index a98c0d5..08bcdd7 100644
+> --- a/arch/arm/boot/dts/at91sam9x5.dtsi
+> +++ b/arch/arm/boot/dts/at91sam9x5.dtsi
+> @@ -505,6 +505,9 @@
+>  				atmel,adc-drdy-mask = <0x1000000>;
+>  				atmel,adc-status-register = <0x30>;
+>  				atmel,adc-trigger-register = <0xc0>;
+> +				atmel,adc-res = <8 10>;
+> +				atmel,adc-res-names = "lowres", "highres";
+> +				atmel,adc-use-res = "highres";
+>  
+>  				trigger@0 {
+>  					trigger-name = "external-rising";
+> 
