@@ -1,135 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35735 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751926Ab3CBQRl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2013 11:17:41 -0500
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 37/67] iio:imu:adis16400 move to info_mask_(shared_by_type/separate)
-Date: Sat,  2 Mar 2013 16:16:54 +0000
-Message-Id: <1362241044-3534-38-git-send-email-jic23@kernel.org>
-In-Reply-To: <1362241044-3534-1-git-send-email-jic23@kernel.org>
-References: <1362241044-3534-1-git-send-email-jic23@kernel.org>
+Received: from eusmtp01.atmel.com ([212.144.249.242]:52468 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755023Ab3C2Oya (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2013 10:54:30 -0400
+From: <ludovic.desroches@atmel.com>
+To: <linux-iio@vger.kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <plagnioj@jcrosoft.com>,
+	<nicolas.ferre@atmel.com>, <maxime.ripard@free-electrons.com>
+Subject: [PATCH 3/3] iio: at91_adc: fix missing Sample and Hold time
+Date: Fri, 29 Mar 2013 15:54:13 +0100
+Message-ID: <1364568853-18561-4-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <1364568853-18561-1-git-send-email-ludovic.desroches@atmel.com>
+References: <1364568853-18561-1-git-send-email-ludovic.desroches@atmel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The original info_mask is going away in favour of the broken out versions.
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-cc: Lars-Peter Clausen <lars@metafoo.de>
+On the at91_adc a minimal Sample and Hold Time is necessary for the ADC to
+guarantee the best converted final value between two channels selection.
+This time has to be programmed through the bitfield SHTIM in the
+Mode Register ADC_MR.
+
+Signed-off-by: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+[ludovic.desroches@atmel.com: add unit for sample and hold time]
+Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
- drivers/iio/imu/adis16400_core.c | 47 ++++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 24 deletions(-)
+ Documentation/devicetree/bindings/arm/atmel-adc.txt |  1 +
+ drivers/iio/adc/at91_adc.c                          | 15 ++++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-index b7f215e..2111068 100644
---- a/drivers/iio/imu/adis16400_core.c
-+++ b/drivers/iio/imu/adis16400_core.c
-@@ -484,8 +484,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.indexed = 1, \
- 	.channel = 0, \
- 	.extend_name = name, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
-+	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_SCALE, \
- 	.address = (addr), \
- 	.scan_index = (si), \
- 	.scan_type = { \
-@@ -507,10 +506,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.type = IIO_ANGL_VEL, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_ ## mod, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
--		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+		BIT(IIO_CHAN_INFO_CALIBBIAS),		  \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
- 	.address = addr, \
- 	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
- 	.scan_type = { \
-@@ -526,10 +525,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.type = IIO_ACCEL, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_ ## mod, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_CALIBBIAS_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
--		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+		BIT(IIO_CHAN_INFO_CALIBBIAS), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
- 	.scan_type = { \
-@@ -545,9 +544,9 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.type = IIO_MAGN, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_ ## mod, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SHARED_BIT | \
--		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
- 	.scan_type = { \
-@@ -568,10 +567,11 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.indexed = 1, \
- 	.channel = 0, \
- 	.extend_name = ADIS16400_MOD_TEMP_NAME_ ## mod, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT | \
--		IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY_SHARED_BIT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+		BIT(IIO_CHAN_INFO_OFFSET) | \
-+		BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_type = \
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
- 	.scan_type = { \
-@@ -587,9 +587,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.type = IIO_TEMP, \
- 	.indexed = 1, \
- 	.channel = 0, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_OFFSET_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SEPARATE_BIT, \
-+	.info_mask_separate = IIO_CHAN_INFO_RAW | IIO_CHAN_INFO_OFFSET | \
-+		IIO_CHAN_INFO_SCALE, \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_X, \
- 	.scan_type = { \
-@@ -605,8 +604,8 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.type = IIO_INCLI, \
- 	.modified = 1, \
- 	.channel2 = IIO_MOD_ ## mod, \
--	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT | \
--		IIO_CHAN_INFO_SCALE_SHARED_BIT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
- 	.address = (addr), \
- 	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
- 	.scan_type = { \
-@@ -646,8 +645,8 @@ static const struct iio_chan_spec adis16448_channels[] = {
- 	ADIS16400_MAGN_CHAN(Z, ADIS16400_ZMAGN_OUT, 16),
- 	{
- 		.type = IIO_PRESSURE,
--		.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT |
--		IIO_CHAN_INFO_SCALE_SHARED_BIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
- 		.address = ADIS16448_BARO_OUT,
- 		.scan_index = ADIS16400_SCAN_BARO,
- 		.scan_type = IIO_ST('s', 16, 16, 0),
+diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+index 3a05492..16769d9 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+@@ -26,6 +26,7 @@ Optional properties:
+ 		       atmel,adc-res-names property. If not specified, the highest
+ 		       resolution will be used.
+   - atmel,adc-sleep-mode: Boolean to enable sleep mode when no conversion
++  - atmel,adc-sample-hold-time: Sample and Hold Time in microseconds
+  
+ Optional trigger Nodes:
+   - Required properties:
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 8e38f1c..69fe8d4 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -52,6 +52,7 @@ struct at91_adc_state {
+ 	void __iomem		*reg_base;
+ 	struct at91_adc_reg_desc *registers;
+ 	u8			startup_time;
++	u8			sample_hold_time;
+ 	bool			sleep_mode;
+ 	struct iio_trigger	**trig;
+ 	struct at91_adc_trigger	*trigger_list;
+@@ -465,6 +466,9 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+ 	}
+ 	st->startup_time = prop;
+ 
++	prop = 0;
++	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
++	st->sample_hold_time = prop;
+ 
+ 	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
+ 		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
+@@ -578,7 +582,7 @@ static const struct iio_info at91_adc_info = {
+ 
+ static int at91_adc_probe(struct platform_device *pdev)
+ {
+-	unsigned int prsc, mstrclk, ticks, adc_clk;
++	unsigned int prsc, mstrclk, ticks, adc_clk, shtim;
+ 	int ret;
+ 	struct iio_dev *idev;
+ 	struct at91_adc_state *st;
+@@ -691,12 +695,21 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 */
+ 	ticks = round_up((st->startup_time * adc_clk /
+ 			  1000000) - 1, 8) / 8;
++	/*
++	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
++	 * the best converted final value between two channels selection
++	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
++	 */
++	shtim = round_up((st->sample_hold_time * adc_clk /
++			  1000000) - 1, 1);
++
+ 	reg = AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL;
+ 	reg |= AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP;
+ 	if (st->low_res)
+ 		reg |= AT91_ADC_LOWRES;
+ 	if (st->sleep_mode)
+ 		reg |= AT91_ADC_SLEEP;
++	reg |= AT91_ADC_SHTIM_(shtim) & AT91_ADC_SHTIM;
+ 	at91_adc_writel(st, AT91_ADC_MR, reg);
+ 
+ 	/* Setup the ADC channels available on the board */
 -- 
-1.8.1.4
+1.7.11.3
 
