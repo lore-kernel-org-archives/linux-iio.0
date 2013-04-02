@@ -1,63 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:56385 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755729Ab3CPOjK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Mar 2013 10:39:10 -0400
-Message-ID: <5144849A.8050907@metafoo.de>
-Date: Sat, 16 Mar 2013 15:41:30 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <ldewangan@nvidia.com>
+Message-ID: <515A7A06.2090608@nvidia.com>
+Date: Tue, 2 Apr 2013 11:56:14 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
 MIME-Version: 1.0
-To: Doug Anderson <dianders@chromium.org>
-CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>
-Subject: Re: [RFC: PATCH 2/2] iio: adc: exynos_adc: Handle timeout and race
- conditions
-References: <1363364801-23684-1-git-send-email-ch.naveen@samsung.com>	<51439846.9090201@metafoo.de> <CAD=FV=V+-DwCjGoookySCazazBBYOoRO+=G5Q_WXAw+SrXNc-A@mail.gmail.com>
-In-Reply-To: <CAD=FV=V+-DwCjGoookySCazazBBYOoRO+=G5Q_WXAw+SrXNc-A@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Lars-Peter
+ Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 0/4] iio:magnetometer:ak8975 cleanup and move out of staging.
+References: <1364144310-32251-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1364144310-32251-1-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/16/2013 01:37 AM, Doug Anderson wrote:
-> On Fri, Mar 15, 2013 at 2:53 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> What exactly is the spinlock protecting against here? Concurrent runs of
->> exynos_adc_isr? This is probably not issue in the first place.
->>
->> What you want to protect against is that completion is completed between the
->> call to INIT_COMPLETION() and the start of a new conversion. So the sections
->> that need to be under the spinlock are the complete call here and the point
->> from INIT_COMPLETION until the transfer is started in exynos_read_raw(). Make
->> sure to use spin_lock_irq there.
-> 
-> ...and at that point I _think_ you won't also need the mutex.
-> 
-> A reasonable way to test to see if you've got this all correct would be to:
-> 
-> * Start two processes that are reading from different ADCs that will
-> report very different values (maybe add a device tree node for adc1 or
-> adc7 and use those since they're not really connected to
-> thermistors?).
-> 
-> * Have your two processes read as fast as they can.  This could just
-> be "while true; do cat /sys/class/hwmon/hwmon0/device/temp1_input;
-> done"
-> 
-> * Decrease your timeout and maybe(?) sprinkle some random udelays in
-> the irq handler so that the timeouts happen sometimes but not others.
-> 
-> * Periodically cancel one of the readers with Ctrl-C
-> 
-> If all is working well then you should always get back the right value
-> from the right reader (and get no crashes).
-> 
+On Sunday 24 March 2013 10:28 PM, Jonathan Cameron wrote:
+> When I proposed moving this out of staging a while back, Lars-Peter
+> pointed out a few 'unusual' elements in the driver.  This series
+> addresses those and the interesting question of what the NOSTART flag
+> was doing there in the read code (came up in the dicussion of one of
+> Lars-Peter's points).
+>
+> The caching in the write is a little unnecessary, but isn't technically
+> incorrect so I haven't touched that.
+>
+> If anyone has one of these to test and make sure the changes haven't
+> broken anything that would be great!
+>
+> Thanks,
 
-
-I think you still need the mutex for serialization, otherwise the requests
-would just cancel each other out. Btw. what happens if you start a conversion
-while another is still in progress? Is it possible to abort a conversion?
-
-- Lars
+This series looks good.
+Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
