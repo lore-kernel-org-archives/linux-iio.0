@@ -1,55 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:61813 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755000Ab3DWMra (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2013 08:47:30 -0400
-Date: Tue, 23 Apr 2013 05:48:00 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Axel Lin <axel.lin@ingics.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Jean Delvare <khali@linux-fr.org>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (iio_hwmon) Fix missing iio_channel_release_all
- call if devm_kzalloc fail
-Message-ID: <20130423124800.GA29681@roeck-us.net>
-References: <1366708003.10246.1.camel@phoenix>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1366708003.10246.1.camel@phoenix>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	ch.naveen@samsung.com,
+	sachin.kamat@linaro.org,
+	patches@linaro.org
+Subject: [PATCH 1/2] adc: exynos_adc: Convert to devm_ioremap_resource()
+Date: Wed,  3 Apr 2013 11:53:58 +0530
+Message-Id: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Apr 23, 2013 at 05:06:43PM +0800, Axel Lin wrote:
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Use the newly introduced devm_ioremap_resource() instead of
+devm_request_and_ioremap() which provides more consistent error handling.
 
-Good catch.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/iio/adc/exynos_adc.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-
-> ---
->  drivers/hwmon/iio_hwmon.c |    6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-> index aafa453..368497f 100644
-> --- a/drivers/hwmon/iio_hwmon.c
-> +++ b/drivers/hwmon/iio_hwmon.c
-> @@ -84,8 +84,10 @@ static int iio_hwmon_probe(struct platform_device *pdev)
->  		return PTR_ERR(channels);
->  
->  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
-> -	if (st == NULL)
-> -		return -ENOMEM;
-> +	if (st == NULL) {
-> +		ret = -ENOMEM;
-> +		goto error_release_channels;
-> +	}
->  
->  	st->channels = channels;
->  
-> -- 
-> 1.7.10.4
-> 
-> 
-> 
-> 
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 9f3a8ef..22d034a 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -270,16 +270,16 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	info = iio_priv(indio_dev);
+ 
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+-	if (!info->regs) {
+-		ret = -ENOMEM;
++	info->regs = devm_ioremap_resource(&pdev->dev, mem);
++	if (IS_ERR(info->regs)) {
++		ret = PTR_ERR(info->regs);
+ 		goto err_iio;
+ 	}
+ 
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	info->enable_reg = devm_request_and_ioremap(&pdev->dev, mem);
+-	if (!info->enable_reg) {
+-		ret = -ENOMEM;
++	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
++	if (IS_ERR(info->enable_reg)) {
++		ret = PTR_ERR(info->enable_reg);
+ 		goto err_iio;
+ 	}
+ 
+-- 
+1.7.9.5
