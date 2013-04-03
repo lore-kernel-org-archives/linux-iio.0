@@ -1,61 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36867 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760406Ab3DBTaS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Apr 2013 15:30:18 -0400
-Message-ID: <515B31C6.2030609@kernel.org>
-Date: Tue, 02 Apr 2013 20:30:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-pd0-f180.google.com ([209.85.192.180]:43626 "EHLO
+	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755939Ab3DCR1m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2013 13:27:42 -0400
+Received: by mail-pd0-f180.google.com with SMTP id q11so965274pdj.39
+        for <linux-iio@vger.kernel.org>; Wed, 03 Apr 2013 10:27:42 -0700 (PDT)
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO cleanups, new stuff and staging graduations (IIO set 3
- for the 3.10 cycle)
+In-Reply-To: <1364970239-8242-2-git-send-email-sachin.kamat@linaro.org>
+References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org> <1364970239-8242-2-git-send-email-sachin.kamat@linaro.org>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Wed, 3 Apr 2013 10:27:21 -0700
+Message-ID: <CAHfPSqBvX8WFR6Up7mEior1USYZ=723MMNB+cFHrh8P6gv4YBQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] adc: exynos_adc: Fix incorrect variable type
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, jic23@kernel.org,
+	My self <ch.naveen@samsung.com>, patches@linaro.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 03b7f67bd1a085572539788d07c4630489108a35:
+On 2 April 2013 23:23, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+> wait_for_completion_interruptible_timeout() returns negative value on error
+> but is assigned to an unsigned variable. Though this might not matter much
+> as the return value is only tested for '0', for the sake of code correctness
+> modify the variable type suitably. Without this patch we get the following
+> smatch error:
+> drivers/iio/adc/exynos_adc.c:147 exynos_read_raw() error:
+> 'wait_for_completion_interruptible_timeout()' returns negative and
+> 'timeout' is unsigned
+>
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  drivers/iio/adc/exynos_adc.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 22d034a..3bf5132 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -118,7 +118,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>                                 long mask)
+>  {
+>         struct exynos_adc *info = iio_priv(indio_dev);
+> -       unsigned long timeout;
+> +       long timeout;
+Sachin thank you for your efforts.
 
-  staging: ti-soc-thermal: Add get_trend support (2013-04-01 12:27:31 -0700)
+Apart from just changing it to long. we seem to have other corner cases
+and a CL is under discussion https://patchwork.kernel.org/patch/2279591/
 
-are available in the git repository at:
+Doug, has replied on it as of today. We will come back with that CL soon.
+>         u32 con1, con2;
+>
+>         if (mask != IIO_CHAN_INFO_RAW)
+> --
+> 1.7.9.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.10c
 
-for you to fetch changes up to beca9e767e27f756d6aed9a62665e3f73546aabb:
 
-  iio: at91_adc: fix missing Sample and Hold time (2013-04-02 19:22:16 +0100)
-
-----------------------------------------------------------------
-Third round of IIO cleanups, graduations and new stuff for the 3.10 cycle.
-
-A small set including 3 things.
-1) A short cleanup series for the ak8975.
-2) Graduation of ak8975 out of staging.
-3) Some additional bits for the at91 adc driver to cover low resolution
-   modes, sleep and a little bit of missing documentation.
-
-----------------------------------------------------------------
-Jean-Christophe PLAGNIOL-VILLARD (2):
-      iio: at91_adc: add sleep mode support
-      iio: at91_adc: fix missing Sample and Hold time
-
-Jonathan Cameron (4):
-      staging:iio:magnetometer:ak8975 drop unused eoc_irq
-      staging:iio:magnetometer:ak8975 drop I2C_M_NOSTART flag in read_data
-      staging:iio:magnetometer:ak8975 use standard i2c_smbus read functions.
-      iio:magnetometer:ak8975 move driver out of staging
-
-Ludovic Desroches (1):
-      iio: at91_adc: add low and high res support
-
- .../devicetree/bindings/arm/atmel-adc.txt          | 13 ++++
- drivers/iio/adc/at91_adc.c                         | 90 ++++++++++++++++++++--
- drivers/iio/magnetometer/Kconfig                   | 11 +++
- drivers/iio/magnetometer/Makefile                  |  1 +
- drivers/{staging => }/iio/magnetometer/ak8975.c    | 69 ++++-------------
- drivers/staging/iio/magnetometer/Kconfig           | 11 ---
- drivers/staging/iio/magnetometer/Makefile          |  1 -
- 7 files changed, 127 insertions(+), 69 deletions(-)
- rename drivers/{staging => }/iio/magnetometer/ak8975.c (90%)
+--
+Shine bright,
+(: Nav :)
