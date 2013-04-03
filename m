@@ -1,26 +1,44 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 2 Apr 2013 12:38:04 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO cleanups, new stuff and staging graduations (IIO set
- 3 for the 3.10 cycle)
-Message-ID: <20130402193804.GA30986@kroah.com>
-References: <515B31C6.2030609@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <515B31C6.2030609@kernel.org>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	ch.naveen@samsung.com,
+	sachin.kamat@linaro.org,
+	patches@linaro.org
+Subject: [PATCH 2/2] adc: exynos_adc: Fix incorrect variable type
+Date: Wed,  3 Apr 2013 11:53:59 +0530
+Message-Id: <1364970239-8242-2-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
+References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Apr 02, 2013 at 08:30:14PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 03b7f67bd1a085572539788d07c4630489108a35:
-> 
->   staging: ti-soc-thermal: Add get_trend support (2013-04-01 12:27:31 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.10c
+wait_for_completion_interruptible_timeout() returns negative value on error
+but is assigned to an unsigned variable. Though this might not matter much
+as the return value is only tested for '0', for the sake of code correctness
+modify the variable type suitably. Without this patch we get the following
+smatch error:
+drivers/iio/adc/exynos_adc.c:147 exynos_read_raw() error:
+'wait_for_completion_interruptible_timeout()' returns negative and
+'timeout' is unsigned
 
-Pulled and pushed out, thanks.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/iio/adc/exynos_adc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 22d034a..3bf5132 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -118,7 +118,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				long mask)
+ {
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+-	unsigned long timeout;
++	long timeout;
+ 	u32 con1, con2;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+-- 
+1.7.9.5
