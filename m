@@ -1,498 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailrelay1.diasemi.com ([82.210.246.133]:60283 "EHLO
-	mailrelay1.diasemi.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752281Ab3DQQt3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Apr 2013 12:49:29 -0400
-Message-Id: <201304171648.r3HGm5rd023889@latitude>
-From: Anthony Olech <anthony.olech.opensource@diasemi.com>
-Date: Wed, 17 Apr 2013 17:33:34 +0100
-Subject: [NEW DRIVER V5 2/7] drivers/iio/adc: DA9058 ADC driver
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org
-Cc: Samuel Ortiz <sameo@linux.intel.com>
-Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>
-Cc: Steven Toth <stoth@kernellabs.com>
-Cc: Michael Krufky <mkrufky@kernellabs.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: LKML <linux-kernel@vger.kernel.org>
-Cc: David Dajun Chen <david.chen@diasemi.com>
+Received: from mail-pb0-f50.google.com ([209.85.160.50]:40565 "EHLO
+	mail-pb0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750699Ab3DDEGf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Apr 2013 00:06:35 -0400
+From: Naveen Krishna Chatradhi <naveenkrishna.ch@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-samsung-soc@vger.kernel.org, jic23@cam.ac.uk,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: adc: exynos_adc: Handle timeout issues
+Date: Wed,  3 Apr 2013 21:06:28 -0700
+Message-Id: <1365048389-6364-1-git-send-email-naveenkrishna.ch@gmail.com>
+In-Reply-To: <1363364801-23684-1-git-send-email-ch.naveen@samsung.com>
+References: <1363364801-23684-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch is relative to linux next-20130417
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 
-This is the ADC component driver of the Dialog DA9058 PMIC.
-This driver is just one component of the whole DA9058 PMIC
-driver. It depends on the DA9058 CORE component driver.
-The HWMON component driver depends on this ADC component driver.
+This patch does the following
+1. Handle the return values of wait_for_completion_interruptible_timeout
+2. Reset software if a timeout happes.
 
-This component driver recieves the actual platform data from
-the DA9058 CORE driver, whose settings may be overridden from
-the platform data supplied from the machine driver.
+Note: submitted for review at https://patchwork.kernel.org/patch/2279591/
 
-Changes relative to V4 of this patch:
-- rebased to latest tagged linux-next - previously relative to mainline
-drivers/iio/adc/Kconfig
-- removed dependancy on IIO_BUFFER, IIO_KFIFO_BUF and IIO_TRIGGER
-- added dependancy on MFD_DA9058
-- changed wait_for_completion_timeout to wait_for_completion_interruptible_timeout
-- added blank line before static function declaration
-- removed IIO_CHAN_INFO_SCALE
-- marked struct da9058_adc_channels as static const
-- changed to prefered style of nested struct instantiation
-- change to .info_mask_separate in struct instantiation
-- remove scan_mask
-- removed clearing of platform_set_drvdata
-
-Signed-off-by: Anthony Olech <anthony.olech.opensource@diasemi.com>
-Signed-off-by: David Dajun Chen <david.chen@diasemi.com>
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: Doug Anderson <dianders@chromium.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/adc/Kconfig      |   12 ++
- drivers/iio/adc/Makefile     |    1 +
- drivers/iio/adc/da9058-adc.c |  397 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 410 insertions(+)
- create mode 100644 drivers/iio/adc/da9058-adc.c
+As per the comments from Doug at
+http://marc.info/?l=linux-kernel&m=136500878406955&w=3
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index ab0767e6..68162bf 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -111,6 +111,18 @@ config EXYNOS_ADC
- 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
- 	  this resource.
+Changes since v1:
+1. Remove the spin lock implememtation and the INIT_COMPLETION
+2. Rearrange the code and reset the ADC in cases of timeout.
+
+ drivers/iio/adc/exynos_adc.c | 73 ++++++++++++++++++++++++++------------------
+ 1 file changed, 43 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 5ab0dfd..a6c4df5 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -111,6 +111,35 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
+ 	return (unsigned int)match->data;
+ }
  
-+config DA9058_ADC
-+	tristate "Dialog DA9058 PMIC ADC"
-+	depends on MFD_DA9058
-+	select SYSFS
-+	help
-+	  Say yes here to build support for the ADC component of
-+	  the DAILOG DA9058 PMIC.
-+	  If unsure, say N (but it's safe to say "Y").
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called da9058-adc.
-+
- config LP8788_ADC
- 	bool "LP8788 ADC driver"
- 	depends on MFD_LP8788
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 0a825be..ad04a7d 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_AD7791) += ad7791.o
- obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-+obj-$(CONFIG_DA9058_ADC) += da9058-adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1363) += max1363.o
-diff --git a/drivers/iio/adc/da9058-adc.c b/drivers/iio/adc/da9058-adc.c
-new file mode 100644
-index 0000000..d0ff431
---- /dev/null
-+++ b/drivers/iio/adc/da9058-adc.c
-@@ -0,0 +1,397 @@
-+/*
-+ *  Copyright (C) 2012 Dialog Semiconductor Ltd.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/iio/iio.h>
-+#include <linux/regmap.h>
-+#include <linux/mfd/core.h>
-+
-+#include <linux/mfd/da9058/version.h>
-+#include <linux/mfd/da9058/core.h>
-+#include <linux/mfd/da9058/registers.h>
-+#include <linux/mfd/da9058/irq.h>
-+#include <linux/mfd/da9058/pdata.h>
-+#include <linux/mfd/da9058/adc.h>
-+#include <linux/mfd/da9058/conf.h>
-+
-+struct da9058_adc {
-+	struct da9058 *da9058;
-+	struct platform_device *pdev;
-+	struct rtc_device *rtc_dev;
-+	int use_automatic_adc;
-+	int irq;
-+};
-+
-+/*
-+ *  if the PMIC is in automatic ADC consersion mode we have the choice
-+ *  of just getting the last (automatic) conversion or doing a manual
-+ *  conversion anyway.
-+ *
-+ *  if the PMIC is not in automatic ADC consersion mode we have no choice
-+ *  we just have to ignore the requested mode and just do a manual
-+ *  ADC conversion.
-+ */
-+static int da9058_automatic_adc_conversion(struct da9058 *da9058,
-+				const int channel, unsigned int *value)
++static void exynos_adc_hw_init(struct exynos_adc *info)
 +{
-+	unsigned int adc_msh, adc_lsh;
-+	int ret;
++	u32 con1, con2;
++	int delay;
 +
-+	switch (channel) {
-+	case DA9058_ADCMAN_MUXSEL_VBAT:
-+		ret = da9058_reg_read(da9058, DA9058_VBATRES_REG_MSB,
-+						&adc_msh);
-+		if (ret)
-+			return ret;
++	if (info->version == ADC_V2) {
++		con1 = ADC_V2_CON1_SOFT_RESET;
++		writel(con1, ADC_V2_CON1(info->regs));
 +
-+		ret = da9058_reg_read(da9058, DA9058_AUTORES_REG_1,
-+					&adc_lsh);
-+		if (ret)
-+			return ret;
++		/* ADC H/W requires 25PCLKs before other register access */
++		delay = DIV_ROUND_UP(25 * 1000000, clk_get_rate(info->clk));
++		udelay(delay);
 +
-+		*value = (adc_lsh & 0x0F) | (adc_msh << 4);
++		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
++			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
++		writel(con2, ADC_V2_CON2(info->regs));
 +
-+		return 0;
-+	case DA9058_ADCMAN_MUXSEL_TEMP:
-+		ret = da9058_reg_read(da9058, DA9058_TEMPRES_REG_MSB,
-+						&adc_msh);
-+		if (ret)
-+			return ret;
-+
-+		ret = da9058_reg_read(da9058, DA9058_AUTORES_REG_1,
-+					&adc_lsh);
-+		if (ret)
-+			return ret;
-+
-+		*value = (adc_lsh >> 4) | (adc_msh << 4);
-+
-+		return 0;
-+	case DA9058_ADCMAN_MUXSEL_VF:
-+		ret = da9058_reg_read(da9058, DA9058_VREF_REG,
-+					&adc_msh);
-+		if (ret)
-+			return ret;
-+
-+		ret = da9058_reg_read(da9058, DA9058_AUTORES_REG_2,
-+					&adc_lsh);
-+		if (ret)
-+			return ret;
-+
-+		*value = (adc_lsh & 0x0F) | (adc_msh << 4);
-+
-+		return 0;
-+	case DA9058_ADCMAN_MUXSEL_ADCIN:
-+		ret = da9058_reg_read(da9058, DA9058_ADCINRES_REG_MSB,
-+					&adc_msh);
-+		if (ret)
-+			return ret;
-+
-+		ret = da9058_reg_read(da9058, DA9058_AUTORES_REG_2,
-+					&adc_lsh);
-+		if (ret)
-+			return ret;
-+
-+		*value = (adc_lsh >> 4) | (adc_msh << 4);
-+
-+		return 0;
-+	case DA9058_ADCMAN_MUXSEL_TJUNC:
-+		ret = da9058_reg_read(da9058, DA9058_TJUNCRES_REG,
-+					&adc_msh);
-+		if (ret)
-+			return ret;
-+
-+		ret = da9058_reg_read(da9058, DA9058_AUTORES_REG_3,
-+					&adc_lsh);
-+		if (ret)
-+			return ret;
-+
-+		*value = (adc_lsh >> 4) | (adc_msh << 4);
-+
-+		return 0;
-+	default:
-+		dev_err(da9058->dev, "ADC Channel %d is reserved\n", channel);
-+		return -EIO;
-+	}
-+}
-+
-+static int da9058_manual_adc_conversion(struct da9058 *da9058,
-+				const int channel, unsigned int *value)
-+{
-+	unsigned int adc_msh, adc_lsh;
-+	int ret;
-+
-+	mutex_lock(&da9058->adc_mutex);
-+
-+	ret = da9058_reg_write(da9058, DA9058_ADCMAN_REG,
-+					DA9058_ADCMAN_MANCONV | channel);
-+	if (ret < 0)
-+		goto err;
-+
-+	if (!wait_for_completion_interruptible_timeout(&da9058->adc_read_done,
-+						msecs_to_jiffies(500))) {
-+		dev_err(da9058->dev,
-+			"timeout waiting for ADC conversion interrupt\n");
-+		ret = -ETIMEDOUT;
-+		goto err;
-+	}
-+
-+	ret = da9058_reg_read(da9058, DA9058_ADCRESH_REG, &adc_msh);
-+	if (ret < 0)
-+		goto err;
-+
-+	ret = da9058_reg_read(da9058, DA9058_ADCRESL_REG, &adc_lsh);
-+	if (ret < 0)
-+		goto err;
-+
-+	*value = (adc_msh << 4) | (adc_lsh & 0x0F);
-+
-+err:
-+	mutex_unlock(&da9058->adc_mutex);
-+	return ret;
-+}
-+
-+static int da9058_adc_conversion_read(struct da9058 *da9058, const int channel,
-+					int automatic_mode, unsigned int *value)
-+{
-+	if (!value)
-+		return -EINVAL;
-+
-+	if (automatic_mode) {
-+		unsigned int adc_ctrl;
-+		int ret;
-+
-+		ret = da9058_reg_read(da9058, DA9058_ADCCONT_REG, &adc_ctrl);
-+		if (ret)
-+			return ret;
-+
-+		if (adc_ctrl & DA9058_ADCCONT_AUTOADCEN)
-+			return da9058_automatic_adc_conversion(da9058,
-+						channel, value);
-+		else
-+			return da9058_manual_adc_conversion(da9058,
-+						channel, value);
++		/* Enable interrupts */
++		writel(1, ADC_V2_INT_EN(info->regs));
 +	} else {
-+		return da9058_manual_adc_conversion(da9058, channel, value);
++		/* set default prescaler values and Enable prescaler */
++		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
++
++		/* Enable 12-bit ADC resolution */
++		con1 |= ADC_V1_CON_RES;
++		writel(con1, ADC_V1_CON(info->regs));
 +	}
 +}
 +
-+static irqreturn_t da9058_adc_interrupt(int irq, void *data)
-+{
-+	struct da9058 *da9058 = data;
-+
-+	complete(&da9058->adc_read_done);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int da9058_adc_read_raw(struct iio_dev *idev,
-+	struct iio_chan_spec const *chan, int *val, int *val2, long info)
-+{
-+	struct da9058_adc *adc = iio_priv(idev);
-+	struct da9058 *da9058 = adc->da9058;
+ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+ 				int *val,
+@@ -118,8 +147,9 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				long mask)
+ {
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+-	unsigned long timeout;
++	long timeout;
+ 	u32 con1, con2;
 +	int ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = da9058_adc_conversion_read(da9058, chan->channel,
-+					adc->use_automatic_adc, val);
-+		if (ret)
-+			return ret;
-+		else
-+			return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	};
-+}
-+
-+static const struct iio_info da9058_adc_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &da9058_adc_read_raw,
-+};
-+
-+static const struct iio_chan_spec da9058_adc_channels[] = {
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 0,
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			},
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 1,
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			},
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 2,
-+		.scan_index = 2,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			},
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 3,
-+		.scan_index = 3,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			},
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 4,
-+		.scan_index = 4,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			},
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+
-+};
-+
-+static int da9058_adc_probe(struct platform_device *pdev)
-+{
-+	struct da9058 *da9058 = dev_get_drvdata(pdev->dev.parent);
-+	const struct mfd_cell *cell = mfd_get_cell(pdev);
-+	struct da9058_adc_pdata *adc_pdata;
-+	struct da9058_adc *adc;
-+	struct iio_dev *idev;
-+	int ret;
-+
-+	if (cell == NULL) {
-+		ret = -ENODEV;
-+		goto exit;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+ 		return -EINVAL;
+@@ -146,14 +176,21 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 
+ 	timeout = wait_for_completion_interruptible_timeout
+ 			(&info->completion, EXYNOS_ADC_TIMEOUT);
+-	*val = info->value;
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	if (timeout == 0) {
++		dev_warn(&indio_dev->dev, "Conversion timed out reseting\n");
++		exynos_adc_hw_init(info);
++		ret = -ETIMEDOUT;
++	} else if (timeout < 0) {
++		ret = timeout;
++	} else {
++		*val = info->value;
++		ret = IIO_VAL_INT;
 +	}
-+
-+	if (da9058 == NULL) {
-+		ret = -ENODEV;
-+		goto exit;
-+	}
-+
-+	if (da9058->adc_read) {
-+		ret = -EEXIST;
-+		goto exit;
-+	}
-+
-+	adc_pdata = cell->platform_data;
-+
-+	if (adc_pdata == NULL) {
-+		ret = -EINVAL;
-+		goto exit;
-+	}
-+
-+	idev = iio_device_alloc(sizeof(struct da9058_adc));
-+	if (idev == NULL) {
-+		ret = -ENOMEM;
-+		goto error_ret;
-+	}
-+	adc = iio_priv(idev);
-+
-+	platform_set_drvdata(pdev, idev);
-+
-+	idev->dev.parent = &pdev->dev;
-+	idev->name = dev_name(&pdev->dev);
-+	idev->modes = INDIO_DIRECT_MODE;
-+	idev->info = &da9058_adc_info;
-+
-+	adc->irq = platform_get_irq(pdev, 0);
-+	if (adc->irq < 0) {
-+		dev_err(&pdev->dev, "cannot get ADC IRQ error=%d\n",
-+				adc->irq);
-+		ret = -ENODEV;
-+		goto error_free_device;
-+	}
-+
-+	idev->channels = da9058_adc_channels;
-+	idev->num_channels = ARRAY_SIZE(da9058_adc_channels);
-+	idev->masklength = ARRAY_SIZE(da9058_adc_channels);
-+
-+	platform_set_drvdata(pdev, adc);
-+	adc->da9058 = da9058;
-+	adc->pdev = pdev;
-+	adc->use_automatic_adc = adc_pdata->use_automatic_adc;
-+	da9058->adc_read = da9058_adc_conversion_read;
-+
-+	ret = iio_device_register(idev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Couldn't register the device.\n");
-+		goto error_free_device;
-+	}
-+
-+	ret = request_threaded_irq(da9058_to_virt_irq_num(da9058, adc->irq),
-+				NULL, da9058_adc_interrupt,
-+				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-+				"DA9058 ADC EOM", da9058);
-+	if (ret)
-+		goto failed_to_get_adc_interrupt;
-+
-+	goto exit;
-+
-+failed_to_get_adc_interrupt:
-+	iio_device_unregister(idev);
-+error_free_device:
-+	iio_device_free(idev);
-+exit:
-+error_ret:
+ 
+-	if (timeout == 0)
+-		return -ETIMEDOUT;
++	mutex_unlock(&indio_dev->mlock);
+ 
+-	return IIO_VAL_INT;
 +	return ret;
-+}
-+
-+static int da9058_adc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *idev = platform_get_drvdata(pdev);
-+	struct da9058_adc *adc = iio_priv(idev);
-+
-+	iio_device_unregister(idev);
-+	free_irq(adc->irq, adc);
-+	iio_device_free(idev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver da9058_adc_driver = {
-+	.probe = da9058_adc_probe,
-+	.remove = da9058_adc_remove,
-+	.driver = {
-+		.name = "da9058-adc",
-+		.owner = THIS_MODULE,
-+	},
-+};
-+
-+module_platform_driver(da9058_adc_driver);
-+
-+MODULE_DESCRIPTION("Dialog DA9058 PMIC Analogue to Digial Converter Driver");
-+MODULE_AUTHOR("Anthony Olech <Anthony.Olech@diasemi.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:da9058-adc");
+ }
+ 
+ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+@@ -225,30 +262,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+ 	return 0;
+ }
+ 
+-static void exynos_adc_hw_init(struct exynos_adc *info)
+-{
+-	u32 con1, con2;
+-
+-	if (info->version == ADC_V2) {
+-		con1 = ADC_V2_CON1_SOFT_RESET;
+-		writel(con1, ADC_V2_CON1(info->regs));
+-
+-		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+-			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+-		writel(con2, ADC_V2_CON2(info->regs));
+-
+-		/* Enable interrupts */
+-		writel(1, ADC_V2_INT_EN(info->regs));
+-	} else {
+-		/* set default prescaler values and Enable prescaler */
+-		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+-
+-		/* Enable 12-bit ADC resolution */
+-		con1 |= ADC_V1_CON_RES;
+-		writel(con1, ADC_V1_CON(info->regs));
+-	}
+-}
+-
+ static int exynos_adc_probe(struct platform_device *pdev)
+ {
+ 	struct exynos_adc *info = NULL;
 -- 
-end-of-patch for NEW DRIVER V5
+1.7.12.4
 
