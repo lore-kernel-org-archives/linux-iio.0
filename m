@@ -1,61 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f173.google.com ([209.85.214.173]:55425 "EHLO
-	mail-ob0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932711Ab3DDDgA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2013 23:36:00 -0400
-Received: by mail-ob0-f173.google.com with SMTP id wn14so1116020obc.4
-        for <linux-iio@vger.kernel.org>; Wed, 03 Apr 2013 20:35:59 -0700 (PDT)
+Return-Path: <sachin.kamat@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHfPSqBvX8WFR6Up7mEior1USYZ=723MMNB+cFHrh8P6gv4YBQ@mail.gmail.com>
+In-Reply-To: <516BDA77.5060402@jic23.retrosnub.co.uk>
 References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
-	<1364970239-8242-2-git-send-email-sachin.kamat@linaro.org>
-	<CAHfPSqBvX8WFR6Up7mEior1USYZ=723MMNB+cFHrh8P6gv4YBQ@mail.gmail.com>
-Date: Thu, 4 Apr 2013 09:05:59 +0530
-Message-ID: <CAK9yfHzKGq2KVv0nQNQ_Z_MoSvb=oLDjFBsRb1iqQD1AzxmFhw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] adc: exynos_adc: Fix incorrect variable type
+	<CAK9yfHxht4L38absFAbDkX2=ort5HV7W=Q2uU2BbncQhXJ4T_Q@mail.gmail.com>
+	<516BDA77.5060402@jic23.retrosnub.co.uk>
+Date: Mon, 15 Apr 2013 16:37:24 +0530
+Message-ID: <CAK9yfHxuBJ1DcNv9tDes7Hfz-W=rruWZX=H2YV_Kg8tO4xVEbQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] adc: exynos_adc: Convert to devm_ioremap_resource()
 From: Sachin Kamat <sachin.kamat@linaro.org>
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, jic23@kernel.org,
-	My self <ch.naveen@samsung.com>, patches@linaro.org
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 3 April 2013 22:57, Naveen Krishna Ch <naveenkrishna.ch@gmail.com> wrote:
-> On 2 April 2013 23:23, Sachin Kamat <sachin.kamat@linaro.org> wrote:
->> wait_for_completion_interruptible_timeout() returns negative value on error
->> but is assigned to an unsigned variable. Though this might not matter much
->> as the return value is only tested for '0', for the sake of code correctness
->> modify the variable type suitably. Without this patch we get the following
->> smatch error:
->> drivers/iio/adc/exynos_adc.c:147 exynos_read_raw() error:
->> 'wait_for_completion_interruptible_timeout()' returns negative and
->> 'timeout' is unsigned
+On 15 April 2013 16:16, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+> On 15/04/13 09:22, Sachin Kamat wrote:
 >>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> ---
->>  drivers/iio/adc/exynos_adc.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->> index 22d034a..3bf5132 100644
->> --- a/drivers/iio/adc/exynos_adc.c
->> +++ b/drivers/iio/adc/exynos_adc.c
->> @@ -118,7 +118,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->>                                 long mask)
->>  {
->>         struct exynos_adc *info = iio_priv(indio_dev);
->> -       unsigned long timeout;
->> +       long timeout;
-> Sachin thank you for your efforts.
+>> On 3 April 2013 11:53, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+>>>
+>>> Use the newly introduced devm_ioremap_resource() instead of
+>>> devm_request_and_ioremap() which provides more consistent error handling.
+>>>
+>>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 >
-> Apart from just changing it to long. we seem to have other corner cases
-> and a CL is under discussion https://patchwork.kernel.org/patch/2279591/
+> Not sure why I missed this one.  I think I marked the entire thread
+> as not ready based on the responses to patch 2.  Clearly nothing wrong
+> with this one!  Will pick up for the next cycle now as I think it
+> is a cleanup rather than an actual bug fix?
 
-Thanks for pointing this out. I had not seen this earlier. My patch
-was to fix an obvious issue with the existing code.
-However, since you have more elaborate plans about handling this,
-please go ahead with that.
+Yes this is a cleanup and hence can go in for 3.10-rc. Thanks.
 
 
 -- 
