@@ -1,150 +1,171 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailrelay1.diasemi.com ([82.210.246.133]:27134 "EHLO
-	mailrelay1.diasemi.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753531Ab3DQQh2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Apr 2013 12:37:28 -0400
-Message-Id: <201304171635.r3HGZp3D023837@latitude>
-From: Anthony Olech <anthony.olech.opensource@diasemi.com>
-Date: Wed, 17 Apr 2013 17:33:37 +0100
-Subject: [NEW DRIVER V5 0/7] DA9058 PMIC - please comment on this new driver
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Andrew Jones <drjones@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Ashish Jangam <ashish.jangam@kpitcummins.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Eric Andersson <eric.andersson@unixphere.com>
-Cc: Grant Likely <grant.likely@secretlab.ca>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <khali@linux-fr.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Liam Girdwood <lrg@ti.com>
-Cc: Linus Walleij <linus.walleij@stericsson.com>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-input@vger.kernel.org
-Cc: lm-sensors@lm-sensors.org
-Cc: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: Mauro Carvalho Chehab <mchehab@redhat.com>
-Cc: Michael Krufky <mkrufky@kernellabs.com>
-Cc: Paul Gortmaker <p_gortmaker@yahoo.com>
-Cc: Randy Dunlap <rdunlap@xenotime.net>
-Cc: rtc-linux@googlegroups.com
-Cc: Samuel Ortiz <sameo@linux.intel.com>
-Cc: Steven Toth <stoth@kernellabs.com>
+Received: from mail.free-electrons.com ([94.23.35.102]:34043 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S967479Ab3DRPjL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Apr 2013 11:39:11 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>
+Cc: jimwall@q.com, brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: [PATCH 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+Date: Thu, 18 Apr 2013 17:38:55 +0200
+Message-Id: <1366299536-18353-3-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is submission attempt number 5 to have this driver included in
-the linux kernel source tree. This is the driver for the Dialog DA9058.
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-The DA9058 is a low power Power Management Integrated Circuit with extra
-functionality. It is a Multi Function Device controlled only from an I2C
-bus whose components can raise an interrupt request on a single IRQ line.
+The ADCs connected to this bus have been experiencing some timeout
+issues when using the iMX28 i2c controller. Switching back to bitbanging
+solves this.
 
-The driver for the DA9058 consists of a core (i2c) device driver that
-instantiates the individual component device drivers for:
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ arch/arm/boot/dts/imx28-cfa10049.dts |  108 ++++++++++++++++++++--------------
+ 1 file changed, 65 insertions(+), 43 deletions(-)
 
-adc - 5 ADC channels
-gpio - 2 available pins
-onkey - 1 device
-regulator - 4 BUCKS, 19 LDO and 3 fixed
-rtc - low power clock
-hwmon - 5 monitored voltages/temperatures
-
-All the above six component device drivers depend on the 'core'
-component driver, which is number one in the patch series.
-
-Each component driver for the Dialog DA9058 will follow as an e-mail
-patch relative to linux next-20130417
-
-This driver has been tested on a Samsung SMDK6410 connected to a Dialog
-DA9058 Evaluation Board via one GPIO and a 3-wire I2C connection.
-
-All the components can be builtin to the kernel or compiled as modules.
-As far as I can tell, all the latest APIs both for the core driver and
-all the component drivers have been adhered to, but if I have missed
-something please let me know.
-
-Many thanks,
-Anthony Olech, Dialog Semiconductor Ltd.
-
-Tony Olech (at Home) (7):
-  drivers/mfd: DA9058 MFD core driver
-  drivers/iio/adc: DA9058 ADC driver
-  drivers/input/misc: DA9058 ONKEY driver
-  drivers/rtc: DA9058 RTC driver
-  drivers/gpio: DA9058 GPIO driver
-  drivers/hwmon: DA9058 HWMON driver
-  drivers/regulator: DA9058 REGULATOR driver
-
- Documentation/hwmon/da9058           |   39 ++
- drivers/gpio/Kconfig                 |   12 +
- drivers/gpio/Makefile                |    1 +
- drivers/gpio/gpio-da9058.c           |  377 ++++++++++++++
- drivers/hwmon/Kconfig                |   10 +
- drivers/hwmon/Makefile               |    3 +-
- drivers/hwmon/da9058-hwmon.c         |  349 +++++++++++++
- drivers/iio/adc/Kconfig              |   12 +
- drivers/iio/adc/Makefile             |    1 +
- drivers/iio/adc/da9058-adc.c         |  397 +++++++++++++++
- drivers/input/misc/Kconfig           |   10 +
- drivers/input/misc/Makefile          |    1 +
- drivers/input/misc/da9058_onkey.c    |  177 +++++++
- drivers/mfd/Kconfig                  |   17 +
- drivers/mfd/Makefile                 |    3 +
- drivers/mfd/da9058-core.c            |   74 +++
- drivers/mfd/da9058-i2c.c             |   97 ++++
- drivers/mfd/da9058-info.c            |  929 ++++++++++++++++++++++++++++++++++
- drivers/mfd/da9058-irq.c             |   57 +++
- drivers/regulator/Kconfig            |   11 +
- drivers/regulator/Makefile           |    1 +
- drivers/regulator/da9058-regulator.c |  210 ++++++++
- drivers/rtc/Kconfig                  |   10 +
- drivers/rtc/Makefile                 |    1 +
- drivers/rtc/rtc-da9058.c             |  458 +++++++++++++++++
- include/linux/mfd/da9058/adc.h       |   18 +
- include/linux/mfd/da9058/bat.h       |   33 ++
- include/linux/mfd/da9058/codec.h     |   22 +
- include/linux/mfd/da9058/conf.h      |   22 +
- include/linux/mfd/da9058/core.h      |   66 +++
- include/linux/mfd/da9058/gpio.h      |   19 +
- include/linux/mfd/da9058/hwmon.h     |   33 ++
- include/linux/mfd/da9058/i2c.h       |   22 +
- include/linux/mfd/da9058/irq.h       |   50 ++
- include/linux/mfd/da9058/onkey.h     |   17 +
- include/linux/mfd/da9058/pdata.h     |   30 ++
- include/linux/mfd/da9058/registers.h |  480 ++++++++++++++++++
- include/linux/mfd/da9058/regulator.h |   33 ++
- include/linux/mfd/da9058/rtc.h       |   17 +
- 39 files changed, 4118 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/hwmon/da9058
- create mode 100644 drivers/gpio/gpio-da9058.c
- create mode 100644 drivers/hwmon/da9058-hwmon.c
- create mode 100644 drivers/iio/adc/da9058-adc.c
- create mode 100644 drivers/input/misc/da9058_onkey.c
- create mode 100644 drivers/mfd/da9058-core.c
- create mode 100644 drivers/mfd/da9058-i2c.c
- create mode 100644 drivers/mfd/da9058-info.c
- create mode 100644 drivers/mfd/da9058-irq.c
- create mode 100644 drivers/regulator/da9058-regulator.c
- create mode 100644 drivers/rtc/rtc-da9058.c
- create mode 100644 include/linux/mfd/da9058/adc.h
- create mode 100644 include/linux/mfd/da9058/bat.h
- create mode 100644 include/linux/mfd/da9058/codec.h
- create mode 100644 include/linux/mfd/da9058/conf.h
- create mode 100644 include/linux/mfd/da9058/core.h
- create mode 100644 include/linux/mfd/da9058/gpio.h
- create mode 100644 include/linux/mfd/da9058/hwmon.h
- create mode 100644 include/linux/mfd/da9058/i2c.h
- create mode 100644 include/linux/mfd/da9058/irq.h
- create mode 100644 include/linux/mfd/da9058/onkey.h
- create mode 100644 include/linux/mfd/da9058/pdata.h
- create mode 100644 include/linux/mfd/da9058/registers.h
- create mode 100644 include/linux/mfd/da9058/regulator.h
- create mode 100644 include/linux/mfd/da9058/rtc.h
-
+diff --git a/arch/arm/boot/dts/imx28-cfa10049.dts b/arch/arm/boot/dts/imx28-cfa10049.dts
+index 79a2007..a333dbf 100644
+--- a/arch/arm/boot/dts/imx28-cfa10049.dts
++++ b/arch/arm/boot/dts/imx28-cfa10049.dts
+@@ -138,6 +138,17 @@
+ 					fsl,voltage = <1>;
+ 					fsl,pull-up = <0>; /* 0 will enable the keeper */
+ 				};
++
++				i2c1_pins_cfa10049: i2c1@0 {
++					reg = <0>;
++					fsl,pinmux-ids = <
++						0x3103 /* MX28_PAD_PWM0__GPIO */
++						0x3113 /* MX28_PAD_PWM1__I2C1_SDA */
++					>;
++					fsl,drive-strength = <1>;
++					fsl,voltage = <1>;
++					fsl,pull-up = <1>;
++				};
+ 			};
+ 
+ 			lcdif@80030000 {
+@@ -155,49 +166,6 @@
+ 				status = "okay";
+ 			};
+ 
+-			i2c1: i2c@8005a000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&i2c1_pins_a>;
+-				status = "okay";
+-			};
+-
+-			i2cmux {
+-				compatible = "i2c-mux-gpio";
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+-				mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
+-				i2c-parent = <&i2c1>;
+-
+-				i2c@0 {
+-					reg = <0>;
+-				};
+-
+-				i2c@1 {
+-					reg = <1>;
+-				};
+-
+-				i2c@2 {
+-					reg = <2>;
+-				};
+-
+-				i2c@3 {
+-					reg = <3>;
+-					#address-cells = <1>;
+-					#size-cells = <0>;
+-
+-					pca9555: pca9555@20 {
+-						compatible = "nxp,pca9555";
+-						interrupt-parent = <&gpio2>;
+-						interrupts = <19 0x2>;
+-						gpio-controller;
+-						#gpio-cells = <2>;
+-						interrupt-controller;
+-						#interrupt-cells = <2>;
+-						reg = <0x20>;
+-					};
+-				};
+-			};
+-
+ 			usbphy1: usbphy@8007e000 {
+ 				status = "okay";
+ 			};
+@@ -322,6 +290,60 @@
+ 		rotary-encoder,relative-axis;
+ 	};
+ 
++	i2c1gpio: i2c@0 {
++		compatible = "i2c-gpio";
++		pinctrl-0 = <&i2c1_pins_cfa10049>;
++		pinctrl-names = "default";
++		gpios = <
++			&gpio3 17 0 /* sda */
++			&gpio3 16 0 /* scl */
++			 >;
++		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
++	};
++
++	i2cmux {
++		compatible = "i2c-mux-gpio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
++		i2c-parent = <&i2c1gpio>;
++
++		i2c@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@2 {
++			reg = <2>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@3 {
++			reg = <3>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			pca9555: pca9555@20 {
++				compatible = "nxp,pca9555";
++				interrupt-parent = <&gpio2>;
++				interrupts = <19 0x2>;
++				gpio-controller;
++				#gpio-cells = <2>;
++				interrupt-controller;
++				#interrupt-cells = <2>;
++				reg = <0x20>;
++			};
++		};
++	};
++
+ 	backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 3 5000000>;
 -- 
-end-of-patch for NEW DRIVER V5
+1.7.10.4
 
