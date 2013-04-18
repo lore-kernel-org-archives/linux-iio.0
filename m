@@ -1,56 +1,80 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <516A9F6C.70906@metafoo.de>
-Date: Sun, 14 Apr 2013 14:22:04 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio:Add an IIO_VAL_INTO_PLUS_PICO return type for
- read_raw callbacks.
-References: <1365938625-21778-1-git-send-email-jic23@kernel.org> <1365938625-21778-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1365938625-21778-2-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:34055 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S967480Ab3DRPjM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Apr 2013 11:39:12 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>
+Cc: jimwall@q.com, brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 3/3] ARM: mxs: cfa10049: Add NAU7802 ADCs to the device tree
+Date: Thu, 18 Apr 2013 17:38:56 +0200
+Message-Id: <1366299536-18353-4-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/14/2013 01:23 PM, Jonathan Cameron wrote:
-> For now not added to the write_raw handling as no usecase yet exists
-> and it would involve a more substantial reworking of the string
-> processing code to handle it cleanly.
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/iio/industrialio-core.c | 5 +++++
->  include/linux/iio/types.h       | 1 +
->  2 files changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index e145931..40ef037 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -393,6 +393,11 @@ static ssize_t iio_read_channel_info(struct device *dev,
->  			return sprintf(buf, "-%d.%09u\n", val, -val2);
->  		else
->  			return sprintf(buf, "%d.%09u\n", val, val2);
-> +	case IIO_VAL_INT_PLUS_PICO:
-> +		if (val2 < 0)
-> +			return sprintf(buf, "-%d.%012u\n", val, -val2);
-> +		else
-> +			return sprintf(buf, "-%d.%012u\n", val, val2);
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-This one shouldn't have the minus sign.
+Since these ADCs share the same non-configurable address on the I2C bus,
+they have to be put behind a muxer.
 
->  	case IIO_VAL_FRACTIONAL:
->  		tmp = div_s64((s64)val * 1000000000LL, val2);
->  		val2 = do_div(tmp, 1000000000LL);
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 88bf0f0..27e78a6 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -58,6 +58,7 @@ enum iio_modifier {
->  #define IIO_VAL_INT_PLUS_MICRO 2
->  #define IIO_VAL_INT_PLUS_NANO 3
->  #define IIO_VAL_INT_PLUS_MICRO_DB 4
-> +#define IIO_VAL_INT_PLUS_PICO 5
->  #define IIO_VAL_FRACTIONAL 10
->  #define IIO_VAL_FRACTIONAL_LOG2 11
->  
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ arch/arm/boot/dts/imx28-cfa10049.dts |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx28-cfa10049.dts b/arch/arm/boot/dts/imx28-cfa10049.dts
+index a333dbf..23166d9 100644
+--- a/arch/arm/boot/dts/imx28-cfa10049.dts
++++ b/arch/arm/boot/dts/imx28-cfa10049.dts
+@@ -312,18 +312,36 @@
+ 			reg = <0>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
++
++			adc0: nau7802@2a {
++				compatible = "nuvoton,nau7802";
++				reg = <0x2a>;
++				nuvoton,vldo = <3000>;
++			};
+ 		};
+ 
+ 		i2c@1 {
+ 			reg = <1>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
++
++			adc1: nau7802@2a {
++				compatible = "nuvoton,nau7802";
++				reg = <0x2a>;
++				nuvoton,vldo = <3000>;
++			};
+ 		};
+ 
+ 		i2c@2 {
+ 			reg = <2>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
++
++			adc2: nau7802@2a {
++				compatible = "nuvoton,nau7802";
++				reg = <0x2a>;
++				nuvoton,vldo = <3000>;
++			};
+ 		};
+ 
+ 		i2c@3 {
+-- 
+1.7.10.4
+
