@@ -1,62 +1,51 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <516A9F1B.5060407@metafoo.de>
-Date: Sun, 14 Apr 2013 14:20:43 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/3]  staging:iio:adis16130 bits and bobs.
-References: <1365938625-21778-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1365938625-21778-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:34015 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S966678Ab3DRPjH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Apr 2013 11:39:07 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>
+Cc: jimwall@q.com, brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 0/3] Add support for the Nuvoton NAU7802 ADC to the cfa10049
+Date: Thu, 18 Apr 2013 17:38:53 +0200
+Message-Id: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/14/2013 01:23 PM, Jonathan Cameron wrote:
-> Hi All,
-> 
-> Had a few bored moments so thought I'd take a quick look at this driver.
-> The read function is rather odd to say the least, Lars/Michael could one of
-> you take a quick look at this.  Right now it does an spi sync that I think
-> should read the data and follows it with an additional read.  I can't
-> immediately see what the read is for.
+Hi,
 
-Yea I noticed that too, I think that read was introduced by accident during
-some refactoring. See
-https://github.com/lclausen-adi/linux-2.6/commit/1889f3a5d291ad57a5faed83652c465de29d740f
+This patchset adds support for the 3 Nuvoton NAU7802 ADCs presetn on the
+CFA-10049 board from Crystalfontz. The first patch adds the driver, the next
+ones are adding them in the DT after switching the second i2c bus to bitbanging
+following a lot of timeout issues we have on that bus.
 
-Unfortunately I couldn't get my hands on a adis16030 board yet to test those
-changes otherwise I'd already submitted them.
+Regards,
 
-> 
-> Also note the introduction of IIO_INT_PLUS_PICO which is going to be common
-> with 24 bit plus devices.  For now I've ignored the write case as this driver
-> doesn't support it, but it will be needed if for example 24/16 bit options
-> are both supported for this driver.
-> 
-> Note to my mind this device is far enough away from the other adis parts
-> in interface to justify it's own driver.
+Alexandre Belloni (1):
+  iio: Add Nuvoton NAU7802 ADC driver
 
-Yes.
+Maxime Ripard (2):
+  ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+  ARM: mxs: cfa10049: Add NAU7802 ADCs to the device tree
 
-> 
-> Also could someone check my scale/offset calcs are right. It's Sunday
-> morning and I'm not feeling all that awake ;)
-> 
+ .../bindings/iio/adc/nuvoton-nau7802.txt           |   17 +
+ arch/arm/boot/dts/imx28-cfa10049.dts               |  126 ++--
+ drivers/iio/adc/Kconfig                            |    9 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/nau7802.c                          |  644 ++++++++++++++++++++
+ 5 files changed, 754 insertions(+), 43 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+ create mode 100644 drivers/iio/adc/nau7802.c
 
-For temp scale you seem to be off by a factor of 1000000 (well or maybe
-I'm), otherwise I got the same.
+-- 
+1.7.10.4
 
-> Thanks,
-> 
-> Jonathan 
-> 
-> Jonathan Cameron (3):
->   iio:Add an IIO_VAL_INTO_PLUS_PICO return type for read_raw callbacks.
->   staging:iio:gyro:adis16130 drop unused list.h header.
->   staging:iio:gyro:adis16130 add offset and scale info mask elements.
-> 
->  drivers/iio/industrialio-core.c           |  5 +++
->  drivers/staging/iio/gyro/adis16130_core.c | 58 +++++++++++++++++++++++++------
->  include/linux/iio/types.h                 |  1 +
->  3 files changed, 53 insertions(+), 11 deletions(-)
-> 
