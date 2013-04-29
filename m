@@ -1,65 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47819 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754178Ab3D0Jbt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Apr 2013 05:31:49 -0400
-Message-ID: <517B9AFE.9000205@jic23.retrosnub.co.uk>
-Date: Sat, 27 Apr 2013 10:31:42 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mail-ob0-f182.google.com ([209.85.214.182]:35313 "EHLO
+	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757109Ab3D2RSO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Apr 2013 13:18:14 -0400
+Received: by mail-ob0-f182.google.com with SMTP id dn14so5715888obc.13
+        for <linux-iio@vger.kernel.org>; Mon, 29 Apr 2013 10:18:14 -0700 (PDT)
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Axel Lin <axel.lin@ingics.com>, Jonathan Cameron <jic23@cam.ac.uk>,
-	Jean Delvare <khali@linux-fr.org>, lm-sensors@lm-sensors.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (iio_hwmon) Fix missing iio_channel_release_all
- call if devm_kzalloc fail
-References: <1366708003.10246.1.camel@phoenix> <20130423124800.GA29681@roeck-us.net>
-In-Reply-To: <20130423124800.GA29681@roeck-us.net>
+In-Reply-To: <516BDA77.5060402@jic23.retrosnub.co.uk>
+References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
+	<CAK9yfHxht4L38absFAbDkX2=ort5HV7W=Q2uU2BbncQhXJ4T_Q@mail.gmail.com>
+	<516BDA77.5060402@jic23.retrosnub.co.uk>
+Date: Mon, 29 Apr 2013 22:48:13 +0530
+Message-ID: <CAK9yfHz-m3ZUvNuYYcfjCGksTPXK=m2t40qVJbfxdEaPst9OiQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] adc: exynos_adc: Convert to devm_ioremap_resource()
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/23/2013 01:48 PM, Guenter Roeck wrote:
-> On Tue, Apr 23, 2013 at 05:06:43PM +0800, Axel Lin wrote:
->> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> Good catch.
->
-> Acked-by: Guenter Roeck <linux@roeck-us.net>
-Given the timing this will need to go in through hwmon
-after the merge window is closed.  Sorry, busy week or
-I would have caught up with this earlier.
+Hi Jonathan,
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+On 15 April 2013 16:16, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+> On 15/04/13 09:22, Sachin Kamat wrote:
+>>
+>> On 3 April 2013 11:53, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+>>>
+>>> Use the newly introduced devm_ioremap_resource() instead of
+>>> devm_request_and_ioremap() which provides more consistent error handling.
+>>>
+>>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 >
->> ---
->>  drivers/hwmon/iio_hwmon.c |    6 ++++--
->>  1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
->> index aafa453..368497f 100644
->> --- a/drivers/hwmon/iio_hwmon.c
->> +++ b/drivers/hwmon/iio_hwmon.c
->> @@ -84,8 +84,10 @@ static int iio_hwmon_probe(struct platform_device *pdev)
->>  		return PTR_ERR(channels);
->>  
->>  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
->> -	if (st == NULL)
->> -		return -ENOMEM;
->> +	if (st == NULL) {
->> +		ret = -ENOMEM;
->> +		goto error_release_channels;
->> +	}
->>  
->>  	st->channels = channels;
->>  
->> -- 
->> 1.7.10.4
->>
->>
->>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Not sure why I missed this one.  I think I marked the entire thread
+> as not ready based on the responses to patch 2.  Clearly nothing wrong
+> with this one!  Will pick up for the next cycle now as I think it
+> is a cleanup rather than an actual bug fix?
+>
+> Thanks for the ping.
 
+Looks like this patch has still not made it to your tree as I did not
+find it in Greg's pull request to Linus.
+I however saw two of my other iio patches in his pull request.
+
+
+-- 
+With warm regards,
+Sachin
