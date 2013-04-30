@@ -1,171 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:34043 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S967479Ab3DRPjL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Apr 2013 11:39:11 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>
-Cc: jimwall@q.com, brian@crystalfontz.com,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Rob Landley <rob@landley.net>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: [PATCH 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
-Date: Thu, 18 Apr 2013 17:38:55 +0200
-Message-Id: <1366299536-18353-3-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from mail-vc0-f175.google.com ([209.85.220.175]:61888 "EHLO
+	mail-vc0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753940Ab3D3CYG convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Apr 2013 22:24:06 -0400
+Received: by mail-vc0-f175.google.com with SMTP id lf10so34463vcb.6
+        for <linux-iio@vger.kernel.org>; Mon, 29 Apr 2013 19:24:04 -0700 (PDT)
+MIME-Version: 1.0
+Date: Tue, 30 Apr 2013 04:24:04 +0200
+Message-ID: <CAOTW74kb_qJP=by_iKOTCHVurh2wEc6nfmdL-F2ddqq3aQ672g@mail.gmail.com>
+Subject: Abstracting and extending evdev to work with the iio subsystem
+From: alessandro osima <alex.osima@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Hunyue Yau <hy-gsoc@hy-research.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Hello everyone, my name is  Alessandro Osima and I'm a computer
+science student at Università degli Studi di Milano, Italy (second
+year, equivalent to bachelor).
 
-The ADCs connected to this bus have been experiencing some timeout
-issues when using the iMX28 i2c controller. Switching back to bitbanging
-solves this.
 
-Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- arch/arm/boot/dts/imx28-cfa10049.dts |  108 ++++++++++++++++++++--------------
- 1 file changed, 65 insertions(+), 43 deletions(-)
+ For this year's Google Summer of Code I have decided to submit an
+application proposal focused on abstracting evdev  from input to allow
+iio and other subsystems to take advantage of it to send/receive
+events and data to userspace application troughout files located in
+the /dev directory.
 
-diff --git a/arch/arm/boot/dts/imx28-cfa10049.dts b/arch/arm/boot/dts/imx28-cfa10049.dts
-index 79a2007..a333dbf 100644
---- a/arch/arm/boot/dts/imx28-cfa10049.dts
-+++ b/arch/arm/boot/dts/imx28-cfa10049.dts
-@@ -138,6 +138,17 @@
- 					fsl,voltage = <1>;
- 					fsl,pull-up = <0>; /* 0 will enable the keeper */
- 				};
-+
-+				i2c1_pins_cfa10049: i2c1@0 {
-+					reg = <0>;
-+					fsl,pinmux-ids = <
-+						0x3103 /* MX28_PAD_PWM0__GPIO */
-+						0x3113 /* MX28_PAD_PWM1__I2C1_SDA */
-+					>;
-+					fsl,drive-strength = <1>;
-+					fsl,voltage = <1>;
-+					fsl,pull-up = <1>;
-+				};
- 			};
- 
- 			lcdif@80030000 {
-@@ -155,49 +166,6 @@
- 				status = "okay";
- 			};
- 
--			i2c1: i2c@8005a000 {
--				pinctrl-names = "default";
--				pinctrl-0 = <&i2c1_pins_a>;
--				status = "okay";
--			};
--
--			i2cmux {
--				compatible = "i2c-mux-gpio";
--				#address-cells = <1>;
--				#size-cells = <0>;
--				mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
--				i2c-parent = <&i2c1>;
--
--				i2c@0 {
--					reg = <0>;
--				};
--
--				i2c@1 {
--					reg = <1>;
--				};
--
--				i2c@2 {
--					reg = <2>;
--				};
--
--				i2c@3 {
--					reg = <3>;
--					#address-cells = <1>;
--					#size-cells = <0>;
--
--					pca9555: pca9555@20 {
--						compatible = "nxp,pca9555";
--						interrupt-parent = <&gpio2>;
--						interrupts = <19 0x2>;
--						gpio-controller;
--						#gpio-cells = <2>;
--						interrupt-controller;
--						#interrupt-cells = <2>;
--						reg = <0x20>;
--					};
--				};
--			};
--
- 			usbphy1: usbphy@8007e000 {
- 				status = "okay";
- 			};
-@@ -322,6 +290,60 @@
- 		rotary-encoder,relative-axis;
- 	};
- 
-+	i2c1gpio: i2c@0 {
-+		compatible = "i2c-gpio";
-+		pinctrl-0 = <&i2c1_pins_cfa10049>;
-+		pinctrl-names = "default";
-+		gpios = <
-+			&gpio3 17 0 /* sda */
-+			&gpio3 16 0 /* scl */
-+			 >;
-+		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
-+	};
-+
-+	i2cmux {
-+		compatible = "i2c-mux-gpio";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
-+		i2c-parent = <&i2c1gpio>;
-+
-+		i2c@0 {
-+			reg = <0>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
-+		i2c@1 {
-+			reg = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
-+		i2c@2 {
-+			reg = <2>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
-+		i2c@3 {
-+			reg = <3>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			pca9555: pca9555@20 {
-+				compatible = "nxp,pca9555";
-+				interrupt-parent = <&gpio2>;
-+				interrupts = <19 0x2>;
-+				gpio-controller;
-+				#gpio-cells = <2>;
-+				interrupt-controller;
-+				#interrupt-cells = <2>;
-+				reg = <0x20>;
-+			};
-+		};
-+	};
-+
- 	backlight {
- 		compatible = "pwm-backlight";
- 		pwms = <&pwm 3 5000000>;
--- 
-1.7.10.4
+This http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/asion/1#
+ is my proposal.
 
+I would kindly ask your opinions about this project and would be very
+grateful for any comments and suggestion to improve it.
+
+Thank you for reading this post and please don't hesitate to ask for
+any clarification or more details.
+
+Regards
+
+Alessandro Osima.
