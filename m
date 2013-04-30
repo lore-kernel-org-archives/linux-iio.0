@@ -1,79 +1,59 @@
-Return-Path: <maxime.ripard@free-electrons.com>
-Message-ID: <5174EE51.4000606@free-electrons.com>
-Date: Mon, 22 Apr 2013 10:01:21 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f172.google.com ([209.85.214.172]:47942 "EHLO
+	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752475Ab3D3C7Y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Apr 2013 22:59:24 -0400
+Received: by mail-ob0-f172.google.com with SMTP id v19so52795obq.17
+        for <linux-iio@vger.kernel.org>; Mon, 29 Apr 2013 19:59:23 -0700 (PDT)
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Shawn Guo <shawn.guo@linaro.org>,
- Grant Likely <grant.likely@secretlab.ca>,
- jimwall@q.com, brian@crystalfontz.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- devicetree-discuss@lists.ozlabs.org, Jonathan Cameron <jic23@cam.ac.uk>,
- Rob Landley <rob@landley.net>,
- Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCH 1/3] iio: Add Nuvoton NAU7802 ADC driver
-References: <1366299536-18353-1-git-send-email-alexandre.belloni@free-electrons.com> <1366299536-18353-2-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1366299536-18353-2-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <517EBBAA.3040503@metafoo.de>
+References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org>
+	<CAK9yfHxht4L38absFAbDkX2=ort5HV7W=Q2uU2BbncQhXJ4T_Q@mail.gmail.com>
+	<516BDA77.5060402@jic23.retrosnub.co.uk>
+	<CAK9yfHz-m3ZUvNuYYcfjCGksTPXK=m2t40qVJbfxdEaPst9OiQ@mail.gmail.com>
+	<517EBBAA.3040503@metafoo.de>
+Date: Tue, 30 Apr 2013 08:29:23 +0530
+Message-ID: <CAK9yfHxwk77Otgu1FOu5eUAMpvNN8pVtK7UvxJ0BKLD3i2A_Gw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] adc: exynos_adc: Convert to devm_ioremap_resource()
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	linux-iio@vger.kernel.org, jic23@kernel.org
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Alexandre,
+On 29 April 2013 23:57, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 04/29/2013 07:18 PM, Sachin Kamat wrote:
+>> Hi Jonathan,
+>>
+>> On 15 April 2013 16:16, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+>>> On 15/04/13 09:22, Sachin Kamat wrote:
+>>>>
+>>>> On 3 April 2013 11:53, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+>>>>>
+>>>>> Use the newly introduced devm_ioremap_resource() instead of
+>>>>> devm_request_and_ioremap() which provides more consistent error handling.
+>>>>>
+>>>>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+>>>
+>>> Not sure why I missed this one.  I think I marked the entire thread
+>>> as not ready based on the responses to patch 2.  Clearly nothing wrong
+>>> with this one!  Will pick up for the next cycle now as I think it
+>>> is a cleanup rather than an actual bug fix?
+>>>
+>>> Thanks for the ping.
+>>
+>> Looks like this patch has still not made it to your tree as I did not
+>> find it in Greg's pull request to Linus.
+>> I however saw two of my other iio patches in his pull request.
+>
+> The IIO tree was already closed at that point, so "next cycle" refers to 3.11
+> in this case.
 
-Le 18/04/2013 17:38, Alexandre Belloni a écrit :
-> +	nau7802_i2c_write(st, NAU7802_REG_PUCTRL, data);
-> +	nau7802_i2c_write(st, NAU7802_REG_ADC_CTRL, 0x30);
-> +
-> +	if (tmp >= 2400) {
-> +		data = NAU7802_CTRL1_VLDO((4500 - tmp) / 300);
-> +		nau7802_i2c_write(st, NAU7802_REG_CTRL1, data);
-> +	}
-
-You should probably make a macro or inline function (with a comment) out
-of that computation explaining why you are doing this.
-
-> +
-> +	st->min_conversions = 6;
-
-I'd prefer to see this as a define.
-
-> +
-> +	/*
-> +	 * The ADC fires continuously and we can't do anything about
-> +	 * it. So we need to have the IRQ disabled by default, and we
-> +	 * will enable them back when we will need them..
-> +	 */
-> +	if (client->irq) {
-> +		irq_set_status_flags(client->irq, IRQ_NOAUTOEN);
-> +		ret = request_threaded_irq(client->irq,
-> +				NULL,
-> +				nau7802_eoc_trigger,
-> +				IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-> +				client->dev.driver->name,
-> +				idev);
-> +		if (ret) {
-> +			/*
-> +			 * What may happen here is that our IRQ controller is
-> +			 * not able to get level interrupt but this is required
-> +			 * by this ADC as when going over 40 sample per second,
-> +			 * the interrupt line may stay high between conversions.
-> +			 * So, we continue no matter what but we switch to
-> +			 * polling mode.
-> +			 */
-> +			dev_info(&client->dev,
-> +				"Failed to allocate IRQ, using polling mode\n");
-> +			client->irq = 0;
-> +			/*
-> +			 * We are polling, use the fastest sample rate by
-> +			 * default
-> +			 */
-> +			st->sample_rate = 0x7;
-
-Ditto.
-
-Maxime
+Oh OK. Got it :)
+Thanks for the clarification.
 
 -- 
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+With warm regards,
+Sachin
