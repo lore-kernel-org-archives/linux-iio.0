@@ -1,53 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43185 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754177Ab3EFRVN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 13:21:13 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [RFC PATCH 0/4] iio: Rework the generic trigger-gpio trigger and move out of staging
-Date: Mon,  6 May 2013 18:20:59 +0100
-Message-Id: <1367860863-6863-1-git-send-email-jic23@kernel.org>
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:46353 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756882Ab3EAVCN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 May 2013 17:02:13 -0400
+Date: Wed, 1 May 2013 23:02:02 +0200
+From: Oskar Andero <oskar.andero@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] iio: adc: add driver for MCP3204/08 12-bit ADC
+Message-ID: <20130501210202.GB21719@skinner.xfiles.lan>
+References: <1367360497-16820-1-git-send-email-oskar.andero@gmail.com>
+ <51812195.3030305@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51812195.3030305@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+Hi,
 
-This is an RFC for a couple of reasons.
+On 16:07 Wed 01 May     , Lars-Peter Clausen wrote:
+> On 05/01/2013 12:21 AM, Oskar Andero wrote:
+> > This adds support for Microchip's 12 bit AD converters MCP3204 and
+> > MCP3208. These chips communicates over SPI and supports single-ended
+> > and pseudo-differential configurations.
+> > 
+> > Cc: Jonathan Cameron <jic23@cam.ac.uk>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> > Signed-off-by: Oskar Andero <oskar.andero@gmail.com>
+> 
+> Hi,
+> 
+> Looks very good in general. A few minor things, mostly related to the regulator
+> handling and a couple of nitpicks inline.
 
-1) I'm not sure how people feel about the move to multiple platform devices
-(patch 3).
-2) I don't actually have a simple test setup for this one.  I can put one
-together but it might be a while before I get it done.
+Thanks for reviewing! I will prepare version 2 shortly.
 
-Anyhow, the purpose of this set is to respond to Lars-Peter's comments
-when I originally asked if anyone minded it moving out of staging as it
-was before this.  Lars raised the point that having one driver instance
-register multiple triggers just made life more complicated, and instead
-it might be better to have multiple driver instances, with one trigger each.
-Lars also pointed out that the name of the driver was silly given there
-was nolonger a requirement that the source of the interrupts be a gpio
-and there hasn't been for quite some time.
+> > +
+> > +		ret = regulator_enable(adc->reg);
+> > +		if (ret < 0)
+> > +			goto reg_free;
+> > +	} else {
+> > +		adc->ref_mv = pdata->ref_mv;
+> 
+> I'd like to see this fallback path go away. For supplies with a const voltage
+> the fixed-voltage-regulator can be used.
+> 
 
-All comments welcome. Particularly wrt to patch 3.
+Ok. I added this since the voltage I use for reference is behind a level-shifter,
+meaning there is actually no regulator on the board providing that exact
+voltage level. Not sure what you mean with "the fixed-voltage-regulator", but
+maybe that is what I am looking for in my case?
 
-Jonathan Cameron (4):
-  staging:iio:trigger:gpio bug in release of gpio in error path
-  staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
-  staging:iio:triggers:interrupt trigger - one per platform device.
-  iio:triggers:interrupt trigger - move out of staging.
+Thanks!
 
- drivers/iio/trigger/Kconfig                 |   9 ++
- drivers/iio/trigger/Makefile                |   1 +
- drivers/iio/trigger/iio-trig-interrupt.c    | 123 ++++++++++++++++++++
- drivers/staging/iio/trigger/Kconfig         |   6 -
- drivers/staging/iio/trigger/Makefile        |   1 -
- drivers/staging/iio/trigger/iio-trig-gpio.c | 167 ----------------------------
- 6 files changed, 133 insertions(+), 174 deletions(-)
- create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
- delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
-
--- 
-1.8.2.1
-
+-Oskar
