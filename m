@@ -1,329 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f177.google.com ([209.85.217.177]:47616 "EHLO
-	mail-lb0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1762416Ab3ECJ65 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 May 2013 05:58:57 -0400
-From: Oskar Andero <oskar.andero@gmail.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Oskar Andero <oskar.andero@gmail.com>
-Subject: [PATCHv4] iio: adc: add driver for MCP3204/08 12-bit ADC
-Date: Fri,  3 May 2013 11:58:49 +0200
-Message-Id: <1367575129-11983-1-git-send-email-oskar.andero@gmail.com>
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:33863 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751190Ab3EBVav (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2013 17:30:51 -0400
+MIME-Version: 1.0
+In-Reply-To: <1367529031-4915-1-git-send-email-laurent.navet@gmail.com>
+References: <1367529031-4915-1-git-send-email-laurent.navet@gmail.com>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Thu, 2 May 2013 14:30:30 -0700
+Message-ID: <CAHfPSqAn1tki7-NSKmJfqgEcvj1gQg0q99Q1Sed7cTvDuYNkWg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: exynos_adc: use devm_ioremap_resource()
+To: Laurent Navet <laurent.navet@gmail.com>
+Cc: jic23@cam.ac.uk, My self <ch.naveen@samsung.com>, lars@metafoo.de,
+	sachin.kamat@linaro.org, dianders@chromium.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds support for Microchip's 12 bit AD converters MCP3204 and
-MCP3208. These chips communicates over SPI and supports single-ended
-and pseudo-differential configurations.
+On 2 May 2013 14:10, Laurent Navet <laurent.navet@gmail.com> wrote:
+> Replace calls to deprecated devm_request_and_ioremap by devm_ioremap_resource.
+>
+> Found with coccicheck and this semantic patch:
+>  scripts/coccinelle/api/devm_request_and_ioremap.cocci.
+>
+> Signed-off-by: Laurent Navet <laurent.navet@gmail.com>
+Hello Laurent,
 
-Cc: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Oskar Andero <oskar.andero@gmail.com>
----
- drivers/iio/adc/Kconfig   |  10 ++
- drivers/iio/adc/Makefile  |   1 +
- drivers/iio/adc/mcp320x.c | 257 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 268 insertions(+)
- create mode 100644 drivers/iio/adc/mcp320x.c
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index ab0767e6..93129ec 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -133,6 +133,16 @@ config MAX1363
- 	  max11646, max11647) Provides direct access via sysfs and buffered
- 	  data via the iio dev interface.
- 
-+config MCP320X
-+	tristate "Microchip Technology MCP3204/08"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for Microchip Technology's MCP3204 or
-+	  MCP3208 analog to digital converter.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called mcp320x.
-+
- config TI_ADC081C
- 	tristate "Texas Instruments ADC081C021/027"
- 	depends on I2C
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 0a825be..8f475d3 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1363) += max1363.o
-+obj-$(CONFIG_MCP320X) += mcp320x.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-new file mode 100644
-index 0000000..ebc0159
---- /dev/null
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -0,0 +1,257 @@
-+/*
-+ * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
-+ *
-+ * Driver for Microchip Technology's MCP3204 and MCP3208 ADC chips.
-+ * Datasheet can be found here:
-+ * http://ww1.microchip.com/downloads/en/devicedoc/21298c.pdf
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/spi/spi.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/regulator/consumer.h>
-+
-+#define MCP_SINGLE_ENDED	(1 << 3)
-+#define MCP_START_BIT		(1 << 4)
-+
-+enum {
-+	mcp3204,
-+	mcp3208,
-+};
-+
-+struct mcp320x {
-+	struct spi_device *spi;
-+	struct spi_message msg;
-+	struct spi_transfer transfer[2];
-+
-+	u8 tx_buf;
-+	u8 rx_buf[2];
-+
-+	struct regulator *reg;
-+	struct mutex lock;
-+};
-+
-+static int mcp320x_adc_conversion(struct mcp320x *adc, u8 msg)
-+{
-+	int ret;
-+
-+	adc->tx_buf = msg;
-+	ret = spi_sync(adc->spi, &adc->msg);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ((adc->rx_buf[0] & 0x3f) << 6)  |
-+		(adc->rx_buf[1] >> 2);
-+}
-+
-+static int mcp320x_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *channel, int *val,
-+			    int *val2, long mask)
-+{
-+	struct mcp320x *adc = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	mutex_lock(&adc->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (channel->differential)
-+			ret = mcp320x_adc_conversion(adc,
-+				MCP_START_BIT | channel->address);
-+		else
-+			ret = mcp320x_adc_conversion(adc,
-+				MCP_START_BIT | MCP_SINGLE_ENDED |
-+				channel->address);
-+		if (ret < 0)
-+			goto out;
-+
-+		*val = ret;
-+		ret = IIO_VAL_INT;
-+		break;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Digital output code = (4096 * Vin) / Vref */
-+		ret = regulator_get_voltage(adc->reg);
-+		if (ret < 0)
-+			goto out;
-+
-+		*val = ret / 1000;
-+		*val2 = 12;
-+		ret = IIO_VAL_FRACTIONAL_LOG2;
-+		break;
-+
-+	default:
-+		break;
-+	}
-+
-+out:
-+	mutex_unlock(&adc->lock);
-+
-+	return ret;
-+}
-+
-+#define MCP320X_VOLTAGE_CHANNEL(num)				\
-+	{							\
-+		.type = IIO_VOLTAGE,				\
-+		.indexed = 1,					\
-+		.channel = (num),				\
-+		.address = (num),				\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
-+	}
-+
-+#define MCP320X_VOLTAGE_CHANNEL_DIFF(num)			\
-+	{							\
-+		.type = IIO_VOLTAGE,				\
-+		.indexed = 1,					\
-+		.channel = (num * 2),				\
-+		.channel2 = (num * 2 + 1),			\
-+		.address = (num * 2),				\
-+		.differential = 1,				\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
-+	}
-+
-+static const struct iio_chan_spec mcp3204_channels[] = {
-+	MCP320X_VOLTAGE_CHANNEL(0),
-+	MCP320X_VOLTAGE_CHANNEL(1),
-+	MCP320X_VOLTAGE_CHANNEL(2),
-+	MCP320X_VOLTAGE_CHANNEL(3),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(1),
-+};
-+
-+static const struct iio_chan_spec mcp3208_channels[] = {
-+	MCP320X_VOLTAGE_CHANNEL(0),
-+	MCP320X_VOLTAGE_CHANNEL(1),
-+	MCP320X_VOLTAGE_CHANNEL(2),
-+	MCP320X_VOLTAGE_CHANNEL(3),
-+	MCP320X_VOLTAGE_CHANNEL(4),
-+	MCP320X_VOLTAGE_CHANNEL(5),
-+	MCP320X_VOLTAGE_CHANNEL(6),
-+	MCP320X_VOLTAGE_CHANNEL(7),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(1),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(2),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(3),
-+};
-+
-+static const struct iio_info mcp320x_info = {
-+	.read_raw = mcp320x_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+struct mcp3208_chip_info {
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
-+};
-+
-+static const struct mcp3208_chip_info mcp3208_chip_infos[] = {
-+	[mcp3204] = {
-+		.channels = mcp3204_channels,
-+		.num_channels = ARRAY_SIZE(mcp3204_channels)
-+	},
-+	[mcp3208] = {
-+		.channels = mcp3208_channels,
-+		.num_channels = ARRAY_SIZE(mcp3208_channels)
-+	},
-+};
-+
-+static int mcp320x_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct mcp320x *adc;
-+	const struct mcp3208_chip_info *chip_info;
-+	int ret;
-+
-+	indio_dev = iio_device_alloc(sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(indio_dev);
-+	adc->spi = spi;
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &mcp320x_info;
-+
-+	chip_info = &mcp3208_chip_infos[spi_get_device_id(spi)->driver_data];
-+	indio_dev->channels = chip_info->channels;
-+	indio_dev->num_channels = chip_info->num_channels;
-+
-+	adc->transfer[0].tx_buf = &adc->tx_buf;
-+	adc->transfer[0].len = sizeof(adc->tx_buf);
-+	adc->transfer[1].rx_buf = adc->rx_buf;
-+	adc->transfer[1].len = sizeof(adc->rx_buf);
-+
-+	spi_message_init_with_transfers(&adc->msg, adc->transfer,
-+					ARRAY_SIZE(adc->transfer));
-+
-+	adc->reg = regulator_get(&spi->dev, "vref");
-+	if (IS_ERR(adc->reg)) {
-+		ret = PTR_ERR(adc->reg);
-+		goto iio_free;
-+	}
-+
-+	ret = regulator_enable(adc->reg);
-+	if (ret < 0)
-+		goto reg_free;
-+
-+	mutex_init(&adc->lock);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto reg_disable;
-+
-+	return 0;
-+
-+reg_disable:
-+	regulator_disable(adc->reg);
-+reg_free:
-+	regulator_put(adc->reg);
-+iio_free:
-+	iio_device_free(indio_dev);
-+
-+	return ret;
-+}
-+
-+static int mcp320x_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct mcp320x *adc = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	regulator_disable(adc->reg);
-+	regulator_put(adc->reg);
-+	iio_device_free(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id mcp320x_id[] = {
-+	{ "mcp3204", mcp3204 },
-+	{ "mcp3208", mcp3208 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, mcp320x_id);
-+
-+static struct spi_driver mcp320x_driver = {
-+	.driver = {
-+		.name = "mcp320x",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = mcp320x_probe,
-+	.remove = mcp320x_remove,
-+	.id_table = mcp320x_id,
-+};
-+module_spi_driver(mcp320x_driver);
-+
-+MODULE_AUTHOR("Oskar Andero <oskar.andero@gmail.com>");
-+MODULE_DESCRIPTION("Microchip Technology MCP3204/08");
-+MODULE_LICENSE("GPL v2");
--- 
-1.8.1.5
+But, we already have patch from Sachin
+http://patches.linaro.org/15833/
+lined up for merge.
 
+Thanks for the post.
+Naveen
+> ---
+>  drivers/iio/adc/exynos_adc.c |   12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 9f3a8ef..22d034a 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -270,16 +270,16 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>         info = iio_priv(indio_dev);
+>
+>         mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -       info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+> -       if (!info->regs) {
+> -               ret = -ENOMEM;
+> +       info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +       if (IS_ERR(info->regs)) {
+> +               ret = PTR_ERR(info->regs);
+>                 goto err_iio;
+>         }
+>
+>         mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -       info->enable_reg = devm_request_and_ioremap(&pdev->dev, mem);
+> -       if (!info->enable_reg) {
+> -               ret = -ENOMEM;
+> +       info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+> +       if (IS_ERR(info->enable_reg)) {
+> +               ret = PTR_ERR(info->enable_reg);
+>                 goto err_iio;
+>         }
+>
+> --
+> 1.7.10.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
+
+--
+Shine bright,
+(: Nav :)
