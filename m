@@ -1,44 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:57928 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759696Ab3E2RKD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 13:10:03 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: sameo@linux.intel.com, jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
-	balbi@ti.com, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/5] drivers/iio: am335x_adc: cleanup on missing DT nodes
-Date: Wed, 29 May 2013 19:09:52 +0200
-Message-Id: <1369847397-27451-2-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
-References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:40999 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752123Ab3EBVCN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2013 17:02:13 -0400
+From: Laurent Navet <laurent.navet@gmail.com>
+To: jic23@cam.ac.uk
+Cc: ch.naveen@samsung.com, lars@metafoo.de, sachin.kamat@linaro.org,
+	dianders@chromium.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Laurent Navet <laurent.navet@gmail.com>
+Subject: [PATCH] iio: adc: exynos_adc: use devm_ioremap_resource()
+Date: Thu,  2 May 2013 23:10:31 +0200
+Message-Id: <1367529031-4915-1-git-send-email-laurent.navet@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently we leak indio_dev() if the DT has no "adc" node in it.
+Replace calls to deprecated devm_request_and_ioremap by devm_ioremap_resource.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Found with coccicheck and this semantic patch:
+ scripts/coccinelle/api/devm_request_and_ioremap.cocci.
+
+Signed-off-by: Laurent Navet <laurent.navet@gmail.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/adc/exynos_adc.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index d0317fc..b2f27de 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -208,8 +208,10 @@ static int tiadc_probe(struct platform_device *pdev)
- 	adc_dev->mfd_tscadc = tscadc_dev;
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 9f3a8ef..22d034a 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -270,16 +270,16 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	info = iio_priv(indio_dev);
  
- 	node = of_get_child_by_name(node, "adc");
--	if (!node)
--		return  -EINVAL;
-+	if (!node) {
-+		err = -EINVAL;
-+		goto err_free_device;
-+	}
- 	err = of_property_read_u32(node,
- 			"ti,adc-channels", &val32);
- 	if (err < 0)
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+-	if (!info->regs) {
+-		ret = -ENOMEM;
++	info->regs = devm_ioremap_resource(&pdev->dev, mem);
++	if (IS_ERR(info->regs)) {
++		ret = PTR_ERR(info->regs);
+ 		goto err_iio;
+ 	}
+ 
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	info->enable_reg = devm_request_and_ioremap(&pdev->dev, mem);
+-	if (!info->enable_reg) {
+-		ret = -ENOMEM;
++	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
++	if (IS_ERR(info->enable_reg)) {
++		ret = PTR_ERR(info->enable_reg);
+ 		goto err_iio;
+ 	}
+ 
 -- 
 1.7.10.4
 
