@@ -1,11 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from rere.qmqm.pl ([89.167.52.164]:34131 "EHLO rere.qmqm.pl"
+Received: from rere.qmqm.pl ([89.167.52.164]:34130 "EHLO rere.qmqm.pl"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758984Ab3EDN1n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1758751Ab3EDN1n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Sat, 4 May 2013 09:27:43 -0400
-Message-Id: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
+Message-Id: <ba60ca91ef1d3061b454e518f6026a1157fae5d7.1367671597.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
+References: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
 From: =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Subject: [PATCH 1/2] staging/iio/mxs-lradc: cleanup masklength
+Subject: [PATCH 2/2] staging/iio/mxs-lradc: fix preenable for multiple buffers
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 To: linux-iio@vger.kernel.org
@@ -17,54 +19,43 @@ Date: Sat,  4 May 2013 15:19:35 +0200 (CEST)
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We know the exact iio->masklength = LRADC_MAX_TOTAL_CHANS.
-Let's use it consistently.
+This fixes 'preenable failed: -EINVAL' error when using this driver.
 
 Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
 ---
- drivers/staging/iio/adc/mxs-lradc.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/iio/adc/mxs-lradc.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 2856b8f..03299ea 100644
+index 03299ea..d92c97a 100644
 --- a/drivers/staging/iio/adc/mxs-lradc.c
 +++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -620,7 +620,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
- 		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
- 	unsigned int i, j = 0;
- 
--	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
-+	for_each_set_bit(i, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
- 		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
- 		writel(chan_value, lradc->base + LRADC_CH(j));
- 		lradc->buffer[j] &= LRADC_CH_VALUE_MASK;
-@@ -775,8 +775,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
- 					const unsigned long *mask)
+@@ -690,7 +690,6 @@ static void mxs_lradc_trigger_remove(struct iio_dev *iio)
+ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
  {
  	struct mxs_lradc *lradc = iio_priv(iio);
--	const int len = iio->masklength;
--	const int map_chans = bitmap_weight(mask, len);
-+	const int map_chans = bitmap_weight(mask, LRADC_MAX_TOTAL_CHANS);
- 	int rsvd_chans = 0;
- 	unsigned long rsvd_mask = 0;
+-	struct iio_buffer *buffer = iio->buffer;
+ 	int ret = 0, chan, ofs = 0;
+ 	unsigned long enable = 0;
+ 	uint32_t ctrl4_set = 0;
+@@ -698,7 +697,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+ 	uint32_t ctrl1_irq = 0;
+ 	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+ 		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+-	const int len = bitmap_weight(buffer->scan_mask, LRADC_MAX_TOTAL_CHANS);
++	const int len = bitmap_weight(iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS);
  
-@@ -793,7 +792,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
- 		rsvd_chans++;
+ 	if (!len)
+ 		return -EINVAL;
+@@ -725,7 +724,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+ 		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+ 	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
  
- 	/* Test for attempts to map channels with special mode of operation. */
--	if (bitmap_intersects(mask, &rsvd_mask, len))
-+	if (bitmap_intersects(mask, &rsvd_mask, LRADC_MAX_TOTAL_CHANS))
- 		return false;
- 
- 	/* Test for attempts to map more channels then available slots. */
-@@ -969,6 +968,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 	iio->modes = INDIO_DIRECT_MODE;
- 	iio->channels = mxs_lradc_chan_spec;
- 	iio->num_channels = ARRAY_SIZE(mxs_lradc_chan_spec);
-+	iio->masklength = LRADC_MAX_TOTAL_CHANS;
- 
- 	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
- 				&mxs_lradc_trigger_handler,
+-	for_each_set_bit(chan, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
++	for_each_set_bit(chan, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
+ 		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+ 		ctrl4_clr |= LRADC_CTRL4_LRADCSELECT_MASK(ofs);
+ 		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
 -- 
 1.7.10.4
 
