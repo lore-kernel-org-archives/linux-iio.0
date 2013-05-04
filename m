@@ -1,52 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:11142 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755485Ab3EGKm0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 06:42:26 -0400
-Received: from epcpsbgm2.samsung.com (epcpsbgm2 [203.254.230.27])
- by mailout4.samsung.com
- (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
- 17 2011)) with ESMTP id <0MMF002S2CEND8V0@mailout4.samsung.com> for
- linux-iio@vger.kernel.org; Tue, 07 May 2013 19:42:24 +0900 (KST)
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Received: from rere.qmqm.pl ([89.167.52.164]:34128 "EHLO rere.qmqm.pl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758951Ab3EDN1n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 4 May 2013 09:27:43 -0400
+Message-Id: <69bda5c45bbe03d8e6164ec1a737d93e195c7004.1367671597.git.mirq-linux@rere.qmqm.pl>
+From: =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
+Subject: [PATCH] iio: fix memleak in iio_cb_buffer handling
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 To: linux-iio@vger.kernel.org
-Cc: devicetree-discuss@lists.ozlabs.org, achew@nvidia.com,
-	s.nawrocki@samsung.com, Jacek Anaszewski <j.anaszewski@samsung.com>
-Subject: [PATCH 0/2 V2] iio: magnetometer: ak8975: Add support for DT and
- interrupt handling
-Date: Tue, 07 May 2013 12:41:37 +0200
-Message-id: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>
+Date: Sat,  4 May 2013 15:19:35 +0200 (CEST)
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-These patches add 'data ready' interrupt handling for AK8975
-magnetometer, so as to provide more efficient alternative of
-waiting for the end of conversion. This short series adds also
-support for parsing 'gpios' property when initializing from oftree.
+iio_channel_get_all_cb() was not releasing cb_buff->buffer.scan_mask on error
+path. Neither was iio_channel_release_all_cb(). Fix this by using single
+allocation for entire iio_cb_buffer data.
 
-This is a follow-up of the previous patchset and it includes
-following improvements:
+Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+---
 
-- replaced NULL with 'data' in the second argument of the free_irq calls,
-  which fixes problem on the module removal
-- changed the order of checking for the platform_data and added
-  checking for the -EPROBE_DEFER as spotted by Lars-Peter Clausen
-- moved ak8975.txt out of staging as spotted by Jonathan Cameron
-- modified header description in ak8975.txt
-- renamed '0C' to '0c' in the examplary device node in ak8975.txt
+Compile tested only.
 
-Thanks,
-Jacek Anaszewski
+ drivers/iio/buffer_cb.c |   32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-Jacek Anaszewski (2):
-  iio:ak8975 Add support for gpios DT property
-  iio:ak8975 Implement data ready interrupt handling
-
- .../bindings/iio/magnetometer/ak8975.txt           |   18 ++++
- drivers/iio/magnetometer/ak8975.c                  |  103 +++++++++++++++++++-
- 2 files changed, 116 insertions(+), 5 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-
--- 
-1.7.5.4
+diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
+index 9201022..6fcac0a 100644
+--- a/drivers/iio/buffer_cb.c
++++ b/drivers/iio/buffer_cb.c
+@@ -10,6 +10,7 @@ struct iio_cb_buffer {
+ 	int (*cb)(u8 *data, void *private);
+ 	void *private;
+ 	struct iio_channel *channels;
++	unsigned long scan_mask[0];
+ };
+ 
+ static int iio_buffer_cb_store_to(struct iio_buffer *buffer, u8 *data)
+@@ -35,32 +36,30 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+ 	struct iio_dev *indio_dev;
+ 	struct iio_channel *chan;
+ 
+-	cb_buff = kzalloc(sizeof(*cb_buff), GFP_KERNEL);
++	chan = iio_channel_get_all(dev);
++	if (IS_ERR(chan)) {
++		ret = PTR_ERR(chan);
++		goto error_ret;
++	}
++
++	indio_dev = chan->indio_dev;
++
++	cb_buff = kzalloc(sizeof(*cb_buff) +
++		BITS_TO_LONGS(indio_dev->masklength) * sizeof(long),
++		GFP_KERNEL);
+ 	if (cb_buff == NULL) {
++		iio_channel_release_all(chan);
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+ 	}
+ 
++	cb_buff->channels = chan;
+ 	cb_buff->private = private;
+ 	cb_buff->cb = cb;
+ 	cb_buff->buffer.access = &iio_cb_access;
+ 	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
++	cb_buff->buffer.scan_mask = cb_buff->scan_mask;
+ 
+-	cb_buff->channels = iio_channel_get_all(dev);
+-	if (IS_ERR(cb_buff->channels)) {
+-		ret = PTR_ERR(cb_buff->channels);
+-		goto error_free_cb_buff;
+-	}
+-
+-	indio_dev = cb_buff->channels[0].indio_dev;
+-	cb_buff->buffer.scan_mask
+-		= kcalloc(BITS_TO_LONGS(indio_dev->masklength), sizeof(long),
+-			  GFP_KERNEL);
+-	if (cb_buff->buffer.scan_mask == NULL) {
+-		ret = -ENOMEM;
+-		goto error_release_channels;
+-	}
+-	chan = &cb_buff->channels[0];
+ 	while (chan->indio_dev) {
+ 		if (chan->indio_dev != indio_dev) {
+ 			ret = -EINVAL;
+@@ -75,7 +74,6 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+ 
+ error_release_channels:
+ 	iio_channel_release_all(cb_buff->channels);
+-error_free_cb_buff:
+ 	kfree(cb_buff);
+ error_ret:
+ 	return ERR_PTR(ret);
 
