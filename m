@@ -1,93 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog119.obsmtp.com ([207.126.144.147]:54734 "EHLO
-	eu1sys200aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756693Ab3ENJbB convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 May 2013 05:31:01 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Paul Bolle <pebolle@tiscali.nl>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date: Tue, 14 May 2013 11:30:32 +0200
-Subject: Re: [PATCH] iio: STMicroelectronics: remove three useless selects
-Message-ID: <1426549.ftB3AjjfpY@elitebook-8460p>
-References: <1368522350.1350.98.camel@x61.thuisdomein>
-In-Reply-To: <1368522350.1350.98.camel@x61.thuisdomein>
-Content-Type: text/plain; charset="us-ascii"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42693 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754484Ab3EFQfd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 12:35:33 -0400
+Message-ID: <5187DBD1.9090907@kernel.org>
+Date: Mon, 06 May 2013 17:35:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH] iio: fix memleak in iio_cb_buffer handling
+References: <69bda5c45bbe03d8e6164ec1a737d93e195c7004.1367671597.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <69bda5c45bbe03d8e6164ec1a737d93e195c7004.1367671597.git.mirq-linux@rere.qmqm.pl>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Paul,
-
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
-
-Thanks,
-Denis
-
-On Tuesday, May 14, 2013 11:05:50 AM Paul Bolle wrote:
-> Drivers for STMicroelectronics accelerometers, gyroscopes, and
-> magnetometers were added in v3.9. They all have a (similar) select
-> statement in their Kconfig files for a non-existant Kconfig symbol.
-> These select statements can safely be removed.
+On 05/04/2013 02:19 PM, Michał Mirosław wrote:
+> iio_channel_get_all_cb() was not releasing cb_buff->buffer.scan_mask on error
+> path. Neither was iio_channel_release_all_cb(). Fix this by using single
+> allocation for entire iio_cb_buffer data.
 > 
-> Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+
+When addressing a bug like this, we would be looking for a minimal fix
+for the current kernel cycle and then perhaps a more involved tidy
+up as you have done here to be applied rather less urgently.
+
+As such could your split this into the two line fix (just add the two
+missing kfree(cb_buff->buffer.scan_mask) and separate more general rework.
+
+I'm unconvinced the reworked version is clearer to follow though it is
+a few lines shorter.  Feel free to try and persuade me but that is a
+separate issue from the bug fix!
+
+Jonathan
 > ---
-> 0) Untested.
 > 
-> 1) Perhaps it was intended (in development versions of these drivers) to
-> have separate buffer and core drivers. One hint is that in the buffer
-> related source files one can find the usual MODULE_* macros. Those
-> macros can also be found in the core source files. I do wonder what
-> happens at build time now these drivers have two copies of these macros.
+> Compile tested only.
 > 
->  drivers/iio/accel/Kconfig        | 1 -
->  drivers/iio/gyro/Kconfig         | 1 -
->  drivers/iio/magnetometer/Kconfig | 1 -
->  3 files changed, 3 deletions(-)
+>  drivers/iio/buffer_cb.c |   32 +++++++++++++++-----------------
+>  1 file changed, 15 insertions(+), 17 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index bb59496..719d83f 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -28,7 +28,6 @@ config IIO_ST_ACCEL_3AXIS
->  	select IIO_ST_ACCEL_I2C_3AXIS if (I2C)
->  	select IIO_ST_ACCEL_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> -	select IIO_ST_ACCEL_BUFFER if (IIO_TRIGGERED_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics accelerometers:
->  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 6be4628..b8daf1b 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -47,7 +47,6 @@ config IIO_ST_GYRO_3AXIS
->  	select IIO_ST_GYRO_I2C_3AXIS if (I2C)
->  	select IIO_ST_GYRO_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> -	select IIO_ST_GYRO_BUFFER if (IIO_TRIGGERED_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics gyroscopes:
->  	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-> diff --git a/drivers/iio/magnetometer/Kconfig
-> b/drivers/iio/magnetometer/Kconfig
- index bd1cfb6..c332b0a 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -32,7 +32,6 @@ config IIO_ST_MAGN_3AXIS
->  	select IIO_ST_MAGN_I2C_3AXIS if (I2C)
->  	select IIO_ST_MAGN_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> -	select IIO_ST_MAGN_BUFFER if (IIO_TRIGGERED_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics magnetometers:
->  	  LSM303DLHC, LSM303DLM, LIS3MDL.
-> -- 
-> 1.7.11.7
+> diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
+> index 9201022..6fcac0a 100644
+> --- a/drivers/iio/buffer_cb.c
+> +++ b/drivers/iio/buffer_cb.c
+> @@ -10,6 +10,7 @@ struct iio_cb_buffer {
+>  	int (*cb)(u8 *data, void *private);
+>  	void *private;
+>  	struct iio_channel *channels;
+> +	unsigned long scan_mask[0];
+>  };
+>  
+>  static int iio_buffer_cb_store_to(struct iio_buffer *buffer, u8 *data)
+> @@ -35,32 +36,30 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+>  	struct iio_dev *indio_dev;
+>  	struct iio_channel *chan;
+>  
+> -	cb_buff = kzalloc(sizeof(*cb_buff), GFP_KERNEL);
+> +	chan = iio_channel_get_all(dev);
+> +	if (IS_ERR(chan)) {
+> +		ret = PTR_ERR(chan);
+> +		goto error_ret;
+> +	}
+> +
+> +	indio_dev = chan->indio_dev;
+> +
+> +	cb_buff = kzalloc(sizeof(*cb_buff) +
+> +		BITS_TO_LONGS(indio_dev->masklength) * sizeof(long),
+> +		GFP_KERNEL);
+>  	if (cb_buff == NULL) {
+> +		iio_channel_release_all(chan);
+>  		ret = -ENOMEM;
+>  		goto error_ret;
+>  	}
+>  
+> +	cb_buff->channels = chan;
+>  	cb_buff->private = private;
+>  	cb_buff->cb = cb;
+>  	cb_buff->buffer.access = &iio_cb_access;
+>  	INIT_LIST_HEAD(&cb_buff->buffer.demux_list);
+> +	cb_buff->buffer.scan_mask = cb_buff->scan_mask;
+>  
+> -	cb_buff->channels = iio_channel_get_all(dev);
+> -	if (IS_ERR(cb_buff->channels)) {
+> -		ret = PTR_ERR(cb_buff->channels);
+> -		goto error_free_cb_buff;
+> -	}
+> -
+> -	indio_dev = cb_buff->channels[0].indio_dev;
+> -	cb_buff->buffer.scan_mask
+> -		= kcalloc(BITS_TO_LONGS(indio_dev->masklength), sizeof(long),
+> -			  GFP_KERNEL);
+> -	if (cb_buff->buffer.scan_mask == NULL) {
+> -		ret = -ENOMEM;
+> -		goto error_release_channels;
+> -	}
+> -	chan = &cb_buff->channels[0];
+>  	while (chan->indio_dev) {
+>  		if (chan->indio_dev != indio_dev) {
+>  			ret = -EINVAL;
+> @@ -75,7 +74,6 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
+>  
+>  error_release_channels:
+>  	iio_channel_release_all(cb_buff->channels);
+> -error_free_cb_buff:
+>  	kfree(cb_buff);
+>  error_ret:
+>  	return ERR_PTR(ret);
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
