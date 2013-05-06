@@ -1,48 +1,28 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from casper.infradead.org ([85.118.1.10]:55812 "EHLO
-	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752159Ab3EGRJ3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 13:09:29 -0400
-Message-ID: <51893523.9000105@infradead.org>
-Date: Tue, 07 May 2013 10:08:51 -0700
-From: Randy Dunlap <rdunlap@infradead.org>
-MIME-Version: 1.0
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-CC: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: linux-next: Tree for May 7 (iio)
-References: <20130507134922.981483ab1e5cb09e5543a6cc@canb.auug.org.au>
-In-Reply-To: <20130507134922.981483ab1e5cb09e5543a6cc@canb.auug.org.au>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:38560 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752782Ab3EFMtR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 08:49:17 -0400
+From: Jan Luebbe <jlu@pengutronix.de>
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: rachna@ti.com, linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org, Koen Kooi <koen@dominion.thruhere.net>
+Subject: Re: [PATCH] ti_tscadc: Update with IIO map interface & deal with partial activation
+Date: Mon,  6 May 2013 14:48:57 +0200
+Message-Id: <1367844539-6812-1-git-send-email-jlu@pengutronix.de>
+In-Reply-To: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
+References: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/06/13 20:49, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Please do not add any v3.11 destined work to your linux-next included
-> branches until after v3.10-rc1 is released.
-> 
-> I am receiving a (un)reasonable number of conflicts from there being
-> multiple copies of some commits in various trees.   Please clean this up
-> and resist the temptataion to rebase your trees on the way to your
-> upstream ...
-> 
-> Changes since 20130506:
-> 
+Hi Pantelis,
 
-on x86_64:
+while trying out your patch on a custom AM335x board, I noticed that the
+sysfs entries ware missing. This is fixed in the first patch, you might want
+to squash that into your original patch.
 
-when CONFIG_AD5446=y and CONFIG_I2C=m:
+The second one makes sure that the iio framework does not read invalid data.
 
-drivers/built-in.o: In function `ad5622_write':
-ad5446.c:(.text+0xae0b5): undefined reference to `i2c_master_send'
-drivers/built-in.o: In function `ad5446_init':
-ad5446.c:(.init.text+0x4f28): undefined reference to `i2c_register_driver'
-drivers/built-in.o: In function `ad5446_i2c_unregister_driver':
-ad5446.c:(.exit.text+0xc73): undefined reference to `i2c_del_driver'
+Regards,
+Jan
 
-
-
--- 
-~Randy
