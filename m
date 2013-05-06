@@ -1,90 +1,67 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <519CD307.8020404@metafoo.de>
-Date: Wed, 22 May 2013 16:15:35 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42641 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753417Ab3EFQaZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 12:30:25 -0400
+Message-ID: <5187DAA1.50503@kernel.org>
+Date: Mon, 06 May 2013 17:30:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Guillaume Ballet <gballetwork@gmail.com>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- linux-iio@vger.kernel.org
-Subject: Re: Why is only one int returned in iio_read_channel_processed?
-References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com> <519C7C29.9040707@jic23.retrosnub.co.uk> <519C7F93.9010606@metafoo.de> <519C8923.7020902@jic23.retrosnub.co.uk> <CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com> <519CAF57.5030301@metafoo.de> <CAGi_vrir0uQd4u9WgixQ5an+jE8WFTyVmBiFnmxa-y=DfeW61g@mail.gmail.com> <519CCAA2.2070408@metafoo.de> <CAGi_vrjk7FLvYhHSLbV9D4GGHY1X1k1fkuEXMkh9Mn7z_5qj1w@mail.gmail.com>
-In-Reply-To: <CAGi_vrjk7FLvYhHSLbV9D4GGHY1X1k1fkuEXMkh9Mn7z_5qj1w@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] staging/iio/mxs-lradc: fix preenable for multiple
+ buffers
+References: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl> <ba60ca91ef1d3061b454e518f6026a1157fae5d7.1367671597.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <ba60ca91ef1d3061b454e518f6026a1157fae5d7.1367671597.git.mirq-linux@rere.qmqm.pl>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/22/2013 04:00 PM, Guillaume Ballet wrote:
-> On Wed, May 22, 2013 at 3:39 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 05/22/2013 03:29 PM, Guillaume Ballet wrote:
->>> On Wed, May 22, 2013 at 1:43 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>> On 05/22/2013 11:37 AM, Guillaume Ballet wrote:
->>>>>>>
->>>>>>>>
->>>>>>>>> functions' signature only has one integer
->>>>>>>>> in/out parameter. That makes sense in the context of _raw because the
->>>>>>>>> value isn't yet processed.
->>>>>>>>>
->>>>>>>>> However, as the scale is a number encoded over two ints, the
->>>>>>>>> _processed value should also span two ints. Is there a reason why it's
->>>>>>>>> still only one int?
->>>>>>>>
->>>>>>>> No it certainly should not be one int for exactly the reasons you have
->>>>>>>> stated.
->>>>>>>>>
->>>>>>>>>
->>>>>>>
->>>>>>> I'm not to sure about that. I'd rather add a scale parameter to the
->>>>>>> iio_read_channel_processed, just in the same way the
->>>>>>> convert_raw_to_processed function takes a scale parameter.
->>>>>>
->>>>>> That may be tricky to do given we often have nasty non linear functions
->>>>>> that are the reason we are using processed in the first place.  Hmm.
->>>>>> Not sure which way works better.
->>>>>
->>>>> I agree, this is the whole point of using processed. Lars, is there a
->>>>> specific reason why you want to keep reading the value and the scale
->>>>> in different function calls?
->>>>
->>>> I don't want to keep reading scale and value in different function calls.
->>>>
->>>> What's you use case and how do you want to split the data between the two
->>>> integers?
->>>
->>> Since the scale's format can be IIO_VAL_INT_PLUS_MICRO and
->>> IIO_VAL_INT_PLUS_NANO, etc... and since iio_read_channel_processed
->>> returns a value that is homogeneous to (value * scale), it seems to me
->>> the same format should be used as when calling iio_read_channel_raw
->>> with IIO_CHAN_INFO_SCALE. My use case is not more complicated than
->>> making sure I keep the same precision when getting processed values.
->>
->> That doesn't really help me understand what you are trying to do. What is
->> your application, where do you call iio_read_channel_processed and how do
->> you process the returned value.
+On 05/04/2013 02:19 PM, Michał Mirosław wrote:
+> This fixes 'preenable failed: -EINVAL' error when using this driver.
 > 
-> I have a driver for an ADC block that measures miscellaneous values in
-> various units (temperature, voltage, current...) to be read from
-> drivers in other kernel subsystems (the power supply class, for
-> instance).
+For future patches, please cleanly separate out (in a different series)
+the bug fixes from the cleanups.  This one has been applied to the
+fixes-togreg branch of iio.git wherease the first patch will go
+through the togreg branch and hit one kernel cycle later.
 
-This already works today with the current implementation of
-iio_read_channel_processed.
-
-Unit conversion has to be done by the IIO device itself as
-> it's done using tables that are provided by various vendors who don't
-> want them published.
-
-So how do you include the tables in the IIO driver if they can't be published?
-
-> Hence my need to call iio_read_channel_processed
-> and not entrust anyone else with the conversion.
-
-Ah, ok, so your driver implements IIO_CHAN_INFO_PROCESSED instead of
-IIO_CHAN_INFO_RAW. And you want to be able to specify your value with
-sub-decimal precession, is this correct?
-
+Applied to the fixes-togreg
+> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |    5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> Could _you_ please explain what your concern with using the same format is?
-
-Because the definition of IIO_CHAN_INFO_PROCESSED is that the value has
-already the proper unit and no unit conversion is necessary.
-
-- Lars
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 03299ea..d92c97a 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -690,7 +690,6 @@ static void mxs_lradc_trigger_remove(struct iio_dev *iio)
+>  static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+> -	struct iio_buffer *buffer = iio->buffer;
+>  	int ret = 0, chan, ofs = 0;
+>  	unsigned long enable = 0;
+>  	uint32_t ctrl4_set = 0;
+> @@ -698,7 +697,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  	uint32_t ctrl1_irq = 0;
+>  	const uint32_t chan_value = LRADC_CH_ACCUMULATE |
+>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+> -	const int len = bitmap_weight(buffer->scan_mask, LRADC_MAX_TOTAL_CHANS);
+> +	const int len = bitmap_weight(iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS);
+>  
+>  	if (!len)
+>  		return -EINVAL;
+> @@ -725,7 +724,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+>  		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+>  	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>  
+> -	for_each_set_bit(chan, buffer->scan_mask, LRADC_MAX_TOTAL_CHANS) {
+> +	for_each_set_bit(chan, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
+>  		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
+>  		ctrl4_clr |= LRADC_CTRL4_LRADCSELECT_MASK(ofs);
+>  		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
+> 
