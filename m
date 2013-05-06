@@ -1,51 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-239.synserver.de ([212.40.185.239]:1082 "EHLO
-	smtp-out-221.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1161857Ab3DEPjT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Apr 2013 11:39:19 -0400
-Message-ID: <515EFE0C.2030401@metafoo.de>
-Date: Fri, 05 Apr 2013 18:38:36 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42600 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752836Ab3EFQ1l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 12:27:41 -0400
+Message-ID: <5187D9FA.8000808@kernel.org>
+Date: Mon, 06 May 2013 17:27:38 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Doug Anderson <dianders@chromium.org>
-CC: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc@vger.kernel.org,
+To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>
-Subject: Re: [RFC: PATCH 2/2] iio: adc: exynos_adc: Handle timeout and race
- conditions
-References: <1363364801-23684-1-git-send-email-ch.naveen@samsung.com> <51439846.9090201@metafoo.de> <CAD=FV=V+-DwCjGoookySCazazBBYOoRO+=G5Q_WXAw+SrXNc-A@mail.gmail.com> <5144849A.8050907@metafoo.de> <CAD=FV=VBYHyD6yXBrM1BV3gazDFT0oHgvJM0+5LU1w4AO16Yzg@mail.gmail.com> <515E90FD.10006@metafoo.de> <CAD=FV=XHKn_vqv7-rqpraJy_V2kyBfo98WdMsAJ5eXhADc_rmA@mail.gmail.com>
-In-Reply-To: <CAD=FV=XHKn_vqv7-rqpraJy_V2kyBfo98WdMsAJ5eXhADc_rmA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+	Shawn Guo <shawn.guo@linaro.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] staging/iio/mxs-lradc: cleanup masklength
+References: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/05/2013 04:56 PM, Doug Anderson wrote:
-> Lars,
-> 
-> On Fri, Apr 5, 2013 at 1:53 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> Since we sleep inside the protected section we need to use a mutex.
-> 
-> Ah, good point.
-> 
->> It's not the timeout case I'm worried about, but the case where the transfer
->> is interrupted by the user. Even though it is rather unlikely for the
->> problem to occur we should still try to avoid it, this is one of these
->> annoying heisenbugs that happen once in a while and nobody is able to
->> reproduce them.
-> 
-> Yes, of course.  Then we can also get extra confidence that the reset
-> logic works well by stressing out this case...  :)
-> 
-> This makes me think, though.  Given how fast we expect the ADC
-> transaction to finish, would there be any benefit to making the wait
-> non-interruptible and then shortening the timeout a whole lot.  If we
-> shortened to 1ms then we're really not "non-interruptible" for very
-> long and there's less chance of subtle bugs in the way that reset
-> works.
+On 05/04/2013 02:19 PM, Michał Mirosław wrote:
+> We know the exact iio->masklength = LRADC_MAX_TOTAL_CHANS.
+> Let's use it consistently.
+I guess this gives a small improvement in clarity so
+applied to togreg branch of iio.git.
 
-Yes, that could also work.
-
-- Lars
+Thanks,
+> 
+> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 2856b8f..03299ea 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -620,7 +620,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
+>  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
+>  	unsigned int i, j = 0;
+>  
+> -	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
+> +	for_each_set_bit(i, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
+>  		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
+>  		writel(chan_value, lradc->base + LRADC_CH(j));
+>  		lradc->buffer[j] &= LRADC_CH_VALUE_MASK;
+> @@ -775,8 +775,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
+>  					const unsigned long *mask)
+>  {
+>  	struct mxs_lradc *lradc = iio_priv(iio);
+> -	const int len = iio->masklength;
+> -	const int map_chans = bitmap_weight(mask, len);
+> +	const int map_chans = bitmap_weight(mask, LRADC_MAX_TOTAL_CHANS);
+>  	int rsvd_chans = 0;
+>  	unsigned long rsvd_mask = 0;
+>  
+> @@ -793,7 +792,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
+>  		rsvd_chans++;
+>  
+>  	/* Test for attempts to map channels with special mode of operation. */
+> -	if (bitmap_intersects(mask, &rsvd_mask, len))
+> +	if (bitmap_intersects(mask, &rsvd_mask, LRADC_MAX_TOTAL_CHANS))
+>  		return false;
+>  
+>  	/* Test for attempts to map more channels then available slots. */
+> @@ -969,6 +968,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  	iio->modes = INDIO_DIRECT_MODE;
+>  	iio->channels = mxs_lradc_chan_spec;
+>  	iio->num_channels = ARRAY_SIZE(mxs_lradc_chan_spec);
+> +	iio->masklength = LRADC_MAX_TOTAL_CHANS;
+>  
+>  	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
+>  				&mxs_lradc_trigger_handler,
+> 
