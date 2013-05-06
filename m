@@ -1,593 +1,187 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42722 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43193 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753525Ab3EFQif (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 12:38:35 -0400
-Message-ID: <5187DC87.7030802@kernel.org>
-Date: Mon, 06 May 2013 17:38:31 +0100
+	with ESMTP id S1754324Ab3EFRVN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 13:21:13 -0400
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH] iio:trigger:sysfs Move out of staging.
-References: <1365940460-32120-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1365940460-32120-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 3/4] staging:iio:triggers:interrupt trigger - one per platform device.
+Date: Mon,  6 May 2013 18:21:02 +0100
+Message-Id: <1367860863-6863-4-git-send-email-jic23@kernel.org>
+In-Reply-To: <1367860863-6863-1-git-send-email-jic23@kernel.org>
+References: <1367860863-6863-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/14/2013 12:54 PM, Jonathan Cameron wrote:
-> This simple driver is rather useful. No issues about its interface
-> have been raised for some time hence the proposal to move it out
-> of staging.
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Applied to the togreg branch of iio.git
+Switching from one platform device registering a lot of triggers
+to one for each trigger simplifies the code somewhat. It would be
+relatively unusual to have more than a couple of such devices
+registered so this change will not result in much additional overhead.
 
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/trigger/iio-trig-interrupt.c | 119 +++++++++--------------
+ 1 file changed, 45 insertions(+), 74 deletions(-)
 
-> ---
->  drivers/iio/Kconfig                          |   3 +
->  drivers/iio/Makefile                         |   1 +
->  drivers/iio/trigger/Kconfig                  |  17 ++
->  drivers/iio/trigger/Makefile                 |   5 +
->  drivers/iio/trigger/iio-trig-sysfs.c         | 227 +++++++++++++++++++++++++++
->  drivers/staging/iio/trigger/Kconfig          |  11 --
->  drivers/staging/iio/trigger/Makefile         |   1 -
->  drivers/staging/iio/trigger/iio-trig-sysfs.c | 227 ---------------------------
->  8 files changed, 253 insertions(+), 239 deletions(-)
-> 
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index b2f963b..daa3ddd 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -70,5 +70,8 @@ source "drivers/iio/gyro/Kconfig"
->  source "drivers/iio/imu/Kconfig"
->  source "drivers/iio/light/Kconfig"
->  source "drivers/iio/magnetometer/Kconfig"
-> +if IIO_TRIGGER
-> +   source "drivers/iio/trigger/Kconfig"
-> +endif #IIO_TRIGGER
->  
->  endif # IIO
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index a0e8cdd..a349a96 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -21,3 +21,4 @@ obj-y += frequency/
->  obj-y += imu/
->  obj-y += light/
->  obj-y += magnetometer/
-> +obj-y += trigger/
-> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-> new file mode 100644
-> index 0000000..a4e68db
-> --- /dev/null
-> +++ b/drivers/iio/trigger/Kconfig
-> @@ -0,0 +1,17 @@
-> +#
-> +# Industrial I/O standalone triggers
-> +#
-> +menu "Triggers - standalone"
-> +
-> +config IIO_SYSFS_TRIGGER
-> +	tristate "SYSFS trigger"
-> +	depends on SYSFS
-> +	select IRQ_WORK
-> +	help
-> +	  Provides support for using SYSFS entry as IIO triggers.
-> +	  If unsure, say N (but it's safe to say "Y").
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called iio-trig-sysfs.
-> +
-> +endmenu
-> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-> new file mode 100644
-> index 0000000..e0b2183
-> --- /dev/null
-> +++ b/drivers/iio/trigger/Makefile
-> @@ -0,0 +1,5 @@
-> +#
-> +# Makefile for triggers not associated with iio-devices
-> +#
-> +
-> +obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-> diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
-> new file mode 100644
-> index 0000000..b727bde
-> --- /dev/null
-> +++ b/drivers/iio/trigger/iio-trig-sysfs.c
-> @@ -0,0 +1,227 @@
-> +/*
-> + * Copyright 2011 Analog Devices Inc.
-> + *
-> + * Licensed under the GPL-2.
-> + *
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +#include <linux/list.h>
-> +#include <linux/irq_work.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/trigger.h>
-> +
-> +struct iio_sysfs_trig {
-> +	struct iio_trigger *trig;
-> +	struct irq_work work;
-> +	int id;
-> +	struct list_head l;
-> +};
-> +
-> +static LIST_HEAD(iio_sysfs_trig_list);
-> +static DEFINE_MUTEX(iio_syfs_trig_list_mut);
-> +
-> +static int iio_sysfs_trigger_probe(int id);
-> +static ssize_t iio_sysfs_trig_add(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  const char *buf,
-> +				  size_t len)
-> +{
-> +	int ret;
-> +	unsigned long input;
-> +
-> +	ret = strict_strtoul(buf, 10, &input);
-> +	if (ret)
-> +		return ret;
-> +	ret = iio_sysfs_trigger_probe(input);
-> +	if (ret)
-> +		return ret;
-> +	return len;
-> +}
-> +static DEVICE_ATTR(add_trigger, S_IWUSR, NULL, &iio_sysfs_trig_add);
-> +
-> +static int iio_sysfs_trigger_remove(int id);
-> +static ssize_t iio_sysfs_trig_remove(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     const char *buf,
-> +				     size_t len)
-> +{
-> +	int ret;
-> +	unsigned long input;
-> +
-> +	ret = strict_strtoul(buf, 10, &input);
-> +	if (ret)
-> +		return ret;
-> +	ret = iio_sysfs_trigger_remove(input);
-> +	if (ret)
-> +		return ret;
-> +	return len;
-> +}
-> +
-> +static DEVICE_ATTR(remove_trigger, S_IWUSR, NULL, &iio_sysfs_trig_remove);
-> +
-> +static struct attribute *iio_sysfs_trig_attrs[] = {
-> +	&dev_attr_add_trigger.attr,
-> +	&dev_attr_remove_trigger.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group iio_sysfs_trig_group = {
-> +	.attrs = iio_sysfs_trig_attrs,
-> +};
-> +
-> +static const struct attribute_group *iio_sysfs_trig_groups[] = {
-> +	&iio_sysfs_trig_group,
-> +	NULL
-> +};
-> +
-> +
-> +/* Nothing to actually do upon release */
-> +static void iio_trigger_sysfs_release(struct device *dev)
-> +{
-> +}
-> +
-> +static struct device iio_sysfs_trig_dev = {
-> +	.bus = &iio_bus_type,
-> +	.groups = iio_sysfs_trig_groups,
-> +	.release = &iio_trigger_sysfs_release,
-> +};
-> +
-> +static void iio_sysfs_trigger_work(struct irq_work *work)
-> +{
-> +	struct iio_sysfs_trig *trig = container_of(work, struct iio_sysfs_trig,
-> +							work);
-> +
-> +	iio_trigger_poll(trig->trig, 0);
-> +}
-> +
-> +static ssize_t iio_sysfs_trigger_poll(struct device *dev,
-> +		struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +	struct iio_sysfs_trig *sysfs_trig = iio_trigger_get_drvdata(trig);
-> +
-> +	irq_work_queue(&sysfs_trig->work);
-> +
-> +	return count;
-> +}
-> +
-> +static DEVICE_ATTR(trigger_now, S_IWUSR, NULL, iio_sysfs_trigger_poll);
-> +
-> +static struct attribute *iio_sysfs_trigger_attrs[] = {
-> +	&dev_attr_trigger_now.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group iio_sysfs_trigger_attr_group = {
-> +	.attrs = iio_sysfs_trigger_attrs,
-> +};
-> +
-> +static const struct attribute_group *iio_sysfs_trigger_attr_groups[] = {
-> +	&iio_sysfs_trigger_attr_group,
-> +	NULL
-> +};
-> +
-> +static const struct iio_trigger_ops iio_sysfs_trigger_ops = {
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int iio_sysfs_trigger_probe(int id)
-> +{
-> +	struct iio_sysfs_trig *t;
-> +	int ret;
-> +	bool foundit = false;
-> +	mutex_lock(&iio_syfs_trig_list_mut);
-> +	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-> +		if (id == t->id) {
-> +			foundit = true;
-> +			break;
-> +		}
-> +	if (foundit) {
-> +		ret = -EINVAL;
-> +		goto out1;
-> +	}
-> +	t = kmalloc(sizeof(*t), GFP_KERNEL);
-> +	if (t == NULL) {
-> +		ret = -ENOMEM;
-> +		goto out1;
-> +	}
-> +	t->id = id;
-> +	t->trig = iio_trigger_alloc("sysfstrig%d", id);
-> +	if (!t->trig) {
-> +		ret = -ENOMEM;
-> +		goto free_t;
-> +	}
-> +
-> +	t->trig->dev.groups = iio_sysfs_trigger_attr_groups;
-> +	t->trig->ops = &iio_sysfs_trigger_ops;
-> +	t->trig->dev.parent = &iio_sysfs_trig_dev;
-> +	iio_trigger_set_drvdata(t->trig, t);
-> +
-> +	init_irq_work(&t->work, iio_sysfs_trigger_work);
-> +
-> +	ret = iio_trigger_register(t->trig);
-> +	if (ret)
-> +		goto out2;
-> +	list_add(&t->l, &iio_sysfs_trig_list);
-> +	__module_get(THIS_MODULE);
-> +	mutex_unlock(&iio_syfs_trig_list_mut);
-> +	return 0;
-> +
-> +out2:
-> +	iio_trigger_put(t->trig);
-> +free_t:
-> +	kfree(t);
-> +out1:
-> +	mutex_unlock(&iio_syfs_trig_list_mut);
-> +	return ret;
-> +}
-> +
-> +static int iio_sysfs_trigger_remove(int id)
-> +{
-> +	bool foundit = false;
-> +	struct iio_sysfs_trig *t;
-> +	mutex_lock(&iio_syfs_trig_list_mut);
-> +	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-> +		if (id == t->id) {
-> +			foundit = true;
-> +			break;
-> +		}
-> +	if (!foundit) {
-> +		mutex_unlock(&iio_syfs_trig_list_mut);
-> +		return -EINVAL;
-> +	}
-> +
-> +	iio_trigger_unregister(t->trig);
-> +	iio_trigger_free(t->trig);
-> +
-> +	list_del(&t->l);
-> +	kfree(t);
-> +	module_put(THIS_MODULE);
-> +	mutex_unlock(&iio_syfs_trig_list_mut);
-> +	return 0;
-> +}
-> +
-> +
-> +static int __init iio_sysfs_trig_init(void)
-> +{
-> +	device_initialize(&iio_sysfs_trig_dev);
-> +	dev_set_name(&iio_sysfs_trig_dev, "iio_sysfs_trigger");
-> +	return device_add(&iio_sysfs_trig_dev);
-> +}
-> +module_init(iio_sysfs_trig_init);
-> +
-> +static void __exit iio_sysfs_trig_exit(void)
-> +{
-> +	device_unregister(&iio_sysfs_trig_dev);
-> +}
-> +module_exit(iio_sysfs_trig_exit);
-> +
-> +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-> +MODULE_DESCRIPTION("Sysfs based trigger for the iio subsystem");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:iio-trig-sysfs");
-> diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
-> index d44d3ad..d0ae99c 100644
-> --- a/drivers/staging/iio/trigger/Kconfig
-> +++ b/drivers/staging/iio/trigger/Kconfig
-> @@ -18,17 +18,6 @@ config IIO_GPIO_TRIGGER
->  	help
->  	  Provides support for using GPIO pins as IIO triggers.
->  
-> -config IIO_SYSFS_TRIGGER
-> -	tristate "SYSFS trigger"
-> -	depends on SYSFS
-> -	select IRQ_WORK
-> -	help
-> -	  Provides support for using SYSFS entry as IIO triggers.
-> -	  If unsure, say N (but it's safe to say "Y").
-> -
-> -	  To compile this driver as a module, choose M here: the
-> -	  module will be called iio-trig-sysfs.
-> -
->  config IIO_BFIN_TMR_TRIGGER
->  	tristate "Blackfin TIMER trigger"
->  	depends on BLACKFIN
-> diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
-> index b088b57..8a53041 100644
-> --- a/drivers/staging/iio/trigger/Makefile
-> +++ b/drivers/staging/iio/trigger/Makefile
-> @@ -4,5 +4,4 @@
->  
->  obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
->  obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
-> -obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
->  obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
-> diff --git a/drivers/staging/iio/trigger/iio-trig-sysfs.c b/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> deleted file mode 100644
-> index b727bde..0000000
-> --- a/drivers/staging/iio/trigger/iio-trig-sysfs.c
-> +++ /dev/null
-> @@ -1,227 +0,0 @@
-> -/*
-> - * Copyright 2011 Analog Devices Inc.
-> - *
-> - * Licensed under the GPL-2.
-> - *
-> - */
-> -
-> -#include <linux/kernel.h>
-> -#include <linux/module.h>
-> -#include <linux/platform_device.h>
-> -#include <linux/slab.h>
-> -#include <linux/list.h>
-> -#include <linux/irq_work.h>
-> -
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/trigger.h>
-> -
-> -struct iio_sysfs_trig {
-> -	struct iio_trigger *trig;
-> -	struct irq_work work;
-> -	int id;
-> -	struct list_head l;
-> -};
-> -
-> -static LIST_HEAD(iio_sysfs_trig_list);
-> -static DEFINE_MUTEX(iio_syfs_trig_list_mut);
-> -
-> -static int iio_sysfs_trigger_probe(int id);
-> -static ssize_t iio_sysfs_trig_add(struct device *dev,
-> -				  struct device_attribute *attr,
-> -				  const char *buf,
-> -				  size_t len)
-> -{
-> -	int ret;
-> -	unsigned long input;
-> -
-> -	ret = strict_strtoul(buf, 10, &input);
-> -	if (ret)
-> -		return ret;
-> -	ret = iio_sysfs_trigger_probe(input);
-> -	if (ret)
-> -		return ret;
-> -	return len;
-> -}
-> -static DEVICE_ATTR(add_trigger, S_IWUSR, NULL, &iio_sysfs_trig_add);
-> -
-> -static int iio_sysfs_trigger_remove(int id);
-> -static ssize_t iio_sysfs_trig_remove(struct device *dev,
-> -				     struct device_attribute *attr,
-> -				     const char *buf,
-> -				     size_t len)
-> -{
-> -	int ret;
-> -	unsigned long input;
-> -
-> -	ret = strict_strtoul(buf, 10, &input);
-> -	if (ret)
-> -		return ret;
-> -	ret = iio_sysfs_trigger_remove(input);
-> -	if (ret)
-> -		return ret;
-> -	return len;
-> -}
-> -
-> -static DEVICE_ATTR(remove_trigger, S_IWUSR, NULL, &iio_sysfs_trig_remove);
-> -
-> -static struct attribute *iio_sysfs_trig_attrs[] = {
-> -	&dev_attr_add_trigger.attr,
-> -	&dev_attr_remove_trigger.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group iio_sysfs_trig_group = {
-> -	.attrs = iio_sysfs_trig_attrs,
-> -};
-> -
-> -static const struct attribute_group *iio_sysfs_trig_groups[] = {
-> -	&iio_sysfs_trig_group,
-> -	NULL
-> -};
-> -
-> -
-> -/* Nothing to actually do upon release */
-> -static void iio_trigger_sysfs_release(struct device *dev)
-> -{
-> -}
-> -
-> -static struct device iio_sysfs_trig_dev = {
-> -	.bus = &iio_bus_type,
-> -	.groups = iio_sysfs_trig_groups,
-> -	.release = &iio_trigger_sysfs_release,
-> -};
-> -
-> -static void iio_sysfs_trigger_work(struct irq_work *work)
-> -{
-> -	struct iio_sysfs_trig *trig = container_of(work, struct iio_sysfs_trig,
-> -							work);
-> -
-> -	iio_trigger_poll(trig->trig, 0);
-> -}
-> -
-> -static ssize_t iio_sysfs_trigger_poll(struct device *dev,
-> -		struct device_attribute *attr, const char *buf, size_t count)
-> -{
-> -	struct iio_trigger *trig = to_iio_trigger(dev);
-> -	struct iio_sysfs_trig *sysfs_trig = iio_trigger_get_drvdata(trig);
-> -
-> -	irq_work_queue(&sysfs_trig->work);
-> -
-> -	return count;
-> -}
-> -
-> -static DEVICE_ATTR(trigger_now, S_IWUSR, NULL, iio_sysfs_trigger_poll);
-> -
-> -static struct attribute *iio_sysfs_trigger_attrs[] = {
-> -	&dev_attr_trigger_now.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group iio_sysfs_trigger_attr_group = {
-> -	.attrs = iio_sysfs_trigger_attrs,
-> -};
-> -
-> -static const struct attribute_group *iio_sysfs_trigger_attr_groups[] = {
-> -	&iio_sysfs_trigger_attr_group,
-> -	NULL
-> -};
-> -
-> -static const struct iio_trigger_ops iio_sysfs_trigger_ops = {
-> -	.owner = THIS_MODULE,
-> -};
-> -
-> -static int iio_sysfs_trigger_probe(int id)
-> -{
-> -	struct iio_sysfs_trig *t;
-> -	int ret;
-> -	bool foundit = false;
-> -	mutex_lock(&iio_syfs_trig_list_mut);
-> -	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-> -		if (id == t->id) {
-> -			foundit = true;
-> -			break;
-> -		}
-> -	if (foundit) {
-> -		ret = -EINVAL;
-> -		goto out1;
-> -	}
-> -	t = kmalloc(sizeof(*t), GFP_KERNEL);
-> -	if (t == NULL) {
-> -		ret = -ENOMEM;
-> -		goto out1;
-> -	}
-> -	t->id = id;
-> -	t->trig = iio_trigger_alloc("sysfstrig%d", id);
-> -	if (!t->trig) {
-> -		ret = -ENOMEM;
-> -		goto free_t;
-> -	}
-> -
-> -	t->trig->dev.groups = iio_sysfs_trigger_attr_groups;
-> -	t->trig->ops = &iio_sysfs_trigger_ops;
-> -	t->trig->dev.parent = &iio_sysfs_trig_dev;
-> -	iio_trigger_set_drvdata(t->trig, t);
-> -
-> -	init_irq_work(&t->work, iio_sysfs_trigger_work);
-> -
-> -	ret = iio_trigger_register(t->trig);
-> -	if (ret)
-> -		goto out2;
-> -	list_add(&t->l, &iio_sysfs_trig_list);
-> -	__module_get(THIS_MODULE);
-> -	mutex_unlock(&iio_syfs_trig_list_mut);
-> -	return 0;
-> -
-> -out2:
-> -	iio_trigger_put(t->trig);
-> -free_t:
-> -	kfree(t);
-> -out1:
-> -	mutex_unlock(&iio_syfs_trig_list_mut);
-> -	return ret;
-> -}
-> -
-> -static int iio_sysfs_trigger_remove(int id)
-> -{
-> -	bool foundit = false;
-> -	struct iio_sysfs_trig *t;
-> -	mutex_lock(&iio_syfs_trig_list_mut);
-> -	list_for_each_entry(t, &iio_sysfs_trig_list, l)
-> -		if (id == t->id) {
-> -			foundit = true;
-> -			break;
-> -		}
-> -	if (!foundit) {
-> -		mutex_unlock(&iio_syfs_trig_list_mut);
-> -		return -EINVAL;
-> -	}
-> -
-> -	iio_trigger_unregister(t->trig);
-> -	iio_trigger_free(t->trig);
-> -
-> -	list_del(&t->l);
-> -	kfree(t);
-> -	module_put(THIS_MODULE);
-> -	mutex_unlock(&iio_syfs_trig_list_mut);
-> -	return 0;
-> -}
-> -
-> -
-> -static int __init iio_sysfs_trig_init(void)
-> -{
-> -	device_initialize(&iio_sysfs_trig_dev);
-> -	dev_set_name(&iio_sysfs_trig_dev, "iio_sysfs_trigger");
-> -	return device_add(&iio_sysfs_trig_dev);
-> -}
-> -module_init(iio_sysfs_trig_init);
-> -
-> -static void __exit iio_sysfs_trig_exit(void)
-> -{
-> -	device_unregister(&iio_sysfs_trig_dev);
-> -}
-> -module_exit(iio_sysfs_trig_exit);
-> -
-> -MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-> -MODULE_DESCRIPTION("Sysfs based trigger for the iio subsystem");
-> -MODULE_LICENSE("GPL v2");
-> -MODULE_ALIAS("platform:iio-trig-sysfs");
-> 
+diff --git a/drivers/staging/iio/trigger/iio-trig-interrupt.c b/drivers/staging/iio/trigger/iio-trig-interrupt.c
+index 9afba96..e015de2 100644
+--- a/drivers/staging/iio/trigger/iio-trig-interrupt.c
++++ b/drivers/staging/iio/trigger/iio-trig-interrupt.c
+@@ -17,11 +17,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+ 
+-static LIST_HEAD(iio_interrupt_trigger_list);
+-static DEFINE_MUTEX(iio_interrupt_trigger_list_lock);
+ 
+ struct iio_interrupt_trigger_info {
+-	struct mutex in_use;
+ 	unsigned int irq;
+ };
+ 
+@@ -39,57 +36,48 @@ static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
+ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+ {
+ 	struct iio_interrupt_trigger_info *trig_info;
+-	struct iio_trigger *trig, *trig2;
++	struct iio_trigger *trig;
+ 	unsigned long irqflags;
+ 	struct resource *irq_res;
+ 	int irq, ret = 0, irq_res_cnt = 0;
+ 
+-	do {
+-		irq_res = platform_get_resource(pdev,
+-				IORESOURCE_IRQ, irq_res_cnt);
+-
+-		if (irq_res == NULL) {
+-			if (irq_res_cnt == 0)
+-				dev_err(&pdev->dev, "No IRQs specified");
+-			break;
+-		}
+-		irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+-
+-		for (irq = irq_res->start; irq <= irq_res->end; irq++) {
+-
+-			trig = iio_trigger_alloc("irqtrig%d", irq);
+-			if (!trig) {
+-				ret = -ENOMEM;
+-				goto error_free_completed_registrations;
+-			}
+-
+-			trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+-			if (!trig_info) {
+-				ret = -ENOMEM;
+-				goto error_put_trigger;
+-			}
+-			iio_trigger_set_drvdata(trig, trig_info);
+-			trig_info->irq = irq;
+-			trig->ops = &iio_interrupt_trigger_ops;
+-			ret = request_irq(irq, iio_interrupt_trigger_poll,
+-					  irqflags, trig->name, trig);
+-			if (ret) {
+-				dev_err(&pdev->dev,
+-					"request IRQ-%d failed", irq);
+-				goto error_free_trig_info;
+-			}
+-
+-			ret = iio_trigger_register(trig);
+-			if (ret)
+-				goto error_release_irq;
+-
+-			list_add_tail(&trig->alloc_list,
+-					&iio_interrupt_trigger_list);
+-		}
+-
+-		irq_res_cnt++;
+-	} while (irq_res != NULL);
++	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, irq_res_cnt);
+ 
++	if (irq_res == NULL) {
++		if (irq_res_cnt == 0)
++			dev_err(&pdev->dev, "No IRQs specified");
++		return -ENODEV;
++	}
++	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
++
++	irq = irq_res->start;
++
++	trig = iio_trigger_alloc("irqtrig%d", irq_res->start);
++	if (!trig) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
++	if (!trig_info) {
++		ret = -ENOMEM;
++		goto error_put_trigger;
++	}
++	iio_trigger_set_drvdata(trig, trig_info);
++	trig_info->irq = irq;
++	trig->ops = &iio_interrupt_trigger_ops;
++	ret = request_irq(irq, iio_interrupt_trigger_poll,
++			  irqflags, trig->name, trig);
++	if (ret) {
++		dev_err(&pdev->dev,
++			"request IRQ-%d failed", irq);
++		goto error_free_trig_info;
++	}
++
++	ret = iio_trigger_register(trig);
++	if (ret)
++		goto error_release_irq;
++	platform_set_drvdata(pdev, trig);
+ 
+ 	return 0;
+ 
+@@ -100,38 +88,21 @@ error_free_trig_info:
+ 	kfree(trig_info);
+ error_put_trigger:
+ 	iio_trigger_put(trig);
+-error_free_completed_registrations:
+-	/* The rest should have been added to the iio_interrupt_trigger_list */
+-	list_for_each_entry_safe(trig,
+-				 trig2,
+-				 &iio_interrupt_trigger_list,
+-				 alloc_list) {
+-		trig_info = iio_trigger_get_drvdata(trig);
+-		free_irq(trig_info->irq, trig);
+-		kfree(trig_info);
+-		iio_trigger_unregister(trig);
+-	}
+-
++error_ret:
+ 	return ret;
+ }
+ 
+ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+ {
+-	struct iio_trigger *trig, *trig2;
++	struct iio_trigger *trig;
+ 	struct iio_interrupt_trigger_info *trig_info;
+ 
+-	mutex_lock(&iio_interrupt_trigger_list_lock);
+-	list_for_each_entry_safe(trig,
+-				 trig2,
+-				 &iio_interrupt_trigger_list,
+-				 alloc_list) {
+-		trig_info = iio_trigger_get_drvdata(trig);
+-		iio_trigger_unregister(trig);
+-		free_irq(trig_info->irq, trig);
+-		kfree(trig_info);
+-		iio_trigger_put(trig);
+-	}
+-	mutex_unlock(&iio_interrupt_trigger_list_lock);
++	trig = platform_get_drvdata(pdev);
++	trig_info = iio_trigger_get_drvdata(trig);
++	iio_trigger_unregister(trig);
++	free_irq(trig_info->irq, trig);
++	kfree(trig_info);
++	iio_trigger_put(trig);
+ 
+ 	return 0;
+ }
+-- 
+1.8.2.1
+
