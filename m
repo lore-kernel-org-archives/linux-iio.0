@@ -1,75 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42600 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752836Ab3EFQ1l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 12:27:41 -0400
-Message-ID: <5187D9FA.8000808@kernel.org>
-Date: Mon, 06 May 2013 17:27:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] staging/iio/mxs-lradc: cleanup masklength
-References: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
-In-Reply-To: <6bb527db65fb20f60bb95814bff3abc513733a7c.1367671597.git.mirq-linux@rere.qmqm.pl>
-Content-Type: text/plain; charset=UTF-8
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:38562 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753008Ab3EFMtS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 May 2013 08:49:18 -0400
+From: Jan Luebbe <jlu@pengutronix.de>
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: rachna@ti.com, linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org, Koen Kooi <koen@dominion.thruhere.net>,
+	Jan Luebbe <jlu@pengutronix.de>
+Subject: [PATCH 2/2] iio: adc: ti_am335x_adc: make tiadc_read_raw() more robust
+Date: Mon,  6 May 2013 14:48:59 +0200
+Message-Id: <1367844539-6812-3-git-send-email-jlu@pengutronix.de>
+In-Reply-To: <1367844539-6812-1-git-send-email-jlu@pengutronix.de>
+References: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
+ <1367844539-6812-1-git-send-email-jlu@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/04/2013 02:19 PM, Michał Mirosław wrote:
-> We know the exact iio->masklength = LRADC_MAX_TOTAL_CHANS.
-> Let's use it consistently.
-I guess this gives a small improvement in clarity so
-applied to togreg branch of iio.git.
+Check that mask is actually IIO_CHAN_INFO_RAW.
 
-Thanks,
-> 
-> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 2856b8f..03299ea 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -620,7 +620,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
->  		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
->  	unsigned int i, j = 0;
->  
-> -	for_each_set_bit(i, iio->active_scan_mask, iio->masklength) {
-> +	for_each_set_bit(i, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
->  		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
->  		writel(chan_value, lradc->base + LRADC_CH(j));
->  		lradc->buffer[j] &= LRADC_CH_VALUE_MASK;
-> @@ -775,8 +775,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
->  					const unsigned long *mask)
->  {
->  	struct mxs_lradc *lradc = iio_priv(iio);
-> -	const int len = iio->masklength;
-> -	const int map_chans = bitmap_weight(mask, len);
-> +	const int map_chans = bitmap_weight(mask, LRADC_MAX_TOTAL_CHANS);
->  	int rsvd_chans = 0;
->  	unsigned long rsvd_mask = 0;
->  
-> @@ -793,7 +792,7 @@ static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
->  		rsvd_chans++;
->  
->  	/* Test for attempts to map channels with special mode of operation. */
-> -	if (bitmap_intersects(mask, &rsvd_mask, len))
-> +	if (bitmap_intersects(mask, &rsvd_mask, LRADC_MAX_TOTAL_CHANS))
->  		return false;
->  
->  	/* Test for attempts to map more channels then available slots. */
-> @@ -969,6 +968,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->  	iio->modes = INDIO_DIRECT_MODE;
->  	iio->channels = mxs_lradc_chan_spec;
->  	iio->num_channels = ARRAY_SIZE(mxs_lradc_chan_spec);
-> +	iio->masklength = LRADC_MAX_TOTAL_CHANS;
->  
->  	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
->  				&mxs_lradc_trigger_handler,
-> 
+Also handle the case where not enough data is in the fifo.
+
+Signed-off-by: Jan Luebbe <jlu@pengutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c | 48 ++++++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 620cc0c..4b764a9 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -157,26 +157,34 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	int i;
+ 	unsigned int fifo1count, readx1;
+ 
+-	/*
+-	 * When the sub-system is first enabled,
+-	 * the sequencer will always start with the
+-	 * lowest step (1) and continue until step (16).
+-	 * For ex: If we have enabled 4 ADC channels and
+-	 * currently use only 1 out of them, the
+-	 * sequencer still configures all the 4 steps,
+-	 * leading to 3 unwanted data.
+-	 * Hence we need to flush out this data.
+-	 */
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * When the sub-system is first enabled,
++		 * the sequencer will always start with the
++		 * lowest step (1) and continue until step (16).
++		 * For ex: If we have enabled 4 ADC channels and
++		 * currently use only 1 out of them, the
++		 * sequencer still configures all the 4 steps,
++		 * leading to 3 unwanted data.
++		 * Hence we need to flush out this data.
++		 */
++
++		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
++		for (i = 0; i < fifo1count; i++) {
++			readx1 = tiadc_readl(adc_dev, REG_FIFO1);
++			if (i == chan->channel)
++				*val = readx1 & 0xfff;
++		}
++		tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
+ 
+-	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+-	for (i = 0; i < fifo1count; i++) {
+-		readx1 = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (i == chan->channel)
+-			*val = readx1 & 0xfff;
+-	}
+-	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
++		if (fifo1count <= chan->channel)
++			return -EINVAL;
+ 
+-	return IIO_VAL_INT;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+ static const struct iio_info tiadc_info = {
+@@ -213,7 +221,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ 	else {
+ 		node = of_get_child_by_name(node, "adc");
+ 		if (!node)
+-			return  -EINVAL;
++			return	-EINVAL;
+ 		else {
+ 			err = of_property_read_u32(node,
+ 					"ti,adc-channels", &val32);
+@@ -310,7 +318,7 @@ static const struct dev_pm_ops tiadc_pm_ops = {
+ 
+ static struct platform_driver tiadc_driver = {
+ 	.driver = {
+-		.name   = "tiadc",
++		.name	= "tiadc",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= TIADC_PM_OPS,
+ 	},
+-- 
+1.8.2.rc2
+
