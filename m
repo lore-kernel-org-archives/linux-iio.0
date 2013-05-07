@@ -1,95 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-108.synserver.de ([212.40.185.108]:1092 "EHLO
-	smtp-out-108.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752798Ab3EHIwd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 May 2013 04:52:33 -0400
-Message-ID: <518A1232.1020605@metafoo.de>
-Date: Wed, 08 May 2013 10:52:02 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from casper.infradead.org ([85.118.1.10]:55812 "EHLO
+	casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752159Ab3EGRJ3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 13:09:29 -0400
+Message-ID: <51893523.9000105@infradead.org>
+Date: Tue, 07 May 2013 10:08:51 -0700
+From: Randy Dunlap <rdunlap@infradead.org>
 MIME-Version: 1.0
-To: Axel Lin <axel.lin@ingics.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC] iio: dac: Fix build error when CONFIG_SPI_MASTER=y
- && CONFIG_I2C=m
-References: <1368002183.31837.2.camel@phoenix>
-In-Reply-To: <1368002183.31837.2.camel@phoenix>
-Content-Type: text/plain; charset=UTF-8
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+CC: linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: linux-next: Tree for May 7 (iio)
+References: <20130507134922.981483ab1e5cb09e5543a6cc@canb.auug.org.au>
+In-Reply-To: <20130507134922.981483ab1e5cb09e5543a6cc@canb.auug.org.au>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/08/2013 10:36 AM, Axel Lin wrote:
-> This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
+On 05/06/13 20:49, Stephen Rothwell wrote:
+> Hi all,
 > 
-> drivers/built-in.o: In function `ad5064_i2c_write':
-> drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
-> drivers/built-in.o: In function `ad5064_i2c_register_driver':
-> drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
-> drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
-> drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
-> make: *** [vmlinux] Error 1
+> Please do not add any v3.11 destined work to your linux-next included
+> branches until after v3.10-rc1 is released.
 > 
-> Add config IIO_DAC_I2C_AND_SPI helper to handle such case:
-> When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
-> Thus don't allow the drivers to be compiled as built-in.
+> I am receiving a (un)reasonable number of conflicts from there being
+> multiple copies of some commits in various trees.   Please clean this up
+> and resist the temptataion to rebase your trees on the way to your
+> upstream ...
+> 
+> Changes since 20130506:
 > 
 
-My plan was to do something like "depends on (SPI_MASTER && I2C!=m) || I2C",
-but if this works as well I'm fine with it. The real fix though is to break
-the driver apart into a SPI part, an I2S part and a common part. But that's
-something for 3.11 while this is something for 3.10/stable.
+on x86_64:
+
+when CONFIG_AD5446=y and CONFIG_I2C=m:
+
+drivers/built-in.o: In function `ad5622_write':
+ad5446.c:(.text+0xae0b5): undefined reference to `i2c_master_send'
+drivers/built-in.o: In function `ad5446_init':
+ad5446.c:(.init.text+0x4f28): undefined reference to `i2c_register_driver'
+drivers/built-in.o: In function `ad5446_i2c_unregister_driver':
+ad5446.c:(.exit.text+0xc73): undefined reference to `i2c_del_driver'
 
 
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> ---
->  drivers/iio/dac/Kconfig | 17 ++++++++++++++---
->  1 file changed, 14 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index f4a6f08..34bc1d7 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -1,11 +1,22 @@
->  #
->  # DAC drivers
->  #
-> +
-> +# Helper to resolve issues with configs that have SPI enabled but I2C
-> +# modular, meaning we can't build the drivers in with I2C support.
-> +# We use an ordered list of conditional defaults to pick the appropriate
-> +# setting - SPI can't be modular so that case doesn't need to be covered.
-> +config IIO_DAC_I2C_AND_SPI
-> +	tristate
-> +	default m if I2C=m
-> +	default y if I2C=y
-> +	default y if SPI_MASTER=y
-> +
->  menu "Digital to analog converters"
->  
->  config AD5064
->  	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
-> -	depends on (SPI_MASTER || I2C)
-> +	depends on IIO_DAC_I2C_AND_SPI
->  	help
->  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
->  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
-> @@ -27,7 +38,7 @@ config AD5360
->  
->  config AD5380
->  	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
-> -	depends on (SPI_MASTER || I2C)
-> +	depends on IIO_DAC_I2C_AND_SPI
->  	select REGMAP_I2C if I2C
->  	select REGMAP_SPI if SPI_MASTER
->  	help
-> @@ -57,7 +68,7 @@ config AD5624R_SPI
->  
->  config AD5446
->  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
-> -	depends on (SPI_MASTER || I2C)
-> +	depends on IIO_DAC_I2C_AND_SPI
->  	help
->  	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
->  	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
 
+-- 
+~Randy
