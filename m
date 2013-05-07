@@ -1,83 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:49282 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751044Ab3EIHtZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2013 03:49:25 -0400
-Received: by mail-pd0-f178.google.com with SMTP id w11so1816264pde.23
-        for <linux-iio@vger.kernel.org>; Thu, 09 May 2013 00:49:24 -0700 (PDT)
-Message-ID: <1368085759.3454.0.camel@phoenix>
-Subject: [PATCH v3] iio: dac: Fix build error when CONFIG_SPI_MASTER=y &&
- CONFIG_I2C=m
-From: Axel Lin <axel.lin@ingics.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Wu Fengguang <fengguang.wu@intel.com>
-Date: Thu, 09 May 2013 15:49:19 +0800
-Content-Type: text/plain; charset="UTF-8"
+Received: from plane.gmane.org ([80.91.229.3]:44065 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759193Ab3EGJUF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 7 May 2013 05:20:05 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1UZe43-0005Cb-4e
+	for linux-iio@vger.kernel.org; Tue, 07 May 2013 11:20:03 +0200
+Received: from 217-67-201-162.itsa.net.pl ([217.67.201.162])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Tue, 07 May 2013 11:20:03 +0200
+Received: from j.anaszewski by 217-67-201-162.itsa.net.pl with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Tue, 07 May 2013 11:20:03 +0200
+To: linux-iio@vger.kernel.org
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH 2/2] iio: ak8975: Implement data ready interrupt handling
+Date: Tue, 07 May 2013 11:17:11 +0200
+Message-ID: <kmagqi$guj$2@ger.gmane.org>
+References: <1366123040-17917-1-git-send-email-j.anaszewski@samsung.com> <1366123040-17917-3-git-send-email-j.anaszewski@samsung.com> <5187DF32.7060107@kernel.org>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <5187DF32.7060107@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
+On 05/06/2013 06:49 PM, Jonathan Cameron wrote:
+> On 04/16/2013 03:37 PM, Jacek Anaszewski wrote:
+>> Implement "data ready" interrupt handling in addition to the
+>> two existing read modes - DRDY GPIO polling and ST1 register
+>> DRDY bit polling.
+>>
+>> Signed-off-by: Jacek Anaszewski<j.anaszewski@samsung.com>
+>> Signed-off-by: Kyungmin Park<kyungmin.park@samsung.com>
+>> Cc: Andrew Chew<achew@nvidia.com>
+>
+> Allowing either the gpio or the interrupt is a little ususual, but
+> I suppose does avoid having to change existing users to gain interrupt
+> support (if their gpio subsystem happens to support interrupts).
 
-drivers/built-in.o: In function `ad5064_i2c_write':
-drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
-drivers/built-in.o: In function `ad5064_i2c_register_driver':
-drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
-drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
-drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
-make: *** [vmlinux] Error 1
+Thanks for the review. I am going to send new series promptly.
 
-When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
-Thus don't allow the drivers to be compiled as built-in when CONFIG_I2C=m.
+Regarding the gpio issue - I can imagine the situation when there is no 
+available interrupt pin at the CPU, as they were all connected to the 
+other devices, there are some free general purpose pins though. It is 
+always better to have a possibility to periodically read the state of
+such a pin, instead of performing cycling I2C transmission to check the 
+status of DRDY bit in the ST1 register, which is a fallback in the driver.
 
-The real fix though is to break the driver apart into a SPI part, an I2C part
-and a common part. But that's something for 3.11 while this is something for
-3.10/stable.
-
-Reported-by: Wu Fengguang <fengguang.wu@intel.com>
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
-v3: Update comment
-
- drivers/iio/dac/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index f4a6f08..b61160b 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -5,7 +5,7 @@ menu "Digital to analog converters"
- 
- config AD5064
- 	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
--	depends on (SPI_MASTER || I2C)
-+	depends on (SPI_MASTER && I2C!=m) || I2C
- 	help
- 	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
- 	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
-@@ -27,7 +27,7 @@ config AD5360
- 
- config AD5380
- 	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
--	depends on (SPI_MASTER || I2C)
-+	depends on (SPI_MASTER && I2C!=m) || I2C
- 	select REGMAP_I2C if I2C
- 	select REGMAP_SPI if SPI_MASTER
- 	help
-@@ -57,7 +57,7 @@ config AD5624R_SPI
- 
- config AD5446
- 	tristate "Analog Devices AD5446 and similar single channel DACs driver"
--	depends on (SPI_MASTER || I2C)
-+	depends on (SPI_MASTER && I2C!=m) || I2C
- 	help
- 	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
- 	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
--- 
-1.8.1.2
-
-
+Thanks,
+Jacek Anaszewski
 
