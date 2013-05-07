@@ -1,82 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:58904 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757386Ab3EVVIk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:40 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 6/7] mfd/ti_am335x_tscadc: remove platform_data support
-Date: Wed, 22 May 2013 23:08:16 +0200
-Message-Id: <1369256897-25984-6-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
-References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+Received: from mailout3.samsung.com ([203.254.224.33]:61001 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755485Ab3EGKnP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 06:43:15 -0400
+Received: from epcpsbgm1.samsung.com (epcpsbgm1 [203.254.230.26])
+ by mailout3.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0MMF007ETCF4T4T0@mailout3.samsung.com> for
+ linux-iio@vger.kernel.org; Tue, 07 May 2013 19:43:14 +0900 (KST)
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: devicetree-discuss@lists.ozlabs.org, achew@nvidia.com,
+	s.nawrocki@samsung.com,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: [PATCH 1/2 V2] iio:ak8975 Add support for gpios DT property
+Date: Tue, 07 May 2013 12:41:38 +0200
+Message-id: <1367923299-30594-2-git-send-email-j.anaszewski@samsung.com>
+In-reply-to: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
+References: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch removes access to platform data mfd_tscadc_board because the
-platform is DT only.
+Add support for parsing 'gpios' property when initializing
+from oftree.
+This patch adds also the binding documentation file.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
 ---
- drivers/mfd/ti_am335x_tscadc.c |   23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+ .../bindings/iio/magnetometer/ak8975.txt           |   18 ++++++++++++++++++
+ drivers/iio/magnetometer/ak8975.c                  |   12 +++++++++---
+ 2 files changed, 27 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index e28a31d..c27b147 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -26,8 +26,6 @@
- #include <linux/of_device.h>
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+new file mode 100644
+index 0000000..011679f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+@@ -0,0 +1,18 @@
++* AsahiKASEI AK8975 magnetometer sensor
++
++Required properties:
++
++  - compatible : should be "asahi-kasei,ak8975"
++  - reg : the I2C address of the magnetometer
++
++Optional properties:
++
++  - gpios : should be device tree identifier of the magnetometer DRDY pin
++
++Example:
++
++ak8975@0c {
++        compatible = "asahi-kasei,ak8975";
++        reg = <0x0c>;
++        gpios = <&gpj0 7 0>;
++};
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index af6c320..d75cc23 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -29,6 +29,7 @@
+ #include <linux/delay.h>
  
- #include <linux/mfd/ti_am335x_tscadc.h>
--#include <linux/input/ti_am335x_tsc.h>
--#include <linux/platform_data/ti_am335x_adc.h>
+ #include <linux/gpio.h>
++#include <linux/of_gpio.h>
  
- static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
- {
-@@ -66,31 +64,22 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	struct ti_tscadc_dev	*tscadc;
- 	struct resource		*res;
- 	struct clk		*clk;
--	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
- 	struct device_node	*node = pdev->dev.of_node;
- 	struct mfd_cell		*cell;
- 	int			err, ctrl;
- 	int			clk_value, clock_rate;
- 	int			tsc_wires = 0, adc_channels = 0, total_channels;
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -384,10 +385,15 @@ static int ak8975_probe(struct i2c_client *client,
+ 	int err;
  
--	if (!pdata && !pdev->dev.of_node) {
--		dev_err(&pdev->dev, "Could not find platform data\n");
-+	if (!pdev->dev.of_node) {
-+		dev_err(&pdev->dev, "Could not find valid DT data.\n");
- 		return -EINVAL;
- 	}
+ 	/* Grab and set up the supplied GPIO. */
+-	if (client->dev.platform_data == NULL)
+-		eoc_gpio = -1;
+-	else
++	if (client->dev.platform_data)
+ 		eoc_gpio = *(int *)(client->dev.platform_data);
++	else if (client->dev.of_node)
++		eoc_gpio = of_get_gpio(client->dev.of_node, 0);
++	else
++		eoc_gpio = -1;
++
++	if (eoc_gpio == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
  
--	if (pdev->dev.platform_data) {
--		if (pdata->tsc_init)
--			tsc_wires = pdata->tsc_init->wires;
-+	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
-+	of_property_read_u32(node, "ti,wires", &tsc_wires);
- 
--		if (pdata->adc_init)
--			adc_channels = pdata->adc_init->adc_channels;
--	} else {
--		node = of_get_child_by_name(pdev->dev.of_node, "tsc");
--		of_property_read_u32(node, "ti,wires", &tsc_wires);
--
--		node = of_get_child_by_name(pdev->dev.of_node, "adc");
--		of_property_read_u32(node, "ti,adc-channels", &adc_channels);
--	}
-+	node = of_get_child_by_name(pdev->dev.of_node, "adc");
-+	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
- 
- 	total_channels = tsc_wires + adc_channels;
- 
+ 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	   poll if so */
 -- 
-1.7.10.4
+1.7.5.4
 
