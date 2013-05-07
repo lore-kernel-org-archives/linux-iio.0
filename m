@@ -1,70 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:52226 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932394Ab3EGOIE convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 10:08:04 -0400
-Message-ID: <1367935754.4474.39.camel@coredoba.hi.pengutronix.de>
-Subject: Re: [PATCH] ti_tscadc: Update with IIO map interface & deal with
- partial activation
-From: Jan =?ISO-8859-1?Q?L=FCbbe?= <jlu@pengutronix.de>
-To: Pantelis Antoniou <panto@antoniou-consulting.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, rachna@ti.com,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	Koen Kooi <koen@dominion.thruhere.net>
-Date: Tue, 07 May 2013 16:09:14 +0200
-In-Reply-To: <902E054D-F014-4380-A493-96384AC85DD4@antoniou-consulting.com>
-References: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
-	 <1367844539-6812-1-git-send-email-jlu@pengutronix.de>
-	 <5187D655.1010402@kernel.org>
-	 <902E054D-F014-4380-A493-96384AC85DD4@antoniou-consulting.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mailout2.samsung.com ([203.254.224.25]:20600 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757035Ab3EGKne (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 06:43:34 -0400
+Received: from epcpsbgm2.samsung.com (epcpsbgm2 [203.254.230.27])
+ by mailout2.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0MMF00JKVCGCZ8P0@mailout2.samsung.com> for
+ linux-iio@vger.kernel.org; Tue, 07 May 2013 19:43:33 +0900 (KST)
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: devicetree-discuss@lists.ozlabs.org, achew@nvidia.com,
+	s.nawrocki@samsung.com,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: [PATCH 2/2 V2] iio:ak8975 Implement data ready interrupt handling
+Date: Tue, 07 May 2013 12:41:39 +0200
+Message-id: <1367923299-30594-3-git-send-email-j.anaszewski@samsung.com>
+In-reply-to: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
+References: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 2013-05-07 at 16:08 +0300, Pantelis Antoniou wrote:
-> Hi Jonathan,
-> 
-> On May 6, 2013, at 7:12 PM, Jonathan Cameron wrote:
-> 
-> > On 05/06/2013 01:48 PM, Jan Luebbe wrote:
-> >> Hi Pantelis,
-> >> 
-> >> while trying out your patch on a custom AM335x board, I noticed that the
-> >> sysfs entries ware missing. This is fixed in the first patch, you might want
-> >> to squash that into your original patch.
-> >> 
-> >> The second one makes sure that the iio framework does not read invalid data.
-> >> 
-> >> Regards,
-> >> Jan
-> > 
-> > I don't believe Pantelis ever came back with a response to the various issues
-> > raised with the original patches?
-> > 
-> 
-> I am aware. We've been quite busy getting the new beaglebone out. I plan to
-> revisit the full patchset for all the various fixes we had to do in a month
-> or so.
+Implement "data ready" interrupt handling in addition to the
+two existing read modes - DRDY GPIO polling and ST1 register
+DRDY bit polling.
 
-It seems that TI continued working on this in their vendor kernel:
-http://arago-project.org/git/projects/?p=linux-am33x.git;a=history;f=drivers/staging/iio;hb=v3.2-staging
-We could possibly reuse/port some of that work.
+Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ drivers/iio/magnetometer/ak8975.c |   91 ++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 89 insertions(+), 2 deletions(-)
 
-> > If Pantelis has moved on, Jan feel free to pick up the patches, respin them
-> > and resend to linux-iio if you like (with appropriate crediting naturally)
-> > 
-> 
-> I wouldn't mind Jan to pick up the IIO patches.
-
-I'm currently also busy with other things, so I'm not optimistic that
-I'd find some time to do this. :/
-
-Thanks,
-Jan
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index d75cc23..7105f22 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -24,10 +24,11 @@
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/i2c.h>
++#include <linux/interrupt.h>
+ #include <linux/err.h>
+ #include <linux/mutex.h>
+ #include <linux/delay.h>
+-
++#include <linux/bitops.h>
+ #include <linux/gpio.h>
+ #include <linux/of_gpio.h>
+ 
+@@ -83,6 +84,7 @@
+  */
+ #define AK8975_MAX_CONVERSION_TIMEOUT	500
+ #define AK8975_CONVERSION_DONE_POLL_TIME 10
++#define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
+ 
+ /*
+  * Per-instance context data for the device.
+@@ -95,6 +97,9 @@ struct ak8975_data {
+ 	long			raw_to_gauss[3];
+ 	u8			reg_cache[AK8975_MAX_REGS];
+ 	int			eoc_gpio;
++	int			eoc_irq;
++	wait_queue_head_t	data_ready_queue;
++	unsigned long		flags;
+ };
+ 
+ static const int ak8975_index_to_reg[] = {
+@@ -124,6 +129,51 @@ static int ak8975_write_data(struct i2c_client *client,
+ }
+ 
+ /*
++ * Handle data ready irq
++ */
++static irqreturn_t ak8975_irq_handler(int irq, void *data)
++{
++	struct ak8975_data *ak8975 = data;
++
++	set_bit(0, &ak8975->flags);
++	wake_up(&ak8975->data_ready_queue);
++
++	return IRQ_HANDLED;
++}
++
++/*
++ * Install data ready interrupt handler
++ */
++static int ak8975_setup_irq(struct ak8975_data *data)
++{
++	struct i2c_client *client = data->client;
++	int rc;
++	int irq;
++
++	if (client->irq)
++		irq = client->irq;
++	else
++		irq = gpio_to_irq(data->eoc_gpio);
++
++	rc = request_irq(irq, ak8975_irq_handler,
++			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++			 dev_name(&client->dev), data);
++	if (rc < 0) {
++		dev_err(&client->dev,
++			"irq %d request failed, (gpio %d): %d\n",
++			irq, data->eoc_gpio, rc);
++		return rc;
++	}
++
++	init_waitqueue_head(&data->data_ready_queue);
++	clear_bit(0, &data->flags);
++	data->eoc_irq = irq;
++
++	return rc;
++}
++
++
++/*
+  * Perform some start-of-day setup, including reading the asa calibration
+  * values and caching them.
+  */
+@@ -171,6 +221,16 @@ static int ak8975_setup(struct i2c_client *client)
+ 				AK8975_REG_CNTL_MODE_POWER_DOWN,
+ 				AK8975_REG_CNTL_MODE_MASK,
+ 				AK8975_REG_CNTL_MODE_SHIFT);
++
++	if (data->eoc_gpio > 0 || client->irq) {
++		ret = ak8975_setup_irq(data);
++		if (ret < 0) {
++			dev_err(&client->dev,
++				"Error setting data ready interrupt\n");
++			return ret;
++		}
++	}
++
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Error in setting power-down mode\n");
+ 		return ret;
+@@ -267,9 +327,23 @@ static int wait_conversion_complete_polled(struct ak8975_data *data)
+ 		dev_err(&client->dev, "Conversion timeout happened\n");
+ 		return -EINVAL;
+ 	}
++
+ 	return read_status;
+ }
+ 
++/* Returns 0 if the end of conversion interrupt occured or -ETIME otherwise */
++static int wait_conversion_complete_interrupt(struct ak8975_data *data)
++{
++	int ret;
++
++	ret = wait_event_timeout(data->data_ready_queue,
++				 test_bit(0, &data->flags),
++				 AK8975_DATA_READY_TIMEOUT);
++	clear_bit(0, &data->flags);
++
++	return ret > 0 ? 0 : -ETIME;
++}
++
+ /*
+  * Emits the raw flux value for the x, y, or z axis.
+  */
+@@ -295,13 +369,16 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 	}
+ 
+ 	/* Wait for the conversion to complete. */
+-	if (gpio_is_valid(data->eoc_gpio))
++	if (data->eoc_irq)
++		ret = wait_conversion_complete_interrupt(data);
++	else if (gpio_is_valid(data->eoc_gpio))
+ 		ret = wait_conversion_complete_gpio(data);
+ 	else
+ 		ret = wait_conversion_complete_polled(data);
+ 	if (ret < 0)
+ 		goto exit;
+ 
++	/* This will be executed only for non-interrupt based waiting case */
+ 	if (ret & AK8975_REG_ST1_DRDY_MASK) {
+ 		ret = i2c_smbus_read_byte_data(client, AK8975_REG_ST2);
+ 		if (ret < 0) {
+@@ -415,6 +492,11 @@ static int ak8975_probe(struct i2c_client *client,
+ 	}
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
++
++	data->client = client;
++	data->eoc_gpio = eoc_gpio;
++	data->eoc_irq = 0;
++
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+@@ -439,6 +521,8 @@ static int ak8975_probe(struct i2c_client *client,
+ 
+ exit_free_iio:
+ 	iio_device_free(indio_dev);
++	if (data->eoc_irq)
++		free_irq(data->eoc_irq, data);
+ exit_gpio:
+ 	if (gpio_is_valid(eoc_gpio))
+ 		gpio_free(eoc_gpio);
+@@ -453,6 +537,9 @@ static int ak8975_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(indio_dev);
+ 
++	if (data->eoc_irq)
++		free_irq(data->eoc_irq, data);
++
+ 	if (gpio_is_valid(data->eoc_gpio))
+ 		gpio_free(data->eoc_gpio);
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.7.5.4
 
