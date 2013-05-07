@@ -1,223 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:35632 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754916Ab3EAOEo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 May 2013 10:04:44 -0400
-Message-ID: <51812195.3030305@metafoo.de>
-Date: Wed, 01 May 2013 16:07:17 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Oskar Andero <oskar.andero@gmail.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH] iio: adc: add driver for MCP3204/08 12-bit ADC
-References: <1367360497-16820-1-git-send-email-oskar.andero@gmail.com>
-In-Reply-To: <1367360497-16820-1-git-send-email-oskar.andero@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:52226 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932394Ab3EGOIE convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2013 10:08:04 -0400
+Message-ID: <1367935754.4474.39.camel@coredoba.hi.pengutronix.de>
+Subject: Re: [PATCH] ti_tscadc: Update with IIO map interface & deal with
+ partial activation
+From: Jan =?ISO-8859-1?Q?L=FCbbe?= <jlu@pengutronix.de>
+To: Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, rachna@ti.com,
+	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+	Koen Kooi <koen@dominion.thruhere.net>
+Date: Tue, 07 May 2013 16:09:14 +0200
+In-Reply-To: <902E054D-F014-4380-A493-96384AC85DD4@antoniou-consulting.com>
+References: <1351698938-3839-1-git-send-email-panto@antoniou-consulting.com>
+	 <1367844539-6812-1-git-send-email-jlu@pengutronix.de>
+	 <5187D655.1010402@kernel.org>
+	 <902E054D-F014-4380-A493-96384AC85DD4@antoniou-consulting.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/01/2013 12:21 AM, Oskar Andero wrote:
-> This adds support for Microchip's 12 bit AD converters MCP3204 and
-> MCP3208. These chips communicates over SPI and supports single-ended
-> and pseudo-differential configurations.
+On Tue, 2013-05-07 at 16:08 +0300, Pantelis Antoniou wrote:
+> Hi Jonathan,
 > 
-> Cc: Jonathan Cameron <jic23@cam.ac.uk>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Oskar Andero <oskar.andero@gmail.com>
-
-Hi,
-
-Looks very good in general. A few minor things, mostly related to the regulator
-handling and a couple of nitpicks inline.
-
-> ---
->  drivers/iio/adc/Kconfig               |  10 ++
->  drivers/iio/adc/Makefile              |   1 +
->  drivers/iio/adc/mcp320x.c             | 261 ++++++++++++++++++++++++++++++++++
->  include/linux/platform_data/mcp320x.h |  23 +++
->  4 files changed, 295 insertions(+)
->  create mode 100644 drivers/iio/adc/mcp320x.c
->  create mode 100644 include/linux/platform_data/mcp320x.h
+> On May 6, 2013, at 7:12 PM, Jonathan Cameron wrote:
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index ab0767e6..93129ec 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-[...]
-> +
-> +static int mcp320x_read_raw(struct iio_dev *iio,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct mcp320x *adc = iio_priv(iio);
-> +	int ret = -EINVAL;
-> +
-> +	mutex_lock(&adc->lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-[...]
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Digital output code = (4096 * Vin) / Vref */
-> +		if (!IS_ERR_OR_NULL(adc->reg)) {
-> +			ret = regulator_get_voltage(adc->reg);
-> +			if (ret < 0)
-> +				goto out;
-> +			*val = ret / 1000;
-> +		} else {
-> +			*val = adc->ref_mv;
-> +		}
-> +		*val2 = 4096 * 1000;
+> > On 05/06/2013 01:48 PM, Jan Luebbe wrote:
+> >> Hi Pantelis,
+> >> 
+> >> while trying out your patch on a custom AM335x board, I noticed that the
+> >> sysfs entries ware missing. This is fixed in the first patch, you might want
+> >> to squash that into your original patch.
+> >> 
+> >> The second one makes sure that the iio framework does not read invalid data.
+> >> 
+> >> Regards,
+> >> Jan
+> > 
+> > I don't believe Pantelis ever came back with a response to the various issues
+> > raised with the original patches?
+> > 
+> 
+> I am aware. We've been quite busy getting the new beaglebone out. I plan to
+> revisit the full patchset for all the various fixes we had to do in a month
+> or so.
 
-The scale of voltage channels is in mV. So I think the * 1000 should be removed.
+It seems that TI continued working on this in their vendor kernel:
+http://arago-project.org/git/projects/?p=linux-am33x.git;a=history;f=drivers/staging/iio;hb=v3.2-staging
+We could possibly reuse/port some of that work.
 
-> +		ret = IIO_VAL_FRACTIONAL;
-> +		break;
-> +
-> +	default:
-> +		break;
-> +	}
-> +
-> +out:
-> +	mutex_unlock(&adc->lock);
-> +
-> +	return ret;
-> +}
-[...]h
-> +static int mcp320x_probe(struct spi_device *spi)
-> +{
-> +	struct mcp320x_platform_data *pdata = spi->dev.platform_data;
-> +	struct iio_dev *iio;
+> > If Pantelis has moved on, Jan feel free to pick up the patches, respin them
+> > and resend to linux-iio if you like (with appropriate crediting naturally)
+> > 
+> 
+> I wouldn't mind Jan to pick up the IIO patches.
 
-It's not a big deal, but usually we call the iio_dev variabl indio_dev would be
-nice for consistency to use this name in your driver as well.
+I'm currently also busy with other things, so I'm not optimistic that
+I'd find some time to do this. :/
 
-> +	struct mcp320x *adc;
-> +	int ret;
-> +
-> +	if (!pdata) {
-> +		dev_err(&spi->dev, "No platform data!");
-> +		return -EINVAL;
-> +	}
-> +
-> +	iio = iio_device_alloc(sizeof(*adc));
-> +	if (!iio)
-> +		return -ENOMEM;
-> +
-> +	adc = iio_priv(iio);
-> +	adc->spi = spi;
-> +
-> +	iio->dev.parent = &spi->dev;
-> +	iio->name = spi_get_device_id(spi)->name;
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->info = &mcp320x_info;
-> +
-> +	if (spi_get_device_id(spi)->driver_data == mcp3204) {
-> +		iio->channels = mcp3204_channels;
-> +		iio->num_channels = ARRAY_SIZE(mcp3204_channels);
-> +	} else {
-> +		iio->channels = mcp3208_channels;
-> +		iio->num_channels = ARRAY_SIZE(mcp3208_channels);
-> +	}
+Thanks,
+Jan
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-Usually we use a lookup table for this. E.g
-
-struct mcp3208_chip_info {
-	struct iio_chan_spec *channels;
-	unsigned int num_channels;
-};
-
-static const struct mcp3208_chip_info[] = {
-	[mcp3204] = {
-		.channels = mcp3204_channels,
-		.num_channels = ARRAY_SIZE(mcp3204_channels)
-	},
-	[mcp3204] = {
-		...
-	},
-};
-
-	indio_dev->channels = mcp3208_chip_info[id].channels;
-	indio_dev->num_channels = mcp3208_chip_info[id].num_channels;
-
-This keeps things a bit more tidy. Especially if more chip variants are added
-later.
-
-> +
-> +	adc->transfer[0].tx_buf = &adc->tx_buf;
-> +	adc->transfer[0].len = sizeof(adc->tx_buf);
-> +	adc->transfer[1].rx_buf = adc->rx_buf;
-> +	adc->transfer[1].len = sizeof(adc->rx_buf);
-> +
-> +	spi_message_init(&adc->msg);
-> +	spi_message_add_tail(&adc->transfer[0], &adc->msg);
-> +	spi_message_add_tail(&adc->transfer[1], &adc->msg);
-
-There is a new helper function which makes this a bit shorter:
-
-	spi_message_init_with_transfers(&adc->msg, adc->transfer,
-		ARRAY_SIZE(adc->transfer));
-
-> +
-> +	if (pdata->reg) {
-> +		adc->reg = regulator_get(&spi->dev, pdata->reg);
-
-This not how the regulator API is supposed to be used. The regulator name
-should be const. E.g. "vref". Your board code then provides a lookup table map
-the regulator to the name in the consumer.
-
-> +		if (IS_ERR_OR_NULL(adc->reg))
-> +			return PTR_ERR(adc->reg);
-
-So what happens in the OR_NULL case? I think it is save to just use
-IS_ERR(adc->reg)
-
-> +
-> +		ret = regulator_enable(adc->reg);
-> +		if (ret < 0)
-> +			goto reg_free;
-> +	} else {
-> +		adc->ref_mv = pdata->ref_mv;
-
-I'd like to see this fallback path go away. For supplies with a const voltage
-the fixed-voltage-regulator can be used.
-
-> +	}
-> +
-> +	mutex_init(&adc->lock);
-> +
-> +	ret = iio_device_register(iio);
-> +	if (ret < 0)
-> +		goto iio_free;
-> +
-> +	return 0;
-> +
-> +iio_free:
-> +	iio_device_free(iio);
-> +reg_free:
-> +	if (!IS_ERR_OR_NULL(adc->reg))
-> +		regulator_put(adc->reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mcp320x_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio = spi_get_drvdata(spi);
-> +	struct mcp320x *adc = iio_priv(iio);
-> +
-> +	if (!IS_ERR_OR_NULL(adc->reg)) {
-> +		regulator_disable(adc->reg);
-> +		regulator_put(adc->reg);
-> +	}
-
-First unregister the device, then free the regulator, then free the device.
-
-> +
-> +	iio_device_unregister(iio);
-> +	iio_device_free(iio);
-> +
-> +	return 0;
-> +}
-[...]
