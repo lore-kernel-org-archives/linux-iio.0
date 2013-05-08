@@ -1,58 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39270 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757250Ab3EVVl1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:41:27 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: mirq-linux@rere.qmqm.pl, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio:callback buffer: free the scan_mask
-Date: Wed, 22 May 2013 22:41:17 +0100
-Message-Id: <1369258877-7308-1-git-send-email-jic23@kernel.org>
+Received: from smtp-out-108.synserver.de ([212.40.185.108]:1092 "EHLO
+	smtp-out-108.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752798Ab3EHIwd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 May 2013 04:52:33 -0400
+Message-ID: <518A1232.1020605@metafoo.de>
+Date: Wed, 08 May 2013 10:52:02 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
+To: Axel Lin <axel.lin@ingics.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC] iio: dac: Fix build error when CONFIG_SPI_MASTER=y
+ && CONFIG_I2C=m
+References: <1368002183.31837.2.camel@phoenix>
+In-Reply-To: <1368002183.31837.2.camel@phoenix>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Reported-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
-As per original discussion I've now put together a minimal patch.
-The rework suggested was reasonable but had no place in a fix patch.
+On 05/08/2013 10:36 AM, Axel Lin wrote:
+> This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
+> 
+> drivers/built-in.o: In function `ad5064_i2c_write':
+> drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
+> drivers/built-in.o: In function `ad5064_i2c_register_driver':
+> drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
+> drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
+> drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
+> make: *** [vmlinux] Error 1
+> 
+> Add config IIO_DAC_I2C_AND_SPI helper to handle such case:
+> When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
+> Thus don't allow the drivers to be compiled as built-in.
+> 
 
- drivers/iio/buffer_cb.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+My plan was to do something like "depends on (SPI_MASTER && I2C!=m) || I2C",
+but if this works as well I'm fine with it. The real fix though is to break
+the driver apart into a SPI part, an I2S part and a common part. But that's
+something for 3.11 while this is something for 3.10/stable.
 
-diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
-index 9201022..9d19ba7 100644
---- a/drivers/iio/buffer_cb.c
-+++ b/drivers/iio/buffer_cb.c
-@@ -64,7 +64,7 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
- 	while (chan->indio_dev) {
- 		if (chan->indio_dev != indio_dev) {
- 			ret = -EINVAL;
--			goto error_release_channels;
-+			goto error_free_scan_mask;
- 		}
- 		set_bit(chan->channel->scan_index,
- 			cb_buff->buffer.scan_mask);
-@@ -73,6 +73,8 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
- 
- 	return cb_buff;
- 
-+error_free_scan_mask:
-+	kfree(cb_buff->buffer.scan_mask);
- error_release_channels:
- 	iio_channel_release_all(cb_buff->channels);
- error_free_cb_buff:
-@@ -100,6 +102,7 @@ EXPORT_SYMBOL_GPL(iio_channel_stop_all_cb);
- 
- void iio_channel_release_all_cb(struct iio_cb_buffer *cb_buff)
- {
-+	kfree(cb_buff->buffer.scan_mask);
- 	iio_channel_release_all(cb_buff->channels);
- 	kfree(cb_buff);
- }
--- 
-1.8.2.3
+
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+> ---
+>  drivers/iio/dac/Kconfig | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index f4a6f08..34bc1d7 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -1,11 +1,22 @@
+>  #
+>  # DAC drivers
+>  #
+> +
+> +# Helper to resolve issues with configs that have SPI enabled but I2C
+> +# modular, meaning we can't build the drivers in with I2C support.
+> +# We use an ordered list of conditional defaults to pick the appropriate
+> +# setting - SPI can't be modular so that case doesn't need to be covered.
+> +config IIO_DAC_I2C_AND_SPI
+> +	tristate
+> +	default m if I2C=m
+> +	default y if I2C=y
+> +	default y if SPI_MASTER=y
+> +
+>  menu "Digital to analog converters"
+>  
+>  config AD5064
+>  	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
+>  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
+> @@ -27,7 +38,7 @@ config AD5360
+>  
+>  config AD5380
+>  	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	select REGMAP_I2C if I2C
+>  	select REGMAP_SPI if SPI_MASTER
+>  	help
+> @@ -57,7 +68,7 @@ config AD5624R_SPI
+>  
+>  config AD5446
+>  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+>  	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
 
