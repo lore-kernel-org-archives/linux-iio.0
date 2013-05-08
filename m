@@ -1,81 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog117.obsmtp.com ([207.126.144.143]:60589 "EHLO
-	eu1sys200aog117.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751714Ab3EJJcB convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 May 2013 05:32:01 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	Matteo DAMENO <matteo.dameno@st.com>,
-	"carmine.iascone@st.com" <carmine.iascone@st.com>,
-	"kyungmin.park@samsung.com" <kyungmin.park@samsung.com>,
-	"s.nawrocki@samsung.com" <s.nawrocki@samsung.com>
-Date: Fri, 10 May 2013 11:31:15 +0200
-Subject: Re: [NEW DRIVER] LPS331AP barometer sensor driver
-Message-ID: <2454453.7GbGA1kxYy@elitebook-8460p>
-References: <1368176965-23190-1-git-send-email-j.anaszewski@samsung.com>
-In-Reply-To: <1368176965-23190-1-git-send-email-j.anaszewski@samsung.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Received: from mail-pd0-f177.google.com ([209.85.192.177]:45548 "EHLO
+	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753269Ab3EHI63 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 May 2013 04:58:29 -0400
+Received: by mail-pd0-f177.google.com with SMTP id g10so1094526pdj.36
+        for <linux-iio@vger.kernel.org>; Wed, 08 May 2013 01:58:28 -0700 (PDT)
+Message-ID: <1368003504.32385.3.camel@phoenix>
+Subject: Re: [PATCH RFC] iio: dac: Fix build error when CONFIG_SPI_MASTER=y
+ && CONFIG_I2C=m
+From: Axel Lin <axel.lin@ingics.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Wu Fengguang <fengguang.wu@intel.com>
+Date: Wed, 08 May 2013 16:58:24 +0800
+In-Reply-To: <1368002183.31837.2.camel@phoenix>
+References: <1368002183.31837.2.camel@phoenix>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jacek,
+於 三，2013-05-08 於 16:36 +0800，Axel Lin 提到：
+> This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
+> 
+> drivers/built-in.o: In function `ad5064_i2c_write':
+> drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
+> drivers/built-in.o: In function `ad5064_i2c_register_driver':
+> drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
+> drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
+> drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
+> make: *** [vmlinux] Error 1
+> 
+> Add config IIO_DAC_I2C_AND_SPI helper to handle such case:
+> When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
+> Thus don't allow the drivers to be compiled as built-in.
+> 
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
 
-for the STMicroelectronics MEMS I have wrote one common library 
-(common/st_sensors) that implements some common features for our devices.
-Now I'm working on to submit the patch for all our barometer sensors using 
-also trigger and buffer.
+I should add 
+Reported-by: Wu Fengguang <fengguang.wu@intel.com>
+And also Cc Fengguang now.
+I look into this issue because it is reported by Fengguang's kbuild test
+robot.
 
-Denis
+> ---
+>  drivers/iio/dac/Kconfig | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index f4a6f08..34bc1d7 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -1,11 +1,22 @@
+>  #
+>  # DAC drivers
+>  #
+> +
+> +# Helper to resolve issues with configs that have SPI enabled but I2C
+> +# modular, meaning we can't build the drivers in with I2C support.
+> +# We use an ordered list of conditional defaults to pick the appropriate
+> +# setting - SPI can't be modular so that case doesn't need to be covered.
+> +config IIO_DAC_I2C_AND_SPI
+> +	tristate
+> +	default m if I2C=m
+> +	default y if I2C=y
+> +	default y if SPI_MASTER=y
+> +
+>  menu "Digital to analog converters"
+>  
+>  config AD5064
+>  	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
+>  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
+> @@ -27,7 +38,7 @@ config AD5360
+>  
+>  config AD5380
+>  	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	select REGMAP_I2C if I2C
+>  	select REGMAP_SPI if SPI_MASTER
+>  	help
+> @@ -57,7 +68,7 @@ config AD5624R_SPI
+>  
+>  config AD5446
+>  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+> -	depends on (SPI_MASTER || I2C)
+> +	depends on IIO_DAC_I2C_AND_SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+>  	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
 
 
-On Friday, May 10, 2013 11:09:24 AM Jacek Anaszewski wrote:
-> This is a driver for LPS331AP barometer device.
-> It was tested with Samsung Exynos4x12 PQ/M0 board.
-> 
-> The device exposes two interrupt pins, but the driver uses only one optional
-> interrupt source. It needs to be stressed that only configuration with INT2
-> interrupt source could have been tested due to the available PCB layout.
-> 
-> Output data from the device can be read in two ways - on demand and by
-> initiating IIO events for the device. The former mode allows for power
-> saving as it instructs the device to do a 'one shot' measurement and return
-> to the power down mode, whereas the latter enables cyclic measurements
-> with the period managed through the 'odr' attribute, where possible settings
-> are: 40ms, 80ms, 143ms and 1000ms. The value has to be given in
-> miliseconds. Every integer value is accepted - the driver will round it to
-> the nearest bottom 'odr' setting.
-> 
-> Whereas 'one shot' mode can be used without enabled interrupts, by using
-> read_raw callback, the cyclic measurements can be enabled only when there
-> is at least one interrupt source available. The cyclic measurement mode
-> is activated by enabling one of the two events. In this mode it is also
-> possible to read the output data through the read_raw callback - the driver
-> returns periodically cached data then, not being forced to initiate
-> 'one shot' mode, and making the read operation almost immediate.
-> Read pressures and temperatures output can be converted in units of
-> measurement by dividing them respectively through in_pressure_scale
-> and in_temp_scale. Temperature values must then be added by the constant
-> float in_temp_offset expressed as Celsius degrees.
-> 
-> Thanks,
-> Jacek Anaszewski
-> 
-> Jacek Anaszewski (1):
->   iio: lps331ap: Add new driver for the device
-> 
->  .../devicetree/bindings/iio/barometer/lps331ap.txt |   40 +
->  drivers/iio/Kconfig                                |    1 +
->  drivers/iio/Makefile                               |    1 +
->  drivers/iio/barometer/Kconfig                      |   12 +
->  drivers/iio/barometer/Makefile                     |    7 +
->  drivers/iio/barometer/lps331ap.c                   | 1252
-> ++++++++++++++++++++ 6 files changed, 1313 insertions(+), 0 deletions(-)
->  create mode 100644
-> Documentation/devicetree/bindings/iio/barometer/lps331ap.txt create mode
-> 100644 drivers/iio/barometer/Kconfig
->  create mode 100644 drivers/iio/barometer/Makefile
->  create mode 100644 drivers/iio/barometer/lps331ap.c
