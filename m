@@ -1,112 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44812 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49525 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752988Ab3ERUdZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 May 2013 16:33:25 -0400
-Message-ID: <5197E593.60405@kernel.org>
-Date: Sat, 18 May 2013 21:33:23 +0100
+	with ESMTP id S1753955Ab3EKJwv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 05:52:51 -0400
+Message-ID: <518E14F1.6000008@kernel.org>
+Date: Sat, 11 May 2013 10:52:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: linux-iio@vger.kernel.org, lars@metafoo.de,
-	j.anaszewski@samsung.com
-Subject: Re: [PATCH 2/3] iio:common: Added get_buffer_element function pointer
-References: <1368607493-4843-1-git-send-email-denis.ciocca@st.com> <1368607493-4843-3-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1368607493-4843-3-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Axel Lin <axel.lin@ingics.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Wu Fengguang <fengguang.wu@intel.com>
+Subject: Re: [PATCH v3] iio: dac: Fix build error when CONFIG_SPI_MASTER=y
+ && CONFIG_I2C=m
+References: <1368085759.3454.0.camel@phoenix> <518B5F73.4010702@metafoo.de>
+In-Reply-To: <518B5F73.4010702@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
->From a quick read, it seems to me that all that is required to make
-a single function cover both cases is to tell it how many bytes
-are to be read?
-
-If so a callback seems like overkill.  Of course if there are other
-cases on the way for other devices this might make sense, but here
-it seems there ought to be easier ways of doing this such as
-adata->bytes_per_element = 2 or 3 and having the function take the
-number of bytes of data when called?  Or just infer it from
-the iio_chan_spec structure....
-
-Jonathan
-
-On 05/15/2013 09:44 AM, Denis CIOCCA wrote:
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-> ---
->  drivers/iio/accel/st_accel_core.c                 |    1 +
->  drivers/iio/common/st_sensors/st_sensors_buffer.c |    2 +-
->  drivers/iio/gyro/st_gyro_core.c                   |    1 +
->  drivers/iio/magnetometer/st_magn_core.c           |    1 +
->  include/linux/iio/common/st_sensors.h             |    2 ++
->  5 files changed, 6 insertions(+), 1 deletion(-)
+On 05/09/2013 09:33 AM, Lars-Peter Clausen wrote:
+> On 05/09/2013 09:49 AM, Axel Lin wrote:
+>> This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
+>>
+>> drivers/built-in.o: In function `ad5064_i2c_write':
+>> drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
+>> drivers/built-in.o: In function `ad5064_i2c_register_driver':
+>> drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
+>> drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
+>> drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
+>> make: *** [vmlinux] Error 1
+>>
+>> When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
+>> Thus don't allow the drivers to be compiled as built-in when CONFIG_I2C=m.
+>>
+>> The real fix though is to break the driver apart into a SPI part, an I2C part
+>> and a common part. But that's something for 3.11 while this is something for
+>> 3.10/stable.
+>>
+>> Reported-by: Wu Fengguang <fengguang.wu@intel.com>
+>> Signed-off-by: Axel Lin <axel.lin@ingics.com>
 > 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 40236d5..2b8a7bd 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -454,6 +454,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_accel_common_probe_error;
->  
-> +	adata->get_buffer_element = &st_sensors_get_buffer_element;
->  	adata->multiread_bit = adata->sensor->multi_read_bit;
->  	indio_dev->channels = adata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index 09b236d..430039d 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -94,7 +94,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
->  
-> -	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
-> +	len = sdata->get_buffer_element(indio_dev, sdata->buffer_data);
->  	if (len < 0)
->  		goto st_sensors_get_buffer_element_error;
->  
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 9bae46b..56e9253 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -313,6 +313,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_gyro_common_probe_error;
->  
-> +	gdata->get_buffer_element = &st_sensors_get_buffer_element;
->  	gdata->multiread_bit = gdata->sensor->multi_read_bit;
->  	indio_dev->channels = gdata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 715d616..3208ba8 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -356,6 +356,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_magn_common_probe_error;
->  
-> +	mdata->get_buffer_element = &st_sensors_get_buffer_element;
->  	mdata->multiread_bit = mdata->sensor->multi_read_bit;
->  	indio_dev->channels = mdata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 5ffd763..fd81707 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -203,6 +203,7 @@ struct st_sensors {
->   * @buffer_data: Data used by buffer part.
->   * @odr: Output data rate of the sensor [Hz].
->   * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
-> + * @get_buffer_element: Function to get data from sensor and push on buffer.
->   * @tf: Transfer function structure used by I/O operations.
->   * @tb: Transfer buffers and mutex used by I/O operations.
->   */
-> @@ -220,6 +221,7 @@ struct st_sensor_data {
->  	unsigned int odr;
->  
->  	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
-> +	int (*get_buffer_element) (struct iio_dev *indio_dev, u8 *buf);
->  
->  	const struct st_sensor_transfer_function *tf;
->  	struct st_sensor_transfer_buffer tb;
+> Thanks for taking care of this.
+> 
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+> Jonathan when you apply this please also add:
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> 
+> since he reported the issue as well
+>
+Done and applied to fixes-togreg branch of iio.git
+
+Thanks all.
+>> ---
+>> v3: Update comment
+>>
+>>  drivers/iio/dac/Kconfig | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+>> index f4a6f08..b61160b 100644
+>> --- a/drivers/iio/dac/Kconfig
+>> +++ b/drivers/iio/dac/Kconfig
+>> @@ -5,7 +5,7 @@ menu "Digital to analog converters"
+>>  
+>>  config AD5064
+>>  	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
+>> -	depends on (SPI_MASTER || I2C)
+>> +	depends on (SPI_MASTER && I2C!=m) || I2C
+>>  	help
+>>  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
+>>  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
+>> @@ -27,7 +27,7 @@ config AD5360
+>>  
+>>  config AD5380
+>>  	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
+>> -	depends on (SPI_MASTER || I2C)
+>> +	depends on (SPI_MASTER && I2C!=m) || I2C
+>>  	select REGMAP_I2C if I2C
+>>  	select REGMAP_SPI if SPI_MASTER
+>>  	help
+>> @@ -57,7 +57,7 @@ config AD5624R_SPI
+>>  
+>>  config AD5446
+>>  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
+>> -	depends on (SPI_MASTER || I2C)
+>> +	depends on (SPI_MASTER && I2C!=m) || I2C
+>>  	help
+>>  	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+>>  	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
