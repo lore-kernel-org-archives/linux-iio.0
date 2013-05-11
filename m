@@ -1,35 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog105.obsmtp.com ([207.126.144.119]:58911 "EHLO
-	eu1sys200aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755920Ab3ETMqk convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 20 May 2013 08:46:40 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Denis Ciocca <denis.ciocca@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 20 May 2013 14:45:45 +0200
-Subject: Re: Use buffer without trigger
-Message-ID: <19561183.S6vWajn81H@ctocwl0124>
-References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com>
- <5196280C.8070909@metafoo.de> <519755D6.10000@kernel.org>
-In-Reply-To: <519755D6.10000@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51711 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752834Ab3EKOSh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 10:18:37 -0400
+Message-ID: <518E5339.3090006@kernel.org>
+Date: Sat, 11 May 2013 15:18:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Alessandro Osima <alex.osima@gmail.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Hunyue Yau <hy-gsoc@hy-research.com>
+Subject: Re: Abstracting and extending evdev to work with the iio subsystem
+References: <CAOTW74kb_qJP=by_iKOTCHVurh2wEc6nfmdL-F2ddqq3aQ672g@mail.gmail.com> <51836C28.4050806@metafoo.de> <62B3B14C-0FFA-4914-9CD0-B4D5742780C7@gmail.com>
+In-Reply-To: <62B3B14C-0FFA-4914-9CD0-B4D5742780C7@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> Lots of the ADC drivers do this.  See max1363 for example. No sign a trigger
-> but it definitely has a buffer.  Often these parts convert on demand but
-> can do it at very high rates.
-I Jonathan,
+Hi Alessandro,
 
-I'm seeing the max1363 driver but I don't understand the caller of 
-max1363_trigger_handler function.
-Usually, the iio_trigger_generic_data_rdy_poll function inside the 
-request_threaded_irq, call iio_trigger_poll function and I suppose that this 
-function is the caller of handler declarated inside iio_triggered_buffer_setup.
+Note that we do have the ability (though the driver hasn't merged yet
+mainly because I got distracted) to have a fully fledged input driver
+running as a client of IIO.
+Also a lot of what you are focusing on in your description seems to be that
+IIO uses sysfs to provide access to the various data channels on a device.
 
-Many thanks,
-Denis
+Note that is only one option so please take a close
+look at the buffered methods as they are much closer to evdev but with
+rather less overhead.  In fact early discussions that lead to IIO
+focused on the fact that for high performance we would want to loose
+the overhead of labeling every event.
+
+As it is we have one dev file per iio device - though events are accessed
+via an anonymous file descriptor obtained from the buffer access file that
+sits under /dev (note there was quite a lot of pressure to not have multiple
+files in dev for a single physical device).
+
+The sysfs stuff then acts as a description of what is coming out
+of the device (to take it out of band and hence loose the overhead of
+constantly describing the data).  Now I agree there are plenty
+of usecases where evdev type interfaces make sense - such as actual
+events (rather than consistent data streams).  Whether it makes sense
+from a userspace point of view to have a generalized ev dev or instead
+a means of making relevant devices run through input is not clear to me.
+
+Now the IIO event interface (not used for the primary data flow) is
+clunky (and loosely based on evdev) so there may be more scope there.
+Note however that as things stand IIO events do not carry data.  They
+merely indicate events like a threshold being crossed.  This is again
+rather different from typical evdev usage. (it's been a while since
+I last looked at evdev so I may have missremembered some of the details!)
+
+So I'd favour some work on the events side of IIO and how that could
+make use of a generalized evdev but am unsure of whether evdev would make
+sense for more general IIO usage.  If you do want to do that you'll want
+to use a very similar approach to the iio-input driver to get access to the
+main data flow and come up with something similar for what are termed
+'events' in IIO (threshold type interrupts sources).
+
+Good luck
+
+Jonathan
+
+On 05/06/2013 11:47 PM, Alessandro Osima wrote:
+> Hello Lars.
+> 
+> Thank you for your interest and sorry for the late answer.
+> 
+> When I posted the proposal I was still studying the event interface, so I decided not to add it as a possible use case yet. 
+> I believe an input abstracted evdev would allow the creation of a more flexible and simpler to use event interface.
+> Every event generated by a device could be broadcasted trough a single file in /dev (created by the abstracted evdev) and read by an application with the help of an header file describing the new event interface (like input currently does with evdev and input.h).
+> This approach will allow to have an event interface that's simpler to use for an userspace app because instead of reading N sysfs files concurrently the app will have to read just one file in /dev and then handle the events received with something like a switch statement. 
+> Input abstracted evdev will help by creating the /dev file and forwarding the file_operations on that file to iio. 
+> I have added a bit more detailed explanations on my proposal.
+> 
+> This is just an idea, I'm looking for your feedbacks to make it better.
+> 
+> Regards,
+> Alessandro Osima
+> 
+> On May 3, 2013, at 9:50 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> 
+>> On 04/30/2013 04:24 AM, alessandro osima wrote:
+>>> Hello everyone, my name is  Alessandro Osima and I'm a computer
+>>> science student at Università degli Studi di Milano, Italy (second
+>>> year, equivalent to bachelor).
+>>>
+>>>
+>>> For this year's Google Summer of Code I have decided to submit an
+>>> application proposal focused on abstracting evdev  from input to allow
+>>> iio and other subsystems to take advantage of it to send/receive
+>>> events and data to userspace application troughout files located in
+>>> the /dev directory.
+>>>
+>>> This http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/asion/1#
+>>> is my proposal.
+>>>
+>>> I would kindly ask your opinions about this project and would be very
+>>> grateful for any comments and suggestion to improve it.
+>>>
+>>
+>> Hi,
+>>
+>> Sounds interesting. Did you hd a look at the existing IIO event interface
+>> (drivers/iio/industrialio-event.c)? I'm asking because you don't seem to
+>> mention it in your proposal.
+>>
+>> - Lars
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
