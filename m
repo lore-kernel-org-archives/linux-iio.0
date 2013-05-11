@@ -1,32 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-185.synserver.de ([212.40.185.185]:1141 "EHLO
-	smtp-out-185.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753535Ab3EQMw7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 May 2013 08:52:59 -0400
-Message-ID: <5196280C.8070909@metafoo.de>
-Date: Fri, 17 May 2013 14:52:28 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51746 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753072Ab3EKOWy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 10:22:54 -0400
+Message-ID: <518E543C.30401@kernel.org>
+Date: Sat, 11 May 2013 15:22:52 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Denis CIOCCA <denis.ciocca@st.com>
-CC: Denis Ciocca <denis.ciocca@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: Use buffer without trigger
-References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <2076388.y5Y0d24KYt@ctocwl0124> <519614CA.5040702@metafoo.de> <2527914.pxyfU9jjLA@ctocwl0124>
-In-Reply-To: <2527914.pxyfU9jjLA@ctocwl0124>
+CC: linux-iio@vger.kernel.org, denis.ciocca@gmail.com
+Subject: Re: [PATCH] iio:common: added disable function after read info raw
+ data
+References: <1368106549-6352-1-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1368106549-6352-1-git-send-email-denis.ciocca@st.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/17/2013 02:34 PM, Denis CIOCCA wrote:
->> Yes, but you still have to assign the trigger to the device in sysfs.
+On 05/09/2013 02:35 PM, Denis CIOCCA wrote:
+> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Applied to fixes-togreg branch of iio.git
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_core.c |    2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Ok but I have to use a dummy trigger for every device?
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index bd33473..ed9bc8a 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -312,6 +312,8 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+>  			goto read_error;
+>  
+>  		*val = *val >> ch->scan_type.shift;
+> +
+> +		err = st_sensors_set_enable(indio_dev, false);
+>  	}
+>  	mutex_unlock(&indio_dev->mlock);
+>  
 > 
-> Denis
-
-No. Allocate your buffers and allocate your one trigger. Before you can
-enable your buffer you need to assign the trigger to the buffer in sysfs (By
-writing to trigger/current_trigger).
-
-- Lars
