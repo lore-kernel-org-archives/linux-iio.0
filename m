@@ -1,100 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49525 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49584 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753955Ab3EKJwv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 05:52:51 -0400
-Message-ID: <518E14F1.6000008@kernel.org>
-Date: Sat, 11 May 2013 10:52:49 +0100
+	with ESMTP id S1753177Ab3EKKAO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 06:00:14 -0400
+Message-ID: <518E16AB.6010809@kernel.org>
+Date: Sat, 11 May 2013 11:00:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Axel Lin <axel.lin@ingics.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Wu Fengguang <fengguang.wu@intel.com>
-Subject: Re: [PATCH v3] iio: dac: Fix build error when CONFIG_SPI_MASTER=y
- && CONFIG_I2C=m
-References: <1368085759.3454.0.camel@phoenix> <518B5F73.4010702@metafoo.de>
-In-Reply-To: <518B5F73.4010702@metafoo.de>
-Content-Type: text/plain; charset=UTF-8
+To: Jacek Anaszewski <j.anaszewski@samsung.com>
+CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	achew@nvidia.com, s.nawrocki@samsung.com
+Subject: Re: [PATCH 0/2 V2] iio: magnetometer: ak8975: Add support for DT
+ and interrupt handling
+References: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
+In-Reply-To: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/09/2013 09:33 AM, Lars-Peter Clausen wrote:
-> On 05/09/2013 09:49 AM, Axel Lin wrote:
->> This patch fixes below build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m:
->>
->> drivers/built-in.o: In function `ad5064_i2c_write':
->> drivers/iio/dac/ad5064.c:608: undefined reference to `i2c_master_send'
->> drivers/built-in.o: In function `ad5064_i2c_register_driver':
->> drivers/iio/dac/ad5064.c:646: undefined reference to `i2c_register_driver'
->> drivers/built-in.o: In function `ad5064_i2c_unregister_driver':
->> drivers/iio/dac/ad5064.c:651: undefined reference to `i2c_del_driver'
->> make: *** [vmlinux] Error 1
->>
->> When CONFIG_I2C=m, meaning we can't build the drivers in with I2C support.
->> Thus don't allow the drivers to be compiled as built-in when CONFIG_I2C=m.
->>
->> The real fix though is to break the driver apart into a SPI part, an I2C part
->> and a common part. But that's something for 3.11 while this is something for
->> 3.10/stable.
->>
->> Reported-by: Wu Fengguang <fengguang.wu@intel.com>
->> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> 
-> Thanks for taking care of this.
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Jonathan when you apply this please also add:
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> 
-> since he reported the issue as well
->
-Done and applied to fixes-togreg branch of iio.git
+Applied to togreg branch of iio.git.
+I'll send upstream after merge window has closed
+(so if anyone else wants to take a look at this, you have
+a couple of days)
 
-Thanks all.
->> ---
->> v3: Update comment
->>
->>  drivers/iio/dac/Kconfig | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
->> index f4a6f08..b61160b 100644
->> --- a/drivers/iio/dac/Kconfig
->> +++ b/drivers/iio/dac/Kconfig
->> @@ -5,7 +5,7 @@ menu "Digital to analog converters"
->>  
->>  config AD5064
->>  	tristate "Analog Devices AD5064 and similar multi-channel DAC driver"
->> -	depends on (SPI_MASTER || I2C)
->> +	depends on (SPI_MASTER && I2C!=m) || I2C
->>  	help
->>  	  Say yes here to build support for Analog Devices AD5024, AD5025, AD5044,
->>  	  AD5045, AD5064, AD5064-1, AD5065, AD5628, AD5629R, AD5648, AD5666, AD5668,
->> @@ -27,7 +27,7 @@ config AD5360
->>  
->>  config AD5380
->>  	tristate "Analog Devices AD5380/81/82/83/84/90/91/92 DAC driver"
->> -	depends on (SPI_MASTER || I2C)
->> +	depends on (SPI_MASTER && I2C!=m) || I2C
->>  	select REGMAP_I2C if I2C
->>  	select REGMAP_SPI if SPI_MASTER
->>  	help
->> @@ -57,7 +57,7 @@ config AD5624R_SPI
->>  
->>  config AD5446
->>  	tristate "Analog Devices AD5446 and similar single channel DACs driver"
->> -	depends on (SPI_MASTER || I2C)
->> +	depends on (SPI_MASTER && I2C!=m) || I2C
->>  	help
->>  	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
->>  	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
+Thanks,
+
+On 05/07/2013 11:41 AM, Jacek Anaszewski wrote:
+> These patches add 'data ready' interrupt handling for AK8975
+> magnetometer, so as to provide more efficient alternative of
+> waiting for the end of conversion. This short series adds also
+> support for parsing 'gpios' property when initializing from oftree.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> This is a follow-up of the previous patchset and it includes
+> following improvements:
+> 
+> - replaced NULL with 'data' in the second argument of the free_irq calls,
+>   which fixes problem on the module removal
+> - changed the order of checking for the platform_data and added
+>   checking for the -EPROBE_DEFER as spotted by Lars-Peter Clausen
+> - moved ak8975.txt out of staging as spotted by Jonathan Cameron
+> - modified header description in ak8975.txt
+> - renamed '0C' to '0c' in the examplary device node in ak8975.txt
+> 
+> Thanks,
+> Jacek Anaszewski
+> 
+> Jacek Anaszewski (2):
+>   iio:ak8975 Add support for gpios DT property
+>   iio:ak8975 Implement data ready interrupt handling
+> 
+>  .../bindings/iio/magnetometer/ak8975.txt           |   18 ++++
+>  drivers/iio/magnetometer/ak8975.c                  |  103 +++++++++++++++++++-
+>  2 files changed, 116 insertions(+), 5 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
 > 
