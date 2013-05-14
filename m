@@ -1,78 +1,93 @@
-Return-Path: <denis.ciocca@st.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from eu1sys200aog119.obsmtp.com ([207.126.144.147]:54734 "EHLO
+	eu1sys200aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1756693Ab3ENJbB convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 May 2013 05:31:01 -0400
 From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, j.anaszewski@samsung.com,
-	linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 4/5] iio:magn: channel definition update and added get_buffer_element function pointer
-Date: Tue, 14 May 2013 16:22:02 +0200
-Message-Id: <1368541323-27423-5-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1368541323-27423-1-git-send-email-denis.ciocca@st.com>
-References: <1368541323-27423-1-git-send-email-denis.ciocca@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date: Tue, 14 May 2013 11:30:32 +0200
+Subject: Re: [PATCH] iio: STMicroelectronics: remove three useless selects
+Message-ID: <1426549.ftB3AjjfpY@elitebook-8460p>
+References: <1368522350.1350.98.camel@x61.thuisdomein>
+In-Reply-To: <1368522350.1350.98.camel@x61.thuisdomein>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/magnetometer/st_magn_core.c |   37 +++++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 12 deletions(-)
+Hi Paul,
 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 16f0d6d..3208ba8 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -113,22 +113,34 @@
- #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
- 
- static const struct iio_chan_spec st_magn_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
- static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-@@ -344,6 +356,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 	if (err < 0)
- 		goto st_magn_common_probe_error;
- 
-+	mdata->get_buffer_element = &st_sensors_get_buffer_element;
- 	mdata->multiread_bit = mdata->sensor->multi_read_bit;
- 	indio_dev->channels = mdata->sensor->ch;
- 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
--- 
-1.7.9.5
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
+
+Thanks,
+Denis
+
+On Tuesday, May 14, 2013 11:05:50 AM Paul Bolle wrote:
+> Drivers for STMicroelectronics accelerometers, gyroscopes, and
+> magnetometers were added in v3.9. They all have a (similar) select
+> statement in their Kconfig files for a non-existant Kconfig symbol.
+> These select statements can safely be removed.
+> 
+> Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+> ---
+> 0) Untested.
+> 
+> 1) Perhaps it was intended (in development versions of these drivers) to
+> have separate buffer and core drivers. One hint is that in the buffer
+> related source files one can find the usual MODULE_* macros. Those
+> macros can also be found in the core source files. I do wonder what
+> happens at build time now these drivers have two copies of these macros.
+> 
+>  drivers/iio/accel/Kconfig        | 1 -
+>  drivers/iio/gyro/Kconfig         | 1 -
+>  drivers/iio/magnetometer/Kconfig | 1 -
+>  3 files changed, 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index bb59496..719d83f 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -28,7 +28,6 @@ config IIO_ST_ACCEL_3AXIS
+>  	select IIO_ST_ACCEL_I2C_3AXIS if (I2C)
+>  	select IIO_ST_ACCEL_SPI_3AXIS if (SPI_MASTER)
+>  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+> -	select IIO_ST_ACCEL_BUFFER if (IIO_TRIGGERED_BUFFER)
+>  	help
+>  	  Say yes here to build support for STMicroelectronics accelerometers:
+>  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 6be4628..b8daf1b 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -47,7 +47,6 @@ config IIO_ST_GYRO_3AXIS
+>  	select IIO_ST_GYRO_I2C_3AXIS if (I2C)
+>  	select IIO_ST_GYRO_SPI_3AXIS if (SPI_MASTER)
+>  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+> -	select IIO_ST_GYRO_BUFFER if (IIO_TRIGGERED_BUFFER)
+>  	help
+>  	  Say yes here to build support for STMicroelectronics gyroscopes:
+>  	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+> diff --git a/drivers/iio/magnetometer/Kconfig
+> b/drivers/iio/magnetometer/Kconfig
+ index bd1cfb6..c332b0a 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -32,7 +32,6 @@ config IIO_ST_MAGN_3AXIS
+>  	select IIO_ST_MAGN_I2C_3AXIS if (I2C)
+>  	select IIO_ST_MAGN_SPI_3AXIS if (SPI_MASTER)
+>  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+> -	select IIO_ST_MAGN_BUFFER if (IIO_TRIGGERED_BUFFER)
+>  	help
+>  	  Say yes here to build support for STMicroelectronics magnetometers:
+>  	  LSM303DLHC, LSM303DLM, LIS3MDL.
+> -- 
+> 1.7.11.7
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
