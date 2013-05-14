@@ -1,205 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog103.obsmtp.com ([207.126.144.115]:51324 "EHLO
-	eu1sys200aog103.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755874Ab3EOIpQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 May 2013 04:45:16 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org, lars@metafoo.de,
-	j.anaszewski@samsung.com
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 1/3] iio:common: ST_SENSORS_LSM_CHANNELS macro changed
-Date: Wed, 15 May 2013 10:44:51 +0200
-Message-Id: <1368607493-4843-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
-References: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:32855 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754057Ab3ENRy2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 May 2013 13:54:28 -0400
+Message-ID: <51927AEF.6080107@metafoo.de>
+Date: Tue, 14 May 2013 19:57:03 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Denis Ciocca <denis.ciocca@gmail.com>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: Use buffer without trigger
+References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com>
+In-Reply-To: <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/accel/st_accel_core.c       |   36 ++++++++++++++++++++-----------
- drivers/iio/gyro/st_gyro_core.c         |   21 ++++++++++--------
- drivers/iio/magnetometer/st_magn_core.c |   36 ++++++++++++++++++++-----------
- include/linux/iio/common/st_sensors.h   |   20 ++++++++---------
- 4 files changed, 69 insertions(+), 44 deletions(-)
+On 05/14/2013 06:18 PM, Denis Ciocca wrote:
+> Hi all,
+> 
+> I have one question about iio device. I want create with only one physical
+> device a lot of iio devices because I want to activate each 'sensor'
+> without stop the buffer and reactivate with more channels.
+> But, I want to use only one trigger, for example of the major iio device.
+> It is possible to register only a buffer of one device and use the trigger
+> of another one?
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index e0f5a3c..40236d5 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -125,22 +125,34 @@
- #define ST_ACCEL_3_MULTIREAD_BIT		false
- 
- static const struct iio_chan_spec st_accel_12bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
- static const struct iio_chan_spec st_accel_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index fa9b242..9bae46b 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -86,15 +86,18 @@
- #define ST_GYRO_2_MULTIREAD_BIT			true
- 
- static const struct iio_chan_spec st_gyro_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
--		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
--		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
--		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 16f0d6d..715d616 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -113,22 +113,34 @@
- #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
- 
- static const struct iio_chan_spec st_magn_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
- static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 172c5b2..5ffd763 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -30,8 +30,6 @@
- #define ST_SENSORS_SCAN_X			0
- #define ST_SENSORS_SCAN_Y			1
- #define ST_SENSORS_SCAN_Z			2
--#define ST_SENSORS_DEFAULT_12_REALBITS		12
--#define ST_SENSORS_DEFAULT_16_REALBITS		16
- #define ST_SENSORS_DEFAULT_POWER_ON_VALUE	0x01
- #define ST_SENSORS_DEFAULT_POWER_OFF_VALUE	0x00
- #define ST_SENSORS_DEFAULT_WAI_ADDRESS		0x0f
-@@ -42,20 +40,20 @@
- #define ST_SENSORS_MAX_NAME			17
- #define ST_SENSORS_MAX_4WAI			7
- 
--#define ST_SENSORS_LSM_CHANNELS(device_type, index, mod, endian, bits, addr) \
-+#define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
-+					ch2, s, endian, rbits, sbits, addr) \
- { \
- 	.type = device_type, \
--	.modified = 1, \
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
--			BIT(IIO_CHAN_INFO_SCALE), \
-+	.modified = mod, \
-+	.info_mask_separate = mask, \
- 	.scan_index = index, \
--	.channel2 = mod, \
-+	.channel2 = ch2, \
- 	.address = addr, \
- 	.scan_type = { \
--		.sign = 's', \
--		.realbits = bits, \
--		.shift = 16 - bits, \
--		.storagebits = 16, \
-+		.sign = s, \
-+		.realbits = rbits, \
-+		.shift = sbits - rbits, \
-+		.storagebits = sbits, \
- 		.endianness = endian, \
- 	}, \
- }
--- 
-1.7.9.5
+Simple answer: yes.
 
+- Lars
