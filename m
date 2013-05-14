@@ -1,67 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39478 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756513Ab3EVVzr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:55:47 -0400
-Message-ID: <519D3EDD.2000104@kernel.org>
-Date: Wed, 22 May 2013 22:55:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Patil Rachna <rachna@ti.com>
-Subject: Re: [PATCH 4/7] iio/ti_am335x_adc: remove the else case
-References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de> <1369256897-25984-4-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369256897-25984-4-git-send-email-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from eu1sys200aog118.obsmtp.com ([207.126.144.145]:51958 "EHLO
+	eu1sys200aog118.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755592Ab3ENOWc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 May 2013 10:22:32 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org, j.anaszewski@samsung.com,
+	linux-iio@vger.kernel.org
+Subject: STMicroelectronics pressure sensors driver 
+Date: Tue, 14 May 2013 16:21:58 +0200
+Message-Id: <1368541323-27423-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/22/2013 10:08 PM, Sebastian Andrzej Siewior wrote:
-> The DT support added in ("iio: adc: am335x: Add DT support")
-> added an else case which shifts the code to the righ for no reaseon.
-> This patch simply removes the pointless else case and shifts the code
-> back to the left.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Hi Jonathan, Jacek,
 
-Either I am going completely mad or I never took the original patch.
-I'm not entirely sure I can remember why though.  I think there were
-issues with another patch in the series and so I was waiting for
-a reposting that never happened.  Looking back I think the debate
-was curriously enough whether it made sense ot have the platform_data
-support in there or not.
+I send to you the pressure patches, tested on linux-next 
+on pandaboard. Any feedback are welcome!
+Thanks,
+Denis
 
-Did anyone every take any of that series?  Which tree did you base these on?
-> ---
->  drivers/iio/adc/ti_am335x_adc.c |   13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index f258eb0..ac78672 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -214,14 +214,11 @@ static int tiadc_probe(struct platform_device *pdev)
->  		node = of_get_child_by_name(node, "adc");
->  		if (!node)
->  			return  -EINVAL;
-> -		else {
-> -			err = of_property_read_u32(node,
-> -					"ti,adc-channels", &val32);
-> -			if (err < 0)
-> -				goto err_free_device;
-> -			else
-> -				adc_dev->channels = val32;
-> -		}
-> +		err = of_property_read_u32(node,
-> +				"ti,adc-channels", &val32);
-> +		if (err < 0)
-> +			goto err_free_device;
-> +		adc_dev->channels = val32;
->  	}
->  
->  	indio_dev->dev.parent = &pdev->dev;
-> 
