@@ -1,17 +1,18 @@
 Return-Path: <denis.ciocca@st.com>
 From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org, lars@metafoo.de,
-	j.anaszewski@samsung.com
+To: jic23@kernel.org, j.anaszewski@samsung.com,
+	linux-iio@vger.kernel.org
 Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 3/3] iio:pressure: Add STMicroelectronics pressures driver
-Date: Wed, 15 May 2013 10:44:53 +0200
-Message-Id: <1368607493-4843-4-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
-References: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
+Subject: [PATCH 5/5] iio:pressure: Add STMicroelectronics pressures driver
+Date: Tue, 14 May 2013 16:22:03 +0200
+Message-Id: <1368541323-27423-6-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1368541323-27423-1-git-send-email-denis.ciocca@st.com>
+References: <1368541323-27423-1-git-send-email-denis.ciocca@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 This patch adds a generic pressure driver for STMicroelectronics
-pressures, currently it supports: LPS331AP.
+pressures, currently it supports:
+LPS331AP.
 
 Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
