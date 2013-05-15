@@ -1,159 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:58913 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757319Ab3EVVIl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:41 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 7/7] Documentation/DT bindings: add info for TI TSC ADC
-Date: Wed, 22 May 2013 23:08:17 +0200
-Message-Id: <1369256897-25984-7-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
-References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org, lars@metafoo.de,
+	j.anaszewski@samsung.com
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 2/3] iio:common: Added get_buffer_element function pointer
+Date: Wed, 15 May 2013 10:44:52 +0200
+Message-Id: <1368607493-4843-3-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
+References: <1368607493-4843-1-git-send-email-denis.ciocca@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The platform data structs are killed here because there are no users in
-tree (nobody sets the structs up, the RO usage is beeing removed) and the
-documentation about the parameters is saved here.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |   38 ++++++++++++++++++++
- include/linux/input/ti_am335x_tsc.h                |   35 ------------------
- include/linux/mfd/ti_am335x_tscadc.h               |    5 ---
- include/linux/platform_data/ti_am335x_adc.h        |   14 --------
- 4 files changed, 38 insertions(+), 54 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
- delete mode 100644 include/linux/input/ti_am335x_tsc.h
- delete mode 100644 include/linux/platform_data/ti_am335x_adc.h
+ drivers/iio/accel/st_accel_core.c                 |    1 +
+ drivers/iio/common/st_sensors/st_sensors_buffer.c |    2 +-
+ drivers/iio/gyro/st_gyro_core.c                   |    1 +
+ drivers/iio/magnetometer/st_magn_core.c           |    1 +
+ include/linux/iio/common/st_sensors.h             |    2 ++
+ 5 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-new file mode 100644
-index 0000000..e533e9d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -0,0 +1,38 @@
-+* TI - TSC ADC (Touschscreen and analog digital converter)
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+Required properties:
-+- child "tsc"
-+	ti,wires: Wires refer to application modes i.e. 4/5/8 wire touchscreen
-+		  support on the platform.
-+	ti,x-plate-resistance: X plate resistance
-+	ti,steps-to-configure: The sequencer supports a total of 16
-+			       programmable steps. A step configured to read a
-+			       single co-ordinate value. Can be applied more
-+			       number of times for better results.
-+	ti,wire-config: Different boards could have a different order for
-+			connecting wires on touchscreen. We need to provide an
-+			8 bit number where in the 1st four bits represent the
-+			analog lines and the next 4 bits represent positive/
-+			negative terminal on that input line. Notations to
-+			represent the input lines and terminals resoectively
-+			is as follows:
-+			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-+			XP  = 0, XN = 1, YP = 2, YN = 3.
-+- child "adc"
-+	ti,adc-channels: Number of analog inputs available for ADC
-+
-+Example:
-+	tscadc: tscadc@44e0d000 {
-+		compatible = "ti,ti-tscadc";
-+		tsc {
-+			ti,wires = <4>;
-+			ti,x-plate-resistance = <200>;
-+			ti,steps-to-configure = <5>;
-+			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		};
-+
-+		adc {
-+			ti,adc-channels = <4>;
-+		};
-+	}
-diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
-deleted file mode 100644
-index 6a66b4d..0000000
---- a/include/linux/input/ti_am335x_tsc.h
-+++ /dev/null
-@@ -1,35 +0,0 @@
--#ifndef __LINUX_TI_AM335X_TSC_H
--#define __LINUX_TI_AM335X_TSC_H
--
--/**
-- * struct tsc_data	Touchscreen wire configuration
-- * @wires:		Wires refer to application modes
-- *			i.e. 4/5/8 wire touchscreen support
-- *			on the platform.
-- * @x_plate_resistance:	X plate resistance.
-- * @steps_to_configure:	The sequencer supports a total of
-- *			16 programmable steps.
-- *			A step configured to read a single
-- *			co-ordinate value, can be applied
-- *			more number of times for better results.
-- * @wire_config:	Different EVM's could have a different order
-- *			for connecting wires on touchscreen.
-- *			We need to provide an 8 bit number where in
-- *			the 1st four bits represent the analog lines
-- *			and the next 4 bits represent positive/
-- *			negative terminal on that input line.
-- *			Notations to represent the input lines and
-- *			terminals resoectively is as follows:
-- *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-- *			XP  = 0, XN = 1, YP = 2, YN = 3.
-- *
-- */
--
--struct tsc_data {
--	int wires;
--	int x_plate_resistance;
--	int steps_to_configure;
--	int wire_config[10];
--};
--
--#endif
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 50a245f..c985262 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -128,11 +128,6 @@
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 40236d5..2b8a7bd 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -454,6 +454,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_accel_common_probe_error;
  
- #define TSCADC_CELLS		2
++	adata->get_buffer_element = &st_sensors_get_buffer_element;
+ 	adata->multiread_bit = adata->sensor->multi_read_bit;
+ 	indio_dev->channels = adata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index 09b236d..430039d 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -94,7 +94,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
  
--struct mfd_tscadc_board {
--	struct tsc_data *tsc_init;
--	struct adc_data *adc_init;
--};
--
- struct ti_tscadc_dev {
- 	struct device *dev;
- 	struct regmap *regmap_tscadc;
-diff --git a/include/linux/platform_data/ti_am335x_adc.h b/include/linux/platform_data/ti_am335x_adc.h
-deleted file mode 100644
-index e41d583..0000000
---- a/include/linux/platform_data/ti_am335x_adc.h
-+++ /dev/null
-@@ -1,14 +0,0 @@
--#ifndef __LINUX_TI_AM335X_ADC_H
--#define __LINUX_TI_AM335X_ADC_H
--
--/**
-- * struct adc_data	ADC Input information
-- * @adc_channels:	Number of analog inputs
-- *			available for ADC.
-- */
--
--struct adc_data {
--	unsigned int adc_channels;
--};
--
--#endif
+-	len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
++	len = sdata->get_buffer_element(indio_dev, sdata->buffer_data);
+ 	if (len < 0)
+ 		goto st_sensors_get_buffer_element_error;
+ 
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index 9bae46b..56e9253 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -313,6 +313,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_gyro_common_probe_error;
+ 
++	gdata->get_buffer_element = &st_sensors_get_buffer_element;
+ 	gdata->multiread_bit = gdata->sensor->multi_read_bit;
+ 	indio_dev->channels = gdata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 715d616..3208ba8 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -356,6 +356,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_magn_common_probe_error;
+ 
++	mdata->get_buffer_element = &st_sensors_get_buffer_element;
+ 	mdata->multiread_bit = mdata->sensor->multi_read_bit;
+ 	indio_dev->channels = mdata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 5ffd763..fd81707 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -203,6 +203,7 @@ struct st_sensors {
+  * @buffer_data: Data used by buffer part.
+  * @odr: Output data rate of the sensor [Hz].
+  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
++ * @get_buffer_element: Function to get data from sensor and push on buffer.
+  * @tf: Transfer function structure used by I/O operations.
+  * @tb: Transfer buffers and mutex used by I/O operations.
+  */
+@@ -220,6 +221,7 @@ struct st_sensor_data {
+ 	unsigned int odr;
+ 
+ 	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
++	int (*get_buffer_element) (struct iio_dev *indio_dev, u8 *buf);
+ 
+ 	const struct st_sensor_transfer_function *tf;
+ 	struct st_sensor_transfer_buffer tb;
 -- 
-1.7.10.4
-
+1.7.9.5
