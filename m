@@ -1,31 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:32855 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754057Ab3ENRy2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 May 2013 13:54:28 -0400
-Message-ID: <51927AEF.6080107@metafoo.de>
-Date: Tue, 14 May 2013 19:57:03 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from 18.mo1.mail-out.ovh.net ([46.105.35.72]:60091 "EHLO
+	mo1.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751511Ab3EPSJq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 May 2013 14:09:46 -0400
+Received: from mail94.ha.ovh.net (b7.ovh.net [213.186.33.57])
+	by mo1.mail-out.ovh.net (Postfix) with SMTP id 5F8A8FF9454
+	for <linux-iio@vger.kernel.org>; Thu, 16 May 2013 15:55:01 +0200 (CEST)
+Date: Thu, 16 May 2013 15:54:55 +0200
+From: Alexandre Relange <alexandre@relange.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, trivial@kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: Correct HID light sensor name in comments
+Message-ID: <20130516135455.GA16014@Pinea-Alexandre>
 MIME-Version: 1.0
-To: Denis Ciocca <denis.ciocca@gmail.com>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: Use buffer without trigger
-References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com>
-In-Reply-To: <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/14/2013 06:18 PM, Denis Ciocca wrote:
-> Hi all,
-> 
-> I have one question about iio device. I want create with only one physical
-> device a lot of iio devices because I want to activate each 'sensor'
-> without stop the buffer and reactivate with more channels.
-> But, I want to use only one trigger, for example of the major iio device.
-> It is possible to register only a buffer of one device and use the trigger
-> of another one?
+The original driver was pasted from accelerometer driver, but the name
+of the ID was not changed. This patch fixes this comment.
 
-Simple answer: yes.
+Signed-off-by: Alexandre Relange <alexandre@relange.org>
+---
+ drivers/iio/light/hid-sensor-als.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Lars
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 80d68ff..cdc2cad 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -31,7 +31,7 @@
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+ /*Format: HID-SENSOR-usage_id_in_hex*/
+-/*Usage ID from spec for Accelerometer-3D: 0x200041*/
++/*Usage ID from spec for Ambiant-Light: 0x200041*/
+ #define DRIVER_NAME "HID-SENSOR-200041"
+ 
+ #define CHANNEL_SCAN_INDEX_ILLUM 0
+-- 
+1.8.2.2
+
