@@ -1,54 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:44065 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759193Ab3EGJUF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 7 May 2013 05:20:05 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1UZe43-0005Cb-4e
-	for linux-iio@vger.kernel.org; Tue, 07 May 2013 11:20:03 +0200
-Received: from 217-67-201-162.itsa.net.pl ([217.67.201.162])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Tue, 07 May 2013 11:20:03 +0200
-Received: from j.anaszewski by 217-67-201-162.itsa.net.pl with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Tue, 07 May 2013 11:20:03 +0200
-To: linux-iio@vger.kernel.org
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-Subject: Re: [PATCH 2/2] iio: ak8975: Implement data ready interrupt handling
-Date: Tue, 07 May 2013 11:17:11 +0200
-Message-ID: <kmagqi$guj$2@ger.gmane.org>
-References: <1366123040-17917-1-git-send-email-j.anaszewski@samsung.com> <1366123040-17917-3-git-send-email-j.anaszewski@samsung.com> <5187DF32.7060107@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-In-Reply-To: <5187DF32.7060107@kernel.org>
+Received: from smtp-out-185.synserver.de ([212.40.185.185]:1141 "EHLO
+	smtp-out-185.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753535Ab3EQMw7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 May 2013 08:52:59 -0400
+Message-ID: <5196280C.8070909@metafoo.de>
+Date: Fri, 17 May 2013 14:52:28 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: Denis Ciocca <denis.ciocca@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: Use buffer without trigger
+References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <2076388.y5Y0d24KYt@ctocwl0124> <519614CA.5040702@metafoo.de> <2527914.pxyfU9jjLA@ctocwl0124>
+In-Reply-To: <2527914.pxyfU9jjLA@ctocwl0124>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/06/2013 06:49 PM, Jonathan Cameron wrote:
-> On 04/16/2013 03:37 PM, Jacek Anaszewski wrote:
->> Implement "data ready" interrupt handling in addition to the
->> two existing read modes - DRDY GPIO polling and ST1 register
->> DRDY bit polling.
->>
->> Signed-off-by: Jacek Anaszewski<j.anaszewski@samsung.com>
->> Signed-off-by: Kyungmin Park<kyungmin.park@samsung.com>
->> Cc: Andrew Chew<achew@nvidia.com>
->
-> Allowing either the gpio or the interrupt is a little ususual, but
-> I suppose does avoid having to change existing users to gain interrupt
-> support (if their gpio subsystem happens to support interrupts).
+On 05/17/2013 02:34 PM, Denis CIOCCA wrote:
+>> Yes, but you still have to assign the trigger to the device in sysfs.
+> 
+> Ok but I have to use a dummy trigger for every device?
+> 
+> Denis
 
-Thanks for the review. I am going to send new series promptly.
+No. Allocate your buffers and allocate your one trigger. Before you can
+enable your buffer you need to assign the trigger to the buffer in sysfs (By
+writing to trigger/current_trigger).
 
-Regarding the gpio issue - I can imagine the situation when there is no 
-available interrupt pin at the CPU, as they were all connected to the 
-other devices, there are some free general purpose pins though. It is 
-always better to have a possibility to periodically read the state of
-such a pin, instead of performing cycling I2C transmission to check the 
-status of DRDY bit in the ST1 register, which is a fallback in the driver.
-
-Thanks,
-Jacek Anaszewski
-
+- Lars
