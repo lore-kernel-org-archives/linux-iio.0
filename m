@@ -1,35 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40433 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751959Ab3ERKUM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 May 2013 06:20:12 -0400
-Message-ID: <519755D6.10000@kernel.org>
-Date: Sat, 18 May 2013 11:20:06 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Denis CIOCCA <denis.ciocca@st.com>,
-	Denis Ciocca <denis.ciocca@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: Denis Ciocca <denis.ciocca@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Date: Fri, 17 May 2013 13:28:36 +0200
 Subject: Re: Use buffer without trigger
-References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <2076388.y5Y0d24KYt@ctocwl0124> <519614CA.5040702@metafoo.de> <2527914.pxyfU9jjLA@ctocwl0124> <5196280C.8070909@metafoo.de>
-In-Reply-To: <5196280C.8070909@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <2076388.y5Y0d24KYt@ctocwl0124>
+References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com>
+ <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com>
+ <51927AEF.6080107@metafoo.de>
+In-Reply-To: <51927AEF.6080107@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/17/2013 01:52 PM, Lars-Peter Clausen wrote:
-> On 05/17/2013 02:34 PM, Denis CIOCCA wrote:
->>> Yes, but you still have to assign the trigger to the device in sysfs.
->>
->> Ok but I have to use a dummy trigger for every device?
->>
->> Denis
-> 
-> No. Allocate your buffers and allocate your one trigger. Before you can
-> enable your buffer you need to assign the trigger to the buffer in sysfs (By
-> writing to trigger/current_trigger).
-> 
-Lots of the ADC drivers do this.  See max1363 for example. No sign a trigger
-but it definitely has a buffer.  Often these parts convert on demand but can
-do it at very high rates.
+I've tried to register a buffer on one iio device, but when I try to enable=
+ it=20
+the error massage is about the no trigger available.
+I don't want a trigger for this device, I want use only one trigger of anot=
+her=20
+iio device for all. It is possible?
+Thanks,
+
+Denis
+
+
+On Tuesday, May 14, 2013 07:57:03 PM Lars-Peter Clausen wrote:
+> On 05/14/2013 06:18 PM, Denis Ciocca wrote:
+> > Hi all,
+> >=20
+> > I have one question about iio device. I want create with only one physi=
+cal
+> > device a lot of iio devices because I want to activate each 'sensor'
+> > without stop the buffer and reactivate with more channels.
+> > But, I want to use only one trigger, for example of the major iio devic=
+e.
+> > It is possible to register only a buffer of one device and use the trig=
+ger
+> > of another one?
+>=20
+> Simple answer: yes.
+>=20
+> - Lars
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html=
