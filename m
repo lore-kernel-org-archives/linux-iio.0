@@ -1,53 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-036.synserver.de ([212.40.185.36]:1072 "EHLO
-	smtp-out-036.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752733Ab3EVLng (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 07:43:36 -0400
-Message-ID: <519CAF57.5030301@metafoo.de>
-Date: Wed, 22 May 2013 13:43:19 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Guillaume Ballet <gballetwork@gmail.com>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: Why is only one int returned in iio_read_channel_processed?
-References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com> <519C7C29.9040707@jic23.retrosnub.co.uk> <519C7F93.9010606@metafoo.de> <519C8923.7020902@jic23.retrosnub.co.uk> <CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com>
-In-Reply-To: <CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mailout4.samsung.com ([203.254.224.34]:51340 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751611Ab3ETGip (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 May 2013 02:38:45 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de
+Subject: [PATCH] iio: exynos_adc: fix wrong structure extration in suspend and
+ resume
+Date: Mon, 20 May 2013 12:04:49 +0530
+Message-id: <1369031689-23189-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/22/2013 11:37 AM, Guillaume Ballet wrote:
->>>
->>>>
->>>>> functions' signature only has one integer
->>>>> in/out parameter. That makes sense in the context of _raw because the
->>>>> value isn't yet processed.
->>>>>
->>>>> However, as the scale is a number encoded over two ints, the
->>>>> _processed value should also span two ints. Is there a reason why it's
->>>>> still only one int?
->>>>
->>>> No it certainly should not be one int for exactly the reasons you have
->>>> stated.
->>>>>
->>>>>
->>>
->>> I'm not to sure about that. I'd rather add a scale parameter to the
->>> iio_read_channel_processed, just in the same way the
->>> convert_raw_to_processed function takes a scale parameter.
->>
->> That may be tricky to do given we often have nasty non linear functions
->> that are the reason we are using processed in the first place.  Hmm.
->> Not sure which way works better.
-> 
-> I agree, this is the whole point of using processed. Lars, is there a
-> specific reason why you want to keep reading the value and the scale
-> in different function calls?
+The exynos_adc device structure was wrongly extracted from the dev*
+correcting the same.
 
-I don't want to keep reading scale and value in different function calls.
+Using the regular conversion of
+struct device* -> struct platform_device* -> struct exynos_adc* seems wrong.
+Instead we should be doing
+struct device* -> struct iio_dev* -> struct exynos_adc*
 
-What's you use case and how do you want to split the data between the two
-integers?
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+---
+ drivers/iio/adc/exynos_adc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-- Lars
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index a6c4df5..2347df5 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -403,8 +403,8 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ #ifdef CONFIG_PM_SLEEP
+ static int exynos_adc_suspend(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct exynos_adc *info = platform_get_drvdata(pdev);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct exynos_adc *info = iio_priv(indio_dev);
+ 	u32 con;
+ 
+ 	if (info->version == ADC_V2) {
+@@ -426,8 +426,8 @@ static int exynos_adc_suspend(struct device *dev)
+ 
+ static int exynos_adc_resume(struct device *dev)
+ {
+-	struct platform_device *pdev = to_platform_device(dev);
+-	struct exynos_adc *info = platform_get_drvdata(pdev);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct exynos_adc *info = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	ret = regulator_enable(info->vdd);
+-- 
+1.7.12.4
+
