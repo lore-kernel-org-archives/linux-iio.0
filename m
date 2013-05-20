@@ -1,56 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49584 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753177Ab3EKKAO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2013 06:00:14 -0400
-Message-ID: <518E16AB.6010809@kernel.org>
-Date: Sat, 11 May 2013 11:00:11 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from eu1sys200aog105.obsmtp.com ([207.126.144.119]:58911 "EHLO
+	eu1sys200aog105.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755920Ab3ETMqk convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 20 May 2013 08:46:40 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 20 May 2013 14:45:45 +0200
+Subject: Re: Use buffer without trigger
+Message-ID: <19561183.S6vWajn81H@ctocwl0124>
+References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com>
+ <5196280C.8070909@metafoo.de> <519755D6.10000@kernel.org>
+In-Reply-To: <519755D6.10000@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-CC: linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	achew@nvidia.com, s.nawrocki@samsung.com
-Subject: Re: [PATCH 0/2 V2] iio: magnetometer: ak8975: Add support for DT
- and interrupt handling
-References: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
-In-Reply-To: <1367923299-30594-1-git-send-email-j.anaszewski@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Applied to togreg branch of iio.git.
-I'll send upstream after merge window has closed
-(so if anyone else wants to take a look at this, you have
-a couple of days)
+> Lots of the ADC drivers do this.  See max1363 for example. No sign a trigger
+> but it definitely has a buffer.  Often these parts convert on demand but
+> can do it at very high rates.
+I Jonathan,
 
-Thanks,
+I'm seeing the max1363 driver but I don't understand the caller of 
+max1363_trigger_handler function.
+Usually, the iio_trigger_generic_data_rdy_poll function inside the 
+request_threaded_irq, call iio_trigger_poll function and I suppose that this 
+function is the caller of handler declarated inside iio_triggered_buffer_setup.
 
-On 05/07/2013 11:41 AM, Jacek Anaszewski wrote:
-> These patches add 'data ready' interrupt handling for AK8975
-> magnetometer, so as to provide more efficient alternative of
-> waiting for the end of conversion. This short series adds also
-> support for parsing 'gpios' property when initializing from oftree.
-> 
-> This is a follow-up of the previous patchset and it includes
-> following improvements:
-> 
-> - replaced NULL with 'data' in the second argument of the free_irq calls,
->   which fixes problem on the module removal
-> - changed the order of checking for the platform_data and added
->   checking for the -EPROBE_DEFER as spotted by Lars-Peter Clausen
-> - moved ak8975.txt out of staging as spotted by Jonathan Cameron
-> - modified header description in ak8975.txt
-> - renamed '0C' to '0c' in the examplary device node in ak8975.txt
-> 
-> Thanks,
-> Jacek Anaszewski
-> 
-> Jacek Anaszewski (2):
->   iio:ak8975 Add support for gpios DT property
->   iio:ak8975 Implement data ready interrupt handling
-> 
->  .../bindings/iio/magnetometer/ak8975.txt           |   18 ++++
->  drivers/iio/magnetometer/ak8975.c                  |  103 +++++++++++++++++++-
->  2 files changed, 116 insertions(+), 5 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-> 
+Many thanks,
+Denis
