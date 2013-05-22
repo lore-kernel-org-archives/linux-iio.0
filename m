@@ -1,27 +1,55 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <519614CA.5040702@metafoo.de>
-Date: Fri, 17 May 2013 13:30:18 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-mx-f.csi.cam.ac.uk ([131.111.8.149]:37009 "EHLO
+	ppsw-42.csi.cam.ac.uk" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752232Ab3EVIFD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 04:05:03 -0400
+Message-ID: <519C7C29.9040707@jic23.retrosnub.co.uk>
+Date: Wed, 22 May 2013 09:04:57 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: Denis Ciocca <denis.ciocca@gmail.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>
-Subject: Re: Use buffer without trigger
-References: <CAEE_umrLpNJo1kMbLtktK0RH6WCKCEYR+yiTiyPJu_8G3coE7A@mail.gmail.com> <CAEE_umq7aC5=HWAW_2N=XsLJ0y6YqBojjN0Awm3BuGmqHSzrsw@mail.gmail.com> <51927AEF.6080107@metafoo.de> <2076388.y5Y0d24KYt@ctocwl0124>
-In-Reply-To: <2076388.y5Y0d24KYt@ctocwl0124>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Guillaume Ballet <gballetwork@gmail.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: Why is only one int returned in iio_read_channel_processed?
+References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com>
+In-Reply-To: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/17/2013 01:28 PM, Denis CIOCCA wrote:
-> I've tried to register a buffer on one iio device, but when I try to enable it 
-> the error massage is about the no trigger available.
-> I don't want a trigger for this device, I want use only one trigger of another 
-> iio device for all. It is possible?
+On 22/05/13 08:49, Guillaume Ballet wrote:
+> Hello,
+>
+> The read_raw operation in iio_info has a signature that takes two
+> integer as in/out parameters. This lets the driver return values with
+> micro- or nano-unit precision.
+>
+> However, the high-level iio_read_channel_raw and
+> iio_read_channel_processed
+Do we even have an iio_read_channel_processed? I think you are referring
+to the in kernel consumer interface.  In iio/consumer.h we have an 
+iio_read_channel_raw but unless I am going mad no 
+iio_read_channel_processed (as of yet).
+
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/include/linux/iio/consumer.h?h=togreg
+(is the latest development tree).
+
+Which tree are you looking at?
+
+> functions' signature only has one integer
+> in/out parameter. That makes sense in the context of _raw because the
+> value isn't yet processed.
+>
+> However, as the scale is a number encoded over two ints, the
+> _processed value should also span two ints. Is there a reason why it's
+> still only one int?
+No it certainly should not be one int for exactly the reasons you have 
+stated.
+>
 > Thanks,
-> 
-> Denis
+> Guillaume
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-Yes, but you still have to assign the trigger to the device in sysfs.
-
-- Lars
