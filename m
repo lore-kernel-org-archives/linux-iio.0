@@ -1,159 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:48454 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:58876 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754068Ab3E0TN0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:13:26 -0400
+	with ESMTP id S1756943Ab3EVVIh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:37 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
+To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 14/19] Documentation/DT bindings: add info for TI TSC ADC
-Date: Mon, 27 May 2013 21:12:01 +0200
-Message-Id: <1369681926-22185-15-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 1/7] input/ti_am_335x_tsc: remove the else case
+Date: Wed, 22 May 2013 23:08:11 +0200
+Message-Id: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The platform data structs are killed here because there are no users in
-tree (nobody sets the structs up, the RO usage is beeing removed) and the
-documentation about the parameters is saved here.
+The DT support added in ("input: touchscreen: am335x: Add DT support")
+added an else case which shifts the code to the righ for no reaseon.
+This patch simply removes the pointless else case and shifts the code
+back to the left.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |   38 ++++++++++++++++++++
- include/linux/input/ti_am335x_tsc.h                |   35 ------------------
- include/linux/mfd/ti_am335x_tscadc.h               |    5 ---
- include/linux/platform_data/ti_am335x_adc.h        |   14 --------
- 4 files changed, 38 insertions(+), 54 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
- delete mode 100644 include/linux/input/ti_am335x_tsc.h
- delete mode 100644 include/linux/platform_data/ti_am335x_adc.h
+ drivers/input/touchscreen/ti_am335x_tsc.c |   63 +++++++++++++----------------
+ 1 file changed, 28 insertions(+), 35 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-new file mode 100644
-index 0000000..e533e9d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -0,0 +1,38 @@
-+* TI - TSC ADC (Touschscreen and analog digital converter)
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+Required properties:
-+- child "tsc"
-+	ti,wires: Wires refer to application modes i.e. 4/5/8 wire touchscreen
-+		  support on the platform.
-+	ti,x-plate-resistance: X plate resistance
-+	ti,steps-to-configure: The sequencer supports a total of 16
-+			       programmable steps. A step configured to read a
-+			       single co-ordinate value. Can be applied more
-+			       number of times for better results.
-+	ti,wire-config: Different boards could have a different order for
-+			connecting wires on touchscreen. We need to provide an
-+			8 bit number where in the 1st four bits represent the
-+			analog lines and the next 4 bits represent positive/
-+			negative terminal on that input line. Notations to
-+			represent the input lines and terminals resoectively
-+			is as follows:
-+			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-+			XP  = 0, XN = 1, YP = 2, YN = 3.
-+- child "adc"
-+	ti,adc-channels: Number of analog inputs available for ADC
-+
-+Example:
-+	tscadc: tscadc@44e0d000 {
-+		compatible = "ti,ti-tscadc";
-+		tsc {
-+			ti,wires = <4>;
-+			ti,x-plate-resistance = <200>;
-+			ti,steps-to-configure = <5>;
-+			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		};
-+
-+		adc {
-+			ti,adc-channels = <4>;
-+		};
-+	}
-diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
-deleted file mode 100644
-index 6a66b4d..0000000
---- a/include/linux/input/ti_am335x_tsc.h
-+++ /dev/null
-@@ -1,35 +0,0 @@
--#ifndef __LINUX_TI_AM335X_TSC_H
--#define __LINUX_TI_AM335X_TSC_H
--
--/**
-- * struct tsc_data	Touchscreen wire configuration
-- * @wires:		Wires refer to application modes
-- *			i.e. 4/5/8 wire touchscreen support
-- *			on the platform.
-- * @x_plate_resistance:	X plate resistance.
-- * @steps_to_configure:	The sequencer supports a total of
-- *			16 programmable steps.
-- *			A step configured to read a single
-- *			co-ordinate value, can be applied
-- *			more number of times for better results.
-- * @wire_config:	Different EVM's could have a different order
-- *			for connecting wires on touchscreen.
-- *			We need to provide an 8 bit number where in
-- *			the 1st four bits represent the analog lines
-- *			and the next 4 bits represent positive/
-- *			negative terminal on that input line.
-- *			Notations to represent the input lines and
-- *			terminals resoectively is as follows:
-- *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-- *			XP  = 0, XN = 1, YP = 2, YN = 3.
-- *
-- */
--
--struct tsc_data {
--	int wires;
--	int x_plate_resistance;
--	int steps_to_configure;
--	int wire_config[10];
--};
--
--#endif
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 50a245f..c985262 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -128,11 +128,6 @@
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 4fcf72f..20f4505 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -396,41 +396,34 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
  
- #define TSCADC_CELLS		2
+ 	if (!node)
+ 		return -EINVAL;
+-	else {
+-		node = of_get_child_by_name(node, "tsc");
+-		if (!node)
+-			return -EINVAL;
+-		else {
+-			err = of_property_read_u32(node, "ti,wires", &val32);
+-			if (err < 0)
+-				goto error_ret;
+-			else
+-				ts_dev->wires = val32;
+-
+-			err = of_property_read_u32(node,
+-					"ti,x-plate-resistance", &val32);
+-			if (err < 0)
+-				goto error_ret;
+-			else
+-				ts_dev->x_plate_resistance = val32;
+-
+-			err = of_property_read_u32(node,
+-					"ti,steps-to-configure", &val32);
+-			if (err < 0)
+-				goto error_ret;
+-			else
+-				ts_dev->steps_to_configure = val32;
+-
+-			err = of_property_read_u32_array(node, "ti,wire-config",
+-					wires_conf, ARRAY_SIZE(wires_conf));
+-			if (err < 0)
+-				goto error_ret;
+-			else {
+-				for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
+-					ts_dev->config_inp[i] = wires_conf[i];
+-			}
+-		}
+-	}
++
++	node = of_get_child_by_name(node, "tsc");
++	if (!node)
++		return -EINVAL;
++	err = of_property_read_u32(node, "ti,wires", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->wires = val32;
++
++	err = of_property_read_u32(node,
++			"ti,x-plate-resistance", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->x_plate_resistance = val32;
++
++	err = of_property_read_u32(node,
++			"ti,steps-to-configure", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->steps_to_configure = val32;
++
++	err = of_property_read_u32_array(node, "ti,wire-config",
++			wires_conf, ARRAY_SIZE(wires_conf));
++	if (err < 0)
++		goto error_ret;
++
++	for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
++		ts_dev->config_inp[i] = wires_conf[i];
+ 	return 0;
  
--struct mfd_tscadc_board {
--	struct tsc_data *tsc_init;
--	struct adc_data *adc_init;
--};
--
- struct ti_tscadc_dev {
- 	struct device *dev;
- 	struct regmap *regmap_tscadc;
-diff --git a/include/linux/platform_data/ti_am335x_adc.h b/include/linux/platform_data/ti_am335x_adc.h
-deleted file mode 100644
-index e41d583..0000000
---- a/include/linux/platform_data/ti_am335x_adc.h
-+++ /dev/null
-@@ -1,14 +0,0 @@
--#ifndef __LINUX_TI_AM335X_ADC_H
--#define __LINUX_TI_AM335X_ADC_H
--
--/**
-- * struct adc_data	ADC Input information
-- * @adc_channels:	Number of analog inputs
-- *			available for ADC.
-- */
--
--struct adc_data {
--	unsigned int adc_channels;
--};
--
--#endif
+ error_ret:
 -- 
 1.7.10.4
 
