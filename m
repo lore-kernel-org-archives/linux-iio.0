@@ -1,86 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f172.google.com ([209.85.223.172]:51534 "EHLO
-	mail-ie0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753018Ab3EVOAM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 10:00:12 -0400
-Received: by mail-ie0-f172.google.com with SMTP id 16so5246812iea.31
-        for <linux-iio@vger.kernel.org>; Wed, 22 May 2013 07:00:11 -0700 (PDT)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39693 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757704Ab3EVWQj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 18:16:39 -0400
+Message-ID: <519D43C5.3020302@kernel.org>
+Date: Wed, 22 May 2013 23:16:37 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <519CCAA2.2070408@metafoo.de>
-References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com>
-	<519C7C29.9040707@jic23.retrosnub.co.uk>
-	<519C7F93.9010606@metafoo.de>
-	<519C8923.7020902@jic23.retrosnub.co.uk>
-	<CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com>
-	<519CAF57.5030301@metafoo.de>
-	<CAGi_vrir0uQd4u9WgixQ5an+jE8WFTyVmBiFnmxa-y=DfeW61g@mail.gmail.com>
-	<519CCAA2.2070408@metafoo.de>
-Date: Wed, 22 May 2013 16:00:11 +0200
-Message-ID: <CAGi_vrjk7FLvYhHSLbV9D4GGHY1X1k1fkuEXMkh9Mn7z_5qj1w@mail.gmail.com>
-Subject: Re: Why is only one int returned in iio_read_channel_processed?
-From: Guillaume Ballet <gballetwork@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO cleanups, new stuff and staging graduations (IIO set 1
+ for the 3.11 cycle)
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, May 22, 2013 at 3:39 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 05/22/2013 03:29 PM, Guillaume Ballet wrote:
->> On Wed, May 22, 2013 at 1:43 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>> On 05/22/2013 11:37 AM, Guillaume Ballet wrote:
->>>>>>
->>>>>>>
->>>>>>>> functions' signature only has one integer
->>>>>>>> in/out parameter. That makes sense in the context of _raw because the
->>>>>>>> value isn't yet processed.
->>>>>>>>
->>>>>>>> However, as the scale is a number encoded over two ints, the
->>>>>>>> _processed value should also span two ints. Is there a reason why it's
->>>>>>>> still only one int?
->>>>>>>
->>>>>>> No it certainly should not be one int for exactly the reasons you have
->>>>>>> stated.
->>>>>>>>
->>>>>>>>
->>>>>>
->>>>>> I'm not to sure about that. I'd rather add a scale parameter to the
->>>>>> iio_read_channel_processed, just in the same way the
->>>>>> convert_raw_to_processed function takes a scale parameter.
->>>>>
->>>>> That may be tricky to do given we often have nasty non linear functions
->>>>> that are the reason we are using processed in the first place.  Hmm.
->>>>> Not sure which way works better.
->>>>
->>>> I agree, this is the whole point of using processed. Lars, is there a
->>>> specific reason why you want to keep reading the value and the scale
->>>> in different function calls?
->>>
->>> I don't want to keep reading scale and value in different function calls.
->>>
->>> What's you use case and how do you want to split the data between the two
->>> integers?
->>
->> Since the scale's format can be IIO_VAL_INT_PLUS_MICRO and
->> IIO_VAL_INT_PLUS_NANO, etc... and since iio_read_channel_processed
->> returns a value that is homogeneous to (value * scale), it seems to me
->> the same format should be used as when calling iio_read_channel_raw
->> with IIO_CHAN_INFO_SCALE. My use case is not more complicated than
->> making sure I keep the same precision when getting processed values.
->
-> That doesn't really help me understand what you are trying to do. What is
-> your application, where do you call iio_read_channel_processed and how do
-> you process the returned value.
+The following changes since commit 735ae5392a622e88ebe9dda1f66d80850580239d:
 
-I have a driver for an ADC block that measures miscellaneous values in
-various units (temperature, voltage, current...) to be read from
-drivers in other kernel subsystems (the power supply class, for
-instance). Unit conversion has to be done by the IIO device itself as
-it's done using tables that are provided by various vendors who don't
-want them published. Hence my need to call iio_read_channel_processed
-and not entrust anyone else with the conversion.
+  Staging: bcm: fix checkpatch errors and warnings in Version.h (2013-05-21 19:59:50 -0700)
 
-Could _you_ please explain what your concern with using the same format is?
+are available in the git repository at:
 
-Guillaume
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.11a
+
+for you to fetch changes up to c619653d77a5d59abe9166da57f3686b7f067745:
+
+  adc: exynos_adc: Convert to devm_ioremap_resource() (2013-05-22 22:18:22 +0100)
+
+----------------------------------------------------------------
+First round of new IIO drivers and cleanups for the 3.11 cycle.
+
+1) New driver for MCP3204/08 12 bit ADCs
+2) Move the sysfs trigger out of staging.  This has been pretty clean for a
+   long time so lets finally move it out.
+3) New functionality for the ak8975 magnetometer (DT and data ready interrupt
+   handling)
+4) Use devm_ioremap_resource in exynos_adc.  We have 3 separate versions of
+   this patch proposed but this one got there first.
+5) A couple of other tiny fixes.
+
+----------------------------------------------------------------
+Alexandre Relange (1):
+      iio: Correct HID light sensor name in comments
+
+Jacek Anaszewski (2):
+      iio:ak8975 Add support for gpios DT property
+      iio:ak8975 Implement data ready interrupt handling
+
+Jonathan Cameron (1):
+      iio:trigger:sysfs Move out of staging.
+
+Michał Mirosław (2):
+      iio: buffer: cleanup messages in iio_update_buffers()
+      staging/iio/mxs-lradc: cleanup masklength
+
+Oskar Andero (1):
+      iio: adc: add driver for MCP3204/08 12-bit ADC
+
+Paul Bolle (1):
+      iio: STMicroelectronics: remove three useless selects
+
+Sachin Kamat (1):
+      adc: exynos_adc: Convert to devm_ioremap_resource()
+
+ .../bindings/iio/magnetometer/ak8975.txt           |  18 ++
+ drivers/iio/Kconfig                                |   3 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/accel/Kconfig                          |   1 -
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/exynos_adc.c                       |  12 +-
+ drivers/iio/adc/mcp320x.c                          | 257 +++++++++++++++++++++
+ drivers/iio/gyro/Kconfig                           |   1 -
+ drivers/iio/industrialio-buffer.c                  |  10 +-
+ drivers/iio/light/hid-sensor-als.c                 |   2 +-
+ drivers/iio/magnetometer/Kconfig                   |   1 -
+ drivers/iio/magnetometer/ak8975.c                  | 103 ++++++++-
+ drivers/iio/trigger/Kconfig                        |  17 ++
+ drivers/iio/trigger/Makefile                       |   5 +
+ drivers/{staging => }/iio/trigger/iio-trig-sysfs.c |   0
+ drivers/staging/iio/adc/mxs-lradc.c                |   8 +-
+ drivers/staging/iio/trigger/Kconfig                |  11 -
+ drivers/staging/iio/trigger/Makefile               |   1 -
+ 19 files changed, 425 insertions(+), 37 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
+ create mode 100644 drivers/iio/adc/mcp320x.c
+ create mode 100644 drivers/iio/trigger/Kconfig
+ create mode 100644 drivers/iio/trigger/Makefile
+ rename drivers/{staging => }/iio/trigger/iio-trig-sysfs.c (100%)
