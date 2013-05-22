@@ -1,57 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39013 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39037 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755071Ab3EVVTp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:19:45 -0400
-Message-ID: <519D366C.6050209@kernel.org>
-Date: Wed, 22 May 2013 22:19:40 +0100
+	with ESMTP id S1757330Ab3EVVVJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:21:09 -0400
+Message-ID: <519D36C2.5000009@kernel.org>
+Date: Wed, 22 May 2013 22:21:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] adc: exynos_adc: Convert to devm_ioremap_resource()
-References: <1364970239-8242-1-git-send-email-sachin.kamat@linaro.org> <CAK9yfHxht4L38absFAbDkX2=ort5HV7W=Q2uU2BbncQhXJ4T_Q@mail.gmail.com> <516BDA77.5060402@jic23.retrosnub.co.uk> <CAK9yfHz-m3ZUvNuYYcfjCGksTPXK=m2t40qVJbfxdEaPst9OiQ@mail.gmail.com> <517EBBAA.3040503@metafoo.de> <CAK9yfHxwk77Otgu1FOu5eUAMpvNN8pVtK7UvxJ0BKLD3i2A_Gw@mail.gmail.com>
-In-Reply-To: <CAK9yfHxwk77Otgu1FOu5eUAMpvNN8pVtK7UvxJ0BKLD3i2A_Gw@mail.gmail.com>
+To: Silviu-Mihai Popescu <silviupopescu1990@gmail.com>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: iio: adc: convert to devm_ioremap_resource()
+References: <1368270391-15267-1-git-send-email-silviupopescu1990@gmail.com>
+In-Reply-To: <1368270391-15267-1-git-send-email-silviupopescu1990@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/30/2013 03:59 AM, Sachin Kamat wrote:
-> On 29 April 2013 23:57, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 04/29/2013 07:18 PM, Sachin Kamat wrote:
->>> Hi Jonathan,
->>>
->>> On 15 April 2013 16:16, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
->>>> On 15/04/13 09:22, Sachin Kamat wrote:
->>>>>
->>>>> On 3 April 2013 11:53, Sachin Kamat <sachin.kamat@linaro.org> wrote:
->>>>>>
->>>>>> Use the newly introduced devm_ioremap_resource() instead of
->>>>>> devm_request_and_ioremap() which provides more consistent error handling.
->>>>>>
->>>>>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->>>>
->>>> Not sure why I missed this one.  I think I marked the entire thread
->>>> as not ready based on the responses to patch 2.  Clearly nothing wrong
->>>> with this one!  Will pick up for the next cycle now as I think it
->>>> is a cleanup rather than an actual bug fix?
->>>>
->>>> Thanks for the ping.
->>>
->>> Looks like this patch has still not made it to your tree as I did not
->>> find it in Greg's pull request to Linus.
->>> I however saw two of my other iio patches in his pull request.
->>
->> The IIO tree was already closed at that point, so "next cycle" refers to 3.11
->> in this case.
+On 05/11/2013 12:06 PM, Silviu-Mihai Popescu wrote:
+> Convert all uses of devm_request_and_ioremap() to the newly introduced
+> devm_ioremap_resource() which provides more consistent error handling.
 > 
-> Oh OK. Got it :)
-> Thanks for the clarification.
-> 
-Now finally applied to the togreg branch of iio.git.
-Will hopefully send upstream sometime over next few days at which point it will hit
-linux-next and be ready for the next merge cycle.
+> Signed-off-by: Silviu-Mihai Popescu <silviupopescu1990@gmail.com>
+Patch number 3 doing the same thing.  I was somewhat tardy applying
+the first one so sorry for wasting your time on this.
 
 Jonathan
+> ---
+>  drivers/iio/adc/exynos_adc.c |   12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 9f3a8ef..22d034a 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -270,16 +270,16 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  	info = iio_priv(indio_dev);
+>  
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
+> -	if (!info->regs) {
+> -		ret = -ENOMEM;
+> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(info->regs)) {
+> +		ret = PTR_ERR(info->regs);
+>  		goto err_iio;
+>  	}
+>  
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -	info->enable_reg = devm_request_and_ioremap(&pdev->dev, mem);
+> -	if (!info->enable_reg) {
+> -		ret = -ENOMEM;
+> +	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(info->enable_reg)) {
+> +		ret = PTR_ERR(info->enable_reg);
+>  		goto err_iio;
+>  	}
+>  
+> 
