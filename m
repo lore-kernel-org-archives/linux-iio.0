@@ -1,26 +1,57 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 22 May 2013 15:23:30 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO cleanups, new stuff and staging graduations (IIO set
- 1 for the 3.11 cycle)
-Message-ID: <20130522222330.GA28862@kroah.com>
-References: <519D43C5.3020302@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <519D43C5.3020302@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:58891 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757319Ab3EVVIi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:38 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 4/7] iio/ti_am335x_adc: remove the else case
+Date: Wed, 22 May 2013 23:08:14 +0200
+Message-Id: <1369256897-25984-4-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, May 22, 2013 at 11:16:37PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 735ae5392a622e88ebe9dda1f66d80850580239d:
-> 
->   Staging: bcm: fix checkpatch errors and warnings in Version.h (2013-05-21 19:59:50 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.11a
+The DT support added in ("iio: adc: am335x: Add DT support")
+added an else case which shifts the code to the righ for no reaseon.
+This patch simply removes the pointless else case and shifts the code
+back to the left.
 
-Pulled and pushed out, thanks.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-greg k-h
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index f258eb0..ac78672 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -214,14 +214,11 @@ static int tiadc_probe(struct platform_device *pdev)
+ 		node = of_get_child_by_name(node, "adc");
+ 		if (!node)
+ 			return  -EINVAL;
+-		else {
+-			err = of_property_read_u32(node,
+-					"ti,adc-channels", &val32);
+-			if (err < 0)
+-				goto err_free_device;
+-			else
+-				adc_dev->channels = val32;
+-		}
++		err = of_property_read_u32(node,
++				"ti,adc-channels", &val32);
++		if (err < 0)
++			goto err_free_device;
++		adc_dev->channels = val32;
+ 	}
+ 
+ 	indio_dev->dev.parent = &pdev->dev;
+-- 
+1.7.10.4
+
