@@ -1,48 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:51310 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753849Ab3EVUZo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 16:25:44 -0400
-Date: Wed, 22 May 2013 23:25:31 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: michael.hennerich@analog.com
-Cc: linux-iio@vger.kernel.org
-Subject: re: iio: frequency: New driver for Analog Devices ADF4350/ADF4351
- Wideband Synthesizers
-Message-ID: <20130522202531.GA1438@elgon.mountain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from www.linutronix.de ([62.245.132.108]:58884 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757279Ab3EVVIh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:37 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 3/7] input/i_am335x_tsc: removed unused variable in titsc_irq()
+Date: Wed, 22 May 2013 23:08:13 +0200
+Message-Id: <1369256897-25984-3-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Michael Hennerich,
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-The patch e31166f0fd48: "iio: frequency: New driver for Analog
-Devices ADF4350/ADF4351 Wideband Synthesizers" from May 29, 2012,
-leads to the following warning:
-"drivers/iio/frequency/adf4350.c:212 adf4350_set_freq()
-	 warn: 0x13c001fc0 is larger than 32 bits"
-
-I have been messing with Smatch recently and this is not the right
-warning...  :/
-
-drivers/iio/frequency/adf4350.c
-   207          st->regs[ADF4350_REG2] =
-   208                  ADF4350_REG2_10BIT_R_CNT(r_cnt) |
-   209                  ADF4350_REG2_DOUBLE_BUFF_EN |
-   210                  (pdata->ref_doubler_en ? ADF4350_REG2_RMULT2_EN : 0) |
-   211                  (pdata->ref_div2_en ? ADF4350_REG2_RDIV2_EN : 0) |
-   212                  (pdata->r2_user_settings & (ADF4350_REG2_PD_POLARITY_POS |
-   213                  ADF4350_REG2_LDP_6ns | ADF4350_REG2_LDF_INT_N |
-   214                  ADF4350_REG2_CHARGE_PUMP_CURR_uA(5000) |
-   215                  ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x9)));
-                        ^^^^^^^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-0x7 and 0x9 are signed int so when we do "<< 29" it wraps or has a sign
-extention.  Also we are doing a bitwise AND with 32 bit unsigned values
-so they get truncated that way too.
-
-It's not clear what was intended here.
-
-regards,
-dan carpenter
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e778ffd..a85818b 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -319,7 +319,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int z1, z2, z;
+ 	unsigned int fsm;
+ 	unsigned int diffx = 0, diffy = 0;
+-	int i;
+ 
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+ 	if (status & IRQENB_FIFO0THRES) {
+-- 
+1.7.10.4
 
