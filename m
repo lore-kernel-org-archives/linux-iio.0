@@ -1,96 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:48316 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:58898 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754170Ab3E0TMS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:12:18 -0400
+	with ESMTP id S1757335Ab3EVVIj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:39 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
+To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 01/19] input: touchscreen: am335x: Step enable bits made configurable
-Date: Mon, 27 May 2013 21:11:48 +0200
-Message-Id: <1369681926-22185-2-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 5/7] iio/ti_am335x_adc: remove platform_data support
+Date: Wed, 22 May 2013 23:08:15 +0200
+Message-Id: <1369256897-25984-5-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+This patch removes access to platform data mfd_tscadc_board because the
+platform is DT only.
 
-Current code has hard coded value written to
-step enable bits. Now the bits are updated based
-on how many steps are needed to be configured got
-from platform data.
-
-The user needs to take care not to exceed
-the count more than 16. While using ADC and TSC
-one should take care to set this parameter correctly.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++++--
- include/linux/mfd/ti_am335x_tscadc.h      |    1 -
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c |   26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 51e7b87..da652e0 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -39,6 +39,7 @@ struct titsc {
- 	unsigned int		irq;
- 	unsigned int		wires;
- 	unsigned int		x_plate_resistance;
-+	unsigned int		enable_bits;
- 	bool			pen_down;
- 	int			steps_to_configure;
- };
-@@ -57,6 +58,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
- static void titsc_step_config(struct titsc *ts_dev)
- {
- 	unsigned int	config;
-+	unsigned int	stepenable = 0;
- 	int i, total_steps;
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index ac78672..1baf5b4 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -29,7 +29,6 @@
  
- 	/* Configure the Step registers */
-@@ -128,7 +130,11 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
- 			STEPCONFIG_OPENDLY);
+ #include <linux/io.h>
+ #include <linux/mfd/ti_am335x_tscadc.h>
+-#include <linux/platform_data/ti_am335x_adc.h>
  
--	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
-+	for (i = 0; i <= (total_steps + 2); i++)
-+		stepenable |= 1 << i;
-+	ts_dev->enable_bits = stepenable;
-+
-+	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
- }
+ struct tiadc_device {
+ 	struct ti_tscadc_dev *mfd_tscadc;
+@@ -188,13 +187,12 @@ static int tiadc_probe(struct platform_device *pdev)
+ 	struct iio_dev		*indio_dev;
+ 	struct tiadc_device	*adc_dev;
+ 	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
+-	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
+ 	struct device_node	*node = tscadc_dev->dev->of_node;
+ 	int			err;
+ 	u32			val32;
  
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -250,7 +256,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+-	if (!pdata && !node) {
+-		dev_err(&pdev->dev, "Could not find platform data\n");
++	if (!node) {
++		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+ 		return -EINVAL;
+ 	}
  
- 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+@@ -208,18 +206,14 @@ static int tiadc_probe(struct platform_device *pdev)
  
--	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
-+	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
- 	return IRQ_HANDLED;
- }
+ 	adc_dev->mfd_tscadc = tscadc_dev;
  
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index c79ad5d..23e4f33 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -47,7 +47,6 @@
- #define STEPENB_MASK		(0x1FFFF << 0)
- #define STEPENB(val)		((val) << 0)
- #define STPENB_STEPENB		STEPENB(0x1FFFF)
--#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
+-	if (pdata)
+-		adc_dev->channels = pdata->adc_init->adc_channels;
+-	else {
+-		node = of_get_child_by_name(node, "adc");
+-		if (!node)
+-			return  -EINVAL;
+-		err = of_property_read_u32(node,
+-				"ti,adc-channels", &val32);
+-		if (err < 0)
+-			goto err_free_device;
+-		adc_dev->channels = val32;
+-	}
++	node = of_get_child_by_name(node, "adc");
++	if (!node)
++		return  -EINVAL;
++	err = of_property_read_u32(node,
++			"ti,adc-channels", &val32);
++	if (err < 0)
++		goto err_free_device;
++	adc_dev->channels = val32;
  
- /* IRQ enable */
- #define IRQENB_HW_PEN		BIT(0)
+ 	indio_dev->dev.parent = &pdev->dev;
+ 	indio_dev->name = dev_name(&pdev->dev);
 -- 
 1.7.10.4
 
