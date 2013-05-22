@@ -1,105 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:58876 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756943Ab3EVVIh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:37 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/7] input/ti_am_335x_tsc: remove the else case
-Date: Wed, 22 May 2013 23:08:11 +0200
-Message-Id: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39078 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757276Ab3EVV16 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:27:58 -0400
+Message-ID: <519D3858.8070306@kernel.org>
+Date: Wed, 22 May 2013 22:27:52 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Jacek Anaszewski <j.anaszewski@samsung.com>
+CC: linux-iio@vger.kernel.org,
+	Jonathan Cameron
+	<public-jic23-DgEjT+Ai2ygdnm+yROfE0A@plane.gmane.org>,
+	"linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org"
+	<public-linux-iio-u79uwXL29TY76Z2rM5mHXA@plane.gmane.org>,
+	"lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org"
+	<public-lars-Qo5EllUWu/uELgA04lAiVw@plane.gmane.org>,
+	"j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org"
+	<public-j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@plane.gmane.org>
+Subject: Re: [PATCH 3/3] iio:pressure: Add STMicroelectronics pressures driver
+References: <1368607493-4843-1-git-send-email-denis.ciocca@st.com> <1368607493-4843-4-git-send-email-denis.ciocca@st.com> <5197ED56.7000405@kernel.org> <4675748.2RFENMIBLW@ctocwl0124> <5199F14A.5040309@samsung.com>
+In-Reply-To: <5199F14A.5040309@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The DT support added in ("input: touchscreen: am335x: Add DT support")
-added an else case which shifts the code to the righ for no reaseon.
-This patch simply removes the pointless else case and shifts the code
-back to the left.
+On 05/20/2013 10:47 AM, Jacek Anaszewski wrote:
+> On 05/20/2013 09:51 AM, Denis CIOCCA wrote:
+>> Hi Jonathan,
+>>
+>>> Now going forward I'd of course like to see everyone happy with the
+>>> resulting driver.  Denis do you have plans to implement the threshold
+>>> events that were in the other driver proposal?
+>> Now I'm very full but in the future I have plans to support the threshold
+>> events, I'm very happy if Jacek will help me! ;)
+> 
+> Hi Jonathan, Denis,
+> 
+> The threshold events weren't supported in my driver proposal - the events were related only to the 'data ready'
+> interrupts. I've been
+> playing with threshold interrupts during development, but I didn't
+> find the device reliable by minimal threshold levels.
+Oops, I missed that you were 'abusing' these entirely in review.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |   63 +++++++++++++----------------
- 1 file changed, 28 insertions(+), 35 deletions(-)
+> I've lately
+> devised a procedure of testing greater pressure differences and
+> I will test it within few weeks, as currently I am working on
+> another driver.
+Given the driver simplicity (as it's adding to the existing drivers that
+are well tested) I'm going to assume it works fine for now
+and merge it based on review.  Do shout if it doesn't of course
+or if you have any improvements to suggest.
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 4fcf72f..20f4505 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -396,41 +396,34 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
- 
- 	if (!node)
- 		return -EINVAL;
--	else {
--		node = of_get_child_by_name(node, "tsc");
--		if (!node)
--			return -EINVAL;
--		else {
--			err = of_property_read_u32(node, "ti,wires", &val32);
--			if (err < 0)
--				goto error_ret;
--			else
--				ts_dev->wires = val32;
--
--			err = of_property_read_u32(node,
--					"ti,x-plate-resistance", &val32);
--			if (err < 0)
--				goto error_ret;
--			else
--				ts_dev->x_plate_resistance = val32;
--
--			err = of_property_read_u32(node,
--					"ti,steps-to-configure", &val32);
--			if (err < 0)
--				goto error_ret;
--			else
--				ts_dev->steps_to_configure = val32;
--
--			err = of_property_read_u32_array(node, "ti,wire-config",
--					wires_conf, ARRAY_SIZE(wires_conf));
--			if (err < 0)
--				goto error_ret;
--			else {
--				for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
--					ts_dev->config_inp[i] = wires_conf[i];
--			}
--		}
--	}
-+
-+	node = of_get_child_by_name(node, "tsc");
-+	if (!node)
-+		return -EINVAL;
-+	err = of_property_read_u32(node, "ti,wires", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->wires = val32;
-+
-+	err = of_property_read_u32(node,
-+			"ti,x-plate-resistance", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->x_plate_resistance = val32;
-+
-+	err = of_property_read_u32(node,
-+			"ti,steps-to-configure", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->steps_to_configure = val32;
-+
-+	err = of_property_read_u32_array(node, "ti,wire-config",
-+			wires_conf, ARRAY_SIZE(wires_conf));
-+	if (err < 0)
-+		goto error_ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
-+		ts_dev->config_inp[i] = wires_conf[i];
- 	return 0;
- 
- error_ret:
--- 
-1.7.10.4
+I'd definitely like to see full event support for the threshold interrupts
+in these parts (which will be needed to finally kill off the my lis3l02dq
+driver :)  Been trying to get rid of that one for years.).
 
+Jonathan
+> 
+> Thanks,
+> Jacek
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
