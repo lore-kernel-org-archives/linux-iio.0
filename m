@@ -1,36 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:45440 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757920Ab3EWOzz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2013 10:55:55 -0400
-Date: Thu, 23 May 2013 16:55:40 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, jic23@kernel.org
-Subject: Re: [PATCH 1/1] iio: at91_adc: Add missing CONFIG_OF macro
-Message-ID: <20130523145540.GH8595@lukather>
-References: <1369286787-8448-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <Michael.Hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <dan.carpenter@oracle.com>, Michael Hennerich
+	<michael.hennerich@analog.com>
+Subject: [PATCH 1/4] iio: frequency: ad4350: Fix bug / typo in mask
+Date: Thu, 23 May 2013 17:00:56 +0200
+Message-ID: <1369321259-14602-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1369286787-8448-1-git-send-email-sachin.kamat@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Sachin,
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-On Thu, May 23, 2013 at 10:56:27AM +0530, Sachin Kamat wrote:
-> The data structure is required only when DT is enabled.
-> Hence compile it conditionally.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/iio/frequency/adf4350.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Thanks!
-
-Maxime
-
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index a884252..e76d4ac 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -212,7 +212,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 		(pdata->r2_user_settings & (ADF4350_REG2_PD_POLARITY_POS |
+ 		ADF4350_REG2_LDP_6ns | ADF4350_REG2_LDF_INT_N |
+ 		ADF4350_REG2_CHARGE_PUMP_CURR_uA(5000) |
+-		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x9)));
++		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x3)));
+ 
+ 	st->regs[ADF4350_REG3] = pdata->r3_user_settings &
+ 				 (ADF4350_REG3_12BIT_CLKDIV(0xFFF) |
 -- 
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.7.9.5
