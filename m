@@ -1,358 +1,283 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:57931 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759698Ab3E2RKE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 13:10:04 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: sameo@linux.intel.com, jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
-	balbi@ti.com, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: =?UTF-8?q?=5BPATCH=202/5=5D=20input/ti=5Fam335x=5Fadc=3A=20use=20only=20FIFO0=20and=20clean=20up=20a=20little?=
-Date: Wed, 29 May 2013 19:09:53 +0200
-Message-Id: <1369847397-27451-3-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
-References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+Received: from smtp-out-103.synserver.de ([212.40.185.103]:1054 "EHLO
+	smtp-out-103.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759707Ab3EWQqB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2013 12:46:01 -0400
+Message-ID: <519E47BA.6040907@metafoo.de>
+Date: Thu, 23 May 2013 18:45:46 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: michael.hennerich@analog.com
+CC: jic23@kernel.org, linux-iio@vger.kernel.org,
+	dan.carpenter@oracle.com
+Subject: Re: [PATCH 4/4] iio: frequency: adf4350: Add support for dt bindings
+References: <1369321259-14602-1-git-send-email-michael.hennerich@analog.com> <1369321259-14602-4-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1369321259-14602-4-git-send-email-michael.hennerich@analog.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The driver programs a threshold of "steps-to-configure" say 5. The
-REG_FIFO0THR registers says it should it be programmed to "threshold
-minus one". The driver does not expect just 5 coordinates but 5 * 2 + 2.
-Multiplied by two because 5 for X and 5 for Y. Plus 2 because we have
-two Z.
-The whole thing works because It reads the 5 coordinates for X and Y and
-split over FIFO0 and FIFO1 and the last element in each FIFO is ignored
-within the loop and read later.
-Nothing guaranties that FIFO1 is ready by the time it is read. In fact I
-could see that that FIFO1 reaturns for Y channels 8,9, 10, 12, 6 and for
-Y channel 7 for Z. The problem is that channel 7 and channel 12 got
-somehow mixed up. The variance filter here maybe tries to get rid of the
-wrong Y values, dunno.
-The other Problem is that FIFO1 is also used by the IIO part leading to
-not wrong results if both (tsc & adc) are used.
+On 05/23/2013 05:00 PM, michael.hennerich@analog.com wrote:
+> From: Michael Hennerich <michael.hennerich@analog.com>
+> 
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> ---
+>  .../devicetree/bindings/iio/frequency/adf4350.txt  |   84 ++++++++++++++
+>  drivers/iio/frequency/adf4350.c                    |  122 +++++++++++++++++++-
+>  2 files changed, 205 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4350.txt b/Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+> new file mode 100644
+> index 0000000..ab99cfd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+> @@ -0,0 +1,84 @@
+> +Analog Devices ADF4350/ADF4351 device driver
+> +
+> +Required properties:
+> +	- compatible: Should be one of
+> +		* "adi,adf4350": When using the ADF4350 device
+> +		* "adi,adf4351": When using the ADF4351 device
+> +	- reg: SPI chip select numbert for the device
 
-The patch tries to clean up the whole thing a little:
-- Name it "coordiante-readouts" and not "steps-to-configure" and
-  document it properly. Point out that it the hardware does a total of
-  "5 * 2 + 2" reads / steps and not just what is configured.
+typo: number
 
-- Remove the +1 and -1 in REG_STEPCONFIG, REG_STEPDELAY and its counter
-  part in the for loop. This is just confusing.
+> +	- spi-max-frequency: Max SPI frequency to use (< 20000000)
+> +	- clocks: From common clock binding. Clock is phandle to clock for
+> +		ADF435x Reference Clock (CLKIN).
+> +
+> +Optional properties:
+> +	- adi,channel-spacing: Channel spacing in Hz (influences MODULUS).
+> +	- adi,power-up-frequency:	If set in Hz the PLL tunes to
+> +			the desired frequency on probe.
+> +	- adi,ref-div-factor: If set the driver skips dynamic calculation
+> +			and uses this default value instead.
+> +	- adi,ref-doubler-en: Enables reference doubler.
+> +	- adi,ref-div2-en: Enables reference divider.
+> +	- adi,gpio-lock-detect:	If set with a valid GPIO number, pll lock state
+> +			is tested upon read.
 
-- Use only FIFO0 in TSC. The fifo has space for 64 entries so should be
-  fine.
+GPIOs are referenced by phandle plus parameter, not by GPIO number.
 
-- Read the whole FIFO in one function and check the channel.
+> +	- adi,reg2-pd-polarity-pos-en: Enables positive phase
+> +			detector polarity. Default = negative.
+> +	- adi,reg2-ldp-6ns-en: Enables 6ns lock detect precision.
+> +			Default = 10ns.
+> +	- adi,reg2-ldf-int-n-en: Enables lock detect for integer-N mode.
+> +			Default = factional-N mode.
+> +	- adi,reg2-charge-pump-curr-ua: Charge pump current in mA.
+> +			Default = 2500mA.
+> +	- adi,reg2-muxout: On chip multiplexer output selection.
+> +			Valid values for the multiplexer output are:
+> +			0: Three-State Output (default)
+> +			1: DVDD
+> +			2: DGND
+> +			3: R-Counter output
+> +			4: N-Divider output
+> +			5: Analog lock detect
+> +			6: Digital lock detect
+> +	- adi,reg2-noise-mode: Enables low noise mode. Default = Low spur mode.
+> +	- adi,reg3-csr-en: Enables cycle slip reduction.
+> +	- adi,reg3-charge-cancellation-en: Enabled charge pump
+> +			charge cancellation for integer-N modes.
+> +	- adi,reg3-anti-backlash-3ns-en: Enables 3ns antibacklash pulse width
+> +			 for integer-N modes.
+> +	- adi,reg3-band-sel-clock-mode-high-en: Enables faster band selection logic.
+> +	- adi,reg3-12bit-clkdiv: Clock divider value used when
+> +			adi,reg3-12bit-clkdiv-mode != 0
+> +	- adi,reg3-12bit-clkdiv-mode:
+> +			Valid values for the clkdiv mode are:
+> +			0: Clock divider off (default)
+> +			1: Fast lock enable
+> +			2: Phase resync enable
+> +	- adi,reg4-aux-output-en: Enables auxiliary RF output.
+> +	- adi,reg4-aux-output-fund-en: Selects fundamental VCO output on the
+> +			auxiliary RF output. Default = Output of RF dividers.
+> +	- adi,reg4-mute-till-lock-en: Enables Mute-Till-Lock-Detect function.
+> +	- adi,reg4-output-pwr: Output power selection.
+> +			Valid values for the power mode are:
+> +			0: -4dBM (default)
+> +			1: -1dBM
+> +			2: +2dBM
+> +			3: +5dBM
+> +	- adi,reg4-aux-output-pwr: Auxiliary output power selection.
+> +			Valid values for the power mode are:
+> +			0: -4dBM (default)
+> +			1: -1dBM
+> +			2: +2dBM
+> +			3: +5dBM
 
-- in case we dawdle around, make sure we only read a multiple of our
-  coordinate set. On the second interrupt we will cleanup the remaining
-  enties.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |   15 ++--
- arch/arm/boot/dts/am335x-evm.dts                   |    2 +-
- drivers/iio/adc/ti_am335x_adc.c                    |    2 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          |   87 ++++++++++----------
- include/linux/mfd/ti_am335x_tscadc.h               |    4 +-
- 5 files changed, 58 insertions(+), 52 deletions(-)
+As I said before abbreviations in devicetree property names are kind of
+frowned upon. There are a lot of abbreviations used for these properties.
+Also I'm not sure whether it makes sense to include the register number in
+the property name.
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-index e533e9d..80e04e3 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -6,10 +6,15 @@
- 	ti,wires: Wires refer to application modes i.e. 4/5/8 wire touchscreen
- 		  support on the platform.
- 	ti,x-plate-resistance: X plate resistance
--	ti,steps-to-configure: The sequencer supports a total of 16
--			       programmable steps. A step configured to read a
--			       single co-ordinate value. Can be applied more
--			       number of times for better results.
-+	ti,coordiante-readouts: The sequencer supports a total of 16
-+				programmable steps each step is used to
-+				read a single coordinate. A single
-+                                readout is enough but multiple reads can
-+				increase the quality.
-+				A value of 5 means, 5 reads for X, 5 for
-+				Y and 2 for Z (always). This utilises 12
-+				of the 16 software steps available. The
-+				remaining 4 can be used by the ADC.
- 	ti,wire-config: Different boards could have a different order for
- 			connecting wires on touchscreen. We need to provide an
- 			8 bit number where in the 1st four bits represent the
-@@ -28,7 +33,7 @@
- 		tsc {
- 			ti,wires = <4>;
- 			ti,x-plate-resistance = <200>;
--			ti,steps-to-configure = <5>;
-+			ti,coordiante-readouts = <5>;
- 			ti,wire-config = <0x00 0x11 0x22 0x33>;
- 		};
- 
-diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-index be6a5b2..26fea97 100644
---- a/arch/arm/boot/dts/am335x-evm.dts
-+++ b/arch/arm/boot/dts/am335x-evm.dts
-@@ -250,7 +250,7 @@
- 	tsc {
- 		ti,wires = <4>;
- 		ti,x-plate-resistance = <200>;
--		ti,steps-to-configure = <5>;
-+		ti,coordiante-readouts = <5>;
- 		ti,wire-config = <0x00 0x11 0x22 0x33>;
- 	};
- 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index b2f27de..2988840 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -72,7 +72,7 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 
- 	stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
- 
--	for (i = (steps + 1); i <= TOTAL_STEPS; i++) {
-+	for (i = steps; i < TOTAL_STEPS; i++) {
- 		tiadc_writel(adc_dev, REG_STEPCONFIG(i),
- 				stepconfig | STEPCONFIG_INP(channels));
- 		tiadc_writel(adc_dev, REG_STEPDELAY(i),
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 2921163..7c97fc7 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -58,7 +58,7 @@ struct titsc {
- 	unsigned int		bckup_x;
- 	unsigned int		bckup_y;
- 	bool			pen_down;
--	int			steps_to_configure;
-+	int			coordiante_readouts;
- 	u32			config_inp[4];
- 	int			bit_xp, bit_xn, bit_yp, bit_yn;
- 	int			inp_xp, inp_xn, inp_yp, inp_yn;
-@@ -168,11 +168,8 @@ static int titsc_config_wires(struct titsc *ts_dev)
- static void titsc_step_config(struct titsc *ts_dev)
- {
- 	unsigned int	config;
--	unsigned int	stepenable = 0;
--	int i, total_steps;
--
--	/* Configure the Step registers */
--	total_steps = 2 * ts_dev->steps_to_configure;
-+	int i;
-+	int end_step;
- 
- 	config = STEPCONFIG_MODE_HWSYNC |
- 			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
-@@ -190,7 +187,9 @@ static void titsc_step_config(struct titsc *ts_dev)
- 		break;
- 	}
- 
--	for (i = 1; i <= ts_dev->steps_to_configure; i++) {
-+	/* 1 … coordiante_readouts is for X */
-+	end_step = ts_dev->coordiante_readouts;
-+	for (i = 0; i < end_step; i++) {
- 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
- 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
- 	}
-@@ -198,7 +197,7 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	config = 0;
- 	config = STEPCONFIG_MODE_HWSYNC |
- 			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
--			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
-+			STEPCONFIG_INM_ADCREFM;
- 	switch (ts_dev->wires) {
- 	case 4:
- 		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
-@@ -212,12 +211,13 @@ static void titsc_step_config(struct titsc *ts_dev)
- 		break;
- 	}
- 
--	for (i = (ts_dev->steps_to_configure + 1); i <= total_steps; i++) {
-+	/* coordiante_readouts … coordiante_readouts * 2 is for Y */
-+	end_step = ts_dev->coordiante_readouts * 2;
-+	for (i = ts_dev->coordiante_readouts; i < end_step; i++) {
- 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
- 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
- 	}
- 
--	config = 0;
- 	/* Charge step configuration */
- 	config = ts_dev->bit_xp | ts_dev->bit_yn |
- 			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
-@@ -226,37 +226,40 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
- 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
- 
--	config = 0;
--	/* Configure to calculate pressure */
-+	/* coordiante_readouts * 2 … coordiante_readouts * 2 + 2 is for Z */
- 	config = STEPCONFIG_MODE_HWSYNC |
- 			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
- 			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
- 			STEPCONFIG_INP(ts_dev->inp_xp);
--	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 1), config);
--	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 1),
-+	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
-+	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
- 			STEPCONFIG_OPENDLY);
- 
--	config |= STEPCONFIG_INP(ts_dev->inp_yn) | STEPCONFIG_FIFO1;
--	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 2), config);
--	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
-+	end_step++;
-+	config |= STEPCONFIG_INP(ts_dev->inp_yn);
-+	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
-+	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
- 			STEPCONFIG_OPENDLY);
- 
--	for (i = 0; i <= (total_steps + 2); i++)
--		stepenable |= 1 << i;
--	ts_dev->enable_bits = stepenable;
-+	/* The steps1 … end and bit 0 for TS_Charge */
-+	ts_dev->enable_bits = (1 << (end_step + 2)) - 1;
- 
- 	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
- }
- 
- static void titsc_read_coordinates(struct titsc *ts_dev,
--				    unsigned int *x, unsigned int *y)
-+		u32 *x, u32 *y, u32 *z1, u32 *z2)
- {
- 	unsigned int fifocount = titsc_readl(ts_dev, REG_FIFO0CNT);
- 	unsigned int prev_val_x = ~0, prev_val_y = ~0;
- 	unsigned int prev_diff_x = ~0, prev_diff_y = ~0;
- 	unsigned int read, diff;
- 	unsigned int i, channel;
-+	unsigned int creads = ts_dev->coordiante_readouts;
- 
-+	*z1 = *z2 = 0;
-+	if (fifocount % (creads * 2 + 2))
-+		fifocount -= fifocount % (creads * 2 + 2);
- 	/*
- 	 * Delta filter is used to remove large variations in sampled
- 	 * values from ADC. The filter tries to predict where the next
-@@ -265,32 +268,31 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
- 	 * algorithm compares the difference with that of a present value,
- 	 * if true the value is reported to the sub system.
- 	 */
--	for (i = 0; i < fifocount - 1; i++) {
-+	for (i = 0; i < fifocount; i++) {
- 		read = titsc_readl(ts_dev, REG_FIFO0);
--		channel = read & 0xf0000;
--		channel = channel >> 0x10;
--		if ((channel >= 0) && (channel < ts_dev->steps_to_configure)) {
--			read &= 0xfff;
-+		channel = (read & 0xf0000) >> 16;
-+		read &= 0xfff;
-+		if (channel < creads) {
- 			diff = abs(read - prev_val_x);
- 			if (diff < prev_diff_x) {
- 				prev_diff_x = diff;
- 				*x = read;
- 			}
- 			prev_val_x = read;
--		}
- 
--		read = titsc_readl(ts_dev, REG_FIFO1);
--		channel = read & 0xf0000;
--		channel = channel >> 0x10;
--		if ((channel >= ts_dev->steps_to_configure) &&
--			(channel < (2 * ts_dev->steps_to_configure - 1))) {
--			read &= 0xfff;
-+		} else if (channel < creads * 2) {
- 			diff = abs(read - prev_val_y);
- 			if (diff < prev_diff_y) {
- 				prev_diff_y = diff;
- 				*y = read;
- 			}
- 			prev_val_y = read;
-+
-+		} else if (channel < creads * 2 + 1) {
-+			*z1 = read;
-+
-+		} else if (channel < creads * 2 + 2) {
-+			*z2 = read;
- 		}
- 	}
- }
-@@ -307,26 +309,24 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
--		titsc_read_coordinates(ts_dev, &x, &y);
-+
-+		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
- 
- 		diffx = abs(x - (ts_dev->bckup_x));
- 		diffy = abs(y - (ts_dev->bckup_y));
- 		ts_dev->bckup_x = x;
- 		ts_dev->bckup_y = y;
- 
--		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
--		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
--
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
- 			/*
- 			 * Calculate pressure using formula
- 			 * Resistance(touch) = x plate resistance *
- 			 * x postion/4096 * ((z2 / z1) - 1)
- 			 */
--			z = z2 - z1;
-+			z = z1 - z2;
- 			z *= x;
- 			z *= ts_dev->x_plate_resistance;
--			z /= z1;
-+			z /= z2;
- 			z = (z + 2047) >> 12;
- 
- 			if ((diffx < TSCADC_DELTA_X) &&
-@@ -399,8 +399,8 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
- 	if (err < 0)
- 		return err;
- 
--	err = of_property_read_u32(node, "ti,steps-to-configure",
--			&ts_dev->steps_to_configure);
-+	err = of_property_read_u32(node, "ti,coordiante-readouts",
-+			&ts_dev->coordiante_readouts);
- 	if (err < 0)
- 		return err;
- 
-@@ -454,7 +454,8 @@ static int titsc_probe(struct platform_device *pdev)
- 		goto err_free_irq;
- 	}
- 	titsc_step_config(ts_dev);
--	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
-+	titsc_writel(ts_dev, REG_FIFO0THR,
-+			ts_dev->coordiante_readouts * 2 + 2 - 1);
- 
- 	input_dev->name = "ti-tsc";
- 	input_dev->dev.parent = &pdev->dev;
-@@ -526,7 +527,7 @@ static int titsc_resume(struct device *dev)
- 	}
- 	titsc_step_config(ts_dev);
- 	titsc_writel(ts_dev, REG_FIFO0THR,
--			ts_dev->steps_to_configure);
-+			ts_dev->coordiante_readouts * 2 + 2 - 1);
- 	return 0;
- }
- 
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index c985262..4ec52b0 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -30,8 +30,8 @@
- #define REG_IDLECONFIG		0x058
- #define REG_CHARGECONFIG	0x05C
- #define REG_CHARGEDELAY		0x060
--#define REG_STEPCONFIG(n)	(0x64 + ((n - 1) * 8))
--#define REG_STEPDELAY(n)	(0x68 + ((n - 1) * 8))
-+#define REG_STEPCONFIG(n)	(0x64 + ((n) * 8))
-+#define REG_STEPDELAY(n)	(0x68 + ((n) * 8))
- #define REG_FIFO0CNT		0xE4
- #define REG_FIFO0THR		0xE8
- #define REG_FIFO1CNT		0xF0
--- 
-1.7.10.4
+> +
+> +
+> +Example:
+> +		lo_pll0_rx_adf4351: adf4351-rx-lpc@4 {
+> +			compatible = "adi,adf4351";
+> +			reg = <4>;
+> +			spi-max-frequency = <10000000>;
+> +			clocks = <&clk0_ad9523 9>;
+> +			clock-names = "clkin";
+> +			adi,channel-spacing = <10000>;
+> +			adi,power-up-frequency = <2400000000>;
+> +			adi,reg2-pd-polarity-pos-en;
+> +			adi,reg2-charge-pump-curr-ua = <2500>;
+> +			adi,reg4-output-pwr = <3>;
+> +			adi,reg4-mute-till-lock-en;
+> +		};
+> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+> index f6849c8..828ce3e1 100644
+> --- a/drivers/iio/frequency/adf4350.c
+> +++ b/drivers/iio/frequency/adf4350.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/gpio.h>
+>  #include <asm/div64.h>
+>  #include <linux/clk.h>
+> +#include <linux/of.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -375,14 +376,133 @@ static const struct iio_info adf4350_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> +#ifdef CONFIG_OF
+> +static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+> +{
+> +	struct device_node *np = dev->of_node;
+> +	struct adf4350_platform_data *pdata;
+> +	unsigned int tmp;
+> +	int ret;
+> +
+> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+> +	if (!pdata) {
+> +		dev_err(dev, "could not allocate memory for platform data\n");
+> +		return NULL;
+> +	}
+> +
+> +	strncpy(&pdata->name[0], np->name, SPI_NAME_SIZE - 1);
+> +
+> +	tmp = 10000;
+> +	of_property_read_u32(np, "adi,channel-spacing", &tmp);
+> +	pdata->channel_spacing = tmp;
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,power-up-frequency", &tmp);
+> +	pdata->power_up_frequency = tmp;
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,ref-div-factor", &tmp);
+> +	pdata->ref_div_factor = tmp;
+> +
+> +	ret = of_property_read_u32(np, "adi,gpio-lock-detect",
+> +				   &pdata->gpio_lock_detect);
+> +	if (ret < 0)
+> +		pdata->gpio_lock_detect = -1;
+> +
+> +	pdata->ref_doubler_en = of_property_read_bool(np, "adi,ref-doubler-en");
+> +	pdata->ref_div2_en = of_property_read_bool(np, "adi,ref-div2-en");
+> +
+> +	/* r2_user_settings */
+> +	pdata->r2_user_settings =
+> +		of_property_read_bool(np, "adi,reg2-pd-polarity-pos-en") ?
+> +					ADF4350_REG2_PD_POLARITY_POS : 0;
+> +	pdata->r2_user_settings |=
+> +		of_property_read_bool(np, "adi,reg2-ldp-6ns-en") ?
+> +					ADF4350_REG2_LDP_6ns : 0;
+> +	pdata->r2_user_settings |=
+> +		of_property_read_bool(np, "adi,reg2-ldf-int-n-en") ?
+> +					ADF4350_REG2_LDF_INT_N : 0;
+> +	tmp = 2500;
+> +	of_property_read_u32(np, "adi,reg2-charge-pump-curr-ua", &tmp);
+> +	pdata->r2_user_settings |= ADF4350_REG2_CHARGE_PUMP_CURR_uA(tmp);
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg2-muxout", &tmp);
+> +	pdata->r2_user_settings |= ADF4350_REG2_MUXOUT(tmp);
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg2-noise-mode", &tmp);
+> +	pdata->r2_user_settings |= ADF4350_REG2_NOISE_MODE(tmp);
+> +
+> +	/* r3_user_settings */
+> +
+> +	pdata->r3_user_settings =
+> +		of_property_read_bool(np, "adi,reg3-csr-en") ?
+> +					ADF4350_REG3_12BIT_CSR_EN : 0;
+> +	pdata->r3_user_settings |=
+> +		of_property_read_bool(np, "adi,reg3-charge-cancellation-en") ?
+> +					ADF4351_REG3_CHARGE_CANCELLATION_EN : 0;
+> +	pdata->r3_user_settings |=
+> +		of_property_read_bool(np, "adi,reg3-anti-backlash-3ns-en") ?
+> +					ADF4351_REG3_ANTI_BACKLASH_3ns_EN : 0;
+> +	pdata->r3_user_settings |=
+> +		of_property_read_bool(np,
+> +				      "adi,reg3-band-sel-clock-mode-high-en") ?
+> +				      ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH : 0;
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg3-12bit-clkdiv", &tmp);
+> +	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV(tmp);
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg3-12bit-clkdiv-mode", &tmp);
+> +	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV_MODE(tmp);
+> +
+> +	/* r4_user_settings */
+> +
+> +	pdata->r4_user_settings =
+> +		of_property_read_bool(np, "adi,reg4-aux-output-en") ?
+> +					ADF4350_REG4_AUX_OUTPUT_EN : 0;
+> +	pdata->r4_user_settings |=
+> +		of_property_read_bool(np, "adi,reg4-aux-output-fund-en") ?
+> +					ADF4350_REG4_AUX_OUTPUT_FUND : 0;
+> +	pdata->r4_user_settings |=
+> +		of_property_read_bool(np, "adi,reg4-mute-till-lock-en") ?
+> +					ADF4350_REG4_MUTE_TILL_LOCK_EN : 0;
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg4-output-pwr", &tmp);
+> +	pdata->r4_user_settings |= ADF4350_REG4_OUTPUT_PWR(tmp);
+> +
+> +	tmp = 0;
+> +	of_property_read_u32(np, "adi,reg4-aux-output-pwr", &tmp);
+> +	pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_PWR(tmp);
+> +
+> +	return pdata;
+> +}
+> +#else
+> +static
+> +struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>  static int adf4350_probe(struct spi_device *spi)
+>  {
+> -	struct adf4350_platform_data *pdata = spi->dev.platform_data;
+> +	struct adf4350_platform_data *pdata;
+>  	struct iio_dev *indio_dev;
+>  	struct adf4350_state *st;
+>  	struct clk *clk = NULL;
+>  	int ret;
+>  
+> +	if (spi->dev.of_node) {
+> +		pdata = adf4350_parse_dt(&spi->dev);
+> +		if (IS_ERR(pdata))
+> +			return PTR_ERR(pdata);
+
+adf4350_parse_dt() returns either NULL or a valid struct.
+
+> +	} else {
+> +		pdata = spi->dev.platform_data;
+> +	}
+> +
+>  	if (!pdata) {
+>  		dev_warn(&spi->dev, "no platform data? using default\n");
+>  		pdata = &default_pdata;
 
