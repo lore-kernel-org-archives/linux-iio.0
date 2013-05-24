@@ -1,161 +1,256 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:48327 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756670Ab3E0TMU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:12:20 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 04/19] input: touchscreen: am335x: Add DT support
-Date: Mon, 27 May 2013 21:11:51 +0200
-Message-Id: <1369681926-22185-5-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
+	j.anaszewski@samsung.com, lee.jones@stericsson.com,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 2/3] iio:common: Removed stuff macros, added num_data_channels on st_sensors struct             and added support on one-shot sysfs reads to 3 byte channel
+Date: Fri, 24 May 2013 16:25:16 +0200
+Message-Id: <1369405517-2619-3-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1369405517-2619-1-git-send-email-denis.ciocca@st.com>
+References: <1369405517-2619-1-git-send-email-denis.ciocca@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-From: "Patil, Rachna" <rachna@ti.com>
+This patch introduce num_data_channels variable on st_sensors struct
+to manage different type of channels (size or number) in
+st_sensors_get_buffer_element function.
+Removed ST_SENSORS_NUMBER_DATA_CHANNELS and ST_SENSORS_BYTE_FOR_CHANNEL
+and used struct iio_chan_spec const *ch to catch data.
+Added 3 byte channel data support on one-shot reads.
 
-Add DT support for client touchscreen driver
-
-[ panto@antoniou-consulting.com : use of_get_child_by_name
-	instead of of_find_node_by_name ]
-
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-[ bigeasy: shift the code to the left ]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   87 ++++++++++++++++++++++++-----
- 1 file changed, 74 insertions(+), 13 deletions(-)
+ drivers/iio/accel/st_accel_core.c                 |    3 ++
+ drivers/iio/common/st_sensors/st_sensors_buffer.c |   33 ++++++++++-----------
+ drivers/iio/common/st_sensors/st_sensors_core.c   |   19 ++++++++----
+ drivers/iio/gyro/st_gyro_core.c                   |    3 ++
+ drivers/iio/magnetometer/st_magn_core.c           |    3 ++
+ include/linux/iio/common/st_sensors.h             |    4 +--
+ 6 files changed, 40 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 064d2b2..be5cb67 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 40236d5..4aec121 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
 @@ -26,6 +26,8 @@
- #include <linux/io.h>
- #include <linux/input/ti_am335x_tsc.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
+ #include <linux/iio/common/st_sensors.h>
+ #include "st_accel.h"
  
- #include <linux/mfd/ti_am335x_tscadc.h>
++#define ST_ACCEL_NUMBER_DATA_CHANNELS		3
++
+ /* DEFAULT VALUE FOR SENSORS */
+ #define ST_ACCEL_DEFAULT_OUT_X_L_ADDR		0x28
+ #define ST_ACCEL_DEFAULT_OUT_Y_L_ADDR		0x2a
+@@ -454,6 +456,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_accel_common_probe_error;
  
-@@ -366,6 +368,67 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
++	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
+ 	adata->multiread_bit = adata->sensor->multi_read_bit;
+ 	indio_dev->channels = adata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index 09b236d..7b7417a 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -25,10 +25,13 @@
+ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ {
+ 	int i, n = 0, len;
+-	u8 addr[ST_SENSORS_NUMBER_DATA_CHANNELS];
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	unsigned int num_data_channels = sdata->num_data_channels;
++	unsigned int byte_for_channel =
++			indio_dev->channels[0].scan_type.storagebits >> 3;
++	u8 addr[num_data_channels];
  
-+static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
-+					struct titsc *ts_dev)
+-	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++) {
++	for (i = 0; i < num_data_channels; i++) {
+ 		if (test_bit(i, indio_dev->active_scan_mask)) {
+ 			addr[n] = indio_dev->channels[i].address;
+ 			n++;
+@@ -37,47 +40,41 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ 	switch (n) {
+ 	case 1:
+ 		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+-			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL, buf,
+-			sdata->multiread_bit);
++			addr[0], byte_for_channel, buf, sdata->multiread_bit);
+ 		break;
+ 	case 2:
+-		if ((addr[1] - addr[0]) == ST_SENSORS_BYTE_FOR_CHANNEL) {
++		if ((addr[1] - addr[0]) == byte_for_channel) {
+ 			len = sdata->tf->read_multiple_byte(&sdata->tb,
+-					sdata->dev, addr[0],
+-					ST_SENSORS_BYTE_FOR_CHANNEL*n,
+-					buf, sdata->multiread_bit);
++				sdata->dev, addr[0], byte_for_channel * n,
++				buf, sdata->multiread_bit);
+ 		} else {
+-			u8 rx_array[ST_SENSORS_BYTE_FOR_CHANNEL*
+-				    ST_SENSORS_NUMBER_DATA_CHANNELS];
++			u8 rx_array[byte_for_channel * num_data_channels];
+ 			len = sdata->tf->read_multiple_byte(&sdata->tb,
+ 				sdata->dev, addr[0],
+-				ST_SENSORS_BYTE_FOR_CHANNEL*
+-				ST_SENSORS_NUMBER_DATA_CHANNELS,
++				byte_for_channel * num_data_channels,
+ 				rx_array, sdata->multiread_bit);
+ 			if (len < 0)
+ 				goto read_data_channels_error;
+ 
+-			for (i = 0; i < n * ST_SENSORS_NUMBER_DATA_CHANNELS;
+-									i++) {
++			for (i = 0; i < n * num_data_channels; i++) {
+ 				if (i < n)
+ 					buf[i] = rx_array[i];
+ 				else
+ 					buf[i] = rx_array[n + i];
+ 			}
+-			len = ST_SENSORS_BYTE_FOR_CHANNEL*n;
++			len = byte_for_channel * n;
+ 		}
+ 		break;
+ 	case 3:
+ 		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+-			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL*
+-			ST_SENSORS_NUMBER_DATA_CHANNELS,
++			addr[0], byte_for_channel * num_data_channels,
+ 			buf, sdata->multiread_bit);
+ 		break;
+ 	default:
+ 		len = -EINVAL;
+ 		goto read_data_channels_error;
+ 	}
+-	if (len != ST_SENSORS_BYTE_FOR_CHANNEL*n) {
++	if (len != byte_for_channel * n) {
+ 		len = -EIO;
+ 		goto read_data_channels_error;
+ 	}
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index ed9bc8a..5c0b66f 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -20,6 +20,11 @@
+ 
+ #define ST_SENSORS_WAI_ADDRESS		0x0f
+ 
++static inline u32 st_sensors_get_unaligned_le24(const u8 *p)
 +{
-+	struct device_node *node = tscadc_dev->dev->of_node;
-+	int err, i;
-+	u32 val32, wires_conf[4];
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	node = of_get_child_by_name(node, "tsc");
-+	if (!node)
-+		return -EINVAL;
-+	err = of_property_read_u32(node, "ti,wires", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->wires = val32;
-+
-+	err = of_property_read_u32(node,
-+			"ti,x-plate-resistance", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->x_plate_resistance = val32;
-+
-+	err = of_property_read_u32(node,
-+			"ti,steps-to-configure", &val32);
-+	if (err < 0)
-+		goto error_ret;
-+	ts_dev->steps_to_configure = val32;
-+
-+	err = of_property_read_u32_array(node, "ti,wire-config",
-+			wires_conf, ARRAY_SIZE(wires_conf));
-+	if (err < 0)
-+		goto error_ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
-+		ts_dev->config_inp[i] = wires_conf[i];
-+	return 0;
-+
-+error_ret:
-+	return err;
++	return ((s32)((p[0] | p[1] << 8 | p[2] << 16) << 8) >> 8);
 +}
 +
-+static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
-+					struct titsc *ts_dev)
-+{
-+	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
-+
-+	if (!pdata)
-+		return -EINVAL;
-+
-+	ts_dev->wires = pdata->tsc_init->wires;
-+	ts_dev->x_plate_resistance =
-+		pdata->tsc_init->x_plate_resistance;
-+	ts_dev->steps_to_configure =
-+		pdata->tsc_init->steps_to_configure;
-+	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
-+		sizeof(pdata->tsc_init->wire_config));
-+	return 0;
-+}
-+
- /*
-  * The functions for inserting/removing driver as a module.
-  */
-@@ -375,16 +438,8 @@ static int titsc_probe(struct platform_device *pdev)
- 	struct titsc *ts_dev;
- 	struct input_dev *input_dev;
- 	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
--	struct mfd_tscadc_board	*pdata;
+ static int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+ 						u8 reg_addr, u8 mask, u8 data)
+ {
+@@ -273,19 +278,23 @@ st_sensors_match_scale_error:
+ EXPORT_SYMBOL(st_sensors_set_fullscale_by_gain);
+ 
+ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+-							u8 ch_addr, int *data)
++				struct iio_chan_spec const *ch, int *data)
+ {
  	int err;
+-	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
++	u8 outdata[byte_for_channel];
  
--	pdata = tscadc_dev->dev->platform_data;
--
--	if (!pdata) {
--		dev_err(&pdev->dev, "Could not find platform data\n");
--		return -EINVAL;
--	}
--
- 	/* Allocate memory for device */
- 	ts_dev = kzalloc(sizeof(struct titsc), GFP_KERNEL);
- 	input_dev = input_allocate_device();
-@@ -398,11 +453,17 @@ static int titsc_probe(struct platform_device *pdev)
- 	ts_dev->mfd_tscadc = tscadc_dev;
- 	ts_dev->input = input_dev;
- 	ts_dev->irq = tscadc_dev->irq;
--	ts_dev->wires = pdata->tsc_init->wires;
--	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
--	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
--	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
--			sizeof(pdata->tsc_init->wire_config));
-+
-+	if (tscadc_dev->dev->platform_data)
-+		err = titsc_parse_pdata(tscadc_dev, ts_dev);
-+	else
-+		err = titsc_parse_dt(tscadc_dev, ts_dev);
-+
-+	if (err) {
-+		dev_err(&pdev->dev, "Could not find platform data\n");
-+		err = -EINVAL;
-+		goto err_free_mem;
-+	}
+ 	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+-				ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
++				ch->address, byte_for_channel,
+ 				outdata, sdata->multiread_bit);
+ 	if (err < 0)
+ 		goto read_error;
  
- 	err = request_irq(ts_dev->irq, titsc_irq,
- 			  0, pdev->dev.driver->name, ts_dev);
+-	*data = (s16)get_unaligned_le16(outdata);
++	if (byte_for_channel == 2)
++		*data = (s16)get_unaligned_le16(outdata);
++	else if (byte_for_channel == 3)
++		*data = (s32)st_sensors_get_unaligned_le24(outdata);
+ 
+ read_error:
+ 	return err;
+@@ -307,7 +316,7 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ 			goto read_error;
+ 
+ 		msleep((sdata->sensor->bootime * 1000) / sdata->odr);
+-		err = st_sensors_read_axis_data(indio_dev, ch->address, val);
++		err = st_sensors_read_axis_data(indio_dev, ch, val);
+ 		if (err < 0)
+ 			goto read_error;
+ 
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index 9bae46b..f9ed348 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -27,6 +27,8 @@
+ #include <linux/iio/common/st_sensors.h>
+ #include "st_gyro.h"
+ 
++#define ST_GYRO_NUMBER_DATA_CHANNELS		3
++
+ /* DEFAULT VALUE FOR SENSORS */
+ #define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
+ #define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
+@@ -313,6 +315,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_gyro_common_probe_error;
+ 
++	gdata->num_data_channels = ST_GYRO_NUMBER_DATA_CHANNELS;
+ 	gdata->multiread_bit = gdata->sensor->multi_read_bit;
+ 	indio_dev->channels = gdata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 715d616..ebfe8f1 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -26,6 +26,8 @@
+ #include <linux/iio/common/st_sensors.h>
+ #include "st_magn.h"
+ 
++#define ST_MAGN_NUMBER_DATA_CHANNELS		3
++
+ /* DEFAULT VALUE FOR SENSORS */
+ #define ST_MAGN_DEFAULT_OUT_X_L_ADDR		0X04
+ #define ST_MAGN_DEFAULT_OUT_Y_L_ADDR		0X08
+@@ -356,6 +358,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_magn_common_probe_error;
+ 
++	mdata->num_data_channels = ST_MAGN_NUMBER_DATA_CHANNELS;
+ 	mdata->multiread_bit = mdata->sensor->multi_read_bit;
+ 	indio_dev->channels = mdata->sensor->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 5ffd763..72b2694 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -24,9 +24,7 @@
+ #define ST_SENSORS_FULLSCALE_AVL_MAX		10
+ 
+ #define ST_SENSORS_NUMBER_ALL_CHANNELS		4
+-#define ST_SENSORS_NUMBER_DATA_CHANNELS		3
+ #define ST_SENSORS_ENABLE_ALL_AXIS		0x07
+-#define ST_SENSORS_BYTE_FOR_CHANNEL		2
+ #define ST_SENSORS_SCAN_X			0
+ #define ST_SENSORS_SCAN_Y			1
+ #define ST_SENSORS_SCAN_Z			2
+@@ -202,6 +200,7 @@ struct st_sensors {
+  * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
+  * @buffer_data: Data used by buffer part.
+  * @odr: Output data rate of the sensor [Hz].
++ * num_data_channels: Number of data channels used in buffer.
+  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
+  * @tf: Transfer function structure used by I/O operations.
+  * @tb: Transfer buffers and mutex used by I/O operations.
+@@ -218,6 +217,7 @@ struct st_sensor_data {
+ 	char *buffer_data;
+ 
+ 	unsigned int odr;
++	unsigned int num_data_channels;
+ 
+ 	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
+ 
 -- 
-1.7.10.4
-
+1.7.9.5
