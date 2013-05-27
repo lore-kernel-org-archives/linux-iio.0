@@ -1,40 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:58884 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:48445 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757279Ab3EVVIh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 17:08:37 -0400
+	with ESMTP id S1754068Ab3E0TNT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:13:19 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, "Patil Rachna" <rachna@ti.com>,
+	Felipe Balbi <balbi@ti.com>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 3/7] input/i_am335x_tsc: removed unused variable in titsc_irq()
-Date: Wed, 22 May 2013 23:08:13 +0200
-Message-Id: <1369256897-25984-3-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
-References: <1369256897-25984-1-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 17/19] mfd / iio: ti_am335x_adc: rename device from tiadc to TI-adc
+Date: Mon, 27 May 2013 21:12:04 +0200
+Message-Id: <1369681926-22185-18-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+TI-adc reads a little better compared to tiadc.
+While here add an alias so the driver is loaded on demand.
+
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/iio/adc/ti_am335x_adc.c |    4 ++--
+ drivers/mfd/ti_am335x_tscadc.c  |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e778ffd..a85818b 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -319,7 +319,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int z1, z2, z;
- 	unsigned int fsm;
- 	unsigned int diffx = 0, diffy = 0;
--	int i;
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 72ffe89..d0317fc 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -299,14 +299,14 @@ static const struct dev_pm_ops tiadc_pm_ops = {
  
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
+ static struct platform_driver tiadc_driver = {
+ 	.driver = {
+-		.name   = "tiadc",
++		.name   = "TI-adc",
+ 		.owner	= THIS_MODULE,
+ 		.pm	= TIADC_PM_OPS,
+ 	},
+ 	.probe	= tiadc_probe,
+ 	.remove	= tiadc_remove,
+ };
+-
++MODULE_ALIAS("platform:TI-adc");
+ module_platform_driver(tiadc_driver);
+ 
+ MODULE_DESCRIPTION("TI ADC controller driver");
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index c25fe00..014df14 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -193,7 +193,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	if (adc_channels > 0) {
+ 		tscadc->adc_cell = tscadc->used_cells;
+ 		cell = &tscadc->cells[tscadc->used_cells++];
+-		cell->name = "tiadc";
++		cell->name = "TI-adc";
+ 		cell->platform_data = tscadc;
+ 		cell->pdata_size = sizeof(*tscadc);
+ 	}
 -- 
 1.7.10.4
 
