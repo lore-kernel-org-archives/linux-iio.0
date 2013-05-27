@@ -1,68 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:45217 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965590Ab3E2LN1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 07:13:27 -0400
-Date: Wed, 29 May 2013 12:12:53 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
+Received: from www.linutronix.de ([62.245.132.108]:48316 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754170Ab3E0TMS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:12:18 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Message-ID: <20130529111253.GR3660@sirena.org.uk>
+	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 01/19] input: touchscreen: am335x: Step enable bits made configurable
+Date: Mon, 27 May 2013 21:11:48 +0200
+Message-Id: <1369681926-22185-2-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
 References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-20-git-send-email-bigeasy@linutronix.de>
- <20130529084642.GA18273@linutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2D20dG0OqTzqkNh7"
-In-Reply-To: <20130529084642.GA18273@linutronix.de>
-Subject: Re: [PATCH 19/19 v2] mfd/ti_am335x_tscadc: add private lock/unlock
- function for regmap read/write
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: "Patil, Rachna" <rachna@ti.com>
 
---2D20dG0OqTzqkNh7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Current code has hard coded value written to
+step enable bits. Now the bits are updated based
+on how many steps are needed to be configured got
+from platform data.
 
-On Wed, May 29, 2013 at 10:46:42AM +0200, Sebastian Andrzej Siewior wrote:
-> Without this, devm_regmap_init_mmio() creates & uses a simple
-> spin_lock() and this should be enough. Within the probe function the
-> registers are read and written in process context. Later they are
-> accessed from the ISR and lockdep complains because now the lock is
-> taken suddenly with IRQs enabled. Currently I don't see any other way to
-> keep lockdep quiet than doing this.
+The user needs to take care not to exceed
+the count more than 16. While using ADC and TSC
+one should take care to set this parameter correctly.
 
-This is not a good place to make this change, there's nothing specific
-to the device here and in actual fact there's already a change in the
-works from Lars-Peter Clausen converting the spinlock to always use
-spin_lock_irqsave() so it should be resolved soon.  The thread was on
-lkml in the past few days.
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++++--
+ include/linux/mfd/ti_am335x_tscadc.h      |    1 -
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
---2D20dG0OqTzqkNh7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 51e7b87..da652e0 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -39,6 +39,7 @@ struct titsc {
+ 	unsigned int		irq;
+ 	unsigned int		wires;
+ 	unsigned int		x_plate_resistance;
++	unsigned int		enable_bits;
+ 	bool			pen_down;
+ 	int			steps_to_configure;
+ };
+@@ -57,6 +58,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
++	unsigned int	stepenable = 0;
+ 	int i, total_steps;
+ 
+ 	/* Configure the Step registers */
+@@ -128,7 +130,11 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	for (i = 0; i <= (total_steps + 2); i++)
++		stepenable |= 1 << i;
++	ts_dev->enable_bits = stepenable;
++
++	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -250,7 +256,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	titsc_writel(ts_dev, REG_SE, ts_dev->enable_bits);
+ 	return IRQ_HANDLED;
+ }
+ 
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index c79ad5d..23e4f33 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -47,7 +47,6 @@
+ #define STEPENB_MASK		(0x1FFFF << 0)
+ #define STEPENB(val)		((val) << 0)
+ #define STPENB_STEPENB		STEPENB(0x1FFFF)
+-#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
+ 
+ /* IRQ enable */
+ #define IRQENB_HW_PEN		BIT(0)
+-- 
+1.7.10.4
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRpeKyAAoJELSic+t+oim9N4kP/258Zv7HSI7fy+bdO6a75yZG
-R24iFMWMvolGBamoJ+DM0o0/7bEg9C7CJA8fIBddEV+7jMDvoOASdc7rChGMq0Su
-5MqQmx+hosticY0P8lYV13v6n66/fXZmr3VQJ/IRzSAKtoNgPMCxjoXcJZ+qHSA6
-vwXvyN1KOFXec16PBdG+XNT6VS0YefwW7/RJ0uJYPsX49WLMeszMGwScIWc661pL
-nPV+g2gJG1OpCwVcXUdcmgsrxydXH4yWCsx5UBuccd8hViFH2fVJ9tM9g/wsp4oj
-8G6yOvZoIw08IvVLWn22rM+5SyyOB9UZMG+H2K/qJQ45lU5jz6DWXxA9P+5Be6V+
-NvqNSxHWYJT4f/4b+Haw1Ip1MwruX1A1sTuoAtCz3uGc+5/K5t8+BnfsaKxL99Ga
-VP2mg7BfdUF2Wsc/tlTW597SF/2qZw92pNNjk51BnTOZi2zPLUrDPrxFMc/vBJiY
-JHzZ0LiAP/tui/yhJXFj9cooWJsohVO9eIJLIlq8hI0N264TVk3oDW+E6u2cyNx0
-hNNGcblMfXdV90HJJm/7hzuXWYbCnlr3MJl+Gq2zoMau1mHM+bJ6QVKl2jW2Pv3A
-jYAgIFs8goqAIEAzTSy+GP2AtvQG7ElQGYjdgNNzEhAZxiVGmEjX9B7+njhLRon/
-YBD8FPhDd97AyFcyd+Cg
-=gnFO
------END PGP SIGNATURE-----
-
---2D20dG0OqTzqkNh7--
