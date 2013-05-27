@@ -1,115 +1,304 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:54972 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965224Ab3E2Iqr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 04:46:47 -0400
-Date: Wed, 29 May 2013 10:46:42 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 19/19 v2] mfd/ti_am335x_tscadc: add private lock/unlock
- function for regmap read/write
-Message-ID: <20130529084642.GA18273@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-20-git-send-email-bigeasy@linutronix.de>
+Return-Path: <Michael.Hennerich@analog.com>
+Message-ID: <51A34352.6040107@analog.com>
+Date: Mon, 27 May 2013 13:28:18 +0200
+From: Michael Hennerich <michael.hennerich@analog.com>
+Reply-To: <michael.hennerich@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1369681926-22185-20-git-send-email-bigeasy@linutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	<dan.carpenter@oracle.com>
+Subject: Re: [PATCH 4/4] iio: frequency: adf4350: Add support for dt bindings
+References: <1369321259-14602-1-git-send-email-michael.hennerich@analog.com> <1369321259-14602-4-git-send-email-michael.hennerich@analog.com> <519E47BA.6040907@metafoo.de>
+In-Reply-To: <519E47BA.6040907@metafoo.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Without this, devm_regmap_init_mmio() creates & uses a simple
-spin_lock() and this should be enough. Within the probe function the
-registers are read and written in process context. Later they are
-accessed from the ISR and lockdep complains because now the lock is
-taken suddenly with IRQs enabled. Currently I don't see any other way to
-keep lockdep quiet than doing this.
+On 05/23/2013 06:45 PM, Lars-Peter Clausen wrote:
+> On 05/23/2013 05:00 PM, michael.hennerich@analog.com wrote:
+>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>
+>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>> ---
+>>   .../devicetree/bindings/iio/frequency/adf4350.txt  |   84 ++++++++++++++
+>>   drivers/iio/frequency/adf4350.c                    |  122 +++++++++++++++++++-
+>>   2 files changed, 205 insertions(+), 1 deletion(-)
+>>   create mode 100644 Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4350.txt b/Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+>> new file mode 100644
+>> index 0000000..ab99cfd
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/frequency/adf4350.txt
+>> @@ -0,0 +1,84 @@
+>> +Analog Devices ADF4350/ADF4351 device driver
+>> +
+>> +Required properties:
+>> +	- compatible: Should be one of
+>> +		* "adi,adf4350": When using the ADF4350 device
+>> +		* "adi,adf4351": When using the ADF4351 device
+>> +	- reg: SPI chip select numbert for the device
+> typo: number
+Oops!
+>
+>> +	- spi-max-frequency: Max SPI frequency to use (< 20000000)
+>> +	- clocks: From common clock binding. Clock is phandle to clock for
+>> +		ADF435x Reference Clock (CLKIN).
+>> +
+>> +Optional properties:
+>> +	- adi,channel-spacing: Channel spacing in Hz (influences MODULUS).
+>> +	- adi,power-up-frequency:	If set in Hz the PLL tunes to
+>> +			the desired frequency on probe.
+>> +	- adi,ref-div-factor: If set the driver skips dynamic calculation
+>> +			and uses this default value instead.
+>> +	- adi,ref-doubler-en: Enables reference doubler.
+>> +	- adi,ref-div2-en: Enables reference divider.
+>> +	- adi,gpio-lock-detect:	If set with a valid GPIO number, pll lock state
+>> +			is tested upon read.
+> GPIOs are referenced by phandle plus parameter, not by GPIO number.
+This slipped out - it was originally on my to-do list -
+Thanks.
+>
+>> +	- adi,reg2-pd-polarity-pos-en: Enables positive phase
+>> +			detector polarity. Default = negative.
+>> +	- adi,reg2-ldp-6ns-en: Enables 6ns lock detect precision.
+>> +			Default = 10ns.
+>> +	- adi,reg2-ldf-int-n-en: Enables lock detect for integer-N mode.
+>> +			Default = factional-N mode.
+>> +	- adi,reg2-charge-pump-curr-ua: Charge pump current in mA.
+>> +			Default = 2500mA.
+>> +	- adi,reg2-muxout: On chip multiplexer output selection.
+>> +			Valid values for the multiplexer output are:
+>> +			0: Three-State Output (default)
+>> +			1: DVDD
+>> +			2: DGND
+>> +			3: R-Counter output
+>> +			4: N-Divider output
+>> +			5: Analog lock detect
+>> +			6: Digital lock detect
+>> +	- adi,reg2-noise-mode: Enables low noise mode. Default = Low spur mode.
+>> +	- adi,reg3-csr-en: Enables cycle slip reduction.
+>> +	- adi,reg3-charge-cancellation-en: Enabled charge pump
+>> +			charge cancellation for integer-N modes.
+>> +	- adi,reg3-anti-backlash-3ns-en: Enables 3ns antibacklash pulse width
+>> +			 for integer-N modes.
+>> +	- adi,reg3-band-sel-clock-mode-high-en: Enables faster band selection logic.
+>> +	- adi,reg3-12bit-clkdiv: Clock divider value used when
+>> +			adi,reg3-12bit-clkdiv-mode != 0
+>> +	- adi,reg3-12bit-clkdiv-mode:
+>> +			Valid values for the clkdiv mode are:
+>> +			0: Clock divider off (default)
+>> +			1: Fast lock enable
+>> +			2: Phase resync enable
+>> +	- adi,reg4-aux-output-en: Enables auxiliary RF output.
+>> +	- adi,reg4-aux-output-fund-en: Selects fundamental VCO output on the
+>> +			auxiliary RF output. Default = Output of RF dividers.
+>> +	- adi,reg4-mute-till-lock-en: Enables Mute-Till-Lock-Detect function.
+>> +	- adi,reg4-output-pwr: Output power selection.
+>> +			Valid values for the power mode are:
+>> +			0: -4dBM (default)
+>> +			1: -1dBM
+>> +			2: +2dBM
+>> +			3: +5dBM
+>> +	- adi,reg4-aux-output-pwr: Auxiliary output power selection.
+>> +			Valid values for the power mode are:
+>> +			0: -4dBM (default)
+>> +			1: -1dBM
+>> +			2: +2dBM
+>> +			3: +5dBM
+>
+> As I said before abbreviations in devicetree property names are kind of
+> frowned upon.
+I guess they are frowned upon, because they tend to confuse and makes 
+life harder?
+>   There are a lot of abbreviations used for these properties.
+> Also I'm not sure whether it makes sense to include the register number in
+> the property name.
+The properties are optional - they are there to fine tune application 
+and board specific analog performance.
+It is my understanding that people must read the datasheet and product 
+collaterals in order to use them.
+Apart from the _en (enable) usage the abbreviations are mostly the ones 
+that the datasheet uses.
+The register names are included for the same purpose - to help 
+identifying the property that needs to be set or not.
 
-Cc: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
+Thoughts?
 
-v1..v2: pass a ti_tscadc_dev via lock arg
+>
+>> +
+>> +
+>> +Example:
+>> +		lo_pll0_rx_adf4351: adf4351-rx-lpc@4 {
+>> +			compatible = "adi,adf4351";
+>> +			reg = <4>;
+>> +			spi-max-frequency = <10000000>;
+>> +			clocks = <&clk0_ad9523 9>;
+>> +			clock-names = "clkin";
+>> +			adi,channel-spacing = <10000>;
+>> +			adi,power-up-frequency = <2400000000>;
+>> +			adi,reg2-pd-polarity-pos-en;
+>> +			adi,reg2-charge-pump-curr-ua = <2500>;
+>> +			adi,reg4-output-pwr = <3>;
+>> +			adi,reg4-mute-till-lock-en;
+>> +		};
+>> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+>> index f6849c8..828ce3e1 100644
+>> --- a/drivers/iio/frequency/adf4350.c
+>> +++ b/drivers/iio/frequency/adf4350.c
+>> @@ -18,6 +18,7 @@
+>>   #include <linux/gpio.h>
+>>   #include <asm/div64.h>
+>>   #include <linux/clk.h>
+>> +#include <linux/of.h>
+>>   
+>>   #include <linux/iio/iio.h>
+>>   #include <linux/iio/sysfs.h>
+>> @@ -375,14 +376,133 @@ static const struct iio_info adf4350_info = {
+>>   	.driver_module = THIS_MODULE,
+>>   };
+>>   
+>> +#ifdef CONFIG_OF
+>> +static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+>> +{
+>> +	struct device_node *np = dev->of_node;
+>> +	struct adf4350_platform_data *pdata;
+>> +	unsigned int tmp;
+>> +	int ret;
+>> +
+>> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+>> +	if (!pdata) {
+>> +		dev_err(dev, "could not allocate memory for platform data\n");
+>> +		return NULL;
+>> +	}
+>> +
+>> +	strncpy(&pdata->name[0], np->name, SPI_NAME_SIZE - 1);
+>> +
+>> +	tmp = 10000;
+>> +	of_property_read_u32(np, "adi,channel-spacing", &tmp);
+>> +	pdata->channel_spacing = tmp;
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,power-up-frequency", &tmp);
+>> +	pdata->power_up_frequency = tmp;
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,ref-div-factor", &tmp);
+>> +	pdata->ref_div_factor = tmp;
+>> +
+>> +	ret = of_property_read_u32(np, "adi,gpio-lock-detect",
+>> +				   &pdata->gpio_lock_detect);
+>> +	if (ret < 0)
+>> +		pdata->gpio_lock_detect = -1;
+>> +
+>> +	pdata->ref_doubler_en = of_property_read_bool(np, "adi,ref-doubler-en");
+>> +	pdata->ref_div2_en = of_property_read_bool(np, "adi,ref-div2-en");
+>> +
+>> +	/* r2_user_settings */
+>> +	pdata->r2_user_settings =
+>> +		of_property_read_bool(np, "adi,reg2-pd-polarity-pos-en") ?
+>> +					ADF4350_REG2_PD_POLARITY_POS : 0;
+>> +	pdata->r2_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg2-ldp-6ns-en") ?
+>> +					ADF4350_REG2_LDP_6ns : 0;
+>> +	pdata->r2_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg2-ldf-int-n-en") ?
+>> +					ADF4350_REG2_LDF_INT_N : 0;
+>> +	tmp = 2500;
+>> +	of_property_read_u32(np, "adi,reg2-charge-pump-curr-ua", &tmp);
+>> +	pdata->r2_user_settings |= ADF4350_REG2_CHARGE_PUMP_CURR_uA(tmp);
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg2-muxout", &tmp);
+>> +	pdata->r2_user_settings |= ADF4350_REG2_MUXOUT(tmp);
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg2-noise-mode", &tmp);
+>> +	pdata->r2_user_settings |= ADF4350_REG2_NOISE_MODE(tmp);
+>> +
+>> +	/* r3_user_settings */
+>> +
+>> +	pdata->r3_user_settings =
+>> +		of_property_read_bool(np, "adi,reg3-csr-en") ?
+>> +					ADF4350_REG3_12BIT_CSR_EN : 0;
+>> +	pdata->r3_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg3-charge-cancellation-en") ?
+>> +					ADF4351_REG3_CHARGE_CANCELLATION_EN : 0;
+>> +	pdata->r3_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg3-anti-backlash-3ns-en") ?
+>> +					ADF4351_REG3_ANTI_BACKLASH_3ns_EN : 0;
+>> +	pdata->r3_user_settings |=
+>> +		of_property_read_bool(np,
+>> +				      "adi,reg3-band-sel-clock-mode-high-en") ?
+>> +				      ADF4351_REG3_BAND_SEL_CLOCK_MODE_HIGH : 0;
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg3-12bit-clkdiv", &tmp);
+>> +	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV(tmp);
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg3-12bit-clkdiv-mode", &tmp);
+>> +	pdata->r3_user_settings |= ADF4350_REG3_12BIT_CLKDIV_MODE(tmp);
+>> +
+>> +	/* r4_user_settings */
+>> +
+>> +	pdata->r4_user_settings =
+>> +		of_property_read_bool(np, "adi,reg4-aux-output-en") ?
+>> +					ADF4350_REG4_AUX_OUTPUT_EN : 0;
+>> +	pdata->r4_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg4-aux-output-fund-en") ?
+>> +					ADF4350_REG4_AUX_OUTPUT_FUND : 0;
+>> +	pdata->r4_user_settings |=
+>> +		of_property_read_bool(np, "adi,reg4-mute-till-lock-en") ?
+>> +					ADF4350_REG4_MUTE_TILL_LOCK_EN : 0;
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg4-output-pwr", &tmp);
+>> +	pdata->r4_user_settings |= ADF4350_REG4_OUTPUT_PWR(tmp);
+>> +
+>> +	tmp = 0;
+>> +	of_property_read_u32(np, "adi,reg4-aux-output-pwr", &tmp);
+>> +	pdata->r4_user_settings |= ADF4350_REG4_AUX_OUTPUT_PWR(tmp);
+>> +
+>> +	return pdata;
+>> +}
+>> +#else
+>> +static
+>> +struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+>> +{
+>> +	return NULL;
+>> +}
+>> +#endif
+>> +
+>>   static int adf4350_probe(struct spi_device *spi)
+>>   {
+>> -	struct adf4350_platform_data *pdata = spi->dev.platform_data;
+>> +	struct adf4350_platform_data *pdata;
+>>   	struct iio_dev *indio_dev;
+>>   	struct adf4350_state *st;
+>>   	struct clk *clk = NULL;
+>>   	int ret;
+>>   
+>> +	if (spi->dev.of_node) {
+>> +		pdata = adf4350_parse_dt(&spi->dev);
+>> +		if (IS_ERR(pdata))
+>> +			return PTR_ERR(pdata);
+> adf4350_parse_dt() returns either NULL or a valid struct.
+I'll fix that.
+>
+>> +	} else {
+>> +		pdata = spi->dev.platform_data;
+>> +	}
+>> +
+>>   	if (!pdata) {
+>>   		dev_warn(&spi->dev, "no platform data? using default\n");
+>>   		pdata = &default_pdata;
+>
 
- drivers/mfd/ti_am335x_tscadc.c       |   21 ++++++++++++++++++++-
- include/linux/mfd/ti_am335x_tscadc.h |    2 ++
- 2 files changed, 22 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 5e4076f..bd982e5 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -42,11 +42,27 @@ static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
- 	regmap_write(tsadc->regmap_tscadc, reg, val);
- }
- 
-+static void tscadc_lock_spinlock(void *__map)
-+{
-+	struct ti_tscadc_dev *tsadc = __map;
-+
-+	spin_lock_irqsave(&tsadc->reg_map_lock, tsadc->reg_map_flags);
-+}
-+
-+static void tscadc_unlock_spinlock(void *__map)
-+{
-+	struct ti_tscadc_dev *tsadc = __map;
-+
-+	spin_unlock_irqrestore(&tsadc->reg_map_lock, tsadc->reg_map_flags);
-+}
-+
- static const struct regmap_config tscadc_regmap_config = {
- 	.name = "ti_tscadc",
- 	.reg_bits = 32,
- 	.reg_stride = 4,
- 	.val_bits = 32,
-+	.lock = tscadc_lock_spinlock,
-+	.unlock = tscadc_unlock_spinlock,
- };
- 
- static void tscadc_idle_config(struct ti_tscadc_dev *config)
-@@ -69,6 +85,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	int			err, ctrl;
- 	int			clk_value, clock_rate;
- 	int			tsc_wires = 0, adc_channels = 0, total_channels;
-+	struct regmap_config	tscadc_regmap_cfg = tscadc_regmap_config;
- 
- 	if (!pdev->dev.of_node) {
- 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
-@@ -110,6 +127,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	} else
- 		tscadc->irq = err;
- 
-+	spin_lock_init(&tscadc->reg_map_lock);
- 	res = devm_request_mem_region(&pdev->dev,
- 			res->start, resource_size(res), pdev->name);
- 	if (!res) {
-@@ -124,8 +142,9 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
-+	tscadc_regmap_cfg.lock_arg = tscadc;
- 	tscadc->regmap_tscadc = devm_regmap_init_mmio(&pdev->dev,
--			tscadc->tscadc_base, &tscadc_regmap_config);
-+			tscadc->tscadc_base, &tscadc_regmap_cfg);
- 	if (IS_ERR(tscadc->regmap_tscadc)) {
- 		dev_err(&pdev->dev, "regmap init failed\n");
- 		err = PTR_ERR(tscadc->regmap_tscadc);
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index c985262..284e482 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -129,6 +129,8 @@
- #define TSCADC_CELLS		2
- 
- struct ti_tscadc_dev {
-+	spinlock_t reg_map_lock;
-+	unsigned long reg_map_flags;
- 	struct device *dev;
- 	struct regmap *regmap_tscadc;
- 	void __iomem *tscadc_base;
 -- 
-1.7.10.4
+Greetings,
+Michael
 
+--
+Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
+Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
+Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
+Margaret Seif
