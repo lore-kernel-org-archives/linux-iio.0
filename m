@@ -1,43 +1,161 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-220.synserver.de ([212.40.185.220]:1058 "EHLO
-	smtp-out-220.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965445Ab3E2LZz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 07:25:55 -0400
-Message-ID: <51A5E5B3.80201@metafoo.de>
-Date: Wed, 29 May 2013 13:25:39 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Mark Brown <broonie@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
+Received: from www.linutronix.de ([62.245.132.108]:48327 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756670Ab3E0TMU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 May 2013 15:12:20 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 19/19 v2] mfd/ti_am335x_tscadc: add private lock/unlock
- function for regmap read/write
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-20-git-send-email-bigeasy@linutronix.de> <20130529084642.GA18273@linutronix.de> <20130529111253.GR3660@sirena.org.uk>
-In-Reply-To: <20130529111253.GR3660@sirena.org.uk>
-Content-Type: text/plain; charset=ISO-8859-1
+	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 04/19] input: touchscreen: am335x: Add DT support
+Date: Mon, 27 May 2013 21:11:51 +0200
+Message-Id: <1369681926-22185-5-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/29/2013 01:12 PM, Mark Brown wrote:
-> On Wed, May 29, 2013 at 10:46:42AM +0200, Sebastian Andrzej Siewior wrote:
->> Without this, devm_regmap_init_mmio() creates & uses a simple
->> spin_lock() and this should be enough. Within the probe function the
->> registers are read and written in process context. Later they are
->> accessed from the ISR and lockdep complains because now the lock is
->> taken suddenly with IRQs enabled. Currently I don't see any other way to
->> keep lockdep quiet than doing this.
-> 
-> This is not a good place to make this change, there's nothing specific
-> to the device here and in actual fact there's already a change in the
-> works from Lars-Peter Clausen converting the spinlock to always use
-> spin_lock_irqsave() so it should be resolved soon.  The thread was on
-> lkml in the past few days.
+From: "Patil, Rachna" <rachna@ti.com>
 
-Yes, this patch shouldn't be necessary in next/master anymore. For the
-record the patch can be found here: https://patchwork.kernel.org/patch/2609721/
+Add DT support for client touchscreen driver
 
-- Lars
+[ panto@antoniou-consulting.com : use of_get_child_by_name
+	instead of of_find_node_by_name ]
+
+Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+[ bigeasy: shift the code to the left ]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   87 ++++++++++++++++++++++++-----
+ 1 file changed, 74 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 064d2b2..be5cb67 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -26,6 +26,8 @@
+ #include <linux/io.h>
+ #include <linux/input/ti_am335x_tsc.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ 
+@@ -366,6 +368,67 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
++					struct titsc *ts_dev)
++{
++	struct device_node *node = tscadc_dev->dev->of_node;
++	int err, i;
++	u32 val32, wires_conf[4];
++
++	if (!node)
++		return -EINVAL;
++
++	node = of_get_child_by_name(node, "tsc");
++	if (!node)
++		return -EINVAL;
++	err = of_property_read_u32(node, "ti,wires", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->wires = val32;
++
++	err = of_property_read_u32(node,
++			"ti,x-plate-resistance", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->x_plate_resistance = val32;
++
++	err = of_property_read_u32(node,
++			"ti,steps-to-configure", &val32);
++	if (err < 0)
++		goto error_ret;
++	ts_dev->steps_to_configure = val32;
++
++	err = of_property_read_u32_array(node, "ti,wire-config",
++			wires_conf, ARRAY_SIZE(wires_conf));
++	if (err < 0)
++		goto error_ret;
++
++	for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
++		ts_dev->config_inp[i] = wires_conf[i];
++	return 0;
++
++error_ret:
++	return err;
++}
++
++static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
++					struct titsc *ts_dev)
++{
++	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
++
++	if (!pdata)
++		return -EINVAL;
++
++	ts_dev->wires = pdata->tsc_init->wires;
++	ts_dev->x_plate_resistance =
++		pdata->tsc_init->x_plate_resistance;
++	ts_dev->steps_to_configure =
++		pdata->tsc_init->steps_to_configure;
++	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
++		sizeof(pdata->tsc_init->wire_config));
++	return 0;
++}
++
+ /*
+  * The functions for inserting/removing driver as a module.
+  */
+@@ -375,16 +438,8 @@ static int titsc_probe(struct platform_device *pdev)
+ 	struct titsc *ts_dev;
+ 	struct input_dev *input_dev;
+ 	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
+-	struct mfd_tscadc_board	*pdata;
+ 	int err;
+ 
+-	pdata = tscadc_dev->dev->platform_data;
+-
+-	if (!pdata) {
+-		dev_err(&pdev->dev, "Could not find platform data\n");
+-		return -EINVAL;
+-	}
+-
+ 	/* Allocate memory for device */
+ 	ts_dev = kzalloc(sizeof(struct titsc), GFP_KERNEL);
+ 	input_dev = input_allocate_device();
+@@ -398,11 +453,17 @@ static int titsc_probe(struct platform_device *pdev)
+ 	ts_dev->mfd_tscadc = tscadc_dev;
+ 	ts_dev->input = input_dev;
+ 	ts_dev->irq = tscadc_dev->irq;
+-	ts_dev->wires = pdata->tsc_init->wires;
+-	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
+-	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
+-	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
+-			sizeof(pdata->tsc_init->wire_config));
++
++	if (tscadc_dev->dev->platform_data)
++		err = titsc_parse_pdata(tscadc_dev, ts_dev);
++	else
++		err = titsc_parse_dt(tscadc_dev, ts_dev);
++
++	if (err) {
++		dev_err(&pdev->dev, "Could not find platform data\n");
++		err = -EINVAL;
++		goto err_free_mem;
++	}
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+ 			  0, pdev->dev.driver->name, ts_dev);
+-- 
+1.7.10.4
+
