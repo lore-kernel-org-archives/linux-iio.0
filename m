@@ -1,64 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39589 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756513Ab3EVWIK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 May 2013 18:08:10 -0400
-Message-ID: <519D41C7.10304@kernel.org>
-Date: Wed, 22 May 2013 23:08:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:54972 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965224Ab3E2Iqr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 04:46:47 -0400
+Date: Wed, 29 May 2013 10:46:42 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 19/19 v2] mfd/ti_am335x_tscadc: add private lock/unlock
+ function for regmap read/write
+Message-ID: <20130529084642.GA18273@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-20-git-send-email-bigeasy@linutronix.de>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for 3.10 - set 1
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1369681926-22185-20-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit c7b0cf3e712775e8e2015c2f4582864159540be6:
+Without this, devm_regmap_init_mmio() creates & uses a simple
+spin_lock() and this should be enough. Within the probe function the
+registers are read and written in process context. Later they are
+accessed from the ISR and lockdep complains because now the lock is
+taken suddenly with IRQs enabled. Currently I don't see any other way to
+keep lockdep quiet than doing this.
 
-  staging: imx-drm: imx-tve: Check the return value of 'regulator_enable()' (2013-05-21 10:48:54 -0700)
+Cc: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
 
-are available in the git repository at:
+v1..v2: pass a ti_tscadc_dev via lock arg
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.10a
+ drivers/mfd/ti_am335x_tscadc.c       |   21 ++++++++++++++++++++-
+ include/linux/mfd/ti_am335x_tscadc.h |    2 ++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
-for you to fetch changes up to 927b4dc3e440a060bd7d9a7ecb83c3dcd80adc84:
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 5e4076f..bd982e5 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -42,11 +42,27 @@ static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
+ 	regmap_write(tsadc->regmap_tscadc, reg, val);
+ }
+ 
++static void tscadc_lock_spinlock(void *__map)
++{
++	struct ti_tscadc_dev *tsadc = __map;
++
++	spin_lock_irqsave(&tsadc->reg_map_lock, tsadc->reg_map_flags);
++}
++
++static void tscadc_unlock_spinlock(void *__map)
++{
++	struct ti_tscadc_dev *tsadc = __map;
++
++	spin_unlock_irqrestore(&tsadc->reg_map_lock, tsadc->reg_map_flags);
++}
++
+ static const struct regmap_config tscadc_regmap_config = {
+ 	.name = "ti_tscadc",
+ 	.reg_bits = 32,
+ 	.reg_stride = 4,
+ 	.val_bits = 32,
++	.lock = tscadc_lock_spinlock,
++	.unlock = tscadc_unlock_spinlock,
+ };
+ 
+ static void tscadc_idle_config(struct ti_tscadc_dev *config)
+@@ -69,6 +85,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+ 	int			tsc_wires = 0, adc_channels = 0, total_channels;
++	struct regmap_config	tscadc_regmap_cfg = tscadc_regmap_config;
+ 
+ 	if (!pdev->dev.of_node) {
+ 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+@@ -110,6 +127,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	} else
+ 		tscadc->irq = err;
+ 
++	spin_lock_init(&tscadc->reg_map_lock);
+ 	res = devm_request_mem_region(&pdev->dev,
+ 			res->start, resource_size(res), pdev->name);
+ 	if (!res) {
+@@ -124,8 +142,9 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
++	tscadc_regmap_cfg.lock_arg = tscadc;
+ 	tscadc->regmap_tscadc = devm_regmap_init_mmio(&pdev->dev,
+-			tscadc->tscadc_base, &tscadc_regmap_config);
++			tscadc->tscadc_base, &tscadc_regmap_cfg);
+ 	if (IS_ERR(tscadc->regmap_tscadc)) {
+ 		dev_err(&pdev->dev, "regmap init failed\n");
+ 		err = PTR_ERR(tscadc->regmap_tscadc);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index c985262..284e482 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -129,6 +129,8 @@
+ #define TSCADC_CELLS		2
+ 
+ struct ti_tscadc_dev {
++	spinlock_t reg_map_lock;
++	unsigned long reg_map_flags;
+ 	struct device *dev;
+ 	struct regmap *regmap_tscadc;
+ 	void __iomem *tscadc_base;
+-- 
+1.7.10.4
 
-  iio: exynos_adc: fix wrong structure extration in suspend and resume (2013-05-22 22:15:20 +0100)
-
-----------------------------------------------------------------
-First round of IIO fixes for the 3.10 cycle.
-
-The usual mixed bag of little fixes.
-
-1) A fix for mxs-lradc having missed out on some global abi changes that and
-   hence being unable to start up buffered output.
-2) Clean up error handling in tsl2x7x
-3) A build fix for some of the dac drivers when they have spi master support
-   built in, but i2c support build as a module.
-4) Add a missing disable after a oneshot capture to the st sensor core.
-5) Exynos adc driver took a novel an incorrect route to get at its private
-   data store.
-
-----------------------------------------------------------------
-Axel Lin (1):
-      iio: dac: Fix build error when CONFIG_SPI_MASTER=y && CONFIG_I2C=m
-
-Denis CIOCCA (1):
-      iio:common:st: added disable function after read info raw data
-
-Michał Mirosław (1):
-      staging/iio/mxs-lradc: fix preenable for multiple buffers
-
-Naveen Krishna Chatradhi (1):
-      iio: exynos_adc: fix wrong structure extration in suspend and resume
-
-Wei Yongjun (1):
-      staging:iio:light:tsl2x7x: fix the error handling in tsl2x7x_probe()
-
- drivers/iio/adc/exynos_adc.c                    | 8 ++++----
- drivers/iio/common/st_sensors/st_sensors_core.c | 2 ++
- drivers/iio/dac/Kconfig                         | 6 +++---
- drivers/staging/iio/adc/mxs-lradc.c             | 5 ++---
- drivers/staging/iio/light/tsl2x7x_core.c        | 9 +++++----
- 5 files changed, 16 insertions(+), 14 deletions(-)
