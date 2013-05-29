@@ -1,47 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:51174 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751255Ab3EWFkO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2013 01:40:14 -0400
-Received: by mail-pd0-f174.google.com with SMTP id 3so683907pdj.5
-        for <linux-iio@vger.kernel.org>; Wed, 22 May 2013 22:40:13 -0700 (PDT)
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk, jic23@kernel.org, sachin.kamat@linaro.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 1/1] iio: at91_adc: Add missing CONFIG_OF macro
-Date: Thu, 23 May 2013 10:56:27 +0530
-Message-Id: <1369286787-8448-1-git-send-email-sachin.kamat@linaro.org>
+Received: from www.linutronix.de ([62.245.132.108]:57945 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759712Ab3E2RKG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 13:10:06 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: sameo@linux.intel.com, jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
+	balbi@ti.com, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 5/5] iio/ti_am335x_adc: check if we found the value
+Date: Wed, 29 May 2013 19:09:56 +0200
+Message-Id: <1369847397-27451-6-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The data structure is required only when DT is enabled.
-Hence compile it conditionally.
+Usually we get all the values we wanted but it is possible, that te ADC
+unit is busy performing the conversation for the HW events. In that case
+-EBUSY is returned and the user may re-call the function.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/adc/at91_adc.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/ti_am335x_adc.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index e5b88d5..b6db6a0 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -774,11 +774,13 @@ static int at91_adc_remove(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index df2de4c..6a00874 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -161,6 +161,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	int i;
+ 	unsigned int fifo1count, read;
+ 	u32 step = UINT_MAX;
++	bool found = false;
+ 
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -185,10 +186,14 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (read >> 16 == step)
++		if (read >> 16 == step) {
+ 			*val = read & 0xfff;
++			found = true;
++		}
+ 	}
+ 	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
++	if (found == false)
++		return -EBUSY;
+ 
+ 	return IIO_VAL_INT;
  }
- 
-+#ifdef CONFIG_OF
- static const struct of_device_id at91_adc_dt_ids[] = {
- 	{ .compatible = "atmel,at91sam9260-adc" },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
-+#endif
- 
- static struct platform_driver at91_adc_driver = {
- 	.probe = at91_adc_probe,
 -- 
-1.7.9.5
+1.7.10.4
 
