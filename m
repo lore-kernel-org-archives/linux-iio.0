@@ -1,61 +1,44 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <519CCAA2.2070408@metafoo.de>
-Date: Wed, 22 May 2013 15:39:46 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Guillaume Ballet <gballetwork@gmail.com>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- linux-iio@vger.kernel.org
-Subject: Re: Why is only one int returned in iio_read_channel_processed?
-References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com> <519C7C29.9040707@jic23.retrosnub.co.uk> <519C7F93.9010606@metafoo.de> <519C8923.7020902@jic23.retrosnub.co.uk> <CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com> <519CAF57.5030301@metafoo.de> <CAGi_vrir0uQd4u9WgixQ5an+jE8WFTyVmBiFnmxa-y=DfeW61g@mail.gmail.com>
-In-Reply-To: <CAGi_vrir0uQd4u9WgixQ5an+jE8WFTyVmBiFnmxa-y=DfeW61g@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:57928 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759696Ab3E2RKD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 May 2013 13:10:03 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: sameo@linux.intel.com, jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
+	balbi@ti.com, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 1/5] drivers/iio: am335x_adc: cleanup on missing DT nodes
+Date: Wed, 29 May 2013 19:09:52 +0200
+Message-Id: <1369847397-27451-2-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/22/2013 03:29 PM, Guillaume Ballet wrote:
-> On Wed, May 22, 2013 at 1:43 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 05/22/2013 11:37 AM, Guillaume Ballet wrote:
->>>>>
->>>>>>
->>>>>>> functions' signature only has one integer
->>>>>>> in/out parameter. That makes sense in the context of _raw because the
->>>>>>> value isn't yet processed.
->>>>>>>
->>>>>>> However, as the scale is a number encoded over two ints, the
->>>>>>> _processed value should also span two ints. Is there a reason why it's
->>>>>>> still only one int?
->>>>>>
->>>>>> No it certainly should not be one int for exactly the reasons you have
->>>>>> stated.
->>>>>>>
->>>>>>>
->>>>>
->>>>> I'm not to sure about that. I'd rather add a scale parameter to the
->>>>> iio_read_channel_processed, just in the same way the
->>>>> convert_raw_to_processed function takes a scale parameter.
->>>>
->>>> That may be tricky to do given we often have nasty non linear functions
->>>> that are the reason we are using processed in the first place.  Hmm.
->>>> Not sure which way works better.
->>>
->>> I agree, this is the whole point of using processed. Lars, is there a
->>> specific reason why you want to keep reading the value and the scale
->>> in different function calls?
->>
->> I don't want to keep reading scale and value in different function calls.
->>
->> What's you use case and how do you want to split the data between the two
->> integers?
-> 
-> Since the scale's format can be IIO_VAL_INT_PLUS_MICRO and
-> IIO_VAL_INT_PLUS_NANO, etc... and since iio_read_channel_processed
-> returns a value that is homogeneous to (value * scale), it seems to me
-> the same format should be used as when calling iio_read_channel_raw
-> with IIO_CHAN_INFO_SCALE. My use case is not more complicated than
-> making sure I keep the same precision when getting processed values.
+Currently we leak indio_dev() if the DT has no "adc" node in it.
 
-That doesn't really help me understand what you are trying to do. What is
-your application, where do you call iio_read_channel_processed and how do
-you process the returned value.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-- Lars
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index d0317fc..b2f27de 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -208,8 +208,10 @@ static int tiadc_probe(struct platform_device *pdev)
+ 	adc_dev->mfd_tscadc = tscadc_dev;
+ 
+ 	node = of_get_child_by_name(node, "adc");
+-	if (!node)
+-		return  -EINVAL;
++	if (!node) {
++		err = -EINVAL;
++		goto err_free_device;
++	}
+ 	err = of_property_read_u32(node,
+ 			"ti,adc-channels", &val32);
+ 	if (err < 0)
+-- 
+1.7.10.4
+
