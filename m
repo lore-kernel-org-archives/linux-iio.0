@@ -1,60 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52979 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49076 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755115Ab3FBSD1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 14:03:27 -0400
-Message-ID: <51AB88EE.3090602@kernel.org>
-Date: Sun, 02 Jun 2013 19:03:26 +0100
+	with ESMTP id S1753630Ab3FBQGC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 12:06:02 -0400
+Message-ID: <51AB6D68.2080207@kernel.org>
+Date: Sun, 02 Jun 2013 17:06:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	sameo@linux.intel.com, jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
-	balbi@ti.com
-Subject: Re: [PATCH 5/5] iio/ti_am335x_adc: check if we found the value
-References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de> <1369847397-27451-6-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369847397-27451-6-git-send-email-bigeasy@linutronix.de>
+To: Jingoo Han <jg1.han@samsung.com>
+CC: 'Jonathan Cameron' <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: replace strict_strtoul() with kstrtoul()
+References: <000401ce5e97$2aa80490$7ff80db0$@samsung.com>
+In-Reply-To: <000401ce5e97$2aa80490$7ff80db0$@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/29/2013 06:09 PM, Sebastian Andrzej Siewior wrote:
-> Usually we get all the values we wanted but it is possible, that te ADC
-> unit is busy performing the conversation for the HW events. In that case
-> -EBUSY is returned and the user may re-call the function.
+On 06/01/2013 08:10 AM, Jingoo Han wrote:
+> The usage of strict_strtoul() is not preferred, because
+> strict_strtoul() is obsolete. Thus, kstrtoul() should be
+> used.
 > 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+hmmm.  Normally I'd only take this sort of change
+if it were part of a large scale cleanup of a driver, but
+as those are both my drivers what the heck, I'll take it.
+
+Applied to the togreg branch of iio.git.
+
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 > ---
->  drivers/iio/adc/ti_am335x_adc.c |    7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+>  drivers/iio/adc/max1363.c            |    2 +-
+>  drivers/iio/trigger/iio-trig-sysfs.c |    4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index df2de4c..6a00874 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -161,6 +161,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
->  	int i;
->  	unsigned int fifo1count, read;
->  	u32 step = UINT_MAX;
-> +	bool found = false;
+> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+> index 9e6da72..f148d00 100644
+> --- a/drivers/iio/adc/max1363.c
+> +++ b/drivers/iio/adc/max1363.c
+> @@ -660,7 +660,7 @@ static ssize_t max1363_monitor_store_freq(struct device *dev,
+>  	unsigned long val;
+>  	bool found = false;
 >  
->  	/*
->  	 * When the sub-system is first enabled,
-> @@ -185,10 +186,14 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
->  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
->  	for (i = 0; i < fifo1count; i++) {
->  		read = tiadc_readl(adc_dev, REG_FIFO1);
-> -		if (read >> 16 == step)
-> +		if (read >> 16 == step) {
->  			*val = read & 0xfff;
-> +			found = true;
-> +		}
->  	}
->  	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
-> +	if (found == false)
-> +		return -EBUSY;
+> -	ret = strict_strtoul(buf, 10, &val);
+> +	ret = kstrtoul(buf, 10, &val);
+>  	if (ret)
+>  		return -EINVAL;
+>  	for (i = 0; i < ARRAY_SIZE(max1363_monitor_speeds); i++)
+> diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
+> index b727bde..effcd0a 100644
+> --- a/drivers/iio/trigger/iio-trig-sysfs.c
+> +++ b/drivers/iio/trigger/iio-trig-sysfs.c
+> @@ -34,7 +34,7 @@ static ssize_t iio_sysfs_trig_add(struct device *dev,
+>  	int ret;
+>  	unsigned long input;
 >  
->  	return IIO_VAL_INT;
->  }
+> -	ret = strict_strtoul(buf, 10, &input);
+> +	ret = kstrtoul(buf, 10, &input);
+>  	if (ret)
+>  		return ret;
+>  	ret = iio_sysfs_trigger_probe(input);
+> @@ -53,7 +53,7 @@ static ssize_t iio_sysfs_trig_remove(struct device *dev,
+>  	int ret;
+>  	unsigned long input;
+>  
+> -	ret = strict_strtoul(buf, 10, &input);
+> +	ret = kstrtoul(buf, 10, &input);
+>  	if (ret)
+>  		return ret;
+>  	ret = iio_sysfs_trigger_remove(input);
 > 
