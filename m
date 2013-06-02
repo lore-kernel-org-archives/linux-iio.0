@@ -1,58 +1,71 @@
-Return-Path: <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52820 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754811Ab3FBRuU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 13:50:20 -0400
+Message-ID: <51AB85DB.2000305@kernel.org>
+Date: Sun, 02 Jun 2013 18:50:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: mirq-linux@rere.qmqm.pl,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 0/4 V2]  iio: Rework the generic trigger-gpio trigger and move out of staging
-Date: Sun,  2 Jun 2013 20:00:12 +0100
-Message-Id: <1370199616-25500-1-git-send-email-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+MIME-Version: 1.0
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 17/19] mfd / iio: ti_am335x_adc: rename device from tiadc
+ to TI-adc
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-18-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-18-git-send-email-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Only changes here are dropping the irq_res_cnt as it unused (thanks Lars) and
-a rebase as a result of some Kconfig dependency changes.
+On 05/27/2013 08:12 PM, Sebastian Andrzej Siewior wrote:
+> TI-adc reads a little better compared to tiadc.
+> While here add an alias so the driver is loaded on demand.
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-I still don't have a hardware setup, but this is so simple that unless
-someone shouts I'll probably send it upstream in fairly soon anyway.
-
-Jonathan
-
-Previous message:
-
-Hi all,
-
-This is an RFC for a couple of reasons.
-
-1) I'm not sure how people feel about the move to multiple platform devices
-(patch 3).
-2) I don't actually have a simple test setup for this one.  I can put one
-together but it might be a while before I get it done.
-
-Anyhow, the purpose of this set is to respond to Lars-Peter's comments
-when I originally asked if anyone minded it moving out of staging as it
-was before this.  Lars raised the point that having one driver instance
-register multiple triggers just made life more complicated, and instead
-it might be better to have multiple driver instances, with one trigger each.
-Lars also pointed out that the name of the driver was silly given there
-was nolonger a requirement that the source of the interrupts be a gpio
-and there hasn't been for quite some time.
-
-All comments welcome. Particularly wrt to patch 3.
-
-Jonathan Cameron (4):
-  staging:iio:trigger:gpio bug in release of gpio in error path
-  staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
-  staging:iio:triggers:interrupt trigger - one per platform device.
-  iio:triggers:interrupt trigger - move out of staging.
-
- drivers/iio/trigger/Kconfig                 |   9 ++
- drivers/iio/trigger/Makefile                |   1 +
- drivers/iio/trigger/iio-trig-interrupt.c    | 121 ++++++++++++++++++++
- drivers/staging/iio/trigger/Kconfig         |   6 -
- drivers/staging/iio/trigger/Makefile        |   1 -
- drivers/staging/iio/trigger/iio-trig-gpio.c | 167 ----------------------------
- 6 files changed, 131 insertions(+), 174 deletions(-)
- create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
- delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
-
--- 
-1.8.2.3
+but you'll be wanting a few more acks on a name change...
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c |    4 ++--
+>  drivers/mfd/ti_am335x_tscadc.c  |    2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index 72ffe89..d0317fc 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -299,14 +299,14 @@ static const struct dev_pm_ops tiadc_pm_ops = {
+>  
+>  static struct platform_driver tiadc_driver = {
+>  	.driver = {
+> -		.name   = "tiadc",
+> +		.name   = "TI-adc",
+>  		.owner	= THIS_MODULE,
+>  		.pm	= TIADC_PM_OPS,
+>  	},
+>  	.probe	= tiadc_probe,
+>  	.remove	= tiadc_remove,
+>  };
+> -
+> +MODULE_ALIAS("platform:TI-adc");
+>  module_platform_driver(tiadc_driver);
+>  
+>  MODULE_DESCRIPTION("TI ADC controller driver");
+> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> index c25fe00..014df14 100644
+> --- a/drivers/mfd/ti_am335x_tscadc.c
+> +++ b/drivers/mfd/ti_am335x_tscadc.c
+> @@ -193,7 +193,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>  	if (adc_channels > 0) {
+>  		tscadc->adc_cell = tscadc->used_cells;
+>  		cell = &tscadc->cells[tscadc->used_cells++];
+> -		cell->name = "tiadc";
+> +		cell->name = "TI-adc";
+>  		cell->platform_data = tscadc;
+>  		cell->pdata_size = sizeof(*tscadc);
+>  	}
+> 
