@@ -1,71 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49076 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52442 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753630Ab3FBQGC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 12:06:02 -0400
-Message-ID: <51AB6D68.2080207@kernel.org>
-Date: Sun, 02 Jun 2013 17:06:00 +0100
+	with ESMTP id S1754573Ab3FBRXB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 13:23:01 -0400
+Message-ID: <51AB7F73.6050304@kernel.org>
+Date: Sun, 02 Jun 2013 18:22:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jingoo Han <jg1.han@samsung.com>
-CC: 'Jonathan Cameron' <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: replace strict_strtoul() with kstrtoul()
-References: <000401ce5e97$2aa80490$7ff80db0$@samsung.com>
-In-Reply-To: <000401ce5e97$2aa80490$7ff80db0$@samsung.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 08/19] iio/ti_am335x_adc: remove platform_data support
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-9-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-9-git-send-email-bigeasy@linutronix.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/01/2013 08:10 AM, Jingoo Han wrote:
-> The usage of strict_strtoul() is not preferred, because
-> strict_strtoul() is obsolete. Thus, kstrtoul() should be
-> used.
+On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
+> This patch removes access to platform data mfd_tscadc_board because the
+> platform is DT only.
 > 
-hmmm.  Normally I'd only take this sort of change
-if it were part of a large scale cleanup of a driver, but
-as those are both my drivers what the heck, I'll take it.
-
-Applied to the togreg branch of iio.git.
-
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
->  drivers/iio/adc/max1363.c            |    2 +-
->  drivers/iio/trigger/iio-trig-sysfs.c |    4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
+>  drivers/iio/adc/ti_am335x_adc.c |   26 ++++++++++----------------
+>  1 file changed, 10 insertions(+), 16 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index 9e6da72..f148d00 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -660,7 +660,7 @@ static ssize_t max1363_monitor_store_freq(struct device *dev,
->  	unsigned long val;
->  	bool found = false;
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index e657709..d821d88 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -26,7 +26,6 @@
+>  #include <linux/of_device.h>
 >  
-> -	ret = strict_strtoul(buf, 10, &val);
-> +	ret = kstrtoul(buf, 10, &val);
->  	if (ret)
+>  #include <linux/mfd/ti_am335x_tscadc.h>
+> -#include <linux/platform_data/ti_am335x_adc.h>
+>  
+>  struct tiadc_device {
+>  	struct ti_tscadc_dev *mfd_tscadc;
+> @@ -143,13 +142,12 @@ static int tiadc_probe(struct platform_device *pdev)
+>  	struct iio_dev		*indio_dev;
+>  	struct tiadc_device	*adc_dev;
+>  	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
+> -	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
+>  	struct device_node	*node = tscadc_dev->dev->of_node;
+>  	int			err;
+>  	u32			val32;
+>  
+> -	if (!pdata && !node) {
+> -		dev_err(&pdev->dev, "Could not find platform data\n");
+> +	if (!node) {
+> +		dev_err(&pdev->dev, "Could not find valid DT data.\n");
 >  		return -EINVAL;
->  	for (i = 0; i < ARRAY_SIZE(max1363_monitor_speeds); i++)
-> diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
-> index b727bde..effcd0a 100644
-> --- a/drivers/iio/trigger/iio-trig-sysfs.c
-> +++ b/drivers/iio/trigger/iio-trig-sysfs.c
-> @@ -34,7 +34,7 @@ static ssize_t iio_sysfs_trig_add(struct device *dev,
->  	int ret;
->  	unsigned long input;
+>  	}
 >  
-> -	ret = strict_strtoul(buf, 10, &input);
-> +	ret = kstrtoul(buf, 10, &input);
->  	if (ret)
->  		return ret;
->  	ret = iio_sysfs_trigger_probe(input);
-> @@ -53,7 +53,7 @@ static ssize_t iio_sysfs_trig_remove(struct device *dev,
->  	int ret;
->  	unsigned long input;
+> @@ -163,18 +161,14 @@ static int tiadc_probe(struct platform_device *pdev)
 >  
-> -	ret = strict_strtoul(buf, 10, &input);
-> +	ret = kstrtoul(buf, 10, &input);
->  	if (ret)
->  		return ret;
->  	ret = iio_sysfs_trigger_remove(input);
+>  	adc_dev->mfd_tscadc = tscadc_dev;
+>  
+> -	if (pdata)
+> -		adc_dev->channels = pdata->adc_init->adc_channels;
+> -	else {
+> -		node = of_get_child_by_name(node, "adc");
+> -		if (!node)
+> -			return  -EINVAL;
+> -		err = of_property_read_u32(node,
+> -				"ti,adc-channels", &val32);
+> -		if (err < 0)
+> -			goto err_free_device;
+> -		adc_dev->channels = val32;
+> -	}
+> +	node = of_get_child_by_name(node, "adc");
+> +	if (!node)
+> +		return  -EINVAL;
+> +	err = of_property_read_u32(node,
+> +			"ti,adc-channels", &val32);
+> +	if (err < 0)
+> +		goto err_free_device;
+> +	adc_dev->channels = val32;
+>  
+>  	indio_dev->dev.parent = &pdev->dev;
+>  	indio_dev->name = dev_name(&pdev->dev);
 > 
