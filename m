@@ -1,205 +1,393 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog116.obsmtp.com ([207.126.144.141]:41222 "EHLO
-	eu1sys200aog116.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1758040Ab3FCO7I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jun 2013 10:59:08 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, frederic.pillon@stericsson.com,
-	lee.jones@stericcson.com, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 1/3] iio:common: ST_SENSORS_LSM_CHANNELS macro changed
-Date: Mon,  3 Jun 2013 16:58:50 +0200
-Message-Id: <1370271532-10194-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1370271532-10194-1-git-send-email-denis.ciocca@st.com>
-References: <1370271532-10194-1-git-send-email-denis.ciocca@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53464 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755507Ab3FBTAZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 15:00:25 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: mirq-linux@rere.qmqm.pl, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 2/4] staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
+Date: Sun,  2 Jun 2013 20:00:14 +0100
+Message-Id: <1370199616-25500-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1370199616-25500-1-git-send-email-jic23@kernel.org>
+References: <1370199616-25500-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/accel/st_accel_core.c       |   36 ++++++++++++++++++++-----------
- drivers/iio/gyro/st_gyro_core.c         |   21 ++++++++++--------
- drivers/iio/magnetometer/st_magn_core.c |   36 ++++++++++++++++++++-----------
- include/linux/iio/common/st_sensors.h   |   20 ++++++++---------
- 4 files changed, 69 insertions(+), 44 deletions(-)
+Also change all internal naming appropriately.
+This trigger is no longer just for gpio provided interrupts so
+change the naming to reflect this.  Also drop some now missleading
+left over comments.
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index e0f5a3c..40236d5 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -125,22 +125,34 @@
- #define ST_ACCEL_3_MULTIREAD_BIT		false
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/trigger/Kconfig              |   8 +-
+ drivers/staging/iio/trigger/Makefile             |   2 +-
+ drivers/staging/iio/trigger/iio-trig-gpio.c      | 166 -----------------------
+ drivers/staging/iio/trigger/iio-trig-interrupt.c | 152 +++++++++++++++++++++
+ 4 files changed, 157 insertions(+), 171 deletions(-)
+
+diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
+index ae9fcd3..4ecb213 100644
+--- a/drivers/staging/iio/trigger/Kconfig
++++ b/drivers/staging/iio/trigger/Kconfig
+@@ -12,11 +12,11 @@ config IIO_PERIODIC_RTC_TRIGGER
+ 	  Provides support for using periodic capable real time
+ 	  clocks as IIO triggers.
  
- static const struct iio_chan_spec st_accel_12bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_12_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 12, 16,
-+			ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
+-config IIO_GPIO_TRIGGER
+-	tristate "GPIO trigger"
+-	depends on GPIOLIB
++config IIO_INTERRUPT_TRIGGER
++	tristate "Generic interrupt trigger"
+ 	help
+-	  Provides support for using GPIO pins as IIO triggers.
++	  Provides support for using interrupts of various types as IIO
++	  triggers.  These may be provided by a gpio driver for example.
  
- static const struct iio_chan_spec st_accel_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_ACCEL_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
+ config IIO_BFIN_TMR_TRIGGER
+ 	tristate "Blackfin TIMER trigger"
+diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
+index 8a53041..48f2236 100644
+--- a/drivers/staging/iio/trigger/Makefile
++++ b/drivers/staging/iio/trigger/Makefile
+@@ -3,5 +3,5 @@
+ #
  
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index fa9b242..9bae46b 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -86,15 +86,18 @@
- #define ST_GYRO_2_MULTIREAD_BIT			true
- 
- static const struct iio_chan_spec st_gyro_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_X,
--		IIO_MOD_X, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Y,
--		IIO_MOD_Y, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL, ST_SENSORS_SCAN_Z,
--		IIO_MOD_Z, IIO_LE, ST_SENSORS_DEFAULT_16_REALBITS,
--						ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_GYRO_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 16f0d6d..715d616 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -113,22 +113,34 @@
- #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
- 
- static const struct iio_chan_spec st_magn_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_DEFAULT_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
- static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_X, IIO_MOD_X, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_X_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Y, IIO_MOD_Y, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Y_L_ADDR),
--	ST_SENSORS_LSM_CHANNELS(IIO_MAGN, ST_SENSORS_SCAN_Z, IIO_MOD_Z, IIO_LE,
--		ST_SENSORS_DEFAULT_16_REALBITS, ST_MAGN_2_OUT_Z_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_X_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Y_L_ADDR),
-+	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-+			ST_MAGN_2_OUT_Z_L_ADDR),
- 	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 172c5b2..5ffd763 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -30,8 +30,6 @@
- #define ST_SENSORS_SCAN_X			0
- #define ST_SENSORS_SCAN_Y			1
- #define ST_SENSORS_SCAN_Z			2
--#define ST_SENSORS_DEFAULT_12_REALBITS		12
--#define ST_SENSORS_DEFAULT_16_REALBITS		16
- #define ST_SENSORS_DEFAULT_POWER_ON_VALUE	0x01
- #define ST_SENSORS_DEFAULT_POWER_OFF_VALUE	0x00
- #define ST_SENSORS_DEFAULT_WAI_ADDRESS		0x0f
-@@ -42,20 +40,20 @@
- #define ST_SENSORS_MAX_NAME			17
- #define ST_SENSORS_MAX_4WAI			7
- 
--#define ST_SENSORS_LSM_CHANNELS(device_type, index, mod, endian, bits, addr) \
-+#define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
-+					ch2, s, endian, rbits, sbits, addr) \
- { \
- 	.type = device_type, \
--	.modified = 1, \
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
--			BIT(IIO_CHAN_INFO_SCALE), \
-+	.modified = mod, \
-+	.info_mask_separate = mask, \
- 	.scan_index = index, \
--	.channel2 = mod, \
-+	.channel2 = ch2, \
- 	.address = addr, \
- 	.scan_type = { \
--		.sign = 's', \
--		.realbits = bits, \
--		.shift = 16 - bits, \
--		.storagebits = 16, \
-+		.sign = s, \
-+		.realbits = rbits, \
-+		.shift = sbits - rbits, \
-+		.storagebits = sbits, \
- 		.endianness = endian, \
- 	}, \
- }
+ obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
+-obj-$(CONFIG_IIO_GPIO_TRIGGER) += iio-trig-gpio.o
++obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+ obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
+diff --git a/drivers/staging/iio/trigger/iio-trig-gpio.c b/drivers/staging/iio/trigger/iio-trig-gpio.c
+deleted file mode 100644
+index 69dabca..0000000
+--- a/drivers/staging/iio/trigger/iio-trig-gpio.c
++++ /dev/null
+@@ -1,166 +0,0 @@
+-/*
+- * Industrial I/O - gpio based trigger support
+- *
+- * Copyright (c) 2008 Jonathan Cameron
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License version 2 as published by
+- * the Free Software Foundation.
+- *
+- * Currently this is more of a functioning proof of concept than a full
+- * fledged trigger driver.
+- *
+- * TODO:
+- *
+- * Add board config elements to allow specification of startup settings.
+- */
+-
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <linux/interrupt.h>
+-#include <linux/slab.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/trigger.h>
+-
+-static LIST_HEAD(iio_gpio_trigger_list);
+-static DEFINE_MUTEX(iio_gpio_trigger_list_lock);
+-
+-struct iio_gpio_trigger_info {
+-	struct mutex in_use;
+-	unsigned int irq;
+-};
+-/*
+- * Need to reference count these triggers and only enable gpio interrupts
+- * as appropriate.
+- */
+-
+-/* So what functionality do we want in here?... */
+-/* set high / low as interrupt type? */
+-
+-static irqreturn_t iio_gpio_trigger_poll(int irq, void *private)
+-{
+-	/* Timestamp not currently provided */
+-	iio_trigger_poll(private, 0);
+-	return IRQ_HANDLED;
+-}
+-
+-static const struct iio_trigger_ops iio_gpio_trigger_ops = {
+-	.owner = THIS_MODULE,
+-};
+-
+-static int iio_gpio_trigger_probe(struct platform_device *pdev)
+-{
+-	struct iio_gpio_trigger_info *trig_info;
+-	struct iio_trigger *trig, *trig2;
+-	unsigned long irqflags;
+-	struct resource *irq_res;
+-	int irq, ret = 0, irq_res_cnt = 0;
+-
+-	do {
+-		irq_res = platform_get_resource(pdev,
+-				IORESOURCE_IRQ, irq_res_cnt);
+-
+-		if (irq_res == NULL) {
+-			if (irq_res_cnt == 0)
+-				dev_err(&pdev->dev, "No GPIO IRQs specified");
+-			break;
+-		}
+-		irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+-
+-		for (irq = irq_res->start; irq <= irq_res->end; irq++) {
+-
+-			trig = iio_trigger_alloc("irqtrig%d", irq);
+-			if (!trig) {
+-				ret = -ENOMEM;
+-				goto error_free_completed_registrations;
+-			}
+-
+-			trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+-			if (!trig_info) {
+-				ret = -ENOMEM;
+-				goto error_put_trigger;
+-			}
+-			iio_trigger_set_drvdata(trig, trig_info);
+-			trig_info->irq = irq;
+-			trig->ops = &iio_gpio_trigger_ops;
+-			ret = request_irq(irq, iio_gpio_trigger_poll,
+-					  irqflags, trig->name, trig);
+-			if (ret) {
+-				dev_err(&pdev->dev,
+-					"request IRQ-%d failed", irq);
+-				goto error_free_trig_info;
+-			}
+-
+-			ret = iio_trigger_register(trig);
+-			if (ret)
+-				goto error_release_irq;
+-
+-			list_add_tail(&trig->alloc_list,
+-					&iio_gpio_trigger_list);
+-		}
+-
+-		irq_res_cnt++;
+-	} while (irq_res != NULL);
+-
+-
+-	return 0;
+-
+-/* First clean up the partly allocated trigger */
+-error_release_irq:
+-	free_irq(irq, trig);
+-error_free_trig_info:
+-	kfree(trig_info);
+-error_put_trigger:
+-	iio_trigger_put(trig);
+-error_free_completed_registrations:
+-	/* The rest should have been added to the iio_gpio_trigger_list */
+-	list_for_each_entry_safe(trig,
+-				 trig2,
+-				 &iio_gpio_trigger_list,
+-				 alloc_list) {
+-		trig_info = iio_trigger_get_drvdata(trig);
+-		free_irq(trig_info->irq, trig);
+-		kfree(trig_info);
+-		iio_trigger_unregister(trig);
+-	}
+-
+-	return ret;
+-}
+-
+-static int iio_gpio_trigger_remove(struct platform_device *pdev)
+-{
+-	struct iio_trigger *trig, *trig2;
+-	struct iio_gpio_trigger_info *trig_info;
+-
+-	mutex_lock(&iio_gpio_trigger_list_lock);
+-	list_for_each_entry_safe(trig,
+-				 trig2,
+-				 &iio_gpio_trigger_list,
+-				 alloc_list) {
+-		trig_info = iio_trigger_get_drvdata(trig);
+-		iio_trigger_unregister(trig);
+-		free_irq(trig_info->irq, trig);
+-		kfree(trig_info);
+-		iio_trigger_put(trig);
+-	}
+-	mutex_unlock(&iio_gpio_trigger_list_lock);
+-
+-	return 0;
+-}
+-
+-static struct platform_driver iio_gpio_trigger_driver = {
+-	.probe = iio_gpio_trigger_probe,
+-	.remove = iio_gpio_trigger_remove,
+-	.driver = {
+-		.name = "iio_gpio_trigger",
+-		.owner = THIS_MODULE,
+-	},
+-};
+-
+-module_platform_driver(iio_gpio_trigger_driver);
+-
+-MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+-MODULE_DESCRIPTION("Example gpio trigger for the iio subsystem");
+-MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/trigger/iio-trig-interrupt.c b/drivers/staging/iio/trigger/iio-trig-interrupt.c
+new file mode 100644
+index 0000000..9afba96
+--- /dev/null
++++ b/drivers/staging/iio/trigger/iio-trig-interrupt.c
+@@ -0,0 +1,152 @@
++/*
++ * Industrial I/O - generic interrupt based trigger support
++ *
++ * Copyright (c) 2008-2013 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/slab.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++static LIST_HEAD(iio_interrupt_trigger_list);
++static DEFINE_MUTEX(iio_interrupt_trigger_list_lock);
++
++struct iio_interrupt_trigger_info {
++	struct mutex in_use;
++	unsigned int irq;
++};
++
++static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
++{
++	/* Timestamp not currently provided */
++	iio_trigger_poll(private, 0);
++	return IRQ_HANDLED;
++}
++
++static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
++	.owner = THIS_MODULE,
++};
++
++static int iio_interrupt_trigger_probe(struct platform_device *pdev)
++{
++	struct iio_interrupt_trigger_info *trig_info;
++	struct iio_trigger *trig, *trig2;
++	unsigned long irqflags;
++	struct resource *irq_res;
++	int irq, ret = 0, irq_res_cnt = 0;
++
++	do {
++		irq_res = platform_get_resource(pdev,
++				IORESOURCE_IRQ, irq_res_cnt);
++
++		if (irq_res == NULL) {
++			if (irq_res_cnt == 0)
++				dev_err(&pdev->dev, "No IRQs specified");
++			break;
++		}
++		irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
++
++		for (irq = irq_res->start; irq <= irq_res->end; irq++) {
++
++			trig = iio_trigger_alloc("irqtrig%d", irq);
++			if (!trig) {
++				ret = -ENOMEM;
++				goto error_free_completed_registrations;
++			}
++
++			trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
++			if (!trig_info) {
++				ret = -ENOMEM;
++				goto error_put_trigger;
++			}
++			iio_trigger_set_drvdata(trig, trig_info);
++			trig_info->irq = irq;
++			trig->ops = &iio_interrupt_trigger_ops;
++			ret = request_irq(irq, iio_interrupt_trigger_poll,
++					  irqflags, trig->name, trig);
++			if (ret) {
++				dev_err(&pdev->dev,
++					"request IRQ-%d failed", irq);
++				goto error_free_trig_info;
++			}
++
++			ret = iio_trigger_register(trig);
++			if (ret)
++				goto error_release_irq;
++
++			list_add_tail(&trig->alloc_list,
++					&iio_interrupt_trigger_list);
++		}
++
++		irq_res_cnt++;
++	} while (irq_res != NULL);
++
++
++	return 0;
++
++/* First clean up the partly allocated trigger */
++error_release_irq:
++	free_irq(irq, trig);
++error_free_trig_info:
++	kfree(trig_info);
++error_put_trigger:
++	iio_trigger_put(trig);
++error_free_completed_registrations:
++	/* The rest should have been added to the iio_interrupt_trigger_list */
++	list_for_each_entry_safe(trig,
++				 trig2,
++				 &iio_interrupt_trigger_list,
++				 alloc_list) {
++		trig_info = iio_trigger_get_drvdata(trig);
++		free_irq(trig_info->irq, trig);
++		kfree(trig_info);
++		iio_trigger_unregister(trig);
++	}
++
++	return ret;
++}
++
++static int iio_interrupt_trigger_remove(struct platform_device *pdev)
++{
++	struct iio_trigger *trig, *trig2;
++	struct iio_interrupt_trigger_info *trig_info;
++
++	mutex_lock(&iio_interrupt_trigger_list_lock);
++	list_for_each_entry_safe(trig,
++				 trig2,
++				 &iio_interrupt_trigger_list,
++				 alloc_list) {
++		trig_info = iio_trigger_get_drvdata(trig);
++		iio_trigger_unregister(trig);
++		free_irq(trig_info->irq, trig);
++		kfree(trig_info);
++		iio_trigger_put(trig);
++	}
++	mutex_unlock(&iio_interrupt_trigger_list_lock);
++
++	return 0;
++}
++
++static struct platform_driver iio_interrupt_trigger_driver = {
++	.probe = iio_interrupt_trigger_probe,
++	.remove = iio_interrupt_trigger_remove,
++	.driver = {
++		.name = "iio_interrupt_trigger",
++		.owner = THIS_MODULE,
++	},
++};
++
++module_platform_driver(iio_interrupt_trigger_driver);
++
++MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
++MODULE_DESCRIPTION("Interrupt trigger for the iio subsystem");
++MODULE_LICENSE("GPL v2");
 -- 
-1.7.9.5
+1.8.2.3
 
