@@ -1,71 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:12519 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751976Ab3FAHLA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Jun 2013 03:11:00 -0400
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0MNP00CEUDA6NSF0@mailout3.samsung.com> for
- linux-iio@vger.kernel.org; Sat, 01 Jun 2013 16:10:59 +0900 (KST)
-From: Jingoo Han <jg1.han@samsung.com>
-To: 'Jonathan Cameron' <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] iio: replace strict_strtoul() with kstrtoul()
-Date: Sat, 01 Jun 2013 16:10:58 +0900
-Message-id: <000401ce5e97$2aa80490$7ff80db0$@samsung.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52261 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753376Ab3FBQ67 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 12:58:59 -0400
+Message-ID: <51AB79CE.2000001@kernel.org>
+Date: Sun, 02 Jun 2013 17:58:54 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 07/19] iio: adc: am335x: Add DT support
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-8-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1369681926-22185-8-git-send-email-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The usage of strict_strtoul() is not preferred, because
-strict_strtoul() is obsolete. Thus, kstrtoul() should be
-used.
+On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
+> 
+> Add DT support for client ADC driver.
+> 
+> [ panto@antoniou-consulting.com : use of_get_child_by_name
+> 	instead of of_find_node_by_name ]
+> 
+> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> [bigeasy: shift the code to the left]
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/iio/adc/max1363.c            |    2 +-
- drivers/iio/trigger/iio-trig-sysfs.c |    4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 9e6da72..f148d00 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -660,7 +660,7 @@ static ssize_t max1363_monitor_store_freq(struct device *dev,
- 	unsigned long val;
- 	bool found = false;
- 
--	ret = strict_strtoul(buf, 10, &val);
-+	ret = kstrtoul(buf, 10, &val);
- 	if (ret)
- 		return -EINVAL;
- 	for (i = 0; i < ARRAY_SIZE(max1363_monitor_speeds); i++)
-diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
-index b727bde..effcd0a 100644
---- a/drivers/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/iio/trigger/iio-trig-sysfs.c
-@@ -34,7 +34,7 @@ static ssize_t iio_sysfs_trig_add(struct device *dev,
- 	int ret;
- 	unsigned long input;
- 
--	ret = strict_strtoul(buf, 10, &input);
-+	ret = kstrtoul(buf, 10, &input);
- 	if (ret)
- 		return ret;
- 	ret = iio_sysfs_trigger_probe(input);
-@@ -53,7 +53,7 @@ static ssize_t iio_sysfs_trig_remove(struct device *dev,
- 	int ret;
- 	unsigned long input;
- 
--	ret = strict_strtoul(buf, 10, &input);
-+	ret = kstrtoul(buf, 10, &input);
- 	if (ret)
- 		return ret;
- 	ret = iio_sysfs_trigger_remove(input);
--- 
-1.7.10.4
+I would take this directly but then I'd imagine that will cause havoc
+when the later patches are applied and touch both iio and mfd.
 
 
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c |   23 +++++++++++++++++++----
+>  1 file changed, 19 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index 5f9a7e7..e657709 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -22,6 +22,8 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/io.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+>  
+>  #include <linux/mfd/ti_am335x_tscadc.h>
+>  #include <linux/platform_data/ti_am335x_adc.h>
+> @@ -141,11 +143,12 @@ static int tiadc_probe(struct platform_device *pdev)
+>  	struct iio_dev		*indio_dev;
+>  	struct tiadc_device	*adc_dev;
+>  	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
+> -	struct mfd_tscadc_board	*pdata;
+> +	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
+> +	struct device_node	*node = tscadc_dev->dev->of_node;
+>  	int			err;
+> +	u32			val32;
+>  
+> -	pdata = tscadc_dev->dev->platform_data;
+> -	if (!pdata || !pdata->adc_init) {
+> +	if (!pdata && !node) {
+>  		dev_err(&pdev->dev, "Could not find platform data\n");
+>  		return -EINVAL;
+>  	}
+> @@ -159,7 +162,19 @@ static int tiadc_probe(struct platform_device *pdev)
+>  	adc_dev = iio_priv(indio_dev);
+>  
+>  	adc_dev->mfd_tscadc = tscadc_dev;
+> -	adc_dev->channels = pdata->adc_init->adc_channels;
+> +
+> +	if (pdata)
+> +		adc_dev->channels = pdata->adc_init->adc_channels;
+> +	else {
+> +		node = of_get_child_by_name(node, "adc");
+> +		if (!node)
+> +			return  -EINVAL;
+> +		err = of_property_read_u32(node,
+> +				"ti,adc-channels", &val32);
+> +		if (err < 0)
+> +			goto err_free_device;
+> +		adc_dev->channels = val32;
+> +	}
+>  
+>  	indio_dev->dev.parent = &pdev->dev;
+>  	indio_dev->name = dev_name(&pdev->dev);
+> 
