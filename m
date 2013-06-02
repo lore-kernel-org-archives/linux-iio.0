@@ -1,227 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52669 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48848 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754703Ab3FBRkc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 13:40:32 -0400
-Message-ID: <51AB838B.5060602@kernel.org>
-Date: Sun, 02 Jun 2013 18:40:27 +0100
+	with ESMTP id S1753499Ab3FBQAq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 12:00:46 -0400
+Message-ID: <51AB6C2C.2060803@kernel.org>
+Date: Sun, 02 Jun 2013 17:00:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 11/19] iio & mfd: ti_tscadc: Update with IIO map interface
- & deal with partial activation
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-12-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-12-git-send-email-bigeasy@linutronix.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Guillaume Ballet <gballetwork@gmail.com>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	linux-iio@vger.kernel.org
+Subject: Re: Why is only one int returned in iio_read_channel_processed?
+References: <CAGi_vrjcy=pB93FT8XrNHNZZb82RT=0YEbjds3PU4L4OstFgGQ@mail.gmail.com> <519C7C29.9040707@jic23.retrosnub.co.uk> <519C7F93.9010606@metafoo.de> <519C8923.7020902@jic23.retrosnub.co.uk> <CAGi_vricp+o35GiycEeO=eXg4gwpiP3x1ZvU2JCP0-_vMwrwWw@mail.gmail.com> <519CAF57.5030301@metafoo.de> <CAGi_vrir0uQd4u9WgixQ5an+jE8WFTyVmBiFnmxa-y=DfeW61g@mail.gmail.com> <519CCAA2.2070408@metafoo.de> <CAGi_vrjk7FLvYhHSLbV9D4GGHY1X1k1fkuEXMkh9Mn7z_5qj1w@mail.gmail.com> <519CD307.8020404@metafoo.de> <CAGi_vri2=wV8+m=y7ODKwh=F7opd_ZWckfP6NF_OftFh4=A=4Q@mail.gmail.com> <519CFCEB.1010606@metafoo.de> <CAGi_vrgk=x0JmVhqWPFRbdEBiHiURrUBoezKapJd5wj4zUXr7w@mail.gmail.com> <519DF1C7.9010604@metafoo.de> <CAGi_vri0x77BmteL=+A3-P7Ai3x9NAdBa-HqctaKN9jMt0EN1w@mail.gmail.com> <519E1979.8070400@metafoo.de>
+In-Reply-To: <519E1979.8070400@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
-> From: Pantelis Antoniou <panto@antoniou-consulting.com>
->
-> Add an IIO map interface that consumers can use.
->
-> While we're here fix the mfd device in the case
-> where a subdevice might not be activated.
-Any time I read 'while we're here' it rings alarm bells.
-Two issues -> Two patches please.
+On 05/23/2013 02:28 PM, Lars-Peter Clausen wrote:
+> On 05/23/2013 03:18 PM, Guillaume Ballet wrote:
+>>>>
+>>>> - if IIO_INT_VAL_PLUS_NANO is returned (common when dealing with
+>>>> current sources), 32 bits is a bit tight - which is why the read_raw
+>>>> function pointer in iio_info has (val, val2) in the first place.
+>>>> - People like me who do not use the iio_convert_raw_to_processed
+>>>> path() but need to support IIO_CHAN_INFO_PROCESSED directly in their
+>>>> driver have an issue: we would need to be passed the scale in the
+>>>> read_raw function of iio_info. That would impact _all_ IIO drivers.
+>>>
+>>> IIO_CHAN_INFO_PROCESSED is by definition supposed to return the value in the
+>>> proper unit. If that doesn't work for you use IIO_CHAN_INFO_RAW +
+>>> IIO_CHAN_INFO_SCALE. Think of IIO_CHAN_INFO_PROCESSED as IIO_CHAN_INFO_RAW
+>>> with the scale set to 1.0
+>>
+>> This isn't a unit problem, this is a precision problem: if I want to
+>> return a current in Ampères, for instance 5.000000001, I can't get
+>> that by calling iio_read_channel_processed() (or
+>> iio_read_channel_raw() for that matter) as the precision is too big to
+>> fit in only one integer. The issue is that the callback that handles
+>> IIO_CHAN_INFO_PROCESSED and IIO_CHAN_INFO_RAW does allow to return
+>> such a value. There's an inconsistency in the interface.
+> 
+> I doubt anybody actually cares about the 0.000000001 in that case.
+> 
+>>
+>>>
+>>>> - The scale parameter to iio_convert_raw_to_processed() itself is an
+>>>> int, and IIO_CHAN_INFO_SCALE can return a scale in the
+>>>> IIO_VAL_INT_PLUS_NANO scheme. It means somewhere along the road,
+>>>> precision is lost.
+>>>
+>>> The scale would be passed in by the consumer, so the consumer is able to
+>>> specify the amount of precision it wants.
+>>
+>> Not if they want a precision as high as the IIO driver is able to
+>> deliver: the scale returned by a IIO_CHAN_INFO_SCALE is a 64-bits
+>> fixed point integer. The scaled passed to
+>> iio_convert_raw_to_processed() is a 32 bit integer. If one needs great
+>> precision on big numbers, it won't fit.
+> 
+> The problem is that there is no in kernel user who can actually make use of
+> anything but a 32bit integer. If we need a larger range we should change the
+> return type to a 64bit integer rather than adopting the val1, val2 scheme
+> for the in-kernel API.
 
-The level of reworking here is rather high. Probably better
-to do the structural changes in one patch then follow with the
-new functionality in another.
+Just to make things clear....
 
-Other comments inline.
->
-> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-> Signed-off-by: Felipe Balbi <balbi@ti.com>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      |   53 +++++++++++++++++++++++++++++-----
->  drivers/mfd/ti_am335x_tscadc.c       |   29 ++++++++++++-------
->  include/linux/mfd/ti_am335x_tscadc.h |    8 ++---
->  3 files changed, 67 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index d821d88..cceff09 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -20,16 +20,19 @@
->  #include <linux/slab.h>
->  #include <linux/interrupt.h>
->  #include <linux/platform_device.h>
-> -#include <linux/io.h>
-why? Not immediately obvious this has anything to do with the rest of this patch.
->  #include <linux/iio/iio.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
->
->  #include <linux/mfd/ti_am335x_tscadc.h>
->
->  struct tiadc_device {
->  	struct ti_tscadc_dev *mfd_tscadc;
->  	int channels;
-> +	char *buf;
-> +	struct iio_map *map;
->  };
->
->  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> @@ -76,25 +79,59 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
->  static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
->  {
->  	struct iio_chan_spec *chan_array;
-
-> -	int i;
-> -
-> -	indio_dev->num_channels = channels;
-> -	chan_array = kcalloc(indio_dev->num_channels,
-> -			sizeof(struct iio_chan_spec), GFP_KERNEL);
-> +	struct iio_chan_spec *chan;
-> +	char *s;
-> +	int i, len, size, ret;
->
-
-This is less than beautiful... It'll cost you marginally more to
-allocate a separate array for the strings, but will be a lot nicer
-to read.  If we are dealing with a relatively small maximum number
-then just do it as a static const char * array of all possible
-strings.
-
-> +	size = indio_dev->num_channels * (sizeof(struct iio_chan_spec) + 6);
-> +	chan_array = kzalloc(size, GFP_KERNEL);
->  	if (chan_array == NULL)
->  		return -ENOMEM;
->
-> -	for (i = 0; i < (indio_dev->num_channels); i++) {
-> -		struct iio_chan_spec *chan = chan_array + i;
-> +	/* buffer space is after the array */
-> +	s = (char *)(chan_array + indio_dev->num_channels);
-> +	chan = chan_array;
-> +	for (i = 0; i < indio_dev->num_channels; i++, chan++, s += len + 1) {
-> +
-> +		len = sprintf(s, "AIN%d", i);
-> +
->  		chan->type = IIO_VOLTAGE;
->  		chan->indexed = 1;
->  		chan->channel = i;
->  		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> +		chan->datasheet_name = s;
-> +		chan->scan_type.sign = 'u';
-> +		chan->scan_type.realbits = 12;
-> +		chan->scan_type.storagebits = 32;
-> +		chan->scan_type.shift = 0;
->  	}
->
->  	indio_dev->channels = chan_array;
->
-> +	size = (indio_dev->num_channels + 1) * sizeof(struct iio_map);
-> +	adc_dev->map = kzalloc(size, GFP_KERNEL);
-> +	if (adc_dev->map == NULL) {
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		adc_dev->map[i].adc_channel_label =
-> +			chan_array[i].datasheet_name;
-> +		adc_dev->map[i].consumer_dev_name = "any";
-> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
-> +	}
-> +	adc_dev->map[i].adc_channel_label = NULL;
-> +	adc_dev->map[i].consumer_dev_name = NULL;
-> +	adc_dev->map[i].consumer_channel = NULL;
-> +
-> +	ret = iio_map_array_register(indio_dev, adc_dev->map);
-> +	if (ret != 0) {
-> +		kfree(adc_dev->map);
-> +		kfree(chan_array);
-> +		return -ENOMEM;
-> +	}
-> +
->  	return indio_dev->num_channels;
->  }
->
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index 5b324e5..bd127bd 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -175,26 +175,35 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
->  	ctrl |= CNTRLREG_TSCSSENB;
->  	tscadc_writel(tscadc, REG_CTRL, ctrl);
->
-> +	tscadc->used_cells = 0;
-> +	tscadc->tsc_cell = -1;
-> +	tscadc->adc_cell = -1;
-> +
->  	/* TSC Cell */
-> -	cell = &tscadc->cells[TSC_CELL];
-> -	cell->name = "tsc";
-> -	cell->platform_data = tscadc;
-> -	cell->pdata_size = sizeof(*tscadc);
-> +	if (tsc_wires > 0) {
-> +		tscadc->tsc_cell = tscadc->used_cells;
-> +		cell = &tscadc->cells[tscadc->used_cells++];
-> +		cell->name = "tsc";
-> +		cell->platform_data = tscadc;
-> +		cell->pdata_size = sizeof(*tscadc);
-> +	}
->
->  	/* ADC Cell */
-> -	cell = &tscadc->cells[ADC_CELL];
-> -	cell->name = "tiadc";
-> -	cell->platform_data = tscadc;
-> -	cell->pdata_size = sizeof(*tscadc);
-> +	if (adc_channels > 0) {
-> +		tscadc->adc_cell = tscadc->used_cells;
-> +		cell = &tscadc->cells[tscadc->used_cells++];
-> +		cell->name = "tiadc";
-> +		cell->platform_data = tscadc;
-> +		cell->pdata_size = sizeof(*tscadc);
-> +	}
->
->  	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
-> -			TSCADC_CELLS, NULL, 0, NULL);
-> +			tscadc->used_cells, NULL, 0, NULL);
->  	if (err < 0)
->  		goto err_disable_clk;
->
->  	device_init_wakeup(&pdev->dev, true);
->  	platform_set_drvdata(pdev, tscadc);
-> -
->  	return 0;
->
->  err_disable_clk:
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 9624fea..50a245f 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -128,11 +128,6 @@
->
->  #define TSCADC_CELLS		2
->
-> -enum tscadc_cells {
-> -	TSC_CELL,
-> -	ADC_CELL,
-> -};
-> -
->  struct mfd_tscadc_board {
->  	struct tsc_data *tsc_init;
->  	struct adc_data *adc_init;
-> @@ -143,6 +138,9 @@ struct ti_tscadc_dev {
->  	struct regmap *regmap_tscadc;
->  	void __iomem *tscadc_base;
->  	int irq;
-> +	int used_cells;	/* 0-2 */
-> +	int tsc_cell;	/* -1 if not used */
-> +	int adc_cell;	/* -1 if not used */
->  	struct mfd_cell cells[TSCADC_CELLS];
->
->  	/* tsc device */
->
+If an in kernel user were proposed that actually did make good use
+of this it might be a different matter. It's just that no one has suggested
+one as yet. I can contrive of complex cases where it might make sense, but
+until we have a real world usecase, let us leave this.
+> 
+> - Lars
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
