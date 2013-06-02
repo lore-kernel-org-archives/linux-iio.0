@@ -1,163 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52781 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754767Ab3FBRsZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 13:48:25 -0400
-Message-ID: <51AB8568.9050104@kernel.org>
-Date: Sun, 02 Jun 2013 18:48:24 +0100
+Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 14/19] Documentation/DT bindings: add info for TI TSC
- ADC
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-15-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-15-git-send-email-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: mirq-linux@rere.qmqm.pl,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/4 V2]  iio: Rework the generic trigger-gpio trigger and move out of staging
+Date: Sun,  2 Jun 2013 20:00:12 +0100
+Message-Id: <1370199616-25500-1-git-send-email-jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/27/2013 08:12 PM, Sebastian Andrzej Siewior wrote:
-> The platform data structs are killed here because there are no users in
-> tree (nobody sets the structs up, the RO usage is beeing removed) and the
-> documentation about the parameters is saved here.
-The platform data removal has nothing to do with the rest of the patch.
-Please review the whole series to cleanup the patch divisions.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  .../bindings/input/touchscreen/ti-tsc-adc.txt      |   38 ++++++++++++++++++++
->  include/linux/input/ti_am335x_tsc.h                |   35 ------------------
->  include/linux/mfd/ti_am335x_tscadc.h               |    5 ---
->  include/linux/platform_data/ti_am335x_adc.h        |   14 --------
->  4 files changed, 38 insertions(+), 54 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->  delete mode 100644 include/linux/input/ti_am335x_tsc.h
->  delete mode 100644 include/linux/platform_data/ti_am335x_adc.h
-> 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> new file mode 100644
-> index 0000000..e533e9d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> @@ -0,0 +1,38 @@
-> +* TI - TSC ADC (Touschscreen and analog digital converter)
-> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> +
-> +Required properties:
-> +- child "tsc"
-> +	ti,wires: Wires refer to application modes i.e. 4/5/8 wire touchscreen
-> +		  support on the platform.
-> +	ti,x-plate-resistance: X plate resistance
-> +	ti,steps-to-configure: The sequencer supports a total of 16
-> +			       programmable steps. A step configured to read a
-> +			       single co-ordinate value. Can be applied more
-> +			       number of times for better results.
-> +	ti,wire-config: Different boards could have a different order for
-> +			connecting wires on touchscreen. We need to provide an
-> +			8 bit number where in the 1st four bits represent the
-> +			analog lines and the next 4 bits represent positive/
-> +			negative terminal on that input line. Notations to
-> +			represent the input lines and terminals resoectively
-> +			is as follows:
-> +			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-> +			XP  = 0, XN = 1, YP = 2, YN = 3.
-> +- child "adc"
-> +	ti,adc-channels: Number of analog inputs available for ADC
-> +
-> +Example:
-> +	tscadc: tscadc@44e0d000 {
-> +		compatible = "ti,ti-tscadc";
-> +		tsc {
-> +			ti,wires = <4>;
-> +			ti,x-plate-resistance = <200>;
-> +			ti,steps-to-configure = <5>;
-> +			ti,wire-config = <0x00 0x11 0x22 0x33>;
-> +		};
-> +
-> +		adc {
-> +			ti,adc-channels = <4>;
-> +		};
-> +	}
-> diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
-> deleted file mode 100644
-> index 6a66b4d..0000000
-> --- a/include/linux/input/ti_am335x_tsc.h
-> +++ /dev/null
-> @@ -1,35 +0,0 @@
-> -#ifndef __LINUX_TI_AM335X_TSC_H
-> -#define __LINUX_TI_AM335X_TSC_H
-> -
-> -/**
-> - * struct tsc_data	Touchscreen wire configuration
-> - * @wires:		Wires refer to application modes
-> - *			i.e. 4/5/8 wire touchscreen support
-> - *			on the platform.
-> - * @x_plate_resistance:	X plate resistance.
-> - * @steps_to_configure:	The sequencer supports a total of
-> - *			16 programmable steps.
-> - *			A step configured to read a single
-> - *			co-ordinate value, can be applied
-> - *			more number of times for better results.
-> - * @wire_config:	Different EVM's could have a different order
-> - *			for connecting wires on touchscreen.
-> - *			We need to provide an 8 bit number where in
-> - *			the 1st four bits represent the analog lines
-> - *			and the next 4 bits represent positive/
-> - *			negative terminal on that input line.
-> - *			Notations to represent the input lines and
-> - *			terminals resoectively is as follows:
-> - *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
-> - *			XP  = 0, XN = 1, YP = 2, YN = 3.
-> - *
-> - */
-> -
-> -struct tsc_data {
-> -	int wires;
-> -	int x_plate_resistance;
-> -	int steps_to_configure;
-> -	int wire_config[10];
-> -};
-> -
-> -#endif
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 50a245f..c985262 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -128,11 +128,6 @@
->  
->  #define TSCADC_CELLS		2
->  
-> -struct mfd_tscadc_board {
-> -	struct tsc_data *tsc_init;
-> -	struct adc_data *adc_init;
-> -};
-> -
->  struct ti_tscadc_dev {
->  	struct device *dev;
->  	struct regmap *regmap_tscadc;
-> diff --git a/include/linux/platform_data/ti_am335x_adc.h b/include/linux/platform_data/ti_am335x_adc.h
-> deleted file mode 100644
-> index e41d583..0000000
-> --- a/include/linux/platform_data/ti_am335x_adc.h
-> +++ /dev/null
-> @@ -1,14 +0,0 @@
-> -#ifndef __LINUX_TI_AM335X_ADC_H
-> -#define __LINUX_TI_AM335X_ADC_H
-> -
-> -/**
-> - * struct adc_data	ADC Input information
-> - * @adc_channels:	Number of analog inputs
-> - *			available for ADC.
-> - */
-> -
-> -struct adc_data {
-> -	unsigned int adc_channels;
-> -};
-> -
-> -#endif
-> 
+Only changes here are dropping the irq_res_cnt as it unused (thanks Lars) and
+a rebase as a result of some Kconfig dependency changes.
+
+I still don't have a hardware setup, but this is so simple that unless
+someone shouts I'll probably send it upstream in fairly soon anyway.
+
+Jonathan
+
+Previous message:
+
+Hi all,
+
+This is an RFC for a couple of reasons.
+
+1) I'm not sure how people feel about the move to multiple platform devices
+(patch 3).
+2) I don't actually have a simple test setup for this one.  I can put one
+together but it might be a while before I get it done.
+
+Anyhow, the purpose of this set is to respond to Lars-Peter's comments
+when I originally asked if anyone minded it moving out of staging as it
+was before this.  Lars raised the point that having one driver instance
+register multiple triggers just made life more complicated, and instead
+it might be better to have multiple driver instances, with one trigger each.
+Lars also pointed out that the name of the driver was silly given there
+was nolonger a requirement that the source of the interrupts be a gpio
+and there hasn't been for quite some time.
+
+All comments welcome. Particularly wrt to patch 3.
+
+Jonathan Cameron (4):
+  staging:iio:trigger:gpio bug in release of gpio in error path
+  staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
+  staging:iio:triggers:interrupt trigger - one per platform device.
+  iio:triggers:interrupt trigger - move out of staging.
+
+ drivers/iio/trigger/Kconfig                 |   9 ++
+ drivers/iio/trigger/Makefile                |   1 +
+ drivers/iio/trigger/iio-trig-interrupt.c    | 121 ++++++++++++++++++++
+ drivers/staging/iio/trigger/Kconfig         |   6 -
+ drivers/staging/iio/trigger/Makefile        |   1 -
+ drivers/staging/iio/trigger/iio-trig-gpio.c | 167 ----------------------------
+ 6 files changed, 131 insertions(+), 174 deletions(-)
+ create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
+ delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
+
+-- 
+1.8.2.3
