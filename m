@@ -1,283 +1,342 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51901 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53475 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753999Ab3FBQdT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 12:33:19 -0400
-Message-ID: <51AB73CC.2070801@kernel.org>
-Date: Sun, 02 Jun 2013 17:33:16 +0100
+	with ESMTP id S1755518Ab3FBTA0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 15:00:26 -0400
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: lars@metafoo.de, linux-iio@vger.kernel.org,
-	j.anaszewski@samsung.com, lee.jones@stericsson.com
-Subject: Re: [PATCH 2/3] iio:common: Removed stuff macros, added num_data_channels
- on st_sensors struct             and added support on one-shot sysfs reads
- to 3 byte channel
-References: <1369405517-2619-1-git-send-email-denis.ciocca@st.com> <1369405517-2619-3-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1369405517-2619-3-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: mirq-linux@rere.qmqm.pl, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 4/4] iio:triggers:interrupt trigger - move out of staging.
+Date: Sun,  2 Jun 2013 20:00:16 +0100
+Message-Id: <1370199616-25500-5-git-send-email-jic23@kernel.org>
+In-Reply-To: <1370199616-25500-1-git-send-email-jic23@kernel.org>
+References: <1370199616-25500-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/24/2013 03:25 PM, Denis CIOCCA wrote:
-> This patch introduce num_data_channels variable on st_sensors struct
-> to manage different type of channels (size or number) in
-> st_sensors_get_buffer_element function.
-> Removed ST_SENSORS_NUMBER_DATA_CHANNELS and ST_SENSORS_BYTE_FOR_CHANNEL
-> and used struct iio_chan_spec const *ch to catch data.
-> Added 3 byte channel data support on one-shot reads.
+This is now a very simple trigger indeed but useful in many common cases.
 
-Issue with use of VLAs described below or at least I've linked
-to some places that should tell you why this is currently considered a bad idea.
-Please reroll the series without them. One of those kernel coding
-quirks that you meet from time to time!
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/trigger/Kconfig                      |   9 ++
+ drivers/iio/trigger/Makefile                     |   1 +
+ drivers/iio/trigger/iio-trig-interrupt.c         | 121 +++++++++++++++++++++++
+ drivers/staging/iio/trigger/Kconfig              |   6 --
+ drivers/staging/iio/trigger/Makefile             |   1 -
+ drivers/staging/iio/trigger/iio-trig-interrupt.c | 121 -----------------------
+ 6 files changed, 131 insertions(+), 128 deletions(-)
 
-> 
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-> ---
->  drivers/iio/accel/st_accel_core.c                 |    3 ++
->  drivers/iio/common/st_sensors/st_sensors_buffer.c |   33 ++++++++++-----------
->  drivers/iio/common/st_sensors/st_sensors_core.c   |   19 ++++++++----
->  drivers/iio/gyro/st_gyro_core.c                   |    3 ++
->  drivers/iio/magnetometer/st_magn_core.c           |    3 ++
->  include/linux/iio/common/st_sensors.h             |    4 +--
->  6 files changed, 40 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 40236d5..4aec121 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -26,6 +26,8 @@
->  #include <linux/iio/common/st_sensors.h>
->  #include "st_accel.h"
->  
-> +#define ST_ACCEL_NUMBER_DATA_CHANNELS		3
-> +
->  /* DEFAULT VALUE FOR SENSORS */
->  #define ST_ACCEL_DEFAULT_OUT_X_L_ADDR		0x28
->  #define ST_ACCEL_DEFAULT_OUT_Y_L_ADDR		0x2a
-> @@ -454,6 +456,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_accel_common_probe_error;
->  
-> +	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
->  	adata->multiread_bit = adata->sensor->multi_read_bit;
->  	indio_dev->channels = adata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index 09b236d..7b7417a 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -25,10 +25,13 @@
->  int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->  {
->  	int i, n = 0, len;
-> -	u8 addr[ST_SENSORS_NUMBER_DATA_CHANNELS];
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +	unsigned int num_data_channels = sdata->num_data_channels;
-> +	unsigned int byte_for_channel =
-> +			indio_dev->channels[0].scan_type.storagebits >> 3;
-> +	u8 addr[num_data_channels];
->  
-> -	for (i = 0; i < ST_SENSORS_NUMBER_DATA_CHANNELS; i++) {
-> +	for (i = 0; i < num_data_channels; i++) {
->  		if (test_bit(i, indio_dev->active_scan_mask)) {
->  			addr[n] = indio_dev->channels[i].address;
->  			n++;
-> @@ -37,47 +40,41 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->  	switch (n) {
->  	case 1:
->  		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> -			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL, buf,
-> -			sdata->multiread_bit);
-> +			addr[0], byte_for_channel, buf, sdata->multiread_bit);
->  		break;
->  	case 2:
-> -		if ((addr[1] - addr[0]) == ST_SENSORS_BYTE_FOR_CHANNEL) {
-> +		if ((addr[1] - addr[0]) == byte_for_channel) {
->  			len = sdata->tf->read_multiple_byte(&sdata->tb,
-> -					sdata->dev, addr[0],
-> -					ST_SENSORS_BYTE_FOR_CHANNEL*n,
-> -					buf, sdata->multiread_bit);
-> +				sdata->dev, addr[0], byte_for_channel * n,
-> +				buf, sdata->multiread_bit);
->  		} else {
-> -			u8 rx_array[ST_SENSORS_BYTE_FOR_CHANNEL*
-> -				    ST_SENSORS_NUMBER_DATA_CHANNELS];
-> +			u8 rx_array[byte_for_channel * num_data_channels];
->  			len = sdata->tf->read_multiple_byte(&sdata->tb,
->  				sdata->dev, addr[0],
-> -				ST_SENSORS_BYTE_FOR_CHANNEL*
-> -				ST_SENSORS_NUMBER_DATA_CHANNELS,
-> +				byte_for_channel * num_data_channels,
->  				rx_array, sdata->multiread_bit);
->  			if (len < 0)
->  				goto read_data_channels_error;
->  
-> -			for (i = 0; i < n * ST_SENSORS_NUMBER_DATA_CHANNELS;
-> -									i++) {
-> +			for (i = 0; i < n * num_data_channels; i++) {
->  				if (i < n)
->  					buf[i] = rx_array[i];
->  				else
->  					buf[i] = rx_array[n + i];
->  			}
-> -			len = ST_SENSORS_BYTE_FOR_CHANNEL*n;
-> +			len = byte_for_channel * n;
->  		}
->  		break;
->  	case 3:
->  		len = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> -			addr[0], ST_SENSORS_BYTE_FOR_CHANNEL*
-> -			ST_SENSORS_NUMBER_DATA_CHANNELS,
-> +			addr[0], byte_for_channel * num_data_channels,
->  			buf, sdata->multiread_bit);
->  		break;
->  	default:
->  		len = -EINVAL;
->  		goto read_data_channels_error;
->  	}
-> -	if (len != ST_SENSORS_BYTE_FOR_CHANNEL*n) {
-> +	if (len != byte_for_channel * n) {
->  		len = -EIO;
->  		goto read_data_channels_error;
->  	}
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index ed9bc8a..5c0b66f 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -20,6 +20,11 @@
->  
->  #define ST_SENSORS_WAI_ADDRESS		0x0f
->  
-> +static inline u32 st_sensors_get_unaligned_le24(const u8 *p)
-> +{
-> +	return ((s32)((p[0] | p[1] << 8 | p[2] << 16) << 8) >> 8);
-> +}
-> +
->  static int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
->  						u8 reg_addr, u8 mask, u8 data)
->  {
-> @@ -273,19 +278,23 @@ st_sensors_match_scale_error:
->  EXPORT_SYMBOL(st_sensors_set_fullscale_by_gain);
->  
->  static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
-> -							u8 ch_addr, int *data)
-> +				struct iio_chan_spec const *ch, int *data)
->  {
->  	int err;
-> -	u8 outdata[ST_SENSORS_BYTE_FOR_CHANNEL];
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
-> +	u8 outdata[byte_for_channel];
+diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+index a4e68db..360fd50 100644
+--- a/drivers/iio/trigger/Kconfig
++++ b/drivers/iio/trigger/Kconfig
+@@ -3,6 +3,15 @@
+ #
+ menu "Triggers - standalone"
+ 
++config IIO_INTERRUPT_TRIGGER
++	tristate "Generic interrupt trigger"
++	help
++	  Provides support for using an interrupt of any type as an IIO
++	  trigger.  This may be provided by a gpio driver for example.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-trig-interrupt.
++
+ config IIO_SYSFS_TRIGGER
+ 	tristate "SYSFS trigger"
+ 	depends on SYSFS
+diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+index e0b2183..ce319a5 100644
+--- a/drivers/iio/trigger/Makefile
++++ b/drivers/iio/trigger/Makefile
+@@ -2,4 +2,5 @@
+ # Makefile for triggers not associated with iio-devices
+ #
+ 
++obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+ obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+new file mode 100644
+index 0000000..84bf397
+--- /dev/null
++++ b/drivers/iio/trigger/iio-trig-interrupt.c
+@@ -0,0 +1,121 @@
++/*
++ * Industrial I/O - generic interrupt based trigger support
++ *
++ * Copyright (c) 2008-2013 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/slab.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++
++
++struct iio_interrupt_trigger_info {
++	unsigned int irq;
++};
++
++static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
++{
++	/* Timestamp not currently provided */
++	iio_trigger_poll(private, 0);
++	return IRQ_HANDLED;
++}
++
++static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
++	.owner = THIS_MODULE,
++};
++
++static int iio_interrupt_trigger_probe(struct platform_device *pdev)
++{
++	struct iio_interrupt_trigger_info *trig_info;
++	struct iio_trigger *trig;
++	unsigned long irqflags;
++	struct resource *irq_res;
++	int irq, ret = 0;
++
++	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++
++	if (irq_res == NULL)
++		return -ENODEV;
++
++	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
++
++	irq = irq_res->start;
++
++	trig = iio_trigger_alloc("irqtrig%d", irq_res->start);
++	if (!trig) {
++		ret = -ENOMEM;
++		goto error_ret;
++	}
++
++	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
++	if (!trig_info) {
++		ret = -ENOMEM;
++		goto error_put_trigger;
++	}
++	iio_trigger_set_drvdata(trig, trig_info);
++	trig_info->irq = irq;
++	trig->ops = &iio_interrupt_trigger_ops;
++	ret = request_irq(irq, iio_interrupt_trigger_poll,
++			  irqflags, trig->name, trig);
++	if (ret) {
++		dev_err(&pdev->dev,
++			"request IRQ-%d failed", irq);
++		goto error_free_trig_info;
++	}
++
++	ret = iio_trigger_register(trig);
++	if (ret)
++		goto error_release_irq;
++	platform_set_drvdata(pdev, trig);
++
++	return 0;
++
++/* First clean up the partly allocated trigger */
++error_release_irq:
++	free_irq(irq, trig);
++error_free_trig_info:
++	kfree(trig_info);
++error_put_trigger:
++	iio_trigger_put(trig);
++error_ret:
++	return ret;
++}
++
++static int iio_interrupt_trigger_remove(struct platform_device *pdev)
++{
++	struct iio_trigger *trig;
++	struct iio_interrupt_trigger_info *trig_info;
++
++	trig = platform_get_drvdata(pdev);
++	trig_info = iio_trigger_get_drvdata(trig);
++	iio_trigger_unregister(trig);
++	free_irq(trig_info->irq, trig);
++	kfree(trig_info);
++	iio_trigger_put(trig);
++
++	return 0;
++}
++
++static struct platform_driver iio_interrupt_trigger_driver = {
++	.probe = iio_interrupt_trigger_probe,
++	.remove = iio_interrupt_trigger_remove,
++	.driver = {
++		.name = "iio_interrupt_trigger",
++		.owner = THIS_MODULE,
++	},
++};
++
++module_platform_driver(iio_interrupt_trigger_driver);
++
++MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
++MODULE_DESCRIPTION("Interrupt trigger for the iio subsystem");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/staging/iio/trigger/Kconfig b/drivers/staging/iio/trigger/Kconfig
+index 4ecb213..2fd18c6 100644
+--- a/drivers/staging/iio/trigger/Kconfig
++++ b/drivers/staging/iio/trigger/Kconfig
+@@ -12,12 +12,6 @@ config IIO_PERIODIC_RTC_TRIGGER
+ 	  Provides support for using periodic capable real time
+ 	  clocks as IIO triggers.
+ 
+-config IIO_INTERRUPT_TRIGGER
+-	tristate "Generic interrupt trigger"
+-	help
+-	  Provides support for using interrupts of various types as IIO
+-	  triggers.  These may be provided by a gpio driver for example.
+-
+ config IIO_BFIN_TMR_TRIGGER
+ 	tristate "Blackfin TIMER trigger"
+ 	depends on BLACKFIN
+diff --git a/drivers/staging/iio/trigger/Makefile b/drivers/staging/iio/trigger/Makefile
+index 48f2236..238481b 100644
+--- a/drivers/staging/iio/trigger/Makefile
++++ b/drivers/staging/iio/trigger/Makefile
+@@ -3,5 +3,4 @@
+ #
+ 
+ obj-$(CONFIG_IIO_PERIODIC_RTC_TRIGGER) += iio-trig-periodic-rtc.o
+-obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+ obj-$(CONFIG_IIO_BFIN_TMR_TRIGGER) += iio-trig-bfin-timer.o
+diff --git a/drivers/staging/iio/trigger/iio-trig-interrupt.c b/drivers/staging/iio/trigger/iio-trig-interrupt.c
+deleted file mode 100644
+index 84bf397..0000000
+--- a/drivers/staging/iio/trigger/iio-trig-interrupt.c
++++ /dev/null
+@@ -1,121 +0,0 @@
+-/*
+- * Industrial I/O - generic interrupt based trigger support
+- *
+- * Copyright (c) 2008-2013 Jonathan Cameron
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License version 2 as published by
+- * the Free Software Foundation.
+- */
+-
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <linux/interrupt.h>
+-#include <linux/slab.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/trigger.h>
+-
+-
+-struct iio_interrupt_trigger_info {
+-	unsigned int irq;
+-};
+-
+-static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
+-{
+-	/* Timestamp not currently provided */
+-	iio_trigger_poll(private, 0);
+-	return IRQ_HANDLED;
+-}
+-
+-static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
+-	.owner = THIS_MODULE,
+-};
+-
+-static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+-{
+-	struct iio_interrupt_trigger_info *trig_info;
+-	struct iio_trigger *trig;
+-	unsigned long irqflags;
+-	struct resource *irq_res;
+-	int irq, ret = 0;
+-
+-	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-
+-	if (irq_res == NULL)
+-		return -ENODEV;
+-
+-	irqflags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+-
+-	irq = irq_res->start;
+-
+-	trig = iio_trigger_alloc("irqtrig%d", irq_res->start);
+-	if (!trig) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-
+-	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+-	if (!trig_info) {
+-		ret = -ENOMEM;
+-		goto error_put_trigger;
+-	}
+-	iio_trigger_set_drvdata(trig, trig_info);
+-	trig_info->irq = irq;
+-	trig->ops = &iio_interrupt_trigger_ops;
+-	ret = request_irq(irq, iio_interrupt_trigger_poll,
+-			  irqflags, trig->name, trig);
+-	if (ret) {
+-		dev_err(&pdev->dev,
+-			"request IRQ-%d failed", irq);
+-		goto error_free_trig_info;
+-	}
+-
+-	ret = iio_trigger_register(trig);
+-	if (ret)
+-		goto error_release_irq;
+-	platform_set_drvdata(pdev, trig);
+-
+-	return 0;
+-
+-/* First clean up the partly allocated trigger */
+-error_release_irq:
+-	free_irq(irq, trig);
+-error_free_trig_info:
+-	kfree(trig_info);
+-error_put_trigger:
+-	iio_trigger_put(trig);
+-error_ret:
+-	return ret;
+-}
+-
+-static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+-{
+-	struct iio_trigger *trig;
+-	struct iio_interrupt_trigger_info *trig_info;
+-
+-	trig = platform_get_drvdata(pdev);
+-	trig_info = iio_trigger_get_drvdata(trig);
+-	iio_trigger_unregister(trig);
+-	free_irq(trig_info->irq, trig);
+-	kfree(trig_info);
+-	iio_trigger_put(trig);
+-
+-	return 0;
+-}
+-
+-static struct platform_driver iio_interrupt_trigger_driver = {
+-	.probe = iio_interrupt_trigger_probe,
+-	.remove = iio_interrupt_trigger_remove,
+-	.driver = {
+-		.name = "iio_interrupt_trigger",
+-		.owner = THIS_MODULE,
+-	},
+-};
+-
+-module_platform_driver(iio_interrupt_trigger_driver);
+-
+-MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+-MODULE_DESCRIPTION("Interrupt trigger for the iio subsystem");
+-MODULE_LICENSE("GPL v2");
+-- 
+1.8.2.3
 
-Sparse is complaining about this...
-
-drivers/iio/common/st_sensors/st_sensors_core.c:286:20: error: bad constant expression
-
- I was a little suspicious of whether VLAs were allowed in kernel (having
-seen none in use) when I read this but gave it the benefit of the doubt..
-Bit of googling suggests that they are frowned upon...
-
-http://www.gossamer-threads.com/lists/linux/kernel/382529?do=post_view_threaded#382529
-https://lkml.org/lkml/2013/3/6/724
-
-Otherwise this series is fine, could you reroll with the VLA instances replaced appropriately.
->  
->  	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> -				ch_addr, ST_SENSORS_BYTE_FOR_CHANNEL,
-> +				ch->address, byte_for_channel,
->  				outdata, sdata->multiread_bit);
->  	if (err < 0)
->  		goto read_error;
->  
-> -	*data = (s16)get_unaligned_le16(outdata);
-> +	if (byte_for_channel == 2)
-> +		*data = (s16)get_unaligned_le16(outdata);
-> +	else if (byte_for_channel == 3)
-> +		*data = (s32)st_sensors_get_unaligned_le24(outdata);
->  
->  read_error:
->  	return err;
-> @@ -307,7 +316,7 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
->  			goto read_error;
->  
->  		msleep((sdata->sensor->bootime * 1000) / sdata->odr);
-> -		err = st_sensors_read_axis_data(indio_dev, ch->address, val);
-> +		err = st_sensors_read_axis_data(indio_dev, ch, val);
->  		if (err < 0)
->  			goto read_error;
->  
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 9bae46b..f9ed348 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -27,6 +27,8 @@
->  #include <linux/iio/common/st_sensors.h>
->  #include "st_gyro.h"
->  
-> +#define ST_GYRO_NUMBER_DATA_CHANNELS		3
-> +
->  /* DEFAULT VALUE FOR SENSORS */
->  #define ST_GYRO_DEFAULT_OUT_X_L_ADDR		0x28
->  #define ST_GYRO_DEFAULT_OUT_Y_L_ADDR		0x2a
-> @@ -313,6 +315,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_gyro_common_probe_error;
->  
-> +	gdata->num_data_channels = ST_GYRO_NUMBER_DATA_CHANNELS;
->  	gdata->multiread_bit = gdata->sensor->multi_read_bit;
->  	indio_dev->channels = gdata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 715d616..ebfe8f1 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -26,6 +26,8 @@
->  #include <linux/iio/common/st_sensors.h>
->  #include "st_magn.h"
->  
-> +#define ST_MAGN_NUMBER_DATA_CHANNELS		3
-> +
->  /* DEFAULT VALUE FOR SENSORS */
->  #define ST_MAGN_DEFAULT_OUT_X_L_ADDR		0X04
->  #define ST_MAGN_DEFAULT_OUT_Y_L_ADDR		0X08
-> @@ -356,6 +358,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		goto st_magn_common_probe_error;
->  
-> +	mdata->num_data_channels = ST_MAGN_NUMBER_DATA_CHANNELS;
->  	mdata->multiread_bit = mdata->sensor->multi_read_bit;
->  	indio_dev->channels = mdata->sensor->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 5ffd763..72b2694 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -24,9 +24,7 @@
->  #define ST_SENSORS_FULLSCALE_AVL_MAX		10
->  
->  #define ST_SENSORS_NUMBER_ALL_CHANNELS		4
-> -#define ST_SENSORS_NUMBER_DATA_CHANNELS		3
->  #define ST_SENSORS_ENABLE_ALL_AXIS		0x07
-> -#define ST_SENSORS_BYTE_FOR_CHANNEL		2
->  #define ST_SENSORS_SCAN_X			0
->  #define ST_SENSORS_SCAN_Y			1
->  #define ST_SENSORS_SCAN_Z			2
-> @@ -202,6 +200,7 @@ struct st_sensors {
->   * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
->   * @buffer_data: Data used by buffer part.
->   * @odr: Output data rate of the sensor [Hz].
-> + * num_data_channels: Number of data channels used in buffer.
->   * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
->   * @tf: Transfer function structure used by I/O operations.
->   * @tb: Transfer buffers and mutex used by I/O operations.
-> @@ -218,6 +217,7 @@ struct st_sensor_data {
->  	char *buffer_data;
->  
->  	unsigned int odr;
-> +	unsigned int num_data_channels;
->  
->  	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
->  
-> 
