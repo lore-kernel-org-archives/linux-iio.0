@@ -1,65 +1,34 @@
 Return-Path: <Michael.Hennerich@analog.com>
-Message-ID: <51AC5153.7050506@analog.com>
-Date: Mon, 3 Jun 2013 10:18:27 +0200
-From: Michael Hennerich <michael.hennerich@analog.com>
-Reply-To: <michael.hennerich@analog.com>
+From: <michael.hennerich@analog.com>
+To: <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <Lars-Peter.Clausen@analog.com>,
+	<dan.carpenter@oracle.com>, Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH RESEND V2 1/4] iio: frequency: ad4350: Fix bug / typo in mask
+Date: Mon, 3 Jun 2013 15:30:46 +0200
+Message-ID: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "device-drivers-devel@blackfin.uclinux.org"
-	<device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] iio: frequency: New driver for Analog Devices ADF4350/ADF4351
- Wideband Synthesizers
-References: <1336398556-5360-1-git-send-email-michael.hennerich@analog.com> <4FA932D9.5010006@cam.ac.uk> <4FA93D00.2070906@analog.com> <4FABB647.3090200@kernel.org> <4FACC2B2.9000601@analog.com>
-In-Reply-To: <4FACC2B2.9000601@analog.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/11/2012 09:41 AM, Michael Hennerich wrote:
-> On 05/10/2012 02:36 PM, Jonathan Cameron wrote:
->> On 5/8/2012 4:34 PM, Michael Hennerich wrote:
->>> On 05/08/2012 04:51 PM, Jonathan Cameron wrote:
->>>> On 5/7/2012 2:49 PM, michael.hennerich@analog.com wrote:
->>>>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>>>
->>>>>
->>>>> +
->>>>> +static const struct iio_chan_spec_ext_info adf4350_ext_info[] = {
->>>>> + /* Ideally we use IIO_CHAN_INFO_FREQUENCY, but there are
->>>>> + * values>  2^32 in order to support the entire frequency range
->>>>> + * in Hz. Using scale is a bit ugly.
->>>>> + */
->>>> hmm.. Add IIO_VAL_MEGA_PLUS_INT.. We were always going to need a bigger
->>>> version at somepoint...
->>> Well - we then need an s64, however read|write_raw feature s32 for
->>> val and val2. So shall we pass low word in val and high word in val2?
->> I was thinking
->> val*1e6 + val2 would fit with what we have done elsewhere?  Is that
->> enough room?
-> Hi Jonathan,
->
-> IIO_VAL_MEGA_PLUS_INT versus IIO_VAL_LONG_LONG
->
-> It is enough room. But I wonder why we would do costly divide and modulus operations, when we can do sifts and ANDs? Splitting a s64 would give is the maximum available room with very little overhead.
->
-> Thoughts?
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Hi Jonathan,
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+---
+ drivers/iio/frequency/adf4350.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I like to touch base on the IIO_VAL_MEGA_PLUS_INT versus 
-IIO_VAL_LONG_LONG thing again.
-We need something bigger as IIO_VAL_INT without loosing granularity by 
-using scale.
-
-You're favorite is still IIO_VAL_MEGA_PLUS_INT?
-I need to implement something - just like to get everyones thought again.
-
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index a884252..e76d4ac 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -212,7 +212,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 		(pdata->r2_user_settings & (ADF4350_REG2_PD_POLARITY_POS |
+ 		ADF4350_REG2_LDP_6ns | ADF4350_REG2_LDF_INT_N |
+ 		ADF4350_REG2_CHARGE_PUMP_CURR_uA(5000) |
+-		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x9)));
++		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x3)));
+ 
+ 	st->regs[ADF4350_REG3] = pdata->r3_user_settings &
+ 				 (ADF4350_REG3_12BIT_CLKDIV(0xFFF) |
 -- 
-Greetings,
-Michael
-
---
-Analog Devices GmbH      Wilhelm-Wagenfeld-Str. 6      80807 Muenchen
-Sitz der Gesellschaft: Muenchen; Registergericht: Muenchen HRB 40368;
-Geschaeftsfuehrer:Dr.Carsten Suckrow, Thomas Wessel, William A. Martin,
-Margaret Seif
+1.7.9.5
