@@ -1,34 +1,50 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio:common: Added check memory allocation failed
-Date: Wed,  5 Jun 2013 09:21:29 +0200
-Message-Id: <1370416890-4659-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1370416890-4659-1-git-send-email-denis.ciocca@st.com>
-References: <1370416890-4659-1-git-send-email-denis.ciocca@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:54822 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751281Ab3FDKMH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 06:12:07 -0400
+Date: Tue, 4 Jun 2013 12:12:02 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 07/19] iio: adc: am335x: Add DT support
+Message-ID: <20130604101202.GA1151@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-8-git-send-email-bigeasy@linutronix.de>
+ <51AB79CE.2000001@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <51AB79CE.2000001@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/common/st_sensors/st_sensors_buffer.c |    5 +++++
- 1 file changed, 5 insertions(+)
+* Jonathan Cameron | 2013-06-02 17:58:54 [+0100]:
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index 7389785..71a2c5f 100644
---- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -57,6 +57,11 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- 			u8 *rx_array;
- 			rx_array = kmalloc(byte_for_channel * num_data_channels,
- 					   GFP_KERNEL);
-+			if (!rx_array) {
-+				len = -ENOMEM;
-+				goto st_sensors_free_memory;
-+			}
-+
- 			len = sdata->tf->read_multiple_byte(&sdata->tb,
- 				sdata->dev, addr[0],
- 				byte_for_channel * num_data_channels,
--- 
-1.7.9.5
+>On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
+>> From: "Patil, Rachna" <rachna@ti.com>
+>> 
+>> Add DT support for client ADC driver.
+>> 
+>> [ panto@antoniou-consulting.com : use of_get_child_by_name
+>> 	instead of of_find_node_by_name ]
+>> 
+>> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+>> Signed-off-by: Patil, Rachna <rachna@ti.com>
+>> Signed-off-by: Felipe Balbi <balbi@ti.com>
+>> [bigeasy: shift the code to the left]
+>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>Acked-by: Jonathan Cameron <jic23@kernel.org>
+>
+>I would take this directly but then I'd imagine that will cause havoc
+>when the later patches are applied and touch both iio and mfd.
+
+Yeah, I have no idea what to do here since it would be best to grab the
+series in one go. The fact that I hear nothing from input/mfd does not
+make it easier :)
+
+Sebastian
