@@ -1,72 +1,111 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51B757E1.2080205@metafoo.de>
-Date: Tue, 11 Jun 2013 19:01:21 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
+Return-Path: <bigeasy@linutronix.de>
+Date: Tue, 4 Jun 2013 12:19:36 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Lee Jones <lee.jones@linaro.org>, =?UTF-8?B?QmVub8OudCBDb3Vzc29u?=
- <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
- Felipe Balbi <balbi@ti.com>,
- linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <20130611142358.GG29135@zurbaran> <20130611160415.GA379@core.coreip.homeip.net> <20130611161506.GK29135@zurbaran> <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com>
-In-Reply-To: <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com>
-Content-Type: text/plain; charset=UTF-8
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 11/19] iio & mfd: ti_tscadc: Update with IIO map
+ interface & deal with partial activation
+Message-ID: <20130604101936.GB1151@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-12-git-send-email-bigeasy@linutronix.de>
+ <51AB838B.5060602@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <51AB838B.5060602@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/11/2013 06:27 PM, Jonathan Cameron wrote:
-> 
-> 
-> Samuel Ortiz <sameo@linux.intel.com> wrote:
-> 
->> Hi Dmitry,
+* Jonathan Cameron | 2013-06-02 18:40:27 [+0100]:
+
+>On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
+>> From: Pantelis Antoniou <panto@antoniou-consulting.com>
 >>
->> On Tue, Jun 11, 2013 at 09:04:16AM -0700, Dmitry Torokhov wrote:
->>> On Tue, Jun 11, 2013 at 04:23:58PM +0200, Samuel Ortiz wrote:
->>>> Hi Sebastian,
->>>>
->>>> On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior
->> wrote:
->>>>> I believe the whole thing should go via the MFD tree. It touches
->> also
->>>>> input & iio subsystem. I collected ACKs where I got some in the
->> meantime.
->>>> Please fix your commit logs, and your subject lines. It should be
->> e.g.
->>>> mfd: input: ti_am335x_adc: Blablabla
->>>>
->>>> if it's mostly an mfd patch that also touches an input driver.
->>>>
->>>> Then, this is a pretty big patchset, with iio, input and mfd all
->> mixed
->>>> together and it is likely to create merge conflicts.
->>>> From what I can see from it, and please correct me if I'm
->>>> wrong, the iio and input changes depend on the mfd ones, and not
->> the
->>>> other way around. If that's so, I'm going to ask you to reshuffle
->> your
->>>> patch set and separate the MFD changes from the iio and input ones.
->> I'll
->>>> take the MFD ones and will create an immutable branch for Jonathan
->> and
->>>> Dmitry to pull from and apply the iio and input changes on top of
->> it.
->>>> Merge conflicts should be mostly avoided that way.
->>>
->>> I purposely left this driver alone as I expected it would be merged
->>> through MFD tree, so there should not be any merging issues on my
->> side.
->> Thanks for the notice.
->> Jonathan, can you guarantee the same for the iio parts ?
-> I have also been avoiding taking any of these and there are unlikely to be any iio wide changes merging at this stage in cycle.  Hence these going through MFD is best plan.
-> 
-> Lars raised a couple of issues so would be best to wait for his ack if he hasn't already looked at this revision.
+>> Add an IIO map interface that consumers can use.
+>>
+>> While we're here fix the mfd device in the case
+>> where a subdevice might not be activated.
+>Any time I read 'while we're here' it rings alarm bells.
+>Two issues -> Two patches please.
+>
+>The level of reworking here is rather high. Probably better
+>to do the structural changes in one patch then follow with the
+>new functionality in another.
 
-The IIO bits look fine to me in this version.
+Okay, will try.
 
-- Lars
+>Other comments inline.
+>>
+>> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+>> Signed-off-by: Felipe Balbi <balbi@ti.com>
+>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>> ---
+>>  drivers/iio/adc/ti_am335x_adc.c      |   53 +++++++++++++++++++++++++++++-----
+>>  drivers/mfd/ti_am335x_tscadc.c       |   29 ++++++++++++-------
+>>  include/linux/mfd/ti_am335x_tscadc.h |    8 ++---
+>>  3 files changed, 67 insertions(+), 23 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>> index d821d88..cceff09 100644
+>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>> @@ -20,16 +20,19 @@
+>>  #include <linux/slab.h>
+>>  #include <linux/interrupt.h>
+>>  #include <linux/platform_device.h>
+>> -#include <linux/io.h>
+>why? Not immediately obvious this has anything to do with the rest of this patch.
+
+Yeah, a patch later or two it is added again :P Will drop this nonsense.
+
+>>  #include <linux/iio/iio.h>
+>>  #include <linux/of.h>
+>>  #include <linux/of_device.h>
+>> +#include <linux/iio/machine.h>
+>> +#include <linux/iio/driver.h>
+>>
+>>  #include <linux/mfd/ti_am335x_tscadc.h>
+>>
+>>  struct tiadc_device {
+>>  	struct ti_tscadc_dev *mfd_tscadc;
+>>  	int channels;
+>> +	char *buf;
+>> +	struct iio_map *map;
+>>  };
+>>
+>>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+>> @@ -76,25 +79,59 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+>>  static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+>>  {
+>>  	struct iio_chan_spec *chan_array;
+>
+>> -	int i;
+>> -
+>> -	indio_dev->num_channels = channels;
+>> -	chan_array = kcalloc(indio_dev->num_channels,
+>> -			sizeof(struct iio_chan_spec), GFP_KERNEL);
+>> +	struct iio_chan_spec *chan;
+>> +	char *s;
+>> +	int i, len, size, ret;
+>>
+>
+>This is less than beautiful... It'll cost you marginally more to
+>allocate a separate array for the strings, but will be a lot nicer
+>to read.  If we are dealing with a relatively small maximum number
+>then just do it as a static const char * array of all possible
+>strings.
+
+The EVM board takes 4 and the maximum is 8. This is 20 bytes on EVM and
+40 for the max. This probably does not hurt in data segment, will
+change.
+
+>
+>> +	size = indio_dev->num_channels * (sizeof(struct iio_chan_spec) + 6);
+>> +	chan_array = kzalloc(size, GFP_KERNEL);
+>>  	if (chan_array == NULL)
+>>  		return -ENOMEM;
+
+Sebastian
