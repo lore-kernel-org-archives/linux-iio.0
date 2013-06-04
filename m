@@ -1,101 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:56465 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754905Ab3FKUnX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 16:43:23 -0400
-Date: Tue, 11 Jun 2013 13:44:16 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio/kern: consider the case where channel number >
- number of channels
-Message-ID: <20130611204416.GA13883@roeck-us.net>
-References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
- <51B7809A.1030804@kernel.org>
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:58831 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751802Ab3FDQoa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 12:44:30 -0400
+Date: Tue, 4 Jun 2013 09:44:22 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>, Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 06/19] input/ti_am33x_tsc: remove platform_data support
+Message-ID: <20130604164420.GC26400@core.coreip.homeip.net>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-7-git-send-email-bigeasy@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51B7809A.1030804@kernel.org>
+In-Reply-To: <1369681926-22185-7-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jun 11, 2013 at 08:55:06PM +0100, Jonathan Cameron wrote:
-> On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
-> > On the am335x I export ADC channels indexed by their number as specified
-> > in the datasheet. The channels are shared between the TSC & ADC and be
-> > used either by TSC or the ADC. So it is possible that the TSC uses
-> > chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
-> > channles of the ADC is 2 but the individual numbers are 2 and 3.
-> > This patch changes the check for the the requesting channel by walking
-> > over the list and comparing the channel number.
-> > 
-> This doesn't work in general.  The index is not the same as channel
-> (or any other form of index present). Note that modified channels may
-> all have channel set to 0  (accel_x, accel_y etc for instance).
+On Mon, May 27, 2013 at 09:11:53PM +0200, Sebastian Andrzej Siewior wrote:
+> This patch removes access to platform data mfd_tscadc_board because the
+> platform is DT only.
 > 
-> The index refers directly into those channels registered.
-> Is it possible for channels to move at runtime between the two units?
-> I would imagine not as this is very much a case of wiring.
-> 
-> Thus we have a fairly messy bit if interdependence in the device
-> tree but it should work.
-> 
-> I don't actually have much / any real experience of device tree configurations
-> and this is Guenter's code, hence I have cc'd him.
-> 
-> Note that it is acceptable and relatively common to have missing
-> values in scan_index but that isn't really relevant here.
-> 
-> Jonathan
-> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > ---
-> >  drivers/iio/inkern.c |   13 ++++++-------
-> >  1 file changed, 6 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > index dca4eed..1a40077 100644
-> > --- a/drivers/iio/inkern.c
-> > +++ b/drivers/iio/inkern.c
-> > @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
-> >  	struct iio_dev *indio_dev;
-> >  	int err;
-> >  	struct of_phandle_args iiospec;
-> > +	int i;
-> >  
-> >  	err = of_parse_phandle_with_args(np, "io-channels",
-> >  					 "#io-channel-cells",
-> > @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
-> >  	indio_dev = dev_to_iio_dev(idev);
-> >  	channel->indio_dev = indio_dev;
-> >  	index = iiospec.args_count ? iiospec.args[0] : 0;
-> > -	if (index >= indio_dev->num_channels) {
-> > -		err = -EINVAL;
-> > -		goto err_put;
-> > +	for (i = 0; i < indio_dev->num_channels; i++) {
-> > +		if (indio_dev->channels[i].channel == index) {
-> > +			channel->channel = &indio_dev->channels[i];
-> > +			return 0;
-> > +		}
-> >  	}
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Too long ago since I looked into that, but this code changes the API
-from "get nth channel" to "channel with channel index n".
-Not really sure I understand why that should be necessary.
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Guenter
+> ---
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   27 ++-------------------------
+>  1 file changed, 2 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index b7d3c23..b467196 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -24,7 +24,6 @@
+>  #include <linux/clk.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/io.h>
+> -#include <linux/input/ti_am335x_tsc.h>
+>  #include <linux/delay.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> @@ -425,24 +424,6 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
+>  	return err;
+>  }
+>  
+> -static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
+> -					struct titsc *ts_dev)
+> -{
+> -	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
+> -
+> -	if (!pdata)
+> -		return -EINVAL;
+> -
+> -	ts_dev->wires = pdata->tsc_init->wires;
+> -	ts_dev->x_plate_resistance =
+> -		pdata->tsc_init->x_plate_resistance;
+> -	ts_dev->steps_to_configure =
+> -		pdata->tsc_init->steps_to_configure;
+> -	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
+> -		sizeof(pdata->tsc_init->wire_config));
+> -	return 0;
+> -}
+> -
+>  /*
+>   * The functions for inserting/removing driver as a module.
+>   */
+> @@ -468,13 +449,9 @@ static int titsc_probe(struct platform_device *pdev)
+>  	ts_dev->input = input_dev;
+>  	ts_dev->irq = tscadc_dev->irq;
+>  
+> -	if (tscadc_dev->dev->platform_data)
+> -		err = titsc_parse_pdata(tscadc_dev, ts_dev);
+> -	else
+> -		err = titsc_parse_dt(tscadc_dev, ts_dev);
+> -
+> +	err = titsc_parse_dt(tscadc_dev, ts_dev);
+>  	if (err) {
+> -		dev_err(&pdev->dev, "Could not find platform data\n");
+> +		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+>  		err = -EINVAL;
+>  		goto err_free_mem;
+>  	}
+> -- 
+> 1.7.10.4
+> 
 
-> > -	channel->channel = &indio_dev->channels[index];
-> > -
-> > -	return 0;
-> >  
-> > -err_put:
-> >  	iio_device_put(indio_dev);
-> 
-> If not found (i.e. the device tree entries are garbage) we may return sucess witout
-> actually having retrieved the driver.  I would suggest setting err = -EINVAL before
-> the for loop.
-> 
-> >  	return err;
-> >  }
-> > 
-> 
+-- 
+Dmitry
