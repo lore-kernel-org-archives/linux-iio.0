@@ -1,49 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from perches-mx.perches.com ([206.117.179.246]:47168 "EHLO
-	labridge.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1755311Ab3FDOox (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 4 Jun 2013 10:44:53 -0400
-From: Joe Perches <joe@perches.com>
-To: linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: [PATCH 2/4] inkern: iio_device_put after incorrect return/goto
-Date: Tue,  4 Jun 2013 07:44:48 -0700
-Message-Id: <d0f7d0eef677250c457c08c8f8ca7e125811f754.1370356776.git.joe@perches.com>
-In-Reply-To: <60123fd3175b7cceadf6c335b12e58b797e18f65.1370356776.git.joe@perches.com>
-References: <60123fd3175b7cceadf6c335b12e58b797e18f65.1370356776.git.joe@perches.com>
+Received: from www.linutronix.de ([62.245.132.108]:54906 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751674Ab3FDKYS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 06:24:18 -0400
+Date: Tue, 4 Jun 2013 12:24:17 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH 14/19] Documentation/DT bindings: add info for TI TSC
+ ADC
+Message-ID: <20130604102417.GD1151@linutronix.de>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-15-git-send-email-bigeasy@linutronix.de>
+ <51AB8568.9050104@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <51AB8568.9050104@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The code uses
+* Jonathan Cameron | 2013-06-02 18:48:24 [+0100]:
 
-    return foo;
-    goto err_type;
+>On 05/27/2013 08:12 PM, Sebastian Andrzej Siewior wrote:
+>> The platform data structs are killed here because there are no users in
+>> tree (nobody sets the structs up, the RO usage is beeing removed) and the
+>> documentation about the parameters is saved here.
+>The platform data removal has nothing to do with the rest of the patch.
+>Please review the whole series to cleanup the patch divisions.
 
-when instead the form should have been
+Well, I removed the platform data and moved the documentation .dts but
+okay, I will add this along with the DT part.
 
-    ret = foo;
-    goto err_type;
-
-Here this causes a useful iio_device_put to be skipped.
-
-Signed-off-by: Joe Perches <joe@perches.com>
----
- drivers/iio/inkern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 795d100..dca4eed 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -124,7 +124,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
- 	channel->indio_dev = indio_dev;
- 	index = iiospec.args_count ? iiospec.args[0] : 0;
- 	if (index >= indio_dev->num_channels) {
--		return -EINVAL;
-+		err = -EINVAL;
- 		goto err_put;
- 	}
- 	channel->channel = &indio_dev->channels[index];
--- 
-1.8.1.2.459.gbcd45b4.dirty
-
+Sebastian
