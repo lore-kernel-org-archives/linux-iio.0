@@ -1,97 +1,82 @@
-Return-Path: <bigeasy@linutronix.de>
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>
-Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: am335x: TSC & ADC reworking including DT pieces, take 4
-Date: Tue, 11 Jun 2013 13:30:46 +0200
-Message-Id: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51045 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752893Ab3FDR2G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 13:28:06 -0400
+Message-ID: <51AE23A1.2050401@kernel.org>
+Date: Tue, 04 Jun 2013 18:28:01 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, mirq-linux@rere.qmqm.pl
+Subject: Re: [PATCH 0/4 V2]  iio: Rework the generic trigger-gpio trigger
+ and move out of staging
+References: <1370199616-25500-1-git-send-email-jic23@kernel.org> <51ADF315.1060108@metafoo.de>
+In-Reply-To: <51ADF315.1060108@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-I believe the whole thing should go via the MFD tree. It touches also
-input & iio subsystem. I collected ACKs where I got some in the meantime.
+On 06/04/2013 03:00 PM, Lars-Peter Clausen wrote:
+> On 06/02/2013 09:00 PM, Jonathan Cameron wrote:
+>> Only changes here are dropping the irq_res_cnt as it unused (thanks Lars) and
+>> a rebase as a result of some Kconfig dependency changes.
+>>
+>> I still don't have a hardware setup, but this is so simple that unless
+>> someone shouts I'll probably send it upstream in fairly soon anyway.
+>>
+>> Jonathan
+>>
+>> Previous message:
+>>
+>> Hi all,
+>>
+>> This is an RFC for a couple of reasons.
+>>
+>> 1) I'm not sure how people feel about the move to multiple platform devices
+>> (patch 3).
+>> 2) I don't actually have a simple test setup for this one.  I can put one
+>> together but it might be a while before I get it done.
+>>
+>> Anyhow, the purpose of this set is to respond to Lars-Peter's comments
+>> when I originally asked if anyone minded it moving out of staging as it
+>> was before this.  Lars raised the point that having one driver instance
+>> register multiple triggers just made life more complicated, and instead
+>> it might be better to have multiple driver instances, with one trigger each.
+>> Lars also pointed out that the name of the driver was silly given there
+>> was nolonger a requirement that the source of the interrupts be a gpio
+>> and there hasn't been for quite some time.
+>>
+>> All comments welcome. Particularly wrt to patch 3.
+> 
+> Looks all good to me. FWIW:
+> 
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Thanks, gives me a warm fuzzy feeling.  I hate merging
+my own patches unreviewed!
 
-I added Lee Jones because I hear no sign of life from Samuel.
-
-The following changes since commit d683b96b072dc4680fc74964eca77e6a23d1fa6e:
-
-  Linux 3.10-rc4 (2013-06-02 17:11:17 +0900)
-
-are available in the git repository at:
-
-  git://breakpoint.cc/bigeasy/linux tags/am335x_tsc-adc
-
-for you to fetch changes up to fe12425dd7e93db2dfdfa4eb9289036100cb0338:
-
-  iio/ti_am335x_adc: check if we found the value (2013-06-11 13:11:35 +0200)
-
-----------------------------------------------------------------
-A complete refurbished series inclunding:
-- DT support for the MFD, TSC and ADC driver & platform device support,
-  which has no users, has been killed.
-- iio_map from last series is gone and replaced by proper nodes in the
-  device tree.
-- suspend fixes which means correct data structs are taken and no
-  interrupt storm
-- fifo split which should problem with TSC & ADC beeing used at the same
-  time
-- The ADC channels are now checked before blindly applied. That means the
-  touch part reads X, Y and Z coordinates and does not mix them up. Same
-  goes for the IIO ADC driver.
-- The IIO ADC driver now creates files named in_voltageX_raw where X
-  represents the ADC line instead of a number starting at 0. A read from
-  this file can return -EBUSY in case touch is busy and the ADC didn't
-  collect a value.
-
-----------------------------------------------------------------
-Pantelis Antoniou (2):
-      iio/ti_tscadc: provide datasheet_name and scan_type
-      mfd/ti_tscadc: deal with partial activation
-
-Patil, Rachna (7):
-      input/ti_am33x_tsc: Step enable bits made configurable
-      input/ti_am33x_tsc: Order of TSC wires, made configurable
-      input/ti_am33x_tsc: remove unwanted fifo flush
-      input/ti_am33x_tsc: Add DT support
-      iio/ti_am335x_adc: Add DT support
-      mfd/ti_am335x_tscadc: Add DT support
-      arm/am33xx: add TSC/ADC mfd device support
-
-Sebastian Andrzej Siewior (13):
-      mfd/ti_am335x_tscadc: remove regmap
-      mfd & input & iio/ti_am335x_adc: use one structure for ti_tscadc_dev
-      input/ti_am33x_tsc: remove platform_data support
-      iio/ti_am335x_adc: remove platform_data support
-      mfd/ti_am335x_tscadc: remove platform_data support
-      input & mfd: ti_am335x_tsc remove remaining platform data pieces
-      mfd & input/ti_am335x_tsc: rename device from tsc to TI-am335x-tsc
-      mfd & iio/ti_am335x_adc: rename device from tiadc to TI-am335x-adc
-      input/ti_am335x_adc: use only FIFO0 and clean up a little
-      input/ti_am335x_tsc: ACK the HW_PEN irq in ISR
-      input/ti_am335x_tsc: return IRQ_NONE if there was no IRQ for us
-      iio/ti_am335x_adc: Allow to specify input line
-      iio/ti_am335x_adc: check if we found the value
-
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |   44 +++
- arch/arm/boot/dts/am335x-evm.dts                   |   14 +
- arch/arm/boot/dts/am33xx.dtsi                      |   18 ++
- drivers/iio/adc/ti_am335x_adc.c                    |  132 ++++++---
- drivers/input/touchscreen/ti_am335x_tsc.c          |  288 ++++++++++++++------
- drivers/mfd/ti_am335x_tscadc.c                     |  133 ++++++---
- include/linux/input/ti_am335x_tsc.h                |   23 --
- include/linux/mfd/ti_am335x_tscadc.h               |   43 +--
- include/linux/platform_data/ti_am335x_adc.h        |   14 -
- 9 files changed, 494 insertions(+), 215 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
- delete mode 100644 include/linux/input/ti_am335x_tsc.h
- delete mode 100644 include/linux/platform_data/ti_am335x_adc.h
-
-Sebastian
+Will apply these to the togreg branch of iio.git in a few mins.
+>>
+>> Jonathan Cameron (4):
+>>   staging:iio:trigger:gpio bug in release of gpio in error path
+>>   staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
+>>   staging:iio:triggers:interrupt trigger - one per platform device.
+>>   iio:triggers:interrupt trigger - move out of staging.
+>>
+>>  drivers/iio/trigger/Kconfig                 |   9 ++
+>>  drivers/iio/trigger/Makefile                |   1 +
+>>  drivers/iio/trigger/iio-trig-interrupt.c    | 121 ++++++++++++++++++++
+>>  drivers/staging/iio/trigger/Kconfig         |   6 -
+>>  drivers/staging/iio/trigger/Makefile        |   1 -
+>>  drivers/staging/iio/trigger/iio-trig-gpio.c | 167 ----------------------------
+>>  6 files changed, 131 insertions(+), 174 deletions(-)
+>>  create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
+>>  delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
