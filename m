@@ -1,244 +1,164 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52798 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754799Ab3FBRtW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jun 2013 13:49:22 -0400
-Message-ID: <51AB85A0.4040004@kernel.org>
-Date: Sun, 02 Jun 2013 18:49:20 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Received: from mail-pb0-f53.google.com ([209.85.160.53]:37750 "EHLO
+	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751802Ab3FDQxP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 12:53:15 -0400
+Date: Tue, 4 Jun 2013 09:53:11 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 15/19] input/ti_am335x_tsc: tiny cleanup
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-16-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1369681926-22185-16-git-send-email-bigeasy@linutronix.de>
-Content-Type: text/plain; charset=UTF-8
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	sameo@linux.intel.com, jic23@cam.ac.uk, balbi@ti.com
+Subject: Re: [PATCH 3/5] input/ti_am335x_tsc: fold regbit_map() and simplfy
+Message-ID: <20130604165311.GG26400@core.coreip.homeip.net>
+References: <1369847397-27451-1-git-send-email-bigeasy@linutronix.de>
+ <1369847397-27451-4-git-send-email-bigeasy@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1369847397-27451-4-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/27/2013 08:12 PM, Sebastian Andrzej Siewior wrote:
-> Things that can be done to done without using make up:
-That causes some amusing images of code with lipstick ;)  'wake up' perhaps?
-> - reduce config_inp from 20 elements to 4
->   The loop goes 0…3 so elements 4…19 remain unused.
-> - put the shift for analog_line into one line, since config_inp is u32 we
->   don't need to worry about sign extension,
-> - check if he DT values are 0…3 as expected
-> - replace "err = -EINVAL; goto err" with "return -EINVAL;" as there is no
->   cleanup and this is less code
-> - pull out "config[analog_line[i]][0…3];" from the switch case and use
->   magic to the 0…3 correct.
-> - since we removed so much lines, spent a few to get
->   "config[an_line][wi_order];" done.
-> - get rid of "val32, wires_conf" and assign the values directly. This is
->   just init code but we can still save a few cycles.
-> - remove titsc_config_wires() from resume path. ->bit_yn & friends are only
->   written once and not changed so as long as we assume that our DDR will
->   have no biflips we can skip that.
+On Wed, May 29, 2013 at 07:09:54PM +0200, Sebastian Andrzej Siewior wrote:
+> If we put the values which are looked up by regbit_map() directly in the
+> config array then we can remove the function.
+> And now when I look at it I don't understand why the array has to have
+> two dimensions. One does it, too. And while at it, the description says
+> that AIN0 … AIN7 can be used so allow this.
 > 
 > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
 > ---
->  drivers/input/touchscreen/ti_am335x_tsc.c |  124 ++++++++++++-----------------
->  1 file changed, 51 insertions(+), 73 deletions(-)
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   76 ++++++++---------------------
+>  1 file changed, 19 insertions(+), 57 deletions(-)
 > 
 > diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> index 0dbf3df..96accaa 100644
+> index 7c97fc7..63cee57 100644
 > --- a/drivers/input/touchscreen/ti_am335x_tsc.c
 > +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> @@ -59,7 +59,7 @@ struct titsc {
->  	unsigned int		bckup_y;
->  	bool			pen_down;
->  	int			steps_to_configure;
-> -	int			config_inp[20];
-> +	u32			config_inp[4];
->  	int			bit_xp, bit_xn, bit_yp, bit_yn;
->  	int			inp_xp, inp_xn, inp_yp, inp_yn;
->  };
-> @@ -115,69 +115,54 @@ static int regbit_map(int val)
+> @@ -37,15 +37,11 @@
+>  #define TSCADC_DELTA_X		15
+>  #define TSCADC_DELTA_Y		15
 >  
+> -/*
+> - * Refer to function regbit_map() to
+> - * map the values in the matrix.
+> - */
+> -static int config[4][4] = {
+> -		{1,	0,	1,	0},
+> -		{2,	3,	2,	3},
+> -		{4,	5,	4,	5},
+> -		{0,	6,	0,	6}
+> +static const int config_pins[] = {
+> +		XPP,
+> +		XNN,
+> +		YPP,
+> +		YNN,
+>  };
+>  
+>  struct titsc {
+> @@ -79,45 +75,11 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+>  	regmap_write(tsc->mfd_tscadc->regmap_tscadc, reg, val);
+>  }
+>  
+> -/*
+> - * Each of the analog lines are mapped
+> - * with one or two register bits,
+> - * which can be either pulled high/low
+> - * depending on the value to be read.
+> - */
+> -static int regbit_map(int val)
+> -{
+> -	int map_bits = 0;
+> -
+> -	switch (val) {
+> -	case 1:
+> -		map_bits = XPP;
+> -		break;
+> -	case 2:
+> -		map_bits = XNP;
+> -		break;
+> -	case 3:
+> -		map_bits = XNN;
+> -		break;
+> -	case 4:
+> -		map_bits = YPP;
+> -		break;
+> -	case 5:
+> -		map_bits = YPN;
+> -		break;
+> -	case 6:
+> -		map_bits = YNN;
+> -		break;
+> -	}
+> -
+> -	return map_bits;
+> -}
+> -
 >  static int titsc_config_wires(struct titsc *ts_dev)
 >  {
-> -	int		analog_line[10], wire_order[10];
-> -	int		i, temp_bits, err;
-> +	u32 analog_line[4];
-> +	u32 wire_order[4];
-> +	int i, temp_bits;
+>  	u32 analog_line[4];
+>  	u32 wire_order[4];
+> -	int i, temp_bits;
+> +	int i, bit_cfg;
 >  
 >  	for (i = 0; i < 4; i++) {
 >  		/*
->  		 * Get the order in which TSC wires are attached
->  		 * w.r.t. each of the analog input lines on the EVM.
+> @@ -126,9 +88,9 @@ static int titsc_config_wires(struct titsc *ts_dev)
 >  		 */
-> -		analog_line[i] = ts_dev->config_inp[i] & 0xF0;
-> -		analog_line[i] = analog_line[i] >> 4;
-> -
-> +		analog_line[i] = (ts_dev->config_inp[i] & 0xF0) >> 4;
+>  		analog_line[i] = (ts_dev->config_inp[i] & 0xF0) >> 4;
 >  		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
-> +		if (WARN_ON(analog_line[i] > 4))
-> +				return -EINVAL;
-> +		if (WARN_ON(wire_order[i] > 4))
-> +				return -EINVAL;
+> -		if (WARN_ON(analog_line[i] > 4))
+> +		if (WARN_ON(analog_line[i] > 7))
+>  				return -EINVAL;
+> -		if (WARN_ON(wire_order[i] > 4))
+> +		if (WARN_ON(wire_order[i] > ARRAY_SIZE(config_pins)))
+>  				return -EINVAL;
 >  	}
 >  
->  	for (i = 0; i < 4; i++) {
-> +		int an_line;
-> +		int wi_order;
-> +
-> +		an_line = analog_line[i];
-> +		wi_order = wire_order[i];
-> +		temp_bits = config[an_line][wi_order];
-> +		if (temp_bits == 0)
-> +			return -EINVAL;
->  		switch (wire_order[i]) {
+> @@ -138,27 +100,27 @@ static int titsc_config_wires(struct titsc *ts_dev)
+>  
+>  		an_line = analog_line[i];
+>  		wi_order = wire_order[i];
+> -		temp_bits = config[an_line][wi_order];
+> -		if (temp_bits == 0)
+> +		bit_cfg = config_pins[wi_order];
+> +		if (bit_cfg == 0)
+>  			return -EINVAL;
+> -		switch (wire_order[i]) {
+> +		switch (wi_order) {
 >  		case 0:
-> -			temp_bits = config[analog_line[i]][0];
-> -			if (temp_bits == 0) {
-> -				err = -EINVAL;
-> -				goto ret;
-> -			} else {
-> -				ts_dev->bit_xp = regbit_map(temp_bits);
-> -				ts_dev->inp_xp = analog_line[i];
-> -				break;
-> -			}
-> +			ts_dev->bit_xp = regbit_map(temp_bits);
-> +			ts_dev->inp_xp = analog_line[i];
-> +			break;
-> +
+> -			ts_dev->bit_xp = regbit_map(temp_bits);
+> -			ts_dev->inp_xp = analog_line[i];
+> +			ts_dev->bit_xp = bit_cfg;
+> +			ts_dev->inp_xp = an_line;
+>  			break;
+>  
 >  		case 1:
-> -			temp_bits = config[analog_line[i]][1];
-> -			if (temp_bits == 0) {
-> -				err = -EINVAL;
-> -				goto ret;
-> -			} else {
-> -				ts_dev->bit_xn = regbit_map(temp_bits);
-> -				ts_dev->inp_xn = analog_line[i];
-> -				break;
-> -			}
-> +			ts_dev->bit_xn = regbit_map(temp_bits);
-> +			ts_dev->inp_xn = analog_line[i];
-> +			break;
-> +
+> -			ts_dev->bit_xn = regbit_map(temp_bits);
+> -			ts_dev->inp_xn = analog_line[i];
+> +			ts_dev->bit_xn = bit_cfg;
+> +			ts_dev->inp_xn = an_line;
+>  			break;
+>  
 >  		case 2:
-> -			temp_bits = config[analog_line[i]][2];
-> -			if (temp_bits == 0) {
-> -				err = -EINVAL;
-> -				goto ret;
-> -			} else {
-> -				ts_dev->bit_yp = regbit_map(temp_bits);
-> -				ts_dev->inp_yp = analog_line[i];
-> -				break;
-> -			}
-> +			ts_dev->bit_yp = regbit_map(temp_bits);
-> +			ts_dev->inp_yp = analog_line[i];
-> +			break;
+> -			ts_dev->bit_yp = regbit_map(temp_bits);
+> -			ts_dev->inp_yp = analog_line[i];
+> +			ts_dev->bit_yp = bit_cfg;
+> +			ts_dev->inp_yp = an_line;
+>  			break;
 >  		case 3:
-> -			temp_bits = config[analog_line[i]][3];
-> -			if (temp_bits == 0) {
-> -				err = -EINVAL;
-> -				goto ret;
-> -			} else {
-> -				ts_dev->bit_yn = regbit_map(temp_bits);
-> -				ts_dev->inp_yn = analog_line[i];
-> -				break;
-> -			}
-> +			ts_dev->bit_yn = regbit_map(temp_bits);
-> +			ts_dev->inp_yn = analog_line[i];
-> +			break;
+> -			ts_dev->bit_yn = regbit_map(temp_bits);
+> -			ts_dev->inp_yn = analog_line[i];
+> +			ts_dev->bit_yn = bit_cfg;
+> +			ts_dev->inp_yn = an_line;
+>  			break;
 >  		}
 >  	}
-> -
->  	return 0;
-> -
-> -ret:
-> -	return err;
->  }
->  
->  static void titsc_step_config(struct titsc *ts_dev)
-> @@ -319,7 +304,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
->  	unsigned int z1, z2, z;
->  	unsigned int fsm;
->  	unsigned int diffx = 0, diffy = 0;
-> -	int i;
->  
->  	status = titsc_readl(ts_dev, REG_IRQSTATUS);
->  	if (status & IRQENB_FIFO0THRES) {
-> @@ -387,11 +371,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
->  }
->  
->  static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
-> -					struct titsc *ts_dev)
-> +		struct titsc *ts_dev)
->  {
->  	struct device_node *node = tscadc_dev->dev->of_node;
-> -	int err, i;
-> -	u32 val32, wires_conf[4];
-> +	int err;
->  
->  	if (!node)
->  		return -EINVAL;
-> @@ -399,34 +382,30 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
->  	node = of_get_child_by_name(node, "tsc");
->  	if (!node)
->  		return -EINVAL;
-> -	err = of_property_read_u32(node, "ti,wires", &val32);
-> +	err = of_property_read_u32(node, "ti,wires", &ts_dev->wires);
->  	if (err < 0)
-> -		goto error_ret;
-> -	ts_dev->wires = val32;
-> -
-> -	err = of_property_read_u32(node,
-> -			"ti,x-plate-resistance", &val32);
-> -	if (err < 0)
-> -		goto error_ret;
-> -	ts_dev->x_plate_resistance = val32;
-> +		return err;
-> +	switch (ts_dev->wires) {
-> +	case 4:
-> +	case 5:
-> +	case 8:
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
->  
-> -	err = of_property_read_u32(node,
-> -			"ti,steps-to-configure", &val32);
-> +	err = of_property_read_u32(node, "ti,x-plate-resistance",
-> +			&ts_dev->x_plate_resistance);
->  	if (err < 0)
-> -		goto error_ret;
-> -	ts_dev->steps_to_configure = val32;
-> +		return err;
->  
-> -	err = of_property_read_u32_array(node, "ti,wire-config",
-> -			wires_conf, ARRAY_SIZE(wires_conf));
-> +	err = of_property_read_u32(node, "ti,steps-to-configure",
-> +			&ts_dev->steps_to_configure);
->  	if (err < 0)
-> -		goto error_ret;
-> +		return err;
->  
-> -	for (i = 0; i < ARRAY_SIZE(wires_conf); i++)
-> -		ts_dev->config_inp[i] = wires_conf[i];
-> -	return 0;
-> -
-> -error_ret:
-> -	return err;
-> +	return of_property_read_u32_array(node, "ti,wire-config",
-> +			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
->  }
->  
->  /*
-> @@ -545,7 +524,6 @@ static int titsc_resume(struct device *dev)
->  				0x00);
->  		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
->  	}
-> -	titsc_config_wires(ts_dev);
->  	titsc_step_config(ts_dev);
->  	titsc_writel(ts_dev, REG_FIFO0THR,
->  			ts_dev->steps_to_configure);
+> -- 
+> 1.7.10.4
 > 
+
+-- 
+Dmitry
