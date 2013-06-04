@@ -1,38 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:54906 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751674Ab3FDKYS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 06:24:18 -0400
-Date: Tue, 4 Jun 2013 12:24:17 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 14/19] Documentation/DT bindings: add info for TI TSC
- ADC
-Message-ID: <20130604102417.GD1151@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-15-git-send-email-bigeasy@linutronix.de>
- <51AB8568.9050104@kernel.org>
+Received: from smtp-out-246.synserver.de ([212.40.185.246]:1199 "EHLO
+	smtp-out-234.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752451Ab3FDOFO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 10:05:14 -0400
+Message-ID: <51ADF25E.3050701@metafoo.de>
+Date: Tue, 04 Jun 2013 15:57:50 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <51AB8568.9050104@kernel.org>
+To: michael.hennerich@analog.com
+CC: jic23@kernel.org, linux-iio@vger.kernel.org,
+	Lars-Peter.Clausen@analog.com, dan.carpenter@oracle.com
+Subject: Re: [PATCH RESEND V2 1/4] iio: frequency: ad4350: Fix bug / typo
+ in mask
+References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com>
+In-Reply-To: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* Jonathan Cameron | 2013-06-02 18:48:24 [+0100]:
+On 06/03/2013 03:30 PM, michael.hennerich@analog.com wrote:
+> From: Michael Hennerich <michael.hennerich@analog.com>
+> t
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>me.
 
->On 05/27/2013 08:12 PM, Sebastian Andrzej Siewior wrote:
->> The platform data structs are killed here because there are no users in
->> tree (nobody sets the structs up, the RO usage is beeing removed) and the
->> documentation about the parameters is saved here.
->The platform data removal has nothing to do with the rest of the patch.
->Please review the whole series to cleanup the patch divisions.
+FWIW, complete series looks good to. All four patches:
 
-Well, I removed the platform data and moved the documentation .dts but
-okay, I will add this along with the DT part.
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-Sebastian
+> ---
+>  drivers/iio/frequency/adf4350.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+> index a884252..e76d4ac 100644
+> --- a/drivers/iio/frequency/adf4350.c
+> +++ b/drivers/iio/frequency/adf4350.c
+> @@ -212,7 +212,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+>  		(pdata->r2_user_settings & (ADF4350_REG2_PD_POLARITY_POS |
+>  		ADF4350_REG2_LDP_6ns | ADF4350_REG2_LDF_INT_N |
+>  		ADF4350_REG2_CHARGE_PUMP_CURR_uA(5000) |
+> -		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x9)));
+> +		ADF4350_REG2_MUXOUT(0x7) | ADF4350_REG2_NOISE_MODE(0x3)));
+>  
+>  	st->regs[ADF4350_REG3] = pdata->r3_user_settings &
+>  				 (ADF4350_REG3_12BIT_CLKDIV(0xFFF) |
+
