@@ -1,57 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from li42-95.members.linode.com ([209.123.162.95]:60024 "EHLO
-	li42-95.members.linode.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752064Ab3FDLKY convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 4 Jun 2013 07:10:24 -0400
-Subject: Re: [PATCH 12/19] iio & mfd & input: ti_tscadc: Match mfd sub devices to regmap interface
-Mime-Version: 1.0 (Apple Message framework v1085)
-Content-Type: text/plain; charset=us-ascii
-From: Pantelis Antoniou <panto@antoniou-consulting.com>
-In-Reply-To: <20130604110532.GJ1151@linutronix.de>
-Date: Tue, 4 Jun 2013 14:10:20 +0300
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>
-Message-Id: <FBB90884-C774-4981-A5BA-26B498B19D76@antoniou-consulting.com>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de> <1369681926-22185-13-git-send-email-bigeasy@linutronix.de> <51AB84F5.2030405@kernel.org> <20130604102318.GC1151@linutronix.de> <F58DCC19-20B7-4385-B323-C1A2E5F22641@antoniou-consulting.com> <20130604105210.GI1151@linutronix.de> <4AA621AD-5273-444C-875C-05486CC810A8@antoniou-consulting.com> <20130604110532.GJ1151@linutronix.de>
+Received: from mail-pb0-f49.google.com ([209.85.160.49]:64898 "EHLO
+	mail-pb0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752783Ab3FDQn6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 12:43:58 -0400
+Date: Tue, 4 Jun 2013 09:43:49 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Felipe Balbi <balbi@ti.com>, "Patil, Rachna" <rachna@ti.com>
+Subject: Re: [PATCH 05/19] input: ti_am335x_tsc: Add variance filters
+Message-ID: <20130604164345.GB26400@core.coreip.homeip.net>
+References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
+ <1369681926-22185-6-git-send-email-bigeasy@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1369681926-22185-6-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi,
 
-On Jun 4, 2013, at 2:05 PM, Sebastian Andrzej Siewior wrote:
-
-> * Pantelis Antoniou | 2013-06-04 13:54:48 [+0300]:
+On Mon, May 27, 2013 at 09:11:52PM +0200, Sebastian Andrzej Siewior wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
 > 
->> What make you think I am the original author?
-> Nothing, you just made _this_ patch.
+> Only fine tuning variance present in tslib utility
+> does not help in removing all the wanted ADC noise.
 > 
+> This logic of filtering is necessary to get this
+> touchscreen to work finely.
 
-I'm the author of that patch that fixes it, I'm not the author of the original driver.
+So why do not we enhancing tslib so that it is useful for more
+touchscreen?
 
->> I just fixed whatever I had to fix to get it working.
-> Fair enough.
-> 
->> Namely that the multi function device was using regmap in one place and
->> not in another, which had the nice effect of the regmap cache getting out of sync.
-> 
-> Yeah, that is a pain. Currently I think why we do need regmap at all
-> here and I think about getting rid of it. Most of the values read here
-> need no caching at all.
-> 
+FWIW I have been asking this question from the very beginning of this
+driver being submitted.
 
-You need to talk to the original driver author then.
-
->> Regards
->> 
->> -- Pantelis
-> 
-> Sebastian
-
-Regards
-
--- Pantelis
-
+-- 
+Dmitry
