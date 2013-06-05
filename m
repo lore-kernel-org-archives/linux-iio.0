@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:35299 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:35259 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755761Ab3FEQ2k (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:28:40 -0400
+	with ESMTP id S1754553Ab3FEQ1G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:27:06 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: Samuel Ortiz <sameo@linux.intel.com>
 Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
@@ -10,46 +10,53 @@ Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Jonathan Cameron <jic23@cam.ac.uk>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 20/22] input/ti_am335x_tsc: return IRQ_NONE if there was no IRQ for us
-Date: Wed,  5 Jun 2013 18:24:53 +0200
-Message-Id: <1370449495-29981-21-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 22/22] iio/ti_am335x_adc: check if we found the value
+Date: Wed,  5 Jun 2013 18:24:55 +0200
+Message-Id: <1370449495-29981-23-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
 References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The previous patch ("input/ti_am335x_tsc: ACK the HW_PEN irq in ISR")
-acked the interrupt so we don't freeze if we don't handle an enabled
-interrupt source. The interrupt core has a mechanism for this and to get
-it work one should only say that it handled an interrupt if it is
-actually the case.
+Usually we get all the values we wanted but it is possible, that te ADC
+unit is busy performing the conversation for the HW events. In that case
+-EBUSY is returned and the user may re-call the function.
 
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 82d4a39..a06447f 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -314,10 +314,12 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
- 	}
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 4bf34f2..4ef0354 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -171,6 +171,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	int i;
+ 	unsigned int fifo1count, read;
+ 	u32 step = UINT_MAX;
++	bool found = false;
  
--	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -195,11 +196,14 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (read >> 16 == step)
++		if (read >> 16 == step) {
+ 			*val = read & 0xfff;
++			found = true;
++		}
+ 	}
+ 	am335x_tsc_se_update(adc_dev->mfd_tscadc);
 -
--	am335x_tsc_se_update(ts_dev->mfd_tscadc);
--	return IRQ_HANDLED;
-+	if (irqclr) {
-+		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
-+		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		return IRQ_HANDLED;
-+	}
-+	return IRQ_NONE;
++	if (found == false)
++		return -EBUSY;
+ 	return IIO_VAL_INT;
  }
  
- static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
 -- 
 1.7.10.4
 
