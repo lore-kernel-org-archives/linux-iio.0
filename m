@@ -1,44 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:59851 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752773Ab3FIQhv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Jun 2013 12:37:51 -0400
-Message-ID: <51B4B024.8070102@metafoo.de>
-Date: Sun, 09 Jun 2013 18:41:08 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36612 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756923Ab3FERnU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 13:43:20 -0400
+Message-ID: <51AF78B5.5000206@kernel.org>
+Date: Wed, 05 Jun 2013 18:43:17 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 12/22] iio/ti_tscadc: Update with IIO map interface
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-13-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1370449495-29981-13-git-send-email-bigeasy@linutronix.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	michael.hennerich@analog.com, linux-iio@vger.kernel.org,
+	Lars-Peter.Clausen@analog.com, dan.carpenter@oracle.com
+Subject: Re: [PATCH RESEND V2 3/4] iio: frequency: adf4350: Add support for
+ clock consumer framework
+References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com> <1370266249-26338-3-git-send-email-michael.hennerich@analog.com> <51AE277B.1070302@kernel.org> <51AEE974.3030000@analog.com> <51AF4A51.5090609@metafoo.de> <51AF5880.30008@jic23.retrosnub.co.uk> <51AF7694.9060604@metafoo.de>
+In-Reply-To: <51AF7694.9060604@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/05/2013 06:24 PM, Sebastian Andrzej Siewior wrote:
-[...]
-> -	return indio_dev->num_channels;
-> +	adc_dev->map = kcalloc(channels + 1, sizeof(struct iio_map),
-> +			GFP_KERNEL);
-> +	if (adc_dev->map == NULL)
-> +		goto err_free_chan;
-> +
-> +	for (i = 0; i < channels; i++) {
-> +		adc_dev->map[i].adc_channel_label =
-> +			chan_array[i].datasheet_name;
-> +		adc_dev->map[i].consumer_dev_name = "any";
-> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
-> +	}
+On 06/05/2013 06:34 PM, Lars-Peter Clausen wrote:
+> On 06/05/2013 05:25 PM, Jonathan Cameron wrote:
+>> On 05/06/13 15:25, Lars-Peter Clausen wrote:
+>>> On 06/05/2013 09:32 AM, Michael Hennerich wrote:
+>>>> On 06/04/2013 07:44 PM, Jonathan Cameron wrote:
+>>>>> On 06/03/2013 02:30 PM, michael.hennerich@analog.com wrote:
+>>>>>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>>>>>
+>>>>>> Preferably get clkin (PLL reference clock) from clock framework
+>>>>>>
+>>>>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>>>>> ERROR: "clk_round_rate" [drivers/iio/frequency/adf4350.ko] undefined!
+>>>>> make[1]: *** [__modpost] Error 1
+>>>>>
+>>>>> on my arm test build. Sorry, I was being lazy before and hadn't done
+>>>>> any test builds till I tried merging it.  Backed out the merge of this
+>>>>> patch for now.
+>>>>>
+>>>>> clk.h does say that api is optional for machine classes.  No idea what you
+>>>>> want to
+>>>>> do about this.
+>>>>
+>>>> The CLK API is optional in the driver - so I prefer to keep it like that and
+>>>> don't make
+>>>> the driver depend on COMMON_CLK.
+>>>>
+>>>> The simplest and probably the best workaround is to guard the CLK Round/Set
+>>>> code with
+>>>> #if defined(CONFIG_COMMON_CLK).
+>>>>
+>>>> Thoughts?
+>>>>
+>>>
+>>> This is not a bug in the driver. If the clk API is not implemented it is
+>>> stubbed out. It looks as if Jonathan is testing on a platform which
+>>> implements the clk API but not clk_round_rate() (None of the other clk_*
+>>> symbols are undefined).
+>>>
+>>> Jonathan on which platform are you testing this?
+>> arm specifically pxa27x eabi
+>>>
+> 
+> No clk_round_rate() in arch/arm/mach-pxa/clock.c
+Hmm.. Indeed.  So what does one do if one wants to use those functions?
 
-This is not the way the IIO map interface is supposed to be used and I doubt it
-will actually work at all. The map either needs to be provided by board code
-with the proper consumer device and channel name filled in or in your case
-where you use devicetree you don't need to provide a map at all since this will
-all be handled by the generic IIO devicetree bindings. So I'd just drop this patch.
 
-- Lars
+> 
+> - Lars
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
