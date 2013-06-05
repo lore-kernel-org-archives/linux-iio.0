@@ -1,39 +1,294 @@
-Return-Path: <jic23@hermes.cam.ac.uk>
-Message-ID: <51AEFF42.2010002@jic23.retrosnub.co.uk>
-Date: Wed, 05 Jun 2013 10:05:06 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:common: Added check memory allocation failed
-References: <1370416890-4659-1-git-send-email-denis.ciocca@st.com> <1370416890-4659-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1370416890-4659-2-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:35138 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755724Ab3FEQZK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:25:10 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Patil, Rachna" <rachna@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 04/22] input/ti_am33x_tsc: Order of TSC wires, made configurable
+Date: Wed,  5 Jun 2013 18:24:37 +0200
+Message-Id: <1370449495-29981-5-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
+References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/06/13 08:21, Denis CIOCCA wrote:
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-> ---
->   drivers/iio/common/st_sensors/st_sensors_buffer.c |    5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index 7389785..71a2c5f 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -57,6 +57,11 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->   			u8 *rx_array;
->   			rx_array = kmalloc(byte_for_channel * num_data_channels,
->   					   GFP_KERNEL);
-> +			if (!rx_array) {
-> +				len = -ENOMEM;
-> +				goto st_sensors_free_memory;
-> +			}
-> +
->   			len = sdata->tf->read_multiple_byte(&sdata->tb,
->   				sdata->dev, addr[0],
->   				byte_for_channel * num_data_channels,
->
-Dratt, I forgot about that.  Will merge with the original patch and push 
-out a forced update to the tree.
+From: "Patil, Rachna" <rachna@ti.com>
+
+The current driver expected touchscreen input
+wires(XP,XN,YP,YN) to be connected in a particular order.
+Making changes to accept this as platform data.
+
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+[bigeasy: larger rework of the patch, no config[4][4] array, smaller
+          sized config_inp, no regbit_map(), shrinked
+	  titsc_config_wires(), no config redo on resume, config_inp and
+	  friends are now u32]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |  102 ++++++++++++++++++++++++-----
+ include/linux/input/ti_am335x_tsc.h       |   12 ++++
+ include/linux/mfd/ti_am335x_tscadc.h      |   10 ++-
+ 3 files changed, 105 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 23d6a4d..56c6220 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -33,6 +33,13 @@
+ #define SEQ_SETTLE		275
+ #define MAX_12BIT		((1 << 12) - 1)
+ 
++static const int config_pins[] = {
++	XPP,
++	XNN,
++	YPP,
++	YNN,
++};
++
+ struct titsc {
+ 	struct input_dev	*input;
+ 	struct ti_tscadc_dev	*mfd_tscadc;
+@@ -41,6 +48,9 @@ struct titsc {
+ 	unsigned int		x_plate_resistance;
+ 	bool			pen_down;
+ 	int			steps_to_configure;
++	u32			config_inp[4];
++	u32			bit_xp, bit_xn, bit_yp, bit_yn;
++	u32			inp_xp, inp_xn, inp_yp, inp_yn;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -54,6 +64,58 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ 	writel(val, tsc->mfd_tscadc->tscadc_base + reg);
+ }
+ 
++static int titsc_config_wires(struct titsc *ts_dev)
++{
++	u32 analog_line[4];
++	u32 wire_order[4];
++	int i, bit_cfg;
++
++	for (i = 0; i < 4; i++) {
++		/*
++		 * Get the order in which TSC wires are attached
++		 * w.r.t. each of the analog input lines on the EVM.
++		 */
++		analog_line[i] = (ts_dev->config_inp[i] & 0xF0) >> 4;
++		wire_order[i] = ts_dev->config_inp[i] & 0x0F;
++		if (WARN_ON(analog_line[i] > 7))
++			return -EINVAL;
++		if (WARN_ON(wire_order[i] > ARRAY_SIZE(config_pins)))
++			return -EINVAL;
++	}
++
++	for (i = 0; i < 4; i++) {
++		int an_line;
++		int wi_order;
++
++		an_line = analog_line[i];
++		wi_order = wire_order[i];
++		bit_cfg = config_pins[wi_order];
++		if (bit_cfg == 0)
++			return -EINVAL;
++		switch (wi_order) {
++		case 0:
++			ts_dev->bit_xp = bit_cfg;
++			ts_dev->inp_xp = an_line;
++			break;
++
++		case 1:
++			ts_dev->bit_xn = bit_cfg;
++			ts_dev->inp_xn = an_line;
++			break;
++
++		case 2:
++			ts_dev->bit_yp = bit_cfg;
++			ts_dev->inp_yp = an_line;
++			break;
++		case 3:
++			ts_dev->bit_yn = bit_cfg;
++			ts_dev->inp_yn = an_line;
++			break;
++		}
++	}
++	return 0;
++}
++
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
+@@ -64,18 +126,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	total_steps = 2 * ts_dev->steps_to_configure;
+ 
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_XPP;
++			STEPCONFIG_AVG_16 | ts_dev->bit_xp;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_YNN |
+-				STEPCONFIG_INP_AN4 | STEPCONFIG_XNN |
+-				STEPCONFIG_YPP;
++		config |= ts_dev->bit_yn |
++				STEPCONFIG_INP_AN4 | ts_dev->bit_xn |
++				ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_INP_AN2 | STEPCONFIG_XNN;
++		config |= STEPCONFIG_INP(ts_dev->inp_yp) | ts_dev->bit_xn;
+ 		break;
+ 	}
+ 
+@@ -86,18 +148,18 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YNN |
++			STEPCONFIG_AVG_16 | ts_dev->bit_yn |
+ 			STEPCONFIG_INM_ADCREFM | STEPCONFIG_FIFO1;
+ 	switch (ts_dev->wires) {
+ 	case 4:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	case 5:
+-		config |= STEPCONFIG_XPP | STEPCONFIG_INP_AN4 |
+-				STEPCONFIG_XNP | STEPCONFIG_YPN;
++		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
++				ts_dev->bit_xn | ts_dev->bit_yp;
+ 		break;
+ 	case 8:
+-		config |= STEPCONFIG_YPP;
++		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
+ 		break;
+ 	}
+ 
+@@ -108,9 +170,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = 0;
+ 	/* Charge step configuration */
+-	config = STEPCONFIG_XPP | STEPCONFIG_YNN |
++	config = ts_dev->bit_xp | ts_dev->bit_yn |
+ 			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+-			STEPCHARGE_INM_AN1 | STEPCHARGE_INP_AN1;
++			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
+ 
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+ 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+@@ -118,13 +180,14 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	config = 0;
+ 	/* Configure to calculate pressure */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+-			STEPCONFIG_AVG_16 | STEPCONFIG_YPP |
+-			STEPCONFIG_XNN | STEPCONFIG_INM_ADCREFM;
++			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
++			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
++			STEPCONFIG_INP(ts_dev->inp_xp);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 1), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 1),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	config |= STEPCONFIG_INP_AN3 | STEPCONFIG_FIFO1;
++	config |= STEPCONFIG_INP(ts_dev->inp_yn) | STEPCONFIG_FIFO1;
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(total_steps + 2), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+@@ -292,6 +355,8 @@ static int titsc_probe(struct platform_device *pdev)
+ 	ts_dev->wires = pdata->tsc_init->wires;
+ 	ts_dev->x_plate_resistance = pdata->tsc_init->x_plate_resistance;
+ 	ts_dev->steps_to_configure = pdata->tsc_init->steps_to_configure;
++	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
++			sizeof(pdata->tsc_init->wire_config));
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+ 			  0, pdev->dev.driver->name, ts_dev);
+@@ -301,6 +366,11 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
++	err = titsc_config_wires(ts_dev);
++	if (err) {
++		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
++		goto err_free_irq;
++	}
+ 	titsc_step_config(ts_dev);
+ 	titsc_writel(ts_dev, REG_FIFO0THR, ts_dev->steps_to_configure);
+ 
+diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
+index 49269a2..6a66b4d 100644
+--- a/include/linux/input/ti_am335x_tsc.h
++++ b/include/linux/input/ti_am335x_tsc.h
+@@ -12,12 +12,24 @@
+  *			A step configured to read a single
+  *			co-ordinate value, can be applied
+  *			more number of times for better results.
++ * @wire_config:	Different EVM's could have a different order
++ *			for connecting wires on touchscreen.
++ *			We need to provide an 8 bit number where in
++ *			the 1st four bits represent the analog lines
++ *			and the next 4 bits represent positive/
++ *			negative terminal on that input line.
++ *			Notations to represent the input lines and
++ *			terminals resoectively is as follows:
++ *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
++ *			XP  = 0, XN = 1, YP = 2, YN = 3.
++ *
+  */
+ 
+ struct tsc_data {
+ 	int wires;
+ 	int x_plate_resistance;
+ 	int steps_to_configure;
++	int wire_config[10];
+ };
+ 
+ #endif
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index eeead15..2d78af8 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -71,8 +71,6 @@
+ #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
+ #define STEPCONFIG_INP_MASK	(0xF << 19)
+ #define STEPCONFIG_INP(val)	((val) << 19)
+-#define STEPCONFIG_INP_AN2	STEPCONFIG_INP(2)
+-#define STEPCONFIG_INP_AN3	STEPCONFIG_INP(3)
+ #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+ #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+ #define STEPCONFIG_FIFO1	BIT(26)
+@@ -94,7 +92,6 @@
+ #define STEPCHARGE_INM_AN1	STEPCHARGE_INM(1)
+ #define STEPCHARGE_INP_MASK	(0xF << 19)
+ #define STEPCHARGE_INP(val)	((val) << 19)
+-#define STEPCHARGE_INP_AN1	STEPCHARGE_INP(1)
+ #define STEPCHARGE_RFM_MASK	(3 << 23)
+ #define STEPCHARGE_RFM(val)	((val) << 23)
+ #define STEPCHARGE_RFM_XNUR	STEPCHARGE_RFM(1)
+@@ -116,6 +113,13 @@
+ #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+ #define CNTRLREG_TSCENB		BIT(7)
+ 
++#define XPP			STEPCONFIG_XPP
++#define XNP			STEPCONFIG_XNP
++#define XNN			STEPCONFIG_XNN
++#define YPP			STEPCONFIG_YPP
++#define YPN			STEPCONFIG_YPN
++#define YNN			STEPCONFIG_YNN
++
+ #define ADC_CLK			3000000
+ #define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+-- 
+1.7.10.4
+
