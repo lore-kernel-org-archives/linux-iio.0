@@ -1,64 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:35142 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755403Ab3FEQZL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:25:11 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 05/22] input/ti_am33x_tsc: remove unwanted fifo flush
-Date: Wed,  5 Jun 2013 18:24:38 +0200
-Message-Id: <1370449495-29981-6-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
+Received: from smtp-out-243.synserver.de ([212.40.185.243]:1041 "EHLO
+	smtp-out-243.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753657Ab3FESHg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 14:07:36 -0400
+Message-ID: <51AF7E60.50007@metafoo.de>
+Date: Wed, 05 Jun 2013 20:07:28 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	michael.hennerich@analog.com, linux-iio@vger.kernel.org,
+	Lars-Peter.Clausen@analog.com, dan.carpenter@oracle.com
+Subject: Re: [PATCH RESEND V2 3/4] iio: frequency: adf4350: Add support for
+ clock consumer framework
+References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com> <1370266249-26338-3-git-send-email-michael.hennerich@analog.com> <51AE277B.1070302@kernel.org> <51AEE974.3030000@analog.com> <51AF4A51.5090609@metafoo.de> <51AF5880.30008@jic23.retrosnub.co.uk> <51AF7694.9060604@metafoo.de> <51AF78B5.5000206@kernel.org>
+In-Reply-To: <51AF78B5.5000206@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On 06/05/2013 07:43 PM, Jonathan Cameron wrote:
+> On 06/05/2013 06:34 PM, Lars-Peter Clausen wrote:
+>> On 06/05/2013 05:25 PM, Jonathan Cameron wrote:
+>>> On 05/06/13 15:25, Lars-Peter Clausen wrote:
+>>>> On 06/05/2013 09:32 AM, Michael Hennerich wrote:
+>>>>> On 06/04/2013 07:44 PM, Jonathan Cameron wrote:
+>>>>>> On 06/03/2013 02:30 PM, michael.hennerich@analog.com wrote:
+>>>>>>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>>>>>>
+>>>>>>> Preferably get clkin (PLL reference clock) from clock framework
+>>>>>>>
+>>>>>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>>>>>> ERROR: "clk_round_rate" [drivers/iio/frequency/adf4350.ko] undefined!
+>>>>>> make[1]: *** [__modpost] Error 1
+>>>>>>
+>>>>>> on my arm test build. Sorry, I was being lazy before and hadn't done
+>>>>>> any test builds till I tried merging it.  Backed out the merge of this
+>>>>>> patch for now.
+>>>>>>
+>>>>>> clk.h does say that api is optional for machine classes.  No idea what you
+>>>>>> want to
+>>>>>> do about this.
+>>>>>
+>>>>> The CLK API is optional in the driver - so I prefer to keep it like that and
+>>>>> don't make
+>>>>> the driver depend on COMMON_CLK.
+>>>>>
+>>>>> The simplest and probably the best workaround is to guard the CLK Round/Set
+>>>>> code with
+>>>>> #if defined(CONFIG_COMMON_CLK).
+>>>>>
+>>>>> Thoughts?
+>>>>>
+>>>>
+>>>> This is not a bug in the driver. If the clk API is not implemented it is
+>>>> stubbed out. It looks as if Jonathan is testing on a platform which
+>>>> implements the clk API but not clk_round_rate() (None of the other clk_*
+>>>> symbols are undefined).
+>>>>
+>>>> Jonathan on which platform are you testing this?
+>>> arm specifically pxa27x eabi
+>>>>
+>>
+>> No clk_round_rate() in arch/arm/mach-pxa/clock.c
+> Hmm.. Indeed.  So what does one do if one wants to use those functions?
 
-When touchscreen and ADC are used together, this
-unwanted fifo flush leads to loss of ADC data.
+I think the pxa implementation of the clk API is just broken in this regard.
+The clk API requires you to implement all the functions declared in
+include/linux/clk.h
 
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ----------
- 1 file changed, 10 deletions(-)
-
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 56c6220..b2f8a46 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -252,8 +252,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int x = 0, y = 0;
- 	unsigned int z1, z2, z;
- 	unsigned int fsm;
--	unsigned int fifo1count, fifo0count;
--	int i;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
-@@ -262,14 +260,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
- 		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
- 
--		fifo1count = titsc_readl(ts_dev, REG_FIFO1CNT);
--		for (i = 0; i < fifo1count; i++)
--			titsc_readl(ts_dev, REG_FIFO1);
--
--		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
--		for (i = 0; i < fifo0count; i++)
--			titsc_readl(ts_dev, REG_FIFO0);
--
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
- 			/*
- 			 * Calculate pressure using formula
--- 
-1.7.10.4
-
+- Lars
