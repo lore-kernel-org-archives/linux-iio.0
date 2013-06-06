@@ -1,81 +1,38 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51B09F92.3060201@metafoo.de>
-Date: Thu, 06 Jun 2013 16:41:22 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- michael.hennerich@analog.com, linux-iio@vger.kernel.org,
- Lars-Peter.Clausen@analog.com, dan.carpenter@oracle.com
-Subject: Re: [PATCH RESEND V2 3/4] iio: frequency: adf4350: Add support for
- clock consumer framework
-References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com> <1370266249-26338-3-git-send-email-michael.hennerich@analog.com> <51AE277B.1070302@kernel.org> <51AEE974.3030000@analog.com> <51AF4A51.5090609@metafoo.de> <51AF5880.30008@jic23.retrosnub.co.uk> <51AF7694.9060604@metafoo.de> <51AF78B5.5000206@kernel.org> <51AF7E60.50007@metafoo.de> <51AF9D2F.4000302@kernel.org>
-In-Reply-To: <51AF9D2F.4000302@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <jic23@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	kbuild-all@01.org,
+	Fengguang Wu <fengguang.wu@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio:trigger:interrupt fix formatting of rsize variable in name
+Date: Thu,  6 Jun 2013 19:24:54 +0100
+Message-Id: <1370543094-10248-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/05/2013 10:18 PM, Jonathan Cameron wrote:
-> On 06/05/2013 07:07 PM, Lars-Peter Clausen wrote:
->> On 06/05/2013 07:43 PM, Jonathan Cameron wrote:
->>> On 06/05/2013 06:34 PM, Lars-Peter Clausen wrote:
->>>> On 06/05/2013 05:25 PM, Jonathan Cameron wrote:
->>>>> On 05/06/13 15:25, Lars-Peter Clausen wrote:
->>>>>> On 06/05/2013 09:32 AM, Michael Hennerich wrote:
->>>>>>> On 06/04/2013 07:44 PM, Jonathan Cameron wrote:
->>>>>>>> On 06/03/2013 02:30 PM, michael.hennerich@analog.com wrote:
->>>>>>>>> From: Michael Hennerich <michael.hennerich@analog.com>
->>>>>>>>>
->>>>>>>>> Preferably get clkin (PLL reference clock) from clock framework
->>>>>>>>>
->>>>>>>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
->>>>>>>> ERROR: "clk_round_rate" [drivers/iio/frequency/adf4350.ko] undefined!
->>>>>>>> make[1]: *** [__modpost] Error 1
->>>>>>>>
->>>>>>>> on my arm test build. Sorry, I was being lazy before and hadn't done
->>>>>>>> any test builds till I tried merging it.  Backed out the merge of this
->>>>>>>> patch for now.
->>>>>>>>
->>>>>>>> clk.h does say that api is optional for machine classes.  No idea what you
->>>>>>>> want to
->>>>>>>> do about this.
->>>>>>>
->>>>>>> The CLK API is optional in the driver - so I prefer to keep it like that and
->>>>>>> don't make
->>>>>>> the driver depend on COMMON_CLK.
->>>>>>>
->>>>>>> The simplest and probably the best workaround is to guard the CLK Round/Set
->>>>>>> code with
->>>>>>> #if defined(CONFIG_COMMON_CLK).
->>>>>>>
->>>>>>> Thoughts?
->>>>>>>
->>>>>>
->>>>>> This is not a bug in the driver. If the clk API is not implemented it is
->>>>>> stubbed out. It looks as if Jonathan is testing on a platform which
->>>>>> implements the clk API but not clk_round_rate() (None of the other clk_*
->>>>>> symbols are undefined).
->>>>>>
->>>>>> Jonathan on which platform are you testing this?
->>>>> arm specifically pxa27x eabi
->>>>>>
->>>>
->>>> No clk_round_rate() in arch/arm/mach-pxa/clock.c
->>> Hmm.. Indeed.  So what does one do if one wants to use those functions?
->>
->> I think the pxa implementation of the clk API is just broken in this regard.
->> The clk API requires you to implement all the functions declared in
->> include/linux/clk.h
-> Not according to the header it doesn't.
-> 
-> /*
->  * The remaining APIs are optional for machine class support.
->  */
-> 
-> Just above clk_round_rate
-> 
-> Odd situation admittedly but the header certainly implies that these do
-> not 'need' to be implemented.
+The name includes irq_res->start which of type resource_size_t not integer.
+We could in theory use %pa for this but then it would be in hex and also
+that causes a warning about incorrect types anyway.  Hence just
+use the irq local variable we assigned the line above.
 
-It should at least be stubbed out, otherwise this doesn't make too much sense.
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/trigger/iio-trig-interrupt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Lars
+diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+index 84bf397..0a6756d 100644
+--- a/drivers/iio/trigger/iio-trig-interrupt.c
++++ b/drivers/iio/trigger/iio-trig-interrupt.c
+@@ -50,7 +50,7 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+ 
+ 	irq = irq_res->start;
+ 
+-	trig = iio_trigger_alloc("irqtrig%d", irq_res->start);
++	trig = iio_trigger_alloc("irqtrig%zu", irq_res->start);
+ 	if (!trig) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+-- 
+1.8.3
