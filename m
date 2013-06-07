@@ -1,75 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:54896 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751281Ab3FDKXW convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 06:23:22 -0400
-Date: Tue, 4 Jun 2013 12:23:18 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 12/19] iio & mfd & input: ti_tscadc: Match mfd sub
- devices to regmap interface
-Message-ID: <20130604102318.GC1151@linutronix.de>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-13-git-send-email-bigeasy@linutronix.de>
- <51AB84F5.2030405@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <51AB84F5.2030405@kernel.org>
+Received: from mail-pd0-f169.google.com ([209.85.192.169]:56167 "EHLO
+	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753862Ab3FGLUY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Jun 2013 07:20:24 -0400
+Received: by mail-pd0-f169.google.com with SMTP id y10so4724977pdj.28
+        for <linux-iio@vger.kernel.org>; Fri, 07 Jun 2013 04:20:23 -0700 (PDT)
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: devel@driverdev.osuosl.org
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+	jic23@cam.ac.uk, sachin.kamat@linaro.org, jic23@kernel.org,
+	Stefan Roese <sr@denx.de>
+Subject: [PATCH 1/1] staging: iio: spear_adc: Add missing CONFIG_OF macro
+Date: Fri,  7 Jun 2013 16:36:01 +0530
+Message-Id: <1370603161-10992-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* Jonathan Cameron | 2013-06-02 18:46:29 [+0100]:
+The data structure is required only when DT is enabled.
+Hence compile it conditionally.
 
->On 05/27/2013 08:11 PM, Sebastian Andrzej Siewior wrote:
->> From: Pantelis Antoniou <panto@antoniou-consulting.com>
->> 
->Some confusing splitting between this and the previous patch that definitely wants
->to be cleaned up.
->
->> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->> index cceff09..72ffe89 100644
->> --- a/drivers/iio/adc/ti_am335x_adc.c
->> +++ b/drivers/iio/adc/ti_am335x_adc.c
->> @@ -76,22 +82,24 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
->>  	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
->>  }
->>  
->> -static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
->> +static int tiadc_channel_init(struct iio_dev *indio_dev,
->> +		struct tiadc_device *adc_dev)
->>  {
->>  	struct iio_chan_spec *chan_array;
->>  	struct iio_chan_spec *chan;
->>  	char *s;
->>  	int i, len, size, ret;
->> +	int channels = adc_dev->channels;
->This is an unconnected bit of cleanup.  If you want it put it in the previous patch
->which only just introduced what you are changing.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Stefan Roese <sr@denx.de>
+---
+ drivers/staging/iio/adc/spear_adc.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-It will be probably best.
+diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+index 25a06cb..736219c 100644
+--- a/drivers/staging/iio/adc/spear_adc.c
++++ b/drivers/staging/iio/adc/spear_adc.c
+@@ -415,11 +415,13 @@ static int spear_adc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
+ static const struct of_device_id spear_adc_dt_ids[] = {
+ 	{ .compatible = "st,spear600-adc", },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, spear_adc_dt_ids);
++#endif
+ 
+ static struct platform_driver spear_adc_driver = {
+ 	.probe		= spear_adc_probe,
+-- 
+1.7.9.5
 
->> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
->> index bd127bd..a27401a 100644
->> --- a/drivers/mfd/ti_am335x_tscadc.c
->> +++ b/drivers/mfd/ti_am335x_tscadc.c
->> @@ -31,6 +31,7 @@ static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
->>  {
->>  	unsigned int val;
->>
->????  What is this doing here? It's not doing the move to regmap but rather setting a default value.
-
-No lo sé :) I saw that and was wondering myself a little and planned the
-romval of this default for later. Now I think I do this earlier.
-
->> +	val = (unsigned int)-1;
->>  	regmap_read(tsadc->regmap_tscadc, reg, &val);
->>  	return val;
->>  }
-
-Sebastian
