@@ -1,45 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:48000 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752442Ab3FFJlx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jun 2013 05:41:53 -0400
-Received: by mail-pd0-f176.google.com with SMTP id r11so3110669pdi.35
-        for <linux-iio@vger.kernel.org>; Thu, 06 Jun 2013 02:41:53 -0700 (PDT)
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: devel@driverdev.osuosl.org
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	jic23@cam.ac.uk, sachin.kamat@linaro.org,
-	Roland Stigge <stigge@antcom.de>
-Subject: [PATCH 3/3] staging: iio: lpc32xx_adc: Remove redundant platform_set_drvdata()
-Date: Thu,  6 Jun 2013 14:57:24 +0530
-Message-Id: <1370510844-23603-3-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1370510844-23603-1-git-send-email-sachin.kamat@linaro.org>
-References: <1370510844-23603-1-git-send-email-sachin.kamat@linaro.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41371 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751672Ab3FHJT2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jun 2013 05:19:28 -0400
+Message-ID: <51B2F720.9090708@kernel.org>
+Date: Sat, 08 Jun 2013 10:19:28 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH 17/22] mfd & iio/ti_am335x_adc: rename device from tiadc
+ to TI-am335x-adc
+References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-18-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370449495-29981-18-git-send-email-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Commit 0998d06310 (device-core: Ensure drvdata = NULL when no
-driver is bound) removes the need to set driver data field to
-NULL.
+On 06/05/2013 05:24 PM, Sebastian Andrzej Siewior wrote:
+> TI-adc reads a little better compared to tiadc. And if we add am335x to
+> it then we have the same naming scheme as the tsc side.
+> While here add an alias so the driver is loaded on demand.
+Good, I also prefer this naming.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Roland Stigge <stigge@antcom.de>
----
- drivers/staging/iio/adc/lpc32xx_adc.c |    1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-index 2f2f7fd..9a4bb09 100644
---- a/drivers/staging/iio/adc/lpc32xx_adc.c
-+++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-@@ -215,7 +215,6 @@ static int lpc32xx_adc_remove(struct platform_device *pdev)
- 
- 	iio_device_unregister(iodev);
- 	free_irq(irq, info);
--	platform_set_drvdata(pdev, NULL);
- 	clk_put(info->clk);
- 	iounmap(info->adc_base);
- 	iio_device_free(iodev);
--- 
-1.7.9.5
-
+> 
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c |    4 ++--
+>  drivers/mfd/ti_am335x_tscadc.c  |    2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index c6695a8..38f2415 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -318,14 +318,14 @@ static const struct dev_pm_ops tiadc_pm_ops = {
+>  
+>  static struct platform_driver tiadc_driver = {
+>  	.driver = {
+> -		.name   = "tiadc",
+> +		.name   = "TI-am335x-adc",
+>  		.owner	= THIS_MODULE,
+>  		.pm	= TIADC_PM_OPS,
+>  	},
+>  	.probe	= tiadc_probe,
+>  	.remove	= tiadc_remove,
+>  };
+> -
+> +MODULE_ALIAS("platform:TI-am335x-adc");
+>  module_platform_driver(tiadc_driver);
+>  
+>  MODULE_DESCRIPTION("TI ADC controller driver");
+> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> index ba9235a..8bdab8d 100644
+> --- a/drivers/mfd/ti_am335x_tscadc.c
+> +++ b/drivers/mfd/ti_am335x_tscadc.c
+> @@ -203,7 +203,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>  	if (adc_channels > 0) {
+>  		tscadc->adc_cell = tscadc->used_cells;
+>  		cell = &tscadc->cells[tscadc->used_cells++];
+> -		cell->name = "tiadc";
+> +		cell->name = "TI-am335x-adc";
+>  		cell->platform_data = &tscadc;
+>  		cell->pdata_size = sizeof(tscadc);
+>  	}
+> 
