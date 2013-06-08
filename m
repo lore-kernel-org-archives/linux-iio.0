@@ -1,52 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51463 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41096 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750791Ab3FDSDk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 14:03:40 -0400
-Message-ID: <51AE2BF3.5080906@kernel.org>
-Date: Tue, 04 Jun 2013 19:03:31 +0100
+	with ESMTP id S1751475Ab3FHIsb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jun 2013 04:48:31 -0400
+Message-ID: <51B2EFDE.1030702@kernel.org>
+Date: Sat, 08 Jun 2013 09:48:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: linux-iio@vger.kernel.org, Lars-Peter.Clausen@analog.com,
-	dan.carpenter@oracle.com
-Subject: Re: [PATCH RESEND V2 2/4] iio: frequency: adf4350: cast value to
- unsigned to make code checkers happy
-References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com> <1370266249-26338-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1370266249-26338-2-git-send-email-michael.hennerich@analog.com>
+To: Stefan Roese <sr@denx.de>
+CC: Sachin Kamat <sachin.kamat@linaro.org>, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+	jic23@cam.ac.uk
+Subject: Re: [PATCH 1/1] staging: iio: spear_adc: Add missing CONFIG_OF macro
+References: <1370603161-10992-1-git-send-email-sachin.kamat@linaro.org> <51B1C2E8.4040904@denx.de>
+In-Reply-To: <51B1C2E8.4040904@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/03/2013 02:30 PM, michael.hennerich@analog.com wrote:
-> From: Michael Hennerich <michael.hennerich@analog.com>
+On 06/07/2013 12:24 PM, Stefan Roese wrote:
+> On 06/07/2013 01:06 PM, Sachin Kamat wrote:
+>> The data structure is required only when DT is enabled.
+>> Hence compile it conditionally.
+>>
+>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+>> Cc: Stefan Roese <sr@denx.de>
 > 
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Applied to the togreg branch of iio.git.
-> ---
->  include/linux/iio/frequency/adf4350.h |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Acked-by: Stefan Roese <sr@denx.de>
 > 
-> diff --git a/include/linux/iio/frequency/adf4350.h b/include/linux/iio/frequency/adf4350.h
-> index be91f34..ffd8c8f 100644
-> --- a/include/linux/iio/frequency/adf4350.h
-> +++ b/include/linux/iio/frequency/adf4350.h
-> @@ -1,7 +1,7 @@
->  /*
->   * ADF4350/ADF4351 SPI PLL driver
->   *
-> - * Copyright 2012 Analog Devices Inc.
-> + * Copyright 2012-2013 Analog Devices Inc.
->   *
->   * Licensed under the GPL-2.
->   */
-> @@ -41,7 +41,7 @@
->  #define ADF4350_REG2_RDIV2_EN			(1 << 24)
->  #define ADF4350_REG2_RMULT2_EN			(1 << 25)
->  #define ADF4350_REG2_MUXOUT(x)			((x) << 26)
-> -#define ADF4350_REG2_NOISE_MODE(x)		((x) << 29)
-> +#define ADF4350_REG2_NOISE_MODE(x)		(((unsigned)(x)) << 29)
->  #define ADF4350_MUXOUT_THREESTATE		0
->  #define ADF4350_MUXOUT_DVDD			1
->  #define ADF4350_MUXOUT_GND			2
-> 
+> Thanks,
+> Stefan
+Applied to the togreg branch of iio.git
+
+Thanks,
