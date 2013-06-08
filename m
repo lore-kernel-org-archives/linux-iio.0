@@ -1,105 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41319 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41347 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751568Ab3FHJP1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jun 2013 05:15:27 -0400
-Message-ID: <51B2F62C.6010709@kernel.org>
-Date: Sat, 08 Jun 2013 10:15:24 +0100
+	with ESMTP id S1751571Ab3FHJSj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Jun 2013 05:18:39 -0400
+Message-ID: <51B2F6ED.6030702@kernel.org>
+Date: Sat, 08 Jun 2013 10:18:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO cleanups, new stuff and staging graduations (IIO set 2
- for the 3.11 cycle)
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 12/22] iio/ti_tscadc: Update with IIO map interface
+References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-13-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370449495-29981-13-git-send-email-bigeasy@linutronix.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit b164935b38d64557a32892e7aa45e213e9d11ea8:
+On 06/05/2013 05:24 PM, Sebastian Andrzej Siewior wrote:
+> From: Pantelis Antoniou <panto@antoniou-consulting.com>
+>
+> Add an IIO map interface that consumers can use.
+>
+Nicely done and much cleaner.  Thanks,
 
-  staging: MIPS: add Octeon USB HCD support (2013-06-03 12:45:03 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.11b
-
-for you to fetch changes up to 78f304d06c47d600ec1a4b0995f1f4c5667a677e:
-
-  iio:trigger:interrupt fix formatting of rsize variable in name (2013-06-08 10:00:58 +0100)
-
-----------------------------------------------------------------
-Second round of IIO new stuff and cleanups for the 3.11 cycle.
-
-1) Pressure sensor support in the st sensors driver - LPS331AP currently.
-2) Graduation of generic interrupt from staging with some related cleanup.
-3) A number of platform_set_drvdata on remove removals.
-4) 2 conditional build changes to prevent device tree structures from being
-   built in when device tree isn't enabled.  These just save a bit of space
-   rather than being strictly required at the moment.
-5) A couple of strict_strtoul -> kstrtoul conversions.
-
-----------------------------------------------------------------
-Denis CIOCCA (3):
-      iio:common: ST_SENSORS_LSM_CHANNELS macro changed
-      iio:common: Removed stuff macros, added num_data_channels on st_sensors struct and added support on one-shot sysfs
-reads to 3 byte channel
-      iio:pressure: Add STMicroelectronics pressures driver
-
-Jingoo Han (1):
-      iio: replace strict_strtoul() with kstrtoul()
-
-Jonathan Cameron (5):
-      staging:iio:trigger:gpio bug in release of gpio in error path
-      staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
-      staging:iio:triggers:interrupt trigger - one per platform device.
-      iio:triggers:interrupt trigger - move out of staging.
-      iio:trigger:interrupt fix formatting of rsize variable in name
-
-Michael Hennerich (1):
-      iio: frequency: adf4350: cast value to unsigned to make code checkers happy
-
-Sachin Kamat (5):
-      iio: at91_adc: Add missing CONFIG_OF macro
-      staging: iio: ad7606_par: Remove redundant platform_set_drvdata()
-      staging: iio: spear_adc: Remove redundant platform_set_drvdata()
-      staging: iio: lpc32xx_adc: Remove redundant platform_set_drvdata()
-      staging: iio: spear_adc: Add missing CONFIG_OF macro
-
- drivers/iio/Kconfig                               |   1 +
- drivers/iio/Makefile                              |   1 +
- drivers/iio/accel/st_accel_core.c                 |  39 +++-
- drivers/iio/adc/at91_adc.c                        |   2 +
- drivers/iio/adc/max1363.c                         |   2 +-
- drivers/iio/common/st_sensors/st_sensors_buffer.c |  61 +++--
- drivers/iio/common/st_sensors/st_sensors_core.c   |  34 ++-
- drivers/iio/gyro/st_gyro_core.c                   |  24 +-
- drivers/iio/magnetometer/st_magn_core.c           |  39 +++-
- drivers/iio/pressure/Kconfig                      |  35 +++
- drivers/iio/pressure/Makefile                     |  10 +
- drivers/iio/pressure/st_pressure.h                |  39 ++++
- drivers/iio/pressure/st_pressure_buffer.c         | 105 +++++++++
- drivers/iio/pressure/st_pressure_core.c           | 272 ++++++++++++++++++++++
- drivers/iio/pressure/st_pressure_i2c.c            |  77 ++++++
- drivers/iio/pressure/st_pressure_spi.c            |  76 ++++++
- drivers/iio/trigger/Kconfig                       |   9 +
- drivers/iio/trigger/Makefile                      |   1 +
- drivers/iio/trigger/iio-trig-interrupt.c          | 121 ++++++++++
- drivers/iio/trigger/iio-trig-sysfs.c              |   4 +-
- drivers/staging/iio/adc/ad7606_par.c              |   2 -
- drivers/staging/iio/adc/lpc32xx_adc.c             |   1 -
- drivers/staging/iio/adc/spear_adc.c               |   3 +-
- drivers/staging/iio/trigger/Kconfig               |   6 -
- drivers/staging/iio/trigger/Makefile              |   1 -
- drivers/staging/iio/trigger/iio-trig-gpio.c       | 167 -------------
- include/linux/iio/common/st_sensors.h             |  24 +-
- include/linux/iio/frequency/adf4350.h             |   4 +-
- 28 files changed, 900 insertions(+), 260 deletions(-)
- create mode 100644 drivers/iio/pressure/Kconfig
- create mode 100644 drivers/iio/pressure/Makefile
- create mode 100644 drivers/iio/pressure/st_pressure.h
- create mode 100644 drivers/iio/pressure/st_pressure_buffer.c
- create mode 100644 drivers/iio/pressure/st_pressure_core.c
- create mode 100644 drivers/iio/pressure/st_pressure_i2c.c
- create mode 100644 drivers/iio/pressure/st_pressure_spi.c
- create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
- delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
+> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> [bigeasy: use static AIN[0-8] names, plugged a mem leak, use kcalloc()]
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c |   57 ++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 51 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index 502e929..c6695a8 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -24,12 +24,15 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+>
+>  #include <linux/mfd/ti_am335x_tscadc.h>
+>
+>  struct tiadc_device {
+>  	struct ti_tscadc_dev *mfd_tscadc;
+>  	int channels;
+> +	struct iio_map *map;
+>  };
+>
+>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+> @@ -84,34 +87,76 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+>  	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
+>  }
+>
+> +static const char * const chan_name_ain[] = {
+> +	"AIN0",
+> +	"AIN1",
+> +	"AIN2",
+> +	"AIN3",
+> +	"AIN4",
+> +	"AIN5",
+> +	"AIN6",
+> +	"AIN7",
+> +};
+> +
+>  static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+>  {
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>  	struct iio_chan_spec *chan_array;
+> -	int i;
+> +	struct iio_chan_spec *chan;
+> +	int i, ret;
+>
+>  	indio_dev->num_channels = channels;
+> -	chan_array = kcalloc(indio_dev->num_channels,
+> +	chan_array = kcalloc(channels,
+>  			sizeof(struct iio_chan_spec), GFP_KERNEL);
+> -
+>  	if (chan_array == NULL)
+>  		return -ENOMEM;
+>
+> -	for (i = 0; i < (indio_dev->num_channels); i++) {
+> -		struct iio_chan_spec *chan = chan_array + i;
+> +	chan = chan_array;
+> +	for (i = 0; i < channels; i++, chan++) {
+> +
+>  		chan->type = IIO_VOLTAGE;
+>  		chan->indexed = 1;
+>  		chan->channel = i;
+>  		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +		chan->datasheet_name = chan_name_ain[i];
+> +		chan->scan_type.sign = 'u';
+> +		chan->scan_type.realbits = 12;
+> +		chan->scan_type.storagebits = 32;
+> +		chan->scan_type.shift = 0;
+>  	}
+>
+>  	indio_dev->channels = chan_array;
+>
+> -	return indio_dev->num_channels;
+> +	adc_dev->map = kcalloc(channels + 1, sizeof(struct iio_map),
+> +			GFP_KERNEL);
+> +	if (adc_dev->map == NULL)
+> +		goto err_free_chan;
+> +
+> +	for (i = 0; i < channels; i++) {
+> +		adc_dev->map[i].adc_channel_label =
+> +			chan_array[i].datasheet_name;
+> +		adc_dev->map[i].consumer_dev_name = "any";
+> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
+> +	}
+> +
+> +	ret = iio_map_array_register(indio_dev, adc_dev->map);
+> +	if (ret)
+> +		goto err_map;
+> +
+> +	return 0;
+> +err_map:
+> +	kfree(adc_dev->map);
+> +err_free_chan:
+> +	kfree(chan_array);
+> +	return -ENOMEM;
+>  }
+>
+>  static void tiadc_channels_remove(struct iio_dev *indio_dev)
+>  {
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +
+>  	kfree(indio_dev->channels);
+> +	kfree(adc_dev->map);
+>  }
+>
+>  static int tiadc_read_raw(struct iio_dev *indio_dev,
+>
