@@ -1,237 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:35134 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755387Ab3FEQZJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:25:09 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: =?UTF-8?q?=5BPATCH=2003/22=5D=20input/ti=5Fam33x=5Ftsc=3A=20Step=20enable=20bits=20made=20configurable?=
-Date: Wed,  5 Jun 2013 18:24:36 +0200
-Message-Id: <1370449495-29981-4-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54862 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751732Ab3FISRt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Jun 2013 14:17:49 -0400
+Message-ID: <51B4C6CC.7070904@kernel.org>
+Date: Sun, 09 Jun 2013 19:17:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	michael.hennerich@analog.com, linux-iio@vger.kernel.org,
+	Lars-Peter.Clausen@analog.com, dan.carpenter@oracle.com
+Subject: Re: [PATCH RESEND V2 3/4] iio: frequency: adf4350: Add support for
+ clock consumer framework
+References: <1370266249-26338-1-git-send-email-michael.hennerich@analog.com> <1370266249-26338-3-git-send-email-michael.hennerich@analog.com> <51AE277B.1070302@kernel.org> <51AEE974.3030000@analog.com> <51AF4A51.5090609@metafoo.de> <51AF5880.30008@jic23.retrosnub.co.uk> <51AF7694.9060604@metafoo.de> <51AF78B5.5000206@kernel.org> <51AF7E60.50007@metafoo.de> <51AF9D2F.4000302@kernel.org> <51B09F92.3060201@metafoo.de> <51B2F24F.8080605@kernel.org>
+In-Reply-To: <51B2F24F.8080605@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+On 06/08/2013 09:58 AM, Jonathan Cameron wrote:
+> On 06/06/2013 03:41 PM, Lars-Peter Clausen wrote:
+>> On 06/05/2013 10:18 PM, Jonathan Cameron wrote:
+>>> On 06/05/2013 07:07 PM, Lars-Peter Clausen wrote:
+>>>> On 06/05/2013 07:43 PM, Jonathan Cameron wrote:
+>>>>> On 06/05/2013 06:34 PM, Lars-Peter Clausen wrote:
+>>>>>> On 06/05/2013 05:25 PM, Jonathan Cameron wrote:
+>>>>>>> On 05/06/13 15:25, Lars-Peter Clausen wrote:
+>>>>>>>> On 06/05/2013 09:32 AM, Michael Hennerich wrote:
+>>>>>>>>> On 06/04/2013 07:44 PM, Jonathan Cameron wrote:
+>>>>>>>>>> On 06/03/2013 02:30 PM, michael.hennerich@analog.com wrote:
+>>>>>>>>>>> From: Michael Hennerich <michael.hennerich@analog.com>
+>>>>>>>>>>>
+>>>>>>>>>>> Preferably get clkin (PLL reference clock) from clock framework
+>>>>>>>>>>>
+>>>>>>>>>>> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+>>>>>>>>>> ERROR: "clk_round_rate" [drivers/iio/frequency/adf4350.ko] undefined!
+>>>>>>>>>> make[1]: *** [__modpost] Error 1
+>>>>>>>>>>
+>>>>>>>>>> on my arm test build. Sorry, I was being lazy before and hadn't done
+>>>>>>>>>> any test builds till I tried merging it.  Backed out the merge of this
+>>>>>>>>>> patch for now.
+>>>>>>>>>>
+>>>>>>>>>> clk.h does say that api is optional for machine classes.  No idea what you
+>>>>>>>>>> want to
+>>>>>>>>>> do about this.
+>>>>>>>>>
+>>>>>>>>> The CLK API is optional in the driver - so I prefer to keep it like that and
+>>>>>>>>> don't make
+>>>>>>>>> the driver depend on COMMON_CLK.
+>>>>>>>>>
+>>>>>>>>> The simplest and probably the best workaround is to guard the CLK Round/Set
+>>>>>>>>> code with
+>>>>>>>>> #if defined(CONFIG_COMMON_CLK).
+>>>>>>>>>
+>>>>>>>>> Thoughts?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> This is not a bug in the driver. If the clk API is not implemented it is
+>>>>>>>> stubbed out. It looks as if Jonathan is testing on a platform which
+>>>>>>>> implements the clk API but not clk_round_rate() (None of the other clk_*
+>>>>>>>> symbols are undefined).
+>>>>>>>>
+>>>>>>>> Jonathan on which platform are you testing this?
+>>>>>>> arm specifically pxa27x eabi
+>>>>>>>>
+>>>>>>
+>>>>>> No clk_round_rate() in arch/arm/mach-pxa/clock.c
+>>>>> Hmm.. Indeed.  So what does one do if one wants to use those functions?
+>>>>
+>>>> I think the pxa implementation of the clk API is just broken in this regard.
+>>>> The clk API requires you to implement all the functions declared in
+>>>> include/linux/clk.h
+>>> Not according to the header it doesn't.
+>>>
+>>> /*
+>>>  * The remaining APIs are optional for machine class support.
+>>>  */
+>>>
+>>> Just above clk_round_rate
+>>>
+>>> Odd situation admittedly but the header certainly implies that these do
+>>> not 'need' to be implemented.
+>>
+>> It should at least be stubbed out, otherwise this doesn't make too much sense.
+>>
+>> - Lars
+>>
+> So as not to step on any toes I've raised the issue on lkml and the arm kernel
+> list.
+> 
+> My personal feeling is that architectures should just implement a stub returning
+> an error code to indicate it isn't available but we will see what
+> others think.
+> 
+A fix is on its way for my test platform so given that everyone acknowledges that
+these functions are no longer optional, I've applied this patch to the togreg
+branch of iio.git.  Sorry for the delay.  Will be interesting to see if there
+any other subarchs that are missing this.
 
-Current code has hard coded value written to
-step enable bits. Now the bits are updated based
-on how many steps are needed to be configured got
-from platform data.
-
-The user needs to take care not to exceed
-the count more than 16. While using ADC and TSC
-one should take care to set this parameter correctly.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-[bigeasy: add lock, move to MFD, use in TSC & ADC]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/iio/adc/ti_am335x_adc.c           |   20 ++++++++++++++++++--
- drivers/input/touchscreen/ti_am335x_tsc.c |   12 ++++++++++--
- drivers/mfd/ti_am335x_tscadc.c            |   29 ++++++++++++++++++++++++++++-
- include/linux/mfd/ti_am335x_tscadc.h      |    8 ++++++--
- 4 files changed, 62 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 9db352e..543b9c4 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -42,10 +42,20 @@ static void tiadc_writel(struct tiadc_device *adc, unsigned int reg,
- 	writel(val, adc->mfd_tscadc->tscadc_base + reg);
- }
- 
-+static u32 get_adc_step_mask(struct tiadc_device *adc_dev)
-+{
-+	u32 step_en;
-+
-+	step_en = ((1 << adc_dev->channels) - 1);
-+	step_en <<= TOTAL_STEPS - adc_dev->channels + 1;
-+	return step_en;
-+}
-+
- static void tiadc_step_config(struct tiadc_device *adc_dev)
- {
- 	unsigned int stepconfig;
- 	int i, channels = 0, steps;
-+	u32 step_en;
- 
- 	/*
- 	 * There are 16 configurable steps and 8 analog input
-@@ -69,7 +79,8 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 				STEPCONFIG_OPENDLY);
- 		channels++;
- 	}
--	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
-+	step_en = get_adc_step_mask(adc_dev);
-+	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
- }
- 
- static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
-@@ -127,7 +138,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 		if (i == chan->channel)
- 			*val = readx1 & 0xfff;
- 	}
--	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
-+	am335x_tsc_se_update(adc_dev->mfd_tscadc);
- 
- 	return IIO_VAL_INT;
- }
-@@ -191,10 +202,15 @@ static int tiadc_probe(struct platform_device *pdev)
- static int tiadc_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	u32 step_en;
- 
- 	iio_device_unregister(indio_dev);
- 	tiadc_channels_remove(indio_dev);
- 
-+	step_en = get_adc_step_mask(adc_dev);
-+	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
-+
- 	iio_device_free(indio_dev);
- 
- 	return 0;
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 16077d3..23d6a4d 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -57,6 +57,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
- static void titsc_step_config(struct titsc *ts_dev)
- {
- 	unsigned int	config;
-+	unsigned int	stepenable = 0;
- 	int i, total_steps;
- 
- 	/* Configure the Step registers */
-@@ -128,7 +129,9 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
- 			STEPCONFIG_OPENDLY);
- 
--	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
-+	/* The steps1 … end and bit 0 for TS_Charge */
-+	stepenable = (1 << (total_steps + 2)) - 1;
-+	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
- }
- 
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -250,7 +253,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
- 
--	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
-+	am335x_tsc_se_update(ts_dev->mfd_tscadc);
- 	return IRQ_HANDLED;
- }
- 
-@@ -334,6 +337,11 @@ static int titsc_remove(struct platform_device *pdev)
- 
- 	free_irq(ts_dev->irq, ts_dev);
- 
-+	/* total steps followed by the enable mask */
-+	steps = 2 * ts_dev->steps_to_configure + 2;
-+	steps = (1 << steps) - 1;
-+	am335x_tsc_se_clr(ts_dev->mfd_tscadc, steps);
-+
- 	input_unregister_device(ts_dev->input);
- 
- 	platform_set_drvdata(pdev, NULL);
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 490b2bd..7b091c4 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -37,6 +37,32 @@ static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
- 	writel(val, tsadc->tscadc_base + reg);
- }
- 
-+void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc)
-+{
-+	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
-+}
-+EXPORT_SYMBOL_GPL(am335x_tsc_se_update);
-+
-+void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val)
-+{
-+	spin_lock(&tsadc->reg_lock);
-+	tsadc->reg_se_cache |= val;
-+	spin_unlock(&tsadc->reg_lock);
-+
-+	am335x_tsc_se_update(tsadc);
-+}
-+EXPORT_SYMBOL_GPL(am335x_tsc_se_set);
-+
-+void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val)
-+{
-+	spin_lock(&tsadc->reg_lock);
-+	tsadc->reg_se_cache &= ~val;
-+	spin_unlock(&tsadc->reg_lock);
-+
-+	am335x_tsc_se_update(tsadc);
-+}
-+EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
-+
- static void tscadc_idle_config(struct ti_tscadc_dev *config)
- {
- 	unsigned int idleconfig;
-@@ -110,6 +136,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
-+	spin_lock_init(&tscadc->reg_lock);
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get_sync(&pdev->dev);
- 
-@@ -220,7 +247,7 @@ static int tscadc_resume(struct device *dev)
- 			CNTRLREG_STEPID | CNTRLREG_4WIRE;
- 	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
- 	tscadc_idle_config(tscadc_dev);
--	tscadc_writel(tscadc_dev, REG_SE, STPENB_STEPENB);
-+	am335x_tsc_se_update(tscadc_dev);
- 	restore = tscadc_readl(tscadc_dev, REG_CTRL);
- 	tscadc_writel(tscadc_dev, REG_CTRL,
- 			(restore | CNTRLREG_TSCSSENB));
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 5e430fe..eeead15 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -46,8 +46,6 @@
- /* Step Enable */
- #define STEPENB_MASK		(0x1FFFF << 0)
- #define STEPENB(val)		((val) << 0)
--#define STPENB_STEPENB		STEPENB(0x1FFFF)
--#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
- 
- /* IRQ enable */
- #define IRQENB_HW_PEN		BIT(0)
-@@ -140,6 +138,8 @@ struct ti_tscadc_dev {
- 	void __iomem *tscadc_base;
- 	int irq;
- 	struct mfd_cell cells[TSCADC_CELLS];
-+	u32 reg_se_cache;
-+	spinlock_t reg_lock;
- 
- 	/* tsc device */
- 	struct titsc *tsc;
-@@ -155,4 +155,8 @@ static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
- 	return *tscadc_dev;
- }
- 
-+void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc);
-+void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val);
-+void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val);
-+
- #endif
--- 
-1.7.10.4
-
+Jonathan
+> Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
