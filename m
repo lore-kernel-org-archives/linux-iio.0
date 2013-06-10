@@ -1,59 +1,58 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51B59071.9090908@metafoo.de>
-Date: Mon, 10 Jun 2013 10:38:09 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 12/22] iio/ti_tscadc: Update with IIO map interface
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-13-git-send-email-bigeasy@linutronix.de> <51B4B024.8070102@metafoo.de> <51B582D3.1050501@linutronix.de>
-In-Reply-To: <51B582D3.1050501@linutronix.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH] iio/kern: consider the case where channel number > number of channels
+Date: Mon, 10 Jun 2013 17:42:35 +0200
+Message-Id: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/10/2013 09:40 AM, Sebastian Andrzej Siewior wrote:
-> On 06/09/2013 06:41 PM, Lars-Peter Clausen wrote:
->> On 06/05/2013 06:24 PM, Sebastian Andrzej Siewior wrote:
->> [...]
->>> -	return indio_dev->num_channels;
->>> +	adc_dev->map = kcalloc(channels + 1, sizeof(struct iio_map),
->>> +			GFP_KERNEL);
->>> +	if (adc_dev->map == NULL)
->>> +		goto err_free_chan;
->>> +
->>> +	for (i = 0; i < channels; i++) {
->>> +		adc_dev->map[i].adc_channel_label =
->>> +			chan_array[i].datasheet_name;
->>> +		adc_dev->map[i].consumer_dev_name = "any";
->>> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
->>> +	}
->>
->> This is not the way the IIO map interface is supposed to be used and I doubt it
->> will actually work at all. The map either needs to be provided by board code
->> with the proper consumer device and channel name filled in or in your case
->> where you use devicetree you don't need to provide a map at all since this will
->> all be handled by the generic IIO devicetree bindings. So I'd just drop this patch.
-> 
-> The channels are not described in the device tree. If so how would that
-> be the case? Right now, I don't have any consumer. How do I test this
-> easily if this is done correctly?
-> If in doubt it will probably drop this until someone comes along who
-> actually needs this.
+On the am335x I export ADC channels indexed by their number as specified
+in the datasheet. The channels are shared between the TSC & ADC and be
+used either by TSC or the ADC. So it is possible that the TSC uses
+chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
+channles of the ADC is 2 but the individual numbers are 2 and 3.
+This patch changes the check for the the requesting channel by walking
+over the list and comparing the channel number.
 
-You don't need to describe the channels in devicetree, except setting the
-"#io-channel-cells" property of your ADC node to 1. You also need to initialize
-the of_node property of your iio_device's struct's 'dev' field to the your adc
-node.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/inkern.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-After that it's just a matter of using, e.g.
-
-	io-channels = <&adc 1>;
-	io-channel-names = "voltage";
-
-in your consumer.
-
-- Lars
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index dca4eed..1a40077 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+ 	struct iio_dev *indio_dev;
+ 	int err;
+ 	struct of_phandle_args iiospec;
++	int i;
+ 
+ 	err = of_parse_phandle_with_args(np, "io-channels",
+ 					 "#io-channel-cells",
+@@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+ 	indio_dev = dev_to_iio_dev(idev);
+ 	channel->indio_dev = indio_dev;
+ 	index = iiospec.args_count ? iiospec.args[0] : 0;
+-	if (index >= indio_dev->num_channels) {
+-		err = -EINVAL;
+-		goto err_put;
++	for (i = 0; i < indio_dev->num_channels; i++) {
++		if (indio_dev->channels[i].channel == index) {
++			channel->channel = &indio_dev->channels[i];
++			return 0;
++		}
+ 	}
+-	channel->channel = &indio_dev->channels[index];
+-
+-	return 0;
+ 
+-err_put:
+ 	iio_device_put(indio_dev);
+ 	return err;
+ }
+-- 
+1.7.10.4
