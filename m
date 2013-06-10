@@ -1,57 +1,40 @@
-Return-Path: <jic23@cam.ac.uk>
-Message-ID: <51AE32EC.3030100@cam.ac.uk>
-Date: Tue, 04 Jun 2013 19:33:16 +0100
-From: Jonathan Cameron <jic23@cam.ac.uk>
-MIME-Version: 1.0
-To: michael.hennerich@analog.com
-CC: Jonathan Cameron <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "device-drivers-devel@blackfin.uclinux.org" <device-drivers-devel@blackfin.uclinux.org>
-Subject: Re: [PATCH] iio: frequency: New driver for Analog Devices ADF4350/ADF4351
- Wideband Synthesizers
-References: <1336398556-5360-1-git-send-email-michael.hennerich@analog.com> <4FA932D9.5010006@cam.ac.uk> <4FA93D00.2070906@analog.com> <4FABB647.3090200@kernel.org> <4FACC2B2.9000601@analog.com> <51AC5153.7050506@analog.com>
-In-Reply-To: <51AC5153.7050506@analog.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/4] staging:iio:adis16130: Remove unused includes
+Date: Mon, 10 Jun 2013 16:00:12 +0200
+Message-Id: <1370872815-14386-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/03/2013 09:18 AM, Michael Hennerich wrote:
-> On 05/11/2012 09:41 AM, Michael Hennerich wrote:
->> On 05/10/2012 02:36 PM, Jonathan Cameron wrote:
->>> On 5/8/2012 4:34 PM, Michael Hennerich wrote:
->>>> On 05/08/2012 04:51 PM, Jonathan Cameron wrote:
->>>>> On 5/7/2012 2:49 PM, michael.hennerich@analog.com wrote:
->>>>>> From: Michael Hennerich<michael.hennerich@analog.com>
->>>>>>
->>>>>>
->>>>>> +
->>>>>> +static const struct iio_chan_spec_ext_info adf4350_ext_info[] = {
->>>>>> + /* Ideally we use IIO_CHAN_INFO_FREQUENCY, but there are
->>>>>> + * values>  2^32 in order to support the entire frequency range
->>>>>> + * in Hz. Using scale is a bit ugly.
->>>>>> + */
->>>>> hmm.. Add IIO_VAL_MEGA_PLUS_INT.. We were always going to need a bigger
->>>>> version at somepoint...
->>>> Well - we then need an s64, however read|write_raw feature s32 for
->>>> val and val2. So shall we pass low word in val and high word in val2?
->>> I was thinking
->>> val*1e6 + val2 would fit with what we have done elsewhere?  Is that
->>> enough room?
->> Hi Jonathan,
->>
->> IIO_VAL_MEGA_PLUS_INT versus IIO_VAL_LONG_LONG
->>
->> It is enough room. But I wonder why we would do costly divide and modulus operations, when we can do sifts and ANDs?
->> Splitting a s64 would give is the maximum available room with very little overhead.
->>
->> Thoughts?
-> 
-> Hi Jonathan,
-> 
-> I like to touch base on the IIO_VAL_MEGA_PLUS_INT versus IIO_VAL_LONG_LONG thing again.
-> We need something bigger as IIO_VAL_INT without loosing granularity by using scale.
-> 
-> You're favorite is still IIO_VAL_MEGA_PLUS_INT?
-Yes, for consistency with the existing interfaces.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adis16130_core.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-> I need to implement something - just like to get everyones thought again.
-> 
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index 531b803..5288635 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -6,18 +6,12 @@
+  * Licensed under the GPL-2 or later.
+  */
+ 
+-#include <linux/delay.h>
+ #include <linux/mutex.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+ #include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ 
+ #define ADIS16130_CON         0x0
+ #define ADIS16130_CON_RD      (1 << 6)
+-- 
+1.8.0
