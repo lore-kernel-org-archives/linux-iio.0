@@ -1,67 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54516 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755116Ab3FKSDB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 14:03:01 -0400
-Message-ID: <51B7664E.9070708@kernel.org>
-Date: Tue, 11 Jun 2013 19:02:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B58108.3020800@linutronix.de>
+Date: Mon, 10 Jun 2013 09:32:24 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-To: Samuel Ortiz <sameo@linux.intel.com>
-CC: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lee Jones <lee.jones@linaro.org>,
-	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <20130611142358.GG29135@zurbaran>
-In-Reply-To: <20130611142358.GG29135@zurbaran>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH 21/22] iio/ti_am335x_adc: Allow to specify input line
+References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-22-git-send-email-bigeasy@linutronix.de> <51B2F85E.2080805@kernel.org>
+In-Reply-To: <51B2F85E.2080805@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/11/2013 03:23 PM, Samuel Ortiz wrote:
-> Hi Sebastian,
-> 
-> On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior wrote:
->> I believe the whole thing should go via the MFD tree. It touches also
->> input & iio subsystem. I collected ACKs where I got some in the meantime.
-> Please fix your commit logs, and your subject lines. It should be e.g.
-> mfd: input: ti_am335x_adc: Blablabla
-> 
-> if it's mostly an mfd patch that also touches an input driver.
-> 
-> Then, this is a pretty big patchset, with iio, input and mfd all mixed
-> together and it is likely to create merge conflicts.
-> From what I can see from it, and please correct me if I'm
-> wrong, the iio and input changes depend on the mfd ones, and not the
-> other way around. If that's so, I'm going to ask you to reshuffle your
-> patch set and separate the MFD changes from the iio and input ones. I'll
-> take the MFD ones and will create an immutable branch for Jonathan and
-> Dmitry to pull from and apply the iio and input changes on top of it.
-> Merge conflicts should be mostly avoided that way.
+On 06/08/2013 11:24 AM, Jonathan Cameron wrote:
+> On 06/05/2013 05:24 PM, Sebastian Andrzej Siewior wrote:
+>> The TSC part allows to specify the input lines. The IIO part assumes
+>> that it usues always the last few, that means if IIO has adc-channels
+>> set to 2 it will use channel 6 and 7. However it might make sense to use
+>> only 6.
+>> This patch changes the device property (which was introduced recently
+>> and was never in an official release) in a way that the user can specify
+>> which of the AIN lines should be used. In Addition to this, the name is
+>> now AINx where x is the channel number i.e. for AIN6 we would have 6.
+>> Prior this, it always started counting at 0 which is confusing. In
+>> addition to this, it also checks for correct step number during reading
+>> and does not rely on proper FIFO depth.
+>>
+> Looks like a typo below... Also the change that is in doesn't directly seem
+> to be described in this description.
 
-I'd just like to note for future reference that I would prefer Samuels
-approach of such a branch for future cases where things touch on iio
-and another subsystem.
+You can use up to 8 channels and it was checked that the user does not
+specify more. However, in case of the touch you can read a channel
+multiple times. Each read process is programmed in the FSM and referred
+as a step in the manual. You can have up to 15 steps. The additional
+check ensures that the user does not try to more "steps" then available.
 
-Now as I've expressed I am happy with this set going through mfd
-but there is never anything wrong with agreeing how things 'should'
-be done ;)
+>> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+>> index 8bdab8d..acdb7b9 100644
+>> --- a/drivers/mfd/ti_am335x_tscadc.c
+>> +++ b/drivers/mfd/ti_am335x_tscadc.c
+>> @@ -91,10 +95,17 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>>
+>>  	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+>>  	of_property_read_u32(node, "ti,wires", &tsc_wires);
+>> +	of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
+> Coordiante? I'm guessing coordinate
 
-> AFAICT, only patch #2 should be kept with input and iio bits mixed
-> together with MFD as otherwise this would introduce functional breakage.
-> Otherwise, all MFD bits from the other patches could be either separated
-> or merged together (e.g. MFD bits from patches #6 and #8, and #16 and
-> #17).
+You guess correctly. It is a typo in multiple files, I fix it up…
 
-> 
-> Does that sound doable to you ?
-> 
-> Cheers,
-> Samuel.
-> 
+>>
+>>  	node = of_get_child_by_name(pdev->dev.of_node, "adc");
+>> -	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+>> -
+>> +	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
+>> +		adc_channels++;
+>> +		if (val > 7) {
+>> +			dev_err(&pdev->dev, " PIN numbers are 0..7 (not %d)\n",
+>> +					val);
+>> +			return -EINVAL;
+>> +		}
+>> +	}
+>>  	total_channels = tsc_wires + adc_channels;
+>>  	if (total_channels > 8) {
+>>  		dev_err(&pdev->dev, "Number of i/p channels more than 8\n");
+
+Sebastian
