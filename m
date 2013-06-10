@@ -1,70 +1,103 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:50359 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1422666Ab3FTS6J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Jun 2013 14:58:09 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>
-Cc: jimwall@q.com, brian@crystalfontz.com,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Rob Landley <rob@landley.net>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 0/3] Add support for the Nuvoton NAU7802 ADC to the cfa10049
-Date: Thu, 20 Jun 2013 20:57:52 +0200
-Message-Id: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/4] staging:iio:adis16130: Move out of staging
+Date: Mon, 10 Jun 2013 16:00:15 +0200
+Message-Id: <1370872815-14386-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
+References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+The adis16130 driver is fairly simple and it a good shape now, so move it out of
+staging. Remove an outdated FIXME along the way.
 
-Sorry for the delay, this is v2 of the patchset that adds support for the 3
-Nuvoton NAU7802 ADCs present on the CFA-10049 board from Crystalfontz. The first
-patch adds the driver, the next ones are adding them in the DT after switching
-the second i2c bus to bitbanging following a lot of timeout issues we have on
-that bus.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/gyro/Kconfig                                           | 7 +++++++
+ drivers/iio/gyro/Makefile                                          | 1 +
+ .../{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c}    | 1 -
+ drivers/staging/iio/gyro/Kconfig                                   | 7 -------
+ drivers/staging/iio/gyro/Makefile                                  | 3 ---
+ 5 files changed, 8 insertions(+), 11 deletions(-)
+ rename drivers/{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c} (99%)
 
-Since v1, I've taken into account the review from Jonathan Cameron, Lars-Peter
-Clausen and Maxime Ripard:
- - channels are now statically allocated
- - no wrappers around i2c functions
- - sampling_freq is a shared attribute
- - setting gain is done through scale
- - cosmetics changes (s/idev/indio_dev/, blank lines before returns)
- - use of sign_extend32 to extend the sign
- - reading scale now returns IIO_VAL_FRACTIONAL_LOG2
- - no dt lookup for interrupts, this is done in of_i2c.c but that was mask due
- to a bug.
-
-what I didn't address is setting the external reference voltage through a fixed
-regulator and I kept the vldo attribute to set the internal voltage reference in
-the DT as Jonathan seemed to be ok with that. If anybody is using a nau7802 with
-an external reference, it will still be time to add the fixed regulator. It
-shouldn't be difficult but I don't have any hardware to test.
-
-Regards,
-
-Alexandre Belloni (1):
-  iio: Add Nuvoton NAU7802 ADC driver
-
-Maxime Ripard (2):
-  ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
-  ARM: mxs: cfa10049: Add NAU7802 ADCs to the device tree
-
- .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
- arch/arm/boot/dts/imx28-cfa10049.dts               | 126 +++--
- drivers/iio/adc/Kconfig                            |   9 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
- 5 files changed, 713 insertions(+), 43 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
- create mode 100644 drivers/iio/adc/nau7802.c
-
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index b8daf1b..8498e9d 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -10,6 +10,13 @@ config ADIS16080
+ 	  Say yes here to build support for Analog Devices ADIS16080, ADIS16100 Yaw
+ 	  Rate Gyroscope with SPI.
+ 
++config ADIS16130
++	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices ADIS16130 High Precision
++	  Angular Rate Sensor driver.
++
+ config ADIS16136
+ 	tristate "Analog devices ADIS16136 and similar gyroscopes driver"
+ 	depends on SPI_MASTER
+diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+index 225d289..e9dc034 100644
+--- a/drivers/iio/gyro/Makefile
++++ b/drivers/iio/gyro/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ obj-$(CONFIG_ADIS16080) += adis16080.o
++obj-$(CONFIG_ADIS16130) += adis16130.o
+ obj-$(CONFIG_ADIS16136) += adis16136.o
+ obj-$(CONFIG_ADXRS450) += adxrs450.o
+ 
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/iio/gyro/adis16130.c
+similarity index 99%
+rename from drivers/staging/iio/gyro/adis16130_core.c
+rename to drivers/iio/gyro/adis16130.c
+index 8979435..129acdf 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/iio/gyro/adis16130.c
+@@ -183,7 +183,6 @@ error_ret:
+ 	return ret;
+ }
+ 
+-/* fixme, confirm ordering in this function */
+ static int adis16130_remove(struct spi_device *spi)
+ {
+ 	iio_device_unregister(spi_get_drvdata(spi));
+diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
+index 8360662..b433371 100644
+--- a/drivers/staging/iio/gyro/Kconfig
++++ b/drivers/staging/iio/gyro/Kconfig
+@@ -10,13 +10,6 @@ config ADIS16060
+ 	  Say yes here to build support for Analog Devices adis16060 wide bandwidth
+ 	  yaw rate gyroscope with SPI.
+ 
+-config ADIS16130
+-	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices ADIS16130 High Precision
+-	  Angular Rate Sensor driver.
+-
+ config ADIS16260
+ 	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
+index 98e6500..975f95b 100644
+--- a/drivers/staging/iio/gyro/Makefile
++++ b/drivers/staging/iio/gyro/Makefile
+@@ -5,8 +5,5 @@
+ adis16060-y             := adis16060_core.o
+ obj-$(CONFIG_ADIS16060) += adis16060.o
+ 
+-adis16130-y             := adis16130_core.o
+-obj-$(CONFIG_ADIS16130) += adis16130.o
+-
+ adis16260-y             := adis16260_core.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
 -- 
-1.8.1.2
-
+1.8.0
