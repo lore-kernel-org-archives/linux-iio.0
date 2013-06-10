@@ -1,49 +1,38 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <51B735CC.9080909@linutronix.de>
-Date: Tue, 11 Jun 2013 16:35:56 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: Samuel Ortiz <sameo@linux.intel.com>
-CC: Lee Jones <lee.jones@linaro.org>, =?ISO-8859-1?Q?Beno=EEt_Cousson?=
- <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
- linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- "Patil, Rachna" <rachna@ti.com>
-Subject: Re: [PATCH 04/22] input/ti_am33x_tsc: Order of TSC wires, made configurable
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-5-git-send-email-bigeasy@linutronix.de> <20130611142324.GD29135@zurbaran>
-In-Reply-To: <20130611142324.GD29135@zurbaran>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/4] staging:iio:adis16130: Fix sample reading
+Date: Mon, 10 Jun 2013 16:00:13 +0200
+Message-Id: <1370872815-14386-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
+References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/11/2013 04:23 PM, Samuel Ortiz wrote:
-> Hi Sebastian,
+The driver first does a proper read of the data register, but right after that
+it does a spi_read, which will overwrite the initial result.
 
-Hi Samuel,
+It looks as if the extra spi_read was accidentally introduced in commit
+a5e7363ca ("staging:iio:gyro:adis16130 drop control of adc resolution."), quite
+likely due to a bad rebase.
 
-> On Tue, Jun 11, 2013 at 01:30:50PM +0200, Sebastian Andrzej Siewior wrote:
->> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
->> index eeead15..2d78af8 100644
->> --- a/include/linux/mfd/ti_am335x_tscadc.h
->> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->> @@ -116,6 +113,13 @@
->>  #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
->>  #define CNTRLREG_TSCENB		BIT(7)
->>  
->> +#define XPP			STEPCONFIG_XPP
->> +#define XNP			STEPCONFIG_XNP
->> +#define XNN			STEPCONFIG_XNN
->> +#define YPP			STEPCONFIG_YPP
->> +#define YPN			STEPCONFIG_YPN
->> +#define YNN			STEPCONFIG_YNN
-> What is that for ? Isn't STEPCONFIG_XPP explicit enough ?
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adis16130_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Yeah :P It was added by the original author of the patch, I have no
-problem getting rid of it.
-
-> 
-> Cheers,
-> Samuel.
-
-Sebastian
+diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+index 5288635..2537f59 100644
+--- a/drivers/staging/iio/gyro/adis16130_core.c
++++ b/drivers/staging/iio/gyro/adis16130_core.c
+@@ -62,7 +62,6 @@ static int adis16130_spi_read(struct iio_dev *indio_dev, u8 reg_addr, u32 *val)
+ 	spi_message_init(&msg);
+ 	spi_message_add_tail(&xfer, &msg);
+ 	ret = spi_sync(st->us, &msg);
+-	ret = spi_read(st->us, st->buf, 4);
+ 
+ 	if (ret == 0)
+ 		*val = (st->buf[1] << 16) | (st->buf[2] << 8) | st->buf[3];
+-- 
+1.8.0
