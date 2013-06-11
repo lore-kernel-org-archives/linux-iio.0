@@ -1,145 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55864 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55470 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756879Ab3FKUHP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 16:07:15 -0400
-Message-ID: <51B78371.1090908@kernel.org>
-Date: Tue, 11 Jun 2013 21:07:13 +0100
+	with ESMTP id S1751991Ab3FKTe1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:34:27 -0400
+Message-ID: <51B77BC2.9090705@kernel.org>
+Date: Tue, 11 Jun 2013 20:34:26 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:trigger: Fix use_count race condition
-References: <1370974731-11878-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370974731-11878-1-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 3/4] staging:iio:adis16130: Report scale and offset
+References: <1370872815-14386-1-git-send-email-lars@metafoo.de> <1370872815-14386-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1370872815-14386-3-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 07:18 PM, Lars-Peter Clausen wrote:
-> When using more than one trigger consumer it can happen that multiple threads
-> perform a read-modify-update cycle on 'use_count' concurrently. This can cause
-> updates to be lost and use_count can get stuck at non-zero value, in which case
-> the IIO core assumes that at least one thread is still running and will wait for
-> it to finish before running any trigger handlers again. This effectively renders
-> the trigger disabled and a reboot is necessary before it can be used again. To
-> fix this make use_count an atomic variable. Also set it to the number of
-> consumers before starting the first consumer, otherwise it might happen that
-> use_count drops to 0 even though not all consumers have been run yet.
+On 06/10/2013 03:00 PM, Lars-Peter Clausen wrote:
+> Report scale and offset for the temperature and voltage channels.
 > 
-I am a little worried there is a different race in here. Can't immediateliy get
-my head around whether it can actually occur. It would require a subirq thread
-to finish handling the interrupt during either trigger_poll or trigger_poll_chained.
-
-I can't immediately see what prevents this happening..
-
-One nasty option might be to ensure that we only launch num_consumers interrupts
-on without caring whether they are the ones we originally counted or not.
-
-
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git. Thanks.
 > ---
->  drivers/iio/industrialio-trigger.c | 44 +++++++++++++++++++++++++++-----------
->  include/linux/iio/trigger.h        |  3 ++-
->  2 files changed, 33 insertions(+), 14 deletions(-)
+>  drivers/staging/iio/gyro/adis16130_core.c | 57 +++++++++++++++++++++++++------
+>  1 file changed, 47 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 4d6c7d8..a02ca65 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -126,13 +126,22 @@ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
+> diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
+> index 2537f59..8979435 100644
+> --- a/drivers/staging/iio/gyro/adis16130_core.c
+> +++ b/drivers/staging/iio/gyro/adis16130_core.c
+> @@ -78,14 +78,47 @@ static int adis16130_read_raw(struct iio_dev *indio_dev,
+>  	int ret;
+>  	u32 temp;
 >  
->  void iio_trigger_poll(struct iio_trigger *trig, s64 time)
->  {
-> +	unsigned int num_consumers;
->  	int i;
-> -	if (!trig->use_count)
-> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
-> -			if (trig->subirqs[i].enabled) {
-> -				trig->use_count++;
-> +
-> +	if (!atomic_read(&trig->use_count)) {
-> +		num_consumers = 0;
-> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> +			if (trig->subirqs[i].enabled)
-> +				num_consumers++;
+> -	/* Take the iio_dev status lock */
+> -	mutex_lock(&indio_dev->mlock);
+> -	ret =  adis16130_spi_read(indio_dev, chan->address, &temp);
+> -	mutex_unlock(&indio_dev->mlock);
+> -	if (ret)
+> -		return ret;
+> -	*val = temp;
+> -	return IIO_VAL_INT;
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		/* Take the iio_dev status lock */
+> +		mutex_lock(&indio_dev->mlock);
+> +		ret = adis16130_spi_read(indio_dev, chan->address, &temp);
+> +		mutex_unlock(&indio_dev->mlock);
+> +		if (ret)
+> +			return ret;
+> +		*val = temp;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_ANGL_VEL:
+> +			/* 0 degree = 838860, 250 degree = 14260608 */
+> +			*val = 250;
+> +			*val2 = 336440817; /* RAD_TO_DEGREE(14260608 - 8388608) */
+> +			return IIO_VAL_FRACTIONAL;
+> +		case IIO_TEMP:
+> +			/* 0C = 8036283, 105C = 9516048 */
+> +			*val = 105000;
+> +			*val2 = 9516048 - 8036283;
+> +			return IIO_VAL_FRACTIONAL;
+> +		default:
+> +			return -EINVAL;
 > +		}
-> +		atomic_set(&trig->use_count, num_consumers);
-> +
-Is there any chance the state of subirqs[i].enabled might have changed since
-it was queried above?
-
-> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> +			if (trig->subirqs[i].enabled)
-how about,
-
-if (trig->subirqs[i].enabled && num_consumers--)
-as that would prevent the case of launching too many irq handlers.
-
->  				generic_handle_irq(trig->subirq_base + i);
-> -			}
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_ANGL_VEL:
+> +			*val = -8388608;
+> +			return IIO_VAL_INT;
+> +		case IIO_TEMP:
+> +			*val = -8036283;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
 > +		}
+> +		break;
 > +	}
->  }
->  EXPORT_SYMBOL(iio_trigger_poll);
->  
-> @@ -145,20 +154,29 @@ EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
->  
->  void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
->  {
-> +	unsigned int num_consumers;
->  	int i;
-> -	if (!trig->use_count)
-> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
-> -			if (trig->subirqs[i].enabled) {
-> -				trig->use_count++;
-> -				handle_nested_irq(trig->subirq_base + i);
-> -			}
 > +
-> +	if (!atomic_read(&trig->use_count)) {
-> +		num_consumers = 0;
-> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> +			if (trig->subirqs[i].enabled)
-> +				num_consumers++;
-> +		}
-> +		atomic_set(&trig->use_count, num_consumers);
-> +
-> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
-> +			if (trig->subirqs[i].enabled)
-> +				generic_handle_irq(trig->subirq_base + i);
-> +		}
-> +	}
+> +	return -EINVAL;
 >  }
->  EXPORT_SYMBOL(iio_trigger_poll_chained);
 >  
->  void iio_trigger_notify_done(struct iio_trigger *trig)
->  {
-> -	trig->use_count--;
-> -	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
-> +	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
-> +		trig->ops->try_reenable)
->  		if (trig->ops->try_reenable(trig))
->  			/* Missed an interrupt so launch new poll now */
->  			iio_trigger_poll(trig, 0);
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index 3869c52..369cf2c 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -8,6 +8,7 @@
->   */
->  #include <linux/irq.h>
->  #include <linux/module.h>
-> +#include <linux/atomic.h>
->  
->  #ifndef _IIO_TRIGGER_H_
->  #define _IIO_TRIGGER_H_
-> @@ -61,7 +62,7 @@ struct iio_trigger {
->  
->  	struct list_head		list;
->  	struct list_head		alloc_list;
-> -	int use_count;
-> +	atomic_t			use_count;
->  
->  	struct irq_chip			subirq_chip;
->  	int				subirq_base;
+>  static const struct iio_chan_spec adis16130_channels[] = {
+> @@ -93,13 +126,17 @@ static const struct iio_chan_spec adis16130_channels[] = {
+>  		.type = IIO_ANGL_VEL,
+>  		.modified = 1,
+>  		.channel2 = IIO_MOD_Z,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OFFSET),
+>  		.address = ADIS16130_RATEDATA,
+>  	}, {
+>  		.type = IIO_TEMP,
+>  		.indexed = 1,
+>  		.channel = 0,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_OFFSET),
+>  		.address = ADIS16130_TEMPDATA,
+>  	}
+>  };
 > 
