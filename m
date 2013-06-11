@@ -12,9 +12,9 @@ Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
 	linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 07/22] input/ti_am33x_tsc: remove platform_data support
-Date: Tue, 11 Jun 2013 13:30:53 +0200
-Message-Id: <1370950268-7224-8-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 11/22] mfd/ti_am335x_tscadc: remove platform_data support
+Date: Tue, 11 Jun 2013 13:30:57 +0200
+Message-Id: <1370950268-7224-12-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -22,61 +22,61 @@ List-ID: <linux-iio@vger.kernel.org>
 This patch removes access to platform data mfd_tscadc_board because the
 platform is DT only.
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   25 +------------------------
- 1 file changed, 1 insertion(+), 24 deletions(-)
+ drivers/mfd/ti_am335x_tscadc.c |   23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index a44d2c4..66c5a26 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -24,7 +24,6 @@
- #include <linux/clk.h>
- #include <linux/platform_device.h>
- #include <linux/io.h>
--#include <linux/input/ti_am335x_tsc.h>
- #include <linux/delay.h>
- #include <linux/of.h>
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index aae5e55..f9ad26f 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -25,8 +25,6 @@
  #include <linux/of_device.h>
-@@ -347,24 +346,6 @@ static int titsc_parse_dt(struct platform_device *pdev,
- 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
- }
  
--static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
--					struct titsc *ts_dev)
--{
--	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
--
--	if (!pdata)
--		return -EINVAL;
--
--	ts_dev->wires = pdata->tsc_init->wires;
--	ts_dev->x_plate_resistance =
--		pdata->tsc_init->x_plate_resistance;
--	ts_dev->steps_to_configure =
--		pdata->tsc_init->steps_to_configure;
--	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
--		sizeof(pdata->tsc_init->wire_config));
--	return 0;
--}
--
- /*
-  * The functions for inserting/removing driver as a module.
-  */
-@@ -390,11 +371,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	ts_dev->input = input_dev;
- 	ts_dev->irq = tscadc_dev->irq;
+ #include <linux/mfd/ti_am335x_tscadc.h>
+-#include <linux/input/ti_am335x_tsc.h>
+-#include <linux/platform_data/ti_am335x_adc.h>
  
--	if (tscadc_dev->dev->platform_data)
--		err = titsc_parse_pdata(tscadc_dev, ts_dev);
--	else
--		err = titsc_parse_dt(pdev, ts_dev);
+ static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
+ {
+@@ -80,31 +78,22 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	struct ti_tscadc_dev	*tscadc;
+ 	struct resource		*res;
+ 	struct clk		*clk;
+-	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
+ 	struct device_node	*node = pdev->dev.of_node;
+ 	struct mfd_cell		*cell;
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+ 	int			tsc_wires = 0, adc_channels = 0, total_channels;
+ 
+-	if (!pdata && !pdev->dev.of_node) {
+-		dev_err(&pdev->dev, "Could not find platform data\n");
++	if (!pdev->dev.of_node) {
++		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (pdev->dev.platform_data) {
+-		if (pdata->tsc_init)
+-			tsc_wires = pdata->tsc_init->wires;
++	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
++	of_property_read_u32(node, "ti,wires", &tsc_wires);
+ 
+-		if (pdata->adc_init)
+-			adc_channels = pdata->adc_init->adc_channels;
+-	} else {
+-		node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+-		of_property_read_u32(node, "ti,wires", &tsc_wires);
 -
-+	err = titsc_parse_dt(pdev, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
- 		goto err_free_mem;
+-		node = of_get_child_by_name(pdev->dev.of_node, "adc");
+-		of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+-	}
++	node = of_get_child_by_name(pdev->dev.of_node, "adc");
++	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+ 
+ 	total_channels = tsc_wires + adc_channels;
+ 
 -- 
 1.7.10.4
