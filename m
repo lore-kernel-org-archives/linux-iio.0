@@ -1,43 +1,39 @@
-Return-Path: <sameo@linux.intel.com>
-Date: Tue, 11 Jun 2013 16:23:36 +0200
-From: Samuel Ortiz <sameo@linux.intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
-Message-ID: <20130611142336.GE29135@zurbaran>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <1370950268-7224-2-git-send-email-bigeasy@linutronix.de>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B7358D.7000605@linutronix.de>
+Date: Tue, 11 Jun 2013 16:34:53 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1370950268-7224-2-git-send-email-bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: Lee Jones <lee.jones@linaro.org>, =?ISO-8859-1?Q?Beno=EEt_Cousson?=
+ <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-2-git-send-email-bigeasy@linutronix.de> <20130611142336.GE29135@zurbaran>
+In-Reply-To: <20130611142336.GE29135@zurbaran>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Sebastian,
+On 06/11/2013 04:23 PM, Samuel Ortiz wrote:
+> Hi Sebastian,
 
-On Tue, Jun 11, 2013 at 01:30:47PM +0200, Sebastian Andrzej Siewior wrote:
-> The MFD part uses regmap without caching and is the only user of the
-> regmap. The child drivers, that is input(touch) and iio(adc), use direct
-> reg access.
-> There is a patch which converts them to use regmap as well but I see no
-> benefit at all doing this. There is a direct MMIO bus access with no
-> need to cache values like for I2C or SPI devices. Furthermore, most (if
-> not all) of the access done by the touch & ADC driver read volatile
-> register.
-> Therefore this patch removes regmap part of the driver.
-NAK. Using regmap is better than open coding your register accesses, and
-the children not using this API is not a reason for the MFD driver to do
-the same.
+Hi Samuel,
 
-Cheers,
-Samuel.
+>> Therefore this patch removes regmap part of the driver.
+> NAK. Using regmap is better than open coding your register accesses, and
+> the children not using this API is not a reason for the MFD driver to do
+> the same.
 
--- 
-Intel Open Source Technology Centre
-http://oss.intel.com/
+There is no advantage over using regmap in the first place. It goes
+through a few layers, uses no caching because almost all registers are
+volatile and this is a direct bus. In the end it complicates more than
+it helps.
+
+> 
+> Cheers,
+> Samuel.
+> 
+
+Sebastian
