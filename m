@@ -1,49 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from antcom.de ([188.40.178.216]:38683 "EHLO chuck.antcom.de"
-	rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750733Ab3FFPR6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 6 Jun 2013 11:17:58 -0400
-Message-ID: <51B0A668.3060905@antcom.de>
-Date: Thu, 06 Jun 2013 17:10:32 +0200
-From: Roland Stigge <stigge@antcom.de>
+Received: from mga03.intel.com ([143.182.124.21]:1430 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754846Ab3FKRz0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Jun 2013 13:55:26 -0400
+Date: Tue, 11 Jun 2013 19:55:19 +0200
+From: Samuel Ortiz <sameo@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
+Message-ID: <20130611175519.GL29135@zurbaran>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <20130611142358.GG29135@zurbaran>
+ <20130611160415.GA379@core.coreip.homeip.net>
+ <20130611161506.GK29135@zurbaran>
+ <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-	gregkh@linuxfoundation.org, jic23@cam.ac.uk
-Subject: Re: [PATCH 3/3] staging: iio: lpc32xx_adc: Remove redundant platform_set_drvdata()
-References: <1370510844-23603-1-git-send-email-sachin.kamat@linaro.org> <1370510844-23603-3-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1370510844-23603-3-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2013 11:27 AM, Sachin Kamat wrote:
-> Commit 0998d06310 (device-core: Ensure drvdata = NULL when no
-> driver is bound) removes the need to set driver data field to
-> NULL.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Roland Stigge <stigge@antcom.de>
+Hi Jonathan,
 
-Tested-by: Roland Stigge <stigge@antcom.de>
-Acked-by: Roland Stigge <stigge@antcom.de>
+On Tue, Jun 11, 2013 at 05:27:48PM +0100, Jonathan Cameron wrote:
+> Samuel Ortiz <sameo@linux.intel.com> wrote:
+> >On Tue, Jun 11, 2013 at 09:04:16AM -0700, Dmitry Torokhov wrote:
+> >> On Tue, Jun 11, 2013 at 04:23:58PM +0200, Samuel Ortiz wrote:
+> >> > Hi Sebastian,
+> >> > 
+> >> > On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior
+> >wrote:
+> >> > > I believe the whole thing should go via the MFD tree. It touches
+> >also
+> >> > > input & iio subsystem. I collected ACKs where I got some in the
+> >meantime.
+> >> > Please fix your commit logs, and your subject lines. It should be
+> >e.g.
+> >> > mfd: input: ti_am335x_adc: Blablabla
+> >> > 
+> >> > if it's mostly an mfd patch that also touches an input driver.
+> >> > 
+> >> > Then, this is a pretty big patchset, with iio, input and mfd all
+> >mixed
+> >> > together and it is likely to create merge conflicts.
+> >> > From what I can see from it, and please correct me if I'm
+> >> > wrong, the iio and input changes depend on the mfd ones, and not
+> >the
+> >> > other way around. If that's so, I'm going to ask you to reshuffle
+> >your
+> >> > patch set and separate the MFD changes from the iio and input ones.
+> >I'll
+> >> > take the MFD ones and will create an immutable branch for Jonathan
+> >and
+> >> > Dmitry to pull from and apply the iio and input changes on top of
+> >it.
+> >> > Merge conflicts should be mostly avoided that way.
+> >> 
+> >> I purposely left this driver alone as I expected it would be merged
+> >> through MFD tree, so there should not be any merging issues on my
+> >side.
+> >Thanks for the notice.
+> >Jonathan, can you guarantee the same for the iio parts ?
+> I have also been avoiding taking any of these and there are unlikely to be any iio wide changes merging at this stage in cycle.  Hence these going through MFD is best plan.
+>
+Thanks. Then I'm willing to try and see if linux-next does not complain
+too hard about that.
 
-Thanks!
+Sebastian, please address the commit log and cosmetic issues I pointed out,
+keep the regmap code and I'll pull this patchset in.
+If further down the road we get some nasty merge conflicts from
+linux-next, I might ask you to re-work it. Let's see.
 
-> ---
->  drivers/staging/iio/adc/lpc32xx_adc.c |    1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-> index 2f2f7fd..9a4bb09 100644
-> --- a/drivers/staging/iio/adc/lpc32xx_adc.c
-> +++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-> @@ -215,7 +215,6 @@ static int lpc32xx_adc_remove(struct platform_device *pdev)
->  
->  	iio_device_unregister(iodev);
->  	free_irq(irq, info);
-> -	platform_set_drvdata(pdev, NULL);
->  	clk_put(info->clk);
->  	iounmap(info->adc_base);
->  	iio_device_free(iodev);
+Cheers,
+Samuel.
 
+-- 
+Intel Open Source Technology Centre
+http://oss.intel.com/
