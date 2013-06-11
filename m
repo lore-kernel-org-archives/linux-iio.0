@@ -1,42 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47449 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754402Ab3FVOA1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Jun 2013 10:00:27 -0400
-Message-ID: <51C5ADF8.8060206@kernel.org>
-Date: Sat, 22 Jun 2013 15:00:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Tue, 11 Jun 2013 18:10:51 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
+Message-ID: <20130611171051.GA4320@laptop>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
+ <20130611142347.GF29135@zurbaran>
+ <51B73756.5010004@linutronix.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Wei Yongjun <weiyj.lk@gmail.com>, yongjun_wei@trendmicro.com.cn,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH -next] iio: dac: ad7303: fix error return code in ad7303_probe()
-References: <CAPgLHd_7GTkOavGHctmaODV-gQBjRi5aiUF7+BR-FRnP8eCa7w@mail.gmail.com> <51C57E98.5020409@kernel.org> <51C5A6F0.80505@metafoo.de>
-In-Reply-To: <51C5A6F0.80505@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <51B73756.5010004@linutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/22/2013 02:30 PM, Lars-Peter Clausen wrote:
-> On 06/22/2013 12:38 PM, Jonathan Cameron wrote:
->> On 06/18/2013 02:08 PM, Wei Yongjun wrote:
->>> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
->>>
->>> Fix to return a negative error code from the error handling
->>> case instead of 0, as done elsewhere in this function.
->>>
->>> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
->> This one looks pretty obvious so I'll take it without waiting
->> for any other comments.
->>
->> Applied to togreg branch of iio.git
->>
->> Thanks,
+> >> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+> >> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> >> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> >> [bigeasy: module alias, rename to ti,am3359-tscadc as it was tested on
+> >>           AM3359]
+> > I honestly can't tell if this is a change from the last version of your
+> > patchset or a description of this patch changes in general.
+> > This is cluttering your commit logs, please remove this as well.
 > 
+> I took the original patch. Every change I made to it because people
+> asked to merge changes into the patch where the problem occurred I
+> added it here before my sign-off.
 > 
-> hm, I actually though I'd acked this patch, but looks like the mail didn't make
-> it through.
-> 
-> - Lars
-> 
-Added an ack as I hadn't pushed out to a public tree yet anyway.
+> In the end I would like not to post a patch with "From: != me" and
+> don't make change which the original author did not do. Also dropping
+> their authorship isn't nice. What could we agree on?
+
+Generally speaking, if it is necessary to merge various author's
+patches into one, then you can the merger will tend to take authorship
+of the commit. Note that just because you are the author of the
+commit, it doesn't mean you authored the patch.
+
+I also use the rule of thumb that if you make significant changes to a
+patch, then you can also assume authorship too. I'll leave the 'how
+much is significant' to your own good judgement.
+
+If you're just making a few fixups, then just add your SOB in the
+normal way. That should be enough reward for a mere few patch fixes.
+
+Adding little 'I-did-this' notes to the commit log should mostly be
+avoided IMO.
+
+-- 
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
