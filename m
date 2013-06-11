@@ -1,38 +1,44 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/4] staging:iio:adis16130: Fix sample reading
-Date: Mon, 10 Jun 2013 16:00:13 +0200
-Message-Id: <1370872815-14386-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
+Return-Path: <sameo@linux.intel.com>
+Date: Tue, 11 Jun 2013 17:05:05 +0200
+From: Samuel Ortiz <sameo@linux.intel.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
+Message-ID: <20130611150505.GI29135@zurbaran>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
+ <20130611142347.GF29135@zurbaran>
+ <51B73756.5010004@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51B73756.5010004@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The driver first does a proper read of the data register, but right after that
-it does a spi_read, which will overwrite the initial result.
+Hi Sebastian,
 
-It looks as if the extra spi_read was accidentally introduced in commit
-a5e7363ca ("staging:iio:gyro:adis16130 drop control of adc resolution."), quite
-likely due to a bad rebase.
+On Tue, Jun 11, 2013 at 04:42:30PM +0200, Sebastian Andrzej Siewior wrote:
+> In the end I would like not to post a patch with "From: != me" and
+> don't make change which the original author did not do. Also dropping
+> their authorship isn't nice. What could we agree on?
+You probably don't want to change authorship unless the final patch is
+really far from the original one. In which case you can change it and
+mention the original author name in the commit log.
+If you have only made a few changes on top of the original patch, please
+say so explicitely in the commit log. Don't bother if we're talking
+about small changes or cosmetic ones. But your commit log has to be
+readable and clear.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/gyro/adis16130_core.c | 1 -
- 1 file changed, 1 deletion(-)
+Cheers,
+Samuel.
 
-diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
-index 5288635..2537f59 100644
---- a/drivers/staging/iio/gyro/adis16130_core.c
-+++ b/drivers/staging/iio/gyro/adis16130_core.c
-@@ -62,7 +62,6 @@ static int adis16130_spi_read(struct iio_dev *indio_dev, u8 reg_addr, u32 *val)
- 	spi_message_init(&msg);
- 	spi_message_add_tail(&xfer, &msg);
- 	ret = spi_sync(st->us, &msg);
--	ret = spi_read(st->us, st->buf, 4);
- 
- 	if (ret == 0)
- 		*val = (st->buf[1] << 16) | (st->buf[2] << 8) | st->buf[3];
 -- 
-1.8.0
+Intel Open Source Technology Centre
+http://oss.intel.com/
