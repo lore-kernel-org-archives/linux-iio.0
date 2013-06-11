@@ -1,101 +1,65 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/4] staging:iio:adis16130: Report scale and offset
-Date: Mon, 10 Jun 2013 16:00:14 +0200
-Message-Id: <1370872815-14386-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B74DF1.3010502@linutronix.de>
+Date: Tue, 11 Jun 2013 18:18:57 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+MIME-Version: 1.0
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: Lee Jones <lee.jones@linaro.org>, =?UTF-8?B?QmVub8OudCBDb3Vzc29u?=
+ <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <20130611142358.GG29135@zurbaran> <51B74252.5090906@linutronix.de> <20130611161054.GJ29135@zurbaran>
+In-Reply-To: <20130611161054.GJ29135@zurbaran>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Report scale and offset for the temperature and voltage channels.
+On 06/11/2013 06:10 PM, Samuel Ortiz wrote:
+> Hi Sebastian,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/gyro/adis16130_core.c | 57 +++++++++++++++++++++++++------
- 1 file changed, 47 insertions(+), 10 deletions(-)
+Hi Samuel,
 
-diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
-index 2537f59..8979435 100644
---- a/drivers/staging/iio/gyro/adis16130_core.c
-+++ b/drivers/staging/iio/gyro/adis16130_core.c
-@@ -78,14 +78,47 @@ static int adis16130_read_raw(struct iio_dev *indio_dev,
- 	int ret;
- 	u32 temp;
- 
--	/* Take the iio_dev status lock */
--	mutex_lock(&indio_dev->mlock);
--	ret =  adis16130_spi_read(indio_dev, chan->address, &temp);
--	mutex_unlock(&indio_dev->mlock);
--	if (ret)
--		return ret;
--	*val = temp;
--	return IIO_VAL_INT;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		/* Take the iio_dev status lock */
-+		mutex_lock(&indio_dev->mlock);
-+		ret = adis16130_spi_read(indio_dev, chan->address, &temp);
-+		mutex_unlock(&indio_dev->mlock);
-+		if (ret)
-+			return ret;
-+		*val = temp;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+			/* 0 degree = 838860, 250 degree = 14260608 */
-+			*val = 250;
-+			*val2 = 336440817; /* RAD_TO_DEGREE(14260608 - 8388608) */
-+			return IIO_VAL_FRACTIONAL;
-+		case IIO_TEMP:
-+			/* 0C = 8036283, 105C = 9516048 */
-+			*val = 105000;
-+			*val2 = 9516048 - 8036283;
-+			return IIO_VAL_FRACTIONAL;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+			*val = -8388608;
-+			return IIO_VAL_INT;
-+		case IIO_TEMP:
-+			*val = -8036283;
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	}
-+
-+	return -EINVAL;
- }
- 
- static const struct iio_chan_spec adis16130_channels[] = {
-@@ -93,13 +126,17 @@ static const struct iio_chan_spec adis16130_channels[] = {
- 		.type = IIO_ANGL_VEL,
- 		.modified = 1,
- 		.channel2 = IIO_MOD_Z,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
- 		.address = ADIS16130_RATEDATA,
- 	}, {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_OFFSET),
- 		.address = ADIS16130_TEMPDATA,
- 	}
- };
--- 
-1.8.0
+> On Tue, Jun 11, 2013 at 05:29:22PM +0200, Sebastian Andrzej Siewior wrote:
+>>> Then, this is a pretty big patchset, with iio, input and mfd all mixed
+>>> together and it is likely to create merge conflicts.
+>> They somehow depend on each other. Otherwise I would have sent three
+>> series, one per subsystem.
+> Of course they depend on each other, but the dependency is mostly for
+> iio and input to depend on the MFD changes.
+
+Except for the one #18 as mentioned below.
+
+>> Still. There is #18 which reworks the "step addressing" and involves
+>> changes in both (iio & input) at the same time.
+> Would splitting iio and input break anything there ?
+
+Yes. Once the header files is modified without the two .c files the
+driver is not working. To fix this I need another patch making sure
+input + iio does not the header files and another to user it (once
+everything is merged).
+
+>> There is #21. Adding this to the initial "DT support" patch would be bad
+>> I think because it requires some changes on the iio side which have
+>> nothing to do with DT. Putting the iio changes before DT would require
+>> to make some change to platform-data part which will go away anyway.
+> Wouldn't it workif you split this one into an MFD+dts file changes and
+> another one for the iio changes ?
+
+It would work in general. The first few DT-iio patches wouldn't make
+sense but then why not.
+
+>> So I started collecting ACKs from input and iio to avoid this split. If
+>> you really want the split then I will start doing so…
+> I think it would be nicer, yes.
+
+Nicer. I see. Please tell me what you think about #1 because I really
+would like to drop regmap and then I can start reshuffle the series :)
+
+> 
+> Cheers,
+> Samuel.
+> 
+
+Sebastian
