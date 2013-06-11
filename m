@@ -1,69 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1072 "EHLO
-	smtp-out-134.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751299Ab3FNP6Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jun 2013 11:58:25 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/7] staging:iio:ad7291: Remove userspace reset
-Date: Fri, 14 Jun 2013 17:58:23 +0200
-Message-Id: <1371225508-32190-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1371225508-32190-1-git-send-email-lars@metafoo.de>
-References: <1371225508-32190-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Pantelis Antoniou <panto@antoniou-consulting.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 12/22] iio/ti_tscadc: provide datasheet_name and scan_type
+Date: Tue, 11 Jun 2013 13:30:58 +0200
+Message-Id: <1370950268-7224-13-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-There is no reason why userspace should want to trigger a manual reset of the
-device, so remove this functionality.
+From: Pantelis Antoniou <panto@antoniou-consulting.com>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+This patch provides the members "datasheet_name" and scan_type. This is
+the remaining part of the earlier patch where I (bigeasy) removed iio_map
+because it is now supplied by the device tree.
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+[bigeasy: use static AIN[0-8] names, use kcalloc(), removed iio_map,
+	patch description]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/staging/iio/adc/ad7291.c | 24 ------------------------
- 1 file changed, 24 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c |   29 ++++++++++++++++++++++++-----
+ 1 file changed, 24 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index a3a3a2f..782e100 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -127,29 +127,6 @@ static int ad7291_i2c_write(struct ad7291_chip_info *chip, u8 reg, u16 data)
- 	return i2c_smbus_write_word_data(chip->client, reg, swab16(data));
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 2868c0c..9939810 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -24,6 +24,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ 
+@@ -84,29 +86,46 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
  }
  
--static ssize_t ad7291_store_reset(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7291_chip_info *chip = iio_priv(indio_dev);
--
--	return ad7291_i2c_write(chip, AD7291_COMMAND,
--				chip->command | AD7291_RESET);
--}
--
--static IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, ad7291_store_reset, 0);
--
--static struct attribute *ad7291_attributes[] = {
--	&iio_dev_attr_reset.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ad7291_attribute_group = {
--	.attrs = ad7291_attributes,
--};
--
- static irqreturn_t ad7291_event_handler(int irq, void *private)
++static const char * const chan_name_ain[] = {
++	"AIN0",
++	"AIN1",
++	"AIN2",
++	"AIN3",
++	"AIN4",
++	"AIN5",
++	"AIN6",
++	"AIN7",
++};
++
+ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
  {
- 	struct iio_dev *indio_dev = private;
-@@ -569,7 +546,6 @@ static struct attribute_group ad7291_event_attribute_group = {
- };
++	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+ 	struct iio_chan_spec *chan_array;
++	struct iio_chan_spec *chan;
+ 	int i;
  
- static const struct iio_info ad7291_info = {
--	.attrs = &ad7291_attribute_group,
- 	.read_raw = &ad7291_read_raw,
- 	.read_event_config = &ad7291_read_event_config,
- 	.write_event_config = &ad7291_write_event_config,
+ 	indio_dev->num_channels = channels;
+-	chan_array = kcalloc(indio_dev->num_channels,
++	chan_array = kcalloc(channels,
+ 			sizeof(struct iio_chan_spec), GFP_KERNEL);
+-
+ 	if (chan_array == NULL)
+ 		return -ENOMEM;
+ 
+-	for (i = 0; i < (indio_dev->num_channels); i++) {
+-		struct iio_chan_spec *chan = chan_array + i;
++	chan = chan_array;
++	for (i = 0; i < channels; i++, chan++) {
++
+ 		chan->type = IIO_VOLTAGE;
+ 		chan->indexed = 1;
+ 		chan->channel = i;
+ 		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++		chan->datasheet_name = chan_name_ain[i];
++		chan->scan_type.sign = 'u';
++		chan->scan_type.realbits = 12;
++		chan->scan_type.storagebits = 32;
+ 	}
+ 
+ 	indio_dev->channels = chan_array;
+ 
+-	return indio_dev->num_channels;
++	return 0;
+ }
+ 
+ static void tiadc_channels_remove(struct iio_dev *indio_dev)
 -- 
-1.8.0
-
+1.7.10.4
