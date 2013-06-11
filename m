@@ -1,91 +1,237 @@
-Return-Path: <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 12/22] iio/ti_tscadc: Update with IIO map interface
-Mime-Version: 1.0 (Apple Message framework v1085)
-Content-Type: text/plain; charset=us-ascii
-From: Pantelis Antoniou <panto@antoniou-consulting.com>
-In-Reply-To: <51B58F39.7020405@metafoo.de>
-Date: Mon, 10 Jun 2013 11:33:35 +0300
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Samuel Ortiz <sameo@linux.intel.com>,
- Felipe Balbi <balbi@ti.com>,
- linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Jonathan Cameron <jic23@cam.ac.uk>
-Message-Id: <232886C6-415E-4C69-BE28-C402F1864D62@antoniou-consulting.com>
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-13-git-send-email-bigeasy@linutronix.de> <51B4B024.8070102@metafoo.de> <51B582D3.1050501@linutronix.de> <429732E1-5AEE-45AD-9BA8-3B5C6CD85867@antoniou-consulting.com> <51B58F39.7020405@metafoo.de>
-To: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	"Patil, Rachna" <rachna@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: =?UTF-8?q?=5BPATCH=2003/22=5D=20input/ti=5Fam33x=5Ftsc=3A=20Step=20enable=20bits=20made=20configurable?=
+Date: Tue, 11 Jun 2013 13:30:49 +0200
+Message-Id: <1370950268-7224-4-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Lars,
+From: "Patil, Rachna" <rachna@ti.com>
 
-On Jun 10, 2013, at 11:32 AM, Lars-Peter Clausen wrote:
+Current code has hard coded value written to
+step enable bits. Now the bits are updated based
+on how many steps are needed to be configured got
+from platform data.
 
-> On 06/10/2013 10:10 AM, Pantelis Antoniou wrote:
->> Hi Sebastian,
->>=20
->> On Jun 10, 2013, at 10:40 AM, Sebastian Andrzej Siewior wrote:
->>=20
->>> On 06/09/2013 06:41 PM, Lars-Peter Clausen wrote:
->>>> On 06/05/2013 06:24 PM, Sebastian Andrzej Siewior wrote:
->>>> [...]
->>>>> -	return indio_dev->num_channels;
->>>>> +	adc_dev->map =3D kcalloc(channels + 1, sizeof(struct iio_map),
->>>>> +			GFP_KERNEL);
->>>>> +	if (adc_dev->map =3D=3D NULL)
->>>>> +		goto err_free_chan;
->>>>> +
->>>>> +	for (i =3D 0; i < channels; i++) {
->>>>> +		adc_dev->map[i].adc_channel_label =3D
->>>>> +			chan_array[i].datasheet_name;
->>>>> +		adc_dev->map[i].consumer_dev_name =3D "any";
->>>>> +		adc_dev->map[i].consumer_channel =3D =
-chan_array[i].datasheet_name;
->>>>> +	}
->>>>=20
->>>> This is not the way the IIO map interface is supposed to be used =
-and I doubt it
->>>> will actually work at all. The map either needs to be provided by =
-board code
->>>> with the proper consumer device and channel name filled in or in =
-your case
->>>> where you use devicetree you don't need to provide a map at all =
-since this will
->>>> all be handled by the generic IIO devicetree bindings. So I'd just =
-drop this patch.
->>>=20
->>> The channels are not described in the device tree. If so how would =
-that
->>> be the case? Right now, I don't have any consumer. How do I test =
-this
->>> easily if this is done correctly?
->>> If in doubt it will probably drop this until someone comes along who
->>> actually needs this.
->>>=20
->>=20
->> Please don't remove this immediately. We need the hardcoded names =
-until
->> we use DT bindings that get a handle of the IIO channels.
->>=20
->> I realize this is a temporary solution though until the driver is =
-reworked
->> to use DT properly.
->=20
-> It's not a solution at all, since it simply won't work.
->=20
-> You have two options, either specify the mapping in your board code =
-based on
-> the consumers, or use devicetree to get a handle to device and =
-channel. Btw.
-> from the consumers side it won't matter which way is used, the same =
-code will
-> work with both, so there is no need to add DT support to the consumer.
->=20
+The user needs to take care not to exceed
+the count more than 16. While using ADC and TSC
+one should take care to set this parameter correctly.
 
-Well, when we did this initially there was no other way. I'll check out =
-mainline
-and see if it will work for our case. We're slowly working towards =
-rebasing all
-our stuff against mainline again.
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+[bigeasy: add lock, move to MFD, use in TSC & ADC]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c           |   20 ++++++++++++++++++--
+ drivers/input/touchscreen/ti_am335x_tsc.c |   12 ++++++++++--
+ drivers/mfd/ti_am335x_tscadc.c            |   29 ++++++++++++++++++++++++++++-
+ include/linux/mfd/ti_am335x_tscadc.h      |    8 ++++++--
+ 4 files changed, 62 insertions(+), 7 deletions(-)
 
-> - Lars
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 9db352e..543b9c4 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -42,10 +42,20 @@ static void tiadc_writel(struct tiadc_device *adc, unsigned int reg,
+ 	writel(val, adc->mfd_tscadc->tscadc_base + reg);
+ }
+ 
++static u32 get_adc_step_mask(struct tiadc_device *adc_dev)
++{
++	u32 step_en;
++
++	step_en = ((1 << adc_dev->channels) - 1);
++	step_en <<= TOTAL_STEPS - adc_dev->channels + 1;
++	return step_en;
++}
++
+ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ {
+ 	unsigned int stepconfig;
+ 	int i, channels = 0, steps;
++	u32 step_en;
+ 
+ 	/*
+ 	 * There are 16 configurable steps and 8 analog input
+@@ -69,7 +79,8 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 				STEPCONFIG_OPENDLY);
+ 		channels++;
+ 	}
+-	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
++	step_en = get_adc_step_mask(adc_dev);
++	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
+ }
+ 
+ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+@@ -127,7 +138,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 		if (i == chan->channel)
+ 			*val = readx1 & 0xfff;
+ 	}
+-	tiadc_writel(adc_dev, REG_SE, STPENB_STEPENB);
++	am335x_tsc_se_update(adc_dev->mfd_tscadc);
+ 
+ 	return IIO_VAL_INT;
+ }
+@@ -191,10 +202,15 @@ static int tiadc_probe(struct platform_device *pdev)
+ static int tiadc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct tiadc_device *adc_dev = iio_priv(indio_dev);
++	u32 step_en;
+ 
+ 	iio_device_unregister(indio_dev);
+ 	tiadc_channels_remove(indio_dev);
+ 
++	step_en = get_adc_step_mask(adc_dev);
++	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
++
+ 	iio_device_free(indio_dev);
+ 
+ 	return 0;
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 16077d3..23d6a4d 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -57,6 +57,7 @@ static void titsc_writel(struct titsc *tsc, unsigned int reg,
+ static void titsc_step_config(struct titsc *ts_dev)
+ {
+ 	unsigned int	config;
++	unsigned int	stepenable = 0;
+ 	int i, total_steps;
+ 
+ 	/* Configure the Step registers */
+@@ -128,7 +129,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	titsc_writel(ts_dev, REG_STEPDELAY(total_steps + 2),
+ 			STEPCONFIG_OPENDLY);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	/* The steps1 … end and bit 0 for TS_Charge */
++	stepenable = (1 << (total_steps + 2)) - 1;
++	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -250,7 +253,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 
+-	titsc_writel(ts_dev, REG_SE, STPENB_STEPENB_TC);
++	am335x_tsc_se_update(ts_dev->mfd_tscadc);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -334,6 +337,11 @@ static int titsc_remove(struct platform_device *pdev)
+ 
+ 	free_irq(ts_dev->irq, ts_dev);
+ 
++	/* total steps followed by the enable mask */
++	steps = 2 * ts_dev->steps_to_configure + 2;
++	steps = (1 << steps) - 1;
++	am335x_tsc_se_clr(ts_dev->mfd_tscadc, steps);
++
+ 	input_unregister_device(ts_dev->input);
+ 
+ 	platform_set_drvdata(pdev, NULL);
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 490b2bd..7b091c4 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -37,6 +37,32 @@ static void tscadc_writel(struct ti_tscadc_dev *tsadc, unsigned int reg,
+ 	writel(val, tsadc->tscadc_base + reg);
+ }
+ 
++void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc)
++{
++	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
++}
++EXPORT_SYMBOL_GPL(am335x_tsc_se_update);
++
++void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val)
++{
++	spin_lock(&tsadc->reg_lock);
++	tsadc->reg_se_cache |= val;
++	spin_unlock(&tsadc->reg_lock);
++
++	am335x_tsc_se_update(tsadc);
++}
++EXPORT_SYMBOL_GPL(am335x_tsc_se_set);
++
++void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val)
++{
++	spin_lock(&tsadc->reg_lock);
++	tsadc->reg_se_cache &= ~val;
++	spin_unlock(&tsadc->reg_lock);
++
++	am335x_tsc_se_update(tsadc);
++}
++EXPORT_SYMBOL_GPL(am335x_tsc_se_clr);
++
+ static void tscadc_idle_config(struct ti_tscadc_dev *config)
+ {
+ 	unsigned int idleconfig;
+@@ -110,6 +136,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
++	spin_lock_init(&tscadc->reg_lock);
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
+@@ -220,7 +247,7 @@ static int tscadc_resume(struct device *dev)
+ 			CNTRLREG_STEPID | CNTRLREG_4WIRE;
+ 	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
+ 	tscadc_idle_config(tscadc_dev);
+-	tscadc_writel(tscadc_dev, REG_SE, STPENB_STEPENB);
++	am335x_tsc_se_update(tscadc_dev);
+ 	restore = tscadc_readl(tscadc_dev, REG_CTRL);
+ 	tscadc_writel(tscadc_dev, REG_CTRL,
+ 			(restore | CNTRLREG_TSCSSENB));
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 5e430fe..eeead15 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -46,8 +46,6 @@
+ /* Step Enable */
+ #define STEPENB_MASK		(0x1FFFF << 0)
+ #define STEPENB(val)		((val) << 0)
+-#define STPENB_STEPENB		STEPENB(0x1FFFF)
+-#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
+ 
+ /* IRQ enable */
+ #define IRQENB_HW_PEN		BIT(0)
+@@ -140,6 +138,8 @@ struct ti_tscadc_dev {
+ 	void __iomem *tscadc_base;
+ 	int irq;
+ 	struct mfd_cell cells[TSCADC_CELLS];
++	u32 reg_se_cache;
++	spinlock_t reg_lock;
+ 
+ 	/* tsc device */
+ 	struct titsc *tsc;
+@@ -155,4 +155,8 @@ static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
+ 	return *tscadc_dev;
+ }
+ 
++void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc);
++void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val);
++void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val);
++
+ #endif
+-- 
+1.7.10.4
