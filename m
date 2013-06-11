@@ -1,51 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55437 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752127Ab3FKTcT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:32:19 -0400
-Message-ID: <51B77B42.9060800@kernel.org>
-Date: Tue, 11 Jun 2013 20:32:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] staging:iio:adis16130: Remove unused includes
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from 13.mo3.mail-out.ovh.net ([188.165.33.202]:48494 "EHLO
+	mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752430Ab3FKTMr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:12:47 -0400
+Received: from mail96.ha.ovh.net (b6.ovh.net [213.186.33.56])
+	by mo3.mail-out.ovh.net (Postfix) with SMTP id BB8AEFF9D40
+	for <linux-iio@vger.kernel.org>; Tue, 11 Jun 2013 16:58:28 +0200 (CEST)
+From: Alexandre Relange <alexandre@relange.org>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org,
+	Alexandre Relange <alexandre@relange.org>
+Subject: [PATCH 5/5] iio: mechanical: switch sensor: add ID table
+Date: Tue, 11 Jun 2013 16:52:16 +0200
+Message-Id: <1370962336-20739-5-git-send-email-alexandre@relange.org>
+In-Reply-To: <1370962336-20739-1-git-send-email-alexandre@relange.org>
+References: <1370962336-20739-1-git-send-email-alexandre@relange.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/10/2013 03:00 PM, Lars-Peter Clausen wrote:
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+auto-probes module when device is detected and prepare module extension
+to other hid mechanical sensors.
 
-Thanks,
-> ---
->  drivers/staging/iio/gyro/adis16130_core.c | 6 ------
->  1 file changed, 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
-> index 531b803..5288635 100644
-> --- a/drivers/staging/iio/gyro/adis16130_core.c
-> +++ b/drivers/staging/iio/gyro/adis16130_core.c
-> @@ -6,18 +6,12 @@
->   * Licensed under the GPL-2 or later.
->   */
->  
-> -#include <linux/delay.h>
->  #include <linux/mutex.h>
-> -#include <linux/device.h>
->  #include <linux/kernel.h>
->  #include <linux/spi/spi.h>
-> -#include <linux/slab.h>
-> -#include <linux/sysfs.h>
-> -#include <linux/list.h>
->  #include <linux/module.h>
->  
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
->  
->  #define ADIS16130_CON         0x0
->  #define ADIS16130_CON_RD      (1 << 6)
-> 
+Signed-off-by: Alexandre Relange <alexandre@relange.org>
+---
+ drivers/iio/mechanical/hid-sensor-switch.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iio/mechanical/hid-sensor-switch.c b/drivers/iio/mechanical/hid-sensor-switch.c
+index 7027305..1556ee5 100644
+--- a/drivers/iio/mechanical/hid-sensor-switch.c
++++ b/drivers/iio/mechanical/hid-sensor-switch.c
+@@ -344,11 +344,18 @@ static int hid_switch_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct platform_device_id switch_id_table[] = {
++        { "HID-SENSOR-200061", 0 },
++        {  } /* Terminating Entry */
++};
++MODULE_DEVICE_TABLE(platform, switch_id_table);
++
+ static struct platform_driver hid_switch_platform_driver = {
+ 	.driver = {
+ 		.name	= DRIVER_NAME,
+ 		.owner	= THIS_MODULE,
+ 	},
++	.id_table	= switch_id_table,
+ 	.probe		= hid_switch_probe,
+ 	.remove		= hid_switch_remove,
+ };
+-- 
+1.8.3
+
