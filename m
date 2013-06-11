@@ -12,56 +12,101 @@ Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
 	linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 17/22] mfd & iio/ti_am335x_adc: rename device from tiadc to TI-am335x-adc
-Date: Tue, 11 Jun 2013 13:31:03 +0200
-Message-Id: <1370950268-7224-18-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 15/22] input & mfd: ti_am335x_tsc remove remaining platform data pieces
+Date: Tue, 11 Jun 2013 13:31:01 +0200
+Message-Id: <1370950268-7224-16-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-TI-adc reads a little better compared to tiadc. And if we add am335x to
-it then we have the same naming scheme as the tsc side.
+The two header files removed here are unused and have no users as this
+platform was never used with platform devices.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/adc/ti_am335x_adc.c |    3 +--
- drivers/mfd/ti_am335x_tscadc.c  |    2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ include/linux/input/ti_am335x_tsc.h         |   35 ---------------------------
+ include/linux/mfd/ti_am335x_tscadc.h        |    5 ----
+ include/linux/platform_data/ti_am335x_adc.h |   14 -----------
+ 3 files changed, 54 deletions(-)
+ delete mode 100644 include/linux/input/ti_am335x_tsc.h
+ delete mode 100644 include/linux/platform_data/ti_am335x_adc.h
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 9939810..4bec91e 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -292,7 +292,7 @@ MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
- 
- static struct platform_driver tiadc_driver = {
- 	.driver = {
--		.name   = "tiadc",
-+		.name   = "TI-am335x-adc",
- 		.owner	= THIS_MODULE,
- 		.pm	= TIADC_PM_OPS,
- 		.of_match_table = of_match_ptr(ti_adc_dt_ids),
-@@ -300,7 +300,6 @@ static struct platform_driver tiadc_driver = {
- 	.probe	= tiadc_probe,
- 	.remove	= tiadc_remove,
- };
+diff --git a/include/linux/input/ti_am335x_tsc.h b/include/linux/input/ti_am335x_tsc.h
+deleted file mode 100644
+index 6a66b4d..0000000
+--- a/include/linux/input/ti_am335x_tsc.h
++++ /dev/null
+@@ -1,35 +0,0 @@
+-#ifndef __LINUX_TI_AM335X_TSC_H
+-#define __LINUX_TI_AM335X_TSC_H
 -
- module_platform_driver(tiadc_driver);
+-/**
+- * struct tsc_data	Touchscreen wire configuration
+- * @wires:		Wires refer to application modes
+- *			i.e. 4/5/8 wire touchscreen support
+- *			on the platform.
+- * @x_plate_resistance:	X plate resistance.
+- * @steps_to_configure:	The sequencer supports a total of
+- *			16 programmable steps.
+- *			A step configured to read a single
+- *			co-ordinate value, can be applied
+- *			more number of times for better results.
+- * @wire_config:	Different EVM's could have a different order
+- *			for connecting wires on touchscreen.
+- *			We need to provide an 8 bit number where in
+- *			the 1st four bits represent the analog lines
+- *			and the next 4 bits represent positive/
+- *			negative terminal on that input line.
+- *			Notations to represent the input lines and
+- *			terminals resoectively is as follows:
+- *			AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
+- *			XP  = 0, XN = 1, YP = 2, YN = 3.
+- *
+- */
+-
+-struct tsc_data {
+-	int wires;
+-	int x_plate_resistance;
+-	int steps_to_configure;
+-	int wire_config[10];
+-};
+-
+-#endif
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index b6e7ac6..cd8686b 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -127,11 +127,6 @@
  
- MODULE_DESCRIPTION("TI ADC controller driver");
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index bf33134..d3f48d2 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -204,7 +204,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	if (adc_channels > 0) {
- 		tscadc->adc_cell = tscadc->used_cells;
- 		cell = &tscadc->cells[tscadc->used_cells++];
--		cell->name = "tiadc";
-+		cell->name = "TI-am335x-adc";
- 		cell->of_compatible = "ti,am3359-adc";
- 		cell->platform_data = &tscadc;
- 		cell->pdata_size = sizeof(tscadc);
+ #define TSCADC_CELLS		2
+ 
+-struct mfd_tscadc_board {
+-	struct tsc_data *tsc_init;
+-	struct adc_data *adc_init;
+-};
+-
+ struct ti_tscadc_dev {
+ 	struct device *dev;
+ 	void __iomem *tscadc_base;
+diff --git a/include/linux/platform_data/ti_am335x_adc.h b/include/linux/platform_data/ti_am335x_adc.h
+deleted file mode 100644
+index e41d583..0000000
+--- a/include/linux/platform_data/ti_am335x_adc.h
++++ /dev/null
+@@ -1,14 +0,0 @@
+-#ifndef __LINUX_TI_AM335X_ADC_H
+-#define __LINUX_TI_AM335X_ADC_H
+-
+-/**
+- * struct adc_data	ADC Input information
+- * @adc_channels:	Number of analog inputs
+- *			available for ADC.
+- */
+-
+-struct adc_data {
+-	unsigned int adc_channels;
+-};
+-
+-#endif
 -- 
 1.7.10.4
