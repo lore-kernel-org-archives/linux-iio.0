@@ -1,82 +1,154 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51045 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752893Ab3FDR2G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 13:28:06 -0400
-Message-ID: <51AE23A1.2050401@kernel.org>
-Date: Tue, 04 Jun 2013 18:28:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, mirq-linux@rere.qmqm.pl
-Subject: Re: [PATCH 0/4 V2]  iio: Rework the generic trigger-gpio trigger
- and move out of staging
-References: <1370199616-25500-1-git-send-email-jic23@kernel.org> <51ADF315.1060108@metafoo.de>
-In-Reply-To: <51ADF315.1060108@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 02/22] mfd & input & iio/ti_am335x_adc: use one structure for ti_tscadc_dev
+Date: Tue, 11 Jun 2013 13:30:48 +0200
+Message-Id: <1370950268-7224-3-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/04/2013 03:00 PM, Lars-Peter Clausen wrote:
-> On 06/02/2013 09:00 PM, Jonathan Cameron wrote:
->> Only changes here are dropping the irq_res_cnt as it unused (thanks Lars) and
->> a rebase as a result of some Kconfig dependency changes.
->>
->> I still don't have a hardware setup, but this is so simple that unless
->> someone shouts I'll probably send it upstream in fairly soon anyway.
->>
->> Jonathan
->>
->> Previous message:
->>
->> Hi all,
->>
->> This is an RFC for a couple of reasons.
->>
->> 1) I'm not sure how people feel about the move to multiple platform devices
->> (patch 3).
->> 2) I don't actually have a simple test setup for this one.  I can put one
->> together but it might be a while before I get it done.
->>
->> Anyhow, the purpose of this set is to respond to Lars-Peter's comments
->> when I originally asked if anyone minded it moving out of staging as it
->> was before this.  Lars raised the point that having one driver instance
->> register multiple triggers just made life more complicated, and instead
->> it might be better to have multiple driver instances, with one trigger each.
->> Lars also pointed out that the name of the driver was silly given there
->> was nolonger a requirement that the source of the interrupts be a gpio
->> and there hasn't been for quite some time.
->>
->> All comments welcome. Particularly wrt to patch 3.
-> 
-> Looks all good to me. FWIW:
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-Thanks, gives me a warm fuzzy feeling.  I hate merging
-my own patches unreviewed!
+The mfd driver creates platform data for the child devices and it is the
+ti_tscadc_dev struct. This struct is copied for the two devices.
+The copy of the structure makes a common lock in this structure a little
+less usefull. Therefore the platform data is not a pointer to the
+structure and the same structure is used.
+While doing the change I noticed that the suspend/resume code assumes
+the wrong pointer for ti_tscadc_dev and this has been fixed as well.
 
-Will apply these to the togreg branch of iio.git in a few mins.
->>
->> Jonathan Cameron (4):
->>   staging:iio:trigger:gpio bug in release of gpio in error path
->>   staging:iio:triggers: rename iio-trig-gpio to iio-trig-interrupt
->>   staging:iio:triggers:interrupt trigger - one per platform device.
->>   iio:triggers:interrupt trigger - move out of staging.
->>
->>  drivers/iio/trigger/Kconfig                 |   9 ++
->>  drivers/iio/trigger/Makefile                |   1 +
->>  drivers/iio/trigger/iio-trig-interrupt.c    | 121 ++++++++++++++++++++
->>  drivers/staging/iio/trigger/Kconfig         |   6 -
->>  drivers/staging/iio/trigger/Makefile        |   1 -
->>  drivers/staging/iio/trigger/iio-trig-gpio.c | 167 ----------------------------
->>  6 files changed, 131 insertions(+), 174 deletions(-)
->>  create mode 100644 drivers/iio/trigger/iio-trig-interrupt.c
->>  delete mode 100644 drivers/staging/iio/trigger/iio-trig-gpio.c
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c           |    5 +++--
+ drivers/input/touchscreen/ti_am335x_tsc.c |   16 +++++++++-------
+ drivers/mfd/ti_am335x_tscadc.c            |    8 ++++----
+ include/linux/mfd/ti_am335x_tscadc.h      |    7 +++++++
+ 4 files changed, 23 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 5f9a7e7..9db352e 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -140,7 +140,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ {
+ 	struct iio_dev		*indio_dev;
+ 	struct tiadc_device	*adc_dev;
+-	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
++	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
+ 	struct mfd_tscadc_board	*pdata;
+ 	int			err;
+ 
+@@ -205,9 +205,10 @@ static int tiadc_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
++	struct ti_tscadc_dev *tscadc_dev;
+ 	unsigned int idle;
+ 
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (!device_may_wakeup(tscadc_dev->dev)) {
+ 		idle = tiadc_readl(adc_dev, REG_CTRL);
+ 		idle &= ~(CNTRLREG_TSCSSENB);
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 51e7b87..16077d3 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -262,7 +262,7 @@ static int titsc_probe(struct platform_device *pdev)
+ {
+ 	struct titsc *ts_dev;
+ 	struct input_dev *input_dev;
+-	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
++	struct ti_tscadc_dev *tscadc_dev = ti_tscadc_dev_get(pdev);
+ 	struct mfd_tscadc_board	*pdata;
+ 	int err;
+ 
+@@ -329,8 +329,8 @@ static int titsc_probe(struct platform_device *pdev)
+ 
+ static int titsc_remove(struct platform_device *pdev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = platform_get_drvdata(pdev);
++	u32 steps;
+ 
+ 	free_irq(ts_dev->irq, ts_dev);
+ 
+@@ -344,10 +344,11 @@ static int titsc_remove(struct platform_device *pdev)
+ #ifdef CONFIG_PM
+ static int titsc_suspend(struct device *dev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = dev_get_drvdata(dev);
++	struct ti_tscadc_dev *tscadc_dev;
+ 	unsigned int idle;
+ 
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (device_may_wakeup(tscadc_dev->dev)) {
+ 		idle = titsc_readl(ts_dev, REG_IRQENABLE);
+ 		titsc_writel(ts_dev, REG_IRQENABLE,
+@@ -359,9 +360,10 @@ static int titsc_suspend(struct device *dev)
+ 
+ static int titsc_resume(struct device *dev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = dev_get_drvdata(dev);
++	struct ti_tscadc_dev *tscadc_dev;
+ 
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (device_may_wakeup(tscadc_dev->dev)) {
+ 		titsc_writel(ts_dev, REG_IRQWAKEUP,
+ 				0x00);
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 804e61e..490b2bd 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -157,14 +157,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	/* TSC Cell */
+ 	cell = &tscadc->cells[TSC_CELL];
+ 	cell->name = "tsc";
+-	cell->platform_data = tscadc;
+-	cell->pdata_size = sizeof(*tscadc);
++	cell->platform_data = &tscadc;
++	cell->pdata_size = sizeof(tscadc);
+ 
+ 	/* ADC Cell */
+ 	cell = &tscadc->cells[ADC_CELL];
+ 	cell->name = "tiadc";
+-	cell->platform_data = tscadc;
+-	cell->pdata_size = sizeof(*tscadc);
++	cell->platform_data = &tscadc;
++	cell->pdata_size = sizeof(tscadc);
+ 
+ 	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
+ 			TSCADC_CELLS, NULL, 0, NULL);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index dc75c34..5e430fe 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -148,4 +148,11 @@ struct ti_tscadc_dev {
+ 	struct adc_device *adc;
+ };
+ 
++static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
++{
++	struct ti_tscadc_dev **tscadc_dev = p->dev.platform_data;
++
++	return *tscadc_dev;
++}
++
+ #endif
+-- 
+1.7.10.4
