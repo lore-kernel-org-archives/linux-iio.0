@@ -1,61 +1,91 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 11 Jun 2013 18:10:51 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
-Message-ID: <20130611171051.GA4320@laptop>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
- <20130611142347.GF29135@zurbaran>
- <51B73756.5010004@linutronix.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55688 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755248Ab3FKTzO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:55:14 -0400
+Message-ID: <51B7809A.1030804@kernel.org>
+Date: Tue, 11 Jun 2013 20:55:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <51B73756.5010004@linutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
+ of channels
+References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> >> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-> >> Signed-off-by: Patil, Rachna <rachna@ti.com>
-> >> Signed-off-by: Felipe Balbi <balbi@ti.com>
-> >> [bigeasy: module alias, rename to ti,am3359-tscadc as it was tested on
-> >>           AM3359]
-> > I honestly can't tell if this is a change from the last version of your
-> > patchset or a description of this patch changes in general.
-> > This is cluttering your commit logs, please remove this as well.
+On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
+> On the am335x I export ADC channels indexed by their number as specified
+> in the datasheet. The channels are shared between the TSC & ADC and be
+> used either by TSC or the ADC. So it is possible that the TSC uses
+> chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
+> channles of the ADC is 2 but the individual numbers are 2 and 3.
+> This patch changes the check for the the requesting channel by walking
+> over the list and comparing the channel number.
 > 
-> I took the original patch. Every change I made to it because people
-> asked to merge changes into the patch where the problem occurred I
-> added it here before my sign-off.
+This doesn't work in general.  The index is not the same as channel
+(or any other form of index present). Note that modified channels may
+all have channel set to 0  (accel_x, accel_y etc for instance).
+
+The index refers directly into those channels registered.
+Is it possible for channels to move at runtime between the two units?
+I would imagine not as this is very much a case of wiring.
+
+Thus we have a fairly messy bit if interdependence in the device
+tree but it should work.
+
+I don't actually have much / any real experience of device tree configurations
+and this is Guenter's code, hence I have cc'd him.
+
+Note that it is acceptable and relatively common to have missing
+values in scan_index but that isn't really relevant here.
+
+Jonathan
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/iio/inkern.c |   13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
-> In the end I would like not to post a patch with "From: != me" and
-> don't make change which the original author did not do. Also dropping
-> their authorship isn't nice. What could we agree on?
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index dca4eed..1a40077 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+>  	struct iio_dev *indio_dev;
+>  	int err;
+>  	struct of_phandle_args iiospec;
+> +	int i;
+>  
+>  	err = of_parse_phandle_with_args(np, "io-channels",
+>  					 "#io-channel-cells",
+> @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+>  	indio_dev = dev_to_iio_dev(idev);
+>  	channel->indio_dev = indio_dev;
+>  	index = iiospec.args_count ? iiospec.args[0] : 0;
+> -	if (index >= indio_dev->num_channels) {
+> -		err = -EINVAL;
+> -		goto err_put;
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+> +		if (indio_dev->channels[i].channel == index) {
+> +			channel->channel = &indio_dev->channels[i];
+> +			return 0;
+> +		}
+>  	}
+> -	channel->channel = &indio_dev->channels[index];
+> -
+> -	return 0;
+>  
+> -err_put:
+>  	iio_device_put(indio_dev);
 
-Generally speaking, if it is necessary to merge various author's
-patches into one, then you can the merger will tend to take authorship
-of the commit. Note that just because you are the author of the
-commit, it doesn't mean you authored the patch.
+If not found (i.e. the device tree entries are garbage) we may return sucess witout
+actually having retrieved the driver.  I would suggest setting err = -EINVAL before
+the for loop.
 
-I also use the rule of thumb that if you make significant changes to a
-patch, then you can also assume authorship too. I'll leave the 'how
-much is significant' to your own good judgement.
-
-If you're just making a few fixups, then just add your SOB in the
-normal way. That should be enough reward for a mere few patch fixes.
-
-Adding little 'I-did-this' notes to the commit log should mostly be
-avoided IMO.
-
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>  	return err;
+>  }
+> 
