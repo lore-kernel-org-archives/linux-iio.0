@@ -1,49 +1,88 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <51B88CF1.4060708@linutronix.de>
-Date: Wed, 12 Jun 2013 17:00:01 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-121.synserver.de ([212.40.185.121]:1074 "EHLO
+	smtp-out-120.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754753Ab3FKVI2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 17:08:28 -0400
+Message-ID: <51B791D1.9020105@metafoo.de>
+Date: Tue, 11 Jun 2013 23:08:33 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Samuel Ortiz <sameo@linux.intel.com>
+To: Guenter Roeck <linux@roeck-us.net>
 CC: Jonathan Cameron <jic23@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Jonathan Cameron <jic23@cam.ac.uk>, Lee Jones <lee.jones@linaro.org>,
- =?ISO-8859-1?Q?Beno=EEt_Cousson?= <b-cousson@ti.com>,
- Tony Lindgren <tony@atomide.com>,
- Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <20130611142358.GG29135@zurbaran> <20130611160415.GA379@core.coreip.homeip.net> <20130611161506.GK29135@zurbaran> <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com> <20130611175519.GL29135@zurbaran> <51B877C7.8080001@linutronix.de> <20130612135042.GO29135@zurbaran> <51B87F58.9070000@linutronix.de> <20130612144133.GP29135@zurbaran>
-In-Reply-To: <20130612144133.GP29135@zurbaran>
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
+ of channels
+References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de> <51B7809A.1030804@kernel.org> <20130611204416.GA13883@roeck-us.net>
+In-Reply-To: <20130611204416.GA13883@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/12/2013 04:41 PM, Samuel Ortiz wrote:
->> This forces me redo a few things and most likely adding it to the
->> iio and input driver to be consistent here.
-> I'm not asking for that. The current MFD code uses regmap fine without
-> the iio and input using it, I don't see why you would have to add regmap
-> support there.
-
-Right. Since no reg-cache is used then this should be fine then.
-
->> Could you please give a reason why using the regmap here is a good
->> thing? I mentioned a few why it is not and why is better to leave it
->> out.
-> Yes, and I'm not convinced obviously. regmap prevents you from open
-> coding your MMIO access, and this is the right approach.
-
-I am not convinced that adding another layer of indirection for doing
-the same thing is a good approach. Pointer chasing _is_ expensive.
-_None_ of the regmap features are used here.
-I would understand if I would re-implement register caching or a
-wrapper across multiple buses but nothing of this is the case.
-The current code even ignores the return value.
-
-So, are we going to convert all drivers to use regmap now?
-
-> Cheers,
-> Samuel.
+On 06/11/2013 10:44 PM, Guenter Roeck wrote:
+> On Tue, Jun 11, 2013 at 08:55:06PM +0100, Jonathan Cameron wrote:
+>> On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
+>>> On the am335x I export ADC channels indexed by their number as specified
+>>> in the datasheet. The channels are shared between the TSC & ADC and be
+>>> used either by TSC or the ADC. So it is possible that the TSC uses
+>>> chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
+>>> channles of the ADC is 2 but the individual numbers are 2 and 3.
+>>> This patch changes the check for the the requesting channel by walking
+>>> over the list and comparing the channel number.
+>>>
+>> This doesn't work in general.  The index is not the same as channel
+>> (or any other form of index present). Note that modified channels may
+>> all have channel set to 0  (accel_x, accel_y etc for instance).
+>>
+>> The index refers directly into those channels registered.
+>> Is it possible for channels to move at runtime between the two units?
+>> I would imagine not as this is very much a case of wiring.
+>>
+>> Thus we have a fairly messy bit if interdependence in the device
+>> tree but it should work.
+>>
+>> I don't actually have much / any real experience of device tree configurations
+>> and this is Guenter's code, hence I have cc'd him.
+>>
+>> Note that it is acceptable and relatively common to have missing
+>> values in scan_index but that isn't really relevant here.
+>>
+>> Jonathan
+>>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>> ---
+>>>  drivers/iio/inkern.c |   13 ++++++-------
+>>>  1 file changed, 6 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+>>> index dca4eed..1a40077 100644
+>>> --- a/drivers/iio/inkern.c
+>>> +++ b/drivers/iio/inkern.c
+>>> @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+>>>  	struct iio_dev *indio_dev;
+>>>  	int err;
+>>>  	struct of_phandle_args iiospec;
+>>> +	int i;
+>>>  
+>>>  	err = of_parse_phandle_with_args(np, "io-channels",
+>>>  					 "#io-channel-cells",
+>>> @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+>>>  	indio_dev = dev_to_iio_dev(idev);
+>>>  	channel->indio_dev = indio_dev;
+>>>  	index = iiospec.args_count ? iiospec.args[0] : 0;
+>>> -	if (index >= indio_dev->num_channels) {
+>>> -		err = -EINVAL;
+>>> -		goto err_put;
+>>> +	for (i = 0; i < indio_dev->num_channels; i++) {
+>>> +		if (indio_dev->channels[i].channel == index) {
+>>> +			channel->channel = &indio_dev->channels[i];
+>>> +			return 0;
+>>> +		}
+>>>  	}
+> 
+> Too long ago since I looked into that, but this code changes the API
+> from "get nth channel" to "channel with channel index n".
+> Not really sure I understand why that should be necessary.
 > 
 
-Sebastian
+yea, this will definitively not work channels of different types will
+usually have the same channel numbers.
