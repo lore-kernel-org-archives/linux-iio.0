@@ -1,108 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55470 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751991Ab3FKTe1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:34:27 -0400
-Message-ID: <51B77BC2.9090705@kernel.org>
-Date: Tue, 11 Jun 2013 20:34:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:56465 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754905Ab3FKUnX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 16:43:23 -0400
+Date: Tue, 11 Jun 2013 13:44:16 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio/kern: consider the case where channel number >
+ number of channels
+Message-ID: <20130611204416.GA13883@roeck-us.net>
+References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
+ <51B7809A.1030804@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] staging:iio:adis16130: Report scale and offset
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de> <1370872815-14386-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-3-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51B7809A.1030804@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/10/2013 03:00 PM, Lars-Peter Clausen wrote:
-> Report scale and offset for the temperature and voltage channels.
+On Tue, Jun 11, 2013 at 08:55:06PM +0100, Jonathan Cameron wrote:
+> On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
+> > On the am335x I export ADC channels indexed by their number as specified
+> > in the datasheet. The channels are shared between the TSC & ADC and be
+> > used either by TSC or the ADC. So it is possible that the TSC uses
+> > chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
+> > channles of the ADC is 2 but the individual numbers are 2 and 3.
+> > This patch changes the check for the the requesting channel by walking
+> > over the list and comparing the channel number.
+> > 
+> This doesn't work in general.  The index is not the same as channel
+> (or any other form of index present). Note that modified channels may
+> all have channel set to 0  (accel_x, accel_y etc for instance).
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git. Thanks.
-> ---
->  drivers/staging/iio/gyro/adis16130_core.c | 57 +++++++++++++++++++++++++------
->  1 file changed, 47 insertions(+), 10 deletions(-)
+> The index refers directly into those channels registered.
+> Is it possible for channels to move at runtime between the two units?
+> I would imagine not as this is very much a case of wiring.
 > 
-> diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/staging/iio/gyro/adis16130_core.c
-> index 2537f59..8979435 100644
-> --- a/drivers/staging/iio/gyro/adis16130_core.c
-> +++ b/drivers/staging/iio/gyro/adis16130_core.c
-> @@ -78,14 +78,47 @@ static int adis16130_read_raw(struct iio_dev *indio_dev,
->  	int ret;
->  	u32 temp;
->  
-> -	/* Take the iio_dev status lock */
-> -	mutex_lock(&indio_dev->mlock);
-> -	ret =  adis16130_spi_read(indio_dev, chan->address, &temp);
-> -	mutex_unlock(&indio_dev->mlock);
-> -	if (ret)
-> -		return ret;
-> -	*val = temp;
-> -	return IIO_VAL_INT;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		/* Take the iio_dev status lock */
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = adis16130_spi_read(indio_dev, chan->address, &temp);
-> +		mutex_unlock(&indio_dev->mlock);
-> +		if (ret)
-> +			return ret;
-> +		*val = temp;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			/* 0 degree = 838860, 250 degree = 14260608 */
-> +			*val = 250;
-> +			*val2 = 336440817; /* RAD_TO_DEGREE(14260608 - 8388608) */
-> +			return IIO_VAL_FRACTIONAL;
-> +		case IIO_TEMP:
-> +			/* 0C = 8036283, 105C = 9516048 */
-> +			*val = 105000;
-> +			*val2 = 9516048 - 8036283;
-> +			return IIO_VAL_FRACTIONAL;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			*val = -8388608;
-> +			return IIO_VAL_INT;
-> +		case IIO_TEMP:
-> +			*val = -8036283;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
->  }
->  
->  static const struct iio_chan_spec adis16130_channels[] = {
-> @@ -93,13 +126,17 @@ static const struct iio_chan_spec adis16130_channels[] = {
->  		.type = IIO_ANGL_VEL,
->  		.modified = 1,
->  		.channel2 = IIO_MOD_Z,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_OFFSET),
->  		.address = ADIS16130_RATEDATA,
->  	}, {
->  		.type = IIO_TEMP,
->  		.indexed = 1,
->  		.channel = 0,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_OFFSET),
->  		.address = ADIS16130_TEMPDATA,
->  	}
->  };
+> Thus we have a fairly messy bit if interdependence in the device
+> tree but it should work.
+> 
+> I don't actually have much / any real experience of device tree configurations
+> and this is Guenter's code, hence I have cc'd him.
+> 
+> Note that it is acceptable and relatively common to have missing
+> values in scan_index but that isn't really relevant here.
+> 
+> Jonathan
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > ---
+> >  drivers/iio/inkern.c |   13 ++++++-------
+> >  1 file changed, 6 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > index dca4eed..1a40077 100644
+> > --- a/drivers/iio/inkern.c
+> > +++ b/drivers/iio/inkern.c
+> > @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+> >  	struct iio_dev *indio_dev;
+> >  	int err;
+> >  	struct of_phandle_args iiospec;
+> > +	int i;
+> >  
+> >  	err = of_parse_phandle_with_args(np, "io-channels",
+> >  					 "#io-channel-cells",
+> > @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+> >  	indio_dev = dev_to_iio_dev(idev);
+> >  	channel->indio_dev = indio_dev;
+> >  	index = iiospec.args_count ? iiospec.args[0] : 0;
+> > -	if (index >= indio_dev->num_channels) {
+> > -		err = -EINVAL;
+> > -		goto err_put;
+> > +	for (i = 0; i < indio_dev->num_channels; i++) {
+> > +		if (indio_dev->channels[i].channel == index) {
+> > +			channel->channel = &indio_dev->channels[i];
+> > +			return 0;
+> > +		}
+> >  	}
+
+Too long ago since I looked into that, but this code changes the API
+from "get nth channel" to "channel with channel index n".
+Not really sure I understand why that should be necessary.
+
+Guenter
+
+> > -	channel->channel = &indio_dev->channels[index];
+> > -
+> > -	return 0;
+> >  
+> > -err_put:
+> >  	iio_device_put(indio_dev);
+> 
+> If not found (i.e. the device tree entries are garbage) we may return sucess witout
+> actually having retrieved the driver.  I would suggest setting err = -EINVAL before
+> the for loop.
+> 
+> >  	return err;
+> >  }
+> > 
 > 
