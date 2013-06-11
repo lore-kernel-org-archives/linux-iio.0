@@ -1,77 +1,45 @@
-Return-Path: <sameo@linux.intel.com>
-Date: Tue, 11 Jun 2013 18:10:54 +0200
-From: Samuel Ortiz <sameo@linux.intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-Message-ID: <20130611161054.GJ29135@zurbaran>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <20130611142358.GG29135@zurbaran>
- <51B74252.5090906@linutronix.de>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B74540.2020608@linutronix.de>
+Date: Tue, 11 Jun 2013 17:41:52 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <51B74252.5090906@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: Lee Jones <lee.jones@linaro.org>, =?ISO-8859-1?Q?Beno=EEt_Cousson?=
+ <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ "Patil, Rachna" <rachna@ti.com>,
+ Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-11-git-send-email-bigeasy@linutronix.de> <20130611142347.GF29135@zurbaran> <51B73756.5010004@linutronix.de> <20130611150505.GI29135@zurbaran>
+In-Reply-To: <20130611150505.GI29135@zurbaran>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Sebastian,
+On 06/11/2013 05:05 PM, Samuel Ortiz wrote:
+> Hi Sebastian,
 
-On Tue, Jun 11, 2013 at 05:29:22PM +0200, Sebastian Andrzej Siewior wrote:
-> > Then, this is a pretty big patchset, with iio, input and mfd all mixed
-> > together and it is likely to create merge conflicts.
-> They somehow depend on each other. Otherwise I would have sent three
-> series, one per subsystem.
-Of course they depend on each other, but the dependency is mostly for
-iio and input to depend on the MFD changes.
+Hi Samuel,
 
+> On Tue, Jun 11, 2013 at 04:42:30PM +0200, Sebastian Andrzej Siewior wrote:
+>> In the end I would like not to post a patch with "From: != me" and
+>> don't make change which the original author did not do. Also dropping
+>> their authorship isn't nice. What could we agree on?
+> You probably don't want to change authorship unless the final patch is
+> really far from the original one. In which case you can change it and
+> mention the original author name in the commit log.
+> If you have only made a few changes on top of the original patch, please
+> say so explicitely in the commit log. Don't bother if we're talking
+> about small changes or cosmetic ones. But your commit log has to be
+> readable and clear.
 
-> >>From what I can see from it, and please correct me if I'm
-> > wrong, the iio and input changes depend on the mfd ones, and not the
-> > other way around. If that's so, I'm going to ask you to reshuffle your
-> > patch set and separate the MFD changes from the iio and input ones. I'll
-> > take the MFD ones and will create an immutable branch for Jonathan and
-> > Dmitry to pull from and apply the iio and input changes on top of it.
-> > Merge conflicts should be mostly avoided that way.
-> > AFAICT, only patch #2 should be kept with input and iio bits mixed
-> > together with MFD as otherwise this would introduce functional breakage.
-> > Otherwise, all MFD bits from the other patches could be either separated
-> > or merged together (e.g. MFD bits from patches #6 and #8, and #16 and
-> > #17).
-> > 
-> > Does that sound doable to you ?
-> 
-> The device renaming shouldn't matter since I added DT nodes for the mfd
-> child devices earlier. But then the of_compatible assignments should
-> go hand in hand. However if I split this then the driver won't work
-> but then it does not now as well (because there is no platform_data
-> provider in tree).
-> 
-> Still. There is #18 which reworks the "step addressing" and involves
-> changes in both (iio & input) at the same time.
-Would splitting iio and input break anything there ?
+Commit 06c9494 on of many examples where cosmetic are recorded. But to
+make some progress I rewrite the commit log to resolve this and don't
+add anything to the sign-off area.
 
+> Cheers,
+> Samuel.
 
-> There is #21. Adding this to the initial "DT support" patch would be bad
-> I think because it requires some changes on the iio side which have
-> nothing to do with DT. Putting the iio changes before DT would require
-> to make some change to platform-data part which will go away anyway.
-Wouldn't it workif you split this one into an MFD+dts file changes and
-another one for the iio changes ?
-
- 
-> So I started collecting ACKs from input and iio to avoid this split. If
-> you really want the split then I will start doing so…
-I think it would be nicer, yes.
-
-Cheers,
-Samuel.
-
--- 
-Intel Open Source Technology Centre
-http://oss.intel.com/
+Sebastian
