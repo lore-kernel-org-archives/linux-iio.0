@@ -1,88 +1,164 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-121.synserver.de ([212.40.185.121]:1074 "EHLO
-	smtp-out-120.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754753Ab3FKVI2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 17:08:28 -0400
-Message-ID: <51B791D1.9020105@metafoo.de>
-Date: Tue, 11 Jun 2013 23:08:33 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56305 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753656Ab3FKUuq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 16:50:46 -0400
+Message-ID: <51B78DA3.4000101@kernel.org>
+Date: Tue, 11 Jun 2013 21:50:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
- of channels
-References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de> <51B7809A.1030804@kernel.org> <20130611204416.GA13883@roeck-us.net>
-In-Reply-To: <20130611204416.GA13883@roeck-us.net>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:trigger: Fix use_count race condition
+References: <1370974731-11878-1-git-send-email-lars@metafoo.de> <51B78371.1090908@kernel.org> <51B788E3.70008@metafoo.de>
+In-Reply-To: <51B788E3.70008@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 10:44 PM, Guenter Roeck wrote:
-> On Tue, Jun 11, 2013 at 08:55:06PM +0100, Jonathan Cameron wrote:
->> On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
->>> On the am335x I export ADC channels indexed by their number as specified
->>> in the datasheet. The channels are shared between the TSC & ADC and be
->>> used either by TSC or the ADC. So it is possible that the TSC uses
->>> chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
->>> channles of the ADC is 2 but the individual numbers are 2 and 3.
->>> This patch changes the check for the the requesting channel by walking
->>> over the list and comparing the channel number.
+On 06/11/2013 09:30 PM, Lars-Peter Clausen wrote:
+> On 06/11/2013 10:07 PM, Jonathan Cameron wrote:
+>> On 06/11/2013 07:18 PM, Lars-Peter Clausen wrote:
+>>> When using more than one trigger consumer it can happen that multiple threads
+>>> perform a read-modify-update cycle on 'use_count' concurrently. This can cause
+>>> updates to be lost and use_count can get stuck at non-zero value, in which case
+>>> the IIO core assumes that at least one thread is still running and will wait for
+>>> it to finish before running any trigger handlers again. This effectively renders
+>>> the trigger disabled and a reboot is necessary before it can be used again. To
+>>> fix this make use_count an atomic variable. Also set it to the number of
+>>> consumers before starting the first consumer, otherwise it might happen that
+>>> use_count drops to 0 even though not all consumers have been run yet.
 >>>
->> This doesn't work in general.  The index is not the same as channel
->> (or any other form of index present). Note that modified channels may
->> all have channel set to 0  (accel_x, accel_y etc for instance).
+>> I am a little worried there is a different race in here. Can't immediateliy get
+>> my head around whether it can actually occur. It would require a subirq thread
+>> to finish handling the interrupt during either trigger_poll or trigger_poll_chained.
 >>
->> The index refers directly into those channels registered.
->> Is it possible for channels to move at runtime between the two units?
->> I would imagine not as this is very much a case of wiring.
+>> I can't immediately see what prevents this happening..
 >>
->> Thus we have a fairly messy bit if interdependence in the device
->> tree but it should work.
+>> One nasty option might be to ensure that we only launch num_consumers interrupts
+>> on without caring whether they are the ones we originally counted or not.
 >>
->> I don't actually have much / any real experience of device tree configurations
->> and this is Guenter's code, hence I have cc'd him.
 >>
->> Note that it is acceptable and relatively common to have missing
->> values in scan_index but that isn't really relevant here.
->>
->> Jonathan
->>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 >>> ---
->>>  drivers/iio/inkern.c |   13 ++++++-------
->>>  1 file changed, 6 insertions(+), 7 deletions(-)
+>>>  drivers/iio/industrialio-trigger.c | 44 +++++++++++++++++++++++++++-----------
+>>>  include/linux/iio/trigger.h        |  3 ++-
+>>>  2 files changed, 33 insertions(+), 14 deletions(-)
 >>>
->>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>> index dca4eed..1a40077 100644
->>> --- a/drivers/iio/inkern.c
->>> +++ b/drivers/iio/inkern.c
->>> @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
->>>  	struct iio_dev *indio_dev;
->>>  	int err;
->>>  	struct of_phandle_args iiospec;
->>> +	int i;
+>>> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+>>> index 4d6c7d8..a02ca65 100644
+>>> --- a/drivers/iio/industrialio-trigger.c
+>>> +++ b/drivers/iio/industrialio-trigger.c
+>>> @@ -126,13 +126,22 @@ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
 >>>  
->>>  	err = of_parse_phandle_with_args(np, "io-channels",
->>>  					 "#io-channel-cells",
->>> @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
->>>  	indio_dev = dev_to_iio_dev(idev);
->>>  	channel->indio_dev = indio_dev;
->>>  	index = iiospec.args_count ? iiospec.args[0] : 0;
->>> -	if (index >= indio_dev->num_channels) {
->>> -		err = -EINVAL;
->>> -		goto err_put;
->>> +	for (i = 0; i < indio_dev->num_channels; i++) {
->>> +		if (indio_dev->channels[i].channel == index) {
->>> +			channel->channel = &indio_dev->channels[i];
->>> +			return 0;
+>>>  void iio_trigger_poll(struct iio_trigger *trig, s64 time)
+>>>  {
+>>> +	unsigned int num_consumers;
+>>>  	int i;
+>>> -	if (!trig->use_count)
+>>> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
+>>> -			if (trig->subirqs[i].enabled) {
+>>> -				trig->use_count++;
+>>> +
+>>> +	if (!atomic_read(&trig->use_count)) {
+>>> +		num_consumers = 0;
+>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+>>> +			if (trig->subirqs[i].enabled)
+>>> +				num_consumers++;
 >>> +		}
->>>  	}
+>>> +		atomic_set(&trig->use_count, num_consumers);
+>>> +
+>> Is there any chance the state of subirqs[i].enabled might have changed since
+>> it was queried above?
 > 
-> Too long ago since I looked into that, but this code changes the API
-> from "get nth channel" to "channel with channel index n".
-> Not really sure I understand why that should be necessary.
+> hm, right.
 > 
+>>
+>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+>>> +			if (trig->subirqs[i].enabled)
+>> how about,
+>>
+>> if (trig->subirqs[i].enabled && num_consumers--)
+>> as that would prevent the case of launching too many irq handlers.
+> 
+> That wouldn't fix the case where the subirq was enabled. use_count would end
+> up with a positive value.
+Can't say I follow that given I can't see a way we'd end up with fewer enabled
+sub irqs on the second pass than the first.  Thus it would be fine as we would
+fire use_count subirqs, each of which would then decrement use_count.
 
-yea, this will definitively not work channels of different types will
-usually have the same channel numbers.
+> We can make a copy of enabled and use it for both
+> loops. Or use a spinlock protecting the triggers subirqs.
+
+I suspect a spin lock is going to be the cleanest solution.
+
+> 
+>>
+>>>  				generic_handle_irq(trig->subirq_base + i);
+>>> -			}
+>>> +		}
+>>> +	}
+>>>  }
+>>>  EXPORT_SYMBOL(iio_trigger_poll);
+>>>  
+>>> @@ -145,20 +154,29 @@ EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
+>>>  
+>>>  void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
+>>>  {
+>>> +	unsigned int num_consumers;
+>>>  	int i;
+>>> -	if (!trig->use_count)
+>>> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
+>>> -			if (trig->subirqs[i].enabled) {
+>>> -				trig->use_count++;
+>>> -				handle_nested_irq(trig->subirq_base + i);
+>>> -			}
+>>> +
+>>> +	if (!atomic_read(&trig->use_count)) {
+>>> +		num_consumers = 0;
+>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+>>> +			if (trig->subirqs[i].enabled)
+>>> +				num_consumers++;
+>>> +		}
+>>> +		atomic_set(&trig->use_count, num_consumers);
+>>> +
+>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+>>> +			if (trig->subirqs[i].enabled)
+>>> +				generic_handle_irq(trig->subirq_base + i);
+>>> +		}
+>>> +	}
+>>>  }
+>>>  EXPORT_SYMBOL(iio_trigger_poll_chained);
+>>>  
+>>>  void iio_trigger_notify_done(struct iio_trigger *trig)
+>>>  {
+>>> -	trig->use_count--;
+>>> -	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
+>>> +	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
+>>> +		trig->ops->try_reenable)
+>>>  		if (trig->ops->try_reenable(trig))
+>>>  			/* Missed an interrupt so launch new poll now */
+>>>  			iio_trigger_poll(trig, 0);
+>>> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+>>> index 3869c52..369cf2c 100644
+>>> --- a/include/linux/iio/trigger.h
+>>> +++ b/include/linux/iio/trigger.h
+>>> @@ -8,6 +8,7 @@
+>>>   */
+>>>  #include <linux/irq.h>
+>>>  #include <linux/module.h>
+>>> +#include <linux/atomic.h>
+>>>  
+>>>  #ifndef _IIO_TRIGGER_H_
+>>>  #define _IIO_TRIGGER_H_
+>>> @@ -61,7 +62,7 @@ struct iio_trigger {
+>>>  
+>>>  	struct list_head		list;
+>>>  	struct list_head		alloc_list;
+>>> -	int use_count;
+>>> +	atomic_t			use_count;
+>>>  
+>>>  	struct irq_chip			subirq_chip;
+>>>  	int				subirq_base;
+>>>
+> 
