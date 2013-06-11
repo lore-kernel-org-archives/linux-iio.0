@@ -11,115 +11,48 @@ Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
 	linux-omap@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
-	"Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 08/22] iio/ti_am335x_adc: Add DT support
-Date: Tue, 11 Jun 2013 13:30:54 +0200
-Message-Id: <1370950268-7224-9-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 16/22] mfd & input/ti_am335x_tsc: rename device from tsc to TI-am335x-tsc
+Date: Tue, 11 Jun 2013 13:31:02 +0200
+Message-Id: <1370950268-7224-17-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: "Patil, Rachna" <rachna@ti.com>
+tsc is a very generic name. This patch adds a TI and HW prefix to it
+less generic.
 
-Add DT support for client ADC driver.
-
-[ panto@antoniou-consulting.com : use of_get_child_by_name
-	instead of of_find_node_by_name ]
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-[bigeasy: shift the code to the left, fix clean up on
-          of_get_child_by_name() failer, provide OF binding in mfd, use
-	  own of node, get rid of of_get_child_by_name()]
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/adc/ti_am335x_adc.c |   29 ++++++++++++++++++++++++-----
- drivers/mfd/ti_am335x_tscadc.c  |    1 +
- 2 files changed, 25 insertions(+), 5 deletions(-)
+ drivers/input/touchscreen/ti_am335x_tsc.c |    2 +-
+ drivers/mfd/ti_am335x_tscadc.c            |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 543b9c4..b24402c 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -22,6 +22,8 @@
- #include <linux/platform_device.h>
- #include <linux/io.h>
- #include <linux/iio/iio.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
- #include <linux/platform_data/ti_am335x_adc.h>
-@@ -152,11 +154,12 @@ static int tiadc_probe(struct platform_device *pdev)
- 	struct iio_dev		*indio_dev;
- 	struct tiadc_device	*adc_dev;
- 	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
--	struct mfd_tscadc_board	*pdata;
-+	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
-+	struct device_node	*node = pdev->dev.of_node;
- 	int			err;
-+	u32			val32;
- 
--	pdata = tscadc_dev->dev->platform_data;
--	if (!pdata || !pdata->adc_init) {
-+	if (!pdata && !node) {
- 		dev_err(&pdev->dev, "Could not find platform data\n");
- 		return -EINVAL;
- 	}
-@@ -169,8 +172,17 @@ static int tiadc_probe(struct platform_device *pdev)
- 	}
- 	adc_dev = iio_priv(indio_dev);
- 
--	adc_dev->mfd_tscadc = tscadc_dev;
--	adc_dev->channels = pdata->adc_init->adc_channels;
-+	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
-+
-+	if (pdata)
-+		adc_dev->channels = pdata->adc_init->adc_channels;
-+	else {
-+		err = of_property_read_u32(node,
-+				"ti,adc-channels", &val32);
-+		if (err < 0)
-+			goto err_free_device;
-+		adc_dev->channels = val32;
-+	}
- 
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->name = dev_name(&pdev->dev);
-@@ -260,11 +272,18 @@ static const struct dev_pm_ops tiadc_pm_ops = {
- #define TIADC_PM_OPS NULL
- #endif
- 
-+static const struct of_device_id ti_adc_dt_ids[] = {
-+	{ .compatible = "ti,am3359-adc", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
-+
- static struct platform_driver tiadc_driver = {
- 	.driver = {
- 		.name   = "tiadc",
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 66c5a26..d6643cb 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -491,7 +491,7 @@ static struct platform_driver ti_tsc_driver = {
+ 	.probe	= titsc_probe,
+ 	.remove	= titsc_remove,
+ 	.driver	= {
+-		.name   = "tsc",
++		.name   = "TI-am335x-tsc",
  		.owner	= THIS_MODULE,
- 		.pm	= TIADC_PM_OPS,
-+		.of_match_table = of_match_ptr(ti_adc_dt_ids),
- 	},
- 	.probe	= tiadc_probe,
- 	.remove	= tiadc_remove,
+ 		.pm	= TITSC_PM_OPS,
+ 		.of_match_table = of_match_ptr(ti_tsc_dt_ids),
 diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 15a01f6..eaaa253 100644
+index 74e4694..bf33134 100644
 --- a/drivers/mfd/ti_am335x_tscadc.c
 +++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -191,6 +191,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	/* ADC Cell */
- 	cell = &tscadc->cells[ADC_CELL];
- 	cell->name = "tiadc";
-+	cell->of_compatible = "ti,am3359-adc";
- 	cell->platform_data = &tscadc;
- 	cell->pdata_size = sizeof(tscadc);
- 
+@@ -194,7 +194,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	if (tsc_wires > 0) {
+ 		tscadc->tsc_cell = tscadc->used_cells;
+ 		cell = &tscadc->cells[tscadc->used_cells++];
+-		cell->name = "tsc";
++		cell->name = "TI-am335x-tsc";
+ 		cell->of_compatible = "ti,am3359-tsc";
+ 		cell->platform_data = &tscadc;
+ 		cell->pdata_size = sizeof(tscadc);
 -- 
 1.7.10.4
