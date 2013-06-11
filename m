@@ -1,41 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44259 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752404Ab3F2PNL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 11:13:11 -0400
-Message-ID: <51CEF97F.4050209@kernel.org>
-Date: Sat, 29 Jun 2013 16:13:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wg0-f42.google.com ([74.125.82.42]:37773 "EHLO
+	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754692Ab3FKSmU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 14:42:20 -0400
+Received: by mail-wg0-f42.google.com with SMTP id x12so845143wgg.5
+        for <linux-iio@vger.kernel.org>; Tue, 11 Jun 2013 11:42:19 -0700 (PDT)
+Date: Tue, 11 Jun 2013 19:42:14 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
+Message-ID: <20130611184214.GB4320@laptop>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
+ <20130611142347.GF29135@zurbaran>
+ <51B73756.5010004@linutronix.de>
+ <20130611150505.GI29135@zurbaran>
+ <51B74540.2020608@linutronix.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: add DAC 500kohm_to_gnd to possible powerdown_modes
-References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net> <1372023020-18742-3-git-send-email-pmeerw@pmeerw.net> <51CED1BF.8070200@kernel.org> <51CEE1E3.6090006@metafoo.de>
-In-Reply-To: <51CEE1E3.6090006@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <51B74540.2020608@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/29/2013 02:32 PM, Lars-Peter Clausen wrote:
-> On 06/29/2013 02:23 PM, Jonathan Cameron wrote:
->> On 06/23/2013 10:30 PM, Peter Meerwald wrote:
->>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->> applied to the togreg branch of iio.git
->>> ---
->>>  Documentation/ABI/testing/sysfs-bus-iio | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->>> index 2e33dc6..0af1af0 100644
->>> --- a/Documentation/ABI/testing/sysfs-bus-iio
->>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->>> @@ -351,6 +351,7 @@ Description:
->>>  		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
->>>  		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
->>>  		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
->>> +		500kohm_to_gnd: connected to ground via an 100kOhm resistor,
+On Tue, 11 Jun 2013, Sebastian Andrzej Siewior wrote:
+
+> On 06/11/2013 05:05 PM, Samuel Ortiz wrote:
+> > Hi Sebastian,
 > 
-> I missed this earlier, there's a typo here, it should obviously be 'via an
-> 500kOhm resistor'
+> Hi Samuel,
 > 
-doh, I'll fix that and force a push to the tree.
+> > On Tue, Jun 11, 2013 at 04:42:30PM +0200, Sebastian Andrzej Siewior wrote:
+> >> In the end I would like not to post a patch with "From: != me" and
+> >> don't make change which the original author did not do. Also dropping
+> >> their authorship isn't nice. What could we agree on?
+> > You probably don't want to change authorship unless the final patch is
+> > really far from the original one. In which case you can change it and
+> > mention the original author name in the commit log.
+> > If you have only made a few changes on top of the original patch, please
+> > say so explicitely in the commit log. Don't bother if we're talking
+> > about small changes or cosmetic ones. But your commit log has to be
+> > readable and clear.
+> 
+> Commit 06c9494 on of many examples where cosmetic are recorded. But to
+> make some progress I rewrite the commit log to resolve this and don't
+> add anything to the sign-off area.
+
+If you are submitting the patch, you still have to add your own SOB.
+
+-- 
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
