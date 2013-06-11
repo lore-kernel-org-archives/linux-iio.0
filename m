@@ -1,5 +1,5 @@
 Return-Path: <sameo@linux.intel.com>
-Date: Tue, 11 Jun 2013 17:05:05 +0200
+Date: Tue, 11 Jun 2013 16:23:47 +0200
 From: Samuel Ortiz <sameo@linux.intel.com>
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Cc: Lee Jones <lee.jones@linaro.org>,
@@ -12,29 +12,37 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
 	Pantelis Antoniou <panto@antoniou-consulting.com>
 Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
-Message-ID: <20130611150505.GI29135@zurbaran>
+Message-ID: <20130611142347.GF29135@zurbaran>
 References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
  <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
- <20130611142347.GF29135@zurbaran>
- <51B73756.5010004@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51B73756.5010004@linutronix.de>
+In-Reply-To: <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
 Hi Sebastian,
 
-On Tue, Jun 11, 2013 at 04:42:30PM +0200, Sebastian Andrzej Siewior wrote:
-> In the end I would like not to post a patch with "From: != me" and
-> don't make change which the original author did not do. Also dropping
-> their authorship isn't nice. What could we agree on?
-You probably don't want to change authorship unless the final patch is
-really far from the original one. In which case you can change it and
-mention the original author name in the commit log.
-If you have only made a few changes on top of the original patch, please
-say so explicitely in the commit log. Don't bother if we're talking
-about small changes or cosmetic ones. But your commit log has to be
-readable and clear.
+On Tue, Jun 11, 2013 at 01:30:56PM +0200, Sebastian Andrzej Siewior wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
+> 
+> Make changes to add DT support in the MFD core driver.
+Which changes ?
+
+
+> [ panto@antoniou-consulting.com : use of_get_child_by_name
+> 	instead of of_find_node_by_name ]
+I have no idea where that is coming from. Please remove this kind of
+stuff and build a proper commit log instead.
+
+
+> Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> [bigeasy: module alias, rename to ti,am3359-tscadc as it was tested on
+>           AM3359]
+I honestly can't tell if this is a change from the last version of your
+patchset or a description of this patch changes in general.
+This is cluttering your commit logs, please remove this as well.
 
 Cheers,
 Samuel.
