@@ -1,54 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41858 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752366Ab3F2JqC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 05:46:02 -0400
-Message-ID: <51CEACD8.7070804@kernel.org>
-Date: Sat, 29 Jun 2013 10:46:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <sameo@linux.intel.com>
+Date: Tue, 11 Jun 2013 18:15:06 +0200
+From: Samuel Ortiz <sameo@linux.intel.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
+Message-ID: <20130611161506.GK29135@zurbaran>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <20130611142358.GG29135@zurbaran>
+ <20130611160415.GA379@core.coreip.homeip.net>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: add ds1077 programmable oscillator driver
-References: <1371938043-3865-1-git-send-email-pmeerw@pmeerw.net> <51C87806.5000700@metafoo.de> <alpine.DEB.2.01.1306241932420.13960@pmeerw.net> <51C8887D.4080406@metafoo.de>
-In-Reply-To: <51C8887D.4080406@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20130611160415.GA379@core.coreip.homeip.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/24/2013 06:57 PM, Lars-Peter Clausen wrote:
-> On 06/24/2013 07:47 PM, Peter Meerwald wrote:
->> Hello,
->>
->>> Hm, I wonder where we should draw the line between what should be
->>> implemented as a IIO driver and what should be implemented as a clk API
->>> driver. This one looks like it actually belongs into the clk framework.
->>
->> several IIO drivers have overlap with other kernel subsystems
-> 
-> Which is not a necessarily good.
-> 
->>
->> I think the 'line' depends on the intended use/application of the driver, 
->> not so much on characteristics of the hardware; why do you think it 
->> belongs to clk?
-> 
-> But the usecase might differ from board to board and that's when you get a
-> problem. One user wants a clk driver another a IIO driver.
-> 
->>
->> the ds1077 is a small, separate chip which can generate a frequency; using 
->> IIO I can easily control that frequency from userspace
->>
->> clk seems to be targetted more at integrated clocksources that get 
->> activated automatically when needed by other components (maybe I am wrong)
-> 
-> 
-> I think there is a userspace consumer for the clk API in the making.
+Hi Dmitry,
 
-Just to jump on the end of this conversation, sorry Peter but this one definitely
-looks to me like it belongs clk rather than IIO. If there wasn't a userspace
-API in the making, I'd suggest now was the time to propose one as you
-clearly have an application for one.
+On Tue, Jun 11, 2013 at 09:04:16AM -0700, Dmitry Torokhov wrote:
+> On Tue, Jun 11, 2013 at 04:23:58PM +0200, Samuel Ortiz wrote:
+> > Hi Sebastian,
+> > 
+> > On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior wrote:
+> > > I believe the whole thing should go via the MFD tree. It touches also
+> > > input & iio subsystem. I collected ACKs where I got some in the meantime.
+> > Please fix your commit logs, and your subject lines. It should be e.g.
+> > mfd: input: ti_am335x_adc: Blablabla
+> > 
+> > if it's mostly an mfd patch that also touches an input driver.
+> > 
+> > Then, this is a pretty big patchset, with iio, input and mfd all mixed
+> > together and it is likely to create merge conflicts.
+> > From what I can see from it, and please correct me if I'm
+> > wrong, the iio and input changes depend on the mfd ones, and not the
+> > other way around. If that's so, I'm going to ask you to reshuffle your
+> > patch set and separate the MFD changes from the iio and input ones. I'll
+> > take the MFD ones and will create an immutable branch for Jonathan and
+> > Dmitry to pull from and apply the iio and input changes on top of it.
+> > Merge conflicts should be mostly avoided that way.
+> 
+> I purposely left this driver alone as I expected it would be merged
+> through MFD tree, so there should not be any merging issues on my side.
+Thanks for the notice.
+Jonathan, can you guarantee the same for the iio parts ?
 
-Jonathan
+Sabastian, hold on before reworking your patchset.
+
+Cheers,
+Samuel.
+
+-- 
+Intel Open Source Technology Centre
+http://oss.intel.com/
