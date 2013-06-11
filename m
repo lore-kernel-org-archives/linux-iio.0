@@ -1,53 +1,49 @@
-Return-Path: <sameo@linux.intel.com>
-Date: Tue, 11 Jun 2013 16:23:58 +0200
-From: Samuel Ortiz <sameo@linux.intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-Message-ID: <20130611142358.GG29135@zurbaran>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B735CC.9080909@linutronix.de>
+Date: Tue, 11 Jun 2013 16:35:56 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: Lee Jones <lee.jones@linaro.org>, =?ISO-8859-1?Q?Beno=EEt_Cousson?=
+ <b-cousson@ti.com>, Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ "Patil, Rachna" <rachna@ti.com>
+Subject: Re: [PATCH 04/22] input/ti_am33x_tsc: Order of TSC wires, made configurable
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-5-git-send-email-bigeasy@linutronix.de> <20130611142324.GD29135@zurbaran>
+In-Reply-To: <20130611142324.GD29135@zurbaran>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Sebastian,
+On 06/11/2013 04:23 PM, Samuel Ortiz wrote:
+> Hi Sebastian,
 
-On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior wrote:
-> I believe the whole thing should go via the MFD tree. It touches also
-> input & iio subsystem. I collected ACKs where I got some in the meantime.
-Please fix your commit logs, and your subject lines. It should be e.g.
-mfd: input: ti_am335x_adc: Blablabla
+Hi Samuel,
 
-if it's mostly an mfd patch that also touches an input driver.
+> On Tue, Jun 11, 2013 at 01:30:50PM +0200, Sebastian Andrzej Siewior wrote:
+>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>> index eeead15..2d78af8 100644
+>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>> @@ -116,6 +113,13 @@
+>>  #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+>>  #define CNTRLREG_TSCENB		BIT(7)
+>>  
+>> +#define XPP			STEPCONFIG_XPP
+>> +#define XNP			STEPCONFIG_XNP
+>> +#define XNN			STEPCONFIG_XNN
+>> +#define YPP			STEPCONFIG_YPP
+>> +#define YPN			STEPCONFIG_YPN
+>> +#define YNN			STEPCONFIG_YNN
+> What is that for ? Isn't STEPCONFIG_XPP explicit enough ?
 
-Then, this is a pretty big patchset, with iio, input and mfd all mixed
-together and it is likely to create merge conflicts.
->From what I can see from it, and please correct me if I'm
-wrong, the iio and input changes depend on the mfd ones, and not the
-other way around. If that's so, I'm going to ask you to reshuffle your
-patch set and separate the MFD changes from the iio and input ones. I'll
-take the MFD ones and will create an immutable branch for Jonathan and
-Dmitry to pull from and apply the iio and input changes on top of it.
-Merge conflicts should be mostly avoided that way.
-AFAICT, only patch #2 should be kept with input and iio bits mixed
-together with MFD as otherwise this would introduce functional breakage.
-Otherwise, all MFD bits from the other patches could be either separated
-or merged together (e.g. MFD bits from patches #6 and #8, and #16 and
-#17).
+Yeah :P It was added by the original author of the patch, I have no
+problem getting rid of it.
 
-Does that sound doable to you ?
+> 
+> Cheers,
+> Samuel.
 
-Cheers,
-Samuel.
-
--- 
-Intel Open Source Technology Centre
-http://oss.intel.com/
+Sebastian
