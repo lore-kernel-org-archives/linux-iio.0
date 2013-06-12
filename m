@@ -1,57 +1,46 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <51B8370D.1090102@linutronix.de>
-Date: Wed, 12 Jun 2013 10:53:33 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:43602 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753954Ab3FLOCO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 10:02:14 -0400
+Message-ID: <51B87F58.9070000@linutronix.de>
+Date: Wed, 12 Jun 2013 16:02:00 +0200
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Guenter Roeck <linux@roeck-us.net>,
- Jonathan Cameron <jic23@kernel.org>,
- Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
- of channels
-References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de> <51B7809A.1030804@kernel.org> <20130611204416.GA13883@roeck-us.net> <51B791D1.9020105@metafoo.de>
-In-Reply-To: <51B791D1.9020105@metafoo.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <20130611142358.GG29135@zurbaran> <20130611160415.GA379@core.coreip.homeip.net> <20130611161506.GK29135@zurbaran> <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com> <20130611175519.GL29135@zurbaran> <51B877C7.8080001@linutronix.de> <20130612135042.GO29135@zurbaran>
+In-Reply-To: <20130612135042.GO29135@zurbaran>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 11:08 PM, Lars-Peter Clausen wrote:
->>> This doesn't work in general.  The index is not the same as channel
->>> (or any other form of index present). Note that modified channels may
->>> all have channel set to 0  (accel_x, accel_y etc for instance).
->>>
->>> The index refers directly into those channels registered.
->>> Is it possible for channels to move at runtime between the two units?
->>> I would imagine not as this is very much a case of wiring.
->>>
->>> Thus we have a fairly messy bit if interdependence in the device
->>> tree but it should work.
->>>
->>> I don't actually have much / any real experience of device tree configurations
->>> and this is Guenter's code, hence I have cc'd him.
->>>
->>> Note that it is acceptable and relatively common to have missing
->>> values in scan_index but that isn't really relevant here.
->>>
->>> Jonathan
->>
->> Too long ago since I looked into that, but this code changes the API
->> from "get nth channel" to "channel with channel index n".
->> Not really sure I understand why that should be necessary.
->>
-> 
-> yea, this will definitively not work channels of different types will
-> usually have the same channel numbers.
+On 06/12/2013 03:50 PM, Samuel Ortiz wrote:
+> Hi Sebastian,
 
-I see. I've been looking at the Documentation. It says "IIO specifier"
-for the second argument. Now I assumed it is referred to the channel
-number and not the order of channel registration. The "read" requests
-(in the drivers I checked) checked the channel's number in order to
-associate the request with the wire. I see now some use the "address"
-field.
-So it kind of looked like a bug where one did not assume that the
-channel number could start at != 0. It is either the documentation or
-me reading it. I guess it is the latter. Anyway, if this is the
-intention of the parameter, just drop the patch and everything is fine
-:)
+Hi Samuel,
+
+>> By keep the regmap code you mean I am allowed to remove the regmap
+>> usage in mfd (keep patch #1) or do you insist on adding its usage in
+>> iio and input?
+> I insist on keeping it on the MFD driver, i.e. _not_ keeping patch #1.
+
+This forces me redo a few things and most likely adding it to the
+iio and input driver to be consistent here.
+
+Could you please give a reason why using the regmap here is a good
+thing? I mentioned a few why it is not and why is better to leave it
+out.
+
+> Cheers,
+> Samuel.
 
 Sebastian
