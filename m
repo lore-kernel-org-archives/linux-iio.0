@@ -1,49 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:42754 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751426Ab3FWV2a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Jun 2013 17:28:30 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 4/5] iio: remove mention of ring buffer from  CONFIG_IIO_KFIFO_BUF, CONFIG_IIO_TRIGGER description
-Date: Sun, 23 Jun 2013 23:28:19 +0200
-Message-Id: <1372022900-18670-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
-References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
+Received: from www.linutronix.de ([62.245.132.108]:44766 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932129Ab3FLROn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:14:43 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 19/21] input: ti_am335x_tsc: return IRQ_NONE if there was no IRQ for us
+Date: Wed, 12 Jun 2013 18:58:20 +0200
+Message-Id: <1371056302-12714-20-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-ring buffers are only in staging, don't mention them here
+The previous patch ("input/ti_am335x_tsc: ACK the HW_PEN irq in ISR")
+acked the interrupt so we don't freeze if we don't handle an enabled
+interrupt source. The interrupt core has a mechanism for this and to get
+it work one should only say that it handled an interrupt if it is
+actually the case.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/Kconfig | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index be8e303..524380c 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -30,8 +30,7 @@ config IIO_KFIFO_BUF
- 	select IIO_TRIGGER
- 	tristate "Industrial I/O buffering based on kfifo"
- 	help
--	  A simple fifo based on kfifo.  Use this if you want a fifo
--	  rather than a ring buffer. Note that this currently provides
-+	  A simple fifo based on kfifo.  Note that this currently provides
- 	  no buffer events so it is up to userspace to work out how
- 	  often to read from the buffer.
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 2ba7703..0e9f02a 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -314,10 +314,12 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+ 	}
  
-@@ -49,7 +48,7 @@ config IIO_TRIGGER
- 	help
- 	  Provides IIO core support for triggers.  Currently these
- 	  are used to initialize capture of samples to push into
--	  ring buffers.  The triggers are effectively a 'capture
-+	  buffers.  The triggers are effectively a 'capture
- 	  data now' interrupt.
+-	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+-
+-	am335x_tsc_se_update(ts_dev->mfd_tscadc);
+-	return IRQ_HANDLED;
++	if (irqclr) {
++		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
++		am335x_tsc_se_update(ts_dev->mfd_tscadc);
++		return IRQ_HANDLED;
++	}
++	return IRQ_NONE;
+ }
  
- config IIO_CONSUMERS_PER_TRIGGER
+ static int titsc_parse_dt(struct platform_device *pdev,
 -- 
-1.8.3.1
+1.7.10.4
 
