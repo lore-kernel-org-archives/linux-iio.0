@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44540 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:44696 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757289Ab3FLQ6h (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 12:58:37 -0400
+	with ESMTP id S1757244Ab3FLRLv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:11:51 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: Samuel Ortiz <sameo@linux.intel.com>
 Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
@@ -12,10 +12,11 @@ Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
 	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
 	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 04/21] input: ti_am33x_tsc: remove unwanted fifo flush
-Date: Wed, 12 Jun 2013 18:58:05 +0200
-Message-Id: <1371056302-12714-5-git-send-email-bigeasy@linutronix.de>
+	Pantelis Antoniou <panto@antoniou-consulting.com>,
+	Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Subject: [PATCH 13/21] arm: am33xx: add TSC/ADC mfd device support
+Date: Wed, 12 Jun 2013 18:58:14 +0200
+Message-Id: <1371056302-12714-14-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
@@ -23,44 +24,69 @@ List-Id: linux-iio@vger.kernel.org
 
 From: "Patil, Rachna" <rachna@ti.com>
 
-When touchscreen and ADC are used together, this
-unwanted fifo flush leads to loss of ADC data.
+Add support for core multifunctional device along
+with its clients touchscreen and ADC.
 
+Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
 Signed-off-by: Patil, Rachna <rachna@ti.com>
 Signed-off-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ----------
- 1 file changed, 10 deletions(-)
+ arch/arm/boot/dts/am335x-evm.dts |   14 ++++++++++++++
+ arch/arm/boot/dts/am33xx.dtsi    |   18 ++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 2bdd66c..7b7de60 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -252,8 +252,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int x = 0, y = 0;
- 	unsigned int z1, z2, z;
- 	unsigned int fsm;
--	unsigned int fifo1count, fifo0count;
--	int i;
+diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+index 0423298..26fea97 100644
+--- a/arch/arm/boot/dts/am335x-evm.dts
++++ b/arch/arm/boot/dts/am335x-evm.dts
+@@ -244,3 +244,17 @@
+ &cpsw_emac1 {
+ 	phy_id = <&davinci_mdio>, <1>;
+ };
++
++&tscadc {
++	status = "okay";
++	tsc {
++		ti,wires = <4>;
++		ti,x-plate-resistance = <200>;
++		ti,coordiante-readouts = <5>;
++		ti,wire-config = <0x00 0x11 0x22 0x33>;
++	};
++
++	adc {
++		ti,adc-channels = <4>;
++	};
++};
+diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+index 1460d9b..4ad7797 100644
+--- a/arch/arm/boot/dts/am33xx.dtsi
++++ b/arch/arm/boot/dts/am33xx.dtsi
+@@ -404,6 +404,24 @@
+ 			ti,hwmods = "wkup_m3";
+ 		};
  
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
- 	if (status & IRQENB_FIFO0THRES) {
-@@ -262,14 +260,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		z1 = titsc_readl(ts_dev, REG_FIFO0) & 0xfff;
- 		z2 = titsc_readl(ts_dev, REG_FIFO1) & 0xfff;
- 
--		fifo1count = titsc_readl(ts_dev, REG_FIFO1CNT);
--		for (i = 0; i < fifo1count; i++)
--			titsc_readl(ts_dev, REG_FIFO1);
--
--		fifo0count = titsc_readl(ts_dev, REG_FIFO0CNT);
--		for (i = 0; i < fifo0count; i++)
--			titsc_readl(ts_dev, REG_FIFO0);
--
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
- 			/*
- 			 * Calculate pressure using formula
++		tscadc: tscadc@44e0d000 {
++			compatible = "ti,am3359-tscadc";
++			reg = <0x44e0d000 0x1000>;
++			interrupt-parent = <&intc>;
++			interrupts = <16>;
++			ti,hwmods = "adc_tsc";
++			status = "disabled";
++
++			tsc {
++				compatible = "ti,am3359-tsc";
++			};
++			am335x_adc: adc {
++				#io-channel-cells = <1>;
++				compatible = "ti,am3359-adc";
++			};
++
++		};
++
+ 		gpmc: gpmc@50000000 {
+ 			compatible = "ti,am3352-gpmc";
+ 			ti,hwmods = "gpmc";
 -- 
 1.7.10.4
 
