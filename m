@@ -1,35 +1,52 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51C5923D.6030609@metafoo.de>
-Date: Sat, 22 Jun 2013 14:02:05 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <sameo@linux.intel.com>
+Date: Wed, 12 Jun 2013 16:41:33 +0200
+From: Samuel Ortiz <sameo@linux.intel.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
+Message-ID: <20130612144133.GP29135@zurbaran>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <20130611142358.GG29135@zurbaran>
+ <20130611160415.GA379@core.coreip.homeip.net>
+ <20130611161506.GK29135@zurbaran>
+ <1565f2fb-7f16-4910-8fa2-cd5700e8986d@email.android.com>
+ <20130611175519.GL29135@zurbaran>
+ <51B877C7.8080001@linutronix.de>
+ <20130612135042.GO29135@zurbaran>
+ <51B87F58.9070000@linutronix.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- Shawn Guo <shawn.guo@linaro.org>,
- Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
- brian@crystalfontz.com, Maxime Ripard <maxime.ripard@free-electrons.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- devicetree-discuss@lists.ozlabs.org, Jonathan Cameron <jic23@cam.ac.uk>,
- Rob Landley <rob@landley.net>,
- Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
-References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C590B5.2060308@kernel.org>
-In-Reply-To: <51C590B5.2060308@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51B87F58.9070000@linutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/22/2013 01:55 PM, Jonathan Cameron wrote:
-> On 06/20/2013 07:57 PM, Alexandre Belloni wrote:
->> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
->> gain and sampling rates.
->>
-> Sorry, somewhat low on time today so only a quick review.
+On Wed, Jun 12, 2013 at 04:02:00PM +0200, Sebastian Andrzej Siewior wrote:
+> >> By keep the regmap code you mean I am allowed to remove the regmap
+> >> usage in mfd (keep patch #1) or do you insist on adding its usage in
+> >> iio and input?
+> > I insist on keeping it on the MFD driver, i.e. _not_ keeping patch #1.
 > 
-> 1) Missing userspace ABI documentation.  Also, perhaps min_conversions is
->    a little vague?  Not that I have a better idea!
+> This forces me redo a few things and most likely adding it to the
+> iio and input driver to be consistent here.
+I'm not asking for that. The current MFD code uses regmap fine without
+the iio and input using it, I don't see why you would have to add regmap
+support there.
 
-I really don't like the name min_conversions either. Isn't this effectively
-a decimation filter?
+> Could you please give a reason why using the regmap here is a good
+> thing? I mentioned a few why it is not and why is better to leave it
+> out.
+Yes, and I'm not convinced obviously. regmap prevents you from open
+coding your MMIO access, and this is the right approach.
 
-- Lars
+Cheers,
+Samuel.
+
+-- 
+Intel Open Source Technology Centre
+http://oss.intel.com/
