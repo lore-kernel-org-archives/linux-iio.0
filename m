@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44574 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:44554 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757429Ab3FLQ6l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 12:58:41 -0400
+	with ESMTP id S1757374Ab3FLQ6j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 12:58:39 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To: Samuel Ortiz <sameo@linux.intel.com>
 Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
@@ -11,111 +11,147 @@ Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
 	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>,
+	linux-input@vger.kernel.org,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 07/21] iio: ti_am335x_adc: Add DT support
-Date: Wed, 12 Jun 2013 18:58:08 +0200
-Message-Id: <1371056302-12714-8-git-send-email-bigeasy@linutronix.de>
+Subject: [PATCH 01/21] mfd: input: iio: ti_am335x_adc: use one structure for ti_tscadc_dev
+Date: Wed, 12 Jun 2013 18:58:02 +0200
+Message-Id: <1371056302-12714-2-git-send-email-bigeasy@linutronix.de>
 In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+The mfd driver creates platform data for the child devices and it is the
+ti_tscadc_dev struct. This struct is copied for the two devices.
+The copy of the structure makes a common lock in this structure a little
+less usefull. Therefore the platform data is not a pointer to the
+structure and the same structure is used.
+While doing the change I noticed that the suspend/resume code assumes
+the wrong pointer for ti_tscadc_dev and this has been fixed as well.
 
-Add DT support for client ADC driver.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/adc/ti_am335x_adc.c |   29 ++++++++++++++++++++++++-----
- drivers/mfd/ti_am335x_tscadc.c  |    1 +
- 2 files changed, 25 insertions(+), 5 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c           |    5 +++--
+ drivers/input/touchscreen/ti_am335x_tsc.c |   16 +++++++++-------
+ drivers/mfd/ti_am335x_tscadc.c            |    8 ++++----
+ include/linux/mfd/ti_am335x_tscadc.h      |    7 +++++++
+ 4 files changed, 23 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 543b9c4..b24402c 100644
+index 5f9a7e7..9db352e 100644
 --- a/drivers/iio/adc/ti_am335x_adc.c
 +++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -22,6 +22,8 @@
- #include <linux/platform_device.h>
- #include <linux/io.h>
- #include <linux/iio/iio.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
- #include <linux/platform_data/ti_am335x_adc.h>
-@@ -152,11 +154,12 @@ static int tiadc_probe(struct platform_device *pdev)
+@@ -140,7 +140,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ {
  	struct iio_dev		*indio_dev;
  	struct tiadc_device	*adc_dev;
- 	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
--	struct mfd_tscadc_board	*pdata;
-+	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
-+	struct device_node	*node = pdev->dev.of_node;
+-	struct ti_tscadc_dev	*tscadc_dev = pdev->dev.platform_data;
++	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
+ 	struct mfd_tscadc_board	*pdata;
  	int			err;
-+	u32			val32;
  
--	pdata = tscadc_dev->dev->platform_data;
--	if (!pdata || !pdata->adc_init) {
-+	if (!pdata && !node) {
- 		dev_err(&pdev->dev, "Could not find platform data\n");
- 		return -EINVAL;
- 	}
-@@ -169,8 +172,17 @@ static int tiadc_probe(struct platform_device *pdev)
- 	}
- 	adc_dev = iio_priv(indio_dev);
+@@ -205,9 +205,10 @@ static int tiadc_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
++	struct ti_tscadc_dev *tscadc_dev;
+ 	unsigned int idle;
  
--	adc_dev->mfd_tscadc = tscadc_dev;
--	adc_dev->channels = pdata->adc_init->adc_channels;
-+	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
-+
-+	if (pdata)
-+		adc_dev->channels = pdata->adc_init->adc_channels;
-+	else {
-+		err = of_property_read_u32(node,
-+				"ti,adc-channels", &val32);
-+		if (err < 0)
-+			goto err_free_device;
-+		adc_dev->channels = val32;
-+	}
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (!device_may_wakeup(tscadc_dev->dev)) {
+ 		idle = tiadc_readl(adc_dev, REG_CTRL);
+ 		idle &= ~(CNTRLREG_TSCSSENB);
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 51e7b87..16077d3 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -262,7 +262,7 @@ static int titsc_probe(struct platform_device *pdev)
+ {
+ 	struct titsc *ts_dev;
+ 	struct input_dev *input_dev;
+-	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
++	struct ti_tscadc_dev *tscadc_dev = ti_tscadc_dev_get(pdev);
+ 	struct mfd_tscadc_board	*pdata;
+ 	int err;
  
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->name = dev_name(&pdev->dev);
-@@ -260,11 +272,18 @@ static const struct dev_pm_ops tiadc_pm_ops = {
- #define TIADC_PM_OPS NULL
- #endif
+@@ -329,8 +329,8 @@ static int titsc_probe(struct platform_device *pdev)
  
-+static const struct of_device_id ti_adc_dt_ids[] = {
-+	{ .compatible = "ti,am3359-adc", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
-+
- static struct platform_driver tiadc_driver = {
- 	.driver = {
- 		.name   = "tiadc",
- 		.owner	= THIS_MODULE,
- 		.pm	= TIADC_PM_OPS,
-+		.of_match_table = of_match_ptr(ti_adc_dt_ids),
- 	},
- 	.probe	= tiadc_probe,
- 	.remove	= tiadc_remove,
+ static int titsc_remove(struct platform_device *pdev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = pdev->dev.platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = platform_get_drvdata(pdev);
++	u32 steps;
+ 
+ 	free_irq(ts_dev->irq, ts_dev);
+ 
+@@ -344,10 +344,11 @@ static int titsc_remove(struct platform_device *pdev)
+ #ifdef CONFIG_PM
+ static int titsc_suspend(struct device *dev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = dev_get_drvdata(dev);
++	struct ti_tscadc_dev *tscadc_dev;
+ 	unsigned int idle;
+ 
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (device_may_wakeup(tscadc_dev->dev)) {
+ 		idle = titsc_readl(ts_dev, REG_IRQENABLE);
+ 		titsc_writel(ts_dev, REG_IRQENABLE,
+@@ -359,9 +360,10 @@ static int titsc_suspend(struct device *dev)
+ 
+ static int titsc_resume(struct device *dev)
+ {
+-	struct ti_tscadc_dev *tscadc_dev = dev->platform_data;
+-	struct titsc *ts_dev = tscadc_dev->tsc;
++	struct titsc *ts_dev = dev_get_drvdata(dev);
++	struct ti_tscadc_dev *tscadc_dev;
+ 
++	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
+ 	if (device_may_wakeup(tscadc_dev->dev)) {
+ 		titsc_writel(ts_dev, REG_IRQWAKEUP,
+ 				0x00);
 diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index f509766..1d6c740 100644
+index e9f3fb5..772ea2a 100644
 --- a/drivers/mfd/ti_am335x_tscadc.c
 +++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -210,6 +210,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+@@ -176,14 +176,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	/* TSC Cell */
+ 	cell = &tscadc->cells[TSC_CELL];
+ 	cell->name = "tsc";
+-	cell->platform_data = tscadc;
+-	cell->pdata_size = sizeof(*tscadc);
++	cell->platform_data = &tscadc;
++	cell->pdata_size = sizeof(tscadc);
+ 
  	/* ADC Cell */
  	cell = &tscadc->cells[ADC_CELL];
  	cell->name = "tiadc";
-+	cell->of_compatible = "ti,am3359-adc";
- 	cell->platform_data = &tscadc;
- 	cell->pdata_size = sizeof(tscadc);
+-	cell->platform_data = tscadc;
+-	cell->pdata_size = sizeof(*tscadc);
++	cell->platform_data = &tscadc;
++	cell->pdata_size = sizeof(tscadc);
  
+ 	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
+ 			TSCADC_CELLS, NULL, 0, NULL);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index c79ad5d..8114e4e 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -149,4 +149,11 @@ struct ti_tscadc_dev {
+ 	struct adc_device *adc;
+ };
+ 
++static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
++{
++	struct ti_tscadc_dev **tscadc_dev = p->dev.platform_data;
++
++	return *tscadc_dev;
++}
++
+ #endif
 -- 
 1.7.10.4
 
