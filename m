@@ -1,49 +1,65 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <51B582D3.1050501@linutronix.de>
-Date: Mon, 10 Jun 2013 09:40:03 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:44673 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755584Ab3FLRLF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:11:05 -0400
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 12/22] iio/ti_tscadc: Update with IIO map interface
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de> <1370449495-29981-13-git-send-email-bigeasy@linutronix.de> <51B4B024.8070102@metafoo.de>
-In-Reply-To: <51B4B024.8070102@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 21/21] iio: ti_am335x_adc: check if we found the value
+Date: Wed, 12 Jun 2013 18:58:22 +0200
+Message-Id: <1371056302-12714-22-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/09/2013 06:41 PM, Lars-Peter Clausen wrote:
-> On 06/05/2013 06:24 PM, Sebastian Andrzej Siewior wrote:
-> [...]
->> -	return indio_dev->num_channels;
->> +	adc_dev->map = kcalloc(channels + 1, sizeof(struct iio_map),
->> +			GFP_KERNEL);
->> +	if (adc_dev->map == NULL)
->> +		goto err_free_chan;
->> +
->> +	for (i = 0; i < channels; i++) {
->> +		adc_dev->map[i].adc_channel_label =
->> +			chan_array[i].datasheet_name;
->> +		adc_dev->map[i].consumer_dev_name = "any";
->> +		adc_dev->map[i].consumer_channel = chan_array[i].datasheet_name;
->> +	}
-> 
-> This is not the way the IIO map interface is supposed to be used and I doubt it
-> will actually work at all. The map either needs to be provided by board code
-> with the proper consumer device and channel name filled in or in your case
-> where you use devicetree you don't need to provide a map at all since this will
-> all be handled by the generic IIO devicetree bindings. So I'd just drop this patch.
+Usually we get all the values we wanted but it is possible, that te ADC
+unit is busy performing the conversation for the HW events. In that case
+-EBUSY is returned and the user may re-call the function.
 
-The channels are not described in the device tree. If so how would that
-be the case? Right now, I don't have any consumer. How do I test this
-easily if this is done correctly?
-If in doubt it will probably drop this until someone comes along who
-actually needs this.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-> 
-> - Lars
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 8ffe52d..4427e8e 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -145,6 +145,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	int i;
+ 	unsigned int fifo1count, read;
+ 	u32 step = UINT_MAX;
++	bool found = false;
+ 
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -169,11 +170,14 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (read >> 16 == step)
++		if (read >> 16 == step) {
+ 			*val = read & 0xfff;
++			found = true;
++		}
+ 	}
+ 	am335x_tsc_se_update(adc_dev->mfd_tscadc);
+-
++	if (found == false)
++		return -EBUSY;
+ 	return IIO_VAL_INT;
+ }
+ 
+-- 
+1.7.10.4
 
-Sebastian
