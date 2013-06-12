@@ -1,68 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:56662 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753654Ab3F0T0e (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jun 2013 15:26:34 -0400
-Message-ID: <51CC91E8.50605@free-electrons.com>
-Date: Thu, 27 Jun 2013 21:26:32 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Jean Delvare <khali@linux-fr.org>, jimwall@q.com,
-	brian@crystalfontz.com, Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, lm-sensors@lm-sensors.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] hwmon: Add a simple driver to read the MXS SoC temperature
-References: <1372236673-20725-1-git-send-email-alexandre.belloni@free-electrons.com> <1372236673-20725-4-git-send-email-alexandre.belloni@free-electrons.com> <20130626143927.GB31998@roeck-us.net> <20130627091732.GP5803@lukather> <20130627142758.GA5812@roeck-us.net>
-In-Reply-To: <20130627142758.GA5812@roeck-us.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from www.linutronix.de ([62.245.132.108]:44724 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757679Ab3FLRMy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:12:54 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 10/21] mfd: ti_am335x_tscadc: remove platform_data support
+Date: Wed, 12 Jun 2013 18:58:11 +0200
+Message-Id: <1371056302-12714-11-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+This patch removes access to platform data mfd_tscadc_board because the
+platform is DT only.
 
-On 27/06/2013 16:27, Guenter Roeck wrote:
-> On Thu, Jun 27, 2013 at 11:17:32AM +0200, Maxime Ripard wrote:
->> On Wed, Jun 26, 2013 at 07:39:27AM -0700, Guenter Roeck wrote:
->>> On Wed, Jun 26, 2013 at 10:51:12AM +0200, Alexandre Belloni wrote:
->>>> The low resolution ADC of the mxs is able to read an internal temperature
->>>> sensor, expose that using hwmon.
->>>>
->>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->>>> ---
->>> Wouldn't it make more sense to use iio-hwmon and improve it if necessary ?
->> Actually, I wonder if we should not just put the hwmon driver
->> capabilities directly into the mxs-lradc driver, just like it's already
->> been done in this driver for the touchscreen support.
->>
->> The probing of this hwmon driver doesn't really belong to the DT, it's
->> not really realistic to probe it from the machine definition, and it
->> really is the IP that is wired that way.
->>
-> Merging iio-hwmon functionality into an adc driver seems just as bad
-> (or even worse) as copying it into a new driver.
->
-> If the lradc driver knows that the ADC channels are temperature sensors, it
-> should register them with the iio subsystem as IIO_TEMP type. Then you should
-> be able to use iio_hwmon as is.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/mfd/ti_am335x_tscadc.c |   23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-They are already registered as IIO_TEMP but only implement read_raw. Also,
-
-iio_hwmon_read_val() is using iio_read_channel_processed() and that will
-basically only read one of the 2 channels. As I documented, you actually
-need to read both channel 8 and channel 9 and then compute the value in
-Kelvins. I'm not sure how you want me to do that in the current framework.
-
-Regards,
-
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 292d34e..e78b9df 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -26,8 +26,6 @@
+ #include <linux/of_device.h>
+ 
+ #include <linux/mfd/ti_am335x_tscadc.h>
+-#include <linux/input/ti_am335x_tsc.h>
+-#include <linux/platform_data/ti_am335x_adc.h>
+ 
+ static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
+ {
+@@ -91,31 +89,22 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	struct ti_tscadc_dev	*tscadc;
+ 	struct resource		*res;
+ 	struct clk		*clk;
+-	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
+ 	struct device_node	*node = pdev->dev.of_node;
+ 	struct mfd_cell		*cell;
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+ 	int			tsc_wires = 0, adc_channels = 0, total_channels;
+ 
+-	if (!pdata && !pdev->dev.of_node) {
+-		dev_err(&pdev->dev, "Could not find platform data\n");
++	if (!pdev->dev.of_node) {
++		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (pdev->dev.platform_data) {
+-		if (pdata->tsc_init)
+-			tsc_wires = pdata->tsc_init->wires;
++	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
++	of_property_read_u32(node, "ti,wires", &tsc_wires);
+ 
+-		if (pdata->adc_init)
+-			adc_channels = pdata->adc_init->adc_channels;
+-	} else {
+-		node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+-		of_property_read_u32(node, "ti,wires", &tsc_wires);
+-
+-		node = of_get_child_by_name(pdev->dev.of_node, "adc");
+-		of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+-	}
++	node = of_get_child_by_name(pdev->dev.of_node, "adc");
++	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+ 
+ 	total_channels = tsc_wires + adc_channels;
+ 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.7.10.4
 
