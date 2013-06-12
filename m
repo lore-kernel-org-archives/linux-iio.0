@@ -1,159 +1,232 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55884 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756946Ab3FKUKr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 16:10:47 -0400
-Message-ID: <51B78445.6090203@kernel.org>
-Date: Tue, 11 Jun 2013 21:10:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Alexandre Relange <alexandre@relange.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: ABI doc: update scan_elements sysfs paths
-References: <1370962336-20739-1-git-send-email-alexandre@relange.org>
-In-Reply-To: <1370962336-20739-1-git-send-email-alexandre@relange.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from www.linutronix.de ([62.245.132.108]:44750 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932078Ab3FLRNo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:13:44 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 20/21] iio: ti_am335x_adc: Allow to specify input line
+Date: Wed, 12 Jun 2013 18:58:21 +0200
+Message-Id: <1371056302-12714-21-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 03:52 PM, Alexandre Relange wrote:
-> update ABI documentation with current paths related to scan_elements folder
-> 
-> Paths changed long time ago in commit: 26d25ae3f0d8ffe350aacc75b71198d6b35bd1f4
-Good spot, that's been wrong for a long time.
-> 
-> Signed-off-by: Alexandre Relange <alexandre@relange.org>
-Applied to the togreg branch of iio.git
+The TSC part allows to specify the input lines. The IIO part assumes
+that it usues always the last few, that means if IIO has adc-channels
+set to 2 it will use channel 6 and 7. However it might make sense to use
+only 6.
+This patch changes the device property (which was introduced recently
+and was never in an official release) in a way that the user can specify
+which of the AIN lines should be used. In Addition to this, the name is
+now AINx where x is the channel number i.e. for AIN6 we would have 6.
+Prior this, it always started counting at 0 which is confusing. In
+addition to this, it also checks for correct step number during reading
+and does not rely on proper FIFO depth.
 
-Thanks,
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/arm/boot/dts/am335x-evm.dts |    2 +-
+ drivers/iio/adc/ti_am335x_adc.c  |   57 +++++++++++++++++++++++++-------------
+ drivers/mfd/ti_am335x_tscadc.c   |   20 +++++++++++--
+ 3 files changed, 56 insertions(+), 23 deletions(-)
 
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 90 ++++++++++++++++-----------------
->  1 file changed, 45 insertions(+), 45 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 2e33dc6..dda81ff 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -690,45 +690,45 @@ Description:
->  		Actually start the buffer capture up.  Will start trigger
->  		if first device and appropriate.
->  
-> -What:		/sys/bus/iio/devices/iio:deviceX/buffer/scan_elements
-> +What:		/sys/bus/iio/devices/iio:deviceX/scan_elements
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Directory containing interfaces for elements that will be
->  		captured for a single triggered sample set in the buffer.
->  
-> -What:		/sys/.../buffer/scan_elements/in_accel_x_en
-> -What:		/sys/.../buffer/scan_elements/in_accel_y_en
-> -What:		/sys/.../buffer/scan_elements/in_accel_z_en
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_x_en
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_y_en
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_z_en
-> -What:		/sys/.../buffer/scan_elements/in_magn_x_en
-> -What:		/sys/.../buffer/scan_elements/in_magn_y_en
-> -What:		/sys/.../buffer/scan_elements/in_magn_z_en
-> -What:		/sys/.../buffer/scan_elements/in_timestamp_en
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_supply_en
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_en
-> -What:		/sys/.../buffer/scan_elements/in_voltageY-voltageZ_en
-> -What:		/sys/.../buffer/scan_elements/in_incli_x_en
-> -What:		/sys/.../buffer/scan_elements/in_incli_y_en
-> -What:		/sys/.../buffer/scan_elements/in_pressureY_en
-> -What:		/sys/.../buffer/scan_elements/in_pressure_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_x_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_y_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_z_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_x_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_y_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY-voltageZ_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Scan element control for triggered data capture.
->  
-> -What:		/sys/.../buffer/scan_elements/in_accel_type
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_type
-> -What:		/sys/.../buffer/scan_elements/in_magn_type
-> -What:		/sys/.../buffer/scan_elements/in_incli_type
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_type
-> -What:		/sys/.../buffer/scan_elements/in_voltage_type
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_supply_type
-> -What:		/sys/.../buffer/scan_elements/in_timestamp_type
-> -What:		/sys/.../buffer/scan_elements/in_pressureY_type
-> -What:		/sys/.../buffer/scan_elements/in_pressure_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_incli_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -752,29 +752,29 @@ Description:
->  		For other storage combinations this attribute will be extended
->  		appropriately.
->  
-> -What:		/sys/.../buffer/scan_elements/in_accel_type_available
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_type_available
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		If the type parameter can take one of a small set of values,
->  		this attribute lists them.
->  
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_index
-> -What:		/sys/.../buffer/scan_elements/in_voltageY_supply_index
-> -What:		/sys/.../buffer/scan_elements/in_accel_x_index
-> -What:		/sys/.../buffer/scan_elements/in_accel_y_index
-> -What:		/sys/.../buffer/scan_elements/in_accel_z_index
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_x_index
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_y_index
-> -What:		/sys/.../buffer/scan_elements/in_anglvel_z_index
-> -What:		/sys/.../buffer/scan_elements/in_magn_x_index
-> -What:		/sys/.../buffer/scan_elements/in_magn_y_index
-> -What:		/sys/.../buffer/scan_elements/in_magn_z_index
-> -What:		/sys/.../buffer/scan_elements/in_incli_x_index
-> -What:		/sys/.../buffer/scan_elements/in_incli_y_index
-> -What:		/sys/.../buffer/scan_elements/in_timestamp_index
-> -What:		/sys/.../buffer/scan_elements/in_pressureY_index
-> -What:		/sys/.../buffer/scan_elements/in_pressure_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_x_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_y_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_accel_z_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_x_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_y_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
->  KernelVersion:	2.6.37
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> 
+diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+index 26fea97..0fa4c7f 100644
+--- a/arch/arm/boot/dts/am335x-evm.dts
++++ b/arch/arm/boot/dts/am335x-evm.dts
+@@ -255,6 +255,6 @@
+ 	};
+ 
+ 	adc {
+-		ti,adc-channels = <4>;
++		ti,adc-channels = <4 5 6 7>;
+ 	};
+ };
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 307a7c0..8ffe52d 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -32,6 +32,8 @@
+ struct tiadc_device {
+ 	struct ti_tscadc_dev *mfd_tscadc;
+ 	int channels;
++	u8 channel_line[8];
++	u8 channel_step[8];
+ };
+ 
+ static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+@@ -57,7 +59,7 @@ static u32 get_adc_step_mask(struct tiadc_device *adc_dev)
+ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ {
+ 	unsigned int stepconfig;
+-	int i, channels = 0, steps;
++	int i, steps;
+ 	u32 step_en;
+ 
+ 	/*
+@@ -71,16 +73,18 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 	 */
+ 
+ 	steps = TOTAL_STEPS - adc_dev->channels;
+-	channels = TOTAL_CHANNELS - adc_dev->channels;
+-
+ 	stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+ 
+-	for (i = steps; i < TOTAL_STEPS; i++) {
+-		tiadc_writel(adc_dev, REG_STEPCONFIG(i),
+-				stepconfig | STEPCONFIG_INP(channels));
+-		tiadc_writel(adc_dev, REG_STEPDELAY(i),
++	for (i = 0; i < adc_dev->channels; i++) {
++		int chan;
++
++		chan = adc_dev->channel_line[i];
++		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
++				stepconfig | STEPCONFIG_INP(chan));
++		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
+ 				STEPCONFIG_OPENDLY);
+-		channels++;
++		adc_dev->channel_step[i] = steps;
++		steps++;
+ 	}
+ 	step_en = get_adc_step_mask(adc_dev);
+ 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
+@@ -115,9 +119,9 @@ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+ 
+ 		chan->type = IIO_VOLTAGE;
+ 		chan->indexed = 1;
+-		chan->channel = i;
++		chan->channel = adc_dev->channel_line[i];
+ 		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+-		chan->datasheet_name = chan_name_ain[i];
++		chan->datasheet_name = chan_name_ain[chan->channel];
+ 		chan->scan_type.sign = 'u';
+ 		chan->scan_type.realbits = 12;
+ 		chan->scan_type.storagebits = 32;
+@@ -139,7 +143,8 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+ 	int i;
+-	unsigned int fifo1count, readx1;
++	unsigned int fifo1count, read;
++	u32 step = UINT_MAX;
+ 
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -152,11 +157,20 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	 * Hence we need to flush out this data.
+ 	 */
+ 
++	for (i = 0; i < ARRAY_SIZE(adc_dev->channel_step); i++) {
++		if (chan->channel == adc_dev->channel_line[i]) {
++			step = adc_dev->channel_step[i];
++			break;
++		}
++	}
++	if (WARN_ON_ONCE(step == UINT_MAX))
++		return -EINVAL;
++
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+-		readx1 = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (i == chan->channel)
+-			*val = readx1 & 0xfff;
++		read = tiadc_readl(adc_dev, REG_FIFO1);
++		if (read >> 16 == step)
++			*val = read & 0xfff;
+ 	}
+ 	am335x_tsc_se_update(adc_dev->mfd_tscadc);
+ 
+@@ -172,8 +186,11 @@ static int tiadc_probe(struct platform_device *pdev)
+ 	struct iio_dev		*indio_dev;
+ 	struct tiadc_device	*adc_dev;
+ 	struct device_node	*node = pdev->dev.of_node;
++	struct property		*prop;
++	const __be32		*cur;
+ 	int			err;
+-	u32			val32;
++	u32			val;
++	int			channels = 0;
+ 
+ 	if (!node) {
+ 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+@@ -190,11 +207,11 @@ static int tiadc_probe(struct platform_device *pdev)
+ 
+ 	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
+ 
+-	err = of_property_read_u32(node,
+-			"ti,adc-channels", &val32);
+-	if (err < 0)
+-		goto err_free_device;
+-	adc_dev->channels = val32;
++	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
++		adc_dev->channel_line[channels] = val;
++		channels++;
++	}
++	adc_dev->channels = channels;
+ 
+ 	indio_dev->dev.parent = &pdev->dev;
+ 	indio_dev->name = dev_name(&pdev->dev);
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 2532339..b003a16 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -91,9 +91,13 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	struct clk		*clk;
+ 	struct device_node	*node = pdev->dev.of_node;
+ 	struct mfd_cell		*cell;
++	struct property         *prop;
++	const __be32            *cur;
++	u32			val;
+ 	int			err, ctrl;
+ 	int			clk_value, clock_rate;
+ 	int			tsc_wires = 0, adc_channels = 0, total_channels;
++	int			readouts = 0;
+ 
+ 	if (!pdev->dev.of_node) {
+ 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
+@@ -102,10 +106,17 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 
+ 	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+ 	of_property_read_u32(node, "ti,wires", &tsc_wires);
++	of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
+ 
+ 	node = of_get_child_by_name(pdev->dev.of_node, "adc");
+-	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
+-
++	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
++		adc_channels++;
++		if (val > 7) {
++			dev_err(&pdev->dev, " PIN numbers are 0..7 (not %d)\n",
++					val);
++			return -EINVAL;
++		}
++	}
+ 	total_channels = tsc_wires + adc_channels;
+ 	if (total_channels > 8) {
+ 		dev_err(&pdev->dev, "Number of i/p channels more than 8\n");
+@@ -116,6 +127,11 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
++	if (readouts * 2 + 2 + adc_channels > 16) {
++		dev_err(&pdev->dev, "Too many step configurations requested\n");
++		return -EINVAL;
++	}
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res) {
+ 		dev_err(&pdev->dev, "no memory resource defined.\n");
+-- 
+1.7.10.4
+
