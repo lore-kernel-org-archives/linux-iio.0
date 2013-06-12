@@ -1,92 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:58831 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751802Ab3FDQoa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 12:44:30 -0400
-Date: Tue, 4 Jun 2013 09:44:22 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>, Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 06/19] input/ti_am33x_tsc: remove platform_data support
-Message-ID: <20130604164420.GC26400@core.coreip.homeip.net>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-7-git-send-email-bigeasy@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1369681926-22185-7-git-send-email-bigeasy@linutronix.de>
+Received: from www.linutronix.de ([62.245.132.108]:44718 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932066Ab3FLRMp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:12:45 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Samuel Ortiz <sameo@linux.intel.com>
+Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 18/21] input: ti_am335x_tsc: ACK the HW_PEN irq in ISR
+Date: Wed, 12 Jun 2013 18:58:19 +0200
+Message-Id: <1371056302-12714-19-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, May 27, 2013 at 09:11:53PM +0200, Sebastian Andrzej Siewior wrote:
-> This patch removes access to platform data mfd_tscadc_board because the
-> platform is DT only.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+The interrupt source IRQENB_HW_PEN is enabled in suspend and suposed to
+be used as a wake up source. Once this interrupt source is unmaksed, the
+devices ends up in ISR and never continues.
+This change ACKs the interrupt and disables it so the system does not
+freeze.
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> ---
->  drivers/input/touchscreen/ti_am335x_tsc.c |   27 ++-------------------------
->  1 file changed, 2 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> index b7d3c23..b467196 100644
-> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
-> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> @@ -24,7 +24,6 @@
->  #include <linux/clk.h>
->  #include <linux/platform_device.h>
->  #include <linux/io.h>
-> -#include <linux/input/ti_am335x_tsc.h>
->  #include <linux/delay.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> @@ -425,24 +424,6 @@ static int titsc_parse_dt(struct ti_tscadc_dev *tscadc_dev,
->  	return err;
->  }
->  
-> -static int titsc_parse_pdata(struct ti_tscadc_dev *tscadc_dev,
-> -					struct titsc *ts_dev)
-> -{
-> -	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
-> -
-> -	if (!pdata)
-> -		return -EINVAL;
-> -
-> -	ts_dev->wires = pdata->tsc_init->wires;
-> -	ts_dev->x_plate_resistance =
-> -		pdata->tsc_init->x_plate_resistance;
-> -	ts_dev->steps_to_configure =
-> -		pdata->tsc_init->steps_to_configure;
-> -	memcpy(ts_dev->config_inp, pdata->tsc_init->wire_config,
-> -		sizeof(pdata->tsc_init->wire_config));
-> -	return 0;
-> -}
-> -
->  /*
->   * The functions for inserting/removing driver as a module.
->   */
-> @@ -468,13 +449,9 @@ static int titsc_probe(struct platform_device *pdev)
->  	ts_dev->input = input_dev;
->  	ts_dev->irq = tscadc_dev->irq;
->  
-> -	if (tscadc_dev->dev->platform_data)
-> -		err = titsc_parse_pdata(tscadc_dev, ts_dev);
-> -	else
-> -		err = titsc_parse_dt(tscadc_dev, ts_dev);
-> -
-> +	err = titsc_parse_dt(tscadc_dev, ts_dev);
->  	if (err) {
-> -		dev_err(&pdev->dev, "Could not find platform data\n");
-> +		dev_err(&pdev->dev, "Could not find valid DT data.\n");
->  		err = -EINVAL;
->  		goto err_free_mem;
->  	}
-> -- 
-> 1.7.10.4
-> 
-
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 1bceb25..2ba7703 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -308,6 +308,12 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 		irqclr |= IRQENB_PENUP;
+ 	}
+ 
++	if (status & IRQENB_HW_PEN) {
++
++		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
++		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
++	}
++
+ 	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 
+ 	am335x_tsc_se_update(ts_dev->mfd_tscadc);
 -- 
-Dmitry
+1.7.10.4
+
