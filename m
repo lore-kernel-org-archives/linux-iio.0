@@ -1,85 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44587 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755017Ab3FLQ6n (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 12:58:43 -0400
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51B8370D.1090102@linutronix.de>
+Date: Wed, 12 Jun 2013 10:53:33 +0200
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 08/21] iio: ti_am335x_adc: remove platform_data support
-Date: Wed, 12 Jun 2013 18:58:09 +0200
-Message-Id: <1371056302-12714-9-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Guenter Roeck <linux@roeck-us.net>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
+ of channels
+References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de> <51B7809A.1030804@kernel.org> <20130611204416.GA13883@roeck-us.net> <51B791D1.9020105@metafoo.de>
+In-Reply-To: <51B791D1.9020105@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes access to platform data mfd_tscadc_board because the
-platform is DT only.
+On 06/11/2013 11:08 PM, Lars-Peter Clausen wrote:
+>>> This doesn't work in general.  The index is not the same as channel
+>>> (or any other form of index present). Note that modified channels may
+>>> all have channel set to 0  (accel_x, accel_y etc for instance).
+>>>
+>>> The index refers directly into those channels registered.
+>>> Is it possible for channels to move at runtime between the two units?
+>>> I would imagine not as this is very much a case of wiring.
+>>>
+>>> Thus we have a fairly messy bit if interdependence in the device
+>>> tree but it should work.
+>>>
+>>> I don't actually have much / any real experience of device tree configurations
+>>> and this is Guenter's code, hence I have cc'd him.
+>>>
+>>> Note that it is acceptable and relatively common to have missing
+>>> values in scan_index but that isn't really relevant here.
+>>>
+>>> Jonathan
+>>
+>> Too long ago since I looked into that, but this code changes the API
+>> from "get nth channel" to "channel with channel index n".
+>> Not really sure I understand why that should be necessary.
+>>
+> 
+> yea, this will definitively not work channels of different types will
+> usually have the same channel numbers.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/iio/adc/ti_am335x_adc.c |   21 +++++++--------------
- 1 file changed, 7 insertions(+), 14 deletions(-)
+I see. I've been looking at the Documentation. It says "IIO specifier"
+for the second argument. Now I assumed it is referred to the channel
+number and not the order of channel registration. The "read" requests
+(in the drivers I checked) checked the channel's number in order to
+associate the request with the wire. I see now some use the "address"
+field.
+So it kind of looked like a bug where one did not assume that the
+channel number could start at != 0. It is either the documentation or
+me reading it. I guess it is the latter. Anyway, if this is the
+intention of the parameter, just drop the patch and everything is fine
+:)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index b24402c..2868c0c 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -26,7 +26,6 @@
- #include <linux/of_device.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
--#include <linux/platform_data/ti_am335x_adc.h>
- 
- struct tiadc_device {
- 	struct ti_tscadc_dev *mfd_tscadc;
-@@ -153,14 +152,12 @@ static int tiadc_probe(struct platform_device *pdev)
- {
- 	struct iio_dev		*indio_dev;
- 	struct tiadc_device	*adc_dev;
--	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
--	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
- 	struct device_node	*node = pdev->dev.of_node;
- 	int			err;
- 	u32			val32;
- 
--	if (!pdata && !node) {
--		dev_err(&pdev->dev, "Could not find platform data\n");
-+	if (!node) {
-+		dev_err(&pdev->dev, "Could not find valid DT data.\n");
- 		return -EINVAL;
- 	}
- 
-@@ -174,15 +171,11 @@ static int tiadc_probe(struct platform_device *pdev)
- 
- 	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
- 
--	if (pdata)
--		adc_dev->channels = pdata->adc_init->adc_channels;
--	else {
--		err = of_property_read_u32(node,
--				"ti,adc-channels", &val32);
--		if (err < 0)
--			goto err_free_device;
--		adc_dev->channels = val32;
--	}
-+	err = of_property_read_u32(node,
-+			"ti,adc-channels", &val32);
-+	if (err < 0)
-+		goto err_free_device;
-+	adc_dev->channels = val32;
- 
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->name = dev_name(&pdev->dev);
--- 
-1.7.10.4
-
+Sebastian
