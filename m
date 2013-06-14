@@ -1,161 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46559 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752942Ab3FOJo6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jun 2013 05:44:58 -0400
-Message-ID: <51BB832C.1060403@kernel.org>
-Date: Fri, 14 Jun 2013 21:55:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:36495 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751512Ab3FNN6A (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jun 2013 09:58:00 -0400
+Date: Fri, 14 Jun 2013 14:57:49 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Message-ID: <20130614135749.GS1403@sirena.org.uk>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <20130611142358.GG29135@zurbaran>
+ <51B74252.5090906@linutronix.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 7/7] staging:iio:ad7291: Rework regulator handling
-References: <1371225508-32190-1-git-send-email-lars@metafoo.de> <1371225508-32190-7-git-send-email-lars@metafoo.de>
-In-Reply-To: <1371225508-32190-7-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="/OxAoNYcURhUkoHv"
+In-Reply-To: <51B74252.5090906@linutronix.de>
+Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/14/2013 04:58 PM, Lars-Peter Clausen wrote:
-> Add platform_data for the driver which allows to specify whether an external
-> reference voltage is used or not. It is not possible to use the return value of
-> regulator_get() for this since the regulator framework is able to return a dummy
-> regulator in case no regulator has been specified. In this case the driver will
-> always get a valid regulator, no matter if it has been specified or not.  Also
-> make the regulator non-optional if platform_data states that an external
-> reference voltage should be used.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
-> ---
->  drivers/staging/iio/adc/ad7291.c | 38 +++++++++++++++++++++++---------------
->  drivers/staging/iio/adc/ad7291.h | 12 ++++++++++++
->  2 files changed, 35 insertions(+), 15 deletions(-)
->  create mode 100644 drivers/staging/iio/adc/ad7291.h
-> 
-> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-> index c2709d6..3fc79e5 100644
-> --- a/drivers/staging/iio/adc/ad7291.c
-> +++ b/drivers/staging/iio/adc/ad7291.c
-> @@ -21,6 +21,8 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/events.h>
->  
-> +#include "ad7291.h"
-> +
->  /*
->   * Simplified handling
->   *
-> @@ -76,7 +78,6 @@
->  struct ad7291_chip_info {
->  	struct i2c_client	*client;
->  	struct regulator	*reg;
-> -	u16			int_vref_mv;
->  	u16			command;
->  	u16			c_mask;	/* Active voltage channels for events */
->  	struct mutex		state_lock;
-> @@ -445,7 +446,15 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_VOLTAGE:
-> -			*val = chip->int_vref_mv;
-> +			if (chip->reg) {
-> +				int vref;
-> +				vref = regulator_get_voltage(chip->reg);
-> +				if (vref < 0)
-> +					return vref;
-> +				*val = vref / 1000;
-> +			} else {
-> +				*val = 2500;
-> +			}
->  			*val2 = AD7291_BITS;
->  			return IIO_VAL_FRACTIONAL_LOG2;
->  		case IIO_TEMP:
-> @@ -513,9 +522,10 @@ static const struct iio_info ad7291_info = {
->  static int ad7291_probe(struct i2c_client *client,
->  		const struct i2c_device_id *id)
->  {
-> +	struct ad7291_platform_data *pdata = client->dev.platform_data;
->  	struct ad7291_chip_info *chip;
->  	struct iio_dev *indio_dev;
-> -	int ret = 0, voltage_uv = 0;
-> +	int ret = 0;
->  
->  	indio_dev = iio_device_alloc(sizeof(*chip));
->  	if (indio_dev == NULL) {
-> @@ -524,12 +534,14 @@ static int ad7291_probe(struct i2c_client *client,
->  	}
->  	chip = iio_priv(indio_dev);
->  
-> -	chip->reg = regulator_get(&client->dev, "vcc");
-> -	if (!IS_ERR(chip->reg)) {
-> +	if (pdata && pdata->use_external_ref) {
-> +		chip->reg = regulator_get(&client->dev, "vref");
-> +		if (IS_ERR(chip->reg))
-> +			goto error_free;
-> +
->  		ret = regulator_enable(chip->reg);
->  		if (ret)
->  			goto error_put_reg;
-> -		voltage_uv = regulator_get_voltage(chip->reg);
->  	}
->  
->  	mutex_init(&chip->state_lock);
-> @@ -542,12 +554,8 @@ static int ad7291_probe(struct i2c_client *client,
->  			AD7291_T_SENSE_MASK | /* Tsense always enabled */
->  			AD7291_ALERT_POLARITY; /* set irq polarity low level */
->  
-> -	if (voltage_uv) {
-> -		chip->int_vref_mv = voltage_uv / 1000;
-> +	if (pdata && pdata->use_external_ref)
->  		chip->command |= AD7291_EXT_REF;
-> -	} else {
-> -		chip->int_vref_mv = 2500; /* Build-in ref */
-> -	}
->  
->  	indio_dev->name = id->name;
->  	indio_dev->channels = ad7291_channels;
-> @@ -590,12 +598,12 @@ error_unreg_irq:
->  	if (client->irq)
->  		free_irq(client->irq, indio_dev);
->  error_disable_reg:
-> -	if (!IS_ERR(chip->reg))
-> +	if (chip->reg)
->  		regulator_disable(chip->reg);
->  error_put_reg:
-> -	if (!IS_ERR(chip->reg))
-> +	if (chip->reg)
->  		regulator_put(chip->reg);
-> -
-> +error_free:
->  	iio_device_free(indio_dev);
->  error_ret:
->  	return ret;
-> @@ -611,7 +619,7 @@ static int ad7291_remove(struct i2c_client *client)
->  	if (client->irq)
->  		free_irq(client->irq, indio_dev);
->  
-> -	if (!IS_ERR(chip->reg)) {
-> +	if (chip->reg) {
->  		regulator_disable(chip->reg);
->  		regulator_put(chip->reg);
->  	}
-> diff --git a/drivers/staging/iio/adc/ad7291.h b/drivers/staging/iio/adc/ad7291.h
-> new file mode 100644
-> index 0000000..bbd89fa
-> --- /dev/null
-> +++ b/drivers/staging/iio/adc/ad7291.h
-> @@ -0,0 +1,12 @@
-> +#ifndef __IIO_AD7291_H__
-> +#define __IIO_AD7291_H__
-> +
-> +/**
-> + * struct ad7291_platform_data - AD7291 platform data
-> + * @use_external_ref: Whether to use an external or internal reference voltage
-> + */
-> +struct ad7291_platform_data {
-> +	bool use_external_ref;
-> +};
-> +
-> +#endif
-> 
+
+--/OxAoNYcURhUkoHv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Tue, Jun 11, 2013 at 05:29:22PM +0200, Sebastian Andrzej Siewior wrote:
+> On 06/11/2013 04:23 PM, Samuel Ortiz wrote:
+
+> > Please fix your commit logs, and your subject lines. It should be e.g.
+> > mfd: input: ti_am335x_adc: Blablabla
+
+> > if it's mostly an mfd patch that also touches an input driver.
+
+> I usually do "subsystem / driver: short description" but if you want
+> the ":" as delimiter I can do this.
+
+You should always aim to be consistent with the style used by the code
+you're updating - do a git log and make sure your patches don't have
+changelogs that are obivously using a different style.
+
+--/OxAoNYcURhUkoHv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRuyFaAAoJELSic+t+oim9MHUQAI4k6ZFd3GEwPZgVcptmG09S
+gXyleNtbhmtiFGUsZEZDhX8fQjAnGMq6i2fsBQXQv9WcdZNFWuBWyoYL5D9YWm+z
+oWmwrsMB9WncNyd1otHRH+k+qRWhosroOtjRSi+oBPGZKE2Nb9BzyUxxsWbmq4iW
+Vq5V6KKRX0rWGA6zrD/ZCerQR81A/b+DQWd7UT56GRWIGYle2s7MI7zMXXQQer+u
+nXmm/Df7kSdeXDupuepUIyc3dw7c4yfjENM2vvcmIVchXBLEvBpjBGBlTlaPfeJu
+Sflwu/pUeeuVJYUXWtDV85Ec3ymVh4YVPjwMeno7dlSow3l5z9SWr22dMgzMY2Y3
+mGLwDVkwYx/2Y/jaLrFPR5eDQU7DKBoLFqeN+eh0ZL/vkmmJrfRy+HoVv6WF7yGb
+RbU25Z+hJ1dgWvuCFZU/5lpxF/fXBm00rXWgZ3nkOLfbQVupBRh98IwMAFPerQjm
+LydU8L8iN8nl/MJLjcwtpN1ODVXhilodAlBk7Zn7GJUf+Id9xybtMKLzixTBGN2a
+s1dy6/fpJAX7l8Bwwt7uYrP4kZPVD63YPzm7Z6CEoIcg/s18byxnzoE6eYB4HXCg
+8ZGAV7+pam7fe/jR1f6aTpnL8RKrwdujsWlkpQwGntGTgxed1DywWWpf5MCEpOmq
+GwRs87ym96jNXPEWvvPV
+=vm2j
+-----END PGP SIGNATURE-----
+
+--/OxAoNYcURhUkoHv--
