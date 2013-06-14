@@ -1,97 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1059 "EHLO
-	smtp-out-134.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751176Ab3FNP6g (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jun 2013 11:58:36 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/7] staging:iio:ad7291: Use i2c_smbus_{read,write}_word_swapped instead of open-coding it
-Date: Fri, 14 Jun 2013 17:58:26 +0200
-Message-Id: <1371225508-32190-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1371225508-32190-1-git-send-email-lars@metafoo.de>
-References: <1371225508-32190-1-git-send-email-lars@metafoo.de>
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:45766 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751362Ab3FNNyf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jun 2013 09:54:35 -0400
+Date: Fri, 14 Jun 2013 14:53:58 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Message-ID: <20130614135358.GR1403@sirena.org.uk>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <1370950268-7224-2-git-send-email-bigeasy@linutronix.de>
+ <20130611142336.GE29135@zurbaran>
+ <51B7358D.7000605@linutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5mu1Tvth33Vj8K2q"
+In-Reply-To: <51B7358D.7000605@linutronix.de>
+Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-No need to swap the upper and lower byte by hand if there is a helper function
-which already does this.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7291.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+--5mu1Tvth33Vj8K2q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index bf8d689..2a7e6a7 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -87,20 +87,20 @@ static int ad7291_i2c_read(struct ad7291_chip_info *chip, u8 reg, u16 *data)
- 	struct i2c_client *client = chip->client;
- 	int ret = 0;
- 
--	ret = i2c_smbus_read_word_data(client, reg);
-+	ret = i2c_smbus_read_word_swapped(client, reg);
- 	if (ret < 0) {
- 		dev_err(&client->dev, "I2C read error\n");
- 		return ret;
- 	}
- 
--	*data = swab16((u16)ret);
-+	*data = ret;
- 
- 	return 0;
- }
- 
- static int ad7291_i2c_write(struct ad7291_chip_info *chip, u8 reg, u16 data)
- {
--	return i2c_smbus_write_word_data(chip->client, reg, swab16(data));
-+	return i2c_smbus_write_word_swapped(chip->client, reg, data);
- }
- 
- static irqreturn_t ad7291_event_handler(int irq, void *private)
-@@ -418,35 +418,33 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
- 				return ret;
- 			}
- 			/* Read voltage */
--			ret = i2c_smbus_read_word_data(chip->client,
-+			ret = i2c_smbus_read_word_swapped(chip->client,
- 						       AD7291_VOLTAGE);
- 			if (ret < 0) {
- 				mutex_unlock(&chip->state_lock);
- 				return ret;
- 			}
--			*val = swab16((u16)ret) & AD7291_VALUE_MASK;
-+			*val = ret & AD7291_VALUE_MASK;
- 			mutex_unlock(&chip->state_lock);
- 			return IIO_VAL_INT;
- 		case IIO_TEMP:
- 			/* Assumes tsense bit of command register always set */
--			ret = i2c_smbus_read_word_data(chip->client,
-+			ret = i2c_smbus_read_word_swapped(chip->client,
- 						       AD7291_T_SENSE);
- 			if (ret < 0)
- 				return ret;
--			signval = (s16)((swab16((u16)ret) &
--				AD7291_VALUE_MASK) << 4) >> 4;
-+			signval = (s16)((ret & AD7291_VALUE_MASK) << 4) >> 4;
- 			*val = signval;
- 			return IIO_VAL_INT;
- 		default:
- 			return -EINVAL;
- 		}
- 	case IIO_CHAN_INFO_AVERAGE_RAW:
--		ret = i2c_smbus_read_word_data(chip->client,
-+		ret = i2c_smbus_read_word_swapped(chip->client,
- 					       AD7291_T_AVERAGE);
- 			if (ret < 0)
- 				return ret;
--			signval = (s16)((swab16((u16)ret) &
--				AD7291_VALUE_MASK) << 4) >> 4;
-+			signval = (s16)((ret & AD7291_VALUE_MASK) << 4) >> 4;
- 			*val = signval;
- 			return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--- 
-1.8.0
+On Tue, Jun 11, 2013 at 04:34:53PM +0200, Sebastian Andrzej Siewior wrote:
 
+> >> Therefore this patch removes regmap part of the driver.
+
+> > NAK. Using regmap is better than open coding your register accesses, and
+> > the children not using this API is not a reason for the MFD driver to do
+> > the same.
+
+> There is no advantage over using regmap in the first place. It goes
+> through a few layers, uses no caching because almost all registers are
+> volatile and this is a direct bus. In the end it complicates more than
+> it helps.
+
+It does give you tracepoints and debugfs.  If it's making things at all
+complicated we need to look at why that is and figure out how to fix
+that since it's probably an issue for other users.
+
+--5mu1Tvth33Vj8K2q
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRuyBtAAoJELSic+t+oim9BbYP/1+zKwt1iB3j76z88fQnyubj
+KOiwAO9mDpaTdX69TCrRyhSfL/soylTxHBvHpHv7WNhWGF/MAaz7ivhOJ7ENBojg
+fX8LAMSFhWRq5KpCOKKWQGcdiyaQhqBknfHMAIoahBC+1Y9v/k2sNnuHogOLzybp
+rb+bewLZIcoo6eSMeuxauwvXukkQNWJTL8NB92LME2toFntazY0uPshwDVbbZjCs
+bFAyv0RXkljqlfUGwYe6rubfaGYR+6GNCIWMl1A1aiWhKW4tspktsk0aI+uEVznk
+5YCtpfAm4dsQecaoQtsgIRmK0978Zrm0R5buj8pkbiv6kYBmpGQ8BMV+CXRqOXjp
+4CGKn2mHOnvHJdQ518xmnvxUhYP0j9bh+GzvMLM5Mbuou/P9vf3SSMFTO+FKvGJ7
+Ee51mW0d5u/NBUKtcTyjp4zytuvh0yHteX/L3f+XONT6izUCg9z/LnmuaTrv9x7A
+dQ8LLORyqGtgL/rUGZ6cb8fSRfPKa82noi8dXm5TSp5eQbDlPLsRg48XDPqCkOYl
+W8ns1GUVu0+xIEjHET8w+Ff/LttXYG9if8Y6S6tKziohfizX46X9PIabiFpeKO3u
+x66j6t9ui+HEtklLKgRYtbOzAIvExgmNMnx81fA3HpmduSoarhtOJzECkdFZt6od
+QdyKhuqOeBEmM4YA/3lK
+=mCoi
+-----END PGP SIGNATURE-----
+
+--5mu1Tvth33Vj8K2q--
