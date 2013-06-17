@@ -1,40 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1075 "EHLO
-	smtp-out-134.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751294Ab3FNP6Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jun 2013 11:58:25 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/7] staging:iio:ad7291: Remove unnecessary dev_info() from probe()
-Date: Fri, 14 Jun 2013 17:58:24 +0200
-Message-Id: <1371225508-32190-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1371225508-32190-1-git-send-email-lars@metafoo.de>
-References: <1371225508-32190-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51BEF5F4.4090600@linutronix.de>
+Date: Mon, 17 Jun 2013 13:41:40 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+MIME-Version: 1.0
+To: Mark Brown <broonie@kernel.org>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+ Lee Jones <lee.jones@linaro.org>,
+ =?ISO-8859-1?Q?Beno=EEt_Cousson?= <b-cousson@ti.com>,
+ Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org
+Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-2-git-send-email-bigeasy@linutronix.de> <20130611142336.GE29135@zurbaran> <51B7358D.7000605@linutronix.de> <20130614135358.GR1403@sirena.org.uk>
+In-Reply-To: <20130614135358.GR1403@sirena.org.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-No need spam the log during probe if nothing went wrong.
+On 06/14/2013 03:53 PM, Mark Brown wrote:
+> On Tue, Jun 11, 2013 at 04:34:53PM +0200, Sebastian Andrzej Siewior
+> wrote:
+> 
+> It does give you tracepoints and debugfs.  If it's making things at
+> all complicated we need to look at why that is and figure out how
+> to fix that since it's probably an issue for other users.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7291.c | 3 ---
- 1 file changed, 3 deletions(-)
+debugfs are tracepoints is our offer? Let me check the price one more
+time.
 
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index 782e100..5bb1963 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -628,9 +628,6 @@ static int ad7291_probe(struct i2c_client *client,
- 	if (ret)
- 		goto error_unreg_irq;
- 
--	dev_info(&client->dev, "%s ADC registered.\n",
--			 id->name);
--
- 	return 0;
- 
- error_unreg_irq:
--- 
-1.8.0
+A simply mmio read does right now:
+- lock + unlock.
+  each time you chase another pointer plus enable/disable interrupts
+  plus you have to save flags in another structure.
 
+- _regmap_read()
+  We check a few variables and then we go after reg_read and we end up
+  in _regmap_raw_read().
+  Here we call _regmap_range_lookup() which should return NULL. Next
+  thing we invoke map->format.format_reg(). Finally we can call
+  map->bus->read() which brings us to regmap_mmio_read().
+  At the end we invoke map->format.parse_val().
+
+write looks most likely the same.
+
+A simple register read invokes 5 functions pointers. I am not counting
+the function arguments in between and I am also not counting the number
+of arguments which are involved and take pointer as well. This is a lot
+of stuff that is done for a simple read of an mmio.
+
+I understand that most of this may not be expensive in total if it
+comes to SPI or I2C and all the goodies like reg caching and one
+interface which deals with SPI and I2C. I also understand that some
+chips have a non standard interface and are either BE or LE. We have
+similar things on USB where people wired the BUS wrongly either at the
+BUS level or at the SoC level so some PowerPC have an in-core ehci
+controller but its registers are BE and not LE like it should be. The
+solution here was variable check a simple swap() in that case.
+I like abstractions but this gone a little too far I think.
+
+This is a lot of for a simple mmio access. In terms of performance: If
+I add a trace point to my read and write I have still less code which
+is called and it can be disabled. This regmap overhead is always there
+chasing pointers.
+
+As I said before: I doubt that you get this regmap access in an one GiB
+network driver and in turn remove their trace points to register access.
+
+Please don't get me wrong: It is still nice for slow buses and this ADC
+driver isn't anything close to high performance like a 1GiB network
+driver but it adds a lot of unwanted overhead which I prefer not to
+have.
+
+Sebastian
