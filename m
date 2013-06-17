@@ -1,103 +1,104 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/4] staging:iio:adis16130: Move out of staging
-Date: Mon, 10 Jun 2013 16:00:15 +0200
-Message-Id: <1370872815-14386-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:53563 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751090Ab3FQQEK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2013 12:04:10 -0400
+Date: Mon, 17 Jun 2013 17:03:26 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Message-ID: <20130617160326.GE1403@sirena.org.uk>
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
+ <1370950268-7224-2-git-send-email-bigeasy@linutronix.de>
+ <20130611142336.GE29135@zurbaran>
+ <51B7358D.7000605@linutronix.de>
+ <20130614135358.GR1403@sirena.org.uk>
+ <51BEF5F4.4090600@linutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="nFw2VRElW3V0Y7aQ"
+In-Reply-To: <51BEF5F4.4090600@linutronix.de>
+Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The adis16130 driver is fairly simple and it a good shape now, so move it out of
-staging. Remove an outdated FIXME along the way.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/gyro/Kconfig                                           | 7 +++++++
- drivers/iio/gyro/Makefile                                          | 1 +
- .../{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c}    | 1 -
- drivers/staging/iio/gyro/Kconfig                                   | 7 -------
- drivers/staging/iio/gyro/Makefile                                  | 3 ---
- 5 files changed, 8 insertions(+), 11 deletions(-)
- rename drivers/{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c} (99%)
+--nFw2VRElW3V0Y7aQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index b8daf1b..8498e9d 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -10,6 +10,13 @@ config ADIS16080
- 	  Say yes here to build support for Analog Devices ADIS16080, ADIS16100 Yaw
- 	  Rate Gyroscope with SPI.
- 
-+config ADIS16130
-+	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for Analog Devices ADIS16130 High Precision
-+	  Angular Rate Sensor driver.
-+
- config ADIS16136
- 	tristate "Analog devices ADIS16136 and similar gyroscopes driver"
- 	depends on SPI_MASTER
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 225d289..e9dc034 100644
---- a/drivers/iio/gyro/Makefile
-+++ b/drivers/iio/gyro/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- obj-$(CONFIG_ADIS16080) += adis16080.o
-+obj-$(CONFIG_ADIS16130) += adis16130.o
- obj-$(CONFIG_ADIS16136) += adis16136.o
- obj-$(CONFIG_ADXRS450) += adxrs450.o
- 
-diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/iio/gyro/adis16130.c
-similarity index 99%
-rename from drivers/staging/iio/gyro/adis16130_core.c
-rename to drivers/iio/gyro/adis16130.c
-index 8979435..129acdf 100644
---- a/drivers/staging/iio/gyro/adis16130_core.c
-+++ b/drivers/iio/gyro/adis16130.c
-@@ -183,7 +183,6 @@ error_ret:
- 	return ret;
- }
- 
--/* fixme, confirm ordering in this function */
- static int adis16130_remove(struct spi_device *spi)
- {
- 	iio_device_unregister(spi_get_drvdata(spi));
-diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-index 8360662..b433371 100644
---- a/drivers/staging/iio/gyro/Kconfig
-+++ b/drivers/staging/iio/gyro/Kconfig
-@@ -10,13 +10,6 @@ config ADIS16060
- 	  Say yes here to build support for Analog Devices adis16060 wide bandwidth
- 	  yaw rate gyroscope with SPI.
- 
--config ADIS16130
--	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
--	depends on SPI
--	help
--	  Say yes here to build support for Analog Devices ADIS16130 High Precision
--	  Angular Rate Sensor driver.
--
- config ADIS16260
- 	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
- 	depends on SPI
-diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-index 98e6500..975f95b 100644
---- a/drivers/staging/iio/gyro/Makefile
-+++ b/drivers/staging/iio/gyro/Makefile
-@@ -5,8 +5,5 @@
- adis16060-y             := adis16060_core.o
- obj-$(CONFIG_ADIS16060) += adis16060.o
- 
--adis16130-y             := adis16130_core.o
--obj-$(CONFIG_ADIS16130) += adis16130.o
--
- adis16260-y             := adis16260_core.o
- obj-$(CONFIG_ADIS16260) += adis16260.o
--- 
-1.8.0
+On Mon, Jun 17, 2013 at 01:41:40PM +0200, Sebastian Andrzej Siewior wrote:
+> On 06/14/2013 03:53 PM, Mark Brown wrote:
+
+> > It does give you tracepoints and debugfs.  If it's making things at
+> > all complicated we need to look at why that is and figure out how
+> > to fix that since it's probably an issue for other users.
+
+> debugfs are tracepoints is our offer? Let me check the price one more
+> time.
+
+OK...
+
+> This is a lot of for a simple mmio access. In terms of performance: If
+> I add a trace point to my read and write I have still less code which
+> is called and it can be disabled. This regmap overhead is always there
+> chasing pointers.
+
+Equally well what you're implementing here is support for something
+that's typically implemented with an I2C or SPI control interface so
+you're already going to be quite a way ahead of the norm.  This is part
+of what's confusing me, usually for this application things aren't that
+bad performance wise even on a massively slower bus.
+
+If all you're saying here is that there's some overhead that's fine if a
+bit surprising, but the way you're talking made it sound like there was
+some issue that made the API actually unusable.
+
+> As I said before: I doubt that you get this regmap access in an one GiB
+> network driver and in turn remove their trace points to register access.
+
+Well, of course for that sort of thing the general trick is not to talk
+to the hardware at all and do as much as possible with memory that the
+hardware can DMA - there's actually still non-trivial costs in talking
+over the buses.
+
+> Please don't get me wrong: It is still nice for slow buses and this ADC
+> driver isn't anything close to high performance like a 1GiB network
+> driver but it adds a lot of unwanted overhead which I prefer not to
+> have.
+
+OK, but equally well remember that from a subsystem maintainer point of
+view having things factored out is a win in itself; for example with the
+MFDs locking on the register I/O has been a persistent issue in the past.
+
+--nFw2VRElW3V0Y7aQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQIcBAEBAgAGBQJRvzNLAAoJELSic+t+oim9vmEP/j1XJ015WyfVwWwRJ+bfdNex
+qhxUYMGMTRXJi76ZgJtKWxnG+d2BeV6uSN5ov6reXOwA8OnDrcil+h3VyY/79bHt
+YU6D1uOJVO9O2XnwSboBDWrYv8zrFKrH5yLJ8j8h51xqO7RzZ84j0GtCdqYBARn9
+Hf0/gZZV3HFXzrLE+qHMoCG8UHxujf95MW6f2B48SaT17G/oDXSMwncKHImJicer
+pPpCuGO9JRH0PCr6JdnBkq8OG5qMr5X6Mi4JQkA30lN9AX6qypW76JuA/CANRsQo
+AOAqdtYrojocjM2FJhmp1EVrQXN2o9FUKjTtiCUrxsQsDXLEektZsdUQhuh1+fPz
+elI97Re6NJql4DUAWo71h/Gt6cHWusjjstAL2pg4/ayJeBqtGLQfUINx+fdKt6RP
+XS0qMDd3n+UONXb+VL4IpOYiTaV9rqi8So1JpG8DkbLBfLRYDCUeQI8gfD0HIeha
+VB1fMIxENJ86q5NA3rrYV59btyg3+dexcCp1bUcGs3/JkJQLfSgt+8kek9nNrOEC
+Z/9vQbs00haHftBWSAlXKOUaCkg4mQGZuQT3nEAuzDNORH3W+CVFc5rmSNmcZUFo
+SQOD7VmHT9uNOB1ZYZCE6eglKC6TmxN0F+eHg+HbhqR4goYKhOwbWDbfISVtx9k2
+0fcMLRGa659l+WWANP7u
+=gQTL
+-----END PGP SIGNATURE-----
+
+--nFw2VRElW3V0Y7aQ--
