@@ -1,109 +1,150 @@
-Return-Path: <ggao@invensense.com>
-MIME-Version: 1.0
-In-Reply-To: <51CEAE0A.1020800@kernel.org>
-References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
-	<1372022900-18670-2-git-send-email-pmeerw@pmeerw.net>
-	<51CEAE0A.1020800@kernel.org>
-Date: Sat, 29 Jun 2013 16:05:19 -0700
-Message-ID: <CAE9_fzmrVYtpK-_1Ew_RohZg8RxRsWeJWmKsjnQaFAt+wV8w4w@mail.gmail.com>
-Subject: Re: [PATCH 2/5] iio: use I2C_FUNC_SMBUS_I2C_BLOCK macro
-From: Ge Gao <ggao@invensense.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio <linux-iio@vger.kernel.org>
-Content-Type: multipart/alternative; boundary=047d7bd9218a81767204e0530752
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:46233 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932641Ab3FQL7k (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2013 07:59:40 -0400
+Received: from epcpsbgm1.samsung.com (epcpsbgm1 [203.254.230.26])
+ by mailout2.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0MOJ00LYFDB2FAT0@mailout2.samsung.com> for
+ linux-iio@vger.kernel.org; Mon, 17 Jun 2013 20:59:39 +0900 (KST)
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: s.nawrocki@samsung.com, Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: [PATCH/RFC] gp2ap002a00f ambient light/proximity sensor
+Date: Mon, 17 Jun 2013 13:59:23 +0200
+Message-id: <1371470364-14475-1-git-send-email-j.anaszewski@samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---047d7bd9218a81767204e0530752
-Content-Type: text/plain; charset=ISO-8859-1
+This driver in the current form supports:
+ - reading channels in 'one shot' mode through read_raw callback,
+ - three events - rising and falling ambient light events and 
+   rising proximity event. 
 
-It is not needed now. But it is actually needed in my "full" version of
-drivers, which involves of using DMP.  But I think it can be removed now.
-Do you need a patch for this? Thank you very much.
+It has infrastructure for triggers implemented, but either it is
+not implemented properly or I don't know how to initialize it from
+user space.
 
-Ge
+What I'd like to achieve through this RFC is (besides regular review)
+gain some clarification on how to properly implemeint support for 
+both events and triggers. At first I'd like to mention that I managed
+to implement support for triggers without events. I did it by following
+implementations of the existing drivers that support triggers,
+but no events. Briefly, they perform following steps to setup
+a trigger:
 
-On Saturday, June 29, 2013, Jonathan Cameron wrote:
-
-> On 06/23/2013 10:28 PM, Peter Meerwald wrote:
-> > I do not see why the driver requires I2C_FUNC_SMBUS_I2C_BLOCK,
-> > actually only single bytes or words are transferred
-> Applied as is, but Ge, I would like you to answer Peter's question
-> about whether this is actually needed at all.
->
-> >
-> > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> > Cc: Ge Gao <ggao@invensense.com>
-> > ---
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > index fe4c61e..6a1ff80 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > @@ -663,8 +663,8 @@ static int inv_mpu_probe(struct i2c_client *client,
-> >       int result;
-> >
-> >       if (!i2c_check_functionality(client->adapter,
-> > -                                     I2C_FUNC_SMBUS_READ_I2C_BLOCK |
-> > -                                     I2C_FUNC_SMBUS_WRITE_I2C_BLOCK)) {
-> > +             I2C_FUNC_SMBUS_I2C_BLOCK)) {
-> > +
-> >               result = -ENOSYS;
-> >               goto out_no_free;
-> >       }
-> >
->
-
---047d7bd9218a81767204e0530752
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">It is not needed now. But it is=A0actually needed in my &q=
-uot;full&quot; version of drivers, which=A0involves of using DMP.=A0 But I =
-think it can be removed now. Do you need a=A0patch for this? Thank you very=
- much.<div>
-<br></div><div>Ge=A0<span></span><br><br>On Saturday, June 29, 2013, Jonath=
-an Cameron  wrote:<br><blockquote style=3D"margin:0px 0px 0px 0.8ex;padding=
--left:1ex;border-left-color:rgb(204,204,204);border-left-width:1px;border-l=
-eft-style:solid" class=3D"gmail_quote">
+ static irqreturn_t gp2ap002a00f_irq_handler(int irq, void *data)
+ {
+ 	struct gp2ap002a00f_data *lgt = iio_priv(indio_dev);
+ 
+ 	// Filling the lgt->buffer with the output data from the 
+	// device is performed here, according to the
+	// indio_dev->active_scan_mask bits.
+ 
+        iio_push_to_buffers(indio_dev, lgt->buffer);
+        iio_trigger_notify_done(indio_dev->trig);
+ }
 
 
-On 06/23/2013 10:28 PM, Peter Meerwald wrote:<br>
-&gt; I do not see why the driver requires I2C_FUNC_SMBUS_I2C_BLOCK,<br>
-&gt; actually only single bytes or words are transferred<br>
-Applied as is, but Ge, I would like you to answer Peter&#39;s question<br>
-about whether this is actually needed at all.<br>
-<br>
-&gt;<br>
-&gt; Signed-off-by: Peter Meerwald &lt;<a>pmeerw@pmeerw.net</a>&gt;<br>
-&gt; Cc: Ge Gao &lt;<a>ggao@invensense.com</a>&gt;<br>
-&gt; ---<br>
-&gt; =A0drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 4 ++--<br>
-&gt; =A01 file changed, 2 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/=
-imu/inv_mpu6050/inv_mpu_core.c<br>
-&gt; index fe4c61e..6a1ff80 100644<br>
-&gt; --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c<br>
-&gt; +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c<br>
-&gt; @@ -663,8 +663,8 @@ static int inv_mpu_probe(struct i2c_client *client=
-,<br>
-&gt; =A0 =A0 =A0 int result;<br>
-&gt;<br>
-&gt; =A0 =A0 =A0 if (!i2c_check_functionality(client-&gt;adapter,<br>
-&gt; - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 I2C_FUNC_SMBUS_READ_I2C_BLOCK |<br>
-&gt; - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 I2C_FUNC_SMBUS_WRITE_I2C_BLOCK)) {<br>
-&gt; + =A0 =A0 =A0 =A0 =A0 =A0 I2C_FUNC_SMBUS_I2C_BLOCK)) {<br>
-&gt; +<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 result =3D -ENOSYS;<br>
-&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 goto out_no_free;<br>
-&gt; =A0 =A0 =A0 }<br>
-&gt;<br>
-</blockquote></div>
-</div>
+ int gp2ap002a00f_trig_set_state(struct iio_trigger *trig, bool state)
+ {
+ 	// Here a buffer is allocated/deallocated and the device 
+	// related operations are performed to enable/disable 
+	// generating data, according to the
+	// indio_dev->active_scan_mask bits .
+ }
+ 
+ 
+ static const struct iio_trigger_ops gp2ap002a00f_trigger_ops = {
+ 	.owner = THIS_MODULE,
+ 	.set_trigger_state = &gp2ap002a00f_trig_set_state,
+ };
 
---047d7bd9218a81767204e0530752--
+ iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+                gp2ap002a00f_irq_handler, &gp2ap002a00f_setup_ops);
+
+ iio_trigger_alloc("%s-trigger", indio_dev->name);
+
+ err = devm_request_threaded_irq(&client->dev, client->irq,
+                            iio_trigger_generic_data_rdy_poll,
+                            NULL,
+                            IRQF_TRIGGER_FALLING,
+                            data->trig->name,
+                            data->trig);
+
+ data->trig->private_data = indio_dev;
+ data->trig->ops = &gp2ap002a00f_trigger_ops;
+ data->trig->dev.parent = &data->client->dev
+
+ ret = iio_trigger_register(data->trig);
+
+With the implementation shown above I can setup a trigger using
+generic_buffer application.
+
+Nonetheless, drivers that implement both triggers and events
+are implemented in a somehow different manner (I followed
+recommended max1363 driver):
+
+static irqreturn_t gp2ap002a00f_event_handler(int irq, void *data)
+{
+        iio_push_event(indio_dev,
+                       IIO_MOD_EVENT_CODE(
+                                IIO_LIGHT,
+                                SCAN_MODE_LIGHT_CLEAR,
+                                IIO_MOD_LIGHT_CLEAR,
+                                IIO_EV_TYPE_THRESH,
+                                IIO_EV_DIR_RISING),
+                       iio_get_time_ns());
+
+}
+
+ err = iio_triggered_buffer_setup(indio_dev, NULL,
+       &gp2ap002a00f_trigger_handler, &gp2ap002a00f_buffer_setup_ops);
+
+ err = devm_request_threaded_irq(&client->dev, client->irq,
+                            &gp2ap002a00f_event_handler,
+                            NULL,
+                            IRQF_TRIGGER_FALLING,
+                            "gp2ap002a00f_event",
+                            indio_dev);
+
+Enabling/disabling data generation seems to be handled by
+buffer_setup_ops' preenable/postenable/predisable callbacks.
+I've noticed also that there is update_scan_mode callback exploited
+in some of the implementations, which I suspect serves for updating
+scan_mode without the need for disabling a trigger?
+
+With this implementation the trigger/current_trigger file is empty
+and generic_buffer application fails. Therefore I ask for
+clarification on what I am doing wrong here.
+
+Regarding the remaining parts of the driver - I used flags, not bit
+fields as Jonathan requested in my driver for the lps331ap device
+because of the need for one flag for wait_event_timeout function.
+This flag is set in the interrupt handler and access to it must
+be atomic. I could have gone for bit fields for the rest of the
+flags in the driver, but I think that now the implementation
+is more consistent.
+
+I've also noticed that once initialized triggers keep some
+IIO resources unreleased as execution of rmmod on the driver module
+fails even after triggered capture finish. Is it a known issue?
+
+Thanks,
+Jacek Anaszewski
+
+Jacek Anaszewski (1):
+  iio: gp2ap002a00f: Add a driver for the device.
+
+ .../devicetree/bindings/iio/light/gp2ap002a00f.txt |   20 +
+ drivers/iio/light/Kconfig                          |   12 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/gp2ap002a00f.c                   | 1158 ++++++++++++++++++++
+ 4 files changed, 1191 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/gp2ap002a00f.txt
+ create mode 100644 drivers/iio/light/gp2ap002a00f.c
+
+-- 
+1.7.5.4
+
