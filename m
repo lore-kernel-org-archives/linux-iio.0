@@ -1,95 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:35166 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756085Ab3FEQZN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2013 12:25:13 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Received: from mail.free-electrons.com ([94.23.35.102]:50359 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422666Ab3FTS6J (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Jun 2013 14:58:09 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>
+Cc: jimwall@q.com, brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
 	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 08/22] iio/ti_am335x_adc: Add DT support
-Date: Wed,  5 Jun 2013 18:24:41 +0200
-Message-Id: <1370449495-29981-9-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
-References: <1370449495-29981-1-git-send-email-bigeasy@linutronix.de>
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 0/3] Add support for the Nuvoton NAU7802 ADC to the cfa10049
+Date: Thu, 20 Jun 2013 20:57:52 +0200
+Message-Id: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+Hi,
 
-Add DT support for client ADC driver.
+Sorry for the delay, this is v2 of the patchset that adds support for the 3
+Nuvoton NAU7802 ADCs present on the CFA-10049 board from Crystalfontz. The first
+patch adds the driver, the next ones are adding them in the DT after switching
+the second i2c bus to bitbanging following a lot of timeout issues we have on
+that bus.
 
-[ panto@antoniou-consulting.com : use of_get_child_by_name
-	instead of of_find_node_by_name ]
+Since v1, I've taken into account the review from Jonathan Cameron, Lars-Peter
+Clausen and Maxime Ripard:
+ - channels are now statically allocated
+ - no wrappers around i2c functions
+ - sampling_freq is a shared attribute
+ - setting gain is done through scale
+ - cosmetics changes (s/idev/indio_dev/, blank lines before returns)
+ - use of sign_extend32 to extend the sign
+ - reading scale now returns IIO_VAL_FRACTIONAL_LOG2
+ - no dt lookup for interrupts, this is done in of_i2c.c but that was mask due
+ to a bug.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-[bigeasy: shift the code to the left, fix clean up on
-          of_get_child_by_name() failer]
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/iio/adc/ti_am335x_adc.c |   25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+what I didn't address is setting the external reference voltage through a fixed
+regulator and I kept the vldo attribute to set the internal voltage reference in
+the DT as Jonathan seemed to be ok with that. If anybody is using a nau7802 with
+an external reference, it will still be time to add the fixed regulator. It
+shouldn't be difficult but I don't have any hardware to test.
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 543b9c4..95bcd56 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -22,6 +22,8 @@
- #include <linux/platform_device.h>
- #include <linux/io.h>
- #include <linux/iio/iio.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
- #include <linux/platform_data/ti_am335x_adc.h>
-@@ -152,11 +154,12 @@ static int tiadc_probe(struct platform_device *pdev)
- 	struct iio_dev		*indio_dev;
- 	struct tiadc_device	*adc_dev;
- 	struct ti_tscadc_dev	*tscadc_dev = ti_tscadc_dev_get(pdev);
--	struct mfd_tscadc_board	*pdata;
-+	struct mfd_tscadc_board	*pdata = tscadc_dev->dev->platform_data;
-+	struct device_node	*node = tscadc_dev->dev->of_node;
- 	int			err;
-+	u32			val32;
- 
--	pdata = tscadc_dev->dev->platform_data;
--	if (!pdata || !pdata->adc_init) {
-+	if (!pdata && !node) {
- 		dev_err(&pdev->dev, "Could not find platform data\n");
- 		return -EINVAL;
- 	}
-@@ -170,7 +173,21 @@ static int tiadc_probe(struct platform_device *pdev)
- 	adc_dev = iio_priv(indio_dev);
- 
- 	adc_dev->mfd_tscadc = tscadc_dev;
--	adc_dev->channels = pdata->adc_init->adc_channels;
-+
-+	if (pdata)
-+		adc_dev->channels = pdata->adc_init->adc_channels;
-+	else {
-+		node = of_get_child_by_name(node, "adc");
-+		if (!node) {
-+			err = -EINVAL;
-+			goto err_free_device;
-+		}
-+		err = of_property_read_u32(node,
-+				"ti,adc-channels", &val32);
-+		if (err < 0)
-+			goto err_free_device;
-+		adc_dev->channels = val32;
-+	}
- 
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->name = dev_name(&pdev->dev);
+Regards,
+
+Alexandre Belloni (1):
+  iio: Add Nuvoton NAU7802 ADC driver
+
+Maxime Ripard (2):
+  ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+  ARM: mxs: cfa10049: Add NAU7802 ADCs to the device tree
+
+ .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
+ arch/arm/boot/dts/imx28-cfa10049.dts               | 126 +++--
+ drivers/iio/adc/Kconfig                            |   9 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
+ 5 files changed, 713 insertions(+), 43 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+ create mode 100644 drivers/iio/adc/nau7802.c
+
 -- 
-1.7.10.4
+1.8.1.2
 
