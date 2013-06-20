@@ -1,107 +1,173 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44688 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755892Ab3FLRL2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:11:28 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
+Received: from mail.free-electrons.com ([94.23.35.102]:50383 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422676Ab3FTS6M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Jun 2013 14:58:12 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>
+Cc: jimwall@q.com, brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
 	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Pantelis Antoniou <panto@antoniou-consulting.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 11/21] iio: ti_tscadc: provide datasheet_name and scan_type
-Date: Wed, 12 Jun 2013 18:58:12 +0200
-Message-Id: <1371056302-12714-12-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+Date: Thu, 20 Jun 2013 20:57:54 +0200
+Message-Id: <1371754675-12242-3-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Pantelis Antoniou <panto@antoniou-consulting.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-This patch provides the members "datasheet_name" and scan_type. This is
-the remaining part of the earlier patch where I (bigeasy) removed iio_map
-because it is now supplied by the device tree. It also static names as
-suggested by Jonathan.
+The ADCs connected to this bus have been experiencing some timeout
+issues when using the iMX28 i2c controller. Switching back to bitbanging
+solves this.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c |   29 ++++++++++++++++++++++++-----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/imx28-cfa10049.dts | 108 +++++++++++++++++++++--------------
+ 1 file changed, 65 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 2868c0c..9939810 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -24,6 +24,8 @@
- #include <linux/iio/iio.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/iio/machine.h>
-+#include <linux/iio/driver.h>
+diff --git a/arch/arm/boot/dts/imx28-cfa10049.dts b/arch/arm/boot/dts/imx28-cfa10049.dts
+index 05ae549..d3758c2 100644
+--- a/arch/arm/boot/dts/imx28-cfa10049.dts
++++ b/arch/arm/boot/dts/imx28-cfa10049.dts
+@@ -139,6 +139,17 @@
+ 					fsl,pull-up = <0>; /* 0 will enable the keeper */
+ 				};
  
- #include <linux/mfd/ti_am335x_tscadc.h>
- 
-@@ -84,29 +86,46 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
- }
- 
-+static const char * const chan_name_ain[] = {
-+	"AIN0",
-+	"AIN1",
-+	"AIN2",
-+	"AIN3",
-+	"AIN4",
-+	"AIN5",
-+	"AIN6",
-+	"AIN7",
-+};
++				i2c1_pins_cfa10049: i2c1@0 {
++					reg = <0>;
++					fsl,pinmux-ids = <
++						0x3103 /* MX28_PAD_PWM0__GPIO */
++						0x3113 /* MX28_PAD_PWM1__I2C1_SDA */
++					>;
++					fsl,drive-strength = <1>;
++					fsl,voltage = <1>;
++					fsl,pull-up = <1>;
++				};
 +
- static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
- {
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
- 	struct iio_chan_spec *chan_array;
-+	struct iio_chan_spec *chan;
- 	int i;
+ 				fiq_pins_cfa10049: fiq@0 {
+ 					reg = <0>;
+ 					fsl,pinmux-ids = <
+@@ -199,49 +210,6 @@
+ 				status = "okay";
+ 			};
  
- 	indio_dev->num_channels = channels;
--	chan_array = kcalloc(indio_dev->num_channels,
-+	chan_array = kcalloc(channels,
- 			sizeof(struct iio_chan_spec), GFP_KERNEL);
+-			i2c1: i2c@8005a000 {
+-				pinctrl-names = "default";
+-				pinctrl-0 = <&i2c1_pins_a>;
+-				status = "okay";
+-			};
 -
- 	if (chan_array == NULL)
- 		return -ENOMEM;
+-			i2cmux {
+-				compatible = "i2c-mux-gpio";
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+-				mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
+-				i2c-parent = <&i2c1>;
+-
+-				i2c@0 {
+-					reg = <0>;
+-				};
+-
+-				i2c@1 {
+-					reg = <1>;
+-				};
+-
+-				i2c@2 {
+-					reg = <2>;
+-				};
+-
+-				i2c@3 {
+-					reg = <3>;
+-					#address-cells = <1>;
+-					#size-cells = <0>;
+-
+-					pca9555: pca9555@20 {
+-						compatible = "nxp,pca9555";
+-						interrupt-parent = <&gpio2>;
+-						interrupts = <19 0x2>;
+-						gpio-controller;
+-						#gpio-cells = <2>;
+-						interrupt-controller;
+-						#interrupt-cells = <2>;
+-						reg = <0x20>;
+-					};
+-				};
+-			};
+-
+ 			usbphy1: usbphy@8007e000 {
+ 				status = "okay";
+ 			};
+@@ -366,6 +334,60 @@
+ 		rotary-encoder,relative-axis;
+ 	};
  
--	for (i = 0; i < (indio_dev->num_channels); i++) {
--		struct iio_chan_spec *chan = chan_array + i;
-+	chan = chan_array;
-+	for (i = 0; i < channels; i++, chan++) {
++	i2c1gpio: i2c@0 {
++		compatible = "i2c-gpio";
++		pinctrl-0 = <&i2c1_pins_cfa10049>;
++		pinctrl-names = "default";
++		gpios = <
++			&gpio3 17 0 /* sda */
++			&gpio3 16 0 /* scl */
++			 >;
++		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
++	};
 +
- 		chan->type = IIO_VOLTAGE;
- 		chan->indexed = 1;
- 		chan->channel = i;
- 		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-+		chan->datasheet_name = chan_name_ain[i];
-+		chan->scan_type.sign = 'u';
-+		chan->scan_type.realbits = 12;
-+		chan->scan_type.storagebits = 32;
- 	}
- 
- 	indio_dev->channels = chan_array;
- 
--	return indio_dev->num_channels;
-+	return 0;
- }
- 
- static void tiadc_channels_remove(struct iio_dev *indio_dev)
++	i2cmux {
++		compatible = "i2c-mux-gpio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		mux-gpios = <&gpio1 22 0 &gpio1 23 0>;
++		i2c-parent = <&i2c1gpio>;
++
++		i2c@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@2 {
++			reg = <2>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
++		i2c@3 {
++			reg = <3>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			pca9555: pca9555@20 {
++				compatible = "nxp,pca9555";
++				interrupt-parent = <&gpio2>;
++				interrupts = <19 0x2>;
++				gpio-controller;
++				#gpio-cells = <2>;
++				interrupt-controller;
++				#interrupt-cells = <2>;
++				reg = <0x20>;
++			};
++		};
++	};
++
+ 	backlight {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm 3 5000000>;
 -- 
-1.7.10.4
+1.8.1.2
 
