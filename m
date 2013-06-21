@@ -1,45 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bk0-f41.google.com ([209.85.214.41]:53593 "EHLO
-	mail-bk0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752106Ab3FRNIB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Jun 2013 09:08:01 -0400
-Received: by mail-bk0-f41.google.com with SMTP id jc3so1767185bkc.0
-        for <linux-iio@vger.kernel.org>; Tue, 18 Jun 2013 06:08:00 -0700 (PDT)
+Received: from mail-vb0-f54.google.com ([209.85.212.54]:42079 "EHLO
+	mail-vb0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161490Ab3FUW1q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Jun 2013 18:27:46 -0400
 MIME-Version: 1.0
-Date: Tue, 18 Jun 2013 21:08:00 +0800
-Message-ID: <CAPgLHd_7GTkOavGHctmaODV-gQBjRi5aiUF7+BR-FRnP8eCa7w@mail.gmail.com>
-Subject: [PATCH -next] iio: dac: ad7303: fix error return code in ad7303_probe()
-From: Wei Yongjun <weiyj.lk@gmail.com>
-To: jic23@cam.ac.uk, lars@metafoo.de
-Cc: yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <1371754675-12242-3-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com>
+	<1371754675-12242-3-git-send-email-alexandre.belloni@free-electrons.com>
+Date: Fri, 21 Jun 2013 19:27:44 -0300
+Message-ID: <CAOMZO5AbZVLH0rxP=iuumrDBxFe5XVGH9qK9PyUdxtucbOHzdg@mail.gmail.com>
+Subject: Re: [PATCHv2 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+From: Fabio Estevam <festevam@gmail.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	brian@crystalfontz.com, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	jimwall@q.com, Rob Herring <rob.herring@calxeda.com>,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+On Thu, Jun 20, 2013 at 3:57 PM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
+> From: Maxime Ripard <maxime.ripard@free-electrons.com>
+>
+> The ADCs connected to this bus have been experiencing some timeout
+> issues when using the iMX28 i2c controller. Switching back to bitbanging
+> solves this.
 
-Fix to return a negative error code from the error handling
-case instead of 0, as done elsewhere in this function.
+Could you please investigate this timeout issue?
 
-Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
----
- drivers/iio/dac/ad7303.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+The I2C timeouts I was having on mx28 when trying to access sgtl5000
+codec, was due to the lack
+of codec clock.
 
-diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
-index 85aeef6..d546f50 100644
---- a/drivers/iio/dac/ad7303.c
-+++ b/drivers/iio/dac/ad7303.c
-@@ -235,8 +235,10 @@ static int ad7303_probe(struct spi_device *spi)
- 
- 	if (ext_ref) {
- 		st->vref_reg = regulator_get(&spi->dev, "REF");
--		if (IS_ERR(st->vref_reg))
-+		if (IS_ERR(st->vref_reg)) {
-+			ret = PTR_ERR(st->vref_reg);
- 			goto err_disable_vdd_reg;
-+		}
- 
- 		ret = regulator_enable(st->vref_reg);
- 		if (ret)
-
+After I provided the codec clock I am able to use I2C without issues
+and just sent a patch for it.
