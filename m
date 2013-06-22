@@ -1,80 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:36281 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751212Ab3FZOsq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 26 Jun 2013 10:48:46 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1Urr1O-0001NY-Vl
-	for linux-iio@vger.kernel.org; Wed, 26 Jun 2013 16:48:34 +0200
-Received: from 217-67-201-162.itsa.net.pl ([217.67.201.162])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 16:48:34 +0200
-Received: from j.anaszewski by 217-67-201-162.itsa.net.pl with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 16:48:34 +0200
-To: linux-iio@vger.kernel.org
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-Subject: Re: [PATCH/RFC] iio: gp2ap002a00f: Add a driver for the device.
-Date: Wed, 26 Jun 2013 16:48:24 +0200
-Message-ID: <51CAFF38.6040506@samsung.com>
-References: <51C58B62.30602@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-In-Reply-To: <51C58B62.30602@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alexandre.belloni@free-electrons.com>
+Message-ID: <51C5A68F.3000300@free-electrons.com>
+Date: Sat, 22 Jun 2013 15:28:47 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>, Shawn Guo <shawn.guo@linaro.org>,
+ Grant Likely <grant.likely@secretlab.ca>,
+ jimwall@q.com, brian@crystalfontz.com,
+ Maxime Ripard <maxime.ripard@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree-discuss@lists.ozlabs.org, Jonathan Cameron <jic23@cam.ac.uk>,
+ Rob Landley <rob@landley.net>,
+ Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C590B5.2060308@kernel.org> <51C5923D.6030609@metafoo.de> <51C5A1AF.3070404@free-electrons.com> <51C5A499.5050509@metafoo.de>
+In-Reply-To: <51C5A499.5050509@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/22/2013 01:32 PM, Jonathan Cameron wrote:
-> Sorry, due to some local email weirdness I don't seem to have an original
-> copy of this email, so have grabbed it from marc.info.
-> This may mess up the thread handling for others.
->
->> Add a new driver for the ambient light/proximity sensor
->> device. The driver exposes three channels: light_clear
->> light_ir and proximity. It also supports high and low
->> ambient light threshold event and proximity detection
->> event.
+On 22/06/2013 15:20, Lars-Peter Clausen wrote:
+> On 06/22/2013 03:07 PM, Alexandre Belloni wrote:
+>> On 22/06/2013 14:02, Lars-Peter Clausen wrote:
+>>> On 06/22/2013 01:55 PM, Jonathan Cameron wrote:
+>>>> On 06/20/2013 07:57 PM, Alexandre Belloni wrote:
+>>>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>>>>> gain and sampling rates.
+>>>>>
+>>>> Sorry, somewhat low on time today so only a quick review.
+>>>>
+>>>> 1) Missing userspace ABI documentation.  Also, perhaps min_conversions is
+>>>>    a little vague?  Not that I have a better idea!
+>>> I really don't like the name min_conversions either. Isn't this effectively
+>>> a decimation filter?
+>> Yeah, it could be seen like that but it is only relevant and only
+>> happens when switching between channels. I'm open to any ideas.
 >>
-> Just to check, are you aware of the drive in drivers/input/misc?
-
-Yes I am aware of it. I even got influenced by it to the extent
-that I mistakenly adopted its name for my driver, which should be
-gp2ap020a00f. The name will be corrected in the second version
-of the patch. The gp2ap002a00f device seems not to have too much
-in common with gp2ap020a00f.
-
-> A few comments from a somewhat superficial review below.
+> I see. Is there anything about this in the datasheet on how many conversions
+> you usually need? Is this really something you need to change at runtime or
+> does moving this to platform data work?
 >
-[...]
->> +static const struct iio_chan_spec gp2ap002a00f_channels[] = {
->> +	{
->> +		.type = IIO_LIGHT,
->> +		.channel2 = IIO_MOD_LIGHT_CLEAR,
->> +		.modified = 1,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> Just to confirm, you are providing no means at all of converting
-> these channels to any form of standard unit?
-> Without the datasheet I can't tell if this is because no conversion
-> is provided.
+>
 
-Yes, this is intentional.
+There is actually nothing in the datasheet. The default value (6
+conversions) was found experimentally. What I did was saturating the ADC
+with the higher value on one channel and the lower value on the other
+one and I tried to find when reading both channel sequentially was
+resulting in a correct value.
 
-[...]
->> +	err = iio_triggered_buffer_setup(indio_dev, NULL,
->> +		&gp2ap002a00f_trigger_handler,&gp2ap002a00f_buffer_setup_ops);
->> +
-> So this is a single irq line for events and dataready?
-> I can't seem to find a decent datasheet online for this part which is
-> always annoying!
+You may not need to change it at runtime. And that value mainly depend
+on the precision versus speed balance you want to achieve. If you know
+that the values on both channels will not be to far apart, then you may
+not need to wait at all.
 
-The documentation I have for my disposal is confidential.
-Yes, there is common interrupt line for events and data ready.
-When threshold registers are filled with a value greater than 0
-the interrupts are considered enabled. This has also side effect -
-no interrupt is being generated when converted value is 0.
+Would you think that is something I should hide in the DT ? Or maybe I
+can drop that knob for now and see if it is needed in the future.
 
-Thanks,
-Jacek
-
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
