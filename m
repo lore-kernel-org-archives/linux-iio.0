@@ -1,104 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:53563 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751090Ab3FQQEK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2013 12:04:10 -0400
-Date: Mon, 17 Jun 2013 17:03:26 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Message-ID: <20130617160326.GE1403@sirena.org.uk>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <1370950268-7224-2-git-send-email-bigeasy@linutronix.de>
- <20130611142336.GE29135@zurbaran>
- <51B7358D.7000605@linutronix.de>
- <20130614135358.GR1403@sirena.org.uk>
- <51BEF5F4.4090600@linutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47449 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754402Ab3FVOA1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Jun 2013 10:00:27 -0400
+Message-ID: <51C5ADF8.8060206@kernel.org>
+Date: Sat, 22 Jun 2013 15:00:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nFw2VRElW3V0Y7aQ"
-In-Reply-To: <51BEF5F4.4090600@linutronix.de>
-Subject: Re: [PATCH 01/22] mfd/ti_am335x_tscadc: remove regmap
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Wei Yongjun <weiyj.lk@gmail.com>, yongjun_wei@trendmicro.com.cn,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH -next] iio: dac: ad7303: fix error return code in ad7303_probe()
+References: <CAPgLHd_7GTkOavGHctmaODV-gQBjRi5aiUF7+BR-FRnP8eCa7w@mail.gmail.com> <51C57E98.5020409@kernel.org> <51C5A6F0.80505@metafoo.de>
+In-Reply-To: <51C5A6F0.80505@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
---nFw2VRElW3V0Y7aQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Jun 17, 2013 at 01:41:40PM +0200, Sebastian Andrzej Siewior wrote:
-> On 06/14/2013 03:53 PM, Mark Brown wrote:
-
-> > It does give you tracepoints and debugfs.  If it's making things at
-> > all complicated we need to look at why that is and figure out how
-> > to fix that since it's probably an issue for other users.
-
-> debugfs are tracepoints is our offer? Let me check the price one more
-> time.
-
-OK...
-
-> This is a lot of for a simple mmio access. In terms of performance: If
-> I add a trace point to my read and write I have still less code which
-> is called and it can be disabled. This regmap overhead is always there
-> chasing pointers.
-
-Equally well what you're implementing here is support for something
-that's typically implemented with an I2C or SPI control interface so
-you're already going to be quite a way ahead of the norm.  This is part
-of what's confusing me, usually for this application things aren't that
-bad performance wise even on a massively slower bus.
-
-If all you're saying here is that there's some overhead that's fine if a
-bit surprising, but the way you're talking made it sound like there was
-some issue that made the API actually unusable.
-
-> As I said before: I doubt that you get this regmap access in an one GiB
-> network driver and in turn remove their trace points to register access.
-
-Well, of course for that sort of thing the general trick is not to talk
-to the hardware at all and do as much as possible with memory that the
-hardware can DMA - there's actually still non-trivial costs in talking
-over the buses.
-
-> Please don't get me wrong: It is still nice for slow buses and this ADC
-> driver isn't anything close to high performance like a 1GiB network
-> driver but it adds a lot of unwanted overhead which I prefer not to
-> have.
-
-OK, but equally well remember that from a subsystem maintainer point of
-view having things factored out is a win in itself; for example with the
-MFDs locking on the register I/O has been a persistent issue in the past.
-
---nFw2VRElW3V0Y7aQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRvzNLAAoJELSic+t+oim9vmEP/j1XJ015WyfVwWwRJ+bfdNex
-qhxUYMGMTRXJi76ZgJtKWxnG+d2BeV6uSN5ov6reXOwA8OnDrcil+h3VyY/79bHt
-YU6D1uOJVO9O2XnwSboBDWrYv8zrFKrH5yLJ8j8h51xqO7RzZ84j0GtCdqYBARn9
-Hf0/gZZV3HFXzrLE+qHMoCG8UHxujf95MW6f2B48SaT17G/oDXSMwncKHImJicer
-pPpCuGO9JRH0PCr6JdnBkq8OG5qMr5X6Mi4JQkA30lN9AX6qypW76JuA/CANRsQo
-AOAqdtYrojocjM2FJhmp1EVrQXN2o9FUKjTtiCUrxsQsDXLEektZsdUQhuh1+fPz
-elI97Re6NJql4DUAWo71h/Gt6cHWusjjstAL2pg4/ayJeBqtGLQfUINx+fdKt6RP
-XS0qMDd3n+UONXb+VL4IpOYiTaV9rqi8So1JpG8DkbLBfLRYDCUeQI8gfD0HIeha
-VB1fMIxENJ86q5NA3rrYV59btyg3+dexcCp1bUcGs3/JkJQLfSgt+8kek9nNrOEC
-Z/9vQbs00haHftBWSAlXKOUaCkg4mQGZuQT3nEAuzDNORH3W+CVFc5rmSNmcZUFo
-SQOD7VmHT9uNOB1ZYZCE6eglKC6TmxN0F+eHg+HbhqR4goYKhOwbWDbfISVtx9k2
-0fcMLRGa659l+WWANP7u
-=gQTL
------END PGP SIGNATURE-----
-
---nFw2VRElW3V0Y7aQ--
+On 06/22/2013 02:30 PM, Lars-Peter Clausen wrote:
+> On 06/22/2013 12:38 PM, Jonathan Cameron wrote:
+>> On 06/18/2013 02:08 PM, Wei Yongjun wrote:
+>>> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+>>>
+>>> Fix to return a negative error code from the error handling
+>>> case instead of 0, as done elsewhere in this function.
+>>>
+>>> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+>> This one looks pretty obvious so I'll take it without waiting
+>> for any other comments.
+>>
+>> Applied to togreg branch of iio.git
+>>
+>> Thanks,
+> 
+> 
+> hm, I actually though I'd acked this patch, but looks like the mail didn't make
+> it through.
+> 
+> - Lars
+> 
+Added an ack as I hadn't pushed out to a public tree yet anyway.
