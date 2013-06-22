@@ -1,85 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44724 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757679Ab3FLRMy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:12:54 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 10/21] mfd: ti_am335x_tscadc: remove platform_data support
-Date: Wed, 12 Jun 2013 18:58:11 +0200
-Message-Id: <1371056302-12714-11-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <51C5A499.5050509@metafoo.de>
+Date: Sat, 22 Jun 2013 15:20:25 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: Jonathan Cameron <jic23@kernel.org>, Shawn Guo <shawn.guo@linaro.org>,
+ Grant Likely <grant.likely@secretlab.ca>,
+ jimwall@q.com, brian@crystalfontz.com,
+ Maxime Ripard <maxime.ripard@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree-discuss@lists.ozlabs.org, Jonathan Cameron <jic23@cam.ac.uk>,
+ Rob Landley <rob@landley.net>,
+ Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C590B5.2060308@kernel.org> <51C5923D.6030609@metafoo.de> <51C5A1AF.3070404@free-electrons.com>
+In-Reply-To: <51C5A1AF.3070404@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes access to platform data mfd_tscadc_board because the
-platform is DT only.
+On 06/22/2013 03:07 PM, Alexandre Belloni wrote:
+> On 22/06/2013 14:02, Lars-Peter Clausen wrote:
+>> On 06/22/2013 01:55 PM, Jonathan Cameron wrote:
+>>> On 06/20/2013 07:57 PM, Alexandre Belloni wrote:
+>>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>>>> gain and sampling rates.
+>>>>
+>>> Sorry, somewhat low on time today so only a quick review.
+>>>
+>>> 1) Missing userspace ABI documentation.  Also, perhaps min_conversions is
+>>>    a little vague?  Not that I have a better idea!
+>> I really don't like the name min_conversions either. Isn't this effectively
+>> a decimation filter?
+> 
+> Yeah, it could be seen like that but it is only relevant and only
+> happens when switching between channels. I'm open to any ideas.
+> 
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/mfd/ti_am335x_tscadc.c |   23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+I see. Is there anything about this in the datasheet on how many conversions
+you usually need? Is this really something you need to change at runtime or
+does moving this to platform data work?
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 292d34e..e78b9df 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -26,8 +26,6 @@
- #include <linux/of_device.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
--#include <linux/input/ti_am335x_tsc.h>
--#include <linux/platform_data/ti_am335x_adc.h>
- 
- static unsigned int tscadc_readl(struct ti_tscadc_dev *tsadc, unsigned int reg)
- {
-@@ -91,31 +89,22 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	struct ti_tscadc_dev	*tscadc;
- 	struct resource		*res;
- 	struct clk		*clk;
--	struct mfd_tscadc_board	*pdata = pdev->dev.platform_data;
- 	struct device_node	*node = pdev->dev.of_node;
- 	struct mfd_cell		*cell;
- 	int			err, ctrl;
- 	int			clk_value, clock_rate;
- 	int			tsc_wires = 0, adc_channels = 0, total_channels;
- 
--	if (!pdata && !pdev->dev.of_node) {
--		dev_err(&pdev->dev, "Could not find platform data\n");
-+	if (!pdev->dev.of_node) {
-+		dev_err(&pdev->dev, "Could not find valid DT data.\n");
- 		return -EINVAL;
- 	}
- 
--	if (pdev->dev.platform_data) {
--		if (pdata->tsc_init)
--			tsc_wires = pdata->tsc_init->wires;
-+	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
-+	of_property_read_u32(node, "ti,wires", &tsc_wires);
- 
--		if (pdata->adc_init)
--			adc_channels = pdata->adc_init->adc_channels;
--	} else {
--		node = of_get_child_by_name(pdev->dev.of_node, "tsc");
--		of_property_read_u32(node, "ti,wires", &tsc_wires);
--
--		node = of_get_child_by_name(pdev->dev.of_node, "adc");
--		of_property_read_u32(node, "ti,adc-channels", &adc_channels);
--	}
-+	node = of_get_child_by_name(pdev->dev.of_node, "adc");
-+	of_property_read_u32(node, "ti,adc-channels", &adc_channels);
- 
- 	total_channels = tsc_wires + adc_channels;
- 
--- 
-1.7.10.4
-
+- Lars
