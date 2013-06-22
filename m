@@ -1,191 +1,163 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46318 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46018 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756024Ab3FVLtM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Jun 2013 07:49:12 -0400
-Message-ID: <51C58F34.9010202@kernel.org>
-Date: Sat, 22 Jun 2013 12:49:08 +0100
+	with ESMTP id S1751965Ab3FVLDa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Jun 2013 07:03:30 -0400
+Message-ID: <51C5847C.7030100@kernel.org>
+Date: Sat, 22 Jun 2013 12:03:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-CC: linux-iio@vger.kernel.org, s.nawrocki@samsung.com
-Subject: Re: [PATCH/RFC] gp2ap002a00f ambient light/proximity sensor
-References: <1371470364-14475-1-git-send-email-j.anaszewski@samsung.com>
-In-Reply-To: <1371470364-14475-1-git-send-email-j.anaszewski@samsung.com>
+To: Otavio Salvador <otavio@ossystems.com.br>
+CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Kernel development list <linux-kernel@vger.kernel.org>
+Subject: Re: Fwd: mxs-lradc oops when unloading module
+References: <CAP9ODKof+yv27-zHSO9MTLC9Wv6F6Ya-Ot-vW7OK7kwadYK8Xg@mail.gmail.com> <CAP9ODKq92LW-xQyiHkVe6AkwaaYV11nt92DxCEzUioEVARTZXw@mail.gmail.com>
+In-Reply-To: <CAP9ODKq92LW-xQyiHkVe6AkwaaYV11nt92DxCEzUioEVARTZXw@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/17/2013 12:59 PM, Jacek Anaszewski wrote:
-> This driver in the current form supports:
->  - reading channels in 'one shot' mode through read_raw callback,
->  - three events - rising and falling ambient light events and 
->    rising proximity event. 
+On 06/16/2013 10:09 PM, Otavio Salvador wrote:
+> [ I am resending as it didn't make iio mailing list as the message
+> wasn't plain text ]
 > 
-> It has infrastructure for triggers implemented, but either it is
-> not implemented properly or I don't know how to initialize it from
-> user space.
+> Hello,
 > 
-> What I'd like to achieve through this RFC is (besides regular review)
-> gain some clarification on how to properly implemeint support for 
-> both events and triggers. At first I'd like to mention that I managed
-> to implement support for triggers without events. I did it by following
-> implementations of the existing drivers that support triggers,
-> but no events. Briefly, they perform following steps to setup
-> a trigger:
+> When using mxs-lradc, as module, in a MX23 and unloading the driver,
+> it sometimes oops as:
 > 
->  static irqreturn_t gp2ap002a00f_irq_handler(int irq, void *data)
->  {
->  	struct gp2ap002a00f_data *lgt = iio_priv(indio_dev);
->  
->  	// Filling the lgt->buffer with the output data from the 
-> 	// device is performed here, according to the
-> 	// indio_dev->active_scan_mask bits.
->  
->         iio_push_to_buffers(indio_dev, lgt->buffer);
->         iio_trigger_notify_done(indio_dev->trig);
->  }
-THat's a fairly standard handler for the the trigger.  That is the trigger
-interrupt handler itself fires off sub interrupts to any devices 'consuming'
-it resulting in this function being called.
+> [   46.340000] Unable to handle kernel NULL pointer dereference at
+> virtual address 00000005
+> [   46.340000] pgd = c7744000
+> [   46.350000] [00000005] *pgd=46f4d831, *pte=00000000, *ppte=00000000
+> [   46.360000] Internal error: Oops: 1 [#1] ARM
+> [   46.360000] Modules linked in: mxs_lradc(C-) industrialio_triggered_buffer
+> [   46.360000] CPU: 0 PID: 359 Comm: rmmod Tainted: G         C
+> 3.10.0-rc5+ #24
+> [   46.360000] task: c6f6a200 ti: c680e000 task.ti: c680e000
+> [   46.360000] PC is at module_put+0x18/0x80
+> [   46.360000] LR is at iio_device_unregister_trigger_consumer+0x1c/0x28
+> [   46.360000] pc : [<c0063334>]    lr : [<c0373808>]    psr: a0000013
+> [   46.360000] sp : c680feb0  ip : 60000013  fp : 01324008
+> [   46.360000] r10: 00000013  r9 : c680e000  r8 : 00000000
+> [   46.360000] r7 : c6ee9418  r6 : c0373808  r5 : c6ee8800  r4 : c6ee9810
+> [   46.360000] r3 : 00000001  r2 : c067a428  r1 : 000002e0  r0 : c6ee8800
+> [   46.360000] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+> [   46.360000] Control: 0005317f  Table: 47744000  DAC: 00000015
+> [   46.360000] Process rmmod (pid: 359, stack limit = 0xc680e1b8)
+> [   46.360000] Stack: (0xc680feb0 to 0xc6810000)
+> [   46.360000] fea0:                                     c6ee9810
+> c6ee9400 c76cff80 c0373808
+> [   46.360000] fec0: c6ee9410 c036f9bc c036f990 c6ee9418 c6ee9410
+> c02a9610 c6ee9434 c065fbe0
+> [   46.360000] fee0: c77ccbe0 c024bc40 00000000 c6ee9400 00000000
+> c74c0644 c680e000 bf0049c4
+> [   46.360000] ff00: bf004940 c74c0610 bf00589c c02ae058 c02ae044
+> c02ac8f0 bf00589c c74c0610
+> [   46.360000] ff20: bf00589c c02ad0dc bf0058dc bf00589c c065fe60
+> c02ac730 bf0058dc 00000000
+> [   46.360000] ff40: 00000800 c0064010 ffffffff 5f73786d 6461726c
+> 00000063 c6f6a200 c680e000
+> [   46.360000] ff60: c6f6a200 c000edcc 00000001 00000000 c680e000
+> bec16e48 01324008 c005c754
+> [   46.360000] ff80: 01324088 00000800 01324088 01324088 00000800
+> 01324088 00000081 c000ef08
+> [   46.360000] ffa0: 00000000 c000ed40 01324088 00000800 013240b8
+> 00000800 bec16c08 ffffeffc
+> [   46.360000] ffc0: 01324088 00000800 01324088 00000081 00000001
+> bec16c38 bec16e48 01324008
+> [   46.360000] ffe0: 4d819ef0 bec16bf4 4d808768 4d721e6c 20000010
+> 013240b8 15401540 51110540
+> [   46.360000] [<c0063334>] (module_put+0x18/0x80) from [<c0373808>]
+> (iio_device_unregister_trigger_consumer+0x1c/0x28)
+> [   46.360000] [<c0373808>]
+> (iio_device_unregister_trigger_consumer+0x1c/0x28) from [<c036f9bc>]
+> (iio_dev_release+0x2c/0x6c)
+> [   46.360000] [<c036f9bc>] (iio_dev_release+0x2c/0x6c) from
+> [<c02a9610>] (device_release+0x2c/0x90)
+> [   46.360000] [<c02a9610>] (device_release+0x2c/0x90) from
+> [<c024bc40>] (kobject_release+0x48/0x7c)
+> [   46.360000] [<c024bc40>] (kobject_release+0x48/0x7c) from
+> [<bf0049c4>] (mxs_lradc_remove+0x84/0x90 [mxs_lradc])
+> [   46.360000] [<bf0049c4>] (mxs_lradc_remove+0x84/0x90 [mxs_lradc])
+> from [<c02ae058>] (platform_drv_remove+0x14/0x18)
+> [   46.360000] [<c02ae058>] (platform_drv_remove+0x14/0x18) from
+> [<c02ac8f0>] (__device_release_driver+0x58/0xb4)
+> [   46.360000] [<c02ac8f0>] (__device_release_driver+0x58/0xb4) from
+> [<c02ad0dc>] (driver_detach+0xb4/0xb8)
+> [   46.360000] [<c02ad0dc>] (driver_detach+0xb4/0xb8) from
+> [<c02ac730>] (bus_remove_driver+0x7c/0xc0)
+> [   46.360000] [<c02ac730>] (bus_remove_driver+0x7c/0xc0) from
+> [<c0064010>] (SyS_delete_module+0x150/0x26c)
+> [   46.360000] [<c0064010>] (SyS_delete_module+0x150/0x26c) from
+> [<c000ed40>] (ret_fast_syscall+0x0/0x44)
+> [   46.360000] Code: e1a0600e 08bd8070 e5953174 e59f2060 (e5931004)
+> [   46.650000] ---[ end trace 7379015df3468e61 ]---
 > 
+> From what I could grasp, it might be related to the IIO subsystem but
+> I couldn't find the culprit.
 > 
->  int gp2ap002a00f_trig_set_state(struct iio_trigger *trig, bool state)
->  {
->  	// Here a buffer is allocated/deallocated and the device 
-> 	// related operations are performed to enable/disable 
-> 	// generating data, according to the
-> 	// indio_dev->active_scan_mask bits .
->  }
->  
->  
->  static const struct iio_trigger_ops gp2ap002a00f_trigger_ops = {
->  	.owner = THIS_MODULE,
->  	.set_trigger_state = &gp2ap002a00f_trig_set_state,
->  };
+> It seems "iio_device_unregister_trigger_consumer", as:
 > 
->  iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
->                 gp2ap002a00f_irq_handler, &gp2ap002a00f_setup_ops);
-> 
->  iio_trigger_alloc("%s-trigger", indio_dev->name);
-> 
->  err = devm_request_threaded_irq(&client->dev, client->irq,
->                             iio_trigger_generic_data_rdy_poll,
-This generic hander simply fires off the set of consumer interrupts.
-
->                             NULL,
->                             IRQF_TRIGGER_FALLING,
->                             data->trig->name,
->                             data->trig);
-> 
->  data->trig->private_data = indio_dev;
->  data->trig->ops = &gp2ap002a00f_trigger_ops;
->  data->trig->dev.parent = &data->client->dev
-> 
->  ret = iio_trigger_register(data->trig);
-> 
-> With the implementation shown above I can setup a trigger using
-> generic_buffer application.
-> 
-> Nonetheless, drivers that implement both triggers and events
-> are implemented in a somehow different manner (I followed
-> recommended max1363 driver):
-Note the max1363 does not supply a trigger of it's own.  That part
-captures data on demand and has no 'data ready' signal or similar.
-The above example of buffering suggests that this device has an internal
-clock and fires a dataready interrupt at regular intervals when monitoring?
-
-> 
-> static irqreturn_t gp2ap002a00f_event_handler(int irq, void *data)
+> void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
 > {
->         iio_push_event(indio_dev,
->                        IIO_MOD_EVENT_CODE(
->                                 IIO_LIGHT,
->                                 SCAN_MODE_LIGHT_CLEAR,
->                                 IIO_MOD_LIGHT_CLEAR,
->                                 IIO_EV_TYPE_THRESH,
->                                 IIO_EV_DIR_RISING),
->                        iio_get_time_ns());
-> 
+> /* Clean up an associated but not attached trigger reference */
+> if (indio_dev->trig)
+> iio_trigger_put(indio_dev->trig);
 > }
->
-This handles the event interrupts, but does nothing about firing off
-a trigger to any consumers.
-
->  err = iio_triggered_buffer_setup(indio_dev, NULL,
->        &gp2ap002a00f_trigger_handler, &gp2ap002a00f_buffer_setup_ops);
->
-Just note that your event handler in the actual driver sleeps so should
-the handler should be the 4th parameter with the 3rd null.
-Note this causes some complexity for iio as 'normally' the triggers
-are initialized from interrupt context.  To that end we play some
-tricks.
-
-Right now I can't actually find a driver doing this, I though the lis3l02dq
-driver did, but it seems that one won't actually run both events and the
-buffer at the same time.
-
-Anyhow to sketch out the solution you want, combine a standard threaded
-handler with the trick used in drivers/iio/trigger/iio-trig-sysfs.c in
-which and irq_work queue is used to get us back into interrupt context
-and fire off the trigger interrupts.
-
-Mostly hardware designers make our lives easy by directing event and
-dataready interrupts to different pins!
-
->  err = devm_request_threaded_irq(&client->dev, client->irq,
->                             &gp2ap002a00f_event_handler,
->                             NULL,
->                             IRQF_TRIGGER_FALLING,
->                             "gp2ap002a00f_event",
->                             indio_dev);
 > 
-> Enabling/disabling data generation seems to be handled by
-> buffer_setup_ops' preenable/postenable/predisable callbacks.
-> I've noticed also that there is update_scan_mode callback exploited
-> in some of the implementations, which I suspect serves for updating
-> scan_mode without the need for disabling a trigger?
-No. To change a scan mask you must disconnect from the trigger.  If there
-are other consumers this means the trigger will briefly stop whilst
-this one is disconnected then resume for any other consumers.
+> and , as:
+> 
+> static inline void iio_trigger_put(struct iio_trigger *trig)
+> {
+> module_put(trig->ops->owner);
+> put_device(&trig->dev);
+> }
+> 
+> so, somehow the trig->ops is NULL here.
+> 
+> Do someone has a clue?
+> 
+I think the issue is more core to iio trigger handling than that, you
+have just been unlucky enough to hit a bug that has been there a while.
 
-> 
-> With this implementation the trigger/current_trigger file is empty
-> and generic_buffer application fails. Therefore I ask for
-> clarification on what I am doing wrong here.
-You aren't actually registering a trigger as far as I can see?
+In iio_trigger_unregister we call
+iio_device_unregister which in turn calls device_del (as intended) and
+device_put (as not!).  Then we get an additional device_put from
+iio_trigger_free giving us one more than we should have an resulting
+in a double attempt to free the device.
 
-> 
-> Regarding the remaining parts of the driver - I used flags, not bit
-> fields as Jonathan requested in my driver for the lps331ap device
-> because of the need for one flag for wait_event_timeout function.
-> This flag is set in the interrupt handler and access to it must
-> be atomic. I could have gone for bit fields for the rest of the
-> flags in the driver, but I think that now the implementation
-> is more consistent.
-> 
-> I've also noticed that once initialized triggers keep some
-> IIO resources unreleased as execution of rmmod on the driver module
-> fails even after triggered capture finish. Is it a known issue?
-I have not observed this, perhaps you have not succesfully disconnected
-the consumer from the trigger? (e.g. if current_trigger is not empty
-it will not succeed).  There is a probable double free bug in the
-trigger unregistering that we are chasing down a the moment in another
-thread.
+Could you try the following change and see if it solves the problem?
+(the comment abov is 'interesting' and stupid given I've long ago
+forgotten what it refers to, but it could be related to this issue...)
 
-Jonathan
-> 
-> Thanks,
-> Jacek Anaszewski
-> 
-> Jacek Anaszewski (1):
->   iio: gp2ap002a00f: Add a driver for the device.
-> 
->  .../devicetree/bindings/iio/light/gp2ap002a00f.txt |   20 +
->  drivers/iio/light/Kconfig                          |   12 +
->  drivers/iio/light/Makefile                         |    1 +
->  drivers/iio/light/gp2ap002a00f.c                   | 1158 ++++++++++++++++++++
->  4 files changed, 1191 insertions(+), 0 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/gp2ap002a00f.txt
->  create mode 100644 drivers/iio/light/gp2ap002a00f.c
-> 
+>From 238faf76acaa9214b0eb607742dd14b134469328 Mon Sep 17 00:00:00 2001
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Sat, 22 Jun 2013 12:00:04 +0100
+Subject: [PATCH] iio:trigger: device_unregister->device_del to avoid double
+ free
+
+iio_trigger unregistration and freeing has been separated in this
+code for some time, but it looks like the calls to the device
+handling were not appropriately updated.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/industrialio-trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 4d6c7d8..ea8a414 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -104,7 +104,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+
+ 	ida_simple_remove(&iio_trigger_ida, trig_info->id);
+ 	/* Possible issue in here */
+-	device_unregister(&trig_info->dev);
++	device_del(&trig_info->dev);
+ }
+ EXPORT_SYMBOL(iio_trigger_unregister);
+
+-- 
+1.8.3
