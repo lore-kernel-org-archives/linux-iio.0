@@ -1,58 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:44766 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932129Ab3FLROn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2013 13:14:43 -0400
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Samuel Ortiz <sameo@linux.intel.com>
-Cc: =?UTF-8?q?Beno=C3=AEt=20Cousson?= <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 19/21] input: ti_am335x_tsc: return IRQ_NONE if there was no IRQ for us
-Date: Wed, 12 Jun 2013 18:58:20 +0200
-Message-Id: <1371056302-12714-20-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
-References: <1371056302-12714-1-git-send-email-bigeasy@linutronix.de>
+Received: from ns.pmeerw.net ([87.118.82.44]:42751 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751385Ab3FWV23 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Jun 2013 17:28:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>, Ge Gao <ggao@invensense.com>
+Subject: [PATCH 2/5] iio: use I2C_FUNC_SMBUS_I2C_BLOCK macro
+Date: Sun, 23 Jun 2013 23:28:17 +0200
+Message-Id: <1372022900-18670-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The previous patch ("input/ti_am335x_tsc: ACK the HW_PEN irq in ISR")
-acked the interrupt so we don't freeze if we don't handle an enabled
-interrupt source. The interrupt core has a mechanism for this and to get
-it work one should only say that it handled an interrupt if it is
-actually the case.
+I do not see why the driver requires I2C_FUNC_SMBUS_I2C_BLOCK,
+actually only single bytes or words are transferred
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Ge Gao <ggao@invensense.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 2ba7703..0e9f02a 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -314,10 +314,12 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index fe4c61e..6a1ff80 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -663,8 +663,8 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	int result;
+ 
+ 	if (!i2c_check_functionality(client->adapter,
+-					I2C_FUNC_SMBUS_READ_I2C_BLOCK |
+-					I2C_FUNC_SMBUS_WRITE_I2C_BLOCK)) {
++		I2C_FUNC_SMBUS_I2C_BLOCK)) {
++
+ 		result = -ENOSYS;
+ 		goto out_no_free;
  	}
- 
--	titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
--
--	am335x_tsc_se_update(ts_dev->mfd_tscadc);
--	return IRQ_HANDLED;
-+	if (irqclr) {
-+		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
-+		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		return IRQ_HANDLED;
-+	}
-+	return IRQ_NONE;
- }
- 
- static int titsc_parse_dt(struct platform_device *pdev,
 -- 
-1.7.10.4
+1.8.3.1
 
