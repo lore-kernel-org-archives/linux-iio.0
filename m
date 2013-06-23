@@ -1,91 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55688 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57995 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755248Ab3FKTzO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:55:14 -0400
-Message-ID: <51B7809A.1030804@kernel.org>
-Date: Tue, 11 Jun 2013 20:55:06 +0100
+	with ESMTP id S1751637Ab3FWRde (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 23 Jun 2013 13:33:34 -0400
+Message-ID: <51C73156.7040807@kernel.org>
+Date: Sun, 23 Jun 2013 18:33:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] iio/kern: consider the case where channel number > number
- of channels
-References: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
-In-Reply-To: <1370878955-31880-1-git-send-email-bigeasy@linutronix.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
+	brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C590B5.2060308@kernel.org> <51C5923D.6030609@metafoo.de> <51C5A1AF.3070404@free-electrons.com> <51C5A499.5050509@metafoo.de> <51C5A68F.3000300@free-electrons.com> <51C6FE00.8010900@metafoo.de>
+In-Reply-To: <51C6FE00.8010900@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/10/2013 04:42 PM, Sebastian Andrzej Siewior wrote:
-> On the am335x I export ADC channels indexed by their number as specified
-> in the datasheet. The channels are shared between the TSC & ADC and be
-> used either by TSC or the ADC. So it is possible that the TSC uses
-> chanels 0 & 1 and the ADC is using channels 2 & 3. The total number of
-> channles of the ADC is 2 but the individual numbers are 2 and 3.
-> This patch changes the check for the the requesting channel by walking
-> over the list and comparing the channel number.
+On 06/23/2013 02:54 PM, Lars-Peter Clausen wrote:
+> On 06/22/2013 03:28 PM, Alexandre Belloni wrote:
+>> On 22/06/2013 15:20, Lars-Peter Clausen wrote:
+>>> On 06/22/2013 03:07 PM, Alexandre Belloni wrote:
+>>>> On 22/06/2013 14:02, Lars-Peter Clausen wrote:
+>>>>> On 06/22/2013 01:55 PM, Jonathan Cameron wrote:
+>>>>>> On 06/20/2013 07:57 PM, Alexandre Belloni wrote:
+>>>>>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>>>>>>> gain and sampling rates.
+>>>>>>>
+>>>>>> Sorry, somewhat low on time today so only a quick review.
+>>>>>>
+>>>>>> 1) Missing userspace ABI documentation.  Also, perhaps min_conversions is
+>>>>>>    a little vague?  Not that I have a better idea!
+>>>>> I really don't like the name min_conversions either. Isn't this effectively
+>>>>> a decimation filter?
+>>>> Yeah, it could be seen like that but it is only relevant and only
+>>>> happens when switching between channels. I'm open to any ideas.
+>>>>
+>>> I see. Is there anything about this in the datasheet on how many conversions
+>>> you usually need? Is this really something you need to change at runtime or
+>>> does moving this to platform data work?
+>>>
+>>>
+>>
+>> There is actually nothing in the datasheet. The default value (6
+>> conversions) was found experimentally. What I did was saturating the ADC
+>> with the higher value on one channel and the lower value on the other
+>> one and I tried to find when reading both channel sequentially was
+>> resulting in a correct value.
+>>
+>> You may not need to change it at runtime. And that value mainly depend
+>> on the precision versus speed balance you want to achieve. If you know
+>> that the values on both channels will not be to far apart, then you may
+>> not need to wait at all.
+>>
+>> Would you think that is something I should hide in the DT ? Or maybe I
+>> can drop that knob for now and see if it is needed in the future.
+>>
 > 
-This doesn't work in general.  The index is not the same as channel
-(or any other form of index present). Note that modified channels may
-all have channel set to 0  (accel_x, accel_y etc for instance).
-
-The index refers directly into those channels registered.
-Is it possible for channels to move at runtime between the two units?
-I would imagine not as this is very much a case of wiring.
-
-Thus we have a fairly messy bit if interdependence in the device
-tree but it should work.
-
-I don't actually have much / any real experience of device tree configurations
-and this is Guenter's code, hence I have cc'd him.
-
-Note that it is acceptable and relatively common to have missing
-values in scan_index but that isn't really relevant here.
-
-Jonathan
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/iio/inkern.c |   13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+> It is always a good idea to be conservative when introducing new ABI, so if
+> you think we can get away with hardcoding this in the driver I think that's
+> a good idea.
 > 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index dca4eed..1a40077 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -107,6 +107,7 @@ static int __of_iio_channel_get(struct iio_channel *channel,
->  	struct iio_dev *indio_dev;
->  	int err;
->  	struct of_phandle_args iiospec;
-> +	int i;
->  
->  	err = of_parse_phandle_with_args(np, "io-channels",
->  					 "#io-channel-cells",
-> @@ -123,15 +124,13 @@ static int __of_iio_channel_get(struct iio_channel *channel,
->  	indio_dev = dev_to_iio_dev(idev);
->  	channel->indio_dev = indio_dev;
->  	index = iiospec.args_count ? iiospec.args[0] : 0;
-> -	if (index >= indio_dev->num_channels) {
-> -		err = -EINVAL;
-> -		goto err_put;
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		if (indio_dev->channels[i].channel == index) {
-> +			channel->channel = &indio_dev->channels[i];
-> +			return 0;
-> +		}
->  	}
-> -	channel->channel = &indio_dev->channels[index];
-> -
-> -	return 0;
->  
-> -err_put:
->  	iio_device_put(indio_dev);
-
-If not found (i.e. the device tree entries are garbage) we may return sucess witout
-actually having retrieved the driver.  I would suggest setting err = -EINVAL before
-the for loop.
-
->  	return err;
->  }
-> 
+I agree entirely.  We can always make it controllable later as long
+as we keep the default the same as the value you hard code in now.
