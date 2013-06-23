@@ -1,133 +1,168 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:35479 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751738Ab3FXKhb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 06:37:31 -0400
-Message-ID: <51C82169.1010203@free-electrons.com>
-Date: Mon, 24 Jun 2013 12:37:29 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Shawn Guo <shawn.guo@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
-	brian@crystalfontz.com,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Rob Landley <rob@landley.net>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
-References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C7EA23.1040707@metafoo.de>
-In-Reply-To: <51C7EA23.1040707@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ns.pmeerw.net ([87.118.82.44]:42759 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751385Ab3FWVa3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Jun 2013 17:30:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 2/4] iio: add powerdown to mcp4725 dac drive
+Date: Sun, 23 Jun 2013 23:30:18 +0200
+Message-Id: <1372023020-18742-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
+References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/06/2013 08:41, Lars-Peter Clausen wrote:
-> On 06/20/2013 08:57 PM, Alexandre Belloni wrote:
->> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
->> gain and sampling rates.
->>
->> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
->> ---
->>  .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
->>  drivers/iio/adc/Kconfig                            |   9 +
->>  drivers/iio/adc/Makefile                           |   1 +
->>  drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
->>  4 files changed, 630 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
->>  create mode 100644 drivers/iio/adc/nau7802.c
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
->> new file mode 100644
->> index 0000000..9bc4218
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
->> @@ -0,0 +1,17 @@
->> +* Nuvoton NAU7802 Analog to Digital Converter (ADC)use
->> +
->> +Required properties:
->> +  - compatible: Should be "nuvoton,nau7802"
->> +  - reg: Should contain the ADC I2C address
->> +
->> +Optional properties:
->> +  - nuvoton,vldo: Reference voltage in millivolts (integer)
->> +  - interrupts: IRQ line for the ADC. If not used the driver will use
->> +    polling.
->> +
->> +Example:
->> +adc2: nau7802@2a {
->> +	compatible = "nuvoton,nau7802";
->> +	reg = <0x2a>;
->> +	nuvoton,vldo = <3000>;
-> We usually use the regulator framework for specifying the reference voltage.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/dac/mcp4725.c | 87 +++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 85 insertions(+), 2 deletions(-)
 
-I followed what Jonathan said in his review of my first patch. Do we
-want to use the regulator framework to set the internal reference
-voltage of the ADC ? I agree that if you supply an external voltage, it
-will be necessary to use the regulator framework. Unfortunately, I can't
-test that here.
-
->> +};
-> [...]
->> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
->> new file mode 100644
->> index 0000000..e1b6981
->> --- /dev/null
->> +++ b/drivers/iio/adc/nau7802.c
->> @@ -0,0 +1,603 @@
-> [...]
->> +static int nau7802_set_gain(struct nau7802_state *st, int gain)
->> +{
->> +	u8 data;
->> +	int ret;
->> +
->> +	mutex_lock(&st->lock);
->> +	st->conversion_count = 0;
->> +
->> +	data = i2c_smbus_read_byte_data(st->client, NAU7802_REG_CTRL1);
->> +	if (data < 0)
->> +		goto nau7802_sysfs_set_gain_out;
-> ret will be uninitialized if the goto above is taken
-
-Right, bigger issue, data is u8 so it will never be negative. I'm fixing
-that !
-
-
->> +	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL1,
->> +					(data & (~NAU7802_CTRL1_GAINS_BITS)) |
->> +					gain);
->> +
->> +nau7802_sysfs_set_gain_out:
->> +	mutex_unlock(&st->lock);
->> +
->> +	return ret ? ret : 0;
->> +}
-> [...]
->> +static int nau7802_read_irq(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *chan,
->> +			int *val)
->> +{
->> +	struct nau7802_state *st = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	INIT_COMPLETION(st->value_ok);
->> +	enable_irq(st->client->irq);
-> Is it really necessary to enable/disable the IRQ or could you keep it
-> enabled all the time?
-
-Fact is that the ADC doesn't really care if you are reading data or not
-so you will probably endd up in a situation were you will get 320 IRQ
-per second but not caring about the result. We have 3 ADCs on the board.
-so that amounts to 960 IRQ per second when we are only reading like once
-par second !
-
-
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index cb9db90..f569738 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -31,15 +31,19 @@ struct mcp4725_data {
+ 	struct i2c_client *client;
+ 	u16 vref_mv;
+ 	u16 dac_value;
++	bool powerdown;
++	unsigned powerdown_mode;
+ };
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int mcp4725_suspend(struct device *dev)
+ {
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mcp4725_data *data = iio_priv(indio_dev);
+ 	u8 outbuf[2];
+ 
+-	outbuf[0] = 0x3 << 4; /* power-down bits, 500 kOhm resistor */
++	outbuf[0] = (data->powerdown_mode + 1) << 4;
+ 	outbuf[1] = 0;
++	data->powerdown = true;
+ 
+ 	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
+ }
+@@ -53,10 +57,12 @@ static int mcp4725_resume(struct device *dev)
+ 	/* restore previous DAC value */
+ 	outbuf[0] = (data->dac_value >> 8) & 0xf;
+ 	outbuf[1] = data->dac_value & 0xff;
++	data->powerdown = false;
+ 
+ 	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
+ static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops, mcp4725_suspend, mcp4725_resume);
+ #define MCP4725_PM_OPS (&mcp4725_pm_ops)
+ #else
+@@ -123,6 +129,78 @@ static const struct attribute_group mcp4725_attribute_group = {
+ 	.attrs = mcp4725_attributes,
+ };
+ 
++static const char * const mcp4725_powerdown_modes[] = {
++	"1kohm_to_gnd",
++	"100kohm_to_gnd",
++	"500kohm_to_gnd"
++};
++
++static int mcp4725_get_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++
++	return data->powerdown_mode;
++}
++
++static int mcp4725_set_powerdown_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned mode)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++
++	data->powerdown_mode = mode;
++
++	return 0;
++}
++
++static ssize_t mcp4725_read_powerdown(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", data->powerdown);
++}
++
++static ssize_t mcp4725_write_powerdown(struct iio_dev *indio_dev,
++	 uintptr_t private, const struct iio_chan_spec *chan,
++	 const char *buf, size_t len)
++{
++	struct mcp4725_data *data = iio_priv(indio_dev);
++	bool state;
++	int ret;
++
++	ret = strtobool(buf, &state);
++	if (ret)
++		return ret;
++
++	if (state)
++		ret = mcp4725_suspend(&data->client->dev);
++	else
++		ret = mcp4725_resume(&data->client->dev);
++	if (ret < 0)
++		return ret;
++
++	return len;
++}
++
++static const struct iio_enum mcp4725_powerdown_mode_enum = {
++	.items = mcp4725_powerdown_modes,
++	.num_items = ARRAY_SIZE(mcp4725_powerdown_modes),
++	.get = mcp4725_get_powerdown_mode,
++	.set = mcp4725_set_powerdown_mode,
++};
++
++static const struct iio_chan_spec_ext_info mcp4725_ext_info[] = {
++	{
++		.name = "powerdown",
++		.read = mcp4725_read_powerdown,
++		.write = mcp4725_write_powerdown,
++	},
++	IIO_ENUM("powerdown_mode", false, &mcp4725_powerdown_mode_enum),
++	IIO_ENUM_AVAILABLE("powerdown_mode", &mcp4725_powerdown_mode_enum),
++	{ },
++};
++
+ static const struct iio_chan_spec mcp4725_channel = {
+ 	.type		= IIO_VOLTAGE,
+ 	.indexed	= 1,
+@@ -131,6 +209,7 @@ static const struct iio_chan_spec mcp4725_channel = {
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 	.scan_type	= IIO_ST('u', 12, 16, 0),
++	.ext_info	= mcp4725_ext_info,
+ };
+ 
+ static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
+@@ -208,6 +287,7 @@ static int mcp4725_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	struct mcp4725_platform_data *platform_data = client->dev.platform_data;
+ 	u8 inbuf[3];
++	u8 pd;
+ 	int err;
+ 
+ 	if (!platform_data || !platform_data->vref_mv) {
+@@ -239,6 +319,9 @@ static int mcp4725_probe(struct i2c_client *client,
+ 		dev_err(&client->dev, "failed to read DAC value");
+ 		goto exit_free_device;
+ 	}
++	pd = (inbuf[0] >> 1) & 0x3;
++	data->powerdown = pd > 0 ? true : false;
++	data->powerdown_mode = pd ? pd-1 : 2; /* 500kohm_to_gnd */
+ 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
+ 
+ 	err = iio_device_register(indio_dev);
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.8.3.1
 
