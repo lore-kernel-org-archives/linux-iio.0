@@ -1,62 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-223.synserver.de ([212.40.185.223]:1138 "EHLO
-	smtp-out-223.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751155Ab3FXGR4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 02:17:56 -0400
-Message-ID: <51C7E4A6.7020107@metafoo.de>
-Date: Mon, 24 Jun 2013 08:18:14 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: fix typos in dac Kconfig
-References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ns.pmeerw.net ([87.118.82.44]:42761 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751377Ab3FWVa3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Jun 2013 17:30:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/4] iio: move ABI specification for store_eeprom; is used by ad9523, mcp4725 and ds1077 devices
+Date: Sun, 23 Jun 2013 23:30:20 +0200
+Message-Id: <1372023020-18742-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
+References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/23/2013 11:28 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+ Documentation/ABI/testing/sysfs-bus-iio                  | 8 ++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 | 8 --------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks
-
-> ---
->  drivers/iio/dac/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index c9c33ce..b9fd4c7 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -15,7 +15,7 @@ config AD5064
->  	  module will be called ad5064.
->  
->  config AD5360
-> -	tristate "Analog Devices Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
-> +	tristate "Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
->  	depends on SPI
->  	help
->  	  Say yes here to build support for Analog Devices AD5360, AD5361,
-> @@ -68,7 +68,7 @@ config AD5446
->  	  module will be called ad5446.
->  
->  config AD5449
-> -	tristate "Analog Device AD5449 and similar DACs driver"
-> +	tristate "Analog Devices AD5449 and similar DACs driver"
->  	depends on SPI_MASTER
->  	help
->  	  Say yes here to build support for Analog Devices AD5415, AD5426, AD5429,
-> @@ -131,7 +131,7 @@ config AD5686
->  	  module will be called ad5686.
->  
->  config AD7303
-> -	tristate "Analog Devices Analog Devices AD7303 DAC driver"
-> +	tristate "Analog Devices AD7303 DAC driver"
->  	depends on SPI
->  	help
->  	  Say yes here to build support for Analog Devices AD7303 Digital to Analog
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 0af1af0..d43ca5c 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -793,3 +793,11 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to read the amount of quadrature error
+ 		present in the device at a given time.
++
++What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
++KernelVersion:	3.4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Writing '1' stores the current device configuration into
++		on-chip EEPROM. After power-up or chip reset the device will
++		automatically load the saved configuration.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+index 2ce9c3f..a91aeab 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+@@ -18,14 +18,6 @@ Description:
+ 		Reading returns either '1' or '0'. '1' means that the
+ 		pllY is locked.
+ 
+-What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+-KernelVersion:	3.4.0
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Writing '1' stores the current device configuration into
+-		on-chip EEPROM. After power-up or chip reset the device will
+-		automatically load the saved configuration.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/sync_dividers
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
+-- 
+1.8.3.1
 
