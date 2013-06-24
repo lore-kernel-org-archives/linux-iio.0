@@ -1,143 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47818 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750783Ab3FXQKQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 24 Jun 2013 12:10:16 -0400
-Date: Mon, 24 Jun 2013 18:10:15 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio: add store_eeprom to mcp4725 dac driver
-In-Reply-To: <206df056-f8ec-43a4-b8ff-d9d6eb2edee7@email.android.com>
-Message-ID: <alpine.DEB.2.01.1306241808400.13960@pmeerw.net>
-References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net> <206df056-f8ec-43a4-b8ff-d9d6eb2edee7@email.android.com>
+Received: from smtp-out-223.synserver.de ([212.40.185.223]:1138 "EHLO
+	smtp-out-223.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751155Ab3FXGR4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 02:17:56 -0400
+Message-ID: <51C7E4A6.7020107@metafoo.de>
+Date: Mon, 24 Jun 2013 08:18:14 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: fix typos in dac Kconfig
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 06/23/2013 11:28 PM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
 
-> >Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+
+Thanks
+
+> ---
+>  drivers/iio/dac/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Abi docs?
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index c9c33ce..b9fd4c7 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -15,7 +15,7 @@ config AD5064
+>  	  module will be called ad5064.
+>  
+>  config AD5360
+> -	tristate "Analog Devices Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
+> +	tristate "Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
+>  	depends on SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5360, AD5361,
+> @@ -68,7 +68,7 @@ config AD5446
+>  	  module will be called ad5446.
+>  
+>  config AD5449
+> -	tristate "Analog Device AD5449 and similar DACs driver"
+> +	tristate "Analog Devices AD5449 and similar DACs driver"
+>  	depends on SPI_MASTER
+>  	help
+>  	  Say yes here to build support for Analog Devices AD5415, AD5426, AD5429,
+> @@ -131,7 +131,7 @@ config AD5686
+>  	  module will be called ad5686.
+>  
+>  config AD7303
+> -	tristate "Analog Devices Analog Devices AD7303 DAC driver"
+> +	tristate "Analog Devices AD7303 DAC driver"
+>  	depends on SPI
+>  	help
+>  	  Say yes here to build support for Analog Devices AD7303 Digital to Analog
 
-see patch 4 of the series, http://thread.gmane.org/gmane.linux.kernel.iio/7834
-
-the idea is to move store_eeprom from 
-Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-to
-Documentation/ABI/testing/sysfs-bus-iio
-i.e. reuse existing ABI
-
-p.
-
-> >---
-> >drivers/iio/dac/mcp4725.c | 64
-> >+++++++++++++++++++++++++++++++++++++++++++++--
-> > 1 file changed, 62 insertions(+), 2 deletions(-)
-> >
-> >diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> >index a612ec7..cb9db90 100644
-> >--- a/drivers/iio/dac/mcp4725.c
-> >+++ b/drivers/iio/dac/mcp4725.c
-> >@@ -12,14 +12,13 @@
-> >* driver for the Microchip I2C 12-bit digital-to-analog converter (DAC)
-> >  * (7-bit I2C slave address 0x60, the three LSBs can be configured in
-> >  * hardware)
-> >- *
-> >- * writing the DAC value to EEPROM is not supported
-> >  */
-> > 
-> > #include <linux/module.h>
-> > #include <linux/init.h>
-> > #include <linux/i2c.h>
-> > #include <linux/err.h>
-> >+#include <linux/delay.h>
-> > 
-> > #include <linux/iio/iio.h>
-> > #include <linux/iio/sysfs.h>
-> >@@ -64,6 +63,66 @@ static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops,
-> >mcp4725_suspend, mcp4725_resume);
-> > #define MCP4725_PM_OPS NULL
-> > #endif
-> > 
-> >+static int mcp4725_store_eeprom(struct device *dev,
-> >+	struct device_attribute *attr, const char *buf, size_t len)
-> >+{
-> >+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >+	struct mcp4725_data *data = iio_priv(indio_dev);
-> >+	int tries = 20;
-> >+	u8 inoutbuf[3];
-> >+	bool state;
-> >+	int ret;
-> >+
-> >+	ret = strtobool(buf, &state);
-> >+	if (ret < 0)
-> >+		return ret;
-> >+
-> >+	if (!state)
-> >+		return 0;
-> >+
-> >+	inoutbuf[0] = 0x60; /* write EEPROM */
-> >+	inoutbuf[1] = data->dac_value >> 4;
-> >+	inoutbuf[2] = (data->dac_value & 0xf) << 4;
-> >+
-> >+	ret = i2c_master_send(data->client, inoutbuf, 3);
-> >+	if (ret < 0)
-> >+		return ret;
-> >+	else if (ret != 3)
-> >+		return -EIO;
-> >+
-> >+	/* wait for write complete, takes up to 50ms */
-> >+	while (tries--) {
-> >+		msleep(20);
-> >+		ret = i2c_master_recv(data->client, inoutbuf, 3);
-> >+		if (ret < 0)
-> >+			return ret;
-> >+		else if (ret != 3)
-> >+			return -EIO;
-> >+
-> >+		if (inoutbuf[0] & 0x80)
-> >+			break;
-> >+	}
-> >+
-> >+	if (tries < 0) {
-> >+		dev_err(&data->client->dev,
-> >+			"mcp4725_store_eeprom() failed, incomplete\n");
-> >+		return -EIO;
-> >+	}
-> >+
-> >+	return len;
-> >+}
-> >+
-> >+static IIO_DEVICE_ATTR(store_eeprom, S_IWUSR, NULL,
-> >mcp4725_store_eeprom, 0);
-> >+
-> >+static struct attribute *mcp4725_attributes[] = {
-> >+	&iio_dev_attr_store_eeprom.dev_attr.attr,
-> >+	NULL,
-> >+};
-> >+
-> >+static const struct attribute_group mcp4725_attribute_group = {
-> >+	.attrs = mcp4725_attributes,
-> >+};
-> >+
-> > static const struct iio_chan_spec mcp4725_channel = {
-> > 	.type		= IIO_VOLTAGE,
-> > 	.indexed	= 1,
-> >@@ -138,6 +197,7 @@ static int mcp4725_write_raw(struct iio_dev
-> >*indio_dev,
-> > static const struct iio_info mcp4725_info = {
-> > 	.read_raw = mcp4725_read_raw,
-> > 	.write_raw = mcp4725_write_raw,
-> >+	.attrs = &mcp4725_attribute_group,
-> > 	.driver_module = THIS_MODULE,
-> > };
-> > 
-> 
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
