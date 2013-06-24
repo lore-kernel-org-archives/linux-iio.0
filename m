@@ -1,54 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:48176 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752662Ab3FXRrN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 24 Jun 2013 13:47:13 -0400
-Date: Mon, 24 Jun 2013 19:47:12 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: add ds1077 programmable oscillator driver
-In-Reply-To: <51C87806.5000700@metafoo.de>
-Message-ID: <alpine.DEB.2.01.1306241932420.13960@pmeerw.net>
-References: <1371938043-3865-1-git-send-email-pmeerw@pmeerw.net> <51C87806.5000700@metafoo.de>
+Received: from smtp-out-228.synserver.de ([212.40.185.228]:1048 "EHLO
+	smtp-out-228.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752556Ab3FXQlI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 12:41:08 -0400
+Message-ID: <51C876B2.1050103@metafoo.de>
+Date: Mon, 24 Jun 2013 18:41:22 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
+	brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C7EA23.1040707@metafoo.de> <51C82169.1010203@free-electrons.com>
+In-Reply-To: <51C82169.1010203@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
-
-> Hm, I wonder where we should draw the line between what should be
-> implemented as a IIO driver and what should be implemented as a clk API
-> driver. This one looks like it actually belongs into the clk framework.
-
-several IIO drivers have overlap with other kernel subsystems
-
-I think the 'line' depends on the intended use/application of the driver, 
-not so much on characteristics of the hardware; why do you think it 
-belongs to clk?
-
-the ds1077 is a small, separate chip which can generate a frequency; using 
-IIO I can easily control that frequency from userspace
-
-clk seems to be targetted more at integrated clocksources that get 
-activated automatically when needed by other components (maybe I am wrong)
-
-regards, p.
-
-> > ---
-> >  drivers/iio/frequency/Kconfig        |  10 +
-> >  drivers/iio/frequency/Makefile       |   1 +
-> >  drivers/iio/frequency/ds1077.c       | 425 +++++++++++++++++++++++++++++++++++
-> >  include/linux/iio/frequency/ds1077.h |  22 ++
-> >  4 files changed, 458 insertions(+)
-> >  create mode 100644 drivers/iio/frequency/ds1077.c
-> >  create mode 100644 include/linux/iio/frequency/ds1077.h
-> > 
-> [...}
+On 06/24/2013 12:37 PM, Alexandre Belloni wrote:
+> On 24/06/2013 08:41, Lars-Peter Clausen wrote:
+>> On 06/20/2013 08:57 PM, Alexandre Belloni wrote:
+>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>>> gain and sampling rates.
+>>>
+>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>>> ---
+>>>  .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
+>>>  drivers/iio/adc/Kconfig                            |   9 +
+>>>  drivers/iio/adc/Makefile                           |   1 +
+>>>  drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
+>>>  4 files changed, 630 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>>>  create mode 100644 drivers/iio/adc/nau7802.c
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>>> new file mode 100644
+>>> index 0000000..9bc4218
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>>> @@ -0,0 +1,17 @@
+>>> +* Nuvoton NAU7802 Analog to Digital Converter (ADC)use
+>>> +
+>>> +Required properties:
+>>> +  - compatible: Should be "nuvoton,nau7802"
+>>> +  - reg: Should contain the ADC I2C address
+>>> +
+>>> +Optional properties:
+>>> +  - nuvoton,vldo: Reference voltage in millivolts (integer)
+>>> +  - interrupts: IRQ line for the ADC. If not used the driver will use
+>>> +    polling.
+>>> +
+>>> +Example:
+>>> +adc2: nau7802@2a {
+>>> +	compatible = "nuvoton,nau7802";
+>>> +	reg = <0x2a>;
+>>> +	nuvoton,vldo = <3000>;
+>> We usually use the regulator framework for specifying the reference voltage.
 > 
+> I followed what Jonathan said in his review of my first patch. Do we
+> want to use the regulator framework to set the internal reference
+> voltage of the ADC ? I agree that if you supply an external voltage, it
+> will be necessary to use the regulator framework. Unfortunately, I can't
+> test that here.
+>
 
--- 
+Ah, ok I missed that it is an internally generated voltage. It might makes
+sense to add that to the properties documentation.
 
-Peter Meerwald
-+43-664-2444418 (mobile)
+I guess ideally you'd also register a regulator for the internal regulator
+and then use that. But I think that will unnecessarily complicate the code,
+so I guess the current solution is fine.
+
+There is one bug in probe though, if nuvoton,vldo is not set tmp will remain
+uninitialized.
+
+
+>>> +};
+>> [...]
+>>> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
+>>> new file mode 100644
+>>> index 0000000..e1b6981
+>>> --- /dev/null
+>>> +++ b/drivers/iio/adc/nau7802.c
+>>> @@ -0,0 +1,603 @@
+>> [...]
+>>> +static int nau7802_set_gain(struct nau7802_state *st, int gain)
+>>> +{
+>>> +	u8 data;
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&st->lock);
+>>> +	st->conversion_count = 0;
+>>> +
+>>> +	data = i2c_smbus_read_byte_data(st->client, NAU7802_REG_CTRL1);
+>>> +	if (data < 0)
+>>> +		goto nau7802_sysfs_set_gain_out;
+>> ret will be uninitialized if the goto above is taken
+> 
+> Right, bigger issue, data is u8 so it will never be negative. I'm fixing
+> that !
+> 
+> 
+>>> +	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL1,
+>>> +					(data & (~NAU7802_CTRL1_GAINS_BITS)) |
+>>> +					gain);
+>>> +
+>>> +nau7802_sysfs_set_gain_out:
+>>> +	mutex_unlock(&st->lock);
+>>> +
+>>> +	return ret ? ret : 0;
+>>> +}
+>> [...]
+>>> +static int nau7802_read_irq(struct iio_dev *indio_dev,
+>>> +			struct iio_chan_spec const *chan,
+>>> +			int *val)
+>>> +{
+>>> +	struct nau7802_state *st = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	INIT_COMPLETION(st->value_ok);
+>>> +	enable_irq(st->client->irq);
+>> Is it really necessary to enable/disable the IRQ or could you keep it
+>> enabled all the time?
+> 
+> Fact is that the ADC doesn't really care if you are reading data or not
+> so you will probably endd up in a situation were you will get 320 IRQ
+> per second but not caring about the result. We have 3 ADCs on the board.
+> so that amounts to 960 IRQ per second when we are only reading like once
+> par second !
+
+Ah, ok, makes sense.
+
