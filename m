@@ -1,62 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:42761 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751377Ab3FWVa3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Jun 2013 17:30:29 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/4] iio: move ABI specification for store_eeprom; is used by ad9523, mcp4725 and ds1077 devices
-Date: Sun, 23 Jun 2013 23:30:20 +0200
-Message-Id: <1372023020-18742-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
-References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail.free-electrons.com ([94.23.35.102]:35479 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751738Ab3FXKhb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 06:37:31 -0400
+Message-ID: <51C82169.1010203@free-electrons.com>
+Date: Mon, 24 Jun 2013 12:37:29 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Shawn Guo <shawn.guo@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
+	brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>
+Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C7EA23.1040707@metafoo.de>
+In-Reply-To: <51C7EA23.1040707@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
- Documentation/ABI/testing/sysfs-bus-iio                  | 8 ++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 | 8 --------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+On 24/06/2013 08:41, Lars-Peter Clausen wrote:
+> On 06/20/2013 08:57 PM, Alexandre Belloni wrote:
+>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>> gain and sampling rates.
+>>
+>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>> ---
+>>  .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
+>>  drivers/iio/adc/Kconfig                            |   9 +
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
+>>  4 files changed, 630 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>>  create mode 100644 drivers/iio/adc/nau7802.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>> new file mode 100644
+>> index 0000000..9bc4218
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+>> @@ -0,0 +1,17 @@
+>> +* Nuvoton NAU7802 Analog to Digital Converter (ADC)use
+>> +
+>> +Required properties:
+>> +  - compatible: Should be "nuvoton,nau7802"
+>> +  - reg: Should contain the ADC I2C address
+>> +
+>> +Optional properties:
+>> +  - nuvoton,vldo: Reference voltage in millivolts (integer)
+>> +  - interrupts: IRQ line for the ADC. If not used the driver will use
+>> +    polling.
+>> +
+>> +Example:
+>> +adc2: nau7802@2a {
+>> +	compatible = "nuvoton,nau7802";
+>> +	reg = <0x2a>;
+>> +	nuvoton,vldo = <3000>;
+> We usually use the regulator framework for specifying the reference voltage.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 0af1af0..d43ca5c 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -793,3 +793,11 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute is used to read the amount of quadrature error
- 		present in the device at a given time.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
-+KernelVersion:	3.4.0
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Writing '1' stores the current device configuration into
-+		on-chip EEPROM. After power-up or chip reset the device will
-+		automatically load the saved configuration.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-index 2ce9c3f..a91aeab 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-@@ -18,14 +18,6 @@ Description:
- 		Reading returns either '1' or '0'. '1' means that the
- 		pllY is locked.
- 
--What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Writing '1' stores the current device configuration into
--		on-chip EEPROM. After power-up or chip reset the device will
--		automatically load the saved configuration.
--
- What:		/sys/bus/iio/devices/iio:deviceX/sync_dividers
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+I followed what Jonathan said in his review of my first patch. Do we
+want to use the regulator framework to set the internal reference
+voltage of the ADC ? I agree that if you supply an external voltage, it
+will be necessary to use the regulator framework. Unfortunately, I can't
+test that here.
+
+>> +};
+> [...]
+>> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
+>> new file mode 100644
+>> index 0000000..e1b6981
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/nau7802.c
+>> @@ -0,0 +1,603 @@
+> [...]
+>> +static int nau7802_set_gain(struct nau7802_state *st, int gain)
+>> +{
+>> +	u8 data;
+>> +	int ret;
+>> +
+>> +	mutex_lock(&st->lock);
+>> +	st->conversion_count = 0;
+>> +
+>> +	data = i2c_smbus_read_byte_data(st->client, NAU7802_REG_CTRL1);
+>> +	if (data < 0)
+>> +		goto nau7802_sysfs_set_gain_out;
+> ret will be uninitialized if the goto above is taken
+
+Right, bigger issue, data is u8 so it will never be negative. I'm fixing
+that !
+
+
+>> +	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL1,
+>> +					(data & (~NAU7802_CTRL1_GAINS_BITS)) |
+>> +					gain);
+>> +
+>> +nau7802_sysfs_set_gain_out:
+>> +	mutex_unlock(&st->lock);
+>> +
+>> +	return ret ? ret : 0;
+>> +}
+> [...]
+>> +static int nau7802_read_irq(struct iio_dev *indio_dev,
+>> +			struct iio_chan_spec const *chan,
+>> +			int *val)
+>> +{
+>> +	struct nau7802_state *st = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	INIT_COMPLETION(st->value_ok);
+>> +	enable_irq(st->client->irq);
+> Is it really necessary to enable/disable the IRQ or could you keep it
+> enabled all the time?
+
+Fact is that the ADC doesn't really care if you are reading data or not
+so you will probably endd up in a situation were you will get 320 IRQ
+per second but not caring about the result. We have 3 ADCs on the board.
+so that amounts to 960 IRQ per second when we are only reading like once
+par second !
+
+
 -- 
-1.8.3.1
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
