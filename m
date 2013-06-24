@@ -1,92 +1,143 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog116.obsmtp.com ([207.126.144.141]:58283 "EHLO
-	eu1sys200aog116.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752474Ab3FXGaT convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 24 Jun 2013 02:30:19 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 24 Jun 2013 08:30:03 +0200
-Subject: Re: [PATCH 5/5] iio: reword help text of several IIO_ST drivers
-Message-ID: <3381694.P0QkDB0nbp@ctocwl0124>
-References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
- <1372022900-18670-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1372022900-18670-5-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset="us-ascii"
+Received: from ns.pmeerw.net ([87.118.82.44]:47818 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750783Ab3FXQKQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 24 Jun 2013 12:10:16 -0400
+Date: Mon, 24 Jun 2013 18:10:15 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: add store_eeprom to mcp4725 dac driver
+In-Reply-To: <206df056-f8ec-43a4-b8ff-d9d6eb2edee7@email.android.com>
+Message-ID: <alpine.DEB.2.01.1306241808400.13960@pmeerw.net>
+References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net> <206df056-f8ec-43a4-b8ff-d9d6eb2edee7@email.android.com>
 MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: "Denis Ciocca" <denis.ciocca@st.com>
 
-On Sunday, June 23, 2013 11:28:20 PM Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> ---
->  drivers/iio/accel/Kconfig        | 4 ++--
->  drivers/iio/gyro/Kconfig         | 4 ++--
->  drivers/iio/magnetometer/Kconfig | 4 ++--
->  drivers/iio/pressure/Kconfig     | 4 ++--
->  4 files changed, 8 insertions(+), 8 deletions(-)
+> >Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 719d83f..a002675 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -33,8 +33,8 @@ config IIO_ST_ACCEL_3AXIS
->  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
->  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330.
+> Abi docs?
+
+see patch 4 of the series, http://thread.gmane.org/gmane.linux.kernel.iio/7834
+
+the idea is to move store_eeprom from 
+Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+to
+Documentation/ABI/testing/sysfs-bus-iio
+i.e. reuse existing ABI
+
+p.
+
+> >---
+> >drivers/iio/dac/mcp4725.c | 64
+> >+++++++++++++++++++++++++++++++++++++++++++++--
+> > 1 file changed, 62 insertions(+), 2 deletions(-)
+> >
+> >diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> >index a612ec7..cb9db90 100644
+> >--- a/drivers/iio/dac/mcp4725.c
+> >+++ b/drivers/iio/dac/mcp4725.c
+> >@@ -12,14 +12,13 @@
+> >* driver for the Microchip I2C 12-bit digital-to-analog converter (DAC)
+> >  * (7-bit I2C slave address 0x60, the three LSBs can be configured in
+> >  * hardware)
+> >- *
+> >- * writing the DAC value to EEPROM is not supported
+> >  */
+> > 
+> > #include <linux/module.h>
+> > #include <linux/init.h>
+> > #include <linux/i2c.h>
+> > #include <linux/err.h>
+> >+#include <linux/delay.h>
+> > 
+> > #include <linux/iio/iio.h>
+> > #include <linux/iio/sysfs.h>
+> >@@ -64,6 +63,66 @@ static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops,
+> >mcp4725_suspend, mcp4725_resume);
+> > #define MCP4725_PM_OPS NULL
+> > #endif
+> > 
+> >+static int mcp4725_store_eeprom(struct device *dev,
+> >+	struct device_attribute *attr, const char *buf, size_t len)
+> >+{
+> >+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >+	struct mcp4725_data *data = iio_priv(indio_dev);
+> >+	int tries = 20;
+> >+	u8 inoutbuf[3];
+> >+	bool state;
+> >+	int ret;
+> >+
+> >+	ret = strtobool(buf, &state);
+> >+	if (ret < 0)
+> >+		return ret;
+> >+
+> >+	if (!state)
+> >+		return 0;
+> >+
+> >+	inoutbuf[0] = 0x60; /* write EEPROM */
+> >+	inoutbuf[1] = data->dac_value >> 4;
+> >+	inoutbuf[2] = (data->dac_value & 0xf) << 4;
+> >+
+> >+	ret = i2c_master_send(data->client, inoutbuf, 3);
+> >+	if (ret < 0)
+> >+		return ret;
+> >+	else if (ret != 3)
+> >+		return -EIO;
+> >+
+> >+	/* wait for write complete, takes up to 50ms */
+> >+	while (tries--) {
+> >+		msleep(20);
+> >+		ret = i2c_master_recv(data->client, inoutbuf, 3);
+> >+		if (ret < 0)
+> >+			return ret;
+> >+		else if (ret != 3)
+> >+			return -EIO;
+> >+
+> >+		if (inoutbuf[0] & 0x80)
+> >+			break;
+> >+	}
+> >+
+> >+	if (tries < 0) {
+> >+		dev_err(&data->client->dev,
+> >+			"mcp4725_store_eeprom() failed, incomplete\n");
+> >+		return -EIO;
+> >+	}
+> >+
+> >+	return len;
+> >+}
+> >+
+> >+static IIO_DEVICE_ATTR(store_eeprom, S_IWUSR, NULL,
+> >mcp4725_store_eeprom, 0);
+> >+
+> >+static struct attribute *mcp4725_attributes[] = {
+> >+	&iio_dev_attr_store_eeprom.dev_attr.attr,
+> >+	NULL,
+> >+};
+> >+
+> >+static const struct attribute_group mcp4725_attribute_group = {
+> >+	.attrs = mcp4725_attributes,
+> >+};
+> >+
+> > static const struct iio_chan_spec mcp4725_channel = {
+> > 	.type		= IIO_VOLTAGE,
+> > 	.indexed	= 1,
+> >@@ -138,6 +197,7 @@ static int mcp4725_write_raw(struct iio_dev
+> >*indio_dev,
+> > static const struct iio_info mcp4725_info = {
+> > 	.read_raw = mcp4725_read_raw,
+> > 	.write_raw = mcp4725_write_raw,
+> >+	.attrs = &mcp4725_attribute_group,
+> > 	.driver_module = THIS_MODULE,
+> > };
+> > 
 > 
-> -	  This driver can also be built as a module. If so, will be created
-> -	  these modules:
-> +	  This driver can also be built as a module. If so, these modules
-> +	  will be created:
->  	  - st_accel (core functions for the driver [it is mandatory]);
->  	  - st_accel_i2c (necessary for the I2C devices [optional*]);
->  	  - st_accel_spi (necessary for the SPI devices [optional*]);
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 8498e9d..1fdcc84 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -58,8 +58,8 @@ config IIO_ST_GYRO_3AXIS
->  	  Say yes here to build support for STMicroelectronics gyroscopes:
->  	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
 > 
-> -	  This driver can also be built as a module. If so, will be created
-> -	  these modules:
-> +	  This driver can also be built as a module. If so, these modules
-> +	  will be created:
->  	  - st_gyro (core functions for the driver [it is mandatory]);
->  	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
->  	  - st_gyro_spi (necessary for the SPI devices [optional*]);
-> diff --git a/drivers/iio/magnetometer/Kconfig
-> b/drivers/iio/magnetometer/Kconfig index c332b0a..4d55b1b 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -36,8 +36,8 @@ config IIO_ST_MAGN_3AXIS
->  	  Say yes here to build support for STMicroelectronics magnetometers:
->  	  LSM303DLHC, LSM303DLM, LIS3MDL.
-> 
-> -	  This driver can also be built as a module. If so, will be created
-> -	  these modules:
-> +	  This driver can also be built as a module. If so, these modules
-> +	  will be created:
->  	  - st_magn (core functions for the driver [it is mandatory]);
->  	  - st_magn_i2c (necessary for the I2C devices [optional*]);
->  	  - st_magn_spi (necessary for the SPI devices [optional*]);
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index 3cba7f5..56ae890 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -14,8 +14,8 @@ config IIO_ST_PRESS
->  	  Say yes here to build support for STMicroelectronics pressure
->  	  sensors: LPS331AP.
-> 
-> -	  This driver can also be built as a module. If so, will be created
-> -	  these modules:
-> +	  This driver can also be built as a module. If so, these modules
-> +	  will be created:
->  	  - st_pressure (core functions for the driver [it is mandatory]);
->  	  - st_pressure_i2c (necessary for the I2C devices [optional*]);
->  	  - st_pressure_spi (necessary for the SPI devices [optional*]);
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
