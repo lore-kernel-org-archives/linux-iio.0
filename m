@@ -1,176 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-223.synserver.de ([212.40.185.223]:1106 "EHLO
-	smtp-out-223.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752310Ab3FXGl1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 02:41:27 -0400
-Message-ID: <51C7EA23.1040707@metafoo.de>
-Date: Mon, 24 Jun 2013 08:41:39 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from eu1sys200aog116.obsmtp.com ([207.126.144.141]:58283 "EHLO
+	eu1sys200aog116.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752474Ab3FXGaT convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 24 Jun 2013 02:30:19 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 24 Jun 2013 08:30:03 +0200
+Subject: Re: [PATCH 5/5] iio: reword help text of several IIO_ST drivers
+Message-ID: <3381694.P0QkDB0nbp@ctocwl0124>
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net>
+ <1372022900-18670-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372022900-18670-5-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Shawn Guo <shawn.guo@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>, jimwall@q.com,
-	brian@crystalfontz.com,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree-discuss@lists.ozlabs.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Rob Landley <rob@landley.net>,
-	Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
-References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/20/2013 08:57 PM, Alexandre Belloni wrote:
-> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
-> gain and sampling rates.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: "Denis Ciocca" <denis.ciocca@st.com>
+
+On Sunday, June 23, 2013 11:28:20 PM Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Denis Ciocca <denis.ciocca@st.com>
 > ---
->  .../bindings/iio/adc/nuvoton-nau7802.txt           |  17 +
->  drivers/iio/adc/Kconfig                            |   9 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/iio/adc/nau7802.c                          | 603 +++++++++++++++++++++
->  4 files changed, 630 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
->  create mode 100644 drivers/iio/adc/nau7802.c
+>  drivers/iio/accel/Kconfig        | 4 ++--
+>  drivers/iio/gyro/Kconfig         | 4 ++--
+>  drivers/iio/magnetometer/Kconfig | 4 ++--
+>  drivers/iio/pressure/Kconfig     | 4 ++--
+>  4 files changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
-> new file mode 100644
-> index 0000000..9bc4218
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
-> @@ -0,0 +1,17 @@
-> +* Nuvoton NAU7802 Analog to Digital Converter (ADC)use
-> +
-> +Required properties:
-> +  - compatible: Should be "nuvoton,nau7802"
-> +  - reg: Should contain the ADC I2C address
-> +
-> +Optional properties:
-> +  - nuvoton,vldo: Reference voltage in millivolts (integer)
-> +  - interrupts: IRQ line for the ADC. If not used the driver will use
-> +    polling.
-> +
-> +Example:
-> +adc2: nau7802@2a {
-> +	compatible = "nuvoton,nau7802";
-> +	reg = <0x2a>;
-> +	nuvoton,vldo = <3000>;
-
-We usually use the regulator framework for specifying the reference voltage.
-
-> +};
-[...]
-> diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
-> new file mode 100644
-> index 0000000..e1b6981
-> --- /dev/null
-> +++ b/drivers/iio/adc/nau7802.c
-> @@ -0,0 +1,603 @@
-[...]
-> +static int nau7802_set_gain(struct nau7802_state *st, int gain)
-> +{
-> +	u8 data;
-> +	int ret;
-> +
-> +	mutex_lock(&st->lock);
-> +	st->conversion_count = 0;
-> +
-> +	data = i2c_smbus_read_byte_data(st->client, NAU7802_REG_CTRL1);
-> +	if (data < 0)
-> +		goto nau7802_sysfs_set_gain_out;
-
-ret will be uninitialized if the goto above is taken
-
-> +	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL1,
-> +					(data & (~NAU7802_CTRL1_GAINS_BITS)) |
-> +					gain);
-> +
-> +nau7802_sysfs_set_gain_out:
-> +	mutex_unlock(&st->lock);
-> +
-> +	return ret ? ret : 0;
-> +}
-[...]
-> +static int nau7802_read_irq(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val)
-> +{
-> +	struct nau7802_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	INIT_COMPLETION(st->value_ok);
-> +	enable_irq(st->client->irq);
-
-Is it really necessary to enable/disable the IRQ or could you keep it
-enabled all the time?
-
-> +
-> +	nau7802_sync(st);
-> +
-> +	/* read registers to ensure we flush everything */
-> +	ret = nau7802_read_conversion(st);
-> +	if (ret < 0)
-> +		goto read_chan_info_failure;
-> +
-> +	/* Wait for a conversion to finish */
-> +	ret = wait_for_completion_interruptible_timeout(&st->value_ok,
-> +			msecs_to_jiffies(1000));
-> +	if (ret == 0)
-> +		ret = -ETIMEDOUT;
-> +
-> +	if (ret < 0)
-> +		goto read_chan_info_failure;
-> +
-> +	disable_irq(st->client->irq);
-> +
-> +	*val = st->last_value;
-> +
-> +	return IIO_VAL_INT;
-> +
-> +read_chan_info_failure:
-> +	disable_irq(st->client->irq);
-> +
-> +	return ret;
-> +}
-[...]
-
-[...]
-> +static int nau7802_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct nau7802_state *st;
-> +	struct device_node *np = client->dev.of_node;
-> +	int i, ret;
-> +	u8 data;
-> +	u32 tmp;
-> +
-> +	if (!client->dev.of_node) {
-> +		dev_err(&client->dev, "No device tree node available.\n");
-> +		return -EINVAL;
-> +	}
-
-Except for getting the vref the is no direct dependency on devicetree, if
-you switch to the regulator framework for the vref this check can be removed.
-
-[...]
-> +	/* Setup the ADC channels available on the board */
-> +	indio_dev->num_channels = 2;
-
-ARRAY_SIZE(nau7802_chan_array)
-
-> +	indio_dev->channels = nau7802_chan_array;
-> +
-> +	init_completion(&st->value_ok);
-
-You need to initialize the completion before requesting the IRQ handler.
-
-[...]
-> +}
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 719d83f..a002675 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -33,8 +33,8 @@ config IIO_ST_ACCEL_3AXIS
+>  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+>  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330.
+> 
+> -	  This driver can also be built as a module. If so, will be created
+> -	  these modules:
+> +	  This driver can also be built as a module. If so, these modules
+> +	  will be created:
+>  	  - st_accel (core functions for the driver [it is mandatory]);
+>  	  - st_accel_i2c (necessary for the I2C devices [optional*]);
+>  	  - st_accel_spi (necessary for the SPI devices [optional*]);
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 8498e9d..1fdcc84 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -58,8 +58,8 @@ config IIO_ST_GYRO_3AXIS
+>  	  Say yes here to build support for STMicroelectronics gyroscopes:
+>  	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+> 
+> -	  This driver can also be built as a module. If so, will be created
+> -	  these modules:
+> +	  This driver can also be built as a module. If so, these modules
+> +	  will be created:
+>  	  - st_gyro (core functions for the driver [it is mandatory]);
+>  	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
+>  	  - st_gyro_spi (necessary for the SPI devices [optional*]);
+> diff --git a/drivers/iio/magnetometer/Kconfig
+> b/drivers/iio/magnetometer/Kconfig index c332b0a..4d55b1b 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -36,8 +36,8 @@ config IIO_ST_MAGN_3AXIS
+>  	  Say yes here to build support for STMicroelectronics magnetometers:
+>  	  LSM303DLHC, LSM303DLM, LIS3MDL.
+> 
+> -	  This driver can also be built as a module. If so, will be created
+> -	  these modules:
+> +	  This driver can also be built as a module. If so, these modules
+> +	  will be created:
+>  	  - st_magn (core functions for the driver [it is mandatory]);
+>  	  - st_magn_i2c (necessary for the I2C devices [optional*]);
+>  	  - st_magn_spi (necessary for the SPI devices [optional*]);
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index 3cba7f5..56ae890 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -14,8 +14,8 @@ config IIO_ST_PRESS
+>  	  Say yes here to build support for STMicroelectronics pressure
+>  	  sensors: LPS331AP.
+> 
+> -	  This driver can also be built as a module. If so, will be created
+> -	  these modules:
+> +	  This driver can also be built as a module. If so, these modules
+> +	  will be created:
+>  	  - st_pressure (core functions for the driver [it is mandatory]);
+>  	  - st_pressure_i2c (necessary for the I2C devices [optional*]);
+>  	  - st_pressure_spi (necessary for the SPI devices [optional*]);
