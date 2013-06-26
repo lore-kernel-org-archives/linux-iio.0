@@ -1,75 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:37678 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750964Ab3FXRZJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 13:25:09 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Cc: jimwall@q.com, brian@crystalfontz.com,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree-discuss@lists.ozlabs.org, Rob Landley <rob@landley.net>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv3 0/3] Add support for the Nuvoton NAU7802 ADC to the cfa10049
-Date: Mon, 24 Jun 2013 19:24:56 +0200
-Message-Id: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from plane.gmane.org ([80.91.229.3]:36497 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751475Ab3FZOuI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Jun 2013 10:50:08 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1Urr2o-0002gZ-R2
+	for linux-iio@vger.kernel.org; Wed, 26 Jun 2013 16:50:02 +0200
+Received: from 217-67-201-162.itsa.net.pl ([217.67.201.162])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 16:50:02 +0200
+Received: from j.anaszewski by 217-67-201-162.itsa.net.pl with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 16:50:02 +0200
+To: linux-iio@vger.kernel.org
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH/RFC] iio: gp2ap002a00f: Add a driver for the device.
+Date: Wed, 26 Jun 2013 16:49:06 +0200
+Message-ID: <51CAFF62.5030707@samsung.com>
+References: <51C58B62.30602@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <51C58B62.30602@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 06/22/2013 01:32 PM, Jonathan Cameron wrote:
+> Sorry, due to some local email weirdness I don't seem to have an original
+> copy of this email, so have grabbed it from marc.info.
+> This may mess up the thread handling for others.
+>
+>> Add a new driver for the ambient light/proximity sensor
+>> device. The driver exposes three channels: light_clear
+>> light_ir and proximity. It also supports high and low
+>> ambient light threshold event and proximity detection
+>> event.
+>>
+> Just to check, are you aware of the drive in drivers/input/misc?
 
-This is v3 of the patchset that adds support for the 3 Nuvoton NAU7802 ADCs
-present on the CFA-10049 board from Crystalfontz. The first patch adds the
-driver, the next ones are adding them in the DT after switching the second i2c
-bus to bitbanging following a lot of timeout issues we have on that bus.
+Yes I am aware of it. I even got influenced by it to the extent
+that I mistakenly adopted its name for my driver, which should be
+gp2ap020a00f. The name will be corrected in the second version
+of the patch. The gp2ap002a00f device seems not to have too much
+in common with gp2ap020a00f.
 
-Changes in v3:
- - removed the min_conversion knob in sysfs, it is now hardcoded to 6
- - added error checking in probe
- - corrected error checking
- - corrected possibly uninitialized vldo
- - used ARRAY_SIZE(nau7802_chan_array) instead of 2
- - added that vldo refers to the internal voltage regulator
+> A few comments from a somewhat superficial review below.
+>
+[...]
+>> +static const struct iio_chan_spec gp2ap002a00f_channels[] = {
+>> +	{
+>> +		.type = IIO_LIGHT,
+>> +		.channel2 = IIO_MOD_LIGHT_CLEAR,
+>> +		.modified = 1,
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> Just to confirm, you are providing no means at all of converting
+> these channels to any form of standard unit?
+> Without the datasheet I can't tell if this is because no conversion
+> is provided.
 
-Changes in v2:
- - channels are now statically allocated
- - no wrappers around i2c functions
- - sampling_freq is a shared attribute
- - setting gain is done through scale
- - cosmetics changes (s/idev/indio_dev/, blank lines before returns)
- - use of sign_extend32 to extend the sign
- - reading scale now returns IIO_VAL_FRACTIONAL_LOG2
- - no dt lookup for interrupts, this is done in of_i2c.c but that was mask due
- to a bug.
+Yes, this is intentional.
 
-what I didn't address is setting the external reference voltage through a fixed
-regulator and I kept the vldo attribute to set the internal voltage reference in
-the DT as Jonathan seemed to be ok with that. If anybody is using a nau7802 with
-an external reference, it will still be time to add the fixed regulator. It
-shouldn't be difficult but I don't have any hardware to test.
+[...]
+>> +	err = iio_triggered_buffer_setup(indio_dev, NULL,
+>> +		&gp2ap002a00f_trigger_handler,&gp2ap002a00f_buffer_setup_ops);
+>> +
+> So this is a single irq line for events and dataready?
+> I can't seem to find a decent datasheet online for this part which is
+> always annoying!
 
-Regards,
+The documentation I have for my disposal is confidential.
+Yes, there is common interrupt line for events and data ready.
+When threshold registers are filled with a value greater than 0
+the interrupts are considered enabled. This has also side effect -
+no interrupt is being generated when converted value is 0.
 
-Alexandre Belloni (1):
-  iio: Add Nuvoton NAU7802 ADC driver
-
-Maxime Ripard (2):
-  ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
-  ARM: mxs: cfa10049: Add NAU7802 ADCs to the device tree
-
- .../bindings/iio/adc/nuvoton-nau7802.txt           |  18 +
- arch/arm/boot/dts/imx28-cfa10049.dts               | 126 +++--
- drivers/iio/adc/Kconfig                            |   9 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/nau7802.c                          | 576 +++++++++++++++++++++
- 5 files changed, 687 insertions(+), 43 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
- create mode 100644 drivers/iio/adc/nau7802.c
-
--- 
-1.8.1.2
+Thanks,
+Jacek
 
