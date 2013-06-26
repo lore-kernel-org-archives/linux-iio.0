@@ -1,86 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:53953 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750810Ab3F0JRg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jun 2013 05:17:36 -0400
-Date: Thu, 27 Jun 2013 11:17:32 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Jean Delvare <khali@linux-fr.org>, jimwall@q.com,
-	brian@crystalfontz.com, Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Rob Landley <rob@landley.net>,
-	Russell King <linux@arm.linux.org.uk>,
-	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, lm-sensors@lm-sensors.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] hwmon: Add a simple driver to read the MXS SoC
- temperature
-Message-ID: <20130627091732.GP5803@lukather>
-References: <1372236673-20725-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1372236673-20725-4-git-send-email-alexandre.belloni@free-electrons.com>
- <20130626143927.GB31998@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ga5bsqHr1s/xcZEm"
-In-Reply-To: <20130626143927.GB31998@roeck-us.net>
+Received: from plane.gmane.org ([80.91.229.3]:60129 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751475Ab3FZPMS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Jun 2013 11:12:18 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1UrrOL-00070l-4k
+	for linux-iio@vger.kernel.org; Wed, 26 Jun 2013 17:12:17 +0200
+Received: from 217-67-201-162.itsa.net.pl ([217.67.201.162])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 17:12:17 +0200
+Received: from j.anaszewski by 217-67-201-162.itsa.net.pl with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 26 Jun 2013 17:12:17 +0200
+To: linux-iio@vger.kernel.org
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH/RFC] iio: gp2ap002a00f: Add a driver for the device.
+Date: Wed, 26 Jun 2013 17:12:00 +0200
+Message-ID: <kqf0bq$mar$1@ger.gmane.org>
+References: <51C58B62.30602@kernel.org> <51CAFF62.5030707@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <51CAFF62.5030707@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 06/26/2013 04:49 PM, Jacek Anaszewski wrote:
+> On 06/22/2013 01:32 PM, Jonathan Cameron wrote:
+>> Sorry, due to some local email weirdness I don't seem to have an original
+>> copy of this email, so have grabbed it from marc.info.
+>> This may mess up the thread handling for others.
+>>
+>>> Add a new driver for the ambient light/proximity sensor
+>>> device. The driver exposes three channels: light_clear
+>>> light_ir and proximity. It also supports high and low
+>>> ambient light threshold event and proximity detection
+>>> event.
+>>>
+>> Just to check, are you aware of the drive in drivers/input/misc?
+>
+> Yes I am aware of it. I even got influenced by it to the extent
+> that I mistakenly adopted its name for my driver, which should be
+> gp2ap020a00f. The name will be corrected in the second version
+> of the patch. The gp2ap002a00f device seems not to have too much
+> in common with gp2ap020a00f.
+>
+>> A few comments from a somewhat superficial review below.
+>>
+> [...]
+>>> +static const struct iio_chan_spec gp2ap002a00f_channels[] = {
+>>> +	{
+>>> +		.type = IIO_LIGHT,
+>>> +		.channel2 = IIO_MOD_LIGHT_CLEAR,
+>>> +		.modified = 1,
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> Just to confirm, you are providing no means at all of converting
+>> these channels to any form of standard unit?
+>> Without the datasheet I can't tell if this is because no conversion
+>> is provided.
+>
+> Yes, this is intentional.
+>
+> [...]
+>>> +	err = iio_triggered_buffer_setup(indio_dev, NULL,
+>>> +		&gp2ap002a00f_trigger_handler,&gp2ap002a00f_buffer_setup_ops);
+>>> +
+>> So this is a single irq line for events and dataready?
+>> I can't seem to find a decent datasheet online for this part which is
+>> always annoying!
+>
+> The documentation I have for my disposal is confidential.
+> Yes, there is common interrupt line for events and data ready.
+> When threshold registers are filled with a value greater than 0
+> the interrupts are considered enabled.
 
---ga5bsqHr1s/xcZEm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I messed up the things - events are considered enabled then.
+Interrupts are being generated when converted value exceeds
+threshold register value, and thus no interrupt is being
+generated when converted value is 0 as in this case it
+can't exceed threshold value.
+Sorry for making confusion.
 
-On Wed, Jun 26, 2013 at 07:39:27AM -0700, Guenter Roeck wrote:
-> On Wed, Jun 26, 2013 at 10:51:12AM +0200, Alexandre Belloni wrote:
-> > The low resolution ADC of the mxs is able to read an internal temperatu=
-re
-> > sensor, expose that using hwmon.
-> >=20
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> > ---
->=20
-> Wouldn't it make more sense to use iio-hwmon and improve it if necessary ?
+Thanks,
+Jacek
 
-Actually, I wonder if we should not just put the hwmon driver
-capabilities directly into the mxs-lradc driver, just like it's already
-been done in this driver for the touchscreen support.
 
-The probing of this hwmon driver doesn't really belong to the DT, it's
-not really realistic to probe it from the machine definition, and it
-really is the IP that is wired that way.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---ga5bsqHr1s/xcZEm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRzAMsAAoJEBx+YmzsjxAgH7YP/j1sJHX0pBnLRoA7suWcPK/M
-ydWSdH9e9cX2NmNKi5qk2rKZb6pt041v2c5qGhlBG27B/ksYWQRggljtkFup2LCO
-3oewUreyrgVB3OIoJ15/JyIbkgLQsPNqdCf0dZbiefxwAAgnP5j45PlqNCtIvdS5
-KMkXcRT5CgXdMqUHBxXCdjdpSFCNdepbEQad1HX/90pddHaAvo8X9w7r0pmcIKkh
-oY6bE9EqgfwbCi22x1BwkS12S8WgVPh1EuJ+WjLb4PuhrVJ2+Yx1cMqmK8Qc0sDa
-IsmUaq9YZqqtihflSewUsBfTQynq43W6XkA4tuukooOc+D4nlndtvmnLn/ILjDpo
-Zr0wEiYAetGWDMVOKwqoZtPx2/awux5AUb4CfCAUQyDQVtVVMLLN3vNwPPlgZypt
-RCIj+SVSYFto1Qys0p+sTGioOXkDWtBJQKlYP0JqfIGJOGpxe/nHlaukmiMmJ7uA
-fF8k2q7pC1xTTGQ8XXGf+24wwc/7ASzLewpDmbqrT1hRfIeydWQtSZj3bTdS6kJf
-8yYtyE1tgwDYSWNDE2IjJCh0XQWqiTOXOS1S7adq3wvFnYNrqz4xoJT/kMNG7UMq
-4uj+8+2I6L4zJQds5iI5EXI5zp6FjK2HxV9K4mIp4ft6+aoSsfNywkHqAjPn54jq
-xSLjqihfQtMCBQS0A+PL
-=JG3w
------END PGP SIGNATURE-----
-
---ga5bsqHr1s/xcZEm--
