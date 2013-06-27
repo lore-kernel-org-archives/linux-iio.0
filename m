@@ -1,65 +1,68 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <51C6FE00.8010900@metafoo.de>
-Date: Sun, 23 Jun 2013 15:54:08 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([94.23.35.102]:56662 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753654Ab3F0T0e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jun 2013 15:26:34 -0400
+Message-ID: <51CC91E8.50605@free-electrons.com>
+Date: Thu, 27 Jun 2013 21:26:32 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Shawn Guo <shawn.guo@linaro.org>,
- Grant Likely <grant.likely@secretlab.ca>,
- jimwall@q.com, brian@crystalfontz.com,
- Maxime Ripard <maxime.ripard@free-electrons.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- devicetree-discuss@lists.ozlabs.org, Jonathan Cameron <jic23@cam.ac.uk>,
- Rob Landley <rob@landley.net>,
- Rob Herring <rob.herring@calxeda.com>
-Subject: Re: [PATCHv2 1/3] iio: Add Nuvoton NAU7802 ADC driver
-References: <1371754675-12242-1-git-send-email-alexandre.belloni@free-electrons.com> <1371754675-12242-2-git-send-email-alexandre.belloni@free-electrons.com> <51C590B5.2060308@kernel.org> <51C5923D.6030609@metafoo.de> <51C5A1AF.3070404@free-electrons.com> <51C5A499.5050509@metafoo.de> <51C5A68F.3000300@free-electrons.com>
-In-Reply-To: <51C5A68F.3000300@free-electrons.com>
+To: Guenter Roeck <linux@roeck-us.net>
+CC: Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Jean Delvare <khali@linux-fr.org>, jimwall@q.com,
+	brian@crystalfontz.com, Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Rob Landley <rob@landley.net>,
+	Russell King <linux@arm.linux.org.uk>,
+	devicetree-discuss@lists.ozlabs.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, lm-sensors@lm-sensors.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/4] hwmon: Add a simple driver to read the MXS SoC temperature
+References: <1372236673-20725-1-git-send-email-alexandre.belloni@free-electrons.com> <1372236673-20725-4-git-send-email-alexandre.belloni@free-electrons.com> <20130626143927.GB31998@roeck-us.net> <20130627091732.GP5803@lukather> <20130627142758.GA5812@roeck-us.net>
+In-Reply-To: <20130627142758.GA5812@roeck-us.net>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/22/2013 03:28 PM, Alexandre Belloni wrote:
-> On 22/06/2013 15:20, Lars-Peter Clausen wrote:
->> On 06/22/2013 03:07 PM, Alexandre Belloni wrote:
->>> On 22/06/2013 14:02, Lars-Peter Clausen wrote:
->>>> On 06/22/2013 01:55 PM, Jonathan Cameron wrote:
->>>>> On 06/20/2013 07:57 PM, Alexandre Belloni wrote:
->>>>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
->>>>>> gain and sampling rates.
->>>>>>
->>>>> Sorry, somewhat low on time today so only a quick review.
->>>>>
->>>>> 1) Missing userspace ABI documentation.  Also, perhaps min_conversions is
->>>>>    a little vague?  Not that I have a better idea!
->>>> I really don't like the name min_conversions either. Isn't this effectively
->>>> a decimation filter?
->>> Yeah, it could be seen like that but it is only relevant and only
->>> happens when switching between channels. I'm open to any ideas.
->>>
->> I see. Is there anything about this in the datasheet on how many conversions
->> you usually need? Is this really something you need to change at runtime or
->> does moving this to platform data work?
+Hi,
+
+On 27/06/2013 16:27, Guenter Roeck wrote:
+> On Thu, Jun 27, 2013 at 11:17:32AM +0200, Maxime Ripard wrote:
+>> On Wed, Jun 26, 2013 at 07:39:27AM -0700, Guenter Roeck wrote:
+>>> On Wed, Jun 26, 2013 at 10:51:12AM +0200, Alexandre Belloni wrote:
+>>>> The low resolution ADC of the mxs is able to read an internal temperature
+>>>> sensor, expose that using hwmon.
+>>>>
+>>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>>>> ---
+>>> Wouldn't it make more sense to use iio-hwmon and improve it if necessary ?
+>> Actually, I wonder if we should not just put the hwmon driver
+>> capabilities directly into the mxs-lradc driver, just like it's already
+>> been done in this driver for the touchscreen support.
 >>
+>> The probing of this hwmon driver doesn't really belong to the DT, it's
+>> not really realistic to probe it from the machine definition, and it
+>> really is the IP that is wired that way.
 >>
-> 
-> There is actually nothing in the datasheet. The default value (6
-> conversions) was found experimentally. What I did was saturating the ADC
-> with the higher value on one channel and the lower value on the other
-> one and I tried to find when reading both channel sequentially was
-> resulting in a correct value.
-> 
-> You may not need to change it at runtime. And that value mainly depend
-> on the precision versus speed balance you want to achieve. If you know
-> that the values on both channels will not be to far apart, then you may
-> not need to wait at all.
-> 
-> Would you think that is something I should hide in the DT ? Or maybe I
-> can drop that knob for now and see if it is needed in the future.
-> 
+> Merging iio-hwmon functionality into an adc driver seems just as bad
+> (or even worse) as copying it into a new driver.
+>
+> If the lradc driver knows that the ADC channels are temperature sensors, it
+> should register them with the iio subsystem as IIO_TEMP type. Then you should
+> be able to use iio_hwmon as is.
 
-It is always a good idea to be conservative when introducing new ABI, so if
-you think we can get away with hardcoding this in the driver I think that's
-a good idea.
+They are already registered as IIO_TEMP but only implement read_raw. Also,
 
-- Lars
+iio_hwmon_read_val() is using iio_read_channel_processed() and that will
+basically only read one of the 2 channels. As I documented, you actually
+need to read both channel 8 and channel 9 and then compute the value in
+Kelvins. I'm not sure how you want me to do that in the current framework.
+
+Regards,
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
