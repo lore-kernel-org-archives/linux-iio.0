@@ -1,58 +1,71 @@
-Return-Path: <sameo@linux.intel.com>
-Date: Tue, 11 Jun 2013 18:15:06 +0200
-From: Samuel Ortiz <sameo@linux.intel.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lee Jones <lee.jones@linaro.org>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>, Felipe Balbi <balbi@ti.com>,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: am335x: TSC & ADC reworking including DT pieces, take 4
-Message-ID: <20130611161506.GK29135@zurbaran>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <20130611142358.GG29135@zurbaran>
- <20130611160415.GA379@core.coreip.homeip.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41917 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752366Ab3F2Jt0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 05:49:26 -0400
+Message-ID: <51CEADA5.7050800@kernel.org>
+Date: Sat, 29 Jun 2013 10:49:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20130611160415.GA379@core.coreip.homeip.net>
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: fix typos in dac Kconfig
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net> <51C7E4A6.7020107@metafoo.de>
+In-Reply-To: <51C7E4A6.7020107@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Dmitry,
-
-On Tue, Jun 11, 2013 at 09:04:16AM -0700, Dmitry Torokhov wrote:
-> On Tue, Jun 11, 2013 at 04:23:58PM +0200, Samuel Ortiz wrote:
-> > Hi Sebastian,
-> > 
-> > On Tue, Jun 11, 2013 at 01:30:46PM +0200, Sebastian Andrzej Siewior wrote:
-> > > I believe the whole thing should go via the MFD tree. It touches also
-> > > input & iio subsystem. I collected ACKs where I got some in the meantime.
-> > Please fix your commit logs, and your subject lines. It should be e.g.
-> > mfd: input: ti_am335x_adc: Blablabla
-> > 
-> > if it's mostly an mfd patch that also touches an input driver.
-> > 
-> > Then, this is a pretty big patchset, with iio, input and mfd all mixed
-> > together and it is likely to create merge conflicts.
-> > From what I can see from it, and please correct me if I'm
-> > wrong, the iio and input changes depend on the mfd ones, and not the
-> > other way around. If that's so, I'm going to ask you to reshuffle your
-> > patch set and separate the MFD changes from the iio and input ones. I'll
-> > take the MFD ones and will create an immutable branch for Jonathan and
-> > Dmitry to pull from and apply the iio and input changes on top of it.
-> > Merge conflicts should be mostly avoided that way.
+On 06/24/2013 07:18 AM, Lars-Peter Clausen wrote:
+> On 06/23/2013 11:28 PM, Peter Meerwald wrote:
+>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
 > 
-> I purposely left this driver alone as I expected it would be merged
-> through MFD tree, so there should not be any merging issues on my side.
-Thanks for the notice.
-Jonathan, can you guarantee the same for the iio parts ?
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 
-Sabastian, hold on before reworking your patchset.
-
-Cheers,
-Samuel.
-
--- 
-Intel Open Source Technology Centre
-http://oss.intel.com/
+Thanks,
+> 
+> Thanks
+> 
+>> ---
+>>  drivers/iio/dac/Kconfig | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+>> index c9c33ce..b9fd4c7 100644
+>> --- a/drivers/iio/dac/Kconfig
+>> +++ b/drivers/iio/dac/Kconfig
+>> @@ -15,7 +15,7 @@ config AD5064
+>>  	  module will be called ad5064.
+>>  
+>>  config AD5360
+>> -	tristate "Analog Devices Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
+>> +	tristate "Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
+>>  	depends on SPI
+>>  	help
+>>  	  Say yes here to build support for Analog Devices AD5360, AD5361,
+>> @@ -68,7 +68,7 @@ config AD5446
+>>  	  module will be called ad5446.
+>>  
+>>  config AD5449
+>> -	tristate "Analog Device AD5449 and similar DACs driver"
+>> +	tristate "Analog Devices AD5449 and similar DACs driver"
+>>  	depends on SPI_MASTER
+>>  	help
+>>  	  Say yes here to build support for Analog Devices AD5415, AD5426, AD5429,
+>> @@ -131,7 +131,7 @@ config AD5686
+>>  	  module will be called ad5686.
+>>  
+>>  config AD7303
+>> -	tristate "Analog Devices Analog Devices AD7303 DAC driver"
+>> +	tristate "Analog Devices AD7303 DAC driver"
+>>  	depends on SPI
+>>  	help
+>>  	  Say yes here to build support for Analog Devices AD7303 Digital to Analog
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
