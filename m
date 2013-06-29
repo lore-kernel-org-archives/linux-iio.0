@@ -1,63 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f42.google.com ([74.125.82.42]:37773 "EHLO
-	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754692Ab3FKSmU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 14:42:20 -0400
-Received: by mail-wg0-f42.google.com with SMTP id x12so845143wgg.5
-        for <linux-iio@vger.kernel.org>; Tue, 11 Jun 2013 11:42:19 -0700 (PDT)
-Date: Tue, 11 Jun 2013 19:42:14 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <b-cousson@ti.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, "Patil, Rachna" <rachna@ti.com>,
-	Pantelis Antoniou <panto@antoniou-consulting.com>
-Subject: Re: [PATCH 10/22] mfd/ti_am335x_tscadc: Add DT support
-Message-ID: <20130611184214.GB4320@laptop>
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de>
- <1370950268-7224-11-git-send-email-bigeasy@linutronix.de>
- <20130611142347.GF29135@zurbaran>
- <51B73756.5010004@linutronix.de>
- <20130611150505.GI29135@zurbaran>
- <51B74540.2020608@linutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43078 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751683Ab3F2M1h (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 08:27:37 -0400
+Message-ID: <51CED2B5.9090707@kernel.org>
+Date: Sat, 29 Jun 2013 13:27:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <51B74540.2020608@linutronix.de>
+To: Otavio Salvador <otavio@ossystems.com.br>
+CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	Fabio Estevam <festevam@gmail.com>
+Subject: Re: Fwd: mxs-lradc oops when unloading module
+References: <CAP9ODKof+yv27-zHSO9MTLC9Wv6F6Ya-Ot-vW7OK7kwadYK8Xg@mail.gmail.com> <CAP9ODKq92LW-xQyiHkVe6AkwaaYV11nt92DxCEzUioEVARTZXw@mail.gmail.com> <51C5847C.7030100@kernel.org> <CAP9ODKohhQVTwj40K-h1LDAqjk6+nO1r=Fq404Xy1DUZWfwRxg@mail.gmail.com>
+In-Reply-To: <CAP9ODKohhQVTwj40K-h1LDAqjk6+nO1r=Fq404Xy1DUZWfwRxg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 11 Jun 2013, Sebastian Andrzej Siewior wrote:
-
-> On 06/11/2013 05:05 PM, Samuel Ortiz wrote:
-> > Hi Sebastian,
+On 06/24/2013 01:30 PM, Otavio Salvador wrote:
+> On Sat, Jun 22, 2013 at 8:03 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> From what I could grasp, it might be related to the IIO subsystem but
+>>> I couldn't find the culprit.
+>>>
+>>> It seems "iio_device_unregister_trigger_consumer", as:
+>>>
+>>> void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+>>> {
+>>> /* Clean up an associated but not attached trigger reference */
+>>> if (indio_dev->trig)
+>>> iio_trigger_put(indio_dev->trig);
+>>> }
+>>>
+>>> and , as:
+>>>
+>>> static inline void iio_trigger_put(struct iio_trigger *trig)
+>>> {
+>>> module_put(trig->ops->owner);
+>>> put_device(&trig->dev);
+>>> }
+>>>
+>>> so, somehow the trig->ops is NULL here.
+>>>
+>>> Do someone has a clue?
+>>>
+>> I think the issue is more core to iio trigger handling than that, you
+>> have just been unlucky enough to hit a bug that has been there a while.
+>>
+>> In iio_trigger_unregister we call
+>> iio_device_unregister which in turn calls device_del (as intended) and
+>> device_put (as not!).  Then we get an additional device_put from
+>> iio_trigger_free giving us one more than we should have an resulting
+>> in a double attempt to free the device.
+>>
+>> Could you try the following change and see if it solves the problem?
+>> (the comment abov is 'interesting' and stupid given I've long ago
+>> forgotten what it refers to, but it could be related to this issue...)
+>>
+>> From 238faf76acaa9214b0eb607742dd14b134469328 Mon Sep 17 00:00:00 2001
+>> From: Jonathan Cameron <jic23@kernel.org>
+>> Date: Sat, 22 Jun 2013 12:00:04 +0100
+>> Subject: [PATCH] iio:trigger: device_unregister->device_del to avoid double
+>>  free
+>>
+>> iio_trigger unregistration and freeing has been separated in this
+>> code for some time, but it looks like the calls to the device
+>> handling were not appropriately updated.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> ---
+>>  drivers/iio/industrialio-trigger.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+>> index 4d6c7d8..ea8a414 100644
+>> --- a/drivers/iio/industrialio-trigger.c
+>> +++ b/drivers/iio/industrialio-trigger.c
+>> @@ -104,7 +104,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
+>>
+>>         ida_simple_remove(&iio_trigger_ida, trig_info->id);
+>>         /* Possible issue in here */
+>> -       device_unregister(&trig_info->dev);
+>> +       device_del(&trig_info->dev);
+>>  }
+>>  EXPORT_SYMBOL(iio_trigger_unregister);
 > 
-> Hi Samuel,
+> Tested-by: Otavio Salvador <otavio@ossystems.com.br>
 > 
-> > On Tue, Jun 11, 2013 at 04:42:30PM +0200, Sebastian Andrzej Siewior wrote:
-> >> In the end I would like not to post a patch with "From: != me" and
-> >> don't make change which the original author did not do. Also dropping
-> >> their authorship isn't nice. What could we agree on?
-> > You probably don't want to change authorship unless the final patch is
-> > really far from the original one. In which case you can change it and
-> > mention the original author name in the commit log.
-> > If you have only made a few changes on top of the original patch, please
-> > say so explicitely in the commit log. Don't bother if we're talking
-> > about small changes or cosmetic ones. But your commit log has to be
-> > readable and clear.
+> It does fix the Oops for me.
+applied to the fixes-togreg branch of iio.git
+Given timing these will probably go in after the merge window closes in a couple of
+weeks.
+
+Thanks,
 > 
-> Commit 06c9494 on of many examples where cosmetic are recorded. But to
-> make some progress I rewrite the commit log to resolve this and don't
-> add anything to the sign-off area.
-
-If you are submitting the patch, you still have to add your own SOB.
-
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> --
+> Otavio Salvador                             O.S. Systems
+> http://www.ossystems.com.br        http://projetos.ossystems.com.br
+> Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
