@@ -1,50 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f45.google.com ([209.85.160.45]:39555 "EHLO
-	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755373Ab3FDQuq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2013 12:50:46 -0400
-Date: Tue, 4 Jun 2013 09:50:35 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@cam.ac.uk>, Felipe Balbi <balbi@ti.com>
-Subject: Re: [PATCH 16/19] mfd / input: ti_am335x_tsc: rename device from tsc
- to TI-tsc
-Message-ID: <20130604165035.GE26400@core.coreip.homeip.net>
-References: <1369681926-22185-1-git-send-email-bigeasy@linutronix.de>
- <1369681926-22185-17-git-send-email-bigeasy@linutronix.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43033 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752487Ab3F2MX6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 08:23:58 -0400
+Message-ID: <51CED1DD.1080102@kernel.org>
+Date: Sat, 29 Jun 2013 13:23:57 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1369681926-22185-17-git-send-email-bigeasy@linutronix.de>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 4/4] iio: move ABI specification for store_eeprom; is
+ used by ad9523, mcp4725 and ds1077 devices
+References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net> <1372023020-18742-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372023020-18742-4-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, May 27, 2013 at 09:12:03PM +0200, Sebastian Andrzej Siewior wrote:
-> tsc is a very generic name. This patch adds a TI prefix to make it a
-> little less generic.
-> While here add an alias so the driver is loaded on demand.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+On 06/23/2013 10:30 PM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 > ---
->  drivers/input/touchscreen/ti_am335x_tsc.c |    3 ++-
->  drivers/mfd/ti_am335x_tscadc.c            |    2 +-
->  2 files changed, 3 insertions(+), 2 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio                  | 8 ++++++++
+>  Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 | 8 --------
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> index 96accaa..2921163 100644
-> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
-> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> @@ -543,11 +543,12 @@ static struct platform_driver ti_tsc_driver = {
->  	.probe	= titsc_probe,
->  	.remove	= titsc_remove,
->  	.driver	= {
-> -		.name   = "tsc",
-> +		.name   = "TI-tsc",
-
-Still quite generic... Why not call it "TI-am335x-tsc"?
-
-Thanks.
-
--- 
-Dmitry
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 0af1af0..d43ca5c 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -793,3 +793,11 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		This attribute is used to read the amount of quadrature error
+>  		present in the device at a given time.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+> +KernelVersion:	3.4.0
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Writing '1' stores the current device configuration into
+> +		on-chip EEPROM. After power-up or chip reset the device will
+> +		automatically load the saved configuration.
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+> index 2ce9c3f..a91aeab 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+> @@ -18,14 +18,6 @@ Description:
+>  		Reading returns either '1' or '0'. '1' means that the
+>  		pllY is locked.
+>  
+> -What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+> -KernelVersion:	3.4.0
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		Writing '1' stores the current device configuration into
+> -		on-chip EEPROM. After power-up or chip reset the device will
+> -		automatically load the saved configuration.
+> -
+>  What:		/sys/bus/iio/devices/iio:deviceX/sync_dividers
+>  KernelVersion:	3.4.0
+>  Contact:	linux-iio@vger.kernel.org
+> 
