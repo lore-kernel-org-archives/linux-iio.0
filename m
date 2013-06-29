@@ -1,38 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:41091 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751683Ab3F2N2v (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 09:28:51 -0400
-Message-ID: <51CEE1E3.6090006@metafoo.de>
-Date: Sat, 29 Jun 2013 15:32:19 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42950 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752487Ab3F2MQF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 08:16:05 -0400
+Message-ID: <51CECFFF.2060803@kernel.org>
+Date: Sat, 29 Jun 2013 13:15:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: add DAC 500kohm_to_gnd to possible powerdown_modes
-References: <1372023020-18742-1-git-send-email-pmeerw@pmeerw.net> <1372023020-18742-3-git-send-email-pmeerw@pmeerw.net> <51CED1BF.8070200@kernel.org>
-In-Reply-To: <51CED1BF.8070200@kernel.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/5] iio: remove mention of ring buffer from  CONFIG_IIO_KFIFO_BUF,
+ CONFIG_IIO_TRIGGER description
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net> <1372022900-18670-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372022900-18670-4-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/29/2013 02:23 PM, Jonathan Cameron wrote:
-> On 06/23/2013 10:30 PM, Peter Meerwald wrote:
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> applied to the togreg branch of iio.git
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 2e33dc6..0af1af0 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -351,6 +351,7 @@ Description:
->>  		6kohm_to_gnd: connected to ground via a 6kOhm resistor,
->>  		20kohm_to_gnd: connected to ground via a 20kOhm resistor,
->>  		100kohm_to_gnd: connected to ground via an 100kOhm resistor,
->> +		500kohm_to_gnd: connected to ground via an 100kOhm resistor,
+On 06/23/2013 10:28 PM, Peter Meerwald wrote:
+> ring buffers are only in staging, don't mention them here
+Actually they aren't there either any more.  Long killed off.
 
-I missed this earlier, there's a typo here, it should obviously be 'via an
-500kOhm resistor'
+> 
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git
+
+Thanks
+> ---
+>  drivers/iio/Kconfig | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index be8e303..524380c 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -30,8 +30,7 @@ config IIO_KFIFO_BUF
+>  	select IIO_TRIGGER
+>  	tristate "Industrial I/O buffering based on kfifo"
+>  	help
+> -	  A simple fifo based on kfifo.  Use this if you want a fifo
+> -	  rather than a ring buffer. Note that this currently provides
+> +	  A simple fifo based on kfifo.  Note that this currently provides
+>  	  no buffer events so it is up to userspace to work out how
+>  	  often to read from the buffer.
+>  
+> @@ -49,7 +48,7 @@ config IIO_TRIGGER
+>  	help
+>  	  Provides IIO core support for triggers.  Currently these
+>  	  are used to initialize capture of samples to push into
+> -	  ring buffers.  The triggers are effectively a 'capture
+> +	  buffers.  The triggers are effectively a 'capture
+>  	  data now' interrupt.
+>  
+>  config IIO_CONSUMERS_PER_TRIGGER
+> 
