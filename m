@@ -1,71 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41917 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41934 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752366Ab3F2Jt0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 05:49:26 -0400
-Message-ID: <51CEADA5.7050800@kernel.org>
-Date: Sat, 29 Jun 2013 10:49:25 +0100
+	with ESMTP id S1752366Ab3F2JvM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 05:51:12 -0400
+Message-ID: <51CEAE0A.1020800@kernel.org>
+Date: Sat, 29 Jun 2013 10:51:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: fix typos in dac Kconfig
-References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net> <51C7E4A6.7020107@metafoo.de>
-In-Reply-To: <51C7E4A6.7020107@metafoo.de>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, Ge Gao <ggao@invensense.com>
+Subject: Re: [PATCH 2/5] iio: use I2C_FUNC_SMBUS_I2C_BLOCK macro
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net> <1372022900-18670-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1372022900-18670-2-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/24/2013 07:18 AM, Lars-Peter Clausen wrote:
-> On 06/23/2013 11:28 PM, Peter Meerwald wrote:
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+On 06/23/2013 10:28 PM, Peter Meerwald wrote:
+> I do not see why the driver requires I2C_FUNC_SMBUS_I2C_BLOCK,
+> actually only single bytes or words are transferred
+Applied as is, but Ge, I would like you to answer Peter's question
+about whether this is actually needed at all.
 
-Thanks,
 > 
-> Thanks
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Ge Gao <ggao@invensense.com>
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
->> ---
->>  drivers/iio/dac/Kconfig | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
->> index c9c33ce..b9fd4c7 100644
->> --- a/drivers/iio/dac/Kconfig
->> +++ b/drivers/iio/dac/Kconfig
->> @@ -15,7 +15,7 @@ config AD5064
->>  	  module will be called ad5064.
->>  
->>  config AD5360
->> -	tristate "Analog Devices Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
->> +	tristate "Analog Devices AD5360/61/62/63/70/71/73 DAC driver"
->>  	depends on SPI
->>  	help
->>  	  Say yes here to build support for Analog Devices AD5360, AD5361,
->> @@ -68,7 +68,7 @@ config AD5446
->>  	  module will be called ad5446.
->>  
->>  config AD5449
->> -	tristate "Analog Device AD5449 and similar DACs driver"
->> +	tristate "Analog Devices AD5449 and similar DACs driver"
->>  	depends on SPI_MASTER
->>  	help
->>  	  Say yes here to build support for Analog Devices AD5415, AD5426, AD5429,
->> @@ -131,7 +131,7 @@ config AD5686
->>  	  module will be called ad5686.
->>  
->>  config AD7303
->> -	tristate "Analog Devices Analog Devices AD7303 DAC driver"
->> +	tristate "Analog Devices AD7303 DAC driver"
->>  	depends on SPI
->>  	help
->>  	  Say yes here to build support for Analog Devices AD7303 Digital to Analog
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index fe4c61e..6a1ff80 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -663,8 +663,8 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  	int result;
+>  
+>  	if (!i2c_check_functionality(client->adapter,
+> -					I2C_FUNC_SMBUS_READ_I2C_BLOCK |
+> -					I2C_FUNC_SMBUS_WRITE_I2C_BLOCK)) {
+> +		I2C_FUNC_SMBUS_I2C_BLOCK)) {
+> +
+>  		result = -ENOSYS;
+>  		goto out_no_free;
+>  	}
 > 
