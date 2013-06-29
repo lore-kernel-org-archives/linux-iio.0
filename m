@@ -1,47 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41871 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42958 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752366Ab3F2Jrg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 05:47:36 -0400
-Message-ID: <51CEAD36.4070503@kernel.org>
-Date: Sat, 29 Jun 2013 10:47:34 +0100
+	with ESMTP id S1752428Ab3F2MRR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jun 2013 08:17:17 -0400
+Message-ID: <51CED04C.8080301@kernel.org>
+Date: Sat, 29 Jun 2013 13:17:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Wei Yongjun <weiyj.lk@gmail.com>, yongjun_wei@trendmicro.com.cn,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH -next] iio: dac: ad7303: fix error return code in ad7303_probe()
-References: <CAPgLHd_7GTkOavGHctmaODV-gQBjRi5aiUF7+BR-FRnP8eCa7w@mail.gmail.com> <51C57E98.5020409@kernel.org> <51C5A6F0.80505@metafoo.de> <51C5ADF8.8060206@kernel.org>
-In-Reply-To: <51C5ADF8.8060206@kernel.org>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 5/5] iio: reword help text of several IIO_ST drivers
+References: <1372022900-18670-1-git-send-email-pmeerw@pmeerw.net> <1372022900-18670-5-git-send-email-pmeerw@pmeerw.net> <3381694.P0QkDB0nbp@ctocwl0124>
+In-Reply-To: <3381694.P0QkDB0nbp@ctocwl0124>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/22/2013 03:00 PM, Jonathan Cameron wrote:
-> On 06/22/2013 02:30 PM, Lars-Peter Clausen wrote:
->> On 06/22/2013 12:38 PM, Jonathan Cameron wrote:
->>> On 06/18/2013 02:08 PM, Wei Yongjun wrote:
->>>> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
->>>>
->>>> Fix to return a negative error code from the error handling
->>>> case instead of 0, as done elsewhere in this function.
->>>>
->>>> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
->>> This one looks pretty obvious so I'll take it without waiting
->>> for any other comments.
->>>
->>> Applied to togreg branch of iio.git
->>>
->>> Thanks,
->>
->>
->> hm, I actually though I'd acked this patch, but looks like the mail didn't make
->> it through.
->>
->> - Lars
->>
-> Added an ack as I hadn't pushed out to a public tree yet anyway.
-Just for reference, the timing is such that I've moved this to the fixes-togreg
-branch as from the IIO point of view we have now entered the next cycle.
+On 06/24/2013 07:30 AM, Denis CIOCCA wrote:
+> Acked-by: "Denis Ciocca" <denis.ciocca@st.com>
+Applied to the togreg branch of iio.git
 
-Jonathan
+Thanks
+> 
+> On Sunday, June 23, 2013 11:28:20 PM Peter Meerwald wrote:
+>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>> Cc: Denis Ciocca <denis.ciocca@st.com>
+>> ---
+>>  drivers/iio/accel/Kconfig        | 4 ++--
+>>  drivers/iio/gyro/Kconfig         | 4 ++--
+>>  drivers/iio/magnetometer/Kconfig | 4 ++--
+>>  drivers/iio/pressure/Kconfig     | 4 ++--
+>>  4 files changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+>> index 719d83f..a002675 100644
+>> --- a/drivers/iio/accel/Kconfig
+>> +++ b/drivers/iio/accel/Kconfig
+>> @@ -33,8 +33,8 @@ config IIO_ST_ACCEL_3AXIS
+>>  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+>>  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330.
+>>
+>> -	  This driver can also be built as a module. If so, will be created
+>> -	  these modules:
+>> +	  This driver can also be built as a module. If so, these modules
+>> +	  will be created:
+>>  	  - st_accel (core functions for the driver [it is mandatory]);
+>>  	  - st_accel_i2c (necessary for the I2C devices [optional*]);
+>>  	  - st_accel_spi (necessary for the SPI devices [optional*]);
+>> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+>> index 8498e9d..1fdcc84 100644
+>> --- a/drivers/iio/gyro/Kconfig
+>> +++ b/drivers/iio/gyro/Kconfig
+>> @@ -58,8 +58,8 @@ config IIO_ST_GYRO_3AXIS
+>>  	  Say yes here to build support for STMicroelectronics gyroscopes:
+>>  	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+>>
+>> -	  This driver can also be built as a module. If so, will be created
+>> -	  these modules:
+>> +	  This driver can also be built as a module. If so, these modules
+>> +	  will be created:
+>>  	  - st_gyro (core functions for the driver [it is mandatory]);
+>>  	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
+>>  	  - st_gyro_spi (necessary for the SPI devices [optional*]);
+>> diff --git a/drivers/iio/magnetometer/Kconfig
+>> b/drivers/iio/magnetometer/Kconfig index c332b0a..4d55b1b 100644
+>> --- a/drivers/iio/magnetometer/Kconfig
+>> +++ b/drivers/iio/magnetometer/Kconfig
+>> @@ -36,8 +36,8 @@ config IIO_ST_MAGN_3AXIS
+>>  	  Say yes here to build support for STMicroelectronics magnetometers:
+>>  	  LSM303DLHC, LSM303DLM, LIS3MDL.
+>>
+>> -	  This driver can also be built as a module. If so, will be created
+>> -	  these modules:
+>> +	  This driver can also be built as a module. If so, these modules
+>> +	  will be created:
+>>  	  - st_magn (core functions for the driver [it is mandatory]);
+>>  	  - st_magn_i2c (necessary for the I2C devices [optional*]);
+>>  	  - st_magn_spi (necessary for the SPI devices [optional*]);
+>> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+>> index 3cba7f5..56ae890 100644
+>> --- a/drivers/iio/pressure/Kconfig
+>> +++ b/drivers/iio/pressure/Kconfig
+>> @@ -14,8 +14,8 @@ config IIO_ST_PRESS
+>>  	  Say yes here to build support for STMicroelectronics pressure
+>>  	  sensors: LPS331AP.
+>>
+>> -	  This driver can also be built as a module. If so, will be created
+>> -	  these modules:
+>> +	  This driver can also be built as a module. If so, these modules
+>> +	  will be created:
+>>  	  - st_pressure (core functions for the driver [it is mandatory]);
+>>  	  - st_pressure_i2c (necessary for the I2C devices [optional*]);
+>>  	  - st_pressure_spi (necessary for the SPI devices [optional*]);--
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
