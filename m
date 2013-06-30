@@ -1,112 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55489 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750792Ab3FKTfh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Jun 2013 15:35:37 -0400
-Message-ID: <51B77C03.1030500@kernel.org>
-Date: Tue, 11 Jun 2013 20:35:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <robin.muellerbady@gmail.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/4] staging:iio:adis16130: Move out of staging
-References: <1370872815-14386-1-git-send-email-lars@metafoo.de> <1370872815-14386-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1370872815-14386-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: robin.muellerbady@gmail.com
+In-Reply-To: <51CEAB8D.8030201@kernel.org>
+References: <CACRdhnBWk8Vi1fD6+6LknnLoPb8dLBEq3wrMXLofVrqQEEuaFA@mail.gmail.com>
+ <51CEAB8D.8030201@kernel.org>
+From: =?UTF-8?B?Um9iaW4gTcO8bGxlci1CYWR5?= <mueller-bady@linux.com>
+Date: Sun, 30 Jun 2013 10:27:13 +0200
+Message-ID: <CACRdhnDrGn6fk0BYLBczDrFJGG4wP3h2+SyYQeqsUMW9q_bdgw@mail.gmail.com>
+Subject: Re: Start writing new IIO drivers
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/10/2013 03:00 PM, Lars-Peter Clausen wrote:
-> The adis16130 driver is fairly simple and it a good shape now, so move it out of
-> staging. Remove an outdated FIXME along the way.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+Thank you very much for your recommendations!
+I had some bad experiences using a cross compiler for ARM while I
+tried to build a "Linux from scratch". But I will try it again and
+hopefully save some time ;-)
 
-Thanks for tidying this one up and getting out of staging.  Lots more to go ;)
-> ---
->  drivers/iio/gyro/Kconfig                                           | 7 +++++++
->  drivers/iio/gyro/Makefile                                          | 1 +
->  .../{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c}    | 1 -
->  drivers/staging/iio/gyro/Kconfig                                   | 7 -------
->  drivers/staging/iio/gyro/Makefile                                  | 3 ---
->  5 files changed, 8 insertions(+), 11 deletions(-)
->  rename drivers/{staging/iio/gyro/adis16130_core.c => iio/gyro/adis16130.c} (99%)
-> 
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index b8daf1b..8498e9d 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -10,6 +10,13 @@ config ADIS16080
->  	  Say yes here to build support for Analog Devices ADIS16080, ADIS16100 Yaw
->  	  Rate Gyroscope with SPI.
->  
-> +config ADIS16130
-> +	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
-> +	depends on SPI
-> +	help
-> +	  Say yes here to build support for Analog Devices ADIS16130 High Precision
-> +	  Angular Rate Sensor driver.
-> +
->  config ADIS16136
->  	tristate "Analog devices ADIS16136 and similar gyroscopes driver"
->  	depends on SPI_MASTER
-> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> index 225d289..e9dc034 100644
-> --- a/drivers/iio/gyro/Makefile
-> +++ b/drivers/iio/gyro/Makefile
-> @@ -3,6 +3,7 @@
->  #
->  
->  obj-$(CONFIG_ADIS16080) += adis16080.o
-> +obj-$(CONFIG_ADIS16130) += adis16130.o
->  obj-$(CONFIG_ADIS16136) += adis16136.o
->  obj-$(CONFIG_ADXRS450) += adxrs450.o
->  
-> diff --git a/drivers/staging/iio/gyro/adis16130_core.c b/drivers/iio/gyro/adis16130.c
-> similarity index 99%
-> rename from drivers/staging/iio/gyro/adis16130_core.c
-> rename to drivers/iio/gyro/adis16130.c
-> index 8979435..129acdf 100644
-> --- a/drivers/staging/iio/gyro/adis16130_core.c
-> +++ b/drivers/iio/gyro/adis16130.c
-> @@ -183,7 +183,6 @@ error_ret:
->  	return ret;
->  }
->  
-> -/* fixme, confirm ordering in this function */
->  static int adis16130_remove(struct spi_device *spi)
->  {
->  	iio_device_unregister(spi_get_drvdata(spi));
-> diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-> index 8360662..b433371 100644
-> --- a/drivers/staging/iio/gyro/Kconfig
-> +++ b/drivers/staging/iio/gyro/Kconfig
-> @@ -10,13 +10,6 @@ config ADIS16060
->  	  Say yes here to build support for Analog Devices adis16060 wide bandwidth
->  	  yaw rate gyroscope with SPI.
->  
-> -config ADIS16130
-> -	tristate "Analog Devices ADIS16130 High Precision Angular Rate Sensor driver"
-> -	depends on SPI
-> -	help
-> -	  Say yes here to build support for Analog Devices ADIS16130 High Precision
-> -	  Angular Rate Sensor driver.
-> -
->  config ADIS16260
->  	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
->  	depends on SPI
-> diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-> index 98e6500..975f95b 100644
-> --- a/drivers/staging/iio/gyro/Makefile
-> +++ b/drivers/staging/iio/gyro/Makefile
-> @@ -5,8 +5,5 @@
->  adis16060-y             := adis16060_core.o
->  obj-$(CONFIG_ADIS16060) += adis16060.o
->  
-> -adis16130-y             := adis16130_core.o
-> -obj-$(CONFIG_ADIS16130) += adis16130.o
-> -
->  adis16260-y             := adis16260_core.o
->  obj-$(CONFIG_ADIS16260) += adis16260.o
-> 
+Thank you,
+
+Robin
+
+2013/6/29 Jonathan Cameron <jic23@kernel.org>:
+> On 06/28/2013 10:28 AM, Robin M=C3=BCller-Bady wrote:
+>> Hi,
+>>
+>> I'm currently writing userspace software in python and c for using
+>> (mainly I2C) sensors, e.g. MPL115A2 barometric pressure, on a
+>> raspberry pi.
+> Excellent!
+>
+>> I now want to port them to the IIO subsystem but I still require some he=
+lp.
+>> * Is there any good documentation on writing those drivers ? I'm
+>> currently working through examples in the current git kernel version
+>> with assistance of the IIO Introductory slides from Maxime Ripard
+>> "IIO, a new kernel subsystem" but these examples are, in my opinion,
+>> rather difficult.
+>
+> Saddly the nature of kernel driver development is that it is hard to put
+> together simple examples (or perhaps I'm just no good at doing so).
+> I'd personally start by taking a basic driver, (perhaps accel/kxsd9)
+> and making sure you understand what each step is doing.
+>
+> Note this won't be a trivial exercise as you will want to drill down
+> through a lot of the function calls to really get the hang of it.
+> Another option is to first of all play with the dummy driver without the
+> events or buffer enabled.  That is there to in a sense act as documentati=
+on
+> of how to do basic stuff.
+>
+>> * As raspbian (raspberry pi specific debian version) comes with a
+>> precompiled kernel 3.6.9, several features of IIO seem to be not yet
+>> included. Compiling a kernel natively on the raspi is no fun (700MHz
+>> ARM), so I don't want to make any mistake with the configs.
+> Silly question but has no one provided an appropriate cross compiler?
+> I certainly don't do my arm builds on an arm processor - have a nice
+> fast intel one for building stuff.  Obviously my appologies if all you
+> have to hand is a raspberry pi, in which case I hope you also have a
+> good book to read.
+>
+> If I were you I would spend some time working out how to do a full cross =
+compile
+> from scratch of a more recent kernel.  I see from a quick google that
+> lots of people are saying 'but it is so much easier to build directly on =
+the
+> pi'.  All I can say is they have clearly never built anything of any size=
+ with
+> an frequency.  Also doing kernel development on anything more than a few
+> months old just leads to a world of pain and makes it much harder to get
+> help as it's not what everyone else is working with.
+>
+>> Which
+>> kernel options of the current stable kernel do I require for IIO/I2C
+>> Sensor communication ?
+> Should just need relevant i2c bus support (if you can enable the actual
+> i2c bus driver then you'll have all the dependencies), core IIO and the
+> driver you want to use. Again if you enable the driver you should be fine
+> and it should not be available unless i2c support is present.
+>
+>>
+>> Thank you very much in advance!
+> Good luck,
+>
+> Feel free to post any questions you have about specific aspects as you
+> get going.
+>>
+>> Regards,
+>>
+>> Robin
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
