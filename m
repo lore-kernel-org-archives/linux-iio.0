@@ -1,34 +1,36 @@
-Return-Path: <akpm@linux-foundation.org>
-Date: Mon, 1 Jul 2013 15:20:04 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>, Maxime Ripard
- <maxime.ripard@free-electrons.com>, Thomas Petazzoni
- <thomas.petazzoni@free-electrons.com>, Gregory Clement
- <gregory.clement@free-electrons.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
- <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: inkern: fix iio_convert_raw_to_processed_unlocked
-Message-Id: <20130701152004.cfddc36e7b3d9d63e1960514@linux-foundation.org>
-In-Reply-To: <1372696809-14661-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1372696809-14661-1-git-send-email-alexandre.belloni@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Return-Path: <alexandre.belloni@free-electrons.com>
+Message-ID: <51D2BEA1.6010206@free-electrons.com>
+Date: Tue, 02 Jul 2013 13:50:57 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+To: Fabio Estevam <festevam@gmail.com>
+CC: Shawn Guo <shawn.guo@linaro.org>, Jonathan Cameron <jic23@cam.ac.uk>,
+ brian@crystalfontz.com, linux-doc@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+ jimwall@q.com, Rob Herring <rob.herring@calxeda.com>,
+ linux-kernel@vger.kernel.org, Grant Likely <grant.likely@secretlab.ca>,
+ Rob Landley <rob@landley.net>,
+ Maxime Ripard <maxime.ripard@free-electrons.com>,
+ linux-arm-kernel@lists.infradead.org,
+ Lucas Stach <l.stach@pengutronix.de>,
+ Marek Vasut <marex@denx.de>
+Subject: Re: [PATCHv3 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com> <1372094699-3832-3-git-send-email-alexandre.belloni@free-electrons.com> <CAOMZO5CLcT=OXYd=ggxpDzUqFxoXSaanqUPGugYLT2Og-VgzCA@mail.gmail.com> <51D2BB05.9040201@free-electrons.com> <CAOMZO5DZufiOjguOCEbe5n0j=w9B5ezBYh0Rejv3zF5Xht5_qQ@mail.gmail.com>
+In-Reply-To: <CAOMZO5DZufiOjguOCEbe5n0j=w9B5ezBYh0Rejv3zF5Xht5_qQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon,  1 Jul 2013 18:40:09 +0200 Alexandre Belloni <alexandre.belloni@free-electrons.com> wrote:
+On 02/07/2013 13:45, Fabio Estevam wrote:
 
-> When reading IIO_CHAN_INFO_OFFSET, the return value of iio_channel_read() for
-> success will be IIO_VAL*, checking for 0 is not correct.
+> Shouldn't this be
+> 
+>          i2c@1 {
+>                  reg = <1>; ?
+> 
 
-I have a canned response:
+No, we have 4 devices on that mux and 2 pins to select the muxing.
 
-When writing a changelog, please describe the end-user-visible effects
-of the bug, so that others can more easily decide which kernel
-version(s) should be fixed, and so that downstream kernel maintainers
-can more easily work out whether this patch will fix a problem which
-they or their customers are observing.
-
-> Cc: <stable@vger.kernel.org> # 3.10.x
-
-Especially when cc'ing -stable.
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
