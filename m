@@ -1,83 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:54935 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932521Ab3GBJZF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 2 Jul 2013 05:25:05 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1Utwpa-0004tZ-VD
-	for linux-iio@vger.kernel.org; Tue, 02 Jul 2013 11:25:02 +0200
-Received: from 217.151.242.15 ([217.151.242.15])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jul 2013 11:25:02 +0200
-Received: from hector.palacios by 217.151.242.15 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jul 2013 11:25:02 +0200
-To: linux-iio@vger.kernel.org
-From: Hector Palacios <hector.palacios@digi.com>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Otavio Salvador <otavio@ossystems.com.br>
 Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
-Date: Tue, 02 Jul 2013 11:19:37 +0200
-Message-ID: <51D29B29.8080909@digi.com>
-References: <1372723722-13902-1-git-send-email-marex@denx.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Cc: public-linux-iio-u79uwXL29TY76Z2rM5mHXA@plane.gmane.org,
-	public-otavio-fKevB0iiKLMBZ+LybsDmbA@plane.gmane.org,
-	Jonathan Cameron
-	<public-jic23-DgEjT+Ai2ygdnm+yROfE0A@plane.gmane.org>,
-	Fabio Estevam
-	<public-fabio.estevam-KZfg59tc24xl57MIdRCFDg@plane.gmane.org>
-In-Reply-To: <1372723722-13902-1-git-send-email-marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Tue, 2 Jul 2013 19:55:45 +0200
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ linux-iio@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>,
+ Fabio Estevam <fabio.estevam@freescale.com>
+References: <1372723722-13902-1-git-send-email-marex@denx.de> <201307021936.57756.marex@denx.de> <CAP9ODKrDnw5ATc1gdfzAMcks5HN8D9v=twcZ2n9KwjehdJfWuQ@mail.gmail.com>
+In-Reply-To: <CAP9ODKrDnw5ATc1gdfzAMcks5HN8D9v=twcZ2n9KwjehdJfWuQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307021955.45799.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Marek,
+Dear Otavio Salvador,
 
-On 07/02/2013 02:08 AM, Marek Vasut wrote:
-> The removed check in the read_raw implementation was always true,
-> therefore remove it.
->
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->   drivers/staging/iio/adc/mxs-lradc.c |    7 -------
->   1 file changed, 7 deletions(-)
->
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index d92c97a..c318eb6 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -234,7 +234,6 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->   {
->   	struct mxs_lradc *lradc = iio_priv(iio_dev);
->   	int ret;
-> -	unsigned long mask;
->
->   	if (m != IIO_CHAN_INFO_RAW)
->   		return -EINVAL;
-> @@ -243,12 +242,6 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->   	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
->   		return -EINVAL;
->
-> -	/* Validate the channel if it doesn't intersect with reserved chans. */
-> -	bitmap_set(&mask, chan->channel, 1);
-> -	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
-> -	if (ret)
-> -		return -EINVAL;
-> -
->   	/*
->   	 * See if there is no buffered operation in progess. If there is, simply
->   	 * bail out. This can be improved to support both buffered and raw IO at
->
+> On Tue, Jul 2, 2013 at 2:36 PM, Marek Vasut <marex@denx.de> wrote:
+> > Dear Otavio Salvador,
+> > 
+> >> On Tue, Jul 2, 2013 at 1:13 PM, Marek Vasut <marex@denx.de> wrote:
+> >> > Dear Alexandre Belloni,
+> >> > 
+> >> >> On 02/07/2013 14:03, Marek Vasut wrote:
+> >> >> > Dear Alexandre Belloni,
+> >> >> > 
+> >> >> >> Dear Marek,
+> >> >> >> 
+> >> >> >> I don't seem to be hitting that issue. I'm using 3.10rc7. Do you
+> >> >> >> know how to reproduce it ?
+> >> >> > 
+> >> >> > The check is just redundant, it's not a bug.
+> >> >> 
+> >> >> Ok, that's what I understood first but then got confused by reports
+> >> >> of it solving a bug.
+> >> > 
+> >> > It cannot solve a thing. If it does, then we have a problem.
+> >> > 
+> >> > What kind of bug do you see ? How can I replicate it ? Can you send me
+> >> > a testcase?
+> >> 
+> >> As I said this code sometimes work. If you put a printf before this
+> >> call it sometimes work. So I think we have a race somewhere.
+> >> 
+> >> When I were debugging this I found that when it works we have 10
+> >> active channels, it seems.
+> > 
+> > Uh, the read_raw() should exit with -EBUSY, since the mutex_tryload()
+> > will fail iff buffered operation is in progress. Or what do you mean by
+> > having "10 active channels"?
+> 
+> The read_raw returned invalid. The onehot always returns false and I
+> have 10 as mask comparing return.
 
-By "always true" you mean that it always entered the if and exited with -EINVAL, right?
-I just started to look at this driver on my MX28 platform and this check was always 
-returning -EINVAL. With this patch I can now read the channels.
-Was this what was happening to you as well?
+Looking at the code.
 
-Thank you,
--- 
-Héctor Palacios
+the bitmap_set() will set (1 << chan->channel) into "mask" var.
 
+The iio_validate_scan_mask_onehot is implemented like this:
+
+688 bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+689         const unsigned long *mask)
+690 {
+691         return bitmap_weight(mask, indio_dev->masklength) == 1;
+692 }
+
+So if mask _always_ has exactly one bit set, the iio_validate_scan_mask_onehot 
+will always return 1. Aaaand ... now I see why it fixes a bug for you.
+
+if (ret)
+ return -EINVAL;
+
+This stuff above will always be if (1) so will always return -EINVAL. Dang!
+
+Best regards,
+Marek Vasut
