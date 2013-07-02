@@ -1,53 +1,96 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <51D341C0.1060904@kernel.org>
-Date: Tue, 02 Jul 2013 22:10:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
 To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
+Subject: Re: [PATCHv3 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+Date: Tue, 2 Jul 2013 18:33:04 +0200
+Cc: Fabio Estevam <festevam@gmail.com>,
+ Shawn Guo <shawn.guo@linaro.org>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ brian@crystalfontz.com,
+ linux-doc@vger.kernel.org,
+ linux-iio@vger.kernel.org,
+ devicetree-discuss@lists.ozlabs.org,
+ jimwall@q.com,
+ Rob Herring <rob.herring@calxeda.com>,
+ linux-kernel@vger.kernel.org,
+ Grant Likely <grant.likely@secretlab.ca>,
+ Rob Landley <rob@landley.net>,
  Maxime Ripard <maxime.ripard@free-electrons.com>,
- Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
- Gregory Clement <gregory.clement@free-electrons.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Lars-Peter Clausen <lars@metafoo.de>,
- stable@vger.kernel.org
-Subject: Re: [PATCH] iio: Fix iio_channel_has_info
-References: <1372688430-13120-1-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1372688430-13120-1-git-send-email-alexandre.belloni@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1
+ linux-arm-kernel@lists.infradead.org,
+ Lucas Stach <l.stach@pengutronix.de>
+References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com> <51D2BEA1.6010206@free-electrons.com> <51D2DE5B.9060309@free-electrons.com>
+In-Reply-To: <51D2DE5B.9060309@free-electrons.com>
+MIME-Version: 1.0
+Message-Id: <201307021833.04282.marex@denx.de>
+Content-Type: Text/Plain;
+  charset="us-ascii"
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/01/2013 03:20 PM, Alexandre Belloni wrote:
-> Since the info_mask split, iio_channel_has_info() is not working correctly.
-> info_mask_separate and info_mask_shared_by_type, it is not possible to compare
-> them directly with the iio_chan_info_enum enum. Correct that bit using the BIT()
-> macro.
-> 
-> Cc: <stable@vger.kernel.org> # 3.10.x
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-ouch / oops is about all I can say to this one.  Ideally might have had a note
-in the description about what the effect of this bug is (breakage in the inkern interface)
+Dear Alexandre Belloni,
 
-Thanks and applied to the fixes-togreg branch of iio.git
-
-
-> ---
->  include/linux/iio/iio.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> On 02/07/2013 13:50, Alexandre Belloni wrote:
+> > On 02/07/2013 13:45, Fabio Estevam wrote:
+> >> Shouldn't this be
+> >> 
+> >>          i2c@1 {
+> >>          
+> >>                  reg = <1>; ?
+> > 
+> > No, we have 4 devices on that mux and 2 pins to select the muxing.
 > 
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 8d171f4..3d35b70 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -211,8 +211,8 @@ struct iio_chan_spec {
->  static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
->  	enum iio_chan_info_enum type)
->  {
-> -	return (chan->info_mask_separate & type) |
-> -	       (chan->info_mask_shared_by_type & type);
-> +	return (chan->info_mask_separate & BIT(type)) |
-> +	       (chan->info_mask_shared_by_type & BIT(type));
->  }
->  
->  #define IIO_ST(si, rb, sb, sh)						\
+> OK, got it working.
 > 
+> So, the results:
+> 
+> bitbanging:
+> 
+> # time cat /sys/bus/iio/devices/iio\:device1/in_voltage0_raw
+> 2637
+> real	0m 0.09s
+> user	0m 0.01s
+> sys	0m 0.01s
+> 
+> 
+> i2c-mxs PIO mode:
+> 
+> # time cat /sys/bus/iio/devices/iio\:device1/in_voltage0_raw
+> [   35.007650] [sched_delayed] sched: RT throttling activated
+> 2627
+> real	0m 7.14s
+> user	0m 0.02s
+> sys	0m 0.01s
+> 
+> 
+> i2c-mxs PIO mode without LRADC:
+> 
+> # time cat /sys/bus/iio/devices/iio\:device1/in_voltage0_raw
+> [   18.007432] [sched_delayed] sched: RT throttling activated
+> 2629
+> real	0m 7.09s
+> user	0m 0.00s
+> sys	0m 0.03s
+> 
+> 
+> i2c-mxs DMA mode:
+> 
+> # time cat /sys/bus/iio/devices/iio\:device1/in_voltage0_raw
+> 2631
+> real	0m 0.12s
+> user	0m 0.01s
+> sys	0m 0.01s
+> 
+> 
+> It seems fine for me.
+
+I think I'm getting a little lost in these gazilions of i2c and lradc threads. 
+Can we not create one thread and keep the related stuff in there instead of 
+discussing it all around !?
+
+Only one question comes to mind with this email -- what do LRADC and I2C have to 
+do with each other here ?
+
+It'd be nice if someone could summarize on what I should focus and possibly 
+prepare a testcase.
+
+Best regards,
+Marek Vasut
