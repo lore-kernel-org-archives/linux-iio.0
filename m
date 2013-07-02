@@ -1,94 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f50.google.com ([209.85.219.50]:37144 "EHLO
-	mail-oa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750845Ab3FXMaY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2013 08:30:24 -0400
+Received: from mail-oa0-f41.google.com ([209.85.219.41]:50123 "EHLO
+	mail-oa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752880Ab3GBRmp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 13:42:45 -0400
+Received: by mail-oa0-f41.google.com with SMTP id n10so6807279oag.0
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jul 2013 10:42:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <51C5847C.7030100@kernel.org>
-References: <CAP9ODKof+yv27-zHSO9MTLC9Wv6F6Ya-Ot-vW7OK7kwadYK8Xg@mail.gmail.com>
-	<CAP9ODKq92LW-xQyiHkVe6AkwaaYV11nt92DxCEzUioEVARTZXw@mail.gmail.com>
-	<51C5847C.7030100@kernel.org>
-Date: Mon, 24 Jun 2013 09:30:23 -0300
-Message-ID: <CAP9ODKohhQVTwj40K-h1LDAqjk6+nO1r=Fq404Xy1DUZWfwRxg@mail.gmail.com>
-Subject: Re: Fwd: mxs-lradc oops when unloading module
+In-Reply-To: <201307021936.57756.marex@denx.de>
+References: <1372723722-13902-1-git-send-email-marex@denx.de>
+	<201307021813.18019.marex@denx.de>
+	<CAP9ODKoVcH9f-2KMzAbQrfgoFGhz2CU=zJVJu-M8dWcUN4s17w@mail.gmail.com>
+	<201307021936.57756.marex@denx.de>
+Date: Tue, 2 Jul 2013 14:42:44 -0300
+Message-ID: <CAP9ODKrDnw5ATc1gdfzAMcks5HN8D9v=twcZ2n9KwjehdJfWuQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
 From: Otavio Salvador <otavio@ossystems.com.br>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	Kernel development list <linux-kernel@vger.kernel.org>,
-	Fabio Estevam <festevam@gmail.com>
+To: Marek Vasut <marex@denx.de>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <fabio.estevam@freescale.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 22, 2013 at 8:03 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> From what I could grasp, it might be related to the IIO subsystem but
->> I couldn't find the culprit.
->>
->> It seems "iio_device_unregister_trigger_consumer", as:
->>
->> void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
->> {
->> /* Clean up an associated but not attached trigger reference */
->> if (indio_dev->trig)
->> iio_trigger_put(indio_dev->trig);
->> }
->>
->> and , as:
->>
->> static inline void iio_trigger_put(struct iio_trigger *trig)
->> {
->> module_put(trig->ops->owner);
->> put_device(&trig->dev);
->> }
->>
->> so, somehow the trig->ops is NULL here.
->>
->> Do someone has a clue?
->>
-> I think the issue is more core to iio trigger handling than that, you
-> have just been unlucky enough to hit a bug that has been there a while.
+On Tue, Jul 2, 2013 at 2:36 PM, Marek Vasut <marex@denx.de> wrote:
+> Dear Otavio Salvador,
 >
-> In iio_trigger_unregister we call
-> iio_device_unregister which in turn calls device_del (as intended) and
-> device_put (as not!).  Then we get an additional device_put from
-> iio_trigger_free giving us one more than we should have an resulting
-> in a double attempt to free the device.
+>> On Tue, Jul 2, 2013 at 1:13 PM, Marek Vasut <marex@denx.de> wrote:
+>> > Dear Alexandre Belloni,
+>> >
+>> >> On 02/07/2013 14:03, Marek Vasut wrote:
+>> >> > Dear Alexandre Belloni,
+>> >> >
+>> >> >> Dear Marek,
+>> >> >>
+>> >> >> I don't seem to be hitting that issue. I'm using 3.10rc7. Do you know
+>> >> >> how to reproduce it ?
+>> >> >
+>> >> > The check is just redundant, it's not a bug.
+>> >>
+>> >> Ok, that's what I understood first but then got confused by reports of
+>> >> it solving a bug.
+>> >
+>> > It cannot solve a thing. If it does, then we have a problem.
+>> >
+>> > What kind of bug do you see ? How can I replicate it ? Can you send me a
+>> > testcase?
+>>
+>> As I said this code sometimes work. If you put a printf before this
+>> call it sometimes work. So I think we have a race somewhere.
+>>
+>> When I were debugging this I found that when it works we have 10
+>> active channels, it seems.
 >
-> Could you try the following change and see if it solves the problem?
-> (the comment abov is 'interesting' and stupid given I've long ago
-> forgotten what it refers to, but it could be related to this issue...)
->
-> From 238faf76acaa9214b0eb607742dd14b134469328 Mon Sep 17 00:00:00 2001
-> From: Jonathan Cameron <jic23@kernel.org>
-> Date: Sat, 22 Jun 2013 12:00:04 +0100
-> Subject: [PATCH] iio:trigger: device_unregister->device_del to avoid double
->  free
->
-> iio_trigger unregistration and freeing has been separated in this
-> code for some time, but it looks like the calls to the device
-> handling were not appropriately updated.
->
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/iio/industrialio-trigger.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 4d6c7d8..ea8a414 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -104,7 +104,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
->
->         ida_simple_remove(&iio_trigger_ida, trig_info->id);
->         /* Possible issue in here */
-> -       device_unregister(&trig_info->dev);
-> +       device_del(&trig_info->dev);
->  }
->  EXPORT_SYMBOL(iio_trigger_unregister);
+> Uh, the read_raw() should exit with -EBUSY, since the mutex_tryload() will fail
+> iff buffered operation is in progress. Or what do you mean by having "10 active
+> channels"?
 
-Tested-by: Otavio Salvador <otavio@ossystems.com.br>
-
-It does fix the Oops for me.
+The read_raw returned invalid. The onehot always returns false and I
+have 10 as mask comparing return.
 
 --
 Otavio Salvador                             O.S. Systems
