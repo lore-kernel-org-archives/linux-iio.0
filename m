@@ -1,47 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:33316 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750774Ab3GBPwD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 11:52:03 -0400
-Message-ID: <51D2F7F1.7000305@metafoo.de>
-Date: Tue, 02 Jul 2013 17:55:29 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-oa0-f49.google.com ([209.85.219.49]:34842 "EHLO
+	mail-oa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751323Ab3GBDiQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jul 2013 23:38:16 -0400
+Received: by mail-oa0-f49.google.com with SMTP id n9so5746222oag.22
+        for <linux-iio@vger.kernel.org>; Mon, 01 Jul 2013 20:38:15 -0700 (PDT)
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Hector Palacios <hector.palacios@digi.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Marek Vasut <marex@denx.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: Accessing specific hardware features of mxs-lradc
-References: <51D2B057.9090005@digi.com> <51D2CE6A.7040103@metafoo.de> <51D2D591.4040101@free-electrons.com> <51D2E9EF.50303@digi.com> <51D2EFDD.9000403@metafoo.de> <51D2F580.5070205@free-electrons.com>
-In-Reply-To: <51D2F580.5070205@free-electrons.com>
+In-Reply-To: <1372723722-13902-1-git-send-email-marex@denx.de>
+References: <1372723722-13902-1-git-send-email-marex@denx.de>
+Date: Tue, 2 Jul 2013 00:38:15 -0300
+Message-ID: <CAP9ODKr6MGYKKRZm7prGRQhPXpfuEimOmrgUucraCfF_7SPTEA@mail.gmail.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: Marek Vasut <marex@denx.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <fabio.estevam@freescale.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/02/2013 05:45 PM, Alexandre Belloni wrote:
-> On 02/07/2013 17:21, Lars-Peter Clausen wrote:
->>>>
->>>> I was looking at that yesterday as I had to had a scale for the
->>>> temperature sensors. You'll have to be careful because the maximum
->>>> measured voltage when DIVIDE_BY_TWO is not set is 1.85V and when it is
->>>> set, it becomes VDDIO - 50mv.
->>
->> I had a quick peak at the datasheet and I think that's a typo. VDDIO is 3.3V.
->> This sentence also doesn't make much sense if divide by two would actually
->> lower the range. "For input channels (other than BATT, 5V, or VDDIO) with
->> signals larger than 1.85 V, the divide-by-two option should be set."
->>
-> 
-> Yeah, what I think they meant is if !DIVIDE_BY_TWO : Vmax = 1.85V else
-> Vmax = 3.25V. So it may not be as easy as multiplying hte scale by two.
-> I couldn't test it, so I didn't implement it.
+On Mon, Jul 1, 2013 at 9:08 PM, Marek Vasut <marex@denx.de> wrote:
+> The removed check in the read_raw implementation was always true,
+> therefore remove it.
+>
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
 
-Parse error on my side, in the datasheet it is a hyphen not a minus, so I
-though the sentence meant that the maximum is 50mV.
+This fixes the driver for MX23 but why this code were add at first?
 
-I guess it is still a divide by two, but since the max input voltage is 3.3V
-you simply can't max out the ADC anymore since the maximum value corresponds to
-3.7V
-
--Lars
+--
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
