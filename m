@@ -1,37 +1,43 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <51D57DBC.3050503@linutronix.de>
-Date: Thu, 04 Jul 2013 15:50:52 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:49728 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752512Ab3GBMXn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 08:23:43 -0400
+From: Marek Vasut <marex@denx.de>
+To: Hector Palacios <hector.palacios@digi.com>
+Subject: Re: Accessing specific hardware features of mxs-lradc
+Date: Tue, 2 Jul 2013 14:06:19 +0200
+Cc: linux-iio@vger.kernel.org,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+References: <51D2B057.9090005@digi.com>
+In-Reply-To: <51D2B057.9090005@digi.com>
 MIME-Version: 1.0
-To: Sekhar Nori <nsekhar@ti.com>
-CC: Lee Jones <lee.jones@linaro.org>,
- Samuel Ortiz <sameo@linux.intel.com>,
- =?UTF-8?B?QmVub8OudCBDb3Vzc29u?= <b-cousson@ti.com>,
- Tony Lindgren <tony@atomide.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org
-Subject: Re: [PATCH 04/22] input/ti_am33x_tsc: Order of TSC wires, made configurable
-References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-5-git-send-email-bigeasy@linutronix.de> <51D5592F.6050208@ti.com> <51D55D80.6080803@linutronix.de> <51D57AF9.2020001@ti.com>
-In-Reply-To: <51D57AF9.2020001@ti.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307021406.19310.marex@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/04/2013 03:39 PM, Sekhar Nori wrote:
-> Yes, I noticed that after sending the mail. To me it does not make sense
-> to make changes to accept something as platform data only to remove
-> platform data itself later.
+Hi Hector,
 
-The patches were made earlier and it was easier that way to take
-everything and simple remove the platform part later.
-
-> May be reorder the series to move this to after platform data removal -
-> that way any platform data related changes in the patch will have to go
-> away.
+> Greetings,
 > 
-> Thanks,
-> Sekhar
+> The mxs-lradc has some hardware specific features like the DIVIDE_BY_TWO
+> (an analog divide by two circuit that can be activated per channel).
+> This is not currently implemented in the driver and I was wondering what
+> would be the way to expose and control such setting. A specific sysfs
+> entry? Somehow through the device tree?
 
-Sebastian
+The proper way would be to see of IIO doesn't already have some ways to control 
+those (it likely does) and then these would automatically be accessible via 
+sysfs.
+
+> Is there any example of how to control a hw-specific feature in other
+> similar iio drivers?
+
+None that I'm aware of, but I didn't look. I suspect this would be somewhere 
+around the channel defitionion, since the /2 function of the LRADC is a per-
+channel feature on the LRADC.
+
+Best regards,
+Marek Vasut
