@@ -1,84 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:32904 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752506Ab3GBMXn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 08:23:43 -0400
-From: Marek Vasut <marex@denx.de>
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Received: from mail-ie0-f171.google.com ([209.85.223.171]:62079 "EHLO
+	mail-ie0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751503Ab3GBLxu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 07:53:50 -0400
+Received: by mail-ie0-f171.google.com with SMTP id qd12so12005688ieb.16
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jul 2013 04:53:50 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <51D2BCE5.8060602@free-electrons.com>
+References: <1372723722-13902-1-git-send-email-marex@denx.de>
+	<51D2BCE5.8060602@free-electrons.com>
+Date: Tue, 2 Jul 2013 08:53:49 -0300
+Message-ID: <CAP9ODKqr_zfzA0QqB63evMJfBGvR8AYWK38Ro29a1hHt5abZ+A@mail.gmail.com>
 Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
-Date: Tue, 2 Jul 2013 14:03:57 +0200
-Cc: linux-iio@vger.kernel.org, otavio@ossystems.com.br,
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
 	Fabio Estevam <fabio.estevam@freescale.com>
-References: <1372723722-13902-1-git-send-email-marex@denx.de> <51D2BCE5.8060602@free-electrons.com>
-In-Reply-To: <51D2BCE5.8060602@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307021403.57543.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Alexandre Belloni,
-
-> Dear Marek,
-> 
+On Tue, Jul 2, 2013 at 8:43 AM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
 > I don't seem to be hitting that issue. I'm using 3.10rc7. Do you know
 > how to reproduce it ?
 
-The check is just redundant, it's not a bug.
+I had this, but in MX23.
 
-> Regards,
-> 
-> On 02/07/2013 02:08, Marek Vasut wrote:
-> > The removed check in the read_raw implementation was always true,
-> > therefore remove it.
-> > 
-> > Signed-off-by: Marek Vasut <marex@denx.de>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> > ---
-> > 
-> >  drivers/staging/iio/adc/mxs-lradc.c |    7 -------
-> >  1 file changed, 7 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> > b/drivers/staging/iio/adc/mxs-lradc.c index d92c97a..c318eb6 100644
-> > --- a/drivers/staging/iio/adc/mxs-lradc.c
-> > +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> > @@ -234,7 +234,6 @@ static int mxs_lradc_read_raw(struct iio_dev
-> > *iio_dev,
-> > 
-> >  {
-> >  
-> >  	struct mxs_lradc *lradc = iio_priv(iio_dev);
-> >  	int ret;
-> > 
-> > -	unsigned long mask;
-> > 
-> >  	if (m != IIO_CHAN_INFO_RAW)
-> >  	
-> >  		return -EINVAL;
-> > 
-> > @@ -243,12 +242,6 @@ static int mxs_lradc_read_raw(struct iio_dev
-> > *iio_dev,
-> > 
-> >  	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-> >  	
-> >  		return -EINVAL;
-> > 
-> > -	/* Validate the channel if it doesn't intersect with reserved chans. */
-> > -	bitmap_set(&mask, chan->channel, 1);
-> > -	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
-> > -	if (ret)
-> > -		return -EINVAL;
-> > -
-> > 
-> >  	/*
-> >  	
-> >  	 * See if there is no buffered operation in progess. If there is,
-> >  	 simply * bail out. This can be improved to support both buffered and
-> >  	 raw IO at
+It seems like a race as if I put some prints in this code area it
+works sometimes.
 
-Best regards,
-Marek Vasut
+--
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
