@@ -1,78 +1,47 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Otavio Salvador <otavio@ossystems.com.br>
-Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
-Date: Tue, 2 Jul 2013 19:55:45 +0200
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>,
- Fabio Estevam <fabio.estevam@freescale.com>
-References: <1372723722-13902-1-git-send-email-marex@denx.de> <201307021936.57756.marex@denx.de> <CAP9ODKrDnw5ATc1gdfzAMcks5HN8D9v=twcZ2n9KwjehdJfWuQ@mail.gmail.com>
-In-Reply-To: <CAP9ODKrDnw5ATc1gdfzAMcks5HN8D9v=twcZ2n9KwjehdJfWuQ@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:33316 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750774Ab3GBPwD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 11:52:03 -0400
+Message-ID: <51D2F7F1.7000305@metafoo.de>
+Date: Tue, 02 Jul 2013 17:55:29 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307021955.45799.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: Hector Palacios <hector.palacios@digi.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Marek Vasut <marex@denx.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: Accessing specific hardware features of mxs-lradc
+References: <51D2B057.9090005@digi.com> <51D2CE6A.7040103@metafoo.de> <51D2D591.4040101@free-electrons.com> <51D2E9EF.50303@digi.com> <51D2EFDD.9000403@metafoo.de> <51D2F580.5070205@free-electrons.com>
+In-Reply-To: <51D2F580.5070205@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Otavio Salvador,
-
-> On Tue, Jul 2, 2013 at 2:36 PM, Marek Vasut <marex@denx.de> wrote:
-> > Dear Otavio Salvador,
-> > 
-> >> On Tue, Jul 2, 2013 at 1:13 PM, Marek Vasut <marex@denx.de> wrote:
-> >> > Dear Alexandre Belloni,
-> >> > 
-> >> >> On 02/07/2013 14:03, Marek Vasut wrote:
-> >> >> > Dear Alexandre Belloni,
-> >> >> > 
-> >> >> >> Dear Marek,
-> >> >> >> 
-> >> >> >> I don't seem to be hitting that issue. I'm using 3.10rc7. Do you
-> >> >> >> know how to reproduce it ?
-> >> >> > 
-> >> >> > The check is just redundant, it's not a bug.
-> >> >> 
-> >> >> Ok, that's what I understood first but then got confused by reports
-> >> >> of it solving a bug.
-> >> > 
-> >> > It cannot solve a thing. If it does, then we have a problem.
-> >> > 
-> >> > What kind of bug do you see ? How can I replicate it ? Can you send me
-> >> > a testcase?
-> >> 
-> >> As I said this code sometimes work. If you put a printf before this
-> >> call it sometimes work. So I think we have a race somewhere.
-> >> 
-> >> When I were debugging this I found that when it works we have 10
-> >> active channels, it seems.
-> > 
-> > Uh, the read_raw() should exit with -EBUSY, since the mutex_tryload()
-> > will fail iff buffered operation is in progress. Or what do you mean by
-> > having "10 active channels"?
+On 07/02/2013 05:45 PM, Alexandre Belloni wrote:
+> On 02/07/2013 17:21, Lars-Peter Clausen wrote:
+>>>>
+>>>> I was looking at that yesterday as I had to had a scale for the
+>>>> temperature sensors. You'll have to be careful because the maximum
+>>>> measured voltage when DIVIDE_BY_TWO is not set is 1.85V and when it is
+>>>> set, it becomes VDDIO - 50mv.
+>>
+>> I had a quick peak at the datasheet and I think that's a typo. VDDIO is 3.3V.
+>> This sentence also doesn't make much sense if divide by two would actually
+>> lower the range. "For input channels (other than BATT, 5V, or VDDIO) with
+>> signals larger than 1.85 V, the divide-by-two option should be set."
+>>
 > 
-> The read_raw returned invalid. The onehot always returns false and I
-> have 10 as mask comparing return.
+> Yeah, what I think they meant is if !DIVIDE_BY_TWO : Vmax = 1.85V else
+> Vmax = 3.25V. So it may not be as easy as multiplying hte scale by two.
+> I couldn't test it, so I didn't implement it.
 
-Looking at the code.
+Parse error on my side, in the datasheet it is a hyphen not a minus, so I
+though the sentence meant that the maximum is 50mV.
 
-the bitmap_set() will set (1 << chan->channel) into "mask" var.
+I guess it is still a divide by two, but since the max input voltage is 3.3V
+you simply can't max out the ADC anymore since the maximum value corresponds to
+3.7V
 
-The iio_validate_scan_mask_onehot is implemented like this:
-
-688 bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
-689         const unsigned long *mask)
-690 {
-691         return bitmap_weight(mask, indio_dev->masklength) == 1;
-692 }
-
-So if mask _always_ has exactly one bit set, the iio_validate_scan_mask_onehot 
-will always return 1. Aaaand ... now I see why it fixes a bug for you.
-
-if (ret)
- return -EINVAL;
-
-This stuff above will always be if (1) so will always return -EINVAL. Dang!
-
-Best regards,
-Marek Vasut
+-Lars
