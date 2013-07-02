@@ -1,40 +1,53 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	<stable@vger.kernel.org>
-Subject: [PATCH] iio: inkern: fix iio_convert_raw_to_processed_unlocked
-Date: Mon,  1 Jul 2013 18:40:09 +0200
-Message-Id: <1372696809-14661-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-Path: <jic23@kernel.org>
+Message-ID: <51D341C0.1060904@kernel.org>
+Date: Tue, 02 Jul 2013 22:10:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+ Maxime Ripard <maxime.ripard@free-electrons.com>,
+ Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+ Gregory Clement <gregory.clement@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: Fix iio_channel_has_info
+References: <1372688430-13120-1-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1372688430-13120-1-git-send-email-alexandre.belloni@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-When reading IIO_CHAN_INFO_OFFSET, the return value of iio_channel_read() for
-success will be IIO_VAL*, checking for 0 is not correct.
+On 07/01/2013 03:20 PM, Alexandre Belloni wrote:
+> Since the info_mask split, iio_channel_has_info() is not working correctly.
+> info_mask_separate and info_mask_shared_by_type, it is not possible to compare
+> them directly with the iio_chan_info_enum enum. Correct that bit using the BIT()
+> macro.
+> 
+> Cc: <stable@vger.kernel.org> # 3.10.x
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+ouch / oops is about all I can say to this one.  Ideally might have had a note
+in the description about what the effect of this bug is (breakage in the inkern interface)
 
-Cc: <stable@vger.kernel.org> # 3.10.x
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/iio/inkern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks and applied to the fixes-togreg branch of iio.git
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 98ddc32..0cf5f8e 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -451,7 +451,7 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
- 	int ret;
- 
- 	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
--	if (ret == 0)
-+	if (ret >= 0)
- 		raw64 += offset;
- 
- 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
--- 
-1.8.1.2
+
+> ---
+>  include/linux/iio/iio.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 8d171f4..3d35b70 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -211,8 +211,8 @@ struct iio_chan_spec {
+>  static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+>  	enum iio_chan_info_enum type)
+>  {
+> -	return (chan->info_mask_separate & type) |
+> -	       (chan->info_mask_shared_by_type & type);
+> +	return (chan->info_mask_separate & BIT(type)) |
+> +	       (chan->info_mask_shared_by_type & BIT(type));
+>  }
+>  
+>  #define IIO_ST(si, rb, sb, sh)						\
+> 
