@@ -1,35 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f49.google.com ([209.85.219.49]:34842 "EHLO
-	mail-oa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751323Ab3GBDiQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jul 2013 23:38:16 -0400
-Received: by mail-oa0-f49.google.com with SMTP id n9so5746222oag.22
-        for <linux-iio@vger.kernel.org>; Mon, 01 Jul 2013 20:38:15 -0700 (PDT)
+Received: from mail1.bemta7.messagelabs.com ([216.82.254.108]:12196 "EHLO
+	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752522Ab3GBO4Q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2013 10:56:16 -0400
+Message-ID: <51D2E9EF.50303@digi.com>
+Date: Tue, 2 Jul 2013 16:55:43 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-In-Reply-To: <1372723722-13902-1-git-send-email-marex@denx.de>
-References: <1372723722-13902-1-git-send-email-marex@denx.de>
-Date: Tue, 2 Jul 2013 00:38:15 -0300
-Message-ID: <CAP9ODKr6MGYKKRZm7prGRQhPXpfuEimOmrgUucraCfF_7SPTEA@mail.gmail.com>
-Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
-From: Otavio Salvador <otavio@ossystems.com.br>
-To: Marek Vasut <marex@denx.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Marek Vasut <marex@denx.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: Accessing specific hardware features of mxs-lradc
+References: <51D2B057.9090005@digi.com> <51D2CE6A.7040103@metafoo.de> <51D2D591.4040101@free-electrons.com>
+In-Reply-To: <51D2D591.4040101@free-electrons.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jul 1, 2013 at 9:08 PM, Marek Vasut <marex@denx.de> wrote:
-> The removed check in the read_raw implementation was always true,
-> therefore remove it.
+Hello,
+
+On 07/02/2013 03:28 PM, Alexandre Belloni wrote:
+> On 02/07/2013 14:58, Lars-Peter Clausen wrote:
+>> On 07/02/2013 12:49 PM, Hector Palacios wrote:
+>>> Greetings,
+>>>
+>>> The mxs-lradc has some hardware specific features like the DIVIDE_BY_TWO (an
+>>> analog divide by two circuit that can be activated per channel).
+>>> This is not currently implemented in the driver and I was wondering what would
+>>> be the way to expose and control such setting. A specific sysfs entry? Somehow
+>>> through the device tree?
+>>>
+>>> Is there any example of how to control a hw-specific feature in other similar
+>>> iio drivers?
+>>>
+>>
+>> This sounds as if the channel scale is programmable. There are quite a few
+>> drivers for devices which have similar features, just make the scale property
+>> writable and provide a scale_available.
+>>
 >
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> I was looking at that yesterday as I had to had a scale for the
+> temperature sensors. You'll have to be careful because the maximum
+> measured voltage when DIVIDE_BY_TWO is not set is 1.85V and when it is
+> set, it becomes VDDIO - 50mv.
+>
+> Also, scaling for quite a lot of channels is fixed. You'll also get
+> channels with a fixed divider that can take DIVIDE_BY_TWO. That is quite
+> a mess ;)
 
-This fixes the driver for MX23 but why this code were add at first?
+Thank you, I checked and it's easy to add custom sysfs attributes using 
+IIO_DEVICE_ATTR(). I was thinking whether adding a divide_by_two attribute per channel:
 
+	divide_by_two0
+	divide_by_two1
+	...
+	divide_by_two7
+
+or a unique divide_by_two descriptor that admits a mask value for all channels.
+I think the first approach (one per channel) is cleaner. Opinions?
+
+Best regards,
 --
-Otavio Salvador                             O.S. Systems
-http://www.ossystems.com.br        http://projetos.ossystems.com.br
-Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
+Hector Palacios
