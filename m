@@ -1,100 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:46009 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752827Ab3GFKuu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Jul 2013 06:50:50 -0400
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 1/4] iio: mxs-lradc: change the realbits to 12
-Date: Sat, 6 Jul 2013 12:13:32 +0200
-Cc: "Lars-Peter Clausen" <lars@metafoo.de>,
-	Hector Palacios <hector.palacios@digi.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <51D6FFAB.2050501@metafoo.de> <51D7EC93.7050300@kernel.org>
-In-Reply-To: <51D7EC93.7050300@kernel.org>
+Received: from mail1.bemta7.messagelabs.com ([216.82.254.102]:32154 "EHLO
+	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753737Ab3GCKkK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2013 06:40:10 -0400
+Message-ID: <51D3FF70.9080303@digi.com>
+Date: Wed, 3 Jul 2013 12:39:44 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307061213.33129.marex@denx.de>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"marex@denx.de" <marex@denx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH RFC] iio: mxs-lradc: add scaling to enable divide_by_two
+ operation
+References: <1372845969-31776-1-git-send-email-hector.palacios@digi.com> <51D3FC22.1040209@free-electrons.com>
+In-Reply-To: <51D3FC22.1040209@free-electrons.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Dear Alexandre,
 
-> On 07/05/2013 06:17 PM, Lars-Peter Clausen wrote:
-> > On 07/05/2013 04:35 PM, Hector Palacios wrote:
-> >> On 07/05/2013 03:10 PM, Marek Vasut wrote:
-> >>> Dear Hector Palacios,
-> >>> 
-> >>>> Dear Marek,
-> >>>> 
-> >>>> On 07/05/2013 01:37 PM, Marek Vasut wrote:
-> >>>>> Dear Hector Palacios,
-> >>>>> 
-> >>>>>> The LRADC virtual channels have an 18 bit field to store the sum of
-> >>>>>> up to 2^5 accumulated samples. The read_raw function however only
-> >>>>>> operates over a single sample (12 bit resolution).
-> >>>>>> In order to use this field for scaling operations, we need it to be
-> >>>>>> the exact resolution value of the LRADC.
-> >>>>> 
-> >>>>> How would this work once the accumulation is supported?
-> >>>> 
-> >>>> As I see it, when you read a channel the driver should give you the
-> >>>> 12-bit value either of one single sample or of N samples.
-> >>> 
-> >>> The hardware will always give you 18 bit value, let's call it A of N
-> >>> accumulated samples, each 12 bit long. N is in range of 1 to 32 .
-> >>> 
-> >>> The driver currently supports N = 1.
-> >>> 
-> >>> Do I understand it correctly that if we want to support N > 1, we have
-> >>> to do the division of A / N in the driver and therefore we will again
-> >>> report only a 12-bit value to the userland ?
-> >>> 
-> >>> If so,
-> >>> 
-> >>> Acked-by: Marek Vasut <marex@denx.de>
-> >> 
-> >> That's what I would expect. I mean, what is A worth for? It's just a
-> >> sum, it tells nothing. The value that really carries information is A /
-> >> N, which is the average value.
-> >> 
-> >> @Lars: is there any driver that allows to read N samples? Does the IIO
-> >> subsystem supply such interface (i.e. a file called n_samples that you
-> >> can program from userland to trigger a read of that N samples in order
-> >> to get the average value when you read that channel)?
-> > 
-> > The ad7606 has the 'oversampling_ratio' attribute. On the other hand the
-> > ad7606 is not the best example either and this is a custom API. But well
-> > that's what it is and since it's not the only device that supports
-> > oversampling we should try and standardize a property name for this. The
-> > ad7606 does the averaging in hardware though.
-> 
-> There is some 'filtering' abi defined and arguably this is just a mean
-> filter with a particular width window, perhaps treating it like that is
-> the cleanest abi wise. The intent was always to extend this filtering ABI
-> to describe common filter types but it hasn't happened yet :)  (that
-> oversampling_ratio is horrible and doesn't generalize nicely at all).
-> 
-> Propose an ABI addition for what you need....
-> Just to start things off, my gut feeling would be somethign along the lines
-> of
-> 
-> in_voltageX_filter_mean_width
-> 
-> with appropriate additions to info_mask as there are plenty of devices that
-> do this (though usually with on board division as Lars suggested - though
-> often for short widths they just fill the last few bits with 0's).
-> 
-> On this note, one of the more 'interesting' uses of the buffering
-> infrastructure is that you can do software implementations of simple
-> filters to cut down on the data flow to userspace. If only there was more
-> time in the day ;)
+On 07/03/2013 12:25 PM, Alexandre Belloni wrote:
+> Dear Hector,
+>
+> On 03/07/2013 12:06, Hector Palacios wrote:
+>> Most LRADC channels have an optional divisor by two which allows
+>> a maximum input voltage of VDDIO - 50mV. This patch adds the scaling
+>> info flag to these channels (all except 7 -VBATT-, 10 -VDDIO- and
+>> 15 -VDD5V-) to allow enabled divide_by_two read operation.
+>>
+>> Reference: http://www.spinics.net/lists/linux-iio/msg08876.html
+>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+>> ---
+>>   drivers/staging/iio/adc/mxs-lradc.c | 52 +++++++++++++++++++++++--------------
+>>   1 file changed, 33 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+>> index 51f781f..4363bb6 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -197,6 +197,7 @@ struct mxs_lradc {
+>>   #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+>>
+>>   #define	LRADC_CTRL2				0x20
+>> +#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+>>   #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
+>>
+>>   #define	LRADC_STATUS				0x40
+>> @@ -234,7 +235,7 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>   	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>>   	int ret;
+>>
+>> -	if (m != IIO_CHAN_INFO_RAW)
+>> +	if (m != IIO_CHAN_INFO_RAW && m != IIO_CHAN_INFO_SCALE)
+>>   		return -EINVAL;
+>>
+>>   	/* Check for invalid channel */
+>> @@ -262,6 +263,11 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>   		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+>>   	writel(0xff, lradc->base + LRADC_CTRL0 + STMP_OFFSET_REG_CLR);
+>>
+>> +	/* Enable DIVIDE_BY_TWO on channel 0 if reading scaled value */
+>> +	if (IIO_CHAN_INFO_SCALE == m)
+>> +		writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
+>> +		       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
+>> +
+>>   	/* Clean the slot's previous content, then set new one. */
+>>   	writel(LRADC_CTRL4_LRADCSELECT_MASK(0),
+>>   		lradc->base + LRADC_CTRL4 + STMP_OFFSET_REG_CLR);
+>> @@ -286,6 +292,10 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>   	ret = IIO_VAL_INT;
+>>
+>>   err:
+>> +	/* Disable DIVIDE_BY_TWO on channel 0 if reading scaled value */
+>> +	if (IIO_CHAN_INFO_SCALE == m)
+>> +		writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
+>> +		       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
+>>   	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
+>>   		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
+>>
+>> @@ -806,11 +816,11 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+>>    * Driver initialization
+>>    */
+>>
+>> -#define MXS_ADC_CHAN(idx, chan_type) {				\
+>> +#define MXS_ADC_CHAN(idx, chan_type, info) {			\
+>>   	.type = (chan_type),					\
+>>   	.indexed = 1,						\
+>>   	.scan_index = (idx),					\
+>> -	.info_mask = IIO_CHAN_INFO_RAW_SEPARATE_BIT,		\
+>> +	.info_mask = (info),					\
+>>   	.channel = (idx),					\
+>>   	.scan_type = {						\
+>>   		.sign = 'u',					\
+>> @@ -819,23 +829,27 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+>>   	},							\
+>>   }
+>>
+>> +#define RAW		IIO_CHAN_INFO_RAW_SEPARATE_BIT
+>> +#define RAW_SCALED	(IIO_CHAN_INFO_RAW_SEPARATE_BIT |	\
+>> +			 IIO_CHAN_INFO_SCALE_SEPARATE_BIT)
+>> +
+>>   static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
+>> -	MXS_ADC_CHAN(0, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(1, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(2, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(3, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(4, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(5, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(6, IIO_VOLTAGE),
+>> -	MXS_ADC_CHAN(7, IIO_VOLTAGE),	/* VBATT */
+>> -	MXS_ADC_CHAN(8, IIO_TEMP),	/* Temp sense 0 */
+>> -	MXS_ADC_CHAN(9, IIO_TEMP),	/* Temp sense 1 */
+>> -	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
+>> -	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
+>> -	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
+>> -	MXS_ADC_CHAN(13, IIO_VOLTAGE),	/* VDDD */
+>> -	MXS_ADC_CHAN(14, IIO_VOLTAGE),	/* VBG */
+>> -	MXS_ADC_CHAN(15, IIO_VOLTAGE),	/* VDD5V */
+>> +	MXS_ADC_CHAN(0, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(1, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(2, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(3, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(4, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(5, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(6, IIO_VOLTAGE, RAW_SCALED),
+>> +	MXS_ADC_CHAN(7, IIO_VOLTAGE, RAW),		/* VBATT */
+>> +	MXS_ADC_CHAN(8, IIO_TEMP, RAW_SCALED),		/* Temp sense 0 */
+>> +	MXS_ADC_CHAN(9, IIO_TEMP, RAW_SCALED),		/* Temp sense 1 */
+>> +	MXS_ADC_CHAN(10, IIO_VOLTAGE, RAW),		/* VDDIO */
+>> +	MXS_ADC_CHAN(11, IIO_VOLTAGE, RAW_SCALED),	/* VTH */
+>> +	MXS_ADC_CHAN(12, IIO_VOLTAGE, RAW_SCALED),	/* VDDA */
+>> +	MXS_ADC_CHAN(13, IIO_VOLTAGE, RAW_SCALED),	/* VDDD */
+>> +	MXS_ADC_CHAN(14, IIO_VOLTAGE, RAW_SCALED),	/* VBG */
+>> +	MXS_ADC_CHAN(15, IIO_VOLTAGE, RAW),		/* VDD5V */
+>>   };
+>>
+>>   static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
+>
+>
+> This is not how it is supposed to work. you should actually add
+> IIO_CHAN_INFO_SCALE_SEPARATE_BIT to all channels .info_mask_separate.
+>
+> Then, you will get two files: in_voltageX_raw and in_voltageX_scale.
+> Userland should calculate in_voltageX_raw * in_voltageX_scale. So when
+> reading in_voltageX_scale, you actually want to read the current scale.
+> To set the scale, you'll have to implement a write_raw.
+>
+> Also, it would probably be a good idea to expose a
+> in_voltageX_scale_available file.
 
-... and a stronger coffee.
+Thanks, I totally misunderstood it.
+One question: to implement a divisor by two what should I write to the scale? A 
+decimal number like 0.5? And I guess I should return -EINVAL for any other value, right?
+
 
 Best regards,
-Marek Vasut
+--
+Hector Palacios
