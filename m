@@ -1,112 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:51742 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933071Ab3GCQy6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2013 12:54:58 -0400
-Message-ID: <51D4575E.2040002@free-electrons.com>
-Date: Wed, 03 Jul 2013 18:54:54 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35283 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753118Ab3GCT0m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2013 15:26:42 -0400
+Message-ID: <51D47AEC.8070606@kernel.org>
+Date: Wed, 03 Jul 2013 20:26:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hector Palacios <hector.palacios@digi.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
+CC: Marek Vasut <marex@denx.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"marex@denx.de" <marex@denx.de>,
 	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH RFC] iio: mxs-lradc: add scaling to enable divide_by_two
- operation
-References: <1372845969-31776-1-git-send-email-hector.palacios@digi.com> <51D400FF.5060803@metafoo.de> <51D453AE.3020005@digi.com>
-In-Reply-To: <51D453AE.3020005@digi.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Remove useless check in read_raw
+References: <1372723722-13902-1-git-send-email-marex@denx.de> <201307021955.45799.marex@denx.de> <51D3EE00.4050907@digi.com> <201307031338.26928.marex@denx.de> <51D42E22.8060006@digi.com>
+In-Reply-To: <51D42E22.8060006@digi.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/2013 18:39, Hector Palacios wrote:
-> Dear Lars,
+On 07/03/2013 02:58 PM, Hector Palacios wrote:
+> Dear Marek,
 > 
-> On 07/03/2013 12:46 PM, Lars-Peter Clausen wrote:
->> The scale attribute reports the scale of the raw value. To gain the
->> value of
->> the result in mV you have to multiply the raw attribute with the scale
->> attribute. The scale attribute does not return the result of a
->> conversion with
->> a scale different applied.
-> 
-> Thank you for the guidance, I misunderstood the whole thing.
-> 
->> I suggest you implement this in two steps. First implement the scale
->> property
->> for all channels. Use a LUT for each channel's fullscale value (in mV)
->> and
->> implement reading the scale like this.
+> On 07/03/2013 01:38 PM, Marek Vasut wrote:
+>> Dear Hector Palacios,
 >>
->> case IIO_CHAN_INFO_SCALE:
->> *val = lut[chan->channel];
->> *val2 = chan->scan_type.realbits;
->> return IIO_VAL_FRACTIONAL_LOG2;
+>>> Dear Marek,
+>>>
+>>> On 07/02/2013 07:55 PM, Marek Vasut wrote:
+>>>> Dear Otavio Salvador,
+>>>>
+>>>>> On Tue, Jul 2, 2013 at 2:36 PM, Marek Vasut <marex-
+>> ynQEQJNshbs@public.gmane.org> wrote:
+>>>>>> Dear Otavio Salvador,
+>>>>>>
+>>>>>>> On Tue, Jul 2, 2013 at 1:13 PM, Marek Vasut <marex-
+>> ynQEQJNshbs@public.gmane.org> wrote:
+>>>>>>>> Dear Alexandre Belloni,
+>>>>>>>>
+>>>>>>>>> On 02/07/2013 14:03, Marek Vasut wrote:
+>>>>>>>>>> Dear Alexandre Belloni,
+>>>>>>>>>>
+>>>>>>>>>>> Dear Marek,
+>>>>>>>>>>>
+>>>>>>>>>>> I don't seem to be hitting that issue. I'm using 3.10rc7. Do you
+>>>>>>>>>>> know how to reproduce it ?
+>>>>>>>>>>
+>>>>>>>>>> The check is just redundant, it's not a bug.
+>>>>>>>>>
+>>>>>>>>> Ok, that's what I understood first but then got confused by reports
+>>>>>>>>> of it solving a bug.
+>>>>>>>>
+>>>>>>>> It cannot solve a thing. If it does, then we have a problem.
+>>>>>>>>
+>>>>>>>> What kind of bug do you see ? How can I replicate it ? Can you send
+>>>>>>>> me a testcase?
+>>>>>>>
+>>>>>>> As I said this code sometimes work. If you put a printf before this
+>>>>>>> call it sometimes work. So I think we have a race somewhere.
+>>>>>>>
+>>>>>>> When I were debugging this I found that when it works we have 10
+>>>>>>> active channels, it seems.
+>>>>>>
+>>>>>> Uh, the read_raw() should exit with -EBUSY, since the mutex_tryload()
+>>>>>> will fail iff buffered operation is in progress. Or what do you mean by
+>>>>>> having "10 active channels"?
+>>>>>
+>>>>> The read_raw returned invalid. The onehot always returns false and I
+>>>>> have 10 as mask comparing return.
+>>>>
+>>>> Looking at the code.
+>>>>
+>>>> the bitmap_set() will set (1 << chan->channel) into "mask" var.
+>>>>
+>>>> The iio_validate_scan_mask_onehot is implemented like this:
+>>>>
+>>>> 688 bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+>>>> 689         const unsigned long *mask)
+>>>> 690 {
+>>>> 691         return bitmap_weight(mask, indio_dev->masklength) == 1;
+>>>> 692 }
+>>>>
+>>>> So if mask _always_ has exactly one bit set, the
+>>>> iio_validate_scan_mask_onehot will always return 1. Aaaand ... now I see
+>>>> why it fixes a bug for you.
+>>>>
+>>>> if (ret)
+>>>>
+>>>>    return -EINVAL;
+>>>>
+>>>> This stuff above will always be if (1) so will always return -EINVAL.
+>>>> Dang!
+>>>
+>>> Yes, this was exactly what was happening on my MX28 when trying to read one
+>>> channel. Now, after the different comments I'm confused, was this a bug
+>>> that your patch solved or was I doing something wrong?
 >>
->> The next step is to make the scale modifiable for channels which
->> support this.
+>> This patch accidentally (in completely unintended way) solved a bug, yes. But
+>> the main idea was to just remove redundant code.
 > 
-> I'm sorry, it's the first time I work with an iio driver and I'm afraid
-> I don't understand this.
-> Let's say the fullscale value for channel 0 is 1.85V by default (when
-> divide_by_two is disabled) and 3.7V (when enabled).
+> Maybe you should then amend the commit message to make clear that it solves a bug.
+Definitely.
+
+I'll apply a version that mentions the bug in the commit comment to a branch that
+will hopefully be applied just after rc1 then can be picked up by stable as appropriate.
+
+Jonathan
 > 
-> The channel's realbits is currently set to 18, because (although the ADC
-> resolution is 12 bits) the device can read several samples and return an
-> accumulated value in 18 bits.
-> 
-> Now, considering the default case where 1.85V is the max ref voltage and
-> considering that the driver only reads one sample during the raw_read
-> operation (12 bits), what value should a read of 'scale' return?
-> 
->     scale = Vref_mv / ((1 << 12) - 1) = 1850 /4095 = 0.45177045 ?
-> 
-
-That's right. Although, I would think that all the values are on 18bits,
-so you probably want to use chan->scan_type.realbits there.
-
-Using IIO_VAL_FRACTIONAL_LOG2 allows you to avoid doing that computation
-in your driver (sometimes, it is actually difficult to get it right
-because you have to use 64 bits numbers).
-
-Also, it simplifies things a bit, you can then use something like:
-
-case IIO_CHAN_INFO_SCALE:
-*val = lut[chan->channel];
-*val2 = chan->scan_type.realbits - is_divide_by_two;
-return IIO_VAL_FRACTIONAL_LOG2;
-
-
-> That is, the value to multiply the raw value to get the voltage in mV?
-> So that if reading the 'raw' returns say 425 and reading scale returns
-> 0.45177 the measured voltage is 425 * 0.45177 = 192mV?
-> 
-
-Right.
-
-> 
-> Then let's say I have implemented a function to modify the scale (which
-> should eventually allow me to enable/disable the by two divisor). What
-> is the user supposed to write to the 'scale'? Is he supposed to supply a
-> decimal number like 0.45177 * 2 = 0.903? This would be pretty odd.
-> Should I create a table instead so that writing a 0 means divisor
-> disabled and writing 1 means divisor enabled, for example?
-> 
-
-That is why you should provide an in_voltageX_scale_available file,
-providing a list of valid values.
-
-> Does the iio provide any descriptor that automatically shows the value
-> in mV (already converted)?
-> 
-
-You can use IIO_CHAN_INFO_PROCESSED to expose that information.
-
-
-
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+> Best regards,
+> -- 
+> Hector Palacios
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
