@@ -1,72 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:57730 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751579Ab3GEROK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 13:14:10 -0400
-Message-ID: <51D6FFAB.2050501@metafoo.de>
-Date: Fri, 05 Jul 2013 19:17:31 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35704 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932690Ab3GCTuq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2013 15:50:46 -0400
+Message-ID: <51D48096.5000206@kernel.org>
+Date: Wed, 03 Jul 2013 20:50:46 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: Marek Vasut <marex@denx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH 1/4] iio: mxs-lradc: change the realbits to 12
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <201307051337.39215.marex@denx.de> <51D6BED7.6060703@digi.com> <201307051510.29011.marex@denx.de> <51D6D9A3.4010607@digi.com>
-In-Reply-To: <51D6D9A3.4010607@digi.com>
+To: Marek Vasut <marex@denx.de>
+CC: linux-iio@vger.kernel.org, otavio@ossystems.com.br,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH] iio: mxs-lradc: Fix misuse of iio->trig
+References: <1372540813-12540-1-git-send-email-marex@denx.de>
+In-Reply-To: <1372540813-12540-1-git-send-email-marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/05/2013 04:35 PM, Hector Palacios wrote:
-> On 07/05/2013 03:10 PM, Marek Vasut wrote:
->> Dear Hector Palacios,
->>
->>> Dear Marek,
->>>
->>> On 07/05/2013 01:37 PM, Marek Vasut wrote:
->>>> Dear Hector Palacios,
->>>>
->>>>> The LRADC virtual channels have an 18 bit field to store the sum of up
->>>>> to 2^5 accumulated samples. The read_raw function however only operates
->>>>> over a single sample (12 bit resolution).
->>>>> In order to use this field for scaling operations, we need it to be the
->>>>> exact resolution value of the LRADC.
->>>>
->>>> How would this work once the accumulation is supported?
->>>
->>> As I see it, when you read a channel the driver should give you the 12-bit
->>> value either of one single sample or of N samples.
->>
->> The hardware will always give you 18 bit value, let's call it A of N accumulated
->> samples, each 12 bit long. N is in range of 1 to 32 .
->>
->> The driver currently supports N = 1.
->>
->> Do I understand it correctly that if we want to support N > 1, we have to do the
->> division of A / N in the driver and therefore we will again report only a 12-bit
->> value to the userland ?
->>
->> If so,
->>
->> Acked-by: Marek Vasut <marex@denx.de>
+On 06/29/2013 10:20 PM, Marek Vasut wrote:
+> The struct iio_dev .trig field is to be used only by the IIO core,
+> the driver shall not fill this field. This fixes ugly crash when
+> the driver is compiled as a module and the module is rmmod'd.
 > 
-> That's what I would expect. I mean, what is A worth for? It's just a sum, it
-> tells nothing. The value that really carries information is A / N, which is the
-> average value.
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Fabio Estevam <fabio.estevam@freescale.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+
+I've applied this to the fixes-togreg branch of iio.git but had a bit
+of fuzz, could you just santiy check that nothing went wrong please.
+
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=fixes-togreg
+
+Thanks
+
+Jonathan
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c |   11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
 > 
-> @Lars: is there any driver that allows to read N samples? Does the IIO
-> subsystem supply such interface (i.e. a file called n_samples that you can
-> program from userland to trigger a read of that N samples in order to get the
-> average value when you read that channel)?
-
-The ad7606 has the 'oversampling_ratio' attribute. On the other hand the ad7606
-is not the best example either and this is a custom API. But well that's what
-it is and since it's not the only device that supports oversampling we should
-try and standardize a property name for this. The ad7606 does the averaging in
-hardware though.
-
-- Lars
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 55a459b..28e029a 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -664,12 +664,13 @@ static int mxs_lradc_trigger_init(struct iio_dev *iio)
+>  {
+>  	int ret;
+>  	struct iio_trigger *trig;
+> +	struct mxs_lradc *lradc = iio_priv(iio);
+>  
+>  	trig = iio_trigger_alloc("%s-dev%i", iio->name, iio->id);
+>  	if (trig == NULL)
+>  		return -ENOMEM;
+>  
+> -	trig->dev.parent = iio->dev.parent;
+> +	trig->dev.parent = lradc->dev;
+>  	trig->private_data = iio;
+>  	trig->ops = &mxs_lradc_trigger_ops;
+>  
+> @@ -679,15 +680,17 @@ static int mxs_lradc_trigger_init(struct iio_dev *iio)
+>  		return ret;
+>  	}
+>  
+> -	iio->trig = trig;
+> +	lradc->trig = trig;
+>  
+>  	return 0;
+>  }
+>  
+>  static void mxs_lradc_trigger_remove(struct iio_dev *iio)
+>  {
+> -	iio_trigger_unregister(iio->trig);
+> -	iio_trigger_free(iio->trig);
+> +	struct mxs_lradc *lradc = iio_priv(iio);
+> +
+> +	iio_trigger_unregister(lradc->trig);
+> +	iio_trigger_free(lradc->trig);
+>  }
+>  
+>  static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+> 
