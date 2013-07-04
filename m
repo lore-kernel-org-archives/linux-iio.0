@@ -1,138 +1,172 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:34434 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752029Ab3GEQ7O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 12:59:14 -0400
-From: Marek Vasut <marex@denx.de>
-To: Hector Palacios <hector.palacios@digi.com>
-Subject: Re: [PATCH 2/4] iio: mxs-lradc: add scale attribute to channels
-Date: Fri, 5 Jul 2013 18:59:00 +0200
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <201307051341.35612.marex@denx.de> <51D6F78E.5080301@digi.com>
-In-Reply-To: <51D6F78E.5080301@digi.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <51D53988.7040808@metafoo.de>
+Date: Thu, 04 Jul 2013 10:59:52 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307051859.01095.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Kevin Tsai <ktsai@capellamicro.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Grant Likely <grant.likely@linaro.org>,
+ Rob Herring <rob.herring@calxeda.com>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+ devicetree-discuss@lists.ozlabs.org
+Subject: Re: [PATCH 1/1] Added Capella CM3218 Ambient Light Sensor IIO Driver.
+References: <1372894271-2592-1-git-send-email-ktsai@capellamicro.com>
+In-Reply-To: <1372894271-2592-1-git-send-email-ktsai@capellamicro.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Hector Palacios,
+On 07/04/2013 01:31 AM, Kevin Tsai wrote:
 
-> Dear Marek,
-> 
-> On 07/05/2013 01:41 PM, Marek Vasut wrote:
-> > Dear Hector Palacios,
-> > 
-> >> Some LRADC channels have a fixed pre-divider, and all can have enabled
-> >> an optional divisor by two which allows a maximum input voltage of
-> >> VDDIO - 50mV.
-> >> 
-> >> This patch
-> >> 
-> >>   - adds the scaling info flag to all channels
-> >>   - adds a lookup table with max reference voltage per channel
-> >>   
-> >>     (where the fixed pre-dividers apply)
-> >>   
-> >>   - allows to read the scaling attribute (computed from the Vref)
-> >> 
-> >> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-> >> ---
-> >> 
-> >>   drivers/staging/iio/adc/mxs-lradc.c | 122
-> >> 
-> >> +++++++++++++++++++++++++++--------- 1 file changed, 93 insertions(+),
-> >> 29 deletions(-)
-> >> 
-> >> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> >> b/drivers/staging/iio/adc/mxs-lradc.c index d65a594..012c42e 100644
-> >> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> >> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> >> @@ -107,19 +107,63 @@ static const char * const mx28_lradc_irq_names[] =
-> >> {
-> >> 
-> >>   	"mxs-lradc-button1",
-> >>   
-> >>   };
-> >> 
-> >> +/*
-> >> + * Max reference voltage (mV) for each channel
-> >> + */
-> >> +static const int mx23_vref_mv[LRADC_MAX_TOTAL_CHANS] = {
-> >> +	1850,		/* CH0 */
-> >> +	1850,		/* CH1 */
-> >> +	1850,		/* CH2 */
-> >> +	1850,		/* CH3 */
-> >> +	1850,		/* CH4 */
-> >> +	1850,		/* CH5 */
-> >> +	1850 * 2,	/* CH6 VDDIO */
-> >> +	1850 * 4,	/* CH7 VBATT */
-> >> +	1850,		/* CH8 Temp sense 0 */
-> >> +	1850,		/* CH9 Temp sense 1 */
-> >> +	1850,		/* CH10 */
-> >> +	1850,		/* CH11 */
-> >> +	1850,		/* CH12 USB_DP */
-> >> +	1850,		/* CH13 USB_DN */
-> >> +	1850,		/* CH14 VBG */
-> >> +	1850 * 4,	/* CH15 VDD5V */
-> >> +};
-> >> +
-> >> +static const int mx28_vref_mv[LRADC_MAX_TOTAL_CHANS] = {
-> >> +	1850,		/* CH0 */
-> >> +	1850,		/* CH1 */
-> >> +	1850,		/* CH2 */
-> >> +	1850,		/* CH3 */
-> >> +	1850,		/* CH4 */
-> >> +	1850,		/* CH5 */
-> >> +	1850,		/* CH6 */
-> >> +	1850 * 4,	/* CH7 VBATT */
-> >> +	1850,		/* CH8 Temp sense 0 */
-> >> +	1850,		/* CH9 Temp sense 1 */
-> >> +	1850 * 2,	/* CH10 VDDIO */
-> >> +	1850,		/* CH11 VTH */
-> >> +	1850 * 2,	/* CH12 VDDA */
-> >> +	1850,		/* CH13 VDDD */
-> >> +	1850,		/* CH14 VBG */
-> >> +	1850 * 4,	/* CH15 VDD5V */
-> >> +};
-> > 
-> > Should the above not be in DT ?
-> 
-> Do you mean for example:
-> 
-> 	lradc@80050000 {
-> 		compatible = "fsl,imx28-lradc";
-> 		reg = <0x80050000 0x2000>;
-> 		interrupts = <10 14 15 16 17 18 19
-> 				20 21 22 23 24 25>;
-> 		vref = <1850 1850 1850 1850
-> 			1850 1850 1850 7400
-> 			1850 1850 3700 1850
-> 			3700 1850 1850 7400>
-> 	};
-> 
-> I'm ok with it, but are there other examples of driver using a similar
-> approach? I see for example the spear-adc which reads:
-> 
-> 	Optional properties:
-> 	- vref-external: External voltage reference in milli-volts. If omitted
-> 	  the internal voltage reference will be used.
-> 
-> which makes me believe the 'internal voltage reference' is hardcoded in the
-> driver. More opinions?
+Maybe write at least a short commit message which states the features of the
+chip.
 
-I'd duke this one out on devicetree-discuss@ list. In general, I'd use something 
-like fsl,vref prop, but this really better be discussed in a separate thread.
+> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
+> ---
+>  drivers/staging/iio/light/Kconfig  |   10 +
+>  drivers/staging/iio/light/Makefile |    1 +
+>  drivers/staging/iio/light/cm3218.c |  581 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 592 insertions(+)
+>  create mode 100644 drivers/staging/iio/light/cm3218.c
+> 
+> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+> index ca8d6e6..647af0c 100644
+> --- a/drivers/staging/iio/light/Kconfig
+> +++ b/drivers/staging/iio/light/Kconfig
+> @@ -40,4 +40,14 @@ config TSL2x7x
+>  	 tmd2672, tsl2772, tmd2772 devices.
+>  	 Provides iio_events and direct access via sysfs.
+>  
+> +config SENSORS_CM3218
+> +        tristate "CM3218 Ambient Light Sensor"
+> +        depends on I2C
+> +        help
+> +         Say Y here if you have a Capella Micro CM3218 Ambient Light Sensor.
+> +
+> +         To compile this driver as a module, choose M here.  This module
+> +         will be called to 'cm3218'.  It will access ALS data via iio sysfs.
+> +         This is recommended.
+> +
 
-On the other hand, I'd hate to keep these patches here waiting , so maybe we 
-should apply them as-is and remove this part from the driver in a subsequent 
-patch? What do you say, Lars ?
+Keep the entries in alphabetical order.
 
-Best regards,
-Marek Vasut
+>  endmenu
+> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+> index 9960fdf..63020ab 100644
+> --- a/drivers/staging/iio/light/Makefile
+> +++ b/drivers/staging/iio/light/Makefile
+> @@ -6,3 +6,4 @@ obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+>  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
+>  obj-$(CONFIG_TSL2583)	+= tsl2583.o
+>  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
+> +obj-$(CONFIG_SENSORS_CM3218)    += cm3218.o
+
+Same here
+
+> diff --git a/drivers/staging/iio/light/cm3218.c b/drivers/staging/iio/light/cm3218.c
+> new file mode 100644
+> index 0000000..9c2584d
+> --- /dev/null
+> +++ b/drivers/staging/iio/light/cm3218.c
+> @@ -0,0 +1,581 @@
+[...]
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +#include <linux/mutex.h>
+> +#include <linux/delay.h>
+
+delay.h seems to be unused
+
+> +#include <linux/slab.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+[...]
+> +
+> +static int cm3218_write(struct i2c_client *client, u8 reg, u16 value)
+> +{
+> +	u16 regval;
+> +	int ret;
+> +	struct cm3218_chip *chip = iio_priv(i2c_get_clientdata(client));
+> +
+> +#ifdef	CM3218_DEBUG
+> +	dev_err(&client->dev,
+> +		"Write to device register 0x%02X with 0x%04X\n", reg, value);
+> +#endif	/* CM3218_DEBUG */
+> +	regval = cpu_to_le16(value);
+> +	ret = i2c_smbus_write_word_data(client, reg, regval);
+
+This looks wrong, with this code the on-wire byteorder will differ between
+big endian and little endian systems. Maybe you want
+i2c_smbus_write_word_swapped?
+
+But as Peter said, just use regmap for all IO.
+
+> +	if (ret) {
+> +		dev_err(&client->dev, "Write to device fails: 0x%x\n", ret);
+> +	} else {
+> +		/* Update cache */
+> +		if (reg < CM3218_MAX_CACHE_REGS)
+> +			chip->reg_cache[reg] = value;
+> +	}
+> +
+> +	return ret;
+[...]
+> +
+> +static int cm3218_detect(struct i2c_client *client,
+> +				   struct i2c_board_info *info)
+> +{
+> +	struct i2c_adapter *adapter = client->adapter;
+> +	const char *name = NULL;
+> +
+> +	cm3218_read_ara(client);
+> +
+> +	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+> +		return -ENODEV;
+> +
+> +	name = "cm3218";
+> +	strlcpy(info->type, name, I2C_NAME_SIZE);
+> +
+
+Always returning zero means the chip will bind to any I2C devices which
+happen to use the same address. I don't think you actually need detection,
+so just remove it.
+
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id cm3218_id[] = {
+> +	{"cm3218", 0},
+> +	{}
+> +};
+> +
+
+Nitpick: no need for the newline
+
+> +MODULE_DEVICE_TABLE(i2c, cm3218_id);
+> +
+> +static const struct of_device_id cm3218_of_match[] = {
+> +	{ .compatible = "invn,cm3218", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, cm3218_of_match);
+> +
+> +static struct i2c_driver cm3218_driver = {
+> +	.class	= I2C_CLASS_HWMON,
+> +	.driver	 = {
+> +			.name = "cm3218",
+> +			.pm = CM3218_PM_OPS,
+> +			.owner = THIS_MODULE,
+> +			.of_match_table = cm3218_of_match,
+> +		    },
+
+Indention looks a bit strange here. Please use one tab per level.
+
+> +	.probe		= cm3218_probe,
+> +	.remove		= cm3218_remove,
+> +	.id_table       = cm3218_id,
+> +	.detect	 = cm3218_detect,
+> +	.address_list   = normal_i2c,
+> +};
+> +module_i2c_driver(cm3218_driver);
