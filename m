@@ -1,43 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-102.synserver.de ([212.40.185.102]:1089 "EHLO
-	smtp-out-102.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757207Ab3GEKjb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 06:39:31 -0400
-Message-ID: <51D6A282.4040506@metafoo.de>
-Date: Fri, 05 Jul 2013 12:40:02 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <bigeasy@linutronix.de>
+Message-ID: <51D57DFA.9060809@linutronix.de>
+Date: Thu, 04 Jul 2013 15:51:54 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: linux-iio@vger.kernel.org, alexandre.belloni@free-electrons.com,
-	jic23@kernel.org, marex@denx.de, fabio.estevam@freescale.com
-Subject: Re: [PATCH 3/4] iio: mxs-lradc: add scale_available file to channels
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <1373013039-19461-4-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1373013039-19461-4-git-send-email-hector.palacios@digi.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Sekhar Nori <nsekhar@ti.com>
+CC: Lee Jones <lee.jones@linaro.org>,
+ Samuel Ortiz <sameo@linux.intel.com>,
+ =?UTF-8?B?QmVub8OudCBDb3Vzc29u?= <b-cousson@ti.com>,
+ Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org,
+ Pantelis Antoniou <panto@antoniou-consulting.com>,
+ Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Subject: Re: [PATCH 14/22] arm/am33xx: add TSC/ADC mfd device support
+References: <1370950268-7224-1-git-send-email-bigeasy@linutronix.de> <1370950268-7224-15-git-send-email-bigeasy@linutronix.de> <51D57D4F.30905@ti.com>
+In-Reply-To: <51D57D4F.30905@ti.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/05/2013 10:30 AM, Hector Palacios wrote:
-[...]
-> +#define SHOW_SCALE_AVAILABLE_FUNC(ch) 					\
-> +static ssize_t mxs_lradc_show_scale_available##ch(struct device *dev,	\
-> +		struct device_attribute *attr, 				\
-> +		char *buf)						\
-> +{ 									\
-> +	return c ch);	\
-> +}
+On 07/04/2013 03:49 PM, Sekhar Nori wrote:
+>> diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+>> index 1460d9b..4ad7797 100644
+>> --- a/arch/arm/boot/dts/am33xx.dtsi
+>> +++ b/arch/arm/boot/dts/am33xx.dtsi
+>> @@ -404,6 +404,24 @@
+>>  			ti,hwmods = "wkup_m3";
+>>  		};
+>>  
+>> +		tscadc: tscadc@44e0d000 {
+>> +			compatible = "ti,am3359-tscadc";
+>> +			reg = <0x44e0d000 0x1000>;
+>> +			interrupt-parent = <&intc>;
+> 
+> interrupt-parent can be dropped since it will be inherited from parent.
 
-No need for a separate function for each channel. Use the address attribute
-of the iio_dev_attr. E.g.
+That is true. I prepare a patch for that after the merge window.
 
-struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
+> 
+> Thanks,
+> Sekhar
 
-return mxs_lradc_show_scale_available_ch(dev, attr, buf, iio_attr->address);
-
-The last parameter to IIO_DEVICE_ATTR initializes this field.
-
-But I think you can need less boilerplate code if you use the
-iio_chan_spec_ext_info feature. Take a look at IIO_ENUM_AVAILABLE and
-friends to see how it is done.
-
-- Lars
+Sebastian
