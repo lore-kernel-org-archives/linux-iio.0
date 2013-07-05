@@ -1,132 +1,100 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-093.synserver.de ([212.40.185.93]:1071 "EHLO
-	smtp-out-093.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751395Ab3GDJKZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jul 2013 05:10:25 -0400
-Message-ID: <51D53C23.50402@metafoo.de>
-Date: Thu, 04 Jul 2013 11:10:59 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <Hector.Palacios@digi.com>
+Message-ID: <51D6EB06.3050705@digi.com>
+Date: Fri, 5 Jul 2013 17:49:26 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"marex@denx.de" <marex@denx.de>,
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>, "jic23@kernel.org"
+	<jic23@kernel.org>, "marex@denx.de" <marex@denx.de>,
 	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH RFC] iio: mxs-lradc: add scaling to enable divide_by_two
- operation
-References: <1372845969-31776-1-git-send-email-hector.palacios@digi.com> <51D400FF.5060803@metafoo.de> <51D453AE.3020005@digi.com> <51D4575E.2040002@free-electrons.com> <51D5392C.4020309@digi.com>
-In-Reply-To: <51D5392C.4020309@digi.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio: mxs-lradc: add scale attribute to channels
+References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <1373013039-19461-3-git-send-email-hector.palacios@digi.com> <51D6A0A6.2020200@metafoo.de>
+In-Reply-To: <51D6A0A6.2020200@metafoo.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/04/2013 10:58 AM, Hector Palacios wrote:
-> Dear Alexandre,
-> 
-> On 07/03/2013 06:54 PM, Alexandre Belloni wrote:
->> On 03/07/2013 18:39, Hector Palacios wrote:
->>> Dear Lars,
->>>
->>> On 07/03/2013 12:46 PM, Lars-Peter Clausen wrote:
->>>> The scale attribute reports the scale of the raw value. To gain the
->>>> value of
->>>> the result in mV you have to multiply the raw attribute with the scale
->>>> attribute. The scale attribute does not return the result of a
->>>> conversion with
->>>> a scale different applied.
->>>
->>> Thank you for the guidance, I misunderstood the whole thing.
->>>
->>>> I suggest you implement this in two steps. First implement the scale
->>>> property
->>>> for all channels. Use a LUT for each channel's fullscale value (in mV)
->>>> and
->>>> implement reading the scale like this.
->>>>
->>>> case IIO_CHAN_INFO_SCALE:
->>>> *val = lut[chan->channel];
->>>> *val2 = chan->scan_type.realbits;
->>>> return IIO_VAL_FRACTIONAL_LOG2;
->>>>
->>>> The next step is to make the scale modifiable for channels which
->>>> support this.
->>>
->>> I'm sorry, it's the first time I work with an iio driver and I'm afraid
->>> I don't understand this.
->>> Let's say the fullscale value for channel 0 is 1.85V by default (when
->>> divide_by_two is disabled) and 3.7V (when enabled).
->>>
->>> The channel's realbits is currently set to 18, because (although the ADC
->>> resolution is 12 bits) the device can read several samples and return an
->>> accumulated value in 18 bits.
->>>
->>> Now, considering the default case where 1.85V is the max ref voltage and
->>> considering that the driver only reads one sample during the raw_read
->>> operation (12 bits), what value should a read of 'scale' return?
->>>
->>>      scale = Vref_mv / ((1 << 12) - 1) = 1850 /4095 = 0.45177045 ?
->>>
+Dear Lars,
+
+On 07/05/2013 12:32 PM, Lars-Peter Clausen wrote:
+> On 07/05/2013 10:30 AM, Hector Palacios wrote:
+>> Some LRADC channels have a fixed pre-divider, and all can have enabled
+>> an optional divisor by two which allows a maximum input voltage of
+>> VDDIO - 50mV.
 >>
->> That's right. Although, I would think that all the values are on 18bits,
->> so you probably want to use chan->scan_type.realbits there.
-> 
-> The field of the register that stores the sample is 18 bits, but each sample
-> is only 12 bits. The read_raw of a given channel will only read one sample
-> and thus returns a value between 0 and 4095.
-> If I use realbits here it will divide the Vref_mv by (1 << 18) and will give
-> me a wrong scale value.
-> Either we change the 'realbits' to 12 which is the real resolution of the
-> ADC, or we leave it as 18 and use a 12 in this operation.
-
-I'd change realbits to 12.
-
-> 
->> Using IIO_VAL_FRACTIONAL_LOG2 allows you to avoid doing that computation
->> in your driver (sometimes, it is actually difficult to get it right
->> because you have to use 64 bits numbers).
+>> This patch
+>>   - adds the scaling info flag to all channels
+>>   - adds a lookup table with max reference voltage per channel
+>>     (where the fixed pre-dividers apply)
+>>   - allows to read the scaling attribute (computed from the Vref)
 >>
->> Also, it simplifies things a bit, you can then use something like:
->>
->> case IIO_CHAN_INFO_SCALE:
->> *val = lut[chan->channel];
->> *val2 = chan->scan_type.realbits - is_divide_by_two;
->> return IIO_VAL_FRACTIONAL_LOG2;
-> 
-> Yes, but not all channels have a by two divisor. Some have a by 4, so I'll
-> need to work out a formula per channel divisor.
+>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+>
+> Looks good, one minor issue.
+>
+> [...]
+>> -
+>> -	/* Validate the channel if it doesn't intersect with reserved chans. */
+>> -	bitmap_set(&mask, chan->channel, 1);
+>> -	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
+>> -	if (ret)
+>> -		return -EINVAL;
+>
+> This will conflict with Marek's "iio: mxs-lradc: Remove useless check in
+> read_raw", can you apply Marek's patch to your tree and rebase this series
+> on-top of it?
 
-The by 4 divider is a fixed divider though. That's why you use a lookup
-table for the default scale. E.g. for channels with a fixed by 4 divider the
-lut would contain 1850 * 4, for channels with a fixed by 2 divider 1850 * 2
-and so on.
+Yes, sorry, I missed Marek's patch when preparing this series.
 
-> When using IIO_VAL_FRACTIONAL_LOG2, val must be given in mV?
+>> +
+>> +/*
+>> + * Raw I/O operations
+>> + */
+>> +static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>> +			const struct iio_chan_spec *chan,
+>> +			int *val, int *val2, long m)
+>> +{
+>> +	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>> +	int ret;
+>> +
+>> +	/*
+>> +	 * See if there is no buffered operation in progress. If there is, simply
+>> +	 * bail out. This can be improved to support both buffered and raw IO at
+>> +	 * the same time, yet the code becomes horribly complicated. Therefore I
+>> +	 * applied KISS principle here.
+>> +	 */
+>> +	ret = mutex_trylock(&lradc->lock);
+>> +	if (!ret)
+>> +		return -EBUSY;
+>
+> I think the locking in this driver needs some re-work (in a separate patch).
+> There is really no reason why you shouldn't be able to query the scale while
+> the device is running in buffered mode. The common idiom to protect against
+> concurrent buffer mode and raw access is to take the indio_dev->mlock in
+> read_raw, check iio_buffer_enabled(), if it returns true, unlock the lock
+> and return -EBUSY. Otherwise continue to read the raw value.
 
-Yes
+Actually I didn't touch this code. It's the original code by Marek.
+It appears as difference because I moved part of the code into a function called 
+mxs_lradc_read_single() for clarity.
+@Marek, will you look at this suggestion?
 
-> 
->>> That is, the value to multiply the raw value to get the voltage in mV?
->>> So that if reading the 'raw' returns say 425 and reading scale returns
->>> 0.45177 the measured voltage is 425 * 0.45177 = 192mV?
->>>
->>
->> Right.
->>
->>>
->>> Then let's say I have implemented a function to modify the scale (which
->>> should eventually allow me to enable/disable the by two divisor). What
->>> is the user supposed to write to the 'scale'? Is he supposed to supply a
->>> decimal number like 0.45177 * 2 = 0.903? This would be pretty odd.
->>> Should I create a table instead so that writing a 0 means divisor
->>> disabled and writing 1 means divisor enabled, for example?
->>>
->>
->> That is why you should provide an in_voltageX_scale_available file,
->> providing a list of valid values.
-> 
-> I see. Thank you very much.
-> 
-> Best regards,
-> -- 
-> Hector Palacios
+>> +
+>> +	/* Check for invalid channel */
+>> +	if (chan->channel > LRADC_MAX_TOTAL_CHANS
+>> +		ret = -EINVAL;
+>
+> This looks wrong. The code will still continue to read and value or the
+> scale and overwrite 'ret'. The original code did check this condition before
+> taking the lock and did return an error. But on the other hand the condition
+> will never be true anyway since you have no channels where the chan value is
+> larger than MAX_TOTAL_CHANS, so maybe just drop this completely.
 
+Same here. This is Marek's original code that was moved. I agree that the check is 
+redundant.
+@Marek, will you take care of it as well?
+
+Best regards,
+--
+Hector Palacios
