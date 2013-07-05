@@ -1,83 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35704 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932690Ab3GCTuq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2013 15:50:46 -0400
-Message-ID: <51D48096.5000206@kernel.org>
-Date: Wed, 03 Jul 2013 20:50:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail1.bemta8.messagelabs.com ([216.82.243.206]:33585 "EHLO
+	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757050Ab3GEMls (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 08:41:48 -0400
+Message-ID: <51D6BED7.6060703@digi.com>
+Date: Fri, 5 Jul 2013 14:40:55 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
 To: Marek Vasut <marex@denx.de>
-CC: linux-iio@vger.kernel.org, otavio@ossystems.com.br,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH] iio: mxs-lradc: Fix misuse of iio->trig
-References: <1372540813-12540-1-git-send-email-marex@denx.de>
-In-Reply-To: <1372540813-12540-1-git-send-email-marex@denx.de>
-Content-Type: text/plain; charset=ISO-8859-1
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH 1/4] iio: mxs-lradc: change the realbits to 12
+References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <1373013039-19461-2-git-send-email-hector.palacios@digi.com> <201307051337.39215.marex@denx.de>
+In-Reply-To: <201307051337.39215.marex@denx.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/29/2013 10:20 PM, Marek Vasut wrote:
-> The struct iio_dev .trig field is to be used only by the IIO core,
-> the driver shall not fill this field. This fixes ugly crash when
-> the driver is compiled as a module and the module is rmmod'd.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Shawn Guo <shawn.guo@linaro.org>
+Dear Marek,
 
-I've applied this to the fixes-togreg branch of iio.git but had a bit
-of fuzz, could you just santiy check that nothing went wrong please.
+On 07/05/2013 01:37 PM, Marek Vasut wrote:
+> Dear Hector Palacios,
+>
+>> The LRADC virtual channels have an 18 bit field to store the sum of up
+>> to 2^5 accumulated samples. The read_raw function however only operates
+>> over a single sample (12 bit resolution).
+>> In order to use this field for scaling operations, we need it to be the
+>> exact resolution value of the LRADC.
+>
+> How would this work once the accumulation is supported?
 
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=fixes-togreg
+As I see it, when you read a channel the driver should give you the 12-bit value 
+either of one single sample or of N samples. If you are measuring an accumulation of N 
+samples, the driver should divide the sum (the 18bit value) by N before returning the 
+value to userland.
 
-Thanks
+>
+>> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+>> ---
+>>   drivers/staging/iio/adc/mxs-lradc.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> b/drivers/staging/iio/adc/mxs-lradc.c index 163c638..d65a594 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -822,7 +822,7 @@ static const struct iio_buffer_setup_ops
+>> mxs_lradc_buffer_ops = { .channel = (idx),					
+> \
+>>   	.scan_type = {						\
+>>   		.sign = 'u',					\
+>> -		.realbits = 18,					\
+>> +		.realbits = 12,					\
+>>   		.storagebits = 32,				\
+>>   	},							\
+>>   }
+>
+> Best regards,
+> Marek Vasut
+>
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c |   11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 55a459b..28e029a 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -664,12 +664,13 @@ static int mxs_lradc_trigger_init(struct iio_dev *iio)
->  {
->  	int ret;
->  	struct iio_trigger *trig;
-> +	struct mxs_lradc *lradc = iio_priv(iio);
->  
->  	trig = iio_trigger_alloc("%s-dev%i", iio->name, iio->id);
->  	if (trig == NULL)
->  		return -ENOMEM;
->  
-> -	trig->dev.parent = iio->dev.parent;
-> +	trig->dev.parent = lradc->dev;
->  	trig->private_data = iio;
->  	trig->ops = &mxs_lradc_trigger_ops;
->  
-> @@ -679,15 +680,17 @@ static int mxs_lradc_trigger_init(struct iio_dev *iio)
->  		return ret;
->  	}
->  
-> -	iio->trig = trig;
-> +	lradc->trig = trig;
->  
->  	return 0;
->  }
->  
->  static void mxs_lradc_trigger_remove(struct iio_dev *iio)
->  {
-> -	iio_trigger_unregister(iio->trig);
-> -	iio_trigger_free(iio->trig);
-> +	struct mxs_lradc *lradc = iio_priv(iio);
-> +
-> +	iio_trigger_unregister(lradc->trig);
-> +	iio_trigger_free(lradc->trig);
->  }
->  
->  static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
-> 
+
+Best regards,
+--
+Hector Palacios
