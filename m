@@ -1,70 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta8.messagelabs.com ([216.82.243.206]:33585 "EHLO
-	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757050Ab3GEMls (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 08:41:48 -0400
-Message-ID: <51D6BED7.6060703@digi.com>
-Date: Fri, 5 Jul 2013 14:40:55 +0200
-From: Hector Palacios <hector.palacios@digi.com>
+Received: from mail-bk0-f44.google.com ([209.85.214.44]:48178 "EHLO
+	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751934Ab3GENKl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 09:10:41 -0400
+Received: by mail-bk0-f44.google.com with SMTP id 6so1051187bkj.17
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jul 2013 06:10:39 -0700 (PDT)
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH 1/4] iio: mxs-lradc: change the realbits to 12
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <1373013039-19461-2-git-send-email-hector.palacios@digi.com> <201307051337.39215.marex@denx.de>
-In-Reply-To: <201307051337.39215.marex@denx.de>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+In-Reply-To: <51D6981B.8090001@metafoo.de>
+References: <CAPgLHd-v0MJWgtjY66Ky87ieQYxXg_9bFQxB0N5zoibshCV7Jg@mail.gmail.com>
+	<20130704160110.GC13897@kroah.com>
+	<51D6981B.8090001@metafoo.de>
+Date: Fri, 5 Jul 2013 21:10:39 +0800
+Message-ID: <CAPgLHd-Wrx7AK7Z2kgJ4nmKmL5Nafc458NH3_UeXUiLSbVxoSQ@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:ad7291: add missing .driver_module to struct iio_info
+From: Wei Yongjun <weiyj.lk@gmail.com>
+To: lars@metafoo.de
+Cc: gregkh@linuxfoundation.org, jic23@cam.ac.uk, wfp5p@virginia.edu,
+	yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Marek,
+On 07/05/2013 05:55 PM, Lars-Peter Clausen wrote:
+> On 07/04/2013 06:01 PM, Greg KH wrote:
+>> On Thu, Jul 04, 2013 at 09:46:34PM +0800, Wei Yongjun wrote:
+>> That's a hint that the register function should be changed so that no module ever has to set this value. Look at how PCI and USB do their driver registration function for how to do this properly. 
+> I don't think that the same approach as used for PCI, USB and others works
+> as nicely here. For one we do not have a registration function for the info
+> struct, it would probably be possible to rework things a bit, but not
+> without some code churn. And secondly we'd also have to make all the
+> iio_info structs non-const, which is something I don't like. And thirdly we
+> do have the proper tools to auto-detect such missing initializations (e.g.
+> using coccinelle), so we can catch these errors early on and they won't show
+> up in new drivers.
 
-On 07/05/2013 01:37 PM, Marek Vasut wrote:
-> Dear Hector Palacios,
->
->> The LRADC virtual channels have an 18 bit field to store the sum of up
->> to 2^5 accumulated samples. The read_raw function however only operates
->> over a single sample (12 bit resolution).
->> In order to use this field for scaling operations, we need it to be the
->> exact resolution value of the LRADC.
->
-> How would this work once the accumulation is supported?
+Agree, with the follow coccinelle script, we can found this easily.
 
-As I see it, when you read a channel the driver should give you the 12-bit value 
-either of one single sample or of N samples. If you are measuring an accumulation of N 
-samples, the driver should divide the sum (the 18bit value) by N before returning the 
-value to userland.
+@r__iio_info@
+identifier nm;
+position p;
+@@
+struct iio_info nm@p = {
+...,
+  .driver_module = THIS_MODULE,
+...
+};
 
->
->> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
->> ---
->>   drivers/staging/iio/adc/mxs-lradc.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
->> b/drivers/staging/iio/adc/mxs-lradc.c index 163c638..d65a594 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -822,7 +822,7 @@ static const struct iio_buffer_setup_ops
->> mxs_lradc_buffer_ops = { .channel = (idx),					
-> \
->>   	.scan_type = {						\
->>   		.sign = 'u',					\
->> -		.realbits = 18,					\
->> +		.realbits = 12,					\
->>   		.storagebits = 32,				\
->>   	},							\
->>   }
->
-> Best regards,
-> Marek Vasut
->
+@@
+identifier nm;
+position p != {r__iio_info.p};
+@@
+struct iio_info nm@p = {
+...,
++ .driver_module = THIS_MODULE,
+};
 
 
-Best regards,
---
-Hector Palacios
+
+
+
