@@ -1,77 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:49908 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752029Ab3GERjY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jul 2013 13:39:24 -0400
-From: Marek Vasut <marex@denx.de>
-To: "Lars-Peter Clausen" <lars@metafoo.de>
-Subject: Re: [PATCH 2/4] iio: mxs-lradc: add scale attribute to channels
-Date: Fri, 5 Jul 2013 19:39:21 +0200
-Cc: Hector Palacios <hector.palacios@digi.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <201307051859.01095.marex@denx.de> <51D6FDA7.5010301@metafoo.de>
-In-Reply-To: <51D6FDA7.5010301@metafoo.de>
+Received: from mail-bk0-f44.google.com ([209.85.214.44]:50299 "EHLO
+	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750758Ab3GFEUc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Jul 2013 00:20:32 -0400
+Received: by mail-bk0-f44.google.com with SMTP id 6so1267659bkj.31
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jul 2013 21:20:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307051939.21455.marex@denx.de>
+Date: Sat, 6 Jul 2013 12:20:30 +0800
+Message-ID: <CAPgLHd-Y35AOCRLcjdFfoNrK9v6n7Th_gjB-GAPpwoAe81H63w@mail.gmail.com>
+Subject: [PATCH] iio: ti_am335x_adc: add missing .driver_module to struct iio_info
+From: Wei Yongjun <weiyj.lk@gmail.com>
+To: jic23@cam.ac.uk, gregkh@linuxfoundation.org, sameo@linux.intel.com,
+	rachna@ti.com, bigeasy@linutronix.de
+Cc: yongjun_wei@trendmicro.com.cn, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Lars-Peter Clausen,
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-> On 07/05/2013 06:59 PM, Marek Vasut wrote:
-> [...]
-> 
-> >>> Should the above not be in DT ?
-> >> 
-> >> Do you mean for example:
-> >> 	lradc@80050000 {
-> >> 	
-> >> 		compatible = "fsl,imx28-lradc";
-> >> 		reg = <0x80050000 0x2000>;
-> >> 		interrupts = <10 14 15 16 17 18 19
-> >> 		
-> >> 				20 21 22 23 24 25>;
-> >> 		
-> >> 		vref = <1850 1850 1850 1850
-> >> 		
-> >> 			1850 1850 1850 7400
-> >> 			1850 1850 3700 1850
-> >> 			3700 1850 1850 7400>
-> >> 	
-> >> 	};
-> >> 
-> >> I'm ok with it, but are there other examples of driver using a similar
-> >> 
-> >> approach? I see for example the spear-adc which reads:
-> >> 	Optional properties:
-> >> 	- vref-external: External voltage reference in milli-volts. If omitted
-> >> 	
-> >> 	  the internal voltage reference will be used.
-> >> 
-> >> which makes me believe the 'internal voltage reference' is hardcoded in
-> >> the driver. More opinions?
-> > 
-> > I'd duke this one out on devicetree-discuss@ list. In general, I'd use
-> > something like fsl,vref prop, but this really better be discussed in a
-> > separate thread.
-> > 
-> > On the other hand, I'd hate to keep these patches here waiting , so maybe
-> > we should apply them as-is and remove this part from the driver in a
-> > subsequent patch? What do you say, Lars ?
-> 
-> I'd leave it as it is. I don't see much point in putting them into the
-> devicetree, it would have made sense if the scales were board specific.
+Add missing .driver_module of struct iio_info. This prevents the
+module from being removed from underneath its users.
 
-They are CPU specific, therefore if we have a new CPU with different scale setup 
-(again), we will need to add another table here. That's why I'd vouch for having 
-them in DT. As we already saw in the past, FSL did merge some MX23/28 components 
-into MX53 and MX6Q.
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/iio/adc/ti_am335x_adc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best regards,
-Marek Vasut
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 5f9a7e7..985f588 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -134,6 +134,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info tiadc_info = {
+ 	.read_raw = &tiadc_read_raw,
++	.driver_module = THIS_MODULE,
+ };
+ 
+ static int tiadc_probe(struct platform_device *pdev)
+
