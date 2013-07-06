@@ -1,53 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37652 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37971 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752783Ab3GFJk5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Jul 2013 05:40:57 -0400
-Message-ID: <51D7E629.8000603@kernel.org>
-Date: Sat, 06 Jul 2013 10:40:57 +0100
+	with ESMTP id S1752827Ab3GFKYK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 6 Jul 2013 06:24:10 -0400
+Message-ID: <51D7F044.9040205@kernel.org>
+Date: Sat, 06 Jul 2013 11:24:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Wei Yongjun <weiyj.lk@gmail.com>
-CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org, lars@metafoo.de,
-	wfp5p@virginia.edu, yongjun_wei@trendmicro.com.cn,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH] staging:iio:ad7291: add missing .driver_module to struct
- iio_info
-References: <CAPgLHd-v0MJWgtjY66Ky87ieQYxXg_9bFQxB0N5zoibshCV7Jg@mail.gmail.com>
-In-Reply-To: <CAPgLHd-v0MJWgtjY66Ky87ieQYxXg_9bFQxB0N5zoibshCV7Jg@mail.gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>, jimwall@q.com,
+	brian@crystalfontz.com,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree-discuss@lists.ozlabs.org, Rob Landley <rob@landley.net>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCHv3 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com> <1372094699-3832-2-git-send-email-alexandre.belloni@free-electrons.com> <51D53B72.6020309@metafoo.de>
+In-Reply-To: <51D53B72.6020309@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/04/2013 02:46 PM, Wei Yongjun wrote:
-> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+On 07/04/2013 10:08 AM, Lars-Peter Clausen wrote:
+> On 06/24/2013 07:24 PM, Alexandre Belloni wrote:
+>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>> gain and sampling rates.
+>>
+>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 > 
-> Add missing .driver_module of struct iio_info. This prevents the
-> module from being removed from underneath its users.
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 > 
-> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
-Applied to the fixes-togreg branch of iio.git.
+Applied to the togreg branch of iio.git (with a few little tweaks).
 
-Obviously we want this fix whatever the outcome of the discussion started
-by Greg as any changes will be in the next cycle, not this one.
+There was some fuzz that required manual fixing because of another driver merge so
+please check I didn't foul anything up with this or the other bits below.
 
-Thanks,
+There were two trivial missing unlocks on error paths in the read_raw function that
+I've fixed up (Coccinelle found these for me - if you can I would always advise
+running sparse, coccicheck and ideally smatch before submitting patches).
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7291.c | 1 +
->  1 file changed, 1 insertion(+)
+I fixed up the comments because if there is one thing I hate bothering
+with it is delightful patches that just fix this stuff. Much better
+to do it now given it took 20 secs ;)
+
+> One remark though. Multiline comments should be like
 > 
-> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-> index 3fc79e5..a2e61c2 100644
-> --- a/drivers/staging/iio/adc/ad7291.c
-> +++ b/drivers/staging/iio/adc/ad7291.c
-> @@ -517,6 +517,7 @@ static const struct iio_info ad7291_info = {
->  	.read_event_value = &ad7291_read_event_value,
->  	.write_event_value = &ad7291_write_event_value,
->  	.event_attrs = &ad7291_event_attribute_group,
-> +	.driver_module = THIS_MODULE,
->  };
->  
->  static int ad7291_probe(struct i2c_client *client,
+> /*
+>  * foo
+>  * bar
+>  */
+> 
+> not
+> 
+> /* foo
+>  * bar
+>  */
+> 
+> But not need to resend the patch just for this
+> 
+> - Lars
 > 
