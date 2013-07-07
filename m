@@ -1,44 +1,49 @@
 Return-Path: <alexandre.belloni@free-electrons.com>
+Message-ID: <51D92B19.8000706@free-electrons.com>
+Date: Sun, 07 Jul 2013 10:47:21 +0200
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	<stable@vger.kernel.org>
-Subject: [PATCH] iio: Fix iio_channel_has_info
-Date: Mon,  1 Jul 2013 16:20:30 +0200
-Message-Id: <1372688430-13120-1-git-send-email-alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Shawn Guo <shawn.guo@linaro.org>, Jonathan Cameron <jic23@cam.ac.uk>,
+ jimwall@q.com, brian@crystalfontz.com,
+ Maxime Ripard <maxime.ripard@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree-discuss@lists.ozlabs.org, Rob Landley <rob@landley.net>,
+ Rob Herring <rob.herring@calxeda.com>,
+ Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCHv3 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
+References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com> <1372094699-3832-3-git-send-email-alexandre.belloni@free-electrons.com> <51D7F0E6.2000008@kernel.org>
+In-Reply-To: <51D7F0E6.2000008@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Since the info_mask split, iio_channel_has_info() is not working correctly.
-info_mask_separate and info_mask_shared_by_type, it is not possible to compare
-them directly with the iio_chan_info_enum enum. Correct that bit using the BIT()
-macro.
+On 06/07/2013 12:26, Jonathan Cameron wrote:
+> On 06/24/2013 06:24 PM, Alexandre Belloni wrote:
+>> From: Maxime Ripard <maxime.ripard@free-electrons.com>
+>>
+>> The ADCs connected to this bus have been experiencing some timeout
+>> issues when using the iMX28 i2c controller. Switching back to bitbanging
+>> solves this.
+>>
+>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> 
+> As there are no disadvantages in taking the driver through IIO and these changes
+> through the appropriate arch trees, I'd not propose to take these through IIO
+> (even when the discussion is done) unless specifically asked to.
+> 
 
-Cc: <stable@vger.kernel.org> # 3.10.x
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- include/linux/iio/iio.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sure, especially since, we may finally not move to i2c bitbanging. I'll
+probably resend a new version of those patches separately.
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 8d171f4..3d35b70 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -211,8 +211,8 @@ struct iio_chan_spec {
- static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
- 	enum iio_chan_info_enum type)
- {
--	return (chan->info_mask_separate & type) |
--	       (chan->info_mask_shared_by_type & type);
-+	return (chan->info_mask_separate & BIT(type)) |
-+	       (chan->info_mask_shared_by_type & BIT(type));
- }
- 
- #define IIO_ST(si, rb, sb, sh)						\
+Shawn, please wait for the i2c-mxs PIO/DMA mode discussion to end before
+applying. If possible, I would prefer not using bitbanging.
+
+Regards,
+
+
 -- 
-1.8.1.2
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
