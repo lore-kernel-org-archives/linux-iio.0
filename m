@@ -1,51 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48309 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751547Ab3GGQJJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jul 2013 12:09:09 -0400
-Message-ID: <51D9929C.30606@kernel.org>
-Date: Sun, 07 Jul 2013 17:09:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
+Received: from ns.pmeerw.net ([87.118.82.44]:44251 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752604Ab3GGQsm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 7 Jul 2013 12:48:42 -0400
+Date: Sun, 7 Jul 2013 18:48:37 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Jacek Anaszewski <j.anaszewski@samsung.com>
-CC: linux-iio@vger.kernel.org, s.nawrocki@samsung.com,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
+cc: linux-iio@vger.kernel.org, s.nawrocki@samsung.com,
+	Kyungmin Park <kyungmin.park@samsung.com>
 Subject: Re: [PATCH/RFC v2] iio: gp2ap020a00f: Add a driver for the device
-References: <1372258172-10996-1-git-send-email-j.anaszewski@samsung.com> <1372258172-10996-2-git-send-email-j.anaszewski@samsung.com>
 In-Reply-To: <1372258172-10996-2-git-send-email-j.anaszewski@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <alpine.DEB.2.01.1307071834340.23797@pmeerw.net>
+References: <1372258172-10996-1-git-send-email-j.anaszewski@samsung.com> <1372258172-10996-2-git-send-email-j.anaszewski@samsung.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/26/2013 03:49 PM, Jacek Anaszewski wrote:
+
 > Add a new driver for the ambient light/proximity sensor
 > device. The driver exposes three channels: light_clear
-> light_ir and proximity. It also supports triggered buffer,
-> high and low ambient light threshold event and proximity
-> detection event.
->
-> Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
-> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
-Hi,
 
-Sorry for the slow review on this: Busy few weeks.
+the driver is described as 'proximity/opto' and also 'proximity/ambient 
+light' -- most drivers say ALS, not opto
 
-Anyhow, mostly looking very nice but a couple of bits inline.
-I would like to see prefixes with GP2AP020A00F on the defined
-constants to avoid possible namespace clashes in future.
+more small comments inline
 
-Also, given the caching in here, I think you might benefit substantially
-from reworking this to use regmap instead of i2c directly.
+regards, p.
 
-You are only caching a few registers here, so if you really don't want
-to do that or have a good reason why not I 'might' take it without.
-
-Only one actual bug and that's in an obscure error path (that I found anyway :)
-
-Thanks,
-
-Jonathan
 > ---
 >  .../devicetree/bindings/iio/light/gp2ap020a00f.txt |   20 +
 >  drivers/iio/light/Kconfig                          |   12 +
@@ -54,7 +36,7 @@ Jonathan
 >  4 files changed, 1226 insertions(+), 0 deletions(-)
 >  create mode 100644 Documentation/devicetree/bindings/iio/light/gp2ap020a00f.txt
 >  create mode 100644 drivers/iio/light/gp2ap020a00f.c
->
+> 
 > diff --git a/Documentation/devicetree/bindings/iio/light/gp2ap020a00f.txt b/Documentation/devicetree/bindings/iio/light/gp2ap020a00f.txt
 > new file mode 100644
 > index 0000000..bef1d37
@@ -88,7 +70,7 @@ Jonathan
 > @@ -52,6 +52,18 @@ config VCNL4000
 >  	 To compile this driver as a module, choose M here: the
 >  	 module will be called vcnl4000.
->
+>  
 > +config GP2AP020A00F
 > +	tristate "Sharp GP2AP020A00F I2C Proximity/Opto sensor driver"
 > +	depends on I2C
@@ -238,9 +220,6 @@ Jonathan
 > +#define RANGE_P_x64		0x06
 > +#define RANGE_P_x128		0x07
 > +
-These all want to be driver namespace only
-so need a prefix.  Way to likely that INVAL_0 will clash with
-something in a standard header if nothing else!
 > +/* LED reg bits */
 > +#define INTVAL_MASK		0xc0 /* Intermittent operating */
 > +#define INTVAL_0		0x00
@@ -268,6 +247,9 @@ something in a standard header if nothing else!
 > +#define GP2AP020A00F_CHAN_TIMESTAMP		3
 > +
 > +#define GP2AP020A00F_DATA_READY_TIMEOUT ((1000*HZ)/1000)
+
+shouldn't this use msecs_to_jiffies() instead of HZ?
+
 > +
 > +#define GP2AP020A00F_DATA_REG(chan) (D0_L_REG + (chan) * 2)
 > +
@@ -339,17 +321,11 @@ something in a standard header if nothing else!
 > +	prev_ctrl_regs[PS_REG] = data->reg_cache[PS_REG];
 > +	prev_ctrl_regs[LED_REG] = data->reg_cache[LED_REG];
 > +
-Convention normally is to only update the actual cache after
-the operation has succeeded.
 > +	data->reg_cache[OP_REG] &= ~(OP_MASK | OP2_MASK | OP3_MASK
 > +				     | TYPE_MASK);
 > +	data->reg_cache[ALS_REG] &= ~PRST_MASK;
 > +	data->reg_cache[LED_REG] &= ~PIN_MASK;
 > +
-This does rather look like it could benefit from a big lookup table
-of values to be or'd with the 3 lookup tables.
-
-Maybe not though given complexity.
 > +	switch (op) {
 > +	case GP2AP020A00F_OPMODE_READ_RAW_CLEAR:
 > +	case GP2AP020A00F_OPMODE_READ_RAW_IR:
@@ -567,6 +543,12 @@ Maybe not though given complexity.
 > +		set_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT, &data->flags);
 > +		err = i2c_smbus_write_i2c_block_data(data->client, TH_L_REG, 2,
 > +						&data->reg_cache[TH_L_REG]);
+
+could use write_word_data() instead of i2c_smbus_write_i2c_block_data()
+
+maybe check with i2c_check_functionality() in probe() if block transfer is 
+supported
+
 > +		break;
 > +	case GP2AP020A00F_CMD_ALS_HIGH_EV_DIS:
 > +		clear_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT, &data->flags);
@@ -642,7 +624,6 @@ Maybe not though given complexity.
 > +		data->reg_cache[reg_addr];
 > +}
 > +
-Kernel doc comments preferred.
 > +/* Returns 0 if the end of conversion interrupt occured or -ETIME otherwise */
 > +static int wait_conversion_complete_interrupt(struct gp2ap020a00f_data *data)
 > +{
@@ -686,6 +667,9 @@ Kernel doc comments preferred.
 > +	/* Read interrupt flags */
 > +	ret = i2c_smbus_read_i2c_block_data(lgt->client, OP_REG, 1,
 > +						&op_reg_val);
+
+i2c_smbus_read_byte_data()?
+
 > +	if (ret < 0)
 > +		goto done;
 > +
@@ -795,7 +779,6 @@ Kernel doc comments preferred.
 > +
 > +static int gp2ap020a00f_setup(struct gp2ap020a00f_data *data)
 > +{
-regmap would handle this lot for free.
 > +	data->reg_cache[OP_REG] = OP3_SHUTDOWN;
 > +	data->reg_cache[LED_REG] = INTVAL_0 | IS_110mA | FREQ_327_5kHz;
 > +	data->reg_cache[ALS_REG] = RES_A_25ms | RANGE_A_x8;
@@ -815,7 +798,6 @@ regmap would handle this lot for free.
 > +		 * Only IIO_EV_DIR_RISING direction for the IIO_PROXIMITY
 > +		 * event is supported by the driver.
 > +		 */
-I'm currious now.  What else does the hardware support?
 > +		return PH_L_REG;
 > +	} else if (chan_type == IIO_LIGHT) {
 > +		if (IIO_EVENT_CODE_EXTRACT_DIR(event_code)
@@ -846,7 +828,6 @@ I'm currious now.  What else does the hardware support?
 > +		goto error_ret;
 > +	}
 > +
-Perhaps think about regmap given the caching here...
 > +	data->reg_cache[thresh_reg_l] = val & 0xff;
 > +	data->reg_cache[thresh_reg_l + 1] = val >> 8;
 > +
@@ -910,8 +891,6 @@ Perhaps think about regmap given the caching here...
 > +			      GP2AP020A00F_CMD_PROX_EV_DIS;
 > +		err = gp2ap020a00f_exec_cmd(data, cmd);
 > +	} else if (chan_type == IIO_LIGHT) {
-It's marginal, but a switch on IIO_EVENT_CODE_EXTRACT_DIR(event_code)
-might be every so slightly neater...  This one entirely up to you though.
 > +		if (IIO_EVENT_CODE_EXTRACT_DIR(event_code)
 > +					== IIO_EV_DIR_RISING) {
 > +			cmd = state ? GP2AP020A00F_CMD_ALS_HIGH_EV_EN :
@@ -923,8 +902,6 @@ might be every so slightly neater...  This one entirely up to you though.
 > +			err = gp2ap020a00f_exec_cmd(data, cmd);
 > +		}
 > +	} else {
-Lock to release here. Coccinelle would probably point this out to you
-and is handy for catching this sort of thing...
 > +		return -EINVAL;
 > +	}
 > +
@@ -1022,8 +999,6 @@ and is handy for catching this sort of thing...
 > +	return err < 0 ? err : IIO_VAL_INT;
 > +}
 > +
-Any info available on how to convert these inputs to an illuminance value?
-(e.g. in LUX)
 > +static const struct iio_chan_spec gp2ap020a00f_channels[] = {
 > +	{
 > +		.type = IIO_LIGHT,
@@ -1093,8 +1068,6 @@ Any info available on how to convert these inputs to an illuminance value?
 > +	size_t d_size = 0;
 > +	int i, err = 0;
 > +
-Without datasheet I'd like you to talk me through exactly what is going on
-in here...
 > +	mutex_lock(&data->lock);
 > +
 > +	/* Enable triggers according to the scan_mask */
@@ -1104,9 +1077,6 @@ in here...
 > +		case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
 > +			err = gp2ap020a00f_exec_cmd(data,
 > +					GP2AP020A00F_CMD_TRIGGER_CLEAR_EN);
-So these triggers correspond to actually capturing the data based on some
-other signal?  e.g. after these are set we'll get a steady stream
-of data off the relevant part of the chip?
 > +			if (err < 0)
 > +				goto error_ret;
 > +			break;
@@ -1126,8 +1096,6 @@ of data off the relevant part of the chip?
 > +		d_size += 2;
 > +	}
 > +
-Is this always guaranteed to be aligned?  Doesn't immediately look like
-it and quite a bit of the buffer handling assumes it is.
 > +	if (indio_dev->scan_timestamp)
 > +		d_size += sizeof(s64);
 > +
@@ -1136,9 +1104,6 @@ it and quite a bit of the buffer handling assumes it is.
 > +		err = -ENOMEM;
 > +		goto error_ret;
 > +	}
-You might to better with the update_scan_mode callback and using generic
-preenable/postdisable.  Perhaps it is simpler this way, I'm not sure
-without actually implementing it!
 > +
 > +	err = iio_sw_buffer_preenable(indio_dev);
 > +
@@ -1155,11 +1120,6 @@ without actually implementing it!
 > +
 > +	mutex_lock(&data->lock);
 > +
-The fact you did the enable as a for_each_bit_set and this like this
-is a little odd.  Actually I think the simple if statements here
-are a little easier, but either way consistency of code structures
-definitely makes my life easier, so pick one form or the other.
-
 > +	if (test_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER, &data->flags)) {
 > +		err = gp2ap020a00f_exec_cmd(data,
 > +					GP2AP020A00F_CMD_TRIGGER_CLEAR_DIS);
@@ -1180,8 +1140,6 @@ definitely makes my life easier, so pick one form or the other.
 > +		if (err < 0)
 > +			goto error_ret;
 > +	}
-In the interests of symetry I'd expect this generic call to be the
-first thing called in this function.
 > +
 > +	err = iio_triggered_buffer_predisable(indio_dev);
 > +	if (err < 0)
@@ -1309,12 +1267,6 @@ first thing called in this function.
 > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
 > +
-
-It's small and probably doesn't actually matter, but I'd expect
-this release order to be the opposite of what we have in the probe
-function (and hence to match the ordering in the error handling
-just above here).  In that the irq is freed beffor the buffer_cleanup.
-
 > +	iio_device_unregister(indio_dev);
 > +	iio_triggered_buffer_cleanup(indio_dev);
 > +	regulator_disable(data->vled_reg);
@@ -1354,4 +1306,9 @@ just above here).  In that the irq is freed beffor the buffer_cleanup.
 > +MODULE_AUTHOR("Jacek Anaszewski <j.anaszewski@samsung.com>");
 > +MODULE_DESCRIPTION("Sharp GP2AP020A00F I2C Proximity/Opto sensor driver");
 > +MODULE_LICENSE("GPL v2");
->
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
