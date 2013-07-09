@@ -1,52 +1,30 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:43229 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757148Ab3GLHTP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 12 Jul 2013 03:19:15 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v3 1/2] ARM: dts: twl: Add GPADC data to device tree
-Date: Fri, 12 Jul 2013 10:18:01 +0300
-Message-ID: <1373613482-28390-2-git-send-email-oleksandr.kozaruk@ti.com>
-In-Reply-To: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
-References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <khali@linux-fr.org>
+Date: Tue, 9 Jul 2013 20:29:42 +0200
+From: Jean Delvare <khali@linux-fr.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Harald Geyer <harald@ccbib.org>, linux-iio@vger.kernel.org, Guenter
+ Roeck <linux@roeck-us.net>, LM Sensors <lm-sensors@lm-sensors.org>
+Subject: Re: humidity sensors
+Message-ID: <20130709202942.1a290151@endymion.delvare>
+In-Reply-To: <51DC4FE0.1080402@kernel.org>
+References: <E1UwWkL-0000pI-8V@stardust.g4.wien.funkfeuer.at>
+	<51DC4FE0.1080402@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-GPADC is the general purpose ADC present on twl6030.
-The dt data is interrupt used to trigger end of ADC
-conversion.
+On Tue, 09 Jul 2013 19:01:04 +0100, Jonathan Cameron wrote:
+> On 07/09/2013 01:10 PM, Harald Geyer wrote:
+> > I'm working on a iio driver for the DHT11 (and DHT22)
+> > humidity and temperature sensor. I believe this is the
+> > first humidity sensor to be supported by the iio framework.
+> Sure, previously these have been considered acceptable to hwmon
+> (just about ;).  That has always  been controversial and with
+> iio-hwmon in place, I doubt anyone will mind having it new
+> ones in IIO.  I've cc'd a few people just in case they have
+> strong views on this.
 
-Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
----
- arch/arm/boot/dts/twl6030.dtsi |    6 ++++++
- 1 file changed, 6 insertions(+)
+This is totally fine with me.
 
-diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
-index 2e3bd31..434842c 100644
---- a/arch/arm/boot/dts/twl6030.dtsi
-+++ b/arch/arm/boot/dts/twl6030.dtsi
-@@ -103,4 +103,10 @@
- 		compatible = "ti,twl6030-pwmled";
- 		#pwm-cells = <2>;
- 	};
-+
-+	gpadc: twl6030_gpadc {
-+		compatible = "ti,twl6030_gpadc";
-+		interrupts = <3>;
-+		#io-channel-cells = <1>;
-+	};
- };
 -- 
-1.7.9.5
-
+Jean Delvare
