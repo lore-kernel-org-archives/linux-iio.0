@@ -1,41 +1,72 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] iio: mxs-lradc: Fix misuse of iio->trig
-Date: Wed, 3 Jul 2013 23:47:55 +0200
-Cc: linux-iio@vger.kernel.org,
- otavio@ossystems.com.br,
- Fabio Estevam <fabio.estevam@freescale.com>,
- Shawn Guo <shawn.guo@linaro.org>
-References: <1372540813-12540-1-git-send-email-marex@denx.de> <51D48096.5000206@kernel.org>
-In-Reply-To: <51D48096.5000206@kernel.org>
+Return-Path: <alexandre.belloni@free-electrons.com>
+Message-ID: <51DC1858.8010008@free-electrons.com>
+Date: Tue, 09 Jul 2013 16:04:08 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307032347.55808.marex@denx.de>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Shawn Guo <shawn.guo@linaro.org>,
+ Jonathan Cameron <jic23@cam.ac.uk>, jimwall@q.com,
+ brian@crystalfontz.com, Maxime Ripard <maxime.ripard@free-electrons.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree-discuss@lists.ozlabs.org, Rob Landley <rob@landley.net>,
+ Rob Herring <rob.herring@calxeda.com>,
+ Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCHv3 1/3] iio: Add Nuvoton NAU7802 ADC driver
+References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com> <1372094699-3832-2-git-send-email-alexandre.belloni@free-electrons.com> <51D53B72.6020309@metafoo.de> <51D7F044.9040205@kernel.org>
+In-Reply-To: <51D7F044.9040205@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Jonathan,
+Hi Jonathan,
 
-> On 06/29/2013 10:20 PM, Marek Vasut wrote:
-> > The struct iio_dev .trig field is to be used only by the IIO core,
-> > the driver shall not fill this field. This fixes ugly crash when
-> > the driver is compiled as a module and the module is rmmod'd.
-> > 
-> > Signed-off-by: Marek Vasut <marex@denx.de>
-> > Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> > Cc: Jonathan Cameron <jic23@kernel.org>
-> > Cc: Shawn Guo <shawn.guo@linaro.org>
-> 
-> I've applied this to the fixes-togreg branch of iio.git but had a bit
-> of fuzz, could you just santiy check that nothing went wrong please.
-> 
-> https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=fixes-tog
-> reg
-> 
-> Thanks
+I don't actually see it in iio.git on kernel.org, am I doing something
+wrong ?
 
-All OK, it must be my -next tree, sorry for the trouble.
+On 06/07/2013 12:24, Jonathan Cameron wrote:
+> On 07/04/2013 10:08 AM, Lars-Peter Clausen wrote:
+>> On 06/24/2013 07:24 PM, Alexandre Belloni wrote:
+>>> The Nuvoton NAU7802 ADC is a 24-bit 2-channels I2C ADC, with adjustable
+>>> gain and sampling rates.
+>>>
+>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>>> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+>>
+> Applied to the togreg branch of iio.git (with a few little tweaks).
+>
+> There was some fuzz that required manual fixing because of another driver merge so
+> please check I didn't foul anything up with this or the other bits below.
+>
+> There were two trivial missing unlocks on error paths in the read_raw function that
+> I've fixed up (Coccinelle found these for me - if you can I would always advise
+> running sparse, coccicheck and ideally smatch before submitting patches).
+>
+> I fixed up the comments because if there is one thing I hate bothering
+> with it is delightful patches that just fix this stuff. Much better
+> to do it now given it took 20 secs ;)
+>
+>> One remark though. Multiline comments should be like
+>>
+>> /*
+>>  * foo
+>>  * bar
+>>  */
+>>
+>> not
+>>
+>> /* foo
+>>  * bar
+>>  */
+>>
+>> But not need to resend the patch just for this
+>>
+>> - Lars
+>>
 
-Best regards,
-Marek Vasut
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
