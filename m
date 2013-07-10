@@ -1,74 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.cosmopool.net ([178.63.74.76]:33475 "EHLO
-	mail.cosmopool.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753462Ab3GIVvs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Jul 2013 17:51:48 -0400
-Message-Id: <E1Uwfov-0000cI-Mb@stardust.g4.wien.funkfeuer.at>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org, LM Sensors <lm-sensors@lm-sensors.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jean Delvare <khali@linux-fr.org>
-Subject: Re: humidity sensors
-In-reply-to: <51DC4FE0.1080402@kernel.org>
-References: <E1UwWkL-0000pI-8V@stardust.g4.wien.funkfeuer.at> <51DC4FE0.1080402@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mail-out.m-online.net ([212.18.0.10]:45274 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753537Ab3GJLnV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 07:43:21 -0400
+From: Marek Vasut <marex@denx.de>
+To: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Check the return value from stmp_reset_block()
+Date: Wed, 10 Jul 2013 13:43:19 +0200
+Cc: jic23@cam.ac.uk, shawn.guo@linaro.org, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+References: <1373423775-11053-1-git-send-email-festevam@gmail.com>
+In-Reply-To: <1373423775-11053-1-git-send-email-festevam@gmail.com>
 MIME-Version: 1.0
-Date: Tue, 09 Jul 2013 23:51:37 +0200
-From: Harald Geyer <harald@ccbib.org>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307101343.19408.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> > I'm working on a iio driver for the DHT11 (and DHT22)
-> > humidity and temperature sensor. I believe this is the
-> > first humidity sensor to be supported by the iio framework.
-> Sure, previously these have been considered acceptable to hwmon
-> (just about ;).  That has always  been controversial and with
-> iio-hwmon in place, I doubt anyone will mind having it new
-> ones in IIO.  I've cc'd a few people just in case they have
-> strong views on this.
+Dear Fabio Estevam,
 
-Thanks for the pointer. Obviously I should have researched that
-better.
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> stmp_reset_block() may fail, so let's check its return value and propagate
+> it in the case of error.
+> 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
 
-I didn't look into this in detail yet, but porting the driver to
-hwmon probably isn't much more work than adding humidity
-support to IIO. Which way do you prefer?
+Acked-by: Marek Vasut <marex@denx.de>
 
-> > This poses the question how the iio API regarding humidity
-> > values should be extended.
-> > 
-> > 1) Which string to use to construct filenames in sysfs, etc.:
-> > My suggestion: "relhum"
-> I wonder if humidtyrelative would be better (just in case someone
-> produces a sensor to measure specific or absolute humidity as then
-> they will be close together in names.  Also it's rarely worth
-> abreviating these terms as it can only cause confusion at a later
-> date and only costs a few characters here and there.
-
-hwmon is using "humidity" it seems. Now I'm torn between using
-the same and "humidityrelative" ;)
-
-> > 2) What unit to use for values:
-> > My suggestion: permil (0.1%)
-> hmm.. Interesting question for a ratio quantity.  Perhaps a
-> decimal ratio might work?  so 0.1% = 0.0001?
-> Don't really have strong feelings but permil whilst common
-> in some fields is a little unusual.
-
-hwmon is using milli per cent units. I suggest following
-that precedent.
-
-> > I'll submit a formal patch for the DHT11 driver when the
-> > iio framework is ready, but if you want to have a look at
-> > the work in progress, you find it at
-> > http://www.unet.univie.ac.at/~a0300802/files/dht11-gpio.c
-> > and at the bottom of this mail.
-
-[...]
-
-> Have had a very quick look at the driver and looks fine in general.
-> Will do a full review once it is complete.
-
-Thanks for the feedback.
-
-Harald
+Best regards,
+Marek Vasut
