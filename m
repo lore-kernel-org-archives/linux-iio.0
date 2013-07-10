@@ -1,71 +1,163 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([94.23.35.102]:54309 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750769Ab3GDJRS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jul 2013 05:17:18 -0400
-Message-ID: <51D53D91.8020201@free-electrons.com>
-Date: Thu, 04 Jul 2013 11:17:05 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Received: from mail1.bemta8.messagelabs.com ([216.82.243.205]:26313 "EHLO
+	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754131Ab3GJOpv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 10:45:51 -0400
+Message-ID: <51DD7392.70908@digi.com>
+Date: Wed, 10 Jul 2013 16:45:38 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
+To: Marek Vasut <marex@denx.de>
+CC: "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"marex@denx.de" <marex@denx.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH RFC] iio: mxs-lradc: add scaling to enable divide_by_two
- operation
-References: <1372845969-31776-1-git-send-email-hector.palacios@digi.com> <51D400FF.5060803@metafoo.de> <51D453AE.3020005@digi.com> <51D4575E.2040002@free-electrons.com> <51D5392C.4020309@digi.com>
-In-Reply-To: <51D5392C.4020309@digi.com>
-Content-Type: text/plain; charset=ISO-8859-1
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH 1/4] iio: mxs-lradc: change the realbits to 12
+References: <1373013039-19461-1-git-send-email-hector.palacios@digi.com> <201307051510.29011.marex@denx.de> <51DD3BA5.6000402@digi.com> <201307101349.26318.marex@denx.de>
+In-Reply-To: <201307101349.26318.marex@denx.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Dear Marek,
 
-On 04/07/2013 10:58, Hector Palacios wrote:
-> 
-> The field of the register that stores the sample is 18 bits, but each
-> sample is only 12 bits. The read_raw of a given channel will only read
-> one sample and thus returns a value between 0 and 4095.
-> If I use realbits here it will divide the Vref_mv by (1 << 18) and will
-> give me a wrong scale value.
-> Either we change the 'realbits' to 12 which is the real resolution of
-> the ADC, or we leave it as 18 and use a 12 in this operation.
+On 07/10/2013 01:49 PM, Marek Vasut wrote:
+> Hi Hector,
 >
-
-As said I didn't have a deep look at it so you are probably right.
-
->> Using IIO_VAL_FRACTIONAL_LOG2 allows you to avoid doing that computation
->> in your driver (sometimes, it is actually difficult to get it right
->> because you have to use 64 bits numbers).
+>> Hello,
 >>
->> Also, it simplifies things a bit, you can then use something like:
+>> On 07/05/2013 03:10 PM, Marek Vasut wrote:
+>>> Dear Hector Palacios,
+>>>
+>>>> Dear Marek,
+>>>>
+>>>> On 07/05/2013 01:37 PM, Marek Vasut wrote:
+>>>>> Dear Hector Palacios,
+>>>>>
+>>>>>> The LRADC virtual channels have an 18 bit field to store the sum of up
+>>>>>> to 2^5 accumulated samples. The read_raw function however only
+>>>>>> operates over a single sample (12 bit resolution).
+>>>>>> In order to use this field for scaling operations, we need it to be
+>>>>>> the exact resolution value of the LRADC.
+>>>>>
+>>>>> How would this work once the accumulation is supported?
+>>>>
+>>>> As I see it, when you read a channel the driver should give you the
+>>>> 12-bit value either of one single sample or of N samples.
+>>>
+>>> The hardware will always give you 18 bit value, let's call it A of N
+>>> accumulated samples, each 12 bit long. N is in range of 1 to 32 .
+>>>
+>>> The driver currently supports N = 1.
+>>>
+>>> Do I understand it correctly that if we want to support N > 1, we have to
+>>> do the division of A / N in the driver and therefore we will again
+>>> report only a 12-bit value to the userland ?
+>>>
+>>> If so,
+>>>
+>>> Acked-by: Marek Vasut <marex@denx.de>
 >>
->> case IIO_CHAN_INFO_SCALE:
->> *val = lut[chan->channel];
->> *val2 = chan->scan_type.realbits - is_divide_by_two;
->> return IIO_VAL_FRACTIONAL_LOG2;
-> 
-> Yes, but not all channels have a by two divisor. Some have a by 4, so
-> I'll need to work out a formula per channel divisor.
-> When using IIO_VAL_FRACTIONAL_LOG2, val must be given in mV?
+>> Coming back to this patch, I just noticed that it is not enough to just
+>> change the realbits from 18 to 12. When using this driver as touchscreen
+>> for Yocto's SATO graphic rootfs I noticed that the driver is using
+>> LRADC_CH_VALUE_MASK for reporting the coordinates.
+>>
+>> 	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
+>> 	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
+>> 	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
+>>
+>> which is defined as an 18bit mask:
+>>
+>> 	#define	LRADC_CH_VALUE_MASK			0x3ffff
+>>
+>> The result is that the touch calibration range in Xorg is expecting values
+>> between 0 and 262143 (0x3ffff), which causes trouble (at least I had
+>> problems to calibrate it).
 >
+> What kind of trouble does it cause?
 
-val is in mV indeed.
+Sorry, I should have said.
+First of all, I'm using a resistive touch that needs calibration.
 
-My first go at it was something along the lines:
+There something I definitely don't understand about calibrating the touch in Sato.
+Initially I don't have any file /etc/pointercal.xinput. When Sato launches the touch 
+is not calibrated so I run the xinput_calibrator. When I run this, the console displays:
 
-*val = 1850;
-*val2 = 12 - divider[chan->channel] - is_divide_by_two;
+Calibrating EVDEV driver for "mxs-lradc" id=6
+         current calibration values (from XInput): min_x=0, max_x=262143 and min_y=0, 
+max_y=262143
 
-But as Lars suggested you could also have something like:
+Notice the max_x and max_y are showing 0x3ffff which is the value sent by the driver.
 
-*val = Vmax[chan->channel];
-*val2 = 12 - is_divide_by_two;
+This calibration program shows a target at each corner. At this point, it will only 
+accept me clicking on the first target (upper left corner). When I click the second it 
+doesn't get it. It eventually gets it if I click several times somewhere else in the 
+screen, but yet it won't get the third target (lower left corner), no matter where I 
+press. So I can't calibrate the touch. I believe the reason might be the calibration 
+tool is expecting much higher values (around the max value) and maybe discarding 
+values that are too close (in relation to the range) to the min coordinate (it's just 
+my guess).
 
+After doing the above patch, when launching the vcalibration tool, I get this on the 
+console:
 
+Calibrating EVDEV driver for "mxs-lradc" id=6
+         current calibration values (from XInput): min_x=0, max_x=4095 and min_y=0, 
+max_y=4095
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+and the application lets me click on every target. The application showed the 
+following output:
+
+Doing dynamic recalibration:
+         Swapping X and Y axis...
+         Setting calibration data: 1405, 1367, 3693, 3733
+         --> Making the calibration permanent <--
+   copy the snippet below into '/etc/X11/xorg.conf.d/99-calibration.conf'
+Section "InputClass"
+         Identifier      "calibration"
+         MatchProduct    "mxs-lradc"
+         Option  "Calibration"   "1405 1367 3693 3733"
+         Option  "SwapAxes"      "1"
+EndSection
+
+I created the file /etc/X11/xorg.conf.d/99-calibration.conf and wrote that 
+information, but the touch still didn't work correctly. :o(
+
+I manually removed the "Calibration" line from this file and launched the calibration 
+tool again. This time I was given the following data:
+
+Section "InputClass"
+         Identifier      "calibration"
+         MatchProduct    "mxs-lradc"
+         Option  "Calibration"   "4207 320 4063 326"
+         Option  "SwapAxes"      "1"
+EndSection
+
+and finally the touch works correctly calibrated.
+
+So, ok, maybe the driver is not responsible for all these problems, but reporting a 
+max value of 0x3ffff seems definitely incorrect, and it was preventing me from 
+completing the calibration.
+
+> [...]
+>
+>> Notice that I leave the existing LRADC_CH_VALUE_MASK 18bit mask in the rest
+>> of the driver, to support accumulated samples.
+>> Curiously, ts_lib works fine without this (maybe the calibration fixes
+>> this?), but nevertheless the information passed by the driver is
+>> incorrect, I guess. Is anybody out there working with the touch? Under
+>> which graphic system?
+>
+> Both QtE and Sato work for me, that's why I'm curious about your issues.
+
+ts_lib application also worked for me without the patch, but I thought maybe the 
+ts_calibrate was doing his job regardless the ranges reported by the driver and the 
+Sato worked differently.
+Are you also using a resistive touch? How did you do the calibration?
+
+Best regards,
+--
+Hector Palacios
