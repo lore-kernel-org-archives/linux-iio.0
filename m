@@ -1,68 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:57110 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754299Ab3GOLKi convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 07:10:38 -0400
-From: "Kozaruk, Oleksandr" <oleksandr.kozaruk@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "tony@atomide.com" <tony@atomide.com>,
-	"benoit.cousson@linaro.org" <benoit.cousson@linaro.org>,
-	"Nayak, Rajendra" <rnayak@ti.com>,
-	"Ujfalusi, Peter" <peter.ujfalusi@ti.com>,
-	"ABRAHAM, KISHON VIJAY" <kishon@ti.com>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"grant.likely@linaro.org" <grant.likely@linaro.org>,
-	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
-	"sameo@linux.intel.com" <sameo@linux.intel.com>,
-	"ch.naveen@samsung.com" <ch.naveen@samsung.com>,
-	"poeschel@lemonage.de" <poeschel@lemonage.de>,
-	"Kim, Milo" <Milo.Kim@ti.com>,
-	"Krishnamoorthy, Balaji T" <balajitk@ti.com>,
-	"gg@slimlogic.co.uk" <gg@slimlogic.co.uk>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-Subject: RE: [PATCH v3 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-Date: Mon, 15 Jul 2013 11:09:40 +0000
-Message-ID: <2A7ABDFCE21540479A5AEB0244A684D5E3D067@DNCE04.ent.ti.com>
-References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
- <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com>,<51E05F6C.1060506@metafoo.de>
-In-Reply-To: <51E05F6C.1060506@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Received: from h1446028.stratoserver.net ([85.214.92.142]:50612 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751087Ab3GJIcy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 04:32:54 -0400
+From: Alexander Holler <holler@ahsoftware.de>
+To: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+	Alexander Holler <holler@ahsoftware.de>
+Subject: [PATCH 2/4] iio: hid-sensor-gyro-3d: add module alias for autoload
+Date: Wed, 10 Jul 2013 10:31:58 +0200
+Message-Id: <1373445120-5407-3-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
+References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Lars-Peter,
-Thank you for the review.
+Add a MODULE_DEVICE_TABLE in order to let hotplug mechanisms automatically
+load the driver.
 
->> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
->> new file mode 100644
->> index 0000000..6ceb789
->> --- /dev/null
->> +++ b/drivers/iio/adc/twl6030-gpadc.c
->> @@ -0,0 +1,1019 @@
->[...]
->> +static u8 twl6032_channel_to_reg(int channel)
->> +{
->> +     return TWL6032_GPADC_GPCH0_LSB;
->
->There is more than one channel, isn't there?
-Yes. But for twl6032 channel of interest is chosen first. When the conversion
-is ready tre result is available in GPCH0_LSB/GPCH1_MSB for any cosen
-channel. For twl6030 there are as many result register pairs as many of
-channels.
+This makes it also possible to use the usual driver name instead of
+HID-SENSOR-2000xx which isn't very descriptive in kernel messages.
 
->> +     ret = devm_request_threaded_irq(dev, irq, NULL,
->> +                                     twl6030_gpadc_irq_handler,
->> +                                     IRQF_ONESHOT, "twl6030_gpadc", gpadc);
->
->You access memory in the interrupt handler which is freed before the interrupt
->handler is freed.
-Thanks for pointing this. devm_* will free memory for irq after the driver
-is removed and memory for the device is freed. I took me awhile to understand
-this. Is there going to be something like devm_iio_device_alloc? whould it be helpfull?
+Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+---
+ drivers/iio/gyro/hid-sensor-gyro-3d.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index bc943dd..9cc8aa1 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -30,10 +30,6 @@
+ #include <linux/iio/triggered_buffer.h>
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+ 
+-/*Format: HID-SENSOR-usage_id_in_hex*/
+-/*Usage ID from spec for Gyro-3D: 0x200076*/
+-#define DRIVER_NAME "HID-SENSOR-200076"
+-
+ enum gyro_3d_channel {
+ 	CHANNEL_SCAN_INDEX_X,
+ 	CHANNEL_SCAN_INDEX_Y,
+@@ -389,9 +385,19 @@ static int hid_gyro_3d_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static struct platform_device_id hid_gyro_3d_ids[] = {
++	{
++		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
++		.name = "HID-SENSOR-200076",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, hid_gyro_3d_ids);
++
+ static struct platform_driver hid_gyro_3d_platform_driver = {
++	.id_table = hid_gyro_3d_ids,
+ 	.driver = {
+-		.name	= DRIVER_NAME,
++		.name	= KBUILD_MODNAME,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= hid_gyro_3d_probe,
+-- 
+1.8.1.5
+
