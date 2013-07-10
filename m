@@ -1,44 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f169.google.com ([209.85.215.169]:42102 "EHLO
-	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932510Ab3GQR1X (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:23 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 16/21] IIO: ti_adc: Fix allocation count of FIFO buffer.
-Date: Wed, 17 Jul 2013 18:26:45 +0100
-Message-Id: <1374082010-28095-17-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51441 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752561Ab3GJJrE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 05:47:04 -0400
+In-Reply-To: <E1Uwfov-0000cI-Mb@stardust.g4.wien.funkfeuer.at>
+References: <E1UwWkL-0000pI-8V@stardust.g4.wien.funkfeuer.at> <51DC4FE0.1080402@kernel.org> <E1Uwfov-0000cI-Mb@stardust.g4.wien.funkfeuer.at>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: humidity sensors
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 10 Jul 2013 10:46:50 +0100
+To: Harald Geyer <harald@ccbib.org>
+CC: linux-iio@vger.kernel.org, LM Sensors <lm-sensors@lm-sensors.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jean Delvare <khali@linux-fr.org>
+Message-ID: <500695c3-bb30-46e7-8fab-3ba32a01a246@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Allocating an extra byte is not necessary here. The driver will check
 
-that the allocation is large enough to satisfy the IIO subsystem.
 
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/iio/adc/ti_am335x_adc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Harald Geyer <harald@ccbib.org> wrote:
+>> > I'm working on a iio driver for the DHT11 (and DHT22)
+>> > humidity and temperature sensor. I believe this is the
+>> > first humidity sensor to be supported by the iio framework.
+>> Sure, previously these have been considered acceptable to hwmon
+>> (just about ;).  That has always  been controversial and with
+>> iio-hwmon in place, I doubt anyone will mind having it new
+>> ones in IIO.  I've cc'd a few people just in case they have
+>> strong views on this.
+>
+>Thanks for the pointer. Obviously I should have researched that
+>better.
+>
+>I didn't look into this in detail yet, but porting the driver to
+>hwmon probably isn't much more work than adding humidity
+>support to IIO. Which way do you prefer?
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index c257169..21294f2 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -219,7 +219,7 @@ static void tiadc_poll_handler(struct work_struct *work_s)
-                 goto out;
-         }
- 
--        iBuf = kmalloc((fifo1count + 1) * sizeof(u32), GFP_KERNEL);
-+        iBuf = kmalloc((fifo1count) * sizeof(u32), GFP_KERNEL);
-         if (iBuf == NULL)
-                 goto out;
-         /*
+I don't really mind but as they have been controversial in hwmon perhaps iio is a better bet.
+>
+>> > This poses the question how the iio API regarding humidity
+>> > values should be extended.
+>> > 
+>> > 1) Which string to use to construct filenames in sysfs, etc.:
+>> > My suggestion: "relhum"
+>> I wonder if humidtyrelative would be better (just in case someone
+>> produces a sensor to measure specific or absolute humidity as then
+>> they will be close together in names.  Also it's rarely worth
+>> abreviating these terms as it can only cause confusion at a later
+>> date and only costs a few characters here and there.
+>
+>hwmon is using "humidity" it seems. Now I'm torn between using
+>the same and "humidityrelative" ;)
+We have broken fairly thoroughly from hwmon on type naming already so don't worry about doing so again.
+>
+>> > 2) What unit to use for values:
+>> > My suggestion: permil (0.1%)
+>> hmm.. Interesting question for a ratio quantity.  Perhaps a
+>> decimal ratio might work?  so 0.1% = 0.0001?
+>> Don't really have strong feelings but permil whilst common
+>> in some fields is a little unusual.
+>
+>hwmon is using milli per cent units. I suggest following
+>that precedent.
+Fair enough.
+>
+>> > I'll submit a formal patch for the DHT11 driver when the
+>> > iio framework is ready, but if you want to have a look at
+>> > the work in progress, you find it at
+>> > http://www.unet.univie.ac.at/~a0300802/files/dht11-gpio.c
+>> > and at the bottom of this mail.
+>
+>[...]
+>
+>> Have had a very quick look at the driver and looks fine in general.
+>> Will do a full review once it is complete.
+>
+>Thanks for the feedback.
+>
+>Harald
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-1.7.9.5
-
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
