@@ -1,88 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:30377 "EHLO mga09.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:24683 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757776Ab3GLVqz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 17:46:55 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Alexander Holler <holler@ahsoftware.de>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
-Date: Fri, 12 Jul 2013 21:46:52 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A92FBDB758@ORSMSX110.amr.corp.intel.com>
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
- <51DD7D78.2020506@linux.intel.com> <51DD848E.4050206@ahsoftware.de>
- <51DEEAFE.506@linux.intel.com> <51DFAE85.9060508@ahsoftware.de>
- <51E04E99.9060105@kernel.org>
-In-Reply-To: <51E04E99.9060105@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+	id S1757555Ab3GLVmy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 12 Jul 2013 17:42:54 -0400
+Message-ID: <51E079E3.4030404@linux.intel.com>
+Date: Fri, 12 Jul 2013 14:49:23 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
+To: Alexander Holler <holler@ahsoftware.de>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 2/4] iio: hid-sensor-gyro-3d: add module alias for autoload
+References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <1373445120-5407-3-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1373445120-5407-3-git-send-email-holler@ahsoftware.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Tested and ready to go.
+Tested. You can add my ack.
 
-Thanks,
-Srinivas
+Acked-by:Srinivas Pandruvada<srinivas.pandruvada@linux.intel.com>
 
 
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@kernel.org] 
-Sent: Friday, July 12, 2013 11:45 AM
-To: Alexander Holler
-Cc: Srinivas Pandruvada; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Jonathan Cameron; Pandruvada, Srinivas
-Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
+On 07/10/2013 01:31 AM, Alexander Holler wrote:
+> Add a MODULE_DEVICE_TABLE in order to let hotplug mechanisms automatically
+> load the driver.
+>
+> This makes it also possible to use the usual driver name instead of
+> HID-SENSOR-2000xx which isn't very descriptive in kernel messages.
+>
+> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+> ---
+>   drivers/iio/gyro/hid-sensor-gyro-3d.c | 16 +++++++++++-----
+>   1 file changed, 11 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> index bc943dd..9cc8aa1 100644
+> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> @@ -30,10 +30,6 @@
+>   #include <linux/iio/triggered_buffer.h>
+>   #include "../common/hid-sensors/hid-sensor-trigger.h"
+>   
+> -/*Format: HID-SENSOR-usage_id_in_hex*/
+> -/*Usage ID from spec for Gyro-3D: 0x200076*/
+> -#define DRIVER_NAME "HID-SENSOR-200076"
+> -
+>   enum gyro_3d_channel {
+>   	CHANNEL_SCAN_INDEX_X,
+>   	CHANNEL_SCAN_INDEX_Y,
+> @@ -389,9 +385,19 @@ static int hid_gyro_3d_remove(struct platform_device *pdev)
+>   	return 0;
+>   }
+>   
+> +static struct platform_device_id hid_gyro_3d_ids[] = {
+> +	{
+> +		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+> +		.name = "HID-SENSOR-200076",
+> +	},
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(platform, hid_gyro_3d_ids);
+> +
+>   static struct platform_driver hid_gyro_3d_platform_driver = {
+> +	.id_table = hid_gyro_3d_ids,
+>   	.driver = {
+> -		.name	= DRIVER_NAME,
+> +		.name	= KBUILD_MODNAME,
+>   		.owner	= THIS_MODULE,
+>   	},
+>   	.probe		= hid_gyro_3d_probe,
 
-On 07/12/2013 08:21 AM, Alexander Holler wrote:
-> Am 11.07.2013 19:27, schrieb Srinivas Pandruvada:
->>
->>
->> On 07/10/2013 08:58 AM, Alexander Holler wrote:
->>> Am 10.07.2013 17:27, schrieb Srinivas Pandruvada:
->>>> Hi,
->>>>
->>>> There was no intention to prevent auto loading. Did you get chance 
->>>> to test these changes?
->>>
->>> Sure, I always test patches before I send them out.
->>>
->>> Ok, I haven't tested the changes with the iio HID drivers (I don't 
->>> have any commercial HID sensor hub, so I've just compile tested 
->>> these patches here, double reading them), but I've tested the 
->>> similiar changes with a patch for rtc-hid-sensor-time I've send out yesterday.
->>> (sorry, no link, lkml.org seems dead, just search for
->>> "rtc-hid-sensor-time: add module alias")
->>>
->>> It works just fine. An example output is now
->>>
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.124444] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: milliseconds supported
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.132864] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: rtc core: setting system clock to 2013-07-09
->>> 17:26:51:328000 UTC (1373390811)
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.146105] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: rtc core: registered hid-sensor-time as rtc0
->>>
->>> Before the output was e.g.
->>>
->>> HID-SENSOR-2000a0 HID-SENSOR-2000a0.0: rtc core: registered 
->>> hid-sensor-time as rtc0
->>>
->>> instead of the above with the descriptive rtc_hid_sensor_time.
->> <Agreed. This is better. >
->>> Automatic loading of modules works too and it works on ARM, Intel 
->>> and AMD as module or static linked. ;)
-> 
-> Do you have tested the patches with a real device? I assume you have 
-> one. ;)
-> 
-> Regards,
-> 
-> Alexander Holler
-
-Just so you two know. Given this discussion, I'll be lazy about these and wait for an Ack from Srinivas before taking these.  Look fine to me, but nice to have confirmation as you say with the actual hardware!
-
-Jonathan
