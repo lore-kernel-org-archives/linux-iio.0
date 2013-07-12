@@ -1,57 +1,102 @@
-Return-Path: <o.v.kravchenko@globallogic.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from h1446028.stratoserver.net ([85.214.92.142]:42816 "EHLO
+	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757508Ab3GLTfK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 15:35:10 -0400
+Received: from eiche.ahsoftware (p57B20185.dip0.t-ipconnect.de [87.178.1.133])
+	(using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mail.ahsoftware.de (Postfix) with ESMTPSA id 53554888059
+	for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2013 21:35:08 +0200 (CEST)
+Message-ID: <51E05A4A.2000306@ahsoftware.de>
+Date: Fri, 12 Jul 2013 21:34:34 +0200
+From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
-In-Reply-To: <51E9AA6D.3070007@kernel.org>
-References: <1374162430-30709-1-git-send-email-x0199363@ti.com>
-	<51E816BD.9010302@metafoo.de>
-	<CAGH3droXKeE7diARCZQ=n37XkAmYzrcUkyZLvcWjWVLHvJnWVw@mail.gmail.com>
-	<51E9AA6D.3070007@kernel.org>
-Date: Mon, 22 Jul 2013 13:51:19 +0300
-Message-ID: <CAGH3droNOGhbkpz5yqznKVX8HOmT2FimKp0_95JVSpEf7zUAoA@mail.gmail.com>
-Subject: Re: [PATCH] iio: core: Avoid double minus in sysfs output
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Oleksandr Kravchenko <x0199363@ti.com>, jic23@cam.ac.uk,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Alexandre Relange <alexandre@relange.org>
+CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/5] iio: mechanical: new HID sensor boolean switch
+References: <1370962336-20739-1-git-send-email-alexandre@relange.org> <1370962336-20739-4-git-send-email-alexandre@relange.org>
+In-Reply-To: <1370962336-20739-4-git-send-email-alexandre@relange.org>
+Content-Type: text/plain; charset=ISO-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Please ignore this patch for now. I'll rework it soon. It issues
-warnings when compiling.
+Am 11.06.2013 16:52, schrieb Alexandre Relange:
+> Implements the Boolean Switch sensor from the USB sensor usage tables
+> http://www.usb.org/developers/hidpage/HUTRR39b.pdf
+> 
+> This code is based on drivers/iio/light/hid-sensor-als.c
+> 
+> Signed-off-by: Alexandre Relange <alexandre@relange.org>
+> ---
 
-On Sat, Jul 20, 2013 at 12:06 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 07/19/2013 07:15 AM, Oleksandr Kravchenko wrote:
->> On Thu, Jul 18, 2013 at 7:24 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>> On 07/18/2013 05:47 PM, Oleksandr Kravchenko wrote:
->>>> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
->>>>
->>>> This patch fixes the issue with double minus in output when
->>>> reading channels from sysfs for IIO_VAL_INT_PLUS_MICRO and
->>>> IIO_VAL_INT_PLUS_NANO cases. Until this patch if val and val2
->>>> both are negatives output string contains "--" before
->>>> digits. It is result of "-%d..." in sprintf() format.
->>>>
->>>
->>> Hm, this might be a bug in a driver that is triggering this. The idea is
->>> that val2 is only allowed to be negative if val is 0.
->>>
->>> - Lars
->>>
->> If I calculate val and val2 in next way:
->> *val = adc / 1000000;
->> *val2 = adc % 1000000;
->> both val and val2 could by negative. Do I have to check it in my driver?
->>
-> I guess it is will happen occasionally.  In the c89 standard, module for a negative
-> is implementation specific.  Anyone know if we can assume this will work in all cases
-> within the kernel?
+...
+
+> +
+> +/*Format: HID-SENSOR-usage_id_in_hex*/
+> +/*Usage ID from spec for Boolean-Switch: 0x200061*/
+> +#define DRIVER_NAME "HID-SENSOR-200061"
+> +
+
+...
+
+> +static struct platform_driver hid_switch_platform_driver = {
+> +	.driver = {
+> +		.name	= DRIVER_NAME,
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= hid_switch_probe,
+> +	.remove		= hid_switch_remove,
+> +};
+> +module_platform_driver(hid_switch_platform_driver);
+> +
+
+You already might add the fix I've recently posted for all the other iio
+HID drivers to let the module automatically loaded. It gives a nicier
+driver name too.
+
+I've pasted the patch for the als-driver for your reference below.
+Be sure to change the usage id to the one for your driver.
+
+Regards,
+
+Alexander Holler
+
+--------
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -30,10 +30,6 @@
+ #include <linux/iio/triggered_buffer.h>
+ #include "../common/hid-sensors/hid-sensor-trigger.h"
+
+-/*Format: HID-SENSOR-usage_id_in_hex*/
+-/*Usage ID from spec for Ambiant-Light: 0x200041*/
+-#define DRIVER_NAME "HID-SENSOR-200041"
+-
+ #define CHANNEL_SCAN_INDEX_ILLUM 0
+
+ struct als_state {
+@@ -355,9 +351,19 @@ static int hid_als_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+
++static struct platform_device_id hid_als_ids[] = {
++	{
++		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
++		.name = "HID-SENSOR-200041",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, hid_als_ids);
++
+ static struct platform_driver hid_als_platform_driver = {
++	.id_table = hid_als_ids,
+ 	.driver = {
+-		.name	= DRIVER_NAME,
++		.name	= KBUILD_MODNAME,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= hid_als_probe,
+-- 1.8.1.5
 
 
-
--- 
-Oleksandr Kravchenko
-GlobalLogic
-P +380633213187
-P +380994930248
-www.globallogic.com
-
-http://www.globallogic.com/email_disclaimer.txt
