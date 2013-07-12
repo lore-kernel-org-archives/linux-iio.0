@@ -1,36 +1,52 @@
-Return-Path: <festevam@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:43229 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757148Ab3GLHTP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 12 Jul 2013 03:19:15 -0400
+From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
+	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<lars@metafoo.de>, <sameo@linux.intel.com>,
+	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
+	<balajitk@ti.com>, <gg@slimlogic.co.uk>
+CC: <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
+Subject: [PATCH v3 1/2] ARM: dts: twl: Add GPADC data to device tree
+Date: Fri, 12 Jul 2013 10:18:01 +0300
+Message-ID: <1373613482-28390-2-git-send-email-oleksandr.kozaruk@ti.com>
+In-Reply-To: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
+References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1372094699-3832-3-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1372094699-3832-1-git-send-email-alexandre.belloni@free-electrons.com>
-	<1372094699-3832-3-git-send-email-alexandre.belloni@free-electrons.com>
-Date: Mon, 1 Jul 2013 23:45:53 -0300
-Message-ID: <CAOMZO5CLcT=OXYd=ggxpDzUqFxoXSaanqUPGugYLT2Og-VgzCA@mail.gmail.com>
-Subject: Re: [PATCHv3 2/3] ARM: mxs: cfa10049: Switch bus i2c1 to bitbanging
-From: Fabio Estevam <festevam@gmail.com>
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>, Jonathan Cameron <jic23@cam.ac.uk>, brian@crystalfontz.com,
-	linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org, jimwall@q.com,
-	Rob Herring <rob.herring@calxeda.com>, linux-kernel@vger.kernel.org,
-	Grant Likely <grant.likely@secretlab.ca>, Rob Landley <rob@landley.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Alexandre,
+GPADC is the general purpose ADC present on twl6030.
+The dt data is interrupt used to trigger end of ADC
+conversion.
 
-On Mon, Jun 24, 2013 at 2:24 PM, Alexandre Belloni
-<alexandre.belloni@free-electrons.com> wrote:
-> From: Maxime Ripard <maxime.ripard@free-electrons.com>
->
-> The ADCs connected to this bus have been experiencing some timeout
-> issues when using the iMX28 i2c controller. Switching back to bitbanging
-> solves this.
+Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+---
+ arch/arm/boot/dts/twl6030.dtsi |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Are you able to use the mxs i2c controller instead of bitbang if you
-use this patch?
-http://www.spinics.net/lists/stable/msg13202.html
+diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+index 2e3bd31..434842c 100644
+--- a/arch/arm/boot/dts/twl6030.dtsi
++++ b/arch/arm/boot/dts/twl6030.dtsi
+@@ -103,4 +103,10 @@
+ 		compatible = "ti,twl6030-pwmled";
+ 		#pwm-cells = <2>;
+ 	};
++
++	gpadc: twl6030_gpadc {
++		compatible = "ti,twl6030_gpadc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
+ };
+-- 
+1.7.9.5
 
-Regards,
-
-Fabio Estevam
