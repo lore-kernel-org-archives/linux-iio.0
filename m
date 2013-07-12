@@ -1,68 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:50635 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751087Ab3GJIdI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 04:33:08 -0400
-From: Alexander Holler <holler@ahsoftware.de>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Alexander Holler <holler@ahsoftware.de>
-Subject: [PATCH 4/4] iio: hid-sensor-magn-3d: add module alias for autoload
-Date: Wed, 10 Jul 2013 10:32:00 +0200
-Message-Id: <1373445120-5407-5-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57786 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933171Ab3GLSor (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 14:44:47 -0400
+Message-ID: <51E04E99.9060105@kernel.org>
+Date: Fri, 12 Jul 2013 19:44:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Alexander Holler <holler@ahsoftware.de>
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
+References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <51DD7D78.2020506@linux.intel.com> <51DD848E.4050206@ahsoftware.de> <51DEEAFE.506@linux.intel.com> <51DFAE85.9060508@ahsoftware.de>
+In-Reply-To: <51DFAE85.9060508@ahsoftware.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a MODULE_DEVICE_TABLE in order to let hotplug mechanisms automatically
-load the driver.
+On 07/12/2013 08:21 AM, Alexander Holler wrote:
+> Am 11.07.2013 19:27, schrieb Srinivas Pandruvada:
+>>
+>>
+>> On 07/10/2013 08:58 AM, Alexander Holler wrote:
+>>> Am 10.07.2013 17:27, schrieb Srinivas Pandruvada:
+>>>> Hi,
+>>>>
+>>>> There was no intention to prevent auto loading. Did you get chance to
+>>>> test these changes?
+>>>
+>>> Sure, I always test patches before I send them out.
+>>>
+>>> Ok, I haven't tested the changes with the iio HID drivers (I don't
+>>> have any commercial HID sensor hub, so I've just compile tested these
+>>> patches here, double reading them), but I've tested the similiar
+>>> changes with a patch for rtc-hid-sensor-time I've send out yesterday.
+>>> (sorry, no link, lkml.org seems dead, just search for
+>>> "rtc-hid-sensor-time: add module alias")
+>>>
+>>> It works just fine. An example output is now
+>>>
+>>> Jul  9 19:27:21 dockstar3 kernel: [    5.124444] rtc_hid_sensor_time
+>>> HID-SENSOR-2000a0.0: milliseconds supported
+>>> Jul  9 19:27:21 dockstar3 kernel: [    5.132864] rtc_hid_sensor_time
+>>> HID-SENSOR-2000a0.0: rtc core: setting system clock to 2013-07-09
+>>> 17:26:51:328000 UTC (1373390811)
+>>> Jul  9 19:27:21 dockstar3 kernel: [    5.146105] rtc_hid_sensor_time
+>>> HID-SENSOR-2000a0.0: rtc core: registered hid-sensor-time as rtc0
+>>>
+>>> Before the output was e.g.
+>>>
+>>> HID-SENSOR-2000a0 HID-SENSOR-2000a0.0: rtc core: registered
+>>> hid-sensor-time as rtc0
+>>>
+>>> instead of the above with the descriptive rtc_hid_sensor_time.
+>> <Agreed. This is better. >
+>>> Automatic loading of modules works too and it works on ARM, Intel and
+>>> AMD as module or static linked. ;)
+> 
+> Do you have tested the patches with a real device? I assume you have one. ;)
+> 
+> Regards,
+> 
+> Alexander Holler
 
-This makes it also possible to use the usual driver name instead of
-HID-SENSOR-2000xx which isn't very descriptive in kernel messages.
+Just so you two know. Given this discussion, I'll be lazy about these and
+wait for an Ack from Srinivas before taking these.  Look fine to me, but
+nice to have confirmation as you say with the actual hardware!
 
-Signed-off-by: Alexander Holler <holler@ahsoftware.de>
----
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 99f4e49..e71127a 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -30,10 +30,6 @@
- #include <linux/iio/triggered_buffer.h>
- #include "../common/hid-sensors/hid-sensor-trigger.h"
- 
--/*Format: HID-SENSOR-usage_id_in_hex*/
--/*Usage ID from spec for Magnetometer-3D: 0x200083*/
--#define DRIVER_NAME "HID-SENSOR-200083"
--
- enum magn_3d_channel {
- 	CHANNEL_SCAN_INDEX_X,
- 	CHANNEL_SCAN_INDEX_Y,
-@@ -390,9 +386,19 @@ static int hid_magn_3d_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static struct platform_device_id hid_magn_3d_ids[] = {
-+	{
-+		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-+		.name = "HID-SENSOR-200083",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, hid_magn_3d_ids);
-+
- static struct platform_driver hid_magn_3d_platform_driver = {
-+	.id_table = hid_magn_3d_ids,
- 	.driver = {
--		.name	= DRIVER_NAME,
-+		.name	= KBUILD_MODNAME,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_magn_3d_probe,
--- 
-1.8.1.5
-
+Jonathan
