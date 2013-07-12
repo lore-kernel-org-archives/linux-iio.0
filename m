@@ -1,43 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f174.google.com ([209.85.217.174]:49525 "EHLO
-	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758140Ab3GOVyE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 17:54:04 -0400
-Received: by mail-lb0-f174.google.com with SMTP id x10so53865lbi.33
-        for <linux-iio@vger.kernel.org>; Mon, 15 Jul 2013 14:54:02 -0700 (PDT)
-Message-ID: <51E46F7A.9020400@cogentembedded.com>
-Date: Tue, 16 Jul 2013 01:54:02 +0400
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Received: from mga09.intel.com ([134.134.136.24]:6317 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S964787Ab3GLVn2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 12 Jul 2013 17:43:28 -0400
+Message-ID: <51E07A04.20705@linux.intel.com>
+Date: Fri, 12 Jul 2013 14:49:56 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-CC: linux-sh@vger.kernel.org
-Subject: Help with fitting unusual devices into IIO framework
+To: Alexander Holler <holler@ahsoftware.de>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 4/4] iio: hid-sensor-magn-3d: add module alias for autoload
+References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <1373445120-5407-5-git-send-email-holler@ahsoftware.de>
+In-Reply-To: <1373445120-5407-5-git-send-email-holler@ahsoftware.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello.
+Tested. You can add my ack.
 
-     Recently I have posted a driver for drivers/misc/ driving a pair of 
-devices: Renesas R-Car Gyro-ADC and speed-pulse interfaces [1]. Arnd 
-Bergmann, one of the maintainers told me that such driver would fit 
-better into the IIO infrastructure. I have studied this infrastructure
-for some time and only found in it a place for the Gyro-ADC interface.
-    Let me describe the devices to be driven in some detail. Gyro-ADC 
-i/f is an interface to multichannel serial ADC (of 3 certain models)
-which can also calculate and average of each 8 samples and sum up 10 of 
-these average values. Speed-pulse interface can count PWM-type input 
-signal pulses and period between them. Though  being two separate 
-devices, these two have to be driven together because of the shared 
-start/stop register (located in Gyro-ADC i/f still) and the clock with 
-1.25 ms period supplied from the Gyro-ADC i/f to the speed-pulse i/f;
-at the same time speed-pulse i/f generates interrupt with 100 ms period 
-to be used by both interfaces.
-    At this time, only speed-pulse interface support is required, 
-Gyro-ADC can be largely ignored (though it has to be initialized). 
-Perhaps we could add a new I/O channel type for speed-pulse i/f? What's 
-your thoughts?
+Acked-by:Srinivas Pandruvada<srinivas.pandruvada@linux.intel.com>
 
-[1] marc.info/?l=linux-kernel&m=137367311823027
 
-WBR, Sergei
+On 07/10/2013 01:32 AM, Alexander Holler wrote:
+> Add a MODULE_DEVICE_TABLE in order to let hotplug mechanisms automatically
+> load the driver.
+>
+> This makes it also possible to use the usual driver name instead of
+> HID-SENSOR-2000xx which isn't very descriptive in kernel messages.
+>
+> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
+> ---
+>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 16 +++++++++++-----
+>   1 file changed, 11 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> index 99f4e49..e71127a 100644
+> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> @@ -30,10 +30,6 @@
+>   #include <linux/iio/triggered_buffer.h>
+>   #include "../common/hid-sensors/hid-sensor-trigger.h"
+>   
+> -/*Format: HID-SENSOR-usage_id_in_hex*/
+> -/*Usage ID from spec for Magnetometer-3D: 0x200083*/
+> -#define DRIVER_NAME "HID-SENSOR-200083"
+> -
+>   enum magn_3d_channel {
+>   	CHANNEL_SCAN_INDEX_X,
+>   	CHANNEL_SCAN_INDEX_Y,
+> @@ -390,9 +386,19 @@ static int hid_magn_3d_remove(struct platform_device *pdev)
+>   	return 0;
+>   }
+>   
+> +static struct platform_device_id hid_magn_3d_ids[] = {
+> +	{
+> +		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+> +		.name = "HID-SENSOR-200083",
+> +	},
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(platform, hid_magn_3d_ids);
+> +
+>   static struct platform_driver hid_magn_3d_platform_driver = {
+> +	.id_table = hid_magn_3d_ids,
+>   	.driver = {
+> -		.name	= DRIVER_NAME,
+> +		.name	= KBUILD_MODNAME,
+>   		.owner	= THIS_MODULE,
+>   	},
+>   	.probe		= hid_magn_3d_probe,
+
