@@ -1,445 +1,325 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <51D98B0E.1090408@kernel.org>
-Date: Sun, 07 Jul 2013 16:36:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-076.synserver.de ([212.40.185.76]:1178 "EHLO
+	smtp-out-076.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965101Ab3GLRDz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 13:03:55 -0400
+Message-ID: <51E03720.1010806@metafoo.de>
+Date: Fri, 12 Jul 2013 19:04:32 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Alexandre Relange <alexandre@relange.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/5] iio: mechanical: new HID sensor boolean switch
-References: <1370962336-20739-1-git-send-email-alexandre@relange.org> <1370962336-20739-4-git-send-email-alexandre@relange.org>
-In-Reply-To: <1370962336-20739-4-git-send-email-alexandre@relange.org>
+To: Oleksandr Kravchenko <x0199363@ti.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, grant.likely@linaro.org,
+	rob.herring@calxeda.com, rob@landley.net, jic23@cam.ac.uk,
+	pmeerw@pmeerw.net, holler@ahsoftware.de,
+	srinivas.pandruvada@intel.com, devicetree-discuss@lists.ozlabs.org,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH] iio: add APDS9300 ambilent light sensor driver
+References: <1373461729-11261-1-git-send-email-x0199363@ti.com>
+In-Reply-To: <1373461729-11261-1-git-send-email-x0199363@ti.com>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 03:52 PM, Alexandre Relange wrote:
-> Implements the Boolean Switch sensor from the USB sensor usage tables
-> http://www.usb.org/developers/hidpage/HUTRR39b.pdf
+On 07/10/2013 03:08 PM, Oleksandr Kravchenko wrote:
+> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 > 
-> This code is based on drivers/iio/light/hid-sensor-als.c
+> This patch adds IIO driver for APDS9300 ambilent light sensor (ALS).
+
+s/ambilent/ambient/
+
+> http://www.avagotech.com/docs/AV02-1077EN
 > 
-> Signed-off-by: Alexandre Relange <alexandre@relange.org>
+> The driver allows to read raw data from ADC registers or calculate
+> lux value. It also can handle threshold inrerrupt.
 
-Other than the issue of what to call this it mostly looks fine.
-But what is hysterisis when applied to a mechanical switch?
+s/inrerrupt/interrupt/
 
+The patch looks very good in general, a couple of comment inline.
+
+> 
+> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 > ---
->  drivers/iio/mechanical/Kconfig             |  14 ++
->  drivers/iio/mechanical/Makefile            |   1 +
->  drivers/iio/mechanical/hid-sensor-switch.c | 359 +++++++++++++++++++++++++++++
->  include/linux/hid-sensor-ids.h             |   4 +
->  4 files changed, 378 insertions(+)
->  create mode 100644 drivers/iio/mechanical/hid-sensor-switch.c
+>  .../devicetree/bindings/iio/light/apds9300.txt     |   22 +
+>  drivers/iio/light/Kconfig                          |   10 +
+>  drivers/iio/light/Makefile                         |    1 +
+>  drivers/iio/light/apds9300.c                       |  528 ++++++++++++++++++++
+>  4 files changed, 561 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/apds9300.txt
+>  create mode 100644 drivers/iio/light/apds9300.c
 > 
-> diff --git a/drivers/iio/mechanical/Kconfig b/drivers/iio/mechanical/Kconfig
-> index b536fa2..e449588 100644
-> --- a/drivers/iio/mechanical/Kconfig
-> +++ b/drivers/iio/mechanical/Kconfig
-> @@ -3,4 +3,18 @@
->  #
->  menu "Mechanical sensors"
->  
-> +config HID_SENSOR_SWITCH
-> +	depends on HID_SENSOR_HUB
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	select HID_SENSOR_IIO_COMMON
-> +	select HID_SENSOR_IIO_TRIGGER
-> +	tristate "HID Boolean Switch"
-> +	help
-> +	  Say yes here to build support for the HID SENSOR
-> +	  Boolean Switch sensor.
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called hid-sensor-switch.
-> +
->  endmenu
-> diff --git a/drivers/iio/mechanical/Makefile b/drivers/iio/mechanical/Makefile
-> index 716098f..30931c5 100644
-> --- a/drivers/iio/mechanical/Makefile
-> +++ b/drivers/iio/mechanical/Makefile
-> @@ -1,3 +1,4 @@
->  #
->  # Makefile for IIO Mechanical sensors
->  #
-> +obj-$(CONFIG_HID_SENSOR_SWITCH)	+= hid-sensor-switch.o
-> diff --git a/drivers/iio/mechanical/hid-sensor-switch.c b/drivers/iio/mechanical/hid-sensor-switch.c
+> diff --git a/Documentation/devicetree/bindings/iio/light/apds9300.txt b/Documentation/devicetree/bindings/iio/light/apds9300.txt
 > new file mode 100644
-> index 0000000..7027305
+> index 0000000..d6f66c7
 > --- /dev/null
-> +++ b/drivers/iio/mechanical/hid-sensor-switch.c
-> @@ -0,0 +1,359 @@
+> +++ b/Documentation/devicetree/bindings/iio/light/apds9300.txt
+> @@ -0,0 +1,22 @@
+> +* Avago APDS9300 ambient light sensor
+> +
+> +http://www.avagotech.com/docs/AV02-1077EN
+> +
+> +Required properties:
+> +
+> +  - compatible : should be "avago,apds9300"
+
+You should also add the avago vendor prefix to
+Documentation/devicetree/bindings/vendor-prefixes.txt. Preferably in a
+separate patch.
+
+> +  - reg : the I2C address of the sensor
+> +
+> +Optional properties:
+> +
+> +  - interrupt-parent : should be the phandle for the interrupt controller
+> +  - interrupts : interrupt mapping for GPIO IRQ
+> +
+> +Example:
+> +
+> +apds9300@39 {
+> +	compatible = "avago,apds9300";
+> +	reg = <0x39>;
+> +	interrupt-parent = <&gpio2>;
+> +	interrupts = <29 8>;
+> +};
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 5ef1a39..08a6742 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -52,6 +52,16 @@ config VCNL4000
+>  	 To compile this driver as a module, choose M here: the
+>  	 module will be called vcnl4000.
+>  
+> +config APDS9300
+> +	tristate "APDS9300 ambient light sensor"
+> +	depends on I2C
+> +	help
+> +	 Say Y here if you want to build a driver for the Avago APDS9300
+> +	 ambient light sensor.
+> +
+> +	 To compile this driver as a module, choose M here: the
+> +	 module will be called apds9300.
+> +
+
+Keeps this in alphabetical order
+
+>  config HID_SENSOR_ALS
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 040d9c7..da58e12 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -6,4 +6,5 @@ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+>  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+>  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+> +obj-$(CONFIG_APDS9300)		+= apds9300.o
+
+Same here
+
+>  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+> diff --git a/drivers/iio/light/apds9300.c b/drivers/iio/light/apds9300.c
+> new file mode 100644
+> index 0000000..2275ecc
+> --- /dev/null
+> +++ b/drivers/iio/light/apds9300.c
+> @@ -0,0 +1,528 @@
 > +/*
-> + * HID Sensors Driver
-> + * Copyright (c) 2012, Intel Corporation.
-> + * Copyright (c) 2013, Alexandre Relange
+> + * apds9300.c - IIO driver for Avago APDS9300 ambient light sensor
 > + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
+> + * Copyright 2013 Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 > + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along with
-> + * this program; if not, write to the Free Software Foundation, Inc.,
-> + * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
 > + */
-> +#include <linux/device.h>
-> +#include <linux/platform_device.h>
+> +
 > +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/pm.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +#include <linux/mutex.h>
 > +#include <linux/interrupt.h>
 > +#include <linux/irq.h>
-> +#include <linux/slab.h>
-> +#include <linux/hid-sensor-hub.h>
+
+No device driver should ever need to include irq.h
+
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include "../common/hid-sensors/hid-sensor-trigger.h"
+> +#include <linux/iio/events.h>
 > +
-> +/*Format: HID-SENSOR-usage_id_in_hex*/
-> +/*Usage ID from spec for Boolean-Switch: 0x200061*/
-> +#define DRIVER_NAME "HID-SENSOR-200061"
+[...]
 > +
-> +#define CHANNEL_SCAN_INDEX_SWITCH 0
+> +static unsigned long als_calculate_lux(u16 ch0, u16 ch1)
+> +{
+> +	unsigned long lux, tmp;
+> +	u64 tmp64;
 > +
-> +struct switch_state {
-> +	struct hid_sensor_hub_callbacks callbacks;
-> +	struct hid_sensor_common common_attributes;
-> +	struct hid_sensor_hub_attribute_info switch_attr;
-> +	u32 value;
-> +};
+> +	/* avoid division by zero */
+> +	if (ch0 == 0)
+> +		return 0;
 > +
-> +/* Channel definitions */
-> +static const struct iio_chan_spec switch_channels[] = {
-> +	{
-> +		.type = IIO_STATE,
-> +		.info_mask_shared_by_type =
-> +			BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +			BIT(IIO_CHAN_INFO_HYSTERESIS),
-> +		.scan_index = CHANNEL_SCAN_INDEX_SWITCH,
+> +	tmp = ch1 * 100 / ch0;
+> +	if (tmp <= 52) {
+> +		/*
+> +		 * Variable tmp64 need to avoid overflow of this part of lux
+> +		 * calculation formula.
+> +		 */
+
+If you want to avoid the overflow you have to do the math as 64bit math. As
+it is right now it will do 32bit math and only store the result in a 64 bit
+variable.
+
+> +		tmp64 = ch0 * lux_ratio[tmp] * 5930 / 1000;
+> +		lux = 3150 * ch0 - (unsigned long)tmp64;
 > +	}
-> +};
+> +	else if (tmp <= 65)
+> +		lux = 2290 * ch0 - 2910 * ch1;
+> +	else if (tmp <= 80)
+> +		lux = 1570 * ch0 - 1800 * ch1;
+> +	else if (tmp <= 130)
+> +		lux = 338 * ch0 - 260 * ch1;
+> +	else
+> +		lux = 0;
 > +
-> +/* Adjust channel real bits based on report descriptor */
-> +static void switch_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-> +					int channel, int size)
-> +{
-> +	channels[channel].scan_type.sign = 'u';
-> +	/* Real storage bits will change based on the report desc. */
-> +	channels[channel].scan_type.realbits = size * 8;
-> +	/* Maximum size of a sample to capture is u32 */
-> +	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
+> +	return lux / 100000;
 > +}
 > +
-> +/* Channel read_raw handler */
-> +static int switch_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2,
-> +			      long mask)
-> +{
-> +	struct switch_state *switch_state = iio_priv(indio_dev);
-> +	int report_id = -1;
-> +	u32 address;
-> +	int ret;
-> +	int ret_type;
-> +
-> +	*val = 0;
-> +	*val2 = 0;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->scan_index) {
-> +		case  CHANNEL_SCAN_INDEX_SWITCH:
-> +			report_id = switch_state->switch_attr.report_id;
-> +			address =
-> +			HID_USAGE_SENSOR_MECHA_BOOL_SWITCH_STATE;
-> +			break;
-> +		default:
-> +			report_id = -1;
-> +			break;
-> +		}
-> +		if (report_id >= 0)
-> +			*val = sensor_hub_input_attr_get_raw_value(
-> +				switch_state->common_attributes.hsdev,
-> +				HID_USAGE_SENSOR_MECHA_BOOL_SWITCH, address,
-> +				report_id);
-> +		else {
-> +			*val = 0;
-> +			return -EINVAL;
-> +		}
-> +		ret_type = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_read_samp_freq_value(
-> +				&switch_state->common_attributes, val, val2);
-> +		ret_type = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_read_raw_hyst_value(
-> +				&switch_state->common_attributes, val, val2);
-> +		ret_type = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	default:
-> +		ret_type = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	return ret_type;
-> +}
-> +
-> +/* Channel write_raw handler */
-> +static int switch_write_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val,
-> +			       int val2,
-> +			       long mask)
-> +{
-> +	struct switch_state *switch_state = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_write_samp_freq_value(
-> +				&switch_state->common_attributes, val, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_write_raw_hyst_value(
-> +				&switch_state->common_attributes, val, val2);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int switch_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       long mask)
-> +{
-> +	return IIO_VAL_INT_PLUS_MICRO;
-> +}
-> +
-> +static const struct iio_info switch_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &switch_read_raw,
-> +	.write_raw = &switch_write_raw,
-> +	.write_raw_get_fmt = &switch_write_raw_get_fmt,
-> +};
-> +
-> +/* Function to push data to buffer */
-> +static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
-> +{
-> +	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
-> +	iio_push_to_buffers(indio_dev, (u8 *)data);
-> +}
-> +
-> +/* Callback handler to send event after all samples are received and captured */
-> +static int switch_proc_event(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id,
-> +				void *priv)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> +	struct switch_state *switch_state = iio_priv(indio_dev);
-> +
-> +	dev_dbg(&indio_dev->dev, "switch_proc_event [%d]\n",
-> +				switch_state->common_attributes.data_ready);
-> +	if (switch_state->common_attributes.data_ready)
-> +		hid_sensor_push_data(indio_dev,
-> +				(u8 *)&switch_state->value,
-> +				sizeof(switch_state->value));
-> +
-> +	return 0;
-> +}
-> +
-> +/* Capture samples in local storage */
-> +static int switch_capture_sample(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id,
-> +				size_t raw_len, char *raw_data,
-> +				void *priv)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> +	struct switch_state *switch_state = iio_priv(indio_dev);
-> +	int ret = -EINVAL;
-> +
-> +	switch (usage_id) {
-> +	case HID_USAGE_SENSOR_MECHA_BOOL_SWITCH_STATE:
-> +		switch_state->value = *(u32 *)raw_data;
-> +		ret = 0;
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +/* Parse report which is specific to an usage id*/
-> +static int switch_parse_report(struct platform_device *pdev,
-> +				struct hid_sensor_hub_device *hsdev,
-> +				struct iio_chan_spec *channels,
-> +				unsigned usage_id,
-> +				struct switch_state *st)
+[...]
+> +static int als_get_adc_val(struct als_data *data, int adc_number)
 > +{
 > +	int ret;
+> +	u8 flags = ALS_CMD | ALS_WORD;
 > +
-> +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-> +			usage_id,
-> +			HID_USAGE_SENSOR_MECHA_BOOL_SWITCH_STATE,
-> +			&st->switch_attr);
+> +	if (!data->power_state)
+> +		return -EAGAIN;
+
+EAGAIN is probably not the right error code, maybe EBUSY or ENODEV.
+
+> +
+> +	/* Select ADC0 or ADC1 data register */
+> +	flags |= adc_number ? ALS_DATA1LOW : ALS_DATA0LOW;
+> +
+> +	ret = i2c_smbus_read_word_data(data->client, flags);
 > +	if (ret < 0)
-> +		return ret;
-> +	switch_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_SWITCH,
-> +					st->switch_attr.size);
-> +
-> +	dev_dbg(&pdev->dev, "switch %x:%x\n", st->switch_attr.index,
-> +			st->switch_attr.report_id);
+> +		dev_err(&data->client->dev,
+> +				"failed to read ADC%d value\n", adc_number);
 > +
 > +	return ret;
 > +}
 > +
-> +/* Function to initialize the processing for usage id */
-> +static int hid_switch_probe(struct platform_device *pdev)
+[...]
+
+> +static irqreturn_t als_interrupt_handler(int irq, void *private)
 > +{
-> +	int ret = 0;
-> +	static const char *name = "switch";
+> +	struct iio_dev *dev_info = private;
+> +	struct als_data *data = iio_priv(dev_info);
+> +
+> +	iio_push_event(dev_info,
+> +			IIO_UNMOD_EVENT_CODE(IIO_INTENSITY, 0,
+> +				IIO_EV_TYPE_THRESH,
+> +				IIO_EV_DIR_FALLING),
+> +			iio_get_time_ns());
+
+In the event mask you specify support for both falling and rising threshold
+events, yet the only event ever triggered is a falling event.
+
+> +
+> +	als_clear_intr(data);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/* Probe/remove functions */
+
+I don't think we need the comment to know that als_probe is the probe
+function ;)
+
+> +
+> +static int als_probe(struct i2c_client *client, const struct i2c_device_id *id)
+> +{
+> +	struct als_data *data;
 > +	struct iio_dev *indio_dev;
-> +	struct switch_state *switch_state;
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct iio_chan_spec *channels;
+> +	int ret;
 > +
-> +	indio_dev = iio_device_alloc(sizeof(struct switch_state));
-> +	if (indio_dev == NULL) {
-> +		ret = -ENOMEM;
-> +		goto error_ret;
-> +	}
-> +	platform_set_drvdata(pdev, indio_dev);
+> +	indio_dev = iio_device_alloc(sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
 > +
-> +	switch_state = iio_priv(indio_dev);
-> +	switch_state->common_attributes.hsdev = hsdev;
-> +	switch_state->common_attributes.pdev = pdev;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
 > +
-> +	ret = hid_sensor_parse_common_attributes(hsdev, HID_USAGE_SENSOR_MECHA_BOOL_SWITCH,
-> +					&switch_state->common_attributes);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup common attributes\n");
-> +		goto error_free_dev;
-> +	}
+> +	ret = als_chip_init(data);
+> +	if (ret < 0)
+> +		goto err;
 > +
-> +	channels = kmemdup(switch_channels, sizeof(switch_channels), GFP_KERNEL);
-> +	if (!channels) {
-> +		ret = -ENOMEM;
-> +		dev_err(&pdev->dev, "failed to duplicate channels\n");
-> +		goto error_free_dev;
-> +	}
+> +	mutex_init(&data->mutex);
 > +
-> +	ret = switch_parse_report(pdev, hsdev, channels,
-> +				HID_USAGE_SENSOR_MECHA_BOOL_SWITCH, switch_state);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup attributes\n");
-> +		goto error_free_dev_mem;
-> +	}
-> +
-> +	indio_dev->channels = channels;
-> +	indio_dev->num_channels =
-> +				ARRAY_SIZE(switch_channels);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &switch_info;
-> +	indio_dev->name = name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->channels = als_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(als_channels);
+> +	indio_dev->name = ALS_DRV_NAME;
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
 > +
-> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +		NULL, NULL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
-> +		goto error_free_dev_mem;
-> +	}
-> +	switch_state->common_attributes.data_ready = false;
-> +	ret = hid_sensor_setup_trigger(indio_dev, name,
-> +				&switch_state->common_attributes);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "trigger setup failed\n");
-> +		goto error_unreg_buffer_funcs;
+> +	if (client->irq)
+> +		indio_dev->info = &als_info;
+> +	else
+> +		indio_dev->info = &als_info_no_irq;
+> +
+> +	if (client->irq) {
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +				NULL, als_interrupt_handler,
+> +				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +				ALS_IRQ_NAME, indio_dev);
+
+This is a bit racy, you access memory in the irq handler that is freed
+before the irq is freed.
+
+> +		if (ret) {
+> +			dev_err(&client->dev, "irq request error %d\n", -ret);
+> +			goto err;
+> +		}
 > +	}
 > +
 > +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "device register failed\n");
-> +		goto error_remove_trigger;
-> +	}
+> +	if (ret < 0)
+> +		goto err;
 > +
-> +	switch_state->callbacks.send_event = switch_proc_event;
-> +	switch_state->callbacks.capture_sample = switch_capture_sample;
-> +	switch_state->callbacks.pdev = pdev;
-> +	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_MECHA_BOOL_SWITCH,
-> +					&switch_state->callbacks);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "callback reg failed\n");
-> +		goto error_iio_unreg;
-> +	}
-> +
-> +	return ret;
-> +
-> +error_iio_unreg:
-> +	iio_device_unregister(indio_dev);
-> +error_remove_trigger:
-> +	hid_sensor_remove_trigger(indio_dev);
-> +error_unreg_buffer_funcs:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +error_free_dev_mem:
-> +	kfree(indio_dev->channels);
-> +error_free_dev:
-> +	iio_device_free(indio_dev);
-> +error_ret:
-> +	return ret;
-> +}
-> +
-> +/* Function to deinitialize the processing for usage id */
-> +static int hid_switch_remove(struct platform_device *pdev)
-> +{
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +
-> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_MECHA_BOOL_SWITCH);
-> +	iio_device_unregister(indio_dev);
-> +	hid_sensor_remove_trigger(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	kfree(indio_dev->channels);
-> +	iio_device_free(indio_dev);
+> +	dev_info(&client->dev, "ambient light sensor\n");
+
+This line is just noise in the bootlog, please remove it.
+
 > +
 > +	return 0;
+> +
+> +err:
+> +	/* Ensure that power off in case of error */
+> +	als_set_power_state(data, 0);
+> +	iio_device_free(indio_dev);
+> +	return ret;
 > +}
 > +
-> +static struct platform_driver hid_switch_platform_driver = {
-> +	.driver = {
-> +		.name	= DRIVER_NAME,
-> +		.owner	= THIS_MODULE,
-> +	},
-> +	.probe		= hid_switch_probe,
-> +	.remove		= hid_switch_remove,
-> +};
-> +module_platform_driver(hid_switch_platform_driver);
+> +static int als_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct als_data *data = iio_priv(indio_dev);
+> +	int ret;
 > +
-> +MODULE_DESCRIPTION("HID Sensor Boolean Switch");
-> +MODULE_AUTHOR("Alexandre Relange <alexandre@relange.org>");
-> +MODULE_LICENSE("GPL");
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 6f24446..e469078 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -31,6 +31,10 @@
->  #define HID_USAGE_SENSOR_ALS					0x200041
->  #define HID_USAGE_SENSOR_LIGHT_ILLUM				0x2004d1
->  
-> +/* MECHANICAL: Boolean Switch: (200061) */
-> +#define HID_USAGE_SENSOR_MECHA_BOOL_SWITCH			0x200061
-> +#define HID_USAGE_SENSOR_MECHA_BOOL_SWITCH_STATE		0x200491
+> +	iio_device_unregister(indio_dev);
 > +
->  /* Gyro 3D: (200076) */
->  #define HID_USAGE_SENSOR_GYRO_3D				0x200076
->  #define HID_USAGE_SENSOR_ANGL_VELOCITY_X_AXIS			0x200457
-> 
+> +	/* Ensure that power off and interrupts are disabled */
+> +	ret = als_set_intr_state(data, 0);
+> +	if (!ret)
+> +		ret = als_set_power_state(data, 0);
+> +
+> +	iio_device_free(indio_dev);
+> +
+> +	return ret;
+
+The remove callback must always return 0.
+
+> +}
+[...]
+
