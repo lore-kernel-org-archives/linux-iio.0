@@ -1,41 +1,75 @@
-Return-Path: <Josh.wu@atmel.com>
-Message-ID: <51F0D3C3.5090201@atmel.com>
-Date: Thu, 25 Jul 2013 15:29:07 +0800
+Return-Path: <josh.wu@atmel.com>
 From: Josh Wu <josh.wu@atmel.com>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Maxime Ripard <maxime.ripard@free-electrons.com>, <jic23@cam.ac.uk>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-	<plagnioj@jcrosoft.com>, <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH 4/5] iio: at91: add an optional dt property for for adc
- clock hz.
-References: <1373789069-11604-1-git-send-email-josh.wu@atmel.com> <1373789069-11604-5-git-send-email-josh.wu@atmel.com> <20130715130610.GD2962@lukather> <51E4FC70.3050207@atmel.com> <20130716103014.GB3125@lukather> <51E52B9B.5030407@metafoo.de>
-In-Reply-To: <51E52B9B.5030407@metafoo.de>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+To: jic23@cam.ac.uk
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
+        nicolas.ferre@atmel.com, Josh Wu <josh.wu@atmel.com>
+Subject: [PATCH 3/5] iio: at91: ADC start-up time calculation changed since at91sam9x5
+Date: Sun, 14 Jul 2013 16:04:27 +0800
+Message-Id: <1373789069-11604-4-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1373789069-11604-1-git-send-email-josh.wu@atmel.com>
+References: <1373789069-11604-1-git-send-email-josh.wu@atmel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 7/16/2013 7:16 PM, Lars-Peter Clausen wrote:
-> On 07/16/2013 12:30 PM, Maxime Ripard wrote:
-> [...]
->>> After a further thinking of this, maybe remove the adc_op_clk is
->>> better since it is a fake clock, and only used to specify the clock
->>> rate.
->>> To specify the clock rate use a dt property or platform data
->>> parameter is better.
->> No, to specify *any* clock, the common clock framework is the better
->> solution.
-> Yep, this patch is not the right approach. It's trying to work around the
-> limitations of the platforms clock API implementation. Please fix the at91
-> clock implementation instead (e.g. by switching to the common clock framework).
+Since in at91sam9x5, sama5d3x chip. the start up time calucation is changed.
+And these two chips also have TSMR, so we check whether ADC has TSMR, then
+choose different start up time calculation formula.
 
-Thank you and Maxime for the clarify. I will drop this patch in next 
-version.
-Just FYI. The at91 clock common framework is in implementation by Boris 
-Brezillion.
+Signed-off-by: Josh Wu <josh.wu@atmel.com>
+---
+ drivers/iio/adc/at91_adc.c |   40 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 33 insertions(+), 7 deletions(-)
 
->
-> - Lars
->
-
-Best Regards,
-Josh Wu
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 14e99ba..e93a075 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -733,13 +733,39 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 		goto error_disable_adc_clk;
+ 	}
+ 
+-	/*
+-	 * Number of ticks needed to cover the startup time of the ADC as
+-	 * defined in the electrical characteristics of the board, divided by 8.
+-	 * The formula thus is : Startup Time = (ticks + 1) * 8 / ADC Clock
+-	 */
+-	ticks = round_up((st->startup_time * adc_clk_khz /
+-			  1000) - 1, 8) / 8;
++	if (!st->caps.has_tsmr) {
++		/*
++		 * Number of ticks needed to cover the startup time of the ADC
++		 * as defined in the electrical characteristics of the board,
++		 * divided by 8. The formula thus is :
++		 *   Startup Time = (ticks + 1) * 8 / ADC Clock
++		 */
++		ticks = round_up((st->startup_time * adc_clk_khz /
++				  1000) - 1, 8) / 8;
++	} else {
++		/*
++		 * For sama5d3x and at91sam9x5, the formula changes to:
++		 * Startup Time = <lookup_table_value> / ADC Clock
++		 */
++		const int startup_lookup[] = {
++			0  , 8  , 16 , 24 ,
++			64 , 80 , 96 , 112,
++			512, 576, 640, 704,
++			768, 832, 896, 960
++			};
++
++		int i, size = ARRAY_SIZE(startup_lookup);
++		ticks = st->startup_time * adc_clk_khz / 1000;
++		for (i = 0; i < size; i++)
++			if (ticks < startup_lookup[i])
++				break;
++
++		ticks = i;
++		if (ticks == size)
++			/* Reach the end of lookup table */
++			ticks = size - 1;
++	}
++
+ 	/*
+ 	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
+ 	 * the best converted final value between two channels selection
+-- 
+1.7.10
