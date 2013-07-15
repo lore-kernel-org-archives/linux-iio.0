@@ -1,253 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47784 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933106Ab3GPQ52 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 12:57:28 -0400
-Message-ID: <51E57B77.4020407@kernel.org>
-Date: Tue, 16 Jul 2013 17:57:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from exprod5og116.obsmtp.com ([64.18.0.147]:48185 "EHLO
+	exprod5og116.obsmtp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932272Ab3GOOyh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 10:54:37 -0400
+Received: by mail-ob0-f176.google.com with SMTP id v19so13780438obq.7
+        for <linux-iio@vger.kernel.org>; Mon, 15 Jul 2013 07:54:35 -0700 (PDT)
 MIME-Version: 1.0
+In-Reply-To: <51E3EC8B.3090601@metafoo.de>
+References: <1373461729-11261-1-git-send-email-x0199363@ti.com>
+	<51E03720.1010806@metafoo.de>
+	<CAGH3drqEPxW=QwadCLj=ZOQe0gp_c7mdSiNQnq1_-BMKL9CgJw@mail.gmail.com>
+	<51E3EC8B.3090601@metafoo.de>
+Date: Mon, 15 Jul 2013 17:54:35 +0300
+Message-ID: <CAGH3dro7MxDJRB=5gsBysiKVvXLskZFuagiBMznUnAjCMoZsTQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: add APDS9300 ambilent light sensor driver
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] staging:iio:ade7xxx: Don't expose the chip reset
- to userspace
-References: <1373987283-32657-1-git-send-email-lars@metafoo.de> <1373987283-32657-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1373987283-32657-3-git-send-email-lars@metafoo.de>
+Cc: Oleksandr Kravchenko <x0199363@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <rob.herring@calxeda.com>,
+	Rob Landley <rob@landley.net>, jic23@cam.ac.uk,
+	Peter Meerwald <pmeerw@pmeerw.net>, holler@ahsoftware.de,
+	srinivas.pandruvada@intel.com, devicetree-discuss@lists.ozlabs.org
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/16/2013 04:08 PM, Lars-Peter Clausen wrote:
-> There is no reason why userspace should want to trigger a manual reset of the
-> device, so remove this functionality.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+I can't to find devm_iio_device_alloc() in my kernel v3.11-rc1
 
-Thanks,
-> ---
->  drivers/staging/iio/meter/ade7753.c      | 18 ------------------
->  drivers/staging/iio/meter/ade7754.c      | 19 -------------------
->  drivers/staging/iio/meter/ade7758_core.c | 18 ------------------
->  drivers/staging/iio/meter/ade7759.c      | 18 ------------------
->  drivers/staging/iio/meter/ade7854.c      | 19 -------------------
->  5 files changed, 92 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index e5943e2..74025fb 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -225,21 +225,6 @@ static int ade7753_reset(struct device *dev)
->  	return ade7753_spi_write_reg_16(dev, ADE7753_MODE, val);
->  }
->  
-> -static ssize_t ade7753_write_reset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf, size_t len)
-> -{
-> -	if (len < 1)
-> -		return -1;
-> -	switch (buf[0]) {
-> -	case '1':
-> -	case 'y':
-> -	case 'Y':
-> -		return ade7753_reset(dev);
-> -	}
-> -	return -1;
-> -}
-> -
->  static IIO_DEV_ATTR_AENERGY(ade7753_read_24bit, ADE7753_AENERGY);
->  static IIO_DEV_ATTR_LAENERGY(ade7753_read_24bit, ADE7753_LAENERGY);
->  static IIO_DEV_ATTR_VAENERGY(ade7753_read_24bit, ADE7753_VAENERGY);
-> @@ -458,8 +443,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->  		ade7753_read_frequency,
->  		ade7753_write_frequency);
->  
-> -static IIO_DEV_ATTR_RESET(ade7753_write_reset);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("27900 14000 7000 3500");
->  
->  static struct attribute *ade7753_attributes[] = {
-> @@ -468,7 +451,6 @@ static struct attribute *ade7753_attributes[] = {
->  	&iio_const_attr_in_temp_scale.dev_attr.attr,
->  	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	&iio_dev_attr_reset.dev_attr.attr,
->  	&iio_dev_attr_phcal.dev_attr.attr,
->  	&iio_dev_attr_cfden.dev_attr.attr,
->  	&iio_dev_attr_aenergy.dev_attr.attr,
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 7b6503b..f649ebe 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -224,22 +224,6 @@ static int ade7754_reset(struct device *dev)
->  	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
->  }
->  
-> -
-> -static ssize_t ade7754_write_reset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf, size_t len)
-> -{
-> -	if (len < 1)
-> -		return -1;
-> -	switch (buf[0]) {
-> -	case '1':
-> -	case 'y':
-> -	case 'Y':
-> -		return ade7754_reset(dev);
-> -	}
-> -	return -1;
-> -}
-> -
->  static IIO_DEV_ATTR_AENERGY(ade7754_read_24bit, ADE7754_AENERGY);
->  static IIO_DEV_ATTR_LAENERGY(ade7754_read_24bit, ADE7754_LAENERGY);
->  static IIO_DEV_ATTR_VAENERGY(ade7754_read_24bit, ADE7754_VAENERGY);
-> @@ -478,8 +462,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->  		ade7754_read_frequency,
->  		ade7754_write_frequency);
->  
-> -static IIO_DEV_ATTR_RESET(ade7754_write_reset);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26000 13000 65000 33000");
->  
->  static struct attribute *ade7754_attributes[] = {
-> @@ -488,7 +470,6 @@ static struct attribute *ade7754_attributes[] = {
->  	&iio_const_attr_in_temp_scale.dev_attr.attr,
->  	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	&iio_dev_attr_reset.dev_attr.attr,
->  	&iio_dev_attr_aenergy.dev_attr.attr,
->  	&iio_dev_attr_laenergy.dev_attr.attr,
->  	&iio_dev_attr_vaenergy.dev_attr.attr,
-> diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-> index 8f5bcfa..6005d4a 100644
-> --- a/drivers/staging/iio/meter/ade7758_core.c
-> +++ b/drivers/staging/iio/meter/ade7758_core.c
-> @@ -313,21 +313,6 @@ static int ade7758_reset(struct device *dev)
->  	return ret;
->  }
->  
-> -static ssize_t ade7758_write_reset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf, size_t len)
-> -{
-> -	if (len < 1)
-> -		return -1;
-> -	switch (buf[0]) {
-> -	case '1':
-> -	case 'y':
-> -	case 'Y':
-> -		return ade7758_reset(dev);
-> -	}
-> -	return len;
-> -}
-> -
->  static IIO_DEV_ATTR_VPEAK(S_IWUSR | S_IRUGO,
->  		ade7758_read_8bit,
->  		ade7758_write_8bit,
-> @@ -591,8 +576,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->  		ade7758_read_frequency,
->  		ade7758_write_frequency);
->  
-> -static IIO_DEV_ATTR_RESET(ade7758_write_reset);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26040 13020 6510 3255");
->  
->  static struct attribute *ade7758_attributes[] = {
-> @@ -601,7 +584,6 @@ static struct attribute *ade7758_attributes[] = {
->  	&iio_const_attr_in_temp_scale.dev_attr.attr,
->  	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	&iio_dev_attr_reset.dev_attr.attr,
->  	&iio_dev_attr_awatthr.dev_attr.attr,
->  	&iio_dev_attr_bwatthr.dev_attr.attr,
->  	&iio_dev_attr_cwatthr.dev_attr.attr,
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index 17dc373..d214ac4 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -229,21 +229,6 @@ static int ade7759_reset(struct device *dev)
->  	return ret;
->  }
->  
-> -static ssize_t ade7759_write_reset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf, size_t len)
-> -{
-> -	if (len < 1)
-> -		return -1;
-> -	switch (buf[0]) {
-> -	case '1':
-> -	case 'y':
-> -	case 'Y':
-> -		return ade7759_reset(dev);
-> -	}
-> -	return -1;
-> -}
-> -
->  static IIO_DEV_ATTR_AENERGY(ade7759_read_40bit, ADE7759_AENERGY);
->  static IIO_DEV_ATTR_CFDEN(S_IWUSR | S_IRUGO,
->  		ade7759_read_16bit,
-> @@ -418,8 +403,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->  		ade7759_read_frequency,
->  		ade7759_write_frequency);
->  
-> -static IIO_DEV_ATTR_RESET(ade7759_write_reset);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("27900 14000 7000 3500");
->  
->  static struct attribute *ade7759_attributes[] = {
-> @@ -428,7 +411,6 @@ static struct attribute *ade7759_attributes[] = {
->  	&iio_const_attr_in_temp_scale.dev_attr.attr,
->  	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	&iio_dev_attr_reset.dev_attr.attr,
->  	&iio_dev_attr_phcal.dev_attr.attr,
->  	&iio_dev_attr_cfden.dev_attr.attr,
->  	&iio_dev_attr_aenergy.dev_attr.attr,
-> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> index c642da8..e8379c0 100644
-> --- a/drivers/staging/iio/meter/ade7854.c
-> +++ b/drivers/staging/iio/meter/ade7854.c
-> @@ -186,22 +186,6 @@ static int ade7854_reset(struct device *dev)
->  	return st->write_reg_16(dev, ADE7854_CONFIG, val);
->  }
->  
-> -
-> -static ssize_t ade7854_write_reset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf, size_t len)
-> -{
-> -	if (len < 1)
-> -		return -1;
-> -	switch (buf[0]) {
-> -	case '1':
-> -	case 'y':
-> -	case 'Y':
-> -		return ade7854_reset(dev);
-> -	}
-> -	return -1;
-> -}
-> -
->  static IIO_DEV_ATTR_AIGAIN(S_IWUSR | S_IRUGO,
->  		ade7854_read_24bit,
->  		ade7854_write_24bit,
-> @@ -468,8 +452,6 @@ err_ret:
->  	return ret;
->  }
->  
-> -static IIO_DEV_ATTR_RESET(ade7854_write_reset);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("8000");
->  
->  static IIO_CONST_ATTR(name, "ade7854");
-> @@ -515,7 +497,6 @@ static struct attribute *ade7854_attributes[] = {
->  	&iio_dev_attr_bvahr.dev_attr.attr,
->  	&iio_dev_attr_cvahr.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	&iio_dev_attr_reset.dev_attr.attr,
->  	&iio_const_attr_name.dev_attr.attr,
->  	&iio_dev_attr_vpeak.dev_attr.attr,
->  	&iio_dev_attr_ipeak.dev_attr.attr,
-> 
+On Mon, Jul 15, 2013 at 3:35 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 07/15/2013 02:27 PM, Oleksandr Kravchenko wrote:
+>> Thank you for review! But I don't completely understand one of your comment:
+>>
+>>>> +static int als_probe(struct i2c_client *client, const struct i2c_device_id *id)
+>> [...]
+>>>> +     if (client->irq) {
+>>>> +             ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>>> +                             NULL, als_interrupt_handler,
+>>>> +                             IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>>> +                             ALS_IRQ_NAME, indio_dev);
+>>>
+>>> This is a bit racy, you access memory in the irq handler that is freed
+>>> before the irq is freed.
+>>
+>> Do you mean than that indio_dev may be used in interrupt handler after
+>> iio_device_free(indio_dev) called in als_remove() function?
+>>
+>> If so, can I use disable_irq() in als_remove() before iio_device_free()
+>> to avoid this problem?
+>>
+>
+> Just add a devm_iio_device_alloc() and use that, instead of trying to bodch
+> around the issue.
+>
+
+
+
+-- 
+Oleksandr Kravchenko
+GlobalLogic
+P +380633213187
+P +380994930248
+www.globallogic.com
+
+http://www.globallogic.com/email_disclaimer.txt
