@@ -1,65 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:45734 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757132Ab3GLHWV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 03:22:21 -0400
-Message-ID: <51DFAE85.9060508@ahsoftware.de>
-Date: Fri, 12 Jul 2013 09:21:41 +0200
-From: Alexander Holler <holler@ahsoftware.de>
+Received: from smtp-out-191.synserver.de ([212.40.185.191]:1071 "EHLO
+	smtp-out-191.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755834Ab3GOLdL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 07:33:11 -0400
+Message-ID: <51E3DE21.9060105@metafoo.de>
+Date: Mon, 15 Jul 2013 13:33:53 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <51DD7D78.2020506@linux.intel.com> <51DD848E.4050206@ahsoftware.de> <51DEEAFE.506@linux.intel.com>
-In-Reply-To: <51DEEAFE.506@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: "Kozaruk, Oleksandr" <oleksandr.kozaruk@ti.com>
+CC: "tony@atomide.com" <tony@atomide.com>,
+	"benoit.cousson@linaro.org" <benoit.cousson@linaro.org>,
+	"Nayak, Rajendra" <rnayak@ti.com>,
+	"Ujfalusi, Peter" <peter.ujfalusi@ti.com>,
+	"ABRAHAM, KISHON VIJAY" <kishon@ti.com>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"grant.likely@linaro.org" <grant.likely@linaro.org>,
+	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
+	"sameo@linux.intel.com" <sameo@linux.intel.com>,
+	"ch.naveen@samsung.com" <ch.naveen@samsung.com>,
+	"poeschel@lemonage.de" <poeschel@lemonage.de>,
+	"Kim, Milo" <Milo.Kim@ti.com>,
+	"Krishnamoorthy, Balaji T" <balajitk@ti.com>,
+	"gg@slimlogic.co.uk" <gg@slimlogic.co.uk>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com> <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com>,<51E05F6C.1060506@metafoo.de> <2A7ABDFCE21540479A5AEB0244A684D5E3D067@DNCE04.ent.ti.com>
+In-Reply-To: <2A7ABDFCE21540479A5AEB0244A684D5E3D067@DNCE04.ent.ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 11.07.2013 19:27, schrieb Srinivas Pandruvada:
->
->
-> On 07/10/2013 08:58 AM, Alexander Holler wrote:
->> Am 10.07.2013 17:27, schrieb Srinivas Pandruvada:
->>> Hi,
->>>
->>> There was no intention to prevent auto loading. Did you get chance to
->>> test these changes?
+On 07/15/2013 01:09 PM, Kozaruk, Oleksandr wrote:
+[...]
+> 
+>>> +     ret = devm_request_threaded_irq(dev, irq, NULL,
+>>> +                                     twl6030_gpadc_irq_handler,
+>>> +                                     IRQF_ONESHOT, "twl6030_gpadc", gpadc);
 >>
->> Sure, I always test patches before I send them out.
->>
->> Ok, I haven't tested the changes with the iio HID drivers (I don't
->> have any commercial HID sensor hub, so I've just compile tested these
->> patches here, double reading them), but I've tested the similiar
->> changes with a patch for rtc-hid-sensor-time I've send out yesterday.
->> (sorry, no link, lkml.org seems dead, just search for
->> "rtc-hid-sensor-time: add module alias")
->>
->> It works just fine. An example output is now
->>
->> Jul  9 19:27:21 dockstar3 kernel: [    5.124444] rtc_hid_sensor_time
->> HID-SENSOR-2000a0.0: milliseconds supported
->> Jul  9 19:27:21 dockstar3 kernel: [    5.132864] rtc_hid_sensor_time
->> HID-SENSOR-2000a0.0: rtc core: setting system clock to 2013-07-09
->> 17:26:51:328000 UTC (1373390811)
->> Jul  9 19:27:21 dockstar3 kernel: [    5.146105] rtc_hid_sensor_time
->> HID-SENSOR-2000a0.0: rtc core: registered hid-sensor-time as rtc0
->>
->> Before the output was e.g.
->>
->> HID-SENSOR-2000a0 HID-SENSOR-2000a0.0: rtc core: registered
->> hid-sensor-time as rtc0
->>
->> instead of the above with the descriptive rtc_hid_sensor_time.
-> <Agreed. This is better. >
->> Automatic loading of modules works too and it works on ARM, Intel and
->> AMD as module or static linked. ;)
+>> You access memory in the interrupt handler which is freed before the interrupt
+>> handler is freed.
+> Thanks for pointing this. devm_* will free memory for irq after the driver
+> is removed and memory for the device is freed. I took me awhile to understand
+> this. Is there going to be something like devm_iio_device_alloc? whould it be helpfull?
+> 
 
-Do you have tested the patches with a real device? I assume you have one. ;)
-
-Regards,
-
-Alexander Holler
-
+Yes, I think it certainly makes sense to add a devm_iio_device_alloc(), care
+to send a patch?
