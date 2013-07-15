@@ -1,67 +1,61 @@
-Return-Path: <Hector.Palacios@digi.com>
-From: Hector Palacios <hector.palacios@digi.com>
-To: <linux-iio@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<marex@denx.de>, <alexandre.belloni@free-electrons.com>, <jic23@kernel.org>,
-	<lars@metafoo.de>, <fabio.estevam@freescale.com>, <hector.palacios@digi.com>
-Subject: [PATCH v2 1/5] iio: mxs-lradc: change the realbits to 12
-Date: Fri, 19 Jul 2013 11:13:24 +0200
-Message-ID: <1374225208-28940-2-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:36615 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757362Ab3GOOZF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 10:25:05 -0400
+From: Marek Vasut <marek.vasut@gmail.com>
+To: Otavio Salvador <otavio@ossystems.com.br>
+Subject: Re: [PATCH 2/5] ARM: mxs-lradc: Simplify mxs_lradc_trigger_init error handle
+Date: Mon, 15 Jul 2013 16:24:57 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	Bill Pemberton <wfp5p@virginia.edu>,
+	"Lars-Peter Clausen" <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <1373898160-8460-2-git-send-email-otavio@ossystems.com.br>
+In-Reply-To: <1373898160-8460-2-git-send-email-otavio@ossystems.com.br>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307151624.57438.marex@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The LRADC virtual channels have an 18 bit field to store the sum of up
-to 2^5 accumulated samples. The read_raw function however only operates
-over a single sample (12 bit resolution).
-In order to use this field for scaling operations, we need it to be the
-exact resolution value of the LRADC.
-Besides, the driver was using an 18 bit mask (LRADC_CH_VALUE_MASK) to
-report touch coordinates to userland. A 12 bit mask should be used instead
-or else the touch libraries will expect a coordinates range between 0
-and 0x3ffff (18 bits), instead of between 0 and 0xfff (12 bits).
+Dear Otavio Salvador,
 
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>
----
- drivers/staging/iio/adc/mxs-lradc.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+> As we have a 'ret' variable with the iio_trigger_register return, this
+> can be used as result.
+> 
+> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> b/drivers/staging/iio/adc/mxs-lradc.c index d92c97a..6d41846 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -671,14 +671,12 @@ static int mxs_lradc_trigger_init(struct iio_dev
+> *iio) trig->ops = &mxs_lradc_trigger_ops;
+> 
+>  	ret = iio_trigger_register(trig);
+> -	if (ret) {
+> +	if (ret)
+>  		iio_trigger_free(trig);
+> -		return ret;
+> -	}
+> 
+>  	iio->trig = trig;
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index d92c97a..91282dc 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -225,6 +225,9 @@ struct mxs_lradc {
- #define	LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
- #define	LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
- 
-+#define LRADC_RESOLUTION			12
-+#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
-+
- /*
-  * Raw I/O operations
-  */
-@@ -547,9 +550,10 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
- 	__set_bit(EV_ABS, input->evbit);
- 	__set_bit(EV_KEY, input->evbit);
- 	__set_bit(BTN_TOUCH, input->keybit);
--	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
--	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
--	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
-+	input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
-+	input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
-+	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
-+			     0, 0);
- 
- 	lradc->ts_input = input;
- 	input_set_drvdata(input, lradc);
-@@ -821,7 +825,7 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
- 	.channel = (idx),					\
- 	.scan_type = {						\
- 		.sign = 'u',					\
--		.realbits = 18,					\
-+		.realbits = LRADC_RESOLUTION,			\
- 		.storagebits = 32,				\
- 	},							\
- }
+
+You are still setting iio->trig , you dont want to do that in case of failure
+
+> -	return 0;
+> +	return ret;
+>  }
+> 
+>  static void mxs_lradc_trigger_remove(struct iio_dev *iio)
+
+Best regards,
+Marek Vasut
