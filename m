@@ -1,174 +1,272 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58652 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757533Ab3GLT43 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 15:56:29 -0400
-Message-ID: <51E05F67.1050301@kernel.org>
-Date: Fri, 12 Jul 2013 20:56:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:58610 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755900Ab3GOL6M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Jul 2013 07:58:12 -0400
+Message-ID: <51E3E362.6090903@ti.com>
+Date: Mon, 15 Jul 2013 14:56:18 +0300
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:trigger: Fix use_count race condition
-References: <1370974731-11878-1-git-send-email-lars@metafoo.de> <51B78371.1090908@kernel.org> <51B788E3.70008@metafoo.de> <51B78DA3.4000101@kernel.org>
-In-Reply-To: <51B78DA3.4000101@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+CC: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>, <tony@atomide.com>,
+	<benoit.cousson@linaro.org>, <rnayak@ti.com>,
+	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<sameo@linux.intel.com>, <ch.naveen@samsung.com>,
+	<poeschel@lemonage.de>, <milo.kim@ti.com>, <balajitk@ti.com>,
+	<gg@slimlogic.co.uk>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com> <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com> <51E05F6C.1060506@metafoo.de>
+In-Reply-To: <51E05F6C.1060506@metafoo.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/2013 09:50 PM, Jonathan Cameron wrote:
-> On 06/11/2013 09:30 PM, Lars-Peter Clausen wrote:
->> On 06/11/2013 10:07 PM, Jonathan Cameron wrote:
->>> On 06/11/2013 07:18 PM, Lars-Peter Clausen wrote:
->>>> When using more than one trigger consumer it can happen that multiple threads
->>>> perform a read-modify-update cycle on 'use_count' concurrently. This can cause
->>>> updates to be lost and use_count can get stuck at non-zero value, in which case
->>>> the IIO core assumes that at least one thread is still running and will wait for
->>>> it to finish before running any trigger handlers again. This effectively renders
->>>> the trigger disabled and a reboot is necessary before it can be used again. To
->>>> fix this make use_count an atomic variable. Also set it to the number of
->>>> consumers before starting the first consumer, otherwise it might happen that
->>>> use_count drops to 0 even though not all consumers have been run yet.
->>>>
->>> I am a little worried there is a different race in here. Can't immediateliy get
->>> my head around whether it can actually occur. It would require a subirq thread
->>> to finish handling the interrupt during either trigger_poll or trigger_poll_chained.
->>>
->>> I can't immediately see what prevents this happening..
->>>
->>> One nasty option might be to ensure that we only launch num_consumers interrupts
->>> on without caring whether they are the ones we originally counted or not.
->>>
->>>
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>>> ---
->>>>  drivers/iio/industrialio-trigger.c | 44 +++++++++++++++++++++++++++-----------
->>>>  include/linux/iio/trigger.h        |  3 ++-
->>>>  2 files changed, 33 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
->>>> index 4d6c7d8..a02ca65 100644
->>>> --- a/drivers/iio/industrialio-trigger.c
->>>> +++ b/drivers/iio/industrialio-trigger.c
->>>> @@ -126,13 +126,22 @@ static struct iio_trigger *iio_trigger_find_by_name(const char *name,
->>>>  
->>>>  void iio_trigger_poll(struct iio_trigger *trig, s64 time)
->>>>  {
->>>> +	unsigned int num_consumers;
->>>>  	int i;
->>>> -	if (!trig->use_count)
->>>> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
->>>> -			if (trig->subirqs[i].enabled) {
->>>> -				trig->use_count++;
->>>> +
->>>> +	if (!atomic_read(&trig->use_count)) {
->>>> +		num_consumers = 0;
->>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
->>>> +			if (trig->subirqs[i].enabled)
->>>> +				num_consumers++;
->>>> +		}
->>>> +		atomic_set(&trig->use_count, num_consumers);
->>>> +
->>> Is there any chance the state of subirqs[i].enabled might have changed since
->>> it was queried above?
->>
->> hm, right.
->>
->>>
->>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
->>>> +			if (trig->subirqs[i].enabled)
->>> how about,
->>>
->>> if (trig->subirqs[i].enabled && num_consumers--)
->>> as that would prevent the case of launching too many irq handlers.
->>
->> That wouldn't fix the case where the subirq was enabled. use_count would end
->> up with a positive value.
-> Can't say I follow that given I can't see a way we'd end up with fewer enabled
-> sub irqs on the second pass than the first.  Thus it would be fine as we would
-> fire use_count subirqs, each of which would then decrement use_count.
-> 
->> We can make a copy of enabled and use it for both
->> loops. Or use a spinlock protecting the triggers subirqs.
-> 
-> I suspect a spin lock is going to be the cleanest solution.
-Lars, have you had any time to look at this?
+Hi All,
 
-I'm not sure when I'll get a chance unfortunately, busy weekend.
+I have a question regarding this patch and IIO in general
+- Does IIO provide sync mechanism with system wide suspend/resume or 
+this should be handled by each driver itself?
 
-> 
+What if during system suspend iio_read_channel_raw() (or any other 
+consumer API) will be called after gpadc driver have been suspended 
+already? (I did some investigation and seems it's possible - Am I right?)
+
+If no, could "info_exist_lock" be reused for such purposes?
+
+Regards,
+-grygorii
+
+
+On 07/12/2013 10:56 PM, Lars-Peter Clausen wrote:
+>
+> A couple of comments inline.
+>
+> On 07/12/2013 09:18 AM, Oleksandr Kozaruk wrote:
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index ab0767e6..87d699e 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -157,4 +157,12 @@ config VIPERBOARD_ADC
+>>         Say yes here to access the ADC part of the Nano River
+>>         Technologies Viperboard.
 >>
->>>
->>>>  				generic_handle_irq(trig->subirq_base + i);
->>>> -			}
->>>> +		}
->>>> +	}
->>>>  }
->>>>  EXPORT_SYMBOL(iio_trigger_poll);
->>>>  
->>>> @@ -145,20 +154,29 @@ EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
->>>>  
->>>>  void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
->>>>  {
->>>> +	unsigned int num_consumers;
->>>>  	int i;
->>>> -	if (!trig->use_count)
->>>> -		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++)
->>>> -			if (trig->subirqs[i].enabled) {
->>>> -				trig->use_count++;
->>>> -				handle_nested_irq(trig->subirq_base + i);
->>>> -			}
->>>> +
->>>> +	if (!atomic_read(&trig->use_count)) {
->>>> +		num_consumers = 0;
->>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
->>>> +			if (trig->subirqs[i].enabled)
->>>> +				num_consumers++;
->>>> +		}
->>>> +		atomic_set(&trig->use_count, num_consumers);
->>>> +
->>>> +		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
->>>> +			if (trig->subirqs[i].enabled)
->>>> +				generic_handle_irq(trig->subirq_base + i);
->>>> +		}
->>>> +	}
->>>>  }
->>>>  EXPORT_SYMBOL(iio_trigger_poll_chained);
->>>>  
->>>>  void iio_trigger_notify_done(struct iio_trigger *trig)
->>>>  {
->>>> -	trig->use_count--;
->>>> -	if (trig->use_count == 0 && trig->ops && trig->ops->try_reenable)
->>>> +	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
->>>> +		trig->ops->try_reenable)
->>>>  		if (trig->ops->try_reenable(trig))
->>>>  			/* Missed an interrupt so launch new poll now */
->>>>  			iio_trigger_poll(trig, 0);
->>>> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
->>>> index 3869c52..369cf2c 100644
->>>> --- a/include/linux/iio/trigger.h
->>>> +++ b/include/linux/iio/trigger.h
->>>> @@ -8,6 +8,7 @@
->>>>   */
->>>>  #include <linux/irq.h>
->>>>  #include <linux/module.h>
->>>> +#include <linux/atomic.h>
->>>>  
->>>>  #ifndef _IIO_TRIGGER_H_
->>>>  #define _IIO_TRIGGER_H_
->>>> @@ -61,7 +62,7 @@ struct iio_trigger {
->>>>  
->>>>  	struct list_head		list;
->>>>  	struct list_head		alloc_list;
->>>> -	int use_count;
->>>> +	atomic_t			use_count;
->>>>  
->>>>  	struct irq_chip			subirq_chip;
->>>>  	int				subirq_base;
->>>>
->>
+>> +config TWL6030_GPADC
+>> +    tristate "TWL6030 GPADC (General Purpose A/D Convertor) Support"
+>> +    depends on TWL4030_CORE
+>> +    default n
+>> +    help
+>> +      Say yes here if you want support for the TWL6030 General Purpose
+>> +      A/D Convertor.
+>> +
+>
+> Keep it in alphabetical order
+>
+>>   endmenu
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 0a825be..8b05633 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -17,3 +17,4 @@ obj-$(CONFIG_MAX1363) += max1363.o
+>>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>>   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+>> +obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>
+> Same here.
+>
+>> diff --git a/drivers/iio/adc/twl6030-gpadc.c
+>> b/drivers/iio/adc/twl6030-gpadc.c
+>> new file mode 100644
+>> index 0000000..6ceb789
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/twl6030-gpadc.c
+>> @@ -0,0 +1,1019 @@
+> [...]
+>> +static u8 twl6032_channel_to_reg(int channel)
+>> +{
+>> +    return TWL6032_GPADC_GPCH0_LSB;
+>
+> There is more than one channel, isn't there?
+>
+> [...]
+>  > +static int twl6030_gpadc_read_raw(struct iio_dev *indio_dev,
+>  > +                 const struct iio_chan_spec *chan,
+>  > +                 int *val, int *val2, long mask)
+>  > +{
+>  > +    struct twl6030_gpadc_data *gpadc = iio_priv(indio_dev);
+>  > +    int ret = -EINVAL;
+>  > +
+>  > +    mutex_lock(&gpadc->lock);
+>  > +
+>  > +    ret = gpadc->pdata->start_conversion(chan->channel);
+>  > +    if (ret) {
+>  > +        dev_err(gpadc->dev, "failed to start conversion\n");
+>  > +        goto err;
+>  > +    }
+>  > +    /* wait for conversion to complete */
+>  > +    wait_for_completion_interruptible_timeout(&gpadc->irq_complete,
+>  > +                        msecs_to_jiffies(5000));
+>
+> wait_for_completion_interruptible_timeout() can return either a negative
+> error code if it was interrupted, 0 if it timed out, or a positive value
+> if it was successfully completed. You need to handle all three cases.
+> Have a look at other existing drivers to see how to do this properly.
+>
+>  > +
+>  > +    switch (mask) {
+>  > +    case IIO_CHAN_INFO_RAW:
+>  > +        ret = twl6030_gpadc_get_raw(gpadc, chan->channel, val);
+>  > +        ret = ret ? -EIO : IIO_VAL_INT;
+>  > +        break;
+>  > +
+>  > +    case IIO_CHAN_INFO_PROCESSED:
+>  > +        ret = twl6030_gpadc_get_processed(gpadc, chan->channel, val);
+>  > +        ret = ret ? -EIO : IIO_VAL_INT;
+>  > +        break;
+>  > +
+>  > +    default:
+>  > +        break;
+>  > +    }
+>  > +err:
+>  > +    mutex_unlock(&gpadc->lock);
+>  > +
+>  > +    return ret;
+>  > +}
+>
+>> +}
+>> +
+> [...]
+>> +static int twl6030_gpadc_probe(struct platform_device *pdev)
+>> +{
+>> +    struct device *dev = &pdev->dev;
+>> +    struct twl6030_gpadc_data *gpadc;
+>> +    const struct twl6030_gpadc_platform_data *pdata;
+>> +    const struct of_device_id *match;
+>> +    struct iio_dev *indio_dev;
+>> +    int irq;
+>> +    int ret = 0;
+>> +
+>> +    match = of_match_device(of_match_ptr(of_twl6030_match_tbl), dev);
+>> +    pdata = match ? match->data : dev->platform_data;
+>> +
+>> +    if (!pdata)
+>> +        return -EINVAL;
+>> +
+>> +    indio_dev = iio_device_alloc(sizeof(struct twl6030_gpadc_data));
+>
+> sizeof(*gpadc)
+>
+>> +    if (!indio_dev) {
+>> +        dev_err(dev, "failed allocating iio device\n");
+>> +        ret = -ENOMEM;
+>> +    }
+>> +
+>> +    gpadc = iio_priv(indio_dev);
+>> +
+>> +    gpadc->twl6030_cal_tbl = devm_kzalloc(dev,
+>> +                    sizeof(struct twl6030_chnl_calib) *
+>> +                    pdata->nchannels, GFP_KERNEL);
+>> +    if (!gpadc->twl6030_cal_tbl)
+>> +        goto err;
+>> +
+>> +    gpadc->dev = dev;
+>> +    gpadc->pdata = pdata;
+>> +
+>> +    platform_set_drvdata(pdev, indio_dev);
+>> +    mutex_init(&gpadc->lock);
+>> +    init_completion(&gpadc->irq_complete);
+>> +
+>> +    ret = pdata->calibrate(gpadc);
+>> +    if (ret < 0) {
+>> +        dev_err(&pdev->dev, "failed to read calibration registers\n");
+>> +        goto err;
+>> +    }
+>> +
+>> +    irq = platform_get_irq(pdev, 0);
+>> +    if (irq < 0) {
+>> +        dev_err(&pdev->dev, "failed to get irq\n");
+>> +        goto err;
+>> +    }
+>> +
+>> +    ret = devm_request_threaded_irq(dev, irq, NULL,
+>> +                    twl6030_gpadc_irq_handler,
+>> +                    IRQF_ONESHOT, "twl6030_gpadc", gpadc);
+>
+> You access memory in the interrupt handler which is freed before the
+> interrupt handler is freed.
+>
+>> +    if (ret) {
+>> +        dev_dbg(&pdev->dev, "could not request irq\n");
+>> +        goto err;
+>> +    }
+>> +
+>> +    ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
+>> +    if (ret < 0) {
+>> +        dev_err(&pdev->dev, "failed to enable GPADC interrupt\n");
+>> +        goto err;
+>> +    }
+>> +    ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCS,
+>> +                    TWL6030_REG_TOGGLE1);
+>> +    if (ret < 0) {
+>> +        dev_err(&pdev->dev, "failed to enable GPADC module\n");
+>> +        goto err;
+>> +    }
+>> +
+>> +    indio_dev->name = DRIVER_NAME;
+>> +    indio_dev->dev.parent = dev;
+>> +    indio_dev->info = &twl6030_gpadc_iio_info;
+>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>> +    indio_dev->channels = pdata->iio_channels;
+>> +    indio_dev->num_channels = pdata->nchannels;
+>> +
+>> +    ret = iio_device_register(indio_dev);
+>> +    if (ret)
+>> +        goto err;
+>> +
+>> +    return ret;
+>> +err:
+>> +    iio_device_free(indio_dev);
+>> +    return ret;
+>> +}
+>> +
+> [...]
+>> +static int twl6030_gpadc_suspend(struct device *pdev)
+>> +{
+>> +    int ret;
+>> +
+>> +    ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCR,
+>> +                TWL6030_REG_TOGGLE1);
+>> +    if (ret)
+>> +        dev_err(pdev, "error reseting GPADC (%d)!\n", ret);
+>> +
+>> +    return 0;
+>> +};
+>> +
+>> +static int twl6030_gpadc_resume(struct device *pdev)
+>> +{
+>> +    int ret;
+>> +
+>> +    ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCS,
+>> +                TWL6030_REG_TOGGLE1);
+>> +    if (ret)
+>> +        dev_err(pdev, "error setting GPADC (%d)!\n", ret);
+>> +
+>> +    return 0;
+>> +};
+>> +
+>> +static const struct dev_pm_ops twl6030_gpadc_pm_ops = {
+>> +    .suspend = twl6030_gpadc_suspend,
+>> +    .resume = twl6030_gpadc_resume,
+>> +};
+>
+> SIMPLE_DEV_PM_OPS?
+>
+> [...]
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+
