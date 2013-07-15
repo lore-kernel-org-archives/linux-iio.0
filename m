@@ -1,92 +1,69 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <51E15654.5080708@kernel.org>
-Date: Sat, 13 Jul 2013 14:29:56 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:51433 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754600Ab3GOXBQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 19:01:16 -0400
+From: Marek Vasut <marex@denx.de>
+To: Otavio Salvador <otavio@ossystems.com.br>
+Subject: Re: [PATCH 2/5] ARM: mxs-lradc: Simplify mxs_lradc_trigger_init error handle
+Date: Tue, 16 Jul 2013 01:00:26 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	Bill Pemberton <wfp5p@virginia.edu>,
+	"Lars-Peter Clausen" <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <201307151624.57438.marex@denx.de> <CAP9ODKqOEd_002KJ3xFQ0uQfNEoZosrD9UGPQ=rLS0W3N77XwQ@mail.gmail.com>
+In-Reply-To: <CAP9ODKqOEd_002KJ3xFQ0uQfNEoZosrD9UGPQ=rLS0W3N77XwQ@mail.gmail.com>
 MIME-Version: 1.0
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-CC: Alexander Holler <holler@ahsoftware.de>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <51DD7D78.2020506@linux.intel.com> <51DD848E.4050206@ahsoftware.de> <51DEEAFE.506@linux.intel.com> <51DFAE85.9060508@ahsoftware.de> <51E04E99.9060105@kernel.org> <4FA419E87744DF4DAECD5BCE1214B7A92FBDB758@ORSMSX110.amr.corp.intel.com>
-In-Reply-To: <4FA419E87744DF4DAECD5BCE1214B7A92FBDB758@ORSMSX110.amr.corp.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307160100.26746.marex@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Thanks,
+Dear Otavio Salvador,
 
-All 4 applied to the togreg branch of iio.git
+> On Mon, Jul 15, 2013 at 11:24 AM, Marek Vasut <marek.vasut@gmail.com> wrote:
+> > Dear Otavio Salvador,
+> > 
+> >> As we have a 'ret' variable with the iio_trigger_register return, this
+> >> can be used as result.
+> >> 
+> >> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+> >> ---
+> >> 
+> >>  drivers/staging/iio/adc/mxs-lradc.c | 6 ++----
+> >>  1 file changed, 2 insertions(+), 4 deletions(-)
+> >> 
+> >> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> >> b/drivers/staging/iio/adc/mxs-lradc.c index d92c97a..6d41846 100644
+> >> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> >> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> >> @@ -671,14 +671,12 @@ static int mxs_lradc_trigger_init(struct iio_dev
+> >> *iio) trig->ops = &mxs_lradc_trigger_ops;
+> >> 
+> >>       ret = iio_trigger_register(trig);
+> >> 
+> >> -     if (ret) {
+> >> +     if (ret)
+> >> 
+> >>               iio_trigger_free(trig);
+> >> 
+> >> -             return ret;
+> >> -     }
+> >> 
+> >>       iio->trig = trig;
+> > 
+> > You are still setting iio->trig , you dont want to do that in case of
+> > failure
+> 
+> In this case it'd end being NULL I think, wouldn't it?
 
-Jonathan
+It won't, see the implementation in:
 
-On 07/12/2013 10:46 PM, Pandruvada, Srinivas wrote:
-> Tested and ready to go.
-> 
-> Thanks,
-> Srinivas
-> 
-> 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org] 
-> Sent: Friday, July 12, 2013 11:45 AM
-> To: Alexander Holler
-> Cc: Srinivas Pandruvada; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Jonathan Cameron; Pandruvada, Srinivas
-> Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
-> 
-> On 07/12/2013 08:21 AM, Alexander Holler wrote:
->> Am 11.07.2013 19:27, schrieb Srinivas Pandruvada:
->>>
->>>
->>> On 07/10/2013 08:58 AM, Alexander Holler wrote:
->>>> Am 10.07.2013 17:27, schrieb Srinivas Pandruvada:
->>>>> Hi,
->>>>>
->>>>> There was no intention to prevent auto loading. Did you get chance 
->>>>> to test these changes?
->>>>
->>>> Sure, I always test patches before I send them out.
->>>>
->>>> Ok, I haven't tested the changes with the iio HID drivers (I don't 
->>>> have any commercial HID sensor hub, so I've just compile tested 
->>>> these patches here, double reading them), but I've tested the 
->>>> similiar changes with a patch for rtc-hid-sensor-time I've send out yesterday.
->>>> (sorry, no link, lkml.org seems dead, just search for
->>>> "rtc-hid-sensor-time: add module alias")
->>>>
->>>> It works just fine. An example output is now
->>>>
->>>> Jul  9 19:27:21 dockstar3 kernel: [    5.124444] rtc_hid_sensor_time
->>>> HID-SENSOR-2000a0.0: milliseconds supported
->>>> Jul  9 19:27:21 dockstar3 kernel: [    5.132864] rtc_hid_sensor_time
->>>> HID-SENSOR-2000a0.0: rtc core: setting system clock to 2013-07-09
->>>> 17:26:51:328000 UTC (1373390811)
->>>> Jul  9 19:27:21 dockstar3 kernel: [    5.146105] rtc_hid_sensor_time
->>>> HID-SENSOR-2000a0.0: rtc core: registered hid-sensor-time as rtc0
->>>>
->>>> Before the output was e.g.
->>>>
->>>> HID-SENSOR-2000a0 HID-SENSOR-2000a0.0: rtc core: registered 
->>>> hid-sensor-time as rtc0
->>>>
->>>> instead of the above with the descriptive rtc_hid_sensor_time.
->>> <Agreed. This is better. >
->>>> Automatic loading of modules works too and it works on ARM, Intel 
->>>> and AMD as module or static linked. ;)
->>
->> Do you have tested the patches with a real device? I assume you have 
->> one. ;)
->>
->> Regards,
->>
->> Alexander Holler
-> 
-> Just so you two know. Given this discussion, I'll be lazy about these and wait for an Ack from Srinivas before taking these.  Look fine to me, but nice to have confirmation as you say with the actual hardware!
-> 
-> Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+drivers/iio/industrialio-trigger.c
+
+Best regards,
+Marek Vasut
