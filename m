@@ -1,89 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:46796 "EHLO comal.ext.ti.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:57110 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932264Ab3GPLsa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Jul 2013 07:48:30 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v4 0/2] TWL6030, TWL6032 GPADC driver
-Date: Tue, 16 Jul 2013 14:47:32 +0300
-Message-ID: <1373975254-23764-1-git-send-email-oleksandr.kozaruk@ti.com>
+	id S1754299Ab3GOLKi convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 07:10:38 -0400
+From: "Kozaruk, Oleksandr" <oleksandr.kozaruk@ti.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: "tony@atomide.com" <tony@atomide.com>,
+	"benoit.cousson@linaro.org" <benoit.cousson@linaro.org>,
+	"Nayak, Rajendra" <rnayak@ti.com>,
+	"Ujfalusi, Peter" <peter.ujfalusi@ti.com>,
+	"ABRAHAM, KISHON VIJAY" <kishon@ti.com>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"grant.likely@linaro.org" <grant.likely@linaro.org>,
+	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
+	"sameo@linux.intel.com" <sameo@linux.intel.com>,
+	"ch.naveen@samsung.com" <ch.naveen@samsung.com>,
+	"poeschel@lemonage.de" <poeschel@lemonage.de>,
+	"Kim, Milo" <Milo.Kim@ti.com>,
+	"Krishnamoorthy, Balaji T" <balajitk@ti.com>,
+	"gg@slimlogic.co.uk" <gg@slimlogic.co.uk>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+Subject: RE: [PATCH v3 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+Date: Mon, 15 Jul 2013 11:09:40 +0000
+Message-ID: <2A7ABDFCE21540479A5AEB0244A684D5E3D067@DNCE04.ent.ti.com>
+References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com>
+ <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com>,<51E05F6C.1060506@metafoo.de>
+In-Reply-To: <51E05F6C.1060506@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Hello Lars-Peter,
+Thank you for the review.
 
-v4 - addressed comments: fixed style violation, bug in freeing memory,
-     added comments explaining calibration method, removed test network
-     channels from exposing to userspace, error handling for 
-     wait_for_complition
-v3 - fixed compiler warning
-v2 - the driver put in drivers/iio, and
-converted using iio facilities as suggested by Graeme.
+>> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+>> new file mode 100644
+>> index 0000000..6ceb789
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/twl6030-gpadc.c
+>> @@ -0,0 +1,1019 @@
+>[...]
+>> +static u8 twl6032_channel_to_reg(int channel)
+>> +{
+>> +     return TWL6032_GPADC_GPCH0_LSB;
+>
+>There is more than one channel, isn't there?
+Yes. But for twl6032 channel of interest is chosen first. When the conversion
+is ready tre result is available in GPCH0_LSB/GPCH1_MSB for any cosen
+channel. For twl6030 there are as many result register pairs as many of
+channels.
 
-TWL603[02] GPADC is used to measure battery voltage,
-battery temperature, battery presence ID, and could
-be used to measure twl603[02] die temperature.
-This is used on TI blaze, blaze tablet platforms.
-
-The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
-channels respectively. Some channels have current
-source and are used for measuring voltage drop
-on resistive load for detecting battery ID resistance,
-or measuring voltage drop on NTC resistors for external
-temperature measurements, other channels measure voltage,
-(i.e. battery voltage), and have inbuilt voltage dividers,
-thus, capable to scale voltage. Some channels are dedicated
-for measuring die temperature.
-
-Some channels could be calibrated in 2 points, having
-offsets from ideal values in trim registers.
-
-The difference between GPADC in TWL6030 and TWL6032:
-- 10 bit vs 12 bit ADC;
-- 17 vs 19 channels;
-- channels have different purpose(i. e. battery voltage
-  channel 8 vs channel 18);
-- trim values are interpreted differently.
-
-The driver is derived from git://git.omapzoom.org/kernel/omap.git
-The original driver's authors and contributors are Balaji T K,
-Graeme Gregory, Ambresh K, Girish S Ghongdemath.
-
-The changes to the original driver:
-- device tree adaptation;
-- drop ioctl support - never been used;
-- unified measurement method for both devices;
-- get rid of "if (device == X)" code style to data driven;
-- drop polling end of conversion and use interrupt instead;
-- iio framework is used
-
-Tested with on blaze tablet 2 with OMAP4430(twl6030), and
-OMAP4470(twl6032) SOMs.
-
-The patches were tested against 3.10-rc7
-
-Oleksandr Kozaruk (2):
-  ARM: dts: twl: Add GPADC data to device tree
-  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-
- arch/arm/boot/dts/twl6030.dtsi  |    6 +
- drivers/iio/adc/Kconfig         |   14 +
- drivers/iio/adc/Makefile        |    1 +
- drivers/iio/adc/twl6030-gpadc.c | 1008 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1029 insertions(+)
- create mode 100644 drivers/iio/adc/twl6030-gpadc.c
-
--- 
-1.8.1.2
-
+>> +     ret = devm_request_threaded_irq(dev, irq, NULL,
+>> +                                     twl6030_gpadc_irq_handler,
+>> +                                     IRQF_ONESHOT, "twl6030_gpadc", gpadc);
+>
+>You access memory in the interrupt handler which is freed before the interrupt
+>handler is freed.
+Thanks for pointing this. devm_* will free memory for irq after the driver
+is removed and memory for the device is freed. I took me awhile to understand
+this. Is there going to be something like devm_iio_device_alloc? whould it be helpfull?
