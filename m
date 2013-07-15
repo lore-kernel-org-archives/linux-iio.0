@@ -1,61 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-191.synserver.de ([212.40.185.191]:1097 "EHLO
-	smtp-out-191.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932668Ab3GOPxT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 11:53:19 -0400
-Message-ID: <51E41B1B.7000100@metafoo.de>
-Date: Mon, 15 Jul 2013 17:54:03 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <otavio.salvador@gmail.com>
 MIME-Version: 1.0
-To: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-CC: Oleksandr Kravchenko <x0199363@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Rob Landley <rob@landley.net>, jic23@cam.ac.uk,
-	Peter Meerwald <pmeerw@pmeerw.net>, holler@ahsoftware.de,
-	srinivas.pandruvada@intel.com, devicetree-discuss@lists.ozlabs.org
-Subject: Re: [PATCH] iio: add APDS9300 ambilent light sensor driver
-References: <1373461729-11261-1-git-send-email-x0199363@ti.com> <51E03720.1010806@metafoo.de> <CAGH3drqEPxW=QwadCLj=ZOQe0gp_c7mdSiNQnq1_-BMKL9CgJw@mail.gmail.com> <51E3EC8B.3090601@metafoo.de> <CAGH3dro7MxDJRB=5gsBysiKVvXLskZFuagiBMznUnAjCMoZsTQ@mail.gmail.com>
-In-Reply-To: <CAGH3dro7MxDJRB=5gsBysiKVvXLskZFuagiBMznUnAjCMoZsTQ@mail.gmail.com>
+Sender: otavio.salvador@gmail.com
+In-Reply-To: <201307151624.57438.marex@denx.de>
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br>
+	<1373898160-8460-2-git-send-email-otavio@ossystems.com.br>
+	<201307151624.57438.marex@denx.de>
+Date: Mon, 15 Jul 2013 11:38:28 -0300
+Message-ID: <CAP9ODKqOEd_002KJ3xFQ0uQfNEoZosrD9UGPQ=rLS0W3N77XwQ@mail.gmail.com>
+Subject: Re: [PATCH 2/5] ARM: mxs-lradc: Simplify mxs_lradc_trigger_init error handle
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: Marek Vasut <marek.vasut@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kernel development list <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bill Pemberton <wfp5p@virginia.edu>,
+	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/15/2013 04:54 PM, Oleksandr Kravchenko wrote:
-> I can't to find devm_iio_device_alloc() in my kernel v3.11-rc1
-> 
-
-It doesn't exist yet, but it should be too hard to implement one.
-
-- Lars
-
-> On Mon, Jul 15, 2013 at 3:35 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 07/15/2013 02:27 PM, Oleksandr Kravchenko wrote:
->>> Thank you for review! But I don't completely understand one of your comment:
->>>
->>>>> +static int als_probe(struct i2c_client *client, const struct i2c_device_id *id)
->>> [...]
->>>>> +     if (client->irq) {
->>>>> +             ret = devm_request_threaded_irq(&client->dev, client->irq,
->>>>> +                             NULL, als_interrupt_handler,
->>>>> +                             IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
->>>>> +                             ALS_IRQ_NAME, indio_dev);
->>>>
->>>> This is a bit racy, you access memory in the irq handler that is freed
->>>> before the irq is freed.
->>>
->>> Do you mean than that indio_dev may be used in interrupt handler after
->>> iio_device_free(indio_dev) called in als_remove() function?
->>>
->>> If so, can I use disable_irq() in als_remove() before iio_device_free()
->>> to avoid this problem?
->>>
+On Mon, Jul 15, 2013 at 11:24 AM, Marek Vasut <marek.vasut@gmail.com> wrote:
+> Dear Otavio Salvador,
+>
+>> As we have a 'ret' variable with the iio_trigger_register return, this
+>> can be used as result.
 >>
->> Just add a devm_iio_device_alloc() and use that, instead of trying to bodch
->> around the issue.
+>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+>> ---
+>>  drivers/staging/iio/adc/mxs-lradc.c | 6 ++----
+>>  1 file changed, 2 insertions(+), 4 deletions(-)
 >>
-> 
-> 
-> 
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> b/drivers/staging/iio/adc/mxs-lradc.c index d92c97a..6d41846 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -671,14 +671,12 @@ static int mxs_lradc_trigger_init(struct iio_dev
+>> *iio) trig->ops = &mxs_lradc_trigger_ops;
+>>
+>>       ret = iio_trigger_register(trig);
+>> -     if (ret) {
+>> +     if (ret)
+>>               iio_trigger_free(trig);
+>> -             return ret;
+>> -     }
+>>
+>>       iio->trig = trig;
+>
+>
+> You are still setting iio->trig , you dont want to do that in case of failure
 
+In this case it'd end being NULL I think, wouldn't it?
+
+--
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
