@@ -1,73 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f178.google.com ([209.85.215.178]:47429 "EHLO
-	mail-ea0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932779Ab3GQR1a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:30 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 20/21] input: ti_am335x_tsc.c fix checkpatch.pl issues
-Date: Wed, 17 Jul 2013 18:26:49 +0100
-Message-Id: <1374082010-28095-21-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <otavio.salvador@gmail.com>
+Sender: Otavio Salvador <otavio.salvador@gmail.com>
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-kernel@vger.kernel.org
+Cc: Otavio Salvador <otavio@ossystems.com.br>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 5/5] iio: add configuration option for debug support
+Date: Mon, 15 Jul 2013 11:22:40 -0300
+Message-Id: <1373898160-8460-5-git-send-email-otavio@ossystems.com.br>
+In-Reply-To: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br>
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br>
+List-ID: <linux-iio@vger.kernel.org>
 
-code formatting fixes
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/iio/Kconfig  | 7 +++++++
+ drivers/iio/Makefile | 2 ++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 4bf2ee6..ba7abfe 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -260,19 +260,19 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 9af763a..d1f06f2 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -12,6 +12,13 @@ menuconfig IIO
  
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
-- 
--        /*
--         * ADC and touchscreen share the IRQ line.
--         * FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
--         * interrupts are used by ADC,
--         * hence return from touchscreen IRQ handler if FIFO1
--         * related interrupts occurred.
--         */
--       if ((status & IRQENB_FIFO1THRES) ||
--                       (status & IRQENB_FIFO1OVRRUN) ||
--                       (status & IRQENB_FIFO1UNDRFLW))
--                return IRQ_NONE;
--        else if (status & IRQENB_FIFO0THRES) {
+ if IIO
+ 
++config IIO_DEBUG
++	boolean "Debug support for Industrial I/O"
++	depends on DEBUG_KERNEL
++	help
++	  Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
++	  sysfs, and debugfs support in Industrial I/O subsystem and drivers.
 +
-+	/*
-+	* ADC and touchscreen share the IRQ line.
-+	* FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
-+	* interrupts are used by ADC,
-+	* hence return from touchscreen IRQ handler if FIFO1
-+	* related interrupts occurred.
-+	*/
-+	if ((status & IRQENB_FIFO1THRES) ||
-+			(status & IRQENB_FIFO1OVRRUN) ||
-+			(status & IRQENB_FIFO1UNDRFLW))
-+		return IRQ_NONE;
-+	else if (status & IRQENB_FIFO0THRES) {
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+ config IIO_BUFFER
+ 	bool "Enable buffer support within IIO"
+ 	help
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 7a3866c..6e43e5b 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -2,6 +2,8 @@
+ # Makefile for the industrial I/O core.
+ #
  
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
-@@ -326,7 +326,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	}
- 
- 	if (irqclr) {
--		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr) );
-+		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
- 		am335x_tsc_se_update(ts_dev->mfd_tscadc);
- 		return IRQ_HANDLED;
- 	}
++ccflags-$(CONFIG_IIO_DEBUG) := -DDEBUG
++
+ obj-$(CONFIG_IIO) += industrialio.o
+ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
 -- 
-1.7.9.5
-
+1.8.3.2
