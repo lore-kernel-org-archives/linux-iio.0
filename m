@@ -1,71 +1,52 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	koen@dominion.thruhere.net
-Subject: [PATCH 03/15] input: ti_tsc: Enable shared IRQ for TSC
-Date: Thu, 18 Jul 2013 23:21:14 +0100
-Message-Id: <1374186086-5015-4-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:33542 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754126Ab3GPL2H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Jul 2013 07:28:07 -0400
+From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
+	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<lars@metafoo.de>, <sameo@linux.intel.com>,
+	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
+	<balajitk@ti.com>, <gg@slimlogic.co.uk>
+CC: <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
+Subject: [PATCH 1/2] ARM: dts: twl: Add GPADC data to device tree
+Date: Tue, 16 Jul 2013 14:27:02 +0300
+Message-ID: <1373974023-23521-2-git-send-email-oleksandr.kozaruk@ti.com>
+In-Reply-To: <1373974023-23521-1-git-send-email-oleksandr.kozaruk@ti.com>
+References: <1373974023-23521-1-git-send-email-oleksandr.kozaruk@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: "Patil, Rachna" <rachna@ti.com>
+GPADC is the general purpose ADC present on twl6030.
+The dt data is interrupt used to trigger end of ADC
+conversion.
 
-Touchscreen and ADC share the same IRQ line from parent MFD core.
-Previously only Touchscreen was interrupt based.
-With continuous mode support added in ADC driver, driver requires
-interrupt to process the ADC samples, so enable shared IRQ flag bit for
-touchscreen.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
-Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 0e9f02a..edc3d03 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -260,8 +260,16 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
--	if (status & IRQENB_FIFO0THRES) {
- 
-+	/*
-+	* ADC and touchscreen share the IRQ line.
-+	* FIFO1 threshold interrupt is used by ADC,
-+	* hence return from touchscreen IRQ handler if FIFO1
-+	* threshold interrupt occurred.
-+	*/
-+	if (status & IRQENB_FIFO1THRES)
-+		return IRQ_NONE;
-+	else if (status & IRQENB_FIFO0THRES) {
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
- 
- 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
-@@ -315,7 +323,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	}
- 
- 	if (irqclr) {
--		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
-+		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
- 		am335x_tsc_se_update(ts_dev->mfd_tscadc);
- 		return IRQ_HANDLED;
- 	}
-@@ -389,7 +397,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
--			  0, pdev->dev.driver->name, ts_dev);
-+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to allocate irq.\n");
- 		goto err_free_mem;
+diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+index 2e3bd31..434842c 100644
+--- a/arch/arm/boot/dts/twl6030.dtsi
++++ b/arch/arm/boot/dts/twl6030.dtsi
+@@ -103,4 +103,10 @@
+ 		compatible = "ti,twl6030-pwmled";
+ 		#pwm-cells = <2>;
+ 	};
++
++	gpadc: twl6030_gpadc {
++		compatible = "ti,twl6030_gpadc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
+ };
 -- 
-1.7.9.5
+1.8.1.2
+
