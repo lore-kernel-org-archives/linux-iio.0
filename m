@@ -1,68 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-236.synserver.de ([212.40.185.236]:1488 "EHLO
+Received: from smtp-out-236.synserver.de ([212.40.185.236]:1196 "EHLO
 	smtp-out-236.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932567Ab3GPPHY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 11:07:24 -0400
+	with ESMTP id S1754599Ab3GPPHX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 11:07:23 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@cam.ac.uk>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/4] staging:iio:ad2s1210: Don't expose the chip reset to userspace
-Date: Tue, 16 Jul 2013 17:08:00 +0200
-Message-Id: <1373987283-32657-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 4/4] iio: Remove IIO_DEV_ATTR_RESET macro
+Date: Tue, 16 Jul 2013 17:08:03 +0200
+Message-Id: <1373987283-32657-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1373987283-32657-1-git-send-email-lars@metafoo.de>
+References: <1373987283-32657-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There is no reason why userspace should want to trigger a manual reset of the
-device, so remove this functionality.
+There are no users of this macro left and we have come to the conclusion that it
+is not a good idea to expose the raw chip reset to userspace so the macro is
+very unlikely to be used in new drivers.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+ include/linux/iio/sysfs.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 0d3356d..dcdadbb 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -192,21 +192,6 @@ static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
- 	return ad2s1210_config_write(st, 0x0);
- }
+diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+index b7a934b..2958c96 100644
+--- a/include/linux/iio/sysfs.h
++++ b/include/linux/iio/sysfs.h
+@@ -73,11 +73,6 @@ struct iio_const_attr {
+ 	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
  
--static ssize_t ad2s1210_store_softreset(struct device *dev,
--					struct device_attribute *attr,
--					const char *buf,
--					size_t len)
--{
--	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
--	int ret;
--
--	mutex_lock(&st->lock);
--	ret = ad2s1210_soft_reset(st);
--	mutex_unlock(&st->lock);
--
--	return ret < 0 ? ret : len;
--}
--
- static ssize_t ad2s1210_show_fclkin(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
-@@ -536,8 +521,6 @@ error_ret:
- 	return ret;
- }
+ /* Generic attributes of onetype or another */
+-/**
+- * IIO_DEV_ATTR_RESET: resets the device
+- **/
+-#define IIO_DEV_ATTR_RESET(_store)			\
+-	IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, _store, 0)
  
--static IIO_DEVICE_ATTR(reset, S_IWUSR,
--		       NULL, ad2s1210_store_softreset, 0);
- static IIO_DEVICE_ATTR(fclkin, S_IRUGO | S_IWUSR,
- 		       ad2s1210_show_fclkin, ad2s1210_store_fclkin, 0);
- static IIO_DEVICE_ATTR(fexcit, S_IRUGO | S_IWUSR,
-@@ -587,7 +570,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
- };
- 
- static struct attribute *ad2s1210_attributes[] = {
--	&iio_dev_attr_reset.dev_attr.attr,
- 	&iio_dev_attr_fclkin.dev_attr.attr,
- 	&iio_dev_attr_fexcit.dev_attr.attr,
- 	&iio_dev_attr_control.dev_attr.attr,
+ /**
+  * IIO_DEV_ATTR_SAMP_FREQ - sets any internal clock frequency
 -- 
 1.8.0
 
