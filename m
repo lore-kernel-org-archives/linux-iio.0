@@ -1,94 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:12579 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751590Ab3GQIXS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 04:23:18 -0400
-Message-ID: <51E65475.4010109@atmel.com>
-Date: Wed, 17 Jul 2013 10:23:17 +0200
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Received: from mail.free-electrons.com ([94.23.35.102]:34873 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754126Ab3GPLUU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 07:20:20 -0400
+Date: Tue, 16 Jul 2013 13:20:17 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Josh Wu <josh.wu@atmel.com>, plagnioj@jcrosoft.com,
+	jic23@cam.ac.uk, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/5] iio: at91: Use different prescal, startup mask in MR
+ for different IP
+Message-ID: <20130716112017.GC3125@lukather>
+References: <1373789069-11604-1-git-send-email-josh.wu@atmel.com>
+ <1373789069-11604-3-git-send-email-josh.wu@atmel.com>
+ <20130715125815.GC2962@lukather>
+ <51E505EA.4060502@atmel.com>
+ <51E50864.6020904@atmel.com>
 MIME-Version: 1.0
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	<plagnioj@jcrosoft.com>, <linux-iio@vger.kernel.org>,
-	<jic23@cam.ac.uk>, <linux-arm-kernel@lists.infradead.org>,
-	<devicetree-discuss@lists.ozlabs.org>
-Subject: Re: [PATCH 2/5] iio: at91: Use different prescal, startup mask in
- MR for different IP
-References: <1373789069-11604-1-git-send-email-josh.wu@atmel.com> <1373789069-11604-3-git-send-email-josh.wu@atmel.com> <20130715125815.GC2962@lukather> <51E505EA.4060502@atmel.com> <51E50864.6020904@atmel.com> <20130716133003.7c208cdf@skate> <51E5990A.4050709@kernel.org> <20130716211706.39665234@skate>
-In-Reply-To: <20130716211706.39665234@skate>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uXxzq0nDebZQVNAZ"
+In-Reply-To: <51E50864.6020904@atmel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/07/2013 21:17, Thomas Petazzoni :
-> Dear Jonathan Cameron,
->
-> On Tue, 16 Jul 2013 20:03:38 +0100, Jonathan Cameron wrote:
->
->> On 07/16/2013 12:30 PM, Thomas Petazzoni wrote:
->>> I've asked exactly this question last week at Linaro Connect during the
->>> ARM SoC consolidation panel/discussion, where Grant Likely, Arnd
->>> Bergmann, Olof and others were answering Device Tree related questions.
->>>
->>> My question, which precisely had the at91-adc DT binding in mind was
->>> precisely whether we should use different compatible properties to
->>> identify different revisions of an IP block and let the driver handle
->>> those differences, or whether the DT binding should provide sufficient
->>> properties (register offsets, bit numbers, etc.) to make the driver
->>> independent of the IP revisions. And clearly, the answer was that
->>> different compatible properties should be used to identify the
->>> different versions of the IP block, and the driver should abstract out
->>> the differences. I.e, was has been done for at91-adc is completely the
->>> opposite of the best practices for Device Tree on ARM.
->>>
->>> See
->>> http://www.youtube.com/watch?v=zF_AXLgkFy4&feature=player_detailpage#t=1581s
->>> where I ask exactly this question, and get answers from Olof Johansson
->>> and Grant Likely. They clearly say that the solution of having separate
->>> compatible properties and a driver that handles the differences is the
->>> way to go. So the way at91-adc (and possibly other at91 drivers) is
->>> using the Device Tree is wrong, there should have been multiple
->>> compatible properties. It's a shame because this is something we did say
->>> when we submitted at91-adc and during the reviews, but the maintainer
->>> wasn't listening to our comments...
->>>
->>
->> Thanks for getting some clarity on this Thomas.  So I'll ask the somewhat obvious
->> question - how do we unwind from where we are to where we want to be wrt to the
->> bindings?
->
-> During Linaro Connect last week, there was some discussion about
-> marking DT bindings as unstable for a little while, once they get
-> reviewed by a group of DT "experts" that mark them as stable. Until
-> they are stable, the kernel does not offer any ABI guarantees, and we
-> are free to change the DT bindings as needed.
->
-> Now, since this unstable/stable thing is not in place at the moment,
-> deciding whether to break or not existing bindings is something to be
-> decided by the maintainer of this platform, judging what is the best
-> option depending on whether there are already many users of the DT for
-> this platform or not, for example.
 
-I didn't had in mind that the current discussion about the addition of 
-some properties could cast doubt on the entire at91-adc binding!
+--uXxzq0nDebZQVNAZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The binding itself has several drawbacks and is kind of over engineered, 
-I agree with that. Some register offsets in particular have nothing to 
-do in a DT binding.
-On the other hand, some values are highly dependent on the SoC process 
-itself and can't be stored in the driver because it would require to 
-change the driver for each new SoC, depending on the electrical 
-characteristics.
-In conclusion, we have to be cautious with this binding and make sure 
-that we don't throw the baby out with the bath water.
+On Tue, Jul 16, 2013 at 10:46:28AM +0200, Nicolas Ferre wrote:
+> >>capabilities from which compatible is declared.
+> >>
+> >>It seems safer.
+>=20
+> I see it as handier in the sense that a different IP version can be
+> compatible with an older IP version: so we do not need to modify the
+> driver just to use another SoC.
+>=20
+> On your side Maxime, what makes you say that it is "safer"?
 
-Moreover, at the time we are just beginning to be comfortable with DT on 
-AT91 and beginning to overcome the difficulty of converting our 
-platforms, I see this new step on the path to "mainline + DT stable" as 
-another slowdown.
+Well, the register holding the IP version seem to be not programmed in
+some cases (or, at least, the driver handles this case).
 
-Bye,
--- 
-Nicolas Ferre
+So, what would happen if one SoC was in such case? You wouldn't be able
+to use the ADC/touchscreen, even though the IP in itself might very well
+work, which doesn't sound very nice, while the DT will always be there,
+and will always have a compatible property.
+
+> >Ok, that make sense. I will use compatible names for the capabilities in
+> >next version. Thanks.
+>=20
+> Hold on a little bit Josh, I know that Jean-Christophe is not in
+> favor of the use of multiple compatible strings. So, as the code is
+> already there, let's wait and see if we find another argument...
+
+And you know my feeling about this for quite some time already ;)
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--uXxzq0nDebZQVNAZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR5SxxAAoJEBx+YmzsjxAgpJ0QAIgmK1LhoTluGXlgkyuZk618
+G0cg3HHBm62DwPStYWOpWiL/Vsz50OoWKTf5O4PSFiXnKR7v0D8tLMncnQVPP7Ae
+IKajDiDB7lgsA/DeTkM3+QxOXIiB0mPqV6Y6W7RGQ0fCD5hLmnx4chyz80+61VFc
+tuAuYIyIxpSZgxEKRlxtDHiNrwu2ynvdixLhOx3UK3qG98CXC+qI0ebElbrHo+sn
+YLW5kPKJME7mIaJm+luLYSE+/AIQyvtAkJzbUWjj+I6KJeY3lli0IFs/euE6iwGV
+AK6gE+MMb/9dVS37Rwi+dhSe3vbMrJKBOF+4h2Mxn+2BTbNz9vmTthEHGB1m+9Eg
+1xKM2GJdlnMlHlsCxKcoIjAX3CX/+q86/OGGYfPuGOE6kcYSFcGLdocS4RsMUbGU
+js9jntAyd8gjGzDIDJQ0Pi9QJAkIFY4zPizI0bETIx14gQ+JEPc0nS3oyYa/9yjU
+/jKH5uXS/4W8oU8qbMJn/2j/dhlxnCCVGgt08U8VgKQpt1XLOv1E0lsFk65g2eXa
+DUv1D0BYy+gWhtFlHnq4ucruqVtxFSHHtPOgqclGue/NRHWPSUX8cK/e+O+qjiCi
+img1fgK/neDdyj3Zd1EJ7ps6iLKCUQAx9+fvUVs9eVQnUmGdkJyZPX6/QGzVL7X3
+2Wvb6qCCk1aUf5br3ZGS
+=sJqn
+-----END PGP SIGNATURE-----
+
+--uXxzq0nDebZQVNAZ--
