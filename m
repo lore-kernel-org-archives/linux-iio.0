@@ -1,72 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46573 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754071Ab3GTNup (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 09:50:45 -0400
-In-Reply-To: <20130720124731.GA10834@gmail.com>
-References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <51EA73BC.8050901@kernel.org> <20130720124731.GA10834@gmail.com>
+Received: from smtp-out-221.synserver.de ([212.40.185.221]:1284 "EHLO
+	smtp-out-221.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753895Ab3GPMJK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 08:09:10 -0400
+Message-ID: <51E53811.6040100@metafoo.de>
+Date: Tue, 16 Jul 2013 14:09:53 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 00/15] iio: ti_am335x_adc: Add continuous mode take 2
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Sat, 20 Jul 2013 14:50:39 +0100
-To: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	koen@dominion.thruhere.net
-Message-ID: <a8f2c435-027a-473f-9ea0-71bfe4276c2b@email.android.com>
+To: Otavio Salvador <otavio@ossystems.com.br>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 5/5] iio: add configuration option for debug support
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <1373898160-8460-5-git-send-email-otavio@ossystems.com.br> <51E5195B.3020908@kernel.org> <51E51FBE.6000205@metafoo.de> <CAP9ODKrsQqa12ZVj0R+rpb=kjtb-63P7yraVmV0+yZxaaeMcsQ@mail.gmail.com>
+In-Reply-To: <CAP9ODKrsQqa12ZVj0R+rpb=kjtb-63P7yraVmV0+yZxaaeMcsQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-"Zubair Lutfullah :" <zubair.lutfullah@gmail.com> wrote:
->On Sat, Jul 20, 2013 at 12:25:48PM +0100, Jonathan Cameron wrote:
->> I am a little irritated by the mess we have here.  Russ has clearly
->done
->> a lot of fine work cleaning up the earlier patches.  As a result
->> we have a series of initial buggy patches and then a series of
->patches
->> fixing them again.
->
->Indeed.
->
->I had already merged a lot of minor bug fixes from Rachil into the main
->patch that adds continuous mode.
->
->But I kept Russ's ones separate because of authorship and history.
-> 
->
->> Part 1.  Any fixes that are unconnected to the rest of the series. 
->These will
->>   then get sent upstream within this cycle.
->
->Understood. I'll send a small series that is disjoint and contains
->fixes for the existing driver.
->
->> Part 2. Feature add patch. Here that is basically a single patch
->adding the
->>   continous mode support.
+On 07/16/2013 02:01 PM, Otavio Salvador wrote:
+> On Tue, Jul 16, 2013 at 7:26 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 07/16/2013 11:58 AM, Jonathan Cameron wrote:
+>>> On 07/15/2013 03:22 PM, Otavio Salvador wrote:
+>>>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+>>> seems a sensible facility to have available.
+>>>
+>>> Applied to the togreg branch of iio.git
 >>
->> It is nice to maintain history and all but I would much rather have
->something
->> that is easy to review, with appropriate comments or if people will
->give
->> them, sign offs to reflect the various contributions.
->> 
->> Jonathan
->
->And then one patch for continuous mode with appropriate
->comments/sign-offs.
->
-Excellent. Thanks for sorting these out.
->Thank-you
->Zubair Lutfullah
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Can you update the Kconfig help text?
+> 
+> Sure I can. Jonathan seem to have applied it so should I send a v2 or
+> a new patch?
+> 
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+He hasn't pushed things out yet, I think a v2 will be fine.
+
+>>>> ---
+>>>>  drivers/iio/Kconfig  | 7 +++++++
+>>>>  drivers/iio/Makefile | 2 ++
+>>>>  2 files changed, 9 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>>> index 9af763a..d1f06f2 100644
+>>>> --- a/drivers/iio/Kconfig
+>>>> +++ b/drivers/iio/Kconfig
+>>>> @@ -12,6 +12,13 @@ menuconfig IIO
+>>>>
+>>>>  if IIO
+>>>>
+>>>> +config IIO_DEBUG
+>>>> +    boolean "Debug support for Industrial I/O"
+>>>> +    depends on DEBUG_KERNEL
+>>>> +    help
+>>>> +      Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
+>>>> +      sysfs, and debugfs support in Industrial I/O subsystem and drivers.
+>>
+>> This has nothing to do with either sysfs or debugfs support.
+> 
+>      Say "yes" to enable debug messaging (like dev_dbg and pr_debug)
+>      support in Industrial I/O subsystem and drivers.
+> 
+> ?
+> 
+> --
+> Otavio Salvador                             O.S. Systems
+> http://www.ossystems.com.br        http://projetos.ossystems.com.br
+> Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
+> 
+
