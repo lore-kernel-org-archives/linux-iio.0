@@ -1,43 +1,76 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	jic23@kernel.org,
-	sachin.kamat@linaro.org
-Subject: [PATCH 00/11] iio: adc: Use devm_* APIs
-Date: Tue, 23 Jul 2013 14:28:06 +0530
-Message-Id: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oa0-f53.google.com ([209.85.219.53]:46173 "EHLO
+	mail-oa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754627Ab3GPMij (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 08:38:39 -0400
+MIME-Version: 1.0
+In-Reply-To: <201307160100.26746.marex@denx.de>
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br>
+	<201307151624.57438.marex@denx.de>
+	<CAP9ODKqOEd_002KJ3xFQ0uQfNEoZosrD9UGPQ=rLS0W3N77XwQ@mail.gmail.com>
+	<201307160100.26746.marex@denx.de>
+Date: Tue, 16 Jul 2013 09:38:39 -0300
+Message-ID: <CAP9ODKoZBmOZ2QMcTfb3rqUhBusPGbOHiaN46sVokrPV3rmUpw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] ARM: mxs-lradc: Simplify mxs_lradc_trigger_init error handle
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: Marek Vasut <marex@denx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Bill Pemberton <wfp5p@virginia.edu>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-All patches are compile tested and based on togreg branch
-of following tree:
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+On Mon, Jul 15, 2013 at 8:00 PM, Marek Vasut <marex@denx.de> wrote:
+> Dear Otavio Salvador,
+>
+>> On Mon, Jul 15, 2013 at 11:24 AM, Marek Vasut <marek.vasut@gmail.com> wrote:
+>> > Dear Otavio Salvador,
+>> >
+>> >> As we have a 'ret' variable with the iio_trigger_register return, this
+>> >> can be used as result.
+>> >>
+>> >> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+>> >> ---
+>> >>
+>> >>  drivers/staging/iio/adc/mxs-lradc.c | 6 ++----
+>> >>  1 file changed, 2 insertions(+), 4 deletions(-)
+>> >>
+>> >> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> >> b/drivers/staging/iio/adc/mxs-lradc.c index d92c97a..6d41846 100644
+>> >> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> >> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> >> @@ -671,14 +671,12 @@ static int mxs_lradc_trigger_init(struct iio_dev
+>> >> *iio) trig->ops = &mxs_lradc_trigger_ops;
+>> >>
+>> >>       ret = iio_trigger_register(trig);
+>> >>
+>> >> -     if (ret) {
+>> >> +     if (ret)
+>> >>
+>> >>               iio_trigger_free(trig);
+>> >>
+>> >> -             return ret;
+>> >> -     }
+>> >>
+>> >>       iio->trig = trig;
+>> >
+>> > You are still setting iio->trig , you dont want to do that in case of
+>> > failure
+>>
+>> In this case it'd end being NULL I think, wouldn't it?
+>
+> It won't, see the implementation in:
+>
+> drivers/iio/industrialio-trigger.c
 
-Sachin Kamat (11):
-  iio: adc: ad7298: Use devm_* APIs
-  iio: adc: ad7476: Use devm_* APIs
-  iio: adc: ad7791: Use devm_* APIs
-  iio: adc: ad7793: Use devm_* APIs
-  iio: adc: ad7887: Use devm_* APIs
-  iio: adc: ad7923: Use devm_* APIs
-  iio: adc: lp8788_adc: Use devm_* APIs
-  iio: adc: mcp320x: Use devm_* APIs
-  iio: adc: nau7802: Use devm_iio_device_alloc
-  iio: adc: ti-adc081c: Use devm_* APIs
-  iio: adc: viperboard_adc: Use devm_iio_device_alloc
+Agreed; will drop this from v2.
 
- drivers/iio/adc/ad7298.c         |   24 ++++++++----------------
- drivers/iio/adc/ad7476.c         |   26 ++++++++------------------
- drivers/iio/adc/ad7791.c         |   19 +++++--------------
- drivers/iio/adc/ad7793.c         |   23 ++++++-----------------
- drivers/iio/adc/ad7887.c         |   23 +++++++----------------
- drivers/iio/adc/ad7923.c         |   20 +++++++-------------
- drivers/iio/adc/lp8788_adc.c     |    7 ++-----
- drivers/iio/adc/mcp320x.c        |   18 +++++-------------
- drivers/iio/adc/nau7802.c        |   19 ++++++++-----------
- drivers/iio/adc/ti-adc081c.c     |   18 +++++-------------
- drivers/iio/adc/viperboard_adc.c |    9 ++-------
- 11 files changed, 63 insertions(+), 143 deletions(-)
-
--- 
-1.7.9.5
+--
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
