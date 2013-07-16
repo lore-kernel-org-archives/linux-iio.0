@@ -1,74 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:6296 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S964787Ab3GLVnM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 12 Jul 2013 17:43:12 -0400
-Message-ID: <51E079F5.50303@linux.intel.com>
-Date: Fri, 12 Jul 2013 14:49:41 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-To: Alexander Holler <holler@ahsoftware.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 3/4] iio: hid-sensor-als: add module alias for autoload
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de> <1373445120-5407-4-git-send-email-holler@ahsoftware.de>
-In-Reply-To: <1373445120-5407-4-git-send-email-holler@ahsoftware.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtp-out-236.synserver.de ([212.40.185.236]:1488 "EHLO
+	smtp-out-236.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932567Ab3GPPHY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 11:07:24 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/4] staging:iio:ad2s1210: Don't expose the chip reset to userspace
+Date: Tue, 16 Jul 2013 17:08:00 +0200
+Message-Id: <1373987283-32657-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Tested. You can add my ack.
+There is no reason why userspace should want to trigger a manual reset of the
+device, so remove this functionality.
 
-Acked-by:Srinivas Pandruvada<srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/resolver/ad2s1210.c | 18 ------------------
+ 1 file changed, 18 deletions(-)
 
-
-On 07/10/2013 01:31 AM, Alexander Holler wrote:
-> Add a MODULE_DEVICE_TABLE in order to let hotplug mechanisms automatically
-> load the driver.
->
-> This makes it also possible to use the usual driver name instead of
-> HID-SENSOR-2000xx which isn't very descriptive in kernel messages.
->
-> Signed-off-by: Alexander Holler <holler@ahsoftware.de>
-> ---
->   drivers/iio/light/hid-sensor-als.c | 16 +++++++++++-----
->   1 file changed, 11 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index cdc2cad..9adfef0 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -30,10 +30,6 @@
->   #include <linux/iio/triggered_buffer.h>
->   #include "../common/hid-sensors/hid-sensor-trigger.h"
->   
-> -/*Format: HID-SENSOR-usage_id_in_hex*/
-> -/*Usage ID from spec for Ambiant-Light: 0x200041*/
-> -#define DRIVER_NAME "HID-SENSOR-200041"
-> -
->   #define CHANNEL_SCAN_INDEX_ILLUM 0
->   
->   struct als_state {
-> @@ -355,9 +351,19 @@ static int hid_als_remove(struct platform_device *pdev)
->   	return 0;
->   }
->   
-> +static struct platform_device_id hid_als_ids[] = {
-> +	{
-> +		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-> +		.name = "HID-SENSOR-200041",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, hid_als_ids);
-> +
->   static struct platform_driver hid_als_platform_driver = {
-> +	.id_table = hid_als_ids,
->   	.driver = {
-> -		.name	= DRIVER_NAME,
-> +		.name	= KBUILD_MODNAME,
->   		.owner	= THIS_MODULE,
->   	},
->   	.probe		= hid_als_probe,
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index 0d3356d..dcdadbb 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -192,21 +192,6 @@ static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
+ 	return ad2s1210_config_write(st, 0x0);
+ }
+ 
+-static ssize_t ad2s1210_store_softreset(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+-	int ret;
+-
+-	mutex_lock(&st->lock);
+-	ret = ad2s1210_soft_reset(st);
+-	mutex_unlock(&st->lock);
+-
+-	return ret < 0 ? ret : len;
+-}
+-
+ static ssize_t ad2s1210_show_fclkin(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    char *buf)
+@@ -536,8 +521,6 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static IIO_DEVICE_ATTR(reset, S_IWUSR,
+-		       NULL, ad2s1210_store_softreset, 0);
+ static IIO_DEVICE_ATTR(fclkin, S_IRUGO | S_IWUSR,
+ 		       ad2s1210_show_fclkin, ad2s1210_store_fclkin, 0);
+ static IIO_DEVICE_ATTR(fexcit, S_IRUGO | S_IWUSR,
+@@ -587,7 +570,6 @@ static const struct iio_chan_spec ad2s1210_channels[] = {
+ };
+ 
+ static struct attribute *ad2s1210_attributes[] = {
+-	&iio_dev_attr_reset.dev_attr.attr,
+ 	&iio_dev_attr_fclkin.dev_attr.attr,
+ 	&iio_dev_attr_fexcit.dev_attr.attr,
+ 	&iio_dev_attr_control.dev_attr.attr,
+-- 
+1.8.0
 
