@@ -1,79 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-236.synserver.de ([212.40.185.236]:1031 "EHLO
-	smtp-out-236.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751392Ab3GPPHW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 11:07:22 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/4] staging:iio:adt7316: Don't expose the chip reset to userspace
-Date: Tue, 16 Jul 2013 17:08:01 +0200
-Message-Id: <1373987283-32657-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1373987283-32657-1-git-send-email-lars@metafoo.de>
-References: <1373987283-32657-1-git-send-email-lars@metafoo.de>
+Received: from mail-la0-f48.google.com ([209.85.215.48]:51862 "EHLO
+	mail-la0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754721Ab3GPOWJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 10:22:09 -0400
+Received: by mail-la0-f48.google.com with SMTP id lx15so571122lab.7
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jul 2013 07:22:07 -0700 (PDT)
+Message-ID: <51E55710.8060907@cogentembedded.com>
+Date: Tue, 16 Jul 2013 18:22:08 +0400
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+MIME-Version: 1.0
+To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
+	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
+	grant.likely@linaro.org, rob.herring@calxeda.com, lars@metafoo.de,
+	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
+	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
+	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 1/2] ARM: dts: twl: Add GPADC data to device tree
+References: <1373974500-23609-1-git-send-email-oleksandr.kozaruk@ti.com>
+In-Reply-To: <1373974500-23609-1-git-send-email-oleksandr.kozaruk@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There is no reason why userspace should want to trigger a manual reset of the
-device, so remove this functionality.
+Hello.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/addac/adt7316.c | 27 ---------------------------
- 1 file changed, 27 deletions(-)
+On 07/16/2013 03:34 PM, Oleksandr Kozaruk wrote:
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 506b5a7..1e13568 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -551,31 +551,6 @@ static IIO_DEVICE_ATTR(enable_smbus_timeout, S_IRUGO | S_IWUSR,
- 		adt7316_store_enable_smbus_timeout,
- 		0);
- 
--
--static ssize_t adt7316_store_reset(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
--{
--	struct iio_dev *dev_info = dev_to_iio_dev(dev);
--	struct adt7316_chip_info *chip = iio_priv(dev_info);
--	u8 config2;
--	int ret;
--
--	config2 = chip->config2 | ADT7316_RESET;
--
--	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
--	if (ret)
--		return -EIO;
--
--	return len;
--}
--
--static IIO_DEVICE_ATTR(reset, S_IWUSR,
--		NULL,
--		adt7316_store_reset,
--		0);
--
- static ssize_t adt7316_show_powerdown(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf)
-@@ -1675,7 +1650,6 @@ static IIO_DEVICE_ATTR(bus_type, S_IRUGO, adt7316_show_bus_type, NULL, 0);
- static struct attribute *adt7316_attributes[] = {
- 	&iio_dev_attr_all_modes.dev_attr.attr,
- 	&iio_dev_attr_mode.dev_attr.attr,
--	&iio_dev_attr_reset.dev_attr.attr,
- 	&iio_dev_attr_enabled.dev_attr.attr,
- 	&iio_dev_attr_ad_channel.dev_attr.attr,
- 	&iio_dev_attr_all_ad_channels.dev_attr.attr,
-@@ -1719,7 +1693,6 @@ static struct attribute *adt7516_attributes[] = {
- 	&iio_dev_attr_all_modes.dev_attr.attr,
- 	&iio_dev_attr_mode.dev_attr.attr,
- 	&iio_dev_attr_select_ex_temp.dev_attr.attr,
--	&iio_dev_attr_reset.dev_attr.attr,
- 	&iio_dev_attr_enabled.dev_attr.attr,
- 	&iio_dev_attr_ad_channel.dev_attr.attr,
- 	&iio_dev_attr_all_ad_channels.dev_attr.attr,
--- 
-1.8.0
+> GPADC is the general purpose ADC present on twl6030.
+> The dt data is interrupt used to trigger end of ADC
+> conversion.
+
+> Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+> ---
+>   arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
+>   1 file changed, 6 insertions(+)
+
+> diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+> index 2e3bd31..434842c 100644
+> --- a/arch/arm/boot/dts/twl6030.dtsi
+> +++ b/arch/arm/boot/dts/twl6030.dtsi
+> @@ -103,4 +103,10 @@
+>   		compatible = "ti,twl6030-pwmled";
+>   		#pwm-cells = <2>;
+>   	};
+> +
+> +	gpadc: twl6030_gpadc {
+> +		compatible = "ti,twl6030_gpadc";
+> +		interrupts = <3>;
+> +		#io-channel-cells = <1>;
+> +	};
+
+    ePAPR [1] says: "The name of a node should be somewhat generic, 
+reflecting the function of the device and not its precise programming 
+model."
+
+[1] http://www.power.org/resources/downloads/Power_ePAPR_APPROVED_v1.0.pdf
+
+WBR, Sergei
 
