@@ -1,87 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:24777 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933247Ab3GLSui convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 14:50:38 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Alexander Holler <holler@ahsoftware.de>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>
-Subject: RE: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
-Date: Fri, 12 Jul 2013 18:46:31 +0000
-Message-ID: <4FA419E87744DF4DAECD5BCE1214B7A92FBDB5B4@ORSMSX110.amr.corp.intel.com>
-References: <1373445120-5407-1-git-send-email-holler@ahsoftware.de>
- <51DD7D78.2020506@linux.intel.com> <51DD848E.4050206@ahsoftware.de>
- <51DEEAFE.506@linux.intel.com> <51DFAE85.9060508@ahsoftware.de>
- <51E04E99.9060105@kernel.org>
-In-Reply-To: <51E04E99.9060105@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41076 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752932Ab3GPIOZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 04:14:25 -0400
+Message-ID: <51E500E0.7000805@kernel.org>
+Date: Tue, 16 Jul 2013 09:14:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.11 - set 1
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Looks fine, but will test on actual hardware in couple of days.
+The following changes since commit 0ad1ea69545b1965be4c93ee03fdc685c6beb23d:
 
-Thanks,
-Srinivas
+  Revert "Revert "Revert "staging/lustre: drop CONFIG_BROKEN dependency""" (2013-06-24 16:47:45 -0700)
 
------Original Message-----
-From: Jonathan Cameron [mailto:jic23@kernel.org] 
-Sent: Friday, July 12, 2013 11:45 AM
-To: Alexander Holler
-Cc: Srinivas Pandruvada; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Jonathan Cameron; Pandruvada, Srinivas
-Subject: Re: [PATCH 0/4] iio: hid-sensor: add module alias for autoload
+are available in the git repository at:
 
-On 07/12/2013 08:21 AM, Alexander Holler wrote:
-> Am 11.07.2013 19:27, schrieb Srinivas Pandruvada:
->>
->>
->> On 07/10/2013 08:58 AM, Alexander Holler wrote:
->>> Am 10.07.2013 17:27, schrieb Srinivas Pandruvada:
->>>> Hi,
->>>>
->>>> There was no intention to prevent auto loading. Did you get chance 
->>>> to test these changes?
->>>
->>> Sure, I always test patches before I send them out.
->>>
->>> Ok, I haven't tested the changes with the iio HID drivers (I don't 
->>> have any commercial HID sensor hub, so I've just compile tested 
->>> these patches here, double reading them), but I've tested the 
->>> similiar changes with a patch for rtc-hid-sensor-time I've send out yesterday.
->>> (sorry, no link, lkml.org seems dead, just search for
->>> "rtc-hid-sensor-time: add module alias")
->>>
->>> It works just fine. An example output is now
->>>
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.124444] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: milliseconds supported
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.132864] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: rtc core: setting system clock to 2013-07-09
->>> 17:26:51:328000 UTC (1373390811)
->>> Jul  9 19:27:21 dockstar3 kernel: [    5.146105] rtc_hid_sensor_time
->>> HID-SENSOR-2000a0.0: rtc core: registered hid-sensor-time as rtc0
->>>
->>> Before the output was e.g.
->>>
->>> HID-SENSOR-2000a0 HID-SENSOR-2000a0.0: rtc core: registered 
->>> hid-sensor-time as rtc0
->>>
->>> instead of the above with the descriptive rtc_hid_sensor_time.
->> <Agreed. This is better. >
->>> Automatic loading of modules works too and it works on ARM, Intel 
->>> and AMD as module or static linked. ;)
-> 
-> Do you have tested the patches with a real device? I assume you have 
-> one. ;)
-> 
-> Regards,
-> 
-> Alexander Holler
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.11a
 
-Just so you two know. Given this discussion, I'll be lazy about these and wait for an Ack from Srinivas before taking these.  Look fine to me, but nice to have confirmation as you say with the actual hardware!
+for you to fetch changes up to 67dbf54a3b03881c7b683801fa49ca1f2c4c3bcf:
 
-Jonathan
+  iio: lps331ap: Fix wrong in_pressure_scale output value (2013-07-16 08:51:57 +0100)
+
+----------------------------------------------------------------
+The first round of IIO fixes for the 3.11 cycle.
+
+This set is larger than I would like, partly due to my lack of review
+time in the weeks before the merge window and partly because a
+couple of large drivers and the subsystem as a whole seem to be
+getting a lot more exposure and testing recently.
+
+1) A long term bug in trigger handling gave a double free of the device.
+
+2) Wrong return value handling means offsets are ignored in
+   iio_convert_raw_to_processed_unlocked.
+
+3) The iio_channel_has_info utility function was incorrectly updated
+   during the recent info_mask split, this is now fixed.
+
+4) mxs-lradc has a couple of little fixes.
+
+5) A couple of missing .driver_module entries meant that drivers
+   could be removed from underneath their users.
+
+6) Error path fixes for ad7303 and lis3l02dq.
+
+7) The scale value for presure in the lps331ap driver was out by
+   a factor of 100.
+
+----------------------------------------------------------------
+Alexandre Belloni (2):
+      iio: Fix iio_channel_has_info
+      iio: inkern: fix iio_convert_raw_to_processed_unlocked
+
+Jacek Anaszewski (1):
+      iio: lps331ap: Fix wrong in_pressure_scale output value
+
+Jonathan Cameron (1):
+      iio:trigger: device_unregister->device_del to avoid double free
+
+Marek Vasut (2):
+      iio: mxs-lradc: Fix misuse of iio->trig
+      iio: mxs-lradc: Remove useless check in read_raw
+
+Peter Meerwald (1):
+      iio staging: fix lis3l02dq, read error handling
+
+Wei Yongjun (3):
+      iio: dac: ad7303: fix error return code in ad7303_probe()
+      iio: ti_am335x_adc: add missing .driver_module to struct iio_info
+      staging:iio:ad7291: add missing .driver_module to struct iio_info
+
+ drivers/iio/adc/ti_am335x_adc.c            |  1 +
+ drivers/iio/dac/ad7303.c                   |  4 +++-
+ drivers/iio/industrialio-trigger.c         |  2 +-
+ drivers/iio/inkern.c                       |  2 +-
+ drivers/iio/pressure/st_pressure_core.c    |  6 ++++--
+ drivers/staging/iio/accel/lis3l02dq_core.c |  2 ++
+ drivers/staging/iio/adc/ad7291.c           |  1 +
+ drivers/staging/iio/adc/mxs-lradc.c        | 18 +++++++-----------
+ include/linux/iio/iio.h                    |  4 ++--
+ 9 files changed, 22 insertions(+), 18 deletions(-)
