@@ -1,41 +1,85 @@
-Return-Path: <Hector.Palacios@digi.com>
-Message-ID: <51E00131.7080909@digi.com>
-Date: Fri, 12 Jul 2013 15:14:25 +0200
-From: Hector Palacios <hector.palacios@digi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47160 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932807Ab3GPQHA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 12:07:00 -0400
+In-Reply-To: <51E51FBE.6000205@metafoo.de>
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <1373898160-8460-5-git-send-email-otavio@ossystems.com.br> <51E5195B.3020908@kernel.org> <51E51FBE.6000205@metafoo.de>
 MIME-Version: 1.0
-To: <devicetree-discuss@lists.ozlabs.org>
-CC: "fabio.estevam@freescale.com" <fabio.estevam@freescale.com>, Marek Vasut
-	<marex@denx.de>, Lars-Peter Clausen <lars@metafoo.de>, "jic23@kernel.org"
-	<jic23@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Reference voltages for ADC channels
-References: <51DA588A.5050609@digi.com>
-In-Reply-To: <51DA588A.5050609@digi.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 5/5] iio: add configuration option for debug support
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Tue, 16 Jul 2013 17:06:51 +0100
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Otavio Salvador <otavio@ossystems.com.br>,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+	linux-iio@vger.kernel.org
+Message-ID: <a9ec6470-0312-4aca-9c0c-bc178e65898b@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
 
-On 07/08/2013 08:13 AM, Hector Palacios wrote:
-> Greetings,
->
-> The other day at linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org we discussed the
-> possibility of having ADC channels voltage references moved to the DT [1].
->
-> In Freescale's i.MX28 and i.MX23, at least, the CPU has 16 ADC channels some of which
-> are dedicated to measure internal stuff, like CPU temperature and voltages. Some
-> channels have different fixed divisors and so different reference voltages.
-> These reference voltages (in mV) are needed to calculate the scale to show through the
-> sysfs IIO interface, so that a user can easily compute the real measured voltage out
-> of the sampled data.
->
-> The proposed DT entry also appears at [1].
-> We would love to here opinions about it.
->
-> [1] http://www.spinics.net/lists/linux-iio/msg08973.html
 
-Any opinion about the suggestion of moving ADC reference voltages into the device tree?
+Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 07/16/2013 11:58 AM, Jonathan Cameron wrote:
+>> On 07/15/2013 03:22 PM, Otavio Salvador wrote:
+>>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+>> seems a sensible facility to have available.
+>> 
+>> Applied to the togreg branch of iio.git
+>
+>Can you update the Kconfig help text?
 
-Thanks
+Good point. Will fix!
+>
+>>> ---
+>>>  drivers/iio/Kconfig  | 7 +++++++
+>>>  drivers/iio/Makefile | 2 ++
+>>>  2 files changed, 9 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>> index 9af763a..d1f06f2 100644
+>>> --- a/drivers/iio/Kconfig
+>>> +++ b/drivers/iio/Kconfig
+>>> @@ -12,6 +12,13 @@ menuconfig IIO
+>>>  
+>>>  if IIO
+>>>  
+>>> +config IIO_DEBUG
+>>> +	boolean "Debug support for Industrial I/O"
+>>> +	depends on DEBUG_KERNEL
+>>> +	help
+>>> +	  Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
+>>> +	  sysfs, and debugfs support in Industrial I/O subsystem and
+>drivers.
+>
+>This has nothing to do with either sysfs or debugfs support.
+>
+>>> +
+>>>  config IIO_BUFFER
+>>>  	bool "Enable buffer support within IIO"
+>>>  	help
+>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>> index 7a3866c..6e43e5b 100644
+>>> --- a/drivers/iio/Makefile
+>>> +++ b/drivers/iio/Makefile
+>>> @@ -2,6 +2,8 @@
+>>>  # Makefile for the industrial I/O core.
+>>>  #
+>>>  
+>>> +ccflags-$(CONFIG_IIO_DEBUG) := -DDEBUG
+>>> +
+>>>  obj-$(CONFIG_IIO) += industrialio.o
+>>>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>>>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> 
+
 -- 
-Héctor Palacios
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
