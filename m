@@ -1,52 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47803 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754589Ab3GPQ55 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 12:57:57 -0400
-Message-ID: <51E57B95.1090909@kernel.org>
-Date: Tue, 16 Jul 2013 17:57:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-232.synserver.de ([212.40.185.232]:1144 "EHLO
+	smtp-out-226.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S932271Ab3GPO0u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 10:26:50 -0400
+Message-ID: <51E55814.4010503@metafoo.de>
+Date: Tue, 16 Jul 2013 16:26:28 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/4] iio: Remove IIO_DEV_ATTR_RESET macro
-References: <1373987283-32657-1-git-send-email-lars@metafoo.de> <1373987283-32657-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1373987283-32657-4-git-send-email-lars@metafoo.de>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	jonathan cameron <jic23@kernel.org>
+Subject: Re: iio_trigger_poll_chained stop and trig->use_count always equals
+ to 1
+References: <5206767.5F4z6p4ukz@ctocwl0124> <51E52036.7040400@metafoo.de> <1405801.Tk0FNxtVJJ@ctocwl0124>
+In-Reply-To: <1405801.Tk0FNxtVJJ@ctocwl0124>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/16/2013 04:08 PM, Lars-Peter Clausen wrote:
-> There are no users of this macro left and we have come to the conclusion that it
-> is not a good idea to expose the raw chip reset to userspace so the macro is
-> very unlikely to be used in new drivers.
+On 07/16/2013 03:26 PM, Denis CIOCCA wrote:
+> Hi Lars,
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git.
-
-Glad to see this one go.
-
-Thanks,
-
-Jonathan
-> ---
->  include/linux/iio/sysfs.h | 5 -----
->  1 file changed, 5 deletions(-)
+> thank you very much, now it works fine!
 > 
-> diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
-> index b7a934b..2958c96 100644
-> --- a/include/linux/iio/sysfs.h
-> +++ b/include/linux/iio/sysfs.h
-> @@ -73,11 +73,6 @@ struct iio_const_attr {
->  	    .dev_attr = __ATTR(_name, S_IRUGO, iio_read_const_attr, NULL)}
->  
->  /* Generic attributes of onetype or another */
-> -/**
-> - * IIO_DEV_ATTR_RESET: resets the device
-> - **/
-> -#define IIO_DEV_ATTR_RESET(_store)			\
-> -	IIO_DEVICE_ATTR(reset, S_IWUSR, NULL, _store, 0)
->  
->  /**
->   * IIO_DEV_ATTR_SAMP_FREQ - sets any internal clock frequency
+> Only one thing:
+> - In your patch I think there is a mistake on iio_trigger_poll_chained 
+> function: generic_handle_irq should be replaced by handle_nested_irq.
 > 
+Yep, thanks. Will fix that in v2. Can you give v2 a try?
+
+- Lars
+
+
+> 
+> 
+> On Tuesday, July 16, 2013 12:28:06 PM Lars-Peter Clausen wrote:
+>> On 07/16/2013 11:26 AM, Denis CIOCCA wrote:
+>>> Hi all,
+>>>
+>>> I need your help to understanding my strange issue...
+>>> The scenario is that:
+>>>
+>>> - I have one I2C device (microcontroller) that expose some sensors.
+>>> - I wrote one driver that create one IIO device for each sensor.
+>>> - There is only one trigger associated to all IIO devices, and one buffer
+>>> for each device.
+>>>
+>>> When interrupt appear (DRDY of one or more sensors), the driver reads a
+>>> mask from micro to understand how many sensors have new data. After that,
+>>> the driver reads all new data from micro and save all data to one buffer.
+>>> This is done in a threaded irq function.
+>>>
+>>> When iio_trigger_poll_chained is called, all data are saved to one common
+>>> buffer, each iio_triggered_buffer_setup functions is called and can split
+>>> and push their data to iio_buffer.
+>>>
+>>> The issue is that: after some samples (about 50:100) the
+>>> iio_trigger_poll_chained doesn't call the iio_triggered_buffer_setup
+>>> functions and trig->use_count is always equals to 1.
+>>
+>> Yea, there is a race condition. Try this patch:
+>> http://www.spinics.net/lists/linux-iio/msg08710.html
+>>
+>> - Lars
+
