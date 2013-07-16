@@ -1,71 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:56854 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751762Ab3GSQOQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 12:14:16 -0400
-From: Marek Vasut <marex@denx.de>
-To: Hector Palacios <hector.palacios@digi.com>
-Subject: Re: [PATCH v2 3/5] iio: mxs-lradc: add scale attribute to channels
-Date: Fri, 19 Jul 2013 18:14:15 +0200
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191630.17149.marex@denx.de> <51E95EF1.4040503@digi.com>
-In-Reply-To: <51E95EF1.4040503@digi.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <51E51FBE.6000205@metafoo.de>
+Date: Tue, 16 Jul 2013 12:26:06 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307191814.15491.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Otavio Salvador <otavio@ossystems.com.br>,
+ linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@cam.ac.uk>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 5/5] iio: add configuration option for debug support
+References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <1373898160-8460-5-git-send-email-otavio@ossystems.com.br> <51E5195B.3020908@kernel.org>
+In-Reply-To: <51E5195B.3020908@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Hector Palacios,
-
-> Dear Marek,
+On 07/16/2013 11:58 AM, Jonathan Cameron wrote:
+> On 07/15/2013 03:22 PM, Otavio Salvador wrote:
+>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+> seems a sensible facility to have available.
 > 
-> On 07/19/2013 04:30 PM, Marek Vasut wrote:
-> >> @@ -228,39 +230,12 @@ struct mxs_lradc {
-> >> 
-> >>   #define LRADC_RESOLUTION			12
-> >>   #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
-> >> 
-> >> -/*
-> >> - * Raw I/O operations
-> >> - */
-> >> -static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-> >> +static int mxs_lradc_read_single(struct iio_dev *iio_dev,
-> >> 
-> >>   			const struct iio_chan_spec *chan,
-> >>   			int *val, int *val2, long m)
-> >>   
-> >>   {
-> >>   
-> >>   	struct mxs_lradc *lradc = iio_priv(iio_dev);
-> >>   	int ret;
-> >> 
-> >> -	unsigned long mask;
-> >> -
-> >> -	if (m != IIO_CHAN_INFO_RAW)
-> >> -		return -EINVAL;
-> >> -
-> >> -	/* Check for invalid channel */
-> >> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-> >> -		return -EINVAL;
-> > 
-> > This was already resolved, so this patch won't apply I'm afraid.
+> Applied to the togreg branch of iio.git
+
+Can you update the Kconfig help text?
+
+>> ---
+>>  drivers/iio/Kconfig  | 7 +++++++
+>>  drivers/iio/Makefile | 2 ++
+>>  2 files changed, 9 insertions(+)
+>>
+>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>> index 9af763a..d1f06f2 100644
+>> --- a/drivers/iio/Kconfig
+>> +++ b/drivers/iio/Kconfig
+>> @@ -12,6 +12,13 @@ menuconfig IIO
+>>  
+>>  if IIO
+>>  
+>> +config IIO_DEBUG
+>> +	boolean "Debug support for Industrial I/O"
+>> +	depends on DEBUG_KERNEL
+>> +	help
+>> +	  Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
+>> +	  sysfs, and debugfs support in Industrial I/O subsystem and drivers.
+
+This has nothing to do with either sysfs or debugfs support.
+
+>> +
+>>  config IIO_BUFFER
+>>  	bool "Enable buffer support within IIO"
+>>  	help
+>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>> index 7a3866c..6e43e5b 100644
+>> --- a/drivers/iio/Makefile
+>> +++ b/drivers/iio/Makefile
+>> @@ -2,6 +2,8 @@
+>>  # Makefile for the industrial I/O core.
+>>  #
+>>  
+>> +ccflags-$(CONFIG_IIO_DEBUG) := -DDEBUG
+>> +
+>>  obj-$(CONFIG_IIO) += industrialio.o
+>>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> You mean the 'unsigned long mask', right?  Yeah, I think I had resolved
-> that one before submitting, but looks like I didn't.
-> The other check is not resolved afaik. We agreed to remove it, but on a
-> different patch.
-
-I mean the other check, yeah. A patch removing that should be applied already.
-
-Best regards,
-Marek Vasut
