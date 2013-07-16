@@ -1,63 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f48.google.com ([209.85.215.48]:51862 "EHLO
-	mail-la0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754721Ab3GPOWJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 10:22:09 -0400
-Received: by mail-la0-f48.google.com with SMTP id lx15so571122lab.7
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jul 2013 07:22:07 -0700 (PDT)
-Message-ID: <51E55710.8060907@cogentembedded.com>
-Date: Tue, 16 Jul 2013 18:22:08 +0400
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47732 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933006Ab3GPQyK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 12:54:10 -0400
+Message-ID: <51E57AAF.9000000@kernel.org>
+Date: Tue, 16 Jul 2013 17:54:07 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com, lars@metafoo.de,
-	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
-	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 1/2] ARM: dts: twl: Add GPADC data to device tree
-References: <1373974500-23609-1-git-send-email-oleksandr.kozaruk@ti.com>
-In-Reply-To: <1373974500-23609-1-git-send-email-oleksandr.kozaruk@ti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Otavio Salvador <otavio@ossystems.com.br>
+CC: linux-kernel@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>,
+	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: add configuration option for debug support
+References: <1373979376-31583-1-git-send-email-otavio@ossystems.com.br> <1373979376-31583-4-git-send-email-otavio@ossystems.com.br>
+In-Reply-To: <1373979376-31583-4-git-send-email-otavio@ossystems.com.br>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello.
+On 07/16/2013 01:56 PM, Otavio Salvador wrote:
+> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
+Applied to the togreg branch of iio.git in place of v1
 
-On 07/16/2013 03:34 PM, Oleksandr Kozaruk wrote:
-
-> GPADC is the general purpose ADC present on twl6030.
-> The dt data is interrupt used to trigger end of ADC
-> conversion.
-
-> Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
 > ---
->   arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
->   1 file changed, 6 insertions(+)
-
-> diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
-> index 2e3bd31..434842c 100644
-> --- a/arch/arm/boot/dts/twl6030.dtsi
-> +++ b/arch/arm/boot/dts/twl6030.dtsi
-> @@ -103,4 +103,10 @@
->   		compatible = "ti,twl6030-pwmled";
->   		#pwm-cells = <2>;
->   	};
+> Changes in v2:
+> - Rework Kconfig help (Lars-Peter Clausen)
+> 
+>  drivers/iio/Kconfig  | 7 +++++++
+>  drivers/iio/Makefile | 2 ++
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 9af763a..e5d1cfc 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -12,6 +12,13 @@ menuconfig IIO
+>  
+>  if IIO
+>  
+> +config IIO_DEBUG
+> +	boolean "Debug support for Industrial I/O"
+> +	depends on DEBUG_KERNEL
+> +	help
+> +	  Say "yes" to enable debug messaging (like dev_dbg and pr_debug)
+> +	  support in Industrial I/O subsystem and drivers.
 > +
-> +	gpadc: twl6030_gpadc {
-> +		compatible = "ti,twl6030_gpadc";
-> +		interrupts = <3>;
-> +		#io-channel-cells = <1>;
-> +	};
-
-    ePAPR [1] says: "The name of a node should be somewhat generic, 
-reflecting the function of the device and not its precise programming 
-model."
-
-[1] http://www.power.org/resources/downloads/Power_ePAPR_APPROVED_v1.0.pdf
-
-WBR, Sergei
-
+>  config IIO_BUFFER
+>  	bool "Enable buffer support within IIO"
+>  	help
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 7a3866c..6e43e5b 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -2,6 +2,8 @@
+>  # Makefile for the industrial I/O core.
+>  #
+>  
+> +ccflags-$(CONFIG_IIO_DEBUG) := -DDEBUG
+> +
+>  obj-$(CONFIG_IIO) += industrialio.o
+>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+> 
