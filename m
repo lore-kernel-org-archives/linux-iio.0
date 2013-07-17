@@ -1,139 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:59124 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754291Ab3GRKTv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 06:19:51 -0400
-From: Oleksandr Kravchenko <x0199363@ti.com>
-To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
-	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
-	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 1/3] iio: core: implement devm_iio_device_alloc/devm_iio_device_free
-Date: Thu, 18 Jul 2013 13:19:24 +0300
-Message-ID: <1374142766-29736-1-git-send-email-x0199363@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-ea0-f178.google.com ([209.85.215.178]:47429 "EHLO
+	mail-ea0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932779Ab3GQR1a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:30 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
+	zubair.lutfullah@gmail.com
+Subject: [PATCH 20/21] input: ti_am335x_tsc.c fix checkpatch.pl issues
+Date: Wed, 17 Jul 2013 18:26:49 +0100
+Message-Id: <1374082010-28095-21-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-
-Add a resource managed devm_iio_device_alloc()/devm_iio_device_free()
-to automatically clean up any allocations made by IIO drivers,
-thus leading to simplified IIO drivers code.
-
-In addition, this will allow IIO drivers to use other devm_*() API
-(like devm_request_irq) and don't care about the race between
-iio_device_free() and the release of resources by Device core
-during driver removing.
-
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-[o.v.kravchenko@globallogic.com: fix return value ib devm_iio_device_alloc
-in case if devres_alloc failed, remove unused variable "rc"]
-Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Tested-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+code formatting fixes
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 ---
- drivers/iio/industrialio-core.c |   47 +++++++++++++++++++++++++++++++++++++++
- include/linux/iio/iio.h         |   25 +++++++++++++++++++++
- 2 files changed, 72 insertions(+)
+ drivers/input/touchscreen/ti_am335x_tsc.c |   28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index e145931..d56d122 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -912,6 +912,53 @@ void iio_device_free(struct iio_dev *dev)
- }
- EXPORT_SYMBOL(iio_device_free);
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 4bf2ee6..ba7abfe 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -260,19 +260,19 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int fsm;
  
-+static void devm_iio_device_release(struct device *dev, void *res)
-+{
-+	iio_device_free(*(struct iio_dev **)res);
-+}
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+- 
+-        /*
+-         * ADC and touchscreen share the IRQ line.
+-         * FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
+-         * interrupts are used by ADC,
+-         * hence return from touchscreen IRQ handler if FIFO1
+-         * related interrupts occurred.
+-         */
+-       if ((status & IRQENB_FIFO1THRES) ||
+-                       (status & IRQENB_FIFO1OVRRUN) ||
+-                       (status & IRQENB_FIFO1UNDRFLW))
+-                return IRQ_NONE;
+-        else if (status & IRQENB_FIFO0THRES) {
 +
-+static int devm_iio_device_match(struct device *dev, void *res, void *data)
-+{
-+	struct iio_dev **r = res;
-+	if (!r || !*r) {
-+		WARN_ON(!r || !*r);
-+		return 0;
-+	}
-+	return *r == data;
-+}
-+
-+struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
-+{
-+	struct iio_dev **ptr, *iio_dev;
-+
-+	ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return NULL;
-+
-+	/* use raw alloc_dr for kmalloc caller tracing */
-+	iio_dev = iio_device_alloc(sizeof_priv);
-+	if (iio_dev) {
-+		*ptr = iio_dev;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
-+
-+	return iio_dev;
-+}
-+EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
-+
-+void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
-+{
-+	int rc;
-+
-+	rc = devres_release(dev, devm_iio_device_release,
-+			    devm_iio_device_match, iio_dev);
-+	WARN_ON(rc);
-+}
-+EXPORT_SYMBOL_GPL(devm_iio_device_free);
-+
- /**
-  * iio_chrdev_open() - chrdev file open for buffer access and ioctls
-  **/
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 8d171f4..f1d99f6 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -532,6 +532,31 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
- void iio_device_free(struct iio_dev *indio_dev);
++	/*
++	* ADC and touchscreen share the IRQ line.
++	* FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
++	* interrupts are used by ADC,
++	* hence return from touchscreen IRQ handler if FIFO1
++	* related interrupts occurred.
++	*/
++	if ((status & IRQENB_FIFO1THRES) ||
++			(status & IRQENB_FIFO1OVRRUN) ||
++			(status & IRQENB_FIFO1UNDRFLW))
++		return IRQ_NONE;
++	else if (status & IRQENB_FIFO0THRES) {
+ 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
  
- /**
-+ * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-+ * @dev: 		Device to allocate iio_dev for
-+ * @sizeof_priv: 	Space to allocate for private structure.
-+ *
-+ * Managed iio_device_alloc.  iio_dev allocated with this function is
-+ * automatically freed on driver detach.
-+ *
-+ * If an iio_dev allocated with this function needs to be freed separately,
-+ * devm_iio_device_free() must be used.
-+ *
-+ * RETURNS:
-+ * Pointer to allocated iio_dev on success, NULL on failure.
-+ */
-+struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
-+
-+/**
-+ * devm_iio_device_free - Resource-managed iio_device_free()
-+ * @dev:		Device this iio_dev belongs to
-+ * @indio_dev: 		the iio_dev associated with the device
-+ *
-+ * Free indio_dev allocated with devm_iio_device_alloc().
-+ */
-+void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
-+
-+/**
-  * iio_buffer_enabled() - helper function to test if the buffer is enabled
-  * @indio_dev:		IIO device structure for device
-  **/
+ 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+@@ -326,7 +326,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	}
+ 
+ 	if (irqclr) {
+-		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr) );
++		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
+ 		am335x_tsc_se_update(ts_dev->mfd_tscadc);
+ 		return IRQ_HANDLED;
+ 	}
 -- 
 1.7.9.5
 
