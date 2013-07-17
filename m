@@ -1,69 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f53.google.com ([74.125.83.53]:55989 "EHLO
-	mail-ee0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755900Ab3GQR1F (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:05 -0400
+Received: from mail-ea0-f176.google.com ([209.85.215.176]:65372 "EHLO
+	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756749Ab3GQR1M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:12 -0400
 From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 To: jic23@cam.ac.uk
 Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
 	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
 	zubair.lutfullah@gmail.com
-Subject: [PATCH 06/21] MFD: ti_tscadc: ADC Clock check not required
-Date: Wed, 17 Jul 2013 18:26:35 +0100
-Message-Id: <1374082010-28095-7-git-send-email-zubair.lutfullah@gmail.com>
+Subject: [PATCH 10/21] IIO: ti_adc: Handle overrun before threshold event
+Date: Wed, 17 Jul 2013 18:26:39 +0100
+Message-Id: <1374082010-28095-11-git-send-email-zubair.lutfullah@gmail.com>
 In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-ADC is ideally expected to work at a frequency of 3MHz.
+If an overrun occurs, the threshold event is meaningless, handle
 
-The present code had a check, which returned error if the frequency
+the overrun event first.
 
-went below the threshold  value. But since AM335x supports various
-
-working frequencies, this check is not required.
-
-Now the code just uses the internal ADC clock divider to set the ADC
-
-frequency w.r.t the sys clock.
-
-Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Russ Dill <Russ.Dill@ti.com>
 Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 ---
- drivers/mfd/ti_am335x_tscadc.c       |    6 +-----
- include/linux/mfd/ti_am335x_tscadc.h |    1 -
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c |   29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index fdbd0d5..e7314e4 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -197,11 +197,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	clock_rate = clk_get_rate(clk);
- 	clk_put(clk);
- 	clk_value = clock_rate / ADC_CLK;
--	if (clk_value < MAX_CLK_DIV) {
--		dev_err(&pdev->dev, "clock input less than min clock requirement\n");
--		err = -EINVAL;
--		goto err_disable_clk;
--	}
-+
- 	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
- 	clk_value = clk_value - 1;
- 	tscadc_writel(tscadc, REG_CLKDIV, clk_value);
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index f436918..1516dc8 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -127,7 +127,6 @@
- #define SEQ_STATUS BIT(5)
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 5c95eba..e510da7 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -171,7 +171,19 @@ static irqreturn_t tiadc_irq(int irq, void *private)
+ 	unsigned int status, config;
  
- #define ADC_CLK			3000000
--#define	MAX_CLK_DIV		7
- #define TOTAL_STEPS		16
- #define TOTAL_CHANNELS		8
- #define FIFO1_THRESHOLD                        19
+         status = tiadc_readl(adc_dev, REG_IRQSTATUS);
+-        if (status & IRQENB_FIFO1THRES) {
++        if (status & IRQENB_FIFO1OVRRUN) {
++                config = tiadc_readl(adc_dev, REG_CTRL);
++                config &= ~(CNTRLREG_TSCSSENB);
++                tiadc_writel(adc_dev, REG_CTRL, config);
++
++                tiadc_writel(adc_dev, REG_IRQSTATUS,
++                                IRQENB_FIFO1OVRRUN |
++                                IRQENB_FIFO1UNDRFLW);
++ 
++                tiadc_writel(adc_dev, REG_CTRL,
++                       (config | CNTRLREG_TSCSSENB));
++		return IRQ_HANDLED;
++        } else if (status & IRQENB_FIFO1THRES) {
+                 tiadc_writel(adc_dev, REG_IRQCLR,
+                                 IRQENB_FIFO1THRES);
+ 
+@@ -183,20 +195,7 @@ static irqreturn_t tiadc_irq(int irq, void *private)
+                 }
+                 tiadc_writel(adc_dev, REG_IRQSTATUS,
+ 					IRQENB_FIFO1THRES);
+-                return IRQ_HANDLED;
+-        } else if ((status &  IRQENB_FIFO1OVRRUN) ||
+-                        (status &  IRQENB_FIFO1UNDRFLW)) {
+-                config = tiadc_readl(adc_dev,  REG_CTRL);
+-                config &= ~( CNTRLREG_TSCSSENB);
+-                tiadc_writel(adc_dev,  REG_CTRL, config);
+- 
+-                tiadc_writel(adc_dev, REG_IRQSTATUS,
+-                                IRQENB_FIFO1OVRRUN |
+-                                IRQENB_FIFO1UNDRFLW);
+-
+-                tiadc_writel(adc_dev,  REG_CTRL,
+-                        (config |  CNTRLREG_TSCSSENB));
+-                return IRQ_HANDLED;        
++                return IRQ_HANDLED;      
+ 	} else {
+                 return IRQ_NONE;
+         }
 -- 
 1.7.9.5
 
