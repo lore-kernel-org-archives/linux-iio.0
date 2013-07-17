@@ -1,114 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53930 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751394Ab3G0LIk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Jul 2013 07:08:40 -0400
-Message-ID: <51F3B84A.6010707@kernel.org>
-Date: Sat, 27 Jul 2013 13:08:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 15/15] staging:iio:adis16260: Move out of staging
-References: <1374072279-7140-1-git-send-email-lars@metafoo.de> <1374072279-7140-15-git-send-email-lars@metafoo.de>
-In-Reply-To: <1374072279-7140-15-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-051.synserver.de ([212.40.185.51]:1076 "EHLO
+	smtp-out-051.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755749Ab3GQOoN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 10:44:13 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 14/15] staging:iio:adis16260: Remove sampling_frequency_available attribute
+Date: Wed, 17 Jul 2013 16:44:38 +0200
+Message-Id: <1374072279-7140-14-git-send-email-lars@metafoo.de>
+In-Reply-To: <1374072279-7140-1-git-send-email-lars@metafoo.de>
+References: <1374072279-7140-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/17/13 15:44, Lars-Peter Clausen wrote:
-> The drivers is in more or less good shape, conforms to the IIO ABI and none of
-> the default static code checker report any problems, so move it out of staging.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+The values presented here are completely bogus. Also ..._available attributes
+are supposed to be used for properties that only support discrete sets of
+values, but we accept continuous values and will round to the next supported
+frequency.
 
-Applied to the togreg branch of iio.git
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/gyro/adis16260_core.c | 16 ----------------
+ 1 file changed, 16 deletions(-)
 
-If you are really bored, the comment just above the id table is clearly untrue
-and you could always apply the new devm_ function to make this driver near perfect.
+diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/staging/iio/gyro/adis16260_core.c
+index d4e3dd7..b4cf800 100644
+--- a/drivers/staging/iio/gyro/adis16260_core.c
++++ b/drivers/staging/iio/gyro/adis16260_core.c
+@@ -101,18 +101,6 @@
+ #define ADIS16260_SCAN_TEMP	3
+ #define ADIS16260_SCAN_ANGL	4
+ 
+-static ssize_t adis16260_read_frequency_available(struct device *dev,
+-						  struct device_attribute *attr,
+-						  char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct adis *adis = iio_priv(indio_dev);
+-	if (spi_get_device_id(adis->spi)->driver_data)
+-		return sprintf(buf, "%s\n", "0.129 ~ 256");
+-	else
+-		return sprintf(buf, "%s\n", "256 2048");
+-}
+-
+ static ssize_t adis16260_read_frequency(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf)
+@@ -190,9 +178,6 @@ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 		adis16260_read_frequency,
+ 		adis16260_write_frequency);
+ 
+-static IIO_DEVICE_ATTR(sampling_frequency_available,
+-		       S_IRUGO, adis16260_read_frequency_available, NULL, 0);
+-
+ static const struct iio_chan_spec adis16260_channels[] = {
+ 	ADIS_GYRO_CHAN(X, ADIS16260_GYRO_OUT, ADIS16260_SCAN_GYRO,
+ 		BIT(IIO_CHAN_INFO_CALIBBIAS) |
+@@ -306,7 +291,6 @@ static int adis16260_write_raw(struct iio_dev *indio_dev,
+ 
+ static struct attribute *adis16260_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL
+ };
+ 
+-- 
+1.8.0
 
-Thanks for all your work on this.  I sometimes feel guilty about how many drivers
-we still have sitting in staging so good to see another one come out.
-
-Jonathan
-> ---
->  drivers/iio/gyro/Kconfig                                     | 12 ++++++++++++
->  drivers/iio/gyro/Makefile                                    |  1 +
->  .../iio/gyro/adis16260_core.c => iio/gyro/adis16260.c}       |  0
->  drivers/staging/iio/gyro/Kconfig                             | 12 ------------
->  drivers/staging/iio/gyro/Makefile                            |  3 ---
->  5 files changed, 13 insertions(+), 15 deletions(-)
->  rename drivers/{staging/iio/gyro/adis16260_core.c => iio/gyro/adis16260.c} (100%)
-> 
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 5913735..41c64a4 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -28,6 +28,18 @@ config ADIS16136
->  	  Say yes here to build support for the Analog Devices ADIS16133, ADIS16135,
->  	  ADIS16136 gyroscope devices.
->  
-> +config ADIS16260
-> +	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
-> +	depends on SPI
-> +	select IIO_ADIS_LIB
-> +	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-> +	help
-> +	  Say yes here to build support for Analog Devices ADIS16260 ADIS16265
-> +	  ADIS16250 ADIS16255 and ADIS16251 programmable digital gyroscope sensors.
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called adis16260.
-> +
->  config ADXRS450
->  	tristate "Analog Devices ADXRS450/3 Digital Output Gyroscope SPI driver"
->  	depends on SPI
-> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> index 36091d5..2f2752a 100644
-> --- a/drivers/iio/gyro/Makefile
-> +++ b/drivers/iio/gyro/Makefile
-> @@ -6,6 +6,7 @@
->  obj-$(CONFIG_ADIS16080) += adis16080.o
->  obj-$(CONFIG_ADIS16130) += adis16130.o
->  obj-$(CONFIG_ADIS16136) += adis16136.o
-> +obj-$(CONFIG_ADIS16260) += adis16260.o
->  obj-$(CONFIG_ADXRS450) += adxrs450.o
->  
->  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
-> diff --git a/drivers/staging/iio/gyro/adis16260_core.c b/drivers/iio/gyro/adis16260.c
-> similarity index 100%
-> rename from drivers/staging/iio/gyro/adis16260_core.c
-> rename to drivers/iio/gyro/adis16260.c
-> diff --git a/drivers/staging/iio/gyro/Kconfig b/drivers/staging/iio/gyro/Kconfig
-> index b433371..88b199b 100644
-> --- a/drivers/staging/iio/gyro/Kconfig
-> +++ b/drivers/staging/iio/gyro/Kconfig
-> @@ -10,16 +10,4 @@ config ADIS16060
->  	  Say yes here to build support for Analog Devices adis16060 wide bandwidth
->  	  yaw rate gyroscope with SPI.
->  
-> -config ADIS16260
-> -	tristate "Analog Devices ADIS16260 Digital Gyroscope Sensor SPI driver"
-> -	depends on SPI
-> -	select IIO_ADIS_LIB
-> -	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-> -	help
-> -	  Say yes here to build support for Analog Devices ADIS16260 ADIS16265
-> -	  ADIS16250 ADIS16255 and ADIS16251 programmable digital gyroscope sensors.
-> -
-> -	  This driver can also be built as a module.  If so, the module
-> -	  will be called adis16260.
-> -
->  endmenu
-> diff --git a/drivers/staging/iio/gyro/Makefile b/drivers/staging/iio/gyro/Makefile
-> index 975f95b..cf22d6d 100644
-> --- a/drivers/staging/iio/gyro/Makefile
-> +++ b/drivers/staging/iio/gyro/Makefile
-> @@ -4,6 +4,3 @@
->  
->  adis16060-y             := adis16060_core.o
->  obj-$(CONFIG_ADIS16060) += adis16060.o
-> -
-> -adis16260-y             := adis16260_core.o
-> -obj-$(CONFIG_ADIS16260) += adis16260.o
-> 
