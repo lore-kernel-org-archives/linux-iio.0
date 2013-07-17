@@ -1,70 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-221.synserver.de ([212.40.185.221]:1284 "EHLO
-	smtp-out-221.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753895Ab3GPMJK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 08:09:10 -0400
-Message-ID: <51E53811.6040100@metafoo.de>
-Date: Tue, 16 Jul 2013 14:09:53 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from devils.ext.ti.com ([198.47.26.153]:51621 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752401Ab3GQLOV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 07:14:21 -0400
+From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
+	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<lars@metafoo.de>, <sameo@linux.intel.com>,
+	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
+	<balajitk@ti.com>, <gg@slimlogic.co.uk>
+CC: <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
+Subject: [PATCH v5 1/2] ARM: dts: twl: Add GPADC data to device tree
+Date: Wed, 17 Jul 2013 14:12:43 +0300
+Message-ID: <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
+In-Reply-To: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
+References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
 MIME-Version: 1.0
-To: Otavio Salvador <otavio@ossystems.com.br>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Kernel development list <linux-kernel@vger.kernel.org>,
-	Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/5] iio: add configuration option for debug support
-References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br> <1373898160-8460-5-git-send-email-otavio@ossystems.com.br> <51E5195B.3020908@kernel.org> <51E51FBE.6000205@metafoo.de> <CAP9ODKrsQqa12ZVj0R+rpb=kjtb-63P7yraVmV0+yZxaaeMcsQ@mail.gmail.com>
-In-Reply-To: <CAP9ODKrsQqa12ZVj0R+rpb=kjtb-63P7yraVmV0+yZxaaeMcsQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/16/2013 02:01 PM, Otavio Salvador wrote:
-> On Tue, Jul 16, 2013 at 7:26 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 07/16/2013 11:58 AM, Jonathan Cameron wrote:
->>> On 07/15/2013 03:22 PM, Otavio Salvador wrote:
->>>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
->>> seems a sensible facility to have available.
->>>
->>> Applied to the togreg branch of iio.git
->>
->> Can you update the Kconfig help text?
-> 
-> Sure I can. Jonathan seem to have applied it so should I send a v2 or
-> a new patch?
-> 
+GPADC is the general purpose ADC present on twl6030.
+The dt data is interrupt used to trigger end of ADC
+conversion.
 
-He hasn't pushed things out yet, I think a v2 will be fine.
+Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+---
+ arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
->>>> ---
->>>>  drivers/iio/Kconfig  | 7 +++++++
->>>>  drivers/iio/Makefile | 2 ++
->>>>  2 files changed, 9 insertions(+)
->>>>
->>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->>>> index 9af763a..d1f06f2 100644
->>>> --- a/drivers/iio/Kconfig
->>>> +++ b/drivers/iio/Kconfig
->>>> @@ -12,6 +12,13 @@ menuconfig IIO
->>>>
->>>>  if IIO
->>>>
->>>> +config IIO_DEBUG
->>>> +    boolean "Debug support for Industrial I/O"
->>>> +    depends on DEBUG_KERNEL
->>>> +    help
->>>> +      Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
->>>> +      sysfs, and debugfs support in Industrial I/O subsystem and drivers.
->>
->> This has nothing to do with either sysfs or debugfs support.
-> 
->      Say "yes" to enable debug messaging (like dev_dbg and pr_debug)
->      support in Industrial I/O subsystem and drivers.
-> 
-> ?
-> 
-> --
-> Otavio Salvador                             O.S. Systems
-> http://www.ossystems.com.br        http://projetos.ossystems.com.br
-> Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
-> 
+diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+index 2e3bd31..322aa8e 100644
+--- a/arch/arm/boot/dts/twl6030.dtsi
++++ b/arch/arm/boot/dts/twl6030.dtsi
+@@ -103,4 +103,10 @@
+ 		compatible = "ti,twl6030-pwmled";
+ 		#pwm-cells = <2>;
+ 	};
++
++	adc: twl6030_gpadc {
++		compatible = "ti,twl6030_gpadc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
+ };
+-- 
+1.8.1.2
 
