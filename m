@@ -1,82 +1,135 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc: jonathan cameron <jic23@kernel.org>
-Date: Tue, 16 Jul 2013 11:26:55 +0200
-Subject: iio_trigger_poll_chained stop and trig->use_count always equals to 1
-Message-ID: <5206767.5F4z6p4ukz@ctocwl0124>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ee0-f47.google.com ([74.125.83.47]:60070 "EHLO
+	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756714Ab3GQR06 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:26:58 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
+	zubair.lutfullah@gmail.com
+Subject: [PATCH 02/21] IIO: ADC: ti_adc: Fix 1st sample read
+Date: Wed, 17 Jul 2013 18:26:31 +0100
+Message-Id: <1374082010-28095-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+Previously we tried to read data form ADC even before ADC sequencer
 
-I need your help to understanding my strange issue...
-The scenario is that:
+finished sampling. This led to wrong samples.
 
-- I have one I2C device (microcontroller) that expose some sensors.
-- I wrote one driver that create one IIO device for each sensor.
-- There is only one trigger associated to all IIO devices, and one buffer f=
-or=20
-each device.
+We now wait on ADC status register idle bit to be set.
 
-When interrupt appear (DRDY of one or more sensors), the driver reads a mas=
-k=20
-from micro to understand how many sensors have new data. After that, the=20
-driver reads all new data from micro and save all data to one buffer. This =
-is=20
-done in a threaded irq function.
+This patch is based on work in the 3.2 tree by TI
+Original Author is Patil Rachna
 
-When iio_trigger_poll_chained is called, all data are saved to one common=20
-buffer, each iio_triggered_buffer_setup functions is called and can split a=
-nd=20
-push their data to iio_buffer.
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c      |   30 ++++++++++++++++++++++--------
+ include/linux/mfd/ti_am335x_tscadc.h |   16 ++++++++++++++++
+ 2 files changed, 38 insertions(+), 8 deletions(-)
 
-The issue is that: after some samples (about 50:100) the=20
-iio_trigger_poll_chained doesn't call the iio_triggered_buffer_setup functi=
-ons=20
-and trig->use_count is always equals to 1.
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 4427e8e..1f83cf7 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -60,7 +60,6 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ {
+ 	unsigned int stepconfig;
+ 	int i, steps;
+-	u32 step_en;
+ 
+ 	/*
+ 	 * There are 16 configurable steps and 8 analog input
+@@ -86,8 +85,7 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 		adc_dev->channel_step[i] = steps;
+ 		steps++;
+ 	}
+-	step_en = get_adc_step_mask(adc_dev);
+-	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
++
+ }
+ 
+ static const char * const chan_name_ain[] = {
+@@ -142,10 +140,22 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 		int *val, int *val2, long mask)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+-	int i;
+-	unsigned int fifo1count, read;
++	int i, map_val;
++	unsigned int fifo1count, read, stepid;
+ 	u32 step = UINT_MAX;
+ 	bool found = false;
++	u32 step_en;
++	unsigned long timeout = jiffies + usecs_to_jiffies
++				(IDLE_TIMEOUT * adc_dev->channels);
++	step_en = get_adc_step_mask(adc_dev);
++	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
++ 
++	/* Wait for ADC sequencer to complete sampling */
++	while (tiadc_readl(adc_dev, REG_ADCFSM) & SEQ_STATUS) {
++		if (time_after(jiffies, timeout))
++			return -EAGAIN;
++		}
++	map_val = chan->channel + TOTAL_CHANNELS;
+ 
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -170,12 +180,16 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (read >> 16 == step) {
+-			*val = read & 0xfff;
++		stepid = read & FIFOREAD_CHNLID_MASK;
++		stepid = stepid >> 0x10;
++
++		if (stepid == map_val) {
++			read = read & FIFOREAD_DATA_MASK;
+ 			found = true;
++			*val = read;
+ 		}
+ 	}
+-	am335x_tsc_se_update(adc_dev->mfd_tscadc);
++
+ 	if (found == false)
+ 		return -EBUSY;
+ 	return IIO_VAL_INT;
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 8d73fe2..db1791b 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -113,11 +113,27 @@
+ #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+ #define CNTRLREG_TSCENB		BIT(7)
+ 
++/* FIFO READ Register */
++#define FIFOREAD_DATA_MASK (0xfff << 0)
++#define FIFOREAD_CHNLID_MASK (0xf << 16)
++
++/* Sequencer Status */
++#define SEQ_STATUS BIT(5)
++
+ #define ADC_CLK			3000000
+ #define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+ #define TOTAL_CHANNELS		8
+ 
++/*
++* ADC runs at 3MHz, and it takes
++* 15 cycles to latch one data output.
++* Hence the idle time for ADC to
++* process one sample data would be
++* around 5 micro seconds.
++*/
++#define IDLE_TIMEOUT 5 /* microsec */
++
+ #define TSCADC_CELLS		2
+ 
+ struct ti_tscadc_dev {
+-- 
+1.7.9.5
 
-To well understanding:
-
-static irqreturn_t st_drdy_poll(int irq, void *private)
-{
-	// stuff statements
-	// i2c read mask
-	// i2c read sensors data
-	iio_trigger_poll_chained(trig, 0);
-	return IRQ_HANDLED;
-}
-
-static irqreturn_t st_trigger_handler(int irq, void *p)
-{
-	// stuff statements
-	// only check operations
-	iio_push_to_buffers(sensor_iio_dev, sdata->buffer_data);
-	iio_trigger_notify_done(sensor_iio_dev->trig);
-	return IRQ_HANDLED;
-}
-
-trigger_allocate()
-{
-err =3D request_threaded_irq(client->irq,
-				NULL,
-				st_drdy_poll,
-				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-				name,
-				trig);
-}
-
-buffer_allocate()
-{
-return iio_triggered_buffer_setup(sensor_iio_dev,
-						&iio_pollfunc_store_time,
-						&st_trigger_handler,
-						&st_buffer_setup_ops);
-}
-
-
-
-If you have any comments...Thanks for your time!
-
-Denis
