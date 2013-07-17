@@ -1,49 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-221.synserver.de ([212.40.185.221]:1079 "EHLO
-	smtp-out-221.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754368Ab3GPK1Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 06:27:25 -0400
-Message-ID: <51E52036.7040400@metafoo.de>
-Date: Tue, 16 Jul 2013 12:28:06 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	jonathan cameron <jic23@kernel.org>
-Subject: Re: iio_trigger_poll_chained stop and trig->use_count always equals
- to 1
-References: <5206767.5F4z6p4ukz@ctocwl0124>
-In-Reply-To: <5206767.5F4z6p4ukz@ctocwl0124>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-ea0-f169.google.com ([209.85.215.169]:49963 "EHLO
+	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755900Ab3GQR0y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:26:54 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
+	zubair.lutfullah@gmail.com
+Subject: [PATCH 00/21] iio: TI-am335x-adc continuous mode
+Date: Wed, 17 Jul 2013 18:26:29 +0100
+Message-Id: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/16/2013 11:26 AM, Denis CIOCCA wrote:
-> Hi all,
-> 
-> I need your help to understanding my strange issue...
-> The scenario is that:
-> 
-> - I have one I2C device (microcontroller) that expose some sensors.
-> - I wrote one driver that create one IIO device for each sensor.
-> - There is only one trigger associated to all IIO devices, and one buffer for 
-> each device.
-> 
-> When interrupt appear (DRDY of one or more sensors), the driver reads a mask 
-> from micro to understand how many sensors have new data. After that, the 
-> driver reads all new data from micro and save all data to one buffer. This is 
-> done in a threaded irq function.
-> 
-> When iio_trigger_poll_chained is called, all data are saved to one common 
-> buffer, each iio_triggered_buffer_setup functions is called and can split and 
-> push their data to iio_buffer.
-> 
-> The issue is that: after some samples (about 50:100) the 
-> iio_trigger_poll_chained doesn't call the iio_triggered_buffer_setup functions 
-> and trig->use_count is always equals to 1.
-> 
+A series of patches that add continuous sampling support
+for the adc drivers for the am335x.
 
-Yea, there is a race condition. Try this patch:
-http://www.spinics.net/lists/linux-iio/msg08710.html
+Most of the work is done by Rachil Patna and Russ Dill from TI.
 
-- Lars
+TI maintains a 3.2 based kernel tree.
+I forward ported these patches from those.
+
+One of the significant changes I made to their patches
+was to the ring_sw buffer as that support has been removed from iio.
+
+I also merged some of their bug fixes in the same large patch which
+adds the main support (patch 5 with the subject "Add continuous mode to adc")
+
+MFD and Input changes are little. I will cc them once IIO has acked
+this patchset. No need to clutter their lists with a dozen iio patches.
+
+These apply on top of mfd-next after the recent set of patches
+on this driver by Sebastian Andrzej Siewior.
+
+Tested on the Beaglebone Black running 3.11
+
+Check_patch.pl issues are resolved in the last three patches separately.
+
+*** BLURB HERE ***
+
+Zubair Lutfullah (21):
+  MFD: ti_tscadc: disable TSC control
+  IIO: ADC: ti_adc: Fix 1st sample read
+  iio: ti_am335x_adc: Added iio_voltageX_scale
+  input: ti_tsc: Enable shared IRQ for TSC
+  iio: input: am335x_adc: Add continuous mode to adc
+  MFD: ti_tscadc: ADC Clock check not required
+  iio: TI-am335x-adc: Cleanup
+  IIO: ti_adc: Handle set to clear IRQENABLE register properly.
+  IIO: ti_adc: Handle set to clear IRQSTATUS register properly
+  IIO: ti_adc: Handle overrun before threshold event
+  iio: ti_adc: Avoid double threshold event
+  IIO: ti_adc: Also clear threshold event when clearing overrun event
+  IO: ti_adc: Reset and clear overrun status before capture.
+  IIO: ti_adc: Properly handle out of memory situation.
+  IIO: ti_adc: Print error and handle short FIFO events
+  IIO: ti_adc: Fix allocation count of FIFO buffer.
+  Revert "IIO: ti_adc: Correct wrong samples received on 1st read in
+    continuous mode"
+  IIO: ti_adc: Fix capture operation during resume
+  iio: ti_amss5x adc Fix check_patch.pl issues
+  input: ti_am335x_tsc.c fix checkpatch.pl issues
+  mfd: ti_am335x_tscadc.c fix checkpatch.pl issues
+
+ drivers/iio/adc/ti_am335x_adc.c           |  388 ++++++++++++++++++++++++++---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   17 +-
+ drivers/mfd/ti_am335x_tscadc.c            |   30 +--
+ include/linux/mfd/ti_am335x_tscadc.h      |   29 ++-
+ 4 files changed, 403 insertions(+), 61 deletions(-)
+
+-- 
+1.7.9.5
+
