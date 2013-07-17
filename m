@@ -1,45 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:38988 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750876Ab3GVNLy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 22 Jul 2013 09:11:54 -0400
-From: Oleksandr Kravchenko <x0199363@ti.com>
-To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
-	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
-	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH v3 1/2] of: Add Avago Technologies vendor prefix
-Date: Mon, 22 Jul 2013 16:11:27 +0300
-Message-ID: <1374498688-24701-1-git-send-email-x0199363@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36280 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756936Ab3GQTMo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 15:12:44 -0400
+In-Reply-To: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: ADC setting for differential and single-ended channels
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 17 Jul 2013 20:12:41 +0100
+To: Otavio Salvador <otavio@ossystems.com.br>,
+	linux-iio@vger.kernel.org, Mario Goulart <mario@ossystems.com.br>
+CC: Lars-Peter Clausen <lars@metafoo.de>, Marek Vasut <marex@denx.de>
+Message-ID: <814feb73-b2b3-4f23-8066-4221b75ac0b9@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 
-This commit adds a device tree vendor prefix for Avago Technologies.
 
-Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- 1 file changed, 1 insertion(+)
+Otavio Salvador <otavio@ossystems.com.br> wrote:
+>Hello,
+>
+>Mario and I are working at TI ADS124x driver and this chip can be used
+>in two ways:
+>
+>In case of ADS1247:
+>
+> - 2 differential channels
+> - 3 single-ended channels
+>
+>In the first case it take two inputs and the chip returns the
+>difference between them; in the second case it does the same but you
+>must choose one channel to be the negative reference for all the other
+>inputs. This is how we understood the datasheet however the
+>single-ended use is quite confusing on it so we might be wrong.
+>
+>So we'd like to know the best way to handle those cases in the driver.
+>One alternative we discussed is to use two attributes in the dts as:
+>
+> ...
+> #channels = <2>;
+> channels = <0 3
+>                    1 2>;
+>
+>So it'd take two channels. One composed by input 0 and input 3 and
+>another composed by input 1 and input 2.
+>
+>On the another case, we'd use:
+>
+>  ...
+>  #channels = <3>
+>  channels = <0 3
+>                     1 3
+>                     2 3>;
+>
+>So it'd take three channels and all them comparing to input 3.
+>
+>Are we in the right route? Any hints how to better solve this?
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index d5a79ca..8aab9c6 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
- apm	Applied Micro Circuits Corporation (APM)
- arm	ARM Ltd.
- atmel	Atmel Corporation
-+avago	Avago Technologies
- bosch	Bosch Sensortec GmbH
- brcm	Broadcom Corporation
- cavium	Cavium, Inc.
+Another option is to leave it entirely up to user space.  See max1363 driver where both single ended and differential channels are supported at the same time with care taken in buffered mode.
+
+Not sure if that works for your case?
+>
+>Regards,
+>
+>--
+>Otavio Salvador                             O.S. Systems
+>http://www.ossystems.com.br        http://projetos.ossystems.com.br
+>Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-1.7.9.5
-
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
