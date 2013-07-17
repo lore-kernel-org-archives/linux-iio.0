@@ -1,47 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f42.google.com ([74.125.83.42]:46082 "EHLO
-	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756796Ab3GQR1Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:16 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 12/21] IIO: ti_adc: Also clear threshold event when clearing overrun event
-Date: Wed, 17 Jul 2013 18:26:41 +0100
-Message-Id: <1374082010-28095-13-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from mail-lb0-f178.google.com ([209.85.217.178]:34094 "EHLO
+	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754741Ab3GQOd5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 10:33:57 -0400
+Received: by mail-lb0-f178.google.com with SMTP id y6so1600495lbh.37
+        for <linux-iio@vger.kernel.org>; Wed, 17 Jul 2013 07:33:56 -0700 (PDT)
+Message-ID: <51E6AB54.103@cogentembedded.com>
+Date: Wed, 17 Jul 2013 18:33:56 +0400
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+MIME-Version: 1.0
+To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
+	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
+	grant.likely@linaro.org, rob.herring@calxeda.com, lars@metafoo.de,
+	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
+	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
+	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 1/2] ARM: dts: twl: Add GPADC data to device tree
+References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com> <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
+In-Reply-To: <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When an overrun occurs, the FIFO is cleared. If a FIFO threshold event
+Hello.
 
-was pending, the data is now gone. Clear the threshold event when
+On 17-07-2013 15:12, Oleksandr Kozaruk wrote:
 
-handling an overrun (or underflow).
+> GPADC is the general purpose ADC present on twl6030.
+> The dt data is interrupt used to trigger end of ADC
+> conversion.
 
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/iio/adc/ti_am335x_adc.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+> ---
+>   arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
+>   1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index fcd414d..1e48799 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -178,7 +178,8 @@ static irqreturn_t tiadc_irq(int irq, void *private)
- 
-                 tiadc_writel(adc_dev, REG_IRQSTATUS,
-                                 IRQENB_FIFO1OVRRUN |
--                                IRQENB_FIFO1UNDRFLW);
-+                                IRQENB_FIFO1UNDRFLW |
-+                                IRQENB_FIFO1THRES);
-  
-                 tiadc_writel(adc_dev, REG_CTRL,
-                        (config | CNTRLREG_TSCSSENB));
--- 
-1.7.9.5
+> diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
+> index 2e3bd31..322aa8e 100644
+> --- a/arch/arm/boot/dts/twl6030.dtsi
+> +++ b/arch/arm/boot/dts/twl6030.dtsi
+> @@ -103,4 +103,10 @@
+>   		compatible = "ti,twl6030-pwmled";
+>   		#pwm-cells = <2>;
+>   	};
+> +
+> +	adc: twl6030_gpadc {
+
+    I was talking about the device name, not label. The "twl6030_gpadc" part.
+
+WBR, Sergei
 
