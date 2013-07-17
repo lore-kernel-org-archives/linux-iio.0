@@ -1,55 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f178.google.com ([209.85.217.178]:34094 "EHLO
-	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754741Ab3GQOd5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 10:33:57 -0400
-Received: by mail-lb0-f178.google.com with SMTP id y6so1600495lbh.37
-        for <linux-iio@vger.kernel.org>; Wed, 17 Jul 2013 07:33:56 -0700 (PDT)
-Message-ID: <51E6AB54.103@cogentembedded.com>
-Date: Wed, 17 Jul 2013 18:33:56 +0400
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Received: from mail-ie0-f174.google.com ([209.85.223.174]:54961 "EHLO
+	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754176Ab3GQONN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 10:13:13 -0400
+Received: by mail-ie0-f174.google.com with SMTP id 9so4096362iec.5
+        for <linux-iio@vger.kernel.org>; Wed, 17 Jul 2013 07:13:13 -0700 (PDT)
 MIME-Version: 1.0
-To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com, lars@metafoo.de,
-	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
-	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 1/2] ARM: dts: twl: Add GPADC data to device tree
-References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com> <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
-In-Reply-To: <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Wed, 17 Jul 2013 11:13:12 -0300
+Message-ID: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+Subject: ADC setting for differential and single-ended channels
+From: Otavio Salvador <otavio@ossystems.com.br>
+To: linux-iio@vger.kernel.org, Mario Goulart <mario@ossystems.com.br>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Marek Vasut <marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello.
+Hello,
 
-On 17-07-2013 15:12, Oleksandr Kozaruk wrote:
+Mario and I are working at TI ADS124x driver and this chip can be used
+in two ways:
 
-> GPADC is the general purpose ADC present on twl6030.
-> The dt data is interrupt used to trigger end of ADC
-> conversion.
+In case of ADS1247:
 
-> Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-> ---
->   arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
->   1 file changed, 6 insertions(+)
+ - 2 differential channels
+ - 3 single-ended channels
 
-> diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
-> index 2e3bd31..322aa8e 100644
-> --- a/arch/arm/boot/dts/twl6030.dtsi
-> +++ b/arch/arm/boot/dts/twl6030.dtsi
-> @@ -103,4 +103,10 @@
->   		compatible = "ti,twl6030-pwmled";
->   		#pwm-cells = <2>;
->   	};
-> +
-> +	adc: twl6030_gpadc {
+In the first case it take two inputs and the chip returns the
+difference between them; in the second case it does the same but you
+must choose one channel to be the negative reference for all the other
+inputs. This is how we understood the datasheet however the
+single-ended use is quite confusing on it so we might be wrong.
 
-    I was talking about the device name, not label. The "twl6030_gpadc" part.
+So we'd like to know the best way to handle those cases in the driver.
+One alternative we discussed is to use two attributes in the dts as:
 
-WBR, Sergei
+ ...
+ #channels = <2>;
+ channels = <0 3
+                    1 2>;
 
+So it'd take two channels. One composed by input 0 and input 3 and
+another composed by input 1 and input 2.
+
+On the another case, we'd use:
+
+  ...
+  #channels = <3>
+  channels = <0 3
+                     1 3
+                     2 3>;
+
+So it'd take three channels and all them comparing to input 3.
+
+Are we in the right route? Any hints how to better solve this?
+
+Regards,
+
+--
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
