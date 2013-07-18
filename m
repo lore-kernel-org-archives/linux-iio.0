@@ -1,45 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39592 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751939Ab3GSVG5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 17:06:57 -0400
-Message-ID: <51E9AA6D.3070007@kernel.org>
-Date: Fri, 19 Jul 2013 22:06:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Thu, 18 Jul 2013 15:45:55 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net
+Subject: Re: [PATCH 01/15] MFD: ti_tscadc: disable TSC config registers in
+ adc mode
+Message-ID: <20130718224555.GA7116@kroah.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+ <1374186086-5015-2-git-send-email-zubair.lutfullah@gmail.com>
 MIME-Version: 1.0
-To: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Oleksandr Kravchenko <x0199363@ti.com>, jic23@cam.ac.uk,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: core: Avoid double minus in sysfs output
-References: <1374162430-30709-1-git-send-email-x0199363@ti.com> <51E816BD.9010302@metafoo.de> <CAGH3droXKeE7diARCZQ=n37XkAmYzrcUkyZLvcWjWVLHvJnWVw@mail.gmail.com>
-In-Reply-To: <CAGH3droXKeE7diARCZQ=n37XkAmYzrcUkyZLvcWjWVLHvJnWVw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1374186086-5015-2-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/19/2013 07:15 AM, Oleksandr Kravchenko wrote:
-> On Thu, Jul 18, 2013 at 7:24 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 07/18/2013 05:47 PM, Oleksandr Kravchenko wrote:
->>> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
->>>
->>> This patch fixes the issue with double minus in output when
->>> reading channels from sysfs for IIO_VAL_INT_PLUS_MICRO and
->>> IIO_VAL_INT_PLUS_NANO cases. Until this patch if val and val2
->>> both are negatives output string contains "--" before
->>> digits. It is result of "-%d..." in sprintf() format.
->>>
->>
->> Hm, this might be a bug in a driver that is triggering this. The idea is
->> that val2 is only allowed to be negative if val is 0.
->>
->> - Lars
->>
-> If I calculate val and val2 in next way:
-> *val = adc / 1000000;
-> *val2 = adc % 1000000;
-> both val and val2 could by negative. Do I have to check it in my driver?
+On Thu, Jul 18, 2013 at 11:21:12PM +0100, Zubair Lutfullah wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
 > 
-I guess it is will happen occasionally.  In the c89 standard, module for a negative
-is implementation specific.  Anyone know if we can assume this will work in all cases
-within the kernel?
+> AFE Pen Ctrl and TouchScreen transistors enabling is not
+> required when only ADC mode is being used, so check for availability of
+> TSC driver before accessing control register.
+> 
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+
+Did Rachna really sign off on this, and the other, patches?  Or did they
+just author them and place them somewhere on the web?  You can't add
+other people's signed-off-by lines, that's not allowed for obvious
+reasons (read what Signed-off-by: means in the
+Documentation/SubmittingPatches file if you are curious.)
+
+thanks,
+
+greg k-h
