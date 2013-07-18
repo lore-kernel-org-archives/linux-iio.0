@@ -1,204 +1,120 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta7.messagelabs.com ([216.82.254.111]:43641 "EHLO
-	mail1.bemta7.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752350Ab3GSPcQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 11:32:16 -0400
-Message-ID: <51E95BEC.5080703@digi.com>
-Date: Fri, 19 Jul 2013 17:31:56 +0200
-From: Hector Palacios <hector.palacios@digi.com>
+Return-Path: <otavio.salvador@gmail.com>
 MIME-Version: 1.0
+Sender: otavio.salvador@gmail.com
+In-Reply-To: <201307180531.02207.marex@denx.de>
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+	<814feb73-b2b3-4f23-8066-4221b75ac0b9@email.android.com>
+	<CAP9ODKr4qC3EuRwbx9=dcTMvYjT2sAMTdBBsYs_-Z82rQ0e2DQ@mail.gmail.com>
+	<201307180531.02207.marex@denx.de>
+Date: Thu, 18 Jul 2013 00:38:51 -0300
+Message-ID: <CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
+Subject: Re: ADC setting for differential and single-ended channels
+From: Otavio Salvador <otavio@ossystems.com.br>
 To: Marek Vasut <marex@denx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify
- scale
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <1374225208-28940-6-git-send-email-hector.palacios@digi.com> <201307191639.01240.marex@denx.de>
-In-Reply-To: <201307191639.01240.marex@denx.de>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Mario Goulart <mario@ossystems.com.br>, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Marek,
-
-On 07/19/2013 04:39 PM, Marek Vasut wrote:
-> Dear Hector Palacios,
+On Thu, Jul 18, 2013 at 12:31 AM, Marek Vasut <marex@denx.de> wrote:
+> Dear Otavio Salvador,
 >
->> Added write_raw function to manipulate the optional divider_by_two
->> through the scaling attribute out of the available scales.
+>> On Wed, Jul 17, 2013 at 4:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> > Otavio Salvador <otavio@ossystems.com.br> wrote:
+>> >>Hello,
+>> >>
+>> >>Mario and I are working at TI ADS124x driver and this chip can be used
+>> >>in two ways:
+>> >>
+>> >>In case of ADS1247:
+>> >> - 2 differential channels
+>> >> - 3 single-ended channels
+>> >>
+>> >>In the first case it take two inputs and the chip returns the
+>> >>difference between them; in the second case it does the same but you
+>> >>must choose one channel to be the negative reference for all the other
+>> >>inputs. This is how we understood the datasheet however the
+>> >>single-ended use is quite confusing on it so we might be wrong.
+>> >>
+>> >>So we'd like to know the best way to handle those cases in the driver.
+>> >>
+>> >>One alternative we discussed is to use two attributes in the dts as:
+>> >> ...
+>> >> #channels = <2>;
+>> >> channels = <0 3
+>> >>
+>> >>                    1 2>;
+>> >>
+>> >>So it'd take two channels. One composed by input 0 and input 3 and
+>> >>another composed by input 1 and input 2.
+>> >>
+>> >>On the another case, we'd use:
+>> >>  ...
+>> >>  #channels = <3>
+>> >>  channels = <0 3
+>> >>
+>> >>                     1 3
+>> >>                     2 3>;
+>> >>
+>> >>So it'd take three channels and all them comparing to input 3.
+>> >>
+>> >>Are we in the right route? Any hints how to better solve this?
+>> >>
+>> > Another option is to leave it entirely up to user space.  See max1363
+>> > driver where both single ended and differential channels are supported
+>> > at the same time with care taken in buffered mode.
+>> >
+>> > Not sure if that works for your case?
 >>
->> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
->> ---
->>   drivers/staging/iio/adc/mxs-lradc.c | 55
->> ++++++++++++++++++++++++++++++++++++- 1 file changed, 54 insertions(+), 1
->> deletion(-)
->>
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
->> b/drivers/staging/iio/adc/mxs-lradc.c index c929733..286cde2 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -144,6 +144,7 @@ struct mxs_lradc {
->>
->>   	uint32_t		vref_mv[LRADC_MAX_TOTAL_CHANS];
->>   	unsigned int		scale_avail[LRADC_MAX_TOTAL_CHANS][2][2];
->> +	unsigned int		is_divided[LRADC_MAX_TOTAL_CHANS];
+>> I think it is nicer to have it set in the dt; we need the dt anyway so
+>> it seems logical to get it setting  the right channel.
 >
-> Why not use bitfield ? ;-)
-
-This is used in some math below and an unsigned int looked more appropriate:
-
-	case IIO_CHAN_INFO_SCALE:
-		*val = lradc->vref_mv[chan->channel];
-		*val2 = chan->scan_type.realbits -
-			lradc->is_divided[chan->channel];
-		ret = IIO_VAL_FRACTIONAL_LOG2;
-		break;
-
+> Can you please elaborate why is it logical?
 >
->>   	/*
->>   	 * Touchscreen LRADC channels receives a private slot in the CTRL4
->> @@ -202,6 +203,7 @@ struct mxs_lradc {
->>   #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
->>
->>   #define	LRADC_CTRL2				0x20
->> +#define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
->>   #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
->>
->>   #define	LRADC_STATUS				0x40
->> @@ -310,7 +312,8 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>   		break;
->>   	case IIO_CHAN_INFO_SCALE:
->>   		*val = lradc->vref_mv[chan->channel];
->> -		*val2 = chan->scan_type.realbits;
->> +		*val2 = chan->scan_type.realbits -
->> +			lradc->is_divided[chan->channel];
->>   		ret = IIO_VAL_FRACTIONAL_LOG2;
->>   		break;
->>   	default:
->> @@ -323,6 +326,54 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>   	return ret;
->>   }
->>
->> +static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
->> +			       const struct iio_chan_spec *chan,
->> +			       int val, int val2, long m)
->> +{
->> +	struct mxs_lradc *lradc = iio_priv(iio_dev);
->> +	int ret;
->> +
->> +	ret = mutex_trylock(&lradc->lock);
->> +	if (!ret)
->> +		return -EBUSY;
->> +
->> +	switch (m) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		ret = -EINVAL;
->> +		if (val == lradc->scale_avail[chan->channel][0][0] &&
->> +		    val2 == lradc->scale_avail[chan->channel][0][1]) {
->> +			/* [0] -> divider by two disabled */
+> I took a brief look over the datasheet [1], here are the facts I see (correct me
+> if I'm wrong). I first looked at Figure 51. :
 >
-> This comment is confusing, you use [0] in different dimensions of the array. So
-> is the stuff below.
+> - ADS1246 has two input channels
+> - ADS1247 has four input channels
+> - ADS1428 has eight input channels
 >
-> Still, how does this even work, can you show me and example how to set the
-> divider from userland ? Sorry, I'm a bit confused with this 3D-business here,
-> even if the comment in previous patch made it a bit clearer. Actually you can
-> use some #define to specify if you're accessing div/2 or div/1 portion of the
-> array to make it more readable.
+> - Each one of the 2/4/8 input channels can be connected to either P(+) or N(-)
+> of the amplifier (figure 53) for the ADC.
 >
-> Like ... scale_avail[chan->channel][LRADC_DIV_BY_2][LRADC_DECIMAL_PART] ...
-> would by nice.
-
-Agreed.
-
-How it works:
-# cd /sys/devices/80000000.apb/80040000.apbx/80050000.lradc/iio:device0
-
-Here you have three entries per channel:
-in_voltageX_raw		-> the sample raw value
-in_voltageX_scale	-> the scale to multiply the raw value to get the voltage in mV
-in_voltageX_scale_available -> lists the available scales of the channel
-
-For example for channel 0:
-
-# cat in_voltage0_scale_available
-0.451660156 0.903320312	(two scales available, first with divider by two disabled, 
-second with divider by two enabled)
-
-# cat in_voltage0_scale
-0.451660156			(divider by two is currently disabled)
-
-# cat in_voltage0_raw		(shows measured value)
-1000
-
-If you multiply the value by the scale you get: 1000 * 0.451660156 = 451.6 mV
-
-# echo 0.903320312 > in_voltage0_scale	(enables the divider by two)
-
-# cat in_voltage0_raw		(shows measured value)
-500
-
-Voltage at channel is the same but now measured value is applying the scale so it 
-shows half the value than before. Now if you multiply: 500 * 0.903320312 = 451.6 mV 
-(the same voltage but you now have a bigger scale and can measure up to 3.7V).
-
-Other channels (like 10 on the MX28) will show different scales because of fixed 
-predividers.
-The multi-dimension array is needed to store the big decimal number.
-
->> +			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
->> +			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
->> +			lradc->is_divided[chan->channel] = 0;
->> +			ret = 0;
->> +		} else if (val == lradc->scale_avail[chan->channel][1][0] &&
->> +			   val2 == lradc->scale_avail[chan->channel][1][1]) {
->> +			/* [1] -> divider by two enabled */
->> +			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
->> +			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
->> +			lradc->is_divided[chan->channel] = 1;
->> +			ret = 0;
->> +		}
->> +
->> +		break;
->> +	default:
->> +		ret = -EINVAL;
->> +		break;
->> +	}
->> +
->> +	mutex_unlock(&lradc->lock);
->> +
->> +	return ret;
->> +}
->> +
->> +static int mxs_lradc_write_raw_get_fmt(struct iio_dev *iio_dev,
->> +				       const struct iio_chan_spec *chan,
->> +				       long m)
->> +{
->> +	return IIO_VAL_INT_PLUS_NANO;
->> +}
->> +
->>   static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
->>   		struct device_attribute *attr,
->>   		char *buf,
->> @@ -400,6 +451,8 @@ static const struct attribute_group
->> mxs_lradc_attribute_group = { static const struct iio_info
->> mxs_lradc_iio_info = {
->>   	.driver_module		= THIS_MODULE,
->>   	.read_raw		= mxs_lradc_read_raw,
->> +	.write_raw		= mxs_lradc_write_raw,
->> +	.write_raw_get_fmt	= &mxs_lradc_write_raw_get_fmt,
+> - Apparently, according to Figure 51. , it is possible to have only one P and
+> one N channel enabled at time (and therefore sample only one pair of channels
+> with the ADC) since the P and N rails are shared by all the inputs and there's
+> only one ADC block.
 >
-> Is this & needed here ?
+> Therefore, the userland would have to export sysfs file for each of the channels
+> where one would write if the channel is possitive(+) / negative(-) /
+> not_connected(NC) and then trigger the start of sampling.
+>
+> What do you think?
 
-No it isn't.
-Thanks.
+This does not make them act as differential  against each other.
 
-Best regards,
+We can have several combinations as:
+
+0 - P / 1 - N (differential)
+0 - P / 1 - P / 2 - P / 3 - N (all differential to 3)
+and so on.
+
+So how userland would tell which would be the differential to use?
+
+Our board has:
+
+0 against 1
+2 against 3
+
+but it is a design choice.
+
+Am I missing something?
+
+
+
+
 --
-Hector Palacios
+Otavio Salvador                             O.S. Systems
+http://www.ossystems.com.br        http://projetos.ossystems.com.br
+Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
