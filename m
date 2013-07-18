@@ -1,120 +1,199 @@
-Return-Path: <otavio.salvador@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-159.synserver.de ([212.40.185.159]:1462 "EHLO
+	smtp-out-159.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758147Ab3GRJrZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 05:47:25 -0400
+Message-ID: <51E7B9DA.9040803@metafoo.de>
+Date: Thu, 18 Jul 2013 11:48:10 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Sender: otavio.salvador@gmail.com
-In-Reply-To: <201307180531.02207.marex@denx.de>
-References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
-	<814feb73-b2b3-4f23-8066-4221b75ac0b9@email.android.com>
-	<CAP9ODKr4qC3EuRwbx9=dcTMvYjT2sAMTdBBsYs_-Z82rQ0e2DQ@mail.gmail.com>
-	<201307180531.02207.marex@denx.de>
-Date: Thu, 18 Jul 2013 00:38:51 -0300
-Message-ID: <CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
-Subject: Re: ADC setting for differential and single-ended channels
-From: Otavio Salvador <otavio@ossystems.com.br>
-To: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Mario Goulart <mario@ossystems.com.br>, Lars-Peter Clausen <lars@metafoo.de>
+To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
+	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
+	grant.likely@linaro.org, rob.herring@calxeda.com,
+	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
+	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
+	linux-omap@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com> <1374059564-6872-3-git-send-email-oleksandr.kozaruk@ti.com> <51E6DCB5.3070302@metafoo.de> <CAPb7_muAzO-jRqgcm89fcKT-hTLq38Aj2p0WAWjGjN9DoQUwPg@mail.gmail.com>
+In-Reply-To: <CAPb7_muAzO-jRqgcm89fcKT-hTLq38Aj2p0WAWjGjN9DoQUwPg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jul 18, 2013 at 12:31 AM, Marek Vasut <marex@denx.de> wrote:
-> Dear Otavio Salvador,
->
->> On Wed, Jul 17, 2013 at 4:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> > Otavio Salvador <otavio@ossystems.com.br> wrote:
->> >>Hello,
->> >>
->> >>Mario and I are working at TI ADS124x driver and this chip can be used
->> >>in two ways:
->> >>
->> >>In case of ADS1247:
->> >> - 2 differential channels
->> >> - 3 single-ended channels
->> >>
->> >>In the first case it take two inputs and the chip returns the
->> >>difference between them; in the second case it does the same but you
->> >>must choose one channel to be the negative reference for all the other
->> >>inputs. This is how we understood the datasheet however the
->> >>single-ended use is quite confusing on it so we might be wrong.
->> >>
->> >>So we'd like to know the best way to handle those cases in the driver.
->> >>
->> >>One alternative we discussed is to use two attributes in the dts as:
->> >> ...
->> >> #channels = <2>;
->> >> channels = <0 3
->> >>
->> >>                    1 2>;
->> >>
->> >>So it'd take two channels. One composed by input 0 and input 3 and
->> >>another composed by input 1 and input 2.
->> >>
->> >>On the another case, we'd use:
->> >>  ...
->> >>  #channels = <3>
->> >>  channels = <0 3
->> >>
->> >>                     1 3
->> >>                     2 3>;
->> >>
->> >>So it'd take three channels and all them comparing to input 3.
->> >>
->> >>Are we in the right route? Any hints how to better solve this?
->> >>
->> > Another option is to leave it entirely up to user space.  See max1363
->> > driver where both single ended and differential channels are supported
->> > at the same time with care taken in buffered mode.
->> >
->> > Not sure if that works for your case?
+On 07/18/2013 10:36 AM, Oleksandr Kozaruk wrote:
+> Hello Lars,
+> 
+> On Wed, Jul 17, 2013 at 9:04 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> +static int twl6032_calibration(struct twl6030_gpadc_data *gpadc)
+>>> +{
+>>> +     int chn, d1 = 0, d2 = 0, temp;
+>>> +     u8 trim_regs[17];
+>>> +     int ret;
+>>> +
+>>> +     ret = twl_i2c_read(TWL6030_MODULE_ID2, trim_regs + 1,
+>>> +                     TWL6030_GPADC_TRIM1, 16);
+>>> +     if (ret < 0) {
+>>> +             dev_err(gpadc->dev, "calibration failed\n");
+>>> +             return ret;
+>>> +     }
+>>> +
+>>> +     /*
+>>> +      * Loop to calculate the value needed for returning voltages from
+>>> +      * GPADC not values.
+>>> +      *
+>>> +      * gain is calculated to 3 decimal places fixed point.
+>>> +      */
+>>> +     for (chn = 0; chn < TWL6032_GPADC_MAX_CHANNELS; chn++) {
+>>> +
+>>> +             switch (chn) {
+>>> +             case 0:
+>>> +             case 1:
+>>> +             case 2:
+>>> +             case 3:
+>>> +             case 4:
+>>> +             case 5:
+>>> +             case 6:
+>>> +             case 11:
+>>> +             case 12:
+>>> +             case 13:
+>>> +             case 14:
+>>> +                     /* D1 */
+>>> +                     d1 = (trim_regs[3] & 0x1F) << 2;
+>>> +                     d1 |= (trim_regs[1] & 0x06) >> 1;
+>>> +                     if (trim_regs[1] & 0x01)
+>>> +                             d1 = -d1;
+>>> +
+>>> +                     /* D2 */
+>>> +                     d2 = (trim_regs[4] & 0x3F) << 2;
+>>> +                     d2 |= (trim_regs[2] & 0x06) >> 1;
+>>> +                     if (trim_regs[2] & 0x01)
+>>> +                             d2 = -d2;
+>>> +                     break;
+>>> +             case 8:
+>>> +                     /* D1 */
+>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
+>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
+>>> +                     if (trim_regs[1] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d1 = (trim_regs[8] & 0x18) << 1;
+>>> +                     d1 |= (trim_regs[7] & 0x1E) >> 1;
+>>> +                     if (trim_regs[7] & 0x01)
+>>> +                             d1 = -d1;
+>>> +
+>>> +                     d1 += temp;
+>>> +
+>>> +                     /* D2 */
+>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
+>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
+>>> +                     if (trim_regs[2] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d2 = (trim_regs[10] & 0x1F) << 2;
+>>> +                     d2 |= (trim_regs[8] & 0x06) >> 1;
+>>> +                     if (trim_regs[8] & 0x01)
+>>> +                             d2 = -d2;
+>>> +
+>>> +                     d2 += temp;
+>>> +                     break;
+>>> +             case 9:
+>>> +                     /* D1 */
+>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
+>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
+>>> +                     if (trim_regs[1] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d1 = (trim_regs[14] & 0x18) << 1;
+>>> +                     d1 |= (trim_regs[12] & 0x1E) >> 1;
+>>> +                     if (trim_regs[12] & 0x01)
+>>> +                             d1 = -d1;
+>>> +
+>>> +                     d1 += temp;
+>>> +
+>>> +                     /* D2 */
+>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
+>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
+>>> +                     if (trim_regs[2] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d2 = (trim_regs[16] & 0x1F) << 2;
+>>> +                     d2 |= (trim_regs[14] & 0x06) >> 1;
+>>> +                     if (trim_regs[14] & 0x01)
+>>> +                             d2 = -d2;
+>>> +
+>>> +                     d2 += temp;
+>>> +             case 10:
+>>> +                     /* D1 */
+>>> +                     d1 = (trim_regs[11] & 0x0F) << 3;
+>>> +                     d1 |= (trim_regs[9] & 0x0E) >> 1;
+>>> +                     if (trim_regs[9] & 0x01)
+>>> +                             d1 = -d1;
+>>> +
+>>> +                     /* D2 */
+>>> +                     d2 = (trim_regs[15] & 0x0F) << 3;
+>>> +                     d2 |= (trim_regs[13] & 0x0E) >> 1;
+>>> +                     if (trim_regs[13] & 0x01)
+>>> +                             d2 = -d2;
+>>> +                     break;
+>>> +             case 7:
+>>> +             case 18:
+>>> +                     /* D1 */
+>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
+>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
+>>> +                     if (trim_regs[1] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d1 = (trim_regs[5] & 0x7E) >> 1;
+>>> +                     if (trim_regs[5] & 0x01)
+>>> +                             d1 = -d1;
+>>> +.
+>>> +                     d1 += temp;
+>>> +
+>>> +                     /* D2 */
+>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
+>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
+>>> +                     if (trim_regs[2] & 0x01)
+>>> +                             temp = -temp;
+>>> +
+>>> +                     d2 = (trim_regs[6] & 0xFE) >> 1;
+>>> +                     if (trim_regs[6] & 0x01)
+>>> +                             d2 = -d2;
+>>> +
+>>> +                     d2 += temp;
+>>> +                     break;
 >>
->> I think it is nicer to have it set in the dt; we need the dt anyway so
->> it seems logical to get it setting  the right channel.
->
-> Can you please elaborate why is it logical?
->
-> I took a brief look over the datasheet [1], here are the facts I see (correct me
-> if I'm wrong). I first looked at Figure 51. :
->
-> - ADS1246 has two input channels
-> - ADS1247 has four input channels
-> - ADS1428 has eight input channels
->
-> - Each one of the 2/4/8 input channels can be connected to either P(+) or N(-)
-> of the amplifier (figure 53) for the ADC.
->
-> - Apparently, according to Figure 51. , it is possible to have only one P and
-> one N channel enabled at time (and therefore sample only one pair of channels
-> with the ADC) since the P and N rails are shared by all the inputs and there's
-> only one ADC block.
->
-> Therefore, the userland would have to export sysfs file for each of the channels
-> where one would write if the channel is possitive(+) / negative(-) /
-> not_connected(NC) and then trigger the start of sampling.
->
-> What do you think?
+>>
+>> There is quite a bit of copy paste in here. Putting the bit swizziling into
+>> a helper function should also improbe legibility.
+> 
+> Trimming bits are scattered randomly between registers and in
+> different bit positions.
+> I don't see any commonalities, that could be generalized. as Graeme
+> said about it "it's a bane of my life".
 
-This does not make them act as differential  against each other.
+The pattern is pretty regular though, how about:
 
-We can have several combinations as:
 
-0 - P / 1 - N (differential)
-0 - P / 1 - P / 2 - P / 3 - N (all differential to 3)
+int twl6032_get_trim_value(u8 *trim_regs, unsigned int reg0,
+	unsigned int reg1, unsigned int mask0, unsigned int mask1,
+	unsigned int shift0)
+{
+	int val;
+
+	val = (trim_regs[reg0] & mask0) << shift0;
+	val |= (trim_regs[reg1] & mask1) >> 1;
+	if (trim_regs[reg1] & 0x01)
+		val = -val;
+
+	return val;
+}
+
+and then
+
+	d1 = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
+	d2 = twl6032_get_trim_value(trim_regs, 4, 2, 0x3f, 0x06, 2);
+
 and so on.
-
-So how userland would tell which would be the differential to use?
-
-Our board has:
-
-0 against 1
-2 against 3
-
-but it is a design choice.
-
-Am I missing something?
-
-
-
-
---
-Otavio Salvador                             O.S. Systems
-http://www.ossystems.com.br        http://projetos.ossystems.com.br
-Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
