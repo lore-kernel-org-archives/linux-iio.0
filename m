@@ -1,181 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from exprod5og117.obsmtp.com ([64.18.0.149]:33132 "EHLO
-	exprod5og117.obsmtp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752092Ab3GRIng (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 04:43:36 -0400
-Received: by mail-qa0-f48.google.com with SMTP id cm16so1586589qab.0
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jul 2013 01:43:35 -0700 (PDT)
+Received: from comal.ext.ti.com ([198.47.26.152]:58211 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755625Ab3GRIIb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Jul 2013 04:08:31 -0400
+Date: Thu, 18 Jul 2013 11:08:23 +0300
+From: Felipe Balbi <balbi@ti.com>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: <jic23@cam.ac.uk>, <linux-iio@vger.kernel.org>,
+	<gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+	<koen@dominion.thruhere.net>
+Subject: Re: [PATCH 05/21] iio: input: am335x_adc: Add continuous mode to adc
+Message-ID: <20130718080823.GB11251@arwen.pp.htv.fi>
+Reply-To: <balbi@ti.com>
+References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+ <1374082010-28095-6-git-send-email-zubair.lutfullah@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <51E6DCB5.3070302@metafoo.de>
-References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
-	<1374059564-6872-3-git-send-email-oleksandr.kozaruk@ti.com>
-	<51E6DCB5.3070302@metafoo.de>
-Date: Thu, 18 Jul 2013 11:36:42 +0300
-Message-ID: <CAPb7_muAzO-jRqgcm89fcKT-hTLq38Aj2p0WAWjGjN9DoQUwPg@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com,
-	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
-	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	linux-omap@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HG+GLK89HZ1zG0kk"
+In-Reply-To: <1374082010-28095-6-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Lars,
+--HG+GLK89HZ1zG0kk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 17, 2013 at 9:04 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> +static int twl6032_calibration(struct twl6030_gpadc_data *gpadc)
->> +{
->> +     int chn, d1 = 0, d2 = 0, temp;
->> +     u8 trim_regs[17];
->> +     int ret;
->> +
->> +     ret = twl_i2c_read(TWL6030_MODULE_ID2, trim_regs + 1,
->> +                     TWL6030_GPADC_TRIM1, 16);
->> +     if (ret < 0) {
->> +             dev_err(gpadc->dev, "calibration failed\n");
->> +             return ret;
->> +     }
->> +
->> +     /*
->> +      * Loop to calculate the value needed for returning voltages from
->> +      * GPADC not values.
->> +      *
->> +      * gain is calculated to 3 decimal places fixed point.
->> +      */
->> +     for (chn = 0; chn < TWL6032_GPADC_MAX_CHANNELS; chn++) {
->> +
->> +             switch (chn) {
->> +             case 0:
->> +             case 1:
->> +             case 2:
->> +             case 3:
->> +             case 4:
->> +             case 5:
->> +             case 6:
->> +             case 11:
->> +             case 12:
->> +             case 13:
->> +             case 14:
->> +                     /* D1 */
->> +                     d1 = (trim_regs[3] & 0x1F) << 2;
->> +                     d1 |= (trim_regs[1] & 0x06) >> 1;
->> +                     if (trim_regs[1] & 0x01)
->> +                             d1 = -d1;
->> +
->> +                     /* D2 */
->> +                     d2 = (trim_regs[4] & 0x3F) << 2;
->> +                     d2 |= (trim_regs[2] & 0x06) >> 1;
->> +                     if (trim_regs[2] & 0x01)
->> +                             d2 = -d2;
->> +                     break;
->> +             case 8:
->> +                     /* D1 */
->> +                     temp = (trim_regs[3] & 0x1F) << 2;
->> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->> +                     if (trim_regs[1] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d1 = (trim_regs[8] & 0x18) << 1;
->> +                     d1 |= (trim_regs[7] & 0x1E) >> 1;
->> +                     if (trim_regs[7] & 0x01)
->> +                             d1 = -d1;
->> +
->> +                     d1 += temp;
->> +
->> +                     /* D2 */
->> +                     temp = (trim_regs[4] & 0x3F) << 2;
->> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->> +                     if (trim_regs[2] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d2 = (trim_regs[10] & 0x1F) << 2;
->> +                     d2 |= (trim_regs[8] & 0x06) >> 1;
->> +                     if (trim_regs[8] & 0x01)
->> +                             d2 = -d2;
->> +
->> +                     d2 += temp;
->> +                     break;
->> +             case 9:
->> +                     /* D1 */
->> +                     temp = (trim_regs[3] & 0x1F) << 2;
->> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->> +                     if (trim_regs[1] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d1 = (trim_regs[14] & 0x18) << 1;
->> +                     d1 |= (trim_regs[12] & 0x1E) >> 1;
->> +                     if (trim_regs[12] & 0x01)
->> +                             d1 = -d1;
->> +
->> +                     d1 += temp;
->> +
->> +                     /* D2 */
->> +                     temp = (trim_regs[4] & 0x3F) << 2;
->> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->> +                     if (trim_regs[2] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d2 = (trim_regs[16] & 0x1F) << 2;
->> +                     d2 |= (trim_regs[14] & 0x06) >> 1;
->> +                     if (trim_regs[14] & 0x01)
->> +                             d2 = -d2;
->> +
->> +                     d2 += temp;
->> +             case 10:
->> +                     /* D1 */
->> +                     d1 = (trim_regs[11] & 0x0F) << 3;
->> +                     d1 |= (trim_regs[9] & 0x0E) >> 1;
->> +                     if (trim_regs[9] & 0x01)
->> +                             d1 = -d1;
->> +
->> +                     /* D2 */
->> +                     d2 = (trim_regs[15] & 0x0F) << 3;
->> +                     d2 |= (trim_regs[13] & 0x0E) >> 1;
->> +                     if (trim_regs[13] & 0x01)
->> +                             d2 = -d2;
->> +                     break;
->> +             case 7:
->> +             case 18:
->> +                     /* D1 */
->> +                     temp = (trim_regs[3] & 0x1F) << 2;
->> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->> +                     if (trim_regs[1] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d1 = (trim_regs[5] & 0x7E) >> 1;
->> +                     if (trim_regs[5] & 0x01)
->> +                             d1 = -d1;
->> +.
->> +                     d1 += temp;
->> +
->> +                     /* D2 */
->> +                     temp = (trim_regs[4] & 0x3F) << 2;
->> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->> +                     if (trim_regs[2] & 0x01)
->> +                             temp = -temp;
->> +
->> +                     d2 = (trim_regs[6] & 0xFE) >> 1;
->> +                     if (trim_regs[6] & 0x01)
->> +                             d2 = -d2;
->> +
->> +                     d2 += temp;
->> +                     break;
->
->
-> There is quite a bit of copy paste in here. Putting the bit swizziling into
-> a helper function should also improbe legibility.
+Hi,
 
-Trimming bits are scattered randomly between registers and in
-different bit positions.
-I don't see any commonalities, that could be generalized. as Graeme
-said about it "it's a bane of my life".
+On Wed, Jul 17, 2013 at 06:26:34PM +0100, Zubair Lutfullah wrote:
+> Main patch. Adds continuous sampling support for the driver
+>=20
+> The IRQs are changed in the TSC drivers as they are shared with
+> the ADC IRQ lines.
+>=20
+> This patch is based on work in the 3.2 tree by TI
+> Original Author is Patil Rachna
+>=20
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 
-Regards,
-OK.
+to me this patch looks incorrect. IIO framework provides a generic ring
+buffer implementation which could be used for continuous mode. Adding
+driver specific attributes isn't very nice IMO.
+
+--=20
+balbi
+
+--HG+GLK89HZ1zG0kk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR56J3AAoJEIaOsuA1yqRER10P/3LR6XQMMELc0CSBIUVxJarV
+FasaTZ9VdRP6CbPQ985wf7fZw7j1N6OSukdvlrOIYzZqG7TaF8AARNpeLZl2JQd/
+CeF9ilbz98b7jC+h61Y5EFKXcRTCp+HRh7f49MYH7Kcast7QknETADN854NTYNMS
+qBqqmxLvRXZOMyMdoJ6zNwgjDziQZaW+z0xJ8OeJnD0q0jc5SSg46it9MfHEv6Yf
+9oBQ0xAjUhtm0iWg0KZwm64bsHQ+F1SbtL/j04hqGMKmczHW5BfJPTg5QmxtVrpv
+7sspXza3dNturIhvoMWah2dxg5CQScTZPyCG8E+ti7Pot2thXhGyXzcqwCd90/3O
+mJ3JIn1zf9qhYB+VdpEW8nslqa0G/PAJZpLCtKzVPn2YBVKxLo3mqxHizLtRZb+9
+aorlPQsPybKaISRZPv4zPETgFEGsxRMx4v6QlBwedgjw0ZqTOQcqzXgiyRDfbLmN
+NBKpJifKaKhNrE22N+Pq5kKI9NFfCodQtc+AY97SKWs9dxm3pslzza5Kgk3WQ62u
+KZ4IO9ezjpD+VJp1PlwIkDKt8nd5hPcIbDl7izB1oUb9H8HHxN0YolHwvLxmMxXW
+FylTB4ILeXG9sY59oI2RN6aNs4Lnc14UkA+W+upLtCU+Tc6mZ45LjThiJ0wqO4Dx
+nalYEjThI+4LUz/7jSD3
+=TUXm
+-----END PGP SIGNATURE-----
+
+--HG+GLK89HZ1zG0kk--
