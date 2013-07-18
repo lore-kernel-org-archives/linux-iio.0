@@ -1,30 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:42501 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751520Ab3GQFmu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 01:42:50 -0400
-Date: Tue, 16 Jul 2013 22:42:26 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.11 - set 1
-Message-ID: <20130717054226.GA23697@kroah.com>
-References: <51E500E0.7000805@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:42392 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1758054Ab3GRJpP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Jul 2013 05:45:15 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 2/3] of: Add Avago Technologies vendor prefix
+Date: Thu, 18 Jul 2013 12:44:43 +0300
+Message-ID: <1374140685-20549-2-git-send-email-x0199363@ti.com>
+In-Reply-To: <1374140685-20549-1-git-send-email-x0199363@ti.com>
+References: <1374140685-20549-1-git-send-email-x0199363@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51E500E0.7000805@kernel.org>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 16, 2013 at 09:14:24AM +0100, Jonathan Cameron wrote:
-> The following changes since commit 0ad1ea69545b1965be4c93ee03fdc685c6beb23d:
-> 
->   Revert "Revert "Revert "staging/lustre: drop CONFIG_BROKEN dependency""" (2013-06-24 16:47:45 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.11a
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 
-Now pulled and pushed out, thanks.
+This commit adds a device tree vendor prefix for Avago Technologies.
 
-greg k-h
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index d5a79ca..8aab9c6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+ apm	Applied Micro Circuits Corporation (APM)
+ arm	ARM Ltd.
+ atmel	Atmel Corporation
++avago	Avago Technologies
+ bosch	Bosch Sensortec GmbH
+ brcm	Broadcom Corporation
+ cavium	Cavium, Inc.
+-- 
+1.7.9.5
+
