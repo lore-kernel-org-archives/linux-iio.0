@@ -1,46 +1,139 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50287 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932507Ab3GQSJt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 14:09:49 -0400
-Date: Wed, 17 Jul 2013 11:09:54 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Koen Kooi <koen@dominion.thruhere.net>
-Subject: Re: [PATCH 05/21] iio: input: am335x_adc: Add continuous mode to adc
-Message-ID: <20130717180954.GA19999@kroah.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
- <1374082010-28095-6-git-send-email-zubair.lutfullah@gmail.com>
- <20130717173801.GD17882@kroah.com>
- <CAExKytyQ23VXMVyRX9OHEQ8HZT5tFhKHSjhaH_-G_O1BVL91-A@mail.gmail.com>
+Received: from comal.ext.ti.com ([198.47.26.152]:35337 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756831Ab3GRJpJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Jul 2013 05:45:09 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 1/3] iio: core: implement devm_iio_device_alloc/devm_iio_device_free
+Date: Thu, 18 Jul 2013 12:44:42 +0300
+Message-ID: <1374140685-20549-1-git-send-email-x0199363@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAExKytyQ23VXMVyRX9OHEQ8HZT5tFhKHSjhaH_-G_O1BVL91-A@mail.gmail.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 
-A: No.
-Q: Should I include quotations after my reply?
+Add a resource managed devm_iio_device_alloc()/devm_iio_device_free()
+to automatically clean up any allocations made by IIO drivers,
+thus leading to simplified IIO drivers code.
 
-http://daringfireball.net/2007/07/on_top
+In addition, this will allow IIO drivers to use other devm_*() API
+(like devm_request_irq) and don't care about the race between
+iio_device_free() and the release of resources by Device core
+during driver removing.
 
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+[o.v.kravchenko@globallogic.com: fix return value ib devm_iio_device_alloc
+in case if devres_alloc failed, remove unused variable "rc"]
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Tested-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/industrialio-core.c |   47 +++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |   25 +++++++++++++++++++++
+ 2 files changed, 72 insertions(+)
 
-On Wed, Jul 17, 2013 at 06:53:53PM +0100, Zubair Lutfullah wrote:
-> checkpatch is applied at the end all together. The last 3 patches are those.
-> 
-> I guess that is non-standard practice.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e145931..d56d122 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -912,6 +912,53 @@ void iio_device_free(struct iio_dev *dev)
+ }
+ EXPORT_SYMBOL(iio_device_free);
+ 
++static void devm_iio_device_release(struct device *dev, void *res)
++{
++	iio_device_free(*(struct iio_dev **)res);
++}
++
++static int devm_iio_device_match(struct device *dev, void *res, void *data)
++{
++	struct iio_dev **r = res;
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++	return *r == data;
++}
++
++struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
++{
++	struct iio_dev **ptr, *iio_dev;
++
++	ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return NULL;
++
++	/* use raw alloc_dr for kmalloc caller tracing */
++	iio_dev = iio_device_alloc(sizeof_priv);
++	if (iio_dev) {
++		*ptr = iio_dev;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
++
++	return iio_dev;
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
++
++void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
++{
++	int rc;
++
++	rc = devres_release(dev, devm_iio_device_release,
++			    devm_iio_device_match, iio_dev);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_free);
++
+ /**
+  * iio_chrdev_open() - chrdev file open for buffer access and ioctls
+  **/
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 8d171f4..f1d99f6 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -532,6 +532,31 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
+ void iio_device_free(struct iio_dev *indio_dev);
+ 
+ /**
++ * devm_iio_device_alloc - Resource-managed iio_device_alloc()
++ * @dev: 		Device to allocate iio_dev for
++ * @sizeof_priv: 	Space to allocate for private structure.
++ *
++ * Managed iio_device_alloc.  iio_dev allocated with this function is
++ * automatically freed on driver detach.
++ *
++ * If an iio_dev allocated with this function needs to be freed separately,
++ * devm_iio_device_free() must be used.
++ *
++ * RETURNS:
++ * Pointer to allocated iio_dev on success, NULL on failure.
++ */
++struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
++
++/**
++ * devm_iio_device_free - Resource-managed iio_device_free()
++ * @dev:		Device this iio_dev belongs to
++ * @indio_dev: 		the iio_dev associated with the device
++ *
++ * Free indio_dev allocated with devm_iio_device_alloc().
++ */
++void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
++
++/**
+  * iio_buffer_enabled() - helper function to test if the buffer is enabled
+  * @indio_dev:		IIO device structure for device
+  **/
+-- 
+1.7.9.5
 
-Yes, each patch needs to be correct and complete, on its own.
-
-> I'll have to redo the whole thing and take care about the From original author
-> too.
-
-That's really a very important thing to never loose, we don't want to
-ever drop the correct authorship of a patch.
-
-thanks,
-
-greg k-h
