@@ -1,100 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45366 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753688Ab3GTLTo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 07:19:44 -0400
-Message-ID: <51EA724F.2060805@kernel.org>
-Date: Sat, 20 Jul 2013 12:19:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	koen@dominion.thruhere.net
-Subject: Re: [PATCH 06/15] iio: ti_am335x_adc: Handle set to clear IRQENABLE
-References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <1374186086-5015-7-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374186086-5015-7-git-send-email-zubair.lutfullah@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 09/15] iio: ti_am335x_adc: Avoid double threshold event
+Date: Thu, 18 Jul 2013 23:21:20 +0100
+Message-Id: <1374186086-5015-10-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/18/2013 11:21 PM, Zubair Lutfullah wrote:
-> From: Russ Dill <Russ.Dill@ti.com>
-> 
-> The driver is currently mishandling the IRQENABLE register. The driver
-> should write a 1 for bits it wishes to set, and a zero for bits it does not
-> wish to change. The read of the current register contents is not
-> necessary.
-> 
-> Write 0 = No action.
-> Read 0 = Interrupt disabled (masked).
-> Read 1 = Interrupt enabled.
-> Write 1 = Enable interrupt.
-> 
-> The current read/update/write method is currently not causing any
-> problems, but could cause confusion in the future.
-> 
-> Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+From: Russ Dill <Russ.Dill@ti.com>
 
-I guess this makes sense as a separate patch to maintain history, but
-I'd personally have preferred it rolled into the write places and
-appropriate credit given as comments.
+The threshold event handler is being called before the FIFO has
+actually reached the threshold.
+The current code receives a FIFO threshold event, masks the interrupt,
+clears the event, and schedules a workqueue. The workqueue is run, it
+empties the FIFO, and unmasks the interrupt.
+In the above sequence, after the event is cleared, it immediately
+retriggers since the FIFO remains beyond the threshold. When the IRQ is
+unmasked, this triggered event generates another IRQ. However, as the
+FIFO has just been emptied, it is likely to not contain enough samples.
+The waits to clear the event until the FIFO has actually been emptied,
+in the workqueue. The unmasking and masking of the interrupt remains
+unchanged.
 
-I don't like the fact that the code will be broken in a known fashion
-at somepoints in this series...
+Signed-off-by: Russ Dill <Russ.Dill@ti.com>
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/adc/ti_am335x_adc.c |   14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index c1b051c..b566e6a 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -207,7 +207,7 @@ static void tiadc_poll_handler(struct work_struct *work_s)
->  		container_of(work_s, struct tiadc_device, poll_work);
->  	struct iio_dev *idev = iio_priv_to_dev(adc_dev);
->  	struct iio_buffer *buffer = idev->buffer;
-> -	unsigned int fifo1count, readx1, status;
-> +	unsigned int fifo1count, readx1;
->  	int i;
->  	u32 *inputbuffer;
->  
-> @@ -223,9 +223,8 @@ static void tiadc_poll_handler(struct work_struct *work_s)
->  	}
->  
->  	buffer->access->store_to(buffer, (u8 *) inputbuffer);
-> -	status = tiadc_readl(adc_dev, REG_IRQENABLE);
->  	tiadc_writel(adc_dev, REG_IRQENABLE,
-> -			(status | IRQENB_FIFO1THRES));
-> +			IRQENB_FIFO1THRES);
->  
->  	kfree(inputbuffer);
->  }
-> @@ -242,7 +241,7 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(idev);
->  	struct iio_buffer *buffer = idev->buffer;
-> -	unsigned int enb, status, fifo1count;
-> +	unsigned int enb, fifo1count;
->  	int stepnum, i;
->  	u8 bit;
->  
-> @@ -250,11 +249,10 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
->  		pr_info("Data cannot be read continuously in one shot mode\n");
->  		return -EINVAL;
->  	} else {
-> -		status = tiadc_readl(adc_dev, REG_IRQENABLE);
->  		tiadc_writel(adc_dev, REG_IRQENABLE,
-> -				(status | IRQENB_FIFO1THRES)|
-> -				 IRQENB_FIFO1OVRRUN |
-> -				 IRQENB_FIFO1UNDRFLW);
-> +				(IRQENB_FIFO1THRES |
-> +				IRQENB_FIFO1OVRRUN |
-> +				IRQENB_FIFO1UNDRFLW));
->  
->  		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
->  		for (i = 0; i < fifo1count; i++)
-> 
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 7ac28a9..8dc070d 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -183,11 +183,9 @@ static irqreturn_t tiadc_irq(int irq, void *private)
+ 		if (iio_buffer_enabled(idev)) {
+ 			if (!work_pending(&adc_dev->poll_work))
+ 				schedule_work(&adc_dev->poll_work);
+-		} else {
++		} else
+ 			wake_up_interruptible(&adc_dev->wq_data_avail);
+-		}
+-		tiadc_writel(adc_dev, REG_IRQSTATUS,
+-					IRQENB_FIFO1THRES);
++
+ 		return IRQ_HANDLED;
+ 	} else {
+ 		return IRQ_NONE;
+@@ -216,6 +214,8 @@ static void tiadc_poll_handler(struct work_struct *work_s)
+ 	}
+ 
+ 	buffer->access->store_to(buffer, (u8 *) inputbuffer);
++	tiadc_writel(adc_dev, REG_IRQSTATUS,
++			IRQENB_FIFO1THRES);
+ 	tiadc_writel(adc_dev, REG_IRQENABLE,
+ 			IRQENB_FIFO1THRES);
+ 
+-- 
+1.7.9.5
