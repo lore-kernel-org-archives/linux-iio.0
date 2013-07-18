@@ -1,40 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:53859 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760539Ab3GSN4r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 09:56:47 -0400
-From: Marek Vasut <marex@denx.de>
-To: Hector Palacios <hector.palacios@digi.com>
-Subject: Re: [PATCH v2 1/5] iio: mxs-lradc: change the realbits to 12
-Date: Fri, 19 Jul 2013 15:56:46 +0200
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org,
-	alexandre.belloni@free-electrons.com, jic23@kernel.org,
-	lars@metafoo.de, fabio.estevam@freescale.com
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <1374225208-28940-2-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374225208-28940-2-git-send-email-hector.palacios@digi.com>
+Received: from smtp-out-165.synserver.de ([212.40.185.165]:1033 "EHLO
+	smtp-out-165.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751394Ab3GRNxV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 09:53:21 -0400
+Message-ID: <51E7F37B.4050803@metafoo.de>
+Date: Thu, 18 Jul 2013 15:54:03 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307191556.46857.marex@denx.de>
+To: Otavio Salvador <otavio@ossystems.com.br>
+CC: Marek Vasut <marex@denx.de>, Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org, Mario Goulart <mario@ossystems.com.br>
+Subject: Re: ADC setting for differential and single-ended channels
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com> <201307180531.02207.marex@denx.de> <CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com> <201307180608.09345.marex@denx.de> <51E78230.8070602@metafoo.de> <CAP9ODKrUcrsOVgbfm4sqv=x_Cq_Jj0aD6DwwcWHXcvVfADZAHg@mail.gmail.com>
+In-Reply-To: <CAP9ODKrUcrsOVgbfm4sqv=x_Cq_Jj0aD6DwwcWHXcvVfADZAHg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Hector Palacios,
-
-> The LRADC virtual channels have an 18 bit field to store the sum of up
-> to 2^5 accumulated samples. The read_raw function however only operates
-> over a single sample (12 bit resolution).
-> In order to use this field for scaling operations, we need it to be the
-> exact resolution value of the LRADC.
-> Besides, the driver was using an 18 bit mask (LRADC_CH_VALUE_MASK) to
-> report touch coordinates to userland. A 12 bit mask should be used instead
-> or else the touch libraries will expect a coordinates range between 0
-> and 0x3ffff (18 bits), instead of between 0 and 0xfff (12 bits).
+On 07/18/2013 02:02 PM, Otavio Salvador wrote:
+> On Thu, Jul 18, 2013 at 2:50 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 07/18/2013 06:08 AM, Marek Vasut wrote:
+>>> Dear Otavio Salvador,
+>>>
+>>>> On Thu, Jul 18, 2013 at 12:31 AM, Marek Vasut <marex@denx.de> wrote:
+>>>>> Dear Otavio Salvador,
+>>>>>
+>>>>>> On Wed, Jul 17, 2013 at 4:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>>>>> Otavio Salvador <otavio@ossystems.com.br> wrote:
+>>>>>>>> Hello,
+>>>>>>>>
+>>>>>>>> Mario and I are working at TI ADS124x driver and this chip can be used
+>>>>>>>> in two ways:
+>>>>>>>>
+>>>>>>>> In case of ADS1247:
+>>>>>>>> - 2 differential channels
+>>>>>>>> - 3 single-ended channels
+>>>>>>>>
+>>>>>>>> In the first case it take two inputs and the chip returns the
+>>>>>>>> difference between them; in the second case it does the same but you
+>>>>>>>> must choose one channel to be the negative reference for all the other
+>>>>>>>> inputs. This is how we understood the datasheet however the
+>>>>>>>> single-ended use is quite confusing on it so we might be wrong.
+>>>>>>>>
+>>>>>>>> So we'd like to know the best way to handle those cases in the driver.
+>>>>>>>>
+>>>>>>>> One alternative we discussed is to use two attributes in the dts as:
+>>>>>>>> ...
+>>>>>>>> #channels = <2>;
+>>>>>>>> channels = <0 3
+>>>>>>>>
+>>>>>>>>                    1 2>;
+>>>>>>>>
+>>>>>>>> So it'd take two channels. One composed by input 0 and input 3 and
+>>>>>>>> another composed by input 1 and input 2.
+>>>>>>>>
+>>>>>>>> On the another case, we'd use:
+>>>>>>>>  ...
+>>>>>>>>  #channels = <3>
+>>>>>>>>  channels = <0 3
+>>>>>>>>
+>>>>>>>>                     1 3
+>>>>>>>>                     2 3>;
+>>>>>>>>
+>>>>>>>> So it'd take three channels and all them comparing to input 3.
+>>>>>>>>
+>>>>>>>> Are we in the right route? Any hints how to better solve this?
+>>>>>>>>
+>>>>>>> Another option is to leave it entirely up to user space.  See max1363
+>>>>>>> driver where both single ended and differential channels are supported
+>>>>>>> at the same time with care taken in buffered mode.
+>>>>>>>
+>>>>>>> Not sure if that works for your case?
+>>>>>>
+>>>>>> I think it is nicer to have it set in the dt; we need the dt anyway so
+>>>>>> it seems logical to get it setting  the right channel.
+>>>>>
+>>>>> Can you please elaborate why is it logical?
+>>>>>
+>>>>> I took a brief look over the datasheet [1], here are the facts I see
+>>>>> (correct me if I'm wrong). I first looked at Figure 51. :
+>>>>>
+>>>>> - ADS1246 has two input channels
+>>>>> - ADS1247 has four input channels
+>>>>> - ADS1428 has eight input channels
+>>>>>
+>>>>> - Each one of the 2/4/8 input channels can be connected to either P(+) or
+>>>>> N(-) of the amplifier (figure 53) for the ADC.
+>>>>>
+>>>>> - Apparently, according to Figure 51. , it is possible to have only one P
+>>>>> and one N channel enabled at time (and therefore sample only one pair of
+>>>>> channels with the ADC) since the P and N rails are shared by all the
+>>>>> inputs and there's only one ADC block.
+>>>>>
+>>>>> Therefore, the userland would have to export sysfs file for each of the
+>>>>> channels where one would write if the channel is possitive(+) /
+>>>>> negative(-) / not_connected(NC) and then trigger the start of sampling.
+>>>>>
+>>>>> What do you think?
+>>>>
+>>>> This does not make them act as differential  against each other.
+>>>>
+>>>> We can have several combinations as:
+>>>>
+>>>> 0 - P / 1 - N (differential)
+>>>> 0 - P / 1 - P / 2 - P / 3 - N (all differential to 3)
+>>>> and so on.
+>>>>
+>>>> So how userland would tell which would be the differential to use?
+>>>>
+>>>> Our board has:
+>>>>
+>>>> 0 against 1
+>>>> 2 against 3
+>>>>
+>>>> but it is a design choice.
+>>>>
+>>>> Am I missing something?
+>>>
+>>> echo 'P' > /sys/.../chan_mux_0
+>>> echo 'P' > /sys/.../chan_mux_2
+>>> echo 'N' > /sys/.../chan_mux_1
+>>> echo 'N' > /sys/.../chan_mux_3
+>>>
+>>> Like this for example ;-) And this could be nicely implemented via IIO, but I
+>>> believe there might even already be an IIO API for this stuff.
+>>
+>> Well the standard API as Jonathan said is to expose all possible pin
+>> combinations. In this case that might be up to 8x8=64 channels. In my
+>> opinion that's fine, but on a specific board maybe not all combinations are
+>> valid. So you might want to specify in your platform data or devicetree that
+>> only a subset of these 64 channels is valid and should be exposed to
+>> userspace. In my opinion it makes the most sense to handle this in the IIO
+>> core since this is a generic requirement, nothing specific to this chip.
+>> E.g. even for 'simple' converters you'll find situations where some pins
+>> might not be connected.
 > 
-> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> Right and how should we do this?
+> 
+> Because it would not be 8x8 but it has also the single-ended
+> combinations (using different N inputs).
 
-Acked-by: Marek Vasut <marex@denx.de>
+Does the device really support single ended, it looks to me as if it only
+supports pseudo-differential configurations.
 
-Best regards,
-Marek Vasut
+> 
+> So in the end, it'd have a huge number of channels in sysfs where only
+> few would be used. This seems confusing for user from my POV.
+> 
+> You said about handle this pins to be exposed in IIO core, does IIO
+> already provide support for it?
+
+No unfortunately not, but as I said, this is not a device specific
+requirement and thus we should find a way to handle this generically in the
+IIO core.
+
+- Lars
+
