@@ -1,51 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:56833 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933026Ab3GQR1d (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:33 -0400
+Return-Path: <zubair.lutfullah@gmail.com>
 From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 21/21] mfd: ti_am335x_tscadc.c fix checkpatch.pl issues
-Date: Wed, 17 Jul 2013 18:26:50 +0100
-Message-Id: <1374082010-28095-22-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net
+Subject: [PATCH 03/15] input: ti_tsc: Enable shared IRQ for TSC
+Date: Thu, 18 Jul 2013 23:21:14 +0100
+Message-Id: <1374186086-5015-4-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-code formatting corrected.
+From: "Patil, Rachna" <rachna@ti.com>
+
+Touchscreen and ADC share the same IRQ line from parent MFD core.
+Previously only Touchscreen was interrupt based.
+With continuous mode support added in ADC driver, driver requires
+interrupt to process the ADC samples, so enable shared IRQ flag bit for
+touchscreen.
+
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
 Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 ---
- drivers/mfd/ti_am335x_tscadc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/input/touchscreen/ti_am335x_tsc.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index e7314e4..b8d7dfb 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -278,8 +278,8 @@ static int tscadc_suspend(struct device *dev)
- 	struct ti_tscadc_dev	*tscadc_dev = dev_get_drvdata(dev);
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 0e9f02a..edc3d03 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -260,8 +260,16 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int fsm;
  
- 	tscadc_writel(tscadc_dev, REG_SE, 0x00);
--        tscadc_dev->irqstat = tscadc_readl(tscadc_dev, REG_IRQENABLE);
--        tscadc_dev->ctrl = tscadc_readl(tscadc_dev, REG_CTRL);
-+	tscadc_dev->irqstat = tscadc_readl(tscadc_dev, REG_IRQENABLE);
-+	tscadc_dev->ctrl = tscadc_readl(tscadc_dev, REG_CTRL);
- 	pm_runtime_put_sync(dev);
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+-	if (status & IRQENB_FIFO0THRES) {
  
- 	return 0;
-@@ -297,7 +297,7 @@ static int tscadc_resume(struct device *dev)
- 	if (tscadc_dev->tsc_cell != -1)
- 		tscadc_idle_config(tscadc_dev);
- 	am335x_tsc_se_update(tscadc_dev);
--        tscadc_writel(tscadc_dev, REG_CTRL, tscadc_dev->ctrl);
-+	tscadc_writel(tscadc_dev, REG_CTRL, tscadc_dev->ctrl);
++	/*
++	* ADC and touchscreen share the IRQ line.
++	* FIFO1 threshold interrupt is used by ADC,
++	* hence return from touchscreen IRQ handler if FIFO1
++	* threshold interrupt occurred.
++	*/
++	if (status & IRQENB_FIFO1THRES)
++		return IRQ_NONE;
++	else if (status & IRQENB_FIFO0THRES) {
+ 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
  
- 	return 0;
- }
+ 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+@@ -315,7 +323,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	}
+ 
+ 	if (irqclr) {
+-		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
++		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
+ 		am335x_tsc_se_update(ts_dev->mfd_tscadc);
+ 		return IRQ_HANDLED;
+ 	}
+@@ -389,7 +397,7 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+-			  0, pdev->dev.driver->name, ts_dev);
++			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to allocate irq.\n");
+ 		goto err_free_mem;
 -- 
 1.7.9.5
-
