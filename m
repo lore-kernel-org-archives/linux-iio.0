@@ -1,72 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45326 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753549Ab3GTLQn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 07:16:43 -0400
-Message-ID: <51EA7199.708@kernel.org>
-Date: Sat, 20 Jul 2013 12:16:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	koen@dominion.thruhere.net
-Subject: Re: [PATCH 05/15] MFD: ti_tscadc: ADC Clock check not required
-References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <1374186086-5015-6-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374186086-5015-6-git-send-email-zubair.lutfullah@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 14/15] iio: ti_am335x_adc: Reset and clear overrun status before capture
+Date: Thu, 18 Jul 2013 23:21:25 +0100
+Message-Id: <1374186086-5015-15-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/18/2013 11:21 PM, Zubair Lutfullah wrote:
-> From: "Patil, Rachna" <rachna@ti.com>
-> 
-> ADC is ideally expected to work at a frequency of 3MHz.
-> The present code had a check, which returned error if the frequency
-> went below the threshold  value. But since AM335x supports various
-> working frequencies, this check is not required.
-> Now the code just uses the internal ADC clock divider to set the ADC
-> frequency w.r.t the sys clock.
-A I read this comment, this is a fairly stand alone patch and everything
-else in the series will work whether or not it is there?
+From: Russ Dill <Russ.Dill@ti.com>
 
-If so, should not really be part of this series and I'm certainly
-going to leave taking it up to the mfd maintainer.
-> 
-> Signed-off-by: Patil, Rachna <rachna@ti.com>
-> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-> ---
->  drivers/mfd/ti_am335x_tscadc.c       |    6 +-----
->  include/linux/mfd/ti_am335x_tscadc.h |    1 -
->  2 files changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index 9f5c326..b8d7dfb 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -197,11 +197,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
->  	clock_rate = clk_get_rate(clk);
->  	clk_put(clk);
->  	clk_value = clock_rate / ADC_CLK;
-> -	if (clk_value < MAX_CLK_DIV) {
-> -		dev_err(&pdev->dev, "clock input less than min clock requirement\n");
-> -		err = -EINVAL;
-> -		goto err_disable_clk;
-> -	}
-> +
->  	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
->  	clk_value = clk_value - 1;
->  	tscadc_writel(tscadc, REG_CLKDIV, clk_value);
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 3058aef..136463b 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -127,7 +127,6 @@
->  #define SEQ_STATUS BIT(5)
->  
->  #define ADC_CLK			3000000
-> -#define	MAX_CLK_DIV		7
->  #define TOTAL_STEPS		16
->  #define TOTAL_CHANNELS		8
->  #define FIFO1_THRESHOLD		19
-> 
+While not pulling out samples, the FIFO will fill up causing an
+overrun event. Before starting up another continuous sample, clear that
+event.
+
+Signed-off-by: Russ Dill <Russ.Dill@ti.com>
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c |   21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 265ed27..00fdb22 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -241,22 +241,23 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(idev);
+ 	struct iio_buffer *buffer = idev->buffer;
+-	unsigned int enb, fifo1count;
+-	int stepnum, i;
++	unsigned int enb, config;
++	int stepnum;
+ 	u8 bit;
+ 
+ 	if (!adc_dev->is_continuous_mode) {
+ 		pr_info("Data cannot be read continuously in one shot mode\n");
+ 		return -EINVAL;
+ 	} else {
+-		tiadc_writel(adc_dev, REG_IRQENABLE,
+-				(IRQENB_FIFO1THRES |
+-				IRQENB_FIFO1OVRRUN |
+-				IRQENB_FIFO1UNDRFLW));
+-
+-		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+-		for (i = 0; i < fifo1count; i++)
+-			tiadc_readl(adc_dev, REG_FIFO1);
++		config = tiadc_readl(adc_dev, REG_CTRL);
++		tiadc_writel(adc_dev, REG_CTRL,
++					config & ~CNTRLREG_TSCSSENB);
++		tiadc_writel(adc_dev, REG_CTRL,
++					config |  CNTRLREG_TSCSSENB);
++		tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
++				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
++		tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
++				| IRQENB_FIFO1OVRRUN);
+ 
+ 		tiadc_writel(adc_dev, REG_SE, 0x00);
+ 		for_each_set_bit(bit, buffer->scan_mask,
+-- 
+1.7.9.5
