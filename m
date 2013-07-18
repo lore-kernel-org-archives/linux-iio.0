@@ -1,93 +1,185 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:51244 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759940Ab3GSJ2P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 19 Jul 2013 05:28:15 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v6 0/2] TWL6030, TWL6032 GPADC driver
-Date: Fri, 19 Jul 2013 12:27:17 +0300
-Message-ID: <1374226039-16943-1-git-send-email-oleksandr.kozaruk@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:32976 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932496Ab3GRSIn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 14:08:43 -0400
+Received: from eucpsbgm2.samsung.com (unknown [203.254.199.245])
+ by mailout2.w1.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0MQ500LL092DMA50@mailout2.w1.samsung.com> for
+ linux-iio@vger.kernel.org; Thu, 18 Jul 2013 19:08:41 +0100 (BST)
+Message-id: <51E82F28.7090305@samsung.com>
+Date: Thu, 18 Jul 2013 20:08:40 +0200
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+MIME-version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jacek Anaszewski <j.anaszewski@samsung.com>,
+	linux-iio@vger.kernel.org, s.nawrocki@samsung.com,
+	Kyungmin Park <kyungmin.park@samsung.com>, lars@metafoo.de
+Subject: Re: [PATCH/RFC v2] iio: gp2ap020a00f: Add a driver for the device
+References: <1372258172-10996-1-git-send-email-j.anaszewski@samsung.com>
+ <1372258172-10996-2-git-send-email-j.anaszewski@samsung.com>
+ <51D9929C.30606@kernel.org>
+In-reply-to: <51D9929C.30606@kernel.org>
+Content-type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 07/07/2013 06:09 PM, Jonathan Cameron wrote:
+[..]
+ >> +error_ret:
+ >> +	mutex_unlock(&data->lock);
+ >> +
+ >> +	return err<  0 ? err : IIO_VAL_INT;
+ >> +}
+ >> +
+ > Any info available on how to convert these inputs to an illuminance 
+value?
+ > (e.g. in LUX)
 
-v6 - addressed comments about trim bits, checkpatch clean up
-v5 - gpadc DT node renamed from "gpadc" to generic "adc", added
-     temperature channels; raw code is corracted with calibration
-     data.
-v4 - addressed comments: fixed style violation, bug in freeing memory,
-     added comments explaining calibration method, removed test network
-     channels from exposing to userspace, error handling for 
-     wait_for_complition
-v3 - fixed compiler warning
-v2 - the driver put in drivers/iio, and
-converted using iio facilities as suggested by Graeme.
+There is info available, but the formula depends on the IR factor
+that is read from in_illuminance_ir channel, i.e, it isn't constant and
+can vary from conversion to conversion.
+Moreover, the other factors in the formula also vary depending on
+the lux mode set (I added lux mode configuration in the third
+version of the patch).
+I wasn't sure how to implement it with IIO, so any hint on how
+to handle dynamically changing scale factor is welcomed.
 
-TWL603[02] GPADC is used to measure battery voltage,
-battery temperature, battery presence ID, and could
-be used to measure twl603[02] die temperature.
-This is used on TI blaze, blaze tablet platforms.
+[...]
+ >> +
+ >> +static int gp2ap020a00f_buffer_preenable(struct iio_dev *indio_dev)
+ >> +{
+ >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+ >> +	size_t d_size = 0;
+ >> +	int i, err = 0;
+ >> +
+ > Without datasheet I'd like you to talk me through exactly what is 
+going on
+ > in here...
+ >> +	mutex_lock(&data->lock);
+ >> +
+ >> +	/* Enable triggers according to the scan_mask */
+ >> +	for_each_set_bit(i, indio_dev->active_scan_mask,
+ >> +		indio_dev->masklength) {
+ >> +		switch (i) {
+ >> +		case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
+ >> +			err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_CLEAR_EN);
+ > So these triggers correspond to actually capturing the data based on some
+ > other signal?  e.g. after these are set we'll get a steady stream
+ > of data off the relevant part of the chip?
 
-The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
-channels respectively. Some channels have current
-source and are used for measuring voltage drop
-on resistive load for detecting battery ID resistance,
-or measuring voltage drop on NTC resistors for external
-temperature measurements, other channels measure voltage,
-(i.e. battery voltage), and have inbuilt voltage dividers,
-thus, capable to scale voltage. Some channels are dedicated
-for measuring die temperature.
+Actually both LIGHT_CLEAR and LIGHT_IR conversions are started after
+setting the device in ALS mode. If the channel is disabled with IIO
+its output value is simply ignored.
+In order to enable PROXIMITY channel the PS part of the device has to
+be enabled. The device can be set in ALS, PS or ALS_AND_PS modes.
 
-Some channels could be calibrated in 2 points, having
-offsets from ideal values in trim registers.
+ >> +			if (err<  0)
+ >> +				goto error_ret;
+ >> +			break;
+ >> +		case GP2AP020A00F_SCAN_MODE_LIGHT_IR:
+ >> +			err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_IR_EN);
+ >> +			if (err<  0)
+ >> +				goto error_ret;
+ >> +			break;
+ >> +		case GP2AP020A00F_SCAN_MODE_PROXIMITY:
+ >> +			err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_PROX_EN);
+ >> +			if (err<  0)
+ >> +				goto error_ret;
+ >> +			break;
+ >> +		}
+ >> +		d_size += 2;
+ >> +	}
+ >> +
+ > Is this always guaranteed to be aligned?  Doesn't immediately look like
+ > it and quite a bit of the buffer handling assumes it is.
 
-The difference between GPADC in TWL6030 and TWL6032:
-- 10 bit vs 12 bit ADC;
-- 17 vs 19 channels;
-- channels have different purpose(i. e. battery voltage
-  channel 8 vs channel 18);
-- trim values are interpreted differently.
+I fixed it in the newest patch by using indio_dev->scan_bytes property.
 
-The driver is derived from git://git.omapzoom.org/kernel/omap.git
-The original driver's authors and contributors are Balaji T K,
-Graeme Gregory, Ambresh K, Girish S Ghongdemath.
+ >> +	if (indio_dev->scan_timestamp)
+ >> +		d_size += sizeof(s64);
+ >> +
+ >> +	data->buffer = kmalloc(d_size, GFP_KERNEL);
+ >> +	if (data->buffer == NULL) {
+ >> +		err = -ENOMEM;
+ >> +		goto error_ret;
+ >> +	}
+ > You might to better with the update_scan_mode callback and using generic
+ > preenable/postdisable.  Perhaps it is simpler this way, I'm not sure
+ > without actually implementing it!
 
-The changes to the original driver:
-- device tree adaptation;
-- drop ioctl support - never been used;
-- unified measurement method for both devices;
-- get rid of "if (device == X)" code style to data driven;
-- drop polling end of conversion and use interrupt instead;
-- iio framework is used
+ From what I figured out update_scan_mode callback is called only
+while enabling the trigger. How an IIO driver can be informed about
+the end of triggered capture in different way than through
+the buffer_postdisable callback?
 
-Tested with on blaze tablet 2 with OMAP4430(twl6030), and
-OMAP4470(twl6032) SOMs.
+ >> +
+ >> +	err = iio_sw_buffer_preenable(indio_dev);
+ >> +
+ >> +error_ret:
+ >> +	mutex_unlock(&data->lock);
+ >> +
+ >> +	return err;
+ >> +}
+ >> +
+ >> +static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
+ >> +{
+ >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+ >> +	int err;
+ >> +
+ >> +	mutex_lock(&data->lock);
+ >> +
+ > The fact you did the enable as a for_each_bit_set and this like this
+ > is a little odd.  Actually I think the simple if statements here
+ > are a little easier, but either way consistency of code structures
+ > definitely makes my life easier, so pick one form or the other.
 
-The patches were tested against 3.10-rc7
+Fixed.
 
-Oleksandr Kozaruk (2):
-  ARM: dts: twl: Add GPADC data to device tree
-  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+ >> +	if (test_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER,&data->flags)) {
+ >> +		err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_CLEAR_DIS);
+ >> +		if (err<  0)
+ >> +			goto error_ret;
+ >> +	}
+ >> +
+ >> +	if (test_bit(GP2AP020A00F_FLAG_ALS_IR_TRIGGER,&data->flags)) {
+ >> +		err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_IR_DIS);
+ >> +		if (err<  0)
+ >> +			goto error_ret;
+ >> +	}
+ >> +
+ >> +	if (test_bit(GP2AP020A00F_FLAG_PS_TRIGGER,&data->flags)) {
+ >> +		err = gp2ap020a00f_exec_cmd(data,
+ >> +					GP2AP020A00F_CMD_TRIGGER_PROX_DIS);
+ >> +		if (err<  0)
+ >> +			goto error_ret;
+ >> +	}
+ > In the interests of symetry I'd expect this generic call to be the
+ > first thing called in this function.
 
- arch/arm/boot/dts/twl6030.dtsi  |   6 +
- drivers/iio/adc/Kconfig         |  14 +
- drivers/iio/adc/Makefile        |   1 +
- drivers/iio/adc/twl6030-gpadc.c | 991 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1012 insertions(+)
- create mode 100644 drivers/iio/adc/twl6030-gpadc.c
+Fixed.
 
--- 
-1.8.1.2
+
+ >> +static int gp2ap020a00f_remove(struct i2c_client *client)
+ >> +{
+ >> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+ >> +
+ >
+ > It's small and probably doesn't actually matter, but I'd expect
+ > this release order to be the opposite of what we have in the probe
+ > function (and hence to match the ordering in the error handling
+ > just above here).  In that the irq is freed beffor the buffer_cleanup.
+ >
+
+Fixed.
+
+Thanks,
+Jacek
 
