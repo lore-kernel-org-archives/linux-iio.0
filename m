@@ -1,47 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:44423 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758489Ab3GRKTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Jul 2013 06:19:54 -0400
-From: Oleksandr Kravchenko <x0199363@ti.com>
-To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
-	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
-	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 2/3] of: Add Avago Technologies vendor prefix
-Date: Thu, 18 Jul 2013 13:19:25 +0300
-Message-ID: <1374142766-29736-2-git-send-email-x0199363@ti.com>
-In-Reply-To: <1374142766-29736-1-git-send-email-x0199363@ti.com>
-References: <1374142766-29736-1-git-send-email-x0199363@ti.com>
+Received: from mail-out.m-online.net ([212.18.0.9]:53413 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750968Ab3GREIN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 00:08:13 -0400
+From: Marek Vasut <marex@denx.de>
+To: Otavio Salvador <otavio@ossystems.com.br>
+Subject: Re: ADC setting for differential and single-ended channels
+Date: Thu, 18 Jul 2013 06:08:09 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Mario Goulart <mario@ossystems.com.br>,
+	"Lars-Peter Clausen" <lars@metafoo.de>
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com> <201307180531.02207.marex@denx.de> <CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
+In-Reply-To: <CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307180608.09345.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Dear Otavio Salvador,
 
-This commit adds a device tree vendor prefix for Avago Technologies.
+> On Thu, Jul 18, 2013 at 12:31 AM, Marek Vasut <marex@denx.de> wrote:
+> > Dear Otavio Salvador,
+> > 
+> >> On Wed, Jul 17, 2013 at 4:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >> > Otavio Salvador <otavio@ossystems.com.br> wrote:
+> >> >>Hello,
+> >> >>
+> >> >>Mario and I are working at TI ADS124x driver and this chip can be used
+> >> >>in two ways:
+> >> >>
+> >> >>In case of ADS1247:
+> >> >> - 2 differential channels
+> >> >> - 3 single-ended channels
+> >> >>
+> >> >>In the first case it take two inputs and the chip returns the
+> >> >>difference between them; in the second case it does the same but you
+> >> >>must choose one channel to be the negative reference for all the other
+> >> >>inputs. This is how we understood the datasheet however the
+> >> >>single-ended use is quite confusing on it so we might be wrong.
+> >> >>
+> >> >>So we'd like to know the best way to handle those cases in the driver.
+> >> >>
+> >> >>One alternative we discussed is to use two attributes in the dts as:
+> >> >> ...
+> >> >> #channels = <2>;
+> >> >> channels = <0 3
+> >> >> 
+> >> >>                    1 2>;
+> >> >>
+> >> >>So it'd take two channels. One composed by input 0 and input 3 and
+> >> >>another composed by input 1 and input 2.
+> >> >>
+> >> >>On the another case, we'd use:
+> >> >>  ...
+> >> >>  #channels = <3>
+> >> >>  channels = <0 3
+> >> >>  
+> >> >>                     1 3
+> >> >>                     2 3>;
+> >> >>
+> >> >>So it'd take three channels and all them comparing to input 3.
+> >> >>
+> >> >>Are we in the right route? Any hints how to better solve this?
+> >> >>
+> >> > Another option is to leave it entirely up to user space.  See max1363
+> >> > driver where both single ended and differential channels are supported
+> >> > at the same time with care taken in buffered mode.
+> >> > 
+> >> > Not sure if that works for your case?
+> >> 
+> >> I think it is nicer to have it set in the dt; we need the dt anyway so
+> >> it seems logical to get it setting  the right channel.
+> > 
+> > Can you please elaborate why is it logical?
+> > 
+> > I took a brief look over the datasheet [1], here are the facts I see
+> > (correct me if I'm wrong). I first looked at Figure 51. :
+> > 
+> > - ADS1246 has two input channels
+> > - ADS1247 has four input channels
+> > - ADS1428 has eight input channels
+> > 
+> > - Each one of the 2/4/8 input channels can be connected to either P(+) or
+> > N(-) of the amplifier (figure 53) for the ADC.
+> > 
+> > - Apparently, according to Figure 51. , it is possible to have only one P
+> > and one N channel enabled at time (and therefore sample only one pair of
+> > channels with the ADC) since the P and N rails are shared by all the
+> > inputs and there's only one ADC block.
+> > 
+> > Therefore, the userland would have to export sysfs file for each of the
+> > channels where one would write if the channel is possitive(+) /
+> > negative(-) / not_connected(NC) and then trigger the start of sampling.
+> > 
+> > What do you think?
+> 
+> This does not make them act as differential  against each other.
+> 
+> We can have several combinations as:
+> 
+> 0 - P / 1 - N (differential)
+> 0 - P / 1 - P / 2 - P / 3 - N (all differential to 3)
+> and so on.
+> 
+> So how userland would tell which would be the differential to use?
+> 
+> Our board has:
+> 
+> 0 against 1
+> 2 against 3
+> 
+> but it is a design choice.
+> 
+> Am I missing something?
 
-Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- 1 file changed, 1 insertion(+)
+echo 'P' > /sys/.../chan_mux_0
+echo 'P' > /sys/.../chan_mux_2
+echo 'N' > /sys/.../chan_mux_1
+echo 'N' > /sys/.../chan_mux_3
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index d5a79ca..8aab9c6 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
- apm	Applied Micro Circuits Corporation (APM)
- arm	ARM Ltd.
- atmel	Atmel Corporation
-+avago	Avago Technologies
- bosch	Bosch Sensortec GmbH
- brcm	Broadcom Corporation
- cavium	Cavium, Inc.
--- 
-1.7.9.5
+Like this for example ;-) And this could be nicely implemented via IIO, but I 
+believe there might even already be an IIO API for this stuff.
 
+Best regards,
+Marek Vasut
