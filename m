@@ -1,124 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta8.messagelabs.com ([216.82.243.207]:36465 "EHLO
-	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1760085Ab3GSJN4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 05:13:56 -0400
-From: Hector Palacios <hector.palacios@digi.com>
-To: <linux-iio@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <marex@denx.de>,
-	<alexandre.belloni@free-electrons.com>, <jic23@kernel.org>,
-	<lars@metafoo.de>, <fabio.estevam@freescale.com>,
-	<hector.palacios@digi.com>
-Subject: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify scale
-Date: Fri, 19 Jul 2013 11:13:28 +0200
-Message-ID: <1374225208-28940-6-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
+Received: from mail-yh0-f48.google.com ([209.85.213.48]:36520 "EHLO
+	mail-yh0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758838Ab3GRRlh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 13:41:37 -0400
+Received: by mail-yh0-f48.google.com with SMTP id z12so1187720yhz.7
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jul 2013 10:41:36 -0700 (PDT)
+From: Mario Domenech Goulart <mario.goulart@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Otavio Salvador <otavio@ossystems.com.br>,
+	Marek Vasut <marex@denx.de>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: ADC setting for differential and single-ended channels
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+	<201307180531.02207.marex@denx.de>
+	<CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
+	<201307180608.09345.marex@denx.de> <51E78230.8070602@metafoo.de>
+	<CAP9ODKrUcrsOVgbfm4sqv=x_Cq_Jj0aD6DwwcWHXcvVfADZAHg@mail.gmail.com>
+	<51E7F37B.4050803@metafoo.de> <87ppufx6ax.fsf@parenteses.org>
+Date: Thu, 18 Jul 2013 17:41:33 +0000
+In-Reply-To: <87ppufx6ax.fsf@parenteses.org> (Mario Domenech Goulart's message
+	of "Thu, 18 Jul 2013 14:59:34 +0000")
+Message-ID: <87ehavwysy.fsf@parenteses.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added write_raw function to manipulate the optional divider_by_two
-through the scaling attribute out of the available scales.
+On Thu, 18 Jul 2013 14:59:34 +0000 Mario Domenech Goulart <mario@ossystems.com.br> wrote:
 
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>
----
- drivers/staging/iio/adc/mxs-lradc.c | 55 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 54 insertions(+), 1 deletion(-)
+> On Thu, 18 Jul 2013 15:54:03 +0200 Lars-Peter Clausen <lars@metafoo.de> wrote:
+>
+>> On 07/18/2013 02:02 PM, Otavio Salvador wrote:
+>>> On Thu, Jul 18, 2013 at 2:50 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>>
+>>>> Well the standard API as Jonathan said is to expose all possible pin
+>>>> combinations. In this case that might be up to 8x8=64 channels. In my
+>>>> opinion that's fine, but on a specific board maybe not all combinations are
+>>>> valid. So you might want to specify in your platform data or devicetree that
+>>>> only a subset of these 64 channels is valid and should be exposed to
+>>>> userspace. In my opinion it makes the most sense to handle this in the IIO
+>>>> core since this is a generic requirement, nothing specific to this chip.
+>>>> E.g. even for 'simple' converters you'll find situations where some pins
+>>>> might not be connected.
+>>> 
+>>> Right and how should we do this?
+>>> 
+>>> Because it would not be 8x8 but it has also the single-ended
+>>> combinations (using different N inputs).
+>>
+>> Does the device really support single ended, it looks to me as if it only
+>> supports pseudo-differential configurations.
+>
+> That's not very clear to me either.  The datasheet states the chips have
+> single-ended inputs, but the mux configuration always assume a positive
+> input and a negative input.
+>
+> I'm assuming the "single-ended" mode refers to using an arbitrary input
+> as negative reference to all the other n-1 inputs.  I suppose that'd be
+> a pseudo-differential configuration, right?
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index c929733..286cde2 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -144,6 +144,7 @@ struct mxs_lradc {
- 
- 	uint32_t		vref_mv[LRADC_MAX_TOTAL_CHANS];
- 	unsigned int		scale_avail[LRADC_MAX_TOTAL_CHANS][2][2];
-+	unsigned int		is_divided[LRADC_MAX_TOTAL_CHANS];
- 
- 	/*
- 	 * Touchscreen LRADC channels receives a private slot in the CTRL4
-@@ -202,6 +203,7 @@ struct mxs_lradc {
- #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
- 
- #define	LRADC_CTRL2				0x20
-+#define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
- #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
- 
- #define	LRADC_STATUS				0x40
-@@ -310,7 +312,8 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = lradc->vref_mv[chan->channel];
--		*val2 = chan->scan_type.realbits;
-+		*val2 = chan->scan_type.realbits -
-+			lradc->is_divided[chan->channel];
- 		ret = IIO_VAL_FRACTIONAL_LOG2;
- 		break;
- 	default:
-@@ -323,6 +326,54 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
- 	return ret;
- }
- 
-+static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
-+			       const struct iio_chan_spec *chan,
-+			       int val, int val2, long m)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio_dev);
-+	int ret;
-+
-+	ret = mutex_trylock(&lradc->lock);
-+	if (!ret)
-+		return -EBUSY;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = -EINVAL;
-+		if (val == lradc->scale_avail[chan->channel][0][0] &&
-+		    val2 == lradc->scale_avail[chan->channel][0][1]) {
-+			/* [0] -> divider by two disabled */
-+			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
-+			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
-+			lradc->is_divided[chan->channel] = 0;
-+			ret = 0;
-+		} else if (val == lradc->scale_avail[chan->channel][1][0] &&
-+			   val2 == lradc->scale_avail[chan->channel][1][1]) {
-+			/* [1] -> divider by two enabled */
-+			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
-+			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
-+			lradc->is_divided[chan->channel] = 1;
-+			ret = 0;
-+		}
-+
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	mutex_unlock(&lradc->lock);
-+
-+	return ret;
-+}
-+
-+static int mxs_lradc_write_raw_get_fmt(struct iio_dev *iio_dev,
-+				       const struct iio_chan_spec *chan,
-+				       long m)
-+{
-+	return IIO_VAL_INT_PLUS_NANO;
-+}
-+
- static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
- 		struct device_attribute *attr,
- 		char *buf,
-@@ -400,6 +451,8 @@ static const struct attribute_group mxs_lradc_attribute_group = {
- static const struct iio_info mxs_lradc_iio_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= mxs_lradc_read_raw,
-+	.write_raw		= mxs_lradc_write_raw,
-+	.write_raw_get_fmt	= &mxs_lradc_write_raw_get_fmt,
- 	.attrs			= &mxs_lradc_attribute_group,
- };
- 
+Here's part of a message from a TI employee that explains the
+single-ended mode:
+
+  "The ADS1248 has 8 multiplexed inputs. When we describe a single ended
+  input, we use one input as a common line, and use the remaining 7
+  inputs measured against common. In this way we decribe this each as a
+  single ended input. That's how we get 7 single ended inputs."
+
+Quoted from
+http://e2e.ti.com/support/data_converters/precision_data_converters/f/73/p/31638/110153.aspx#110153
+
+Best wishes.
+Mario
