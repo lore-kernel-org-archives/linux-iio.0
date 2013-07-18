@@ -1,264 +1,128 @@
-Return-Path: <oleksandr.kozaruk@globallogic.com>
-MIME-Version: 1.0
-In-Reply-To: <51E7B9DA.9040803@metafoo.de>
-References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
-	<1374059564-6872-3-git-send-email-oleksandr.kozaruk@ti.com>
-	<51E6DCB5.3070302@metafoo.de>
-	<CAPb7_muAzO-jRqgcm89fcKT-hTLq38Aj2p0WAWjGjN9DoQUwPg@mail.gmail.com>
-	<51E7B9DA.9040803@metafoo.de>
-Date: Fri, 19 Jul 2013 11:35:41 +0300
-Message-ID: <CAPb7_ms36YnT2VVkhngCEonwihtgHSMWO0uQQxsr58rUCgRPLA@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-From: Oleksandr Kozaruk <oleksandr.kozaruk@globallogic.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com, sameo@linux.intel.com,
-	ch.naveen@samsung.com, poeschel@lemonage.de, milo.kim@ti.com, balajitk@ti.com,
-	gg@slimlogic.co.uk, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org, linux-omap@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net
+Subject: [PATCH 02/15] iio: ti_am335x_adc: Fix wrong samples received on 1st read
+Date: Thu, 18 Jul 2013 23:21:13 +0100
+Message-Id: <1374186086-5015-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Lars,
+From: "Patil, Rachna" <rachna@ti.com>
 
-On Thu, Jul 18, 2013 at 12:48 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 07/18/2013 10:36 AM, Oleksandr Kozaruk wrote:
->> Hello Lars,
->>
->> On Wed, Jul 17, 2013 at 9:04 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>> +static int twl6032_calibration(struct twl6030_gpadc_data *gpadc)
->>>> +{
->>>> +     int chn, d1 = 0, d2 = 0, temp;
->>>> +     u8 trim_regs[17];
->>>> +     int ret;
->>>> +
->>>> +     ret = twl_i2c_read(TWL6030_MODULE_ID2, trim_regs + 1,
->>>> +                     TWL6030_GPADC_TRIM1, 16);
->>>> +     if (ret < 0) {
->>>> +             dev_err(gpadc->dev, "calibration failed\n");
->>>> +             return ret;
->>>> +     }
->>>> +
->>>> +     /*
->>>> +      * Loop to calculate the value needed for returning voltages from
->>>> +      * GPADC not values.
->>>> +      *
->>>> +      * gain is calculated to 3 decimal places fixed point.
->>>> +      */
->>>> +     for (chn = 0; chn < TWL6032_GPADC_MAX_CHANNELS; chn++) {
->>>> +
->>>> +             switch (chn) {
->>>> +             case 0:
->>>> +             case 1:
->>>> +             case 2:
->>>> +             case 3:
->>>> +             case 4:
->>>> +             case 5:
->>>> +             case 6:
->>>> +             case 11:
->>>> +             case 12:
->>>> +             case 13:
->>>> +             case 14:
->>>> +                     /* D1 */
->>>> +                     d1 = (trim_regs[3] & 0x1F) << 2;
->>>> +                     d1 |= (trim_regs[1] & 0x06) >> 1;
->>>> +                     if (trim_regs[1] & 0x01)
->>>> +                             d1 = -d1;
->>>> +
->>>> +                     /* D2 */
->>>> +                     d2 = (trim_regs[4] & 0x3F) << 2;
->>>> +                     d2 |= (trim_regs[2] & 0x06) >> 1;
->>>> +                     if (trim_regs[2] & 0x01)
->>>> +                             d2 = -d2;
->>>> +                     break;
->>>> +             case 8:
->>>> +                     /* D1 */
->>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
->>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->>>> +                     if (trim_regs[1] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d1 = (trim_regs[8] & 0x18) << 1;
->>>> +                     d1 |= (trim_regs[7] & 0x1E) >> 1;
->>>> +                     if (trim_regs[7] & 0x01)
->>>> +                             d1 = -d1;
->>>> +
->>>> +                     d1 += temp;
->>>> +
->>>> +                     /* D2 */
->>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
->>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->>>> +                     if (trim_regs[2] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d2 = (trim_regs[10] & 0x1F) << 2;
->>>> +                     d2 |= (trim_regs[8] & 0x06) >> 1;
->>>> +                     if (trim_regs[8] & 0x01)
->>>> +                             d2 = -d2;
->>>> +
->>>> +                     d2 += temp;
->>>> +                     break;
->>>> +             case 9:
->>>> +                     /* D1 */
->>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
->>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->>>> +                     if (trim_regs[1] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d1 = (trim_regs[14] & 0x18) << 1;
->>>> +                     d1 |= (trim_regs[12] & 0x1E) >> 1;
->>>> +                     if (trim_regs[12] & 0x01)
->>>> +                             d1 = -d1;
->>>> +
->>>> +                     d1 += temp;
->>>> +
->>>> +                     /* D2 */
->>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
->>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->>>> +                     if (trim_regs[2] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d2 = (trim_regs[16] & 0x1F) << 2;
->>>> +                     d2 |= (trim_regs[14] & 0x06) >> 1;
->>>> +                     if (trim_regs[14] & 0x01)
->>>> +                             d2 = -d2;
->>>> +
->>>> +                     d2 += temp;
->>>> +             case 10:
->>>> +                     /* D1 */
->>>> +                     d1 = (trim_regs[11] & 0x0F) << 3;
->>>> +                     d1 |= (trim_regs[9] & 0x0E) >> 1;
->>>> +                     if (trim_regs[9] & 0x01)
->>>> +                             d1 = -d1;
->>>> +
->>>> +                     /* D2 */
->>>> +                     d2 = (trim_regs[15] & 0x0F) << 3;
->>>> +                     d2 |= (trim_regs[13] & 0x0E) >> 1;
->>>> +                     if (trim_regs[13] & 0x01)
->>>> +                             d2 = -d2;
->>>> +                     break;
->>>> +             case 7:
->>>> +             case 18:
->>>> +                     /* D1 */
->>>> +                     temp = (trim_regs[3] & 0x1F) << 2;
->>>> +                     temp |= (trim_regs[1] & 0x06) >> 1;
->>>> +                     if (trim_regs[1] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d1 = (trim_regs[5] & 0x7E) >> 1;
->>>> +                     if (trim_regs[5] & 0x01)
->>>> +                             d1 = -d1;
->>>> +.
->>>> +                     d1 += temp;
->>>> +
->>>> +                     /* D2 */
->>>> +                     temp = (trim_regs[4] & 0x3F) << 2;
->>>> +                     temp |= (trim_regs[2] & 0x06) >> 1;
->>>> +                     if (trim_regs[2] & 0x01)
->>>> +                             temp = -temp;
->>>> +
->>>> +                     d2 = (trim_regs[6] & 0xFE) >> 1;
->>>> +                     if (trim_regs[6] & 0x01)
->>>> +                             d2 = -d2;
->>>> +
->>>> +                     d2 += temp;
->>>> +                     break;
->>>
->>>
->>> There is quite a bit of copy paste in here. Putting the bit swizziling into
->>> a helper function should also improbe legibility.
->>
->> Trimming bits are scattered randomly between registers and in
->> different bit positions.
->> I don't see any commonalities, that could be generalized. as Graeme
->> said about it "it's a bane of my life".
->
-> The pattern is pretty regular though, how about:
->
->
-> int twl6032_get_trim_value(u8 *trim_regs, unsigned int reg0,
->         unsigned int reg1, unsigned int mask0, unsigned int mask1,
->         unsigned int shift0)
-> {
->         int val;
->
->         val = (trim_regs[reg0] & mask0) << shift0;
->         val |= (trim_regs[reg1] & mask1) >> 1;
->         if (trim_regs[reg1] & 0x01)
->                 val = -val;
->
->         return val;
-> }
->
-> and then
->
->         d1 = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
->         d2 = twl6032_get_trim_value(trim_regs, 4, 2, 0x3f, 0x06, 2);
->
-> and so on.
+Previously we tried to read data form ADC even before ADC sequencer
+finished sampling. This led to wrong samples.
+We now wait on ADC status register idle bit to be set.
 
-Thank you. I think legibility is better now, I even found a bug - in
-case 9 'break' was missing.
-Though it is not without special case for channels 7, 18:
-	for (chn = 0; chn < TWL6032_GPADC_MAX_CHANNELS; chn++) {
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c      |   30 ++++++++++++++++++++++--------
+ include/linux/mfd/ti_am335x_tscadc.h |   16 ++++++++++++++++
+ 2 files changed, 38 insertions(+), 8 deletions(-)
 
-		switch (chn) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 11:
-		case 12:
-		case 13:
-		case 14:
-			d1 = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
-			d2 = twl6032_get_trim_value(trim_regs, 4, 2, 0x3f, 0x06, 2);
-			break;
-		case 8:
-			temp = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
-			d1 = temp + twl6032_get_trim_value(trim_regs, 8, 7, 0x18, 0x1E, 1);
-
-			temp = twl6032_get_trim_value(trim_regs, 4, 2, 0x3F, 0x06, 2);
-			d2 = temp + twl6032_get_trim_value(trim_regs, 10, 8, 0x1F, 0x06, 2);
-			break;
-		case 9:
-			temp = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
-			d1 = temp + twl6032_get_trim_value(trim_regs, 14, 12, 0x18, 0x1E, 1);
-
-			temp = twl6032_get_trim_value(trim_regs, 4, 2, 0x3f, 0x06, 2);
-			d2 = temp + twl6032_get_trim_value(trim_regs, 16, 14, 0x1F, 0x06, 1);
-			break;
-		case 10:
-			d1 = twl6032_get_trim_value(trim_regs, 11, 9, 0x0f, 0x0E, 3);
-			d2 = twl6032_get_trim_value(trim_regs, 15, 13, 0x0f, 0x0E, 3);
-			break;
-		case 7:
-		case 18:
-			temp = twl6032_get_trim_value(trim_regs, 3, 1, 0x1f, 0x06, 2);
-
-			d1 = (trim_regs[5] & 0x7E) >> 1;
-			if (trim_regs[5] & 0x01)
-				d1 = -d1;
-			d1 += temp;
-
-			temp = twl6032_get_trim_value(trim_regs, 4, 2, 0x3f, 0x06, 2);
-
-			d2 = (trim_regs[6] & 0xFE) >> 1;
-			if (trim_regs[6] & 0x01)
-				d2 = -d2;
-
-			d2 += temp;
-			break;
-		default:
-			/* No data for other channels */
-			continue;
-		}
-
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 4427e8e..f73fee1 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -60,7 +60,6 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ {
+ 	unsigned int stepconfig;
+ 	int i, steps;
+-	u32 step_en;
+ 
+ 	/*
+ 	 * There are 16 configurable steps and 8 analog input
+@@ -86,8 +85,7 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+ 		adc_dev->channel_step[i] = steps;
+ 		steps++;
+ 	}
+-	step_en = get_adc_step_mask(adc_dev);
+-	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
++
+ }
+ 
+ static const char * const chan_name_ain[] = {
+@@ -142,10 +140,22 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 		int *val, int *val2, long mask)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+-	int i;
+-	unsigned int fifo1count, read;
++	int i, map_val;
++	unsigned int fifo1count, read, stepid;
+ 	u32 step = UINT_MAX;
+ 	bool found = false;
++	u32 step_en;
++	unsigned long timeout = jiffies + usecs_to_jiffies
++				(IDLE_TIMEOUT * adc_dev->channels);
++	step_en = get_adc_step_mask(adc_dev);
++	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
++
++	/* Wait for ADC sequencer to complete sampling */
++	while (tiadc_readl(adc_dev, REG_ADCFSM) & SEQ_STATUS) {
++		if (time_after(jiffies, timeout))
++			return -EAGAIN;
++		}
++	map_val = chan->channel + TOTAL_CHANNELS;
+ 
+ 	/*
+ 	 * When the sub-system is first enabled,
+@@ -170,12 +180,16 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
+-		if (read >> 16 == step) {
+-			*val = read & 0xfff;
++		stepid = read & FIFOREAD_CHNLID_MASK;
++		stepid = stepid >> 0x10;
++
++		if (stepid == map_val) {
++			read = read & FIFOREAD_DATA_MASK;
+ 			found = true;
++			*val = read;
+ 		}
+ 	}
+-	am335x_tsc_se_update(adc_dev->mfd_tscadc);
++
+ 	if (found == false)
+ 		return -EBUSY;
+ 	return IIO_VAL_INT;
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 8d73fe2..db1791b 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -113,11 +113,27 @@
+ #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
+ #define CNTRLREG_TSCENB		BIT(7)
+ 
++/* FIFO READ Register */
++#define FIFOREAD_DATA_MASK (0xfff << 0)
++#define FIFOREAD_CHNLID_MASK (0xf << 16)
++
++/* Sequencer Status */
++#define SEQ_STATUS BIT(5)
++
+ #define ADC_CLK			3000000
+ #define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+ #define TOTAL_CHANNELS		8
+ 
++/*
++* ADC runs at 3MHz, and it takes
++* 15 cycles to latch one data output.
++* Hence the idle time for ADC to
++* process one sample data would be
++* around 5 micro seconds.
++*/
++#define IDLE_TIMEOUT 5 /* microsec */
++
+ #define TSCADC_CELLS		2
+ 
+ struct ti_tscadc_dev {
 -- 
-Regards,
-Oleksandr Kozaruk
+1.7.9.5
