@@ -1,63 +1,139 @@
-Return-Path: <otavio.salvador@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from devils.ext.ti.com ([198.47.26.153]:59124 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754291Ab3GRKTv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 06:19:51 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 1/3] iio: core: implement devm_iio_device_alloc/devm_iio_device_free
+Date: Thu, 18 Jul 2013 13:19:24 +0300
+Message-ID: <1374142766-29736-1-git-send-email-x0199363@ti.com>
 MIME-Version: 1.0
-Sender: otavio.salvador@gmail.com
-In-Reply-To: <51E51FBE.6000205@metafoo.de>
-References: <1373898160-8460-1-git-send-email-otavio@ossystems.com.br>
-	<1373898160-8460-5-git-send-email-otavio@ossystems.com.br>
-	<51E5195B.3020908@kernel.org>
-	<51E51FBE.6000205@metafoo.de>
-Date: Tue, 16 Jul 2013 09:01:48 -0300
-Message-ID: <CAP9ODKrsQqa12ZVj0R+rpb=kjtb-63P7yraVmV0+yZxaaeMcsQ@mail.gmail.com>
-Subject: Re: [PATCH 5/5] iio: add configuration option for debug support
-From: Otavio Salvador <otavio@ossystems.com.br>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Kernel development list <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@cam.ac.uk>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 16, 2013 at 7:26 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 07/16/2013 11:58 AM, Jonathan Cameron wrote:
->> On 07/15/2013 03:22 PM, Otavio Salvador wrote:
->>> Signed-off-by: Otavio Salvador <otavio@ossystems.com.br>
->> seems a sensible facility to have available.
->>
->> Applied to the togreg branch of iio.git
->
-> Can you update the Kconfig help text?
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 
-Sure I can. Jonathan seem to have applied it so should I send a v2 or
-a new patch?
+Add a resource managed devm_iio_device_alloc()/devm_iio_device_free()
+to automatically clean up any allocations made by IIO drivers,
+thus leading to simplified IIO drivers code.
 
->>> ---
->>>  drivers/iio/Kconfig  | 7 +++++++
->>>  drivers/iio/Makefile | 2 ++
->>>  2 files changed, 9 insertions(+)
->>>
->>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->>> index 9af763a..d1f06f2 100644
->>> --- a/drivers/iio/Kconfig
->>> +++ b/drivers/iio/Kconfig
->>> @@ -12,6 +12,13 @@ menuconfig IIO
->>>
->>>  if IIO
->>>
->>> +config IIO_DEBUG
->>> +    boolean "Debug support for Industrial I/O"
->>> +    depends on DEBUG_KERNEL
->>> +    help
->>> +      Say "yes" to enable debug messaging (like dev_dbg and pr_debug),
->>> +      sysfs, and debugfs support in Industrial I/O subsystem and drivers.
->
-> This has nothing to do with either sysfs or debugfs support.
+In addition, this will allow IIO drivers to use other devm_*() API
+(like devm_request_irq) and don't care about the race between
+iio_device_free() and the release of resources by Device core
+during driver removing.
 
-     Say "yes" to enable debug messaging (like dev_dbg and pr_debug)
-     support in Industrial I/O subsystem and drivers.
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+[o.v.kravchenko@globallogic.com: fix return value ib devm_iio_device_alloc
+in case if devres_alloc failed, remove unused variable "rc"]
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Tested-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/industrialio-core.c |   47 +++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |   25 +++++++++++++++++++++
+ 2 files changed, 72 insertions(+)
 
-?
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e145931..d56d122 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -912,6 +912,53 @@ void iio_device_free(struct iio_dev *dev)
+ }
+ EXPORT_SYMBOL(iio_device_free);
+ 
++static void devm_iio_device_release(struct device *dev, void *res)
++{
++	iio_device_free(*(struct iio_dev **)res);
++}
++
++static int devm_iio_device_match(struct device *dev, void *res, void *data)
++{
++	struct iio_dev **r = res;
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++	return *r == data;
++}
++
++struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
++{
++	struct iio_dev **ptr, *iio_dev;
++
++	ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return NULL;
++
++	/* use raw alloc_dr for kmalloc caller tracing */
++	iio_dev = iio_device_alloc(sizeof_priv);
++	if (iio_dev) {
++		*ptr = iio_dev;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
++
++	return iio_dev;
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
++
++void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
++{
++	int rc;
++
++	rc = devres_release(dev, devm_iio_device_release,
++			    devm_iio_device_match, iio_dev);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_free);
++
+ /**
+  * iio_chrdev_open() - chrdev file open for buffer access and ioctls
+  **/
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 8d171f4..f1d99f6 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -532,6 +532,31 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
+ void iio_device_free(struct iio_dev *indio_dev);
+ 
+ /**
++ * devm_iio_device_alloc - Resource-managed iio_device_alloc()
++ * @dev: 		Device to allocate iio_dev for
++ * @sizeof_priv: 	Space to allocate for private structure.
++ *
++ * Managed iio_device_alloc.  iio_dev allocated with this function is
++ * automatically freed on driver detach.
++ *
++ * If an iio_dev allocated with this function needs to be freed separately,
++ * devm_iio_device_free() must be used.
++ *
++ * RETURNS:
++ * Pointer to allocated iio_dev on success, NULL on failure.
++ */
++struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
++
++/**
++ * devm_iio_device_free - Resource-managed iio_device_free()
++ * @dev:		Device this iio_dev belongs to
++ * @indio_dev: 		the iio_dev associated with the device
++ *
++ * Free indio_dev allocated with devm_iio_device_alloc().
++ */
++void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
++
++/**
+  * iio_buffer_enabled() - helper function to test if the buffer is enabled
+  * @indio_dev:		IIO device structure for device
+  **/
+-- 
+1.7.9.5
 
---
-Otavio Salvador                             O.S. Systems
-http://www.ossystems.com.br        http://projetos.ossystems.com.br
-Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
