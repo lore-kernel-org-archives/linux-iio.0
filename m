@@ -1,53 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f179.google.com ([209.85.215.179]:62984 "EHLO
-	mail-ea0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753456Ab3GTMri (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 08:47:38 -0400
-Date: Sat, 20 Jul 2013 13:47:33 +0100
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
-	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net
-Subject: Re: [PATCH 00/15] iio: ti_am335x_adc: Add continuous mode take 2
-Message-ID: <20130720124731.GA10834@gmail.com>
-References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
- <51EA73BC.8050901@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51EA73BC.8050901@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net
+Subject: [PATCH 00/15] iio: ti_am335x_adc: Add continuous mode take 2
+Date: Thu, 18 Jul 2013 23:21:11 +0100
+Message-Id: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Jul 20, 2013 at 12:25:48PM +0100, Jonathan Cameron wrote:
-> I am a little irritated by the mess we have here.  Russ has clearly done
-> a lot of fine work cleaning up the earlier patches.  As a result
-> we have a series of initial buggy patches and then a series of patches
-> fixing them again.
+Patches now give correct authorship.
 
-Indeed.
+and checkpatch.pl issues are checked for each patch.
 
-I had already merged a lot of minor bug fixes from Rachil into the main
-patch that adds continuous mode.
+I hope the actual code bashing can begin now.
 
-But I kept Russ's ones separate because of authorship and history.
- 
+A series of patches that add continuous sampling support
+for the adc drivers for the am335x.
 
-> Part 1.  Any fixes that are unconnected to the rest of the series.  These will
->   then get sent upstream within this cycle.
+These apply on top of mfd-next after the recent set of patches
+on this driver by Sebastian Andrzej Siewior
 
-Understood. I'll send a small series that is disjoint and contains fixes for the existing driver.
+Tested on the Beaglebone Black running 3.11
 
-> Part 2. Feature add patch. Here that is basically a single patch adding the
->   continous mode support.
->
-> It is nice to maintain history and all but I would much rather have something
-> that is easy to review, with appropriate comments or if people will give
-> them, sign offs to reflect the various contributions.
-> 
-> Jonathan
+Patil, Rachna (5):
+  MFD: ti_tscadc: disable TSC config registers in adc mode
+  iio: ti_am335x_adc: Fix wrong samples received on 1st read
+  input: ti_tsc: Enable shared IRQ for TSC
+  iio: mfd: input: ti_am335x_adc:Add support for continuous mode
+  MFD: ti_tscadc: ADC Clock check not required
 
-And then one patch for continuous mode with appropriate comments/sign-offs.
+Russ Dill (10):
+  iio: ti_am335x_adc: Handle set to clear IRQENABLE
+  iio: ti_am335x_adc: Handle set to clear IRQSTATUS
+  iio: ti_am335x_adc: Handle overrun before threshold event
+  iio: ti_am335x_adc: Avoid double threshold event
+  iio: ti_am335x_adc: Also clear threshold event when clearing overrun
+    event
+  iio: ti_am335x_adc: Print error and handle short FIFO events
+  iio: ti_am335x_adc: Fix allocation count of FIFO buffer.
+  iio: ti_am335x_adc: Fix capture operation during resume
+  iio: ti_am335x_adc: Reset and clear overrun status before capture
+  iio: ti_am335x_adc: Properly handle out of memory situation.
 
-Thank-you
-Zubair Lutfullah
+ drivers/iio/adc/ti_am335x_adc.c           |  354 +++++++++++++++++++++++++----
+ drivers/input/touchscreen/ti_am335x_tsc.c |   17 +-
+ drivers/mfd/ti_am335x_tscadc.c            |   30 ++-
+ include/linux/mfd/ti_am335x_tscadc.h      |   27 ++-
+ 4 files changed, 366 insertions(+), 62 deletions(-)
+
+-- 
+1.7.9.5
