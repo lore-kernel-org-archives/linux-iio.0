@@ -1,154 +1,63 @@
-Return-Path: <Hector.Palacios@digi.com>
-From: Hector Palacios <hector.palacios@digi.com>
-To: <linux-iio@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
-	<marex@denx.de>, <alexandre.belloni@free-electrons.com>, <jic23@kernel.org>,
-	<lars@metafoo.de>, <fabio.estevam@freescale.com>, <hector.palacios@digi.com>
-Subject: [PATCH v2 3/5] iio: mxs-lradc: add scale attribute to channels
-Date: Fri, 19 Jul 2013 11:13:26 +0200
-Message-ID: <1374225208-28940-4-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yh0-f53.google.com ([209.85.213.53]:37240 "EHLO
+	mail-yh0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754625Ab3GRO7k (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 10:59:40 -0400
+Received: by mail-yh0-f53.google.com with SMTP id a41so1129707yho.40
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jul 2013 07:59:40 -0700 (PDT)
+From: Mario Domenech Goulart <mario@ossystems.com.br>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Otavio Salvador <otavio@ossystems.com.br>,
+	Marek Vasut <marex@denx.de>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: ADC setting for differential and single-ended channels
+References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+	<201307180531.02207.marex@denx.de>
+	<CAP9ODKqXg4DwXs3eXPrNR1j3fw4_H5bt+xwfuYMHuYgM+QrKPg@mail.gmail.com>
+	<201307180608.09345.marex@denx.de> <51E78230.8070602@metafoo.de>
+	<CAP9ODKrUcrsOVgbfm4sqv=x_Cq_Jj0aD6DwwcWHXcvVfADZAHg@mail.gmail.com>
+	<51E7F37B.4050803@metafoo.de>
+Date: Thu, 18 Jul 2013 14:59:34 +0000
+In-Reply-To: <51E7F37B.4050803@metafoo.de> (Lars-Peter Clausen's message of
+	"Thu, 18 Jul 2013 15:54:03 +0200")
+Message-ID: <87ppufx6ax.fsf@parenteses.org>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Some LRADC channels have fixed pre-dividers and all have an optional
-divider by two which allows a maximum input voltage of VDDIO - 50mV.
+Hi Lars,
 
-This patch
- - adds the scaling info flag to all channels
- - grabs the max reference voltage per channel from DT
-   (where the fixed pre-dividers apply)
- - allows to read the scaling attribute (computed from the Vref)
+On Thu, 18 Jul 2013 15:54:03 +0200 Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>.
----
- drivers/staging/iio/adc/mxs-lradc.c | 81 ++++++++++++++++++++++++-------------
- 1 file changed, 52 insertions(+), 29 deletions(-)
+> On 07/18/2013 02:02 PM, Otavio Salvador wrote:
+>> On Thu, Jul 18, 2013 at 2:50 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>
+>>> Well the standard API as Jonathan said is to expose all possible pin
+>>> combinations. In this case that might be up to 8x8=64 channels. In my
+>>> opinion that's fine, but on a specific board maybe not all combinations are
+>>> valid. So you might want to specify in your platform data or devicetree that
+>>> only a subset of these 64 channels is valid and should be exposed to
+>>> userspace. In my opinion it makes the most sense to handle this in the IIO
+>>> core since this is a generic requirement, nothing specific to this chip.
+>>> E.g. even for 'simple' converters you'll find situations where some pins
+>>> might not be connected.
+>> 
+>> Right and how should we do this?
+>> 
+>> Because it would not be 8x8 but it has also the single-ended
+>> combinations (using different N inputs).
+>
+> Does the device really support single ended, it looks to me as if it only
+> supports pseudo-differential configurations.
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 91282dc..99e5790 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -141,6 +141,8 @@ struct mxs_lradc {
- 
- 	struct completion	completion;
- 
-+	uint32_t		vref_mv[LRADC_MAX_TOTAL_CHANS];
-+
- 	/*
- 	 * Touchscreen LRADC channels receives a private slot in the CTRL4
- 	 * register, the slot #7. Therefore only 7 slots instead of 8 in the
-@@ -228,39 +230,12 @@ struct mxs_lradc {
- #define LRADC_RESOLUTION			12
- #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
- 
--/*
-- * Raw I/O operations
-- */
--static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-+static int mxs_lradc_read_single(struct iio_dev *iio_dev,
- 			const struct iio_chan_spec *chan,
- 			int *val, int *val2, long m)
- {
- 	struct mxs_lradc *lradc = iio_priv(iio_dev);
- 	int ret;
--	unsigned long mask;
--
--	if (m != IIO_CHAN_INFO_RAW)
--		return -EINVAL;
--
--	/* Check for invalid channel */
--	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
--		return -EINVAL;
--
--	/* Validate the channel if it doesn't intersect with reserved chans. */
--	bitmap_set(&mask, chan->channel, 1);
--	ret = iio_validate_scan_mask_onehot(iio_dev, &mask);
--	if (ret)
--		return -EINVAL;
--
--	/*
--	 * See if there is no buffered operation in progess. If there is, simply
--	 * bail out. This can be improved to support both buffered and raw IO at
--	 * the same time, yet the code becomes horribly complicated. Therefore I
--	 * applied KISS principle here.
--	 */
--	ret = mutex_trylock(&lradc->lock);
--	if (!ret)
--		return -EBUSY;
- 
- 	INIT_COMPLETION(lradc->completion);
- 
-@@ -300,6 +275,47 @@ err:
- 	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
- 		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
- 
-+	return ret;
-+}
-+
-+/*
-+ * Raw I/O operations
-+ */
-+static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-+			const struct iio_chan_spec *chan,
-+			int *val, int *val2, long m)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio_dev);
-+	int ret;
-+
-+	/*
-+	 * See if there is no buffered operation in progress. If there is, simply
-+	 * bail out. This can be improved to support both buffered and raw IO at
-+	 * the same time, yet the code becomes horribly complicated. Therefore I
-+	 * applied KISS principle here.
-+	 */
-+	ret = mutex_trylock(&lradc->lock);
-+	if (!ret)
-+		return -EBUSY;
-+
-+	/* Check for invalid channel */
-+	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-+		ret = -EINVAL;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = mxs_lradc_read_single(iio_dev, chan, val, val2, m);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = lradc->vref_mv[chan->channel];
-+		*val2 = chan->scan_type.realbits;
-+		ret = IIO_VAL_FRACTIONAL_LOG2;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
- 	mutex_unlock(&lradc->lock);
- 
- 	return ret;
-@@ -821,7 +837,8 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
- 	.type = (chan_type),					\
- 	.indexed = 1,						\
- 	.scan_index = (idx),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+			      BIT(IIO_CHAN_INFO_SCALE),		\
- 	.channel = (idx),					\
- 	.scan_type = {						\
- 		.sign = 'u',					\
-@@ -960,6 +977,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 			goto err_addr;
- 	}
- 
-+	/* Grab Vref array from DT */
-+	ret = of_property_read_u32_array(node, "fsl,vref", lradc->vref_mv,
-+					 LRADC_MAX_TOTAL_CHANS);
-+	if (ret)
-+		goto err_addr;
-+
- 	platform_set_drvdata(pdev, iio);
- 
- 	init_completion(&lradc->completion);
+That's not very clear to me either.  The datasheet states the chips have
+single-ended inputs, but the mux configuration always assume a positive
+input and a negative input.
+
+I'm assuming the "single-ended" mode refers to using an arbitrary input
+as negative reference to all the other n-1 inputs.  I suppose that'd be
+a pseudo-differential configuration, right?
+
+Best wishes.
+Mario
