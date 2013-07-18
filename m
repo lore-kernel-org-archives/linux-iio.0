@@ -1,71 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:58211 "EHLO comal.ext.ti.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:44423 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755625Ab3GRIIb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Jul 2013 04:08:31 -0400
-Date: Thu, 18 Jul 2013 11:08:23 +0300
-From: Felipe Balbi <balbi@ti.com>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-CC: <jic23@cam.ac.uk>, <linux-iio@vger.kernel.org>,
-	<gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-	<koen@dominion.thruhere.net>
-Subject: Re: [PATCH 05/21] iio: input: am335x_adc: Add continuous mode to adc
-Message-ID: <20130718080823.GB11251@arwen.pp.htv.fi>
-Reply-To: <balbi@ti.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
- <1374082010-28095-6-git-send-email-zubair.lutfullah@gmail.com>
+	id S1758489Ab3GRKTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Jul 2013 06:19:54 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 2/3] of: Add Avago Technologies vendor prefix
+Date: Thu, 18 Jul 2013 13:19:25 +0300
+Message-ID: <1374142766-29736-2-git-send-email-x0199363@ti.com>
+In-Reply-To: <1374142766-29736-1-git-send-email-x0199363@ti.com>
+References: <1374142766-29736-1-git-send-email-x0199363@ti.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HG+GLK89HZ1zG0kk"
-In-Reply-To: <1374082010-28095-6-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---HG+GLK89HZ1zG0kk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 
-Hi,
+This commit adds a device tree vendor prefix for Avago Technologies.
 
-On Wed, Jul 17, 2013 at 06:26:34PM +0100, Zubair Lutfullah wrote:
-> Main patch. Adds continuous sampling support for the driver
->=20
-> The IRQs are changed in the TSC drivers as they are shared with
-> the ADC IRQ lines.
->=20
-> This patch is based on work in the 3.2 tree by TI
-> Original Author is Patil Rachna
->=20
-> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 1 file changed, 1 insertion(+)
 
-to me this patch looks incorrect. IIO framework provides a generic ring
-buffer implementation which could be used for continuous mode. Adding
-driver specific attributes isn't very nice IMO.
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index d5a79ca..8aab9c6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+ apm	Applied Micro Circuits Corporation (APM)
+ arm	ARM Ltd.
+ atmel	Atmel Corporation
++avago	Avago Technologies
+ bosch	Bosch Sensortec GmbH
+ brcm	Broadcom Corporation
+ cavium	Cavium, Inc.
+-- 
+1.7.9.5
 
---=20
-balbi
-
---HG+GLK89HZ1zG0kk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-
-iQIcBAEBAgAGBQJR56J3AAoJEIaOsuA1yqRER10P/3LR6XQMMELc0CSBIUVxJarV
-FasaTZ9VdRP6CbPQ985wf7fZw7j1N6OSukdvlrOIYzZqG7TaF8AARNpeLZl2JQd/
-CeF9ilbz98b7jC+h61Y5EFKXcRTCp+HRh7f49MYH7Kcast7QknETADN854NTYNMS
-qBqqmxLvRXZOMyMdoJ6zNwgjDziQZaW+z0xJ8OeJnD0q0jc5SSg46it9MfHEv6Yf
-9oBQ0xAjUhtm0iWg0KZwm64bsHQ+F1SbtL/j04hqGMKmczHW5BfJPTg5QmxtVrpv
-7sspXza3dNturIhvoMWah2dxg5CQScTZPyCG8E+ti7Pot2thXhGyXzcqwCd90/3O
-mJ3JIn1zf9qhYB+VdpEW8nslqa0G/PAJZpLCtKzVPn2YBVKxLo3mqxHizLtRZb+9
-aorlPQsPybKaISRZPv4zPETgFEGsxRMx4v6QlBwedgjw0ZqTOQcqzXgiyRDfbLmN
-NBKpJifKaKhNrE22N+Pq5kKI9NFfCodQtc+AY97SKWs9dxm3pslzza5Kgk3WQ62u
-KZ4IO9ezjpD+VJp1PlwIkDKt8nd5hPcIbDl7izB1oUb9H8HHxN0YolHwvLxmMxXW
-FylTB4ILeXG9sY59oI2RN6aNs4Lnc14UkA+W+upLtCU+Tc6mZ45LjThiJ0wqO4Dx
-nalYEjThI+4LUz/7jSD3
-=TUXm
------END PGP SIGNATURE-----
-
---HG+GLK89HZ1zG0kk--
