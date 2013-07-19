@@ -1,67 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from exprod5og116.obsmtp.com ([64.18.0.147]:48185 "EHLO
-	exprod5og116.obsmtp.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932272Ab3GOOyh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2013 10:54:37 -0400
-Received: by mail-ob0-f176.google.com with SMTP id v19so13780438obq.7
-        for <linux-iio@vger.kernel.org>; Mon, 15 Jul 2013 07:54:35 -0700 (PDT)
+Received: from mail.free-electrons.com ([94.23.35.102]:35267 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751208Ab3GSRJY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 13:09:24 -0400
+Message-ID: <51E972C2.4040501@free-electrons.com>
+Date: Fri, 19 Jul 2013 19:09:22 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <51E3EC8B.3090601@metafoo.de>
-References: <1373461729-11261-1-git-send-email-x0199363@ti.com>
-	<51E03720.1010806@metafoo.de>
-	<CAGH3drqEPxW=QwadCLj=ZOQe0gp_c7mdSiNQnq1_-BMKL9CgJw@mail.gmail.com>
-	<51E3EC8B.3090601@metafoo.de>
-Date: Mon, 15 Jul 2013 17:54:35 +0300
-Message-ID: <CAGH3dro7MxDJRB=5gsBysiKVvXLskZFuagiBMznUnAjCMoZsTQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: add APDS9300 ambilent light sensor driver
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Oleksandr Kravchenko <x0199363@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Rob Landley <rob@landley.net>, jic23@cam.ac.uk,
-	Peter Meerwald <pmeerw@pmeerw.net>, holler@ahsoftware.de,
-	srinivas.pandruvada@intel.com, devicetree-discuss@lists.ozlabs.org
-Content-Type: text/plain; charset=ISO-8859-1
+To: Hector Palacios <hector.palacios@digi.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree-discuss@lists.ozlabs.org, marex@denx.de,
+	jic23@kernel.org, lars@metafoo.de, fabio.estevam@freescale.com
+Subject: Re: [PATCH v2 1/5] iio: mxs-lradc: change the realbits to 12
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <1374225208-28940-2-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <1374225208-28940-2-git-send-email-hector.palacios@digi.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I can't to find devm_iio_device_alloc() in my kernel v3.11-rc1
-
-On Mon, Jul 15, 2013 at 3:35 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 07/15/2013 02:27 PM, Oleksandr Kravchenko wrote:
->> Thank you for review! But I don't completely understand one of your comment:
->>
->>>> +static int als_probe(struct i2c_client *client, const struct i2c_device_id *id)
->> [...]
->>>> +     if (client->irq) {
->>>> +             ret = devm_request_threaded_irq(&client->dev, client->irq,
->>>> +                             NULL, als_interrupt_handler,
->>>> +                             IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
->>>> +                             ALS_IRQ_NAME, indio_dev);
->>>
->>> This is a bit racy, you access memory in the irq handler that is freed
->>> before the irq is freed.
->>
->> Do you mean than that indio_dev may be used in interrupt handler after
->> iio_device_free(indio_dev) called in als_remove() function?
->>
->> If so, can I use disable_irq() in als_remove() before iio_device_free()
->> to avoid this problem?
->>
+On 19/07/2013 11:13, Hector Palacios wrote:
+> The LRADC virtual channels have an 18 bit field to store the sum of up
+> to 2^5 accumulated samples. The read_raw function however only operates
+> over a single sample (12 bit resolution).
+> In order to use this field for scaling operations, we need it to be the
+> exact resolution value of the LRADC.
+> Besides, the driver was using an 18 bit mask (LRADC_CH_VALUE_MASK) to
+> report touch coordinates to userland. A 12 bit mask should be used instead
+> or else the touch libraries will expect a coordinates range between 0
+> and 0x3ffff (18 bits), instead of between 0 and 0xfff (12 bits).
 >
-> Just add a devm_iio_device_alloc() and use that, instead of trying to bodch
-> around the issue.
+> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> ---
 >
 
+Looks good to me:
 
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
 -- 
-Oleksandr Kravchenko
-GlobalLogic
-P +380633213187
-P +380994930248
-www.globallogic.com
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-http://www.globallogic.com/email_disclaimer.txt
