@@ -1,54 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:59065 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758607Ab3GRPri (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Jul 2013 11:47:38 -0400
-From: Oleksandr Kravchenko <x0199363@ti.com>
-To: <jic23@cam.ac.uk>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH] iio: core: Avoid double minus in sysfs output
-Date: Thu, 18 Jul 2013 18:47:09 +0300
-Message-ID: <1374162430-30709-1-git-send-email-x0199363@ti.com>
+Return-Path: <Hector.Palacios@digi.com>
+Message-ID: <51E967D8.8020001@digi.com>
+Date: Fri, 19 Jul 2013 18:22:48 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Marek Vasut <marex@denx.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>, "jic23@kernel.org"
+	<jic23@kernel.org>, "lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify
+ scale
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191639.01240.marex@denx.de> <51E95BEC.5080703@digi.com> <201307191817.27102.marex@denx.de>
+In-Reply-To: <201307191817.27102.marex@denx.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Dear Marek,
 
-This patch fixes the issue with double minus in output when
-reading channels from sysfs for IIO_VAL_INT_PLUS_MICRO and
-IIO_VAL_INT_PLUS_NANO cases. Until this patch if val and val2
-both are negatives output string contains "--" before
-digits. It is result of "-%d..." in sprintf() format.
+On 07/19/2013 06:17 PM, Marek Vasut wrote:
+>> Here you have three entries per channel:
+>> in_voltageX_raw		-> the sample raw value
+>> in_voltageX_scale	-> the scale to multiply the raw value to get the
+> voltage
+>> in mV in_voltageX_scale_available -> lists the available scales of the
+>> channel
+>>
+>> For example for channel 0:
+>>
+>> # cat in_voltage0_scale_available
+>> 0.451660156 0.903320312	(two scales available, first with divider by two
+>> disabled, second with divider by two enabled)
+>>
+>> # cat in_voltage0_scale
+>> 0.451660156			(divider by two is currently disabled)
+>>
+>> # cat in_voltage0_raw		(shows measured value)
+>> 1000
+>>
+>> If you multiply the value by the scale you get: 1000 * 0.451660156 = 451.6
+>> mV
+>>
+>> # echo 0.903320312 > in_voltage0_scale	(enables the divider by two)
+>
+> Ok, so I have to remember this value : '0.903320312' in case I want to enable
+> divide-by-two functionality?
 
-Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/industrialio-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+No you don't. That's why there is a 'in_voltage_scale_available' that lists the 
+available values.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index d56d122..b3d3959 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -383,14 +383,14 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 		scale_db = true;
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (val2 < 0)
--			return sprintf(buf, "-%d.%06u%s\n", val, -val2,
-+			return sprintf(buf, "-%d.%06u%s\n", abs(val), -val2,
- 				scale_db ? " dB" : "");
- 		else
- 			return sprintf(buf, "%d.%06u%s\n", val, val2,
- 				scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
- 		if (val2 < 0)
--			return sprintf(buf, "-%d.%09u\n", val, -val2);
-+			return sprintf(buf, "-%d.%09u\n", abs(val), -val2);
- 		else
- 			return sprintf(buf, "%d.%09u\n", val, val2);
- 	case IIO_VAL_FRACTIONAL:
--- 
-1.7.9.5
+> Hmmmm ... why would this interface not work:
+> echo 2 > in_voltage0_scale
+>
+> or
+>
+> echo 1 > in_voltage0_scale
 
+An easy thing like that is what I first submitted, but it was rejected and I was told 
+to use the scale_available descriptor instead, which is the common interface the rest 
+of drivers use.
+
+Best regards,
+--
+Hector Palacios
