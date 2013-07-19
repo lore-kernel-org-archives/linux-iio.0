@@ -1,185 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:32976 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932496Ab3GRSIn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2013 14:08:43 -0400
-Received: from eucpsbgm2.samsung.com (unknown [203.254.199.245])
- by mailout2.w1.samsung.com
- (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
- 17 2011)) with ESMTP id <0MQ500LL092DMA50@mailout2.w1.samsung.com> for
- linux-iio@vger.kernel.org; Thu, 18 Jul 2013 19:08:41 +0100 (BST)
-Message-id: <51E82F28.7090305@samsung.com>
-Date: Thu, 18 Jul 2013 20:08:40 +0200
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jacek Anaszewski <j.anaszewski@samsung.com>,
-	linux-iio@vger.kernel.org, s.nawrocki@samsung.com,
-	Kyungmin Park <kyungmin.park@samsung.com>, lars@metafoo.de
-Subject: Re: [PATCH/RFC v2] iio: gp2ap020a00f: Add a driver for the device
-References: <1372258172-10996-1-git-send-email-j.anaszewski@samsung.com>
- <1372258172-10996-2-git-send-email-j.anaszewski@samsung.com>
- <51D9929C.30606@kernel.org>
-In-reply-to: <51D9929C.30606@kernel.org>
-Content-type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail1.bemta8.messagelabs.com ([216.82.243.207]:36465 "EHLO
+	mail1.bemta8.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1760085Ab3GSJN4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 05:13:56 -0400
+From: Hector Palacios <hector.palacios@digi.com>
+To: <linux-iio@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>,
+	<devicetree-discuss@lists.ozlabs.org>, <marex@denx.de>,
+	<alexandre.belloni@free-electrons.com>, <jic23@kernel.org>,
+	<lars@metafoo.de>, <fabio.estevam@freescale.com>,
+	<hector.palacios@digi.com>
+Subject: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify scale
+Date: Fri, 19 Jul 2013 11:13:28 +0200
+Message-ID: <1374225208-28940-6-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/07/2013 06:09 PM, Jonathan Cameron wrote:
-[..]
- >> +error_ret:
- >> +	mutex_unlock(&data->lock);
- >> +
- >> +	return err<  0 ? err : IIO_VAL_INT;
- >> +}
- >> +
- > Any info available on how to convert these inputs to an illuminance 
-value?
- > (e.g. in LUX)
+Added write_raw function to manipulate the optional divider_by_two
+through the scaling attribute out of the available scales.
 
-There is info available, but the formula depends on the IR factor
-that is read from in_illuminance_ir channel, i.e, it isn't constant and
-can vary from conversion to conversion.
-Moreover, the other factors in the formula also vary depending on
-the lux mode set (I added lux mode configuration in the third
-version of the patch).
-I wasn't sure how to implement it with IIO, so any hint on how
-to handle dynamically changing scale factor is welcomed.
+Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+---
+ drivers/staging/iio/adc/mxs-lradc.c | 55 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 1 deletion(-)
 
-[...]
- >> +
- >> +static int gp2ap020a00f_buffer_preenable(struct iio_dev *indio_dev)
- >> +{
- >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
- >> +	size_t d_size = 0;
- >> +	int i, err = 0;
- >> +
- > Without datasheet I'd like you to talk me through exactly what is 
-going on
- > in here...
- >> +	mutex_lock(&data->lock);
- >> +
- >> +	/* Enable triggers according to the scan_mask */
- >> +	for_each_set_bit(i, indio_dev->active_scan_mask,
- >> +		indio_dev->masklength) {
- >> +		switch (i) {
- >> +		case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
- >> +			err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_CLEAR_EN);
- > So these triggers correspond to actually capturing the data based on some
- > other signal?  e.g. after these are set we'll get a steady stream
- > of data off the relevant part of the chip?
-
-Actually both LIGHT_CLEAR and LIGHT_IR conversions are started after
-setting the device in ALS mode. If the channel is disabled with IIO
-its output value is simply ignored.
-In order to enable PROXIMITY channel the PS part of the device has to
-be enabled. The device can be set in ALS, PS or ALS_AND_PS modes.
-
- >> +			if (err<  0)
- >> +				goto error_ret;
- >> +			break;
- >> +		case GP2AP020A00F_SCAN_MODE_LIGHT_IR:
- >> +			err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_IR_EN);
- >> +			if (err<  0)
- >> +				goto error_ret;
- >> +			break;
- >> +		case GP2AP020A00F_SCAN_MODE_PROXIMITY:
- >> +			err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_PROX_EN);
- >> +			if (err<  0)
- >> +				goto error_ret;
- >> +			break;
- >> +		}
- >> +		d_size += 2;
- >> +	}
- >> +
- > Is this always guaranteed to be aligned?  Doesn't immediately look like
- > it and quite a bit of the buffer handling assumes it is.
-
-I fixed it in the newest patch by using indio_dev->scan_bytes property.
-
- >> +	if (indio_dev->scan_timestamp)
- >> +		d_size += sizeof(s64);
- >> +
- >> +	data->buffer = kmalloc(d_size, GFP_KERNEL);
- >> +	if (data->buffer == NULL) {
- >> +		err = -ENOMEM;
- >> +		goto error_ret;
- >> +	}
- > You might to better with the update_scan_mode callback and using generic
- > preenable/postdisable.  Perhaps it is simpler this way, I'm not sure
- > without actually implementing it!
-
- From what I figured out update_scan_mode callback is called only
-while enabling the trigger. How an IIO driver can be informed about
-the end of triggered capture in different way than through
-the buffer_postdisable callback?
-
- >> +
- >> +	err = iio_sw_buffer_preenable(indio_dev);
- >> +
- >> +error_ret:
- >> +	mutex_unlock(&data->lock);
- >> +
- >> +	return err;
- >> +}
- >> +
- >> +static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
- >> +{
- >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
- >> +	int err;
- >> +
- >> +	mutex_lock(&data->lock);
- >> +
- > The fact you did the enable as a for_each_bit_set and this like this
- > is a little odd.  Actually I think the simple if statements here
- > are a little easier, but either way consistency of code structures
- > definitely makes my life easier, so pick one form or the other.
-
-Fixed.
-
- >> +	if (test_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER,&data->flags)) {
- >> +		err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_CLEAR_DIS);
- >> +		if (err<  0)
- >> +			goto error_ret;
- >> +	}
- >> +
- >> +	if (test_bit(GP2AP020A00F_FLAG_ALS_IR_TRIGGER,&data->flags)) {
- >> +		err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_IR_DIS);
- >> +		if (err<  0)
- >> +			goto error_ret;
- >> +	}
- >> +
- >> +	if (test_bit(GP2AP020A00F_FLAG_PS_TRIGGER,&data->flags)) {
- >> +		err = gp2ap020a00f_exec_cmd(data,
- >> +					GP2AP020A00F_CMD_TRIGGER_PROX_DIS);
- >> +		if (err<  0)
- >> +			goto error_ret;
- >> +	}
- > In the interests of symetry I'd expect this generic call to be the
- > first thing called in this function.
-
-Fixed.
-
-
- >> +static int gp2ap020a00f_remove(struct i2c_client *client)
- >> +{
- >> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- >> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
- >> +
- >
- > It's small and probably doesn't actually matter, but I'd expect
- > this release order to be the opposite of what we have in the probe
- > function (and hence to match the ordering in the error handling
- > just above here).  In that the irq is freed beffor the buffer_cleanup.
- >
-
-Fixed.
-
-Thanks,
-Jacek
-
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index c929733..286cde2 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -144,6 +144,7 @@ struct mxs_lradc {
+ 
+ 	uint32_t		vref_mv[LRADC_MAX_TOTAL_CHANS];
+ 	unsigned int		scale_avail[LRADC_MAX_TOTAL_CHANS][2][2];
++	unsigned int		is_divided[LRADC_MAX_TOTAL_CHANS];
+ 
+ 	/*
+ 	 * Touchscreen LRADC channels receives a private slot in the CTRL4
+@@ -202,6 +203,7 @@ struct mxs_lradc {
+ #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+ 
+ #define	LRADC_CTRL2				0x20
++#define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+ #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
+ 
+ #define	LRADC_STATUS				0x40
+@@ -310,7 +312,8 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = lradc->vref_mv[chan->channel];
+-		*val2 = chan->scan_type.realbits;
++		*val2 = chan->scan_type.realbits -
++			lradc->is_divided[chan->channel];
+ 		ret = IIO_VAL_FRACTIONAL_LOG2;
+ 		break;
+ 	default:
+@@ -323,6 +326,54 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+ 	return ret;
+ }
+ 
++static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
++			       const struct iio_chan_spec *chan,
++			       int val, int val2, long m)
++{
++	struct mxs_lradc *lradc = iio_priv(iio_dev);
++	int ret;
++
++	ret = mutex_trylock(&lradc->lock);
++	if (!ret)
++		return -EBUSY;
++
++	switch (m) {
++	case IIO_CHAN_INFO_SCALE:
++		ret = -EINVAL;
++		if (val == lradc->scale_avail[chan->channel][0][0] &&
++		    val2 == lradc->scale_avail[chan->channel][0][1]) {
++			/* [0] -> divider by two disabled */
++			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
++			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
++			lradc->is_divided[chan->channel] = 0;
++			ret = 0;
++		} else if (val == lradc->scale_avail[chan->channel][1][0] &&
++			   val2 == lradc->scale_avail[chan->channel][1][1]) {
++			/* [1] -> divider by two enabled */
++			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
++			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
++			lradc->is_divided[chan->channel] = 1;
++			ret = 0;
++		}
++
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&lradc->lock);
++
++	return ret;
++}
++
++static int mxs_lradc_write_raw_get_fmt(struct iio_dev *iio_dev,
++				       const struct iio_chan_spec *chan,
++				       long m)
++{
++	return IIO_VAL_INT_PLUS_NANO;
++}
++
+ static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
+ 		struct device_attribute *attr,
+ 		char *buf,
+@@ -400,6 +451,8 @@ static const struct attribute_group mxs_lradc_attribute_group = {
+ static const struct iio_info mxs_lradc_iio_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= mxs_lradc_read_raw,
++	.write_raw		= mxs_lradc_write_raw,
++	.write_raw_get_fmt	= &mxs_lradc_write_raw_get_fmt,
+ 	.attrs			= &mxs_lradc_attribute_group,
+ };
+ 
