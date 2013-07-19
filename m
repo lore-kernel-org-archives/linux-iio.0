@@ -1,135 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f47.google.com ([74.125.83.47]:60070 "EHLO
-	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756714Ab3GQR06 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:26:58 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 02/21] IIO: ADC: ti_adc: Fix 1st sample read
-Date: Wed, 17 Jul 2013 18:26:31 +0100
-Message-Id: <1374082010-28095-3-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sergei.shtylyov@cogentembedded.com>
+Message-ID: <51E98310.7020103@cogentembedded.com>
+Date: Fri, 19 Jul 2013 22:18:56 +0400
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+MIME-Version: 1.0
+To: Grygorii Strashko <grygorii.strashko@ti.com>
+CC: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>, tony@atomide.com,
+ benoit.cousson@linaro.org, rnayak@ti.com, peter.ujfalusi@ti.com,
+ kishon@ti.com, jic23@cam.ac.uk, grant.likely@linaro.org,
+ rob.herring@calxeda.com, lars@metafoo.de, sameo@linux.intel.com,
+ ch.naveen@samsung.com, poeschel@lemonage.de, milo.kim@ti.com,
+ balajitk@ti.com, gg@slimlogic.co.uk, linux-iio@vger.kernel.org,
+ devicetree-discuss@lists.ozlabs.org, linux-omap@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v6 1/2] ARM: dts: twl: Add GPADC data to device tree
+References: <1374226039-16943-1-git-send-email-oleksandr.kozaruk@ti.com> <1374226039-16943-2-git-send-email-oleksandr.kozaruk@ti.com> <51E94F97.40002@cogentembedded.com> <51E95DEB.7010702@ti.com>
+In-Reply-To: <51E95DEB.7010702@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Previously we tried to read data form ADC even before ADC sequencer
+Hello.
 
-finished sampling. This led to wrong samples.
+On 07/19/2013 07:40 PM, Grygorii Strashko wrote:
 
-We now wait on ADC status register idle bit to be set.
+>>> GPADC is the general purpose ADC present on twl6030.
+>>> The dt data is interrupt used to trigger end of ADC
+>>> conversion.
 
-This patch is based on work in the 3.2 tree by TI
-Original Author is Patil Rachna
+>>> Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+>>> ---
+>>>   arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
+>>>   1 file changed, 6 insertions(+)
 
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/iio/adc/ti_am335x_adc.c      |   30 ++++++++++++++++++++++--------
- include/linux/mfd/ti_am335x_tscadc.h |   16 ++++++++++++++++
- 2 files changed, 38 insertions(+), 8 deletions(-)
+>>> diff --git a/arch/arm/boot/dts/twl6030.dtsi
+>>> b/arch/arm/boot/dts/twl6030.dtsi
+>>> index 2e3bd31..d7d4c28 100644
+>>> --- a/arch/arm/boot/dts/twl6030.dtsi
+>>> +++ b/arch/arm/boot/dts/twl6030.dtsi
+>>> @@ -103,4 +103,10 @@
+>>>           compatible = "ti,twl6030-pwmled";
+>>>           #pwm-cells = <2>;
+>>>       };
+>>> +
+>>> +    adc: gpadc {
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 4427e8e..1f83cf7 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -60,7 +60,6 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- {
- 	unsigned int stepconfig;
- 	int i, steps;
--	u32 step_en;
- 
- 	/*
- 	 * There are 16 configurable steps and 8 analog input
-@@ -86,8 +85,7 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 		adc_dev->channel_step[i] = steps;
- 		steps++;
- 	}
--	step_en = get_adc_step_mask(adc_dev);
--	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
-+
- }
- 
- static const char * const chan_name_ain[] = {
-@@ -142,10 +140,22 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 		int *val, int *val2, long mask)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
--	int i;
--	unsigned int fifo1count, read;
-+	int i, map_val;
-+	unsigned int fifo1count, read, stepid;
- 	u32 step = UINT_MAX;
- 	bool found = false;
-+	u32 step_en;
-+	unsigned long timeout = jiffies + usecs_to_jiffies
-+				(IDLE_TIMEOUT * adc_dev->channels);
-+	step_en = get_adc_step_mask(adc_dev);
-+	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
-+ 
-+	/* Wait for ADC sequencer to complete sampling */
-+	while (tiadc_readl(adc_dev, REG_ADCFSM) & SEQ_STATUS) {
-+		if (time_after(jiffies, timeout))
-+			return -EAGAIN;
-+		}
-+	map_val = chan->channel + TOTAL_CHANNELS;
- 
- 	/*
- 	 * When the sub-system is first enabled,
-@@ -170,12 +180,16 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
- 	for (i = 0; i < fifo1count; i++) {
- 		read = tiadc_readl(adc_dev, REG_FIFO1);
--		if (read >> 16 == step) {
--			*val = read & 0xfff;
-+		stepid = read & FIFOREAD_CHNLID_MASK;
-+		stepid = stepid >> 0x10;
-+
-+		if (stepid == map_val) {
-+			read = read & FIFOREAD_DATA_MASK;
- 			found = true;
-+			*val = read;
- 		}
- 	}
--	am335x_tsc_se_update(adc_dev->mfd_tscadc);
-+
- 	if (found == false)
- 		return -EBUSY;
- 	return IIO_VAL_INT;
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 8d73fe2..db1791b 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -113,11 +113,27 @@
- #define CNTRLREG_8WIRE		CNTRLREG_AFE_CTRL(3)
- #define CNTRLREG_TSCENB		BIT(7)
- 
-+/* FIFO READ Register */
-+#define FIFOREAD_DATA_MASK (0xfff << 0)
-+#define FIFOREAD_CHNLID_MASK (0xf << 16)
-+
-+/* Sequencer Status */
-+#define SEQ_STATUS BIT(5)
-+
- #define ADC_CLK			3000000
- #define	MAX_CLK_DIV		7
- #define TOTAL_STEPS		16
- #define TOTAL_CHANNELS		8
- 
-+/*
-+* ADC runs at 3MHz, and it takes
-+* 15 cycles to latch one data output.
-+* Hence the idle time for ADC to
-+* process one sample data would be
-+* around 5 micro seconds.
-+*/
-+#define IDLE_TIMEOUT 5 /* microsec */
-+
- #define TSCADC_CELLS		2
- 
- struct ti_tscadc_dev {
--- 
-1.7.9.5
+>>     Read my lips: the node should be called just "adc", not "gpadc".
+>        ^^^^^^^^^^^^ Are you sure?
 
+    I didn't know how to express my disappointment from Oleksandr's inability 
+to understand what I wanted to convey to him from 2 attempts... first, he 
+changed the label instead of the node name, then he only dropped "twl6030_" 
+prefix from the name. I should probably have been even more specific before.
+
+> Why? The name was selected according to the documentation on device "General
+> purpose analog-to-digital converter (GPADC)".
+
+    Sigh, we simply don't care whether this ADC is general-purpose or not.
+The main thing it is ADC.
+
+> PS. Following your logic - "GPIO" need to renamed to "IO" everywhere ;P
+
+    GPIO is well known and established abbreviation, contrasted to GPADC.
+Moreover, ePAPR spec lists "gpio" as a generic node name.
+
+WBR, Sergei
