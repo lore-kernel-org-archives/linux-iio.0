@@ -1,248 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:53775 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757685Ab3GLT4f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 15:56:35 -0400
-Message-ID: <51E05F6C.1060506@metafoo.de>
-Date: Fri, 12 Jul 2013 21:56:28 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.free-electrons.com ([94.23.35.102]:35317 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752244Ab3GSRU5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 13:20:57 -0400
+Message-ID: <51E97577.80801@free-electrons.com>
+Date: Fri, 19 Jul 2013 19:20:55 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com,
-	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
-	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	linux-omap@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-References: <1373613482-28390-1-git-send-email-oleksandr.kozaruk@ti.com> <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com>
-In-Reply-To: <1373613482-28390-3-git-send-email-oleksandr.kozaruk@ti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hector Palacios <hector.palacios@digi.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree-discuss@lists.ozlabs.org, marex@denx.de,
+	jic23@kernel.org, lars@metafoo.de, fabio.estevam@freescale.com
+Subject: Re: [PATCH v2 4/5] iio: mxs-lradc: add scale_available file to channels
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <1374225208-28940-5-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <1374225208-28940-5-git-send-email-hector.palacios@digi.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-A couple of comments inline.
-
-On 07/12/2013 09:18 AM, Oleksandr Kozaruk wrote:
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index ab0767e6..87d699e 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -157,4 +157,12 @@ config VIPERBOARD_ADC
->   	  Say yes here to access the ADC part of the Nano River
->   	  Technologies Viperboard.
+On 19/07/2013 11:13, Hector Palacios wrote:
+> Adds in_voltageX_scale_available file for every channel to read
+> the different available scales.
+> There are two scales per channel:
+>  [0] = divider_by_two disabled (default)
+>  [1] = divider_by_two enabled
 >
-> +config TWL6030_GPADC
-> +	tristate "TWL6030 GPADC (General Purpose A/D Convertor) Support"
-> +	depends on TWL4030_CORE
-> +	default n
-> +	help
-> +	  Say yes here if you want support for the TWL6030 General Purpose
-> +	  A/D Convertor.
-> +
+> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
 
-Keep it in alphabetical order
+Looks good to me:
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
->   endmenu
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 0a825be..8b05633 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -17,3 +17,4 @@ obj-$(CONFIG_MAX1363) += max1363.o
->   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-> +obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+And you are right, we will probably need to hide the 64bits math. I'll
+try to think of something.
 
-Same here.
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-> new file mode 100644
-> index 0000000..6ceb789
-> --- /dev/null
-> +++ b/drivers/iio/adc/twl6030-gpadc.c
-> @@ -0,0 +1,1019 @@
-[...]
-> +static u8 twl6032_channel_to_reg(int channel)
-> +{
-> +	return TWL6032_GPADC_GPCH0_LSB;
-
-There is more than one channel, isn't there?
-
-[...]
- > +static int twl6030_gpadc_read_raw(struct iio_dev *indio_dev,
- > +			     const struct iio_chan_spec *chan,
- > +			     int *val, int *val2, long mask)
- > +{
- > +	struct twl6030_gpadc_data *gpadc = iio_priv(indio_dev);
- > +	int ret = -EINVAL;
- > +
- > +	mutex_lock(&gpadc->lock);
- > +
- > +	ret = gpadc->pdata->start_conversion(chan->channel);
- > +	if (ret) {
- > +		dev_err(gpadc->dev, "failed to start conversion\n");
- > +		goto err;
- > +	}
- > +	/* wait for conversion to complete */
- > +	wait_for_completion_interruptible_timeout(&gpadc->irq_complete,
- > +						msecs_to_jiffies(5000));
-
-wait_for_completion_interruptible_timeout() can return either a negative error 
-code if it was interrupted, 0 if it timed out, or a positive value if it was 
-successfully completed. You need to handle all three cases. Have a look at 
-other existing drivers to see how to do this properly.
-
- > +
- > +	switch (mask) {
- > +	case IIO_CHAN_INFO_RAW:
- > +		ret = twl6030_gpadc_get_raw(gpadc, chan->channel, val);
- > +		ret = ret ? -EIO : IIO_VAL_INT;
- > +		break;
- > +
- > +	case IIO_CHAN_INFO_PROCESSED:
- > +		ret = twl6030_gpadc_get_processed(gpadc, chan->channel, val);
- > +		ret = ret ? -EIO : IIO_VAL_INT;
- > +		break;
- > +
- > +	default:
- > +		break;
- > +	}
- > +err:
- > +	mutex_unlock(&gpadc->lock);
- > +
- > +	return ret;
- > +}
-
-> +}
-> +
-[...]
-> +static int twl6030_gpadc_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct twl6030_gpadc_data *gpadc;
-> +	const struct twl6030_gpadc_platform_data *pdata;
-> +	const struct of_device_id *match;
-> +	struct iio_dev *indio_dev;
-> +	int irq;
-> +	int ret = 0;
-> +
-> +	match = of_match_device(of_match_ptr(of_twl6030_match_tbl), dev);
-> +	pdata = match ? match->data : dev->platform_data;
-> +
-> +	if (!pdata)
-> +		return -EINVAL;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(struct twl6030_gpadc_data));
-
-sizeof(*gpadc)
-
-> +	if (!indio_dev) {
-> +		dev_err(dev, "failed allocating iio device\n");
-> +		ret = -ENOMEM;
-> +	}
-> +
-> +	gpadc = iio_priv(indio_dev);
-> +
-> +	gpadc->twl6030_cal_tbl = devm_kzalloc(dev,
-> +					sizeof(struct twl6030_chnl_calib) *
-> +					pdata->nchannels, GFP_KERNEL);
-> +	if (!gpadc->twl6030_cal_tbl)
-> +		goto err;
-> +
-> +	gpadc->dev = dev;
-> +	gpadc->pdata = pdata;
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	mutex_init(&gpadc->lock);
-> +	init_completion(&gpadc->irq_complete);
-> +
-> +	ret = pdata->calibrate(gpadc);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to read calibration registers\n");
-> +		goto err;
-> +	}
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev, "failed to get irq\n");
-> +		goto err;
-> +	}
-> +
-> +	ret = devm_request_threaded_irq(dev, irq, NULL,
-> +					twl6030_gpadc_irq_handler,
-> +					IRQF_ONESHOT, "twl6030_gpadc", gpadc);
-
-You access memory in the interrupt handler which is freed before the interrupt 
-handler is freed.
-
-> +	if (ret) {
-> +		dev_dbg(&pdev->dev, "could not request irq\n");
-> +		goto err;
-> +	}
-> +
-> +	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to enable GPADC interrupt\n");
-> +		goto err;
-> +	}
-> +	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCS,
-> +					TWL6030_REG_TOGGLE1);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to enable GPADC module\n");
-> +		goto err;
-> +	}
-> +
-> +	indio_dev->name = DRIVER_NAME;
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->info = &twl6030_gpadc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = pdata->iio_channels;
-> +	indio_dev->num_channels = pdata->nchannels;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto err;
-> +
-> +	return ret;
-> +err:
-> +	iio_device_free(indio_dev);
-> +	return ret;
-> +}
-> +
-[...]
-> +static int twl6030_gpadc_suspend(struct device *pdev)
-> +{
-> +	int ret;
-> +
-> +	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCR,
-> +				TWL6030_REG_TOGGLE1);
-> +	if (ret)
-> +		dev_err(pdev, "error reseting GPADC (%d)!\n", ret);
-> +
-> +	return 0;
-> +};
-> +
-> +static int twl6030_gpadc_resume(struct device *pdev)
-> +{
-> +	int ret;
-> +
-> +	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, TWL6030_GPADCS,
-> +				TWL6030_REG_TOGGLE1);
-> +	if (ret)
-> +		dev_err(pdev, "error setting GPADC (%d)!\n", ret);
-> +
-> +	return 0;
-> +};
-> +
-> +static const struct dev_pm_ops twl6030_gpadc_pm_ops = {
-> +	.suspend = twl6030_gpadc_suspend,
-> +	.resume = twl6030_gpadc_resume,
-> +};
-
-SIMPLE_DEV_PM_OPS?
-
-[...]
