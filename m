@@ -1,52 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f172.google.com ([209.85.215.172]:49927 "EHLO
-	mail-ea0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932781Ab3GQR11 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:27 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 18/21] IIO: ti_adc: Fix capture operation during resume
-Date: Wed, 17 Jul 2013 18:26:47 +0100
-Message-Id: <1374082010-28095-19-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39110 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751695Ab3GSUXJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 19 Jul 2013 16:23:09 -0400
+Message-ID: <51E9A029.3000008@kernel.org>
+Date: Fri, 19 Jul 2013 21:23:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Hector Palacios <hector.palacios@digi.com>
+CC: Marek Vasut <marex@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify
+ scale
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191639.01240.marex@denx.de> <51E95BEC.5080703@digi.com> <201307191817.27102.marex@denx.de> <51E967D8.8020001@digi.com>
+In-Reply-To: <51E967D8.8020001@digi.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADC needs to go through a proper initialization sequence after
-resuming from suspend.
+On 07/19/2013 05:22 PM, Hector Palacios wrote:
+> Dear Marek,
+> 
+> On 07/19/2013 06:17 PM, Marek Vasut wrote:
+>>> Here you have three entries per channel:
+>>> in_voltageX_raw        -> the sample raw value
+>>> in_voltageX_scale    -> the scale to multiply the raw value to get the
+>> voltage
+>>> in mV in_voltageX_scale_available -> lists the available scales of the
+>>> channel
+>>>
+>>> For example for channel 0:
+>>>
+>>> # cat in_voltage0_scale_available
+>>> 0.451660156 0.903320312    (two scales available, first with divider by two
+>>> disabled, second with divider by two enabled)
+>>>
+>>> # cat in_voltage0_scale
+>>> 0.451660156            (divider by two is currently disabled)
+>>>
+>>> # cat in_voltage0_raw        (shows measured value)
+>>> 1000
+>>>
+>>> If you multiply the value by the scale you get: 1000 * 0.451660156 = 451.6
+>>> mV
+>>>
+>>> # echo 0.903320312 > in_voltage0_scale    (enables the divider by two)
+>>
+>> Ok, so I have to remember this value : '0.903320312' in case I want to enable
+>> divide-by-two functionality?
+> 
+> No you don't. That's why there is a 'in_voltage_scale_available' that lists the available values.
+> 
+>> Hmmmm ... why would this interface not work:
+>> echo 2 > in_voltage0_scale
+>>
+>> or
+>>
+>> echo 1 > in_voltage0_scale
+> 
+> An easy thing like that is what I first submitted, but it was rejected and I was told to use the scale_available
+> descriptor instead, which is the common interface the rest of drivers use.
 
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/iio/adc/ti_am335x_adc.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+This comes down to allowing us to have one generic predictable interface (which sometimes
+ends up looking uggly!).  The key thing is that if you are outputing using the _raw
+sysfs interfaces, the aim is to avoid doing nasty maths in kernel to get to 'standard' units such as mV.
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 1f42e0a..40eec84 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -588,12 +588,16 @@ static int tiadc_resume(struct device *dev)
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
- 	unsigned int restore;
- 
-+        restore = tiadc_readl(adc_dev, REG_CTRL);
-+        restore &= ~(CNTRLREG_TSCSSENB);
-+        tiadc_writel(adc_dev, REG_CTRL, restore);
-+
-     tiadc_writel(adc_dev, REG_FIFO1THR, FIFO1_THRESHOLD);
-     tiadc_step_config(adc_dev, adc_dev->is_continuous_mode);
- 
- 	/* Make sure ADC is powered up */
--	restore = tiadc_readl(adc_dev, REG_CTRL);
- 	restore &= ~(CNTRLREG_POWERDOWN);
-+        restore |= CNTRLREG_TSCSSENB;
- 	tiadc_writel(adc_dev, REG_CTRL, restore);
- 
- 	return 0;
--- 
-1.7.9.5
+Hence that scale attribute tells you what to apply to the value.  If you just wanted it
+to be 1 or 2 then the in_voltage0_raw value would have to be a long and nasty
+decimal.  Now we do have the option of in_voltage0_calibscale which would be applied
+internally to the value but it really isn't for this purpose (it's for devices with a 'trim'
+control) and you'd still have scale set to 0.903320312 or similar. Although they have
+meaning obviously, in this case 1 and 2 are little more than 'magic' numbers.
 
+Note that when things are quite, I'm at least in theory working on a cleaner interface
+for these 'available' attributes that would also provide in kernel access for IIO consumers.
+Basically this will be another callback to get either the 'range' of pseudo continuous
+variables or the 'available' set for parameters like this.
+
+Being lazy I'm happy to let someone else clean this corner up if they like? *looks hopeful*
+
+Jonathan
+> 
+> Best regards,
+> -- 
+> Hector Palacios
