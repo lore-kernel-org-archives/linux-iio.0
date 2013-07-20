@@ -1,95 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f51.google.com ([74.125.83.51]:39220 "EHLO
-	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756772Ab3GQR1J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:09 -0400
+Received: from mail-ea0-f173.google.com ([209.85.215.173]:48442 "EHLO
+	mail-ea0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754467Ab3GTQ1s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 12:27:48 -0400
 From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 08/21] IIO: ti_adc: Handle set to clear IRQENABLE register properly.
-Date: Wed, 17 Jul 2013 18:26:37 +0100
-Message-Id: <1374082010-28095-9-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+To: sameo@linux.intel.com, lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org, koen@dominion.thruhere.net
+Subject: [PATCH 4/4] mfd: input: arm: dts: doc: ti_am335x: typo fixes (coordiante -> coordinate)
+Date: Sat, 20 Jul 2013 17:27:36 +0100
+Message-Id: <1374337656-6393-5-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The driver is currently mishandling the IRQENABLE register. The driver
-
-should write a 1 for bits it wishes to set, and a zero for bits it does not
-
-wish to change. The read of the current register contents is not
-
-necessary.
-
-Write 0 = No action.
-
-Read 0 = Interrupt disabled (masked).
-
-Read 1 = Interrupt enabled.
-
-Write 1 = Enable interrupt.
-
-The current read/update/write method is currently not causing any
-
-problems, but could cause confusion in the future.
-
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Did a grep for 'coordiante' and replaced them all with 'coordinate'
 ---
- drivers/iio/adc/ti_am335x_adc.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ .../bindings/input/touchscreen/ti-tsc-adc.txt      |    4 ++--
+ arch/arm/boot/dts/am335x-evm.dts                   |    2 +-
+ drivers/input/touchscreen/ti_am335x_tsc.c          |    2 +-
+ drivers/mfd/ti_am335x_tscadc.c                     |    2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 31665fa..a86830b 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -211,7 +211,7 @@ static void tiadc_poll_handler(struct work_struct *work_s)
-                 container_of(work_s, struct tiadc_device, poll_work);
-         struct iio_dev *idev = iio_priv_to_dev(adc_dev);
-         struct iio_buffer *buffer = idev->buffer;
--        unsigned int fifo1count, readx1, status;
-+        unsigned int fifo1count, readx1;
-         int i;
-         u32 *iBuf;
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+index 491c97b..3e22aec 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
++++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+@@ -6,7 +6,7 @@ Required properties:
+ 	ti,wires: Wires refer to application modes i.e. 4/5/8 wire touchscreen
+ 		  support on the platform.
+ 	ti,x-plate-resistance: X plate resistance
+-	ti,coordiante-readouts: The sequencer supports a total of 16
++	ti,coordinate-readouts: The sequencer supports a total of 16
+ 				programmable steps each step is used to
+ 				read a single coordinate. A single
+                                 readout is enough but multiple reads can
+@@ -34,7 +34,7 @@ Example:
+ 		tsc {
+ 			ti,wires = <4>;
+ 			ti,x-plate-resistance = <200>;
+-			ti,coordiante-readouts = <5>;
++			ti,coordinate-readouts = <5>;
+ 			ti,wire-config = <0x00 0x11 0x22 0x33>;
+ 		};
  
-@@ -234,9 +234,8 @@ static void tiadc_poll_handler(struct work_struct *work_s)
-         }
+diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+index 0fa4c7f..e50b781 100644
+--- a/arch/arm/boot/dts/am335x-evm.dts
++++ b/arch/arm/boot/dts/am335x-evm.dts
+@@ -250,7 +250,7 @@
+ 	tsc {
+ 		ti,wires = <4>;
+ 		ti,x-plate-resistance = <200>;
+-		ti,coordiante-readouts = <5>;
++		ti,coordinate-readouts = <5>;
+ 		ti,wire-config = <0x00 0x11 0x22 0x33>;
+ 	};
  
-         buffer->access->store_to(buffer, (u8 *) iBuf);
--        status = tiadc_readl(adc_dev, REG_IRQENABLE);
--        tiadc_writel(adc_dev, REG_IRQENABLE,
--                        (status | IRQENB_FIFO1THRES));
-+        tiadc_writel(adc_dev, REG_IRQENABLE, 
-+				IRQENB_FIFO1THRES);
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 0e9f02a..6422f65 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -348,7 +348,7 @@ static int titsc_parse_dt(struct platform_device *pdev,
+ 	if (err < 0)
+ 		return err;
  
-         kfree(iBuf);
- }
-@@ -253,7 +252,7 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
- {
-         struct tiadc_device *adc_dev = iio_priv(idev);
-         struct iio_buffer *buffer = idev->buffer;
--        unsigned int enb, status, fifo1count;
-+        unsigned int enb, fifo1count;
-         int stepnum, i;
-         u8 bit;
+-	err = of_property_read_u32(node, "ti,coordiante-readouts",
++	err = of_property_read_u32(node, "ti,coordinate-readouts",
+ 			&ts_dev->coordinate_readouts);
+ 	if (err < 0)
+ 		return err;
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index cd74d59..1686ae6 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -106,7 +106,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
  
-@@ -261,11 +260,10 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
-                 printk("Data cannot be read continuously in one shot mode\n");
-                 return -EINVAL;
-         } else {
--                status = tiadc_readl(adc_dev, REG_IRQENABLE);
-                 tiadc_writel(adc_dev, REG_IRQENABLE,
--                                (status | IRQENB_FIFO1THRES)|
-+                                (IRQENB_FIFO1THRES |
-                                  IRQENB_FIFO1OVRRUN |
--                                 IRQENB_FIFO1UNDRFLW);
-+                                 IRQENB_FIFO1UNDRFLW));
+ 	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+ 	of_property_read_u32(node, "ti,wires", &tsc_wires);
+-	of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
++	of_property_read_u32(node, "ti,coordinate-readouts", &readouts);
  
-                 fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-                 for (i = 0; i < fifo1count; i++)
+ 	node = of_get_child_by_name(pdev->dev.of_node, "adc");
+ 	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
 -- 
 1.7.9.5
 
