@@ -1,52 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36171 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46573 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752325Ab3GQTEP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 15:04:15 -0400
-In-Reply-To: <51E668B4.1010000@ti.com>
-References: <1373974023-23521-1-git-send-email-oleksandr.kozaruk@ti.com> <1373974023-23521-3-git-send-email-oleksandr.kozaruk@ti.com> <c8f86766-822b-4fe3-ae2a-e0b12412ef39@email.android.com> <51E668B4.1010000@ti.com>
+	with ESMTP id S1754071Ab3GTNup (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 09:50:45 -0400
+In-Reply-To: <20130720124731.GA10834@gmail.com>
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <51EA73BC.8050901@kernel.org> <20130720124731.GA10834@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: [PATCH 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+Subject: Re: [PATCH 00/15] iio: ti_am335x_adc: Add continuous mode take 2
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 17 Jul 2013 20:04:02 +0100
-To: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-CC: tony@atomide.com, benoit.cousson@linaro.org, rnayak@ti.com,
-	peter.ujfalusi@ti.com, kishon@ti.com, jic23@cam.ac.uk,
-	grant.likely@linaro.org, rob.herring@calxeda.com, lars@metafoo.de,
-	sameo@linux.intel.com, ch.naveen@samsung.com, poeschel@lemonage.de,
-	milo.kim@ti.com, balajitk@ti.com, gg@slimlogic.co.uk,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree-discuss@lists.ozlabs.org,
-	linux-omap@vger.kernel.org
-Message-ID: <7725cc73-4cab-49f5-9c33-ef3b24a7ee57@email.android.com>
+Date: Sat, 20 Jul 2013 14:50:39 +0100
+To: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net
+Message-ID: <a8f2c435-027a-473f-9ea0-71bfe4276c2b@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-Oleksandr Kozaruk <oleksandr.kozaruk@ti.com> wrote:
->Hello Jonathan,
+"Zubair Lutfullah :" <zubair.lutfullah@gmail.com> wrote:
+>On Sat, Jul 20, 2013 at 12:25:48PM +0100, Jonathan Cameron wrote:
+>> I am a little irritated by the mess we have here.  Russ has clearly
+>done
+>> a lot of fine work cleaning up the earlier patches.  As a result
+>> we have a series of initial buggy patches and then a series of
+>patches
+>> fixing them again.
 >
-> >Two very quick comments based on quick glance as it may be a while 
->before I can do a full review.
+>Indeed.
 >
-> >We still have channels that are only usable for temperature being 
->output to user space as voltage channels? Is the conversion so very
->hard?
+>I had already merged a lot of minor bug fixes from Rachil into the main
+>patch that adds continuous mode.
 >
->Can you please clarify what should return temperature channel for 
->in_tempX_input (processed)? Is it voltage or Celsius degree?
-Milli degrees centigrade.
-
->in_tempX_raw should return ADC code? Right?
-Yes
-
-See Documentation/ABI/testing/sysfs-bus-iio
+>But I kept Russ's ones separate because of authorship and history.
+> 
 >
->Regards,
->OK.
+>> Part 1.  Any fixes that are unconnected to the rest of the series. 
+>These will
+>>   then get sent upstream within this cycle.
+>
+>Understood. I'll send a small series that is disjoint and contains
+>fixes for the existing driver.
+>
+>> Part 2. Feature add patch. Here that is basically a single patch
+>adding the
+>>   continous mode support.
+>>
+>> It is nice to maintain history and all but I would much rather have
+>something
+>> that is easy to review, with appropriate comments or if people will
+>give
+>> them, sign offs to reflect the various contributions.
+>> 
+>> Jonathan
+>
+>And then one patch for continuous mode with appropriate
+>comments/sign-offs.
+>
+Excellent. Thanks for sorting these out.
+>Thank-you
+>Zubair Lutfullah
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
 Sent from my Android phone with K-9 Mail. Please excuse my brevity.
