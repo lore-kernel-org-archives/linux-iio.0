@@ -1,52 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:51621 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752401Ab3GQLOV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 07:14:21 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v5 1/2] ARM: dts: twl: Add GPADC data to device tree
-Date: Wed, 17 Jul 2013 14:12:43 +0300
-Message-ID: <1374059564-6872-2-git-send-email-oleksandr.kozaruk@ti.com>
-In-Reply-To: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
-References: <1374059564-6872-1-git-send-email-oleksandr.kozaruk@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-ee0-f43.google.com ([74.125.83.43]:59856 "EHLO
+	mail-ee0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754463Ab3GTQ1q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 12:27:46 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: sameo@linux.intel.com, lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org, koen@dominion.thruhere.net
+Subject: [PATCH 3/4] MFD: ti_tscadc: ADC Clock check not required
+Date: Sat, 20 Jul 2013 17:27:35 +0100
+Message-Id: <1374337656-6393-4-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-GPADC is the general purpose ADC present on twl6030.
-The dt data is interrupt used to trigger end of ADC
-conversion.
+From: "Patil, Rachna" <rachna@ti.com>
 
-Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+ADC is ideally expected to work at a frequency of 3MHz.
+The present code had a check, which returned error if the frequency
+went below the threshold  value. But since AM335x supports various
+working frequencies, this check is not required.
+Now the code just uses the internal ADC clock divider to set the ADC
+frequency w.r.t the sys clock.
+
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 ---
- arch/arm/boot/dts/twl6030.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/mfd/ti_am335x_tscadc.c       |    6 +-----
+ include/linux/mfd/ti_am335x_tscadc.h |    1 -
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/twl6030.dtsi b/arch/arm/boot/dts/twl6030.dtsi
-index 2e3bd31..322aa8e 100644
---- a/arch/arm/boot/dts/twl6030.dtsi
-+++ b/arch/arm/boot/dts/twl6030.dtsi
-@@ -103,4 +103,10 @@
- 		compatible = "ti,twl6030-pwmled";
- 		#pwm-cells = <2>;
- 	};
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index d72001c..cd74d59 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -197,11 +197,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	clock_rate = clk_get_rate(clk);
+ 	clk_put(clk);
+ 	clk_value = clock_rate / ADC_CLK;
+-	if (clk_value < MAX_CLK_DIV) {
+-		dev_err(&pdev->dev, "clock input less than min clock requirement\n");
+-		err = -EINVAL;
+-		goto err_disable_clk;
+-	}
 +
-+	adc: twl6030_gpadc {
-+		compatible = "ti,twl6030_gpadc";
-+		interrupts = <3>;
-+		#io-channel-cells = <1>;
-+	};
- };
+ 	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
+ 	clk_value = clk_value - 1;
+ 	tscadc_writel(tscadc, REG_CLKDIV, clk_value);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index db1791b..25f2c61 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -121,7 +121,6 @@
+ #define SEQ_STATUS BIT(5)
+ 
+ #define ADC_CLK			3000000
+-#define	MAX_CLK_DIV		7
+ #define TOTAL_STEPS		16
+ #define TOTAL_CHANNELS		8
+ 
 -- 
-1.8.1.2
+1.7.9.5
 
