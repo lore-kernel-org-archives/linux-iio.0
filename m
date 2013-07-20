@@ -1,108 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:49581 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752047Ab3GTTAM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 15:00:12 -0400
-From: Marek Vasut <marex@denx.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify scale
-Date: Sat, 20 Jul 2013 21:00:09 +0200
-Cc: Hector Palacios <hector.palacios@digi.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <51E967D8.8020001@digi.com> <51E9A029.3000008@kernel.org>
-In-Reply-To: <51E9A029.3000008@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45366 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753688Ab3GTLTo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 07:19:44 -0400
+Message-ID: <51EA724F.2060805@kernel.org>
+Date: Sat, 20 Jul 2013 12:19:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307202100.09749.marex@denx.de>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net
+Subject: Re: [PATCH 06/15] iio: ti_am335x_adc: Handle set to clear IRQENABLE
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <1374186086-5015-7-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-7-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Jonathan Cameron,
-
-> On 07/19/2013 05:22 PM, Hector Palacios wrote:
-> > Dear Marek,
-> > 
-> > On 07/19/2013 06:17 PM, Marek Vasut wrote:
-> >>> Here you have three entries per channel:
-> >>> in_voltageX_raw        -> the sample raw value
-> >>> in_voltageX_scale    -> the scale to multiply the raw value to get the
-> >> 
-> >> voltage
-> >> 
-> >>> in mV in_voltageX_scale_available -> lists the available scales of the
-> >>> channel
-> >>> 
-> >>> For example for channel 0:
-> >>> 
-> >>> # cat in_voltage0_scale_available
-> >>> 0.451660156 0.903320312    (two scales available, first with divider by
-> >>> two disabled, second with divider by two enabled)
-> >>> 
-> >>> # cat in_voltage0_scale
-> >>> 0.451660156            (divider by two is currently disabled)
-> >>> 
-> >>> # cat in_voltage0_raw        (shows measured value)
-> >>> 1000
-> >>> 
-> >>> If you multiply the value by the scale you get: 1000 * 0.451660156 =
-> >>> 451.6 mV
-> >>> 
-> >>> # echo 0.903320312 > in_voltage0_scale    (enables the divider by two)
-> >> 
-> >> Ok, so I have to remember this value : '0.903320312' in case I want to
-> >> enable divide-by-two functionality?
-> > 
-> > No you don't. That's why there is a 'in_voltage_scale_available' that
-> > lists the available values.
-> > 
-> >> Hmmmm ... why would this interface not work:
-> >> echo 2 > in_voltage0_scale
-> >> 
-> >> or
-> >> 
-> >> echo 1 > in_voltage0_scale
-> > 
-> > An easy thing like that is what I first submitted, but it was rejected
-> > and I was told to use the scale_available descriptor instead, which is
-> > the common interface the rest of drivers use.
+On 07/18/2013 11:21 PM, Zubair Lutfullah wrote:
+> From: Russ Dill <Russ.Dill@ti.com>
 > 
-> This comes down to allowing us to have one generic predictable interface
-> (which sometimes ends up looking uggly!).  The key thing is that if you
-> are outputing using the _raw sysfs interfaces, the aim is to avoid doing
-> nasty maths in kernel to get to 'standard' units such as mV.
-
-OK, understood.
-
-> Hence that scale attribute tells you what to apply to the value.  If you
-> just wanted it to be 1 or 2 then the in_voltage0_raw value would have to
-> be a long and nasty decimal.  Now we do have the option of
-> in_voltage0_calibscale which would be applied internally to the value but
-> it really isn't for this purpose (it's for devices with a 'trim' control)
-> and you'd still have scale set to 0.903320312 or similar. Although they
-> have meaning obviously, in this case 1 and 2 are little more than 'magic'
-> numbers.
+> The driver is currently mishandling the IRQENABLE register. The driver
+> should write a 1 for bits it wishes to set, and a zero for bits it does not
+> wish to change. The read of the current register contents is not
+> necessary.
 > 
-> Note that when things are quite, I'm at least in theory working on a
-> cleaner interface for these 'available' attributes that would also provide
-> in kernel access for IIO consumers. Basically this will be another
-> callback to get either the 'range' of pseudo continuous variables or the
-> 'available' set for parameters like this.
+> Write 0 = No action.
+> Read 0 = Interrupt disabled (masked).
+> Read 1 = Interrupt enabled.
+> Write 1 = Enable interrupt.
+> 
+> The current read/update/write method is currently not causing any
+> problems, but could cause confusion in the future.
+> 
+> Signed-off-by: Russ Dill <Russ.Dill@ti.com>
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 
-Thanks for the explanation!
+I guess this makes sense as a separate patch to maintain history, but
+I'd personally have preferred it rolled into the write places and
+appropriate credit given as comments.
 
-> Being lazy I'm happy to let someone else clean this corner up if they like?
-> *looks hopeful*
+I don't like the fact that the code will be broken in a known fashion
+at somepoints in this series...
 
-Please don't look at me, I already am fully loaded with fixing my mess all 
-around ;-/
-
-Best regards,
-Marek Vasut
+Jonathan
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c |   14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index c1b051c..b566e6a 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -207,7 +207,7 @@ static void tiadc_poll_handler(struct work_struct *work_s)
+>  		container_of(work_s, struct tiadc_device, poll_work);
+>  	struct iio_dev *idev = iio_priv_to_dev(adc_dev);
+>  	struct iio_buffer *buffer = idev->buffer;
+> -	unsigned int fifo1count, readx1, status;
+> +	unsigned int fifo1count, readx1;
+>  	int i;
+>  	u32 *inputbuffer;
+>  
+> @@ -223,9 +223,8 @@ static void tiadc_poll_handler(struct work_struct *work_s)
+>  	}
+>  
+>  	buffer->access->store_to(buffer, (u8 *) inputbuffer);
+> -	status = tiadc_readl(adc_dev, REG_IRQENABLE);
+>  	tiadc_writel(adc_dev, REG_IRQENABLE,
+> -			(status | IRQENB_FIFO1THRES));
+> +			IRQENB_FIFO1THRES);
+>  
+>  	kfree(inputbuffer);
+>  }
+> @@ -242,7 +241,7 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
+>  {
+>  	struct tiadc_device *adc_dev = iio_priv(idev);
+>  	struct iio_buffer *buffer = idev->buffer;
+> -	unsigned int enb, status, fifo1count;
+> +	unsigned int enb, fifo1count;
+>  	int stepnum, i;
+>  	u8 bit;
+>  
+> @@ -250,11 +249,10 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
+>  		pr_info("Data cannot be read continuously in one shot mode\n");
+>  		return -EINVAL;
+>  	} else {
+> -		status = tiadc_readl(adc_dev, REG_IRQENABLE);
+>  		tiadc_writel(adc_dev, REG_IRQENABLE,
+> -				(status | IRQENB_FIFO1THRES)|
+> -				 IRQENB_FIFO1OVRRUN |
+> -				 IRQENB_FIFO1UNDRFLW);
+> +				(IRQENB_FIFO1THRES |
+> +				IRQENB_FIFO1OVRRUN |
+> +				IRQENB_FIFO1UNDRFLW));
+>  
+>  		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+>  		for (i = 0; i < fifo1count; i++)
+> 
