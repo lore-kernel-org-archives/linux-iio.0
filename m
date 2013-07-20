@@ -1,166 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57796 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755720Ab3GUQzD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jul 2013 12:55:03 -0400
-Message-ID: <51EC125F.5020808@kernel.org>
-Date: Sun, 21 Jul 2013 17:54:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:49581 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752047Ab3GTTAM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 15:00:12 -0400
+From: Marek Vasut <marex@denx.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify scale
+Date: Sat, 20 Jul 2013 21:00:09 +0200
+Cc: Hector Palacios <hector.palacios@digi.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <51E967D8.8020001@digi.com> <51E9A029.3000008@kernel.org>
+In-Reply-To: <51E9A029.3000008@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Oleksandr Kravchenko <x0199363@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	grant.likely@linaro.org, rob.herring@calxeda.com, rob@landley.net,
-	jic23@cam.ac.uk, pmeerw@pmeerw.net, holler@ahsoftware.de,
-	srinivas.pandruvada@intel.com, devicetree-discuss@lists.ozlabs.org,
-	grygorii.strashko@ti.com,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH 1/3] iio: core: implement devm_iio_device_alloc/devm_iio_device_free
-References: <1374142766-29736-1-git-send-email-x0199363@ti.com> <51EA8B06.3080005@metafoo.de>
-In-Reply-To: <51EA8B06.3080005@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307202100.09749.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/20/2013 02:05 PM, Lars-Peter Clausen wrote:
-> On 07/18/2013 12:19 PM, Oleksandr Kravchenko wrote:
->> From: Grygorii Strashko <grygorii.strashko@ti.com>
->>
->> Add a resource managed devm_iio_device_alloc()/devm_iio_device_free()
->> to automatically clean up any allocations made by IIO drivers,
->> thus leading to simplified IIO drivers code.
->>
->> In addition, this will allow IIO drivers to use other devm_*() API
->> (like devm_request_irq) and don't care about the race between
->> iio_device_free() and the release of resources by Device core
->> during driver removing.
->>
->> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->> [o.v.kravchenko@globallogic.com: fix return value ib devm_iio_device_alloc
->> in case if devres_alloc failed, remove unused variable "rc"]
->> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
->> Tested-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-> 
-> Very nice, thanks for taking care of this.
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Dear Jonathan Cameron,
 
-Indeed.  Thanks for this,
-
-I did drop the [] bit in the sign off as you had a perfect right
-to sign off on it anyway and that really cluttered it up with
-stuff that isn't in a standard form for that block as far as I know.
-
-Applied to the togreg branch of iio.git.  I suspect we may get a
-reasonable flood of patches using this over the next month or two.
-
-Thanks,
-
-Jonathan
+> On 07/19/2013 05:22 PM, Hector Palacios wrote:
+> > Dear Marek,
+> > 
+> > On 07/19/2013 06:17 PM, Marek Vasut wrote:
+> >>> Here you have three entries per channel:
+> >>> in_voltageX_raw        -> the sample raw value
+> >>> in_voltageX_scale    -> the scale to multiply the raw value to get the
+> >> 
+> >> voltage
+> >> 
+> >>> in mV in_voltageX_scale_available -> lists the available scales of the
+> >>> channel
+> >>> 
+> >>> For example for channel 0:
+> >>> 
+> >>> # cat in_voltage0_scale_available
+> >>> 0.451660156 0.903320312    (two scales available, first with divider by
+> >>> two disabled, second with divider by two enabled)
+> >>> 
+> >>> # cat in_voltage0_scale
+> >>> 0.451660156            (divider by two is currently disabled)
+> >>> 
+> >>> # cat in_voltage0_raw        (shows measured value)
+> >>> 1000
+> >>> 
+> >>> If you multiply the value by the scale you get: 1000 * 0.451660156 =
+> >>> 451.6 mV
+> >>> 
+> >>> # echo 0.903320312 > in_voltage0_scale    (enables the divider by two)
+> >> 
+> >> Ok, so I have to remember this value : '0.903320312' in case I want to
+> >> enable divide-by-two functionality?
+> > 
+> > No you don't. That's why there is a 'in_voltage_scale_available' that
+> > lists the available values.
+> > 
+> >> Hmmmm ... why would this interface not work:
+> >> echo 2 > in_voltage0_scale
+> >> 
+> >> or
+> >> 
+> >> echo 1 > in_voltage0_scale
+> > 
+> > An easy thing like that is what I first submitted, but it was rejected
+> > and I was told to use the scale_available descriptor instead, which is
+> > the common interface the rest of drivers use.
 > 
+> This comes down to allowing us to have one generic predictable interface
+> (which sometimes ends up looking uggly!).  The key thing is that if you
+> are outputing using the _raw sysfs interfaces, the aim is to avoid doing
+> nasty maths in kernel to get to 'standard' units such as mV.
+
+OK, understood.
+
+> Hence that scale attribute tells you what to apply to the value.  If you
+> just wanted it to be 1 or 2 then the in_voltage0_raw value would have to
+> be a long and nasty decimal.  Now we do have the option of
+> in_voltage0_calibscale which would be applied internally to the value but
+> it really isn't for this purpose (it's for devices with a 'trim' control)
+> and you'd still have scale set to 0.903320312 or similar. Although they
+> have meaning obviously, in this case 1 and 2 are little more than 'magic'
+> numbers.
 > 
->> ---
->>   drivers/iio/industrialio-core.c |   47 +++++++++++++++++++++++++++++++++++++++
->>   include/linux/iio/iio.h         |   25 +++++++++++++++++++++
->>   2 files changed, 72 insertions(+)
->>
->> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->> index e145931..d56d122 100644
->> --- a/drivers/iio/industrialio-core.c
->> +++ b/drivers/iio/industrialio-core.c
->> @@ -912,6 +912,53 @@ void iio_device_free(struct iio_dev *dev)
->>   }
->>   EXPORT_SYMBOL(iio_device_free);
->>
->> +static void devm_iio_device_release(struct device *dev, void *res)
->> +{
->> +    iio_device_free(*(struct iio_dev **)res);
->> +}
->> +
->> +static int devm_iio_device_match(struct device *dev, void *res, void *data)
->> +{
->> +    struct iio_dev **r = res;
->> +    if (!r || !*r) {
->> +        WARN_ON(!r || !*r);
->> +        return 0;
->> +    }
->> +    return *r == data;
->> +}
->> +
->> +struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
->> +{
->> +    struct iio_dev **ptr, *iio_dev;
->> +
->> +    ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
->> +               GFP_KERNEL);
->> +    if (!ptr)
->> +        return NULL;
->> +
->> +    /* use raw alloc_dr for kmalloc caller tracing */
->> +    iio_dev = iio_device_alloc(sizeof_priv);
->> +    if (iio_dev) {
->> +        *ptr = iio_dev;
->> +        devres_add(dev, ptr);
->> +    } else {
->> +        devres_free(ptr);
->> +    }
->> +
->> +    return iio_dev;
->> +}
->> +EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
->> +
->> +void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
->> +{
->> +    int rc;
->> +
->> +    rc = devres_release(dev, devm_iio_device_release,
->> +                devm_iio_device_match, iio_dev);
->> +    WARN_ON(rc);
->> +}
->> +EXPORT_SYMBOL_GPL(devm_iio_device_free);
->> +
->>   /**
->>    * iio_chrdev_open() - chrdev file open for buffer access and ioctls
->>    **/
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index 8d171f4..f1d99f6 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -532,6 +532,31 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
->>   void iio_device_free(struct iio_dev *indio_dev);
->>
->>   /**
->> + * devm_iio_device_alloc - Resource-managed iio_device_alloc()
->> + * @dev:         Device to allocate iio_dev for
->> + * @sizeof_priv:     Space to allocate for private structure.
->> + *
->> + * Managed iio_device_alloc.  iio_dev allocated with this function is
->> + * automatically freed on driver detach.
->> + *
->> + * If an iio_dev allocated with this function needs to be freed separately,
->> + * devm_iio_device_free() must be used.
->> + *
->> + * RETURNS:
->> + * Pointer to allocated iio_dev on success, NULL on failure.
->> + */
->> +struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
->> +
->> +/**
->> + * devm_iio_device_free - Resource-managed iio_device_free()
->> + * @dev:        Device this iio_dev belongs to
->> + * @indio_dev:         the iio_dev associated with the device
->> + *
->> + * Free indio_dev allocated with devm_iio_device_alloc().
->> + */
->> +void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
->> +
->> +/**
->>    * iio_buffer_enabled() - helper function to test if the buffer is enabled
->>    * @indio_dev:        IIO device structure for device
->>    **/
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Note that when things are quite, I'm at least in theory working on a
+> cleaner interface for these 'available' attributes that would also provide
+> in kernel access for IIO consumers. Basically this will be another
+> callback to get either the 'range' of pseudo continuous variables or the
+> 'available' set for parameters like this.
+
+Thanks for the explanation!
+
+> Being lazy I'm happy to let someone else clean this corner up if they like?
+> *looks hopeful*
+
+Please don't look at me, I already am fully loaded with fixing my mess all 
+around ;-/
+
+Best regards,
+Marek Vasut
