@@ -1,94 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:36934 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750876Ab3GVMXr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 22 Jul 2013 08:23:47 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v7 0/2] TWL6030, TWL6032 GPADC driver
-Date: Mon, 22 Jul 2013 15:22:50 +0300
-Message-ID: <1374495772-17758-1-git-send-email-oleksandr.kozaruk@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-ea0-f174.google.com ([209.85.215.174]:56265 "EHLO
+	mail-ea0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754458Ab3GTQ1o (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 12:27:44 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: sameo@linux.intel.com, lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org, koen@dominion.thruhere.net
+Subject: [PATCH 2/4] MFD: ti_tscadc: disable TSC config registers in adc mode
+Date: Sat, 20 Jul 2013 17:27:34 +0100
+Message-Id: <1374337656-6393-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+From: "Patil, Rachna" <rachna@ti.com>
 
-v7 - addressed clean up comments, removed test channels
-v6 - addressed comments about trim bits, checkpatch clean up
-v5 - gpadc DT node renamed from "gpadc" to generic "adc", added
-     temperature channels; raw code is corracted with calibration
-     data.
-v4 - addressed comments: fixed style violation, bug in freeing memory,
-     added comments explaining calibration method, removed test network
-     channels from exposing to userspace, error handling for 
-     wait_for_complition
-v3 - fixed compiler warning
-v2 - the driver put in drivers/iio, and
-converted using iio facilities as suggested by Graeme.
+AFE Pen Ctrl and TouchScreen transistors enabling is not
+required when only ADC mode is being used, so check for availability of
+TSC driver before accessing control register.
 
-TWL603[02] GPADC is used to measure battery voltage,
-battery temperature, battery presence ID, and could
-be used to measure twl603[02] die temperature.
-This is used on TI blaze, blaze tablet platforms.
+Signed-off-by: Patil, Rachna <rachna@ti.com>
+Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/mfd/ti_am335x_tscadc.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
-channels respectively. Some channels have current
-source and are used for measuring voltage drop
-on resistive load for detecting battery ID resistance,
-or measuring voltage drop on NTC resistors for external
-temperature measurements, other channels measure voltage,
-(i.e. battery voltage), and have inbuilt voltage dividers,
-thus, capable to scale voltage. Some channels are dedicated
-for measuring die temperature.
-
-Some channels could be calibrated in 2 points, having
-offsets from ideal values in trim registers.
-
-The difference between GPADC in TWL6030 and TWL6032:
-- 10 bit vs 12 bit ADC;
-- 17 vs 19 channels;
-- channels have different purpose(i. e. battery voltage
-  channel 8 vs channel 18);
-- trim values are interpreted differently.
-
-The driver is derived from git://git.omapzoom.org/kernel/omap.git
-The original driver's authors and contributors are Balaji T K,
-Graeme Gregory, Ambresh K, Girish S Ghongdemath.
-
-The changes to the original driver:
-- device tree adaptation;
-- drop ioctl support - never been used;
-- unified measurement method for both devices;
-- get rid of "if (device == X)" code style to data driven;
-- drop polling end of conversion and use interrupt instead;
-- iio framework is used
-
-Tested with on blaze tablet 2 with OMAP4430(twl6030), and
-OMAP4470(twl6032) SOMs.
-
-The patches were tested against 3.11-rc2
-
-Oleksandr Kozaruk (2):
-  ARM: dts: twl: Add GPADC data to device tree
-  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-
- arch/arm/boot/dts/twl6030.dtsi  |   6 +
- drivers/iio/adc/Kconfig         |  14 +
- drivers/iio/adc/Makefile        |   1 +
- drivers/iio/adc/twl6030-gpadc.c | 981 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1002 insertions(+)
- create mode 100644 drivers/iio/adc/twl6030-gpadc.c
-
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index b003a16..d72001c 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -208,13 +208,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 
+ 	/* Set the control register bits */
+ 	ctrl = CNTRLREG_STEPCONFIGWRT |
+-			CNTRLREG_TSCENB |
+-			CNTRLREG_STEPID |
+-			CNTRLREG_4WIRE;
++			CNTRLREG_STEPID;
++	if (tsc_wires > 0)
++		ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
+ 	tscadc_writel(tscadc, REG_CTRL, ctrl);
+ 
+ 	/* Set register bits for Idle Config Mode */
+-	tscadc_idle_config(tscadc);
++	if (tsc_wires > 0)
++		tscadc_idle_config(tscadc);
+ 
+ 	/* Enable the TSC module enable bit */
+ 	ctrl = tscadc_readl(tscadc, REG_CTRL);
+@@ -294,10 +295,13 @@ static int tscadc_resume(struct device *dev)
+ 	pm_runtime_get_sync(dev);
+ 
+ 	/* context restore */
+-	ctrl = CNTRLREG_STEPCONFIGWRT | CNTRLREG_TSCENB |
+-			CNTRLREG_STEPID | CNTRLREG_4WIRE;
++	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
++	if (tscadc_dev->tsc_cell != -1)
++		ctrl |= CNTRLREG_TSCENB | CNTRLREG_4WIRE;
+ 	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
+-	tscadc_idle_config(tscadc_dev);
++
++	if (tscadc_dev->tsc_cell != -1)
++		tscadc_idle_config(tscadc_dev);
+ 	am335x_tsc_se_update(tscadc_dev);
+ 	restore = tscadc_readl(tscadc_dev, REG_CTRL);
+ 	tscadc_writel(tscadc_dev, REG_CTRL,
 -- 
-1.8.1.2
+1.7.9.5
 
