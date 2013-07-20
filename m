@@ -1,89 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:46062 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754126Ab3GPL2K (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Jul 2013 07:28:10 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
-	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<lars@metafoo.de>, <sameo@linux.intel.com>,
-	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
-	<balajitk@ti.com>, <gg@slimlogic.co.uk>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
-Subject: [PATCH v4 0/2] TWL6030, TWL6032 GPADC driver
-Date: Tue, 16 Jul 2013 14:27:01 +0300
-Message-ID: <1373974023-23521-1-git-send-email-oleksandr.kozaruk@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45171 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753688Ab3GTK5b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 20 Jul 2013 06:57:31 -0400
+Message-ID: <51EA6D19.7040401@kernel.org>
+Date: Sat, 20 Jul 2013 11:57:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	koen@dominion.thruhere.net, Torokhov <dmitry.torokhov@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 03/15] input: ti_tsc: Enable shared IRQ for TSC
+References: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com> <1374186086-5015-4-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374186086-5015-4-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 07/18/2013 11:21 PM, Zubair Lutfullah wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
+> 
+> Touchscreen and ADC share the same IRQ line from parent MFD core.
+> Previously only Touchscreen was interrupt based.
+> With continuous mode support added in ADC driver, driver requires
+> interrupt to process the ADC samples, so enable shared IRQ flag bit for
+> touchscreen.
+> 
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+cc'd Dmitry and Linux-input.
 
-v4 - addressed comments: fixed style violation, bug in freeing memory,
-     added comments explaining calibration method, removed test network
-     channels from exposing to userspace, error handling for 
-     wait_for_complition
-v3 - fixed compiler warning
-v2 - the driver put in drivers/iio, and
-converted using iio facilities as suggested by Graeme.
+If this goes through IIO as it is required for the rest of the series to
+work then I will need an Ack from Dmitry.
 
-TWL603[02] GPADC is used to measure battery voltage,
-battery temperature, battery presence ID, and could
-be used to measure twl603[02] die temperature.
-This is used on TI blaze, blaze tablet platforms.
-
-The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
-channels respectively. Some channels have current
-source and are used for measuring voltage drop
-on resistive load for detecting battery ID resistance,
-or measuring voltage drop on NTC resistors for external
-temperature measurements, other channels measure voltage,
-(i.e. battery voltage), and have inbuilt voltage dividers,
-thus, capable to scale voltage. Some channels are dedicated
-for measuring die temperature.
-
-Some channels could be calibrated in 2 points, having
-offsets from ideal values in trim registers.
-
-The difference between GPADC in TWL6030 and TWL6032:
-- 10 bit vs 12 bit ADC;
-- 17 vs 19 channels;
-- channels have different purpose(i. e. battery voltage
-  channel 8 vs channel 18);
-- trim values are interpreted differently.
-
-The driver is derived from git://git.omapzoom.org/kernel/omap.git
-The original driver's authors and contributors are Balaji T K,
-Graeme Gregory, Ambresh K, Girish S Ghongdemath.
-
-The changes to the original driver:
-- device tree adaptation;
-- drop ioctl support - never been used;
-- unified measurement method for both devices;
-- get rid of "if (device == X)" code style to data driven;
-- drop polling end of conversion and use interrupt instead;
-- iio framework is used
-
-Tested with on blaze tablet 2 with OMAP4430(twl6030), and
-OMAP4470(twl6032) SOMs.
-
-The patches were tested against 3.10-rc7
-
-Oleksandr Kozaruk (2):
-  ARM: dts: twl: Add GPADC data to device tree
-  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-
- arch/arm/boot/dts/twl6030.dtsi  |    6 +
- drivers/iio/adc/Kconfig         |   14 +
- drivers/iio/adc/Makefile        |    1 +
- drivers/iio/adc/twl6030-gpadc.c | 1008 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1029 insertions(+)
- create mode 100644 drivers/iio/adc/twl6030-gpadc.c
-
--- 
-1.8.1.2
-
+> ---
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index 0e9f02a..edc3d03 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -260,8 +260,16 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  	unsigned int fsm;
+>  
+>  	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+> -	if (status & IRQENB_FIFO0THRES) {
+>  
+> +	/*
+> +	* ADC and touchscreen share the IRQ line.
+> +	* FIFO1 threshold interrupt is used by ADC,
+> +	* hence return from touchscreen IRQ handler if FIFO1
+> +	* threshold interrupt occurred.
+> +	*/
+> +	if (status & IRQENB_FIFO1THRES)
+> +		return IRQ_NONE;
+> +	else if (status & IRQENB_FIFO0THRES) {
+>  		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+>  
+>  		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+> @@ -315,7 +323,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  	}
+>  
+>  	if (irqclr) {
+> -		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+> +		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
+>  		am335x_tsc_se_update(ts_dev->mfd_tscadc);
+>  		return IRQ_HANDLED;
+>  	}
+> @@ -389,7 +397,7 @@ static int titsc_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	err = request_irq(ts_dev->irq, titsc_irq,
+> -			  0, pdev->dev.driver->name, ts_dev);
+> +			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+>  	if (err) {
+>  		dev_err(&pdev->dev, "failed to allocate irq.\n");
+>  		goto err_free_mem;
+> 
