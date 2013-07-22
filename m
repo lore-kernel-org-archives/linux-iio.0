@@ -1,107 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:64873 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756617Ab3GQR1H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:07 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 07/21] iio: TI-am335x-adc: Cleanup
-Date: Wed, 17 Jul 2013 18:26:36 +0100
-Message-Id: <1374082010-28095-8-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:35257 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753885Ab3GVIZ3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 04:25:29 -0400
+Received: by mail-ee0-f49.google.com with SMTP id b57so3595696eek.36
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jul 2013 01:25:28 -0700 (PDT)
+Date: Mon, 22 Jul 2013 09:25:16 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Cc: sameo@linux.intel.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+	koen@dominion.thruhere.net
+Subject: Re: [PATCH 4/4] mfd: input: arm: dts: doc: ti_am335x: typo fixes
+ (coordiante -> coordinate)
+Message-ID: <20130722082516.GE4681@laptop>
+References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
+ <1374337656-6393-5-git-send-email-zubair.lutfullah@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1374337656-6393-5-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Cleaned up the code a bit. Some formatting.
-Some error handling paths corrected
+On Sat, 20 Jul 2013, Zubair Lutfullah wrote:
 
-This patch is based on work in the 3.2 tree by TI
-Original Author is Patil Rachna
+> Did a grep for 'coordiante' and replaced them all with 'coordinate'
+> ---
+>  .../bindings/input/touchscreen/ti-tsc-adc.txt      |    4 ++--
+>  arch/arm/boot/dts/am335x-evm.dts                   |    2 +-
+>  drivers/input/touchscreen/ti_am335x_tsc.c          |    2 +-
+>  drivers/mfd/ti_am335x_tscadc.c                     |    2 +-
+>  4 files changed, 5 insertions(+), 5 deletions(-)
 
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/iio/adc/ti_am335x_adc.c |   33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
+Once these DT bindings move from a development state to something more
+concrete, I guess misspellings such as these will just have to remain
+incorrect. However, as we are still in a state of development you can
+have my:
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 1f6e800..31665fa 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -311,13 +311,11 @@ static const struct iio_buffer_setup_ops tiadc_buffer_setup_ops = {
- static int tiadc_config_sw_ring(struct iio_dev *idev)
- {
-         struct tiadc_device *adc_dev = iio_priv(idev);
--      //int ret;
- 
-         idev->buffer = iio_kfifo_allocate(idev);
-         if (!idev->buffer)
-                 return(-ENOMEM);
- 
-- //     idev->buffer->access = &ring_sw_access_funcs;
-         idev->setup_ops = &tiadc_buffer_setup_ops;
- 
-         INIT_WORK(&adc_dev->poll_work, &tiadc_poll_handler);
-@@ -506,21 +504,22 @@ static int tiadc_probe(struct platform_device *pdev)
- 	err = tiadc_channel_init(indio_dev, adc_dev->channels);
- 	if (err < 0)
- 		goto err_free_device;
--    init_waitqueue_head(&adc_dev->wq_data_avail);
- 
--    err = request_irq(adc_dev->irq, tiadc_irq, IRQF_SHARED,
--            indio_dev->name, indio_dev);
--    if (err)
--            goto err_free_irq;
-+	init_waitqueue_head(&adc_dev->wq_data_avail);
- 
--    err = tiadc_config_sw_ring(indio_dev);
--    if (err < 0)
--            goto err_unregister;
-+	err = request_irq(adc_dev->irq, tiadc_irq, IRQF_SHARED,
-+		indio_dev->name, indio_dev);
-+	if (err)
-+		goto err_free_irq;
-+
-+	err = tiadc_config_sw_ring(indio_dev);
-+	if (err < 0)
-+		goto err_unregister;
-  
--    err = iio_buffer_register(indio_dev,
--                    indio_dev->channels, indio_dev->num_channels);
--    if (err < 0)
--            goto err_unregister;
-+	err = iio_buffer_register(indio_dev,
-+		indio_dev->channels, indio_dev->num_channels);
-+	if (err < 0)
-+		goto err_unregister;
- 
- 	err = iio_device_register(indio_dev);
- 	if (err)
-@@ -531,9 +530,9 @@ static int tiadc_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_unregister:
--
-+	iio_buffer_unregister(indio_dev);
- err_free_irq:
--   free_irq(adc_dev->irq, indio_dev);
-+	free_irq(adc_dev->irq, indio_dev);
- err_free_channels:
- 	tiadc_channels_remove(indio_dev);
- err_free_device:
-@@ -548,7 +547,9 @@ static int tiadc_remove(struct platform_device *pdev)
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
- 	u32 step_en;
- 
-+	free_irq(adc_dev->irq, indio_dev);
- 	iio_device_unregister(indio_dev);
-+	iio_buffer_unregister(indio_dev);
- 	tiadc_channels_remove(indio_dev);
- 
- 	step_en = get_adc_step_mask(adc_dev);
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+... for the MFD part. 
+
 -- 
-1.7.9.5
-
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
