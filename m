@@ -1,46 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f169.google.com ([209.85.215.169]:34005 "EHLO
-	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756926Ab3GVIiG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 04:38:06 -0400
-Received: by mail-ea0-f169.google.com with SMTP id h15so3639400eak.14
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jul 2013 01:38:05 -0700 (PDT)
-Date: Mon, 22 Jul 2013 09:37:58 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: sameo@linux.intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-	koen@dominion.thruhere.net
-Subject: Re: [PATCH 2/4] MFD: ti_tscadc: disable TSC config registers in adc
- mode
-Message-ID: <20130722083758.GG4681@laptop>
-References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
- <1374337656-6393-3-git-send-email-zubair.lutfullah@gmail.com>
+Received: from mail1.bemta12.messagelabs.com ([216.82.251.1]:54526 "EHLO
+	mail1.bemta12.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755186Ab3GVHqf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 03:46:35 -0400
+Message-ID: <51ECE34E.7050904@digi.com>
+Date: Mon, 22 Jul 2013 09:46:22 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1374337656-6393-3-git-send-email-zubair.lutfullah@gmail.com>
+To: Marek Vasut <marex@denx.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v2 3/5] iio: mxs-lradc: add scale attribute to channels
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191814.15491.marex@denx.de> <51ECDD9F.4080506@digi.com> <201307220942.08990.marex@denx.de>
+In-Reply-To: <201307220942.08990.marex@denx.de>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 20 Jul 2013, Zubair Lutfullah wrote:
+Hi Marek,
 
-> From: "Patil, Rachna" <rachna@ti.com>
-> 
-> AFE Pen Ctrl and TouchScreen transistors enabling is not
-> required when only ADC mode is being used, so check for availability of
-> TSC driver before accessing control register.
-> 
-> Signed-off-by: Patil, Rachna <rachna@ti.com>
-> Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
-> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-> ---
->  drivers/mfd/ti_am335x_tscadc.c |   18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
+On 07/22/2013 09:42 AM, Marek Vasut wrote:
+> Dear Hector Palacios,
+>
+>> Hi Marek,
+>>
+>> On 07/19/2013 06:14 PM, Marek Vasut wrote:
+>>> Dear Hector Palacios,
+>>>
+>>>> Dear Marek,
+>>>>
+>>>> On 07/19/2013 04:30 PM, Marek Vasut wrote:
+>>>>>> @@ -228,39 +230,12 @@ struct mxs_lradc {
+>>>>>>
+>>>>>>     #define LRADC_RESOLUTION			12
+>>>>>>     #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION)
+> - 1)
+>>>>>>
+>>>>>> -/*
+>>>>>> - * Raw I/O operations
+>>>>>> - */
+>>>>>> -static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>>>>> +static int mxs_lradc_read_single(struct iio_dev *iio_dev,
+>>>>>>
+>>>>>>     			const struct iio_chan_spec *chan,
+>>>>>>     			int *val, int *val2, long m)
+>>>>>>
+>>>>>>     {
+>>>>>>
+>>>>>>     	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>>>>>>     	int ret;
+>>>>>>
+>>>>>> -	unsigned long mask;
+>>>>>> -
+>>>>>> -	if (m != IIO_CHAN_INFO_RAW)
+>>>>>> -		return -EINVAL;
+>>>>>> -
+>>>>>> -	/* Check for invalid channel */
+>>>>>> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+>>>>>> -		return -EINVAL;
+>>>>>
+>>>>> This was already resolved, so this patch won't apply I'm afraid.
+>>>>
+>>>> You mean the 'unsigned long mask', right?  Yeah, I think I had resolved
+>>>> that one before submitting, but looks like I didn't.
+>>>> The other check is not resolved afaik. We agreed to remove it, but on a
+>>>> different patch.
+>>>
+>>> I mean the other check, yeah. A patch removing that should be applied
+>>> already.
+>>
+>> Where exactly? It's not fixed in Jonathan's fixes-togreg branch, at least.
+>> Did you fixed it?
+>
+> I use linux-next [1], should be it.
+>
+> http://git.kernel.org/cgit/linux/kernel/git/next/linux-
+> next.git/log/drivers/staging/iio/adc/mxs-lradc.c
 
-Applied, thanks.
+That is removing the unsigned long mask, but not the check for invalid channel.
+I'm taking care of the unsigned long mask but an additional patch is needed to remove 
+the check for invalid channel.
 
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Best regards,
+--
+Hector Palacios
