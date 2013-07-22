@@ -1,98 +1,128 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53438 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751287Ab3G0Kal (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Jul 2013 06:30:41 -0400
-Message-ID: <51F3AF63.2030800@kernel.org>
-Date: Sat, 27 Jul 2013 12:30:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Rhyland Klein <rklein@nvidia.com>
-CC: Sachin Kamat <sachin.kamat@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"patches@linaro.org" <patches@linaro.org>
-Subject: Re: [PATCH 7/8] staging: iio: light: isl29018: Use devm_iio_device_alloc
-References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org> <1374490981-24373-8-git-send-email-sachin.kamat@linaro.org> <51ED4CD2.4070600@nvidia.com>
-In-Reply-To: <51ED4CD2.4070600@nvidia.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	patches@linaro.org,
+	Stefan Roese <sr@denx.de>,
+	Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH 6/8] staging: iio: spear_adc: Use devm_iio_device_alloc
+Date: Mon, 22 Jul 2013 16:32:59 +0530
+Message-Id: <1374490981-24373-7-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/22/13 16:16, Rhyland Klein wrote:
-> On 7/22/2013 7:03 AM, Sachin Kamat wrote:
->> Using devm_iio_device_alloc makes code simpler.
->>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> Cc: Rhyland Klein <rklein@nvidia.com>
-Applied to the togreg branch of iio.git
+Using devm_iio_device_alloc makes code simpler.
 
-Rhyland, please put any acked-by etc up here as it makes it easy
-to find when applying patches (and I'm lazy)
->> ---
->>  drivers/staging/iio/light/isl29018.c |   16 +++++-----------
->>  1 file changed, 5 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
->> index 82478a5..351936c 100644
->> --- a/drivers/staging/iio/light/isl29018.c
->> +++ b/drivers/staging/iio/light/isl29018.c
->> @@ -550,11 +550,10 @@ static int isl29018_probe(struct i2c_client *client,
->>  	struct iio_dev *indio_dev;
->>  	int err;
->>  
->> -	indio_dev = iio_device_alloc(sizeof(*chip));
->> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
->>  	if (indio_dev == NULL) {
->>  		dev_err(&client->dev, "iio allocation fails\n");
->> -		err = -ENOMEM;
->> -		goto exit;
->> +		return -ENOMEM;
->>  	}
->>  	chip = iio_priv(indio_dev);
->>  
->> @@ -572,12 +571,12 @@ static int isl29018_probe(struct i2c_client *client,
->>  	if (IS_ERR(chip->regmap)) {
->>  		err = PTR_ERR(chip->regmap);
->>  		dev_err(chip->dev, "regmap initialization failed: %d\n", err);
->> -		goto exit;
->> +		return err;
->>  	}
->>  
->>  	err = isl29018_chip_init(chip);
->>  	if (err)
->> -		goto exit_iio_free;
->> +		return err;
->>  
->>  	indio_dev->info = &isl29108_info;
->>  	indio_dev->channels = isl29018_channels;
->> @@ -588,14 +587,10 @@ static int isl29018_probe(struct i2c_client *client,
->>  	err = iio_device_register(indio_dev);
->>  	if (err) {
->>  		dev_err(&client->dev, "iio registration fails\n");
->> -		goto exit_iio_free;
->> +		return err;
->>  	}
->>  
->>  	return 0;
->> -exit_iio_free:
->> -	iio_device_free(indio_dev);
->> -exit:
->> -	return err;
->>  }
->>  
->>  static int isl29018_remove(struct i2c_client *client)
->> @@ -604,7 +599,6 @@ static int isl29018_remove(struct i2c_client *client)
->>  
->>  	dev_dbg(&client->dev, "%s()\n", __func__);
->>  	iio_device_unregister(indio_dev);
->> -	iio_device_free(indio_dev);
->>  
->>  	return 0;
->>  }
->>
-> 
-> Thanks!
-> 
-> Acked-by: Rhyland Klein <rklein@nvidia.com>
-> 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Stefan Roese <sr@denx.de>
+Cc: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ drivers/staging/iio/adc/spear_adc.c |   30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+index 736219c..20f2d55 100644
+--- a/drivers/staging/iio/adc/spear_adc.c
++++ b/drivers/staging/iio/adc/spear_adc.c
+@@ -300,11 +300,10 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 	int ret = -ENODEV;
+ 	int irq;
+ 
+-	iodev = iio_device_alloc(sizeof(struct spear_adc_info));
++	iodev = devm_iio_device_alloc(dev, sizeof(struct spear_adc_info));
+ 	if (!iodev) {
+ 		dev_err(dev, "failed allocating iio device\n");
+-		ret = -ENOMEM;
+-		goto errout1;
++		return -ENOMEM;
+ 	}
+ 
+ 	info = iio_priv(iodev);
+@@ -318,8 +317,7 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 	info->adc_base_spear6xx = of_iomap(np, 0);
+ 	if (!info->adc_base_spear6xx) {
+ 		dev_err(dev, "failed mapping memory\n");
+-		ret = -ENOMEM;
+-		goto errout2;
++		return -ENOMEM;
+ 	}
+ 	info->adc_base_spear3xx =
+ 		(struct adc_regs_spear3xx *)info->adc_base_spear6xx;
+@@ -327,33 +325,33 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 	info->clk = clk_get(dev, NULL);
+ 	if (IS_ERR(info->clk)) {
+ 		dev_err(dev, "failed getting clock\n");
+-		goto errout3;
++		goto errout1;
+ 	}
+ 
+ 	ret = clk_prepare_enable(info->clk);
+ 	if (ret) {
+ 		dev_err(dev, "failed enabling clock\n");
+-		goto errout4;
++		goto errout2;
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if ((irq < 0) || (irq >= NR_IRQS)) {
+ 		dev_err(dev, "failed getting interrupt resource\n");
+ 		ret = -EINVAL;
+-		goto errout5;
++		goto errout3;
+ 	}
+ 
+ 	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, MOD_NAME, info);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed requesting interrupt\n");
+-		goto errout5;
++		goto errout3;
+ 	}
+ 
+ 	if (of_property_read_u32(np, "sampling-frequency",
+ 				 &info->sampling_freq)) {
+ 		dev_err(dev, "sampling-frequency missing in DT\n");
+ 		ret = -EINVAL;
+-		goto errout5;
++		goto errout3;
+ 	}
+ 
+ 	/*
+@@ -383,21 +381,18 @@ static int spear_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = iio_device_register(iodev);
+ 	if (ret)
+-		goto errout5;
++		goto errout3;
+ 
+ 	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
+ 
+ 	return 0;
+ 
+-errout5:
+-	clk_disable_unprepare(info->clk);
+-errout4:
+-	clk_put(info->clk);
+ errout3:
+-	iounmap(info->adc_base_spear6xx);
++	clk_disable_unprepare(info->clk);
+ errout2:
+-	iio_device_free(iodev);
++	clk_put(info->clk);
+ errout1:
++	iounmap(info->adc_base_spear6xx);
+ 	return ret;
+ }
+ 
+@@ -410,7 +405,6 @@ static int spear_adc_remove(struct platform_device *pdev)
+ 	clk_disable_unprepare(info->clk);
+ 	clk_put(info->clk);
+ 	iounmap(info->adc_base_spear6xx);
+-	iio_device_free(iodev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
