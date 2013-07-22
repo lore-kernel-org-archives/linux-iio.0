@@ -1,69 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f50.google.com ([74.125.83.50]:45181 "EHLO
-	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756823Ab3GQR1U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:20 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 14/21] IIO: ti_adc: Properly handle out of memory situation.
-Date: Wed, 17 Jul 2013 18:26:43 +0100
-Message-Id: <1374082010-28095-15-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:38988 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750876Ab3GVNLy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 22 Jul 2013 09:11:54 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>, <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH v3 1/2] of: Add Avago Technologies vendor prefix
+Date: Mon, 22 Jul 2013 16:11:27 +0300
+Message-ID: <1374498688-24701-1-git-send-email-x0199363@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If we fail to allocate a buffer, unmask the interrupt to allow a retry.
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 
-The interrupt handler will be re-run, and our workqueue rescheduled.
+This commit adds a device tree vendor prefix for Avago Technologies.
 
-If we are able to allocate memory next time around, everything will
-
-continue as normal, otherwise, we will eventually get an underrun.
-
-Before this patch, the driver would stop capturing without any
-
-indication of error to the IIO subsystem or the user.
-
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index eb47385..69abde0 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -214,7 +214,7 @@ static void tiadc_poll_handler(struct work_struct *work_s)
-         fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-         iBuf = kmalloc((fifo1count + 1) * sizeof(u32), GFP_KERNEL);
-         if (iBuf == NULL)
--                return;
-+                goto out;
-         /*
-          * Wait for ADC sequencer to settle down.
-          * There could be a scenario where in we
-@@ -230,12 +230,14 @@ static void tiadc_poll_handler(struct work_struct *work_s)
-         }
- 
-         buffer->access->store_to(buffer, (u8 *) iBuf);
-+	kfree(iBuf);
-+
-+out:	
- 	tiadc_writel(adc_dev, REG_IRQSTATUS,
- 				IRQENB_FIFO1THRES);
-         tiadc_writel(adc_dev, REG_IRQENABLE, 
- 				IRQENB_FIFO1THRES);
--
--        kfree(iBuf);
-+    
- }
- 
- static int tiadc_buffer_preenable(struct iio_dev *idev)
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index d5a79ca..8aab9c6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+ apm	Applied Micro Circuits Corporation (APM)
+ arm	ARM Ltd.
+ atmel	Atmel Corporation
++avago	Avago Technologies
+ bosch	Bosch Sensortec GmbH
+ brcm	Broadcom Corporation
+ cavium	Cavium, Inc.
 -- 
 1.7.9.5
 
