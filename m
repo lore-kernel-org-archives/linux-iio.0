@@ -1,77 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f169.google.com ([209.85.215.169]:39847 "EHLO
-	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755900Ab3GQR05 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:26:57 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 01/21] MFD: ti_tscadc: disable TSC control
-Date: Wed, 17 Jul 2013 18:26:30 +0100
-Message-Id: <1374082010-28095-2-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from mail-out.m-online.net ([212.18.0.10]:52987 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750799Ab3GVHmR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 03:42:17 -0400
+From: Marek Vasut <marex@denx.de>
+To: Hector Palacios <hector.palacios@digi.com>
+Subject: Re: [PATCH v2 3/5] iio: mxs-lradc: add scale attribute to channels
+Date: Mon, 22 Jul 2013 09:42:08 +0200
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191814.15491.marex@denx.de> <51ECDD9F.4080506@digi.com>
+In-Reply-To: <51ECDD9F.4080506@digi.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307220942.08990.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Register bits when TSC not in use
+Dear Hector Palacios,
 
-AFE Pen Ctrl and TouchScreen transistors enabling is not
+> Hi Marek,
+> 
+> On 07/19/2013 06:14 PM, Marek Vasut wrote:
+> > Dear Hector Palacios,
+> > 
+> >> Dear Marek,
+> >> 
+> >> On 07/19/2013 04:30 PM, Marek Vasut wrote:
+> >>>> @@ -228,39 +230,12 @@ struct mxs_lradc {
+> >>>> 
+> >>>>    #define LRADC_RESOLUTION			12
+> >>>>    #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) 
+- 1)
+> >>>> 
+> >>>> -/*
+> >>>> - * Raw I/O operations
+> >>>> - */
+> >>>> -static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+> >>>> +static int mxs_lradc_read_single(struct iio_dev *iio_dev,
+> >>>> 
+> >>>>    			const struct iio_chan_spec *chan,
+> >>>>    			int *val, int *val2, long m)
+> >>>>    
+> >>>>    {
+> >>>>    
+> >>>>    	struct mxs_lradc *lradc = iio_priv(iio_dev);
+> >>>>    	int ret;
+> >>>> 
+> >>>> -	unsigned long mask;
+> >>>> -
+> >>>> -	if (m != IIO_CHAN_INFO_RAW)
+> >>>> -		return -EINVAL;
+> >>>> -
+> >>>> -	/* Check for invalid channel */
+> >>>> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+> >>>> -		return -EINVAL;
+> >>> 
+> >>> This was already resolved, so this patch won't apply I'm afraid.
+> >> 
+> >> You mean the 'unsigned long mask', right?  Yeah, I think I had resolved
+> >> that one before submitting, but looks like I didn't.
+> >> The other check is not resolved afaik. We agreed to remove it, but on a
+> >> different patch.
+> > 
+> > I mean the other check, yeah. A patch removing that should be applied
+> > already.
+> 
+> Where exactly? It's not fixed in Jonathan's fixes-togreg branch, at least.
+> Did you fixed it?
 
-required when only ADC mode is being used, so check for availability of
+I use linux-next [1], should be it.
 
-TSC driver before accessing control register.
+http://git.kernel.org/cgit/linux/kernel/git/next/linux-
+next.git/log/drivers/staging/iio/adc/mxs-lradc.c
 
-This patch is based on work in the 3.2 tree by TI
-Original Author is Patil Rachna
-
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/mfd/ti_am335x_tscadc.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index b003a16..d72001c 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -208,13 +208,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 
- 	/* Set the control register bits */
- 	ctrl = CNTRLREG_STEPCONFIGWRT |
--			CNTRLREG_TSCENB |
--			CNTRLREG_STEPID |
--			CNTRLREG_4WIRE;
-+			CNTRLREG_STEPID;
-+	if (tsc_wires > 0)
-+		ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
- 	tscadc_writel(tscadc, REG_CTRL, ctrl);
- 
- 	/* Set register bits for Idle Config Mode */
--	tscadc_idle_config(tscadc);
-+	if (tsc_wires > 0)
-+		tscadc_idle_config(tscadc);
- 
- 	/* Enable the TSC module enable bit */
- 	ctrl = tscadc_readl(tscadc, REG_CTRL);
-@@ -294,10 +295,13 @@ static int tscadc_resume(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 
- 	/* context restore */
--	ctrl = CNTRLREG_STEPCONFIGWRT | CNTRLREG_TSCENB |
--			CNTRLREG_STEPID | CNTRLREG_4WIRE;
-+	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
-+	if (tscadc_dev->tsc_cell != -1)
-+		ctrl |= CNTRLREG_TSCENB | CNTRLREG_4WIRE;
- 	tscadc_writel(tscadc_dev, REG_CTRL, ctrl);
--	tscadc_idle_config(tscadc_dev);
-+
-+	if (tscadc_dev->tsc_cell != -1)
-+		tscadc_idle_config(tscadc_dev);
- 	am335x_tsc_se_update(tscadc_dev);
- 	restore = tscadc_readl(tscadc_dev, REG_CTRL);
- 	tscadc_writel(tscadc_dev, REG_CTRL,
--- 
-1.7.9.5
-
+Best regards,
+Marek Vasut
