@@ -1,135 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53425 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751287Ab3G0K3m (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Jul 2013 06:29:42 -0400
-Message-ID: <51F3AF28.6080706@kernel.org>
-Date: Sat, 27 Jul 2013 12:29:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk, patches@linaro.org,
-	Stefan Roese <sr@denx.de>,
-	Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH 6/8] staging: iio: spear_adc: Use devm_iio_device_alloc
-References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org> <1374490981-24373-7-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1374490981-24373-7-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	patches@linaro.org,
+	Marek Vasut <marex@denx.de>
+Subject: [PATCH 5/8] staging: iio: mxs-lradc: Use devm_iio_device_alloc
+Date: Mon, 22 Jul 2013 16:32:58 +0530
+Message-Id: <1374490981-24373-6-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/22/13 12:02, Sachin Kamat wrote:
-> Using devm_iio_device_alloc makes code simpler.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Stefan Roese <sr@denx.de>
-> Cc: Viresh Kumar <viresh.kumar@linaro.org>
-Applied to the togreg branch of iio.git.
+Using devm_iio_device_alloc makes code simpler.
 
-Thanks
-> ---
->  drivers/staging/iio/adc/spear_adc.c |   30 ++++++++++++------------------
->  1 file changed, 12 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
-> index 736219c..20f2d55 100644
-> --- a/drivers/staging/iio/adc/spear_adc.c
-> +++ b/drivers/staging/iio/adc/spear_adc.c
-> @@ -300,11 +300,10 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	int ret = -ENODEV;
->  	int irq;
->  
-> -	iodev = iio_device_alloc(sizeof(struct spear_adc_info));
-> +	iodev = devm_iio_device_alloc(dev, sizeof(struct spear_adc_info));
->  	if (!iodev) {
->  		dev_err(dev, "failed allocating iio device\n");
-> -		ret = -ENOMEM;
-> -		goto errout1;
-> +		return -ENOMEM;
->  	}
->  
->  	info = iio_priv(iodev);
-> @@ -318,8 +317,7 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	info->adc_base_spear6xx = of_iomap(np, 0);
->  	if (!info->adc_base_spear6xx) {
->  		dev_err(dev, "failed mapping memory\n");
-> -		ret = -ENOMEM;
-> -		goto errout2;
-> +		return -ENOMEM;
->  	}
->  	info->adc_base_spear3xx =
->  		(struct adc_regs_spear3xx *)info->adc_base_spear6xx;
-> @@ -327,33 +325,33 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	info->clk = clk_get(dev, NULL);
->  	if (IS_ERR(info->clk)) {
->  		dev_err(dev, "failed getting clock\n");
-> -		goto errout3;
-> +		goto errout1;
->  	}
->  
->  	ret = clk_prepare_enable(info->clk);
->  	if (ret) {
->  		dev_err(dev, "failed enabling clock\n");
-> -		goto errout4;
-> +		goto errout2;
->  	}
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if ((irq < 0) || (irq >= NR_IRQS)) {
->  		dev_err(dev, "failed getting interrupt resource\n");
->  		ret = -EINVAL;
-> -		goto errout5;
-> +		goto errout3;
->  	}
->  
->  	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, MOD_NAME, info);
->  	if (ret < 0) {
->  		dev_err(dev, "failed requesting interrupt\n");
-> -		goto errout5;
-> +		goto errout3;
->  	}
->  
->  	if (of_property_read_u32(np, "sampling-frequency",
->  				 &info->sampling_freq)) {
->  		dev_err(dev, "sampling-frequency missing in DT\n");
->  		ret = -EINVAL;
-> -		goto errout5;
-> +		goto errout3;
->  	}
->  
->  	/*
-> @@ -383,21 +381,18 @@ static int spear_adc_probe(struct platform_device *pdev)
->  
->  	ret = iio_device_register(iodev);
->  	if (ret)
-> -		goto errout5;
-> +		goto errout3;
->  
->  	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
->  
->  	return 0;
->  
-> -errout5:
-> -	clk_disable_unprepare(info->clk);
-> -errout4:
-> -	clk_put(info->clk);
->  errout3:
-> -	iounmap(info->adc_base_spear6xx);
-> +	clk_disable_unprepare(info->clk);
->  errout2:
-> -	iio_device_free(iodev);
-> +	clk_put(info->clk);
->  errout1:
-> +	iounmap(info->adc_base_spear6xx);
->  	return ret;
->  }
->  
-> @@ -410,7 +405,6 @@ static int spear_adc_remove(struct platform_device *pdev)
->  	clk_disable_unprepare(info->clk);
->  	clk_put(info->clk);
->  	iounmap(info->adc_base_spear6xx);
-> -	iio_device_free(iodev);
->  
->  	return 0;
->  }
-> 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Marek Vasut <marex@denx.de>
+---
+ drivers/staging/iio/adc/mxs-lradc.c |   21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 327914e..6f8d3a0 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -913,7 +913,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	int i;
+ 
+ 	/* Allocate the IIO device. */
+-	iio = iio_device_alloc(sizeof(*lradc));
++	iio = devm_iio_device_alloc(dev, sizeof(*lradc));
+ 	if (!iio) {
+ 		dev_err(dev, "Failed to allocate IIO device\n");
+ 		return -ENOMEM;
+@@ -925,10 +925,8 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	lradc->dev = &pdev->dev;
+ 	lradc->base = devm_ioremap_resource(dev, iores);
+-	if (IS_ERR(lradc->base)) {
+-		ret = PTR_ERR(lradc->base);
+-		goto err_addr;
+-	}
++	if (IS_ERR(lradc->base))
++		return PTR_ERR(lradc->base);
+ 
+ 	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+ 
+@@ -948,16 +946,14 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	/* Grab all IRQ sources */
+ 	for (i = 0; i < of_cfg->irq_count; i++) {
+ 		lradc->irq[i] = platform_get_irq(pdev, i);
+-		if (lradc->irq[i] < 0) {
+-			ret = -EINVAL;
+-			goto err_addr;
+-		}
++		if (lradc->irq[i] < 0)
++			return -EINVAL;
+ 
+ 		ret = devm_request_irq(dev, lradc->irq[i],
+ 					mxs_lradc_handle_irq, 0,
+ 					of_cfg->irq_name[i], iio);
+ 		if (ret)
+-			goto err_addr;
++			return ret;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, iio);
+@@ -977,7 +973,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 				&mxs_lradc_trigger_handler,
+ 				&mxs_lradc_buffer_ops);
+ 	if (ret)
+-		goto err_addr;
++		return ret;
+ 
+ 	ret = mxs_lradc_trigger_init(iio);
+ 	if (ret)
+@@ -1008,8 +1004,6 @@ err_dev:
+ 	mxs_lradc_trigger_remove(iio);
+ err_trig:
+ 	iio_triggered_buffer_cleanup(iio);
+-err_addr:
+-	iio_device_free(iio);
+ 	return ret;
+ }
+ 
+@@ -1025,7 +1019,6 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+ 	iio_device_unregister(iio);
+ 	iio_triggered_buffer_cleanup(iio);
+ 	mxs_lradc_trigger_remove(iio);
+-	iio_device_free(iio);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
