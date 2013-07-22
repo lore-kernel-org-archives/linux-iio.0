@@ -1,76 +1,44 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	jic23@kernel.org,
-	sachin.kamat@linaro.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 03/11] iio: adc: ad7791: Use devm_* APIs
-Date: Tue, 23 Jul 2013 14:28:09 +0530
-Message-Id: <1374569897-3858-4-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
-References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <jic23@kernel.org>
+Message-ID: <51ED804E.1000701@kernel.org>
+Date: Mon, 22 Jul 2013 19:56:14 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Oleksandr Kravchenko <x0199363@ti.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, grant.likely@linaro.org,
+ rob.herring@calxeda.com, rob@landley.net, jic23@cam.ac.uk,
+ pmeerw@pmeerw.net, holler@ahsoftware.de, srinivas.pandruvada@intel.com,
+ devicetree-discuss@lists.ozlabs.org, grygorii.strashko@ti.com,
+ Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH v3 1/2] of: Add Avago Technologies vendor prefix
+References: <1374498688-24701-1-git-send-email-x0199363@ti.com>
+In-Reply-To: <1374498688-24701-1-git-send-email-x0199363@ti.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-devm_* APIs are device managed and make code simpler.
+On 07/22/13 14:11, Oleksandr Kravchenko wrote:
+> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+> 
+> This commit adds a device tree vendor prefix for Avago Technologies.
+> 
+> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+applied to the togreg branch of iio.git
+Thanks
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/adc/ad7791.c |   19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
-index 5e8d1da..c202035 100644
---- a/drivers/iio/adc/ad7791.c
-+++ b/drivers/iio/adc/ad7791.c
-@@ -361,21 +361,19 @@ static int ad7791_probe(struct spi_device *spi)
- 		return -ENXIO;
- 	}
- 
--	indio_dev = iio_device_alloc(sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = regulator_get(&spi->dev, "refin");
--	if (IS_ERR(st->reg)) {
--		ret = PTR_ERR(st->reg);
--		goto err_iio_free;
--	}
-+	st->reg = devm_regulator_get(&spi->dev, "refin");
-+	if (IS_ERR(st->reg))
-+		return PTR_ERR(st->reg);
- 
- 	ret = regulator_enable(st->reg);
- 	if (ret)
--		goto error_put_reg;
-+		return ret;
- 
- 	st->info = &ad7791_chip_infos[spi_get_device_id(spi)->driver_data];
- 	ad_sd_init(&st->sd, indio_dev, spi, &ad7791_sigma_delta_info);
-@@ -410,10 +408,6 @@ error_remove_trigger:
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- error_disable_reg:
- 	regulator_disable(st->reg);
--error_put_reg:
--	regulator_put(st->reg);
--err_iio_free:
--	iio_device_free(indio_dev);
- 
- 	return ret;
- }
-@@ -427,9 +421,6 @@ static int ad7791_remove(struct spi_device *spi)
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- 
- 	regulator_disable(st->reg);
--	regulator_put(st->reg);
--
--	iio_device_free(indio_dev);
- 
- 	return 0;
- }
--- 
-1.7.9.5
+> ---
+>  .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index d5a79ca..8aab9c6 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+>  apm	Applied Micro Circuits Corporation (APM)
+>  arm	ARM Ltd.
+>  atmel	Atmel Corporation
+> +avago	Avago Technologies
+>  bosch	Bosch Sensortec GmbH
+>  brcm	Broadcom Corporation
+>  cavium	Cavium, Inc.
+> 
