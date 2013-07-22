@@ -1,50 +1,57 @@
-Return-Path: <x0199363@ti.com>
-From: Oleksandr Kravchenko <x0199363@ti.com>
-To: <jic23@cam.ac.uk>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Oleksandr
- Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH] iio: core: Avoid double minus in sysfs output
-Date: Mon, 22 Jul 2013 13:57:11 +0300
-Message-ID: <1374490631-11924-1-git-send-email-x0199363@ti.com>
+Return-Path: <o.v.kravchenko@globallogic.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <51E9AA6D.3070007@kernel.org>
+References: <1374162430-30709-1-git-send-email-x0199363@ti.com>
+	<51E816BD.9010302@metafoo.de>
+	<CAGH3droXKeE7diARCZQ=n37XkAmYzrcUkyZLvcWjWVLHvJnWVw@mail.gmail.com>
+	<51E9AA6D.3070007@kernel.org>
+Date: Mon, 22 Jul 2013 13:51:19 +0300
+Message-ID: <CAGH3droNOGhbkpz5yqznKVX8HOmT2FimKp0_95JVSpEf7zUAoA@mail.gmail.com>
+Subject: Re: [PATCH] iio: core: Avoid double minus in sysfs output
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Oleksandr Kravchenko <x0199363@ti.com>, jic23@cam.ac.uk,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Please ignore this patch for now. I'll rework it soon. It issues
+warnings when compiling.
 
-This patch fixes the issue with double minus in output when
-reading channels from sysfs for IIO_VAL_INT_PLUS_MICRO and
-IIO_VAL_INT_PLUS_NANO cases. Until this patch if val and val2
-both are negatives output string contains "--" before
-digits. It is result of "-%d..." in sprintf() format.
+On Sat, Jul 20, 2013 at 12:06 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 07/19/2013 07:15 AM, Oleksandr Kravchenko wrote:
+>> On Thu, Jul 18, 2013 at 7:24 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> On 07/18/2013 05:47 PM, Oleksandr Kravchenko wrote:
+>>>> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+>>>>
+>>>> This patch fixes the issue with double minus in output when
+>>>> reading channels from sysfs for IIO_VAL_INT_PLUS_MICRO and
+>>>> IIO_VAL_INT_PLUS_NANO cases. Until this patch if val and val2
+>>>> both are negatives output string contains "--" before
+>>>> digits. It is result of "-%d..." in sprintf() format.
+>>>>
+>>>
+>>> Hm, this might be a bug in a driver that is triggering this. The idea is
+>>> that val2 is only allowed to be negative if val is 0.
+>>>
+>>> - Lars
+>>>
+>> If I calculate val and val2 in next way:
+>> *val = adc / 1000000;
+>> *val2 = adc % 1000000;
+>> both val and val2 could by negative. Do I have to check it in my driver?
+>>
+> I guess it is will happen occasionally.  In the c89 standard, module for a negative
+> is implementation specific.  Anyone know if we can assume this will work in all cases
+> within the kernel?
 
-Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/industrialio-core.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index d56d122..455c24b 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -383,14 +383,14 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 		scale_db = true;
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (val2 < 0)
--			return sprintf(buf, "-%d.%06u%s\n", val, -val2,
--				scale_db ? " dB" : "");
-+			return sprintf(buf, "-%d.%06u%s\n", (int)abs(val),
-+				-val2, scale_db ? " dB" : "");
- 		else
- 			return sprintf(buf, "%d.%06u%s\n", val, val2,
- 				scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
- 		if (val2 < 0)
--			return sprintf(buf, "-%d.%09u\n", val, -val2);
-+			return sprintf(buf, "-%d.%09u\n", (int)abs(val), -val2);
- 		else
- 			return sprintf(buf, "%d.%09u\n", val, val2);
- 	case IIO_VAL_FRACTIONAL:
+
 -- 
-1.7.9.5
+Oleksandr Kravchenko
+GlobalLogic
+P +380633213187
+P +380994930248
+www.globallogic.com
+
+http://www.globallogic.com/email_disclaimer.txt
