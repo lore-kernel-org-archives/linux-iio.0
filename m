@@ -5,147 +5,83 @@ CC: <linux-kernel@vger.kernel.org>, <devicetree-discuss@lists.ozlabs.org>,
 	<alexandre.belloni@free-electrons.com>, <jic23@kernel.org>,
 	<lars@metafoo.de>, <fabio.estevam@freescale.com>, <marex@denx.de>,
 	<hector.palacios@digi.com>
-Subject: [PATCH v3 3/5] iio: mxs-lradc: add scale attribute to channels
-Date: Mon, 22 Jul 2013 16:04:01 +0200
-Message-ID: <1374501843-19651-4-git-send-email-hector.palacios@digi.com>
+Subject: [PATCH v3 2/5] ARM: dts: add reference voltage property for MXS LRADC
+Date: Mon, 22 Jul 2013 16:04:00 +0200
+Message-ID: <1374501843-19651-3-git-send-email-hector.palacios@digi.com>
 In-Reply-To: <1374501843-19651-1-git-send-email-hector.palacios@digi.com>
 References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Some LRADC channels have fixed pre-dividers and all have an optional
-divider by two which allows a maximum input voltage of VDDIO - 50mV.
+Some LRADC channels have fixed pre-dividers so they can measure
+different voltages at full scale. The reference voltage allows to
+expose a scaling attribute through the IIO sysfs so that a user can
+compute the real voltage out of a measured sample value.
 
-This patch
- - adds the scaling info flag to all channels
- - grabs the max reference voltage per channel from DT
-   (where the fixed pre-dividers apply)
- - allows to read the scaling attribute (computed from the Vref)
-
-Signed-off-by: Hector Palacios <hector.palacios@digi.com>.
+Signed-off-by: Hector Palacios <hector.palacios@digi.com>
 Acked-by: Marek Vasut <marex@denx.de>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 77 +++++++++++++++++++++++++------------
- 1 file changed, 53 insertions(+), 24 deletions(-)
+ Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt | 9 ++++++++-
+ arch/arm/boot/dts/imx23.dtsi                                    | 4 ++++
+ arch/arm/boot/dts/imx28.dtsi                                    | 4 ++++
+ 3 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 56667da..5037577 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -141,6 +141,8 @@ struct mxs_lradc {
+diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+index 4688205..6ec485c 100644
+--- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
++++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+@@ -1,9 +1,12 @@
+ * Freescale i.MX28 LRADC device driver
  
- 	struct completion	completion;
+ Required properties:
+-- compatible: Should be "fsl,imx28-lradc"
++- compatible: "fsl,imx28-lradc", "fsl,imx23-lradc"
+ - reg: Address and length of the register set for the device
+ - interrupts: Should contain the LRADC interrupts
++- fsl,vref: Reference voltage (in mV) for each LRADC channel. This is the
++	    maximum voltage that can be measured at full scale in each channel
++	    considering fixed pre-dividers.
  
-+	uint32_t		vref_mv[LRADC_MAX_TOTAL_CHANS];
-+
- 	/*
- 	 * Touchscreen LRADC channels receives a private slot in the CTRL4
- 	 * register, the slot #7. Therefore only 7 slots instead of 8 in the
-@@ -228,33 +230,12 @@ struct mxs_lradc {
- #define LRADC_RESOLUTION			12
- #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+ Optional properties:
+ - fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+@@ -18,4 +21,8 @@ Examples:
+ 		reg = <0x80050000 0x2000>;
+ 		interrupts = <10 14 15 16 17 18 19
+ 				20 21 22 23 24 25>;
++		fsl,vref = <1850 1850 1850 1850
++			    1850 1850 1850 7400
++			    1850 1850 3700 1850
++			    3700 1850 1850 7400>
+ 	};
+diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
+index 587ceef..e212902 100644
+--- a/arch/arm/boot/dts/imx23.dtsi
++++ b/arch/arm/boot/dts/imx23.dtsi
+@@ -430,6 +430,10 @@
+ 				compatible = "fsl,imx23-lradc";
+ 				reg = <0x80050000 0x2000>;
+ 				interrupts = <36 37 38 39 40 41 42 43 44>;
++				fsl,vref = <1850 1850 1850 1850
++					    1850 1850 3700 7400
++					    1850 1850 1850 1850
++					    1850 1850 1850 7400>;
+ 				status = "disabled";
+ 			};
  
--/*
-- * Raw I/O operations
-- */
--static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
--			const struct iio_chan_spec *chan,
--			int *val, int *val2, long m)
-+static int mxs_lradc_read_single(struct iio_dev *iio_dev,
-+				 const struct iio_chan_spec *chan, int *val)
- {
- 	struct mxs_lradc *lradc = iio_priv(iio_dev);
- 	int ret;
+diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
+index 6a8acb0..c1b3724 100644
+--- a/arch/arm/boot/dts/imx28.dtsi
++++ b/arch/arm/boot/dts/imx28.dtsi
+@@ -865,6 +865,10 @@
+ 				reg = <0x80050000 0x2000>;
+ 				interrupts = <10 14 15 16 17 18 19
+ 						20 21 22 23 24 25>;
++				fsl,vref = <1850 1850 1850 1850
++					    1850 1850 1850 7400
++					    1850 1850 3700 1850
++					    3700 1850 1850 7400>;
+ 				status = "disabled";
+ 			};
  
--	if (m != IIO_CHAN_INFO_RAW)
--		return -EINVAL;
--
--	/* Check for invalid channel */
--	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
--		return -EINVAL;
--
--	/*
--	 * See if there is no buffered operation in progess. If there is, simply
--	 * bail out. This can be improved to support both buffered and raw IO at
--	 * the same time, yet the code becomes horribly complicated. Therefore I
--	 * applied KISS principle here.
--	 */
--	ret = mutex_trylock(&lradc->lock);
--	if (!ret)
--		return -EBUSY;
--
- 	INIT_COMPLETION(lradc->completion);
- 
- 	/*
-@@ -293,6 +274,47 @@ err:
- 	writel(LRADC_CTRL1_LRADC_IRQ_EN(0),
- 		lradc->base + LRADC_CTRL1 + STMP_OFFSET_REG_CLR);
- 
-+	return ret;
-+}
-+
-+/*
-+ * Raw I/O operations
-+ */
-+static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-+			const struct iio_chan_spec *chan,
-+			int *val, int *val2, long m)
-+{
-+	struct mxs_lradc *lradc = iio_priv(iio_dev);
-+	int ret;
-+
-+	/*
-+	 * See if there is no buffered operation in progress. If there is, simply
-+	 * bail out. This can be improved to support both buffered and raw IO at
-+	 * the same time, yet the code becomes horribly complicated. Therefore I
-+	 * applied KISS principle here.
-+	 */
-+	ret = mutex_trylock(&lradc->lock);
-+	if (!ret)
-+		return -EBUSY;
-+
-+	/* Check for invalid channel */
-+	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-+		ret = -EINVAL;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = mxs_lradc_read_single(iio_dev, chan, val);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = lradc->vref_mv[chan->channel];
-+		*val2 = chan->scan_type.realbits;
-+		ret = IIO_VAL_FRACTIONAL_LOG2;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
- 	mutex_unlock(&lradc->lock);
- 
- 	return ret;
-@@ -817,7 +839,8 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
- 	.type = (chan_type),					\
- 	.indexed = 1,						\
- 	.scan_index = (idx),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+			      BIT(IIO_CHAN_INFO_SCALE),		\
- 	.channel = (idx),					\
- 	.scan_type = {						\
- 		.sign = 'u',					\
-@@ -956,6 +979,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 			goto err_addr;
- 	}
- 
-+	/* Grab Vref array from DT */
-+	ret = of_property_read_u32_array(node, "fsl,vref", lradc->vref_mv,
-+					 LRADC_MAX_TOTAL_CHANS);
-+	if (ret)
-+		goto err_addr;
-+
- 	platform_set_drvdata(pdev, iio);
- 
- 	init_completion(&lradc->completion);
