@@ -1,139 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45083 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757878Ab3GZQNK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jul 2013 12:13:10 -0400
-In-Reply-To: <51F276D8.9090906@free-electrons.com>
-References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-5-git-send-email-hector.palacios@digi.com> <51EE4300.7070802@metafoo.de> <51EE8445.6070603@digi.com> <51F276D8.9090906@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Hector Palacios <hector.palacios@digi.com>
 Subject: Re: [PATCH v3 4/5] iio: mxs-lradc: add scale_available file to channels
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 26 Jul 2013 17:13:02 +0100
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Hector Palacios <hector.palacios@digi.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>,
-	"marex@denx.de" <marex@denx.de>
-Message-ID: <d838f30e-30ca-49ca-a9f3-ebf4e523c7eb@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Tue, 23 Jul 2013 00:36:41 +0200
+Cc: linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ devicetree-discuss@lists.ozlabs.org,
+ alexandre.belloni@free-electrons.com,
+ jic23@kernel.org,
+ lars@metafoo.de,
+ fabio.estevam@freescale.com
+References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-5-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <1374501843-19651-5-git-send-email-hector.palacios@digi.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201307230036.42046.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
+
+Dear Hector Palacios,
+
+> Adds in_voltageX_scale_available file for every channel to read
+> the different available scales.
+> There are two scales per channel:
+>  [0] = divider_by_two disabled (default)
+>  [1] = divider_by_two enabled
+> The scale is a struct made of integer and nano parts to build
+> a long decimal number.
+> 
+> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> ---
+
+[...]
+
+> @@ -1008,6 +1098,26 @@ static int mxs_lradc_probe(struct platform_device
+> *pdev) if (ret)
+>  		goto err_trig;
+> 
+> +	/* Populate available ADC input ranges */
+> +	for (i = 0; i < LRADC_MAX_TOTAL_CHANS; i++) {
+> +		for (s = 0; s < ARRAY_SIZE(lradc->scale_avail[i]); s++) {
+> +			/*
+> +			 * [s=0] = optional divider by two disabled (default)
+> +			 * [s=1] = optional divider by two enabled
+> +			 *
+> +			 * The scale is calculated by doing:
+> +			 *   Vref >> (realbits - s)
+> +			 * which multiplies by two on the second component
+> +			 * of the array.
+> +			 */
+> +			scale_uv = ((u64)lradc->vref_mv[i] * 100000000) >>
+> +				   (iio->channels[i].scan_type.realbits - s);
+
+Thinking about this, this is basically
+
+            vref_mv[CHANNEL] * 100 000 000
+scale_uv = --------------------------------
+                      2^(12 - s)
+
+Where s can be either 0 or 1.
+
+Why do you multiply it by 100000000 I don't quite understand, but maybe it's 
+fully obvious. It should be documented though.
 
 
 
-Alexandre Belloni <alexandre.belloni@free-electrons.com> wrote:
->On 23/07/2013 15:25, Hector Palacios wrote:
->> Dear Lars,
->>
->> On 07/23/2013 10:46 AM, Lars-Peter Clausen wrote:
->>> On 07/22/2013 04:04 PM, Hector Palacios wrote:
->>> [...]
->>>>
->>>> +static ssize_t mxs_lradc_show_scale_available_ch(struct device
->*dev,
->>>> +        struct device_attribute *attr,
->>>> +        char *buf,
->>>> +        int ch)
->>>> +{
->>>> +    struct iio_dev *iio = dev_to_iio_dev(dev);
->>>> +    struct mxs_lradc *lradc = iio_priv(iio);
->>>> +    int i, len = 0;
->>>> +
->>>> +    for (i = 0; i < ARRAY_SIZE(lradc->scale_avail[ch]); i++)
->>>> +        len += sprintf(buf + len, "%d.%09u ",
->>>> +                   lradc->scale_avail[ch][i].integer,
->>>> +                   lradc->scale_avail[ch][i].nano);
->>>> +
->>>> +    len += sprintf(buf + len, "\n");
->>>> +
->>>> +    return len;
->>>> +}
->>>> +
->>>> +static ssize_t mxs_lradc_show_scale_available(struct device *dev,
->>>> +        struct device_attribute *attr,
->>>> +        char *buf)
->>>> +{
->>>> +    struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
->>>> +
->>>> +    return mxs_lradc_show_scale_available_ch(dev, attr, buf,
->>>> +                         iio_attr->address);
->>>> +}
->>>> +
->>>> +#define SHOW_SCALE_AVAILABLE_ATTR(ch)                    \
->>>> +static IIO_DEVICE_ATTR(in_voltage##ch##_scale_available, S_IRUGO, 
->  \
->>>> +               mxs_lradc_show_scale_available, NULL, ch)
->>>> +
->>>> +SHOW_SCALE_AVAILABLE_ATTR(0);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(1);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(2);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(3);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(4);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(5);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(6);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(7);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(8);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(9);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(10);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(11);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(12);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(13);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(14);
->>>> +SHOW_SCALE_AVAILABLE_ATTR(15);
->>>> +
->>>> +static struct attribute *mxs_lradc_attributes[] = {
->>>> +    &iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage1_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage2_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage3_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage4_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage5_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage6_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage7_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage8_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage9_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage10_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage11_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage12_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage13_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage14_scale_available.dev_attr.attr,
->>>> +    &iio_dev_attr_in_voltage15_scale_available.dev_attr.attr,
->>>> +    NULL
->>>> +};
->>>
->>> This should really be using the iio_chan_spec_ext_info
->>> infrastructure. Bonus
->>> points for factoring out the common code used to calculate and
->>> display the
->>> scales.
->>
->> I perfectly understand. Sadly, I don't currently have the time and
->> expertise to try to work this out the proper way. It already took
->much
->> longer than expected to have this driver toggle a divider flag.
->>
->> I'd appreciate if anyone wishes to complete this job.
->> @Alexander, please feel free to submit your other temp patch without
->> waiting for this one.
->>
->
->Maybe, we can get the patch set as is and do further clean up later.
->Anyway, that driver is still in staging, right ?
->
->As said, I'm willing to propose something for the scale calculation.
+> +			lradc->scale_avail[i][s].nano =
+> +					do_div(scale_uv, 100000000) * 10;
 
-My thoughts exactly. Long term plans include generic handling of available attributes for the whole of IIO.
+Are we not loosing precission here?
 
-It will take me a little while to catch up my backlog though!
+> +			lradc->scale_avail[i][s].integer = scale_uv;
+> +		}
+> +	}
+> +
+>  	/* Configure the hardware. */
+>  	mxs_lradc_hw_init(lradc);
 
-Jonathan
-
-
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+Best regards,
+Marek Vasut
