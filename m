@@ -1,85 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53456 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751287Ab3G0Kbm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Jul 2013 06:31:42 -0400
-Message-ID: <51F3AFA0.2010802@kernel.org>
-Date: Sat, 27 Jul 2013 12:31:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, patches@linaro.org,
-	Laxman Dewangan <ldewangan@nvidia.com>
-Subject: Re: [PATCH 8/8] staging: iio: light: isl29028: Use devm_iio_device_alloc
-References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org> <1374490981-24373-9-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1374490981-24373-9-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	patches@linaro.org,
+	Rhyland Klein <rklein@nvidia.com>
+Subject: [PATCH 7/8] staging: iio: light: isl29018: Use devm_iio_device_alloc
+Date: Mon, 22 Jul 2013 16:33:00 +0530
+Message-Id: <1374490981-24373-8-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374490981-24373-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/22/13 12:03, Sachin Kamat wrote:
-> Using devm_iio_device_alloc makes code simpler.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Laxman Dewangan <ldewangan@nvidia.com>
-Applied to the togreg branch of iio.git
+Using devm_iio_device_alloc makes code simpler.
 
-Thanks for all of these.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Rhyland Klein <rklein@nvidia.com>
+---
+ drivers/staging/iio/light/isl29018.c |   16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-> ---
->  drivers/staging/iio/light/isl29028.c |   13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index 8bb0d03..6014625 100644
-> --- a/drivers/staging/iio/light/isl29028.c
-> +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -482,7 +482,7 @@ static int isl29028_probe(struct i2c_client *client,
->  	struct iio_dev *indio_dev;
->  	int ret;
->  
-> -	indio_dev = iio_device_alloc(sizeof(*chip));
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
->  	if (!indio_dev) {
->  		dev_err(&client->dev, "iio allocation fails\n");
->  		return -ENOMEM;
-> @@ -498,13 +498,13 @@ static int isl29028_probe(struct i2c_client *client,
->  	if (IS_ERR(chip->regmap)) {
->  		ret = PTR_ERR(chip->regmap);
->  		dev_err(chip->dev, "regmap initialization failed: %d\n", ret);
-> -		goto exit_iio_free;
-> +		return ret;
->  	}
->  
->  	ret = isl29028_chip_init(chip);
->  	if (ret < 0) {
->  		dev_err(chip->dev, "chip initialization failed: %d\n", ret);
-> -		goto exit_iio_free;
-> +		return ret;
->  	}
->  
->  	indio_dev->info = &isl29028_info;
-> @@ -517,13 +517,9 @@ static int isl29028_probe(struct i2c_client *client,
->  	if (ret < 0) {
->  		dev_err(chip->dev, "iio registration fails with error %d\n",
->  			ret);
-> -		goto exit_iio_free;
-> +		return ret;
->  	}
->  	return 0;
-> -
-> -exit_iio_free:
-> -	iio_device_free(indio_dev);
-> -	return ret;
->  }
->  
->  static int isl29028_remove(struct i2c_client *client)
-> @@ -531,7 +527,6 @@ static int isl29028_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
->  	iio_device_unregister(indio_dev);
-> -	iio_device_free(indio_dev);
->  	return 0;
->  }
->  
-> 
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 82478a5..351936c 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -550,11 +550,10 @@ static int isl29018_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	int err;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*chip));
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+ 	if (indio_dev == NULL) {
+ 		dev_err(&client->dev, "iio allocation fails\n");
+-		err = -ENOMEM;
+-		goto exit;
++		return -ENOMEM;
+ 	}
+ 	chip = iio_priv(indio_dev);
+ 
+@@ -572,12 +571,12 @@ static int isl29018_probe(struct i2c_client *client,
+ 	if (IS_ERR(chip->regmap)) {
+ 		err = PTR_ERR(chip->regmap);
+ 		dev_err(chip->dev, "regmap initialization failed: %d\n", err);
+-		goto exit;
++		return err;
+ 	}
+ 
+ 	err = isl29018_chip_init(chip);
+ 	if (err)
+-		goto exit_iio_free;
++		return err;
+ 
+ 	indio_dev->info = &isl29108_info;
+ 	indio_dev->channels = isl29018_channels;
+@@ -588,14 +587,10 @@ static int isl29018_probe(struct i2c_client *client,
+ 	err = iio_device_register(indio_dev);
+ 	if (err) {
+ 		dev_err(&client->dev, "iio registration fails\n");
+-		goto exit_iio_free;
++		return err;
+ 	}
+ 
+ 	return 0;
+-exit_iio_free:
+-	iio_device_free(indio_dev);
+-exit:
+-	return err;
+ }
+ 
+ static int isl29018_remove(struct i2c_client *client)
+@@ -604,7 +599,6 @@ static int isl29018_remove(struct i2c_client *client)
+ 
+ 	dev_dbg(&client->dev, "%s()\n", __func__);
+ 	iio_device_unregister(indio_dev);
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
