@@ -1,79 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36280 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756936Ab3GQTMo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 15:12:44 -0400
-In-Reply-To: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
-References: <CAP9ODKq7TkBnpQSvwMRT0Cdy5wwfDGZ3E0ddP5vHkEgmskbcyg@mail.gmail.com>
+Return-Path: <Hector.Palacios@digi.com>
+Message-ID: <51ECE6E0.1030509@digi.com>
+Date: Mon, 22 Jul 2013 10:01:36 +0200
+From: Hector Palacios <hector.palacios@digi.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: ADC setting for differential and single-ended channels
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 17 Jul 2013 20:12:41 +0100
-To: Otavio Salvador <otavio@ossystems.com.br>,
-	linux-iio@vger.kernel.org, Mario Goulart <mario@ossystems.com.br>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Marek Vasut <marex@denx.de>
-Message-ID: <814feb73-b2b3-4f23-8066-4221b75ac0b9@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Marek Vasut <marex@denx.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>, "alexandre.belloni@free-electrons.com"
+	<alexandre.belloni@free-electrons.com>, "lars@metafoo.de" <lars@metafoo.de>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v2 5/5] iio: mxs-lradc: add write_raw function to modify
+ scale
+References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <1374225208-28940-6-git-send-email-hector.palacios@digi.com> <201307191639.01240.marex@denx.de> <51E95BEC.5080703@digi.com> <51E9A240.3000108@kernel.org>
+In-Reply-To: <51E9A240.3000108@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
+Hi Jonathan,
 
+On 07/19/2013 10:32 PM, Jonathan Cameron wrote:
+>>>> @@ -323,6 +326,54 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>>>        return ret;
+>>>>    }
+>>>>
+>>>> +static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
+>>>> +                   const struct iio_chan_spec *chan,
+>>>> +                   int val, int val2, long m)
+>>>> +{
+>>>> +    struct mxs_lradc *lradc = iio_priv(iio_dev);
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = mutex_trylock(&lradc->lock);
+>>>> +    if (!ret)
+>>>> +        return -EBUSY;
+>>>> +
+>>>> +    switch (m) {
+>>>> +    case IIO_CHAN_INFO_SCALE:
+>>>> +        ret = -EINVAL;
+>>>> +        if (val == lradc->scale_avail[chan->channel][0][0] &&
+>>>> +            val2 == lradc->scale_avail[chan->channel][0][1]) {
+>>>> +            /* [0] -> divider by two disabled */
+>>>
+>>> This comment is confusing, you use [0] in different dimensions of the array. So
+>>> is the stuff below.
+>>>
+>>> Still, how does this even work, can you show me and example how to set the
+>>> divider from userland ? Sorry, I'm a bit confused with this 3D-business here,
+>>> even if the comment in previous patch made it a bit clearer. Actually you can
+>>> use some #define to specify if you're accessing div/2 or div/1 portion of the
+>>> array to make it more readable.
+>>>
+>>> Like ... scale_avail[chan->channel][LRADC_DIV_BY_2][LRADC_DECIMAL_PART] ...
+>>> would by nice.
+>>
+>> Agreed.
+> Could even make the int + nano part a structure then you could have
+> scale_avail[chan->channel][LRADC_DIV_BY_2].integer / .nano
+>
+> might not be worth the hassel though for the slight gain in readability.
+>
+> I'm happy either way.
 
-Otavio Salvador <otavio@ossystems.com.br> wrote:
->Hello,
->
->Mario and I are working at TI ADS124x driver and this chip can be used
->in two ways:
->
->In case of ADS1247:
->
-> - 2 differential channels
-> - 3 single-ended channels
->
->In the first case it take two inputs and the chip returns the
->difference between them; in the second case it does the same but you
->must choose one channel to be the negative reference for all the other
->inputs. This is how we understood the datasheet however the
->single-ended use is quite confusing on it so we might be wrong.
->
->So we'd like to know the best way to handle those cases in the driver.
->One alternative we discussed is to use two attributes in the dts as:
->
-> ...
-> #channels = <2>;
-> channels = <0 3
->                    1 2>;
->
->So it'd take two channels. One composed by input 0 and input 3 and
->another composed by input 1 and input 2.
->
->On the another case, we'd use:
->
->  ...
->  #channels = <3>
->  channels = <0 3
->                     1 3
->                     2 3>;
->
->So it'd take three channels and all them comparing to input 3.
->
->Are we in the right route? Any hints how to better solve this?
+I prefer the struct approach, it removes one dimension to the array and I find it cleaner.
 
-Another option is to leave it entirely up to user space.  See max1363 driver where both single ended and differential channels are supported at the same time with care taken in buffered mode.
-
-Not sure if that works for your case?
->
->Regards,
->
->--
->Otavio Salvador                             O.S. Systems
->http://www.ossystems.com.br        http://projetos.ossystems.com.br
->Mobile: +55 (53) 9981-7854            Mobile: +1 (347) 903-9750
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+Best regards,
+--
+Hector Palacios
