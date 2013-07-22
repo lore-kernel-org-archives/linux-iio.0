@@ -1,93 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta12.messagelabs.com ([216.82.251.1]:54526 "EHLO
-	mail1.bemta12.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755186Ab3GVHqf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 03:46:35 -0400
-Message-ID: <51ECE34E.7050904@digi.com>
-Date: Mon, 22 Jul 2013 09:46:22 +0200
-From: Hector Palacios <hector.palacios@digi.com>
+Received: from mail-ee0-f51.google.com ([74.125.83.51]:46705 "EHLO
+	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756968Ab3GVIhD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2013 04:37:03 -0400
+Received: by mail-ee0-f51.google.com with SMTP id e52so3597774eek.38
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jul 2013 01:37:01 -0700 (PDT)
+Date: Mon, 22 Jul 2013 09:36:51 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Cc: sameo@linux.intel.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+	koen@dominion.thruhere.net
+Subject: Re: [PATCH 3/4] MFD: ti_tscadc: ADC Clock check not required
+Message-ID: <20130722083651.GF4681@laptop>
+References: <1374337656-6393-1-git-send-email-zubair.lutfullah@gmail.com>
+ <1374337656-6393-4-git-send-email-zubair.lutfullah@gmail.com>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	"alexandre.belloni@free-electrons.com"
-	<alexandre.belloni@free-electrons.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>
-Subject: Re: [PATCH v2 3/5] iio: mxs-lradc: add scale attribute to channels
-References: <1374225208-28940-1-git-send-email-hector.palacios@digi.com> <201307191814.15491.marex@denx.de> <51ECDD9F.4080506@digi.com> <201307220942.08990.marex@denx.de>
-In-Reply-To: <201307220942.08990.marex@denx.de>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1374337656-6393-4-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Marek,
+On Sat, 20 Jul 2013, Zubair Lutfullah wrote:
 
-On 07/22/2013 09:42 AM, Marek Vasut wrote:
-> Dear Hector Palacios,
->
->> Hi Marek,
->>
->> On 07/19/2013 06:14 PM, Marek Vasut wrote:
->>> Dear Hector Palacios,
->>>
->>>> Dear Marek,
->>>>
->>>> On 07/19/2013 04:30 PM, Marek Vasut wrote:
->>>>>> @@ -228,39 +230,12 @@ struct mxs_lradc {
->>>>>>
->>>>>>     #define LRADC_RESOLUTION			12
->>>>>>     #define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION)
-> - 1)
->>>>>>
->>>>>> -/*
->>>>>> - * Raw I/O operations
->>>>>> - */
->>>>>> -static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>>>>> +static int mxs_lradc_read_single(struct iio_dev *iio_dev,
->>>>>>
->>>>>>     			const struct iio_chan_spec *chan,
->>>>>>     			int *val, int *val2, long m)
->>>>>>
->>>>>>     {
->>>>>>
->>>>>>     	struct mxs_lradc *lradc = iio_priv(iio_dev);
->>>>>>     	int ret;
->>>>>>
->>>>>> -	unsigned long mask;
->>>>>> -
->>>>>> -	if (m != IIO_CHAN_INFO_RAW)
->>>>>> -		return -EINVAL;
->>>>>> -
->>>>>> -	/* Check for invalid channel */
->>>>>> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
->>>>>> -		return -EINVAL;
->>>>>
->>>>> This was already resolved, so this patch won't apply I'm afraid.
->>>>
->>>> You mean the 'unsigned long mask', right?  Yeah, I think I had resolved
->>>> that one before submitting, but looks like I didn't.
->>>> The other check is not resolved afaik. We agreed to remove it, but on a
->>>> different patch.
->>>
->>> I mean the other check, yeah. A patch removing that should be applied
->>> already.
->>
->> Where exactly? It's not fixed in Jonathan's fixes-togreg branch, at least.
->> Did you fixed it?
->
-> I use linux-next [1], should be it.
->
-> http://git.kernel.org/cgit/linux/kernel/git/next/linux-
-> next.git/log/drivers/staging/iio/adc/mxs-lradc.c
+> From: "Patil, Rachna" <rachna@ti.com>
+> 
+> ADC is ideally expected to work at a frequency of 3MHz.
+> The present code had a check, which returned error if the frequency
+> went below the threshold  value. But since AM335x supports various
+> working frequencies, this check is not required.
+> Now the code just uses the internal ADC clock divider to set the ADC
+> frequency w.r.t the sys clock.
+> 
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+> ---
+>  drivers/mfd/ti_am335x_tscadc.c       |    6 +-----
+>  include/linux/mfd/ti_am335x_tscadc.h |    1 -
+>  2 files changed, 1 insertion(+), 6 deletions(-)
 
-That is removing the unsigned long mask, but not the check for invalid channel.
-I'm taking care of the unsigned long mask but an additional patch is needed to remove 
-the check for invalid channel.
+Applied, thanks.
 
-Best regards,
---
-Hector Palacios
+-- 
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
