@@ -1,54 +1,94 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	koen@dominion.thruhere.net
-Subject: [PATCH 00/15] iio: ti_am335x_adc: Add continuous mode take 2
-Date: Thu, 18 Jul 2013 23:21:11 +0100
-Message-Id: <1374186086-5015-1-git-send-email-zubair.lutfullah@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:36934 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750876Ab3GVMXr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 22 Jul 2013 08:23:47 -0400
+From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+To: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
+	<peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<lars@metafoo.de>, <sameo@linux.intel.com>,
+	<ch.naveen@samsung.com>, <poeschel@lemonage.de>, <milo.kim@ti.com>,
+	<balajitk@ti.com>, <gg@slimlogic.co.uk>
+CC: <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-omap@vger.kernel.org>
+Subject: [PATCH v7 0/2] TWL6030, TWL6032 GPADC driver
+Date: Mon, 22 Jul 2013 15:22:50 +0300
+Message-ID: <1374495772-17758-1-git-send-email-oleksandr.kozaruk@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Patches now give correct authorship.
+Hello,
 
-and checkpatch.pl issues are checked for each patch.
+v7 - addressed clean up comments, removed test channels
+v6 - addressed comments about trim bits, checkpatch clean up
+v5 - gpadc DT node renamed from "gpadc" to generic "adc", added
+     temperature channels; raw code is corracted with calibration
+     data.
+v4 - addressed comments: fixed style violation, bug in freeing memory,
+     added comments explaining calibration method, removed test network
+     channels from exposing to userspace, error handling for 
+     wait_for_complition
+v3 - fixed compiler warning
+v2 - the driver put in drivers/iio, and
+converted using iio facilities as suggested by Graeme.
 
-I hope the actual code bashing can begin now.
+TWL603[02] GPADC is used to measure battery voltage,
+battery temperature, battery presence ID, and could
+be used to measure twl603[02] die temperature.
+This is used on TI blaze, blaze tablet platforms.
 
-A series of patches that add continuous sampling support
-for the adc drivers for the am335x.
+The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
+channels respectively. Some channels have current
+source and are used for measuring voltage drop
+on resistive load for detecting battery ID resistance,
+or measuring voltage drop on NTC resistors for external
+temperature measurements, other channels measure voltage,
+(i.e. battery voltage), and have inbuilt voltage dividers,
+thus, capable to scale voltage. Some channels are dedicated
+for measuring die temperature.
 
-These apply on top of mfd-next after the recent set of patches
-on this driver by Sebastian Andrzej Siewior
+Some channels could be calibrated in 2 points, having
+offsets from ideal values in trim registers.
 
-Tested on the Beaglebone Black running 3.11
+The difference between GPADC in TWL6030 and TWL6032:
+- 10 bit vs 12 bit ADC;
+- 17 vs 19 channels;
+- channels have different purpose(i. e. battery voltage
+  channel 8 vs channel 18);
+- trim values are interpreted differently.
 
-Patil, Rachna (5):
-  MFD: ti_tscadc: disable TSC config registers in adc mode
-  iio: ti_am335x_adc: Fix wrong samples received on 1st read
-  input: ti_tsc: Enable shared IRQ for TSC
-  iio: mfd: input: ti_am335x_adc:Add support for continuous mode
-  MFD: ti_tscadc: ADC Clock check not required
+The driver is derived from git://git.omapzoom.org/kernel/omap.git
+The original driver's authors and contributors are Balaji T K,
+Graeme Gregory, Ambresh K, Girish S Ghongdemath.
 
-Russ Dill (10):
-  iio: ti_am335x_adc: Handle set to clear IRQENABLE
-  iio: ti_am335x_adc: Handle set to clear IRQSTATUS
-  iio: ti_am335x_adc: Handle overrun before threshold event
-  iio: ti_am335x_adc: Avoid double threshold event
-  iio: ti_am335x_adc: Also clear threshold event when clearing overrun
-    event
-  iio: ti_am335x_adc: Print error and handle short FIFO events
-  iio: ti_am335x_adc: Fix allocation count of FIFO buffer.
-  iio: ti_am335x_adc: Fix capture operation during resume
-  iio: ti_am335x_adc: Reset and clear overrun status before capture
-  iio: ti_am335x_adc: Properly handle out of memory situation.
+The changes to the original driver:
+- device tree adaptation;
+- drop ioctl support - never been used;
+- unified measurement method for both devices;
+- get rid of "if (device == X)" code style to data driven;
+- drop polling end of conversion and use interrupt instead;
+- iio framework is used
 
- drivers/iio/adc/ti_am335x_adc.c           |  354 +++++++++++++++++++++++++----
- drivers/input/touchscreen/ti_am335x_tsc.c |   17 +-
- drivers/mfd/ti_am335x_tscadc.c            |   30 ++-
- include/linux/mfd/ti_am335x_tscadc.h      |   27 ++-
- 4 files changed, 366 insertions(+), 62 deletions(-)
+Tested with on blaze tablet 2 with OMAP4430(twl6030), and
+OMAP4470(twl6032) SOMs.
+
+The patches were tested against 3.11-rc2
+
+Oleksandr Kozaruk (2):
+  ARM: dts: twl: Add GPADC data to device tree
+  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+
+ arch/arm/boot/dts/twl6030.dtsi  |   6 +
+ drivers/iio/adc/Kconfig         |  14 +
+ drivers/iio/adc/Makefile        |   1 +
+ drivers/iio/adc/twl6030-gpadc.c | 981 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1002 insertions(+)
+ create mode 100644 drivers/iio/adc/twl6030-gpadc.c
 
 -- 
-1.7.9.5
+1.8.1.2
+
