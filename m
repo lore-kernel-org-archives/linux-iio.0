@@ -1,127 +1,83 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Tue, 23 Jul 2013 13:52:42 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@cam.ac.uk>
-Subject: Re: [PATCH 2/2] staging: iio: replace strict_strto*() with kstrto*()
-Message-ID: <20130723105242.GP5585@mwanda>
-References: <001d01ce878e$0e76b710$2b642530$@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <001d01ce878e$0e76b710$2b642530$@samsung.com>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: [PATCH 02/11] iio: adc: ad7476: Use devm_* APIs
+Date: Tue, 23 Jul 2013 14:28:08 +0530
+Message-Id: <1374569897-3858-3-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jul 23, 2013 at 07:19:03PM +0900, Jingoo Han wrote:
-> The usage of strict_strto*() is not preferred, because
-> strict_strto*() is obsolete. Thus, kstrto*() should be
-> used.
+devm_* APIs are device managed and make code simpler.
 
-In olden times there was just strict_strtol() and strict_strtoul().
-These days we have kstrtou8() and kstrtoint() and a bunch of others.
-So when you do these patches you have to take more time to consider
-what type we should be using and update the surrounding code.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+---
+ drivers/iio/adc/ad7476.c |   26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-I haven't reviewed all of these so please check everything again.
-
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 6330af6..afe191a 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -326,7 +326,7 @@ static ssize_t ad5933_store_frequency(struct device *dev,
->  	long val;
->  	int ret;
->  
-> -	ret = strict_strtoul(buf, 10, &val);
-> +	ret = kstrtoul(buf, 10, &val);
-
-This bug is in the original code as well.  "val" is long but it
-should be unsigned long.  Later we check that:
-
-	if (val > AD5933_MAX_OUTPUT_FREQ_Hz) {
-
-Forgetting that "val" could be a negative number.
-
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index e5943e2..fbb230a 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -188,7 +188,7 @@ static ssize_t ade7753_write_8bit(struct device *dev,
->  	int ret;
->  	long val;
->  
-> -	ret = strict_strtol(buf, 10, &val);
-> +	ret = kstrtol(buf, 10, &val);
-
-For these we should be using the new kstrtou8() functions.
-
->  	if (ret)
->  		goto error_ret;
->  	ret = ade7753_spi_write_reg_8(dev, this_attr->address, val);
-> @@ -206,7 +206,7 @@ static ssize_t ade7753_write_16bit(struct device *dev,
->  	int ret;
->  	long val;
->  
-> -	ret = strict_strtol(buf, 10, &val);
-> +	ret = kstrtol(buf, 10, &val);
-
-Same.
-
->  	if (ret)
->  		goto error_ret;
->  	ret = ade7753_spi_write_reg_16(dev, this_attr->address, val);
-> @@ -418,7 +418,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
->  	int ret;
->  	u16 reg, t;
->  
-> -	ret = strict_strtol(buf, 10, &val);
-> +	ret = kstrtol(buf, 10, &val);
->  	if (ret)
->  		return ret;
->  	if (val == 0)
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 7b6503b..ea337c4 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -188,7 +188,7 @@ static ssize_t ade7754_write_8bit(struct device *dev,
->  	int ret;
->  	long val;
->  
-> -	ret = strict_strtol(buf, 10, &val);
-> +	ret = kstrtol(buf, 10, &val);
-
-Same.
-
->  	if (ret)
->  		goto error_ret;
->  	ret = ade7754_spi_write_reg_8(dev, this_attr->address, val);
-> @@ -206,7 +206,7 @@ static ssize_t ade7754_write_16bit(struct device *dev,
->  	int ret;
->  	long val;
->  
-> -	ret = strict_strtol(buf, 10, &val);
-> +	ret = kstrtol(buf, 10, &val);
-
-Same.
-
->  	if (ret)
->  		goto error_ret;
->  	ret = ade7754_spi_write_reg_16(dev, this_attr->address, val);
-> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> @@ -56,7 +56,7 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
->  	unsigned long val;
->  	int ret;
->  
-> -	ret = strict_strtoul(buf, 10, &val);
-> +	ret = kstrtoul(buf, 10, &val);
-
-For this one we should make "val" an int.
-
->  	if (ret)
->  		goto error_ret;
->  
-
-regards,
-dan carpenter
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 2e98bef4..6d2b1d8 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -213,24 +213,21 @@ static int ad7476_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*st));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
+ 	st = iio_priv(indio_dev);
+ 	st->chip_info =
+ 		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+-	st->reg = regulator_get(&spi->dev, "vcc");
+-	if (IS_ERR(st->reg)) {
+-		ret = PTR_ERR(st->reg);
+-		goto error_free_dev;
+-	}
++	st->reg = devm_regulator_get(&spi->dev, "vcc");
++	if (IS_ERR(st->reg))
++		return PTR_ERR(st->reg);
+ 
+ 	ret = regulator_enable(st->reg);
+ 	if (ret)
+-		goto error_put_reg;
++		return ret;
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+ 
+@@ -268,12 +265,7 @@ error_ring_unregister:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ error_disable_reg:
+ 	regulator_disable(st->reg);
+-error_put_reg:
+-	regulator_put(st->reg);
+-error_free_dev:
+-	iio_device_free(indio_dev);
+ 
+-error_ret:
+ 	return ret;
+ }
+ 
+@@ -285,8 +277,6 @@ static int ad7476_remove(struct spi_device *spi)
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 	regulator_disable(st->reg);
+-	regulator_put(st->reg);
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
