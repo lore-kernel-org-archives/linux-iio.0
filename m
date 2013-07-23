@@ -1,63 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41342 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753130Ab3GPIbQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jul 2013 04:31:16 -0400
-Message-ID: <51E504D2.5030000@kernel.org>
-Date: Tue, 16 Jul 2013 09:31:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org,
-	linux-sh@vger.kernel.org
-Subject: Re: Help with fitting unusual devices into IIO framework
-References: <51E46F7A.9020400@cogentembedded.com>
-In-Reply-To: <51E46F7A.9020400@cogentembedded.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: [PATCH 01/11] iio: adc: ad7298: Use devm_* APIs
+Date: Tue, 23 Jul 2013 14:28:07 +0530
+Message-Id: <1374569897-3858-2-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/15/2013 10:54 PM, Sergei Shtylyov wrote:
-> Hello.
-> 
-One quick point first, if you could persuade your email client to wrap at 80 characters
-that  would be great.
+devm_* APIs are device managed and make code simpler.
 
-> Recently I have posted a driver for drivers/misc/ driving a pair of devices: Renesas R-Car > Gyro-ADC and speed-pulse interfaces [1]. Arnd Bergmann, one of the maintainers told me
-> that such driver would fit better into the IIO infrastructure. I have studied this
-> infrastructure for some time and only found in it a place for the Gyro-ADC
-> interface.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+---
+ drivers/iio/adc/ad7298.c |   24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
-> Let me describe the devices to be driven in some detail. Gyro-ADC i/f is an
-> interface to multichannel serial ADC (of 3 certain models) which can also calculate and
-> average of each 8 samples and sum up 10 of these average values.
-That is indeed fairly standard although some of the ABI for summed values is still under
-discussion.
-
-http://thread.gmane.org/gmane.linux.kernel.iio/7978/focus=79864 for example.
-
-> Speed-pulse interface
-> can count PWM-type input signal pulses and period between them. Though  being
-> two separate devices, these two have to be driven together because of the shared 
-> start/stop register (located in Gyro-ADC i/f still) and the clock with 1.25 ms period
-> supplied from the Gyro-ADC i/f to the speed-pulse i/f; at the same time speed-pulse i/f
-> generates interrupt with 100 ms period to be used by both interfaces. At this time, only
-> speed-pulse interface support is required, Gyro-ADC can be largely ignored (though it
-> has to be initialized). Perhaps  we could add a new I/O channel type for speed-pulse i/f?
-> What's your thoughts?
-
-I certainly have no problem with adding this device type.
-Would you like to propose a suitable ABI addition to
-/Documentation/ABI/test/sysfs-bus-iio to cover this type of device.
-
-I do vaguely wonder if we would be better treating these entirely generically as pulse
-counters rather than specifically as being for speed measurement? (Note I have only
-the sketchiest idea of what this device actually does ;)
-> 
-> [1] marc.info/?l=linux-kernel&m=137367311823027
-> 
-> WBR, Sergei
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+index 03b7718..85d1481 100644
+--- a/drivers/iio/adc/ad7298.c
++++ b/drivers/iio/adc/ad7298.c
+@@ -296,9 +296,10 @@ static int ad7298_probe(struct spi_device *spi)
+ {
+ 	struct ad7298_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7298_state *st;
+-	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	struct iio_dev *indio_dev;
+ 	int ret;
+ 
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+@@ -308,14 +309,13 @@ static int ad7298_probe(struct spi_device *spi)
+ 		st->ext_ref = AD7298_EXTREF;
+ 
+ 	if (st->ext_ref) {
+-		st->reg = regulator_get(&spi->dev, "vref");
+-		if (IS_ERR(st->reg)) {
+-			ret = PTR_ERR(st->reg);
+-			goto error_free;
+-		}
++		st->reg = devm_regulator_get(&spi->dev, "vref");
++		if (IS_ERR(st->reg))
++			return PTR_ERR(st->reg);
++
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+-			goto error_put_reg;
++			return ret;
+ 	}
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+@@ -361,11 +361,6 @@ error_cleanup_ring:
+ error_disable_reg:
+ 	if (st->ext_ref)
+ 		regulator_disable(st->reg);
+-error_put_reg:
+-	if (st->ext_ref)
+-		regulator_put(st->reg);
+-error_free:
+-	iio_device_free(indio_dev);
+ 
+ 	return ret;
+ }
+@@ -377,11 +372,8 @@ static int ad7298_remove(struct spi_device *spi)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	if (st->ext_ref) {
++	if (st->ext_ref)
+ 		regulator_disable(st->reg);
+-		regulator_put(st->reg);
+-	}
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
