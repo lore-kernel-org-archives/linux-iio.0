@@ -1,44 +1,85 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <51ED804E.1000701@kernel.org>
-Date: Mon, 22 Jul 2013 19:56:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Oleksandr Kravchenko <x0199363@ti.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, grant.likely@linaro.org,
- rob.herring@calxeda.com, rob@landley.net, jic23@cam.ac.uk,
- pmeerw@pmeerw.net, holler@ahsoftware.de, srinivas.pandruvada@intel.com,
- devicetree-discuss@lists.ozlabs.org, grygorii.strashko@ti.com,
- Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v3 1/2] of: Add Avago Technologies vendor prefix
-References: <1374498688-24701-1-git-send-email-x0199363@ti.com>
-In-Reply-To: <1374498688-24701-1-git-send-email-x0199363@ti.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: [PATCH 05/11] iio: adc: ad7887: Use devm_* APIs
+Date: Tue, 23 Jul 2013 14:28:11 +0530
+Message-Id: <1374569897-3858-6-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/22/13 14:11, Oleksandr Kravchenko wrote:
-> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-> 
-> This commit adds a device tree vendor prefix for Avago Technologies.
-> 
-> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-applied to the togreg branch of iio.git
-Thanks
+devm_* APIs are device managed and make code simpler.
 
-> ---
->  .../devicetree/bindings/vendor-prefixes.txt        |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index d5a79ca..8aab9c6 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -11,6 +11,7 @@ amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
->  apm	Applied Micro Circuits Corporation (APM)
->  arm	ARM Ltd.
->  atmel	Atmel Corporation
-> +avago	Avago Technologies
->  bosch	Bosch Sensortec GmbH
->  brcm	Broadcom Corporation
->  cavium	Cavium, Inc.
-> 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+---
+ drivers/iio/adc/ad7887.c |   23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index dd15a5b..9dd077b 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -237,25 +237,24 @@ static int ad7887_probe(struct spi_device *spi)
+ {
+ 	struct ad7887_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7887_state *st;
+-	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	struct iio_dev *indio_dev;
+ 	uint8_t mode;
+ 	int ret;
+ 
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
+ 
+ 	if (!pdata || !pdata->use_onchip_ref) {
+-		st->reg = regulator_get(&spi->dev, "vref");
+-		if (IS_ERR(st->reg)) {
+-			ret = PTR_ERR(st->reg);
+-			goto error_free;
+-		}
++		st->reg = devm_regulator_get(&spi->dev, "vref");
++		if (IS_ERR(st->reg))
++			return PTR_ERR(st->reg);
+ 
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+-			goto error_put_reg;
++			return ret;
+ 	}
+ 
+ 	st->chip_info =
+@@ -331,11 +330,6 @@ error_unregister_ring:
+ error_disable_reg:
+ 	if (st->reg)
+ 		regulator_disable(st->reg);
+-error_put_reg:
+-	if (st->reg)
+-		regulator_put(st->reg);
+-error_free:
+-	iio_device_free(indio_dev);
+ 
+ 	return ret;
+ }
+@@ -347,11 +341,8 @@ static int ad7887_remove(struct spi_device *spi)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	if (st->reg) {
++	if (st->reg)
+ 		regulator_disable(st->reg);
+-		regulator_put(st->reg);
+-	}
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
