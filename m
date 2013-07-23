@@ -1,103 +1,62 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	jic23@kernel.org,
-	sachin.kamat@linaro.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 09/11] iio: adc: nau7802: Use devm_iio_device_alloc
-Date: Tue, 23 Jul 2013 14:28:15 +0530
-Message-Id: <1374569897-3858-10-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <maxime.ripard@free-electrons.com>
+Date: Tue, 23 Jul 2013 11:31:19 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, jic23@kernel.org
+Subject: Re: [PATCH 09/11] iio: adc: nau7802: Use devm_iio_device_alloc
+Message-ID: <20130723093119.GA10389@lukather>
 References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+ <1374569897-3858-10-git-send-email-sachin.kamat@linaro.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="u3/rZRmxL6MmkK24"
+In-Reply-To: <1374569897-3858-10-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Using devm_iio_device_alloc makes code simpler.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- drivers/iio/adc/nau7802.c |   19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+--u3/rZRmxL6MmkK24
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
-index 70fa171..bdf0346 100644
---- a/drivers/iio/adc/nau7802.c
-+++ b/drivers/iio/adc/nau7802.c
-@@ -404,7 +404,7 @@ static int nau7802_probe(struct i2c_client *client,
- 		return -EINVAL;
- 	}
- 
--	indio_dev = iio_device_alloc(sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
-@@ -423,13 +423,13 @@ static int nau7802_probe(struct i2c_client *client,
- 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_PUCTRL,
- 				  NAU7802_PUCTRL_RR_BIT);
- 	if (ret < 0)
--		goto error_free_indio;
-+		return ret;
- 
- 	/* Enter normal operation mode */
- 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_PUCTRL,
- 				  NAU7802_PUCTRL_PUD_BIT);
- 	if (ret < 0)
--		goto error_free_indio;
-+		return ret;
- 
- 	/*
- 	 * After about 200 usecs, the device should be ready and then
-@@ -438,9 +438,9 @@ static int nau7802_probe(struct i2c_client *client,
- 	udelay(210);
- 	ret = i2c_smbus_read_byte_data(st->client, NAU7802_REG_PUCTRL);
- 	if (ret < 0)
--		goto error_free_indio;
-+		return ret;
- 	if (!(ret & NAU7802_PUCTRL_PUR_BIT))
--		goto error_free_indio;
-+		return ret;
- 
- 	of_property_read_u32(np, "nuvoton,vldo", &tmp);
- 	st->vref_mv = tmp;
-@@ -452,17 +452,17 @@ static int nau7802_probe(struct i2c_client *client,
- 
- 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_PUCTRL, data);
- 	if (ret < 0)
--		goto error_free_indio;
-+		return ret;
- 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_ADC_CTRL, 0x30);
- 	if (ret < 0)
--		goto error_free_indio;
-+		return ret;
- 
- 	if (tmp >= 2400) {
- 		data = NAU7802_CTRL1_VLDO((4500 - tmp) / 300);
- 		ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL1,
- 						data);
- 		if (ret < 0)
--			goto error_free_indio;
-+			return ret;
- 	}
- 
- 	/* Populate available ADC input ranges */
-@@ -533,8 +533,6 @@ error_device_register:
- error_free_irq:
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
--error_free_indio:
--	iio_device_free(indio_dev);
- 
- 	return ret;
- }
-@@ -549,7 +547,6 @@ static int nau7802_remove(struct i2c_client *client)
- 	mutex_destroy(&st->data_lock);
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
--	iio_device_free(indio_dev);
- 
- 	return 0;
- }
--- 
-1.7.9.5
+Hi,
+
+On Tue, Jul 23, 2013 at 02:28:15PM +0530, Sachin Kamat wrote:
+> Using devm_iio_device_alloc makes code simpler.
+>=20
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+
+Thanks,
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--u3/rZRmxL6MmkK24
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR7k1mAAoJEBx+YmzsjxAgyvEP/2eg3Vk83eGtUGVVYvW23kSb
+zgMvrZDGo1g6tam8IXpZ4mZEo3qndcA3dtCg39GNph5IOoI6cTGP7tJRQsGuIbOu
+Ljyns2at4UiX1vp+40utQ4Xcd0lHX7qnKTontkBu4IABYVDj02MqpZWHagaB9KLf
+4iymvuWduY3SOXAUgHvwyz3cj+GLm6pMTL1bNd3qtUWX9omzn3oQFoYOd3pvRXwa
+9yhWkSVUF8ICGdQvCPi6o6y2sxf6I7y99Lck4+/GvnFDbPZVVmkWTydKcSnsE2Pb
+nuTWgu02XfhtnyATEuNkLbiGwpjp8IgaU8zM2WTJDV2uhnWSH/APTe0EIIka5Y9j
+I65sY+PosiM/BiPHHo+q0nbYem/EmaLZnz9QHk1o+IxfBBI7PdKwslzUBJR+6VO2
+0LIZg/XXaLQY7XVoK7DC8kDycWPIx6AUe41d4/c6X+DnICyjYoG03Yqc+vtp2nko
+vRVtcZ72J3672qpak9GJL/NB6XDV3O9yD346X8hK52b0F3DZb6U3CgaSqcv0QZjr
+N0rdE3b8d++6m9r1Adejgpjwlx9+ya0qEVyBZmol7bjAn85Slxh1AD93AbDjFwjw
+01bUrY5G0/vdQ/lLp3XGhFwzH1QM7KgqJH8LllG67I/geDWVCAVjpPa6ENUwDuca
+rRQxc0Dryy/P3zyjbs8e
+=xGoP
+-----END PGP SIGNATURE-----
+
+--u3/rZRmxL6MmkK24--
