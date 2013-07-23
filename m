@@ -1,75 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f42.google.com ([74.125.83.42]:39136 "EHLO
-	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756749Ab3GQR1S (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2013 13:27:18 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, koen@dominion.thruhere.net,
-	zubair.lutfullah@gmail.com
-Subject: [PATCH 13/21] IO: ti_adc: Reset and clear overrun status before capture.
-Date: Wed, 17 Jul 2013 18:26:42 +0100
-Message-Id: <1374082010-28095-14-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1374082010-28095-1-git-send-email-zubair.lutfullah@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Milo Kim <milo.kim@ti.com>
+Subject: [PATCH 07/11] iio: adc: lp8788_adc: Use devm_* APIs
+Date: Tue, 23 Jul 2013 14:28:13 +0530
+Message-Id: <1374569897-3858-8-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-While not pulling out samples, the FIFO will fill up causing an
+devm_* APIs are device managed and make code simpler.
 
-overrun event. Before starting up another continuous sample, clear that
-
-event.
-
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Milo Kim <milo.kim@ti.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ drivers/iio/adc/lp8788_adc.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 1e48799..eb47385 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -250,22 +250,28 @@ static int tiadc_buffer_postenable(struct iio_dev *idev)
- {
-         struct tiadc_device *adc_dev = iio_priv(idev);
-         struct iio_buffer *buffer = idev->buffer;
--        unsigned int enb, fifo1count;
--        int stepnum, i;
-+        unsigned int enb, config;
-+        int stepnum;
-         u8 bit;
+diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
+index 62bc39e..5c8c915 100644
+--- a/drivers/iio/adc/lp8788_adc.c
++++ b/drivers/iio/adc/lp8788_adc.c
+@@ -194,7 +194,7 @@ static int lp8788_adc_probe(struct platform_device *pdev)
+ 	struct lp8788_adc *adc;
+ 	int ret;
  
-         if (!adc_dev->is_continuous_mode) {
-                 printk("Data cannot be read continuously in one shot mode\n");
-                 return -EINVAL;
-         } else {
--                tiadc_writel(adc_dev, REG_IRQENABLE,
--                                (IRQENB_FIFO1THRES |
--                                 IRQENB_FIFO1OVRRUN |
--                                 IRQENB_FIFO1UNDRFLW));
+-	indio_dev = iio_device_alloc(sizeof(*adc));
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
  
--                fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
--                for (i = 0; i < fifo1count; i++)
--                        tiadc_readl(adc_dev, REG_FIFO1);
-+                config = tiadc_readl(adc_dev, REG_CTRL);
-+                tiadc_writel(adc_dev, REG_CTRL,
-+                                        config & ~CNTRLREG_TSCSSENB);
-+                tiadc_writel(adc_dev, REG_CTRL,
-+                                        config |  CNTRLREG_TSCSSENB);
-+
-+                tiadc_writel(adc_dev,  REG_IRQSTATUS,
-+                                 IRQENB_FIFO1THRES |
-+                                 IRQENB_FIFO1OVRRUN |
-+                                 IRQENB_FIFO1UNDRFLW);
-+                tiadc_writel(adc_dev,  REG_IRQENABLE,
-+                                 IRQENB_FIFO1THRES |
-+                                 IRQENB_FIFO1OVRRUN);
+@@ -205,7 +205,7 @@ static int lp8788_adc_probe(struct platform_device *pdev)
+ 	indio_dev->dev.of_node = pdev->dev.of_node;
+ 	ret = lp8788_iio_map_register(indio_dev, lp->pdata, adc);
+ 	if (ret)
+-		goto err_iio_map;
++		return ret;
  
-                 tiadc_writel(adc_dev, REG_SE, 0x00);
-                 for_each_set_bit(bit, buffer->scan_mask,
+ 	mutex_init(&adc->lock);
+ 
+@@ -226,8 +226,6 @@ static int lp8788_adc_probe(struct platform_device *pdev)
+ 
+ err_iio_device:
+ 	iio_map_array_unregister(indio_dev);
+-err_iio_map:
+-	iio_device_free(indio_dev);
+ 	return ret;
+ }
+ 
+@@ -237,7 +235,6 @@ static int lp8788_adc_remove(struct platform_device *pdev)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	iio_map_array_unregister(indio_dev);
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
 1.7.9.5
-
