@@ -1,90 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:59727 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751659Ab3GJHJr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 10 Jul 2013 03:09:47 -0400
-From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
-To: <tony@atomide.com>, <gg@slimlogic.co.uk>, <peter.ujfalusi@ti.com>,
-	<kishon@ti.com>, <benoit.cousson@linaro.org>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<sameo@linux.intel.com>, <ch.naveen@samsung.com>,
-	<milo.kim@ti.com>, <poeschel@lemonage.de>, <balajitk@ti.com>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devicetree-discuss@lists.ozlabs.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-omap@vger.kernel.org>
-Subject: [PATCH v2 0/2] TWL6030, TWL6032 GPADC driver
-Date: Wed, 10 Jul 2013 10:08:52 +0300
-Message-ID: <1373440134-30118-1-git-send-email-oleksandr.kozaruk@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: [PATCH 04/11] iio: adc: ad7793: Use devm_* APIs
+Date: Tue, 23 Jul 2013 14:28:10 +0530
+Message-Id: <1374569897-3858-5-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+devm_* APIs are device managed and make code simpler.
 
-This is version 2 - the driver put in drivers/iio, and
-converted using iio facilities as suggested by Graeme.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+---
+ drivers/iio/adc/ad7793.c |   23 ++++++-----------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
-TWL603[02] GPADC is used to measure battery voltage,
-battery temperature, battery presence ID, and could
-be used to measure twl603[02] die temperature.
-This is used on TI blaze, blaze tablet platforms.
-
-The TWL6030/TWL6032 is a PMIC that has a GPADC with 17/19
-channels respectively. Some channels have current
-source and are used for measuring voltage drop
-on resistive load for detecting battery ID resistance,
-or measuring voltage drop on NTC resistors for external
-temperature measurements, other channels measure voltage,
-(i.e. battery voltage), and have inbuilt voltage dividers,
-thus, capable to scale voltage. Some channels are dedicated
-for measuring die temperature.
-
-Some channels could be calibrated in 2 points, having
-offsets from ideal values in trim registers.
-
-The difference between GPADC in TWL6030 and TWL6032:
-- 10 bit vs 12 bit ADC;
-- 17 vs 19 channels;
-- channels have different purpose(i. e. battery voltage
-  channel 8 vs channel 18);
-- trim values are interpreted differently.
-
-The driver exports function returning converted value for
-requested channels.
-
-Sysfs entries are added to start and read conversion result
-in millivolts for chosen channel.
-
-The driver is derived from git://git.omapzoom.org/kernel/omap.git
-The original driver's authors and contributors are Balaji T K,
-Graeme Gregory, Ambresh K, Girish S Ghongdemath.
-
-The changes to the original driver:
-- device tree adaptation;
-- drop ioctl support - never been used;
-- unified measurement method for both devices;
-- get rid of "if (device == X)" code style to data driven;
-- drop polling end of conversion and use interrupt instead;
-- iio framework is used
-
-Tested with on blaze tablet 2 with OMAP4430(twl6030), and
-OMAP4470(twl6032) SOMs.
-
-The patches were tested against 3.10-rc7
-
-Oleksandr Kozaruk (2):
-  ARM: dts: twl: Add GPADC data to device tree
-  iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
-
- arch/arm/boot/dts/twl6030.dtsi  |    6 +
- drivers/iio/adc/Kconfig         |    8 +
- drivers/iio/adc/Makefile        |    1 +
- drivers/iio/adc/twl6030-gpadc.c | 1019 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 1034 insertions(+)
- create mode 100644 drivers/iio/adc/twl6030-gpadc.c
-
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 334e31f..4dddeab 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -757,7 +757,7 @@ static int ad7793_probe(struct spi_device *spi)
+ 		return -ENODEV;
+ 	}
+ 
+-	indio_dev = iio_device_alloc(sizeof(*st));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+@@ -766,15 +766,13 @@ static int ad7793_probe(struct spi_device *spi)
+ 	ad_sd_init(&st->sd, indio_dev, spi, &ad7793_sigma_delta_info);
+ 
+ 	if (pdata->refsel != AD7793_REFSEL_INTERNAL) {
+-		st->reg = regulator_get(&spi->dev, "refin");
+-		if (IS_ERR(st->reg)) {
+-			ret = PTR_ERR(st->reg);
+-			goto error_device_free;
+-		}
++		st->reg = devm_regulator_get(&spi->dev, "refin");
++		if (IS_ERR(st->reg))
++			return PTR_ERR(st->reg);
+ 
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+-			goto error_put_reg;
++			return ret;
+ 
+ 		vref_mv = regulator_get_voltage(st->reg);
+ 		if (vref_mv < 0) {
+@@ -818,11 +816,6 @@ error_remove_trigger:
+ error_disable_reg:
+ 	if (pdata->refsel != AD7793_REFSEL_INTERNAL)
+ 		regulator_disable(st->reg);
+-error_put_reg:
+-	if (pdata->refsel != AD7793_REFSEL_INTERNAL)
+-		regulator_put(st->reg);
+-error_device_free:
+-	iio_device_free(indio_dev);
+ 
+ 	return ret;
+ }
+@@ -836,12 +829,8 @@ static int ad7793_remove(struct spi_device *spi)
+ 	iio_device_unregister(indio_dev);
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ 
+-	if (pdata->refsel != AD7793_REFSEL_INTERNAL) {
++	if (pdata->refsel != AD7793_REFSEL_INTERNAL)
+ 		regulator_disable(st->reg);
+-		regulator_put(st->reg);
+-	}
+-
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
 1.7.9.5
-
