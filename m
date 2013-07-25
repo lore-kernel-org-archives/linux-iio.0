@@ -1,102 +1,137 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:42816 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757508Ab3GLTfK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2013 15:35:10 -0400
-Received: from eiche.ahsoftware (p57B20185.dip0.t-ipconnect.de [87.178.1.133])
-	(using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mail.ahsoftware.de (Postfix) with ESMTPSA id 53554888059
-	for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2013 21:35:08 +0200 (CEST)
-Message-ID: <51E05A4A.2000306@ahsoftware.de>
-Date: Fri, 12 Jul 2013 21:34:34 +0200
-From: Alexander Holler <holler@ahsoftware.de>
+Return-Path: <oleksandr.kozaruk@ti.com>
+Date: Thu, 25 Jul 2013 09:08:48 +0300
+From: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <tony@atomide.com>, <benoit.cousson@linaro.org>, <rnayak@ti.com>,
+        <peter.ujfalusi@ti.com>, <kishon@ti.com>, <jic23@cam.ac.uk>,
+        <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+        <lars@metafoo.de>, <sameo@linux.intel.com>, <ch.naveen@samsung.com>,
+        <poeschel@lemonage.de>, <milo.kim@ti.com>, <balajitk@ti.com>,
+        <gg@slimlogic.co.uk>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree-discuss@lists.ozlabs.org>, <linux-omap@vger.kernel.org>
+Subject: Re: [PATCH v6 2/2] iio: twl6030-gpadc: TWL6030, TWL6032 GPADC driver
+Message-ID: <20130725060848.GA16521@uglx0158319>
+References: <1374226039-16943-1-git-send-email-oleksandr.kozaruk@ti.com>
+ <1374226039-16943-3-git-send-email-oleksandr.kozaruk@ti.com>
+ <51EA69DE.4080908@kernel.org>
 MIME-Version: 1.0
-To: Alexandre Relange <alexandre@relange.org>
-CC: Jonathan Cameron <jic23@cam.ac.uk>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/5] iio: mechanical: new HID sensor boolean switch
-References: <1370962336-20739-1-git-send-email-alexandre@relange.org> <1370962336-20739-4-git-send-email-alexandre@relange.org>
-In-Reply-To: <1370962336-20739-4-git-send-email-alexandre@relange.org>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <51EA69DE.4080908@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Am 11.06.2013 16:52, schrieb Alexandre Relange:
-> Implements the Boolean Switch sensor from the USB sensor usage tables
-> http://www.usb.org/developers/hidpage/HUTRR39b.pdf
+On Sat, Jul 20, 2013 at 11:43:42AM +0100, Jonathan Cameron wrote:
+> On 07/19/2013 10:27 AM, Oleksandr Kozaruk wrote:
+> > The GPADC is general purpose ADC found on TWL6030, and TWL6032 PMIC,
+> > known also as Phoenix and PhoenixLite.
+> >
+> > The TWL6030 and TWL6032 have GPADC with 17 and 19 channels
+> > respectively. Some channels have current source and are used for
+> > measuring voltage drop on resistive load for detecting battery ID
+> > resistance, or measuring voltage drop on NTC resistors for external
+> > temperature measurements. Some channels measure voltage, (i.e. battery
+> > voltage), and have voltage dividers, thus, capable to scale voltage.
+> > Some channels are dedicated for measuring die temperature.
+> >
+> > Some channels are calibrated in 2 points, having offsets from ideal
+> > values kept in trim registers. This is used to correct measurements.
+> >
+> > The differences between GPADC in TWL6030 and TWL6032:
+> > - 10 bit vs 12 bit ADC;
+> > - 17 vs 19 channels;
+> > - channels have different purpose(i.e. battery voltage
+> >   channel 8 vs channel 18);
+> > - trim values are interpreted differently.
+> >
+> > Based on the driver patched from Balaji TK, Graeme Gregory, Ambresh K,
+> > Girish S Ghongdemath.
+> >
+> > Signed-off-by: Balaji T K <balajitk@ti.com>
+> > Signed-off-by: Graeme Gregory <gg@slimlogic.co.uk>
+> > Signed-off-by: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>
+> A few little bits and bobs inline.
 > 
-> This code is based on drivers/iio/light/hid-sensor-als.c
-> 
-> Signed-off-by: Alexandre Relange <alexandre@relange.org>
-> ---
+> My only major query is about the lack of info for the temperature
+> channels.  How do you convert these to useful real world units?
 
-...
+On blaze tablet platform(OMAP 4) temperature channels were used by
+thermal framework and battery driver.
+Thermal was using channel 4 [1]
 
-> +
-> +/*Format: HID-SENSOR-usage_id_in_hex*/
-> +/*Usage ID from spec for Boolean-Switch: 0x200061*/
-> +#define DRIVER_NAME "HID-SENSOR-200061"
-> +
+Here is the comment from the driver:
 
-...
+* NTC termistor (NCP15WB473F) schematic connection for OMAP4460 board:
+*
+*          [Vref]
+*            |
+*            $ (Rpu)
+*            |
+*            +----+-----------[Vin]
+*            |    |
+*           [Rt]  $ (Rpd)
+*            |    |
+*           -------- (ground)
+*
+* NTC termistor resistanse (Rt, k) calculated from following formula:
+*
+* Rt = Rpd * Rpu * Vin / (Rpd * (Vref - Vin) - Rpu * Vin)
+*
+* where       Vref (GPADC_VREF4) - reference voltage, Vref = 1250 mV;
+*                     Vin (GPADC_IN4) - measuring voltage, Vin = 0...1250 mV;
+*                     Rpu (R1041) - pullup resistor, Rpu = 10 k;
+*                     Rpd (R1043) - pulldown resistor, Rpd = 220 k;
+*
+* Pcb temp sensor temperature (t, C) calculated from following formula:
+*
+* t = 1 / (ln(Rt / Rt0) / B + 1 / T0) - 273
+*
+* where       Rt0 - NTC termistor resistance at 25 C, Rt0 = 47 k;
+*                     B - specific constant, B = 4131 K;
+*                     T0 - temperature, T0 = 298 K
+[..]
 
-> +static struct platform_driver hid_switch_platform_driver = {
-> +	.driver = {
-> +		.name	= DRIVER_NAME,
-> +		.owner	= THIS_MODULE,
-> +	},
-> +	.probe		= hid_switch_probe,
-> +	.remove		= hid_switch_remove,
-> +};
-> +module_platform_driver(hid_switch_platform_driver);
-> +
+And then there is a table for conversion:
+/*
+ * Temperature values in degrees celsius,
+ * voltage values from 156 to 1191 milli volts
+*/
+static s8 mvolt_to_temp[] = {
+               125, 125, 125, 124, 124, 124, 124, 123, 123, 123, 122, 122,
+               122, 122, 121, 121, 121, 121, 120, 120, 120, 120, 119, 119,
+[..]
 
-You already might add the fix I've recently posted for all the other iio
-HID drivers to let the module automatically loaded. It gives a nicier
-driver name too.
+The battery driver was using channel 1, dedicated for measuring battery
+temperature.
+static void twl6030_bci_battery_work(struct work_struct *work)
+{
+[..]
+	for (temp = 0; temp < di->platform_data->tblsize; temp++) {
+		if (adc_code >= di->platform_data->
+				battery_tmp_tbl[temp])
+			break;
+	}
 
-I've pasted the patch for the als-driver for your reference below.
-Be sure to change the usage id to the one for your driver.
+	/* first 2 values are for negative temperature */
+	di->temp_C = (temp - 2) * 10; * /* in tenths of degree Celsius */
+	[..]
+}
+static int omap4_batt_table[] = {
+/* adc code for temperature in degree C */
+	929, 925, /* -2 ,-1 */
+	920, 917, 912, 908, 904, 899, 895, 890, 885, 880, /* 00 - 09 */
+	875, 869, 864, 858, 853, 847, 841, 835, 829, 823, /* 10 - 19 */
+[..]
+	591, 583, 575, 567, 559, 551, 543, 535, 527, 519, /* 50 - 59 */
+	511, 504, 496 /* 60 - 62 */
+};
+
+So, one driver was using millivolts and the other ADC code,
+Though converting to millivolts and the to temperature, seems,
+to be redundant, as code can be converted to temperature.
+If I recollect correctly the previous driver version was using just
+ADC code.
 
 Regards,
+Sasha.
 
-Alexander Holler
-
---------
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -30,10 +30,6 @@
- #include <linux/iio/triggered_buffer.h>
- #include "../common/hid-sensors/hid-sensor-trigger.h"
-
--/*Format: HID-SENSOR-usage_id_in_hex*/
--/*Usage ID from spec for Ambiant-Light: 0x200041*/
--#define DRIVER_NAME "HID-SENSOR-200041"
--
- #define CHANNEL_SCAN_INDEX_ILLUM 0
-
- struct als_state {
-@@ -355,9 +351,19 @@ static int hid_als_remove(struct platform_device *pdev)
- 	return 0;
- }
-
-+static struct platform_device_id hid_als_ids[] = {
-+	{
-+		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-+		.name = "HID-SENSOR-200041",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, hid_als_ids);
-+
- static struct platform_driver hid_als_platform_driver = {
-+	.id_table = hid_als_ids,
- 	.driver = {
--		.name	= DRIVER_NAME,
-+		.name	= KBUILD_MODNAME,
- 		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_als_probe,
--- 1.8.1.5
-
-
+[1] http://git.omapzoom.org/?p=kernel/omap.git;a=blob;f=drivers/staging/thermal_framework/sensor/thermistor_sensor.c;h=828d8010579b55ec4a122c49a2e5b547b1e41e63;hb=decb3fd22223ddf207e0118d0d558459acc7094e
