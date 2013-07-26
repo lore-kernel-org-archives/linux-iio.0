@@ -1,70 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53081 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751188Ab3G0KEN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Jul 2013 06:04:13 -0400
-Message-ID: <51F3A92F.3090901@kernel.org>
-Date: Sat, 27 Jul 2013 12:04:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	Milo Kim <milo.kim@ti.com>
-Subject: Re: [PATCH 07/11] iio: adc: lp8788_adc: Use devm_* APIs
-References: <1374569897-3858-1-git-send-email-sachin.kamat@linaro.org> <1374569897-3858-8-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1374569897-3858-8-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	Russ.Dill@ti.com
+Subject: [PATCH 0/2] iio: input: ti_am335x_adc: Add continuous sampling and trigger support round 3
+Date: Sat, 27 Jul 2013 00:51:12 +0100
+Message-Id: <1374882674-18403-1-git-send-email-zubair.lutfullah@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/23/13 09:58, Sachin Kamat wrote:
-> devm_* APIs are device managed and make code simpler.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Milo Kim <milo.kim@ti.com>
-Applied to the togreg branch of iio.git
+ADC and TSC share an IRQ line. Patch one is simple and adds shared irq support on the TSC side.
 
-> ---
->  drivers/iio/adc/lp8788_adc.c |    7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-> index 62bc39e..5c8c915 100644
-> --- a/drivers/iio/adc/lp8788_adc.c
-> +++ b/drivers/iio/adc/lp8788_adc.c
-> @@ -194,7 +194,7 @@ static int lp8788_adc_probe(struct platform_device *pdev)
->  	struct lp8788_adc *adc;
->  	int ret;
->  
-> -	indio_dev = iio_device_alloc(sizeof(*adc));
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> @@ -205,7 +205,7 @@ static int lp8788_adc_probe(struct platform_device *pdev)
->  	indio_dev->dev.of_node = pdev->dev.of_node;
->  	ret = lp8788_iio_map_register(indio_dev, lp->pdata, adc);
->  	if (ret)
-> -		goto err_iio_map;
-> +		return ret;
->  
->  	mutex_init(&adc->lock);
->  
-> @@ -226,8 +226,6 @@ static int lp8788_adc_probe(struct platform_device *pdev)
->  
->  err_iio_device:
->  	iio_map_array_unregister(indio_dev);
-> -err_iio_map:
-> -	iio_device_free(indio_dev);
->  	return ret;
->  }
->  
-> @@ -237,7 +235,6 @@ static int lp8788_adc_remove(struct platform_device *pdev)
->  
->  	iio_device_unregister(indio_dev);
->  	iio_map_array_unregister(indio_dev);
-> -	iio_device_free(indio_dev);
->  
->  	return 0;
->  }
-> 
+The second patch adds continuous sampling support to the am335x_adc driver.
+
+It has been submitted previously. This is round 3.
+
+Previously:
+- Submitted as a series of patches and bug fixes.
+- The driver would continuously push samples into a buffer exposed to userspace.
+- Extra sysfs attributes for selecting continuous mode or one shot mode.
+- No trigger functionality.
+- Reading from /dev/iio required patching the provided generic_buffer.c iio test application to bypass trigger.
+- Only one channel could be read at a time.
+- And even then, samples were skipped as the FIFO was read incorrectly.
+
+Now: 
+- All bug fixes merged together in one patch.
+- Stuck closely to the IIO ABI this time.
+- Added trigger support.
+- Fixed channel scanning where only one channel could be read into the buffer at a time.
+- Now all enabled channels in the scan_elements folder are pushed to the userspace properly without skipping any samples.
+- generic_buffer.c test application can read samples without any modification.
+- A sysfs trigger starts acquisition.
+
+This has been tested on the Beaglebone Black running the am335x processor.
+The patches apply on the iio branch fixes-togreg.
+
+Patil, Rachna (1):
+  input: ti_tsc: Enable shared IRQ for TSC
+
+Zubair Lutfullah (1):
+  iio: ti_am335x_adc: Add continuous sampling and trigger support
+
+ drivers/iio/adc/ti_am335x_adc.c           |  334 +++++++++++++++++++++++------
+ drivers/input/touchscreen/ti_am335x_tsc.c |   18 +-
+ include/linux/mfd/ti_am335x_tscadc.h      |   13 +-
+ 3 files changed, 299 insertions(+), 66 deletions(-)
+
+-- 
+1.7.9.5
