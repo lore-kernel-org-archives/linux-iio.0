@@ -1,42 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:50465 "EHLO pmeerw.net"
+Received: from comal.ext.ti.com ([198.47.26.152]:40891 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752633Ab3G2VfO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 29 Jul 2013 17:35:14 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>,
-	Grygorii Strashko <grygorii.strashko@ti.com>,
+	id S1751901Ab3G2O6m (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 29 Jul 2013 10:58:42 -0400
+From: Oleksandr Kravchenko <x0199363@ti.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+CC: <grant.likely@linaro.org>, <rob.herring@calxeda.com>,
+	<rob@landley.net>, <jic23@cam.ac.uk>, <pmeerw@pmeerw.net>,
+	<holler@ahsoftware.de>, <srinivas.pandruvada@intel.com>,
+	<devicetree-discuss@lists.ozlabs.org>,
 	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH] iio: Fix documentation of devm_iio_device_free()
-Date: Mon, 29 Jul 2013 23:35:10 +0200
-Message-Id: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 1/2] ARM: OMAP4: Tablet: Add BMA180 sensor
+Date: Mon, 29 Jul 2013 17:58:12 +0300
+Message-ID: <1375109893-7917-1-git-send-email-x0199363@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- include/linux/iio/iio.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index f1d99f6..7ae54a5 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -552,9 +552,9 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
-  * @dev:		Device this iio_dev belongs to
-  * @indio_dev: 		the iio_dev associated with the device
-  *
-- * Free indio_dev allocated with devm_iio_device_alloc().
-+ * Free iio_dev allocated with devm_iio_device_alloc().
-  */
--void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
-+void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
+Add Bosch BMA180 acceleration sensor devicetree
+
+Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ arch/arm/boot/dts/omap4-sdp.dts |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm/boot/dts/omap4-sdp.dts b/arch/arm/boot/dts/omap4-sdp.dts
+index c9022df..13d8279 100644
+--- a/arch/arm/boot/dts/omap4-sdp.dts
++++ b/arch/arm/boot/dts/omap4-sdp.dts
+@@ -170,6 +170,7 @@
+ 			&dss_hdmi_pins
+ 			&tpd12s015_pins
+ 			&apds9300_pins
++			&bma180_pins
+ 	>;
  
- /**
-  * iio_buffer_enabled() - helper function to test if the buffer is enabled
+ 	uart2_pins: pinmux_uart2_pins {
+@@ -305,6 +306,12 @@
+ 			0x50 (PIN_INPUT | MUX_MODE3)		/* gpmc_nbe1.gpio_61 */
+ 		>;
+ 	};
++
++	bma180_pins: pinmux_bma180_pins {
++		pinctrl-single,pins = <
++		0x156 (PIN_INPUT_PULLUP | MUX_MODE3)	/* gpmc_nbe1.gpio_178 */
++		>;
++	};
+ };
+ 
+ &i2c1 {
+@@ -405,6 +412,17 @@
+ 		interrupt-parent = <&gpio2>;
+ 		interrupts = <29 8>; /* gpio line 61, low triggered */
+ 	};
++
++	bma180@40 {
++		compatible = "bosch,bma180";
++		reg = <0x40>;
++		interrupt-parent = <&gpio6>;
++		interrupts = <18 (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING)>;
++		range = <2>;
++		bw = <5>;
++		mode_config = <1>;
++		fuzz = <555>;
++	};
+ };
+ 
+ &mcspi1 {
 -- 
-1.8.3.4
+1.7.9.5
 
