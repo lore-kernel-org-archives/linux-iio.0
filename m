@@ -1,71 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:50796 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:50465 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755366Ab3G2WSf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 29 Jul 2013 18:18:35 -0400
+	id S1752633Ab3G2VfO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 29 Jul 2013 17:35:14 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 2/3] iio:vcnl4000: Use devm_iio_device_alloc
-Date: Tue, 30 Jul 2013 00:18:30 +0200
-Message-Id: <1375136311-8523-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1375136311-8523-1-git-send-email-pmeerw@pmeerw.net>
-References: <1375136311-8523-1-git-send-email-pmeerw@pmeerw.net>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Grygorii Strashko <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH] iio: Fix documentation of devm_iio_device_free()
+Date: Mon, 29 Jul 2013 23:35:10 +0200
+Message-Id: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 ---
- drivers/iio/light/vcnl4000.c | 16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
+ include/linux/iio/iio.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 1014943..2bb3042 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -157,7 +157,7 @@ static int vcnl4000_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	int ret;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index f1d99f6..7ae54a5 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -552,9 +552,9 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
+  * @dev:		Device this iio_dev belongs to
+  * @indio_dev: 		the iio_dev associated with the device
+  *
+- * Free indio_dev allocated with devm_iio_device_alloc().
++ * Free iio_dev allocated with devm_iio_device_alloc().
+  */
+-void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
++void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
  
--	indio_dev = iio_device_alloc(sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -167,7 +167,7 @@ static int vcnl4000_probe(struct i2c_client *client,
- 
- 	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
- 	if (ret < 0)
--		goto error_free_dev;
-+		return ret;
- 
- 	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, Prod %02x, Rev: %02x\n",
- 		ret >> 4, ret & 0xf);
-@@ -181,22 +181,14 @@ static int vcnl4000_probe(struct i2c_client *client,
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_dev;
-+		return ret;
- 
- 	return 0;
--
--error_free_dev:
--	iio_device_free(indio_dev);
--	return ret;
- }
- 
- static int vcnl4000_remove(struct i2c_client *client)
- {
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--
--	iio_device_unregister(indio_dev);
--	iio_device_free(indio_dev);
--
-+	iio_device_unregister(i2c_get_clientdata(client));
- 	return 0;
- }
- 
+ /**
+  * iio_buffer_enabled() - helper function to test if the buffer is enabled
 -- 
 1.8.3.4
 
