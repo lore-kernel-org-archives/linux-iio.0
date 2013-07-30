@@ -4,68 +4,105 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@cam.ac.uk,
 	jic23@kernel.org,
 	sachin.kamat@linaro.org,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: [PATCH 1/3] iio: amplifiers: ad8366: Use devm_* APIs
-Date: Tue, 30 Jul 2013 11:54:21 +0530
-Message-Id: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 3/3] iio: pressure: st_pressure: Use devm_iio_device_alloc
+Date: Tue, 30 Jul 2013 11:54:23 +0530
+Message-Id: <1375165463-23453-3-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
+References: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-devm_* APIs are device managed and make code simpler.
+Using devm_iio_device_alloc makes code simpler.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
 ---
-This series compile tested on togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
----
- drivers/iio/amplifiers/ad8366.c |   13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/iio/pressure/st_pressure_core.c |    1 -
+ drivers/iio/pressure/st_pressure_i2c.c  |   15 ++++-----------
+ drivers/iio/pressure/st_pressure_spi.c  |   15 ++++-----------
+ 3 files changed, 8 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index d354554..d0a79a4 100644
---- a/drivers/iio/amplifiers/ad8366.c
-+++ b/drivers/iio/amplifiers/ad8366.c
-@@ -139,17 +139,17 @@ static int ad8366_probe(struct spi_device *spi)
- 	struct ad8366_state *st;
- 	int ret;
- 
--	indio_dev = iio_device_alloc(sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get(&spi->dev, "vcc");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
--			goto error_put_reg;
-+			return ret;
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index b8ecc87..093b045 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -270,7 +270,6 @@ void st_press_common_remove(struct iio_dev *indio_dev)
+ 		st_sensors_deallocate_trigger(indio_dev);
+ 		st_press_deallocate_ring(indio_dev);
  	}
- 
- 	spi_set_drvdata(spi, indio_dev);
-@@ -173,11 +173,6 @@ static int ad8366_probe(struct spi_device *spi)
- error_disable_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
--error_put_reg:
--	if (!IS_ERR(st->reg))
--		regulator_put(st->reg);
--
 -	iio_device_free(indio_dev);
- 
- 	return ret;
  }
-@@ -195,8 +190,6 @@ static int ad8366_remove(struct spi_device *spi)
- 		regulator_put(reg);
- 	}
+ EXPORT_SYMBOL(st_press_common_remove);
  
--	iio_device_free(indio_dev);
--
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index 3065993..08aac5e 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -25,11 +25,9 @@ static int st_press_i2c_probe(struct i2c_client *client,
+ 	struct st_sensor_data *pdata;
+ 	int err;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*pdata));
+-	if (indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto iio_device_alloc_error;
+-	}
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*pdata));
++	if (!indio_dev)
++		return -ENOMEM;
+ 
+ 	pdata = iio_priv(indio_dev);
+ 	pdata->dev = &client->dev;
+@@ -38,14 +36,9 @@ static int st_press_i2c_probe(struct i2c_client *client,
+ 
+ 	err = st_press_common_probe(indio_dev, client->dev.platform_data);
+ 	if (err < 0)
+-		goto st_press_common_probe_error;
++		return err;
+ 
  	return 0;
+-
+-st_press_common_probe_error:
+-	iio_device_free(indio_dev);
+-iio_device_alloc_error:
+-	return err;
  }
  
+ static int st_press_i2c_remove(struct i2c_client *client)
+diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+index b2aded6..399a29b 100644
+--- a/drivers/iio/pressure/st_pressure_spi.c
++++ b/drivers/iio/pressure/st_pressure_spi.c
+@@ -24,11 +24,9 @@ static int st_press_spi_probe(struct spi_device *spi)
+ 	struct st_sensor_data *pdata;
+ 	int err;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*pdata));
+-	if (indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto iio_device_alloc_error;
+-	}
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*pdata));
++	if (indio_dev == NULL)
++		return -ENOMEM;
+ 
+ 	pdata = iio_priv(indio_dev);
+ 	pdata->dev = &spi->dev;
+@@ -37,14 +35,9 @@ static int st_press_spi_probe(struct spi_device *spi)
+ 
+ 	err = st_press_common_probe(indio_dev, spi->dev.platform_data);
+ 	if (err < 0)
+-		goto st_press_common_probe_error;
++		return err;
+ 
+ 	return 0;
+-
+-st_press_common_probe_error:
+-	iio_device_free(indio_dev);
+-iio_device_alloc_error:
+-	return err;
+ }
+ 
+ static int st_press_spi_remove(struct spi_device *spi)
 -- 
 1.7.9.5
