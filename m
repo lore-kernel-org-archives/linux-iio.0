@@ -1,75 +1,49 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:59641 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757125Ab3G3Djl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Jul 2013 23:39:41 -0400
+Received: by mail-lb0-f173.google.com with SMTP id 10so3155240lbf.4
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jul 2013 20:39:39 -0700 (PDT)
+MIME-Version: 1.0
+Date: Tue, 30 Jul 2013 15:39:37 +1200
+Message-ID: <CAFBKNSRAqprfNZzBVvPR3tqMPip4G9mz3nNDFqUkRB71MqR48w@mail.gmail.com>
+Subject: iio_trigger_alloc fails on Raspberry pi
+From: Jonathan Clapson <jonathan.clapson@gmail.com>
 To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk,
-	jic23@kernel.org,
-	sachin.kamat@linaro.org,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: [PATCH 2/3] iio: frequency: ad9523: Use devm_* APIs
-Date: Tue, 30 Jul 2013 11:54:22 +0530
-Message-Id: <1375165463-23453-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
-References: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-devm_* APIs are device managed and make code simpler.
+Hey
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
----
- drivers/iio/frequency/ad9523.c |   17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
+I'm trying to write a driver to interact with the mpu6000 imu sensor
+on the raspberry pi.
+I've modified the mpu6050 i2c driver in the linux kernel to use the
+mpu6000's spi interface. Calls of iio_trigger_alloc fail. I've added
+some debugging info to industrialio-trigger.c and from this have
+narrowed it down to the irq_alloc_descs function failing to allocate
+any irq's.
 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 92276de..7c5245d 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -961,17 +961,17 @@ static int ad9523_probe(struct spi_device *spi)
- 		return -EINVAL;
- 	}
- 
--	indio_dev = iio_device_alloc(sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get(&spi->dev, "vcc");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
--			goto error_put_reg;
-+			return ret;
- 	}
- 
- 	spi_set_drvdata(spi, indio_dev);
-@@ -1001,11 +1001,6 @@ static int ad9523_probe(struct spi_device *spi)
- error_disable_reg:
- 	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
--error_put_reg:
--	if (!IS_ERR(st->reg))
--		regulator_put(st->reg);
--
--	iio_device_free(indio_dev);
- 
- 	return ret;
- }
-@@ -1017,12 +1012,8 @@ static int ad9523_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 
--	if (!IS_ERR(st->reg)) {
-+	if (!IS_ERR(st->reg))
- 		regulator_disable(st->reg);
--		regulator_put(st->reg);
--	}
--
--	iio_device_free(indio_dev);
- 
- 	return 0;
- }
--- 
-1.7.9.5
+cat /proc/interrupts returns:
+           CPU0
+  3:      21114   ARMCTRL  BCM2708 Timer Tick
+ 32:     986019   ARMCTRL  dwc_otg, dwc_otg_pcd, dwc_otg_hcd:usb1
+ 65:          7   ARMCTRL  ARM Mailbox IRQ
+ 66:          1   ARMCTRL  VCHIQ doorbell
+ 75:          1   ARMCTRL
+ 77:       6801   ARMCTRL  bcm2708_sdhci (dma)
+ 80:         30   ARMCTRL  bcm2708_spi.0
+ 83:         20   ARMCTRL  uart-pl011
+ 84:      11002   ARMCTRL  mmc0
+FIQ:              usb_fiq
+Err:          0
+
+The call to irq_alloc_descs seems to be trying to allocate *any* two
+consecutive irq's (two being the value of
+CONFIG_IIO_CONSUMERS_PER_TRIGGER), the above i believe shows that this
+should be possible?
+
+Any idea's why irq_alloc_descs is failing?
+
+Thanks
