@@ -1,36 +1,99 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:45274 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753537Ab3GJLnV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2013 07:43:21 -0400
-From: Marek Vasut <marex@denx.de>
-To: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] iio: mxs-lradc: Check the return value from stmp_reset_block()
-Date: Wed, 10 Jul 2013 13:43:19 +0200
-Cc: jic23@cam.ac.uk, shawn.guo@linaro.org, linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-References: <1373423775-11053-1-git-send-email-festevam@gmail.com>
-In-Reply-To: <1373423775-11053-1-git-send-email-festevam@gmail.com>
+Return-Path: <o.v.kravchenko@globallogic.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201307101343.19408.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Wed, 31 Jul 2013 18:56:32 +0300
+Message-ID: <CAGH3drpJbnTnMwS-U3QDEFWSk2d-Oi2d9_b6+Lyq2sD78HOUVg@mail.gmail.com>
+Subject: IIO and input in BMA180 acceleration sensor driver
+From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, gregkh@linuxfoundation.org, jic23@cam.ac.uk,
+	Grygorii Strashko <grygorii.strashko@globallogic.com>
+Content-Type: multipart/alternative; boundary=089e013a100afc548f04e2d0c473
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Fabio Estevam,
+--089e013a100afc548f04e2d0c473
+Content-Type: text/plain; charset=ISO-8859-1
 
-> From: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> stmp_reset_block() may fail, so let's check its return value and propagate
-> it in the case of error.
-> 
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+Hi All,
 
-Acked-by: Marek Vasut <marex@denx.de>
+I'm writing driver for BMA180 acceleration sensor. It is a part of our
+OMAP4 development platforms
+Blaze/Tablet 2 and it's used to provide its measurement results to the
+User space (in or case Android)
+through standard Linux input subsystem (In our Product kernels it is
+simple a misc input device).
+Now there is an indetermination:
+- from one side, Accelerometer drivers should be part of IIO now;
+- from other side, We have to use input subsystem to provide backward
+compatibility
+  with the User space (Android)
 
-Best regards,
-Marek Vasut
+So, the question is how to achieve that?
+I'd be appreciated for any advice.
+
+-- 
+Oleksandr Kravchenko
+GlobalLogic
+P +380633213187
+P +380994930248
+www.globallogic.com
+<http://www.globallogic.com/>
+http://www.globallogic.com/email_disclaimer.txt
+
+--089e013a100afc548f04e2d0c473
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi All,<br><br>I&#39;m writing driver for BMA180 accelerat=
+ion sensor. It is a part of our OMAP4 development platforms<br>
+Blaze/Tablet 2 and it&#39;s used to provide its measurement results to the<=
+br>
+User space (in or case Android)<br>
+through standard Linux input subsystem (In our Product kernels it is<br>
+simple a misc input device).<br>
+Now there is an indetermination:<br>
+- from one side, Accelerometer drivers should be part of IIO now;<br>
+- from other side, We have to use input subsystem to provide backward<br>
+compatibility<br>
+=A0 with the User space (Android)<br>
+<br>
+So, the question is how to achieve that?<br>
+I&#39;d be appreciated for any advice.<br clear=3D"all"><div><br>-- <br><di=
+v dir=3D"ltr"><font size=3D"-1"><font size=3D"-1">Oleksandr Kravchenko</fon=
+t><br><span style=3D"vertical-align:baseline;font-variant:normal;font-style=
+:normal;font-size:12px;background-color:transparent;text-decoration:none;fo=
+nt-family:Arial;font-weight:normal">GlobalLogic</span><br>
+<span style=3D"vertical-align:baseline;font-variant:normal;font-style:norma=
+l;font-size:12px;background-color:transparent;text-decoration:none;font-fam=
+ily:Arial;font-weight:normal">P +380633213187</span></font><br><font size=
+=3D"-1"><font size=3D"-1"><span style=3D"vertical-align:baseline;font-varia=
+nt:normal;font-style:normal;font-size:12px;background-color:transparent;tex=
+t-decoration:none;font-family:Arial;font-weight:normal"><font size=3D"-1"><=
+span style=3D"vertical-align:baseline;font-variant:normal;font-style:normal=
+;font-size:12px;background-color:transparent;text-decoration:none;font-fami=
+ly:Arial;font-weight:normal">P +380994930248</span></font><font size=3D"-1"=
+><font size=3D"-1"><span style=3D"vertical-align:baseline;font-variant:norm=
+al;font-style:normal;font-size:12px;background-color:transparent;text-decor=
+ation:none;font-family:Arial;font-weight:normal"><br>
+</span></font></font></span></font><a href=3D"http://www.globallogic.com/" =
+target=3D"_blank"><span style=3D"font-size:12px;font-family:Arial;color:rgb=
+(17,85,204);background-color:transparent;font-weight:normal;font-style:norm=
+al;font-variant:normal;text-decoration:underline;vertical-align:baseline">w=
+ww.globallogic.com</span></a><span style=3D"vertical-align:baseline;font-va=
+riant:normal;font-style:normal;font-size:12px;background-color:transparent;=
+text-decoration:none;font-family:Arial;font-weight:normal"></span><br>
+<a href=3D"http://www.globallogic.com/" target=3D"_blank"><span style=3D"fo=
+nt-size:12px;font-family:Arial;color:rgb(17,85,204);background-color:transp=
+arent;font-weight:normal;font-style:normal;font-variant:normal;text-decorat=
+ion:underline;vertical-align:baseline"></span></a><br>
+<a href=3D"http://www.globallogic.com/email_disclaimer.txt" target=3D"_blan=
+k"><span style=3D"font-size:11px;font-family:Arial;color:rgb(17,85,204);bac=
+kground-color:transparent;font-weight:normal;font-style:normal;font-variant=
+:normal;text-decoration:underline;vertical-align:baseline">http://www.globa=
+llogic.com/email_disclaimer.txt</span></a><span style=3D"vertical-align:bas=
+eline;font-variant:normal;font-style:normal;font-size:11px;background-color=
+:transparent;text-decoration:none;font-family:Arial;font-weight:normal"></s=
+pan></font></div>
+
+</div></div>
+
+--089e013a100afc548f04e2d0c473--
