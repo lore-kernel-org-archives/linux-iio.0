@@ -1,45 +1,34 @@
-Return-Path: <sachin.kamat@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:52739 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754887Ab3HATpT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Aug 2013 15:45:19 -0400
+Date: Thu, 1 Aug 2013 20:45:14 +0100
+From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: How to use GPIO triggers?
+Message-ID: <20130801194513.GA32079@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <51FD41D2.7000405@kernel.org>
-References: <1375438128-23219-1-git-send-email-sachin.kamat@linaro.org>
-	<1375438128-23219-2-git-send-email-sachin.kamat@linaro.org>
-	<51FD41D2.7000405@kernel.org>
-Date: Mon, 5 Aug 2013 11:49:09 +0530
-Message-ID: <CAK9yfHw9G2q-xHhjiV4u_AODsVG_JCiLsndCWRtDdafiEJ_uxQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: magnetometer: st_magn: Use devm_iio_device_alloc
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, jic23@cam.ac.uk, denis.ciocca@st.com
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Hi,
 
-On 3 August 2013 23:15, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 08/02/13 11:08, Sachin Kamat wrote:
->> Using devm_iio_device_alloc makes code simpler.
->>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Applied to the togreg branch of iio.git
->
-> Thanks for getting all of these done.
->
-> Whilst this sort of change is kind of simple, the reduction in
-> complexity makes my life as maintainer easier in the long
-> run so I am very much in favour!
->
-> Also getting rid of all cases like you are doing means
-> that best practice is obvious to anyone writing new drivers.
->
+I've tried googling again and again.
 
-Thanks for your words of encouragement. I appreciate it.
-Converting to devm_* APIs is definitely a useful change as it makes
-the code simpler and error handling safer and cleaner.
-Thanks to all the people involved in implementing and merging iio
-specific devm APIs.
-I will continue to convert all the remaining drivers of iio to use devm APIs.
+But I can't seem to find out how to use GPIO triggers with the ADC driver.
 
--- 
-With warm regards,
-Sachin
+I am using a patched am335x driver and kernel version 3.11.
+I can use sysfs triggers to trigger and read a buffer of samples easily.
+
+But I cannot figure out how to connect a gpio to trigger the driver.
+Is it some additional support to add to the driver?
+
+Or am I missing something very obvious..
+
+Can someone spare a few minutes and point me in the right direction?
+
+Thank-you
+Zubair Lutfullah
