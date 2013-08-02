@@ -1,101 +1,108 @@
-Return-Path: <jic23@kernel.org>
-In-Reply-To: <51FBD9AA.90802@linux.intel.com>
-References: <1375438128-23219-1-git-send-email-sachin.kamat@linaro.org> <51FBD9AA.90802@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 1/2] iio: magnetometer: hid-sensor-magn-3d: Use devm_iio_device_alloc
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 02 Aug 2013 18:15:33 +0100
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org,jic23@cam.ac.uk,denis.ciocca@st.com,Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Message-ID: <94079c69-46a5-4b12-9ea2-7b2823a2ddef@email.android.com>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	denis.ciocca@st.com,
+	sachin.kamat@linaro.org
+Subject: [PATCH 2/2] iio: magnetometer: st_magn: Use devm_iio_device_alloc
+Date: Fri,  2 Aug 2013 15:38:48 +0530
+Message-Id: <1375438128-23219-2-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1375438128-23219-1-git-send-email-sachin.kamat@linaro.org>
+References: <1375438128-23219-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
+Using devm_iio_device_alloc makes code simpler.
 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/magnetometer/st_magn_core.c |    1 -
+ drivers/iio/magnetometer/st_magn_i2c.c  |   15 ++++-----------
+ drivers/iio/magnetometer/st_magn_spi.c  |   15 ++++-----------
+ 3 files changed, 8 insertions(+), 23 deletions(-)
 
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->On 08/02/2013 03:08 AM, Sachin Kamat wrote:
->> Using devm_iio_device_alloc makes code simpler.
->>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
->> ---
->> This series compile tested on togreg branch of
->> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->> ---
->>   drivers/iio/magnetometer/hid-sensor-magn-3d.c |   19
->+++++++------------
->>   1 file changed, 7 insertions(+), 12 deletions(-)
->>
->> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> index e71127a..5a6162d 100644
->> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> @@ -283,11 +283,11 @@ static int hid_magn_3d_probe(struct
->platform_device *pdev)
->>   	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->>   	struct iio_chan_spec *channels;
->>   
->> -	indio_dev = iio_device_alloc(sizeof(struct magn_3d_state));
->> -	if (indio_dev == NULL) {
->> -		ret = -ENOMEM;
->> -		goto error_ret;
->> -	}
->> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
->> +					  sizeof(struct magn_3d_state));
->> +	if (indio_dev == NULL)
->> +		return -ENOMEM;
->> +
->>   	platform_set_drvdata(pdev, indio_dev);
->>   
->>   	magn_state = iio_priv(indio_dev);
->> @@ -299,15 +299,14 @@ static int hid_magn_3d_probe(struct
->platform_device *pdev)
->>   				&magn_state->common_attributes);
->>   	if (ret) {
->?free indio_dev
->>   		dev_err(&pdev->dev, "failed to setup common attributes\n");
->> -		goto error_free_dev;
->> +		return ret;
->>   	}
->>   
->>   	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
->>   			   GFP_KERNEL);
->>   	if (!channels) {
->> -		ret = -ENOMEM;
->>   		dev_err(&pdev->dev, "failed to duplicate channels\n");
->> -		goto error_free_dev;
->> +		return -ENOMEM;
->>   	}
->>   
->>   	ret = magn_3d_parse_report(pdev, hsdev, channels,
->
->Any calls fail after this need to free indio_dev?
-
-No. Once allocated it will be freed when pdev->Dev is freed which will occur due to the error returned from this probe function.
-
-This is as true here as it is in the remove function below. 
->> @@ -364,9 +363,6 @@ error_unreg_buffer_funcs:
->>   	iio_triggered_buffer_cleanup(indio_dev);
->>   error_free_dev_mem:
->>   	kfree(indio_dev->channels);
->> -error_free_dev:
->> -	iio_device_free(indio_dev);
->> -error_ret:
->>   	return ret;
->>   }
->>   
->> @@ -381,7 +377,6 @@ static int hid_magn_3d_remove(struct
->platform_device *pdev)
->>   	hid_sensor_remove_trigger(indio_dev);
->>   	iio_triggered_buffer_cleanup(indio_dev);
->>   	kfree(indio_dev->channels);
->> -	iio_device_free(indio_dev);
->>   
->>   	return 0;
->>   }
-
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 7cd784f..e8d2849 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -407,7 +407,6 @@ void st_magn_common_remove(struct iio_dev *indio_dev)
+ 		st_sensors_deallocate_trigger(indio_dev);
+ 		st_magn_deallocate_ring(indio_dev);
+ 	}
+-	iio_device_free(indio_dev);
+ }
+ EXPORT_SYMBOL(st_magn_common_remove);
+ 
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index 1bed117..892e0fe 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -25,11 +25,9 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+ 	struct st_sensor_data *mdata;
+ 	int err;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*mdata));
+-	if (indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto iio_device_alloc_error;
+-	}
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*mdata));
++	if (!indio_dev)
++		return -ENOMEM;
+ 
+ 	mdata = iio_priv(indio_dev);
+ 	mdata->dev = &client->dev;
+@@ -38,14 +36,9 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+ 
+ 	err = st_magn_common_probe(indio_dev, NULL);
+ 	if (err < 0)
+-		goto st_magn_common_probe_error;
++		return err;
+ 
+ 	return 0;
+-
+-st_magn_common_probe_error:
+-	iio_device_free(indio_dev);
+-iio_device_alloc_error:
+-	return err;
+ }
+ 
+ static int st_magn_i2c_remove(struct i2c_client *client)
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index a2333a1..a6143ea 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -24,11 +24,9 @@ static int st_magn_spi_probe(struct spi_device *spi)
+ 	struct st_sensor_data *mdata;
+ 	int err;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*mdata));
+-	if (indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto iio_device_alloc_error;
+-	}
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*mdata));
++	if (!indio_dev)
++		return -ENOMEM;
+ 
+ 	mdata = iio_priv(indio_dev);
+ 	mdata->dev = &spi->dev;
+@@ -37,14 +35,9 @@ static int st_magn_spi_probe(struct spi_device *spi)
+ 
+ 	err = st_magn_common_probe(indio_dev, NULL);
+ 	if (err < 0)
+-		goto st_magn_common_probe_error;
++		return err;
+ 
+ 	return 0;
+-
+-st_magn_common_probe_error:
+-	iio_device_free(indio_dev);
+-iio_device_alloc_error:
+-	return err;
+ }
+ 
+ static int st_magn_spi_remove(struct spi_device *spi)
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.9.5
