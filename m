@@ -1,70 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38290 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752450Ab3HCQyr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 12:54:47 -0400
-Message-ID: <51FD43EF.30001@kernel.org>
-Date: Sat, 03 Aug 2013 18:54:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <51FBD985.2000904@linux.intel.com>
+Date: Fri, 02 Aug 2013 09:08:37 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	Johan Hovold <jhovold@gmail.com>
-Subject: Re: [PATCH 5/6] iio: light: lm3533-als: Use devm_iio_device_alloc
-References: <1375173868-13235-1-git-send-email-sachin.kamat@linaro.org> <1375173868-13235-5-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1375173868-13235-5-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk, jic23@kernel.org,
+ Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 4/6] iio: light: hid-sensor-als: Use devm_iio_device_alloc
+References: <1375173868-13235-1-git-send-email-sachin.kamat@linaro.org> <1375173868-13235-4-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1375173868-13235-4-git-send-email-sachin.kamat@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/30/13 09:44, Sachin Kamat wrote:
+On 07/30/2013 01:44 AM, Sachin Kamat wrote:
 > Using devm_iio_device_alloc makes code simpler.
-> 
+>
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Johan Hovold <jhovold@gmail.com>
-Applied to the togreg branch of iio.git
-
+> Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
 > ---
->  drivers/iio/light/lm3533-als.c |    7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-> index 5fa31a4..c1aadc6 100644
-> --- a/drivers/iio/light/lm3533-als.c
-> +++ b/drivers/iio/light/lm3533-als.c
-> @@ -847,7 +847,7 @@ static int lm3533_als_probe(struct platform_device *pdev)
->  		return -EINVAL;
->  	}
->  
-> -	indio_dev = iio_device_alloc(sizeof(*als));
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*als));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> @@ -870,7 +870,7 @@ static int lm3533_als_probe(struct platform_device *pdev)
->  	if (als->irq) {
->  		ret = lm3533_als_setup_irq(als, indio_dev);
->  		if (ret)
-> -			goto err_free_dev;
-> +			return ret;
->  	}
->  
->  	ret = lm3533_als_setup(als, pdata);
-> @@ -894,8 +894,6 @@ err_disable:
->  err_free_irq:
->  	if (als->irq)
->  		free_irq(als->irq, indio_dev);
-> -err_free_dev:
+>   drivers/iio/light/hid-sensor-als.c |   17 +++++------------
+>   1 file changed, 5 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+> index 9adfef0..84cf004 100644
+> --- a/drivers/iio/light/hid-sensor-als.c
+> +++ b/drivers/iio/light/hid-sensor-als.c
+> @@ -249,11 +249,9 @@ static int hid_als_probe(struct platform_device *pdev)
+>   	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+>   	struct iio_chan_spec *channels;
+>   
+> -	indio_dev = iio_device_alloc(sizeof(struct als_state));
+> -	if (indio_dev == NULL) {
+> -		ret = -ENOMEM;
+> -		goto error_ret;
+> -	}
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct als_state));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+>   	platform_set_drvdata(pdev, indio_dev);
+>   
+>   	als_state = iio_priv(indio_dev);
+> @@ -264,14 +262,13 @@ static int hid_als_probe(struct platform_device *pdev)
+>   					&als_state->common_attributes);
+>   	if (ret) {
+>   		dev_err(&pdev->dev, "failed to setup common attributes\n");
+> -		goto error_free_dev;
+> +		return ret;
+>   	}
+>   
+>   	channels = kmemdup(als_channels, sizeof(als_channels), GFP_KERNEL);
+>   	if (!channels) {
+> -		ret = -ENOMEM;
+Don't we have to free indio_dev?
+>   		dev_err(&pdev->dev, "failed to duplicate channels\n");
+> -		goto error_free_dev;
+> +		return -ENOMEM;
+>   	}
+>   
+>   	ret = als_parse_report(pdev, hsdev, channels,
+
+Same here, What if any of the calls fail after this? free indio_dev?
+> @@ -329,9 +326,6 @@ error_unreg_buffer_funcs:
+>   	iio_triggered_buffer_cleanup(indio_dev);
+>   error_free_dev_mem:
+>   	kfree(indio_dev->channels);
+> -error_free_dev:
 > -	iio_device_free(indio_dev);
->  
->  	return ret;
->  }
-> @@ -910,7 +908,6 @@ static int lm3533_als_remove(struct platform_device *pdev)
->  	lm3533_als_disable(als);
->  	if (als->irq)
->  		free_irq(als->irq, indio_dev);
+> -error_ret:
+>   	return ret;
+>   }
+>   
+> @@ -346,7 +340,6 @@ static int hid_als_remove(struct platform_device *pdev)
+>   	hid_sensor_remove_trigger(indio_dev);
+>   	iio_triggered_buffer_cleanup(indio_dev);
+>   	kfree(indio_dev->channels);
 > -	iio_device_free(indio_dev);
->  
->  	return 0;
->  }
-> 
+>   
+>   	return 0;
+>   }
