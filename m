@@ -1,42 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38237 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39167 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752450Ab3HCQth (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 12:49:37 -0400
-Message-ID: <51FD42B6.5090909@kernel.org>
-Date: Sat, 03 Aug 2013 18:49:42 +0100
+	with ESMTP id S1752640Ab3HCTAG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 15:00:06 -0400
+Message-ID: <51FD6147.5090101@kernel.org>
+Date: Sat, 03 Aug 2013 21:00:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>
 CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 2/6] iio: imu: adis16480: Use devm_iio_device_alloc
-References: <1375173868-13235-1-git-send-email-sachin.kamat@linaro.org> <1375173868-13235-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1375173868-13235-2-git-send-email-sachin.kamat@linaro.org>
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: Re: [PATCH 1/3] iio: amplifiers: ad8366: Use devm_* APIs
+References: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/30/13 09:44, Sachin Kamat wrote:
-> Using devm_iio_device_alloc makes code simpler.
+On 07/30/13 07:24, Sachin Kamat wrote:
+> devm_* APIs are device managed and make code simpler.
 > 
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git.
+> Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+Applied to the togreg branch of iio.git
 
-Thanks,
-
-Jonathan
+Thanks.
 > ---
->  drivers/iio/imu/adis16480.c |   10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+> This series compile tested on togreg branch of
+> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+> ---
+>  drivers/iio/amplifiers/ad8366.c |   13 +++----------
+>  1 file changed, 3 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> index b7db383..dd4206c 100644
-> --- a/drivers/iio/imu/adis16480.c
-> +++ b/drivers/iio/imu/adis16480.c
-> @@ -839,7 +839,7 @@ static int adis16480_probe(struct spi_device *spi)
->  	struct adis16480 *st;
+> diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+> index d354554..d0a79a4 100644
+> --- a/drivers/iio/amplifiers/ad8366.c
+> +++ b/drivers/iio/amplifiers/ad8366.c
+> @@ -139,17 +139,17 @@ static int ad8366_probe(struct spi_device *spi)
+>  	struct ad8366_state *st;
 >  	int ret;
 >  
 > -	indio_dev = iio_device_alloc(sizeof(*st));
@@ -44,32 +45,33 @@ Jonathan
 >  	if (indio_dev == NULL)
 >  		return -ENOMEM;
 >  
-> @@ -857,11 +857,11 @@ static int adis16480_probe(struct spi_device *spi)
+>  	st = iio_priv(indio_dev);
 >  
->  	ret = adis_init(&st->adis, indio_dev, spi, &adis16480_data);
->  	if (ret)
-> -		goto error_free_dev;
-> +		return ret;
+> -	st->reg = regulator_get(&spi->dev, "vcc");
+> +	st->reg = devm_regulator_get(&spi->dev, "vcc");
+>  	if (!IS_ERR(st->reg)) {
+>  		ret = regulator_enable(st->reg);
+>  		if (ret)
+> -			goto error_put_reg;
+> +			return ret;
+>  	}
 >  
->  	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev, NULL);
->  	if (ret)
-> -		goto error_free_dev;
-> +		return ret;
->  
->  	ret = adis16480_initial_setup(indio_dev);
->  	if (ret)
-> @@ -879,8 +879,6 @@ error_stop_device:
->  	adis16480_stop_device(indio_dev);
->  error_cleanup_buffer:
->  	adis_cleanup_buffer_and_trigger(&st->adis, indio_dev);
-> -error_free_dev:
+>  	spi_set_drvdata(spi, indio_dev);
+> @@ -173,11 +173,6 @@ static int ad8366_probe(struct spi_device *spi)
+>  error_disable_reg:
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+> -error_put_reg:
+> -	if (!IS_ERR(st->reg))
+> -		regulator_put(st->reg);
+> -
 > -	iio_device_free(indio_dev);
+>  
 >  	return ret;
 >  }
->  
-> @@ -894,8 +892,6 @@ static int adis16480_remove(struct spi_device *spi)
->  
->  	adis_cleanup_buffer_and_trigger(&st->adis, indio_dev);
+> @@ -195,8 +190,6 @@ static int ad8366_remove(struct spi_device *spi)
+>  		regulator_put(reg);
+>  	}
 >  
 > -	iio_device_free(indio_dev);
 > -
