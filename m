@@ -1,75 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39800 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39851 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752967Ab3HCUSM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 16:18:12 -0400
-Message-ID: <51FD739C.8020200@kernel.org>
-Date: Sat, 03 Aug 2013 22:18:20 +0100
+	with ESMTP id S1752989Ab3HCUVy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 16:21:54 -0400
+Message-ID: <51FD7479.6000402@kernel.org>
+Date: Sat, 03 Aug 2013 22:22:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio:vcnl4000: Use devm_iio_device_alloc
-References: <1375136311-8523-1-git-send-email-pmeerw@pmeerw.net> <1375136311-8523-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1375136311-8523-2-git-send-email-pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org,
+	Grygorii Strashko <grygorii.strashko@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH] iio: Fix documentation of devm_iio_device_free()
+References: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/29/13 23:18, Peter Meerwald wrote:
+On 07/29/13 22:35, Peter Meerwald wrote:
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Indeed, this is downright confusing ;)
+
 Applied to the togreg branch of iio.git
 
-Thanks
+Thanks.
 > ---
->  drivers/iio/light/vcnl4000.c | 16 ++++------------
->  1 file changed, 4 insertions(+), 12 deletions(-)
+>  include/linux/iio/iio.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index 1014943..2bb3042 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -157,7 +157,7 @@ static int vcnl4000_probe(struct i2c_client *client,
->  	struct iio_dev *indio_dev;
->  	int ret;
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index f1d99f6..7ae54a5 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -552,9 +552,9 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
+>   * @dev:		Device this iio_dev belongs to
+>   * @indio_dev: 		the iio_dev associated with the device
+>   *
+> - * Free indio_dev allocated with devm_iio_device_alloc().
+> + * Free iio_dev allocated with devm_iio_device_alloc().
+>   */
+> -void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
+> +void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
 >  
-> -	indio_dev = iio_device_alloc(sizeof(*data));
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> @@ -167,7 +167,7 @@ static int vcnl4000_probe(struct i2c_client *client,
->  
->  	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
->  	if (ret < 0)
-> -		goto error_free_dev;
-> +		return ret;
->  
->  	dev_info(&client->dev, "VCNL4000 Ambient light/proximity sensor, Prod %02x, Rev: %02x\n",
->  		ret >> 4, ret & 0xf);
-> @@ -181,22 +181,14 @@ static int vcnl4000_probe(struct i2c_client *client,
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
-> -		goto error_free_dev;
-> +		return ret;
->  
->  	return 0;
-> -
-> -error_free_dev:
-> -	iio_device_free(indio_dev);
-> -	return ret;
->  }
->  
->  static int vcnl4000_remove(struct i2c_client *client)
->  {
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -
-> -	iio_device_unregister(indio_dev);
-> -	iio_device_free(indio_dev);
-> -
-> +	iio_device_unregister(i2c_get_clientdata(client));
->  	return 0;
->  }
->  
+>  /**
+>   * iio_buffer_enabled() - helper function to test if the buffer is enabled
 > 
