@@ -1,128 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38322 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38290 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751803Ab3HCQ5U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 12:57:20 -0400
-Message-ID: <51FD4487.2090207@kernel.org>
-Date: Sat, 03 Aug 2013 18:57:27 +0100
+	with ESMTP id S1752450Ab3HCQyr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 12:54:47 -0400
+Message-ID: <51FD43EF.30001@kernel.org>
+Date: Sat, 03 Aug 2013 18:54:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Amit Kucheria <amit.kucheria@linaro.org>
-CC: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
-	jic23@cam.ac.uk
-Subject: Re: [PATCH 6/6] iio: light: tsl2563: Use devm_* APIs
-References: <1375173868-13235-1-git-send-email-sachin.kamat@linaro.org> <1375173868-13235-6-git-send-email-sachin.kamat@linaro.org> <CAP245DUw-U8N2QZFwesb9c8EcRbnwiBMtyA_avCiE++FwB9hCw@mail.gmail.com>
-In-Reply-To: <CAP245DUw-U8N2QZFwesb9c8EcRbnwiBMtyA_avCiE++FwB9hCw@mail.gmail.com>
+To: Sachin Kamat <sachin.kamat@linaro.org>
+CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
+	Johan Hovold <jhovold@gmail.com>
+Subject: Re: [PATCH 5/6] iio: light: lm3533-als: Use devm_iio_device_alloc
+References: <1375173868-13235-1-git-send-email-sachin.kamat@linaro.org> <1375173868-13235-5-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1375173868-13235-5-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/30/13 10:07, Amit Kucheria wrote:
-> On Tue, Jul 30, 2013 at 2:14 PM, Sachin Kamat <sachin.kamat@linaro.org> wrote:
->> devm_* APIs are device managed and make code simpler.
->>
->> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->> Cc: Amit Kucheria <amit.kucheria@linaro.org>
+On 07/30/13 09:44, Sachin Kamat wrote:
+> Using devm_iio_device_alloc makes code simpler.
 > 
-> Looks good. I don't have the device to test this on, though.
-> 
-> Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
-> 
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Cc: Johan Hovold <jhovold@gmail.com>
 Applied to the togreg branch of iio.git
 
-Thanks,
->> ---
->>  drivers/iio/light/tsl2563.c |   25 ++++++++-----------------
->>  1 file changed, 8 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
->> index 1f529f3..ebb962c 100644
->> --- a/drivers/iio/light/tsl2563.c
->> +++ b/drivers/iio/light/tsl2563.c
->> @@ -702,7 +702,7 @@ static int tsl2563_probe(struct i2c_client *client,
->>         int err = 0;
->>         u8 id = 0;
->>
->> -       indio_dev = iio_device_alloc(sizeof(*chip));
->> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
->>         if (!indio_dev)
->>                 return -ENOMEM;
->>
->> @@ -714,13 +714,13 @@ static int tsl2563_probe(struct i2c_client *client,
->>         err = tsl2563_detect(chip);
->>         if (err) {
->>                 dev_err(&client->dev, "detect error %d\n", -err);
->> -               goto fail1;
->> +               return err;
->>         }
->>
->>         err = tsl2563_read_id(chip, &id);
->>         if (err) {
->>                 dev_err(&client->dev, "read id error %d\n", -err);
->> -               goto fail1;
->> +               return err;
->>         }
->>
->>         mutex_init(&chip->lock);
->> @@ -751,7 +751,7 @@ static int tsl2563_probe(struct i2c_client *client,
->>                 indio_dev->info = &tsl2563_info_no_irq;
->>
->>         if (client->irq) {
->> -               err = request_threaded_irq(client->irq,
->> +               err = devm_request_threaded_irq(&client->dev, client->irq,
->>                                            NULL,
->>                                            &tsl2563_event_handler,
->>                                            IRQF_TRIGGER_RISING | IRQF_ONESHOT,
->> @@ -759,14 +759,14 @@ static int tsl2563_probe(struct i2c_client *client,
->>                                            indio_dev);
->>                 if (err) {
->>                         dev_err(&client->dev, "irq request error %d\n", -err);
->> -                       goto fail1;
->> +                       return err;
->>                 }
->>         }
->>
->>         err = tsl2563_configure(chip);
->>         if (err) {
->>                 dev_err(&client->dev, "configure error %d\n", -err);
->> -               goto fail2;
->> +               return err;
->>         }
->>
->>         INIT_DELAYED_WORK(&chip->poweroff_work, tsl2563_poweroff_work);
->> @@ -777,19 +777,14 @@ static int tsl2563_probe(struct i2c_client *client,
->>         err = iio_device_register(indio_dev);
->>         if (err) {
->>                 dev_err(&client->dev, "iio registration error %d\n", -err);
->> -               goto fail3;
->> +               goto fail;
->>         }
->>
->>         return 0;
->>
->> -fail3:
->> +fail:
->>         cancel_delayed_work(&chip->poweroff_work);
->>         flush_scheduled_work();
->> -fail2:
->> -       if (client->irq)
->> -               free_irq(client->irq, indio_dev);
->> -fail1:
->> -       iio_device_free(indio_dev);
->>         return err;
->>  }
->>
->> @@ -807,10 +802,6 @@ static int tsl2563_remove(struct i2c_client *client)
->>                                   chip->intr);
->>         flush_scheduled_work();
->>         tsl2563_set_power(chip, 0);
->> -       if (client->irq)
->> -               free_irq(client->irq, indio_dev);
->> -
->> -       iio_device_free(indio_dev);
->>
->>         return 0;
->>  }
->> --
->> 1.7.9.5
->>
+> ---
+>  drivers/iio/light/lm3533-als.c |    7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+> index 5fa31a4..c1aadc6 100644
+> --- a/drivers/iio/light/lm3533-als.c
+> +++ b/drivers/iio/light/lm3533-als.c
+> @@ -847,7 +847,7 @@ static int lm3533_als_probe(struct platform_device *pdev)
+>  		return -EINVAL;
+>  	}
+>  
+> -	indio_dev = iio_device_alloc(sizeof(*als));
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*als));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+> @@ -870,7 +870,7 @@ static int lm3533_als_probe(struct platform_device *pdev)
+>  	if (als->irq) {
+>  		ret = lm3533_als_setup_irq(als, indio_dev);
+>  		if (ret)
+> -			goto err_free_dev;
+> +			return ret;
+>  	}
+>  
+>  	ret = lm3533_als_setup(als, pdata);
+> @@ -894,8 +894,6 @@ err_disable:
+>  err_free_irq:
+>  	if (als->irq)
+>  		free_irq(als->irq, indio_dev);
+> -err_free_dev:
+> -	iio_device_free(indio_dev);
+>  
+>  	return ret;
+>  }
+> @@ -910,7 +908,6 @@ static int lm3533_als_remove(struct platform_device *pdev)
+>  	lm3533_als_disable(als);
+>  	if (als->irq)
+>  		free_irq(als->irq, indio_dev);
+> -	iio_device_free(indio_dev);
+>  
+>  	return 0;
+>  }
+> 
