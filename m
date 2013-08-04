@@ -1,59 +1,88 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-Date: Sun, 4 Aug 2013 16:42:31 +0100
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Zubair Lutfullah:  zubair.lutfullah@gmail.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org, gregkh@linuxfoundation.org,
-	Russ.Dill@ti.com
-Subject: Re: [PATCH 2/2] iio: ti_am335x_adc: Add continuous sampling and
- trigger support
-Message-ID: <20130804154230.GA32073@gmail.com>
-References: <1374882674-18403-1-git-send-email-zubair.lutfullah@gmail.com>
- <1374882674-18403-3-git-send-email-zubair.lutfullah@gmail.com>
- <51FE357C.2040401@kernel.org>
- <20130804131109.GA30541@gmail.com>
- <51FE8107.4020201@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44859 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751605Ab3HDKID (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Aug 2013 06:08:03 -0400
+Message-ID: <51FE361B.5030900@kernel.org>
+Date: Sun, 04 Aug 2013 12:08:11 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <51FE8107.4020201@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+	gregkh@linuxfoundation.org, Russ.Dill@ti.com,
+	Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH 1/2] input: ti_tsc: Enable shared IRQ for TSC
+References: <1374882674-18403-1-git-send-email-zubair.lutfullah@gmail.com> <1374882674-18403-2-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1374882674-18403-2-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Aug 04, 2013 at 05:27:51PM +0100, Jonathan Cameron wrote:
-> > 
-> > The trigger here is simply to give certain functionality like an oscilloscope 
-> > trigger. The control is given to the userspace application via IIO triggers 
-> > (so sysfs/gpio/timer etc can be used)
-> > 
-> > A buffer of samples is read on one trigger.
-> That buffer is filled continuously?
-
-Yes.
-Very similar to an oscilloscope trigger.
-
-Upon receiving a trigger, enabled channels are sampled continuously and 
-pushed to userspace via iio_push_to_buffer
-
-> > 
-> > generic_buffer.c reads the samples with a simple sysfs trigger.
-> > 
-> I'm not sure what the point of the sysfs trigger here is.  Why not
-> just push from the fifo directly out when a watershed interrupt occurs
-> on the hardware buffer?
+On 07/27/13 00:51, Zubair Lutfullah wrote:
+> From: "Patil, Rachna" <rachna@ti.com>
 > 
+> Touchscreen and ADC share the same IRQ line from parent MFD core.
+> Previously only Touchscreen was interrupt based.
+> With continuous mode support added in ADC driver, driver requires
+> interrupt to process the ADC samples, so enable shared IRQ flag bit for
+> touchscreen.
+> 
+> Signed-off-by: Patil, Rachna <rachna@ti.com>
+> Acked-by: Vaibhav Hiremath <hvaibhav@ti.com>
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I'd rather this went via input independent of the other patch
+(if not there all that will happen is one or other driver will
+fail to probe if both are attempted?)
 
-So that any IIO trigger can be used to initiate sampling. sysfs/gpio/timer etc.
-Also in this way, generic buffer.c can be used without patching it to remove
-trigger checks.
+Can take it through IIO but only with a Dmitry Ack.
 
-What you state is exactly what happens. When the HW fifo threshold is reached,
-the samples are read and sent to userspace via iio_push_to_buffers.
-
-The trigger is used *only* to initiate the process.
-
-> > So.
-> > Additional description in the git log only?
-> > 
-> > I'll add following in log message.
-> > "Any IIO trigger can be used to trigger driver to read a buffer
-> > of samples from enabled channels."
+> ---
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index e1c5300..68d1250 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -260,8 +260,18 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  	unsigned int fsm;
+>  
+>  	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+> -	if (status & IRQENB_FIFO0THRES) {
+> -
+> +	/*
+> +	 * ADC and touchscreen share the IRQ line.
+> +	 * FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
+> +	 * interrupts are used by ADC,
+> +	 * hence return from touchscreen IRQ handler if FIFO1
+> +	 * related interrupts occurred.
+> +	 */
+> +	if ((status & IRQENB_FIFO1THRES) ||
+> +			(status & IRQENB_FIFO1OVRRUN) ||
+> +			(status & IRQENB_FIFO1UNDRFLW))
+> +		return IRQ_NONE;
+> +	else if (status & IRQENB_FIFO0THRES) {
+>  		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+>  
+>  		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+> @@ -315,7 +325,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  	}
+>  
+>  	if (irqclr) {
+> -		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+> +		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
+>  		am335x_tsc_se_update(ts_dev->mfd_tscadc);
+>  		return IRQ_HANDLED;
+>  	}
+> @@ -389,7 +399,7 @@ static int titsc_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	err = request_irq(ts_dev->irq, titsc_irq,
+> -			  0, pdev->dev.driver->name, ts_dev);
+> +			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+>  	if (err) {
+>  		dev_err(&pdev->dev, "failed to allocate irq.\n");
+>  		goto err_free_mem;
+> 
