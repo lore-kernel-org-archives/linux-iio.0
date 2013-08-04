@@ -1,83 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39185 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752877Ab3HCTBi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 15:01:38 -0400
-Message-ID: <51FD61AA.7090805@kernel.org>
-Date: Sat, 03 Aug 2013 21:01:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-169.synserver.de ([212.40.185.169]:1092 "EHLO
+	smtp-out-160.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751680Ab3HDNsG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Aug 2013 09:48:06 -0400
+Message-ID: <51FE5BD5.3060700@metafoo.de>
+Date: Sun, 04 Aug 2013 15:49:09 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, jic23@cam.ac.uk,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: Re: [PATCH 2/3] iio: frequency: ad9523: Use devm_* APIs
-References: <1375165463-23453-1-git-send-email-sachin.kamat@linaro.org> <1375165463-23453-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1375165463-23453-2-git-send-email-sachin.kamat@linaro.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Add tmp006 IR temperature sensor
+References: <1375136888-19978-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1375136888-19978-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/30/13 07:24, Sachin Kamat wrote:
-> devm_* APIs are device managed and make code simpler.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
-Applied to the togreg branch of iio.git
+On 07/30/2013 12:28 AM, Peter Meerwald wrote:
+[...]
+> +static int tmp006_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *channel, int *val,
+> +			    int *val2, long mask)
+> +{
+> +	struct tmp006_data *data = iio_priv(indio_dev);
+> +	s32 ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (channel->type == IIO_VOLTAGE) {
+> +			ret = tmp006_read_measurement(data, TMP006_VOBJECT);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = (s16) ret;
+> +		} else if (channel->type == IIO_TEMP) {
+> +			ret = tmp006_read_measurement(data, TMP006_TAMBIENT);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = (s16) ret >> 2;
+> +		} else
+> +			break;
 
-Thanks,
-> ---
->  drivers/iio/frequency/ad9523.c |   17 ++++-------------
->  1 file changed, 4 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-> index 92276de..7c5245d 100644
-> --- a/drivers/iio/frequency/ad9523.c
-> +++ b/drivers/iio/frequency/ad9523.c
-> @@ -961,17 +961,17 @@ static int ad9523_probe(struct spi_device *spi)
->  		return -EINVAL;
->  	}
->  
-> -	indio_dev = iio_device_alloc(sizeof(*st));
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->  	if (indio_dev == NULL)
->  		return -ENOMEM;
->  
->  	st = iio_priv(indio_dev);
->  
-> -	st->reg = regulator_get(&spi->dev, "vcc");
-> +	st->reg = devm_regulator_get(&spi->dev, "vcc");
->  	if (!IS_ERR(st->reg)) {
->  		ret = regulator_enable(st->reg);
->  		if (ret)
-> -			goto error_put_reg;
-> +			return ret;
->  	}
->  
->  	spi_set_drvdata(spi, indio_dev);
-> @@ -1001,11 +1001,6 @@ static int ad9523_probe(struct spi_device *spi)
->  error_disable_reg:
->  	if (!IS_ERR(st->reg))
->  		regulator_disable(st->reg);
-> -error_put_reg:
-> -	if (!IS_ERR(st->reg))
-> -		regulator_put(st->reg);
-> -
-> -	iio_device_free(indio_dev);
->  
->  	return ret;
->  }
-> @@ -1017,12 +1012,8 @@ static int ad9523_remove(struct spi_device *spi)
->  
->  	iio_device_unregister(indio_dev);
->  
-> -	if (!IS_ERR(st->reg)) {
-> +	if (!IS_ERR(st->reg))
->  		regulator_disable(st->reg);
-> -		regulator_put(st->reg);
-> -	}
-> -
-> -	iio_device_free(indio_dev);
->  
->  	return 0;
->  }
-> 
+Needs braces around the last else branch.
+
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (channel->type == IIO_VOLTAGE) {
+> +			*val = 0;
+> +			*val2 = 156250;
+> +		} else if (channel->type == IIO_TEMP) {
+> +			*val = 31;
+> +			*val2 = 250000;
+> +		} else
+> +			break;
+
+Same here.
+
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+
+[...]
+> +
+> +static int tmp006_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct tmp006_data *data;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = dev_name(&client->dev);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &tmp006_info;
+> +
+> +	indio_dev->channels = tmp006_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(tmp006_channels);
+> +
+> +	if (!tmp006_check_identification(data)) {
+> +		dev_err(&client->dev, "no TMP006 sensor\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	dev_info(&client->dev, "TMP006 IR thermophile sensor\n");
+
+That's just noise.
+
+> +
+> +	ret = i2c_smbus_read_word_swapped(data->client, TMP006_CONFIG);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->config = ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+return 0;
+> +}
+[...]
+
