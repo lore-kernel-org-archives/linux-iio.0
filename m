@@ -1,89 +1,292 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Fri, 30 Aug 2013 09:07:34 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lukasz Czerwinski <l.czerwinski@samsung.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree-discuss@lists.ozlabs.org" <devicetree-discuss@lists.ozlabs.org>
-Subject: Re: [PATCH 0/4]iio: STMicroelectronics DT and event support
-Message-ID: <20130830080734.GF23998@lee--X1>
-References: <1372767338-13179-1-git-send-email-l.czerwinski@samsung.com>
- <521F67CF.4060702@st.com>
- <20130830070628.GE23998@lee--X1>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47123 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753133Ab3HDPCh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Aug 2013 11:02:37 -0400
+Message-ID: <51FE7B22.8040800@kernel.org>
+Date: Sun, 04 Aug 2013 17:02:42 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20130830070628.GE23998@lee--X1>
-List-ID: <linux-iio@vger.kernel.org>
+To: Lukasz Czerwinski <l.czerwinski@samsung.com>
+CC: denis.ciocca@st.com, linux-iio@vger.kernel.org,
+	devicetree-discuss@lists.ozlabs.org,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH 3/4] iio: accel: Add event subsystem to st_accel driver
+References: <1372767338-13179-1-git-send-email-l.czerwinski@samsung.com> <1372767338-13179-4-git-send-email-l.czerwinski@samsung.com>
+In-Reply-To: <1372767338-13179-4-git-send-email-l.czerwinski@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> > + Lee Jones in the loop.
-> 
-> I missed out on these because they weren't sent to LKML. Please ensure
-> you always CC any patches due for Mainline there too. I have some
-> things to say about these patches, but can't as they're not in my
-> inbox. When you send them again, can you CC both LKML and myself
-> please?
+On 07/02/13 13:15, Lukasz Czerwinski wrote:
+> This patch adds event support for iio st_accel driver.
+>
+> Signed-off-by: Lukasz Czerwinski <l.czerwinski@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
 
-Oh, and you need to use the new address for the DT ML too.
+Now I may have gotten lost in the driver, but I believe the underlying
+channel specs are constant and in this patch you edit their event masks.
+Not a good idea ;)
 
-> > On 07/02/2013 02:15 PM, Lukasz Czerwinski wrote:
-> > > Hi,
-> > >
-> > > This is the patchset that adds device tree and event subsytem support
-> > > for generic st_common library.
-> > >
-> > > I tested our patches with Exynos4x12 board. We tested sensors:
-> > > - LSM330DLC accelerometer and gyroscope (I2C)
-> > > - LPS331AP pressure sensor (I2C)
-> > >
-> > > Generally it works fine.
-> > > I couldn't implement event patch for lsm330dlc gyroscope because I
-> > > don't have connected INT1 pin to SoC.
-> > >
-> > > My implementation allows to use event system or triggered buffer by
-> > > proper declaration of irqs in device tree/platform data.
-> > >
-> > > Jacek Anaszewski (1):
-> > >    iio: lps331ap: Add support for DT
-> > >
-> > > Lukasz Czerwinski (3):
-> > >    iio: st_sensors:  Add DT bindings for st_accel and st_gyro
-> > >    iio: st_sensors: Add threshold events support
-> > >    iio: accel: Add event subsystem to st_accel driver
-> > >
-> > >   .../bindings/iio/accelerometer/st_accel.txt        |   54 +++++
-> > >   .../devicetree/bindings/iio/gyroscope/st_gyro.txt  |   51 +++++
-> > >   .../bindings/iio/pressure/st_pressure.txt          |   41 ++++
-> > >   drivers/iio/accel/st_accel.h                       |   19 +-
-> > >   drivers/iio/accel/st_accel_core.c                  |  159 +++++++++++++-
-> > >   drivers/iio/accel/st_accel_i2c.c                   |   19 +-
-> > >   drivers/iio/accel/st_accel_spi.c                   |   19 +-
-> > >   drivers/iio/common/st_sensors/st_sensors_core.c    |  225 +++++++++++++++++++-
-> > >   drivers/iio/common/st_sensors/st_sensors_i2c.c     |   59 ++++-
-> > >   drivers/iio/common/st_sensors/st_sensors_spi.c     |   59 ++++-
-> > >   drivers/iio/gyro/st_gyro.h                         |   15 +-
-> > >   drivers/iio/gyro/st_gyro_core.c                    |    8 +-
-> > >   drivers/iio/gyro/st_gyro_i2c.c                     |   18 +-
-> > >   drivers/iio/gyro/st_gyro_spi.c                     |   18 +-
-> > >   drivers/iio/magnetometer/st_magn.h                 |    3 +-
-> > >   drivers/iio/magnetometer/st_magn_core.c            |    5 +-
-> > >   drivers/iio/magnetometer/st_magn_i2c.c             |    2 +-
-> > >   drivers/iio/magnetometer/st_magn_spi.c             |    2 +-
-> > >   drivers/iio/pressure/st_pressure.h                 |    3 +-
-> > >   drivers/iio/pressure/st_pressure_core.c            |   12 +-
-> > >   drivers/iio/pressure/st_pressure_i2c.c             |   11 +-
-> > >   drivers/iio/pressure/st_pressure_spi.c             |   11 +-
-> > >   include/linux/iio/common/st_sensors.h              |   88 +++++++-
-> > >   include/linux/platform_data/st_sensors_pdata.h     |    2 +
-> > >   24 files changed, 837 insertions(+), 66 deletions(-)
-> > >   create mode 100644 Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt
-> > >   create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/st_gyro.txt
-> > >   create mode 100644 Documentation/devicetree/bindings/iio/pressure/st_pressure.txt
-> > >
-> 
+Also, I am going to guess you haven't tried building this version as
+modules.  You are missing some symbol exports in the previous patch.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> ---
+>  .../bindings/iio/accelerometer/st_accel.txt        |    1 +
+>  drivers/iio/accel/st_accel_core.c                  |  149 ++++++++++++++++++++
+>  2 files changed, 150 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt b/Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt
+> index 9eab7d9..f461a77 100644
+> --- a/Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt
+> +++ b/Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt
+> @@ -21,6 +21,7 @@ Optional properties:
+>    - interrupt-parent : phandle to the interrupt map subnode
+>    - interrupts : interrupt mapping for st_accel interrupt sources:
+>  	0: INT1 irq_data_ready
+> +	1: INT2 irq_event
+>    - irq-map : irq sub-node defining interrupt map
+>                (all properties listed below are required):
+>        - #interrupt-cells : should be 1
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 385cd86..983e8c4 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/gpio.h>
+>  #include <linux/irq.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/iio/events.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/buffer.h>
+> @@ -68,6 +69,20 @@
+>  #define ST_ACCEL_1_DRDY_IRQ_INT1_MASK		0x10
+>  #define ST_ACCEL_1_DRDY_IRQ_INT2_MASK		0x08
+>  #define ST_ACCEL_1_MULTIREAD_BIT		true
+> +#define ST_ACCEL_1_EVENT_IRQ_ADDR		0x22
+> +#define ST_ACCEL_1_EVENT_IRQ_MASK		0x40
+> +#define ST_ACCEL_1_EVENT_CTRL_REG		0x30
+> +#define ST_ACCEL_1_EVENT_CTRL_MASK		0xc0
+> +#define ST_ACCEL_1_EVENT_CTRL_DEFAULT_VAL	0x01
+> +#define ST_ACCEL_1_THS_REG			0x32
+> +#define ST_ACCEL_1_EVENT_STATUS_REG		0x31
+> +#define ST_ACCEL_1_EVENT_STATUS_REG_MASK	0x7f
+> +#define ST_ACCEL_1_INT1_XL			0
+> +#define ST_ACCEL_1_INT1_XH			1
+> +#define ST_ACCEL_1_INT1_YL			2
+> +#define ST_ACCEL_1_INT1_YH			3
+> +#define ST_ACCEL_1_INT1_ZL			4
+> +#define ST_ACCEL_1_INT1_ZH			5
+>
+>  /* CUSTOM VALUES FOR SENSOR 2 */
+>  #define ST_ACCEL_2_WAI_EXP			0x32
+> @@ -93,6 +108,20 @@
+>  #define ST_ACCEL_2_DRDY_IRQ_INT1_MASK		0x02
+>  #define ST_ACCEL_2_DRDY_IRQ_INT2_MASK		0x10
+>  #define ST_ACCEL_2_MULTIREAD_BIT		true
+> +#define ST_ACCEL_2_EVENT_IRQ_ADDR		0x22
+> +#define ST_ACCEL_2_EVENT_IRQ_MASK		0x01
+> +#define ST_ACCEL_2_EVENT_CTRL_REG		0x30
+> +#define ST_ACCEL_2_EVENT_CTRL_MASK		0xc0
+> +#define ST_ACCEL_2_EVENT_CTRL_DEFAULT_VAL	0x01
+> +#define ST_ACCEL_2_THS_REG			0x32
+> +#define ST_ACCEL_2_EVENT_STATUS_REG		0x31
+> +#define ST_ACCEL_2_EVENT_STATUS_REG_MASK	0x7f
+> +#define ST_ACCEL_2_INT1_XL			0
+> +#define ST_ACCEL_2_INT1_XH			1
+> +#define ST_ACCEL_2_INT1_YL			2
+> +#define ST_ACCEL_2_INT1_YH			3
+> +#define ST_ACCEL_2_INT1_ZL			4
+> +#define ST_ACCEL_2_INT1_ZH			5
+>
+>  /* CUSTOM VALUES FOR SENSOR 3 */
+>  #define ST_ACCEL_3_WAI_EXP			0x40
+> @@ -129,6 +158,20 @@
+>  #define ST_ACCEL_3_IG1_EN_MASK			0x08
+>  #define ST_ACCEL_3_MULTIREAD_BIT		false
+>
+> +#define ST_SENSORS_LSM_ACCEL_EVENT(ch, mod, dir, bit_pos, ths_reg) \
+> +{ \
+> +	.bit = bit_pos,\
+Hmm. A lot of this replicates info already available in the iio_chan_spec.
+I guess this 'might' be the cleanest way of doing things but it seems
+a little convoluted.
+> +	.chan = ch, \
+> +	.chan_type = IIO_ACCEL, \
+> +	.modifier = mod, \
+> +	.event_type = IIO_EV_TYPE_THRESH, \
+> +	.direction = dir, \
+> +	.event_ths_reg = { \
+> +		.addr = ths_reg, \
+> +		.mask = 0x7f, \
+> +	}, \
+> +}
+> +
+>  static const struct iio_chan_spec st_accel_12bit_channels[] = {
+>  	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
+>  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> @@ -232,6 +275,46 @@ static const struct st_sensors st_accel_sensors[] = {
+>  		},
+>  		.multi_read_bit = ST_ACCEL_1_MULTIREAD_BIT,
+>  		.bootime = 2,
+> +		.event_irq = {
+> +			.addr = ST_ACCEL_1_EVENT_IRQ_ADDR,
+> +			.mask = ST_ACCEL_1_EVENT_IRQ_MASK,
+> +			.event_count = 6,
+> +			.ctrl_reg = {
+> +				.addr = ST_ACCEL_1_EVENT_CTRL_REG,
+> +				.mask = ST_ACCEL_1_EVENT_CTRL_MASK,
+> +				.val = ST_ACCEL_1_EVENT_CTRL_DEFAULT_VAL,
+> +			},
+> +			.status_reg = {
+> +				.addr = ST_ACCEL_1_EVENT_STATUS_REG,
+> +				.mask = ST_ACCEL_1_EVENT_STATUS_REG_MASK,
+> +			},
+> +			.events = {
+> +				ST_SENSORS_LSM_ACCEL_EVENT(0, IIO_MOD_X,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_1_INT1_XL,
+> +						ST_ACCEL_1_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(0, IIO_MOD_X,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_1_INT1_XH,
+> +						ST_ACCEL_1_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(1, IIO_MOD_Y,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_1_INT1_YL,
+> +						ST_ACCEL_1_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(1, IIO_MOD_Y,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_1_INT1_YH,
+> +						ST_ACCEL_1_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(2, IIO_MOD_Z,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_1_INT1_ZL,
+> +						ST_ACCEL_1_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(2, IIO_MOD_Z,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_1_INT1_ZH,
+> +						ST_ACCEL_1_THS_REG),
+> +			},
+> +		},
+>  	},
+>  	{
+>  		.wai = ST_ACCEL_2_WAI_EXP,
+> @@ -294,6 +377,47 @@ static const struct st_sensors st_accel_sensors[] = {
+>  		},
+>  		.multi_read_bit = ST_ACCEL_2_MULTIREAD_BIT,
+>  		.bootime = 2,
+> +		.event_irq = {
+> +			.addr = ST_ACCEL_2_EVENT_IRQ_ADDR,
+> +			.mask = ST_ACCEL_2_EVENT_IRQ_MASK,
+> +			.event_count = 6,
+> +			.ctrl_reg = {
+> +				.addr = ST_ACCEL_2_EVENT_CTRL_REG,
+> +				.mask = ST_ACCEL_2_EVENT_CTRL_MASK,
+> +				.val = ST_ACCEL_2_EVENT_CTRL_DEFAULT_VAL,
+> +			},
+> +			.status_reg = {
+> +				.addr = ST_ACCEL_2_EVENT_STATUS_REG,
+> +				.mask = ST_ACCEL_2_EVENT_STATUS_REG_MASK,
+> +			},
+> +			.events = {
+> +				ST_SENSORS_LSM_ACCEL_EVENT(0, IIO_MOD_X,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_2_INT1_XL,
+> +						ST_ACCEL_2_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(0, IIO_MOD_X,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_2_INT1_XH,
+> +						ST_ACCEL_2_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(1, IIO_MOD_Y,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_2_INT1_YL,
+> +						ST_ACCEL_2_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(1, IIO_MOD_Y,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_2_INT1_YH,
+> +						ST_ACCEL_2_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(2, IIO_MOD_Z,
+> +						IIO_EV_DIR_FALLING,
+> +						ST_ACCEL_2_INT1_ZL,
+> +						ST_ACCEL_2_THS_REG),
+> +				ST_SENSORS_LSM_ACCEL_EVENT(2, IIO_MOD_Z,
+> +						IIO_EV_DIR_RISING,
+> +						ST_ACCEL_2_INT1_ZH,
+> +						ST_ACCEL_2_THS_REG),
+> +			},
+> +		},
+> +
+>  	},
+>  	{
+>  		.wai = ST_ACCEL_3_WAI_EXP,
+> @@ -437,6 +561,10 @@ static const struct iio_info accel_info = {
+>  	.attrs = &st_accel_attribute_group,
+>  	.read_raw = &st_accel_read_raw,
+>  	.write_raw = &st_accel_write_raw,
+> +	.read_event_value = &st_sensors_read_event_value,
+> +	.write_event_value = &st_sensors_write_event_value,
+> +	.read_event_config = &st_sensors_read_event_config,
+> +	.write_event_config = &st_sensors_write_event_config,
+>  };
+>
+>  #ifdef CONFIG_IIO_TRIGGER
+> @@ -452,6 +580,7 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+>  int st_accel_common_probe(struct iio_dev *indio_dev)
+>  {
+>  	int err;
+> +	int i;
+>  	struct st_sensor_data *adata = iio_priv(indio_dev);
+>
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -489,6 +618,20 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+>  			goto st_accel_probe_trigger_error;
+>  	}
+>
+> +	if (adata->get_irq_event(indio_dev) > 0) {
+> +		err = st_sensors_request_event_irq(indio_dev);
+Compile error as not exported in the previous patch.
+
+> +		if (err < 0)
+> +			goto st_accel_request_irq_event_error;
+> +
+> +		for (i = 0; i < indio_dev->num_channels; i++)
+> +			adata->sensor->ch[i].event_mask =
+> +				ST_SENSORS_LSM_EVENTS_MASK;
+
+This is an easy driver to get lost in, but I think that adata->sensor is
+pointing at some constant data, so you can't do the above.  Actually,
+ideally this would be made explicit throughout the driver by making the
+data pointed to by those pointers constant as well as the pointer.
+
+> +
+> +		err = st_sensors_enable_events(indio_dev);
+> +		if (err < 0)
+> +			goto st_accel_enable_events_error;
+> +	}
+> +
+>  	err = iio_device_register(indio_dev);
+>  	if (err)
+>  		goto st_accel_device_register_error;
+> @@ -496,6 +639,10 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+>  	return err;
+>
+>  st_accel_device_register_error:
+> +st_accel_enable_events_error:
+> +	if (adata->get_irq_event(indio_dev) > 0)
+> +		free_irq(adata->get_irq_event(indio_dev), indio_dev);
+> +st_accel_request_irq_event_error:
+>  	if (adata->get_irq_data_ready(indio_dev) > 0)
+>  		st_sensors_deallocate_trigger(indio_dev);
+>  st_accel_probe_trigger_error:
+> @@ -515,6 +662,8 @@ void st_accel_common_remove(struct iio_dev *indio_dev)
+>  		st_sensors_deallocate_trigger(indio_dev);
+>  		st_accel_deallocate_ring(indio_dev);
+>  	}
+> +	if (adata->get_irq_event(indio_dev) > 0)
+> +		free_irq(adata->get_irq_event(indio_dev), indio_dev);
+>  	iio_device_free(indio_dev);
+>  }
+>  EXPORT_SYMBOL(st_accel_common_remove);
+>
