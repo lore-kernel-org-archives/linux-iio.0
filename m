@@ -1,50 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39851 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752989Ab3HCUVy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 16:21:54 -0400
-Message-ID: <51FD7479.6000402@kernel.org>
-Date: Sat, 03 Aug 2013 22:22:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <51FE5B0C.4070206@metafoo.de>
+Date: Sun, 04 Aug 2013 15:45:48 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Grygorii Strashko <grygorii.strashko@ti.com>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH] iio: Fix documentation of devm_iio_device_free()
-References: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1375133710-19453-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Oleksandr Kravchenko <x0199363@ti.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, grant.likely@linaro.org,
+ rob.herring@calxeda.com, rob@landley.net, jic23@cam.ac.uk,
+ pmeerw@pmeerw.net, holler@ahsoftware.de, srinivas.pandruvada@intel.com,
+ devicetree-discuss@lists.ozlabs.org,
+ Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH 2/2] iio: add Bosch BMA180 acceleration sensor driver
+References: <1375109893-7917-1-git-send-email-x0199363@ti.com> <1375109893-7917-2-git-send-email-x0199363@ti.com>
+In-Reply-To: <1375109893-7917-2-git-send-email-x0199363@ti.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/29/13 22:35, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Indeed, this is downright confusing ;)
-
-Applied to the togreg branch of iio.git
-
-Thanks.
+On 07/29/2013 04:58 PM, Oleksandr Kravchenko wrote:
+> From: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+> 
+> This patch adds IIO driver for Bosch BMA180 triaxial
+> acceleration sensor.
+> http://omapworld.com/BMA180_111_1002839.pdf
+> 
+> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 > ---
->  include/linux/iio/iio.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/iio/accel/bma180.txt       |   53 +++
+>  drivers/iio/accel/Kconfig                          |   10 +
+>  drivers/iio/accel/Makefile                         |    2 +
+>  drivers/iio/accel/bma180.c                         |  462 ++++++++++++++++++++
+>  4 files changed, 527 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/bma180.txt
+>  create mode 100644 drivers/iio/accel/bma180.c
 > 
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index f1d99f6..7ae54a5 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -552,9 +552,9 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
->   * @dev:		Device this iio_dev belongs to
->   * @indio_dev: 		the iio_dev associated with the device
->   *
-> - * Free indio_dev allocated with devm_iio_device_alloc().
-> + * Free iio_dev allocated with devm_iio_device_alloc().
->   */
-> -void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev);
-> +void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
->  
->  /**
->   * iio_buffer_enabled() - helper function to test if the buffer is enabled
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/bma180.txt b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+> new file mode 100644
+> index 0000000..7c13c84
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+> @@ -0,0 +1,53 @@
+> +* Bosch BMA180 triaxial acceleration sensor
+> +
+> +http://omapworld.com/BMA180_111_1002839.pdf
+> +
+> +Required properties:
+> +
+> +  - compatible : should be "bosch,bma180"
+> +  - reg : the I2C address of the sensor
+> +
+> +Optional properties:
+> +
+> +  - interrupt-parent : should be the phandle for the interrupt controller
+> +
+> +  - interrupts : interrupt mapping for GPIO IRQ, it shuld by configured with
+> +		flags IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING
+> +
+> +  - range : select the full scale acceleration range
+> +		0 : -1g..+1g
+> +		1 : -1.5g..+1.5g
+> +		2 : -2g..+2g
+> +		3 : -3g..+3g
+> +		4 : -4g..+4g
+> +		5 : -8g..+8g
+> +		6 : -16g..+16g
+> +
+> +  - bw : select bandwidth bandwidth
+> +		0 : 10Hz
+> +		1 : 20Hz
+> +		2 : 40Hz
+> +		3 : 75Hz
+> +		4 : 150Hz
+> +		5 : 300Hz
+> +		Don't use bandwidth frequency more than 300Hz couse it
+> +		influences the frequency of generating new data interrupts
+> +		and i2c reading phase can be longer than pheriod of interrupt
+> +		generation.
+> +
+> +  - mode_config : 0 - select low noise mode, 1 - select low power mode
+> +
+> +  - fuzz : specifies fuzz value that is used to filter noise from the event stream
+> +
+
+All the four properties above are vendor specific, so they need a vendor
+prefix. Also no underscores in property names and no abbreviations. Also I
+wonder if some of them should rather be runtime configurable, like range and
+bandwidth,
+
+> +Example:
+> +
+> +bma180@40 {
+> +	compatible = "bosch,bma180";
+> +	reg = <0x40>;
+> +	interrupt-parent = <&gpio6>;
+> +	interrupts = <18 (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING)>;
+> +	range = <2>;
+> +	bw = <0>;
+> +	mode_config = <1>;
+> +	fuzz = <555>;
+> +};
+[...]
+> +static int bma180_read_raw(struct iio_dev *indio_dev,
+> +		struct iio_chan_spec const *chan, int *val, int *val2,
+> +		long mask)
+> +{
+> +	struct bma180_data *data = iio_priv(indio_dev);
+> +	long tmp = ((s16)data->acc_reg[chan->channel] >> 2)
+> +		* bma180_range_table[data->range].ratio;
+
+> +
+> +	if (data->acc_reg[chan->channel] < 0)
+> +		return data->acc_reg[chan->channel];
+> +
+> +	*val = tmp / 1000000;
+> +	*val2 = (tmp % 1000000);
+> +
+
+This doesn't look as if the device needs a special conversion formula. Just
+expose the raw value and ratio as the scale.
+
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
+[...]
