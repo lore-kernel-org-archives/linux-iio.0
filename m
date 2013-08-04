@@ -1,82 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59344 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45120 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758264Ab3HMUYa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:24:30 -0400
-Message-ID: <520AA40B.9060107@kernel.org>
-Date: Tue, 13 Aug 2013 22:24:27 +0100
+	with ESMTP id S1751097Ab3HDKy5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Aug 2013 06:54:57 -0400
+Message-ID: <51FE4117.3040404@kernel.org>
+Date: Sun, 04 Aug 2013 12:55:03 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree-discuss@lists.ozlabs.org,
-	alexandre.belloni@free-electrons.com, lars@metafoo.de,
-	fabio.estevam@freescale.com, marex@denx.de
-Subject: Re: [PATCH v3 1/5] iio: mxs-lradc: change the realbits to 12
-References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-2-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374501843-19651-2-git-send-email-hector.palacios@digi.com>
+To: Jacek Anaszewski <j.anaszewski@samsung.com>
+CC: linux-iio@vger.kernel.org, denis.ciocca@st.com,
+	devicetree-discuss@lists.ozlabs.org, l.czerwinski@samsung.com,
+	maxime.ripard@free-electrons.com,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH v2] iio: lps331ap: Add support for DT
+References: <1374240981-13560-1-git-send-email-j.anaszewski@samsung.com> <1374240981-13560-2-git-send-email-j.anaszewski@samsung.com>
+In-Reply-To: <1374240981-13560-2-git-send-email-j.anaszewski@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/22/13 15:03, Hector Palacios wrote:
-> The LRADC virtual channels have an 18 bit field to store the sum of up
-> to 2^5 accumulated samples. The read_raw function however only operates
-> over a single sample (12 bit resolution).
-> In order to use this field for scaling operations, we need it to be the
-> exact resolution value of the LRADC.
-> Besides, the driver was using an 18 bit mask (LRADC_CH_VALUE_MASK) to
-> report touch coordinates to userland. A 12 bit mask should be used instead
-> or else the touch libraries will expect a coordinates range between 0
-> and 0x3ffff (18 bits), instead of between 0 and 0xfff (12 bits).
+On 07/19/13 14:36, Jacek Anaszewski wrote:
+> This patch adds DT support for the lps331ap barometer
+> sensor.
 > 
-> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-> Acked-by: Marek Vasut <marex@denx.de>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Applied to the togreg branch of iio.git
+> Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+This makes sense to me and looks similar to that in existing bindings
+hence,
 
-Thanks,
+Applied to the togreg branch of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+
+Note I am one of those maintainers who has very limited knowledge of device
+tree so am basing this decision on the 'it looks like existing mappings' rather
+than any deep understanding.
 
 Jonathan
 > ---
->  drivers/staging/iio/adc/mxs-lradc.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+>  .../devicetree/bindings/iio/pressure/lps331ap.txt  |   41 ++++++++++++++++++++
+>  drivers/iio/pressure/st_pressure_i2c.c             |   11 +++++-
+>  drivers/iio/pressure/st_pressure_spi.c             |   11 +++++-
+>  3 files changed, 61 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/lps331ap.txt
 > 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 9f52a28..56667da 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -225,6 +225,9 @@ struct mxs_lradc {
->  #define	LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
->  #define	LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
->  
-> +#define LRADC_RESOLUTION			12
-> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/lps331ap.txt b/Documentation/devicetree/bindings/iio/pressure/lps331ap.txt
+> new file mode 100644
+> index 0000000..e05b45e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/pressure/lps331ap.txt
+> @@ -0,0 +1,41 @@
+> +* STMicroelectronics LPS331AP barometer sensor
 > +
->  /*
->   * Raw I/O operations
->   */
-> @@ -540,9 +543,10 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
->  	__set_bit(EV_ABS, input->evbit);
->  	__set_bit(EV_KEY, input->evbit);
->  	__set_bit(BTN_TOUCH, input->keybit);
-> -	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
-> -	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
-> -	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
-> +	input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
-> +	input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
-> +	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
-> +			     0, 0);
->  
->  	lradc->ts_input = input;
->  	input_set_drvdata(input, lradc);
-> @@ -817,7 +821,7 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
->  	.channel = (idx),					\
->  	.scan_type = {						\
->  		.sign = 'u',					\
-> -		.realbits = 18,					\
-> +		.realbits = LRADC_RESOLUTION,			\
->  		.storagebits = 32,				\
->  	},							\
+> +Required properties:
+> +
+> +  - compatible : should be "st,lps331ap"
+> +  - reg : the I2C address of the barometer
+> +
+> +Optional properties:
+> +
+> +  - drdy-int-pin : redirect DRDY on pin INT1 (1) or pin INT2 (2) (u8)
+> +  - interrupt-parent : phandle to the interrupt map subnode
+> +  - interrupts : interrupt mapping for LPS331AP interrupt sources:
+> +		 2 sources: 0 - data ready, 1 - threshold event
+> +  - irq-map : irq sub-node defining interrupt map
+> +	      (all properties listed below are required):
+> +      - #interrupt-cells : should be 1
+> +      - #address-cells : should be 0
+> +      - #size-cells : should be 0
+> +      - interrupt-map : table of entries consisting of three child elements:
+> +	  - unit_interrupt_specifier - 0 : data ready, 1 : threshold event
+> +	  - interrupt parent phandle
+> +	  - parent unit interrupt specifier consisiting of two elements:
+> +	      - index of the interrupt within the controller
+> +	      - flags : should be 0
+> +
+> +Example:
+> +
+> +lps331ap@5d {
+> +	compatible = "st,lps331ap";
+> +	reg = <0x5d>;
+> +	drdy-int-pin = /bits/ 8 <2>;
+> +	interrupt-parent = <&irq_map>;
+> +	interrupts = <0>, <1>;
+> +
+> +	irq_map: irq-map {
+> +		#interrupt-cells = <1>;
+> +		#address-cells = <0>;
+> +		#size-cells = <0>;
+> +		interrupt-map = <0 &gpf0 5 0>;
+> +	};
+> +};
+> diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+> index 7cebcc7..1683ebe 100644
+> --- a/drivers/iio/pressure/st_pressure_i2c.c
+> +++ b/drivers/iio/pressure/st_pressure_i2c.c
+> @@ -56,15 +56,24 @@ static int st_press_i2c_remove(struct i2c_client *client)
 >  }
+>  
+>  static const struct i2c_device_id st_press_id_table[] = {
+> -	{ LPS331AP_PRESS_DEV_NAME },
+> +	{ "st,lps331ap" },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_press_id_table);
+>  
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id lps331ap_of_match[] = {
+> +	{ .compatible = "st,lps331ap", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, lps331ap_of_match);
+> +#endif
+> +
+>  static struct i2c_driver st_press_driver = {
+>  	.driver = {
+>  		.owner = THIS_MODULE,
+>  		.name = "st-press-i2c",
+> +		.of_match_table = of_match_ptr(lps331ap_of_match),
+>  	},
+>  	.probe = st_press_i2c_probe,
+>  	.remove = st_press_i2c_remove,
+> diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+> index 17a1490..05c30d6 100644
+> --- a/drivers/iio/pressure/st_pressure_spi.c
+> +++ b/drivers/iio/pressure/st_pressure_spi.c
+> @@ -55,15 +55,24 @@ static int st_press_spi_remove(struct spi_device *spi)
+>  }
+>  
+>  static const struct spi_device_id st_press_id_table[] = {
+> -	{ LPS331AP_PRESS_DEV_NAME },
+> +	{ "st,lps331ap" },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(spi, st_press_id_table);
+>  
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id lps331ap_of_match[] = {
+> +	{ .compatible = "st,lps331ap", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, lps331ap_of_match);
+> +#endif
+> +
+>  static struct spi_driver st_press_driver = {
+>  	.driver = {
+>  		.owner = THIS_MODULE,
+>  		.name = "st-press-spi",
+> +		.of_match_table = of_match_ptr(lps331ap_of_match),
+>  	},
+>  	.probe = st_press_spi_probe,
+>  	.remove = st_press_spi_remove,
 > 
