@@ -1,70 +1,60 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Mon, 5 Aug 2013 10:40:31 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, jic23@cam.ac.uk,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f49.google.com ([74.125.82.49]:58440 "EHLO
+	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754613Ab3HETVV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Aug 2013 15:21:21 -0400
+Date: Mon, 5 Aug 2013 20:21:14 +0100
+From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>, jic23@cam.ac.uk,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-input@vger.kernel.org, gregkh@linuxfoundation.org,
 	Russ.Dill@ti.com
 Subject: Re: [PATCH 1/2] input: ti_tsc: Enable shared IRQ for TSC
-Message-ID: <20130805174031.GA20093@core.coreip.homeip.net>
+Message-ID: <20130805192113.GA7041@gmail.com>
 References: <1374882674-18403-1-git-send-email-zubair.lutfullah@gmail.com>
  <1374882674-18403-2-git-send-email-zubair.lutfullah@gmail.com>
  <51FE361B.5030900@kernel.org>
  <20130805161256.GA8794@core.coreip.homeip.net>
  <20130805170201.GA4310@gmail.com>
+ <20130805174031.GA20093@core.coreip.homeip.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20130805170201.GA4310@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20130805174031.GA20093@core.coreip.homeip.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 05, 2013 at 06:02:02PM +0100, Zubair Lutfullah : wrote:
-> On Mon, Aug 05, 2013 at 09:12:56AM -0700, Dmitry Torokhov wrote:
-> > > > Touchscreen and ADC share the same IRQ line from parent MFD core.
-> > > > Previously only Touchscreen was interrupt based.
-> > > > With continuous mode support added in ADC driver, driver requires
-> > > > interrupt to process the ADC samples, so enable shared IRQ flag bit for
-> > > > touchscreen.
-> > > > 
-> > > > @@ -260,8 +260,18 @@ static irqreturn_t titsc_irq(int irq, void *dev)
-> > > >  	unsigned int fsm;
-> > > >  
-> > > > +	/*
-> > > > +	 * ADC and touchscreen share the IRQ line.
-> > > > +	 * FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
-> > > > +	 * interrupts are used by ADC,
-> > > > +	 * hence return from touchscreen IRQ handler if FIFO1
-> > > > +	 * related interrupts occurred.
-> > > > +	 */
-> > > > +	if ((status & IRQENB_FIFO1THRES) ||
-> > > > +			(status & IRQENB_FIFO1OVRRUN) ||
-> > > > +			(status & IRQENB_FIFO1UNDRFLW))
-> > > > +		return IRQ_NONE;
-> > > > +	else if (status & IRQENB_FIFO0THRES) {
+On Mon, Aug 05, 2013 at 10:40:31AM -0700, Dmitry Torokhov wrote:
 > > 
-> > What happens if both parts have data at the same time? Can both
-> > IRQENB_FIFO1THRES and IRQENB_FIFO0THRES be signalled? What will happen
-> > in this case?
+> > FIFO 1 used only by ADC and FIFO1THRES handler is inside the iio/adc driver
+> > FIFO 0 used only by TSC and FIFO0THRES handler is inside the input/touchscreen
+> > 
+> > Note: These are level interrupts.
+> > 
+> > I would like some input on how to handle such a situation. 
 > 
-> If ADC is sampling and someone is touching the TSC, both interrupts
-> can signal so closely that for the purpose of the kernel,
-> they can be seen as signaled together.
+> It looks like you need to have smart demultiplexing in MFD core of your
+> driver instead of relying on shared interrupt handler.
 > 
-> FIFO 1 used only by ADC and FIFO1THRES handler is inside the iio/adc driver
-> FIFO 0 used only by TSC and FIFO0THRES handler is inside the input/touchscreen
+> Another option would be to check "your" bits, handle the data, clear the
+> status and then check bits again and return IRQ_NONE instead of
+> IRQ_HANDLED if other guys bits are set, but it is way too ugly.
 > 
-> Note: These are level interrupts.
+> Thanks.
 > 
-> I would like some input on how to handle such a situation. 
+> -- 
+> Dmitry
 
-It looks like you need to have smart demultiplexing in MFD core of your
-driver instead of relying on shared interrupt handler.
+That is going to make a lot of changes in mfd, input and iio
+And should require a separate patch series.
 
-Another option would be to check "your" bits, handle the data, clear the
-status and then check bits again and return IRQ_NONE instead of
-IRQ_HANDLED if other guys bits are set, but it is way too ugly.
+Is it possible to accept the current patches to add continuous mode 
+to the ADC side as is before the next merge window?
 
-Thanks.
+This issue doesn't disturb each side individually..
 
--- 
-Dmitry
+I'll look into fixing the IRQs after settling continuous mode.
+
+Thanks
+Zubair Lutfullah
