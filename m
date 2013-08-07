@@ -1,75 +1,149 @@
-Return-Path: <jg1.han@samsung.com>
-From: Jingoo Han <jg1.han@samsung.com>
-To: 'Jonathan Cameron' <jic23@kernel.org>
-Cc: 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
- 'Jonathan Cameron' <jic23@cam.ac.uk>, devel@driverdev.osuosl.org,
- linux-iio@vger.kernel.org, 'Dan Carpenter' <dan.carpenter@oracle.com>,
- 'Lars-Peter Clausen' <lars@metafoo.de>, Jingoo Han <jg1.han@samsung.com>
-References: <007101ce882f$b4fa5c30$1eef1490$@samsung.com>
- <5209421E.7090401@kernel.org>
-In-reply-to: <5209421E.7090401@kernel.org>
-Subject: Re: [PATCH V2 2/2] staging: iio: replace strict_strto*() with kstrto*()
-Date: Tue, 20 Aug 2013 10:54:41 +0900
-Message-id: <004a01ce9d48$3c7304a0$b5590de0$@samsung.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:58360 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932073Ab3HGHuu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Aug 2013 03:50:50 -0400
+Message-ID: <5201FC55.5080304@free-electrons.com>
+Date: Wed, 07 Aug 2013 09:50:45 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hector Palacios <hector.palacios@digi.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>,
+	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>,
+	"marex@denx.de" <marex@denx.de>
+Subject: Re: [PATCH v3 4/5] iio: mxs-lradc: add scale_available file to channels
+References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-5-git-send-email-hector.palacios@digi.com> <51EE4300.7070802@metafoo.de> <51EE8445.6070603@digi.com> <51F276D8.9090906@free-electrons.com> <d838f30e-30ca-49ca-a9f3-ebf4e523c7eb@email.android.com>
+In-Reply-To: <d838f30e-30ca-49ca-a9f3-ebf4e523c7eb@email.android.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tuesday, August 13, 2013 5:14 AM, Jonathan Cameron wrote:
-> On 07/24/13 06:36, Jingoo Han wrote:
+Hi Jonathan, Lars
 
-[.....]
+I would really like to see that included in 3.12. While I agree there is
+room for improvement, I don't think there are any comments that need an
+immediate action before inclusion apart from the decision that has to be
+taken for the device tree.
 
-> Sorry it has taken me so long to get to this.  Was obviously going
-> to be 'almost' as tedious to review as it would have been to put
-> it together :)
-> 
-> You are brave taking this one as there are a lot of dragons
-> hiding in this code.
-> 
-> In a few cases I'd have been tempted to strtobool warts and all.
-> 
-> Two choices in adt7316 are too short.
-> Unsigned short in ad5933 should be u16 I think (to avoid
-> any issues).
-> If we are going for minimum length variables, the isl29018 use of
-> an unsigned long for a value that at most equals 16 seems excessive.
-> (I'm not sure we are aiming for minimal though..)
-> Also in that driver, you fill an int with a kstrtouint.
+Can you confirm whether you'll take this series as is ?
 
-Thank you for your comments. :-)
-I agree with your opinions.
-I will fix and send v2 patch soon.
+Regards,
 
-Best regards,
-Jingoo Han
+On 26/07/2013 18:13, Jonathan Cameron wrote:
+>
+> Alexandre Belloni <alexandre.belloni@free-electrons.com> wrote:
+>> On 23/07/2013 15:25, Hector Palacios wrote:
+>>> Dear Lars,
+>>>
+>>> On 07/23/2013 10:46 AM, Lars-Peter Clausen wrote:
+>>>> On 07/22/2013 04:04 PM, Hector Palacios wrote:
+>>>> [...]
+>>>>> +static ssize_t mxs_lradc_show_scale_available_ch(struct device
+>> *dev,
+>>>>> +        struct device_attribute *attr,
+>>>>> +        char *buf,
+>>>>> +        int ch)
+>>>>> +{
+>>>>> +    struct iio_dev *iio = dev_to_iio_dev(dev);
+>>>>> +    struct mxs_lradc *lradc = iio_priv(iio);
+>>>>> +    int i, len = 0;
+>>>>> +
+>>>>> +    for (i = 0; i < ARRAY_SIZE(lradc->scale_avail[ch]); i++)
+>>>>> +        len += sprintf(buf + len, "%d.%09u ",
+>>>>> +                   lradc->scale_avail[ch][i].integer,
+>>>>> +                   lradc->scale_avail[ch][i].nano);
+>>>>> +
+>>>>> +    len += sprintf(buf + len, "\n");
+>>>>> +
+>>>>> +    return len;
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t mxs_lradc_show_scale_available(struct device *dev,
+>>>>> +        struct device_attribute *attr,
+>>>>> +        char *buf)
+>>>>> +{
+>>>>> +    struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
+>>>>> +
+>>>>> +    return mxs_lradc_show_scale_available_ch(dev, attr, buf,
+>>>>> +                         iio_attr->address);
+>>>>> +}
+>>>>> +
+>>>>> +#define SHOW_SCALE_AVAILABLE_ATTR(ch)                    \
+>>>>> +static IIO_DEVICE_ATTR(in_voltage##ch##_scale_available, S_IRUGO, 
+>>  \
+>>>>> +               mxs_lradc_show_scale_available, NULL, ch)
+>>>>> +
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(0);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(1);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(2);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(3);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(4);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(5);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(6);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(7);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(8);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(9);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(10);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(11);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(12);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(13);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(14);
+>>>>> +SHOW_SCALE_AVAILABLE_ATTR(15);
+>>>>> +
+>>>>> +static struct attribute *mxs_lradc_attributes[] = {
+>>>>> +    &iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage1_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage2_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage3_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage4_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage5_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage6_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage7_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage8_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage9_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage10_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage11_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage12_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage13_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage14_scale_available.dev_attr.attr,
+>>>>> +    &iio_dev_attr_in_voltage15_scale_available.dev_attr.attr,
+>>>>> +    NULL
+>>>>> +};
+>>>> This should really be using the iio_chan_spec_ext_info
+>>>> infrastructure. Bonus
+>>>> points for factoring out the common code used to calculate and
+>>>> display the
+>>>> scales.
+>>> I perfectly understand. Sadly, I don't currently have the time and
+>>> expertise to try to work this out the proper way. It already took
+>> much
+>>> longer than expected to have this driver toggle a divider flag.
+>>>
+>>> I'd appreciate if anyone wishes to complete this job.
+>>> @Alexander, please feel free to submit your other temp patch without
+>>> waiting for this one.
+>>>
+>> Maybe, we can get the patch set as is and do further clean up later.
+>> Anyway, that driver is still in staging, right ?
+>>
+>> As said, I'm willing to propose something for the scale calculation.
+> My thoughts exactly. Long term plans include generic handling of available attributes for the whole of IIO.
+>
+> It will take me a little while to catch up my backlog though!
+>
+> Jonathan
+>
+>
+>
 
-> ADE7753 plays some evil games in using a signed longs to get the
-> variables from userspace, not checking their range at all then writing
-> them to a mixture of signed and unsigned 16 bit registers.
-> Honestly I'd be tempted to leave that driver alone or trying and persuade
-> Lars-Peter to take a look at it.  The datasheet is out there if you are
-> feeling brave.
-> 
-> From a quick look, the ade7754, ade7758, ade7759, ade7854 play the same game.
-> 
-> > ---
-> >  drivers/staging/iio/accel/sca3000_core.c           |    8 ++---
-> >  drivers/staging/iio/accel/sca3000_ring.c           |    4 +--
-> >  drivers/staging/iio/addac/adt7316.c                |   38 ++++++++++----------
-> >  drivers/staging/iio/frequency/ad9832.c             |    4 +--
-> >  drivers/staging/iio/frequency/ad9834.c             |    4 +--
-> >  drivers/staging/iio/gyro/adis16260_core.c          |    4 +--
-> >  drivers/staging/iio/impedance-analyzer/ad5933.c    |   12 +++----
-> >  drivers/staging/iio/light/isl29018.c               |   12 +++----
-> >  drivers/staging/iio/light/tsl2583.c                |   24 ++++++-------
-> >  drivers/staging/iio/meter/ade7753.c                |   12 +++----
-> >  drivers/staging/iio/meter/ade7754.c                |   12 +++----
-> >  drivers/staging/iio/meter/ade7758_core.c           |   12 +++----
-> >  drivers/staging/iio/meter/ade7759.c                |   12 +++----
-> >  drivers/staging/iio/meter/ade7854.c                |   16 ++++-----
-> >  drivers/staging/iio/resolver/ad2s1210.c            |   20 +++++------
-> >  drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |   23 +++++-------
-> >  .../staging/iio/trigger/iio-trig-periodic-rtc.c    |    4 +--
-> >  17 files changed, 108 insertions(+), 113 deletions(-)
-> >
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
