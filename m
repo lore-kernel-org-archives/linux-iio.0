@@ -1,47 +1,102 @@
-Return-Path: <Josh.wu@atmel.com>
-Message-ID: <5215E1D3.5090905@atmel.com>
-Date: Thu, 22 Aug 2013 18:02:59 +0800
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from newsmtp5.atmel.com ([204.2.163.5]:34471 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753129Ab3HKLH2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 11 Aug 2013 07:07:28 -0400
 From: Josh Wu <josh.wu@atmel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-	<maxime.ripard@free-electrons.com>, <plagnioj@jcrosoft.com>,
-	<nicolas.ferre@atmel.com>, <thomas.petazzoni@free-electrons.com>,
-	<mark.rutland@arm.com>, <b.brezillon@overkiz.com>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>
-Subject: Re: [PATCH v2 4/4] iio: at91: introduce touch screen support in iio
- adc driver
-References: <1376219071-29946-1-git-send-email-josh.wu@atmel.com> <1376219071-29946-5-git-send-email-josh.wu@atmel.com> <20130812172453.GB31418@core.coreip.homeip.net> <520CAD07.1080709@kernel.org>
-In-Reply-To: <520CAD07.1080709@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: jic23@cam.ac.uk
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
+	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
+	mark.rutland@arm.com, b.brezillon@overkiz.com,
+	Josh Wu <josh.wu@atmel.com>
+Subject: [PATCH v2 3/4] iio: at91: ADC start-up time calculation changed since at91sam9x5
+Date: Sun, 11 Aug 2013 19:04:30 +0800
+Message-Id: <1376219071-29946-4-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1376219071-29946-1-git-send-email-josh.wu@atmel.com>
+References: <1376219071-29946-1-git-send-email-josh.wu@atmel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi, Jonathan
+Since in at91sam9x5, sama5d3x chip. the start up time calucation is changed.
+This patch can choose different start up time calculation formula for different
+chips.
 
-On 8/15/2013 6:27 PM, Jonathan Cameron wrote:
->
-> On 08/12/13 18:24, Dmitry Torokhov wrote:
->> Hi Josh,
-> Hi Dmitry,
->
-> As you haven't raised it here, I am guessing you are fine with having this
-> chunk of input related code in an IIO driver?  I wonder if it would be
-> better to break this into an mfd core and child input and iio drivers.
-> The two parts look fairly separable to me.
-> Clearly that means adding some overhead, but the gain is that the input
-> code ends up in input and the IIO code in IIO.
->
-> What are your views on this?  I'm fairly flexible if you think it simply
-> isn't worth the hassle of breaking this up.  I'm more worried about setting
-> a precident than anything else.
->
-> Jonathan
+Signed-off-by: Josh Wu <josh.wu@atmel.com>
+---
+v1 --> v2:
+  add a new variable for different start_time calculation.
 
-Since Dmitry has no feedback yet. I am not sure is it a right time to 
-send out the next version for the IIO ad91 touch patch?
+ drivers/iio/adc/at91_adc.c |   42 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 7 deletions(-)
 
-[snip...]
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index b41eb60..9b0ffff 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -40,6 +40,7 @@
+ 	(writel_relaxed(val, st->reg_base + reg))
+ 
+ struct at91_adc_caps {
++	bool	start_time_use_lookup_tab;
+ 	u32	mr_prescal_mask;
+ 	u32	mr_startup_mask;
+ };
+@@ -700,13 +701,39 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 		goto error_disable_adc_clk;
+ 	}
+ 
+-	/*
+-	 * Number of ticks needed to cover the startup time of the ADC as
+-	 * defined in the electrical characteristics of the board, divided by 8.
+-	 * The formula thus is : Startup Time = (ticks + 1) * 8 / ADC Clock
+-	 */
+-	ticks = round_up((st->startup_time * adc_clk_khz /
+-			  1000) - 1, 8) / 8;
++	if (!st->caps->start_time_use_lookup_tab) {
++		/*
++		 * Number of ticks needed to cover the startup time of the ADC
++		 * as defined in the electrical characteristics of the board,
++		 * divided by 8. The formula thus is :
++		 *   Startup Time = (ticks + 1) * 8 / ADC Clock
++		 */
++		ticks = round_up((st->startup_time * adc_clk_khz /
++				  1000) - 1, 8) / 8;
++	} else {
++		/*
++		 * For sama5d3x and at91sam9x5, the formula changes to:
++		 * Startup Time = <lookup_table_value> / ADC Clock
++		 */
++		const int startup_lookup[] = {
++			0  , 8  , 16 , 24 ,
++			64 , 80 , 96 , 112,
++			512, 576, 640, 704,
++			768, 832, 896, 960
++			};
++
++		int i, size = ARRAY_SIZE(startup_lookup);
++		ticks = st->startup_time * adc_clk_khz / 1000;
++		for (i = 0; i < size; i++)
++			if (ticks < startup_lookup[i])
++				break;
++
++		ticks = i;
++		if (ticks == size)
++			/* Reach the end of lookup table */
++			ticks = size - 1;
++	}
++
+ 	/*
+ 	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
+ 	 * the best converted final value between two channels selection
+@@ -798,6 +825,7 @@ static struct at91_adc_caps at91sam9g45_caps = {
+ };
+ 
+ static struct at91_adc_caps at91sam9x5_caps = {
++	.start_time_use_lookup_tab = true,
+ 	.mr_prescal_mask = AT91_ADC_PRESCAL_9G45,	/* same as 9G45 */
+ 	.mr_startup_mask = AT91_ADC_STARTUP_9X5,
+ };
+-- 
+1.7.10
 
-Best Regards,
-Josh Wu
