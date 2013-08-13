@@ -1,52 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f175.google.com ([209.85.215.175]:63231 "EHLO
-	mail-ea0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757847Ab3HMRHm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 13:07:42 -0400
-Received: by mail-ea0-f175.google.com with SMTP id m14so4204375eaj.20
-        for <linux-iio@vger.kernel.org>; Tue, 13 Aug 2013 10:07:40 -0700 (PDT)
-Date: Tue, 13 Aug 2013 18:07:34 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+Received: from mail-ea0-f178.google.com ([209.85.215.178]:35417 "EHLO
+	mail-ea0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757286Ab3HMQs3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 12:48:29 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
+	lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
-Subject: Re: [PATCH 3/4] input: ti_tsc: Enable shared IRQ for TSC and add
- overrun, underflow checks
-Message-ID: <20130813170734.GJ15278@lee--X1>
+Subject: [PATCH 2/4] input: ti_am335x_tsc: Increase sequencer delay time
+Date: Tue, 13 Aug 2013 17:48:17 +0100
+Message-Id: <1376412499-21007-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
- <1376412499-21007-4-git-send-email-zubair.lutfullah@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1376412499-21007-4-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 13 Aug 2013, Zubair Lutfullah wrote:
+Before checking PEN UP event, IRQ delays for this amount
+of time to let FSM stabilize. Previously, with only the
+TSC driver in IRQ mode, this delay was sufficient.
 
-> Enable shared IRQ to allow ADC to share IRQ line from
-> parent MFD core. Only FIFO0 IRQs are for TSC and handled
-> on the TSC side.
-> 
-> Patch also adds overrun and underflow irq handlers.
-> 
-> Russ Dill (TI) worked on overrun and underflow handlers.
-> Rachna Patil (TI) laid ground work for shared IRQ.
-> 
-> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-> ---
->  drivers/input/touchscreen/ti_am335x_tsc.c |   37 +++++++++++++++++++++++++----
->  include/linux/mfd/ti_am335x_tscadc.h      |    2 ++
->  2 files changed, 34 insertions(+), 5 deletions(-)
+The delay is increased slightly to accomodate if the ADC
+is also being used simultaneously in continuous mode.
 
-For the MFD part when the remainder of the entries have been placed in
-order:
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e165fcb..766bc7e 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -31,7 +31,7 @@
+ #include <linux/mfd/ti_am335x_tscadc.h>
+ 
+ #define ADCFSM_STEPID		0x10
+-#define SEQ_SETTLE		275
++#define SEQ_SETTLE		350
+ #define MAX_12BIT		((1 << 12) - 1)
+ 
+ static const int config_pins[] = {
 -- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.7.9.5
+
