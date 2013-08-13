@@ -1,59 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56197 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59344 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752848Ab3HWWAo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 23 Aug 2013 18:00:44 -0400
-Message-ID: <5217E999.7020408@kernel.org>
-Date: Sat, 24 Aug 2013 00:00:41 +0100
+	with ESMTP id S1758264Ab3HMUYa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:24:30 -0400
+Message-ID: <520AA40B.9060107@kernel.org>
+Date: Tue, 13 Aug 2013 22:24:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Pawel Moll <pawel.moll@arm.com>
-CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Hector Palacios <hector.palacios@digi.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"fabio.estevam@freescale.com" <fabio.estevam@freescale.com>,
-	"marex@denx.de" <marex@denx.de>,
-	"rob.herring@calxeda.com" <rob.herring@calxeda.com>,
-	Mark Rutland <Mark.Rutland@arm.com>,
-	Stephen Warren <swarren@wwwdotorg.org>,
-	Ian Campbell <ian.campbell@citrix.com>
-Subject: Re: [PATCH v3 2/5] ARM: dts: add reference voltage property for MXS
- LRADC
-References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com>  <1374501843-19651-3-git-send-email-hector.palacios@digi.com>  <520AA3CD.1040008@kernel.org> <1376491467.18617.41.camel@hornet>  <52153B8E.7050309@free-electrons.com>  <df6d000d-c918-48ec-958c-c8529ae1b75f@email.android.com> <1377190299.2626.9.camel@hornet>
-In-Reply-To: <1377190299.2626.9.camel@hornet>
-Content-Type: text/plain; charset=UTF-8
+To: Hector Palacios <hector.palacios@digi.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree-discuss@lists.ozlabs.org,
+	alexandre.belloni@free-electrons.com, lars@metafoo.de,
+	fabio.estevam@freescale.com, marex@denx.de
+Subject: Re: [PATCH v3 1/5] iio: mxs-lradc: change the realbits to 12
+References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-2-git-send-email-hector.palacios@digi.com>
+In-Reply-To: <1374501843-19651-2-git-send-email-hector.palacios@digi.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/22/13 17:51, Pawel Moll wrote:
-> On Thu, 2013-08-22 at 07:17 +0100, Jonathan Cameron wrote:
->> I would favour option 2 though some of the discussions going on at the moment about
->> bindings might result in a generic description of this and any other bits of
->>  analog front end.
+On 07/22/13 15:03, Hector Palacios wrote:
+> The LRADC virtual channels have an 18 bit field to store the sum of up
+> to 2^5 accumulated samples. The read_raw function however only operates
+> over a single sample (12 bit resolution).
+> In order to use this field for scaling operations, we need it to be the
+> exact resolution value of the LRADC.
+> Besides, the driver was using an 18 bit mask (LRADC_CH_VALUE_MASK) to
+> report touch coordinates to userland. A 12 bit mask should be used instead
+> or else the touch libraries will expect a coordinates range between 0
+> and 0x3ffff (18 bits), instead of between 0 and 0xfff (12 bits).
 > 
-> Any link to this discussion? devicetree@vger.kernel.org doesn't seem to
-> be involved (of course I may have simply missed the thread ;-)
-Some cc's dropped off the discussion at some point that should have been there
-and the topic has 'wandered' somewhat from where it started.
+> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
+> Acked-by: Marek Vasut <marex@denx.de>
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Applied to the togreg branch of iio.git
 
-https://lkml.org/lkml/2013/8/21/409
+Thanks,
 
-and the couple of messages after that are probably the most relevant.
-
-Speaking of which the devicetree list on here was the old one, I've just switched
-to the vger list you suggest above.
-
-
+Jonathan
+> ---
+>  drivers/staging/iio/adc/mxs-lradc.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
 > 
-> Paweł
-
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 9f52a28..56667da 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -225,6 +225,9 @@ struct mxs_lradc {
+>  #define	LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
+>  #define	LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
+>  
+> +#define LRADC_RESOLUTION			12
+> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+> +
+>  /*
+>   * Raw I/O operations
+>   */
+> @@ -540,9 +543,10 @@ static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
+>  	__set_bit(EV_ABS, input->evbit);
+>  	__set_bit(EV_KEY, input->evbit);
+>  	__set_bit(BTN_TOUCH, input->keybit);
+> -	input_set_abs_params(input, ABS_X, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> -	input_set_abs_params(input, ABS_Y, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> -	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_CH_VALUE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
+> +	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
+> +			     0, 0);
+>  
+>  	lradc->ts_input = input;
+>  	input_set_drvdata(input, lradc);
+> @@ -817,7 +821,7 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
+>  	.channel = (idx),					\
+>  	.scan_type = {						\
+>  		.sign = 'u',					\
+> -		.realbits = 18,					\
+> +		.realbits = LRADC_RESOLUTION,			\
+>  		.storagebits = 32,				\
+>  	},							\
+>  }
 > 
