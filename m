@@ -1,41 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:38288 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751554Ab3HPJEx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 05:04:53 -0400
-Date: Fri, 16 Aug 2013 11:04:50 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
-	lee.jones@linaro.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+Received: from mail-ea0-f170.google.com ([209.85.215.170]:56424 "EHLO
+	mail-ea0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756870Ab3HMQs1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 12:48:27 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
+	lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
-Subject: Re: [PATCH 2/4] input: ti_am335x_tsc: Increase sequencer delay time
-Message-ID: <20130816090450.GB26895@linutronix.de>
+Subject: =?UTF-8?q?=5BPATCH=201/4=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20correct=20step=20mask=20update=20after=20IRQ?=
+Date: Tue, 13 Aug 2013 17:48:16 +0100
+Message-Id: <1376412499-21007-2-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
- <1376412499-21007-3-git-send-email-zubair.lutfullah@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1376412499-21007-3-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* Zubair Lutfullah | 2013-08-13 17:48:17 [+0100]:
+TSC steps should be enabled again after IRQ routine.
+This fix ensures they are updated correctly every time.
 
->diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
->index e165fcb..766bc7e 100644
->--- a/drivers/input/touchscreen/ti_am335x_tsc.c
->+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
->@@ -31,7 +31,7 @@
-> #include <linux/mfd/ti_am335x_tscadc.h>
-> 
-> #define ADCFSM_STEPID		0x10
->-#define SEQ_SETTLE		275
->+#define SEQ_SETTLE		350
-> #define MAX_12BIT		((1 << 12) - 1)
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Okay, if this is required then it is. But in the long turn we should
-make this interrupt threaded since this delay in interrupt context is
-way too long.
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e1c5300..e165fcb 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			config_inp[4];
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
++	u32			step_mask;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	/* The steps1 … end and bit 0 for TS_Charge */
+ 	stepenable = (1 << (end_step + 2)) - 1;
+-	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
++	ts_dev->step_mask = stepenable;
++	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -316,7 +318,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
++		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ 		return IRQ_HANDLED;
+ 	}
+ 	return IRQ_NONE;
+-- 
+1.7.9.5
 
-Sebastian
