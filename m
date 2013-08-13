@@ -1,77 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:63101 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757512Ab3HML7H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 07:59:07 -0400
-Message-ID: <520A1F20.60401@metafoo.de>
-Date: Tue, 13 Aug 2013 13:57:20 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, jic23@cam.ac.uk
-Subject: Re: [PATCH v2] iio: add Bosch BMA180 acceleration sensor driver
-References: <1376384956-16720-1-git-send-email-o.v.kravchenko@globallogic.com> <alpine.DEB.2.01.1308131131170.30839@pmeerw.net> <CAGH3drr2p5dD4SXxG67QChVH1wubRCDKWaQPevQKBxej-UqsBA@mail.gmail.com>
-In-Reply-To: <CAGH3drr2p5dD4SXxG67QChVH1wubRCDKWaQPevQKBxej-UqsBA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:46161 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756659Ab3HMGvd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 02:51:33 -0400
+Received: by mail-pd0-f179.google.com with SMTP id v10so4477867pde.24
+        for <linux-iio@vger.kernel.org>; Mon, 12 Aug 2013 23:51:33 -0700 (PDT)
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, jic23@cam.ac.uk, sachin.kamat@linaro.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/9] iio: gyro: adis16080: Use devm_iio_device_alloc
+Date: Tue, 13 Aug 2013 12:04:27 +0530
+Message-Id: <1376375675-11595-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/13/2013 01:22 PM, Oleksandr Kravchenko wrote:
-> On Tue, Aug 13, 2013 at 1:01 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->>
->>> This patch adds IIO driver for Bosch BMA180 triaxial
->>> acceleration sensor.
->>> http://omapworld.com/BMA180_111_1002839.pdf
->>
->> the DS is preliminary, more up-to-date version available
->>
->> comments inline
->>
->>> ---
->>>   .../devicetree/bindings/iio/accel/bma180.txt       |   35 ++
->>>   drivers/iio/accel/Kconfig                          |   12 +
->>>   drivers/iio/accel/Makefile                         |    2 +
->>>   drivers/iio/accel/bma180.c                         |  635 ++++++++++++++++++++
->>>   4 files changed, 684 insertions(+)
->>>   create mode 100644 Documentation/devicetree/bindings/iio/accel/bma180.txt
->>>   create mode 100644 drivers/iio/accel/bma180.c
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/accel/bma180.txt b/Documentation/devicetree/bindings/iio/accel/bma180.txt
->>> new file mode 100644
->>> index 0000000..e08780b
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/accel/bma180.txt
->>> @@ -0,0 +1,35 @@
->>> +* Bosch BMA180 triaxial acceleration sensor
->>> +
->>> +http://omapworld.com/BMA180_111_1002839.pdf
->>> +
->>> +Required properties:
->>> +
->>> +  - compatible : should be "bosch,bma180"
->>> +  - reg : the I2C address of the sensor
->>> +
->>> +Optional properties:
->>> +
->>> +  - interrupt-parent : should be the phandle for the interrupt controller
->>> +
->>> +  - interrupts : interrupt mapping for GPIO IRQ, it should by configured with
->>> +             flags IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING
->>> +
->>> +  - bosch,resolution : ADC resolution. Must be 130, 190, 250, 380, 500,
->>> +             990 or 1980 mcg/LSB only
->>
->> what is mcg?
-> mcg is microgram (http://en.wikipedia.org/wiki/Kilogram#SI_multiples)
-> How to call it more correctly?
+Using devm_iio_device_alloc makes code simpler.
 
-I would be very surprised if g was gram. g is usually acceleration in this 
-context, 9.81m/s**2
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+This series compile tested on togreg branch of
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+---
+ drivers/iio/gyro/adis16080.c |   21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
-But again same question as before, shouldn't this rather be runtime 
-configurable? Same for bandwidth.
+diff --git a/drivers/iio/gyro/adis16080.c b/drivers/iio/gyro/adis16080.c
+index e1bb5f9..e9ec022 100644
+--- a/drivers/iio/gyro/adis16080.c
++++ b/drivers/iio/gyro/adis16080.c
+@@ -192,16 +192,13 @@ static const struct adis16080_chip_info adis16080_chip_info[] = {
+ static int adis16080_probe(struct spi_device *spi)
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+-	int ret;
+ 	struct adis16080_state *st;
+ 	struct iio_dev *indio_dev;
+ 
+ 	/* setup the industrialio driver allocated elements */
+-	indio_dev = iio_device_alloc(sizeof(*st));
+-	if (indio_dev == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
+ 	st = iio_priv(indio_dev);
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, indio_dev);
+@@ -217,22 +214,12 @@ static int adis16080_probe(struct spi_device *spi)
+ 	indio_dev->info = &adis16080_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_free_dev;
+-	return 0;
+-
+-error_free_dev:
+-	iio_device_free(indio_dev);
+-error_ret:
+-	return ret;
++	return iio_device_register(indio_dev);
+ }
+ 
+ static int adis16080_remove(struct spi_device *spi)
+ {
+ 	iio_device_unregister(spi_get_drvdata(spi));
+-	iio_device_free(spi_get_drvdata(spi));
+-
+ 	return 0;
+ }
+ 
+-- 
+1.7.9.5
 
-- Lars
-
-- Lars
