@@ -1,46 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f53.google.com ([74.125.83.53]:62711 "EHLO
-	mail-ee0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758944Ab3HMUFM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:05:12 -0400
+Received: from mail-ee0-f45.google.com ([74.125.83.45]:41882 "EHLO
+	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759052Ab3HMUFK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:05:10 -0400
 From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
 Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
-Subject: [PATCH 2/4] input: ti_am335x_tsc: Increase sequencer delay time
-Date: Tue, 13 Aug 2013 21:05:01 +0100
-Message-Id: <1376424303-22740-3-git-send-email-zubair.lutfullah@gmail.com>
+Subject: =?UTF-8?q?=5BPATCH=201/4=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20correct=20step=20mask=20update=20after=20IRQ?=
+Date: Tue, 13 Aug 2013 21:05:00 +0100
+Message-Id: <1376424303-22740-2-git-send-email-zubair.lutfullah@gmail.com>
 In-Reply-To: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Before checking PEN UP event, IRQ delays for this amount
-of time to let FSM stabilize. Previously, with only the
-TSC driver in IRQ mode, this delay was sufficient.
-
-The delay is increased slightly to accomodate if the ADC
-is also being used simultaneously in continuous mode.
+TSC steps should be enabled again after IRQ routine.
+This fix ensures they are updated correctly every time.
 
 Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/input/touchscreen/ti_am335x_tsc.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e165fcb..766bc7e 100644
+index e1c5300..e165fcb 100644
 --- a/drivers/input/touchscreen/ti_am335x_tsc.c
 +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -31,7 +31,7 @@
- #include <linux/mfd/ti_am335x_tscadc.h>
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			config_inp[4];
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
++	u32			step_mask;
+ };
  
- #define ADCFSM_STEPID		0x10
--#define SEQ_SETTLE		275
-+#define SEQ_SETTLE		350
- #define MAX_12BIT		((1 << 12) - 1)
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
  
- static const int config_pins[] = {
+ 	/* The steps1 … end and bit 0 for TS_Charge */
+ 	stepenable = (1 << (end_step + 2)) - 1;
+-	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
++	ts_dev->step_mask = stepenable;
++	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -316,7 +318,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
++		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ 		return IRQ_HANDLED;
+ 	}
+ 	return IRQ_NONE;
 -- 
 1.7.9.5
 
