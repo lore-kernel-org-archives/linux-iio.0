@@ -1,138 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59296 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758670Ab3HMUXb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:23:31 -0400
-Message-ID: <520AA3CD.1040008@kernel.org>
-Date: Tue, 13 Aug 2013 22:23:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Hector Palacios <hector.palacios@digi.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"devicetree-discuss@lists.ozlabs.org"
-	<devicetree-discuss@lists.ozlabs.org>,
-	alexandre.belloni@free-electrons.com, lars@metafoo.de,
-	fabio.estevam@freescale.com, marex@denx.de,
-	Rob Herring <rob.herring@calxeda.com>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Stephen Warren <swarren@wwwdotorg.org>,
-	Ian Campbell <ian.campbell@citrix.com>
+Return-Path: <pawel.moll@arm.com>
+Message-ID: <1376491467.18617.41.camel@hornet>
 Subject: Re: [PATCH v3 2/5] ARM: dts: add reference voltage property for MXS
  LRADC
-References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-3-git-send-email-hector.palacios@digi.com>
-In-Reply-To: <1374501843-19651-3-git-send-email-hector.palacios@digi.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+From: Pawel Moll <pawel.moll@arm.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hector Palacios <hector.palacios@digi.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "devicetree-discuss@lists.ozlabs.org"
+ <devicetree-discuss@lists.ozlabs.org>,
+ "alexandre.belloni@free-electrons.com"
+ <alexandre.belloni@free-electrons.com>, "lars@metafoo.de"
+ <lars@metafoo.de>,  "fabio.estevam@freescale.com"
+ <fabio.estevam@freescale.com>, "marex@denx.de" <marex@denx.de>,
+ "rob.herring@calxeda.com" <rob.herring@calxeda.com>, Mark Rutland
+ <Mark.Rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian
+ Campbell <ian.campbell@citrix.com>
+Date: Wed, 14 Aug 2013 15:44:27 +0100
+In-Reply-To: <520AA3CD.1040008@kernel.org>
+References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com>
+	 <1374501843-19651-3-git-send-email-hector.palacios@digi.com>
+	 <520AA3CD.1040008@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/22/13 15:04, Hector Palacios wrote:
-> Some LRADC channels have fixed pre-dividers so they can measure
-> different voltages at full scale. The reference voltage allows to
-> expose a scaling attribute through the IIO sysfs so that a user can
-> compute the real voltage out of a measured sample value.
-> 
-> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
-> Acked-by: Marek Vasut <marex@denx.de>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+On Tue, 2013-08-13 at 22:23 +0100, Jonathan Cameron wrote:
+> On 07/22/13 15:04, Hector Palacios wrote:
+> > Some LRADC channels have fixed pre-dividers so they can measure
+> > different voltages at full scale. The reference voltage allows to
+> > expose a scaling attribute through the IIO sysfs so that a user can
+> > compute the real voltage out of a measured sample value.
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lrad=
+c.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> > index 4688205..6ec485c 100644
+> > --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> > +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
+> > @@ -1,9 +1,12 @@
+> >  * Freescale i.MX28 LRADC device driver
+> > =20
+> >  Required properties:
+> > -- compatible: Should be "fsl,imx28-lradc"
+> > +- compatible: "fsl,imx28-lradc", "fsl,imx23-lradc"
+> >  - reg: Address and length of the register set for the device
+> >  - interrupts: Should contain the LRADC interrupts
+> > +- fsl,vref: Reference voltage (in mV) for each LRADC channel. This is =
+the
+> > +=09    maximum voltage that can be measured at full scale in each chan=
+nel
+> > +=09    considering fixed pre-dividers.
 
-CC'd the device tree maintainers to see if I can get a comment on this one.
-(done from this initial posting of the patch so that the code is still present).
-I've avoided the patch for a while because opinion was divided.
+So, let me try to rephrase what I read above.
 
-Lars-Peter Clausen commented:
+There's an ADC with X channels. And there's a reference voltage source
+(one?). Now, each of the ADC channels have a (different?) voltage
+divider, taking the voltage from the reference source and feeding it to
+the ADC comparator. How much am I wrong?
 
-I've said before that I'm not convinced that this is the right way to implement this. And considering what Thomas said
-here http://www.mail-archive.com/devicetree-discuss@lists.ozlabs.org/msg36691.html I guess I'm not alone with that opinion.
+If I'm not wrong at all, I'd say that the reference source could be
+described as a standard fixed regulator
+(Documentation/devicetree/bindings/regulator/fixed-regulator.txt) and
+the ADC node should have some king of "reference-supply" phandle to the
+regulator node. Now, if the dividers factors are *really* fixed, the
+driver could know about them and calculate the effective reference
+voltage on its own, couldn't it?
 
-Marek replied:
+Let me repeat the "DT standard disclaimer": the tree, in general, should
+describe the way components are *wired up*, not much more.
 
-He's talking about different versions of the IP block, this is the same IP
-block, just connected to different inputs.
-
-Alexander added:
-
-I don't have any strong opinion on that and I'm certainly not an expert
-but thinking about that, I feel this is different from the discussion
-Thomas had. Those are reference voltages and describe how the IP block
-is connected whereas what Thomas was describing is supporting multiple
-versions of an IP block by describing heaps of registers in the DT. It
-may look ugly here because you have a lot of channels but I find that
-quite acceptable.
-
-Personally I'm falling slightly on the side of this being a bad idea as the
-fact they are specified in the processor device tree files and clearly lines
-up with the compatible strings suggests this is ought to be in the driver
-not the device tree.
-
-Anyhow, looking for more opinions / acks as appropriate.
-
-Incidentally I'm very glad that people have come forward to help with
-this stuff!
-
-Jonathan
-
-> ---
->  Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt | 9 ++++++++-
->  arch/arm/boot/dts/imx23.dtsi                                    | 4 ++++
->  arch/arm/boot/dts/imx28.dtsi                                    | 4 ++++
->  3 files changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-> index 4688205..6ec485c 100644
-> --- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-> +++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-> @@ -1,9 +1,12 @@
->  * Freescale i.MX28 LRADC device driver
->  
->  Required properties:
-> -- compatible: Should be "fsl,imx28-lradc"
-> +- compatible: "fsl,imx28-lradc", "fsl,imx23-lradc"
->  - reg: Address and length of the register set for the device
->  - interrupts: Should contain the LRADC interrupts
-> +- fsl,vref: Reference voltage (in mV) for each LRADC channel. This is the
-> +	    maximum voltage that can be measured at full scale in each channel
-> +	    considering fixed pre-dividers.
->  
->  Optional properties:
->  - fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
-> @@ -18,4 +21,8 @@ Examples:
->  		reg = <0x80050000 0x2000>;
->  		interrupts = <10 14 15 16 17 18 19
->  				20 21 22 23 24 25>;
-> +		fsl,vref = <1850 1850 1850 1850
-> +			    1850 1850 1850 7400
-> +			    1850 1850 3700 1850
-> +			    3700 1850 1850 7400>
->  	};
-> diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
-> index 587ceef..e212902 100644
-> --- a/arch/arm/boot/dts/imx23.dtsi
-> +++ b/arch/arm/boot/dts/imx23.dtsi
-> @@ -430,6 +430,10 @@
->  				compatible = "fsl,imx23-lradc";
->  				reg = <0x80050000 0x2000>;
->  				interrupts = <36 37 38 39 40 41 42 43 44>;
-> +				fsl,vref = <1850 1850 1850 1850
-> +					    1850 1850 3700 7400
-> +					    1850 1850 1850 1850
-> +					    1850 1850 1850 7400>;
->  				status = "disabled";
->  			};
->  
-> diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
-> index 6a8acb0..c1b3724 100644
-> --- a/arch/arm/boot/dts/imx28.dtsi
-> +++ b/arch/arm/boot/dts/imx28.dtsi
-> @@ -865,6 +865,10 @@
->  				reg = <0x80050000 0x2000>;
->  				interrupts = <10 14 15 16 17 18 19
->  						20 21 22 23 24 25>;
-> +				fsl,vref = <1850 1850 1850 1850
-> +					    1850 1850 1850 7400
-> +					    1850 1850 3700 1850
-> +					    3700 1850 1850 7400>;
->  				status = "disabled";
->  			};
->  
-> 
+Pawel
