@@ -1,60 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f169.google.com ([209.85.215.169]:59585 "EHLO
-	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759043Ab3HMUFI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2013 16:05:08 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45014 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758480Ab3HNR5P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 14 Aug 2013 13:57:15 -0400
+Message-ID: <520BD308.7030709@kernel.org>
+Date: Wed, 14 Aug 2013 19:57:12 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
-Subject: [PATCH 0/4] iio: input: ti_am335x_adc: Add continuous sampling support round 5
-Date: Tue, 13 Aug 2013 21:04:59 +0100
-Message-Id: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
+Subject: Re: [PATCH 0/4] iio: input: ti_am335x_adc: Add continuous sampling
+ support round 5
+References: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Round 5 updates. Fixed the define order in the header as guided by Lee.
+I'll actually look at these later, but please do put a version number
+in your cover letter patch subject.
+[PATCH V5 0/4] is pretty much the convention to reduce the chance of anyone
+looking at the wrong version.
 
-Round 4 updates below.
+Thanks,
 
-Note: These apply to the fixes-togreg branch in IIO because of
-a fix on the adc side in there.
+Jonathan
 
-The first few are for input which tweak the TSC driver to
-allow ADC in continuous mode with irqs to work nicely together.
-
-The last one is for iio which adds continuous mode to the adc side.
-
-Received feedback on previous series.
-1. What if IRQs occur together?
-This is handled now. Even if both assert.
-They both work.
-
-2. IIO error handling wrong.
-Fixed now.
-
-3. Headers wierd in IIO.
-Fixed.
-
-Apart from that, found a few bugs in continuous mode
-here and there. And squashed them into the same patch.
-
-Thanks
-Zubair Lutfullah
-
-Zubair Lutfullah (4):
-  input: ti_am335x_tsc: correct step mask update after IRQ
-  input: ti_am335x_tsc: Increase sequencer delay time
-  input: ti_am335x_tsc: Enable shared IRQ for TSC, add overrun and
-    underflow checks
-  iio: ti_am335x_adc: Add continuous sampling and trigger support
-
- drivers/iio/adc/ti_am335x_adc.c           |  353 ++++++++++++++++++++++++-----
- drivers/input/touchscreen/ti_am335x_tsc.c |   45 +++-
- include/linux/mfd/ti_am335x_tscadc.h      |   14 ++
- 3 files changed, 342 insertions(+), 70 deletions(-)
-
--- 
-1.7.9.5
-
+On 08/13/13 21:04, Zubair Lutfullah wrote:
+> Round 5 updates. Fixed the define order in the header as guided by Lee.
+> 
+> Round 4 updates below.
+> 
+> Note: These apply to the fixes-togreg branch in IIO because of
+> a fix on the adc side in there.
+> 
+> The first few are for input which tweak the TSC driver to
+> allow ADC in continuous mode with irqs to work nicely together.
+> 
+> The last one is for iio which adds continuous mode to the adc side.
+> 
+> Received feedback on previous series.
+> 1. What if IRQs occur together?
+> This is handled now. Even if both assert.
+> They both work.
+> 
+> 2. IIO error handling wrong.
+> Fixed now.
+> 
+> 3. Headers wierd in IIO.
+> Fixed.
+> 
+> Apart from that, found a few bugs in continuous mode
+> here and there. And squashed them into the same patch.
+> 
+> Thanks
+> Zubair Lutfullah
+> 
+> Zubair Lutfullah (4):
+>   input: ti_am335x_tsc: correct step mask update after IRQ
+>   input: ti_am335x_tsc: Increase sequencer delay time
+>   input: ti_am335x_tsc: Enable shared IRQ for TSC, add overrun and
+>     underflow checks
+>   iio: ti_am335x_adc: Add continuous sampling and trigger support
+> 
+>  drivers/iio/adc/ti_am335x_adc.c           |  353 ++++++++++++++++++++++++-----
+>  drivers/input/touchscreen/ti_am335x_tsc.c |   45 +++-
+>  include/linux/mfd/ti_am335x_tscadc.h      |   14 ++
+>  3 files changed, 342 insertions(+), 70 deletions(-)
+> 
