@@ -1,43 +1,50 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-Date: Fri, 16 Aug 2013 22:21:11 +0100
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:38617 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751342Ab3HPKRW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 06:17:22 -0400
+Date: Fri, 16 Aug 2013 12:17:14 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
 	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
 Subject: Re: [PATCH 4/4] iio: ti_am335x_adc: Add continuous sampling and
  trigger support
-Message-ID: <20130816212110.GB2636@gmail.com>
+Message-ID: <20130816101714.GE26895@linutronix.de>
 References: <1376424303-22740-1-git-send-email-zubair.lutfullah@gmail.com>
  <1376424303-22740-5-git-send-email-zubair.lutfullah@gmail.com>
  <520CBEC6.8010400@kernel.org>
  <20130816100702.GD26895@linutronix.de>
- <520E0E22.4000403@kernel.org>
- <520E0307.70704@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <520E0307.70704@linutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20130816100702.GD26895@linutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Aug 16, 2013 at 12:46:31PM +0200, Sebastian Andrzej Siewior wrote:
-> On 08/16/2013 01:33 PM, Jonathan Cameron wrote:
-> > Ah, fixes-togreg is for this cycle, whereas new stuff like this needs
-> > to go on the togreg branch.  Hence please rebase on the togreg branch
-> > instead.
-> 
-> But he needs "iio: ti_am335x_adc: Fix wrong samples received on 1st
-> read" from that branch. How should the rebase be done?
-> 
-> Sebastian
-First line of cover letter had a note on this..
+* Sebastian Andrzej Siewior | 2013-08-16 12:07:02 [+0200]:
 
-Should I send that particular fix along with the patch series 
-so its applied cleanly in the togreg branch. 
+>* Jonathan Cameron | 2013-08-15 12:43:02 [+0100]:
+>
+>It did apply with no trouble here.
 
-And then during the merge window things magically happen to 
-fix this situation?
+and with
 
-Thanks
-Zubair
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 93129ec..fdd9810 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -156,6 +156,7 @@ config TI_ADC081C
+ config TI_AM335X_ADC
+ 	tristate "TI's ADC driver"
+ 	depends on MFD_TI_AM335X_TSCADC
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for Texas Instruments ADC
+ 	  driver which is also a MFD client.
+
+
+it links :)
+
+Sebastian
