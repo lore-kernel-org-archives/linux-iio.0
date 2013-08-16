@@ -1,93 +1,169 @@
 Return-Path: <j.anaszewski@samsung.com>
-Message-id: <5214DA0C.4050304@samsung.com>
-Date: Wed, 21 Aug 2013 17:17:32 +0200
 From: Jacek Anaszewski <j.anaszewski@samsung.com>
-MIME-version: 1.0
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Kyungmin Park <kyungmin.park@samsung.com>, s.nawrocki@samsung.com
-Subject: Re: [PATCH/RFC v4 2/3] iio: gp2ap020a00f: Add a driver for the device
-References: <1376658739-3417-1-git-send-email-j.anaszewski@samsung.com>
- <520FD862.3070802@kernel.org> <52138250.6040101@samsung.com>
- <52148D57.6010002@samsung.com>
-In-reply-to: <52148D57.6010002@samsung.com>
-Content-type: text/plain; charset=ISO-8859-1; format=flowed
+To: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org, jic23@kernel.org, kyungmin.park@samsung.com,
+ s.nawrocki@samsung.com, Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: [PATCH/RFC v4 1/3] iio: trigger: implement
+ devm_iio_trigger_alloc/devm_iio_triger_free
+Date: Fri, 16 Aug 2013 15:11:58 +0200
+Message-id: <1376658718-3324-1-git-send-email-j.anaszewski@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/21/2013 11:50 AM, Jacek Anaszewski wrote:
-> On 08/20/2013 04:50 PM, Jacek Anaszewski wrote:
->> On 08/17/2013 10:09 PM, Jonathan Cameron wrote:
->>> On 08/16/13 14:12, Jacek Anaszewski wrote:
->>>> Add a new driver for the ambient light/proximity sensor
->>>> device. The driver exposes three channels: light_clear
->>>> light_ir and proximity. It also supports triggered buffer,
->>>> high and low ambient light threshold event and proximity
->>>> detection events.
->>>>
->>>> Signed-off-by: Jacek Anaszewski<j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ-XMD5yJDbdMReXY1tMh2IBg-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>
->>>> Signed-off-by: Kyungmin Park<kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ-XMD5yJDbdMReXY1tMh2IBg-XMD5yJDbdMReXY1tMh2IBg@public.gmane.org>
->>>
->>> Looking good but a few little bits and pieces left.
->>> Superfluous !! when converting to boolean.
->>> If the proximity detection cannot start with thresholds set to
->>> the current value then fail to start it, don't fudge the variables.
->>>
->>> One question that comes to mind as well.  Does the chip always return
->>> a value in the same units whatever scale is being applied?  If so then
->>> all is fine (and this is a cleverer chip than commonly seen!).
->>
->> The chip can be set into two modes: manual and auto calculation.
->> In the manual mode it outputs the result of CLEAR photodiode
->> in D0 register and the result of IR photodiode in D1 register.
->> Illuminance value can be obtained by making some calculation
->> basing on these two values and some variables factors.
->> In the auto calculation mode it outputs the calculated result
->> without the influence of infrared spectrum in lux units to the
->> D0 register. In addition raw IR result is stored in the D1 register.
->>
->> In the recent patch I switched over to using auto calculation mode
->> to avoid the problems with dynamically changing scale value.
->>
->>> Otherwise how does userspace know what it is getting?
->>
->> This was my concern when I asked in the other email how
->> to inform the user what scale has been applied.
->>
->> Thanks,
->> Jacek
->
-> In the RFC v5 I got rid of automatic setting of the maximum
-> measurable range which was a mistake, as I messed it up with
-> switching to auto calculation mode. The auto calculation mode
-> doesn't handle the situation when the output value is to high
-> to fit in 16-bit value - the maximum measurable range has to
-> be adjusted in such case.
->
-> In the auto calculation mode this is the maximum
-> measurable range alone which determines the scale for
-> the output value. The documentation recommends setting it
-> to x128 when the illuminance_clear output value exceeds 16000,
-> and to x8 when in high lux mode and the output value falls
-> below 1000, so this should be done automatically as the function
-> gp2ap020a00f_adjust_lux_mode did in the previous version
-> of the patch.
->
-> Nonetheless, this is the problem of dynamically changing
-> scale value. The other option could be exposing sysfs attribute
-> for changing the scale value, but there should be some information
-> provided at what output values the changes should be made.
->
-> How would you approach that?
->
-> Thanks,
-> Jacek
+Add a resource managed devm_iio_trigger_alloc()/devm_iio_triger_free()
+to automatically clean up triggers allocated by IIO drivers, thus
+leading to simplified IIO drivers code.
 
-Obviously, if in high lux mode (max measurable range is x128) the
-output value can be restored to the exact lux units by performing
-multiplication in the driver. In the low lux mode (max measurable range
-i x8) the output value is already scaled in lux units according
-to the documentation. I applied this solution in the sixth version
-of the patch.
+Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
+Signed-off-by: Kyunmin Park <kyungmin.park@samsung.com>
+---
+ drivers/iio/industrialio-trigger.c |   71 ++++++++++++++++++++++++++++++++++--
+ include/linux/iio/iio.h            |   29 +++++++++++++++
+ 2 files changed, 96 insertions(+), 4 deletions(-)
 
-Thanks,
-Jacek
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 0dd9bb8..3c4180e 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -424,9 +424,8 @@ static void iio_trig_subirqunmask(struct irq_data *d)
+ 	trig->subirqs[d->irq - trig->subirq_base].enabled = true;
+ }
+ 
+-struct iio_trigger *iio_trigger_alloc(const char *fmt, ...)
++struct iio_trigger *viio_trigger_alloc(const char *fmt, va_list vargs)
+ {
+-	va_list vargs;
+ 	struct iio_trigger *trig;
+ 	trig = kzalloc(sizeof *trig, GFP_KERNEL);
+ 	if (trig) {
+@@ -444,9 +443,9 @@ struct iio_trigger *iio_trigger_alloc(const char *fmt, ...)
+ 			kfree(trig);
+ 			return NULL;
+ 		}
+-		va_start(vargs, fmt);
++
+ 		trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+-		va_end(vargs);
++
+ 		if (trig->name == NULL) {
+ 			irq_free_descs(trig->subirq_base,
+ 				       CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+@@ -469,6 +468,18 @@ struct iio_trigger *iio_trigger_alloc(const char *fmt, ...)
+ 	}
+ 	return trig;
+ }
++
++struct iio_trigger *iio_trigger_alloc(const char *fmt, ...)
++{
++	struct iio_trigger *trig;
++	va_list vargs;
++
++	va_start(vargs, fmt);
++	trig = viio_trigger_alloc(fmt, vargs);
++	va_end(vargs);
++
++	return trig;
++}
+ EXPORT_SYMBOL(iio_trigger_alloc);
+ 
+ void iio_trigger_free(struct iio_trigger *trig)
+@@ -478,6 +489,58 @@ void iio_trigger_free(struct iio_trigger *trig)
+ }
+ EXPORT_SYMBOL(iio_trigger_free);
+ 
++
++static void devm_iio_trigger_release(struct device *dev, void *res)
++{
++	iio_trigger_free(*(struct iio_trigger **)res);
++}
++
++static int devm_iio_trigger_match(struct device *dev, void *res, void *data)
++{
++	struct iio_trigger **r = res;
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++	return *r == data;
++}
++
++struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
++						const char *fmt, ...)
++{
++	struct iio_trigger **ptr, *trig;
++	va_list vargs;
++
++	ptr = devres_alloc(devm_iio_trigger_release, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return NULL;
++
++	/* use raw alloc_dr for kmalloc caller tracing */
++	va_start(vargs, fmt);
++	trig = viio_trigger_alloc(fmt, vargs);
++	va_end(vargs);
++	if (trig) {
++		*ptr = trig;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
++
++	return trig;
++}
++EXPORT_SYMBOL_GPL(devm_iio_trigger_alloc);
++
++void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
++{
++	int rc;
++
++	rc = devres_release(dev, devm_iio_trigger_release,
++			    devm_iio_trigger_match, iio_trig);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_trigger_free);
++
+ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+ {
+ 	indio_dev->groups[indio_dev->groupcounter++] =
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 09ebe0a..2103cc3 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -557,6 +557,35 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
+ void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
+ 
+ /**
++ * devm_iio_trigger_alloc - Resource-managed iio_trigger_alloc()
++ * @dev:		Device to allocate iio_trigger for
++ * @fmt:		trigger name format. If it includes format
++ *			specifiers, the additional arguments following
++ *			format are formatted and inserted in the resulting
++ *			string replacing their respective specifiers.
++ *
++ * Managed iio_trigger_alloc.  iio_trigger allocated with this function is
++ * automatically freed on driver detach.
++ *
++ * If an iio_trigger allocated with this function needs to be freed separately,
++ * devm_iio_trigger_free() must be used.
++ *
++ * RETURNS:
++ * Pointer to allocated iio_trigger on success, NULL on failure.
++ */
++struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
++						const char *fmt, ...);
++
++/**
++ * devm_iio_trigger_free - Resource-managed iio_trigger_free()
++ * @dev:		Device this iio_dev belongs to
++ * @iio_trig:		the iio_trigger associated with the device
++ *
++ * Free iio_trigger allocated with devm_iio_trigger_alloc().
++ */
++void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
++
++/**
+  * iio_buffer_enabled() - helper function to test if the buffer is enabled
+  * @indio_dev:		IIO device structure for device
+  **/
+-- 
+1.7.5.4
