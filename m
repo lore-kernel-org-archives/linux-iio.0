@@ -1,65 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:38227 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754136Ab3HPIxz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 04:53:55 -0400
-Date: Fri, 16 Aug 2013 10:53:50 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
+Received: from mail-ea0-f178.google.com ([209.85.215.178]:53229 "EHLO
+	mail-ea0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757212Ab3HPWlI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 18:41:08 -0400
+Date: Fri, 16 Aug 2013 22:42:24 +0100
+From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
+	dmitry.torokhov@gmail.com, sameo@linux.intel.com,
 	lee.jones@linaro.org, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
-Subject: Re: [PATCH 1/4] input: ti_am335x_tsc: correct step mask update
- after IRQ
-Message-ID: <20130816085350.GA26895@linutronix.de>
+Subject: Re: [PATCH 1/4] input: ti_am335x_tsc: correct step mask update after
+ IRQ
+Message-ID: <20130816214224.GE2636@gmail.com>
 References: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
  <1376412499-21007-2-git-send-email-zubair.lutfullah@gmail.com>
+ <20130816085350.GA26895@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1376412499-21007-2-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20130816085350.GA26895@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* Zubair Lutfullah | 2013-08-13 17:48:16 [+0100]:
+On Fri, Aug 16, 2013 at 10:53:50AM +0200, Sebastian Andrzej Siewior wrote:
+> * Zubair Lutfullah | 2013-08-13 17:48:16 [+0100]:
+> 
+> >@@ -316,7 +318,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+> > 
+> > 	if (irqclr) {
+> > 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+> >-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
+> >+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+> > 		return IRQ_HANDLED;
+> > 	}
+> > 	return IRQ_NONE;
+> 
+> titsc_step_config() computes the mask once since it does not change. It
+> is then assigned via am335x_tsc_se_set() to ->reg_se_cache() and later
+> always udpated via am335x_tsc_se_update(). This should ensure that ADC's
+> and TSC's bits are in sync and clear each other out.
+> Now you call am335x_tsc_se_set() in every irq which adds the TSC's mask
+> to ->reg_se_cache but why? It was never removed.
+> 
+> Sebastian
 
->diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
->index e1c5300..e165fcb 100644
->--- a/drivers/input/touchscreen/ti_am335x_tsc.c
->+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
->@@ -52,6 +52,7 @@ struct titsc {
-> 	u32			config_inp[4];
-> 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
-> 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
->+	u32			step_mask;
-> };
-> 
-> static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
->@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
-> 
-> 	/* The steps1 … end and bit 0 for TS_Charge */
-> 	stepenable = (1 << (end_step + 2)) - 1;
->-	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
->+	ts_dev->step_mask = stepenable;
->+	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
-> }
-> 
-> static void titsc_read_coordinates(struct titsc *ts_dev,
->@@ -316,7 +318,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
-> 
-> 	if (irqclr) {
-> 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
->-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
->+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
-> 		return IRQ_HANDLED;
-> 	}
-> 	return IRQ_NONE;
+The problem is when ADC/TSC are used together.
 
-titsc_step_config() computes the mask once since it does not change. It
-is then assigned via am335x_tsc_se_set() to ->reg_se_cache() and later
-always udpated via am335x_tsc_se_update(). This should ensure that ADC's
-and TSC's bits are in sync and clear each other out.
-Now you call am335x_tsc_se_set() in every irq which adds the TSC's mask
-to ->reg_se_cache but why? It was never removed.
+reg_se_cache would get updated with masks in the se_set function in MFD core.
 
-Sebastian
+>From TSC driver, the TSC steps would be set in the reg_se_cache variable.
+>From ADC driver, the ADC steps would be set in the reg_se_cache variable.
+
+But the ADC masks weren't being cleared from the reg_se_cache variable
+anywhere.
+
+After a while of using ADC/TSC together, the reg_se_cache 
+variable would have FFFF always. Resulting in redundant sampling 
+and data in ADC FIFO0.
+
+MFD has received fixes to update the reg_se_cache upon 
+every call to the se_set functions.
+
+Thus, the step_mask must be set every time to ensure
+that it is updated correctly every time.
+
+Hope that clears the confusion.
+This TSC/ADC sharing can be pretty confusing.
+
+Thanks
+Zubair
