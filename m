@@ -1,113 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:38343 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751446Ab3HPJON (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 05:14:13 -0400
-Date: Fri, 16 Aug 2013 11:14:09 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Cc: jic23@cam.ac.uk, dmitry.torokhov@gmail.com, sameo@linux.intel.com,
+Received: from mail-ea0-f181.google.com ([209.85.215.181]:36502 "EHLO
+	mail-ea0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754286Ab3HPW2j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 16 Aug 2013 18:28:39 -0400
+Date: Fri, 16 Aug 2013 22:31:33 +0100
+From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
+	dmitry.torokhov@gmail.com, sameo@linux.intel.com,
 	lee.jones@linaro.org, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
 	gregkh@linuxfoundation.org, Russ.Dill@ti.com
 Subject: Re: [PATCH 3/4] input: ti_tsc: Enable shared IRQ for TSC and add
  overrun, underflow checks
-Message-ID: <20130816091409.GC26895@linutronix.de>
+Message-ID: <20130816213132.GD2636@gmail.com>
 References: <1376412499-21007-1-git-send-email-zubair.lutfullah@gmail.com>
  <1376412499-21007-4-git-send-email-zubair.lutfullah@gmail.com>
+ <20130816091409.GC26895@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1376412499-21007-4-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20130816091409.GC26895@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* Zubair Lutfullah | 2013-08-13 17:48:18 [+0100]:
-
->Enable shared IRQ to allow ADC to share IRQ line from
->parent MFD core. Only FIFO0 IRQs are for TSC and handled
->on the TSC side.
->
->Patch also adds overrun and underflow irq handlers.
->
->Russ Dill (TI) worked on overrun and underflow handlers.
->Rachna Patil (TI) laid ground work for shared IRQ.
->
->Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
->---
-> drivers/input/touchscreen/ti_am335x_tsc.c |   37 +++++++++++++++++++++++++----
-> include/linux/mfd/ti_am335x_tscadc.h      |    2 ++
-> 2 files changed, 34 insertions(+), 5 deletions(-)
->
->diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
->index 766bc7e..9c114b2 100644
->--- a/drivers/input/touchscreen/ti_am335x_tsc.c
->+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
->@@ -256,14 +256,39 @@ static irqreturn_t titsc_irq(int irq, void *dev)
-> {
-> 	struct titsc *ts_dev = dev;
-> 	struct input_dev *input_dev = ts_dev->input;
->-	unsigned int status, irqclr = 0;
->+	unsigned int status, irqclr = 0, config = 0;
-> 	unsigned int x = 0, y = 0;
-> 	unsigned int z1, z2, z;
-> 	unsigned int fsm;
+On Fri, Aug 16, 2013 at 11:14:09AM +0200, Sebastian Andrzej Siewior wrote:
+> * Zubair Lutfullah | 2013-08-13 17:48:18 [+0100]:
+> >+	if ((status & IRQENB_FIFO0OVRRUN) ||
+> >+			(status & IRQENB_FIFO0UNDRFLW)) {
+> >+
+> >+		config = titsc_readl(ts_dev, REG_CTRL);
+> >+		config &= ~(CNTRLREG_TSCSSENB);
+> >+		titsc_writel(ts_dev, REG_CTRL, config);
+> >+
+> >+		if (status & IRQENB_FIFO0UNDRFLW) {
+> >+			titsc_writel(ts_dev, REG_IRQSTATUS,
+> >+				(status | IRQENB_FIFO0UNDRFLW));
+> >+			irqclr |= IRQENB_FIFO0UNDRFLW;
+> >+		} else {
+> >+			titsc_writel(ts_dev, REG_IRQSTATUS,
+> >+				(status | IRQENB_FIFO0OVRRUN));
+> >+			irqclr |= IRQENB_FIFO0OVRRUN;
+> >+		}
 > 
-> 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
->-	if (status & IRQENB_FIFO0THRES) {
->+	/*
->+	 * ADC and touchscreen share the IRQ line.
->+	 * FIFO1 threshold, FIFO1 Overrun and FIFO1 underflow
->+	 * interrupts are used by ADC. Handle FIFO0 IRQs here only
->+	 * and check if any IRQs left in case both fifos interrupt.
->+	 * If any irq left, return none, else return handled.
->+	 */
->+	if ((status & IRQENB_FIFO0OVRRUN) ||
->+			(status & IRQENB_FIFO0UNDRFLW)) {
->+
->+		config = titsc_readl(ts_dev, REG_CTRL);
->+		config &= ~(CNTRLREG_TSCSSENB);
->+		titsc_writel(ts_dev, REG_CTRL, config);
->+
->+		if (status & IRQENB_FIFO0UNDRFLW) {
->+			titsc_writel(ts_dev, REG_IRQSTATUS,
->+				(status | IRQENB_FIFO0UNDRFLW));
->+			irqclr |= IRQENB_FIFO0UNDRFLW;
->+		} else {
->+			titsc_writel(ts_dev, REG_IRQSTATUS,
->+				(status | IRQENB_FIFO0OVRRUN));
->+			irqclr |= IRQENB_FIFO0OVRRUN;
->+		}
-
-You don't do anything on overflow / underflow. Is this due to the fact
-once enabled for FIFO1 it also triggers for FIFO0?
-
->+		titsc_writel(ts_dev, REG_CTRL,
->+			(config | CNTRLREG_TSCSSENB));
->+	} else if (status & IRQENB_FIFO0THRES) {
-> 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+> You don't do anything on overflow / underflow. Is this due to the fact
+> once enabled for FIFO1 it also triggers for FIFO0?
 > 
-> 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
->@@ -317,9 +342,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
-> 	}
+The TSCADC module doesn't recover from these interrupts.
+
+> >+		titsc_writel(ts_dev, REG_CTRL,
+> >+			(config | CNTRLREG_TSCSSENB));
+
+The fix is to re-enable the module after disabling 
+and clearing the interrupts.
+
+That is what the handler is doing.
+> >+	} else if (status & IRQENB_FIFO0THRES) {
+> > 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+> > 
+> > 		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+> >@@ -317,9 +342,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+> > 	}
+> > 
+> > 	if (irqclr) {
+> >-		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+> >+		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
 > 
-> 	if (irqclr) {
->-		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
->+		titsc_writel(ts_dev, REG_IRQSTATUS, (status | irqclr));
+> Shouldn't FIFO1UNDRFLW & OVRRUN be handled by the adc driver? Why do you
+> or the unhandled bits as well here?
+FIFO1 is only used by TSC. ADC doesn't touch it.
+> 
+> > 		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+> >-		return IRQ_HANDLED;
+> >+		status = titsc_readl(ts_dev, REG_IRQSTATUS);
+> >+		if (status == false)
+> >+			return IRQ_HANDLED;
+> 
+> And why this? If you something you handled it, if you didn't you return
+> NONE. Why does it depend on REG_IRQSTATUS?
 
-Shouldn't FIFO1UNDRFLW & OVRRUN be handled by the adc driver? Why do you
-or the unhandled bits as well here?
+These quirks are to handle the situation where both IRQs happen
+simultaneously. Which can occur when someone is using the TSC
+while continuously sampling using the ADC.
 
-> 		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
->-		return IRQ_HANDLED;
->+		status = titsc_readl(ts_dev, REG_IRQSTATUS);
->+		if (status == false)
->+			return IRQ_HANDLED;
+REG_IRQSTATUS has flags for FIFO0 used by ADC as well.
 
-And why this? If you something you handled it, if you didn't you return
-NONE. Why does it depend on REG_IRQSTATUS?
+If there are still those IRQs to handle, then IRQ_NONE is returned.
+Otherwise, all IRQ flags are clear so IRQ_HANDLED is returned.
 
-> 	}
-> 	return IRQ_NONE;
-> }
-
-Sebastian
+Thanks
+Zubair
