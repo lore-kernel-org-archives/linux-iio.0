@@ -2,130 +2,319 @@ Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 3/5] iio: add info_mask_[shared_by_dir/shared_by_all]
-Date: Sat, 17 Aug 2013 15:39:02 +0100
-Message-Id: <1376750344-12817-4-git-send-email-jic23@kernel.org>
+Subject: [PATCH 2/5] iio: refactor info mask attribute creation.
+Date: Sat, 17 Aug 2013 15:39:01 +0100
+Message-Id: <1376750344-12817-3-git-send-email-jic23@kernel.org>
 In-Reply-To: <1376750344-12817-1-git-send-email-jic23@kernel.org>
 References: <1376750344-12817-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-These two additional info_mask bitmaps should allow all 'standard'
-numeric attributes to be handled using the read_raw and write_raw
-callbacks.  Whilst this should reduce code, the more important element
-is that this makes these values easily accessible to in kernel users
-of IIO devices.
+Introduce an enum to specify whether the attribute is separate or
+shared.
+
+Factor out the bitmap handling for loop into a separate function.
+
+Tidy up error handling and add a NULL assignment to squish a false
+positive warning from GCC.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/iio_core.h          |  4 +++-
- drivers/iio/industrialio-core.c | 31 +++++++++++++++++++++++++++++++
- include/linux/iio/iio.h         |  9 ++++++++-
- 3 files changed, 42 insertions(+), 2 deletions(-)
+ drivers/iio/iio_core.h            |   5 +-
+ drivers/iio/industrialio-buffer.c |   2 +-
+ drivers/iio/industrialio-core.c   | 148 ++++++++++++++++++++------------------
+ 3 files changed, 84 insertions(+), 71 deletions(-)
 
 diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
-index 75470ef..8d94d79 100644
+index 05c1b74..75470ef 100644
 --- a/drivers/iio/iio_core.h
 +++ b/drivers/iio/iio_core.h
-@@ -21,7 +21,9 @@ struct iio_dev;
+@@ -20,6 +20,9 @@ struct iio_dev;
+ 
  extern struct device_type iio_device_type;
  
- enum iio_shared_by { __IIO_SEPARATE,
--		     __IIO_SHARED_BY_TYPE };
-+		     __IIO_SHARED_BY_TYPE,
-+		     __IIO_SHARED_BY_DIR,
-+		     __IIO_SHARED_BY_ALL };
- 
++enum iio_shared_by { __IIO_SEPARATE,
++		     __IIO_SHARED_BY_TYPE };
++
  int __iio_add_chan_devattr(const char *postfix,
  			   struct iio_chan_spec const *chan,
+ 			   ssize_t (*func)(struct device *dev,
+@@ -30,7 +33,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 						const char *buf,
+ 						size_t len),
+ 			   u64 mask,
+-			   bool generic,
++			   enum iio_shared_by generic,
+ 			   struct device *dev,
+ 			   struct list_head *attr_list);
+ 
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index e73033f..69e4a45 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -214,7 +214,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 				     &iio_show_scan_index,
+ 				     NULL,
+ 				     0,
+-				     0,
++				     __IIO_SEPARATE,
+ 				     &indio_dev->dev,
+ 				     &buffer->scan_el_dev_attr_list);
+ 	if (ret)
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 720cea1..5459848 100644
+index 97f0297..720cea1 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -550,6 +550,14 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+@@ -516,14 +516,15 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 						struct device_attribute *attr,
+ 						const char *buf,
+ 						size_t len),
+-			   bool generic)
++			   enum iio_shared_by shared_by)
+ {
+-	int ret;
+-	char *name_format, *full_postfix;
++	int ret = 0;
++	char *name_format = NULL;
++	char *full_postfix;
+ 	sysfs_attr_init(&dev_attr->attr);
+ 
+ 	/* Build up postfix of <extend_name>_<modifier>_postfix */
+-	if (chan->modified && !generic) {
++	if (chan->modified && (shared_by == __IIO_SEPARATE)) {
+ 		if (chan->extend_name)
+ 			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+ 						 iio_modifier_names[chan
+@@ -544,53 +545,62 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 						 chan->extend_name,
+ 						 postfix);
+ 	}
+-	if (full_postfix == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	if (full_postfix == NULL)
++		return -ENOMEM;
  
  	if (chan->differential) { /* Differential can not have modifier */
- 		switch (shared_by) {
-+		case __IIO_SHARED_BY_ALL:
-+			name_format = kasprintf(GFP_KERNEL, "%s", full_postfix);
-+			break;
-+		case __IIO_SHARED_BY_DIR:
-+			name_format = kasprintf(GFP_KERNEL, "%s_%s",
-+						iio_direction[chan->output],
-+						full_postfix);
-+			break;
- 		case __IIO_SHARED_BY_TYPE:
+-		if (generic)
++		switch (shared_by) {
++		case __IIO_SHARED_BY_TYPE:
  			name_format
  				= kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
-@@ -577,6 +585,14 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 					    iio_direction[chan->output],
+ 					    iio_chan_type_name_spec[chan->type],
+ 					    iio_chan_type_name_spec[chan->type],
+ 					    full_postfix);
+-		else if (chan->indexed)
++			break;
++		case __IIO_SEPARATE:
++			if (!chan->indexed) {
++				WARN_ON("Differential channels must be indexed\n");
++				ret = -EINVAL;
++				goto error_free_full_postfix;
++			}
+ 			name_format
+-				= kasprintf(GFP_KERNEL, "%s_%s%d-%s%d_%s",
++				= kasprintf(GFP_KERNEL,
++					    "%s_%s%d-%s%d_%s",
+ 					    iio_direction[chan->output],
+ 					    iio_chan_type_name_spec[chan->type],
+ 					    chan->channel,
+ 					    iio_chan_type_name_spec[chan->type],
+ 					    chan->channel2,
+ 					    full_postfix);
+-		else {
+-			WARN_ON("Differential channels must be indexed\n");
+-			ret = -EINVAL;
+-			goto error_free_full_postfix;
++			break;
  		}
  	} else { /* Single ended */
- 		switch (shared_by) {
-+		case __IIO_SHARED_BY_ALL:
-+			name_format = kasprintf(GFP_KERNEL, "%s", full_postfix);
-+			break;
-+		case __IIO_SHARED_BY_DIR:
-+			name_format = kasprintf(GFP_KERNEL, "%s_%s",
-+						iio_direction[chan->output],
-+						full_postfix);
-+			break;
- 		case __IIO_SHARED_BY_TYPE:
+-		if (generic)
+-			name_format
+-				= kasprintf(GFP_KERNEL, "%s_%s_%s",
+-					    iio_direction[chan->output],
+-					    iio_chan_type_name_spec[chan->type],
+-					    full_postfix);
+-		else if (chan->indexed)
+-			name_format
+-				= kasprintf(GFP_KERNEL, "%s_%s%d_%s",
+-					    iio_direction[chan->output],
+-					    iio_chan_type_name_spec[chan->type],
+-					    chan->channel,
+-					    full_postfix);
+-		else
++		switch (shared_by) {
++		case __IIO_SHARED_BY_TYPE:
  			name_format
  				= kasprintf(GFP_KERNEL, "%s_%s_%s",
-@@ -734,6 +750,21 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 	if (ret < 0)
- 		return ret;
- 	attrcount += ret;
+ 					    iio_direction[chan->output],
+ 					    iio_chan_type_name_spec[chan->type],
+ 					    full_postfix);
++			break;
 +
++		case __IIO_SEPARATE:
++			if (chan->indexed)
++				name_format
++					= kasprintf(GFP_KERNEL, "%s_%s%d_%s",
++						    iio_direction[chan->output],
++						    iio_chan_type_name_spec[chan->type],
++						    chan->channel,
++						    full_postfix);
++			else
++				name_format
++					= kasprintf(GFP_KERNEL, "%s_%s_%s",
++						    iio_direction[chan->output],
++						    iio_chan_type_name_spec[chan->type],
++						    full_postfix);
++			break;
++		}
+ 	}
+ 	if (name_format == NULL) {
+ 		ret = -ENOMEM;
+@@ -614,16 +624,11 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+ 		dev_attr->attr.mode |= S_IWUSR;
+ 		dev_attr->store = writefunc;
+ 	}
+-	kfree(name_format);
+-	kfree(full_postfix);
+-
+-	return 0;
+-
+ error_free_name_format:
+ 	kfree(name_format);
+ error_free_full_postfix:
+ 	kfree(full_postfix);
+-error_ret:
++
+ 	return ret;
+ }
+ 
+@@ -642,7 +647,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 						const char *buf,
+ 						size_t len),
+ 			   u64 mask,
+-			   bool generic,
++			   enum iio_shared_by shared_by,
+ 			   struct device *dev,
+ 			   struct list_head *attr_list)
+ {
+@@ -656,7 +661,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 	}
+ 	ret = __iio_device_attr_init(&iio_attr->dev_attr,
+ 				     postfix, chan,
+-				     readfunc, writefunc, generic);
++				     readfunc, writefunc, shared_by);
+ 	if (ret)
+ 		goto error_iio_dev_attr_free;
+ 	iio_attr->c = chan;
+@@ -664,7 +669,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 	list_for_each_entry(t, attr_list, l)
+ 		if (strcmp(t->dev_attr.attr.name,
+ 			   iio_attr->dev_attr.attr.name) == 0) {
+-			if (!generic)
++			if (shared_by == __IIO_SEPARATE)
+ 				dev_err(dev, "tried to double register : %s\n",
+ 					t->dev_attr.attr.name);
+ 			ret = -EBUSY;
+@@ -682,46 +687,53 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+-					struct iio_chan_spec const *chan)
++static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
++					 struct iio_chan_spec const *chan,
++					 enum iio_shared_by shared_by,
++					 const long *infomask)
+ {
+-	int ret, attrcount = 0;
+-	int i;
+-	const struct iio_chan_spec_ext_info *ext_info;
++	int i, ret, attrcount = 0;
+ 
+-	if (chan->channel < 0)
+-		return 0;
+-	for_each_set_bit(i, &chan->info_mask_separate, sizeof(long)*8) {
++	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
+ 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+ 					     chan,
+ 					     &iio_read_channel_info,
+ 					     &iio_write_channel_info,
+ 					     i,
+-					     0,
++					     shared_by,
+ 					     &indio_dev->dev,
+ 					     &indio_dev->channel_attr_list);
+-		if (ret < 0)
+-			goto error_ret;
+-		attrcount++;
+-	}
+-	for_each_set_bit(i, &chan->info_mask_shared_by_type, sizeof(long)*8) {
+-		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+-					     chan,
+-					     &iio_read_channel_info,
+-					     &iio_write_channel_info,
+-					     i,
+-					     1,
+-					     &indio_dev->dev,
+-					     &indio_dev->channel_attr_list);
+-		if (ret == -EBUSY) {
+-			ret = 0;
++		if ((ret == -EBUSY) && (shared_by != __IIO_SEPARATE))
+ 			continue;
+-		} else if (ret < 0) {
+-			goto error_ret;
+-		}
++		else if (ret < 0)
++			return ret;
+ 		attrcount++;
+ 	}
+ 
++	return attrcount;
++}
++
++static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
++					struct iio_chan_spec const *chan)
++{
++	int ret, attrcount = 0;
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	if (chan->channel < 0)
++		return 0;
 +	ret = iio_device_add_info_mask_type(indio_dev, chan,
-+					    __IIO_SHARED_BY_DIR,
-+					    &chan->info_mask_shared_by_dir);
++					    __IIO_SEPARATE,
++					    &chan->info_mask_separate);
 +	if (ret < 0)
 +		return ret;
 +	attrcount += ret;
 +
 +	ret = iio_device_add_info_mask_type(indio_dev, chan,
-+					    __IIO_SHARED_BY_ALL,
-+					    &chan->info_mask_shared_by_all);
++					    __IIO_SHARED_BY_TYPE,
++					    &chan->info_mask_shared_by_type);
 +	if (ret < 0)
 +		return ret;
 +	attrcount += ret;
-+
  	if (chan->ext_info) {
  		unsigned int i = 0;
  		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index dbaa55b..7b8d2ff 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -150,6 +150,10 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
-  *			this channel.
-  * @info_mask_shared_by_type: What information is to be exported that is shared
-  *			by all channels of the same type.
-+ * @info_mask_shared_by_dir: What information is to be exported that is shared
-+ *			by all channels of the same direction.
-+ * @info_mask_shared_by_all: What information is to be exported that is shared
-+ *			by all channels.
-  * @event_mask:		What events can this channel produce.
-  * @ext_info:		Array of extended info attributes for this channel.
-  *			The array is NULL terminated, the last element should
-@@ -186,6 +190,8 @@ struct iio_chan_spec {
- 	} scan_type;
- 	long			info_mask_separate;
- 	long			info_mask_shared_by_type;
-+	long			info_mask_shared_by_dir;
-+	long			info_mask_shared_by_all;
- 	long			event_mask;
- 	const struct iio_chan_spec_ext_info *ext_info;
- 	const char		*extend_name;
-@@ -209,7 +215,8 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
- 	enum iio_chan_info_enum type)
- {
- 	return (chan->info_mask_separate & BIT(type)) |
--	       (chan->info_mask_shared_by_type & BIT(type));
-+		(chan->info_mask_shared_by_type & BIT(type)) |
-+		(chan->info_mask_shared_by_all & BIT(type));
+@@ -740,15 +752,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 				continue;
+ 
+ 			if (ret)
+-				goto error_ret;
++				return ret;
+ 
+ 			attrcount++;
+ 		}
+ 	}
+ 
+-	ret = attrcount;
+-error_ret:
+-	return ret;
++	return attrcount;
  }
  
- #define IIO_ST(si, rb, sb, sh)						\
+ static void iio_device_remove_and_free_read_attr(struct iio_dev *indio_dev,
 -- 
 1.8.3.4
