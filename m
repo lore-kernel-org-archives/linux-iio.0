@@ -1,72 +1,143 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sun, 18 Aug 2013 23:30:19 +0200 (CEST)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:55574 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755340Ab3HRNAc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 18 Aug 2013 09:00:32 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org, Jon Brenner <jon.brenner@ams.com>,
-    Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 1/2] iio: add INT_TIME (integration time) channel info
- attribute
-In-Reply-To: <521138C4.5050904@kernel.org>
-Message-ID: <alpine.DEB.2.01.1308182319000.4146@pmeerw.net>
-References: <1376830828-2496-1-git-send-email-pmeerw@pmeerw.net> <521138C4.5050904@kernel.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 2/2] iio: adjd_s311: Use INT_TIME channel info
+Date: Sun, 18 Aug 2013 15:00:28 +0200
+Message-Id: <1376830828-2496-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1376830828-2496-1-git-send-email-pmeerw@pmeerw.net>
+References: <1376830828-2496-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/light/adjd_s311.c | 72 +++++++++++++------------------------------
+ 1 file changed, 21 insertions(+), 51 deletions(-)
 
-> > integration time is in seconds; it controls the measurement
-> > time and influences the gain of a sensor
-> > 
-> > used by adjd_s311, tsl4531
-> > the following drivers have similar controls:
-> > * tsl2563 (integration time is controlled via CALIBSCALE among other things)
-> > * tsl2583 (has integration_time device_attr, but driver doesn't use channels yet)
-> > * tsl2x7x (has integration_time attr)
-
-> I know this has come up before (and I'm not actually expressing oposition
-> to this going into info_mask) but could you sumarise the arguments for why
-> this property cannot be covered by calibscale or scale?
-> I'd like to have a little stronger argument for the patch description in Git.
-
-sounds good; I'd add:
-
-> There are two typical ways that scaling is implemented in a device:
-> 1) input amplifier
-> 2) reference to the ADC is changed.
-> These both result in the accuracy of the ADC varying (by applying it's
-> sampling over ta more relevant range).
-> 
-> Integration time is a way of dealing with noise inherent in the analog
-> sensor itself.  In this case a mixture of Photon noise and device specific
-> noise.  Photon noise is dealt with by either improving the efficiency of
-> the sensor, (more photons actually captured) which is not easily varied dynamically,
-> or by integrating the measurement over a longer time period.  Note that this
-> can also be thought of as an averaging of a number of individual samples
-> and is infact sometimes implemented this way.
-
-altering integration time implies that the duration of a 
-measurement changes and the user of the device may be interested
+diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
+index 23cff79..8853251 100644
+--- a/drivers/iio/light/adjd_s311.c
++++ b/drivers/iio/light/adjd_s311.c
+@@ -114,43 +114,6 @@ static int adjd_s311_read_data(struct iio_dev *indio_dev, u8 reg, int *val)
+ 	return 0;
+ }
  
-> Hence it makes sense to distinguish between integration time and simple
-> scale. In some devices both types of control are present and whilst they
-> will have similar effects on the amplitude of the reading, their effect
-> on the noise on the measurements will differ considerably.
-
-integration time may or may not have an impact on the range of values
-measured
-
-both characteristics cannot be expressed with scale/calibscale in a 
-satisfying way
-
-let's see if further comments come up, and I'll repost
-
-please note that there is a fix for the adjd_s311 driver posted which you 
-may want to fast-feed to Greg
-
-thanks, regards, p.
-
+-static ssize_t adjd_s311_read_int_time(struct iio_dev *indio_dev,
+-	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
+-{
+-	struct adjd_s311_data *data = iio_priv(indio_dev);
+-	s32 ret;
+-
+-	ret = i2c_smbus_read_word_data(data->client,
+-		ADJD_S311_INT_REG(chan->address));
+-	if (ret < 0)
+-		return ret;
+-
+-	return sprintf(buf, "%d\n", ret & ADJD_S311_INT_MASK);
+-}
+-
+-static ssize_t adjd_s311_write_int_time(struct iio_dev *indio_dev,
+-	 uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
+-	 size_t len)
+-{
+-	struct adjd_s311_data *data = iio_priv(indio_dev);
+-	unsigned long int_time;
+-	int ret;
+-
+-	ret = kstrtoul(buf, 10, &int_time);
+-	if (ret)
+-		return ret;
+-
+-	if (int_time > ADJD_S311_INT_MASK)
+-		return -EINVAL;
+-
+-	ret = i2c_smbus_write_word_data(data->client,
+-		ADJD_S311_INT_REG(chan->address), int_time);
+-	if (ret < 0)
+-		return ret;
+-
+-	return len;
+-}
+-
+ static irqreturn_t adjd_s311_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -186,25 +149,16 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
+-static const struct iio_chan_spec_ext_info adjd_s311_ext_info[] = {
+-	{
+-		.name = "integration_time",
+-		.read = adjd_s311_read_int_time,
+-		.write = adjd_s311_write_int_time,
+-	},
+-	{ }
+-};
+-
+ #define ADJD_S311_CHANNEL(_color, _scan_idx) { \
+ 	.type = IIO_INTENSITY, \
+ 	.modified = 1, \
+ 	.address = (IDX_##_color), \
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+-		BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
++		BIT(IIO_CHAN_INFO_HARDWAREGAIN) | \
++		BIT(IIO_CHAN_INFO_INT_TIME), \
+ 	.channel2 = (IIO_MOD_LIGHT_##_color), \
+ 	.scan_index = (_scan_idx), \
+ 	.scan_type = IIO_ST('u', 10, 16, 0), \
+-	.ext_info = adjd_s311_ext_info, \
+ }
+ 
+ static const struct iio_chan_spec adjd_s311_channels[] = {
+@@ -236,6 +190,18 @@ static int adjd_s311_read_raw(struct iio_dev *indio_dev,
+ 			return ret;
+ 		*val = ret & ADJD_S311_CAP_MASK;
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_INT_TIME:
++		ret = i2c_smbus_read_word_data(data->client,
++			ADJD_S311_INT_REG(chan->address));
++		if (ret < 0)
++			return ret;
++		*val = 0;
++		/*
++		 * not documented, based on measurement:
++		 * 4095 LSBs correspond to roughly 4 ms
++		 */
++		*val2 = ret & ADJD_S311_INT_MASK;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -245,16 +211,20 @@ static int adjd_s311_write_raw(struct iio_dev *indio_dev,
+ 			       int val, int val2, long mask)
+ {
+ 	struct adjd_s311_data *data = iio_priv(indio_dev);
+-	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		if (val < 0 || val > ADJD_S311_CAP_MASK)
+ 			return -EINVAL;
+ 
+-		ret = i2c_smbus_write_byte_data(data->client,
++		return i2c_smbus_write_byte_data(data->client,
+ 			ADJD_S311_CAP_REG(chan->address), val);
+-		return ret;
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0 || val2 < 0 || val2 > ADJD_S311_INT_MASK)
++			return -EINVAL;
++
++		return i2c_smbus_write_word_data(data->client,
++			ADJD_S311_INT_REG(chan->address), val2);
+ 	}
+ 	return -EINVAL;
+ }
 -- 
+1.8.3.4
 
-Peter Meerwald
-+43-664-2444418 (mobile)
