@@ -1,53 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38462 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755510Ab3HROu2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Aug 2013 10:50:28 -0400
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:55605 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755336Ab3HRNHU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 18 Aug 2013 09:07:20 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 1/5] iio: drop info_mask from struct iio_dev
-Date: Sun, 18 Aug 2013 16:50:08 +0100
-Message-Id: <1376841012-7542-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1376841012-7542-1-git-send-email-jic23@kernel.org>
-References: <1376841012-7542-1-git-send-email-jic23@kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: [PATCH] iio: Remove unnecessary _write_raw_get_fmt() in several hid-sensor drivers
+Date: Sun, 18 Aug 2013 15:07:16 +0200
+Message-Id: <1376831236-4219-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Somehow this got missed when dropping all the code that used it
-prior to the split.  Remove it now, there are no users.
+IIO_VAL_INT_PLUS_MICRO is the default, no need to return it explicitly
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: srinivas pandruvada <srinivas.pandruvada@intel.com>
 ---
- include/linux/iio/iio.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/iio/accel/hid-sensor-accel-3d.c       | 8 --------
+ drivers/iio/gyro/hid-sensor-gyro-3d.c         | 8 --------
+ drivers/iio/light/hid-sensor-als.c            | 8 --------
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 8 --------
+ 4 files changed, 32 deletions(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 2103cc3..cdb034d 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -146,12 +146,10 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
-  *			shift:		Shift right by this before masking out
-  *					realbits.
-  *			endianness:	little or big endian
-- * @info_mask:		What information is to be exported about this channel.
-- *			This includes calibbias, scale etc.
-  * @info_mask_separate: What information is to be exported that is specific to
-  *			this channel.
-  * @info_mask_shared_by_type: What information is to be exported that is shared
--*			by all channels of the same type.
-+ *			by all channels of the same type.
-  * @event_mask:		What events can this channel produce.
-  * @ext_info:		Array of extended info attributes for this channel.
-  *			The array is NULL terminated, the last element should
-@@ -186,7 +184,6 @@ struct iio_chan_spec {
- 		u8	shift;
- 		enum iio_endian endianness;
- 	} scan_type;
--	long			info_mask;
- 	long			info_mask_separate;
- 	long			info_mask_shared_by_type;
- 	long			event_mask;
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 68df341..46d22f3 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -175,18 +175,10 @@ static int accel_3d_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int accel_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       long mask)
+-{
+-	return IIO_VAL_INT_PLUS_MICRO;
+-}
+-
+ static const struct iio_info accel_3d_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = &accel_3d_read_raw,
+ 	.write_raw = &accel_3d_write_raw,
+-	.write_raw_get_fmt = &accel_3d_write_raw_get_fmt,
+ };
+ 
+ /* Function to push data to buffer */
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index 9cc8aa1..be95179 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -175,18 +175,10 @@ static int gyro_3d_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int gyro_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       long mask)
+-{
+-	return IIO_VAL_INT_PLUS_MICRO;
+-}
+-
+ static const struct iio_info gyro_3d_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = &gyro_3d_read_raw,
+ 	.write_raw = &gyro_3d_write_raw,
+-	.write_raw_get_fmt = &gyro_3d_write_raw_get_fmt,
+ };
+ 
+ /* Function to push data to buffer */
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 84cf004..e59d00c 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -154,18 +154,10 @@ static int als_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int als_write_raw_get_fmt(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       long mask)
+-{
+-	return IIO_VAL_INT_PLUS_MICRO;
+-}
+-
+ static const struct iio_info als_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = &als_read_raw,
+ 	.write_raw = &als_write_raw,
+-	.write_raw_get_fmt = &als_write_raw_get_fmt,
+ };
+ 
+ /* Function to push data to buffer */
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 5a6162d..a98460b 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -176,18 +176,10 @@ static int magn_3d_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int magn_3d_write_raw_get_fmt(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       long mask)
+-{
+-	return IIO_VAL_INT_PLUS_MICRO;
+-}
+-
+ static const struct iio_info magn_3d_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = &magn_3d_read_raw,
+ 	.write_raw = &magn_3d_write_raw,
+-	.write_raw_get_fmt = &magn_3d_write_raw_get_fmt,
+ };
+ 
+ /* Function to push data to buffer */
 -- 
 1.8.3.4
 
