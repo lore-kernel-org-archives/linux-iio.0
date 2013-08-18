@@ -1,324 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:55593 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:55572 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755306Ab3HRNDg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 18 Aug 2013 09:03:36 -0400
+	id S1755306Ab3HRNAc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 18 Aug 2013 09:00:32 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: Peter Meerwald <pmeerw@pmeerw.net>,
 	Jon Brenner <jon.brenner@ams.com>
-Subject: [PATCH v2] iio: add tsl4531 ambient light sensor driver
-Date: Sun, 18 Aug 2013 15:03:32 +0200
-Message-Id: <1376831012-4064-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 1/2] iio: add INT_TIME (integration time) channel info attribute
+Date: Sun, 18 Aug 2013 15:00:27 +0200
+Message-Id: <1376830828-2496-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-driver for the TSL4531 family of 16-bit I2C ambient light
-sensors; information is here:
-http://www.ams.com/eng/Products/Light-Sensors/Ambient-Light-Sensor-ALS/TSL45315
+integration time is in seconds; it controls the measurement
+time and influences the gain of a sensor
 
-the chip offers simple lux output
-
-v2:
-* rename to tsl4351
-* use INT_TIME
+used by adjd_s311, tsl4531
+the following drivers have similar controls:
+* tsl2563 (integration time is controlled via CALIBSCALE among other things)
+* tsl2583 (has integration_time device_attr, but driver doesn't use channels yet)
+* tsl2x7x (has integration_time attr)
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 Cc: Jon Brenner <jon.brenner@ams.com>
 ---
- drivers/iio/light/Kconfig   |  10 ++
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/tsl4531.c | 250 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 261 insertions(+)
- create mode 100644 drivers/iio/light/tsl4531.c
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ include/linux/iio/sysfs.h               | 15 +++++++++++++++
+ 4 files changed, 29 insertions(+)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index bf9fa0d..488fff7 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -65,6 +65,16 @@ config SENSORS_TSL2563
- 	 This driver can also be built as a module.  If so, the module
- 	 will be called tsl2563.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5caaab9..d75147c 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -800,3 +800,15 @@ Description:
+ 		Writing '1' stores the current device configuration into
+ 		on-chip EEPROM. After power-up or chip reset the device will
+ 		automatically load the saved configuration.
++
++What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_clear_integration_time
++What:		/sys/.../iio:deviceX/in_illuminance_integration_time
++KernelVersion:	3.12
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to get/set the integration time in
++		seconds.
++
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 97f0297..2cb4841 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -101,6 +101,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+ 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
++	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+ };
  
-+config TSL4531
-+	tristate "TAOS TSL4531 ambient light sensors"
-+	depends on I2C
-+	help
-+	 Say Y here if you want to build a driver for the TAOS TSL4531 family
-+	 of ambient light sensors with direct lux output.
-+
-+	 To compile this driver as a module, choose M here: the
-+	 module will be called tsl4531.
-+
- config VCNL4000
- 	tristate "VCNL4000 combined ALS and proximity sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 354ee9a..cd6f3cf 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -8,4 +8,5 @@ obj-$(CONFIG_APDS9300)		+= apds9300.o
- obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-+obj-$(CONFIG_TSL4531)		+= tsl4531.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-diff --git a/drivers/iio/light/tsl4531.c b/drivers/iio/light/tsl4531.c
-new file mode 100644
-index 0000000..61e4538
---- /dev/null
-+++ b/drivers/iio/light/tsl4531.c
-@@ -0,0 +1,250 @@
-+/*
-+ * tsl4531.c - Support for TAOS TSL4531 ambient light sensor
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 09ebe0a..45a99ef 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -36,6 +36,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_PHASE,
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
+ 	IIO_CHAN_INFO_HYSTERESIS,
++	IIO_CHAN_INFO_INT_TIME,
+ };
+ 
+ enum iio_endian {
+diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+index 2958c96..8a1d186 100644
+--- a/include/linux/iio/sysfs.h
++++ b/include/linux/iio/sysfs.h
+@@ -100,6 +100,21 @@ struct iio_const_attr {
+ #define IIO_CONST_ATTR_SAMP_FREQ_AVAIL(_string)			\
+ 	IIO_CONST_ATTR(sampling_frequency_available, _string)
+ 
++/**
++ * IIO_DEV_ATTR_INT_TIME_AVAIL - list available integration times
++ * @_show: output method for the attribute
++ **/
++#define IIO_DEV_ATTR_INT_TIME_AVAIL(_show)		\
++	IIO_DEVICE_ATTR(integration_time_available, S_IRUGO, _show, NULL, 0)
++/**
++ * IIO_CONST_ATTR_INT_TIME_AVAIL - list available integration times
++ * @_string: frequency string for the attribute
 + *
-+ * Copyright 2013 Peter Meerwald <pmeerw@pmeerw.net>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * IIO driver for the TSL4531x family
-+ *   TSL45311/TSL45313: 7-bit I2C slave address 0x39
-+ *   TSL45315/TSL45317: 7-bit I2C slave address 0x29
-+ *
-+ * TODO: single cycle measurement
-+ */
++ * Constant version
++ **/
++#define IIO_CONST_ATTR_INT_TIME_AVAIL(_string)		\
++	IIO_CONST_ATTR(integration_time_available, _string)
 +
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/err.h>
-+#include <linux/delay.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define TSL4531_DRV_NAME "tsl4531"
-+
-+#define TCS3472_COMMAND BIT(7)
-+
-+#define TSL4531_CONTROL (TCS3472_COMMAND | 0x00)
-+#define TSL4531_CONFIG (TCS3472_COMMAND | 0x01)
-+#define TSL4531_DATA (TCS3472_COMMAND | 0x04)
-+#define TSL4531_ID (TCS3472_COMMAND | 0x0a)
-+
-+/* operating modes in control register */
-+#define TSL4531_MODE_POWERDOWN 0x00
-+#define TSL4531_MODE_SINGLE_ADC 0x02
-+#define TSL4531_MODE_NORMAL 0x03
-+
-+/* integration time control in config register */
-+#define TSL4531_TCNTRL_400MS 0x00
-+#define TSL4531_TCNTRL_200MS 0x01
-+#define TSL4531_TCNTRL_100MS 0x02
-+
-+/* part number in id register */
-+#define TSL45311_ID 0x8
-+#define TSL45313_ID 0x9
-+#define TSL45315_ID 0xa
-+#define TSL45317_ID 0xb
-+#define TSL4531_ID_SHIFT 4
-+
-+struct tsl4531_data {
-+	struct i2c_client *client;
-+	int int_time;
-+};
-+
-+static IIO_CONST_ATTR_INT_TIME_AVAIL("0.1 0.2 0.4");
-+
-+static struct attribute *tsl4531_attributes[] = {
-+	&iio_const_attr_integration_time_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group tsl4531_attribute_group = {
-+	.attrs = tsl4531_attributes,
-+};
-+
-+static const struct iio_chan_spec tsl4531_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_INT_TIME)
-+	}
-+};
-+
-+static int tsl4531_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct tsl4531_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_smbus_read_word_data(data->client,
-+			TSL4531_DATA);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* 0.. 1x, 1 .. 2x, 2 .. 4x */
-+		*val = 1 << data->int_time;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_INT_TIME:
-+		if (data->int_time == 0)
-+			*val2 = 400000;
-+		else if (data->int_time == 1)
-+			*val2 = 200000;
-+		else if (data->int_time == 2)
-+			*val2 = 100000;
-+		else return -EINVAL;
-+		*val = 0;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int tsl4531_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct tsl4531_data *data = iio_priv(indio_dev);
-+	int int_time, ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		if (val != 0) return -EINVAL;
-+		if (val2 == 400000)
-+			int_time = 0;
-+		else if (val2 == 200000)
-+			int_time = 1;
-+		else if (val2 == 100000)
-+			int_time = 2;
-+		else
-+			return -EINVAL;
-+		ret = i2c_smbus_write_byte_data(data->client,
-+			TSL4531_CONFIG, int_time);
-+		if (ret >= 0)
-+			data->int_time = int_time;
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info tsl4531_info = {
-+	.read_raw = tsl4531_read_raw,
-+	.write_raw = tsl4531_write_raw,
-+	.attrs = &tsl4531_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int tsl4531_check_id(struct i2c_client *client)
-+{
-+	int ret = i2c_smbus_read_byte_data(client, TSL4531_ID);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret >>= TSL4531_ID_SHIFT;
-+	return ret == TSL45313_ID || ret == TSL45315_ID ||
-+		ret == TSL45315_ID || ret == TSL45317_ID;
-+}
-+
-+static int tsl4531_probe(struct i2c_client *client,
-+			  const struct i2c_device_id *id)
-+{
-+	struct tsl4531_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev =  devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	if (!tsl4531_check_id(client)) {
-+		dev_err(&client->dev, "no TSL4531 sensor\n");
-+		return -ENODEV;
-+	}
-+
-+	ret = i2c_smbus_write_byte_data(data->client, TSL4531_CONTROL,
-+		TSL4531_MODE_NORMAL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, TSL4531_CONFIG,
-+		TSL4531_TCNTRL_400MS);
-+	if (ret < 0)
-+		return ret;
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &tsl4531_info;
-+	indio_dev->channels = tsl4531_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(tsl4531_channels);
-+	indio_dev->name = TSL4531_DRV_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int tsl4531_powerdown(struct i2c_client *client)
-+{
-+	return i2c_smbus_write_byte_data(client, TSL4531_CONTROL,
-+		TSL4531_MODE_POWERDOWN);
-+}
-+
-+static int tsl4531_remove(struct i2c_client *client)
-+{
-+	iio_device_unregister(i2c_get_clientdata(client));
-+	tsl4531_powerdown(client);
-+	
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int tsl4531_suspend(struct device *dev)
-+{
-+	return tsl4531_powerdown(to_i2c_client(dev));
-+}
-+
-+static int tsl4531_resume(struct device *dev)
-+{
-+	return i2c_smbus_write_byte_data(to_i2c_client(dev), TSL4531_CONTROL,
-+		TSL4531_MODE_NORMAL);
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(tsl4531_pm_ops, tsl4531_suspend, tsl4531_resume);
-+
-+static const struct i2c_device_id tsl4531_id[] = {
-+	{ "tsl4531", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, tsl4531_id);
-+
-+static struct i2c_driver tsl4531_driver = {
-+	.driver = {
-+		.name   = TSL4531_DRV_NAME,
-+		.pm	= &tsl4531_pm_ops,
-+		.owner  = THIS_MODULE,
-+	},
-+	.probe  = tsl4531_probe,
-+	.remove = tsl4531_remove,
-+	.id_table = tsl4531_id,
-+};
-+
-+module_i2c_driver(tsl4531_driver);
-+
-+MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-+MODULE_DESCRIPTION("TAOS TSL4531 ambient light sensors driver");
-+MODULE_LICENSE("GPL");
+ #define IIO_DEV_ATTR_TEMP_RAW(_show)			\
+ 	IIO_DEVICE_ATTR(in_temp_raw, S_IRUGO, _show, NULL, 0)
+ 
 -- 
 1.8.3.4
 
