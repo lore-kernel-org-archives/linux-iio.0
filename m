@@ -1,80 +1,107 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53350 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751109Ab3HSSio (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Aug 2013 14:38:44 -0400
-Message-ID: <52127444.4030009@kernel.org>
-Date: Mon, 19 Aug 2013 20:38:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, lars@metafoo.de, jic23@cam.ac.uk,
-	Roland Stigge <stigge@antcom.de>
-Subject: Re: [PATCH 14/14] iio: dac: max517: Use devm_iio_device_alloc
-References: <1376912305-6423-1-git-send-email-sachin.kamat@linaro.org> <1376912305-6423-14-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1376912305-6423-14-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org
+Subject: [PATCH 13/14] iio: dac: ad7303: Use devm_* APIs
+Date: Mon, 19 Aug 2013 17:08:24 +0530
+Message-Id: <1376912305-6423-13-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1376912305-6423-1-git-send-email-sachin.kamat@linaro.org>
+References: <1376912305-6423-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/19/13 12:38, Sachin Kamat wrote:
-> Using devm_iio_device_alloc makes code simpler.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> Cc: Roland Stigge <stigge@antcom.de>
-Applied to the togreg branch of iio.git
+devm_* APIs are device managed and make code simpler.
 
-p.s. Roland, hope you don't mind. This one seems trivial
-enough that I didn't think you'd mind me applying it without an
-ack.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/iio/dac/ad7303.c |   31 ++++++++-----------------------
+ 1 file changed, 8 insertions(+), 23 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/dac/max517.c |   17 ++++-------------
->  1 file changed, 4 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-> index ebfaa41..83adcbf 100644
-> --- a/drivers/iio/dac/max517.c
-> +++ b/drivers/iio/dac/max517.c
-> @@ -164,11 +164,9 @@ static int max517_probe(struct i2c_client *client,
->  	struct max517_platform_data *platform_data = client->dev.platform_data;
->  	int err;
->  
-> -	indio_dev = iio_device_alloc(sizeof(*data));
-> -	if (indio_dev == NULL) {
-> -		err = -ENOMEM;
-> -		goto exit;
-> -	}
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
->  	data = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
->  	data->client = client;
-> @@ -198,23 +196,16 @@ static int max517_probe(struct i2c_client *client,
->  
->  	err = iio_device_register(indio_dev);
->  	if (err)
-> -		goto exit_free_device;
-> +		return err;
->  
->  	dev_info(&client->dev, "DAC registered\n");
->  
->  	return 0;
-> -
-> -exit_free_device:
-> -	iio_device_free(indio_dev);
-> -exit:
-> -	return err;
->  }
->  
->  static int max517_remove(struct i2c_client *client)
->  {
->  	iio_device_unregister(i2c_get_clientdata(client));
-> -	iio_device_free(i2c_get_clientdata(client));
-> -
->  	return 0;
->  }
->  
-> 
+diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
+index d546f50..ed2d276 100644
+--- a/drivers/iio/dac/ad7303.c
++++ b/drivers/iio/dac/ad7303.c
+@@ -203,7 +203,7 @@ static int ad7303_probe(struct spi_device *spi)
+ 	bool ext_ref;
+ 	int ret;
+ 
+-	indio_dev = iio_device_alloc(sizeof(*st));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+@@ -212,15 +212,13 @@ static int ad7303_probe(struct spi_device *spi)
+ 
+ 	st->spi = spi;
+ 
+-	st->vdd_reg = regulator_get(&spi->dev, "Vdd");
+-	if (IS_ERR(st->vdd_reg)) {
+-		ret = PTR_ERR(st->vdd_reg);
+-		goto err_free;
+-	}
++	st->vdd_reg = devm_regulator_get(&spi->dev, "Vdd");
++	if (IS_ERR(st->vdd_reg))
++		return PTR_ERR(st->vdd_reg);
+ 
+ 	ret = regulator_enable(st->vdd_reg);
+ 	if (ret)
+-		goto err_put_vdd_reg;
++		return ret;
+ 
+ 	if (spi->dev.of_node) {
+ 		ext_ref = of_property_read_bool(spi->dev.of_node,
+@@ -234,7 +232,7 @@ static int ad7303_probe(struct spi_device *spi)
+ 	}
+ 
+ 	if (ext_ref) {
+-		st->vref_reg = regulator_get(&spi->dev, "REF");
++		st->vref_reg = devm_regulator_get(&spi->dev, "REF");
+ 		if (IS_ERR(st->vref_reg)) {
+ 			ret = PTR_ERR(st->vref_reg);
+ 			goto err_disable_vdd_reg;
+@@ -242,7 +240,7 @@ static int ad7303_probe(struct spi_device *spi)
+ 
+ 		ret = regulator_enable(st->vref_reg);
+ 		if (ret)
+-			goto err_put_vref_reg;
++			goto err_disable_vdd_reg;
+ 
+ 		st->config |= AD7303_CFG_EXTERNAL_VREF;
+ 	}
+@@ -263,16 +261,8 @@ static int ad7303_probe(struct spi_device *spi)
+ err_disable_vref_reg:
+ 	if (st->vref_reg)
+ 		regulator_disable(st->vref_reg);
+-err_put_vref_reg:
+-	if (st->vref_reg)
+-		regulator_put(st->vref_reg);
+ err_disable_vdd_reg:
+ 	regulator_disable(st->vdd_reg);
+-err_put_vdd_reg:
+-	regulator_put(st->vdd_reg);
+-err_free:
+-	iio_device_free(indio_dev);
+-
+ 	return ret;
+ }
+ 
+@@ -283,14 +273,9 @@ static int ad7303_remove(struct spi_device *spi)
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+-	if (st->vref_reg) {
++	if (st->vref_reg)
+ 		regulator_disable(st->vref_reg);
+-		regulator_put(st->vref_reg);
+-	}
+ 	regulator_disable(st->vdd_reg);
+-	regulator_put(st->vdd_reg);
+-
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
+-- 
+1.7.9.5
