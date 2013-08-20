@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39505 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39344 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751830Ab3HTRS1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2013 13:18:27 -0400
+	with ESMTP id S1751226Ab3HTRGL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2013 13:06:11 -0400
 In-Reply-To: <52138297.9020908@samsung.com>
 References: <1376658684-3267-1-git-send-email-j.anaszewski@samsung.com> <5210ADC3.6090704@kernel.org> <521230CB.20801@samsung.com> <52126D3B.4010401@kernel.org> <52138297.9020908@samsung.com>
 MIME-Version: 1.0
@@ -10,12 +10,12 @@ Content-Type: text/plain;
  charset=UTF-8
 Subject: Re: [PATCH/RFC v4 0/3] gp2ap020a00f ambient light/proximity sensor
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 20 Aug 2013 18:18:22 +0100
+Date: Tue, 20 Aug 2013 17:09:32 +0100
 To: Jacek Anaszewski <j.anaszewski@samsung.com>
 CC: linux-iio@vger.kernel.org,
 	Kyungmin Park <kyungmin.park@samsung.com>,
 	s.nawrocki@samsung.com
-Message-ID: <3f64ca5d-0947-4cd3-83a9-21267d5c8519@email.android.com>
+Message-ID: <54d98ce2-780d-4100-9f0a-0f5cf81bab2d@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -79,23 +79,7 @@ Jacek Anaszewski <j.anaszewski@samsung.com> wrote:
 >
 >the issue ceases to appear. It seems that module_put is called too many
 >times.
-
-Ah.
-I am clearly blind.
-
-This is caused by setting a default trigger in the driver. None of my test drivers do that and generally it is considered a bad idea.
-
-If there is a strong argument for doing that then we need a utility function that also does an additional iio_trigger_get.  I would rather we just dropped the setting of indio_dev->trig and left that to user space. As with having default sets of Channels enabled which we killed off during transition out of staging, it is much cleaner to make no assumptions about what the user wants.
- 
-Please drop that line from the driver and repost with that little bit of suggested extra text in the binding.
-
-
-Sorry I should have picked up on this review before now and from your earlier comment is would guess there are a few other cases out there to be fixed up.
-
-Thanks for chasing this down!
-
-Jonathan
-
+Thanks. Will look into this... 
 >
 >Thanks,
 >Jacek
