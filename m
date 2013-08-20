@@ -1,54 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:18984 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752089Ab3HUPGA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Aug 2013 11:06:00 -0400
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:36313 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751586Ab3HTXPZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 20 Aug 2013 19:15:25 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org, jic23@kernel.org,
-	kyungmin.park@samsung.com, s.nawrocki@samsung.com,
-	Jacek Anaszewski <j.anaszewski@samsung.com>
-Subject: [PATCH/RFC v6 0/2] gp2ap020a00f ambient light/proximity sensor
-Date: Wed, 21 Aug 2013 17:05:42 +0200
-Message-id: <1377097542-4433-1-git-send-email-j.anaszewski@samsung.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: Remove trailing ; from function definitions
+Date: Wed, 21 Aug 2013 01:15:17 +0200
+Message-Id: <1377040517-11928-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This driver supports:
- - reading channels in 'one shot' mode through read_raw callback,
- - four events - rising and falling ambient light events and
-   rising and falling proximity roc events.
- - triggers for all the three channels (triggers can't be enabled
-   simultaneosly with proximity detection event)
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ include/linux/iio/iio.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-This is a follow-up of the previous series and it includes
-following improvements:
-  - brought back gp2ap020a00f_adjust_lux_mode function
-    that adjustes maximum measurable range for the ALS
-    unit
-  - implemented gp2ap020a00f_output_to_lux function for
-    calculating output value when in high lux mode
-  - dropped setting a default trigger in the driver
-  - added description justifying presence of the vled-supply
-    property in the DT node for the device
-  - changed the description of the interrupts property
-    in the DT binding documentation file
-
-Thanks,
-Jacek Anaszewski
-
-Jacek Anaszewski (2):
-  DT: Add documentation for gp2ap020a00f sensor
-  iio: gp2ap020a00f: Add a driver for the device
-
- .../devicetree/bindings/iio/light/gp2ap020a00f.txt |   21 +
- drivers/iio/light/Kconfig                          |   12 +
- drivers/iio/light/Makefile                         |    1 +
- drivers/iio/light/gp2ap020a00f.c                   | 1519 ++++++++++++++++++++
- 4 files changed, 1553 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/light/gp2ap020a00f.txt
- create mode 100644 drivers/iio/light/gp2ap020a00f.c
-
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 45a99ef..c8e94a8 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -458,7 +458,7 @@ static inline void iio_device_put(struct iio_dev *indio_dev)
+ {
+ 	if (indio_dev)
+ 		put_device(&indio_dev->dev);
+-};
++}
+ 
+ /**
+  * dev_to_iio_dev() - Get IIO device struct from a device struct
+@@ -565,7 +565,7 @@ static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
+ {
+ 	return indio_dev->currentmode
+ 		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
+-};
++}
+ 
+ /**
+  * iio_get_debugfs_dentry() - helper function to get the debugfs_dentry
+@@ -575,12 +575,12 @@ static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
+ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+ {
+ 	return indio_dev->debugfs_dentry;
+-};
++}
+ #else
+ static inline struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+ {
+ 	return NULL;
+-};
++}
+ #endif
+ 
+ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
 -- 
-1.7.5.4
+1.8.3.4
 
