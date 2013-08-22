@@ -1,85 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:58245 "EHLO
-	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752261Ab3HUVTS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Aug 2013 17:19:18 -0400
-In-Reply-To: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: working with IIO
-From: Jonathan Cameron <jic23@cam.ac.uk>
-Date: Wed, 21 Aug 2013 22:00:15 +0100
-To: "Yuniverg, Michael" <michael.yuniverg@intel.com>,
+Received: from mga09.intel.com ([134.134.136.24]:61537 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753204Ab3HVLaw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 22 Aug 2013 07:30:52 -0400
+From: "Drubin, Daniel" <daniel.drubin@intel.com>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "Drubin, Daniel" <daniel.drubin@intel.com>,
-	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Message-ID: <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
+CC: "Haimovich, Yoav" <yoav.haimovich@intel.com>
+Subject: RE: working with IIO
+Date: Thu, 22 Aug 2013 11:30:47 +0000
+Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
+ <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
+In-Reply-To: <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+SGkgSm9uYXRoYW4sDQoNCkkgYW0gRGFuaWVsIGFuZCBJIHdvcmsgd2l0aCBNaWNoYWVsLg0KDQpb
+Li4uXQ0KPiA+VGhpcyBsaW1pdGF0aW9uIGlzIHJlYWxseSBwYWluZnVsIGZvciBvdXIgZGVzaWdu
+IHRoYXQgaXMgc3RyaXZpbmcgdG8NCj4gPmFjaGlldmUgYmV0dGVyIHBlcmZvcm1hbmNlIG1vdmlu
+ZyBzb21lIG9mIHNlbnNvcnMgbG9naWMgdG8gS2VybmVsIG1vZGUuDQo+ID5Ob3cgcGxlYXNlIEpv
+bmF0aGFuLCBjb3VsZCB5b3UgZXhwbGFpbiB0aGUgcmF0aW8gYmVoaW5kIHRoaXMNCj4gPmxpbWl0
+YXRpb24/DQo+IA0KPiBTaW1wbGljaXR5IGFuZCBoZW5jZSBzcGVlZCBwbHVzIHdoZXJlIGFsbCB0
+aGlzIGV2b2x2ZWQgZnJvbSB3aGljaCB3YXMgZGF0YQ0KPiBsb2dnaW5nLiBUZWNobmljYWxseSB0
+aGVyZSBpcyBub3RoaW5nIHN0b3BwaW5nIHVzIGhhdmluZyBhIHNlcGFyYXRlIGJ1ZmZlciBwZXIN
+Cj4gdXNlciBhcyB3ZSBhbHJlYWR5IGFsbG93IG11bHRpcGxlIGJ1ZmZlcnMgdG8gYmUgZmVkIGZy
+b20gdGhlIHNhbWUgZGV2aWNlIGZvcg0KPiBkaWZmZXJlbnQgcHVycG9zZXMuIFRoaXMgaXMgaG93
+IHRoZSBicmlkZ2UgdG8gaW5wdXQgZnVuY3Rpb25zIChub3QgeWV0IGluDQo+IG1haW5saW5lKQ0K
+PiANCj4gV2hhdCBpcyB5b3VyIGFwcGxpY2F0aW9uIHdoaWNoIG5lZWRzIG11bHRpcGxlIHNpbXVs
+dGFuZW91cyBidWZmZXJlZCB1c2Vycz8NCg0KV2UgbmVlZCBtdWx0aXBsZSBoaWdoZXIgbGV2ZWwg
+Y2xpZW50cyB0byBiZSBhYmxlIHRvIGNvbmZpZ3VyZSB0aGUgc2FtZSBzZW5zb3IgZm9yIGRpZmZl
+cmVudCByYXRlcyBhbmQgcmVjZWl2ZSBkYXRhIGF0IGRpZmZlcmVudCByYXRlcywgaW5kZXBlbmRl
+bnRseSBvZiBlYWNoIG90aGVyLiBJLmUuIGRldmljZSB3aWxsIHNlbnNlIGF0IG1heGltdW0gb2Yg
+Y29uZmlndXJlZCByYXRlcywgYW5kIGNsaWVudHMgd2lsbCBwb2xsIGRhdGEgYXMgaWYgdGhlaXIg
+Y29uZmlndXJlZCByYXRlcy4gVGhpcyBpcyBtYWlubHkgZm9yIEFuZHJvaWQsIHdoZXJlIHRoZXJl
+IGFyZSBtdWx0aXBsZSBzZW5zb3IgZnJhbWV3b3JrcyBpbmRlcGVuZGVudCBvZiBlYWNoIG90aGVy
+Lg0KDQo+IEFzIGEgcXVpY2sgdGhvdWdodCBJIHdvdWxkIG5vdCBuZWNlc3NhcmlseSBiZSBhZ2Fp
+bnN0IGhhdmluZyB0aGUgYWJpbGl0eSB0bw0KPiByZXF1ZXN0IGFkZGl0aW9uYWwgY2hyZGV2cyBl
+YWNoIHdpdGggdGhlaXIgb3duIGJ1ZmZlcnMuIEEgYml0IGZpZGRseSB0byByZXRyb2ZpdA0KPiB0
+aG91Z2ggYXMgbm90IGJyZWFraW5nIGFiaSB3b3VsZCBtZWFuIHdlIG5lZWQgdG8ga2VlcCB0aGUg
+ZXhpc3RpbmcNCj4gaW50ZXJmYWNlcyBhcyB0aGV5IGFyZS4NCg0KV2UgYWN0dWFsbHkgdGhvdWdo
+dCBhYm91dCByZWdpc3RlcmluZyBtdWx0aXBsZSAidmlydHVhbCIgc2Vuc29ycyBmb3IgdGhlIHNh
+bWUgcGh5c2ljYWwgZGV2aWNlIGluIG9yZGVyIHRvIHN0aWNrIGl0IGludG8gZXhpc3RpbmcgSUlP
+LCBidXQgdGhhdCBoYXMgbGltaXRlZCB1c2UgZm9yIHVzIChpbiBwYXJ0aWN1bGFyLCB3ZSB3aWxs
+IGhhdmUgdG8gb25seSBwcmUtcmVnaXN0ZXIgc3RhdGljYWxseSB0aG9zZSBtdWx0aXBsZSB2aXJ0
+dWFsIHNlbnNvcnMpLg0KDQo+ID5BbmQgaW4gZ2VuZXJhbCAtIGNvdWxkIHlvdSBzaGFyZSB3aXRo
+IHVzIHlvdXIgcGxhbnMgb2YgZnV0dXJlDQo+ID5tb2RpZmljYXRpb25zIHRvICBpaW8NClsuLi5d
+DQo+IE9mIGNvdXJzZSBmZWVsIGZyZWUgdG8gcHJvcG9zZSBhbnkgY2hhbmdlcyB5b3Ugd291bGQg
+bGlrZSENCg0KQXMgb2Ygbm93IHdlIHdvdWxkIGxpa2UgdG8gcHJvcG9zZSBhbiBvcHRpb24gZm9y
+IElJTyBkZXZpY2UgdG8gYWxsb3cgbXVsdGlwbGUgb3BlbnMoKXMuIFdpdGhvdXQgdGhhdCBhZGRp
+dGlvbmFsIG9wdGlvbiBkZXZpY2VzIHdpbGwgd29yayBhcyB0b2RheSwgc28gdGhhdCwgZm9yIGV4
+YW1wbGUsIGV4aXN0aW5nIHNlbnNvciBkcml2ZXJzIHdpbGwgbm90IGhhdmUgdG8gYmUgbW9kaWZp
+ZWQgZm9yIHJlZW50cmFuY3k7IGJ1dCB0aG9zZSBkcml2ZXJzIHRoYXQgbmVlZCBpdCB3aWxsIHNp
+Z25hbCB3aXRoIHRoYXQgb3B0aW9uIHRoYXQgdGhleSB3aWxsIGhhbmRsZSByZWVudHJhbmN5IHRo
+ZW1zZWx2ZXMuDQoNCkJlc3QgcmVnYXJkcywNCkRhbmllbA0KLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkludGVsIElz
+cmFlbCAoNzQpIExpbWl0ZWQKClRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgbWF5IGNv
+bnRhaW4gY29uZmlkZW50aWFsIG1hdGVyaWFsIGZvcgp0aGUgc29sZSB1c2Ugb2YgdGhlIGludGVu
+ZGVkIHJlY2lwaWVudChzKS4gQW55IHJldmlldyBvciBkaXN0cmlidXRpb24KYnkgb3RoZXJzIGlz
+IHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZApyZWNpcGll
+bnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0ZSBhbGwgY29waWVzLgo=
 
-
-"Yuniverg, Michael" <michael.yuniverg@intel.com> wrote:
->Hi Jonathan, guys,
->
->My name is Michael Yuniverg and I'm working for Intel.
->You surely noted that starting Kernel 3.7 some of Intel-supported
->sensors were exposed to user space via iio subsystem.
->
->Me and my colleagues (in CC) are working to expose a new generation of
->Intel-supported sensors and naturally we'd like to  keep using iio.
->However we've seen the limitation of just single user-mode client
->allowed to work with a particular iio device:
->/**
->* iio_chrdev_open() - chrdev file open for buffer access and ioctls
->**/
->static int iio_chrdev_open(struct inode *inode, struct file *filp)
->{
->        struct iio_dev *indio_dev = container_of(inode->i_cdev,
->                                               struct iio_dev, chrdev);
->
->        if (test_and_set_bit(IIO_BUSY_BIT_POS, &indio_dev->flags))
->                return -EBUSY;
->
->        filp->private_data = indio_dev;
->
->        return 0;
->}
->
->This limitation is really painful for our design that is striving to
->achieve better performance moving some of sensors logic to Kernel mode.
->Now please Jonathan, could you explain the ratio behind this
->limitation?
-
-Simplicity and hence speed plus where all this evolved from which was data logging. Technically there is nothing stopping us having a separate buffer per user as we already allow multiple buffers to be fed from the same device for different purposes. This is how the bridge to input functions (not yet in mainline)
-
-What is your application which needs multiple simultaneous buffered users? 
-
-As a quick thought I would not necessarily be against having the ability to request additional chrdevs each with their own buffers. A bit fiddly to retrofit though as not breaking abi would mean we need to keep the existing interfaces as they are.
-
-
->And in general - could you share with us your plans of future
->modifications to  iio
-
-Lots though honestly most of the interesting bits are not my ideas or plans but rather those of others.
-
-Personally I am still working through a load of core changes that are not going to change anything fundamental.
-
-Of course feel free to propose any changes you would like!
->
->Thanks in advance,
->Michael
->
->
->---------------------------------------------------------------------
->Intel Israel (74) Limited
->
->This e-mail and any attachments may contain confidential material for
->the sole use of the intended recipient(s). Any review or distribution
->by others is strictly prohibited. If you are not the intended
->recipient, please contact the sender and delete all copies.
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
