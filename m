@@ -1,67 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-235.synserver.de ([212.40.185.235]:1085 "EHLO
-	smtp-out-208.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752123Ab3HVNPd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2013 09:15:33 -0400
-Message-ID: <52160F47.2030403@metafoo.de>
-Date: Thu, 22 Aug 2013 15:16:55 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Drubin, Daniel" <daniel.drubin@intel.com>
+Received: from mga11.intel.com ([192.55.52.93]:9007 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752533Ab3HVNju (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 22 Aug 2013 09:39:50 -0400
+From: "Drubin, Daniel" <daniel.drubin@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Subject: Re: working with IIO
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com> <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com> <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
-In-Reply-To: <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: RE: working with IIO
+Date: Thu, 22 Aug 2013 13:39:45 +0000
+Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
+ <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
+ <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
+ <52160F47.2030403@metafoo.de>
+In-Reply-To: <52160F47.2030403@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/22/2013 01:30 PM, Drubin, Daniel wrote:
-> Hi Jonathan,
-> 
-> I am Daniel and I work with Michael.
-> 
-> [...]
->>> This limitation is really painful for our design that is striving to
->>> achieve better performance moving some of sensors logic to Kernel mode.
->>> Now please Jonathan, could you explain the ratio behind this
->>> limitation?
->>
->> Simplicity and hence speed plus where all this evolved from which was data
->> logging. Technically there is nothing stopping us having a separate buffer per
->> user as we already allow multiple buffers to be fed from the same device for
->> different purposes. This is how the bridge to input functions (not yet in
->> mainline)
->>
->> What is your application which needs multiple simultaneous buffered users?
-> 
-> We need multiple higher level clients to be able to configure the same sensor for different rates and receive data at different rates, independently of each other. I.e. device will sense at maximum of configured rates, and clients will poll data as if their configured rates. This is mainly for Android, where there are multiple sensor frameworks independent of each other.
-> 
->> As a quick thought I would not necessarily be against having the ability to
->> request additional chrdevs each with their own buffers. A bit fiddly to retrofit
->> though as not breaking abi would mean we need to keep the existing
->> interfaces as they are.
-> 
-> We actually thought about registering multiple "virtual" sensors for the same physical device in order to stick it into existing IIO, but that has limited use for us (in particular, we will have to only pre-register statically those multiple virtual sensors).
-> 
->>> And in general - could you share with us your plans of future
->>> modifications to  iio
-> [...]
->> Of course feel free to propose any changes you would like!
-> 
-> As of now we would like to propose an option for IIO device to allow multiple opens()s. Without that additional option devices will work as today, so that, for example, existing sensor drivers will not have to be modified for reentrancy; but those drivers that need it will signal with that option that they will handle reentrancy themselves.
-
-How about implementing a userspace daemon which does the arbitration between
-multiple users? Doing this in kernel space can get tricky, especially if you
-want to allow concurrent users with different settings, e.g. sample rate.
-This is in part due to the majority of the IIO ABI being stateless and this
-doesn't really mix well with concurrent users. Having a daemon will allow
-you to implement a stateful API on top of the stateless IIO userspace ABI.
-If you go the kernel route though I'm pretty sure you'll run into lots of
-problems without an immediate solution.
-
-- Lars
+Wy4uLl0NCj4gPiBBcyBvZiBub3cgd2Ugd291bGQgbGlrZSB0byBwcm9wb3NlIGFuIG9wdGlvbiBm
+b3IgSUlPIGRldmljZSB0byBhbGxvdw0KPiBtdWx0aXBsZSBvcGVucygpcy4gV2l0aG91dCB0aGF0
+IGFkZGl0aW9uYWwgb3B0aW9uIGRldmljZXMgd2lsbCB3b3JrIGFzIHRvZGF5LA0KPiBzbyB0aGF0
+LCBmb3IgZXhhbXBsZSwgZXhpc3Rpbmcgc2Vuc29yIGRyaXZlcnMgd2lsbCBub3QgaGF2ZSB0byBi
+ZSBtb2RpZmllZCBmb3INCj4gcmVlbnRyYW5jeTsgYnV0IHRob3NlIGRyaXZlcnMgdGhhdCBuZWVk
+IGl0IHdpbGwgc2lnbmFsIHdpdGggdGhhdCBvcHRpb24gdGhhdA0KPiB0aGV5IHdpbGwgaGFuZGxl
+IHJlZW50cmFuY3kgdGhlbXNlbHZlcy4NCj4gDQo+IEhvdyBhYm91dCBpbXBsZW1lbnRpbmcgYSB1
+c2Vyc3BhY2UgZGFlbW9uIHdoaWNoIGRvZXMgdGhlIGFyYml0cmF0aW9uDQo+IGJldHdlZW4gbXVs
+dGlwbGUgdXNlcnM/IERvaW5nIHRoaXMgaW4ga2VybmVsIHNwYWNlIGNhbiBnZXQgdHJpY2t5LCBl
+c3BlY2lhbGx5IGlmDQo+IHlvdSB3YW50IHRvIGFsbG93IGNvbmN1cnJlbnQgdXNlcnMgd2l0aCBk
+aWZmZXJlbnQgc2V0dGluZ3MsIGUuZy4gc2FtcGxlIHJhdGUuDQo+IFRoaXMgaXMgaW4gcGFydCBk
+dWUgdG8gdGhlIG1ham9yaXR5IG9mIHRoZSBJSU8gQUJJIGJlaW5nIHN0YXRlbGVzcyBhbmQgdGhp
+cw0KPiBkb2Vzbid0IHJlYWxseSBtaXggd2VsbCB3aXRoIGNvbmN1cnJlbnQgdXNlcnMuIEhhdmlu
+ZyBhIGRhZW1vbiB3aWxsIGFsbG93IHlvdQ0KPiB0byBpbXBsZW1lbnQgYSBzdGF0ZWZ1bCBBUEkg
+b24gdG9wIG9mIHRoZSBzdGF0ZWxlc3MgSUlPIHVzZXJzcGFjZSBBQkkuDQo+IElmIHlvdSBnbyB0
+aGUga2VybmVsIHJvdXRlIHRob3VnaCBJJ20gcHJldHR5IHN1cmUgeW91J2xsIHJ1biBpbnRvIGxv
+dHMgb2YNCj4gcHJvYmxlbXMgd2l0aG91dCBhbiBpbW1lZGlhdGUgc29sdXRpb24uDQoNClRoYXQn
+cyB0aGUgZGlyZWN0aW9uIGluIHdoaWNoIHdlIGFyZSBjdXJyZW50bHkgYWR2YW5jaW5nLiBOb3Qg
+YmVjYXVzZSB3ZSBhcmUgYWZyYWlkIG9mIGtlcm5lbC1tb2RlIHByb2JsZW1zIC0gYWZ0ZXIgYWxs
+IHRoZXkgYXJlIHZlcnkgc2ltaWxhciB0byB3aGF0IGtlcm5lbC1tb2RlIGZpbGVzeXN0ZW0gZHJp
+dmVyIGZhY2VzIHdoZW4gc2VydmluZyBtdWx0aXBsZSBwcm9jZXNzZXMgYWNjZXNzaW5nIHRoZSBz
+YW1lIEZTLCBqdXN0IGxlc3MgY29tcGxpY2F0ZWQgKGUuZy4gbm8gd3JpdGVycyk7IGJ1dCBtYWlu
+bHkgYmVjYXVzZSB3ZSB3YW50IHRvIHVzZSBleGlzdGluZyBJSU8gYXMgZnJhbWV3b3JrLg0KDQpU
+aGUgbWFpbiBkcmF3YmFjayB0aGF0IHdlIHNlZSBpbiB1c2VyLW1vZGUgZGFlbW9uIGlzIHBlcmZv
+cm1hbmNlLiBDb25zaWRlciBzZXF1ZW5jZSBvZiBldmVudHMgYmV0d2VlbiB0aGUgZGFlbW9uIGFu
+ZCB0aGUgY2FsbGVyIHByb2Nlc3M6DQoNCi0gQ2FsbGVyIHByb2Nlc3MgaW52b2tlcyBzb21lIHNv
+cnQgb2YgUlBDIHZpYSBzb2NrZXQvcGlwZS9tZXNzYWdlIHF1ZXVlIFtzeXN0ZW0gY2FsbCwgY29u
+dGV4dCBzd2l0Y2hdDQotIERhZW1vbiByZWNlaXZlcyByZXF1ZXN0IG1lc3NhZ2UgW3N5c3RlbSBj
+YWxsXQ0KLSBEYWVtb24gcHVzaGVzIHNhbXBsZSBkYXRhIHRocm91Z2ggSVBDIFtzeXN0ZW0gY2Fs
+bCwgZGF0YSBjb3B5LCBjb250ZXh0IHN3aXRjaF0NCi0gQ2FsbGVyIHBvcHMgZGF0YSBvZmYgSVBD
+IFtzeXN0ZW0gY2FsbCwgZGF0YSBjb3B5XQ0KDQpJLmUuIHRoZXJlIGFyZSA0IHN5c3RlbSBjYWxs
+cywgMiBjb250ZXh0IHN3aXRjaGVzIGFuZCAyIGRhdGEgY29waWVzIGFkZGVkIHNvbGVseSBmb3Ig
+dGhlIHB1cnBvc2Ugb2YgYXJiaXRyYXRpb24gZm9yIEVBQ0ggY2xpZW50LCBldmVuIGZvciBzZW5z
+b3JzIG5vdCBjdXJyZW50bHkgc2hhcmVkLg0KDQpCVFcgKG5vdCBkaXJlY3RseSByZWxhdGVkKSwg
+SSd2ZSByZWFkIHNvbWV3aGVyZSB0aGF0IG9uIHNvbWUgc3lzdGVtIElJTyBkaWQgdXAgdG8gMjAw
+TSBzYW1wbGVzIHBlciBzZWNvbmQuIElzIGl0IHRydWU/IElmIHllcywgaG93IHN1Y2ggZGF0YSBy
+YXRlIHdhcyBhY2hpZXZlZD8NCg0KQmVzdCByZWdhcmRzLA0KRGFuaWVsDQoNCi0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQpJbnRlbCBJc3JhZWwgKDc0KSBMaW1pdGVkCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1l
+bnRzIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9m
+IHRoZSBpbnRlbmRlZCByZWNpcGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5
+IG90aGVycyBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5k
+ZWQKcmVjaXBpZW50LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNv
+cGllcy4K
 
