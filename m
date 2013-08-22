@@ -1,69 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-243.synserver.de ([212.40.185.243]:1064 "EHLO
-	smtp-out-238.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753280Ab3HVOPi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2013 10:15:38 -0400
-Message-ID: <52161D55.8090201@metafoo.de>
-Date: Thu, 22 Aug 2013 16:16:53 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Drubin, Daniel" <daniel.drubin@intel.com>
+Received: from mga11.intel.com ([192.55.52.93]:17323 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753622Ab3HVOpI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 22 Aug 2013 10:45:08 -0400
+From: "Drubin, Daniel" <daniel.drubin@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Subject: Re: working with IIO
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com> <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com> <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com> <52160F47.2030403@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
-In-Reply-To: <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: RE: working with IIO
+Date: Thu, 22 Aug 2013 14:45:03 +0000
+Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com>
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
+ <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
+ <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
+ <52160F47.2030403@metafoo.de>
+ <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
+ <52161D55.8090201@metafoo.de>
+In-Reply-To: <52161D55.8090201@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/22/2013 03:39 PM, Drubin, Daniel wrote:
-> [...]
->>> As of now we would like to propose an option for IIO device to allow
->> multiple opens()s. Without that additional option devices will work as today,
->> so that, for example, existing sensor drivers will not have to be modified for
->> reentrancy; but those drivers that need it will signal with that option that
->> they will handle reentrancy themselves.
->>
->> How about implementing a userspace daemon which does the arbitration
->> between multiple users? Doing this in kernel space can get tricky, especially if
->> you want to allow concurrent users with different settings, e.g. sample rate.
->> This is in part due to the majority of the IIO ABI being stateless and this
->> doesn't really mix well with concurrent users. Having a daemon will allow you
->> to implement a stateful API on top of the stateless IIO userspace ABI.
->> If you go the kernel route though I'm pretty sure you'll run into lots of
->> problems without an immediate solution.
-> 
-> That's the direction in which we are currently advancing. Not because we are afraid of kernel-mode problems - after all they are very similar to what kernel-mode filesystem driver faces when serving multiple processes accessing the same FS, just less complicated (e.g. no writers); but mainly because we want to use existing IIO as framework.
-> 
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGFycy1QZXRlciBDbGF1
+c2VuIFttYWlsdG86bGFyc0BtZXRhZm9vLmRlXQ0KPiBTZW50OiBUaHVyc2RheSwgQXVndXN0IDIy
+LCAyMDEzIDU6MTcgUE0NCj4gVG86IERydWJpbiwgRGFuaWVsDQo+IENjOiBKb25hdGhhbiBDYW1l
+cm9uOyBZdW5pdmVyZywgTWljaGFlbDsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsNCj4gSGFp
+bW92aWNoLCBZb2F2DQo+IFN1YmplY3Q6IFJlOiB3b3JraW5nIHdpdGggSUlPDQo+IA0KPiBPbiAw
+OC8yMi8yMDEzIDAzOjM5IFBNLCBEcnViaW4sIERhbmllbCB3cm90ZToNCj4gPiBbLi4uXQ0KPiA+
+Pj4gQXMgb2Ygbm93IHdlIHdvdWxkIGxpa2UgdG8gcHJvcG9zZSBhbiBvcHRpb24gZm9yIElJTyBk
+ZXZpY2UgdG8gYWxsb3cNCj4gPj4gbXVsdGlwbGUgb3BlbnMoKXMuIFdpdGhvdXQgdGhhdCBhZGRp
+dGlvbmFsIG9wdGlvbiBkZXZpY2VzIHdpbGwgd29yaw0KPiA+PiBhcyB0b2RheSwgc28gdGhhdCwg
+Zm9yIGV4YW1wbGUsIGV4aXN0aW5nIHNlbnNvciBkcml2ZXJzIHdpbGwgbm90IGhhdmUNCj4gPj4g
+dG8gYmUgbW9kaWZpZWQgZm9yIHJlZW50cmFuY3k7IGJ1dCB0aG9zZSBkcml2ZXJzIHRoYXQgbmVl
+ZCBpdCB3aWxsDQo+ID4+IHNpZ25hbCB3aXRoIHRoYXQgb3B0aW9uIHRoYXQgdGhleSB3aWxsIGhh
+bmRsZSByZWVudHJhbmN5IHRoZW1zZWx2ZXMuDQo+ID4+DQo+ID4+IEhvdyBhYm91dCBpbXBsZW1l
+bnRpbmcgYSB1c2Vyc3BhY2UgZGFlbW9uIHdoaWNoIGRvZXMgdGhlIGFyYml0cmF0aW9uDQo+ID4+
+IGJldHdlZW4gbXVsdGlwbGUgdXNlcnM/IERvaW5nIHRoaXMgaW4ga2VybmVsIHNwYWNlIGNhbiBn
+ZXQgdHJpY2t5LA0KPiA+PiBlc3BlY2lhbGx5IGlmIHlvdSB3YW50IHRvIGFsbG93IGNvbmN1cnJl
+bnQgdXNlcnMgd2l0aCBkaWZmZXJlbnQgc2V0dGluZ3MsDQo+IGUuZy4gc2FtcGxlIHJhdGUuDQo+
+ID4+IFRoaXMgaXMgaW4gcGFydCBkdWUgdG8gdGhlIG1ham9yaXR5IG9mIHRoZSBJSU8gQUJJIGJl
+aW5nIHN0YXRlbGVzcw0KPiA+PiBhbmQgdGhpcyBkb2Vzbid0IHJlYWxseSBtaXggd2VsbCB3aXRo
+IGNvbmN1cnJlbnQgdXNlcnMuIEhhdmluZyBhDQo+ID4+IGRhZW1vbiB3aWxsIGFsbG93IHlvdSB0
+byBpbXBsZW1lbnQgYSBzdGF0ZWZ1bCBBUEkgb24gdG9wIG9mIHRoZSBzdGF0ZWxlc3MNCj4gSUlP
+IHVzZXJzcGFjZSBBQkkuDQo+ID4+IElmIHlvdSBnbyB0aGUga2VybmVsIHJvdXRlIHRob3VnaCBJ
+J20gcHJldHR5IHN1cmUgeW91J2xsIHJ1biBpbnRvDQo+ID4+IGxvdHMgb2YgcHJvYmxlbXMgd2l0
+aG91dCBhbiBpbW1lZGlhdGUgc29sdXRpb24uDQo+ID4NCj4gPiBUaGF0J3MgdGhlIGRpcmVjdGlv
+biBpbiB3aGljaCB3ZSBhcmUgY3VycmVudGx5IGFkdmFuY2luZy4gTm90IGJlY2F1c2Ugd2UNCj4g
+YXJlIGFmcmFpZCBvZiBrZXJuZWwtbW9kZSBwcm9ibGVtcyAtIGFmdGVyIGFsbCB0aGV5IGFyZSB2
+ZXJ5IHNpbWlsYXIgdG8gd2hhdA0KPiBrZXJuZWwtbW9kZSBmaWxlc3lzdGVtIGRyaXZlciBmYWNl
+cyB3aGVuIHNlcnZpbmcgbXVsdGlwbGUgcHJvY2Vzc2VzDQo+IGFjY2Vzc2luZyB0aGUgc2FtZSBG
+UywganVzdCBsZXNzIGNvbXBsaWNhdGVkIChlLmcuIG5vIHdyaXRlcnMpOyBidXQgbWFpbmx5DQo+
+IGJlY2F1c2Ugd2Ugd2FudCB0byB1c2UgZXhpc3RpbmcgSUlPIGFzIGZyYW1ld29yay4NCj4gPg0K
+PiANCj4gVGhlIHByb2JsZW0gaXMgdGhhdCB0aGUgSUlPIEFCSSBpcyBzdGF0ZWxlc3MsIHNvIGVp
+dGhlciB5b3UgbmVlZCB0byBhZGQgc29tZQ0KPiB2ZXJ5IGNydWRlIGhhY2tzIG9uLXRvcCBvZiBp
+dCB0byBhbGxvdyB0aGlzIG9yIHlvdSdkIGhhdmUgdG8gdGhyb3cgIGF3YXkgdGhlDQo+IGN1cnJl
+bnQgQUJJIGFuZCBkZXZlbG9wIGEgSUlPdjIuIFRoZSB1c2Vyc3BhY2UgZGFlbW9uIGlzIGluIG15
+IG9waW5pb24NCj4gcHJlZmVyYWJsZSB0byBib3RoIGNhc2VzLg0KDQpGcm9tIHByYWN0aWNhbCBQ
+T1Ygd2UgZG9uJ3QgaGF2ZSBtdWNoIGNob2ljZSAodGltZWxpbmUpLCBzaW5jZSB3ZSBoYXZlIHRv
+IHJldXNlIGRyaXZlciB0aGF0IGlzIGJvdW5kIHRvIElJTy4gRnJvbSBwcmluY2lwbGUgc3RhbmRw
+b2ludCBJIHNvbWVob3cgZmFpbCB0byBzZWUgYSBwcm9ibGVtLiBJdCBzZWVtcyB0byBtZSB0aGF0
+IGFsbCBzdGF0ZSBoYW5kbGluZyB0aGF0IGFuIElJTyBkcml2ZXIgbmVlZHMgdG8gZG8gaXMgdG8g
+a2VlcCBhc3NvY2lhdGlvbnMgb2YgUElEcyB0byBzZW5zb3IgcmF0ZXMsIGNvbmZpZ3VyZSBzZW5z
+b3IgdG8gdGhlIGhpZ2hlc3QgcmF0ZSBpbiB0aGUgbGlzdCBhbmQgcmVwbGljYXRlIHNoYXJlZCBk
+YXRhIGF0IHJhdGVzIHJlcXVlc3RlZCBieSB0aGUgY2xpZW50cy4gV2hlbiBhIGZpbGUgZGVzY3Jp
+cHRvciBpcyBjbG9zZWQgKGR1ZSB0byBwcm9jZXNzIHRlcm1pbmF0aW9uIG9yIGFub3RoZXIgcmVh
+c29ucyksIHRoZSBhY3R1YWwgc2Vuc29yIGlzIHJlLWNvbmZpZ3VyZWQgd2l0aCBuZXh0LWhpZ2hl
+c3QgcmF0ZSBhbW9uZyB0aGUgb3BlbiBGRHMuDQoNCj4gPiBUaGUgbWFpbiBkcmF3YmFjayB0aGF0
+IHdlIHNlZSBpbiB1c2VyLW1vZGUgZGFlbW9uIGlzIHBlcmZvcm1hbmNlLg0KPiBDb25zaWRlciBz
+ZXF1ZW5jZSBvZiBldmVudHMgYmV0d2VlbiB0aGUgZGFlbW9uIGFuZCB0aGUgY2FsbGVyIHByb2Nl
+c3M6DQo+ID4NCj4gPiAtIENhbGxlciBwcm9jZXNzIGludm9rZXMgc29tZSBzb3J0IG9mIFJQQyB2
+aWEgc29ja2V0L3BpcGUvbWVzc2FnZQ0KPiA+IHF1ZXVlIFtzeXN0ZW0gY2FsbCwgY29udGV4dCBz
+d2l0Y2hdDQo+ID4gLSBEYWVtb24gcmVjZWl2ZXMgcmVxdWVzdCBtZXNzYWdlIFtzeXN0ZW0gY2Fs
+bF0NCj4gPiAtIERhZW1vbiBwdXNoZXMgc2FtcGxlIGRhdGEgdGhyb3VnaCBJUEMgW3N5c3RlbSBj
+YWxsLCBkYXRhIGNvcHksDQo+ID4gY29udGV4dCBzd2l0Y2hdDQo+ID4gLSBDYWxsZXIgcG9wcyBk
+YXRhIG9mZiBJUEMgW3N5c3RlbSBjYWxsLCBkYXRhIGNvcHldDQo+ID4NCj4gPiBJLmUuIHRoZXJl
+IGFyZSA0IHN5c3RlbSBjYWxscywgMiBjb250ZXh0IHN3aXRjaGVzIGFuZCAyIGRhdGEgY29waWVz
+IGFkZGVkDQo+IHNvbGVseSBmb3IgdGhlIHB1cnBvc2Ugb2YgYXJiaXRyYXRpb24gZm9yIEVBQ0gg
+Y2xpZW50LCBldmVuIGZvciBzZW5zb3JzIG5vdA0KPiBjdXJyZW50bHkgc2hhcmVkLg0KPiANCj4g
+SWYgZG9uZSByaWdodCB0aGUgb3ZlcmhlYWQgc2hvdWxkIGhvcGVmdWxseSBiZSBuZWdsaWdpYmxl
+LiBFLmcuIHJpZ2h0IG5vdyB3ZQ0KPiBkbyBub3QgaGF2ZSBtbWFwIHN1cHBvcnQgZm9yIElJTywg
+YnV0IHRoaXMgaXMgc29tZXRoaW5nIHRoYXQgd2lsbCBiZQ0KPiBpbXBsZW1lbnRlZCBzb29uZXIg
+b3IgbGF0ZXIgKHByb2JhYmx5IHNvb25lciB0aGFuIGxhdGVyKS4gSSB0aGluayB3ZSBzaG91bGQN
+Cj4gdGFrZSBhIGxvb2sgYXQgaG93IEFMU0EgZG9lcyB0aGVzZSB0aGluZ3MuIFRoZXJlIHdlIGFs
+c28gaGF2ZSBubyBpbi1rZXJuZWwNCj4gbXVsdGlwbGV4aW5nIG9yIG1peGluZyBhbmQgdGhpbmdz
+IGFyZSBoYW5kbGVkIGJ5IGEgdXNlcnNwYWNlIGRhZW1vbi4NCg0KSXQncyBub3QgdGhhdCBuZWds
+aWdpYmxlLiBXZSBhcmUgZGV2ZWxvcGluZyBhIHNlbnNvcnMgaHViLCBub3QgaW5kaXZpZHVhbCBz
+ZW5zb3IuIFNvIHdlIGFyZSByZXF1aXJlZCB0byB3aXRoc3RhbmQgYWJvdXQgMTAgc2Vuc29ycyBz
+aW11bHRhbmVvdXNseSwgbW9zdCBhdCBhcHByb3guIDQwMCBzYW1wbGVzL3MuIExpbnV4IGlzIG5v
+dCBleHRyZW1lbHkgZ29vZCBhdCBjb250ZXh0IHN3aXRjaGluZyBsYXRlbmNpZXMsIHNvIHdlIGFy
+ZSBhZnJhaWQgdGhhdCB0aGlzIG92ZXJoZWFkIG11bHRpcGxpZWQgYnkgbnVtYmVyIG9mIGNvbmN1
+cnJlbnRseSB1c2VkIHNlbnNvcnMgbWF5IGJlY29tZSBhIHJlYWwgb2JzdGFjbGUuDQoNCkkgZG9u
+J3Qga25vdyBBTFNBIHRvbyB3ZWxsLCBhbmQgYXVkaW8gc2FtcGxpbmcgbWF5IGJlIHRvbyBsb3ct
+cmF0ZSB0byBiZSByZWxldmFudCBpbiB0aGlzIGNvbnRleHQuIEkgY2FuIHN1Z2dlc3QgbG9va2lu
+ZyBhdCBWNEwoMikgaW5zdGVhZCAtIGl0cyBjb25jaXNlIGludGVyZmFjZSBjYXBhYmxlIG9mIGhh
+bmRsaW5nIGxhcmdlIGFtb3VudHMgb2YgdGltZWx5IGRhdGEgaXMgb3Zlci1kZWNhZGUgcHJvdmVu
+Lg0KDQpCZXN0IHJlZ2FyZHMsDQpEYW5pZWwNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpJbnRlbCBJc3JhZWwgKDc0
+KSBMaW1pdGVkCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1heSBjb250YWluIGNv
+bmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNp
+cGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5IG90aGVycyBpcyBzdHJpY3Rs
+eSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQKcmVjaXBpZW50LCBwbGVh
+c2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNvcGllcy4K
 
-The problem is that the IIO ABI is stateless, so either you need to add some
-very crude hacks on-top of it to allow this or you'd have to throw  away the
-current ABI and develop a IIOv2. The userspace daemon is in my opinion
-preferable to both cases.
-
-> The main drawback that we see in user-mode daemon is performance. Consider sequence of events between the daemon and the caller process:
-> 
-> - Caller process invokes some sort of RPC via socket/pipe/message queue [system call, context switch]
-> - Daemon receives request message [system call]
-> - Daemon pushes sample data through IPC [system call, data copy, context switch]
-> - Caller pops data off IPC [system call, data copy]
-> 
-> I.e. there are 4 system calls, 2 context switches and 2 data copies added solely for the purpose of arbitration for EACH client, even for sensors not currently shared.
-
-If done right the overhead should hopefully be negligible. E.g. right now we
-do not have mmap support for IIO, but this is something that will be
-implemented sooner or later (probably sooner than later). I think we should
-take a look at how ALSA does these things. There we also have no in-kernel
-multiplexing or mixing and things are handled by a userspace daemon.
-
-> 
-> BTW (not directly related), I've read somewhere that on some system IIO did up to 200M samples per second. Is it true? If yes, how such data rate was achieved?
-
-Yes, but not continuous streaming. This is implemented by sampling at 200
-MHz, put data into a buffer, stop sampling and then let userspace read the
-buffer and after that start again.
-
-- Lars
