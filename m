@@ -1,75 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:54597 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752852Ab3HVPtR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 22 Aug 2013 11:49:17 -0400
-From: "Drubin, Daniel" <daniel.drubin@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:53849 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752976Ab3HVP7p (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2013 11:59:45 -0400
+Message-ID: <52163589.4080701@metafoo.de>
+Date: Thu, 22 Aug 2013 18:00:09 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: "Drubin, Daniel" <daniel.drubin@intel.com>
 CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Subject: RE: working with IIO
-Date: Thu, 22 Aug 2013 15:48:52 +0000
-Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8C47@HASMSX103.ger.corp.intel.com>
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
- <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
- <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
- <52160F47.2030403@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
- <52161D55.8090201@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com>
- <521625C5.4020504@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com>
- <52163141.1080905@metafoo.de>
-In-Reply-To: <52163141.1080905@metafoo.de>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Subject: Re: working with IIO
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com> <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com> <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com> <52160F47.2030403@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com> <52161D55.8090201@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com> <521625C5.4020504@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com> <52163141.1080905@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C47@HASMSX103.ger.corp.intel.com>
+In-Reply-To: <CE30B71206DDA24CBD6D43D23C236C034D8C47@HASMSX103.ger.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGFycy1QZXRlciBDbGF1
-c2VuIFttYWlsdG86bGFyc0BtZXRhZm9vLmRlXQ0KPiBTZW50OiBUaHVyc2RheSwgQXVndXN0IDIy
-LCAyMDEzIDY6NDIgUE0NCj4gVG86IERydWJpbiwgRGFuaWVsDQo+IENjOiBKb25hdGhhbiBDYW1l
-cm9uOyBZdW5pdmVyZywgTWljaGFlbDsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsNCj4gSGFp
-bW92aWNoLCBZb2F2DQo+IFN1YmplY3Q6IFJlOiB3b3JraW5nIHdpdGggSUlPDQo+IA0KPiBPbiAw
-OC8yMi8yMDEzIDA1OjE2IFBNLCBEcnViaW4sIERhbmllbCB3cm90ZToNCj4gPiBbLi4uXQ0KPiA+
-Pj4gIEZyb20gcHJhY3RpY2FsIFBPViB3ZSBkb24ndCBoYXZlIG11Y2ggY2hvaWNlICh0aW1lbGlu
-ZSksIHNpbmNlIHdlDQo+ID4+PiBoYXZlIHRvDQo+ID4+IHJldXNlIGRyaXZlciB0aGF0IGlzIGJv
-dW5kIHRvIElJTy4gRnJvbSBwcmluY2lwbGUgc3RhbmRwb2ludCBJDQo+ID4+IHNvbWVob3cgZmFp
-bCB0byBzZWUgYSBwcm9ibGVtLiBJdCBzZWVtcyB0byBtZSB0aGF0IGFsbCBzdGF0ZSBoYW5kbGlu
-Zw0KPiA+PiB0aGF0IGFuIElJTyBkcml2ZXIgbmVlZHMgdG8gZG8gaXMgdG8ga2VlcCBhc3NvY2lh
-dGlvbnMgb2YgUElEcyB0bw0KPiA+PiBzZW5zb3IgcmF0ZXMsIGNvbmZpZ3VyZSBzZW5zb3IgdG8g
-dGhlIGhpZ2hlc3QgcmF0ZSBpbiB0aGUgbGlzdCBhbmQNCj4gPj4gcmVwbGljYXRlIHNoYXJlZCBk
-YXRhIGF0IHJhdGVzIHJlcXVlc3RlZCBieSB0aGUgY2xpZW50cy4gV2hlbiBhIGZpbGUNCj4gPj4g
-ZGVzY3JpcHRvciBpcyBjbG9zZWQgKGR1ZSB0byBwcm9jZXNzIHRlcm1pbmF0aW9uIG9yIGFub3Ro
-ZXIgcmVhc29ucyksDQo+ID4+IHRoZSBhY3R1YWwgc2Vuc29yIGlzIHJlLWNvbmZpZ3VyZWQgd2l0
-aCBuZXh0LWhpZ2hlc3QgcmF0ZSBhbW9uZyB0aGUgb3Blbg0KPiBGRHMuDQo+ID4+DQo+ID4+IEJ1
-dCB5b3UgY2FuJ3QgdHJhY2sgdGhlIGNvbmZpZ3VyZWQgcmF0ZSBwZXIgUElEIHdpdGggdGhlIGN1
-cnJlbnQgQVBJLg0KPiA+PiBUaGF0J3Mgd2h5IEkga2VlcCBzYXlpbmcgdGhhdCB0aGUgQVBJIGlz
-IHN0YXRlbGVzcy4gWW91IGNhbiBub3QgdHJhY2sNCj4gPj4gc3RhdGUgcGVyIGFwcGxpY2F0aW9u
-IHdpdGhvdXQgaW52ZW50aW5nIGEgbmV3IEFQSS4NCj4gPg0KPiA+IFdoeSBjYW4ndCBJIGR1cmlu
-ZyBrZWVwIGEgbGlzdCBvZiBQSURzIHRoYXQgY3VycmVudGx5IHVzZSBhIHNlbnNvciBhbmQgcmVj
-b3JkDQo+IGN1cnJlbnQtPnBpZCB0b2dldGhlciB3aXRoICJkZWZhdWx0IiByYXRlIGR1cmluZyB0
-aGUgZmlyc3Qgc2FtcGxpbmcgcmVxdWVzdA0KPiB0aGF0IGRvZXNuJ3QgaGF2ZSBhIG1hdGNoaW5n
-IFBJRCwgYW5kIGluIHdyaXRlX3JhdygpIGhhbmRsZXIgdGhhdCB1cGRhdGVzDQo+IHJhdGUgbWF0
-Y2ggdGhhdCBjdXJyZW50LT5waWQgYWdhaW5zdCBsaXN0IG9mIHJlY29yZGVkIFBJRHM/IEkgZGlk
-bid0IHNlZSBhDQo+IHBvc3NpYmlsaXR5IHRoYXQgc2Vuc29yIGRyaXZlcidzIGhhbmRsZXIgbWF5
-IGdldCBjYWxsZWQgaW4gYSBkaWZmZXJlbnQgY29udGV4dA0KPiB0aGFuIElJTyBjb3JlIGZvcHMg
-aGFuZGxlci4NCj4gDQo+IFNvIGVhY2ggdGltZSBhIHByb2Nlc3Mgd3JpdGVzIHRvIGEgSUlPIHN5
-c2ZzIGZpbGUgeW91IHdhbnQgdG8gcmVjb3JkIHdoaWNoDQo+IHZhbHVlIHRoYXQgYXBwbGljYXRp
-b24gd3JvdGUuIFNvIHdoZW4gSSBydW4gYGZvciBpIGluIGBzZXEgMCAxMDAwMDBgOyBkbyBlY2hv
-ICRpDQo+ID4gc2FtcGxpbmdfZnJlcXVlbmN5OyBkb25lYCBJJ2QgZW5kIHVwIHdpdGggYSBsaXN0
-IHdpdGggb25lIG1pbGxpb24gZW50cmllcw0KPiB3aGljaCB3aWxsIHN0YXkgaW4gdGhlIGxpc3Qg
-Zm9yZXZlci4NCg0KTm8sIHRoZXJlIGlzIG9ubHkgb25lIGVudHJ5IHBlciBQSUQuIE5leHQgdmFs
-dWUgdGhhdCB0aGUgc2FtZSBwcm9jZXNzIHdyaXRlcyB3aWxsIHJlcGxhY2UgdGhlIHByZXZpb3Vz
-IG9uZSwgbm90IGNyZWF0ZSBhIG5ldyBlbnRyeS4gQW4gZW50cnkgd2lsbCBiZSBjcmVhdGUgb25s
-eSBpZiB0aGUgd3JpdGUgcmVxdWVzdCBhcnJpdmVkIGZyb20gYSBQSUQgY3VycmVudGx5IG5vdCBp
-biBsaXN0Lg0KDQpCZXN0IHJlZ2FyZHMsDQpEYW5pZWwNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpJbnRlbCBJc3Jh
-ZWwgKDc0KSBMaW1pdGVkCgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1heSBjb250
-YWluIGNvbmZpZGVudGlhbCBtYXRlcmlhbCBmb3IKdGhlIHNvbGUgdXNlIG9mIHRoZSBpbnRlbmRl
-ZCByZWNpcGllbnQocykuIEFueSByZXZpZXcgb3IgZGlzdHJpYnV0aW9uCmJ5IG90aGVycyBpcyBz
-dHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQKcmVjaXBpZW50
-LCBwbGVhc2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNvcGllcy4K
+On 08/22/2013 05:48 PM, Drubin, Daniel wrote:
+>
+>
+>> -----Original Message-----
+>> From: Lars-Peter Clausen [mailto:lars@metafoo.de]
+>> Sent: Thursday, August 22, 2013 6:42 PM
+>> To: Drubin, Daniel
+>> Cc: Jonathan Cameron; Yuniverg, Michael; linux-iio@vger.kernel.org;
+>> Haimovich, Yoav
+>> Subject: Re: working with IIO
+>>
+>> On 08/22/2013 05:16 PM, Drubin, Daniel wrote:
+>>> [...]
+>>>>>   From practical POV we don't have much choice (timeline), since we
+>>>>> have to
+>>>> reuse driver that is bound to IIO. From principle standpoint I
+>>>> somehow fail to see a problem. It seems to me that all state handling
+>>>> that an IIO driver needs to do is to keep associations of PIDs to
+>>>> sensor rates, configure sensor to the highest rate in the list and
+>>>> replicate shared data at rates requested by the clients. When a file
+>>>> descriptor is closed (due to process termination or another reasons),
+>>>> the actual sensor is re-configured with next-highest rate among the open
+>> FDs.
+>>>>
+>>>> But you can't track the configured rate per PID with the current API.
+>>>> That's why I keep saying that the API is stateless. You can not track
+>>>> state per application without inventing a new API.
+>>>
+>>> Why can't I during keep a list of PIDs that currently use a sensor and record
+>> current->pid together with "default" rate during the first sampling request
+>> that doesn't have a matching PID, and in write_raw() handler that updates
+>> rate match that current->pid against list of recorded PIDs? I didn't see a
+>> possibility that sensor driver's handler may get called in a different context
+>> than IIO core fops handler.
+>>
+>> So each time a process writes to a IIO sysfs file you want to record which
+>> value that application wrote. So when I run `for i in `seq 0 100000`; do echo $i
+>>> sampling_frequency; done` I'd end up with a list with one million entries
+>> which will stay in the list forever.
+>
+> No, there is only one entry per PID. Next value that the same process writes will replace the previous one, not create a new entry. An entry will be create only if the write request arrived from a PID currently not in list.
+>
+
+Assume that echo is a /bin/echo, not a shell built-in command.
+
+- Lars
 
