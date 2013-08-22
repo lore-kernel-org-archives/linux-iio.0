@@ -1,57 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:2683 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753486Ab3HVPQr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 22 Aug 2013 11:16:47 -0400
-From: "Drubin, Daniel" <daniel.drubin@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:51886 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753714Ab3HVPlb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2013 11:41:31 -0400
+Message-ID: <52163141.1080905@metafoo.de>
+Date: Thu, 22 Aug 2013 17:41:53 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: "Drubin, Daniel" <daniel.drubin@intel.com>
 CC: Jonathan Cameron <jic23@cam.ac.uk>,
 	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Subject: RE: working with IIO
-Date: Thu, 22 Aug 2013 15:16:41 +0000
-Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com>
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
- <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
- <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
- <52160F47.2030403@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
- <52161D55.8090201@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com>
- <521625C5.4020504@metafoo.de>
-In-Reply-To: <521625C5.4020504@metafoo.de>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Subject: Re: working with IIO
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com> <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com> <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com> <52160F47.2030403@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com> <52161D55.8090201@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com> <521625C5.4020504@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com>
+In-Reply-To: <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Wy4uLl0NCj4gPiBGcm9tIHByYWN0aWNhbCBQT1Ygd2UgZG9uJ3QgaGF2ZSBtdWNoIGNob2ljZSAo
-dGltZWxpbmUpLCBzaW5jZSB3ZSBoYXZlIHRvDQo+IHJldXNlIGRyaXZlciB0aGF0IGlzIGJvdW5k
-IHRvIElJTy4gRnJvbSBwcmluY2lwbGUgc3RhbmRwb2ludCBJIHNvbWVob3cgZmFpbCB0bw0KPiBz
-ZWUgYSBwcm9ibGVtLiBJdCBzZWVtcyB0byBtZSB0aGF0IGFsbCBzdGF0ZSBoYW5kbGluZyB0aGF0
-IGFuIElJTyBkcml2ZXIgbmVlZHMNCj4gdG8gZG8gaXMgdG8ga2VlcCBhc3NvY2lhdGlvbnMgb2Yg
-UElEcyB0byBzZW5zb3IgcmF0ZXMsIGNvbmZpZ3VyZSBzZW5zb3IgdG8gdGhlDQo+IGhpZ2hlc3Qg
-cmF0ZSBpbiB0aGUgbGlzdCBhbmQgcmVwbGljYXRlIHNoYXJlZCBkYXRhIGF0IHJhdGVzIHJlcXVl
-c3RlZCBieSB0aGUNCj4gY2xpZW50cy4gV2hlbiBhIGZpbGUgZGVzY3JpcHRvciBpcyBjbG9zZWQg
-KGR1ZSB0byBwcm9jZXNzIHRlcm1pbmF0aW9uIG9yDQo+IGFub3RoZXIgcmVhc29ucyksIHRoZSBh
-Y3R1YWwgc2Vuc29yIGlzIHJlLWNvbmZpZ3VyZWQgd2l0aCBuZXh0LWhpZ2hlc3QgcmF0ZQ0KPiBh
-bW9uZyB0aGUgb3BlbiBGRHMuDQo+IA0KPiBCdXQgeW91IGNhbid0IHRyYWNrIHRoZSBjb25maWd1
-cmVkIHJhdGUgcGVyIFBJRCB3aXRoIHRoZSBjdXJyZW50IEFQSS4gVGhhdCdzDQo+IHdoeSBJIGtl
-ZXAgc2F5aW5nIHRoYXQgdGhlIEFQSSBpcyBzdGF0ZWxlc3MuIFlvdSBjYW4gbm90IHRyYWNrIHN0
-YXRlIHBlcg0KPiBhcHBsaWNhdGlvbiB3aXRob3V0IGludmVudGluZyBhIG5ldyBBUEkuDQoNCldo
-eSBjYW4ndCBJIGR1cmluZyBrZWVwIGEgbGlzdCBvZiBQSURzIHRoYXQgY3VycmVudGx5IHVzZSBh
-IHNlbnNvciBhbmQgcmVjb3JkIGN1cnJlbnQtPnBpZCB0b2dldGhlciB3aXRoICJkZWZhdWx0IiBy
-YXRlIGR1cmluZyB0aGUgZmlyc3Qgc2FtcGxpbmcgcmVxdWVzdCB0aGF0IGRvZXNuJ3QgaGF2ZSBh
-IG1hdGNoaW5nIFBJRCwgYW5kIGluIHdyaXRlX3JhdygpIGhhbmRsZXIgdGhhdCB1cGRhdGVzIHJh
-dGUgbWF0Y2ggdGhhdCBjdXJyZW50LT5waWQgYWdhaW5zdCBsaXN0IG9mIHJlY29yZGVkIFBJRHM/
-IEkgZGlkbid0IHNlZSBhIHBvc3NpYmlsaXR5IHRoYXQgc2Vuc29yIGRyaXZlcidzIGhhbmRsZXIg
-bWF5IGdldCBjYWxsZWQgaW4gYSBkaWZmZXJlbnQgY29udGV4dCB0aGFuIElJTyBjb3JlIGZvcHMg
-aGFuZGxlci4NCg0KQmVzdCByZWdhcmRzLA0KRGFuaWVsDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KSW50ZWwgSXNy
-YWVsICg3NCkgTGltaXRlZAoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkgY29u
-dGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVzZSBvZiB0aGUgaW50ZW5k
-ZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbgpieSBvdGhlcnMgaXMg
-c3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkCnJlY2lwaWVu
-dCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
+On 08/22/2013 05:16 PM, Drubin, Daniel wrote:
+> [...]
+>>>  From practical POV we don't have much choice (timeline), since we have to
+>> reuse driver that is bound to IIO. From principle standpoint I somehow fail to
+>> see a problem. It seems to me that all state handling that an IIO driver needs
+>> to do is to keep associations of PIDs to sensor rates, configure sensor to the
+>> highest rate in the list and replicate shared data at rates requested by the
+>> clients. When a file descriptor is closed (due to process termination or
+>> another reasons), the actual sensor is re-configured with next-highest rate
+>> among the open FDs.
+>>
+>> But you can't track the configured rate per PID with the current API. That's
+>> why I keep saying that the API is stateless. You can not track state per
+>> application without inventing a new API.
+>
+> Why can't I during keep a list of PIDs that currently use a sensor and record current->pid together with "default" rate during the first sampling request that doesn't have a matching PID, and in write_raw() handler that updates rate match that current->pid against list of recorded PIDs? I didn't see a possibility that sensor driver's handler may get called in a different context than IIO core fops handler.
+
+So each time a process writes to a IIO sysfs file you want to record which 
+value that application wrote. So when I run `for i in `seq 0 100000`; do echo 
+$i > sampling_frequency; done` I'd end up with a list with one million entries 
+which will stay in the list forever.
+
+- Lars
 
