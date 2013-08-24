@@ -1,74 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f47.google.com ([209.85.160.47]:62173 "EHLO
-	mail-pb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755432Ab3HXTYo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Aug 2013 15:24:44 -0400
-Received: by mail-pb0-f47.google.com with SMTP id rr4so1917383pbb.34
-        for <linux-iio@vger.kernel.org>; Sat, 24 Aug 2013 12:24:44 -0700 (PDT)
+Return-Path: <sachin.kamat@linaro.org>
 From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
-Cc: jic23@cam.ac.uk, jic23@kernel.org, sachin.kamat@linaro.org,
+Cc: jic23@cam.ac.uk,
+	jic23@kernel.org,
+	sachin.kamat@linaro.org,
 	lars@metafoo.de
-Subject: [PATCH 2/3] staging: iio: ad7152: Use devm_iio_device_alloc
-Date: Sun, 25 Aug 2013 00:54:28 +0530
-Message-Id: <1377372269-4978-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1377372269-4978-1-git-send-email-sachin.kamat@linaro.org>
-References: <1377372269-4978-1-git-send-email-sachin.kamat@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 1/8] staging: iio: adis16201: Use devm_iio_device_alloc
+Date: Sun, 25 Aug 2013 00:18:05 +0530
+Message-Id: <1377370092-2436-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
 Using devm_iio_device_alloc makes code simpler.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/cdc/ad7152.c |   16 ++++------------
- 1 files changed, 4 insertions(+), 12 deletions(-)
+ drivers/staging/iio/accel/adis16201_core.c |   17 ++++++-----------
+ 1 files changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index 1d7c528..f2c309d 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -481,11 +481,9 @@ static int ad7152_probe(struct i2c_client *client,
- 	struct ad7152_chip_info *chip;
+diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+index ab8ec7a..2105576 100644
+--- a/drivers/staging/iio/accel/adis16201_core.c
++++ b/drivers/staging/iio/accel/adis16201_core.c
+@@ -182,11 +182,10 @@ static int adis16201_probe(struct spi_device *spi)
  	struct iio_dev *indio_dev;
  
--	indio_dev = iio_device_alloc(sizeof(*chip));
+ 	/* setup the industrialio driver allocated elements */
+-	indio_dev = iio_device_alloc(sizeof(*st));
 -	if (indio_dev == NULL) {
 -		ret = -ENOMEM;
 -		goto error_ret;
 -	}
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 +	if (!indio_dev)
 +		return -ENOMEM;
- 	chip = iio_priv(indio_dev);
- 	/* this is only used for device removal purposes */
- 	i2c_set_clientdata(client, indio_dev);
-@@ -506,16 +504,11 @@ static int ad7152_probe(struct i2c_client *client,
++
+ 	st = iio_priv(indio_dev);
+ 	/* this is only used for removal purposes */
+ 	spi_set_drvdata(spi, indio_dev);
+@@ -201,10 +200,10 @@ static int adis16201_probe(struct spi_device *spi)
  
- 	ret = iio_device_register(indio_dev);
+ 	ret = adis_init(st, indio_dev, spi, &adis16201_data);
+ 	if (ret)
+-		goto error_free_dev;
++		return ret;
+ 	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
  	if (ret)
 -		goto error_free_dev;
 +		return ret;
  
- 	dev_err(&client->dev, "%s capacitive sensor registered\n", id->name);
+ 	/* Get the device into a sane initial state */
+ 	ret = adis_initial_startup(st);
+@@ -218,9 +217,6 @@ static int adis16201_probe(struct spi_device *spi)
  
- 	return 0;
--
+ error_cleanup_buffer_trigger:
+ 	adis_cleanup_buffer_and_trigger(st, indio_dev);
 -error_free_dev:
 -	iio_device_free(indio_dev);
 -error_ret:
--	return ret;
+ 	return ret;
  }
  
- static int ad7152_remove(struct i2c_client *client)
-@@ -523,7 +516,6 @@ static int ad7152_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+@@ -231,7 +227,6 @@ static int adis16201_remove(struct spi_device *spi)
  
  	iio_device_unregister(indio_dev);
+ 	adis_cleanup_buffer_and_trigger(st, indio_dev);
 -	iio_device_free(indio_dev);
  
  	return 0;
  }
 -- 
 1.7.4.1
-
