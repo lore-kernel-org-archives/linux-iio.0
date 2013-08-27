@@ -1,41 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46408 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755692Ab3H2Trp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Aug 2013 15:47:45 -0400
-Message-ID: <521FB371.1030005@kernel.org>
-Date: Thu, 29 Aug 2013 21:47:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-CC: Josh Wu <josh.wu@atmel.com>, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, plagnioj@jcrosoft.com,
+Received: from newsmtp5.atmel.com ([204.2.163.5]:36120 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753060Ab3H0L3s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Aug 2013 07:29:48 -0400
+From: Josh Wu <josh.wu@atmel.com>
+To: jic23@cam.ac.uk
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
 	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
 	mark.rutland@arm.com, b.brezillon@overkiz.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/6] iio: at91: introduce the multiple compatible string
- for different IPs.
-References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com> <1377602932-1899-3-git-send-email-josh.wu@atmel.com> <20130828080200.GM2695@lukather>
-In-Reply-To: <20130828080200.GM2695@lukather>
-Content-Type: text/plain; charset=ISO-8859-1
+	Josh Wu <josh.wu@atmel.com>
+Subject: [PATCH v3 1/6] iio: at91: fix adc_clk overflow
+Date: Tue, 27 Aug 2013 19:28:47 +0800
+Message-Id: <1377602932-1899-2-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
+References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/28/13 09:02, Maxime Ripard wrote:
-> Hi Josh,
-> 
-> On Tue, Aug 27, 2013 at 07:28:48PM +0800, Josh Wu wrote:
->> As use the multiple compatible string, we can remove hardware register in dt.
->> 
->> CC: devicetree@vger.kernel.org Signed-off-by: Josh Wu <josh.wu@atmel.com>
-> 
-> It's ok for me. You can add my Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-I've assumed for such and obviously good change that none of the devicetree
-maintainers need to give an ack and applied this to the togreg branch of iio.git
+The adc_clk variable is currently defined using a 32-bits unsigned integer,
+which will overflow under some very valid range of operations.
 
-Thanks,
+Such overflow will occur if, for example, the parent clock is set to a
+20MHz frequency and the ADC startup time is larger than 215ns.
 
-Jonathan
-> 
-> Thanks! Maxime
-> 
+To fix this, introduce an intermediate variable holding the clock rate
+in kHz.
+
+Signed-off-by: Josh Wu <josh.wu@atmel.com>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+v1 --> v2:
+  refined the commit message.
+
+ drivers/iio/adc/at91_adc.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index b6db6a0..9cf8ab5 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -582,7 +582,7 @@ static const struct iio_info at91_adc_info = {
+ 
+ static int at91_adc_probe(struct platform_device *pdev)
+ {
+-	unsigned int prsc, mstrclk, ticks, adc_clk, shtim;
++	unsigned int prsc, mstrclk, ticks, adc_clk, adc_clk_khz, shtim;
+ 	int ret;
+ 	struct iio_dev *idev;
+ 	struct at91_adc_state *st;
+@@ -680,6 +680,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 */
+ 	mstrclk = clk_get_rate(st->clk);
+ 	adc_clk = clk_get_rate(st->adc_clk);
++	adc_clk_khz = adc_clk / 1000;
+ 	prsc = (mstrclk / (2 * adc_clk)) - 1;
+ 
+ 	if (!st->startup_time) {
+@@ -693,15 +694,15 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 * defined in the electrical characteristics of the board, divided by 8.
+ 	 * The formula thus is : Startup Time = (ticks + 1) * 8 / ADC Clock
+ 	 */
+-	ticks = round_up((st->startup_time * adc_clk /
+-			  1000000) - 1, 8) / 8;
++	ticks = round_up((st->startup_time * adc_clk_khz /
++			  1000) - 1, 8) / 8;
+ 	/*
+ 	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
+ 	 * the best converted final value between two channels selection
+ 	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
+ 	 */
+-	shtim = round_up((st->sample_hold_time * adc_clk /
+-			  1000000) - 1, 1);
++	shtim = round_up((st->sample_hold_time * adc_clk_khz /
++			  1000) - 1, 1);
+ 
+ 	reg = AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL;
+ 	reg |= AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP;
+-- 
+1.7.10
+
