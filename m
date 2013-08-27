@@ -1,93 +1,54 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <521E4C60.6030001@kernel.org>
-Date: Wed, 28 Aug 2013 20:15:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Mark Rutland <mark.rutland@arm.com>
-CC: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "rob.herring@calxeda.com" <rob.herring@calxeda.com>,
- Pawel Moll <Pawel.Moll@arm.com>,
- "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>,
- "ian.campbell@citrix.com" <ian.campbell@citrix.com>,
- "rob@landley.net" <rob@landley.net>,
- "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
- "denis.ciocca@st.com" <denis.ciocca@st.com>,
- "srinivas.pandruvada@linux.intel.com" <srinivas.pandruvada@linux.intel.com>,
- "lars@metafoo.de" <lars@metafoo.de>
-Subject: Re: [PATCH v5 2/2] iio: add Bosch BMA180 acceleration sensor driver
-References: <1377687678-5761-1-git-send-email-o.v.kravchenko@globallogic.com> <1377687678-5761-2-git-send-email-o.v.kravchenko@globallogic.com> <20130828131724.GE10250@e106331-lin.cambridge.arm.com>
-In-Reply-To: <20130828131724.GE10250@e106331-lin.cambridge.arm.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from newsmtp5.atmel.com ([204.2.163.5]:31761 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753055Ab3H0L3s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Aug 2013 07:29:48 -0400
+From: Josh Wu <josh.wu@atmel.com>
+To: jic23@cam.ac.uk
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
+	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
+	mark.rutland@arm.com, b.brezillon@overkiz.com,
+	Josh Wu <josh.wu@atmel.com>
+Subject: [PATCH v3 0/6] iio: at91: Add touch screen support in at91 adc
+Date: Tue, 27 Aug 2013 19:28:46 +0800
+Message-Id: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/28/13 14:17, Mark Rutland wrote:
-> On Wed, Aug 28, 2013 at 12:01:18PM +0100, Oleksandr Kravchenko wrote:
->> This patch adds IIO driver for Bosch BMA180 triaxial
->> acceleration sensor.
->> http://dlnmh9ip6v2uc.cloudfront.net/datasheets/
->>                 Sensors/Accelerometers/BST-BMA180-DS000-07_2.pdf
->>
->> Stephen Warren:
->> The binding looks simple enough to me, so the binding
-> 
-> You can lose the above two lines, just the Acked-by is good enough. :)
-> 
->> Acked-by: Stephen Warren <swarren@nvidia.com>
->> Signed-off-by: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Bonus text dropped and signoff/ack reordered as the Author goes at the top
-then the chain is as people ack/sign off after that.
+This patch series introduce multiple compatible string for different ip.
+So remove some adc dt parameters as it already included in driver code.
 
-Applied to the togreg branch of iio.git.  Not sure on timings for the merge
-window, but chances are high that this is just too late I'm afraid and will
-have to wait for next time around.
+It also touch screen support for at91 adc driver.
+To enable touch screen you need add the touch screen related dt properties.
 
-Jonathan
->> ---
->>  .../devicetree/bindings/iio/accel/bma180.txt       |   24 +
->>  drivers/iio/accel/Kconfig                          |   12 +
->>  drivers/iio/accel/Makefile                         |    2 +
->>  drivers/iio/accel/bma180.c                         |  676 ++++++++++++++++++++
->>  4 files changed, 714 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/accel/bma180.txt
->>  create mode 100644 drivers/iio/accel/bma180.c
->>
->> diff --git a/Documentation/devicetree/bindings/iio/accel/bma180.txt b/Documentation/devicetree/bindings/iio/accel/bma180.txt
->> new file mode 100644
->> index 0000000..c593357
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/accel/bma180.txt
->> @@ -0,0 +1,24 @@
->> +* Bosch BMA180 triaxial acceleration sensor
->> +
->> +http://omapworld.com/BMA180_111_1002839.pdf
->> +
->> +Required properties:
->> +
->> +  - compatible : should be "bosch,bma180"
->> +  - reg : the I2C address of the sensor
->> +
->> +Optional properties:
->> +
->> +  - interrupt-parent : should be the phandle for the interrupt controller
->> +
->> +  - interrupts : interrupt mapping for GPIO IRQ, it should by configured with
->> +               flags IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING
->> +
-> 
-> One thing I noticed from the datasheet is that this has a clock input
-> (sck) and two regulator inputs (vdd and vddio). It might not always be
-> the case that these are configured statically, so they may need to be
-> described in the dt. It's possible that they could be added later as
-> optional properties, though.
-> 
-> Thanks,
-> Mark.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+v2 --> v3:
+  1. move the dt parameters to driver itself.
+  2. trival fix in touch driver.
+
+v1 --> v2:
+  1. use multiple compatible string for different ADC IP.
+  2. drop the patch that add the adc-clock in dt since we will move to clock
+     common framework.
+  3. don't expose the driver configuration to dt. Such like sample period,
+     pen detect debounce time and etc.
+  4. add a new dt parameter: ts-pressure-threshold.
+
+Josh Wu (6):
+  iio: at91: fix adc_clk overflow
+  iio: at91: introduce the multiple compatible string for different
+    IPs.
+  iio: at91: Use different prescal, startup mask in MR for different IP
+  iio: at91: ADC start-up time calculation changed since at91sam9x5
+  iio: at91: move the num_channels from DT to driver itself
+  iio: at91: introduce touch screen support in iio adc driver
+
+ .../devicetree/bindings/arm/atmel-adc.txt          |   15 +-
+ arch/arm/mach-at91/include/mach/at91_adc.h         |   50 +-
+ drivers/iio/adc/at91_adc.c                         |  550 +++++++++++++++++---
+ include/linux/platform_data/at91_adc.h             |    4 +
+ 4 files changed, 530 insertions(+), 89 deletions(-)
+
+-- 
+1.7.10
+
