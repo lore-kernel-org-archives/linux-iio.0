@@ -1,116 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from newsmtp5.atmel.com ([204.2.163.5]:45293 "EHLO
-	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753148Ab3H0L3x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Aug 2013 07:29:53 -0400
-From: Josh Wu <josh.wu@atmel.com>
-To: jic23@cam.ac.uk
-Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
+Return-Path: <maxime.ripard@free-electrons.com>
+Date: Wed, 28 Aug 2013 10:56:31 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Josh Wu <josh.wu@atmel.com>
+Cc: jic23@cam.ac.uk, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, plagnioj@jcrosoft.com,
 	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
-	mark.rutland@arm.com, b.brezillon@overkiz.com,
-	Josh Wu <josh.wu@atmel.com>
-Subject: [PATCH v3 3/6] iio: at91: Use different prescal, startup mask in MR for different IP
-Date: Tue, 27 Aug 2013 19:28:49 +0800
-Message-Id: <1377602932-1899-4-git-send-email-josh.wu@atmel.com>
-In-Reply-To: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
+	mark.rutland@arm.com, b.brezillon@overkiz.com
+Subject: Re: [PATCH v3 3/6] iio: at91: Use different prescal, startup mask in
+ MR for different IP
+Message-ID: <20130828085631.GO2695@lukather>
 References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <1377602932-1899-4-git-send-email-josh.wu@atmel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NKtYx2Ppz7d1tORf"
+In-Reply-To: <1377602932-1899-4-git-send-email-josh.wu@atmel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-For at91 boards, there are different IPs for adc. Different IPs has different
-STARTUP & PRESCAL mask in ADC_MR.
 
-Signed-off-by: Josh Wu <josh.wu@atmel.com>
----
- arch/arm/mach-at91/include/mach/at91_adc.h |    7 +++++--
- drivers/iio/adc/at91_adc.c                 |   11 +++++++++--
- include/linux/platform_data/at91_adc.h     |    4 ++++
- 3 files changed, 18 insertions(+), 4 deletions(-)
+--NKtYx2Ppz7d1tORf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/arm/mach-at91/include/mach/at91_adc.h b/arch/arm/mach-at91/include/mach/at91_adc.h
-index bea1a20..048a57f 100644
---- a/arch/arm/mach-at91/include/mach/at91_adc.h
-+++ b/arch/arm/mach-at91/include/mach/at91_adc.h
-@@ -28,9 +28,12 @@
- #define			AT91_ADC_TRGSEL_EXTERNAL	(6 << 1)
- #define		AT91_ADC_LOWRES		(1 << 4)	/* Low Resolution */
- #define		AT91_ADC_SLEEP		(1 << 5)	/* Sleep Mode */
--#define		AT91_ADC_PRESCAL	(0x3f << 8)	/* Prescalar Rate Selection */
-+#define		AT91_ADC_PRESCAL_9260	(0x3f << 8)	/* Prescalar Rate Selection */
-+#define		AT91_ADC_PRESCAL_9G45	(0xff << 8)
- #define			AT91_ADC_PRESCAL_(x)	((x) << 8)
--#define		AT91_ADC_STARTUP	(0x1f << 16)	/* Startup Up Time */
-+#define		AT91_ADC_STARTUP_9260	(0x1f << 16)	/* Startup Up Time */
-+#define		AT91_ADC_STARTUP_9G45	(0x7f << 16)
-+#define		AT91_ADC_STARTUP_9X5	(0xf << 16)
- #define			AT91_ADC_STARTUP_(x)	((x) << 16)
- #define		AT91_ADC_SHTIM		(0xf  << 24)	/* Sample & Hold Time */
- #define			AT91_ADC_SHTIM_(x)	((x) << 24)
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 49dd751..bccc407 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -678,8 +678,8 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	shtim = round_up((st->sample_hold_time * adc_clk_khz /
- 			  1000) - 1, 1);
- 
--	reg = AT91_ADC_PRESCAL_(prsc) & AT91_ADC_PRESCAL;
--	reg |= AT91_ADC_STARTUP_(ticks) & AT91_ADC_STARTUP;
-+	reg = AT91_ADC_PRESCAL_(prsc) & st->registers->mr_prescal_mask;
-+	reg |= AT91_ADC_STARTUP_(ticks) & st->registers->mr_startup_mask;
- 	if (st->low_res)
- 		reg |= AT91_ADC_LOWRES;
- 	if (st->sleep_mode)
-@@ -756,6 +756,8 @@ static struct at91_adc_caps at91sam9260_caps = {
- 		.drdy_mask = AT91_ADC_DRDY,
- 		.status_register = AT91_ADC_SR,
- 		.trigger_register = AT91_ADC_TRGR_9260,
-+		.mr_prescal_mask = AT91_ADC_PRESCAL_9260,
-+		.mr_startup_mask = AT91_ADC_STARTUP_9260,
- 	},
- };
- 
-@@ -765,6 +767,8 @@ static struct at91_adc_caps at91sam9g45_caps = {
- 		.drdy_mask = AT91_ADC_DRDY,
- 		.status_register = AT91_ADC_SR,
- 		.trigger_register = AT91_ADC_TRGR_9G45,
-+		.mr_prescal_mask = AT91_ADC_PRESCAL_9G45,
-+		.mr_startup_mask = AT91_ADC_STARTUP_9G45,
- 	},
- };
- 
-@@ -774,6 +778,9 @@ static struct at91_adc_caps at91sam9x5_caps = {
- 		.drdy_mask = AT91_ADC_SR_DRDY_9X5,
- 		.status_register = AT91_ADC_SR_9X5,
- 		.trigger_register = AT91_ADC_TRGR_9X5,
-+		/* prescal mask is same as 9G45 */
-+		.mr_prescal_mask = AT91_ADC_PRESCAL_9G45,
-+		.mr_startup_mask = AT91_ADC_STARTUP_9X5,
- 	},
- };
- 
-diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-index e15745b..b3ca1e9 100644
---- a/include/linux/platform_data/at91_adc.h
-+++ b/include/linux/platform_data/at91_adc.h
-@@ -14,12 +14,16 @@
- 			(Interruptions registers mostly)
-  * @status_register:	Offset of the Interrupt Status Register
-  * @trigger_register:	Offset of the Trigger setup register
-+ * @mr_prescal_mask:	Mask of the PRESCAL field in the adc MR register
-+ * @mr_startup_mask:	Mask of the STARTUP field in the adc MR register
-  */
- struct at91_adc_reg_desc {
- 	u8	channel_base;
- 	u32	drdy_mask;
- 	u8	status_register;
- 	u8	trigger_register;
-+	u32	mr_prescal_mask;
-+	u32	mr_startup_mask;
- };
- 
- /**
--- 
-1.7.10
+Hi Josh,
 
+
+On Tue, Aug 27, 2013 at 07:28:49PM +0800, Josh Wu wrote:
+> For at91 boards, there are different IPs for adc. Different IPs has diffe=
+rent
+> STARTUP & PRESCAL mask in ADC_MR.
+>=20
+> Signed-off-by: Josh Wu <josh.wu@atmel.com>
+
+It looks fine.
+
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--NKtYx2Ppz7d1tORf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSHbs/AAoJEBx+YmzsjxAgsPoP/0PYpy9nwGVh2J7HXrpBaPWZ
+oNpuYeN7PQyQA9Z4GJSTHwHCnKKnyDeNxtckgPtbSrjBP6aWNdPIUwt1IKNFfygs
+wfJpcmYLBMK8MgMC3BMcipKnKVQuJHwoq9FMQoXFJimEmtv7EYU/enxBkJFIqlSI
+bPr+zJFoM00jwNJKl1dDst4QWoOqKsn4sv2W+fEFXklM/J4Q//eLEy4b4Zn2ksFY
+QznXhslU64mt1QmiEmQEQ5PiULDCXxe3t4ofiyO+ryAmRK9SeXMdPWW99+EE7Ke9
+F496ZGrA+DBUk+kkuocoi4pdu6T5cd7/DzAR2u7zDzOaLSD9WJK+ADLyVnTmlslG
+zaHHifCNh7hrdgeGU3GTo5G+snw57UUpEXItuVhuAJnO11FtcsbPvZQA4MfD+zY6
+s3WuW0AaUzERPgygDQ0BHx/Vcz1dDzuumxFJyGParpEBJqwBX8s65/4HftFvk0Wb
+rV6q4g7EikAxZxmvmL2I3gDtVNyoaPtc4m7+0Zh7TyNnl/8qkc2eMvIVXQtRyubJ
+mnfbiheNzqOcq2q1SbWQO2iWQB8t4kn/VgRN4kI538R2l0CB5vJ1U1aNjIxaAzbp
+4WLfumGueOvjsdroAzZ9IqHSdbXQ136pbkUmCss4QTe22Mk2/fktaSIkD4GCGmwu
+CUDByA0A3Ch5AimmNbQf
+=5h5z
+-----END PGP SIGNATURE-----
+
+--NKtYx2Ppz7d1tORf--
