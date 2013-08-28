@@ -1,24 +1,18 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from newsmtp5.atmel.com ([204.2.163.5]:26226 "EHLO
-	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753215Ab3H0LaE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Aug 2013 07:30:04 -0400
+Return-Path: <josh.wu@atmel.com>
 From: Josh Wu <josh.wu@atmel.com>
 To: jic23@cam.ac.uk
 Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
-	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
-	mark.rutland@arm.com, b.brezillon@overkiz.com,
-	Josh Wu <josh.wu@atmel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	devicetree@vger.kernel.org
-Subject: [PATCH v3 6/6] iio: at91: introduce touch screen support in iio adc driver
-Date: Tue, 27 Aug 2013 19:28:52 +0800
-Message-Id: <1377602932-1899-7-git-send-email-josh.wu@atmel.com>
-In-Reply-To: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
-References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+        maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
+        nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
+        mark.rutland@arm.com, b.brezillon@overkiz.com,
+        devicetree@vger.kernel.org, Josh Wu <josh.wu@atmel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [resend][PATCH v3 6/6] iio: at91: introduce touch screen support in iio adc driver
+Date: Wed, 28 Aug 2013 15:45:13 +0800
+Message-Id: <1377675913-30861-1-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1377602932-1899-7-git-send-email-josh.wu@atmel.com>
+References: <1377602932-1899-7-git-send-email-josh.wu@atmel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 AT91 ADC hardware integrate touch screen support. So this patch add touch
 screen support for at91 adc iio driver.
@@ -36,6 +30,9 @@ Signed-off-by: Josh Wu <josh.wu@atmel.com>
 Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 CC: devicetree@vger.kernel.org
 ---
+resend v3:
+  Since [v3 5/6] is resended for compiling error fix. So rebase this patch
+
 v2 --> v3:
   1. fix according to Dmitry's suggestion.
 
@@ -123,7 +120,7 @@ index 048a57f..c287307 100644
 +
  #endif
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index bd72b0e..0e9424c 100644
+index 0f4621a..beec9ae 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
 @@ -11,6 +11,7 @@
@@ -624,7 +621,7 @@ index bd72b0e..0e9424c 100644
  static struct at91_adc_caps at91sam9g45_caps = {
 +	.has_ts = true,
  	.calc_startup_ticks = calc_startup_ticks_9260,	/* same as 9260 */
- 	.num_channels = 8;
+ 	.num_channels = 8,
  	.registers = {
 @@ -808,6 +1144,10 @@ static struct at91_adc_caps at91sam9g45_caps = {
  };
@@ -635,7 +632,7 @@ index bd72b0e..0e9424c 100644
 +	.ts_filter_average = 3,
 +	.ts_pen_detect_sensitivity = 2,
  	.calc_startup_ticks = calc_startup_ticks_9x5,
- 	.num_channels = 12;
+ 	.num_channels = 12,
  	.registers = {
 @@ -834,7 +1174,7 @@ static struct platform_driver at91_adc_driver = {
  	.probe = at91_adc_probe,
@@ -648,4 +645,3 @@ index bd72b0e..0e9424c 100644
  };
 -- 
 1.7.10
-
