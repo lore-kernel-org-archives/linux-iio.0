@@ -1,93 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:30380 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752771Ab3HVQ1E (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 22 Aug 2013 12:27:04 -0400
-From: "Drubin, Daniel" <daniel.drubin@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@cam.ac.uk>,
-	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Haimovich, Yoav" <yoav.haimovich@intel.com>
-Subject: RE: working with IIO
-Date: Thu, 22 Aug 2013 16:26:20 +0000
-Message-ID: <CE30B71206DDA24CBD6D43D23C236C034D8C69@HASMSX103.ger.corp.intel.com>
-References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com>
- <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com>
- <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com>
- <52160F47.2030403@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com>
- <52161D55.8090201@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com>
- <521625C5.4020504@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com>
- <52163141.1080905@metafoo.de>
- <CE30B71206DDA24CBD6D43D23C236C034D8C47@HASMSX103.ger.corp.intel.com>
- <52163589.4080701@metafoo.de>
-In-Reply-To: <52163589.4080701@metafoo.de>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <holler@ahsoftware.de>
+Message-ID: <521DF395.1060502@ahsoftware.de>
+Date: Wed, 28 Aug 2013 14:56:53 +0200
+From: Alexander Holler <holler@ahsoftware.de>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: "Drubin, Daniel" <daniel.drubin@intel.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Jonathan Cameron <jic23@cam.ac.uk>,
+ "Yuniverg, Michael" <michael.yuniverg@intel.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "Haimovich, Yoav" <yoav.haimovich@intel.com>
+Subject: Re: working with IIO
+References: <0423FED8EB79934F939F077EAF96DBD717D8025F@HASMSX105.ger.corp.intel.com> <a761c167-aef3-42a3-a4bd-fa5078861dd1@email.android.com> <CE30B71206DDA24CBD6D43D23C236C034D8B11@HASMSX103.ger.corp.intel.com> <52160F47.2030403@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BAA@HASMSX103.ger.corp.intel.com> <52161D55.8090201@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8BDE@HASMSX103.ger.corp.intel.com> <521625C5.4020504@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C0B@HASMSX103.ger.corp.intel.com> <52163141.1080905@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C47@HASMSX103.ger.corp.intel.com> <52163589.4080701@metafoo.de> <CE30B71206DDA24CBD6D43D23C236C034D8C69@HASMSX103.ger.corp.intel.com>
+In-Reply-To: <CE30B71206DDA24CBD6D43D23C236C034D8C69@HASMSX103.ger.corp.intel.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGFycy1QZXRlciBDbGF1
-c2VuIFttYWlsdG86bGFyc0BtZXRhZm9vLmRlXQ0KPiBTZW50OiBUaHVyc2RheSwgQXVndXN0IDIy
-LCAyMDEzIDc6MDAgUE0NCj4gVG86IERydWJpbiwgRGFuaWVsDQo+IENjOiBKb25hdGhhbiBDYW1l
-cm9uOyBZdW5pdmVyZywgTWljaGFlbDsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsNCj4gSGFp
-bW92aWNoLCBZb2F2DQo+IFN1YmplY3Q6IFJlOiB3b3JraW5nIHdpdGggSUlPDQo+IA0KPiBPbiAw
-OC8yMi8yMDEzIDA1OjQ4IFBNLCBEcnViaW4sIERhbmllbCB3cm90ZToNCj4gPg0KPiA+DQo+ID4+
-IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IExhcnMtUGV0ZXIgQ2xhdXNl
-biBbbWFpbHRvOmxhcnNAbWV0YWZvby5kZV0NCj4gPj4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCAy
-MiwgMjAxMyA2OjQyIFBNDQo+ID4+IFRvOiBEcnViaW4sIERhbmllbA0KPiA+PiBDYzogSm9uYXRo
-YW4gQ2FtZXJvbjsgWXVuaXZlcmcsIE1pY2hhZWw7IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7
-DQo+ID4+IEhhaW1vdmljaCwgWW9hdg0KPiA+PiBTdWJqZWN0OiBSZTogd29ya2luZyB3aXRoIElJ
-Tw0KPiA+Pg0KPiA+PiBPbiAwOC8yMi8yMDEzIDA1OjE2IFBNLCBEcnViaW4sIERhbmllbCB3cm90
-ZToNCj4gPj4+IFsuLi5dDQo+ID4+Pj4+ICAgRnJvbSBwcmFjdGljYWwgUE9WIHdlIGRvbid0IGhh
-dmUgbXVjaCBjaG9pY2UgKHRpbWVsaW5lKSwgc2luY2UNCj4gPj4+Pj4gd2UgaGF2ZSB0bw0KPiA+
-Pj4+IHJldXNlIGRyaXZlciB0aGF0IGlzIGJvdW5kIHRvIElJTy4gRnJvbSBwcmluY2lwbGUgc3Rh
-bmRwb2ludCBJDQo+ID4+Pj4gc29tZWhvdyBmYWlsIHRvIHNlZSBhIHByb2JsZW0uIEl0IHNlZW1z
-IHRvIG1lIHRoYXQgYWxsIHN0YXRlDQo+ID4+Pj4gaGFuZGxpbmcgdGhhdCBhbiBJSU8gZHJpdmVy
-IG5lZWRzIHRvIGRvIGlzIHRvIGtlZXAgYXNzb2NpYXRpb25zIG9mDQo+ID4+Pj4gUElEcyB0byBz
-ZW5zb3IgcmF0ZXMsIGNvbmZpZ3VyZSBzZW5zb3IgdG8gdGhlIGhpZ2hlc3QgcmF0ZSBpbiB0aGUN
-Cj4gPj4+PiBsaXN0IGFuZCByZXBsaWNhdGUgc2hhcmVkIGRhdGEgYXQgcmF0ZXMgcmVxdWVzdGVk
-IGJ5IHRoZSBjbGllbnRzLg0KPiA+Pj4+IFdoZW4gYSBmaWxlIGRlc2NyaXB0b3IgaXMgY2xvc2Vk
-IChkdWUgdG8gcHJvY2VzcyB0ZXJtaW5hdGlvbiBvcg0KPiA+Pj4+IGFub3RoZXIgcmVhc29ucyks
-IHRoZSBhY3R1YWwgc2Vuc29yIGlzIHJlLWNvbmZpZ3VyZWQgd2l0aA0KPiA+Pj4+IG5leHQtaGln
-aGVzdCByYXRlIGFtb25nIHRoZSBvcGVuDQo+ID4+IEZEcy4NCj4gPj4+Pg0KPiA+Pj4+IEJ1dCB5
-b3UgY2FuJ3QgdHJhY2sgdGhlIGNvbmZpZ3VyZWQgcmF0ZSBwZXIgUElEIHdpdGggdGhlIGN1cnJl
-bnQgQVBJLg0KPiA+Pj4+IFRoYXQncyB3aHkgSSBrZWVwIHNheWluZyB0aGF0IHRoZSBBUEkgaXMg
-c3RhdGVsZXNzLiBZb3UgY2FuIG5vdA0KPiA+Pj4+IHRyYWNrIHN0YXRlIHBlciBhcHBsaWNhdGlv
-biB3aXRob3V0IGludmVudGluZyBhIG5ldyBBUEkuDQo+ID4+Pg0KPiA+Pj4gV2h5IGNhbid0IEkg
-ZHVyaW5nIGtlZXAgYSBsaXN0IG9mIFBJRHMgdGhhdCBjdXJyZW50bHkgdXNlIGEgc2Vuc29yDQo+
-ID4+PiBhbmQgcmVjb3JkDQo+ID4+IGN1cnJlbnQtPnBpZCB0b2dldGhlciB3aXRoICJkZWZhdWx0
-IiByYXRlIGR1cmluZyB0aGUgZmlyc3Qgc2FtcGxpbmcNCj4gPj4gY3VycmVudC0+cmVxdWVzdA0K
-PiA+PiB0aGF0IGRvZXNuJ3QgaGF2ZSBhIG1hdGNoaW5nIFBJRCwgYW5kIGluIHdyaXRlX3Jhdygp
-IGhhbmRsZXIgdGhhdA0KPiA+PiB1cGRhdGVzIHJhdGUgbWF0Y2ggdGhhdCBjdXJyZW50LT5waWQg
-YWdhaW5zdCBsaXN0IG9mIHJlY29yZGVkIFBJRHM/IEkNCj4gPj4gZGlkbid0IHNlZSBhIHBvc3Np
-YmlsaXR5IHRoYXQgc2Vuc29yIGRyaXZlcidzIGhhbmRsZXIgbWF5IGdldCBjYWxsZWQNCj4gPj4g
-aW4gYSBkaWZmZXJlbnQgY29udGV4dCB0aGFuIElJTyBjb3JlIGZvcHMgaGFuZGxlci4NCj4gPj4N
-Cj4gPj4gU28gZWFjaCB0aW1lIGEgcHJvY2VzcyB3cml0ZXMgdG8gYSBJSU8gc3lzZnMgZmlsZSB5
-b3Ugd2FudCB0byByZWNvcmQNCj4gPj4gd2hpY2ggdmFsdWUgdGhhdCBhcHBsaWNhdGlvbiB3cm90
-ZS4gU28gd2hlbiBJIHJ1biBgZm9yIGkgaW4gYHNlcSAwDQo+ID4+IDEwMDAwMGA7IGRvIGVjaG8g
-JGkNCj4gPj4+IHNhbXBsaW5nX2ZyZXF1ZW5jeTsgZG9uZWAgSSdkIGVuZCB1cCB3aXRoIGEgbGlz
-dCB3aXRoIG9uZSBtaWxsaW9uDQo+ID4+PiBlbnRyaWVzDQo+ID4+IHdoaWNoIHdpbGwgc3RheSBp
-biB0aGUgbGlzdCBmb3JldmVyLg0KPiA+DQo+ID4gTm8sIHRoZXJlIGlzIG9ubHkgb25lIGVudHJ5
-IHBlciBQSUQuIE5leHQgdmFsdWUgdGhhdCB0aGUgc2FtZSBwcm9jZXNzDQo+IHdyaXRlcyB3aWxs
-IHJlcGxhY2UgdGhlIHByZXZpb3VzIG9uZSwgbm90IGNyZWF0ZSBhIG5ldyBlbnRyeS4gQW4gZW50
-cnkgd2lsbCBiZQ0KPiBjcmVhdGUgb25seSBpZiB0aGUgd3JpdGUgcmVxdWVzdCBhcnJpdmVkIGZy
-b20gYSBQSUQgY3VycmVudGx5IG5vdCBpbiBsaXN0Lg0KPiA+DQo+IA0KPiBBc3N1bWUgdGhhdCBl
-Y2hvIGlzIGEgL2Jpbi9lY2hvLCBub3QgYSBzaGVsbCBidWlsdC1pbiBjb21tYW5kLg0KDQpUaGVu
-IGluZGVlZCBhIG5ldyBlbnRyeSB3aWxsIGJlIGNyZWF0ZWQgMTAwMDAwIHRpbWVzLiBCdXQgYmVm
-b3JlIGNyZWF0aW5nIGEgbmV3IGluc3RhbmNlIG9mIC9iaW4vZWNobywgdGhlIHByZXZpb3VzIG9u
-ZSB3aWxsIHRlcm1pbmF0ZSBjbG9zaW5nIGFsbCBmaWxlIGRlc2NyaXB0b3JzLiBBIGRldmljZSBk
-cml2ZXIgd291bGQgbWlzcyB0aGlzIGV2ZW50IGFuZCB0aHVzIGFuIGFiaWxpdHkgdG8gcmVtb3Zl
-IFBJRCBmcm9tIGxpc3Qgb25seSBpZiB0aGUgZnJhbWV3b3JrIGZvciBzb21lIHJlYXNvbiBjaG9z
-ZSB0byBiYW4gaXQgZnJvbSBrbm93aW5nLg0KDQpCZXN0IHJlZ2FyZHMsDQpEYW5pZWwNCg0KLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCkludGVsIElzcmFlbCAoNzQpIExpbWl0ZWQKClRoaXMgZS1tYWlsIGFuZCBhbnkg
-YXR0YWNobWVudHMgbWF5IGNvbnRhaW4gY29uZmlkZW50aWFsIG1hdGVyaWFsIGZvcgp0aGUgc29s
-ZSB1c2Ugb2YgdGhlIGludGVuZGVkIHJlY2lwaWVudChzKS4gQW55IHJldmlldyBvciBkaXN0cmli
-dXRpb24KYnkgb3RoZXJzIGlzIHN0cmljdGx5IHByb2hpYml0ZWQuIElmIHlvdSBhcmUgbm90IHRo
-ZSBpbnRlbmRlZApyZWNpcGllbnQsIHBsZWFzZSBjb250YWN0IHRoZSBzZW5kZXIgYW5kIGRlbGV0
-ZSBhbGwgY29waWVzLgo=
+Am 22.08.2013 18:26, schrieb Drubin, Daniel:
 
+>>>> So each time a process writes to a IIO sysfs file you want to record
+>>>> which value that application wrote. So when I run `for i in `seq 0
+>>>> 100000`; do echo $i
+>>>>> sampling_frequency; done` I'd end up with a list with one million
+>>>>> entries
+>>>> which will stay in the list forever.
+>>>
+>>> No, there is only one entry per PID. Next value that the same process
+>> writes will replace the previous one, not create a new entry. An entry will be
+>> create only if the write request arrived from a PID currently not in list.
+>>>
+>>
+>> Assume that echo is a /bin/echo, not a shell built-in command.
+> 
+> Then indeed a new entry will be created 100000 times. But before creating a new instance of /bin/echo, the previous one will terminate closing all file descriptors. A device driver would miss this event and thus an ability to remove PID from list only if the framework for some reason chose to ban it from knowing.
+
+Try
+
+sysctl kernel.pid_max
+
+So the list would be likely smaller and reused PIDs will end up with a
+funny behaviour. ;)
+
+Regards,
+
+Alexander Holler
