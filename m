@@ -1,63 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38368 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752913Ab3HCRBC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 Aug 2013 13:01:02 -0400
-Message-ID: <51FD4564.6040109@kernel.org>
-Date: Sat, 03 Aug 2013 19:01:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <naveenkrishna.ch@gmail.com>
 MIME-Version: 1.0
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-CC: linux-iio@vger.kernel.org, s.nawrocki@samsun.com,
-	Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [PATCH 2/2] iio: lps331ap: Modify in_temp_scale calculation way
-References: <1372760003-32090-1-git-send-email-j.anaszewski@samsung.com> <1372760003-32090-3-git-send-email-j.anaszewski@samsung.com>
-In-Reply-To: <1372760003-32090-3-git-send-email-j.anaszewski@samsung.com>
+In-Reply-To: <CAHfPSqD0zpR3dRDaH4c3uxHS81vYn6mPyNjCmJ6c-TC1wpZeig@mail.gmail.com>
+References: <1369031689-23189-1-git-send-email-ch.naveen@samsung.com>
+ <CAD=FV=Xppyb+Y0atygnwA8oBHmGHDx7Bit2fN12GX5Tt-Y9H1A@mail.gmail.com>
+ <519D3594.4070305@kernel.org> <CAHfPSqD0zpR3dRDaH4c3uxHS81vYn6mPyNjCmJ6c-TC1wpZeig@mail.gmail.com>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Wed, 28 Aug 2013 11:03:30 +0530
+Message-ID: <CAHfPSqDYLYDEDqEhd20e4RQP+-ciu+d6MTyOWRi8OHD29dOhSA@mail.gmail.com>
+Subject: Re: [PATCH] iio: exynos_adc: fix wrong structure extration in suspend
+ and resume
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Doug Anderson <dianders@chromium.org>, Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lars-Peter Clausen <lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/02/13 11:13, Jacek Anaszewski wrote:
-> This patch modifies the way how the in_temp_scale output value is
-> calculated. With this implementation it is more clear how the value
-> is obtained.
-> 
-> Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
-> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+On 23 May 2013 10:55, Naveen Krishna Ch <naveenkrishna.ch@gmail.com> wrote:
+> On 23 May 2013 02:46, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 05/20/2013 06:09 PM, Doug Anderson wrote:
+>>> Naveen,
+>>>
+>>> On Sun, May 19, 2013 at 11:34 PM, Naveen Krishna Chatradhi
+>>> <ch.naveen@samsung.com> wrote:
+>>>> The exynos_adc device structure was wrongly extracted from the dev*
+>>>> correcting the same.
+>>>>
+>>>> Using the regular conversion of
+>>>> struct device* -> struct platform_device* -> struct exynos_adc* seems wrong.
+>>>> Instead we should be doing
+>>>> struct device* -> struct iio_dev* -> struct exynos_adc*
+>>>>
+>>>> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+>>>> ---
+>>>>  drivers/iio/adc/exynos_adc.c | 8 ++++----
+>>>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>>
+>>> Reviewed-by: Doug Anderson <dianders@chromium.org>
+>> Applied to the fixes-togreg branch of iio.git
+>> I'll hopefully send these on to Greg before the weekend.
+> Jonathan,
+>
+> I would like to know any comments on
+>
+> https://patchwork.kernel.org/patch/2513361/
+>
+> Its been pending for a while now.
+>
+> Thanks,
+> Naveen
+Ping
+Any comments please
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>
+>
+>
+> --
+> Shine bright,
+> (: Nav :)
 
-The fix (patch 1) has worked it's way through now to IIOs upstream so
-this patch has now been added to the togreg branch of iio.git.
 
-Thanks,
 
-Jonathan
-
-> ---
->  drivers/iio/pressure/st_pressure_core.c |    5 ++++-
->  1 files changed, 4 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index 89eb40a..09d94a6 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -31,6 +31,9 @@
->  #define ST_PRESS_LSB_PER_MBAR			4096UL
->  #define ST_PRESS_KPASCAL_NANO_SCALE		(100000000UL / \
->  						 ST_PRESS_LSB_PER_MBAR)
-> +#define ST_PRESS_LSB_PER_CELSIUS		480UL
-> +#define ST_PRESS_CELSIUS_NANO_SCALE		(1000000000UL / \
-> +						 ST_PRESS_LSB_PER_CELSIUS)
->  #define ST_PRESS_NUMBER_DATA_CHANNELS		1
->  
->  /* DEFAULT VALUE FOR SENSORS */
-> @@ -53,8 +56,8 @@
->  #define ST_PRESS_1_FS_ADDR			0x23
->  #define ST_PRESS_1_FS_MASK			0x30
->  #define ST_PRESS_1_FS_AVL_1260_VAL		0x00
-> -#define ST_PRESS_1_FS_AVL_TEMP_GAIN		2083000
->  #define ST_PRESS_1_FS_AVL_1260_GAIN		ST_PRESS_KPASCAL_NANO_SCALE
-> +#define ST_PRESS_1_FS_AVL_TEMP_GAIN		ST_PRESS_CELSIUS_NANO_SCALE
->  #define ST_PRESS_1_BDU_ADDR			0x20
->  #define ST_PRESS_1_BDU_MASK			0x04
->  #define ST_PRESS_1_DRDY_IRQ_ADDR		0x22
-> 
+-- 
+Shine bright,
+(: Nav :)
