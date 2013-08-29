@@ -1,39 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37273 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753675Ab3H2VhS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Aug 2013 17:37:18 -0400
-Date: Thu, 29 Aug 2013 14:39:41 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers and cleanups for 3.12 - set 3
-Message-ID: <20130829213941.GD24433@kroah.com>
-References: <521FBD27.8000501@kernel.org>
- <521FBDF4.9000106@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46885 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752954Ab3H2UWd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Aug 2013 16:22:33 -0400
+Message-ID: <521FBB99.3040205@kernel.org>
+Date: Thu, 29 Aug 2013 22:22:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <521FBDF4.9000106@kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.11 - set 4
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 29, 2013 at 10:32:36PM +0100, Jonathan Cameron wrote:
-> Hi Greg,
-> 
-> Just thought I'd add a note to say I appreciate that we are late in the
-> current cycle so if you would rather hold these for now that is fine.  I have
-> warned a few people already that these might not go into mainline for a cycle.
-> There is nothing particularly controversial in here though.
+The following changes since commit d8dfad3876e4386666b759da3c833d62fb8b2267:
 
-They all looked fine, so I took them.
+  Linux 3.11-rc7 (2013-08-25 17:43:22 -0700)
 
-> Linus is being particularly uninformative on his view on when the merge window
-> might open this time around as far as I can see.
+are available in the git repository at:
 
-Yeah, I don't really know either.  3.11 could be cut today for all I
-care, it looks good to me, but I haven't been paying too much attention
-to any overall issues that are outside of my maintainer areas.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.11d
 
-thanks,
+for you to fetch changes up to 947b8ec78610fdfd891da249629f79cfa8e5da57:
 
-greg k-h
+  iio: at91: fix adc_clk overflow (2013-08-29 21:42:11 +0100)
+
+----------------------------------------------------------------
+4th round of fixes for IIO in the 3.11 series.
+
+Another one patch pull request, this one for an overflow issue that
+can occur in the at91 adc driver.
+
+----------------------------------------------------------------
+Josh Wu (1):
+      iio: at91: fix adc_clk overflow
+
+ drivers/iio/adc/at91_adc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
