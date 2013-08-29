@@ -1,182 +1,83 @@
-Return-Path: <mark.rutland@arm.com>
-Date: Thu, 8 Aug 2013 14:40:46 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Josh Wu <josh.wu@atmel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-   Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-   "nicolas.ferre@atmel.com" <nicolas.ferre@atmel.com>,
-   "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-   "maxime.ripard@free-electrons.com" <maxime.ripard@free-electrons.com>,
-   "plagnioj@jcrosoft.com" <plagnioj@jcrosoft.com>,
-   "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 5/5] iio: at91: introduce touch screen support in iio
- adc driver
-Message-ID: <20130808134046.GN14648@e106331-lin.cambridge.arm.com>
-References: <1373789069-11604-1-git-send-email-josh.wu@atmel.com>
- <1373789069-11604-6-git-send-email-josh.wu@atmel.com>
- <20130722131747.GA32221@e106331-lin.cambridge.arm.com>
- <51F0DA36.3090608@atmel.com>
- <20130725164503.GB22291@e106331-lin.cambridge.arm.com>
- <5200CECE.7030804@atmel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from eu1sys200aog119.obsmtp.com ([207.126.144.147]:55039 "EHLO
+	eu1sys200aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753117Ab3H2PZW convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 29 Aug 2013 11:25:22 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lukasz Czerwinski <l.czerwinski@samsung.com>,
+	lee Jones <lee.jones@linaro.org>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree-discuss@lists.ozlabs.org"
+	<devicetree-discuss@lists.ozlabs.org>
+Date: Thu, 29 Aug 2013 17:25:03 +0200
+Subject: Re: [PATCH 0/4]iio: STMicroelectronics DT and event support
+Message-ID: <521F67CF.4060702@st.com>
+References: <1372767338-13179-1-git-send-email-l.czerwinski@samsung.com>
+In-Reply-To: <1372767338-13179-1-git-send-email-l.czerwinski@samsung.com>
+Content-Type: text/plain; charset=US-ASCII
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5200CECE.7030804@atmel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 06, 2013 at 11:24:14AM +0100, Josh Wu wrote:
-> Dear Mark
-> 
-> Thanks for the detailed comment. Check mine in below:
-> 
-> On 7/26/2013 12:45 AM, Mark Rutland wrote:
-> > On Thu, Jul 25, 2013 at 08:56:38AM +0100, Josh Wu wrote:
-> >> Hi, Dear Mark
-> >>
-> >> On 7/22/2013 9:17 PM, Mark Rutland wrote:
-> >>> On Sun, Jul 14, 2013 at 09:04:29AM +0100, Josh Wu wrote:
-> >>>> AT91 ADC hardware integrate touch screen support. So this patch add touch
-> >>>> screen support for at91 adc iio driver.
-> >>>> To enable touch screen support in adc, you need to add the dt parameters:
-> >>>>     which type of touch are used? (4 or 5 wires), sample period time,
-> >>>>     pen detect debounce time, average samples and pen detect resistor.
-> >>>>
-> >>>> In the meantime, since touch screen will use a interal period trigger of adc,
-> >>>> so it is conflict to other hardware triggers. Driver will disable the hardware
-> >>>> trigger support if touch screen is enabled.
-> >>>>
-> >>>> This driver has been tested in AT91SAM9X5-EK and SAMA5D3x-EK.
-> >>>>
-> >>>> Signed-off-by: Josh Wu <josh.wu@atmel.com>
-> >>>> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> >>>> ---
-> >>>>    .../devicetree/bindings/arm/atmel-adc.txt          |   13 +
-> >>>>    arch/arm/mach-at91/include/mach/at91_adc.h         |   34 ++
-> >>>>    drivers/iio/adc/at91_adc.c                         |  389 ++++++++++++++++++--
-> >>>>    3 files changed, 412 insertions(+), 24 deletions(-)
-> >>>>
-> >>>> diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-> >>>> index 0db2945..925d656 100644
-> >>>> --- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
-> >>>> +++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
-> >>>> @@ -29,6 +29,19 @@ Optional properties:
-> >>>>      - atmel,adc-sample-hold-time: Sample and Hold Time in microseconds
-> >>>>      - atmel,adc-clock-rate: ADC clock rate. If not specified, use the default
-> >>>>                             adc_op_clk.
-> >>>> +  - atmel,adc-touchscreen-wires: Number of touch screen wires. Only support
-> >>>> +                                4 and 5 wires touch screen.
-> >>> Are 4 and 5 wire configurations that can exist, or the only ones
-> >>> supported by the driver?
-> >> It can be set:
-> >>
-> >> atmel,adc-touchscreen-wires = <4>;
-> >> or
-> >> atmel,adc-touchscreen-wires = <5>;
-> >>
-> >> according to your touch screen.
-> > That doesn't answer my question.
-> >
-> > Is it possible that 3 or 6 wire configurations might exist, for example,
-> > even if not supported by this driver? Or does the design of the adc
-> > prevent this?
-> 
-> No, only 4-wire or 5-wire touch screen support in market so far.
++ Lee Jones in the loop.
 
-Ok. The point that I was trying to get at was that "Only support 4 and 5
-wires touch screen" seems to be a description of the driver rather than
-a physical limitation that should limit what we can describe in dt.
+BR,
+Denis
 
-> 
-> >
-> > Is there any documentation that might make this clearer?
-> >
-> >>>> +    NOTE: when adc touch screen enabled, the adc hardware trigger will be
-> >>>> +          disabled. Since touch screen will occupied the trigger register.
-> >>>> +  - atmel,adc-ts-pendet-debounce: Debounce time in microsecond for touch pen
-> >>>> +                                 detect.
-> >>> For consistency with the adc-touchscreen-wires property, and  other
-> >>> properties with timing information, how about
-> >>> atmel,adc-touchscreen-debounce-delay-us ?
-> >> sound nice to me.
-> > Additionally, is this likely to vary from board to board? This feels
-> > like configuration that could be done based on the compatible string...
-> >
-> >>>> +  - atmel,adc-ts-sample-period-time: Sample Period Time in microsecond for
-> >>>> +                                    touch screen
-> >>> Again, please be consistent with ts or touchscreen. It may also be good
-> >>> to have -us to make the units explicit (though it does leave the
-> >>> property name being quite a mothful):
-> >>>
-> >>> atmel,adc-touchscreen-sample-period-us ?
-> >> nice. I will use this one.
-> > Looking again at the driver code, it looks like a value derived from
-> > this eventually gets written to the hardware. Is this a fixed value at
-> > integration time, or is this a configuration value? If it's the latter,
-> > can the driver not derive a good value for this itself?
-> 
-> After a further thinking, I think it is better to remove this sample 
-> period us & pen detect debouce us.
-> Since it is a fixed value and no need to change it so far (in 
-> at91sam9x5ek, sama5d3xek).
 
-Ok.
-
-> 
-> >
-> >>>> +  - atmel,adc-ts-filter-average: Numbers of sampling data will be averaged.
-> >>>> +    0 means no average. 1 means average two samples. 2 means average four
-> >>>> +    samples. 3 means average eight samples.
-> >>> Is this averaging done in the hardware, or the kernel driver?
-> >> It is done in the hardware.
-> > Similarly, this seems to eventually get written to hardware, and thus
-> > seems more like configuration than hardware description. Why does this
-> > need to be in the DT?
-> >
-> > As an aside, in general it's nicer to describe a property as a logical
-> > value rather than the raw value that gets programmed into hardware (e.g.
-> > this property could by 2, 4, or 8 rather than 1, 2, or 4).
-> >
-> >> But for some soc, like AT91SAM9G45, hardware doesn't support hardware
-> >> average.
-> >> So I am wondering use it as for both hardware and softer average.
-> >>
-> >> BTW, you mentioned the kernel driver, do you mean a filter algorithm is
-> >> already implemented in kernel library?
-> > I do not know of any such filter algorithm in the kernel, though there
-> > may be one. I was simply confused as to what this was used for.
-> >
-> >>> If it's the latter, this can be left for the kernel to decide.
-> >>>
-> >>>> +  - atmel,adc-ts-pendet-sensitivity: Pen Detection input pull-up resistor.
-> >>>> +    It can be 0, 1, 2, 3.
-> >>> I think "pendet" is a bit opaque. "pen-detect" may be better.
-> >> yes. I'll change this.
-> >>
-> >>> What
-> >>> physical property does this represent (are these discrete values, or an
-> >>> enumeration)?
-> >> This property is supported by hardware, it can change the adc internal
-> >> resistor value for better pen detection,
-> >>        * 0 = 200 kOhm, 1 = 150 kOhm, 2 = 100 kOhm, 3 = 50 kOhm
-> >> In general, we just use default value 2 for 100kOhm.
-> > This value eventually gets written to hardware, and seems more like
-> > configuration than hardware description. Why does this need to be in the
-> > DT?
-> 
-> I am a little bit confused by the hardware configuration and hardware 
-> description.
-> It seems I prefer to put all the hardware configurable value to DT. 
-> Since I think this can be changed in DT.
-> But as you mentioned above, only the hardware description can be in DT.
-> Could you give me a more detail about the difference between hardware 
-> configuration and hardware description?
-
-It's admittedly a gray area, but the basic idea would be that anything
-we might feasibly want to change the value of later shouldn't go into
-the DT, while properties of the hardware that might influence those
-decisions should be in the DT. It seems to me that the pen detect
-resistor value is something we might want to change later, if people
-found a particular touchscreen were too sensitive, for instance.
-However, maybe not.
-
-Thanks,
-Mark.
+On 07/02/2013 02:15 PM, Lukasz Czerwinski wrote:
+> Hi,
+>
+> This is the patchset that adds device tree and event subsytem support
+> for generic st_common library.
+>
+> I tested our patches with Exynos4x12 board. We tested sensors:
+> - LSM330DLC accelerometer and gyroscope (I2C)
+> - LPS331AP pressure sensor (I2C)
+>
+> Generally it works fine.
+> I couldn't implement event patch for lsm330dlc gyroscope because I
+> don't have connected INT1 pin to SoC.
+>
+> My implementation allows to use event system or triggered buffer by
+> proper declaration of irqs in device tree/platform data.
+>
+> Jacek Anaszewski (1):
+>    iio: lps331ap: Add support for DT
+>
+> Lukasz Czerwinski (3):
+>    iio: st_sensors:  Add DT bindings for st_accel and st_gyro
+>    iio: st_sensors: Add threshold events support
+>    iio: accel: Add event subsystem to st_accel driver
+>
+>   .../bindings/iio/accelerometer/st_accel.txt        |   54 +++++
+>   .../devicetree/bindings/iio/gyroscope/st_gyro.txt  |   51 +++++
+>   .../bindings/iio/pressure/st_pressure.txt          |   41 ++++
+>   drivers/iio/accel/st_accel.h                       |   19 +-
+>   drivers/iio/accel/st_accel_core.c                  |  159 +++++++++++++-
+>   drivers/iio/accel/st_accel_i2c.c                   |   19 +-
+>   drivers/iio/accel/st_accel_spi.c                   |   19 +-
+>   drivers/iio/common/st_sensors/st_sensors_core.c    |  225 +++++++++++++++++++-
+>   drivers/iio/common/st_sensors/st_sensors_i2c.c     |   59 ++++-
+>   drivers/iio/common/st_sensors/st_sensors_spi.c     |   59 ++++-
+>   drivers/iio/gyro/st_gyro.h                         |   15 +-
+>   drivers/iio/gyro/st_gyro_core.c                    |    8 +-
+>   drivers/iio/gyro/st_gyro_i2c.c                     |   18 +-
+>   drivers/iio/gyro/st_gyro_spi.c                     |   18 +-
+>   drivers/iio/magnetometer/st_magn.h                 |    3 +-
+>   drivers/iio/magnetometer/st_magn_core.c            |    5 +-
+>   drivers/iio/magnetometer/st_magn_i2c.c             |    2 +-
+>   drivers/iio/magnetometer/st_magn_spi.c             |    2 +-
+>   drivers/iio/pressure/st_pressure.h                 |    3 +-
+>   drivers/iio/pressure/st_pressure_core.c            |   12 +-
+>   drivers/iio/pressure/st_pressure_i2c.c             |   11 +-
+>   drivers/iio/pressure/st_pressure_spi.c             |   11 +-
+>   include/linux/iio/common/st_sensors.h              |   88 +++++++-
+>   include/linux/platform_data/st_sensors_pdata.h     |    2 +
+>   24 files changed, 837 insertions(+), 66 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/iio/accelerometer/st_accel.txt
+>   create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/st_gyro.txt
+>   create mode 100644 Documentation/devicetree/bindings/iio/pressure/st_pressure.txt
+>
