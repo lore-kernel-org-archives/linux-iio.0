@@ -1,127 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f54.google.com ([209.85.160.54]:49999 "EHLO
-	mail-pb0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753286Ab3HaRNL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Aug 2013 13:13:11 -0400
-Received: by mail-pb0-f54.google.com with SMTP id ro12so3096605pbb.13
-        for <linux-iio@vger.kernel.org>; Sat, 31 Aug 2013 10:13:10 -0700 (PDT)
+Received: from mail-pb0-f47.google.com ([209.85.160.47]:34932 "EHLO
+	mail-pb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753286Ab3HaRNI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Aug 2013 13:13:08 -0400
+Received: by mail-pb0-f47.google.com with SMTP id rr4so3094007pbb.34
+        for <linux-iio@vger.kernel.org>; Sat, 31 Aug 2013 10:13:07 -0700 (PDT)
 From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org,
-	Roland Stigge <stigge@antcom.de>
-Subject: [PATCH 8/9] staging: iio: lpc32xx_adc: Use devm_* APIs
-Date: Sat, 31 Aug 2013 22:42:38 +0530
-Message-Id: <1377969159-2491-8-git-send-email-sachin.kamat@linaro.org>
+Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org
+Subject: [PATCH 7/9] staging: iio: ad799x_core: Use devm_* APIs
+Date: Sat, 31 Aug 2013 22:42:37 +0530
+Message-Id: <1377969159-2491-7-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1377969159-2491-1-git-send-email-sachin.kamat@linaro.org>
 References: <1377969159-2491-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 devm_* APIs are device managed and make code simpler.
-This also fixes an error in return type during clk_get
-failure.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Roland Stigge <stigge@antcom.de>
 ---
- drivers/staging/iio/adc/lpc32xx_adc.c |   49 +++++++++-----------------------
- 1 files changed, 14 insertions(+), 35 deletions(-)
+ drivers/staging/iio/adc/ad799x_core.c |   16 +++++-----------
+ 1 files changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/lpc32xx_adc.c b/drivers/staging/iio/adc/lpc32xx_adc.c
-index 9a4bb09..ce7ff3e 100644
---- a/drivers/staging/iio/adc/lpc32xx_adc.c
-+++ b/drivers/staging/iio/adc/lpc32xx_adc.c
-@@ -137,43 +137,39 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		dev_err(&pdev->dev, "failed to get platform I/O memory\n");
--		retval = -EBUSY;
--		goto errout1;
-+		return -EBUSY;
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 2b2049c..3f5142b 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -586,8 +586,9 @@ static int ad799x_probe(struct i2c_client *client,
+ 	int ret;
+ 	struct ad799x_platform_data *pdata = client->dev.platform_data;
+ 	struct ad799x_state *st;
+-	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	struct iio_dev *indio_dev;
+ 
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+@@ -606,11 +607,11 @@ static int ad799x_probe(struct i2c_client *client,
+ 
+ 	st->int_vref_mv = pdata->vref_mv;
+ 
+-	st->reg = regulator_get(&client->dev, "vcc");
++	st->reg = devm_regulator_get(&client->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+-			goto error_put_reg;
++			return ret;
  	}
+ 	st->client = client;
  
--	iodev = iio_device_alloc(sizeof(struct lpc32xx_adc_info));
--	if (!iodev) {
--		dev_err(&pdev->dev, "failed allocating iio device\n");
--		retval = -ENOMEM;
--		goto errout1;
--	}
-+	iodev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-+	if (!iodev)
-+		return -ENOMEM;
+@@ -650,10 +651,6 @@ error_cleanup_ring:
+ error_disable_reg:
+ 	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+-error_put_reg:
+-	if (!IS_ERR(st->reg))
+-		regulator_put(st->reg);
+-	iio_device_free(indio_dev);
  
- 	info = iio_priv(iodev);
- 
--	info->adc_base = ioremap(res->start, resource_size(res));
-+	info->adc_base = devm_ioremap(&pdev->dev, res->start,
-+						resource_size(res));
- 	if (!info->adc_base) {
- 		dev_err(&pdev->dev, "failed mapping memory\n");
--		retval = -EBUSY;
--		goto errout2;
-+		return -EBUSY;
- 	}
- 
--	info->clk = clk_get(&pdev->dev, NULL);
-+	info->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(info->clk)) {
- 		dev_err(&pdev->dev, "failed getting clock\n");
--		goto errout3;
-+		return PTR_ERR(info->clk);
- 	}
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if ((irq < 0) || (irq >= NR_IRQS)) {
- 		dev_err(&pdev->dev, "failed getting interrupt resource\n");
--		retval = -EINVAL;
--		goto errout4;
-+		return -EINVAL;
- 	}
- 
--	retval = request_irq(irq, lpc32xx_adc_isr, 0, MOD_NAME, info);
-+	retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
-+								MOD_NAME, info);
- 	if (retval < 0) {
- 		dev_err(&pdev->dev, "failed requesting interrupt\n");
--		goto errout4;
-+		return retval;
- 	}
- 
- 	platform_set_drvdata(pdev, iodev);
-@@ -189,35 +185,18 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
- 
- 	retval = iio_device_register(iodev);
- 	if (retval)
--		goto errout5;
-+		return retval;
- 
- 	dev_info(&pdev->dev, "LPC32XX ADC driver loaded, IRQ %d\n", irq);
- 
- 	return 0;
--
--errout5:
--	free_irq(irq, info);
--errout4:
--	clk_put(info->clk);
--errout3:
--	iounmap(info->adc_base);
--errout2:
--	iio_device_free(iodev);
--errout1:
--	return retval;
+ 	return ret;
  }
+@@ -668,12 +665,9 @@ static int ad799x_remove(struct i2c_client *client)
+ 		free_irq(client->irq, indio_dev);
  
- static int lpc32xx_adc_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *iodev = platform_get_drvdata(pdev);
--	struct lpc32xx_adc_info *info = iio_priv(iodev);
--	int irq = platform_get_irq(pdev, 0);
- 
- 	iio_device_unregister(iodev);
--	free_irq(irq, info);
--	clk_put(info->clk);
--	iounmap(info->adc_base);
--	iio_device_free(iodev);
+ 	ad799x_ring_cleanup(indio_dev);
+-	if (!IS_ERR(st->reg)) {
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+-		regulator_put(st->reg);
+-	}
+ 	kfree(st->rx_buf);
+-	iio_device_free(indio_dev);
  
  	return 0;
  }
