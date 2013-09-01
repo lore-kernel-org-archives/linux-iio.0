@@ -1,45 +1,90 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5228DAC9.8070804@metafoo.de>
-Date: Thu, 05 Sep 2013 21:26:01 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53925 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752181Ab3IAUfE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Sep 2013 16:35:04 -0400
+Message-ID: <5223B305.3090802@kernel.org>
+Date: Sun, 01 Sep 2013 22:35:01 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
+CC: linux-iio@vger.kernel.org, lars@metafoo.de
 Subject: Re: [PATCH V2 0/5] IIO: Refactor info_mask* and ext_info handling
  and introduce info_mask_shared_[by_all/by_type]
 References: <1376841012-7542-1-git-send-email-jic23@kernel.org>
 In-Reply-To: <1376841012-7542-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/18/2013 05:50 PM, Jonathan Cameron wrote:
+If anyone has a chance to review this series, particularly patches 2 and 3 that
+would be a great help!
+
+Thanks,
+
+Jonathan
+
+On 08/18/13 16:50, Jonathan Cameron wrote:
 > Changes since V1.
 > 1) Deal with ext_info as well as the info_mask.
->     In the previous set things sort of worked by coincidence of the ordering
->     in the enum.  This version handles this cleanly.
+>    In the previous set things sort of worked by coincidence of the ordering
+>    in the enum.  This version handles this cleanly.
 > 2) Dropped the bonus const in tmp006.
->
+> 
 > Original message :
->
+> 
 > This series first performs a bit of refactoring of the core handling
 > of info_mask_separate and info_mask_shared_by_type.
->
+> 
 > Next we introduce info_mask_shared_by_dir and info_mask_shared_by_all
 > to allow for attributes of the form
->
+> 
 > in_sampling_frequency or sampling_frequency as appropriate.
->
+> 
 > Most existing drivers will make no use of the shared_by_dir
 > case, but it is there to handle devices with both and input and
 > output channels.
->
+> 
 > There are two main reasons for adding these two cases.
 > 1) Should result in shorter code, particularly for complex drivers.
 > 2) Allows for in kernel consumers accessing this functionality.
->
+> 
 > The intent is to follow this series with one providing a standard
 > way of providing 'available' attributes.  The combination of the
 > two should mean that very few things are still handled via direct
 > registration of attributes.
-
-Makes sense and looks good, except for that enum formating issue.
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> 
+> 
+> Jonathan Cameron (5):
+>   iio: drop info_mask from struct iio_dev
+>   iio: refactor info mask and ext_info attribute creation.
+>   iio: add info_mask_[shared_by_dir/shared_by_all]
+>   staging:iio: dummy driver additions to show shared_by_dir infomask
+>     usage
+>   iio:temperature:tmp006 put sampling_frequency in
+>     info_mask_shared_by_all
+> 
+>  drivers/iio/dac/ad5064.c               |   3 +-
+>  drivers/iio/dac/ad5380.c               |   4 +-
+>  drivers/iio/dac/ad5446.c               |   3 +-
+>  drivers/iio/dac/ad5504.c               |   4 +-
+>  drivers/iio/dac/ad5624r_spi.c          |   4 +-
+>  drivers/iio/dac/ad5686.c               |   3 +-
+>  drivers/iio/dac/ad5755.c               |   1 +
+>  drivers/iio/dac/ad5791.c               |   5 +-
+>  drivers/iio/dac/ad7303.c               |   1 +
+>  drivers/iio/dac/mcp4725.c              |   3 +-
+>  drivers/iio/frequency/adf4350.c        |   1 +
+>  drivers/iio/iio_core.h                 |   2 +-
+>  drivers/iio/industrialio-buffer.c      |   2 +-
+>  drivers/iio/industrialio-core.c        | 179 ++++++++++++++++++++-------------
+>  drivers/iio/temperature/tmp006.c       |  57 +++++------
+>  drivers/staging/iio/iio_simple_dummy.c |  16 +++
+>  include/linux/iio/iio.h                |  24 +++--
+>  17 files changed, 195 insertions(+), 117 deletions(-)
+> 
