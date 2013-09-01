@@ -1,90 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f175.google.com ([209.85.215.175]:46129 "EHLO
-	mail-ea0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757183Ab3IALHU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Sep 2013 07:07:20 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
-Subject: =?UTF-8?q?=5BPATCH=201/2=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
-Date: Sun,  1 Sep 2013 12:07:12 +0100
-Message-Id: <1378033633-26301-2-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1378033633-26301-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1378033633-26301-1-git-send-email-zubair.lutfullah@gmail.com>
+Received: from mail-oa0-f43.google.com ([209.85.219.43]:34501 "EHLO
+	mail-oa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751772Ab3IAFv5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Sep 2013 01:51:57 -0400
+Received: by mail-oa0-f43.google.com with SMTP id i10so4029422oag.16
+        for <linux-iio@vger.kernel.org>; Sat, 31 Aug 2013 22:51:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <52223664.7000803@kernel.org>
+References: <1377969159-2491-1-git-send-email-sachin.kamat@linaro.org>
+	<52223664.7000803@kernel.org>
+Date: Sun, 1 Sep 2013 11:21:54 +0530
+Message-ID: <CAK9yfHy_NR=dMr2j2wPVks3PX79U04J5eBSmkOku+949sZZm4g@mail.gmail.com>
+Subject: Re: [PATCH 1/9] staging: iio: ad7192: Use devm_* APIs
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Enable shared IRQ to allow ADC to share IRQ line from
-parent MFD core. Only FIFO0 IRQs are for TSC and handled
-on the TSC side.
+On 1 September 2013 00:01, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 08/31/13 18:12, Sachin Kamat wrote:
+>> devm_* APIs are device managed and make code simpler.
+>>
+>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+>> ---
+>> This series is compile tested and based on togreg branch
+>> of iio tree.
+>
+> Just to note, there is a memory leak fixed by this patch as well
+> as the remove function didn't free the struct iio_dev before.
 
-Step mask would be updated from cached variable only previously.
-In rare cases when both TSC and ADC are used, the cached
-variable gets mixed up.
-The step mask is written with the required mask every time.
+Yes. I forgot to mention that in the commit log. Thanks for noticing.
 
-Rachna Patil (TI) laid ground work for shared IRQ.
+>
+> Thanks for these Sachin.  All look good to me.
+> I won't take them today as effectively IIO for 3.12 is now
+> closed, as I doubt we'll see more than one more rc on
+> 3.11, and others may want to have time to look through these.
 
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+I wasn't aware of it, sorry.
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e1c5300..24e625c 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			config_inp[4];
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
-+	u32			step_mask;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	/* The steps1 … end and bit 0 for TS_Charge */
- 	stepenable = (1 << (end_step + 2)) - 1;
--	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
-+	ts_dev->step_mask = stepenable;
-+	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- }
- 
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
-+	/*
-+	 * ADC and touchscreen share the IRQ line.
-+	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
-+	 */
- 	if (status & IRQENB_FIFO0THRES) {
- 
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
-@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	if (irqclr) {
- 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
--		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- 		return IRQ_HANDLED;
- 	}
- 	return IRQ_NONE;
-@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
--			  0, pdev->dev.driver->name, ts_dev);
-+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to allocate irq.\n");
- 		goto err_free_mem;
+>
+> I'll pick them up in a few days and queue up for 3.13 assuming
+> no one spots anything I have missed.
+
+Sure. Thanks.
+
+
 -- 
-1.7.9.5
-
+With warm regards,
+Sachin
