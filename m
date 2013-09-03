@@ -1,38 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:33376 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:33386 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756373Ab3ICBFc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 2 Sep 2013 21:05:32 -0400
-Received: from sirene.lan (83-215-0-241.stadt.dyn.salzburg-online.at [83.215.0.241])
-	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: pmeerw)
-	by pmeerw.net (Postfix) with ESMTPSA id 68321C50171
-	for <linux-iio@vger.kernel.org>; Tue,  3 Sep 2013 03:05:28 +0200 (CEST)
+	id S1759235Ab3ICBFf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 2 Sep 2013 21:05:35 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Subject: [PATCH 00/18] Cleanup hmc5843 magnetometer driver in staging
-Date: Tue,  3 Sep 2013 03:05:02 +0200
-Message-Id: <1378170320-27538-1-git-send-email-pmeerw@pmeerw.net>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 18/18] staging:iio:hmc5843: Check initialization and chip identifier
+Date: Tue,  3 Sep 2013 03:05:20 +0200
+Message-Id: <1378170320-27538-19-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1378170320-27538-1-git-send-email-pmeerw@pmeerw.net>
+References: <1378170320-27538-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-some more cleanup and reorganization
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/magnetometer/hmc5843.c |   33 +++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
-patch 1 fixes a conversion bug introduced recently, sorry
-patch 5 makes use of SAMP_FREQ chan_info
-patch 8 adds helper functions to show/check int.micro pairs -- maybe 
-  useful elsewhere?
-patch 9 makes use of CALIBSCALE to adjust gain
-patch 10 forces read of all channel data, no matter how much is actually
-  needed
-patch 11 add trigger handling
-patch 13 drops the operating_mode attribute
-patch 18 adds init checks
-
- drivers/staging/iio/magnetometer/hmc5843.c |  632 +++++++++++++---------------
- 1 file changed, 297 insertions(+), 335 deletions(-)
-
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index 81783ae..915eadd 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -33,6 +33,7 @@
+ #define HMC5843_MODE_REG			0x02
+ #define HMC5843_DATA_OUT_MSB_REGS		0x03
+ #define HMC5843_STATUS_REG			0x09
++#define HMC5843_ID_REG				0x0a
+ 
+ enum hmc5843_ids {
+ 	HMC5843_ID,
+@@ -558,12 +559,30 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+ 	},
+ };
+ 
+-static void hmc5843_init(struct hmc5843_data *data)
++static int hmc5843_init(struct hmc5843_data *data)
+ {
+-	hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
+-	hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
+-	hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
+-	hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
++	int ret;
++	u8 id[3];
++
++	ret = i2c_smbus_read_i2c_block_data(data->client, HMC5843_ID_REG,
++		sizeof(id), id);
++	if (ret < 0)
++		return ret;
++	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
++		dev_err(&data->client->dev, "no HMC5843/5883/5883L sensor\n");
++		return -ENODEV;
++	}
++
++	ret = hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
++	if (ret < 0)
++		return ret;
++	ret = hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
++	if (ret < 0)
++		return ret;
++	ret = hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
++	if (ret < 0)
++		return ret;
++	return hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
+ }
+ 
+ static const struct iio_info hmc5843_info = {
+@@ -602,7 +621,9 @@ static int hmc5843_probe(struct i2c_client *client,
+ 	indio_dev->channels = data->variant->channels;
+ 	indio_dev->num_channels = 4;
+ 
+-	hmc5843_init(data);
++	ret = hmc5843_init(data);
++	if (ret < 0)
++		return ret;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 		hmc5843_trigger_handler, NULL);
 -- 
 1.7.9.5
 
