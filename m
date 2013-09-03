@@ -1,120 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:64489 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753398Ab3IETDX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 5 Sep 2013 15:03:23 -0400
-Message-ID: <5228D594.3080403@metafoo.de>
-Date: Thu, 05 Sep 2013 21:03:48 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Jon Brenner <jon.brenner@ams.com>
-Subject: Re: [PATCH v2] iio: Add tsl4531 ambient light sensor driver
-References: <1378170611-27795-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1378170611-27795-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:33409 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756373Ab3ICBIP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 2 Sep 2013 21:08:15 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Jon Brenner <jon.brenner@ams.com>
+Subject: [PATCH v2 1/2] iio: Add INT_TIME (integration time) channel info attribute
+Date: Tue,  3 Sep 2013 03:08:05 +0200
+Message-Id: <1378170486-27702-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/2013 03:10 AM, Peter Meerwald wrote:
-[...]
-> +static int tsl4531_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct tsl4531_data *data = iio_priv(indio_dev);
-> +	int int_time, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (val != 0)
-> +			return -EINVAL;
-> +		if (val2 == 400000)
-> +			int_time = 0;
-> +		else if (val2 == 200000)
-> +			int_time = 1;
-> +		else if (val2 == 100000)
-> +			int_time = 2;
-> +		else
-> +			return -EINVAL;
-> +		ret = i2c_smbus_write_byte_data(data->client,
-> +			TSL4531_CONFIG, int_time);
-> +		if (ret >= 0)
-> +			data->int_time = int_time;
+Integration time is in seconds; it controls the measurement
+time and influences the gain of a sensor.
 
-This probably needs locking to make sure that the register value and the cached 
-value stay in sync.
+There are two typical ways that scaling is implemented in a device:
+1) input amplifier,
+2) reference to the ADC is changed.
+These both result in the accuracy of the ADC varying (by applying its
+sampling over a more relevant range).
 
-> +		return ret;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-[...]
-> +static int tsl4531_check_id(struct i2c_client *client)
-> +{
-> +	int ret = i2c_smbus_read_byte_data(client, TSL4531_ID);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret >>= TSL4531_ID_SHIFT;
-> +	return ret == TSL45313_ID || ret == TSL45315_ID ||
-> +		ret == TSL45315_ID || ret == TSL45317_ID;
+Integration time is a way of dealing with noise inherent in the analog
+sensor itself.  In the case of a light sensor, a mixture of photon noise
+and device specific noise.  Photon noise is dealt with by either improving
+the efficiency of the sensor, (more photons actually captured) which is not
+easily varied dynamically, or by integrating the measurement over a longer
+time period.  Note that this can also be thought of as an averaging of a
+number of individual samples and is infact sometimes implemented this way.
+Altering integration time implies that the duration of a measurement changes,
+a fact the device's user may be interested in.
 
-nitpick: A switch statement would in my opinion looks cleaner. And you have 
-TSL45315_ID twice, but 11 is missing.
+Hence it makes sense to distinguish between integration time and simple
+scale. In some devices both types of control are present and whilst they
+will have similar effects on the amplitude of the reading, their effect
+on the noise of the measurements will differ considerably.
 
-> +}
-> +
-> +static int tsl4531_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct tsl4531_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev =  devm_iio_device_alloc(&client->dev, sizeof(*data));
+Used by adjd_s311, tsl4531, tcs3472
+The following drivers have similar controls (and could be adapted):
+* tsl2563 (integration time is controlled via CALIBSCALE among other things)
+* tsl2583 (has integration_time device_attr, but driver doesn't use channels yet)
+* tsl2x7x (has integration_time attr)
 
-extra space after the =
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Jon Brenner <jon.brenner@ams.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |   12 ++++++++++++
+ drivers/iio/industrialio-core.c         |    1 +
+ include/linux/iio/iio.h                 |    1 +
+ include/linux/iio/sysfs.h               |   15 +++++++++++++++
+ 4 files changed, 29 insertions(+)
 
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	if (!tsl4531_check_id(client)) {
-> +		dev_err(&client->dev, "no TSL4531 sensor\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, TSL4531_CONTROL,
-> +		TSL4531_MODE_NORMAL);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, TSL4531_CONFIG,
-> +		TSL4531_TCNTRL_400MS);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &tsl4531_info;
-> +	indio_dev->channels = tsl4531_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(tsl4531_channels);
-> +	indio_dev->name = TSL4531_DRV_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = iio_device_register(indio_dev);
-
-return iio_device_register(indio_dev);
-
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-[...]
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5caaab9..d75147c 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -800,3 +800,15 @@ Description:
+ 		Writing '1' stores the current device configuration into
+ 		on-chip EEPROM. After power-up or chip reset the device will
+ 		automatically load the saved configuration.
++
++What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
++What:		/sys/.../iio:deviceX/in_intensity_clear_integration_time
++What:		/sys/.../iio:deviceX/in_illuminance_integration_time
++KernelVersion:	3.12
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to get/set the integration time in
++		seconds.
++
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 97f0297..2cb4841 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -101,6 +101,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+ 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
++	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+ };
+ 
+ const struct iio_chan_spec
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 8e7a813..01edd67 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -36,6 +36,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_PHASE,
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
+ 	IIO_CHAN_INFO_HYSTERESIS,
++	IIO_CHAN_INFO_INT_TIME,
+ };
+ 
+ enum iio_endian {
+diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+index 2958c96..8a1d186 100644
+--- a/include/linux/iio/sysfs.h
++++ b/include/linux/iio/sysfs.h
+@@ -100,6 +100,21 @@ struct iio_const_attr {
+ #define IIO_CONST_ATTR_SAMP_FREQ_AVAIL(_string)			\
+ 	IIO_CONST_ATTR(sampling_frequency_available, _string)
+ 
++/**
++ * IIO_DEV_ATTR_INT_TIME_AVAIL - list available integration times
++ * @_show: output method for the attribute
++ **/
++#define IIO_DEV_ATTR_INT_TIME_AVAIL(_show)		\
++	IIO_DEVICE_ATTR(integration_time_available, S_IRUGO, _show, NULL, 0)
++/**
++ * IIO_CONST_ATTR_INT_TIME_AVAIL - list available integration times
++ * @_string: frequency string for the attribute
++ *
++ * Constant version
++ **/
++#define IIO_CONST_ATTR_INT_TIME_AVAIL(_string)		\
++	IIO_CONST_ATTR(integration_time_available, _string)
++
+ #define IIO_DEV_ATTR_TEMP_RAW(_show)			\
+ 	IIO_DEVICE_ATTR(in_temp_raw, S_IRUGO, _show, NULL, 0)
+ 
+-- 
+1.7.9.5
 
