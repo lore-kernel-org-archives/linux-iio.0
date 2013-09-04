@@ -1,70 +1,53 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Wed, 4 Sep 2013 17:33:03 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Mark Rutland <mark.rutland@arm.com>, wsa@the-dreams.de
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] Documentation: dt: i2c: Add LPS001WP to the Trivial
- Devices list
-Message-ID: <20130904163303.GC8980@lee--X1>
-References: <1378302655-13258-1-git-send-email-lee.jones@linaro.org>
- <20130904142422.GM18206@e106331-lin.cambridge.arm.com>
- <20130904151159.GA8980@lee--X1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20130904151159.GA8980@lee--X1>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:38372 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932491Ab3IDNCD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Sep 2013 09:02:03 -0400
+Received: from dude.hi.pengutronix.de ([2001:6f8:1178:2:21e:67ff:fe11:9c5c])
+	by metis.ext.pengutronix.de with esmtp (Exim 4.72)
+	(envelope-from <jbe@pengutronix.de>)
+	id 1VHCig-000132-13
+	for linux-iio@vger.kernel.org; Wed, 04 Sep 2013 15:02:02 +0200
+Received: from jbe by dude.hi.pengutronix.de with local (Exim 4.80)
+	(envelope-from <jbe@pengutronix.de>)
+	id 1VHCif-00023L-Vl
+	for linux-iio@vger.kernel.org; Wed, 04 Sep 2013 15:02:01 +0200
+From: Juergen Beisert <jbe@pengutronix.de>
+To: linux-iio@vger.kernel.org
+Subject: [RFC] staging/iio/adc: change the MXS touchscreen driver implementation
+Date: Wed,  4 Sep 2013 15:01:41 +0200
+Message-Id: <1378299706-6742-1-git-send-email-jbe@pengutronix.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Looping Wolfram back in, as I cocked up his email address.
+The following series replaces the current busy loop touchscreen implementation
+by a fully interrupt driven implementation.
 
-> Cheers for producing a binding.
-> 
-> On Wed, Sep 04, 2013 at 02:50:55PM +0100, Lee Jones wrote:
-> > LPS001WP is a Pressure and Temperature sensor.
-> > 
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  Documentation/devicetree/bindings/i2c/trivial-devices.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> > index ad6a738..6038807e6 100644
-> > --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> > +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> > @@ -57,6 +57,7 @@ st-micro,24c256		i2c serial eeprom  (24cxx)
-> >  stm,m41t00		Serial Access TIMEKEEPER
-> >  stm,m41t62		Serial real-time clock (RTC) with alarm
-> >  stm,m41t80		M41T80 - SERIAL ACCESS RTC WITH ALARMS
-> > +stm,lps001wp		Pressure and Temperature sensor
-> 
-> As I hinted at in the other thread [1], I don't think this can be
-> documented as a trivial binding -- the driver expects a couple of
-> regulators which should be described in the binding (or the driver
-> shouldn't be using them...).
+Since i.MX23 and i.Mx28 silicon is different, the existing implementation can
+be used for the i.MX28 SoC only.
 
-Surely all devices need to be powered and would subsequently require a
-regulator of one description or other? We don't really *need* to
-manually enable it on my platform but that's because it's 'always
-on', but we do anyway for completeness.
+So, the first two patches of this series move the i.MX28 specific definitions
+out of the way. Then the i.MX23 specific definitions are added, also the code
+to distinguish both SoCs at run-time.
+Up to here the existing driver will also run on an i.MX23 Soc now.
 
-Would a (regulator: vdd) note in this patch be suitable? It seems a
-shame to have to produce a boilerplate binding entry for the sake of a
-regulator.
+When the i.MX23 SoC is running from battery it seems not to be a good idea to
+run a busy loop to detect touches and their location. The fourth patch adds a
+fully interrupt driven implementation which makes use of the built-in delay
+and multiple sample features of the touchscreen controller. This will reduce
+the interrupt load to a minimum.
 
-Wolfram, what's the common procedure in cases such as these?
+The last patch in this series just removes the existing busy loop
+implementation.
 
-> Also, in the other thread the "st," prefix was used [2], while "stm," is
-> listed at the prefix in the binding. As far as I can see, "st," should
-> be used, as it's in vendor-prefixes and "stm," is not.
-> 
-> I'm happy to cook up a patch adding deprecation notes and corrected
-> strings for the existing incorrect "stm," bindings.
+Some restrictions:
 
-Sure, feel free.
+- yet tested on i.MX23 SoC only
+- touchscreen parametrisation ability is provided (with fixed values for now)
+  but should be done via device tree. Some recommendations how to define the
+  bindings would be helpful
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Comments are welcome.
+
+Juergen
+
