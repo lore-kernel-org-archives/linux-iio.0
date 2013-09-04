@@ -1,96 +1,72 @@
-Return-Path: <mark.rutland@arm.com>
-Date: Wed, 4 Sep 2013 15:08:44 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "denis.ciocca@st.com" <denis.ciocca@st.com>,
-        "arnd@arndb.de" <arnd@arndb.de>
-Subject: Re: [PATCH 02/11] ARM: ux500: Enable the LPS001WP Pressure &
- Temperature sensor from DT
-Message-ID: <20130904140844.GL18206@e106331-lin.cambridge.arm.com>
+Return-Path: <lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de,
+	linus.walleij@linaro.org,
+	denis.ciocca@st.com,
+	linux-iio@vger.kernel.org,
+	Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 01/11] ARM: ux500: Remove PrimeCell IDs from Nomadik I2C DT nodes
+Date: Wed,  4 Sep 2013 10:31:33 +0100
+Message-Id: <1378287103-21765-2-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
 References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
- <1378287103-21765-3-git-send-email-lee.jones@linaro.org>
- <20130904123850.GI18206@e106331-lin.cambridge.arm.com>
- <20130904133654.GH20150@lee--X1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20130904133654.GH20150@lee--X1>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Sep 04, 2013 at 02:36:54PM +0100, Lee Jones wrote:
-> On Wed, 04 Sep 2013, Mark Rutland wrote:
-> 
-> > Hi Lee,
-> > 
-> > On Wed, Sep 04, 2013 at 10:31:34AM +0100, Lee Jones wrote:
-> > > After applying this node the LPS001WP sensor chip should probe
-> > > successfully once the driver support has also been applied.
-> > > 
-> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > ---
-> > >  arch/arm/boot/dts/ste-snowball.dts | 10 ++++++++++
-> > >  1 file changed, 10 insertions(+)
-> > > 
-> > > diff --git a/arch/arm/boot/dts/ste-snowball.dts b/arch/arm/boot/dts/ste-snowball.dts
-> > > index cf9b16e..aad8f54 100644
-> > > --- a/arch/arm/boot/dts/ste-snowball.dts
-> > > +++ b/arch/arm/boot/dts/ste-snowball.dts
-> > > @@ -153,6 +153,16 @@
-> > >  			status = "okay";
-> > >  		};
-> > >  
-> > > +		i2c@80128000 {
-> > > +			lps001wp@5c {
-> > > +				compatible = "lps001wp";
-> > > +				reg = <0x5c>;
-> > > +
-> > > +				vdd-supply = <&ab8500_ldo_aux1_reg>;
-> > > +				vms-supply = <&db8500_vsmps2_reg>;
-> > > +			};
-> > > +		};
-> > > +
-> > 
-> > This appears to be missing a binding document. I couldn't see one
-> > anywhere in this series, or in mainline already).
-> > 
-> > As far as I can see, the compatible string should be "st,lps001wp".
-> 
-> The I2C subsystem doesn't actually care about vendor prefixes. They
-> are all stripped before use in all cases. However, I'm happy to
-> provide one if for no other reason than to stick to convention.
+Turns out that they're actually not required and the driver probes just
+fine without them. The ID is incorrect at the moment anyway. They actually
+currently specify the stn8815.
 
-I'd prefer if we did document this. Just because Linux doesn't care
-about this at the moment doesn't mean we (or another OS) might want to
-handle it differently in future. It also gives us a semblance of
-consistency.
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ arch/arm/boot/dts/ste-dbx5x0.dtsi | 5 -----
+ 1 file changed, 5 deletions(-)
 
-> 
-> > Please produce a binding document.
-> 
-> Again, I'm happy to provide a boilerplate document, but there's
-> nothing special happening here.
-
-That's not true. The names of the regulators should be documented. One
-seems to be optional for some reason.
-
-> 
-> > Is there any publicly available documentation on the chip?
-> 
-> If you Google the device name, it will be the first hit.
-
-Ok, I'll take a look.
-
-> 
-> > >  		uart@80120000 {
-> > >  			status = "okay";
-> > >  		};
-> 
-> Kind regards,
-> Lee
-
-Cheers,
-Mark.
+diff --git a/arch/arm/boot/dts/ste-dbx5x0.dtsi b/arch/arm/boot/dts/ste-dbx5x0.dtsi
+index a152945..9c01d66 100644
+--- a/arch/arm/boot/dts/ste-dbx5x0.dtsi
++++ b/arch/arm/boot/dts/ste-dbx5x0.dtsi
+@@ -531,7 +531,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80004000 0x1000>;
+ 			interrupts = <0 21 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -544,7 +543,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80122000 0x1000>;
+ 			interrupts = <0 22 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -557,7 +555,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80128000 0x1000>;
+ 			interrupts = <0 55 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -570,7 +567,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80110000 0x1000>;
+ 			interrupts = <0 12 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -583,7 +579,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x8012a000 0x1000>;
+ 			interrupts = <0 51 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+-- 
+1.8.1.2
