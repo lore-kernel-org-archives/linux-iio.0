@@ -1,64 +1,75 @@
-Return-Path: <lee.jones@linaro.org>
-From: Lee Jones <lee.jones@linaro.org>
-To: linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk
-Cc: arnd@arndb.de,
-	linus.walleij@linaro.org,
-	denis.ciocca@st.com,
-	linux-iio@vger.kernel.org,
-	Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 04/11] iio: pressure-i2c: st: Simplify error checking in probe()
-Date: Wed,  4 Sep 2013 10:31:36 +0100
-Message-Id: <1378287103-21765-5-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
-References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
+Return-Path: <jic23@kernel.org>
+In-Reply-To: <1378287103-21765-5-git-send-email-lee.jones@linaro.org>
+References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org> <1378287103-21765-5-git-send-email-lee.jones@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 04/11] iio: pressure-i2c: st: Simplify error checking in probe()
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 04 Sep 2013 17:21:07 +0100
+To: Lee Jones <lee.jones@linaro.org>,linux-arm-kernel@lists.infradead.org,linux-kernel@vger.kernel.org,jic23@cam.ac.uk
+CC: arnd@arndb.de,linus.walleij@linaro.org,denis.ciocca@st.com,linux-iio@vger.kernel.org
+Message-ID: <19108ebc-3e17-4b85-a82c-c55132443a6f@email.android.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Strip out all the unnecessary gotos and check for NULL returns in the
-usual manner.
+Hi Lee. This won't apply as this driver has already been cleaned up using devm_iio_device_alloc.
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/iio/pressure/st_pressure_i2c.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+Guessing you are basing on an old tree? 
+Always use at least staging-next for IIO patches.
 
-diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-index 7cebcc7..2ace770 100644
---- a/drivers/iio/pressure/st_pressure_i2c.c
-+++ b/drivers/iio/pressure/st_pressure_i2c.c
-@@ -26,10 +26,8 @@ static int st_press_i2c_probe(struct i2c_client *client,
- 	int err;
- 
- 	indio_dev = iio_device_alloc(sizeof(*pdata));
--	if (indio_dev == NULL) {
--		err = -ENOMEM;
--		goto iio_device_alloc_error;
--	}
-+	if (!indio_dev)
-+		return -ENOMEM;
- 
- 	pdata = iio_priv(indio_dev);
- 	pdata->dev = &client->dev;
-@@ -37,15 +35,12 @@ static int st_press_i2c_probe(struct i2c_client *client,
- 	st_sensors_i2c_configure(indio_dev, client, pdata);
- 
- 	err = st_press_common_probe(indio_dev);
--	if (err < 0)
--		goto st_press_common_probe_error;
-+	if (err < 0) {
-+		iio_device_free(indio_dev);
-+		return err;
-+	}
- 
- 	return 0;
--
--st_press_common_probe_error:
--	iio_device_free(indio_dev);
--iio_device_alloc_error:
--	return err;
- }
- 
- static int st_press_i2c_remove(struct i2c_client *client)
+I think this one will hit mainline in next few days.
+
+Jonathan
+
+Lee Jones <lee.jones@linaro.org> wrote:
+>Strip out all the unnecessary gotos and check for NULL returns in the
+>usual manner.
+>
+>Signed-off-by: Lee Jones <lee.jones@linaro.org>
+>---
+> drivers/iio/pressure/st_pressure_i2c.c | 17 ++++++-----------
+> 1 file changed, 6 insertions(+), 11 deletions(-)
+>
+>diff --git a/drivers/iio/pressure/st_pressure_i2c.c
+>b/drivers/iio/pressure/st_pressure_i2c.c
+>index 7cebcc7..2ace770 100644
+>--- a/drivers/iio/pressure/st_pressure_i2c.c
+>+++ b/drivers/iio/pressure/st_pressure_i2c.c
+>@@ -26,10 +26,8 @@ static int st_press_i2c_probe(struct i2c_client
+>*client,
+> 	int err;
+> 
+> 	indio_dev = iio_device_alloc(sizeof(*pdata));
+>-	if (indio_dev == NULL) {
+>-		err = -ENOMEM;
+>-		goto iio_device_alloc_error;
+>-	}
+>+	if (!indio_dev)
+>+		return -ENOMEM;
+> 
+> 	pdata = iio_priv(indio_dev);
+> 	pdata->dev = &client->dev;
+>@@ -37,15 +35,12 @@ static int st_press_i2c_probe(struct i2c_client
+>*client,
+> 	st_sensors_i2c_configure(indio_dev, client, pdata);
+> 
+> 	err = st_press_common_probe(indio_dev);
+>-	if (err < 0)
+>-		goto st_press_common_probe_error;
+>+	if (err < 0) {
+>+		iio_device_free(indio_dev);
+>+		return err;
+>+	}
+> 
+> 	return 0;
+>-
+>-st_press_common_probe_error:
+>-	iio_device_free(indio_dev);
+>-iio_device_alloc_error:
+>-	return err;
+> }
+> 
+> static int st_press_i2c_remove(struct i2c_client *client)
+
 -- 
-1.8.1.2
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
