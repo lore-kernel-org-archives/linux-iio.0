@@ -1,48 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37931 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751452Ab3IHNcg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Sep 2013 09:32:36 -0400
-Message-ID: <522C8A8C.1020206@kernel.org>
-Date: Sun, 08 Sep 2013 15:32:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	"J. August Brenner" <jbrenner@taosinc.com>
-Subject: Re: [PATCH 02/12] staging: iio: tsl2583: Use devm_iio_device_alloc
-References: <1378373397-22919-1-git-send-email-sachin.kamat@linaro.org> <1378373397-22919-2-git-send-email-sachin.kamat@linaro.org> <522B93BB.6030703@kernel.org> <CAK9yfHwd3AcppOhF7OT81R3pOUNwpYZt1U1DW+=tggzx=oU7Xw@mail.gmail.com>
-In-Reply-To: <CAK9yfHwd3AcppOhF7OT81R3pOUNwpYZt1U1DW+=tggzx=oU7Xw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-kernel@vger.kernel.org,
+	wsa@the-dreams.de
+Cc: jic23@cam.ac.uk,
+	linux-iio@vger.kernel.org,
+	mark.rutland@arm.com,
+	Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH] Documentation: dt: i2c: Add LPS001WP to the Trivial Devices list
+Date: Wed,  4 Sep 2013 14:50:55 +0100
+Message-Id: <1378302655-13258-1-git-send-email-lee.jones@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/08/13 14:14, Sachin Kamat wrote:
-> Hi Jonathan,
-> 
-> On 8 September 2013 02:29, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 09/05/13 10:29, Sachin Kamat wrote:
->>> devm_iio_device_alloc makes the code simple. While at it also
->>> fixed an uninitialized return with -EINVAL.
->>>
->>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->>> Cc: J. August Brenner <jbrenner@taosinc.com>
->> Applied to the togreg branch of iio.git.  Jon mentioned he was very
->> busy so I won't wait for his feedback on this.  Ideally this would have
->> been two patches, the fix and the devm stuff on top of that so that
->> we could push the fix into stable if anyone cares.  Here it is obscure
->> enough I doubt anyone ever will so never mind.
-> 
-> I can probably still do that. Create a patch just to fix this on top
-> of your fixes branch which can go into
-> 3.12-rc and below. But you may have to resolve a conflict (I believe
-> this one might give) when you merge
-> it with your togreg branch. Let me know your opinion in any case.
-Don't worry about it.  It is pretty obscure and we don't know if anyone
-has ever actually hit it!
-> 
->>
->> Applied to the togreg branch of iio.git
-> 
-> Thanks for applying this and all others :)
-> 
+LPS001WP is a Pressure and Temperature sensor.
+
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index ad6a738..6038807e6 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -57,6 +57,7 @@ st-micro,24c256		i2c serial eeprom  (24cxx)
+ stm,m41t00		Serial Access TIMEKEEPER
+ stm,m41t62		Serial real-time clock (RTC) with alarm
+ stm,m41t80		M41T80 - SERIAL ACCESS RTC WITH ALARMS
++stm,lps001wp		Pressure and Temperature sensor
+ taos,tsl2550		Ambient Light Sensor with SMBUS/Two Wire Serial Interface
+ ti,tsc2003		I2C Touch-Screen Controller
+ ti,tmp102		Low Power Digital Temperature Sensor with SMBUS/Two Wire Serial Interface
+-- 
+1.8.1.2
