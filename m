@@ -1,68 +1,67 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>, "arnd@arndb.de" <arnd@arndb.de>,
-	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Wed, 4 Sep 2013 22:17:50 +0200
-Subject: Re: [PATCH 08/11] iio: pressure-core: st: Allow for number of
- channels to vary
-Message-ID: <5227956E.2050607@st.com>
+Return-Path: <lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de,
+	linus.walleij@linaro.org,
+	denis.ciocca@st.com,
+	linux-iio@vger.kernel.org,
+	Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 07/11] iio: sensors-core: st: Allow full-scale to be an optional feature
+Date: Wed,  4 Sep 2013 10:31:39 +0100
+Message-Id: <1378287103-21765-8-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
 References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
- <1378287103-21765-9-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1378287103-21765-9-git-send-email-lee.jones@linaro.org>
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
-> At the moment the number of channels specified is dictated by the first
-> sensor supported by the driver. As we add support for more sensors this
-> is likely to vary. Instead of using the ARRAY_SIZE() of the LPS331AP's
-> channel specifier we'll use a new adaptable 'struct st_sensors' element
-> instead.
->
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->   drivers/iio/pressure/st_pressure_core.c | 3 ++-
->   include/linux/iio/common/st_sensors.h   | 1 +
->   2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressu=
-re/st_pressure_core.c
-> index 423ed6a..3cf54ed 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -101,6 +101,7 @@ static const struct st_sensors st_press_sensors[] =3D=
- {
->   			[0] =3D LPS331AP_PRESS_DEV_NAME,
->   		},
->   		.ch =3D (struct iio_chan_spec *)st_press_lsp331ap_channels,
-> +		.num_ch =3D ARRAY_SIZE(st_press_lsp331ap_channels),
->   		.odr =3D {
->   			.addr =3D ST_PRESS_LPS331AP_ODR_ADDR,
->   			.mask =3D ST_PRESS_LPS331AP_ODR_MASK,
-> @@ -237,7 +238,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->   	pdata->num_data_channels =3D ST_PRESS_NUMBER_DATA_CHANNELS;
->   	pdata->multiread_bit =3D pdata->sensor->multi_read_bit;
->   	indio_dev->channels =3D pdata->sensor->ch;
-> -	indio_dev->num_channels =3D ARRAY_SIZE(st_press_lsp331ap_channels);
-> +	indio_dev->num_channels =3D pdata->sensor->num_ch;
->  =20
->   	if (pdata->sensor->fs.addr !=3D 0)
->   		pdata->current_fullscale =3D (struct st_sensor_fullscale_avl *)
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/co=
-mmon/st_sensors.h
-> index 72b2694..4aef925 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -180,6 +180,7 @@ struct st_sensors {
->   	u8 wai;
->   	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
->   	struct iio_chan_spec *ch;
-> +	int num_ch;
->   	struct st_sensor_odr odr;
->   	struct st_sensor_power pw;
->   	struct st_sensor_axis enable_axis;
+Some chips either don't support it or fail to provide adequate documentation,
+so sometimes it's impossible to enable the feature even if it is supported.
+
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++++++----
+ drivers/iio/pressure/st_pressure_core.c         |  6 ++++--
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 865b178..fc9acb7 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -209,10 +209,13 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto init_error;
+ 
+-	err = st_sensors_set_fullscale(indio_dev,
+-						sdata->current_fullscale->num);
+-	if (err < 0)
+-		goto init_error;
++	if (sdata->current_fullscale) {
++		err = st_sensors_set_fullscale(indio_dev,
++					       sdata->current_fullscale->num);
++		if (err < 0)
++			goto init_error;
++	} else
++		dev_info(&indio_dev->dev, "Full-scale not possible\n");
+ 
+ 	err = st_sensors_set_odr(indio_dev, sdata->odr);
+ 	if (err < 0)
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 7ba9299..423ed6a 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -239,8 +239,10 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+ 	indio_dev->channels = pdata->sensor->ch;
+ 	indio_dev->num_channels = ARRAY_SIZE(st_press_lsp331ap_channels);
+ 
+-	pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+-						&pdata->sensor->fs.fs_avl[0];
++	if (pdata->sensor->fs.addr != 0)
++		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
++			&pdata->sensor->fs.fs_avl[0];
++
+ 	pdata->odr = pdata->sensor->odr.odr_avl[0].hz;
+ 
+ 	err = st_sensors_init_sensor(indio_dev);
+-- 
+1.8.1.2
