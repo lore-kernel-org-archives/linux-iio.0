@@ -1,147 +1,119 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 5 Sep 2013 08:59:53 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Denis CIOCCA <denis.ciocca@st.com>
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lee Jones <lee.jones@linaro.org>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"arnd@arndb.de" <arnd@arndb.de>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>, "arnd@arndb.de" <arnd@arndb.de>,
 	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Thu, 5 Sep 2013 10:35:35 +0200
 Subject: Re: [PATCH 06/11] iio: pressure-core: st: Expand and rename
  LPS331AP's channel descriptor
-Message-ID: <20130905075953.GF8980@lee--X1>
+Message-ID: <52284257.5070802@st.com>
 References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
  <1378287103-21765-7-git-send-email-lee.jones@linaro.org>
- <522794F1.90301@st.com>
- <20130905072114.GD8980@lee--X1>
- <52283367.4070603@st.com>
+ <522794F1.90301@st.com> <20130905072114.GD8980@lee--X1>
+ <52283367.4070603@st.com> <20130905075953.GF8980@lee--X1>
+In-Reply-To: <20130905075953.GF8980@lee--X1>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <52283367.4070603@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 05 Sep 2013, Denis CIOCCA wrote:
-
-> 
-> >>> Due to the MACRO used, the task of reading, understanding and maintaining
-> >>> the LPS331AP's channel descriptor is substantially difficult. This patch
-> >>> is based on the view that it's better to have easy to read, maintainable
-> >>> code than to save a few lines here and there. For that reason we're
-> >>> expanding the array so initialisation is completed in full.
-> >> Also for this one, the channel names are general and can be shared
-> >> between different sensors. For the channel definition it's not a problem
-> >> for me, but I think it's not necessary adds all that code...
-> > I'm not sure what you mean by this. Would you be kind enough to
-> > explain it in a different way please?
-> The channel name (in this case st_press_channels) is not only specific 
-> for one sensor but can be shared. Ok in this driver now is used only for 
-> the lps331ap but for example in accelerometer driver is used by several 
-> sensors. It's possible in the future for new pressure sensors use the 
-> same channels definition.
-
-Ah yes I see what you mean. Well as you say, for the moment, as
-they're separated, this naming convention seems the most
-appropriate. If we add anymore devices which share the definition, we
-can pick the best naming convention for the situation I think. For
-instance, I like that you've split the channels up into the number of
-bits they support in the gyro and accel cases, so something of that
-nature could be utilised if other device support is added.
-
-> The channel definition is intended the switch by macro 
-> ST_SENSORS_LSM_CHANNELS to the full definition, for me is not a problem 
-> but I think it's not necessary.
-
-If you are familiar with the macro I guess you could get used to
-working with it, but coming from in as a first time reader, adding a
-new device was pretty difficult. I had to look up the macro in the
-header file, then have the original struct open too and cross
-reference in 3 different places. It's made even more difficult by the
-macro being in a different order to the original struct.
-
-Now I've had time to work with it, I could probably work with it as
-well. I was just thinking about helping out any new person that comes
-along and tries to add support for a new sensor.
-
-> >>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> >>> ---
-> >>>    drivers/iio/pressure/st_pressure_core.c | 45 +++++++++++++++++++++++++--------
-> >>>    1 file changed, 34 insertions(+), 11 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> >>> index becfb25..7ba9299 100644
-> >>> --- a/drivers/iio/pressure/st_pressure_core.c
-> >>> +++ b/drivers/iio/pressure/st_pressure_core.c
-> >>> @@ -58,16 +58,39 @@
-> >>>    #define ST_PRESS_LPS331AP_OUT_XL_ADDR		0x28
-> >>>    #define ST_TEMP_LPS331AP_OUT_L_ADDR		0x2b
-> >>>    
-> >>> -static const struct iio_chan_spec st_press_channels[] = {
-> >>> -	ST_SENSORS_LSM_CHANNELS(IIO_PRESSURE,
-> >>> +static const struct iio_chan_spec st_press_lsp331ap_channels[] = {
-> >>> +	{
-> >>> +		.type = IIO_PRESSURE,
-> >>> +		.channel2 = IIO_NO_MOD,
-> >>> +		.address = ST_PRESS_LPS331AP_OUT_XL_ADDR,
-> >>> +		.scan_index = ST_SENSORS_SCAN_X,
-> >>> +		.scan_type = {
-> >>> +			.sign = 'u',
-> >>> +			.realbits = 24,
-> >>> +			.storagebits = 24,
-> >>> +			.endianness = IIO_LE,
-> >>> +		},
-> >>> +		.info_mask_separate =
-> >>>    			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> >>> -			ST_SENSORS_SCAN_X, 0, IIO_NO_MOD, 'u', IIO_LE, 24, 24,
-> >>> -			ST_PRESS_LPS331AP_OUT_XL_ADDR),
-> >>> -	ST_SENSORS_LSM_CHANNELS(IIO_TEMP,
-> >>> -			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
-> >>> -						BIT(IIO_CHAN_INFO_OFFSET),
-> >>> -			-1, 0, IIO_NO_MOD, 's', IIO_LE, 16, 16,
-> >>> -			ST_TEMP_LPS331AP_OUT_L_ADDR),
-> >>> +		.modified = 0,
-> >>> +	},
-> >>> +	{
-> >>> +		.type = IIO_TEMP,
-> >>> +		.channel2 = IIO_NO_MOD,
-> >>> +		.address = ST_TEMP_LPS331AP_OUT_L_ADDR,
-> >>> +		.scan_index = -1,
-> >>> +		.scan_type = {
-> >>> +			.sign = 'u',
-> >>> +			.realbits = 16,
-> >>> +			.storagebits = 16,
-> >>> +			.endianness = IIO_LE,
-> >>> +		},
-> >>> +		.info_mask_separate =
-> >>> +			BIT(IIO_CHAN_INFO_RAW) |
-> >>> +			BIT(IIO_CHAN_INFO_SCALE) |
-> >>> +			BIT(IIO_CHAN_INFO_OFFSET),
-> >>> +		.modified = 0,
-> >>> +	},
-> >>>    	IIO_CHAN_SOFT_TIMESTAMP(1)
-> >>>    };
-> >>>    
-> >>> @@ -77,7 +100,7 @@ static const struct st_sensors st_press_sensors[] = {
-> >>>    		.sensors_supported = {
-> >>>    			[0] = LPS331AP_PRESS_DEV_NAME,
-> >>>    		},
-> >>> -		.ch = (struct iio_chan_spec *)st_press_channels,
-> >>> +		.ch = (struct iio_chan_spec *)st_press_lsp331ap_channels,
-> >>>    		.odr = {
-> >>>    			.addr = ST_PRESS_LPS331AP_ODR_ADDR,
-> >>>    			.mask = ST_PRESS_LPS331AP_ODR_MASK,
-> >>> @@ -214,7 +237,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
-> >>>    	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
-> >>>    	pdata->multiread_bit = pdata->sensor->multi_read_bit;
-> >>>    	indio_dev->channels = pdata->sensor->ch;
-> >>> -	indio_dev->num_channels = ARRAY_SIZE(st_press_channels);
-> >>> +	indio_dev->num_channels = ARRAY_SIZE(st_press_lsp331ap_channels);
-> >>>    
-> >>>    	pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-> >>>    						&pdata->sensor->fs.fs_avl[0];
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+TGVlLCBJIGdvdCB5b3VyIHBvaW50LiBGb3IgbWUgaXMgb2suLi4NCg0KRGVuaXMNCj4gT24gVGh1
+LCAwNSBTZXAgMjAxMywgRGVuaXMgQ0lPQ0NBIHdyb3RlOg0KPg0KPj4+Pj4gRHVlIHRvIHRoZSBN
+QUNSTyB1c2VkLCB0aGUgdGFzayBvZiByZWFkaW5nLCB1bmRlcnN0YW5kaW5nIGFuZCBtYWludGFp
+bmluZw0KPj4+Pj4gdGhlIExQUzMzMUFQJ3MgY2hhbm5lbCBkZXNjcmlwdG9yIGlzIHN1YnN0YW50
+aWFsbHkgZGlmZmljdWx0LiBUaGlzIHBhdGNoDQo+Pj4+PiBpcyBiYXNlZCBvbiB0aGUgdmlldyB0
+aGF0IGl0J3MgYmV0dGVyIHRvIGhhdmUgZWFzeSB0byByZWFkLCBtYWludGFpbmFibGUNCj4+Pj4+
+IGNvZGUgdGhhbiB0byBzYXZlIGEgZmV3IGxpbmVzIGhlcmUgYW5kIHRoZXJlLiBGb3IgdGhhdCBy
+ZWFzb24gd2UncmUNCj4+Pj4+IGV4cGFuZGluZyB0aGUgYXJyYXkgc28gaW5pdGlhbGlzYXRpb24g
+aXMgY29tcGxldGVkIGluIGZ1bGwuDQo+Pj4+IEFsc28gZm9yIHRoaXMgb25lLCB0aGUgY2hhbm5l
+bCBuYW1lcyBhcmUgZ2VuZXJhbCBhbmQgY2FuIGJlIHNoYXJlZA0KPj4+PiBiZXR3ZWVuIGRpZmZl
+cmVudCBzZW5zb3JzLiBGb3IgdGhlIGNoYW5uZWwgZGVmaW5pdGlvbiBpdCdzIG5vdCBhIHByb2Js
+ZW0NCj4+Pj4gZm9yIG1lLCBidXQgSSB0aGluayBpdCdzIG5vdCBuZWNlc3NhcnkgYWRkcyBhbGwg
+dGhhdCBjb2RlLi4uDQo+Pj4gSSdtIG5vdCBzdXJlIHdoYXQgeW91IG1lYW4gYnkgdGhpcy4gV291
+bGQgeW91IGJlIGtpbmQgZW5vdWdoIHRvDQo+Pj4gZXhwbGFpbiBpdCBpbiBhIGRpZmZlcmVudCB3
+YXkgcGxlYXNlPw0KPj4gVGhlIGNoYW5uZWwgbmFtZSAoaW4gdGhpcyBjYXNlIHN0X3ByZXNzX2No
+YW5uZWxzKSBpcyBub3Qgb25seSBzcGVjaWZpYw0KPj4gZm9yIG9uZSBzZW5zb3IgYnV0IGNhbiBi
+ZSBzaGFyZWQuIE9rIGluIHRoaXMgZHJpdmVyIG5vdyBpcyB1c2VkIG9ubHkgZm9yDQo+PiB0aGUg
+bHBzMzMxYXAgYnV0IGZvciBleGFtcGxlIGluIGFjY2VsZXJvbWV0ZXIgZHJpdmVyIGlzIHVzZWQg
+Ynkgc2V2ZXJhbA0KPj4gc2Vuc29ycy4gSXQncyBwb3NzaWJsZSBpbiB0aGUgZnV0dXJlIGZvciBu
+ZXcgcHJlc3N1cmUgc2Vuc29ycyB1c2UgdGhlDQo+PiBzYW1lIGNoYW5uZWxzIGRlZmluaXRpb24u
+DQo+IEFoIHllcyBJIHNlZSB3aGF0IHlvdSBtZWFuLiBXZWxsIGFzIHlvdSBzYXksIGZvciB0aGUg
+bW9tZW50LCBhcw0KPiB0aGV5J3JlIHNlcGFyYXRlZCwgdGhpcyBuYW1pbmcgY29udmVudGlvbiBz
+ZWVtcyB0aGUgbW9zdA0KPiBhcHByb3ByaWF0ZS4gSWYgd2UgYWRkIGFueW1vcmUgZGV2aWNlcyB3
+aGljaCBzaGFyZSB0aGUgZGVmaW5pdGlvbiwgd2UNCj4gY2FuIHBpY2sgdGhlIGJlc3QgbmFtaW5n
+IGNvbnZlbnRpb24gZm9yIHRoZSBzaXR1YXRpb24gSSB0aGluay4gRm9yDQo+IGluc3RhbmNlLCBJ
+IGxpa2UgdGhhdCB5b3UndmUgc3BsaXQgdGhlIGNoYW5uZWxzIHVwIGludG8gdGhlIG51bWJlciBv
+Zg0KPiBiaXRzIHRoZXkgc3VwcG9ydCBpbiB0aGUgZ3lybyBhbmQgYWNjZWwgY2FzZXMsIHNvIHNv
+bWV0aGluZyBvZiB0aGF0DQo+IG5hdHVyZSBjb3VsZCBiZSB1dGlsaXNlZCBpZiBvdGhlciBkZXZp
+Y2Ugc3VwcG9ydCBpcyBhZGRlZC4NCj4NCj4+IFRoZSBjaGFubmVsIGRlZmluaXRpb24gaXMgaW50
+ZW5kZWQgdGhlIHN3aXRjaCBieSBtYWNybw0KPj4gU1RfU0VOU09SU19MU01fQ0hBTk5FTFMgdG8g
+dGhlIGZ1bGwgZGVmaW5pdGlvbiwgZm9yIG1lIGlzIG5vdCBhIHByb2JsZW0NCj4+IGJ1dCBJIHRo
+aW5rIGl0J3Mgbm90IG5lY2Vzc2FyeS4NCj4gSWYgeW91IGFyZSBmYW1pbGlhciB3aXRoIHRoZSBt
+YWNybyBJIGd1ZXNzIHlvdSBjb3VsZCBnZXQgdXNlZCB0bw0KPiB3b3JraW5nIHdpdGggaXQsIGJ1
+dCBjb21pbmcgZnJvbSBpbiBhcyBhIGZpcnN0IHRpbWUgcmVhZGVyLCBhZGRpbmcgYQ0KPiBuZXcg
+ZGV2aWNlIHdhcyBwcmV0dHkgZGlmZmljdWx0LiBJIGhhZCB0byBsb29rIHVwIHRoZSBtYWNybyBp
+biB0aGUNCj4gaGVhZGVyIGZpbGUsIHRoZW4gaGF2ZSB0aGUgb3JpZ2luYWwgc3RydWN0IG9wZW4g
+dG9vIGFuZCBjcm9zcw0KPiByZWZlcmVuY2UgaW4gMyBkaWZmZXJlbnQgcGxhY2VzLiBJdCdzIG1h
+ZGUgZXZlbiBtb3JlIGRpZmZpY3VsdCBieSB0aGUNCj4gbWFjcm8gYmVpbmcgaW4gYSBkaWZmZXJl
+bnQgb3JkZXIgdG8gdGhlIG9yaWdpbmFsIHN0cnVjdC4NCj4NCj4gTm93IEkndmUgaGFkIHRpbWUg
+dG8gd29yayB3aXRoIGl0LCBJIGNvdWxkIHByb2JhYmx5IHdvcmsgd2l0aCBpdCBhcw0KPiB3ZWxs
+LiBJIHdhcyBqdXN0IHRoaW5raW5nIGFib3V0IGhlbHBpbmcgb3V0IGFueSBuZXcgcGVyc29uIHRo
+YXQgY29tZXMNCj4gYWxvbmcgYW5kIHRyaWVzIHRvIGFkZCBzdXBwb3J0IGZvciBhIG5ldyBzZW5z
+b3IuDQo+DQo+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8u
+b3JnPg0KPj4+Pj4gLS0tDQo+Pj4+PiAgICAgZHJpdmVycy9paW8vcHJlc3N1cmUvc3RfcHJlc3N1
+cmVfY29yZS5jIHwgNDUgKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tDQo+Pj4+PiAg
+ICAgMSBmaWxlIGNoYW5nZWQsIDM0IGluc2VydGlvbnMoKyksIDExIGRlbGV0aW9ucygtKQ0KPj4+
+Pj4NCj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9wcmVzc3VyZS9zdF9wcmVzc3VyZV9j
+b3JlLmMgYi9kcml2ZXJzL2lpby9wcmVzc3VyZS9zdF9wcmVzc3VyZV9jb3JlLmMNCj4+Pj4+IGlu
+ZGV4IGJlY2ZiMjUuLjdiYTkyOTkgMTAwNjQ0DQo+Pj4+PiAtLS0gYS9kcml2ZXJzL2lpby9wcmVz
+c3VyZS9zdF9wcmVzc3VyZV9jb3JlLmMNCj4+Pj4+ICsrKyBiL2RyaXZlcnMvaWlvL3ByZXNzdXJl
+L3N0X3ByZXNzdXJlX2NvcmUuYw0KPj4+Pj4gQEAgLTU4LDE2ICs1OCwzOSBAQA0KPj4+Pj4gICAg
+ICNkZWZpbmUgU1RfUFJFU1NfTFBTMzMxQVBfT1VUX1hMX0FERFIJCTB4MjgNCj4+Pj4+ICAgICAj
+ZGVmaW5lIFNUX1RFTVBfTFBTMzMxQVBfT1VUX0xfQUREUgkJMHgyYg0KPj4+Pj4gICAgIA0KPj4+
+Pj4gLXN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBzdF9wcmVzc19jaGFubmVsc1td
+ID0gew0KPj4+Pj4gLQlTVF9TRU5TT1JTX0xTTV9DSEFOTkVMUyhJSU9fUFJFU1NVUkUsDQo+Pj4+
+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fY2hhbl9zcGVjIHN0X3ByZXNzX2xzcDMzMWFwX2No
+YW5uZWxzW10gPSB7DQo+Pj4+PiArCXsNCj4+Pj4+ICsJCS50eXBlID0gSUlPX1BSRVNTVVJFLA0K
+Pj4+Pj4gKwkJLmNoYW5uZWwyID0gSUlPX05PX01PRCwNCj4+Pj4+ICsJCS5hZGRyZXNzID0gU1Rf
+UFJFU1NfTFBTMzMxQVBfT1VUX1hMX0FERFIsDQo+Pj4+PiArCQkuc2Nhbl9pbmRleCA9IFNUX1NF
+TlNPUlNfU0NBTl9YLA0KPj4+Pj4gKwkJLnNjYW5fdHlwZSA9IHsNCj4+Pj4+ICsJCQkuc2lnbiA9
+ICd1JywNCj4+Pj4+ICsJCQkucmVhbGJpdHMgPSAyNCwNCj4+Pj4+ICsJCQkuc3RvcmFnZWJpdHMg
+PSAyNCwNCj4+Pj4+ICsJCQkuZW5kaWFubmVzcyA9IElJT19MRSwNCj4+Pj4+ICsJCX0sDQo+Pj4+
+PiArCQkuaW5mb19tYXNrX3NlcGFyYXRlID0NCj4+Pj4+ICAgICAJCQlCSVQoSUlPX0NIQU5fSU5G
+T19SQVcpIHwgQklUKElJT19DSEFOX0lORk9fU0NBTEUpLA0KPj4+Pj4gLQkJCVNUX1NFTlNPUlNf
+U0NBTl9YLCAwLCBJSU9fTk9fTU9ELCAndScsIElJT19MRSwgMjQsIDI0LA0KPj4+Pj4gLQkJCVNU
+X1BSRVNTX0xQUzMzMUFQX09VVF9YTF9BRERSKSwNCj4+Pj4+IC0JU1RfU0VOU09SU19MU01fQ0hB
+Tk5FTFMoSUlPX1RFTVAsDQo+Pj4+PiAtCQkJQklUKElJT19DSEFOX0lORk9fUkFXKSB8IEJJVChJ
+SU9fQ0hBTl9JTkZPX1NDQUxFKSB8DQo+Pj4+PiAtCQkJCQkJQklUKElJT19DSEFOX0lORk9fT0ZG
+U0VUKSwNCj4+Pj4+IC0JCQktMSwgMCwgSUlPX05PX01PRCwgJ3MnLCBJSU9fTEUsIDE2LCAxNiwN
+Cj4+Pj4+IC0JCQlTVF9URU1QX0xQUzMzMUFQX09VVF9MX0FERFIpLA0KPj4+Pj4gKwkJLm1vZGlm
+aWVkID0gMCwNCj4+Pj4+ICsJfSwNCj4+Pj4+ICsJew0KPj4+Pj4gKwkJLnR5cGUgPSBJSU9fVEVN
+UCwNCj4+Pj4+ICsJCS5jaGFubmVsMiA9IElJT19OT19NT0QsDQo+Pj4+PiArCQkuYWRkcmVzcyA9
+IFNUX1RFTVBfTFBTMzMxQVBfT1VUX0xfQUREUiwNCj4+Pj4+ICsJCS5zY2FuX2luZGV4ID0gLTEs
+DQo+Pj4+PiArCQkuc2Nhbl90eXBlID0gew0KPj4+Pj4gKwkJCS5zaWduID0gJ3UnLA0KPj4+Pj4g
+KwkJCS5yZWFsYml0cyA9IDE2LA0KPj4+Pj4gKwkJCS5zdG9yYWdlYml0cyA9IDE2LA0KPj4+Pj4g
+KwkJCS5lbmRpYW5uZXNzID0gSUlPX0xFLA0KPj4+Pj4gKwkJfSwNCj4+Pj4+ICsJCS5pbmZvX21h
+c2tfc2VwYXJhdGUgPQ0KPj4+Pj4gKwkJCUJJVChJSU9fQ0hBTl9JTkZPX1JBVykgfA0KPj4+Pj4g
+KwkJCUJJVChJSU9fQ0hBTl9JTkZPX1NDQUxFKSB8DQo+Pj4+PiArCQkJQklUKElJT19DSEFOX0lO
+Rk9fT0ZGU0VUKSwNCj4+Pj4+ICsJCS5tb2RpZmllZCA9IDAsDQo+Pj4+PiArCX0sDQo+Pj4+PiAg
+ICAgCUlJT19DSEFOX1NPRlRfVElNRVNUQU1QKDEpDQo+Pj4+PiAgICAgfTsNCj4+Pj4+ICAgICAN
+Cj4+Pj4+IEBAIC03Nyw3ICsxMDAsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN0X3NlbnNvcnMg
+c3RfcHJlc3Nfc2Vuc29yc1tdID0gew0KPj4+Pj4gICAgIAkJLnNlbnNvcnNfc3VwcG9ydGVkID0g
+ew0KPj4+Pj4gICAgIAkJCVswXSA9IExQUzMzMUFQX1BSRVNTX0RFVl9OQU1FLA0KPj4+Pj4gICAg
+IAkJfSwNCj4+Pj4+IC0JCS5jaCA9IChzdHJ1Y3QgaWlvX2NoYW5fc3BlYyAqKXN0X3ByZXNzX2No
+YW5uZWxzLA0KPj4+Pj4gKwkJLmNoID0gKHN0cnVjdCBpaW9fY2hhbl9zcGVjICopc3RfcHJlc3Nf
+bHNwMzMxYXBfY2hhbm5lbHMsDQo+Pj4+PiAgICAgCQkub2RyID0gew0KPj4+Pj4gICAgIAkJCS5h
+ZGRyID0gU1RfUFJFU1NfTFBTMzMxQVBfT0RSX0FERFIsDQo+Pj4+PiAgICAgCQkJLm1hc2sgPSBT
+VF9QUkVTU19MUFMzMzFBUF9PRFJfTUFTSywNCj4+Pj4+IEBAIC0yMTQsNyArMjM3LDcgQEAgaW50
+IHN0X3ByZXNzX2NvbW1vbl9wcm9iZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPj4+Pj4g
+ICAgIAlwZGF0YS0+bnVtX2RhdGFfY2hhbm5lbHMgPSBTVF9QUkVTU19OVU1CRVJfREFUQV9DSEFO
+TkVMUzsNCj4+Pj4+ICAgICAJcGRhdGEtPm11bHRpcmVhZF9iaXQgPSBwZGF0YS0+c2Vuc29yLT5t
+dWx0aV9yZWFkX2JpdDsNCj4+Pj4+ICAgICAJaW5kaW9fZGV2LT5jaGFubmVscyA9IHBkYXRhLT5z
+ZW5zb3ItPmNoOw0KPj4+Pj4gLQlpbmRpb19kZXYtPm51bV9jaGFubmVscyA9IEFSUkFZX1NJWkUo
+c3RfcHJlc3NfY2hhbm5lbHMpOw0KPj4+Pj4gKwlpbmRpb19kZXYtPm51bV9jaGFubmVscyA9IEFS
+UkFZX1NJWkUoc3RfcHJlc3NfbHNwMzMxYXBfY2hhbm5lbHMpOw0KPj4+Pj4gICAgIA0KPj4+Pj4g
+ICAgIAlwZGF0YS0+Y3VycmVudF9mdWxsc2NhbGUgPSAoc3RydWN0IHN0X3NlbnNvcl9mdWxsc2Nh
+bGVfYXZsICopDQo+Pj4+PiAgICAgCQkJCQkJJnBkYXRhLT5zZW5zb3ItPmZzLmZzX2F2bFswXTsN
+Cg==
