@@ -1,29 +1,45 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Fri, 6 Sep 2013 10:29:44 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: =?iso-8859-1?Q?J=FCrgen?= Beisert <jbe@pengutronix.de>
-Cc: Marek Vasut <marex@denx.de>, Fabio Estevam <fabio.estevam@freescale.com>,
-        devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <rob.herring@calxeda.com>,
-        Jonathan Cameron <jic23@cam.ac.uk>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [patch] iio: mxs-lradc: use helper functions to simplify the code
-Message-ID: <20130906072944.GR6329@mwanda>
-References: <20130905181639.GA19090@elgon.mountain>
- <201309060901.01056.jbe@pengutronix.de>
+Return-Path: <festevam@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <201309060901.01056.jbe@pengutronix.de>
+In-Reply-To: <20130905181639.GA19090@elgon.mountain>
+References: <201309051216.18305.jbe@pengutronix.de>
+	<20130905181639.GA19090@elgon.mountain>
+Date: Thu, 5 Sep 2013 17:15:02 -0300
+Message-ID: <CAOMZO5BmeG3X+cyNcwg0B7hsaqTY5hxjfNiWbxMivinhcZZp7g@mail.gmail.com>
+Subject: Re: [patch] iio: mxs-lradc: use helper functions to simplify the code
+From: Fabio Estevam <festevam@gmail.com>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, =?UTF-8?Q?J=C3=BCrgen_Beisert?= <jbe@pengutronix.de>,
+	Marek Vasut <marex@denx.de>, devel@driverdev.osuosl.org,
+	Fabio Estevam <fabio.estevam@freescale.com>, linux-iio@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <rob.herring@calxeda.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Sep 06, 2013 at 09:01:01AM +0200, Jürgen Beisert wrote:
-> 
-> Oh, I did the same yesterday in preparation of the v2 of my patch series.
-> I will send this new version out today.
-> 
+On Thu, Sep 5, 2013 at 3:16 PM, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> I have introduced lradc_reg_set() and lradc_reg_clear().  It simplifies
+> the callers and makes the lines shorter.
 
-Ah fine.  Then let's drop my version.
+Looks good, just one minor suggestion:
 
-regards,
-dan carpenter
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index a08c173..da5d04b 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -228,6 +228,16 @@ struct mxs_lradc {
+>  #define LRADC_RESOLUTION                       12
+>  #define LRADC_SINGLE_SAMPLE_MASK               ((1 << LRADC_RESOLUTION) - 1)
+>
+> +static void lradc_reg_set(struct mxs_lradc *lradc, u32 val, size_t chan)
+> +{
+> +       writel(val, lradc->base + chan + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static void lradc_reg_clear(struct mxs_lradc *lradc, u32 val, size_t chan)
+> +{
+> +       writel(val, lradc->base + chan + STMP_OFFSET_REG_CLR);
+> +}
+
+Maybe 'static inline' ?
