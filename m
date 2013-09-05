@@ -1,93 +1,147 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Lee Jones <lee.jones@linaro.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Thu, 5 Sep 2013 08:59:53 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Denis CIOCCA <denis.ciocca@st.com>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jic23@cam.ac.uk" <jic23@cam.ac.uk>, "arnd@arndb.de" <arnd@arndb.de>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"arnd@arndb.de" <arnd@arndb.de>,
 	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Thu, 5 Sep 2013 09:31:51 +0200
 Subject: Re: [PATCH 06/11] iio: pressure-core: st: Expand and rename
  LPS331AP's channel descriptor
-Message-ID: <52283367.4070603@st.com>
+Message-ID: <20130905075953.GF8980@lee--X1>
 References: <1378287103-21765-1-git-send-email-lee.jones@linaro.org>
  <1378287103-21765-7-git-send-email-lee.jones@linaro.org>
- <522794F1.90301@st.com> <20130905072114.GD8980@lee--X1>
-In-Reply-To: <20130905072114.GD8980@lee--X1>
-Content-Type: text/plain; charset="utf-8"
+ <522794F1.90301@st.com>
+ <20130905072114.GD8980@lee--X1>
+ <52283367.4070603@st.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <52283367.4070603@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-DQo+Pj4gRHVlIHRvIHRoZSBNQUNSTyB1c2VkLCB0aGUgdGFzayBvZiByZWFkaW5nLCB1bmRlcnN0
-YW5kaW5nIGFuZCBtYWludGFpbmluZw0KPj4+IHRoZSBMUFMzMzFBUCdzIGNoYW5uZWwgZGVzY3Jp
-cHRvciBpcyBzdWJzdGFudGlhbGx5IGRpZmZpY3VsdC4gVGhpcyBwYXRjaA0KPj4+IGlzIGJhc2Vk
-IG9uIHRoZSB2aWV3IHRoYXQgaXQncyBiZXR0ZXIgdG8gaGF2ZSBlYXN5IHRvIHJlYWQsIG1haW50
-YWluYWJsZQ0KPj4+IGNvZGUgdGhhbiB0byBzYXZlIGEgZmV3IGxpbmVzIGhlcmUgYW5kIHRoZXJl
-LiBGb3IgdGhhdCByZWFzb24gd2UncmUNCj4+PiBleHBhbmRpbmcgdGhlIGFycmF5IHNvIGluaXRp
-YWxpc2F0aW9uIGlzIGNvbXBsZXRlZCBpbiBmdWxsLg0KPj4gQWxzbyBmb3IgdGhpcyBvbmUsIHRo
-ZSBjaGFubmVsIG5hbWVzIGFyZSBnZW5lcmFsIGFuZCBjYW4gYmUgc2hhcmVkDQo+PiBiZXR3ZWVu
-IGRpZmZlcmVudCBzZW5zb3JzLiBGb3IgdGhlIGNoYW5uZWwgZGVmaW5pdGlvbiBpdCdzIG5vdCBh
-IHByb2JsZW0NCj4+IGZvciBtZSwgYnV0IEkgdGhpbmsgaXQncyBub3QgbmVjZXNzYXJ5IGFkZHMg
-YWxsIHRoYXQgY29kZS4uLg0KPiBJJ20gbm90IHN1cmUgd2hhdCB5b3UgbWVhbiBieSB0aGlzLiBX
-b3VsZCB5b3UgYmUga2luZCBlbm91Z2ggdG8NCj4gZXhwbGFpbiBpdCBpbiBhIGRpZmZlcmVudCB3
-YXkgcGxlYXNlPw0KVGhlIGNoYW5uZWwgbmFtZSAoaW4gdGhpcyBjYXNlIHN0X3ByZXNzX2NoYW5u
-ZWxzKSBpcyBub3Qgb25seSBzcGVjaWZpYyANCmZvciBvbmUgc2Vuc29yIGJ1dCBjYW4gYmUgc2hh
-cmVkLiBPayBpbiB0aGlzIGRyaXZlciBub3cgaXMgdXNlZCBvbmx5IGZvciANCnRoZSBscHMzMzFh
-cCBidXQgZm9yIGV4YW1wbGUgaW4gYWNjZWxlcm9tZXRlciBkcml2ZXIgaXMgdXNlZCBieSBzZXZl
-cmFsIA0Kc2Vuc29ycy4gSXQncyBwb3NzaWJsZSBpbiB0aGUgZnV0dXJlIGZvciBuZXcgcHJlc3N1
-cmUgc2Vuc29ycyB1c2UgdGhlIA0Kc2FtZSBjaGFubmVscyBkZWZpbml0aW9uLg0KVGhlIGNoYW5u
-ZWwgZGVmaW5pdGlvbiBpcyBpbnRlbmRlZCB0aGUgc3dpdGNoIGJ5IG1hY3JvIA0KU1RfU0VOU09S
-U19MU01fQ0hBTk5FTFMgdG8gdGhlIGZ1bGwgZGVmaW5pdGlvbiwgZm9yIG1lIGlzIG5vdCBhIHBy
-b2JsZW0gDQpidXQgSSB0aGluayBpdCdzIG5vdCBuZWNlc3NhcnkuDQoNCkRlbmlzDQoNCj4+PiBT
-aWduZWQtb2ZmLWJ5OiBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8ub3JnPg0KPj4+IC0tLQ0K
-Pj4+ICAgIGRyaXZlcnMvaWlvL3ByZXNzdXJlL3N0X3ByZXNzdXJlX2NvcmUuYyB8IDQ1ICsrKysr
-KysrKysrKysrKysrKysrKysrKystLS0tLS0tLQ0KPj4+ICAgIDEgZmlsZSBjaGFuZ2VkLCAzNCBp
-bnNlcnRpb25zKCspLCAxMSBkZWxldGlvbnMoLSkNCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL2lpby9wcmVzc3VyZS9zdF9wcmVzc3VyZV9jb3JlLmMgYi9kcml2ZXJzL2lpby9wcmVzc3Vy
-ZS9zdF9wcmVzc3VyZV9jb3JlLmMNCj4+PiBpbmRleCBiZWNmYjI1Li43YmE5Mjk5IDEwMDY0NA0K
-Pj4+IC0tLSBhL2RyaXZlcnMvaWlvL3ByZXNzdXJlL3N0X3ByZXNzdXJlX2NvcmUuYw0KPj4+ICsr
-KyBiL2RyaXZlcnMvaWlvL3ByZXNzdXJlL3N0X3ByZXNzdXJlX2NvcmUuYw0KPj4+IEBAIC01OCwx
-NiArNTgsMzkgQEANCj4+PiAgICAjZGVmaW5lIFNUX1BSRVNTX0xQUzMzMUFQX09VVF9YTF9BRERS
-CQkweDI4DQo+Pj4gICAgI2RlZmluZSBTVF9URU1QX0xQUzMzMUFQX09VVF9MX0FERFIJCTB4MmIN
-Cj4+PiAgICANCj4+PiAtc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fY2hhbl9zcGVjIHN0X3ByZXNz
-X2NoYW5uZWxzW10gPSB7DQo+Pj4gLQlTVF9TRU5TT1JTX0xTTV9DSEFOTkVMUyhJSU9fUFJFU1NV
-UkUsDQo+Pj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBzdF9wcmVzc19sc3Az
-MzFhcF9jaGFubmVsc1tdID0gew0KPj4+ICsJew0KPj4+ICsJCS50eXBlID0gSUlPX1BSRVNTVVJF
-LA0KPj4+ICsJCS5jaGFubmVsMiA9IElJT19OT19NT0QsDQo+Pj4gKwkJLmFkZHJlc3MgPSBTVF9Q
-UkVTU19MUFMzMzFBUF9PVVRfWExfQUREUiwNCj4+PiArCQkuc2Nhbl9pbmRleCA9IFNUX1NFTlNP
-UlNfU0NBTl9YLA0KPj4+ICsJCS5zY2FuX3R5cGUgPSB7DQo+Pj4gKwkJCS5zaWduID0gJ3UnLA0K
-Pj4+ICsJCQkucmVhbGJpdHMgPSAyNCwNCj4+PiArCQkJLnN0b3JhZ2ViaXRzID0gMjQsDQo+Pj4g
-KwkJCS5lbmRpYW5uZXNzID0gSUlPX0xFLA0KPj4+ICsJCX0sDQo+Pj4gKwkJLmluZm9fbWFza19z
-ZXBhcmF0ZSA9DQo+Pj4gICAgCQkJQklUKElJT19DSEFOX0lORk9fUkFXKSB8IEJJVChJSU9fQ0hB
-Tl9JTkZPX1NDQUxFKSwNCj4+PiAtCQkJU1RfU0VOU09SU19TQ0FOX1gsIDAsIElJT19OT19NT0Qs
-ICd1JywgSUlPX0xFLCAyNCwgMjQsDQo+Pj4gLQkJCVNUX1BSRVNTX0xQUzMzMUFQX09VVF9YTF9B
-RERSKSwNCj4+PiAtCVNUX1NFTlNPUlNfTFNNX0NIQU5ORUxTKElJT19URU1QLA0KPj4+IC0JCQlC
-SVQoSUlPX0NIQU5fSU5GT19SQVcpIHwgQklUKElJT19DSEFOX0lORk9fU0NBTEUpIHwNCj4+PiAt
-CQkJCQkJQklUKElJT19DSEFOX0lORk9fT0ZGU0VUKSwNCj4+PiAtCQkJLTEsIDAsIElJT19OT19N
-T0QsICdzJywgSUlPX0xFLCAxNiwgMTYsDQo+Pj4gLQkJCVNUX1RFTVBfTFBTMzMxQVBfT1VUX0xf
-QUREUiksDQo+Pj4gKwkJLm1vZGlmaWVkID0gMCwNCj4+PiArCX0sDQo+Pj4gKwl7DQo+Pj4gKwkJ
-LnR5cGUgPSBJSU9fVEVNUCwNCj4+PiArCQkuY2hhbm5lbDIgPSBJSU9fTk9fTU9ELA0KPj4+ICsJ
-CS5hZGRyZXNzID0gU1RfVEVNUF9MUFMzMzFBUF9PVVRfTF9BRERSLA0KPj4+ICsJCS5zY2FuX2lu
-ZGV4ID0gLTEsDQo+Pj4gKwkJLnNjYW5fdHlwZSA9IHsNCj4+PiArCQkJLnNpZ24gPSAndScsDQo+
-Pj4gKwkJCS5yZWFsYml0cyA9IDE2LA0KPj4+ICsJCQkuc3RvcmFnZWJpdHMgPSAxNiwNCj4+PiAr
-CQkJLmVuZGlhbm5lc3MgPSBJSU9fTEUsDQo+Pj4gKwkJfSwNCj4+PiArCQkuaW5mb19tYXNrX3Nl
-cGFyYXRlID0NCj4+PiArCQkJQklUKElJT19DSEFOX0lORk9fUkFXKSB8DQo+Pj4gKwkJCUJJVChJ
-SU9fQ0hBTl9JTkZPX1NDQUxFKSB8DQo+Pj4gKwkJCUJJVChJSU9fQ0hBTl9JTkZPX09GRlNFVCks
-DQo+Pj4gKwkJLm1vZGlmaWVkID0gMCwNCj4+PiArCX0sDQo+Pj4gICAgCUlJT19DSEFOX1NPRlRf
-VElNRVNUQU1QKDEpDQo+Pj4gICAgfTsNCj4+PiAgICANCj4+PiBAQCAtNzcsNyArMTAwLDcgQEAg
-c3RhdGljIGNvbnN0IHN0cnVjdCBzdF9zZW5zb3JzIHN0X3ByZXNzX3NlbnNvcnNbXSA9IHsNCj4+
-PiAgICAJCS5zZW5zb3JzX3N1cHBvcnRlZCA9IHsNCj4+PiAgICAJCQlbMF0gPSBMUFMzMzFBUF9Q
-UkVTU19ERVZfTkFNRSwNCj4+PiAgICAJCX0sDQo+Pj4gLQkJLmNoID0gKHN0cnVjdCBpaW9fY2hh
-bl9zcGVjICopc3RfcHJlc3NfY2hhbm5lbHMsDQo+Pj4gKwkJLmNoID0gKHN0cnVjdCBpaW9fY2hh
-bl9zcGVjICopc3RfcHJlc3NfbHNwMzMxYXBfY2hhbm5lbHMsDQo+Pj4gICAgCQkub2RyID0gew0K
-Pj4+ICAgIAkJCS5hZGRyID0gU1RfUFJFU1NfTFBTMzMxQVBfT0RSX0FERFIsDQo+Pj4gICAgCQkJ
-Lm1hc2sgPSBTVF9QUkVTU19MUFMzMzFBUF9PRFJfTUFTSywNCj4+PiBAQCAtMjE0LDcgKzIzNyw3
-IEBAIGludCBzdF9wcmVzc19jb21tb25fcHJvYmUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikN
-Cj4+PiAgICAJcGRhdGEtPm51bV9kYXRhX2NoYW5uZWxzID0gU1RfUFJFU1NfTlVNQkVSX0RBVEFf
-Q0hBTk5FTFM7DQo+Pj4gICAgCXBkYXRhLT5tdWx0aXJlYWRfYml0ID0gcGRhdGEtPnNlbnNvci0+
-bXVsdGlfcmVhZF9iaXQ7DQo+Pj4gICAgCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSBwZGF0YS0+c2Vu
-c29yLT5jaDsNCj4+PiAtCWluZGlvX2Rldi0+bnVtX2NoYW5uZWxzID0gQVJSQVlfU0laRShzdF9w
-cmVzc19jaGFubmVscyk7DQo+Pj4gKwlpbmRpb19kZXYtPm51bV9jaGFubmVscyA9IEFSUkFZX1NJ
-WkUoc3RfcHJlc3NfbHNwMzMxYXBfY2hhbm5lbHMpOw0KPj4+ICAgIA0KPj4+ICAgIAlwZGF0YS0+
-Y3VycmVudF9mdWxsc2NhbGUgPSAoc3RydWN0IHN0X3NlbnNvcl9mdWxsc2NhbGVfYXZsICopDQo+
-Pj4gICAgCQkJCQkJJnBkYXRhLT5zZW5zb3ItPmZzLmZzX2F2bFswXTsNCg==
+On Thu, 05 Sep 2013, Denis CIOCCA wrote:
+
+> 
+> >>> Due to the MACRO used, the task of reading, understanding and maintaining
+> >>> the LPS331AP's channel descriptor is substantially difficult. This patch
+> >>> is based on the view that it's better to have easy to read, maintainable
+> >>> code than to save a few lines here and there. For that reason we're
+> >>> expanding the array so initialisation is completed in full.
+> >> Also for this one, the channel names are general and can be shared
+> >> between different sensors. For the channel definition it's not a problem
+> >> for me, but I think it's not necessary adds all that code...
+> > I'm not sure what you mean by this. Would you be kind enough to
+> > explain it in a different way please?
+> The channel name (in this case st_press_channels) is not only specific 
+> for one sensor but can be shared. Ok in this driver now is used only for 
+> the lps331ap but for example in accelerometer driver is used by several 
+> sensors. It's possible in the future for new pressure sensors use the 
+> same channels definition.
+
+Ah yes I see what you mean. Well as you say, for the moment, as
+they're separated, this naming convention seems the most
+appropriate. If we add anymore devices which share the definition, we
+can pick the best naming convention for the situation I think. For
+instance, I like that you've split the channels up into the number of
+bits they support in the gyro and accel cases, so something of that
+nature could be utilised if other device support is added.
+
+> The channel definition is intended the switch by macro 
+> ST_SENSORS_LSM_CHANNELS to the full definition, for me is not a problem 
+> but I think it's not necessary.
+
+If you are familiar with the macro I guess you could get used to
+working with it, but coming from in as a first time reader, adding a
+new device was pretty difficult. I had to look up the macro in the
+header file, then have the original struct open too and cross
+reference in 3 different places. It's made even more difficult by the
+macro being in a different order to the original struct.
+
+Now I've had time to work with it, I could probably work with it as
+well. I was just thinking about helping out any new person that comes
+along and tries to add support for a new sensor.
+
+> >>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> >>> ---
+> >>>    drivers/iio/pressure/st_pressure_core.c | 45 +++++++++++++++++++++++++--------
+> >>>    1 file changed, 34 insertions(+), 11 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> >>> index becfb25..7ba9299 100644
+> >>> --- a/drivers/iio/pressure/st_pressure_core.c
+> >>> +++ b/drivers/iio/pressure/st_pressure_core.c
+> >>> @@ -58,16 +58,39 @@
+> >>>    #define ST_PRESS_LPS331AP_OUT_XL_ADDR		0x28
+> >>>    #define ST_TEMP_LPS331AP_OUT_L_ADDR		0x2b
+> >>>    
+> >>> -static const struct iio_chan_spec st_press_channels[] = {
+> >>> -	ST_SENSORS_LSM_CHANNELS(IIO_PRESSURE,
+> >>> +static const struct iio_chan_spec st_press_lsp331ap_channels[] = {
+> >>> +	{
+> >>> +		.type = IIO_PRESSURE,
+> >>> +		.channel2 = IIO_NO_MOD,
+> >>> +		.address = ST_PRESS_LPS331AP_OUT_XL_ADDR,
+> >>> +		.scan_index = ST_SENSORS_SCAN_X,
+> >>> +		.scan_type = {
+> >>> +			.sign = 'u',
+> >>> +			.realbits = 24,
+> >>> +			.storagebits = 24,
+> >>> +			.endianness = IIO_LE,
+> >>> +		},
+> >>> +		.info_mask_separate =
+> >>>    			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> >>> -			ST_SENSORS_SCAN_X, 0, IIO_NO_MOD, 'u', IIO_LE, 24, 24,
+> >>> -			ST_PRESS_LPS331AP_OUT_XL_ADDR),
+> >>> -	ST_SENSORS_LSM_CHANNELS(IIO_TEMP,
+> >>> -			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
+> >>> -						BIT(IIO_CHAN_INFO_OFFSET),
+> >>> -			-1, 0, IIO_NO_MOD, 's', IIO_LE, 16, 16,
+> >>> -			ST_TEMP_LPS331AP_OUT_L_ADDR),
+> >>> +		.modified = 0,
+> >>> +	},
+> >>> +	{
+> >>> +		.type = IIO_TEMP,
+> >>> +		.channel2 = IIO_NO_MOD,
+> >>> +		.address = ST_TEMP_LPS331AP_OUT_L_ADDR,
+> >>> +		.scan_index = -1,
+> >>> +		.scan_type = {
+> >>> +			.sign = 'u',
+> >>> +			.realbits = 16,
+> >>> +			.storagebits = 16,
+> >>> +			.endianness = IIO_LE,
+> >>> +		},
+> >>> +		.info_mask_separate =
+> >>> +			BIT(IIO_CHAN_INFO_RAW) |
+> >>> +			BIT(IIO_CHAN_INFO_SCALE) |
+> >>> +			BIT(IIO_CHAN_INFO_OFFSET),
+> >>> +		.modified = 0,
+> >>> +	},
+> >>>    	IIO_CHAN_SOFT_TIMESTAMP(1)
+> >>>    };
+> >>>    
+> >>> @@ -77,7 +100,7 @@ static const struct st_sensors st_press_sensors[] = {
+> >>>    		.sensors_supported = {
+> >>>    			[0] = LPS331AP_PRESS_DEV_NAME,
+> >>>    		},
+> >>> -		.ch = (struct iio_chan_spec *)st_press_channels,
+> >>> +		.ch = (struct iio_chan_spec *)st_press_lsp331ap_channels,
+> >>>    		.odr = {
+> >>>    			.addr = ST_PRESS_LPS331AP_ODR_ADDR,
+> >>>    			.mask = ST_PRESS_LPS331AP_ODR_MASK,
+> >>> @@ -214,7 +237,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+> >>>    	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+> >>>    	pdata->multiread_bit = pdata->sensor->multi_read_bit;
+> >>>    	indio_dev->channels = pdata->sensor->ch;
+> >>> -	indio_dev->num_channels = ARRAY_SIZE(st_press_channels);
+> >>> +	indio_dev->num_channels = ARRAY_SIZE(st_press_lsp331ap_channels);
+> >>>    
+> >>>    	pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+> >>>    						&pdata->sensor->fs.fs_avl[0];
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
