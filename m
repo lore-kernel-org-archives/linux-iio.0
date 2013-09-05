@@ -1,51 +1,76 @@
-Return-Path: <jbe@pengutronix.de>
-From: Juergen Beisert <jbe@pengutronix.de>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	devel@driverdev.osuosl.org,
-	marex@denx.de,
-	fabio.estevam@freescale.com,
-	jic23@cam.ac.uk
-Subject: [PATCH 1/5] Staging/iio/adc/touchscreen/MXS: distinguish i.MX23's and i.MX28's LRADC
-Date: Fri,  6 Sep 2013 12:08:39 +0200
-Message-Id: <1378462123-4830-2-git-send-email-jbe@pengutronix.de>
-In-Reply-To: <1378462123-4830-1-git-send-email-jbe@pengutronix.de>
-References: <1378462123-4830-1-git-send-email-jbe@pengutronix.de>
+Cc: lars@metafoo.de,
+	sachin.kamat@linaro.org,
+	jic23@kernel.org
+Subject: [PATCH 01/12] staging: iio: ad5933: Use devm_* APIs
+Date: Thu,  5 Sep 2013 14:59:46 +0530
+Message-Id: <1378373397-22919-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-The LRADC units in i.MX23 and i.MX28 differ and we need to distinguish both
-SoC variants in order to make the touchscreen work on i.MX23
+devm_* APIs are device managed and make code simpler.
 
-Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
-CC: linux-arm-kernel@lists.infradead.org
-CC: devel@driverdev.osuosl.org
-CC: Marek Vasut <marex@denx.de>
-CC: Fabio Estevam <fabio.estevam@freescale.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 3 +++
- 1 file changed, 3 insertions(+)
+This series is compile tested.
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c |   18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index a08c173..dffca90 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -174,6 +174,8 @@ struct mxs_lradc {
- 
- 	struct input_dev	*ts_input;
- 	struct work_struct	ts_work;
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 6330af6..23a0d71 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -703,7 +703,9 @@ static int ad5933_probe(struct i2c_client *client,
+ 	int ret, voltage_uv = 0;
+ 	struct ad5933_platform_data *pdata = client->dev.platform_data;
+ 	struct ad5933_state *st;
+-	struct iio_dev *indio_dev = iio_device_alloc(sizeof(*st));
++	struct iio_dev *indio_dev;
 +
-+	enum mxs_lradc_id	soc;
- };
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
  
- #define	LRADC_CTRL0				0x00
-@@ -920,6 +922,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+@@ -716,11 +718,11 @@ static int ad5933_probe(struct i2c_client *client,
+ 	else
+ 		st->pdata = pdata;
+ 
+-	st->reg = regulator_get(&client->dev, "vcc");
++	st->reg = devm_regulator_get(&client->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+ 		ret = regulator_enable(st->reg);
+ 		if (ret)
+-			goto error_put_reg;
++			return ret;
+ 		voltage_uv = regulator_get_voltage(st->reg);
  	}
  
- 	lradc = iio_priv(iio);
-+	lradc->soc = (enum mxs_lradc_id)of_id->data;
+@@ -778,11 +780,6 @@ error_unreg_ring:
+ error_disable_reg:
+ 	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+-error_put_reg:
+-	if (!IS_ERR(st->reg))
+-		regulator_put(st->reg);
+-
+-	iio_device_free(indio_dev);
  
- 	/* Grab the memory area */
- 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	return ret;
+ }
+@@ -795,11 +792,8 @@ static int ad5933_remove(struct i2c_client *client)
+ 	iio_device_unregister(indio_dev);
+ 	iio_buffer_unregister(indio_dev);
+ 	iio_kfifo_free(indio_dev->buffer);
+-	if (!IS_ERR(st->reg)) {
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+-		regulator_put(st->reg);
+-	}
+-	iio_device_free(indio_dev);
+ 
+ 	return 0;
+ }
 -- 
-1.8.4.rc3
+1.7.9.5
