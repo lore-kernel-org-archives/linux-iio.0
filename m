@@ -1,58 +1,36 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [patch] iio: mxs-lradc: use helper functions to simplify the code
-Date: Thu, 5 Sep 2013 22:29:54 +0200
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
- Jonathan Cameron <jic23@cam.ac.uk>,
- =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>,
- devel@driverdev.osuosl.org,
- Fabio Estevam <fabio.estevam@freescale.com>,
- linux-iio@vger.kernel.org,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- Rob Herring <rob.herring@calxeda.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-References: <201309051216.18305.jbe@pengutronix.de> <20130905181639.GA19090@elgon.mountain> <CAOMZO5BmeG3X+cyNcwg0B7hsaqTY5hxjfNiWbxMivinhcZZp7g@mail.gmail.com>
-In-Reply-To: <CAOMZO5BmeG3X+cyNcwg0B7hsaqTY5hxjfNiWbxMivinhcZZp7g@mail.gmail.com>
+Return-Path: <dan.carpenter@oracle.com>
+Date: Thu, 5 Sep 2013 13:42:56 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: =?iso-8859-1?Q?J=FCrgen?= Beisert <jbe@pengutronix.de>
+Cc: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
+        Marek Vasut <marex@denx.de>,
+        Fabio Estevam <fabio.estevam@freescale.com>, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@cam.ac.uk>
+Subject: Re: [PATCH 3/5] Staging/iio/adc/touchscreen/MXS: add i.MX23 support
+ to the LRADC driver
+Message-ID: <20130905104256.GK6329@mwanda>
+References: <1378299706-6742-1-git-send-email-jbe@pengutronix.de>
+ <1378299706-6742-4-git-send-email-jbe@pengutronix.de>
+ <20130904142738.GH6329@mwanda>
+ <201309051216.18305.jbe@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201309052229.55139.marex@denx.de>
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <201309051216.18305.jbe@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Dear Fabio Estevam,
-
-> On Thu, Sep 5, 2013 at 3:16 PM, Dan Carpenter <dan.carpenter@oracle.com> 
-wrote:
-> > I have introduced lradc_reg_set() and lradc_reg_clear().  It simplifies
-> > the callers and makes the lines shorter.
+On Thu, Sep 05, 2013 at 12:16:18PM +0200, Jürgen Beisert wrote:
+> I like this simplification, but all the other drivers for the MXS series of 
+> SoCs don't use such a method. Do you think this "new style" will be accepted?
 > 
-> Looks good, just one minor suggestion:
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > 
-> > diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> > b/drivers/staging/iio/adc/mxs-lradc.c index a08c173..da5d04b 100644
-> > --- a/drivers/staging/iio/adc/mxs-lradc.c
-> > +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> > @@ -228,6 +228,16 @@ struct mxs_lradc {
-> > 
-> >  #define LRADC_RESOLUTION                       12
-> >  #define LRADC_SINGLE_SAMPLE_MASK               ((1 << LRADC_RESOLUTION)
-> >  - 1)
-> > 
-> > +static void lradc_reg_set(struct mxs_lradc *lradc, u32 val, size_t chan)
-> > +{
-> > +       writel(val, lradc->base + chan + STMP_OFFSET_REG_SET);
-> > +}
-> > +
-> > +static void lradc_reg_clear(struct mxs_lradc *lradc, u32 val, size_t
-> > chan) +{
-> > +       writel(val, lradc->base + chan + STMP_OFFSET_REG_CLR);
-> > +}
-> 
-> Maybe 'static inline' ?
 
-static only, the inline is meaningless, GCC will handle that.
+My lradc_plate_mask() is basically the same idea as what Marek said
+about putting the logic into the define.
 
-Best regards,
-Marek Vasut
+LRADC....IRQ_MASK(id) (((id) == MX23) ? 0x1ff : 0x1fff)
+
+I don't know why Marek is complaining about churn though.  This is
+linux!  We love churn!  And especially in staging, it's our favorite
+thing.  :P
+
+regards,
+dan carpenter
