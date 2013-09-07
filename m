@@ -1,121 +1,25 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de,
-	sachin.kamat@linaro.org,
-	jic23@kernel.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58199 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751812Ab3IGUFf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Sep 2013 16:05:35 -0400
+Message-ID: <522B9528.9000104@kernel.org>
+Date: Sat, 07 Sep 2013 22:05:44 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Sachin Kamat <sachin.kamat@linaro.org>
+CC: linux-iio@vger.kernel.org, lars@metafoo.de,
 	"J. August Brenner" <jbrenner@taosinc.com>
-Subject: [PATCH 10/12] staging: iio: tsl2x7x_core: Use devm_* APIs
-Date: Thu,  5 Sep 2013 14:59:55 +0530
-Message-Id: <1378373397-22919-10-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1378373397-22919-1-git-send-email-sachin.kamat@linaro.org>
-References: <1378373397-22919-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 10/12] staging: iio: tsl2x7x_core: Use devm_* APIs
+References: <1378373397-22919-1-git-send-email-sachin.kamat@linaro.org> <1378373397-22919-10-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1378373397-22919-10-git-send-email-sachin.kamat@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-devm_* APIs are device managed and make code simpler.
-
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: J. August Brenner <jbrenner@taosinc.com>
----
- drivers/staging/iio/light/tsl2x7x_core.c |   38 ++++++++++--------------------
- 1 file changed, 13 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index c99f890..aa86725 100644
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -1851,7 +1851,7 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
- 	struct iio_dev *indio_dev;
- 	struct tsl2X7X_chip *chip;
- 
--	indio_dev = iio_device_alloc(sizeof(*chip));
-+	indio_dev = devm_iio_device_alloc(&clientp->dev, sizeof(*chip));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -1862,22 +1862,21 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
- 	ret = tsl2x7x_i2c_read(chip->client,
- 		TSL2X7X_CHIPID, &device_id);
- 	if (ret < 0)
--		goto fail1;
-+		return ret;
- 
- 	if ((!tsl2x7x_device_id(&device_id, id->driver_data)) ||
- 		(tsl2x7x_device_id(&device_id, id->driver_data) == -EINVAL)) {
- 		dev_info(&chip->client->dev,
- 				"%s: i2c device found does not match expected id\n",
- 				__func__);
--		ret = -EINVAL;
--		goto fail1;
-+		return -EINVAL;
- 	}
- 
- 	ret = i2c_smbus_write_byte(clientp, (TSL2X7X_CMD_REG | TSL2X7X_CNTRL));
- 	if (ret < 0) {
- 		dev_err(&clientp->dev, "%s: write to cmd reg failed. err = %d\n",
- 				__func__, ret);
--		goto fail1;
-+		return ret;
- 	}
- 
- 	/* ALS and PROX functions can be invoked via user space poll
-@@ -1899,16 +1898,17 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
- 	indio_dev->num_channels = chip->chip_info->chan_table_elements;
- 
- 	if (clientp->irq) {
--		ret = request_threaded_irq(clientp->irq,
--					   NULL,
--					   &tsl2x7x_event_handler,
--					   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
--					   "TSL2X7X_event",
--					   indio_dev);
-+		ret = devm_request_threaded_irq(&clientp->dev, clientp->irq,
-+						NULL,
-+						&tsl2x7x_event_handler,
-+						IRQF_TRIGGER_RISING |
-+						IRQF_ONESHOT,
-+						"TSL2X7X_event",
-+						indio_dev);
- 		if (ret) {
- 			dev_err(&clientp->dev,
- 				"%s: irq request failed", __func__);
--			goto fail1;
-+			return ret;
- 		}
- 	}
- 
-@@ -1921,20 +1921,12 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
- 	if (ret) {
- 		dev_err(&clientp->dev,
- 			"%s: iio registration failed\n", __func__);
--		goto fail2;
-+		return ret;
- 	}
- 
- 	dev_info(&clientp->dev, "%s Light sensor found.\n", id->name);
- 
- 	return 0;
--
--fail2:
--	if (clientp->irq)
--		free_irq(clientp->irq, indio_dev);
--fail1:
--	iio_device_free(indio_dev);
--
--	return ret;
- }
- 
- static int tsl2x7x_suspend(struct device *dev)
-@@ -1980,10 +1972,6 @@ static int tsl2x7x_remove(struct i2c_client *client)
- 	tsl2x7x_chip_off(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	if (client->irq)
--		free_irq(client->irq, indio_dev);
--
--	iio_device_free(indio_dev);
- 
- 	return 0;
- }
--- 
-1.7.9.5
+On 09/05/13 10:29, Sachin Kamat wrote:
+> devm_* APIs are device managed and make code simpler.
+> 
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Cc: J. August Brenner <jbrenner@taosinc.com>
+Applied
