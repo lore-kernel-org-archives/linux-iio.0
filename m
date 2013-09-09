@@ -1,76 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f49.google.com ([74.125.83.49]:36113 "EHLO
-	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751876Ab3IIKKY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 06:10:24 -0400
-Received: by mail-ee0-f49.google.com with SMTP id d41so2963760eek.8
-        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 03:10:23 -0700 (PDT)
-From: Lee Jones <lee.jones@linaro.org>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk
-Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 01/14] ARM: ux500: Remove PrimeCell IDs from Nomadik I2C DT nodes
-Date: Mon,  9 Sep 2013 11:09:57 +0100
-Message-Id: <1378721410-30937-2-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
-References: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:37076 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751044Ab3IIIDc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 04:03:32 -0400
+From: Juergen Beisert <jbe@pengutronix.de>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
+	marex@denx.de, fabio.estevam@freescale.com, jic23@cam.ac.uk
+Subject: [RFCv3] staging/iio/adc: change the MXS touchscreen driver implementation
+Date: Mon,  9 Sep 2013 10:03:16 +0200
+Message-Id: <1378713801-1182-1-git-send-email-jbe@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Turns out that they're actually not required and the driver probes just
-fine without them. The ID is incorrect at the moment anyway. They actually
-currently specify the stn8815.
+The following series replaces the current busy loop touchscreen implementation
+for i.MX28/i.MX23 SoCs by a fully interrupt driven implementation.
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- arch/arm/boot/dts/ste-dbx5x0.dtsi | 5 -----
- 1 file changed, 5 deletions(-)
+Since i.MX23 and i.Mx28 silicon differs, the existing implementation can
+be used for the i.MX28 SoC only.
 
-diff --git a/arch/arm/boot/dts/ste-dbx5x0.dtsi b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-index 1c1091e..0c1338e 100644
---- a/arch/arm/boot/dts/ste-dbx5x0.dtsi
-+++ b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-@@ -559,7 +559,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80004000 0x1000>;
- 			interrupts = <0 21 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -572,7 +571,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80122000 0x1000>;
- 			interrupts = <0 22 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -585,7 +583,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80128000 0x1000>;
- 			interrupts = <0 55 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -598,7 +595,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80110000 0x1000>;
- 			interrupts = <0 12 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -611,7 +607,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x8012a000 0x1000>;
- 			interrupts = <0 51 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-1.8.1.2
+So, the first two patches of this series move the i.MX28 specific definitions
+out of the way. Then the i.MX23 specific definitions are added, also the code
+to distinguish both SoCs at run-time.
+Up to here the existing driver will now run on an i.MX23 Soc as well.
+
+When the i.MX23 SoC is running from battery it seems not to be a good idea to
+run a busy loop to detect touches and their locations. The fourth patch adds a
+fully interrupt driven implementation which makes use of the built-in delay
+and multiple sample features of the touchscreen controller. This will reduce
+the interrupt load to a minimum.
+
+The last patch in this series just removes the existing busy loop
+implementation.
+
+Some restrictions/open questions:
+
+- yet tested on i.MX23 SoC only
+- touchscreen parametrisation ability is provided (with fixed values for now)
+  but should be done via device tree. Some recommendations how to define the
+  bindings would be helpful
+- has someone a good idea how to implement a reliable pressure measurement if
+  the resistances of the touchscree's plates are unknown?
+
+Changes since v2:
+
+- useless debug output removed
+- bug in the pressure calculation routine fixed
+
+Changes since v1:
+
+- adding register access functions to make the existing code more readable
+- adding some functions to distinguish the SoCs at run-time to avoid if-else
+  contructs whenever differences in the register layout between i.MX23 and
+  i.MX28 must be handled
+
+Comments are welcome.
+
+Juergen
 
