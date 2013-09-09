@@ -1,95 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f51.google.com ([74.125.83.51]:61296 "EHLO
-	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751174Ab3IIKKg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 06:10:36 -0400
-Received: by mail-ee0-f51.google.com with SMTP id c1so3003872eek.38
-        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 03:10:35 -0700 (PDT)
+Received: from mail-ee0-f42.google.com ([74.125.83.42]:63521 "EHLO
+	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752516Ab3IIKKf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 06:10:35 -0400
+Received: by mail-ee0-f42.google.com with SMTP id b45so3091691eek.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 03:10:34 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
 	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 13/14] iio: sensors-core: st: Clean-up error handling in st_sensors_init_sensor()
-Date: Mon,  9 Sep 2013 11:10:09 +0100
-Message-Id: <1378721410-30937-14-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 12/14] Documentation: dt: i2c: Add LPS001WP to the Trivial Devices list
+Date: Mon,  9 Sep 2013 11:10:08 +0100
+Message-Id: <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
 In-Reply-To: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
 References: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Strip out all those unnecessary gotos and just return the error right away.
-
-Aids to simplicity and reduces code.
+LPS001WP is a Pressure and Temperature sensor.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ .../devicetree/bindings/iio/pressure/lps001wp.txt   | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index eb261a5..05030e4 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -211,8 +211,7 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 		if (sdata->sensor->drdy_irq.mask_int1 == 0) {
- 			dev_err(&indio_dev->dev,
- 					"DRDY on INT1 not available.\n");
--			err = -EINVAL;
--			goto init_error;
-+			return -EINVAL;
- 		}
- 		sdata->drdy_int_pin = 1;
- 		break;
-@@ -220,42 +219,39 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 		if (sdata->sensor->drdy_irq.mask_int2 == 0) {
- 			dev_err(&indio_dev->dev,
- 					"DRDY on INT2 not available.\n");
--			err = -EINVAL;
--			goto init_error;
-+			return -EINVAL;
- 		}
- 		sdata->drdy_int_pin = 2;
- 		break;
- 	default:
- 		dev_err(&indio_dev->dev, "DRDY on pdata not valid.\n");
--		err = -EINVAL;
--		goto init_error;
-+		return -EINVAL;
- 	}
- 
- 	err = st_sensors_set_enable(indio_dev, false);
- 	if (err < 0)
--		goto init_error;
-+		return err;
- 
- 	if (sdata->current_fullscale) {
- 		err = st_sensors_set_fullscale(indio_dev,
- 					       sdata->current_fullscale->num);
- 		if (err < 0)
--			goto init_error;
-+			return err;
- 	} else
- 		dev_info(&indio_dev->dev, "Full-scale not possible\n");
- 
- 	err = st_sensors_set_odr(indio_dev, sdata->odr);
- 	if (err < 0)
--		goto init_error;
-+		return err;
- 
- 	/* set BDU */
- 	err = st_sensors_write_data_with_mask(indio_dev,
- 			sdata->sensor->bdu.addr, sdata->sensor->bdu.mask, true);
- 	if (err < 0)
--		goto init_error;
-+		return err;
- 
- 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
- 
--init_error:
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_init_sensor);
+diff --git a/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+new file mode 100644
+index 0000000..45cb45c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+@@ -0,0 +1,21 @@
++* STMicroelectronics Pressure Sensor
++
++Required properties:
++  - compatible: Should be "st,lps001wp"
++  - reg: The I2C address of the sensor
++
++Optional properties:
++  - vdd-supply: Phandle to the Vdd supply regulator
++  - vddio-supply: Phandle to the Vdd-IO supply regulator
++
++Example:
++
++i2c@80128000 {
++        lps001wp@5c {
++                compatible = "st,lps001wp";
++                reg = <0x5c>;
++
++                vdd-supply = <&ab8500_ldo_aux1_reg>;
++                vddio-supply = <&db8500_vsmps2_reg>;
++        };
++};
 -- 
 1.8.1.2
 
