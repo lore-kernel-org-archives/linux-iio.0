@@ -1,54 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:37067 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750848Ab3IIIDc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 04:03:32 -0400
-From: Juergen Beisert <jbe@pengutronix.de>
+Received: from mailout1.samsung.com ([203.254.224.24]:55369 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751919Ab3IIGKn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 02:10:43 -0400
+Message-id: <522D6661.8030000@samsung.com>
+Date: Mon, 09 Sep 2013 15:10:41 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
 To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
-	marex@denx.de, fabio.estevam@freescale.com, jic23@cam.ac.uk
-Subject: [PATCH 1/5] Staging/iio/adc/touchscreen/MXS: distinguish i.MX23's and i.MX28's LRADC
-Date: Mon,  9 Sep 2013 10:03:17 +0200
-Message-Id: <1378713801-1182-2-git-send-email-jbe@pengutronix.de>
-In-Reply-To: <1378713801-1182-1-git-send-email-jbe@pengutronix.de>
-References: <1378713801-1182-1-git-send-email-jbe@pengutronix.de>
+Cc: devicetree@vger.kernel.org, jic23@cam.ac.uk,
+	rob.herring@calxeda.com, pawel.moll@arm.com, mark.rutland@arm.com,
+	warren@wwwdotorg.org, ian.campbell@citrix.com,
+	Sylwester Nawrocki <s.nawrocki@samsung.com>,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	Jaehoon Chung <jh80.chung@samsung.com>,
+	Beomho Seo <beomho.seo@samsung.com>
+Subject: [PATCH 2/2] DT: Add binding documentation for CM36651 proximity/light
+ sensor
+Content-type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The LRADC units in i.MX23 and i.MX28 differ and we need to distinguish both
-SoC variants in order to make the touchscreen work on i.MX23
+This patch add device tree binding documentation for CM36651
+proximity/light sensor.
 
-Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
-CC: linux-arm-kernel@lists.infradead.org
-CC: devel@driverdev.osuosl.org
-CC: Marek Vasut <marex@denx.de>
-CC: Fabio Estevam <fabio.estevam@freescale.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/iio/light/cm36651.txt      |   24
+++++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 2 files changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index a08c173..dffca90 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -174,6 +174,8 @@ struct mxs_lradc {
- 
- 	struct input_dev	*ts_input;
- 	struct work_struct	ts_work;
+diff --git a/Documentation/devicetree/bindings/iio/light/cm36651.txt
+b/Documentation/devicetree/bindings/iio/light/cm36651.txt
+new file mode 100644
+index 0000000..3a6ba38
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/cm36651.txt
+@@ -0,0 +1,24 @@
++* Capella CM36651 I2C Proximity and Color Light sensor
 +
-+	enum mxs_lradc_id	soc;
- };
- 
- #define	LRADC_CTRL0				0x00
-@@ -920,6 +922,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 	}
- 
- 	lradc = iio_priv(iio);
-+	lradc->soc = (enum mxs_lradc_id)of_id->data;
- 
- 	/* Grab the memory area */
- 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++Required properties:
++- compatible: must be "capella,cm36651"
++- reg: the I2C address of the device
++- interrupts: interrupt to which the chip is connected
++- vled-supply: regulator for the sensor device, as covered
++	       in ../../regulator/regulator.txt
++
++Example:
++
++	i2c_cm36651: i2c-gpio {
++		/* ... */
++
++		cm36651@18 {
++			compatible = "capella,cm36651";
++			reg = <0x18>;
++			interrupt-parent = <&gpx0>;
++			interrupts = <2 0>;
++			vled-supply = <&ps_als_reg>;
++		};
++
++		/* ... */
++	};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt
+b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index ec4d713..044796d 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -17,6 +17,7 @@ brcm	Broadcom Corporation
+ cavium	Cavium, Inc.
+ chrp	Common Hardware Reference Platform
+ cirrus	Cirrus Logic, Inc.
++capella	Capella Microsystems, Inc
+ cortina	Cortina Systems, Inc.
+ dallas	Maxim Integrated Products (formerly Dallas Semiconductor)
+ davicom	DAVICOM Semiconductor, Inc.
 -- 
-1.8.4.rc3
+1.7.9.5
 
+-- 
+Beomho Seo, Assistant Engineer
+System S/W Lab., S/W Platform Team, Software Center
+Samsung Electronics
