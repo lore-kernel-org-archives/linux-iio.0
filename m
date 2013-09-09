@@ -1,58 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f47.google.com ([74.125.83.47]:49221 "EHLO
-	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751980Ab3IILmJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 07:42:09 -0400
-Received: by mail-ee0-f47.google.com with SMTP id d49so3051528eek.6
-        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 04:42:08 -0700 (PDT)
-Date: Mon, 9 Sep 2013 12:42:04 +0100
+Received: from mail-ea0-f170.google.com ([209.85.215.170]:61063 "EHLO
+	mail-ea0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752487Ab3IIKKd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 06:10:33 -0400
+Received: by mail-ea0-f170.google.com with SMTP id h14so3033108eak.15
+        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 03:10:32 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v2 12/14] Documentation: dt: iio: Add binding for LPS001WP 
-Message-ID: <20130909114204.GF22938@lee--X1>
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 11/14] iio: pressure-core: st: Provide support for the Vdd_IO power supply
+Date: Mon,  9 Sep 2013 11:10:07 +0100
+Message-Id: <1378721410-30937-12-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
 References: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
- <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-LPS001WP is a Pressure and Temperature sensor.
+The power to some of the sensors are controlled by regulators. In most
+cases these are 'always on', but if not they will fail to work until
+the regulator is enabled using the relevant APIs. This patch allows for
+the Vdd_IO power supply to be specified by either platform data or
+Device Tree.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../devicetree/bindings/iio/pressure/lps001wp.txt   | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+ drivers/iio/pressure/st_pressure_core.c | 13 ++++++++++++-
+ include/linux/iio/common/st_sensors.h   |  2 ++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
-new file mode 100644
-index 0000000..45cb45c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
-@@ -0,0 +1,21 @@
-+* STMicroelectronics Pressure Sensor
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index f11cffc..330701c 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -319,7 +319,7 @@ void st_press_power_enable(struct iio_dev *indio_dev)
+ 	struct st_sensor_data *pdata = iio_priv(indio_dev);
+ 	int err;
+ 
+-	/* Regulators not mandatory, but if requested we should enable it. */
++	/* Regulators not mandatory, but if requested we should enable them. */
+ 	pdata->vdd = devm_regulator_get_optional(&indio_dev->dev, "vdd");
+ 	if (!IS_ERR(pdata->vdd)) {
+ 		err = regulator_enable(pdata->vdd);
+@@ -327,6 +327,14 @@ void st_press_power_enable(struct iio_dev *indio_dev)
+ 			dev_warn(&indio_dev->dev,
+ 				 "Failed to enable specified Vdd supply\n");
+ 	}
 +
-+Required properties:
-+  - compatible: Should be "st,lps001wp"
-+  - reg: The I2C address of the sensor
++	pdata->vdd_io = devm_regulator_get_optional(&indio_dev->dev, "vddio");
++	if (!IS_ERR(pdata->vdd_io)) {
++		err = regulator_enable(pdata->vdd_io);
++		if (err != 0)
++			dev_warn(&indio_dev->dev,
++				 "Failed to enable specified Vdd_IO supply\n");
++	}
+ }
+ 
+ void st_press_power_disable(struct iio_dev *indio_dev)
+@@ -335,6 +343,9 @@ void st_press_power_disable(struct iio_dev *indio_dev)
+ 
+ 	if (!IS_ERR(pdata->vdd))
+ 		regulator_disable(pdata->vdd);
 +
-+Optional properties:
-+  - vdd-supply: Phandle to the Vdd supply regulator
-+  - vddio-supply: Phandle to the Vdd-IO supply regulator
-+
-+Example:
-+
-+i2c@80128000 {
-+        lps001wp@5c {
-+                compatible = "st,lps001wp";
-+                reg = <0x5c>;
-+
-+                vdd-supply = <&ab8500_ldo_aux1_reg>;
-+                vddio-supply = <&db8500_vsmps2_reg>;
-+        };
-+};
++	if (!IS_ERR(pdata->vdd_io))
++		regulator_disable(pdata->vdd_io);
+ }
+ 
+ int st_press_common_probe(struct iio_dev *indio_dev,
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 968b84e..3c005eb 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -203,6 +203,7 @@ struct st_sensors {
+  * @sensor: Pointer to the current sensor struct in use.
+  * @current_fullscale: Maximum range of measure by the sensor.
+  * @vdd: Pointer to sensor's Vdd power supply
++ * @vdd_io: Pointer to sensor's Vdd-IO power supply
+  * @enabled: Status of the sensor (false->off, true->on).
+  * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
+  * @buffer_data: Data used by buffer part.
+@@ -219,6 +220,7 @@ struct st_sensor_data {
+ 	struct st_sensors *sensor;
+ 	struct st_sensor_fullscale_avl *current_fullscale;
+ 	struct regulator *vdd;
++	struct regulator *vdd_io;
+ 
+ 	bool enabled;
+ 	bool multiread_bit;
+-- 
+1.8.1.2
+
