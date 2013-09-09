@@ -1,20 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f42.google.com ([74.125.83.42]:63521 "EHLO
-	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752516Ab3IIKKf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 06:10:35 -0400
-Received: by mail-ee0-f42.google.com with SMTP id b45so3091691eek.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 03:10:34 -0700 (PDT)
+Received: from mail-ee0-f47.google.com ([74.125.83.47]:49221 "EHLO
+	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751980Ab3IILmJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2013 07:42:09 -0400
+Received: by mail-ee0-f47.google.com with SMTP id d49so3051528eek.6
+        for <linux-iio@vger.kernel.org>; Mon, 09 Sep 2013 04:42:08 -0700 (PDT)
+Date: Mon, 9 Sep 2013 12:42:04 +0100
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 12/14] Documentation: dt: i2c: Add LPS001WP to the Trivial Devices list
-Date: Mon,  9 Sep 2013 11:10:08 +0100
-Message-Id: <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2 12/14] Documentation: dt: iio: Add binding for LPS001WP 
+Message-ID: <20130909114204.GF22938@lee--X1>
 References: <1378721410-30937-1-git-send-email-lee.jones@linaro.org>
+ <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1378721410-30937-13-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -53,6 +56,3 @@ index 0000000..45cb45c
 +                vddio-supply = <&db8500_vsmps2_reg>;
 +        };
 +};
--- 
-1.8.1.2
-
