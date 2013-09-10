@@ -1,10 +1,10 @@
-Return-Path: <jbe@pengutronix.de>
-From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
-To: linux-arm-kernel@lists.infradead.org
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Dan Carpenter <dan.carpenter@oracle.com>
 Subject: Re: [PATCH 3/5] Staging/iio/adc/touchscreen/MXS: add i.MX23 support to the LRADC driver
-Date: Wed, 11 Sep 2013 09:06:57 +0200
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
- Marek Vasut <marex@denx.de>,
+Date: Tue, 10 Sep 2013 23:21:16 +0200
+Cc: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>,
+ linux-arm-kernel@lists.infradead.org,
  linux-iio@vger.kernel.org,
  devel@driverdev.osuosl.org,
  fabio.estevam@freescale.com,
@@ -14,30 +14,24 @@ In-Reply-To: <20130910205444.GB6329@mwanda>
 MIME-Version: 1.0
 Content-Type: Text/Plain;
   charset="iso-8859-1"
-Message-Id: <201309110906.57373.jbe@pengutronix.de>
+Message-Id: <201309102321.16382.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+Dear Dan Carpenter,
 
-On Tuesday 10 September 2013 22:54:44 Dan Carpenter wrote:
 > On Tue, Sep 10, 2013 at 09:36:14AM +0200, J=FCrgen Beisert wrote:
 > > > This patch seems to combine two things -- register access rework AND
 > > > adjustment of the driver for MX23 touchscreen.
-> >
+> >=20
 > > It reworks the register access to avoid the i.MX23/i.MX28 runtime
 > > decision all over the code again and again. This is what Dan has
 > > recommended in his comment.
->
+>=20
 > I thought the same as Marek that it would be better as two patches like
 > the one I sent, but I was also willing to let it slide if no one else
 > complained.
 
-Okay, new (re-worked) patch series will follow.
+Looks like Jurgen can now start cursing me ;-)
 
-Regards,
-Juergen
-
-=2D-=20
-Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0| Juergen Beisert =A0 =A0 =A0 =A0 =A0 =A0 |
-Linux Solutions for Science and Industry =A0 =A0 =A0| http://www.pengutroni=
-x.de/  |
+Best regards,
+Marek Vasut
