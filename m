@@ -1,84 +1,98 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 16 Sep 2013 09:22:17 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:50760 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752402Ab3IJMuI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:50:08 -0400
+Received: by mail-ee0-f50.google.com with SMTP id d51so3817214eek.23
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:50:07 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 21/38] iio: sensors-core: st: Clean-up error handling in
- st_sensors_read_axis_data()
-Message-ID: <20130916082217.GE3999@lee--X1>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 20/38] iio: sensors-core: st: Clean-up error handling in st_sensors_init_sensor()
+Date: Tue, 10 Sep 2013 13:49:21 +0100
+Message-Id: <1378817379-8238-21-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
- <1378817379-8238-22-git-send-email-lee.jones@linaro.org>
- <523495D0.1050002@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <523495D0.1050002@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 14 Sep 2013, Jonathan Cameron wrote:
+Strip out all those unnecessary gotos and just return the error right away.
 
-> On 09/10/13 13:49, Lee Jones wrote:
-> > Gets rid of those unnecessary gotos.
-> 
-> Unfortunately it introduced a bug whilst it is at it.  Sometimes
-> those gotos are necessary and the 'right' way to do things.
-> > 
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/iio/common/st_sensors/st_sensors_core.c | 17 +++++++----------
-> >  1 file changed, 7 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> > index 8c4c54c..148f0e5 100644
-> > --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> > +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> > @@ -331,26 +331,23 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
-> >  	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
-> >  
-> >  	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
-> > -	if (!outdata) {
-> > -		err = -EINVAL;
-> > -		goto st_sensors_read_axis_data_error;
-> > -	}
-> > +	if (!outdata)
-> > +		return -ENOMEM;
-> I agree this change makes complete sense.
-> >  
-> >  	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> >  				ch->address, byte_for_channel,
-> >  				outdata, sdata->multiread_bit);
-> > -	if (err < 0)
-> > -		goto st_sensors_free_memory;
-> > +	if (err < 0) {
-> > +		kfree(outdata);
-> > +		return err;
-> > +	}
-> I don't like this change as....
-> >  
-> >  	if (byte_for_channel == 2)
-> >  		*data = (s16)get_unaligned_le16(outdata);
-> >  	else if (byte_for_channel == 3)
-> >  		*data = (s32)st_sensors_get_unaligned_le24(outdata);
-> >  
-> > -st_sensors_free_memory:
-> > -	kfree(outdata);
-> you now don't free out data in the case of no error.  This is precisely the case
-> where a goto is the correct way to handle things as the free need to occur whether
-> or not the error occurs.
+Aids to simplicity and reduces code.
 
-Ah, you're quite right. I'll fix up.
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-> > -st_sensors_read_axis_data_error:
-> > -	return err;
-> > +	return 0;
-> >  }
-> >  
-> >  int st_sensors_read_info_raw(struct iio_dev *indio_dev,
-> > 
-
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index b86cad2..8c4c54c 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -208,8 +208,7 @@ int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ 		if (sdata->sensor->drdy_irq.mask_int1 == 0) {
+ 			dev_err(&indio_dev->dev,
+ 					"DRDY on INT1 not available.\n");
+-			err = -EINVAL;
+-			goto init_error;
++			return -EINVAL;
+ 		}
+ 		sdata->drdy_int_pin = 1;
+ 		break;
+@@ -217,15 +216,13 @@ int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ 		if (sdata->sensor->drdy_irq.mask_int2 == 0) {
+ 			dev_err(&indio_dev->dev,
+ 					"DRDY on INT2 not available.\n");
+-			err = -EINVAL;
+-			goto init_error;
++			return -EINVAL;
+ 		}
+ 		sdata->drdy_int_pin = 2;
+ 		break;
+ 	default:
+ 		dev_err(&indio_dev->dev, "DRDY on pdata not valid.\n");
+-		err = -EINVAL;
+-		goto init_error;
++		return -EINVAL;
+ 	}
+ 
+ 	return 0;
+@@ -244,29 +241,28 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 
+ 	err = st_sensors_set_enable(indio_dev, false);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	if (sdata->current_fullscale) {
+ 		err = st_sensors_set_fullscale(indio_dev,
+ 					       sdata->current_fullscale->num);
+ 		if (err < 0)
+-			goto init_error;
++			return err;
+ 	} else
+ 		dev_info(&indio_dev->dev, "Full-scale not possible\n");
+ 
+ 	err = st_sensors_set_odr(indio_dev, sdata->odr);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	/* set BDU */
+ 	err = st_sensors_write_data_with_mask(indio_dev,
+ 			sdata->sensor->bdu.addr, sdata->sensor->bdu.mask, true);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
+ 
+-init_error:
+ 	return err;
+ }
+ EXPORT_SYMBOL(st_sensors_init_sensor);
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.1.2
+
