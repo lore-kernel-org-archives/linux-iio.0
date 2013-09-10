@@ -1,65 +1,106 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Wed, 11 Sep 2013 16:35:47 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>, arnd@arndb.de,
-	linux-iio@vger.kernel.org, linus.walleij@linaro.org,
-	linux-kernel@vger.kernel.org, jic23@cam.ac.uk, denis.ciocca@st.com,
-	linux-arm-kernel@lists.infradead.org
-Message-ID: <20130911153547.GU29403@sirena.org.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ee0-f48.google.com ([74.125.83.48]:62221 "EHLO
+	mail-ee0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752395Ab3IJMuO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:50:14 -0400
+Received: by mail-ee0-f48.google.com with SMTP id l10so3837997eei.21
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:50:13 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 26/38] iio: pressure-core: st: Clean-up probe() function
+Date: Tue, 10 Sep 2013 13:49:27 +0100
+Message-Id: <1378817379-8238-27-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
- <1378817379-8238-28-git-send-email-lee.jones@linaro.org>
- <43055af7-991f-4122-b308-a3dcddbbb72a@email.android.com>
- <20130911071053.GD11227@lee--X1>
- <52301963.5030006@metafoo.de>
- <20130911072955.GG11227@lee--X1>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="e5zRiGm/7Jpxr3Pr"
-In-Reply-To: <20130911072955.GG11227@lee--X1>
-Subject: Re: [PATCH 27/38] iio: pressure-core: st: Give some indication if
- device probing was successful
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+This patch contains some pretty basic clean-ups in probe() pertaining to
+the simplification of error handling and a couple of readability adaptions.
 
---e5zRiGm/7Jpxr3Pr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/pressure/st_pressure_core.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-On Wed, Sep 11, 2013 at 08:29:55AM +0100, Lee Jones wrote:
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 3abada2..6ffd949 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -232,21 +232,23 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
+ int st_press_common_probe(struct iio_dev *indio_dev,
+ 				struct st_sensors_platform_data *plat_data)
+ {
+-	int err;
+ 	struct st_sensor_data *pdata = iio_priv(indio_dev);
++	int irq = pdata->get_irq_data_ready(indio_dev);
++	int err;
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &press_info;
+ 
+ 	err = st_sensors_check_device_support(indio_dev,
+-				ARRAY_SIZE(st_press_sensors), st_press_sensors);
++					      ARRAY_SIZE(st_press_sensors),
++					      st_press_sensors);
+ 	if (err < 0)
+-		goto st_press_common_probe_error;
++		return err;
+ 
+ 	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+-	pdata->multiread_bit = pdata->sensor->multi_read_bit;
+-	indio_dev->channels = pdata->sensor->ch;
+-	indio_dev->num_channels = pdata->sensor->num_ch;
++	pdata->multiread_bit     = pdata->sensor->multi_read_bit;
++	indio_dev->channels      = pdata->sensor->ch;
++	indio_dev->num_channels  = pdata->sensor->num_ch;
+ 
+ 	if (pdata->sensor->fs.addr != 0)
+ 		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+@@ -261,32 +263,30 @@ int st_press_common_probe(struct iio_dev *indio_dev,
+ 
+ 	err = st_sensors_init_sensor(indio_dev, plat_data);
+ 	if (err < 0)
+-		goto st_press_common_probe_error;
++		return err;
+ 
+-	if (pdata->get_irq_data_ready(indio_dev) > 0) {
++	if (irq > 0) {
+ 		err = st_press_allocate_ring(indio_dev);
+ 		if (err < 0)
+-			goto st_press_common_probe_error;
++			return err;
+ 
+ 		err = st_sensors_allocate_trigger(indio_dev,
+-							ST_PRESS_TRIGGER_OPS);
++						  ST_PRESS_TRIGGER_OPS);
+ 		if (err < 0)
+ 			goto st_press_probe_trigger_error;
+ 	}
+ 
+ 	err = iio_device_register(indio_dev);
+-	if (err)
++	if (err && irq > 0)
+ 		goto st_press_device_register_error;
+ 
+ 	return err;
+ 
+ st_press_device_register_error:
+-	if (pdata->get_irq_data_ready(indio_dev) > 0)
+-		st_sensors_deallocate_trigger(indio_dev);
++	st_sensors_deallocate_trigger(indio_dev);
+ st_press_probe_trigger_error:
+-	if (pdata->get_irq_data_ready(indio_dev) > 0)
+-		st_press_deallocate_ring(indio_dev);
+-st_press_common_probe_error:
++	st_press_deallocate_ring(indio_dev);
++
+ 	return err;
+ }
+ EXPORT_SYMBOL(st_press_common_probe);
+-- 
+1.8.1.2
 
-> Only if you print out every regulator, clock, GPIO pin and things of
-> this nature. Key hardware blocks such as; SD, Flash, USB, Eth, HDMI,
-> Audio, UART, GPIO and I2C controllers and Sensors I think deserve a
-> one line "I'm here and working" message.
-
-The usual rule people apply with this stuff is if the driver has read
-back information it can display from the hardware (eg, a revision) then
-that's OK.  Things that are likely to crash the system if they fail tend
-to also be OK (this is why the regualtor API is quite chatty for
-example, a lot of the things it does can cause an immediate crash).
-
---e5zRiGm/7Jpxr3Pr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSMI3KAAoJELSic+t+oim9X14P/2E+OPY2jRzMrKGXW10ENG/2
-wFGvzxoMlWzWDCthzoO/oUr6ymY+GuTXaCgbZxSC5WpSKdM+LW0SfWJ/O97T57w/
-yPaWLrPc29mQW+cs/8/sJtMFyeMEVkA83bn3b7QheXvNKj96haf+1vEGpZKMO2+Z
-1+FzK8O1Z+7bX8GeHQWmEIxUsFdgZmqF60jAg5lNPuNZLg+x2dAk2cQDgjAb02M2
-euJbqN95+jt5PkWiVF4uasnletSSeJZg0j4KkZ+A9Zhk3rRidfna0aqNG8vsdMju
-OvnHQhU4XmqdTYDgWKqQYbyu1y+mVwiHpJfgSOfiqqRQnQwHkjGoScqBjT8fKzJh
-FqJPbEvvNH1RP74Xa4tJ5yJdgMw9hBugdASfOOPfquep09bpHYyupG7SI0OsRoMW
-n5uCAdk0zzBUErIktM26C69ps/icFQ0zdeQMVM58ngsEi1xWC+Bsw25dcqlQCVbC
-6VERGBJec9ZWhUwUVsBcGkuWZZCEDs1WNFKZX4Yp8TN7a0QnfUjzzSESM2w2lgw6
-9bQYTWGt7vgK+Mex/uIYfBRbSExkCOQm7gPwqQfF9PJ+1KCB0v38cAQBkm9r6ENw
-18lf16Ksx4MdiAKNBuS5LFYVXeeCLQtX/sMje4sAmty1H2RuMjb6QX1vk/mv+kgU
-aDVn71lJNRb40HG2BBKK
-=tOhT
------END PGP SIGNATURE-----
-
---e5zRiGm/7Jpxr3Pr--
