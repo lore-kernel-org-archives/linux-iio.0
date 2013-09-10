@@ -1,65 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f41.google.com ([74.125.83.41]:57799 "EHLO
-	mail-ee0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751244Ab3IJMts (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:49:48 -0400
-Received: by mail-ee0-f41.google.com with SMTP id d17so3892699eek.0
-        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:49:47 -0700 (PDT)
+Received: from mail-ee0-f44.google.com ([74.125.83.44]:64464 "EHLO
+	mail-ee0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752892Ab3IJMuZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:50:25 -0400
+Received: by mail-ee0-f44.google.com with SMTP id b47so3857724eek.17
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:50:24 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v3 00/38] iio: ST clean-ups and new sensor support
-Date: Tue, 10 Sep 2013 13:49:01 +0100
-Message-Id: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 38/38] iio: magn-core: st: Provide support for the LSM303DLH
+Date: Tue, 10 Sep 2013 13:49:39 +0100
+Message-Id: <1378817379-8238-39-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
+References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Trivial patch adding the LSM303DLH to the list of already supported
+Magnetometer Sensors.
 
-Sorry for the continued development and resubmission. I won't write
-anymore patches now. At least until these have been accepted.
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/magnetometer/st_magn.h      | 1 +
+ drivers/iio/magnetometer/st_magn_core.c | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-This patch-set includes a few clean-ups surrounding error handling and
-non-mandatory functionality along with regulator support and the addition
-of a new pressure/temperature sensor (LPS001WP) and extended support for
-a new magnetometer sensor (LSM303DLH).
-
-Everything has been tested with Device Tree.
-  
-v2:
- - Rebased onto Linux -next as requested by Jonathan
- - Reworked clean-up patch to address Jonathan's concerns
- - Added binding document (inc regulators)
- - Extended regulator support in the driver
- - Re-worked Data Ready pin handling
-
-v3:
- - Standardise sensor names: <model>_<sensor-type>
- - Added error handling clean-ups
- - More binding documents; for magn, accel and gyro
- - Message on successful sensor bring-up; for press, magn, accel and gyro
- - More device enablement for ux500 by way of CONFIGs
- - New neat reorder/grouping of patches 
-
- Documentation/devicetree/bindings/iio/accel/lsm303dlh.txt        |  21 ++++++++
- Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt          |  21 ++++++++
- Documentation/devicetree/bindings/iio/magnetometer/lsm303dlh.txt |  21 ++++++++
- Documentation/devicetree/bindings/iio/pressure/lps001wp.txt      |  21 ++++++++
- arch/arm/boot/dts/ste-dbx5x0.dtsi                                |   5 --
- arch/arm/boot/dts/ste-snowball.dts                               |  34 ++++++++++++
- arch/arm/configs/u8500_defconfig                                 |   5 ++
- drivers/iio/accel/st_accel.h                                     |   4 +-
- drivers/iio/accel/st_accel_core.c                                |  28 +++++-----
- drivers/iio/common/st_sensors/st_sensors_core.c                  |  79 +++++++++++++++-------------
- drivers/iio/gyro/st_gyro.h                                       |   8 +--
- drivers/iio/gyro/st_gyro_core.c                                  |  24 +++++----
- drivers/iio/magnetometer/st_magn.h                               |   3 +-
- drivers/iio/magnetometer/st_magn_core.c                          |  27 +++++-----
- drivers/iio/pressure/st_pressure.h                               |   3 +-
- drivers/iio/pressure/st_pressure_core.c                          | 303 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------------------
- drivers/iio/pressure/st_pressure_i2c.c                           |   1 +
- include/linux/iio/common/st_sensors.h                            |   6 +++
- 18 files changed, 453 insertions(+), 161 deletions(-)
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index f185720..19b53e3 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -15,6 +15,7 @@
+ #include <linux/iio/common/st_sensors.h>
+ 
+ #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
++#define LSM303DLH_MAGN_DEV_NAME		"lsm303dlh_magn"
+ #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
+ #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl_magn"
+ 
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 12e7e79..b2e2917 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -151,7 +151,8 @@ static const struct st_sensors st_magn_sensors[] = {
+ 		.wai = ST_MAGN_1_WAI_EXP,
+ 		.sensors_supported = {
+ 			[0] = LSM303DLHC_MAGN_DEV_NAME,
+-			[1] = LSM303DLM_MAGN_DEV_NAME,
++			[1] = LSM303DLH_MAGN_DEV_NAME,
++			[0] = LSM303DLM_MAGN_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
+ 		.odr = {
+-- 
+1.8.1.2
 
