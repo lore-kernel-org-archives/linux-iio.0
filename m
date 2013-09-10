@@ -1,57 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f54.google.com ([74.125.83.54]:52056 "EHLO
-	mail-ee0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757395Ab3IPLIi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 07:08:38 -0400
-Received: by mail-ee0-f54.google.com with SMTP id e53so1922120eek.41
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 04:08:37 -0700 (PDT)
-Date: Mon, 16 Sep 2013 12:08:34 +0100
+Return-Path: <lee.jones@linaro.org>
 From: Lee Jones <lee.jones@linaro.org>
-To: Denis CIOCCA <denis.ciocca@st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 32/38] iio: accel-core: st: Move LSM303DLH into correct
- group
-Message-ID: <20130916110834.GL3999@lee--X1>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de,
+	linus.walleij@linaro.org,
+	denis.ciocca@st.com,
+	linux-iio@vger.kernel.org,
+	Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 31/38] iio: accel-core: st: Clean up error handling in probe()
+Date: Tue, 10 Sep 2013 13:49:32 +0100
+Message-Id: <1378817379-8238-32-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
- <1378817379-8238-33-git-send-email-lee.jones@linaro.org>
- <5234A20F.7040008@kernel.org>
- <20130916080546.GC3999@lee--X1>
- <5236CD17.5010901@st.com>
- <20130916093812.GG3999@lee--X1>
- <5236D5F0.2030601@st.com>
- <20130916101925.GJ3999@lee--X1>
- <5236DC25.3060909@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5236DC25.3060909@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 16 Sep 2013, Denis CIOCCA wrote:
+Reduce the amount of those unnecessary goto calls, as in most cases
+we can simply return immediately. We also only call for the IRQ number
+once and use that value throughout.
 
-> >> I've tried with real device...Unfortunately, you are right for name on
-> >> the package...
-> >> So, are you using the LSM303DLHC?
-> > According to my datasheet [1], I have the LSM303DLH.
-> >
-> > [1] http://www.calao-systems.com/repository/pub/EMBEDDED%20COMPUTERS/SKY-S9500-ULP-XXX/C12-SDK/SCH-00103-B11.pdf
-> >
-> Mhh...I saw the LSM303DLHC...
-> The LSM303DLH is not populated, there is only the footprint but is not 
-> soldered...
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/accel/st_accel_core.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-The documentation says is the other way round.
-
-See the big "Not populated" box around the LSM303DLHC?
-
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 1458343..ea62291 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -452,8 +452,9 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+ int st_accel_common_probe(struct iio_dev *indio_dev,
+ 				struct st_sensors_platform_data *plat_data)
+ {
+-	int err;
+ 	struct st_sensor_data *adata = iio_priv(indio_dev);
++	int irq = adata->get_irq_data_ready(indio_dev);
++	int err;
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &accel_info;
+@@ -461,7 +462,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
+ 	err = st_sensors_check_device_support(indio_dev,
+ 				ARRAY_SIZE(st_accel_sensors), st_accel_sensors);
+ 	if (err < 0)
+-		goto st_accel_common_probe_error;
++		return err;
+ 
+ 	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
+ 	adata->multiread_bit = adata->sensor->multi_read_bit;
+@@ -478,12 +479,12 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
+ 
+ 	err = st_sensors_init_sensor(indio_dev, plat_data);
+ 	if (err < 0)
+-		goto st_accel_common_probe_error;
++		return err;
+ 
+-	if (adata->get_irq_data_ready(indio_dev) > 0) {
++	if (irq > 0) {
+ 		err = st_accel_allocate_ring(indio_dev);
+ 		if (err < 0)
+-			goto st_accel_common_probe_error;
++			return err;
+ 
+ 		err = st_sensors_allocate_trigger(indio_dev,
+ 						 ST_ACCEL_TRIGGER_OPS);
+@@ -492,18 +493,16 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	err = iio_device_register(indio_dev);
+-	if (err)
++	if (err && irq > 0)
+ 		goto st_accel_device_register_error;
+ 
+ 	return err;
+ 
+ st_accel_device_register_error:
+-	if (adata->get_irq_data_ready(indio_dev) > 0)
+-		st_sensors_deallocate_trigger(indio_dev);
++	st_sensors_deallocate_trigger(indio_dev);
+ st_accel_probe_trigger_error:
+-	if (adata->get_irq_data_ready(indio_dev) > 0)
+-		st_accel_deallocate_ring(indio_dev);
+-st_accel_common_probe_error:
++	st_accel_deallocate_ring(indio_dev);
++
+ 	return err;
+ }
+ EXPORT_SYMBOL(st_accel_common_probe);
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.1.2
