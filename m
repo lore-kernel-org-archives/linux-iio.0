@@ -1,51 +1,45 @@
-Return-Path: <jbe@pengutronix.de>
-From: Juergen Beisert <jbe@pengutronix.de>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	devel@driverdev.osuosl.org,
-	marex@denx.de,
-	fabio.estevam@freescale.com,
-	jic23@cam.ac.uk
-Subject: [PATCH 1/6] Staging/iio/adc/touchscreen/MXS: distinguish i.MX23's and i.MX28's LRADC
-Date: Wed, 11 Sep 2013 10:18:26 +0200
-Message-Id: <1378887511-24530-2-git-send-email-jbe@pengutronix.de>
-In-Reply-To: <1378887511-24530-1-git-send-email-jbe@pengutronix.de>
-References: <1378887511-24530-1-git-send-email-jbe@pengutronix.de>
+Return-Path: <matthias.list@kaehlcke.net>
+Date: Tue, 10 Sep 2013 23:02:28 +0200
+From: Matthias Kaehlcke <matthias.list@kaehlcke.net>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	"Patil, Rachna" <rachna@ti.com>, Felipe Balbi <balbi@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] iio: ti_am335x_adc: Take touchscreen channels into
+ account for conversion timeout
+Message-ID: <20130910210228.GC30481@raspi>
+References: <f1830a7d0debce351966d2f3232158313d87dcc0.1378846446.git.matthias@kaehlcke.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <f1830a7d0debce351966d2f3232158313d87dcc0.1378846446.git.matthias@kaehlcke.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-The LRADC units in i.MX23 and i.MX28 differ and we need to distinguish both
-SoC variants in order to make the touchscreen work on i.MX23
+The calculation of the old conversion timeout value was based on the number of
+channels used by this driver. This doesn't take into account that other channels
+can be used by the touchscreen driver. Adjust the timeout value to the maximum
+if the touchscreen driver is enabled
 
-Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
-CC: linux-arm-kernel@lists.infradead.org
-CC: devel@driverdev.osuosl.org
-CC: Marek Vasut <marex@denx.de>
-CC: Fabio Estevam <fabio.estevam@freescale.com>
-CC: Jonathan Cameron <jic23@cam.ac.uk>
+Signed-off-by: Matthias Kaehlcke <matthias@kaehlcke.net>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/ti_am335x_adc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index a08c173..dffca90 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -174,6 +174,8 @@ struct mxs_lradc {
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 3ceac3e..898fc78 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -146,7 +146,11 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	bool found = false;
+ 	u32 step_en;
+ 	unsigned long timeout = jiffies + usecs_to_jiffies
++#ifdef CONFIG_TOUCHSCREEN_TI_AM335X_TSC
++				(IDLE_TIMEOUT * TOTAL_CHANNELS);
++#else
+ 				(IDLE_TIMEOUT * adc_dev->channels);
++#endif
+ 	step_en = get_adc_step_mask(adc_dev);
+ 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
  
- 	struct input_dev	*ts_input;
- 	struct work_struct	ts_work;
-+
-+	enum mxs_lradc_id	soc;
- };
- 
- #define	LRADC_CTRL0				0x00
-@@ -920,6 +922,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
- 	}
- 
- 	lradc = iio_priv(iio);
-+	lradc->soc = (enum mxs_lradc_id)of_id->data;
- 
- 	/* Grab the memory area */
- 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
 1.8.4.rc3
