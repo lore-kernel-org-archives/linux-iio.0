@@ -8,35 +8,43 @@ Cc: arnd@arndb.de,
 	denis.ciocca@st.com,
 	linux-iio@vger.kernel.org,
 	Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 33/38] iio: accel-core: st: Give some indication if device probing was successful
-Date: Tue, 10 Sep 2013 13:49:34 +0100
-Message-Id: <1378817379-8238-34-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 32/38] iio: accel-core: st: Move LSM303DLH into correct group
+Date: Tue, 10 Sep 2013 13:49:33 +0100
+Message-Id: <1378817379-8238-33-git-send-email-lee.jones@linaro.org>
 In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-At the moment the driver is silent in some error cases and if successful.
-Prior to this patch there was no clear way to know if the driver succeeded
-or not without looking deep into sysfs.
+The LSM303DLH's WAI (WhoAmI) is 0x33, meaning it should be enabled by
+Accel Sensor group one. For the device to probe without error, we'll
+need to ensure it's registered with the correct WAI.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/accel/st_accel_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/accel/st_accel_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 03a2b6b..a003f3b 100644
+index ea62291..03a2b6b 100644
 --- a/drivers/iio/accel/st_accel_core.c
 +++ b/drivers/iio/accel/st_accel_core.c
-@@ -496,6 +496,9 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
- 	if (err && irq > 0)
- 		goto st_accel_device_register_error;
- 
-+	if (!err)
-+		dev_info(&indio_dev->dev, "Successfully registered\n");
-+
- 	return err;
- 
- st_accel_device_register_error:
+@@ -170,6 +170,7 @@ static const struct st_sensors st_accel_sensors[] = {
+ 			[2] = LSM330D_ACCEL_DEV_NAME,
+ 			[3] = LSM330DL_ACCEL_DEV_NAME,
+ 			[4] = LSM330DLC_ACCEL_DEV_NAME,
++			[5] = LSM303DLH_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+@@ -238,8 +239,7 @@ static const struct st_sensors st_accel_sensors[] = {
+ 		.sensors_supported = {
+ 			[0] = LIS331DLH_ACCEL_DEV_NAME,
+ 			[1] = LSM303DL_ACCEL_DEV_NAME,
+-			[2] = LSM303DLH_ACCEL_DEV_NAME,
+-			[3] = LSM303DLM_ACCEL_DEV_NAME,
++			[2] = LSM303DLM_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
 -- 
 1.8.1.2
