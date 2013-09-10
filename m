@@ -1,98 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39623 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750786Ab3IPPcT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 11:32:19 -0400
-In-Reply-To: <20130916081724.GD3999@lee--X1>
-References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org> <1378817379-8238-26-git-send-email-lee.jones@linaro.org> <52349A4E.10401@kernel.org> <20130916081724.GD3999@lee--X1>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 25/38] iio: pressure-core: st: Allow for number of channels to vary
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 16 Sep 2013 16:32:14 +0100
-To: Lee Jones <lee.jones@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
-	denis.ciocca@st.com, linux-iio@vger.kernel.org
-Message-ID: <af83f89d-0d15-473d-8365-40d1fecca728@email.android.com>
+Received: from mail-ea0-f179.google.com ([209.85.215.179]:60324 "EHLO
+	mail-ea0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752546Ab3IJMuM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:50:12 -0400
+Received: by mail-ea0-f179.google.com with SMTP id b10so3788037eae.24
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:50:11 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 24/38] iio: pressure-core: st: Expand and rename LPS331AP's channel descriptor
+Date: Tue, 10 Sep 2013 13:49:25 +0100
+Message-Id: <1378817379-8238-25-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
+References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Due to the MACRO used, the task of reading, understanding and maintaining
+the LPS331AP's channel descriptor is substantially difficult. This patch
+is based on the view that it's better to have easy to read, maintainable
+code than to save a few lines here and there. For that reason we're
+expanding the array so initialisation is completed in full.
 
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/pressure/st_pressure_core.c | 45 +++++++++++++++++++++++++--------
+ 1 file changed, 34 insertions(+), 11 deletions(-)
 
-Lee Jones <lee.jones@linaro.org> wrote:
->On Sat, 14 Sep 2013, Jonathan Cameron wrote:
->
->> On 09/10/13 13:49, Lee Jones wrote:
->> > At the moment the number of channels specified is dictated by the
->first
->> > sensor supported by the driver. As we add support for more sensors
->this
->> > is likely to vary. Instead of using the ARRAY_SIZE() of the
->LPS331AP's
->> > channel specifier we'll use a new adaptable 'struct st_sensors'
->element
->> > instead.
->> > 
->> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
->> Applied with Denis ack (again it should have been here)
->
->Ah, you're going to take the patches one-by-one?
->
->After amending the drivers as per your review I was going to send a
->final time with all Acks applied. Then, once all maintainer Acks were
->obtained I was going to send you a pull-request.
->
->Perhaps I should have communicated the intent sooner.
->
->Future submissions will have all Acks applied in this case.
-
-Quite a few of this series stood alone just fine so I grabbed them :)
->
->> > ---
->> >  drivers/iio/pressure/st_pressure_core.c | 3 ++-
->> >  include/linux/iio/common/st_sensors.h   | 1 +
->> >  2 files changed, 3 insertions(+), 1 deletion(-)
->> > 
->> > diff --git a/drivers/iio/pressure/st_pressure_core.c
->b/drivers/iio/pressure/st_pressure_core.c
->> > index 60c2ee4..3abada2 100644
->> > --- a/drivers/iio/pressure/st_pressure_core.c
->> > +++ b/drivers/iio/pressure/st_pressure_core.c
->> > @@ -107,6 +107,7 @@ static const struct st_sensors
->st_press_sensors[] = {
->> >  			[0] = LPS331AP_PRESS_DEV_NAME,
->> >  		},
->> >  		.ch = (struct iio_chan_spec *)st_press_lps331ap_channels,
->> > +		.num_ch = ARRAY_SIZE(st_press_lps331ap_channels),
->> >  		.odr = {
->> >  			.addr = ST_PRESS_LPS331AP_ODR_ADDR,
->> >  			.mask = ST_PRESS_LPS331AP_ODR_MASK,
->> > @@ -245,7 +246,7 @@ int st_press_common_probe(struct iio_dev
->*indio_dev,
->> >  	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
->> >  	pdata->multiread_bit = pdata->sensor->multi_read_bit;
->> >  	indio_dev->channels = pdata->sensor->ch;
->> > -	indio_dev->num_channels = ARRAY_SIZE(st_press_lps331ap_channels);
->> > +	indio_dev->num_channels = pdata->sensor->num_ch;
->> >  
->> >  	if (pdata->sensor->fs.addr != 0)
->> >  		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
->> > diff --git a/include/linux/iio/common/st_sensors.h
->b/include/linux/iio/common/st_sensors.h
->> > index e51f654..e732fda 100644
->> > --- a/include/linux/iio/common/st_sensors.h
->> > +++ b/include/linux/iio/common/st_sensors.h
->> > @@ -184,6 +184,7 @@ struct st_sensors {
->> >  	u8 wai;
->> >  	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
->> >  	struct iio_chan_spec *ch;
->> > +	int num_ch;
->> >  	struct st_sensor_odr odr;
->> >  	struct st_sensor_power pw;
->> >  	struct st_sensor_axis enable_axis;
->> > 
-
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 2ee4bcd..60c2ee4 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -64,16 +64,39 @@
+ #define ST_PRESS_LPS331AP_OUT_XL_ADDR		0x28
+ #define ST_TEMP_LPS331AP_OUT_L_ADDR		0x2b
+ 
+-static const struct iio_chan_spec st_press_channels[] = {
+-	ST_SENSORS_LSM_CHANNELS(IIO_PRESSURE,
++static const struct iio_chan_spec st_press_lps331ap_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.channel2 = IIO_NO_MOD,
++		.address = ST_PRESS_LPS331AP_OUT_XL_ADDR,
++		.scan_index = ST_SENSORS_SCAN_X,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 24,
++			.storagebits = 24,
++			.endianness = IIO_LE,
++		},
++		.info_mask_separate =
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+-			ST_SENSORS_SCAN_X, 0, IIO_NO_MOD, 'u', IIO_LE, 24, 24,
+-			ST_PRESS_LPS331AP_OUT_XL_ADDR),
+-	ST_SENSORS_LSM_CHANNELS(IIO_TEMP,
+-			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
+-						BIT(IIO_CHAN_INFO_OFFSET),
+-			-1, 0, IIO_NO_MOD, 's', IIO_LE, 16, 16,
+-			ST_TEMP_LPS331AP_OUT_L_ADDR),
++		.modified = 0,
++	},
++	{
++		.type = IIO_TEMP,
++		.channel2 = IIO_NO_MOD,
++		.address = ST_TEMP_LPS331AP_OUT_L_ADDR,
++		.scan_index = -1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.modified = 0,
++	},
+ 	IIO_CHAN_SOFT_TIMESTAMP(1)
+ };
+ 
+@@ -83,7 +106,7 @@ static const struct st_sensors st_press_sensors[] = {
+ 		.sensors_supported = {
+ 			[0] = LPS331AP_PRESS_DEV_NAME,
+ 		},
+-		.ch = (struct iio_chan_spec *)st_press_channels,
++		.ch = (struct iio_chan_spec *)st_press_lps331ap_channels,
+ 		.odr = {
+ 			.addr = ST_PRESS_LPS331AP_ODR_ADDR,
+ 			.mask = ST_PRESS_LPS331AP_ODR_MASK,
+@@ -222,7 +245,7 @@ int st_press_common_probe(struct iio_dev *indio_dev,
+ 	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+ 	pdata->multiread_bit = pdata->sensor->multi_read_bit;
+ 	indio_dev->channels = pdata->sensor->ch;
+-	indio_dev->num_channels = ARRAY_SIZE(st_press_channels);
++	indio_dev->num_channels = ARRAY_SIZE(st_press_lps331ap_channels);
+ 
+ 	if (pdata->sensor->fs.addr != 0)
+ 		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.8.1.2
+
