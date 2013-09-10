@@ -1,43 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from zabrina.hetzner-de.towertech.it ([178.63.16.19]:59391 "EHLO
-	zabrina.hetzner-de.towertech.it" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751284Ab3IPNPe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 09:15:34 -0400
-Date: Mon, 16 Sep 2013 15:07:40 +0200
-From: Alessandro Zummo <a.zummo@towertech.it>
-To: rtc-linux@googlegroups.com
-Cc: jic23@kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	jc23@cam.ac.uk, jkosina@suse.cz, holler@ahsoftware.de
-Subject: Re: [rtc-linux] Re: [PATCH 3/3] HID RTC: Open sensor hub open close
-Message-ID: <20130916150740.757a3ccb@linux.lan.towertech.it>
-In-Reply-To: <52358980.4030000@kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:61911 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751204Ab3IJUEG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 10 Sep 2013 16:04:06 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jc23@cam.ac.uk, jkosina@suse.cz, holler@ahsoftware.de,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/3] IIO: call sensor hub open close function
+Date: Tue, 10 Sep 2013 13:03:51 -0700
+Message-Id: <1378843432-5113-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1378843432-5113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1378843432-5113-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	<1378843432-5113-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-	<52358980.4030000@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 15 Sep 2013 11:18:40 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Call hid_sensor_hub_device_open when user space opens device and call
+hid_sensor_hub_device_close when device is closed. This helps in
+saving power.
 
-> cc'd Alessandro and rtc list as this is within RTC. I'll happilly take
-> it through IIO given the dependency, but I would like an Ack from the RTC
-> side.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- here you go!
-
- Acked-by: Alessandro Zummo <a.zummo@towertech.it>
-
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 87419c4..b6e77e0 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -34,6 +34,12 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	struct hid_sensor_common *st = iio_trigger_get_drvdata(trig);
+ 	int state_val;
+ 
++	if (state) {
++		if (sensor_hub_device_open(st->hsdev))
++			return -EIO;
++	} else
++		sensor_hub_device_close(st->hsdev);
++
+ 	state_val = state ? 1 : 0;
+ 	if (IS_ENABLED(CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS))
+ 		++state_val;
 -- 
-
- Best regards,
-
- Alessandro Zummo,
-  Tower Technologies - Torino, Italy
-
-  http://www.towertech.it
+1.8.3.1
 
