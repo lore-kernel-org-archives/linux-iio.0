@@ -1,85 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42970 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756601Ab3INQVA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Sep 2013 12:21:00 -0400
-Message-ID: <52349B09.1000309@kernel.org>
-Date: Sat, 14 Sep 2013 18:21:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
-	denis.ciocca@st.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 26/38] iio: pressure-core: st: Clean-up probe() function
-References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org> <1378817379-8238-27-git-send-email-lee.jones@linaro.org> <02cccf68-fdc6-4ac3-a5d7-adfa10fa1c46@email.android.com> <20130911071950.GE11227@lee--X1>
-In-Reply-To: <20130911071950.GE11227@lee--X1>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-ea0-f178.google.com ([209.85.215.178]:45411 "EHLO
+	mail-ea0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752585Ab3IJMuN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:50:13 -0400
+Received: by mail-ea0-f178.google.com with SMTP id a15so3868764eae.37
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:50:12 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 25/38] iio: pressure-core: st: Allow for number of channels to vary
+Date: Tue, 10 Sep 2013 13:49:26 +0100
+Message-Id: <1378817379-8238-26-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
+References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/11/13 08:19, Lee Jones wrote:
->>> 	err = st_sensors_init_sensor(indio_dev, plat_data);
->>> 	if (err < 0)
->>> -		goto st_press_common_probe_error;
->>> +		return err;
->>>
->>> -	if (pdata->get_irq_data_ready(indio_dev) > 0) {
->>> +	if (irq > 0) {
->>> 		err = st_press_allocate_ring(indio_dev);
->>> 		if (err < 0)
->>> -			goto st_press_common_probe_error;
->>> +			return err;
->>>
->>> 		err = st_sensors_allocate_trigger(indio_dev,
->>> -							ST_PRESS_TRIGGER_OPS);
->>> +						  ST_PRESS_TRIGGER_OPS);
->>> 		if (err < 0)
->>> 			goto st_press_probe_trigger_error;
->>> 	}
->>>
->>> 	err = iio_device_register(indio_dev);
->>> -	if (err)
->>
->> This bit of handling is confusing. I would much rather see the if IRQ at the goto. Here the first thought is why is it not an error if there is no IRQ! 
-> 
-> I certainly see your point. But surely anyone would see after a second
-> or two that we're returning err and not 0 in this case, so the error
-> would still be returned, we're not ignoring it. Adding this extra
-> comparison saves several lines of code.
-> 
-> If you think it's 'too' confusing, I'll revert the change.
-> 
-> Or perhaps a comment:
-> 
-> /* Only deallocate_[trigger|ring] if they were allocated. */
-> or
-> /* Only deallocate_[trigger|ring] if we have an IRQ line. */
-> or
-> /* If no IRQ was specified, just return the error. */
-> 
+At the moment the number of channels specified is dictated by the first
+sensor supported by the driver. As we add support for more sensors this
+is likely to vary. Instead of using the ARRAY_SIZE() of the LPS331AP's
+channel specifier we'll use a new adaptable 'struct st_sensors' element
+instead.
 
-Revert the change.  Whilst not complex to follow it is non obvious to save only
-a couple of lines. Adding a comment would take almost as much space as just doing
-it the 'easy way'.
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/pressure/st_pressure_core.c | 3 ++-
+ include/linux/iio/common/st_sensors.h   | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
->>> +	if (err && irq > 0)
->>> 		goto st_press_device_register_error;
->>>
->>> 	return err;
->>>
->>> st_press_device_register_error:
->>> -	if (pdata->get_irq_data_ready(indio_dev) > 0)
->>> -		st_sensors_deallocate_trigger(indio_dev);
->>> +	st_sensors_deallocate_trigger(indio_dev);
->>> st_press_probe_trigger_error:
->>> -	if (pdata->get_irq_data_ready(indio_dev) > 0)
->>> -		st_press_deallocate_ring(indio_dev);
->>> -st_press_common_probe_error:
->>> +	st_press_deallocate_ring(indio_dev);
->>> +
->>> 	return err;
->>> }
->>> EXPORT_SYMBOL(st_press_common_probe);
->>
-> 
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 60c2ee4..3abada2 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -107,6 +107,7 @@ static const struct st_sensors st_press_sensors[] = {
+ 			[0] = LPS331AP_PRESS_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_press_lps331ap_channels,
++		.num_ch = ARRAY_SIZE(st_press_lps331ap_channels),
+ 		.odr = {
+ 			.addr = ST_PRESS_LPS331AP_ODR_ADDR,
+ 			.mask = ST_PRESS_LPS331AP_ODR_MASK,
+@@ -245,7 +246,7 @@ int st_press_common_probe(struct iio_dev *indio_dev,
+ 	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+ 	pdata->multiread_bit = pdata->sensor->multi_read_bit;
+ 	indio_dev->channels = pdata->sensor->ch;
+-	indio_dev->num_channels = ARRAY_SIZE(st_press_lps331ap_channels);
++	indio_dev->num_channels = pdata->sensor->num_ch;
+ 
+ 	if (pdata->sensor->fs.addr != 0)
+ 		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index e51f654..e732fda 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -184,6 +184,7 @@ struct st_sensors {
+ 	u8 wai;
+ 	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
+ 	struct iio_chan_spec *ch;
++	int num_ch;
+ 	struct st_sensor_odr odr;
+ 	struct st_sensor_power pw;
+ 	struct st_sensor_axis enable_axis;
+-- 
+1.8.1.2
+
