@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f54.google.com ([74.125.83.54]:37758 "EHLO
-	mail-ee0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752027Ab3IJMtw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:49:52 -0400
-Received: by mail-ee0-f54.google.com with SMTP id e53so3934002eek.27
-        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:49:51 -0700 (PDT)
+Received: from mail-ee0-f53.google.com ([74.125.83.53]:39244 "EHLO
+	mail-ee0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751378Ab3IJMtv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Sep 2013 08:49:51 -0400
+Received: by mail-ee0-f53.google.com with SMTP id b15so3875009eek.40
+        for <linux-iio@vger.kernel.org>; Tue, 10 Sep 2013 05:49:50 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
 	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 04/38] ARM: ux500: Enable the LSM303DLH Magnetometer sensor from DT
-Date: Tue, 10 Sep 2013 13:49:05 +0100
-Message-Id: <1378817379-8238-5-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 03/38] ARM: ux500: Enable the LSM303DLH Accelerator sensor from DT
+Date: Tue, 10 Sep 2013 13:49:04 +0100
+Message-Id: <1378817379-8238-4-git-send-email-lee.jones@linaro.org>
 In-Reply-To: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -27,17 +27,17 @@ Signed-off-by: Lee Jones <lee.jones@linaro.org>
  1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm/boot/dts/ste-snowball.dts b/arch/arm/boot/dts/ste-snowball.dts
-index d1f4c60..e37284e 100644
+index d355d25..d1f4c60 100644
 --- a/arch/arm/boot/dts/ste-snowball.dts
 +++ b/arch/arm/boot/dts/ste-snowball.dts
-@@ -169,6 +169,14 @@
+@@ -161,6 +161,14 @@
  				vdd-supply = <&ab8500_ldo_aux1_reg>;
  				vddio-supply = <&db8500_vsmps2_reg>;
  			};
 +
-+			lsm303dlh_magn@1e {
-+				compatible = "st,lsm303dlh_magn";
-+				reg = <0x1e>;
++			lsm303dlh_accel@19 {
++				compatible = "st,lsm303dlh_accel";
++				reg = <0x19>;
 +
 +				vdd-supply = <&ab8500_ldo_aux1_reg>;
 +				vddio-supply = <&db8500_vsmps2_reg>;
