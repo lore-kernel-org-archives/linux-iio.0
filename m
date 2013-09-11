@@ -1,69 +1,175 @@
 Return-Path: <jbe@pengutronix.de>
-From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
-To: linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 5/6] Staging/iio/adc/touchscreen/MXS: add interrupt driven touch detection
-Date: Mon, 16 Sep 2013 10:38:13 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org,
- marex@denx.de,
- fabio.estevam@freescale.com,
- Torokhov <dmitry.torokhov@gmail.com>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-References: <1378887511-24530-1-git-send-email-jbe@pengutronix.de> <52359259.8010202@kernel.org> <5235DBEA.7030402@kernel.org>
-In-Reply-To: <5235DBEA.7030402@kernel.org>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201309161038.13977.jbe@pengutronix.de>
+From: Juergen Beisert <jbe@pengutronix.de>
+To: linux-iio@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
+	devel@driverdev.osuosl.org,
+	marex@denx.de,
+	fabio.estevam@freescale.com,
+	jic23@cam.ac.uk
+Subject: [PATCH 4/6] Staging/iio/adc/touchscreen/MXS: add i.MX23 support to the LRADC touchscreen driver
+Date: Wed, 11 Sep 2013 10:18:29 +0200
+Message-Id: <1378887511-24530-5-git-send-email-jbe@pengutronix.de>
+In-Reply-To: <1378887511-24530-1-git-send-email-jbe@pengutronix.de>
+References: <1378887511-24530-1-git-send-email-jbe@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Distinguish i.MX23 and i.MX28 at runtime and do the same for both SoC at least
+for the 4 wire touchscreen.
 
-On Sunday 15 September 2013 18:10:18 Jonathan Cameron wrote:
-> On 09/15/13 11:56, Jonathan Cameron wrote:
-> > On 09/11/13 09:18, Juergen Beisert wrote:
-> >> For battery driven systems it is a very bad idea to collect the
-> >> touchscreen data within a kernel busy loop.
-> >>
-> >> This change uses the features of the hardware to delay and accumulate
-> >> samples in hardware to avoid a high interrupt and CPU load.
-> >>
-> >> Note: this is only tested on an i.MX23 SoC yet.
-> >>
-> >> Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
-> >> CC: linux-arm-kernel@lists.infradead.org
-> >> CC: devel@driverdev.osuosl.org
-> >> CC: Marek Vasut <marex@denx.de>
-> >> CC: Fabio Estevam <fabio.estevam@freescale.com>
-> >> CC: Jonathan Cameron <jic23@cam.ac.uk>
-> >
-> > While this driver is placed in IIO within staging at the moment, these
-> > changes are definitely input related.  Hence I have cc'd Dmitry and the
-> > input list.
-> >
-> > I am personaly a little uncomfortable that we have such a complex bit of
-> > input code sat within an IIO driver but such is life.
->
-> The logic in here looks reasonable to me. I am far from a specialist in h=
-ow
-> these touch screens are normally handled though.
->
-> One thing to note is that you really want to get a proposed device tree
-> spec out asap as that can take longer to review than the driver.  If you
-> are proposing to do that as a future patch, then take into account that
-> you'll need to ensure these are the defaults if it is not specified in the
-> device tree for ever more (which is more painful than hammering out he
-> device tree stuff now!)
-> ...
+Note: support for the remaining LRADC channels is not tested on an
+i.MX23 yet.
 
-Will do.
+Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+CC: linux-arm-kernel@lists.infradead.org
+CC: devel@driverdev.osuosl.org
+CC: Marek Vasut <marex@denx.de>
+CC: Fabio Estevam <fabio.estevam@freescale.com>
+CC: Jonathan Cameron <jic23@cam.ac.uk>
+---
+ drivers/staging/iio/adc/mxs-lradc.c | 45 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
 
-Regards,
-Juergen
-
-=2D-=20
-Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0| Juergen Beisert =A0 =A0 =A0 =A0 =A0 =A0 |
-Linux Solutions for Science and Industry =A0 =A0 =A0| http://www.pengutroni=
-x.de/  |
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 4317fee..c81b186 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -188,20 +188,33 @@ struct mxs_lradc {
+ # define LRADC_CTRL0_MX28_XNPSW	/* XM */	(1 << 17)
+ # define LRADC_CTRL0_MX28_XPPSW	/* XP */	(1 << 16)
+ 
++# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	(1 << 20)
++# define LRADC_CTRL0_MX23_YM			(1 << 19)
++# define LRADC_CTRL0_MX23_XM			(1 << 18)
++# define LRADC_CTRL0_MX23_YP			(1 << 17)
++# define LRADC_CTRL0_MX23_XP			(1 << 16)
++
+ # define LRADC_CTRL0_MX28_PLATE_MASK \
+ 		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
+ 		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
+ 		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
+ 		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
+ 
++# define LRADC_CTRL0_MX23_PLATE_MASK \
++		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
++		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
++		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
++
+ #define	LRADC_CTRL1				0x10
+ #define	LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		(1 << 24)
+ #define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+ #define	LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
++#define	LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
+ #define	LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+ #define	LRADC_CTRL1_TOUCH_DETECT_IRQ		(1 << 8)
+ #define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+ #define	LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
++#define	LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
+ #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+ 
+ #define	LRADC_CTRL2				0x20
+@@ -252,36 +265,50 @@ static void mxs_lradc_reg(struct mxs_lradc *lradc, u32 val, u32 reg)
+ 
+ static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL0_MX23_PLATE_MASK;
+ 	return LRADC_CTRL0_MX28_PLATE_MASK;
+ }
+ 
+ static u32 mxs_lradc_irq_en_mask(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK;
+ 	return LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK;
+ }
+ 
+ static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
+ 	return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
+ }
+ 
+ static u32 mxs_lradc_touch_detect_bit(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE;
+ 	return LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE;
+ }
+ 
+ static u32 mxs_lradc_drive_x_plate(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL0_MX23_XP | LRADC_CTRL0_MX23_XM;
+ 	return LRADC_CTRL0_MX28_XPPSW | LRADC_CTRL0_MX28_XNNSW;
+ }
+ 
+ static u32 mxs_lradc_drive_y_plate(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_YM;
+ 	return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_YNNSW;
+ }
+ 
+ static u32 mxs_lradc_drive_pressure(struct mxs_lradc *lradc)
+ {
++	if (lradc->soc == IMX23_LRADC)
++		return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XM;
+ 	return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW;
+ }
+ 
+@@ -319,7 +346,8 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+ 	 * Virtual channel 0 is always used here as the others are always not
+ 	 * used if doing raw sampling.
+ 	 */
+-	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
++	if (lradc->soc == IMX28_LRADC)
++		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
+ 			LRADC_CTRL1);
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
+ 
+@@ -767,7 +795,8 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+ 	if (ret < 0)
+ 		goto err_buf;
+ 
+-	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
++	if (lradc->soc == IMX28_LRADC)
++		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
+ 							LRADC_CTRL1);
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
+ 
+@@ -805,7 +834,8 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
+ 					LRADC_DELAY_KICK, LRADC_DELAY(0));
+ 
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
+-	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
++	if (lradc->soc == IMX28_LRADC)
++		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
+ 					LRADC_CTRL1);
+ 
+ 	kfree(lradc->buffer);
+@@ -909,7 +939,8 @@ static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
+ 	mxs_lradc_reg(lradc, 0, LRADC_DELAY(3));
+ 
+ 	/* Configure the touchscreen type */
+-	mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
++	if (lradc->soc == IMX28_LRADC) {
++		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
+ 							LRADC_CTRL0);
+ 
+ 	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
+@@ -987,6 +1018,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 		dev_warn(dev, "Unsupported number of touchscreen wires (%d)\n",
+ 				ts_wires);
+ 
++	if ((lradc->soc == IMX23_LRADC) && (ts_wires == 5)) {
++		dev_warn(dev, "No support for 5 wire touches on i.MX23\n");
++		dev_warn(dev, "Falling back to 4 wire\n");
++		ts_wires = 4;
++	}
++
+ 	/* Grab all IRQ sources */
+ 	for (i = 0; i < of_cfg->irq_count; i++) {
+ 		lradc->irq[i] = platform_get_irq(pdev, i);
+-- 
+1.8.4.rc3
