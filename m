@@ -1,40 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39493 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754351Ab3INJhT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Sep 2013 05:37:19 -0400
-Message-ID: <52343C6C.2060905@kernel.org>
-Date: Sat, 14 Sep 2013 11:37:32 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/5] iio: gyro: adis16260: Remove redundant break
-References: <1378894829-8173-1-git-send-email-sachin.kamat@linaro.org> <1378894829-8173-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1378894829-8173-2-git-send-email-sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:60458 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754060Ab3IKKSa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Sep 2013 06:18:30 -0400
+Received: by mail-pd0-f175.google.com with SMTP id q10so8990963pdj.34
+        for <linux-iio@vger.kernel.org>; Wed, 11 Sep 2013 03:18:30 -0700 (PDT)
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: sachin.kamat@linaro.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 1/1] MAINTAINERS: Update Jonathan's email address
+Date: Wed, 11 Sep 2013 15:30:25 +0530
+Message-Id: <1378893625-1430-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/11/13 11:20, Sachin Kamat wrote:
-> 'break' after return is redundant. Remove it.
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Applied to the togreg branch of iio.git
-> ---
->  drivers/iio/gyro/adis16260.c |    1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/gyro/adis16260.c b/drivers/iio/gyro/adis16260.c
-> index 0654116..22b6fb8 100644
-> --- a/drivers/iio/gyro/adis16260.c
-> +++ b/drivers/iio/gyro/adis16260.c
-> @@ -239,7 +239,6 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
->  		default:
->  			return -EINVAL;
->  		}
-> -		break;
->  	case IIO_CHAN_INFO_OFFSET:
->  		*val = 250000 / 1453; /* 25 C = 0x00 */
->  		return IIO_VAL_INT;
-> 
+Updated with the current one.
+
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+---
+ MAINTAINERS |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 65e2955..cc4e666 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -948,7 +948,7 @@ S:	Maintained
+ F:	arch/arm/mach-ixp4xx/
+ 
+ ARM/INTEL RESEARCH IMOTE/STARGATE 2 MACHINE SUPPORT
+-M:	Jonathan Cameron <jic23@cam.ac.uk>
++M:	Jonathan Cameron <jic23@kernel.org>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
+ F:	arch/arm/mach-pxa/stargate2.c
+@@ -4132,7 +4132,7 @@ S:	Maintained
+ F:	drivers/media/rc/iguanair.c
+ 
+ IIO SUBSYSTEM AND DRIVERS
+-M:	Jonathan Cameron <jic23@cam.ac.uk>
++M:	Jonathan Cameron <jic23@kernel.org>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	drivers/iio/
+@@ -7870,7 +7870,7 @@ S:	Maintained
+ F:	drivers/staging/media/go7007/
+ 
+ STAGING - INDUSTRIAL IO
+-M:	Jonathan Cameron <jic23@cam.ac.uk>
++M:	Jonathan Cameron <jic23@kernel.org>
+ L:	linux-iio@vger.kernel.org
+ S:	Odd Fixes
+ F:	drivers/staging/iio/
+-- 
+1.7.9.5
+
