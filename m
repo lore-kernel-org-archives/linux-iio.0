@@ -1,801 +1,655 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.w1.samsung.com ([210.118.77.14]:17764 "EHLO
-	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754937Ab3IBJjg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Sep 2013 05:39:36 -0400
-Received: from eucpsbgm2.samsung.com (unknown [203.254.199.245])
- by mailout4.w1.samsung.com
- (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
- 17 2011)) with ESMTP id <0MSH00FXKRYMMUA0@mailout4.w1.samsung.com> for
- linux-iio@vger.kernel.org; Mon, 02 Sep 2013 10:39:33 +0100 (BST)
-Message-id: <52245CD4.5000703@samsung.com>
-Date: Mon, 02 Sep 2013 11:39:32 +0200
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, kyungmin.park@samsung.com,
-	s.nawrocki@samsung.com
-Subject: Re: [PATCH/RFC v8] iio: gp2ap020a00f: Add a driver for the device
-References: <1377702007-29813-1-git-send-email-j.anaszewski@samsung.com>
- <52222FC4.1080408@kernel.org>
-In-reply-to: <52222FC4.1080408@kernel.org>
-Content-type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Josh.wu@atmel.com>
+Message-ID: <5232DBA5.8080005@atmel.com>
+Date: Fri, 13 Sep 2013 17:32:21 +0800
+From: Josh Wu <josh.wu@atmel.com>
+MIME-Version: 1.0
+To: Josh Wu <josh.wu@atmel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: <jic23@cam.ac.uk>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <maxime.ripard@free-electrons.com>,
+	<plagnioj@jcrosoft.com>, <nicolas.ferre@atmel.com>,
+	<thomas.petazzoni@free-electrons.com>, <mark.rutland@arm.com>,
+	<b.brezillon@overkiz.com>, <devicetree@vger.kernel.org>
+Subject: Re: [resend][PATCH v3 6/6] iio: at91: introduce touch screen support
+ in iio adc driver
+References: <1377602932-1899-7-git-send-email-josh.wu@atmel.com> <1377675913-30861-1-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1377675913-30861-1-git-send-email-josh.wu@atmel.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/31/2013 08:02 PM, Jonathan Cameron wrote:
-> On 08/28/13 16:00, Jacek Anaszewski wrote:
->> Add a new driver for the ambient light/proximity sensor
->> device. The driver exposes three channels: light_clear
->> light_ir and proximity. It also supports triggered buffer,
->> high and low ambient light threshold event and proximity
->> detection events.
->>
->> Signed-off-by: Jacek Anaszewski <j.anaszewski@samsung.com>
->> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
->> ---
->> This driver supports:
->>   - reading channels in 'one shot' mode through read_raw callback,
->>   - four events - rising and falling ambient light events and
->>     rising and falling proximity roc events.
->>   - triggers for all the three channels (triggers can't be enabled
->>     simultaneosly with proximity detection event)
->
-> I'm a little confused by this statement.  Can these 3 triggers fire at
-> different rates?  The buffering etc assumes scans across all available
-> channels and that is indeed what you do in the trigger handler.
+Dear Dmitry Torokhov
 
-No, they fire at the same rate. The proximity detection event
-can't be enabled in the same time as the triggers because there
-are different interrupt modes dedicated to the proximity detection
-event and the proximity threshold event which is exploited for the 
-triggers. In the proximity detection interrupt mode (PIN_PS_DETECT)
-there is single interrupt generated upon crossing the threshold.
-If the interrupts should be generated upon every measurement
-cycle, the PIN_PS, PIN_ALS or PIN_ALS_OR_PS mode should be set.
-In those modes the interrupts are being generated if the low or high
-threshold is crossed. Therefore, the illuminance events can be enabled 
-simultaneously with triggers. Actually from the device point of view, 
-they are enabled all the time, when not in the PIN_PS_DETECT mode. The 
-interrupts are being generated when the output data falls below the low 
-threshold or rises above the high threshold. In specific case, when the 
-output value is 0 - no interrupt is being generated as it is impossible 
-to set the low threshold to the value less than 0.
-When both triggers and illuminance events are enabled the
-generic_buffers application displays new samples of data
-only if the thresholds are crossed.
+Could you have any comments for this patch?
 
-This is why the triggers and events are so tightly coupled
-in the driver. I hope that I didn't confuse you even more
-by this explanation :)
+Best Regards,
+Josh Wu
 
->>
->> This is a follow-up of the previous series. The patch with
->> DT bindings documentation [1] for the driver has been already
->> acked [2]. This patch includes following improvements:
->>    - split event_handler to two handlers, for als and proximity
->>      events. It saves cpu resources as the proximity
->>      event is signalized with both rising and falling edges,
->>      whereas als events exploits only the falling one
+On 8/28/2013 3:45 PM, Josh Wu wrote:
+> AT91 ADC hardware integrate touch screen support. So this patch add touch
+> screen support for at91 adc iio driver.
+> To enable touch screen support in adc, you need to add the dt parameters:
+>    1. which type of touch are used? (4 or 5 wires), sample period time.
+>    2. correct pressure detect threshold value.
 >
-> That is truely hideous.  Not that I can see a better way.
+> In the meantime, since touch screen will use a interal period trigger of adc,
+> so it is conflict to other hardware triggers. Driver will disable the hardware
+> trigger support if touch screen is enabled.
 >
-> I was going to ask which combinations of events are possible then
-> noticed you lay it out clearly below!  Even by normal standards
-> of odd hardware this is ugly.
+> This driver has been tested in AT91SAM9X5-EK and SAMA5D3x-EK.
 >
-> I do have a few  minor issues left in line.  I very nearly
-> applied this as is, but given, unfortunately, it has taken me
-> too long to review it to get it in within the upcoming merge cycle
-> (which may open any time) we have plenty of time to clean these
-> little things up.
+> Signed-off-by: Josh Wu <josh.wu@atmel.com>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> CC: devicetree@vger.kernel.org
+> ---
+> resend v3:
+>    Since [v3 5/6] is resended for compiling error fix. So rebase this patch
 >
+> v2 --> v3:
+>    1. fix according to Dmitry's suggestion.
 >
->>    - the function gp2ap020a00f_adjust_lux_mode is now called
->>      from one common place - gp2ap020a00f_als_event_handler
->>    - brought back data_ready_queue, which cuts down the time
->>      needed for obtaining measurement result when accessing
->>      read_raw sysfs attribute
->>    - made slight adjustements in the code formating (one line
->>      exceeds 80 characters limit but I think it is acceptable
->>      in that case)
-> Yup, not much that can be done sensibly about that one line so
-> it is fine.
+> v1 --> v2:
+>    1. use the multiple compatible string for different IPs.
+>    2. hide the driver configuration in driver code instead of exposing them in dt.
+>       Such like sample period, pen detect debounce time and etc.
+>    3. add a new dt parameter: ts-pressure-threshold. this value is much related
+>       with different chips and boards.
 >
->>
->> [1] - http://www.spinics.net/lists/linux-iio/msg09768.html
->> [2] - http://www.spinics.net/lists/linux-iio/msg09772.html
->>
->> Thanks,
->> Jacek Anaszewski
->>
->>   drivers/iio/light/Kconfig        |   12 +
->>   drivers/iio/light/Makefile       |    1 +
->>   drivers/iio/light/gp2ap020a00f.c | 1618 ++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 1631 insertions(+)
->>   create mode 100644 drivers/iio/light/gp2ap020a00f.c
->>
+>   .../devicetree/bindings/arm/atmel-adc.txt          |    7 +
+>   arch/arm/mach-at91/include/mach/at91_adc.h         |   34 ++
+>   drivers/iio/adc/at91_adc.c                         |  388 ++++++++++++++++++--
+>   3 files changed, 405 insertions(+), 24 deletions(-)
 >
-> <snip>
->> +/*
->> + * Copyright (C) 2013 Samsung Electronics Co., Ltd.
->> + * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
->> + *
->> + * IIO features supported by the driver:
->> + *
->> + * Read-only raw channels:
->> + *   - illiminance_clear [lux]
->> + *   - illiminance_ir
->> + *   - proximity
->> + *
->> + * Triggered buffer:
->> + *   - illiminance_clear
->> + *   - illiminance_ir
->> + *   - proximity
->> + *
->> + * Events:
->> + *   - illuminance_clear (rising and falling)
->> + *   - proximity (rising and falling)
->> + *     - both falling and rising thresholds for the proximity events
->> + *       must be set to the values greater than 0.
->> + *
->> + * The driver supports triggered buffers for all the three
->> + * channels as well as high and low threshold events for the
->> + * illuminance_clear and proxmimity channels. Triggers
->> + * can be enabled simultaneously with both illuminance_clear
->> + * events. Proximity events cannot be enabled simultaneously
->> + * with any triggers or illuminance events. Enabling/disabling
->> + * one of the proximity events automatically enables/disables
->> + * the other one.
-> Good description that clearly answered my main remaining question!
->> + *
->
-> <snip>
->
->> +static int gp2ap020a00f_exec_cmd(struct gp2ap020a00f_data *data,
->> +					enum gp2ap020a00f_cmd cmd)
->> +{
->> +	int err = 0;
->> +
->> +	switch (cmd) {
->> +	case GP2AP020A00F_CMD_READ_RAW_CLEAR:
->> +		if (data->cur_opmode != GP2AP020A00F_OPMODE_SHUTDOWN)
->> +			return -EBUSY;
->> +		err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_READ_RAW_CLEAR);
->> +		break;
->> +	case GP2AP020A00F_CMD_READ_RAW_IR:
->> +		if (data->cur_opmode != GP2AP020A00F_OPMODE_SHUTDOWN)
->> +			return -EBUSY;
->> +		err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_READ_RAW_IR);
->> +		break;
->> +	case GP2AP020A00F_CMD_READ_RAW_PROXIMITY:
->> +		if (data->cur_opmode != GP2AP020A00F_OPMODE_SHUTDOWN)
->> +			return -EBUSY;
->> +		err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_READ_RAW_PROXIMITY);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_CLEAR_EN:
->> +		if (data->cur_opmode == GP2AP020A00F_OPMODE_PROX_DETECT)
->> +			return -EBUSY;
->> +		if (!gp2ap020a00f_als_enabled(data))
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_ADD_MODE);
->> +		set_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER, &data->flags);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_CLEAR_DIS:
->> +		clear_bit(GP2AP020A00F_FLAG_ALS_CLEAR_TRIGGER, &data->flags);
->> +		if (gp2ap020a00f_als_enabled(data))
->> +			break;
->> +		err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_SUBTRACT_MODE);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_IR_EN:
->> +		if (data->cur_opmode == GP2AP020A00F_OPMODE_PROX_DETECT)
->> +			return -EBUSY;
->> +		if (!gp2ap020a00f_als_enabled(data))
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_ADD_MODE);
->> +		set_bit(GP2AP020A00F_FLAG_ALS_IR_TRIGGER, &data->flags);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_IR_DIS:
->> +		clear_bit(GP2AP020A00F_FLAG_ALS_IR_TRIGGER, &data->flags);
->> +		if (gp2ap020a00f_als_enabled(data))
->> +			break;
->> +		err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_SUBTRACT_MODE);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_PROX_EN:
->> +		if (data->cur_opmode == GP2AP020A00F_OPMODE_PROX_DETECT)
->> +			return -EBUSY;
->> +		err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_PS,
->> +						GP2AP020A00F_ADD_MODE);
->> +		set_bit(GP2AP020A00F_FLAG_PROX_TRIGGER, &data->flags);
->> +		break;
->> +	case GP2AP020A00F_CMD_TRIGGER_PROX_DIS:
->> +		clear_bit(GP2AP020A00F_FLAG_PROX_TRIGGER, &data->flags);
->> +		err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_PS,
->> +						GP2AP020A00F_SUBTRACT_MODE);
->> +		break;
->> +	case GP2AP020A00F_CMD_ALS_HIGH_EV_EN:
->> +		if (test_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT,
->> +							&data->flags) ||
->> +		    data->cur_opmode == GP2AP020A00F_OPMODE_PROX_DETECT)
->> +			return -EBUSY;
-> EBUSY is fine for the case of proximity being enabled, but for the case
-> where the event is already on we'd normally just expect to return 0
-> rather than an error at all. Of course you wouldn't expect userspace to
-> do this normally but it still isn't really an error.
->
-> You do this quite a few times in this function.
-
-OK, I will fix that.
-
->> +		if (!gp2ap020a00f_als_enabled(data)) {
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_ADD_MODE);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		set_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT, &data->flags);
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_TH, true);
->> +		break;
->> +	case GP2AP020A00F_CMD_ALS_HIGH_EV_DIS:
->> +		if (!test_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT, &data->flags))
->> +			return -EBUSY;
->> +		clear_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT, &data->flags);
->> +		if (!gp2ap020a00f_als_enabled(data)) {
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_SUBTRACT_MODE);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_TH, false);
->> +		break;
->> +	case GP2AP020A00F_CMD_ALS_LOW_EV_EN:
->> +		if (test_bit(GP2AP020A00F_FLAG_ALS_FALLING_EVENT,
->> +							&data->flags) ||
->> +		    data->cur_opmode == GP2AP020A00F_OPMODE_PROX_DETECT)
->> +			return -EBUSY;
->> +		if (!gp2ap020a00f_als_enabled(data)) {
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_ADD_MODE);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		set_bit(GP2AP020A00F_FLAG_ALS_FALLING_EVENT, &data->flags);
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_TL, true);
->> +		break;
->> +	case GP2AP020A00F_CMD_ALS_LOW_EV_DIS:
->> +		if (!test_bit(GP2AP020A00F_FLAG_ALS_FALLING_EVENT,
->> +							&data->flags))
->> +			return -EBUSY;
->> +		clear_bit(GP2AP020A00F_FLAG_ALS_FALLING_EVENT, &data->flags);
->> +		if (!gp2ap020a00f_als_enabled(data)) {
->> +			err = gp2ap020a00f_alter_opmode(data,
->> +						GP2AP020A00F_OPMODE_ALS,
->> +						GP2AP020A00F_SUBTRACT_MODE);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_TL, false);
->> +		break;
->> +	case GP2AP020A00F_CMD_PROX_HIGH_EV_EN:
->> +		if (test_bit(GP2AP020A00F_FLAG_PROX_RISING_EVENT,
->> +							&data->flags) ||
->> +		    gp2ap020a00f_als_enabled(data) ||
->> +		    data->cur_opmode == GP2AP020A00F_OPMODE_PS)
->> +			return -EBUSY;
->> +		if (!gp2ap020a00f_prox_detect_enabled(data)) {
->> +			err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_PROX_DETECT);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		set_bit(GP2AP020A00F_FLAG_PROX_RISING_EVENT, &data->flags);
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_PH, true);
->> +		break;
->> +	case GP2AP020A00F_CMD_PROX_HIGH_EV_DIS:
->> +		if (!test_bit(GP2AP020A00F_FLAG_PROX_RISING_EVENT,
->> +							&data->flags))
->> +			return -EBUSY;
->> +		clear_bit(GP2AP020A00F_FLAG_PROX_RISING_EVENT, &data->flags);
->> +		err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_SHUTDOWN);
->> +		if (err < 0)
->> +			return err;
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_PH, false);
->> +		break;
->> +	case GP2AP020A00F_CMD_PROX_LOW_EV_EN:
->> +		if (test_bit(GP2AP020A00F_FLAG_PROX_FALLING_EVENT,
->> +							&data->flags) ||
->> +		    gp2ap020a00f_als_enabled(data) ||
->> +		    data->cur_opmode == GP2AP020A00F_OPMODE_PS)
->> +			return -EBUSY;
->> +		if (!gp2ap020a00f_prox_detect_enabled(data)) {
->> +			err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_PROX_DETECT);
->> +			if (err < 0)
->> +				return err;
->> +		}
->> +		set_bit(GP2AP020A00F_FLAG_PROX_FALLING_EVENT, &data->flags);
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_PL, true);
->> +		break;
->> +	case GP2AP020A00F_CMD_PROX_LOW_EV_DIS:
->> +		if (!test_bit(GP2AP020A00F_FLAG_PROX_FALLING_EVENT,
->> +							&data->flags))
->> +			return -EBUSY;
->> +		clear_bit(GP2AP020A00F_FLAG_PROX_FALLING_EVENT, &data->flags);
->> +		err = gp2ap020a00f_set_operation_mode(data,
->> +					GP2AP020A00F_OPMODE_SHUTDOWN);
->> +		if (err < 0)
->> +			return err;
->> +		err =  gp2ap020a00f_write_event_threshold(data,
->> +					GP2AP020A00F_THRESH_PL, false);
->> +		break;
->> +	}
->> +
->> +	return err;
->> +}
->> +
->
->
->> +static irqreturn_t gp2ap020a00f_als_event_handler(int irq, void *data)
->> +{
->> +	struct iio_dev *indio_dev = data;
->> +	struct gp2ap020a00f_data *priv = iio_priv(indio_dev);
->> +	u8 op_reg_flags, d0_reg_buf[2];
->> +	unsigned int output_val, op_reg_val;
->> +	int thresh_val_id, ret;
->> +
->> +	mutex_lock(&priv->lock);
->> +
->> +	/* Read interrupt flags */
->> +	ret = regmap_read(priv->regmap, GP2AP020A00F_OP_REG,
->> +							&op_reg_val);
->> +	if (ret < 0)
->> +		goto unlock;
->> +
->> +	op_reg_flags = op_reg_val & (GP2AP020A00F_FLAG_A | GP2AP020A00F_FLAG_P
->> +					| GP2AP020A00F_PROX_DETECT);
->> +
->> +	op_reg_val &= (~GP2AP020A00F_FLAG_A & ~GP2AP020A00F_FLAG_P
->> +					& ~GP2AP020A00F_PROX_DETECT);
->> +
->> +	/* Clear interrupt flags (if not in INTTYPE_PULSE mode) */
->> +	if (priv->cur_opmode != GP2AP020A00F_OPMODE_PROX_DETECT) {
->> +		ret = regmap_write(priv->regmap, GP2AP020A00F_OP_REG,
->> +								op_reg_val);
->> +		if (ret < 0)
->> +			goto unlock;
->> +	}
->> +
->> +	if (op_reg_flags & GP2AP020A00F_FLAG_A) {
->> +		/* Check D0 register to assess if the lux mode
->> +		 * transition is required.
->> +		 */
->> +		ret = regmap_bulk_read(priv->regmap, GP2AP020A00F_D0_L_REG,
->> +							d0_reg_buf, 2);
->> +		if (ret < 0)
->> +			goto unlock;
->> +
->> +		output_val = le16_to_cpup((__le16 *)d0_reg_buf);
->> +
->> +		if (gp2ap020a00f_adjust_lux_mode(priv, output_val))
->> +			goto unlock;
->> +
->> +		gp2ap020a00f_output_to_lux(priv, &output_val);
->> +
->> +		/*
->> +		 * We need to check output value to distinguish
->> +		 * between high and low ambient light threshold event.
->> +		 */
->> +		if (test_bit(GP2AP020A00F_FLAG_ALS_RISING_EVENT,
->> +							&priv->flags)) {
->> +			thresh_val_id =
->> +			    GP2AP020A00F_THRESH_VAL_ID(GP2AP020A00F_TH_L_REG);
->> +			if (output_val > priv->thresh_val[thresh_val_id])
->> +				iio_push_event(indio_dev,
->> +				       IIO_MOD_EVENT_CODE(
->> +					    IIO_LIGHT,
->> +					    GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR,
->> +					    IIO_MOD_LIGHT_CLEAR,
->> +					    IIO_EV_TYPE_THRESH,
->> +					    IIO_EV_DIR_RISING),
->> +				       iio_get_time_ns());
->> +		}
->> +
->> +		if (test_bit(GP2AP020A00F_FLAG_ALS_FALLING_EVENT,
->> +							&priv->flags)) {
->> +			thresh_val_id =
->> +			    GP2AP020A00F_THRESH_VAL_ID(GP2AP020A00F_TL_L_REG);
->> +			if (output_val < priv->thresh_val[thresh_val_id])
->> +				iio_push_event(indio_dev,
->> +				       IIO_MOD_EVENT_CODE(
->> +					    IIO_LIGHT,
->> +					    GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR,
->> +					    IIO_MOD_LIGHT_CLEAR,
->> +					    IIO_EV_TYPE_THRESH,
->> +					    IIO_EV_DIR_FALLING),
->> +				       iio_get_time_ns());
->> +		}
->> +	}
->> +
->> +	if (priv->cur_opmode == GP2AP020A00F_OPMODE_READ_RAW_CLEAR ||
->> +	    priv->cur_opmode == GP2AP020A00F_OPMODE_READ_RAW_IR ||
->> +	    priv->cur_opmode == GP2AP020A00F_OPMODE_READ_RAW_PROXIMITY) {
->> +		set_bit(GP2AP020A00F_FLAG_DATA_READY, &priv->flags);
->> +		wake_up(&priv->data_ready_queue);
->> +		goto unlock;
->> +	}
->> +
->> +	/* This fires off trigger handler. */
-> That comment is missleading. It fires off the trigger, which in turn
-> 'may' call the trigger_handler.
->
-> You might want to only call this iff the trigger is enabled though...
->
->> +	irq_work_queue(&priv->work);
->> +unlock:
->> +	mutex_unlock(&priv->lock);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->> +static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
->> +{
->> +	struct iio_poll_func *pf = data;
->> +	struct iio_dev *indio_dev = pf->indio_dev;
->> +	struct gp2ap020a00f_data *lgt = iio_priv(indio_dev);
->> +	size_t d_size = 0;
->> +	__le32 light_lux;
->> +	int i, out_val, ret;
->> +
->> +	for_each_set_bit(i, indio_dev->active_scan_mask,
->> +		indio_dev->masklength) {
->> +		ret = regmap_bulk_read(lgt->regmap,
->> +				GP2AP020A00F_DATA_REG(i),
->> +				&lgt->buffer[d_size], 2);
->> +		if (ret < 0)
->> +			goto done;
->> +
->> +		if (i == GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR ||
->> +		    i == GP2AP020A00F_SCAN_MODE_LIGHT_IR) {
->> +			out_val = le16_to_cpup((__le16 *)&lgt->buffer[d_size]);
->> +			gp2ap020a00f_output_to_lux(lgt, &out_val);
->> +			light_lux = cpu_to_le32(out_val);
->> +			memcpy(&lgt->buffer[d_size], (u8 *)&light_lux, 4);
->> +			d_size += 4;
->> +		} else {
->> +			d_size += 2;
->> +		}
->> +	}
->> +
->> +	if (indio_dev->scan_timestamp) {
->> +		s64 *timestamp = (s64 *)((u8 *)lgt->buffer +
->> +						ALIGN(d_size, sizeof(s64)));
->> +		*timestamp = pf->timestamp;
->> +	}
->> +
->> +	iio_push_to_buffers(indio_dev, lgt->buffer);
->> +done:
->> +	iio_trigger_notify_done(indio_dev->trig);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->
-> <snip>
->> +static int gp2ap020a00f_write_prox_event_config(struct iio_dev *indio_dev,
->> +					u64 event_code, int state)
->> +{
->> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
->> +	enum gp2ap020a00f_cmd cmd_high_ev, cmd_low_ev;
->> +	int err;
->> +
->> +	cmd_high_ev = state ? GP2AP020A00F_CMD_PROX_HIGH_EV_EN :
->> +			      GP2AP020A00F_CMD_PROX_HIGH_EV_DIS;
->> +	cmd_low_ev = state ? GP2AP020A00F_CMD_PROX_LOW_EV_EN :
->> +			     GP2AP020A00F_CMD_PROX_LOW_EV_DIS;
->> +
->> +	/*
->> +	 * In order to enable proximity detection feature in the device
->> +	 * both high and low threshold registers have to be written
->> +	 * with different values, greater than zero.
->> +	 */
->> +	if (state) {
->> +		if (data->thresh_val[GP2AP020A00F_THRESH_PL] == 0)
->> +			return -EINVAL;
->> +
->> +		if (data->thresh_val[GP2AP020A00F_THRESH_PH] == 0)
->> +			return -EINVAL;
->> +	}
->> +
->> +	err = gp2ap020a00f_exec_cmd(data, cmd_high_ev);
->> +	if (err < 0)
->> +		return err;
->> +
->> +	err = gp2ap020a00f_exec_cmd(data, cmd_low_ev);
->> +	if (err < 0)
->> +		return err;
->> +
->> +	free_irq(data->client->irq, indio_dev);
->> +
->
-> Ouch, this is hideous.  Not your fault, just uggly hardware.
->
->> +	if (state)
->> +		err = request_threaded_irq(data->client->irq, NULL,
->> +					   &gp2ap020a00f_prox_event_handler,
->> +					   IRQF_TRIGGER_RISING |
->> +					   IRQF_TRIGGER_FALLING |
->> +					   IRQF_ONESHOT,
->> +					   "gp2ap020a00f_prox_event",
->> +					   indio_dev);
->> +	else {
->> +		err = request_threaded_irq(data->client->irq, NULL,
->> +					   &gp2ap020a00f_als_event_handler,
->> +					   IRQF_TRIGGER_FALLING |
->> +					   IRQF_ONESHOT,
->> +					   "gp2ap020a00f_als_event",
->> +					   indio_dev);
->> +	}
->> +
->> +	return err;
->> +}
->> +
->
-> <snip>
->> +static int gp2ap020a00f_read_channel(struct gp2ap020a00f_data *data,
->> +				struct iio_chan_spec const *chan, int *val)
->> +{
-> To supress a gcc warning I'm seeing set cmd to something pr add a default
-> with error return to the switch statement.
->> +	enum gp2ap020a00f_cmd cmd;
->> +	int err;
->> +
->> +	switch (chan->scan_index) {
->> +	case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
->> +		cmd = GP2AP020A00F_CMD_READ_RAW_CLEAR;
->> +		break;
->> +	case GP2AP020A00F_SCAN_MODE_LIGHT_IR:
->> +		cmd = GP2AP020A00F_CMD_READ_RAW_IR;
->> +		break;
->> +	case GP2AP020A00F_SCAN_MODE_PROXIMITY:
->> +		cmd = GP2AP020A00F_CMD_READ_RAW_PROXIMITY;
->> +		break;
->> +	}
->> +
->> +	err = gp2ap020a00f_exec_cmd(data, cmd);
->> +	if (err < 0) {
->> +		dev_err(&data->client->dev,
->> +			"gp2ap020a00f_exec_cmd failed\n");
->> +		goto error_ret;
->> +	}
->> +
->> +	err = gp2ap020a00f_read_output(data, chan->address, val);
->> +	if (err < 0)
->> +		dev_err(&data->client->dev,
->> +			"gp2ap020a00f_read_output failed\n");
->> +
->> +	data->cur_opmode = GP2AP020A00F_OPMODE_SHUTDOWN;
->> +
->> +	if (cmd == GP2AP020A00F_CMD_READ_RAW_CLEAR ||
->> +	    cmd == GP2AP020A00F_CMD_READ_RAW_IR)
->> +		gp2ap020a00f_output_to_lux(data, val);
->> +
->> +error_ret:
->> +	return err;
->> +}
->> +
->
->
->> +static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
->> +{
->> +	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
->> +	int i, err = 0;
->> +
->> +	mutex_lock(&data->lock);
->> +
->
-> This confuses me a little.  Do we actually have 3 different
-> sources of interrupts or is it just the case that any of these
-> being enabled results in a single interrupt once all three are
-> available?
-
-Besides PIN_PS_DETECT interrupt mode that I described above there
-are three more: PIN_ALS, PIN_PS and PIN_ALS_OR_PS. The first two
-enable ALS and proximity interrupts respectively and the third one
-enables both. The device has also corresponding operation modes -
-OP_ALS, OP_PS and OP_ALS_AND_PS, which enable only ALS block,
-only PS block or both blocks in the device respectively.
-The output data for both illuminance channels is generated
-at one run, by ALS block. If one of them isn't enabled in the
-scan config it is simply ignored by the driver. The proximity
-output data is produced only when the PS block is enabled.
-The exec_cmd functions checks what operation mode is currently
-enabled and sets the device in the OP_ALS_AND_PS mode if the
-scan mode corresponding to the one of the modes is already enabled.
-
->> +	/* Enable triggers according to the scan_mask */
->> +	for_each_set_bit(i, indio_dev->active_scan_mask,
->> +		indio_dev->masklength) {
->> +		switch (i) {
->> +		case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
->> +			err = gp2ap020a00f_exec_cmd(data,
->> +					GP2AP020A00F_CMD_TRIGGER_CLEAR_EN);
->> +			break;
->> +		case GP2AP020A00F_SCAN_MODE_LIGHT_IR:
->> +			err = gp2ap020a00f_exec_cmd(data,
->> +					GP2AP020A00F_CMD_TRIGGER_IR_EN);
->> +			break;
->> +		case GP2AP020A00F_SCAN_MODE_PROXIMITY:
->> +			err = gp2ap020a00f_exec_cmd(data,
->> +					GP2AP020A00F_CMD_TRIGGER_PROX_EN);
->> +			break;
->> +		}
->> +	}
->> +
->> +	if (err < 0)
->> +		goto error_unlock;
->> +
->> +	data->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
->> +	if (!data->buffer) {
->> +		err = -ENOMEM;
->> +		goto error_unlock;
->> +	}
->> +
->> +	err = iio_triggered_buffer_postenable(indio_dev);
->> +
->> +error_unlock:
->> +	mutex_unlock(&data->lock);
->> +
->> +	return err;
->> +}
->> +
->
->
-> <snip>
->> +static int gp2ap020a00f_probe(struct i2c_client *client,
->> +				const struct i2c_device_id *id)
->> +{
->> +	struct gp2ap020a00f_data *data;
->> +	struct iio_dev *indio_dev;
->> +	struct regmap *regmap;
->> +	int err;
->> +
->> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	data = iio_priv(indio_dev);
->> +
->> +	data->vled_reg = devm_regulator_get(&client->dev, "vled");
->> +	if (IS_ERR(data->vled_reg))
->> +		return PTR_ERR(data->vled_reg);
->> +
->> +	err = regulator_enable(data->vled_reg);
->> +	if (err)
->> +		return err;
->> +
->> +	regmap = devm_regmap_init_i2c(client, &gp2ap020a00f_regmap_config);
->> +	if (IS_ERR(regmap)) {
->> +		dev_err(&client->dev, "Regmap initialization failed.\n");
->> +		err = PTR_ERR(regmap);
->> +		goto error_regulator_disable;
->> +	}
->> +
->> +	/* Initialize device registers */
->> +	err = regmap_bulk_write(regmap, GP2AP020A00F_OP_REG,
->> +			gp2ap020a00f_reg_init_tab,
->> +			ARRAY_SIZE(gp2ap020a00f_reg_init_tab));
->> +
->> +	if (err < 0) {
->> +		dev_err(&client->dev, "Device initialization failed.\n");
->> +		goto error_regulator_disable;
->> +	}
->> +
->> +	i2c_set_clientdata(client, indio_dev);
->> +
->> +	data->client = client;
->> +	data->cur_opmode = GP2AP020A00F_OPMODE_SHUTDOWN;
->> +	data->regmap = regmap;
->> +	init_waitqueue_head(&data->data_ready_queue);
->> +
->> +	mutex_init(&data->lock);
->> +	indio_dev->dev.parent = &client->dev;
->> +	indio_dev->channels = gp2ap020a00f_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(gp2ap020a00f_channels);
->> +	indio_dev->info = &gp2ap020a00f_info;
->> +	indio_dev->name = id->name;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	/* Allocate buffer */
->> +	err = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
->> +		&gp2ap020a00f_trigger_handler, &gp2ap020a00f_buffer_setup_ops);
->> +	if (err < 0)
->> +		goto error_regulator_disable;
->> +
->> +	/* Allocate trigger */
->> +	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-trigger",
->> +							indio_dev->name);
->> +	if (data->trig == NULL) {
->> +		err = -ENOMEM;
->> +		dev_err(&indio_dev->dev, "Failed to allocate iio trigger.\n");
->> +		goto error_uninit_buffer;
->> +	}
->> +
-> Perhaps a comment here to explain that this needs to be enabled for read_raw
-> calls to work?  (took me a minute to figure out why you requested it here).
-
-I will remove this in the next patch as the interrupt handler can't
-execute simultaneously with read_output function because of mutex lock.
-Polling read_raw attribute currently works only because of timeout on
-the data_ready_queue. I recklessly brought back that solution.
-I am going to implement polling an interrupt flag in the read_channel
-function and bring back lux mode adjustment there.
-
->> +	err = request_threaded_irq(client->irq, NULL,
->> +				   &gp2ap020a00f_als_event_handler,
->> +				   IRQF_TRIGGER_FALLING |
->> +				   IRQF_ONESHOT,
->> +				   "gp2ap020a00f_als_event",
->> +				   indio_dev);
->> +	if (err < 0) {
->> +		dev_err(&client->dev, "Irq request failed.\n");
->> +		goto error_uninit_buffer;
->> +	}
->> +
->> +	data->trig->ops = &gp2ap020a00f_trigger_ops;
->> +	data->trig->dev.parent = &data->client->dev;
->> +
->> +	init_irq_work(&data->work, gp2ap020a00f_iio_trigger_work);
->> +
->> +	err = iio_trigger_register(data->trig);
->> +	if (err < 0) {
->> +		dev_err(&client->dev, "Failed to register iio trigger.\n");
->> +		goto error_free_irq;
->> +	}
->> +
->> +	err = iio_device_register(indio_dev);
->> +	if (err < 0)
->> +		goto error_trigger_unregister;
->> +
->> +	return 0;
->> +
->> +error_trigger_unregister:
->> +	iio_trigger_unregister(data->trig);
->> +error_free_irq:
->> +	free_irq(client->irq, indio_dev);
->> +error_uninit_buffer:
->> +	iio_triggered_buffer_cleanup(indio_dev);
->> +error_regulator_disable:
->> +	regulator_disable(data->vled_reg);
->> +
->> +	return err;
->> +}
->> +
->
->
->
-
-Thanks,
-Jacek
-
+> diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> index 0e65e01..d106146 100644
+> --- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+> @@ -23,6 +23,13 @@ Optional properties:
+>   		       resolution will be used.
+>     - atmel,adc-sleep-mode: Boolean to enable sleep mode when no conversion
+>     - atmel,adc-sample-hold-time: Sample and Hold Time in microseconds
+> +  - atmel,adc-ts-wires: Number of touch screen wires. Should be 4 or 5. If this
+> +                        value is set, then adc driver will enable touch screen
+> +                        support.
+> +    NOTE: when adc touch screen enabled, the adc hardware trigger will be
+> +          disabled. Since touch screen will occupied the trigger register.
+> +  - atmel,adc-ts-pressure-threshold: a pressure threshold for touchscreen. It
+> +                                     make touch detect more precision.
+>    
+>   Optional trigger Nodes:
+>     - Required properties:
+> diff --git a/arch/arm/mach-at91/include/mach/at91_adc.h b/arch/arm/mach-at91/include/mach/at91_adc.h
+> index 048a57f..c287307 100644
+> --- a/arch/arm/mach-at91/include/mach/at91_adc.h
+> +++ b/arch/arm/mach-at91/include/mach/at91_adc.h
+> @@ -60,14 +60,48 @@
+>   #define AT91_ADC_IER		0x24		/* Interrupt Enable Register */
+>   #define AT91_ADC_IDR		0x28		/* Interrupt Disable Register */
+>   #define AT91_ADC_IMR		0x2C		/* Interrupt Mask Register */
+> +#define		AT91_ADC_IER_PEN	(1 << 29)
+> +#define		AT91_ADC_IER_NOPEN	(1 << 30)
+> +#define		AT91_ADC_IER_XRDY	(1 << 20)
+> +#define		AT91_ADC_IER_YRDY	(1 << 21)
+> +#define		AT91_ADC_IER_PRDY	(1 << 22)
+> +#define		AT91_ADC_ISR_PENS	(1 << 31)
+>   
+>   #define AT91_ADC_CHR(n)		(0x30 + ((n) * 4))	/* Channel Data Register N */
+>   #define		AT91_ADC_DATA		(0x3ff)
+>   
+>   #define AT91_ADC_CDR0_9X5	(0x50)			/* Channel Data Register 0 for 9X5 */
+>   
+> +#define AT91_ADC_ACR		0x94	/* Analog Control Register */
+> +#define		AT91_ADC_ACR_PENDETSENS	(0x3 << 0)	/* pull-up resistor */
+> +
+> +#define AT91_ADC_TSMR		0xB0
+> +#define		AT91_ADC_TSMR_TSMODE	(3 << 0)	/* Touch Screen Mode */
+> +#define			AT91_ADC_TSMR_TSMODE_NONE		(0 << 0)
+> +#define			AT91_ADC_TSMR_TSMODE_4WIRE_NO_PRESS	(1 << 0)
+> +#define			AT91_ADC_TSMR_TSMODE_4WIRE_PRESS	(2 << 0)
+> +#define			AT91_ADC_TSMR_TSMODE_5WIRE		(3 << 0)
+> +#define		AT91_ADC_TSMR_TSAV	(3 << 4)	/* Averages samples */
+> +#define			AT91_ADC_TSMR_TSAV_(x)		((x) << 4)
+> +#define		AT91_ADC_TSMR_SCTIM	(0x0f << 16)	/* Switch closure time */
+> +#define		AT91_ADC_TSMR_PENDBC	(0x0f << 28)	/* Pen Debounce time */
+> +#define			AT91_ADC_TSMR_PENDBC_(x)	((x) << 28)
+> +#define		AT91_ADC_TSMR_NOTSDMA	(1 << 22)	/* No Touchscreen DMA */
+> +#define		AT91_ADC_TSMR_PENDET_DIS	(0 << 24)	/* Pen contact detection disable */
+> +#define		AT91_ADC_TSMR_PENDET_ENA	(1 << 24)	/* Pen contact detection enable */
+> +
+> +#define AT91_ADC_TSXPOSR	0xB4
+> +#define AT91_ADC_TSYPOSR	0xB8
+> +#define AT91_ADC_TSPRESSR	0xBC
+> +
+>   #define AT91_ADC_TRGR_9260	AT91_ADC_MR
+>   #define AT91_ADC_TRGR_9G45	0x08
+>   #define AT91_ADC_TRGR_9X5	0xC0
+>   
+> +/* Trigger Register bit field */
+> +#define		AT91_ADC_TRGR_TRGPER	(0xffff << 16)
+> +#define			AT91_ADC_TRGR_TRGPER_(x)	((x) << 16)
+> +#define		AT91_ADC_TRGR_TRGMOD	(0x7 << 0)
+> +#define			AT91_ADC_TRGR_MOD_PERIOD_TRIG	(5 << 0)
+> +
+>   #endif
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 0f4621a..beec9ae 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -11,6 +11,7 @@
+>   #include <linux/clk.h>
+>   #include <linux/err.h>
+>   #include <linux/io.h>
+> +#include <linux/input.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/jiffies.h>
+>   #include <linux/kernel.h>
+> @@ -39,7 +40,23 @@
+>   #define at91_adc_writel(st, reg, val) \
+>   	(writel_relaxed(val, st->reg_base + reg))
+>   
+> +#define DRIVER_NAME		"at91_adc"
+> +#define MAX_POS_BITS		12
+> +
+> +#define TOUCH_SAMPLE_PERIOD_US		2000	/* 2ms */
+> +#define TOUCH_PEN_DETECT_DEBOUNCE_US	200
+> +
+>   struct at91_adc_caps {
+> +	bool	has_ts;		/* Support touch screen */
+> +	bool	has_tsmr;	/* only at91sam9x5, sama5d3 have TSMR reg */
+> +	/*
+> +	 * Numbers of sampling data will be averaged. Can be 0~3.
+> +	 * Hardware can average (2 ^ ts_filter_average) sample data.
+> +	 */
+> +	u8	ts_filter_average;
+> +	/* Pen Detection input pull-up resistor, can be 0~3 */
+> +	u8	ts_pen_detect_sensitivity;
+> +
+>   	/* startup time calculate function */
+>   	u32 (*calc_startup_ticks)(u8 startup_time, u32 adc_clk_khz);
+>   
+> @@ -47,6 +64,12 @@ struct at91_adc_caps {
+>   	struct at91_adc_reg_desc registers;
+>   };
+>   
+> +enum atmel_adc_ts_type {
+> +	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
+> +	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
+> +	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
+> +};
+> +
+>   struct at91_adc_state {
+>   	struct clk		*adc_clk;
+>   	u16			*buffer;
+> @@ -71,6 +94,26 @@ struct at91_adc_state {
+>   	bool			low_res;	/* the resolution corresponds to the lowest one */
+>   	wait_queue_head_t	wq_data_avail;
+>   	struct at91_adc_caps	*caps;
+> +
+> +	/*
+> +	 * Following ADC channels are shared by touchscreen:
+> +	 *
+> +	 * CH0 -- Touch screen XP/UL
+> +	 * CH1 -- Touch screen XM/UR
+> +	 * CH2 -- Touch screen YP/LL
+> +	 * CH3 -- Touch screen YM/Sense
+> +	 * CH4 -- Touch screen LR(5-wire only)
+> +	 *
+> +	 * The bitfields below represents the reserved channel in the
+> +	 * touchscreen mode.
+> +	 */
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 0)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 0)
+> +	enum atmel_adc_ts_type	touchscreen_type;
+> +	struct input_dev	*ts_input;
+> +
+> +	u16			ts_sample_period_val;
+> +	u32			ts_pressure_threshold;
+>   };
+>   
+>   static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
+> @@ -105,14 +148,10 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> -static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
+> +/* Handler for classic adc channel eoc trigger */
+> +void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
+>   {
+> -	struct iio_dev *idev = private;
+>   	struct at91_adc_state *st = iio_priv(idev);
+> -	u32 status = at91_adc_readl(st, st->registers->status_register);
+> -
+> -	if (!(status & st->registers->drdy_mask))
+> -		return IRQ_HANDLED;
+>   
+>   	if (iio_buffer_enabled(idev)) {
+>   		disable_irq_nosync(irq);
+> @@ -122,6 +161,115 @@ static irqreturn_t at91_adc_eoc_trigger(int irq, void *private)
+>   		st->done = true;
+>   		wake_up_interruptible(&st->wq_data_avail);
+>   	}
+> +}
+> +
+> +static int at91_ts_sample(struct at91_adc_state *st)
+> +{
+> +	unsigned int xscale, yscale, reg, z1, z2;
+> +	unsigned int x, y, pres, xpos, ypos;
+> +	unsigned int rxp = 1;
+> +	unsigned int factor = 1000;
+> +	struct iio_dev *idev = iio_priv_to_dev(st);
+> +
+> +	unsigned int xyz_mask_bits = st->res;
+> +	unsigned int xyz_mask = (1 << xyz_mask_bits) - 1;
+> +
+> +	/* calculate position */
+> +	/* x position = (x / xscale) * max, max = 2^MAX_POS_BITS - 1 */
+> +	reg = at91_adc_readl(st, AT91_ADC_TSXPOSR);
+> +	xpos = reg & xyz_mask;
+> +	x = (xpos << MAX_POS_BITS) - xpos;
+> +	xscale = (reg >> 16) & xyz_mask;
+> +	if (xscale == 0) {
+> +		dev_err(&idev->dev, "Error: xscale == 0!\n");
+> +		return -1;
+> +	}
+> +	x /= xscale;
+> +
+> +	/* y position = (y / yscale) * max, max = 2^MAX_POS_BITS - 1 */
+> +	reg = at91_adc_readl(st, AT91_ADC_TSYPOSR);
+> +	ypos = reg & xyz_mask;
+> +	y = (ypos << MAX_POS_BITS) - ypos;
+> +	yscale = (reg >> 16) & xyz_mask;
+> +	if (yscale == 0) {
+> +		dev_err(&idev->dev, "Error: yscale == 0!\n");
+> +		return -1;
+> +	}
+> +	y /= yscale;
+> +
+> +	/* calculate the pressure */
+> +	reg = at91_adc_readl(st, AT91_ADC_TSPRESSR);
+> +	z1 = reg & xyz_mask;
+> +	z2 = (reg >> 16) & xyz_mask;
+> +
+> +	if (z1 != 0)
+> +		pres = rxp * (x * factor / 1024) * (z2 * factor / z1 - factor)
+> +			/ factor;
+> +	else
+> +		pres = st->ts_pressure_threshold;	/* no pen contacted */
+> +
+> +	dev_dbg(&idev->dev, "xpos = %d, xscale = %d, ypos = %d, yscale = %d, z1 = %d, z2 = %d, press = %d\n",
+> +				xpos, xscale, ypos, yscale, z1, z2, pres);
+> +
+> +	if (pres < st->ts_pressure_threshold) {
+> +		dev_dbg(&idev->dev, "x = %d, y = %d, pressure = %d\n",
+> +					x, y, pres / factor);
+> +		input_report_abs(st->ts_input, ABS_X, x);
+> +		input_report_abs(st->ts_input, ABS_Y, y);
+> +		input_report_abs(st->ts_input, ABS_PRESSURE, pres);
+> +		input_report_key(st->ts_input, BTN_TOUCH, 1);
+> +		input_sync(st->ts_input);
+> +	} else {
+> +		dev_dbg(&idev->dev, "pressure too low: not reporting\n");
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t at91_adc_interrupt(int irq, void *private)
+> +{
+> +	struct iio_dev *idev = private;
+> +	struct at91_adc_state *st = iio_priv(idev);
+> +	u32 status = at91_adc_readl(st, st->registers->status_register);
+> +	const uint32_t ts_data_irq_mask =
+> +		AT91_ADC_IER_XRDY |
+> +		AT91_ADC_IER_YRDY |
+> +		AT91_ADC_IER_PRDY;
+> +
+> +	if (status & st->registers->drdy_mask)
+> +		handle_adc_eoc_trigger(irq, idev);
+> +
+> +	if (status & AT91_ADC_IER_PEN) {
+> +		at91_adc_writel(st, AT91_ADC_IDR, AT91_ADC_IER_PEN);
+> +		at91_adc_writel(st, AT91_ADC_IER, AT91_ADC_IER_NOPEN |
+> +			ts_data_irq_mask);
+> +		/* Set up period trigger for sampling */
+> +		at91_adc_writel(st, st->registers->trigger_register,
+> +			AT91_ADC_TRGR_MOD_PERIOD_TRIG |
+> +			AT91_ADC_TRGR_TRGPER_(st->ts_sample_period_val));
+> +	} else if (status & AT91_ADC_IER_NOPEN) {
+> +		at91_adc_writel(st, st->registers->trigger_register, 0);
+> +		at91_adc_writel(st, AT91_ADC_IDR, AT91_ADC_IER_NOPEN |
+> +			ts_data_irq_mask);
+> +		at91_adc_writel(st, AT91_ADC_IER, AT91_ADC_IER_PEN);
+> +
+> +		input_report_key(st->ts_input, BTN_TOUCH, 0);
+> +		input_sync(st->ts_input);
+> +	} else if ((status & ts_data_irq_mask) == ts_data_irq_mask) {
+> +		/* Now all touchscreen data is ready */
+> +
+> +		if (status & AT91_ADC_ISR_PENS) {
+> +			/* validate data by pen contact */
+> +			at91_ts_sample(st);
+> +		} else {
+> +			/* triggered by event that is no pen contact, just read
+> +			 * them to clean the interrupt and discard all.
+> +			 */
+> +			at91_adc_readl(st, AT91_ADC_TSXPOSR);
+> +			at91_adc_readl(st, AT91_ADC_TSYPOSR);
+> +			at91_adc_readl(st, AT91_ADC_TSPRESSR);
+> +		}
+> +	}
+>   
+>   	return IRQ_HANDLED;
+>   }
+> @@ -131,6 +279,16 @@ static int at91_adc_channel_init(struct iio_dev *idev)
+>   	struct at91_adc_state *st = iio_priv(idev);
+>   	struct iio_chan_spec *chan_array, *timestamp;
+>   	int bit, idx = 0;
+> +	unsigned long rsvd_mask = 0;
+> +
+> +	/* If touchscreen is enable, then reserve the adc channels */
+> +	if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_4WIRE)
+> +		rsvd_mask = CHAN_MASK_TOUCHSCREEN_4WIRE;
+> +	else if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_5WIRE)
+> +		rsvd_mask = CHAN_MASK_TOUCHSCREEN_5WIRE;
+> +
+> +	/* set up the channel mask to reserve touchscreen channels */
+> +	st->channels_mask &= ~rsvd_mask;
+>   
+>   	idev->num_channels = bitmap_weight(&st->channels_mask,
+>   					   st->num_channels) + 1;
+> @@ -479,6 +637,39 @@ static u32 calc_startup_ticks_9x5(u8 startup_time, u32 adc_clk_khz)
+>   
+>   static const struct of_device_id at91_adc_dt_ids[];
+>   
+> +static int at91_adc_probe_dt_ts(struct device_node *node,
+> +	struct at91_adc_state *st, struct device *dev)
+> +{
+> +	int ret;
+> +	u32 prop;
+> +
+> +	ret = of_property_read_u32(node, "atmel,adc-ts-wires", &prop);
+> +	if (ret) {
+> +		dev_info(dev, "ADC Touch screen is disabled.\n");
+> +		return 0;
+> +	}
+> +
+> +	switch (prop) {
+> +	case 4:
+> +	case 5:
+> +		st->touchscreen_type = prop;
+> +		break;
+> +	default:
+> +		dev_err(dev, "Unsupported number of touchscreen wires (%d). Should be 4 or 5.\n", prop);
+> +		return -EINVAL;
+> +	}
+> +
+> +	prop = 0;
+> +	of_property_read_u32(node, "atmel,adc-ts-pressure-threshold", &prop);
+> +	st->ts_pressure_threshold = prop;
+> +	if (st->ts_pressure_threshold) {
+> +		return 0;
+> +	} else {
+> +		dev_err(dev, "Invalid pressure threshold for the touchscreen\n");
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+>   static int at91_adc_probe_dt(struct at91_adc_state *st,
+>   			     struct platform_device *pdev)
+>   {
+> @@ -560,6 +751,12 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
+>   		i++;
+>   	}
+>   
+> +	/* Check if touchscreen is supported. */
+> +	if (st->caps->has_ts)
+> +		return at91_adc_probe_dt_ts(node, st, &idev->dev);
+> +	else
+> +		dev_info(&idev->dev, "not support touchscreen in the adc compatible string.\n");
+> +
+>   	return 0;
+>   
+>   error_ret:
+> @@ -591,6 +788,114 @@ static const struct iio_info at91_adc_info = {
+>   	.read_raw = &at91_adc_read_raw,
+>   };
+>   
+> +/* Touchscreen related functions */
+> +static int atmel_ts_open(struct input_dev *dev)
+> +{
+> +	struct at91_adc_state *st = input_get_drvdata(dev);
+> +
+> +	at91_adc_writel(st, AT91_ADC_IER, AT91_ADC_IER_PEN);
+> +	return 0;
+> +}
+> +
+> +static void atmel_ts_close(struct input_dev *dev)
+> +{
+> +	struct at91_adc_state *st = input_get_drvdata(dev);
+> +
+> +	at91_adc_writel(st, AT91_ADC_IDR, AT91_ADC_IER_PEN);
+> +}
+> +
+> +static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
+> +{
+> +	u32 reg = 0, pendbc;
+> +	int i = 0;
+> +
+> +	if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_4WIRE)
+> +		reg = AT91_ADC_TSMR_TSMODE_4WIRE_PRESS;
+> +	else
+> +		reg = AT91_ADC_TSMR_TSMODE_5WIRE;
+> +
+> +	/* a Pen Detect Debounce Time is necessary for the ADC Touch to avoid
+> +	 * pen detect noise.
+> +	 * The formula is : Pen Detect Debounce Time = (2 ^ pendbc) / ADCClock
+> +	 */
+> +	pendbc = round_up(TOUCH_PEN_DETECT_DEBOUNCE_US * adc_clk_khz / 1000, 1);
+> +
+> +	while (pendbc >> ++i)
+> +		;	/* Empty! Find the shift offset */
+> +	if (abs(pendbc - (1 << i)) < abs(pendbc - (1 << (i - 1))))
+> +		pendbc = i;
+> +	else
+> +		pendbc = i - 1;
+> +
+> +	if (st->caps->has_tsmr) {
+> +		reg |= AT91_ADC_TSMR_TSAV_(st->caps->ts_filter_average)
+> +				& AT91_ADC_TSMR_TSAV;
+> +		reg |= AT91_ADC_TSMR_PENDBC_(pendbc) & AT91_ADC_TSMR_PENDBC;
+> +		reg |= AT91_ADC_TSMR_NOTSDMA;
+> +		reg |= AT91_ADC_TSMR_PENDET_ENA;
+> +		reg |= 0x03 << 8;	/* TSFREQ, need bigger than TSAV */
+> +
+> +		at91_adc_writel(st, AT91_ADC_TSMR, reg);
+> +	} else {
+> +		/* TODO: for 9g45 which has no TSMR */
+> +	}
+> +
+> +	/* Change adc internal resistor value for better pen detection,
+> +	 * default value is 100 kOhm.
+> +	 * 0 = 200 kOhm, 1 = 150 kOhm, 2 = 100 kOhm, 3 = 50 kOhm
+> +	 * option only available on ES2 and higher
+> +	 */
+> +	at91_adc_writel(st, AT91_ADC_ACR, st->caps->ts_pen_detect_sensitivity
+> +			& AT91_ADC_ACR_PENDETSENS);
+> +
+> +	/* Sample Peroid Time = (TRGPER + 1) / ADCClock */
+> +	st->ts_sample_period_val = round_up((TOUCH_SAMPLE_PERIOD_US *
+> +			adc_clk_khz / 1000) - 1, 1);
+> +
+> +	return 0;
+> +}
+> +
+> +static int at91_ts_register(struct at91_adc_state *st,
+> +		struct platform_device *pdev)
+> +{
+> +	struct input_dev *input;
+> +	struct iio_dev *idev = iio_priv_to_dev(st);
+> +	int ret;
+> +
+> +	input = input_allocate_device();
+> +	if (!input) {
+> +		dev_err(&idev->dev, "Failed to allocate TS device!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	input->name = DRIVER_NAME;
+> +	input->id.bustype = BUS_HOST;
+> +	input->dev.parent = &pdev->dev;
+> +	input->open = atmel_ts_open;
+> +	input->close = atmel_ts_close;
+> +
+> +	__set_bit(EV_ABS, input->evbit);
+> +	__set_bit(EV_KEY, input->evbit);
+> +	__set_bit(BTN_TOUCH, input->keybit);
+> +	input_set_abs_params(input, ABS_X, 0, (1 << MAX_POS_BITS) - 1, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, (1 << MAX_POS_BITS) - 1, 0, 0);
+> +	input_set_abs_params(input, ABS_PRESSURE, 0, 0xffffff, 0, 0);
+> +
+> +	st->ts_input = input;
+> +	input_set_drvdata(input, st);
+> +
+> +	ret = input_register_device(input);
+> +	if (ret)
+> +		input_free_device(st->ts_input);
+> +
+> +	return ret;
+> +}
+> +
+> +static void at91_ts_unregister(struct at91_adc_state *st)
+> +{
+> +	input_unregister_device(st->ts_input);
+> +}
+> +
+>   static int at91_adc_probe(struct platform_device *pdev)
+>   {
+>   	unsigned int prsc, mstrclk, ticks, adc_clk, adc_clk_khz, shtim;
+> @@ -647,7 +952,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+>   	at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_SWRST);
+>   	at91_adc_writel(st, AT91_ADC_IDR, 0xFFFFFFFF);
+>   	ret = request_irq(st->irq,
+> -			  at91_adc_eoc_trigger,
+> +			  at91_adc_interrupt,
+>   			  0,
+>   			  pdev->dev.driver->name,
+>   			  idev);
+> @@ -692,6 +997,10 @@ static int at91_adc_probe(struct platform_device *pdev)
+>   	mstrclk = clk_get_rate(st->clk);
+>   	adc_clk = clk_get_rate(st->adc_clk);
+>   	adc_clk_khz = adc_clk / 1000;
+> +
+> +	dev_dbg(&pdev->dev, "Master clock is set as: %d Hz, adc_clk should set as: %d Hz\n",
+> +		mstrclk, adc_clk);
+> +
+>   	prsc = (mstrclk / (2 * adc_clk)) - 1;
+>   
+>   	if (!st->startup_time) {
+> @@ -728,30 +1037,52 @@ static int at91_adc_probe(struct platform_device *pdev)
+>   	init_waitqueue_head(&st->wq_data_avail);
+>   	mutex_init(&st->lock);
+>   
+> -	ret = at91_adc_buffer_init(idev);
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "Couldn't initialize the buffer.\n");
+> -		goto error_disable_adc_clk;
+> -	}
+> +	/*
+> +	 * Since touch screen will set trigger register as period trigger. So
+> +	 * when touch screen is enabled, then we have to disable hardware
+> +	 * trigger for classic adc.
+> +	 */
+> +	if (!st->touchscreen_type) {
+> +		ret = at91_adc_buffer_init(idev);
+> +		if (ret < 0) {
+> +			dev_err(&pdev->dev, "Couldn't initialize the buffer.\n");
+> +			goto error_disable_adc_clk;
+> +		}
+>   
+> -	ret = at91_adc_trigger_init(idev);
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "Couldn't setup the triggers.\n");
+> -		goto error_unregister_buffer;
+> +		ret = at91_adc_trigger_init(idev);
+> +		if (ret < 0) {
+> +			dev_err(&pdev->dev, "Couldn't setup the triggers.\n");
+> +			at91_adc_buffer_remove(idev);
+> +			goto error_disable_adc_clk;
+> +		}
+> +	} else {
+> +		if (!st->caps->has_tsmr) {
+> +			dev_err(&pdev->dev, "We don't support non-TSMR adc\n");
+> +			goto error_disable_adc_clk;
+> +		}
+> +
+> +		ret = at91_ts_register(st, pdev);
+> +		if (ret)
+> +			goto error_disable_adc_clk;
+> +
+> +		at91_ts_hw_init(st, adc_clk_khz);
+>   	}
+>   
+>   	ret = iio_device_register(idev);
+>   	if (ret < 0) {
+>   		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> -		goto error_remove_triggers;
+> +		goto error_iio_device_register;
+>   	}
+>   
+>   	return 0;
+>   
+> -error_remove_triggers:
+> -	at91_adc_trigger_remove(idev);
+> -error_unregister_buffer:
+> -	at91_adc_buffer_remove(idev);
+> +error_iio_device_register:
+> +	if (!st->touchscreen_type) {
+> +		at91_adc_trigger_remove(idev);
+> +		at91_adc_buffer_remove(idev);
+> +	} else {
+> +		at91_ts_unregister(st);
+> +	}
+>   error_disable_adc_clk:
+>   	clk_disable_unprepare(st->adc_clk);
+>   error_disable_clk:
+> @@ -770,8 +1101,12 @@ static int at91_adc_remove(struct platform_device *pdev)
+>   	struct at91_adc_state *st = iio_priv(idev);
+>   
+>   	iio_device_unregister(idev);
+> -	at91_adc_trigger_remove(idev);
+> -	at91_adc_buffer_remove(idev);
+> +	if (!st->touchscreen_type) {
+> +		at91_adc_trigger_remove(idev);
+> +		at91_adc_buffer_remove(idev);
+> +	} else {
+> +		at91_ts_unregister(st);
+> +	}
+>   	clk_disable_unprepare(st->adc_clk);
+>   	clk_disable_unprepare(st->clk);
+>   	free_irq(st->irq, idev);
+> @@ -795,6 +1130,7 @@ static struct at91_adc_caps at91sam9260_caps = {
+>   };
+>   
+>   static struct at91_adc_caps at91sam9g45_caps = {
+> +	.has_ts = true,
+>   	.calc_startup_ticks = calc_startup_ticks_9260,	/* same as 9260 */
+>   	.num_channels = 8,
+>   	.registers = {
+> @@ -808,6 +1144,10 @@ static struct at91_adc_caps at91sam9g45_caps = {
+>   };
+>   
+>   static struct at91_adc_caps at91sam9x5_caps = {
+> +	.has_ts = true,
+> +	.has_tsmr = true,
+> +	.ts_filter_average = 3,
+> +	.ts_pen_detect_sensitivity = 2,
+>   	.calc_startup_ticks = calc_startup_ticks_9x5,
+>   	.num_channels = 12,
+>   	.registers = {
+> @@ -834,7 +1174,7 @@ static struct platform_driver at91_adc_driver = {
+>   	.probe = at91_adc_probe,
+>   	.remove = at91_adc_remove,
+>   	.driver = {
+> -		   .name = "at91_adc",
+> +		   .name = DRIVER_NAME,
+>   		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
+>   	},
+>   };
