@@ -1,94 +1,96 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sun, 15 Sep 2013 19:44:49 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-    Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
-    Josh Wu <josh.wu@atmel.com>, Denis Ciocca <denis.ciocca@gmail.com>,
-    Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-    Ge Gao <ggao@invensense.com>, Jacek Anaszewski <j.anaszewski@samsung.com>,
-    Fabio Estevam <fabio.estevam@freescale.com>, Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH 04/27] iio: Add iio_push_buffers_with_timestamp()
- helper
-In-Reply-To: <1379263880-18405-4-git-send-email-lars@metafoo.de>
-Message-ID: <alpine.DEB.2.01.1309151934000.22469@pmeerw.net>
-References: <1379263880-18405-1-git-send-email-lars@metafoo.de> <1379263880-18405-4-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-015.synserver.de ([212.40.185.15]:1044 "EHLO
+	smtp-out-015.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757137Ab3IOQty (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 12:49:54 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 03/27] staging:iio: Remove unnecessary casts for iio_push_to_buffers()
+Date: Sun, 15 Sep 2013 18:50:56 +0200
+Message-Id: <1379263880-18405-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1379263880-18405-1-git-send-email-lars@metafoo.de>
+References: <1379263880-18405-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Now that iio_push_to_buffers() takes a void pointer for the data parameter we
+can remove those casts to u8*.
 
-I like!
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/accel/lis3l02dq_ring.c      | 2 +-
+ drivers/staging/iio/adc/mxs-lradc.c             | 2 +-
+ drivers/staging/iio/iio_simple_dummy_buffer.c   | 2 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
+ drivers/staging/iio/meter/ade7758_ring.c        | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
 
-> in buffer, before passing the buffer on to iio_push_buffers(). The buffer needs
-> large enough to hold the timestamp in this case. If timestamps are disabled
-> iio_push_buffers_with_timestamp() will behave just like iio_push_buffers().
-
-computation of the buffer size is the remaining piece of ugliness; 
-indio_dev->scan_bytes in not available at probe time
-
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-> Cc: Josh Wu <josh.wu@atmel.com>
-> Cc: Denis Ciocca <denis.ciocca@gmail.com>
-> Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> Cc: Ge Gao <ggao@invensense.com>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-
-twice, so honoured :)
-
-nitpick below
-
-> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-> index e5507e9..1ebc382 100644
-> --- a/include/linux/iio/buffer.h
-> +++ b/include/linux/iio/buffer.h
-> @@ -116,12 +116,37 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
->  		      struct iio_buffer *buffer, int bit);
->  
->  /**
-> - * iio_push_to_buffers() - push to a registered buffer.
-> + * iio_push_to_buffers_with_timestamp() - push to a registered buffer.
-
-should still be iio_push_to_buffers() here
-
->   * @indio_dev:		iio_dev structure for device.
->   * @data:		Full scan.
->   */
->  int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);
->  
-> +/*
-> + * iio_push_to_buffers_with_timestamp() - push data and timestamp to buffers
-> + * @indio_dev:		iio_dev structure for device.
-> + * @data:		sample data
-> + * @timestamp:		timestamp for the sample data
-> + *
-> + * Pushes data to the IIO device's buffers. If timestamps are enabled for the
-> + * device the function will store the supplied timestamp as the last element in
-> + * the sample data buffer before pushing it to the device buffers. The sample
-> + * data buffer needs to be large enough to hold the additional timestamp
-> + * (usually the buffer should be indio->scan_bytes bytes large).
-> + *
-> + * Returns 0 on success, a negative error code otherwise.
-> + */
-> +static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
-> +	void *data, int64_t timestamp)
-> +{
-> +	if (indio_dev->scan_timestamp) {
-> +		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
-> +		((int64_t *)data)[ts_offset] = timestamp;
-> +	}
-> +
-> +	return iio_push_to_buffers(indio_dev, data);
-> +}
-> +
->  int iio_update_demux(struct iio_dev *indio_dev);
->  
->  /**
-> 
-
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 5b8f0f6..36dcc7e 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -150,7 +150,7 @@ static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*(s64 *)((u8 *)data + ALIGN(len, sizeof(s64)))
+ 			= pf->timestamp;
+-	iio_push_to_buffers(indio_dev, (u8 *)data);
++	iio_push_to_buffers(indio_dev, data);
+ 
+ 	kfree(data);
+ done:
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index f36cde5..7401230 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -631,7 +631,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
+ 		*timestamp = pf->timestamp;
+ 	}
+ 
+-	iio_push_to_buffers(iio, (u8 *)lradc->buffer);
++	iio_push_to_buffers(iio, lradc->buffer);
+ 
+ 	iio_trigger_notify_done(iio->trig);
+ 
+diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+index 72f400c..3921865 100644
+--- a/drivers/staging/iio/iio_simple_dummy_buffer.c
++++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+@@ -86,7 +86,7 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		*(s64 *)((u8 *)data + ALIGN(len, sizeof(s64)))
+ 			= iio_get_time_ns();
+-	iio_push_to_buffers(indio_dev, (u8 *)data);
++	iio_push_to_buffers(indio_dev, data);
+ 
+ 	kfree(data);
+ 
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 00f7067..712f3c2 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -676,7 +676,7 @@ static void ad5933_work(struct work_struct *work)
+ 		} else {
+ 			buf[0] = be16_to_cpu(buf[0]);
+ 		}
+-		iio_push_to_buffers(indio_dev, (u8 *)buf);
++		iio_push_to_buffers(indio_dev, buf);
+ 	} else {
+ 		/* no data available - try again later */
+ 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
+diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+index 7d5db71..3d8bc2d 100644
+--- a/drivers/staging/iio/meter/ade7758_ring.c
++++ b/drivers/staging/iio/meter/ade7758_ring.c
+@@ -73,7 +73,7 @@ static irqreturn_t ade7758_trigger_handler(int irq, void *p)
+ 	if (indio_dev->scan_timestamp)
+ 		dat64[1] = pf->timestamp;
+ 
+-	iio_push_to_buffers(indio_dev, (u8 *)dat64);
++	iio_push_to_buffers(indio_dev, dat64);
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
 -- 
+1.8.0
 
-Peter Meerwald
-+43-664-2444418 (mobile)
