@@ -1,48 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53270 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757024Ab3IOPyj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 11:54:39 -0400
-Message-ID: <5235E65D.4040700@kernel.org>
-Date: Sun, 15 Sep 2013 17:54:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sun, 15 Sep 2013 17:51:51 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: Add tcs3472 color light sensor driver
+In-Reply-To: <5234CB23.3050902@kernel.org>
+Message-ID: <alpine.DEB.2.01.1309151744150.22469@pmeerw.net>
+References: <52344B8B.1010704@kernel.org> <1379187514-28650-1-git-send-email-pmeerw@pmeerw.net> <5234CB23.3050902@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Fix tcs3472 buffer size
-References: <5234CB23.3050902@kernel.org> <1379260356-25851-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1379260356-25851-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/15/13 16:52, Peter Meerwald wrote:
-> and drop obsolete #define
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Oops, applied to the togreg branch of iio.git
+Hi,
 
-Thanks for the fast fix up.
-> ---
->  drivers/iio/light/tcs3472.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
-> index 95510bd..dc7d823 100644
-> --- a/drivers/iio/light/tcs3472.c
-> +++ b/drivers/iio/light/tcs3472.c
-> @@ -55,12 +55,9 @@ struct tcs3472_data {
->  	u8 enable;
->  	u8 control;
->  	u8 atime;
-> -	u16 buffer[4];
-> +	u16 buffer[8]; /* 4 16-bit channels + 64-bit timestamp */
->  };
->  
-> -/* 4 16-bit channels + timestamp = 16 bytes */
-> -#define TSL3472_BUFFER_SIZE 16
-> -
->  #define TCS3472_CHANNEL(_color, _si, _addr) { \
->  	.type = IIO_INTENSITY, \
->  	.modified = 1, \
-> 
+> > chip has four 16-bit channels for red, green, blue, clear color
+> > intensity; driver supports the TCS3x7x family of devices and was
+> > tested with a TCS34725 chip; further information here:
+> > http://www.ams.com/eng/Products/Light-Sensors/Color-Sensor/TCS34725
+> > 
+> > v2 (thanks to Jonathan Cameron):
+> > * drop dynamic buffer allocation, buffer is in tcs3472_data
+> > * limit sysfs output to PAGE_SIZE
+> > * check val2 == 0 when writing CALIBSCALE
+
+> Applied to the togreg branch of iio.git
+
+> > +struct tcs3472_data {
+> > +	struct i2c_client *client;
+> > +	u8 enable;
+> > +	u8 control;
+> > +	u8 atime;
+> > +	u16 buffer[4];
+> > +};
+> > +
+> > +/* 4 16-bit channels + timestamp = 16 bytes */
+> > +#define TSL3472_BUFFER_SIZE 16
+
+I messed this up, sorry
+buffer must be of size 8 (hence 16 bytes) obviously;
+
+patch following (removing the obsolete #define also)
+
+thanks, p.
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
