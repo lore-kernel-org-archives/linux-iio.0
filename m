@@ -1,56 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-015.synserver.de ([212.40.185.15]:1046 "EHLO
+Received: from smtp-out-015.synserver.de ([212.40.185.15]:1030 "EHLO
 	smtp-out-015.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757145Ab3IOQty (ORCPT
+	with ESMTP id S1757091Ab3IOQty (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 12:49:54 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 05/27] iio:bma180: Use iio_push_buffers_with_timestamp()
-Date: Sun, 15 Sep 2013 18:50:58 +0200
-Message-Id: <1379263880-18405-5-git-send-email-lars@metafoo.de>
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
+	Josh Wu <josh.wu@atmel.com>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Ge Gao <ggao@invensense.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Marek Vasut <marex@denx.de>
+Subject: [PATCH 04/27] iio: Add iio_push_buffers_with_timestamp() helper
+Date: Sun, 15 Sep 2013 18:50:57 +0200
+Message-Id: <1379263880-18405-4-git-send-email-lars@metafoo.de>
 In-Reply-To: <1379263880-18405-1-git-send-email-lars@metafoo.de>
 References: <1379263880-18405-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Makes the code shorter and a bit less ugly.
+Drivers using software buffers often store the timestamp in their data buffer
+before calling iio_push_to_buffers() with that data buffer. Storing the
+timestamp in the buffer usually involves some ugly pointer arithmetic. This
+patch adds a new helper function called iio_push_buffers_with_timestamp() which
+is similar to iio_push_to_buffers but takes an additional timestamp parameter.
+The function will help to hide to uglyness in one central place instead of
+exposing it in every driver. If timestamps are enabled for the IIO device
+iio_push_buffers_with_timestamp() will store the timestamp as the last element
+in buffer, before passing the buffer on to iio_push_buffers(). The buffer needs
+large enough to hold the timestamp in this case. If timestamps are disabled
+iio_push_buffers_with_timestamp() will behave just like iio_push_buffers().
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Cc: Josh Wu <josh.wu@atmel.com>
+Cc: Denis Ciocca <denis.ciocca@gmail.com>
+Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Cc: Ge Gao <ggao@invensense.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Jacek Anaszewski <j.anaszewski@samsung.com>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Marek Vasut <marex@denx.de>
 ---
- drivers/iio/accel/bma180.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ include/linux/iio/buffer.h | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index 3eff246..bda7a83 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -471,13 +471,10 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct bma180_data *data = iio_priv(indio_dev);
-+	int64_t time_ns = iio_get_time_ns();
- 	int bit, ret, i = 0;
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index e5507e9..1ebc382 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -116,12 +116,37 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 		      struct iio_buffer *buffer, int bit);
  
- 	mutex_lock(&data->mutex);
--	if (indio_dev->scan_timestamp) {
--		ret = indio_dev->scan_bytes / sizeof(s64) - 1;
--		((s64 *)data->buff)[ret] = iio_get_time_ns();
--	}
+ /**
+- * iio_push_to_buffers() - push to a registered buffer.
++ * iio_push_to_buffers_with_timestamp() - push to a registered buffer.
+  * @indio_dev:		iio_dev structure for device.
+  * @data:		Full scan.
+  */
+ int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);
  
- 	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
- 			 indio_dev->masklength) {
-@@ -490,7 +487,7 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
- 	}
- 	mutex_unlock(&data->mutex);
++/*
++ * iio_push_to_buffers_with_timestamp() - push data and timestamp to buffers
++ * @indio_dev:		iio_dev structure for device.
++ * @data:		sample data
++ * @timestamp:		timestamp for the sample data
++ *
++ * Pushes data to the IIO device's buffers. If timestamps are enabled for the
++ * device the function will store the supplied timestamp as the last element in
++ * the sample data buffer before pushing it to the device buffers. The sample
++ * data buffer needs to be large enough to hold the additional timestamp
++ * (usually the buffer should be indio->scan_bytes bytes large).
++ *
++ * Returns 0 on success, a negative error code otherwise.
++ */
++static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
++	void *data, int64_t timestamp)
++{
++	if (indio_dev->scan_timestamp) {
++		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
++		((int64_t *)data)[ts_offset] = timestamp;
++	}
++
++	return iio_push_to_buffers(indio_dev, data);
++}
++
+ int iio_update_demux(struct iio_dev *indio_dev);
  
--	iio_push_to_buffers(indio_dev, data->buff);
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buff, time_ns);
- err:
- 	iio_trigger_notify_done(indio_dev->trig);
- 
+ /**
 -- 
 1.8.0
 
