@@ -1,62 +1,54 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: "Lars-Peter Clausen" <lars@metafoo.de>
-Subject: Re: [PATCH 25/27] staging:iio:mxs-lradc: Use iio_push_to_buffers_with_timestamp()
-Date: Mon, 16 Sep 2013 19:08:05 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org,
- Fabio Estevam <fabio.estevam@freescale.com>
-References: <1379263880-18405-1-git-send-email-lars@metafoo.de> <201309161553.34371.marex@denx.de> <523737B0.9080306@metafoo.de>
-In-Reply-To: <523737B0.9080306@metafoo.de>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201309161908.05417.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-015.synserver.de ([212.40.185.15]:1079 "EHLO
+	smtp-out-015.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932344Ab3IOQuf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 12:50:35 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 24/27] staging:iio:ad799x: Use iio_push_to_buffers_with_timestamp()
+Date: Sun, 15 Sep 2013 18:51:17 +0200
+Message-Id: <1379263880-18405-24-git-send-email-lars@metafoo.de>
+In-Reply-To: <1379263880-18405-1-git-send-email-lars@metafoo.de>
+References: <1379263880-18405-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear Lars-Peter Clausen,
+Makes the code a bit shorter and less ugly.
 
-> On 09/16/2013 03:53 PM, Marek Vasut wrote:
-> > Dear Lars-Peter Clausen,
-> > 
-> >> Makes the code a bit shorter and less ugly.
-> >> 
-> >> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> >> Cc: Fabio Estevam <fabio.estevam@freescale.com>
-> >> Cc: Marek Vasut <marex@denx.de>
-> >> ---
-> >> 
-> >>  drivers/staging/iio/adc/mxs-lradc.c | 8 +-------
-> >>  1 file changed, 1 insertion(+), 7 deletions(-)
-> >> 
-> >> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> >> b/drivers/staging/iio/adc/mxs-lradc.c index 7401230..9da64bf 100644
-> >> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> >> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> >> @@ -625,13 +625,7 @@ static irqreturn_t mxs_lradc_trigger_handler(int
-> >> irq, void *p) j++;
-> >> 
-> >>  	}
-> >> 
-> >> -	if (iio->scan_timestamp) {
-> >> -		s64 *timestamp = (s64 *)((u8 *)lradc->buffer +
-> >> -					ALIGN(j, sizeof(s64)));
-> >> -		*timestamp = pf->timestamp;
-> >> -	}
-> >> -
-> >> -	iio_push_to_buffers(iio, lradc->buffer);
-> >> +	iio_push_to_buffers_with_timestamp(iio, lradc->buffer, pf->timestamp);
-> >> 
-> >>  	iio_trigger_notify_done(iio->trig);
-> > 
-> > Indeed, this stuff was duplicated all around.
-> 
-> Is that a acked-by? :)
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad799x_ring.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+diff --git a/drivers/staging/iio/adc/ad799x_ring.c b/drivers/staging/iio/adc/ad799x_ring.c
+index c2ebae1..0ff6c03 100644
+--- a/drivers/staging/iio/adc/ad799x_ring.c
++++ b/drivers/staging/iio/adc/ad799x_ring.c
+@@ -35,7 +35,6 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	s64 time_ns;
+ 	int b_sent;
+ 	u8 cmd;
+ 
+@@ -65,13 +64,8 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 	if (b_sent < 0)
+ 		goto out;
+ 
+-	time_ns = iio_get_time_ns();
+-
+-	if (indio_dev->scan_timestamp)
+-		memcpy(st->rx_buf + indio_dev->scan_bytes - sizeof(s64),
+-			&time_ns, sizeof(time_ns));
+-
+-	iio_push_to_buffers(indio_dev, st->rx_buf);
++	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
++			iio_get_time_ns());
+ out:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+-- 
+1.8.0
 
-instead. I'm not on too firm ground here, so I don't feel like ack is 
-appropriate from me on this matter ;-)
-
-Best regards,
-Marek Vasut
