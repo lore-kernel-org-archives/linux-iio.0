@@ -1,15 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-015.synserver.de ([212.40.185.15]:1050 "EHLO
+Received: from smtp-out-015.synserver.de ([212.40.185.15]:1072 "EHLO
 	smtp-out-015.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757129Ab3IOQuW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 12:50:22 -0400
+	with ESMTP id S1757130Ab3IOQuS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Sep 2013 12:50:18 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Denis Ciocca <denis.ciocca@gmail.com>
-Subject: [PATCH 14/27] iio:st_sensors: Use iio_push_to_buffers_with_timestamp()
-Date: Sun, 15 Sep 2013 18:51:07 +0200
-Message-Id: <1379263880-18405-14-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 13/27] iio:max1363: Use iio_push_to_buffers_with_timestamp()
+Date: Sun, 15 Sep 2013 18:51:06 +0200
+Message-Id: <1379263880-18405-13-git-send-email-lars@metafoo.de>
 In-Reply-To: <1379263880-18405-1-git-send-email-lars@metafoo.de>
 References: <1379263880-18405-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,29 +17,35 @@ List-Id: linux-iio@vger.kernel.org
 Makes the code a bit shorter and less ugly.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Denis Ciocca <denis.ciocca@gmail.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_buffer.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iio/adc/max1363.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index 71a2c5f..1665c8e 100644
---- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -113,11 +113,8 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
- 	if (len < 0)
- 		goto st_sensors_get_buffer_element_error;
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 4fb35d1..531a57b 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -1436,7 +1436,6 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct max1363_state *st = iio_priv(indio_dev);
+-	s64 time_ns;
+ 	__u8 *rxbuf;
+ 	int b_sent;
+ 	size_t d_size;
+@@ -1470,11 +1469,7 @@ static irqreturn_t max1363_trigger_handler(int irq, void *p)
+ 	if (b_sent < 0)
+ 		goto done_free;
  
--	if (indio_dev->scan_timestamp)
--		*(s64 *)((u8 *)sdata->buffer_data +
--				ALIGN(len, sizeof(s64))) = pf->timestamp;
+-	time_ns = iio_get_time_ns();
 -
--	iio_push_to_buffers(indio_dev, sdata->buffer_data);
-+	iio_push_to_buffers_with_timestamp(indio_dev, sdata->buffer_data,
-+		pf->timestamp);
+-	if (indio_dev->scan_timestamp)
+-		memcpy(rxbuf + d_size - sizeof(s64), &time_ns, sizeof(time_ns));
+-	iio_push_to_buffers(indio_dev, rxbuf);
++	iio_push_to_buffers_with_timestamp(indio_dev, rxbuf, iio_get_time_ns());
  
- st_sensors_get_buffer_element_error:
- 	iio_trigger_notify_done(indio_dev->trig);
+ done_free:
+ 	kfree(rxbuf);
 -- 
 1.8.0
 
