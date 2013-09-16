@@ -1,64 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:54697 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751466Ab3IQHbz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 03:31:55 -0400
+Return-Path: <jbe@pengutronix.de>
 From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
 To: linux-arm-kernel@lists.infradead.org
 Subject: Re: [PATCH 5/6] Staging/iio/adc/touchscreen/MXS: add interrupt driven touch detection
-Date: Tue, 17 Sep 2013 09:33:08 +0200
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, marex@denx.de,
-	fabio.estevam@freescale.com, jic23@cam.ac.uk,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-References: <1378887511-24530-1-git-send-email-jbe@pengutronix.de> <52359259.8010202@kernel.org> <20130916152846.GC12105@core.coreip.homeip.net>
-In-Reply-To: <20130916152846.GC12105@core.coreip.homeip.net>
+Date: Mon, 16 Sep 2013 10:10:22 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org,
+ marex@denx.de,
+ fabio.estevam@freescale.com,
+ jic23@cam.ac.uk,
+ Torokhov <dmitry.torokhov@gmail.com>,
+ "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+References: <1378887511-24530-1-git-send-email-jbe@pengutronix.de> <1378887511-24530-6-git-send-email-jbe@pengutronix.de> <52359259.8010202@kernel.org>
+In-Reply-To: <52359259.8010202@kernel.org>
 MIME-Version: 1.0
 Content-Type: Text/Plain;
   charset="iso-8859-1"
-Message-Id: <201309170933.08505.jbe@pengutronix.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-Id: <201309161010.22151.jbe@pengutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Dmitry,
+Hi Jonathan,
 
-On Monday 16 September 2013 17:28:46 Dmitry Torokhov wrote:
-> [...]
-> > >  static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
-> > > @@ -641,6 +1056,7 @@ static void mxs_lradc_ts_unregister(struct
-> > > mxs_lradc *lradc)
-> > >
-> > >  	cancel_work_sync(&lradc->ts_work);
-> > >
-> > > +	mxs_lradc_disable_ts(lradc);
-> > >  	input_unregister_device(lradc->ts_input);
-> > >  }
+On Sunday 15 September 2013 12:56:25 Jonathan Cameron wrote:
+> On 09/11/13 09:18, Juergen Beisert wrote:
+> > For battery driven systems it is a very bad idea to collect the
+> > touchscreen data within a kernel busy loop.
+> >
+> > This change uses the features of the hardware to delay and accumulate
+> > samples in hardware to avoid a high interrupt and CPU load.
+> >
+> > Note: this is only tested on an i.MX23 SoC yet.
+> >
+> > Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+> > CC: linux-arm-kernel@lists.infradead.org
+> > CC: devel@driverdev.osuosl.org
+> > CC: Marek Vasut <marex@denx.de>
+> > CC: Fabio Estevam <fabio.estevam@freescale.com>
+> > CC: Jonathan Cameron <jic23@cam.ac.uk>
 >
-> This looks iffy... Normally you disable the device so that it does not
-> generate more interrupts, and then cancel outstanding work(s), otherwise
-> newly generated interrupts may cause more work to be scheduled. Or I
-> missed some of the context and this is not a concern here?
+> While this driver is placed in IIO within staging at the moment, these
+> changes are definitely input related.  Hence I have cc'd Dmitry and the
+> input list.
+>
+> I am personaly a little uncomfortable that we have such a complex bit of
+> input code sat within an IIO driver but such is life.
 
-This part gets removed in patch 6/6:
+Maybe an MFD for this ADC unit would be a better way to go? Currently I hav=
+e a=20
+different problem with this driver, because the ADC unit monitors the batte=
+ry=20
+as well. And the charging driver from the power subsystem needs these value=
+s=20
+to charge the battery in a correct manner.
 
-@@ -1054,8 +891,6 @@ static void mxs_lradc_ts_unregister(struct mxs_lradc *lradc)
-        if (!lradc->use_touchscreen)
-                return;
- 
--       cancel_work_sync(&lradc->ts_work);
--
-        mxs_lradc_disable_ts(lradc);
-        input_unregister_device(lradc->ts_input);
- }
-
-But you are right, I should move this into patch 5/6.
-
-Thanks
+> [...]
 
 Regards,
 Juergen
 
--- 
-Pengutronix e.K.                              | Juergen Beisert             |
-Linux Solutions for Science and Industry      | http://www.pengutronix.de/  |
+=2D-=20
+Pengutronix e.K. =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0| Juergen Beisert =A0 =A0 =A0 =A0 =A0 =A0 |
+Linux Solutions for Science and Industry =A0 =A0 =A0| http://www.pengutroni=
+x.de/  |
