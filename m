@@ -1,76 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f45.google.com ([74.125.83.45]:36732 "EHLO
-	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751215Ab3IPQCi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:38 -0400
-Received: by mail-ee0-f45.google.com with SMTP id c50so2124750eek.32
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:37 -0700 (PDT)
-From: Lee Jones <lee.jones@linaro.org>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk
-Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 01/20] ARM: ux500: Remove PrimeCell IDs from Nomadik I2C DT nodes
-Date: Mon, 16 Sep 2013 17:02:07 +0100
-Message-Id: <1379347346-823-2-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
-References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio:max1361: Use default triggered buffer setup ops
+Date: Mon, 16 Sep 2013 10:34:49 +0200
+Message-Id: <1379320489-27334-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Turns out that they're actually not required and the driver probes just
-fine without them. The ID is incorrect at the moment anyway. They actually
-currently specify the stn8815.
+The max1361 driver uses the same callbacks as the triggered buffer default
+buffer setup ops, so just remove the max1361 specific ops and let it use the
+default ops.
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- arch/arm/boot/dts/ste-dbx5x0.dtsi | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/iio/adc/max1363.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/ste-dbx5x0.dtsi b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-index a152945..9c01d66 100644
---- a/arch/arm/boot/dts/ste-dbx5x0.dtsi
-+++ b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-@@ -531,7 +531,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80004000 0x1000>;
- 			interrupts = <0 21 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 4fb35d1..1e7160d 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -1484,12 +1484,6 @@ done:
+ 	return IRQ_HANDLED;
+ }
  
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -544,7 +543,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80122000 0x1000>;
- 			interrupts = <0 22 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
+-static const struct iio_buffer_setup_ops max1363_buffered_setup_ops = {
+-	.postenable = &iio_triggered_buffer_postenable,
+-	.preenable = &iio_sw_buffer_preenable,
+-	.predisable = &iio_triggered_buffer_predisable,
+-};
+-
+ static int max1363_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -1559,7 +1553,7 @@ static int max1363_probe(struct i2c_client *client,
+ 		goto error_disable_reg;
  
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -557,7 +555,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80128000 0x1000>;
- 			interrupts = <0 55 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-		&max1363_trigger_handler, &max1363_buffered_setup_ops);
++		&max1363_trigger_handler, NULL);
+ 	if (ret)
+ 		goto error_disable_reg;
  
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -570,7 +567,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x80110000 0x1000>;
- 			interrupts = <0 12 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -583,7 +579,6 @@
- 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
- 			reg = <0x8012a000 0x1000>;
- 			interrupts = <0 51 IRQ_TYPE_LEVEL_HIGH>;
--			arm,primecell-periphid = <0x180024>;
- 
- 			#address-cells = <1>;
- 			#size-cells = <0>;
 -- 
-1.8.1.2
-
+1.8.0
