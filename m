@@ -1,13 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f51.google.com ([74.125.83.51]:32906 "EHLO
-	mail-ee0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756173Ab3IPJiQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 05:38:16 -0400
-Received: by mail-ee0-f51.google.com with SMTP id c1so1869429eek.38
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 02:38:15 -0700 (PDT)
-Date: Mon, 16 Sep 2013 10:38:12 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Denis CIOCCA <denis.ciocca@st.com>
+Received: from eu1sys200aog110.obsmtp.com ([207.126.144.129]:58084 "EHLO
+	eu1sys200aog110.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752494Ab3IPJ5l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 05:57:41 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lee Jones <lee.jones@linaro.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	"linux-arm-kernel@lists.infradead.org"
 	<linux-arm-kernel@lists.infradead.org>,
@@ -15,87 +12,26 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	"arnd@arndb.de" <arnd@arndb.de>,
 	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 16 Sep 2013 11:57:04 +0200
 Subject: Re: [PATCH 32/38] iio: accel-core: st: Move LSM303DLH into correct
  group
-Message-ID: <20130916093812.GG3999@lee--X1>
+Message-ID: <5236D5F0.2030601@st.com>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
  <1378817379-8238-33-git-send-email-lee.jones@linaro.org>
- <5234A20F.7040008@kernel.org>
- <20130916080546.GC3999@lee--X1>
- <5236CD17.5010901@st.com>
+ <5234A20F.7040008@kernel.org> <20130916080546.GC3999@lee--X1>
+ <5236CD17.5010901@st.com> <20130916093812.GG3999@lee--X1>
+In-Reply-To: <20130916093812.GG3999@lee--X1>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5236CD17.5010901@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 16 Sep 2013, Denis CIOCCA wrote:
-
-> Hi Lee,
-> >> On 09/10/13 13:49, Lee Jones wrote:
-> >>> The LSM303DLH's WAI (WhoAmI) is 0x33, meaning it should be enabled by
-> >>> Accel Sensor group one. For the device to probe without error, we'll
-> >>> need to ensure it's registered with the correct WAI.
-> >>>
-> >>> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> >> You clearly have a better datasheet than I have as for that part it doesn't even claim to
-> >> have the relevant register to read a who am I from.
-> >>
-> >> Now that datasheet does list odr values as 50, 100, 400 1000 which would put it where it originally
-> >> was in these tables.
-> >>
-> >> http://www.st.com/web/en/resource/technical/document/datasheet/CD00260288.pdf
-> >>
-> >> I haven't checked other elements...
-> >>
-> >> I'm confused but suspect we may need another type entry to deal with this one.
-> > Hmmm... on initial thought, I don't know how we can handle this one. I
-> > assumed the WAIs were a one-stop-shop for device identification. I also
-> > thought that they would only match if the functionality and register
-> > maps would be the same.
-> >
-> > I'll touch base with Denis on this, perhaps he can shed some light.
-> >
-> I've just checked, the WAI is 0x32. It was correct...Are you sure that 
-> you use the LSM303DLH?
-
-That's what the datasheet for the board says. Perhaps it's that that's
-incorrect? Annoyingly, instead of printing the device name on the
-package, ST put some non-Googleable nonsense is there instead
-(probably the serial number).
-
-Nevertheless, I'll revert the patch and work something else out.
-
-> >>> ---
-> >>>   drivers/iio/accel/st_accel_core.c | 4 ++--
-> >>>   1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> >>> index ea62291..03a2b6b 100644
-> >>> --- a/drivers/iio/accel/st_accel_core.c
-> >>> +++ b/drivers/iio/accel/st_accel_core.c
-> >>> @@ -170,6 +170,7 @@ static const struct st_sensors st_accel_sensors[] = {
-> >>>   			[2] = LSM330D_ACCEL_DEV_NAME,
-> >>>   			[3] = LSM330DL_ACCEL_DEV_NAME,
-> >>>   			[4] = LSM330DLC_ACCEL_DEV_NAME,
-> >>> +			[5] = LSM303DLH_ACCEL_DEV_NAME,
-> >>>   		},
-> >>>   		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-> >>>   		.odr = {
-> >>> @@ -238,8 +239,7 @@ static const struct st_sensors st_accel_sensors[] = {
-> >>>   		.sensors_supported = {
-> >>>   			[0] = LIS331DLH_ACCEL_DEV_NAME,
-> >>>   			[1] = LSM303DL_ACCEL_DEV_NAME,
-> >>> -			[2] = LSM303DLH_ACCEL_DEV_NAME,
-> >>> -			[3] = LSM303DLM_ACCEL_DEV_NAME,
-> >>> +			[2] = LSM303DLM_ACCEL_DEV_NAME,
-> >>>   		},
-> >>>   		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-> >>>   		.odr = {
-> >>>
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+SGkgTGVlLA0KDQo+IFRoYXQncyB3aGF0IHRoZSBkYXRhc2hlZXQgZm9yIHRoZSBib2FyZCBzYXlz
+LiBQZXJoYXBzIGl0J3MgdGhhdCB0aGF0J3MgDQo+IGluY29ycmVjdD8gQW5ub3lpbmdseSwgaW5z
+dGVhZCBvZiBwcmludGluZyB0aGUgZGV2aWNlIG5hbWUgb24gdGhlIA0KPiBwYWNrYWdlLCBTVCBw
+dXQgc29tZSBub24tR29vZ2xlYWJsZSBub25zZW5zZSBpcyB0aGVyZSBpbnN0ZWFkIA0KPiAocHJv
+YmFibHkgdGhlIHNlcmlhbCBudW1iZXIpLiBOZXZlcnRoZWxlc3MsIEknbGwgcmV2ZXJ0IHRoZSBw
+YXRjaCBhbmQgDQo+IHdvcmsgc29tZXRoaW5nIGVsc2Ugb3V0Lg0KDQpJJ3ZlIHRyaWVkIHdpdGgg
+cmVhbCBkZXZpY2UuLi5VbmZvcnR1bmF0ZWx5LCB5b3UgYXJlIHJpZ2h0IGZvciBuYW1lIG9uIA0K
+dGhlIHBhY2thZ2UuLi4NClNvLCBhcmUgeW91IHVzaW5nIHRoZSBMU00zMDNETEhDPw0KDQpEZW5p
+cw==
