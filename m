@@ -1,52 +1,52 @@
-Return-Path: <Robin.Getz@analog.com>
-From: "Getz, Robin" <Robin.Getz@analog.com>
-To: Lee Jones <lee.jones@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ea0-f176.google.com ([209.85.215.176]:61261 "EHLO
+	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752688Ab3IPJrj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 05:47:39 -0400
+Received: by mail-ea0-f176.google.com with SMTP id q16so1869498ead.7
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 02:47:38 -0700 (PDT)
+Date: Mon, 16 Sep 2013 10:47:33 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: "Getz, Robin" <Robin.Getz@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
 	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
-	"arnd@arndb.de" <arnd@arndb.de>, "linus.walleij@linaro.org"
-	<linus.walleij@linaro.org>, "denis.ciocca@st.com" <denis.ciocca@st.com>,
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
+	"arnd@arndb.de" <arnd@arndb.de>,
+	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+	"denis.ciocca@st.com" <denis.ciocca@st.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH 27/38] iio: pressure-core: st: Give some indication if
+Subject: Re: [PATCH 27/38] iio: pressure-core: st: Give some indication if
  device probing was successful
-Date: Fri, 13 Sep 2013 20:57:51 +0000
-Message-ID: <FEAE1C531EE4684EBDD22603EC8BE59931CAB11B@NWD2MBX7.ad.analog.com>
+Message-ID: <20130916094733.GH3999@lee--X1>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
  <1378817379-8238-28-git-send-email-lee.jones@linaro.org>
  <43055af7-991f-4122-b308-a3dcddbbb72a@email.android.com>
- <20130911071053.GD11227@lee--X1> <52301963.5030006@metafoo.de>
+ <20130911071053.GD11227@lee--X1>
+ <52301963.5030006@metafoo.de>
  <20130911072955.GG11227@lee--X1>
-In-Reply-To: <20130911072955.GG11227@lee--X1>
-Content-Type: text/plain; charset="utf-8"
+ <FEAE1C531EE4684EBDD22603EC8BE59931CAB11B@NWD2MBX7.ad.analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <FEAE1C531EE4684EBDD22603EC8BE59931CAB11B@NWD2MBX7.ad.analog.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gV2VkbmVzZGF5LCBTZXB0ZW1iZXIgMTEsIDIwMTMgMzozMCBBTSBMZWUgSm9uZXMgd3JvdGU6
-DQo+IE9uIFdlZCwgMTEgU2VwIDIwMTMsIExhcnMtUGV0ZXIgQ2xhdXNlbiB3cm90ZToNCj4gPiBP
-biAwOS8xMS8yMDEzIDA5OjEwIEFNLCBMZWUgSm9uZXMgd3JvdGU6DQo+ID4gPk9uIFR1ZSwgMTAg
-U2VwIDIwMTMsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+ID4gPj5MZWUgSm9uZXMgPGxlZS5q
-b25lc0BsaW5hcm8ub3JnPiB3cm90ZToNCj4gPiBTaWxlbmNlIG1lYW5zIGV2ZXJ5dGhpbmcgaXMg
-Z29vZCwgYSBtZXNzYWdlIG1lYW5zIHRoZXJlIGlzIGFuIGVycm9yLg0KPiA+IElmIGV2ZXJ5IGRl
-dmljZSB0aGF0IGdldHMgcHJvYmVkIHdvdWxkIHNwaXQgb3V0IGEgbWVzc2FnZSB0aGUgbG9nDQo+
-ID4gd291bGQgYmUgc2Nyb2xsaW5nIGZvcmV2ZXIgYW5kIHlvdSB3b3VsZG4ndCBiZSBhYmxlIHRv
-IHNlZSB0aGUgZXJyb3INCj4gPiBtZXNzYWdlcy4NCj4gDQo+IE9ubHkgaWYgeW91IHByaW50IG91
-dCBldmVyeSByZWd1bGF0b3IsIGNsb2NrLCBHUElPIHBpbiBhbmQgdGhpbmdzIG9mIHRoaXMgbmF0
-dXJlLg0KPiBLZXkgaGFyZHdhcmUgYmxvY2tzIHN1Y2ggYXM7IFNELCBGbGFzaCwgVVNCLCBFdGgs
-IEhETUksIEF1ZGlvLCBVQVJULCBHUElPIGFuZA0KPiBJMkMgY29udHJvbGxlcnMgYW5kIFNlbnNv
-cnMgSSB0aGluayBkZXNlcnZlIGEgb25lIGxpbmUgIkknbSBoZXJlIGFuZCB3b3JraW5nIg0KPiBt
-ZXNzYWdlLg0KDQpJbiBtYW55IGVtYmVkZGVkIHN5c3RlbXMgLS0gdGhlcmUgYXJlIGxvdHMgYW5k
-IGxvdHMgb2YgSUlPIGRldmljZXMsIGFuZCBJJ20gbm90IHN1cmUgDQpJIHdvdWxkIGNvbnNpZGVy
-IHZlcnkgbWFueSAia2V5Ii4gSXQgcmVhbGx5IGRlcGVuZHMgb24gdGhlIGJvYXJkLg0KDQpUbyBt
-ZSBpdCdzIGEgbWF0dGVyIG9mIGJvb3QgdGltZS4gRXZlbiBtZW1jcHkgdG8gbXNnYnVmIHRha2Vz
-IHRpbWUuDQpTb21ldGltZXMgdW5uZWNlc3NhcnkgdGltZS4NCg0KPiBJJ2xsIG5vdCBmaWdodCB0
-aGlzIGZvciB0b28gbG9uZy4gVGhpcyBpcyBiYXNlZCBteSBleHBlcmllbmNlIGFzIGEgdXNlci4g
-SSB0cmllZCB0bw0KPiBsb29rIGF0IHRoZSBib290bG9nIGZvciB0aGUgc2Vuc29ycyBJJ2QganVz
-dCBlbmFibGVkIGFuZCB0aGVyZSB3YXMgbm90aGluZy4gU29tZQ0KPiBvZiB0aGVtIGhhZCBwcm9i
-ZWQsIHNvbWUgaGFkbid0IGFuZCB0aGVyZSB3YXMgbm8gY2xlYXIgd2F5IHRvIGRpc3Rpbmd1aXNo
-DQo+IGJldHdlZW4gdGhlbSB3aXRob3V0IGRpZ2dpbmcgaW50byBzeXNmcy4NCg0KZWNobyAid29y
-a2luZzoiDQpjYXQgL3N5cy9idXMvaWlvL2RldmljZXMvKi9uYW1lDQoNCmlzbid0IHRvbyBtdWNo
-IGRpZ2dpbmcuIElmIHlvdSByZWFsbHkgd2FudCB0byBkbyB0aGF0IG9uIHlvdXIgbWFjaGluZSAt
-IGRvIHNvIGluIHJjLmxvY2FsDQoNCmZvciBtYW55IG90aGVyIHN1YnN5c3RlbXMsIGl0J3MganVz
-dCBub3QgdGhhdCBlYXN5LCBhbmQgcHJpbnRpbmcgZnJvbSB0aGUgZHJpdmVyIGlzIG5lY2Vzc2Fy
-eS4NCg0KLVJvYmluDQo=
+> echo "working:"
+> cat /sys/bus/iio/devices/*/name
+> 
+> isn't too much digging. If you really want to do that on your machine - do so in rc.local
+
+Okay, I was going round the long way, which is why is was difficult:
+
+  /sys/class/i2c-adapter/i2c-2/2-005c/iio\:device2/name
+
+I will revert the "registered" patches.
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
