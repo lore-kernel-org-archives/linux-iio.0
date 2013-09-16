@@ -1,43 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:54505 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751576Ab3IPQCq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:46 -0400
-Received: by mail-ee0-f52.google.com with SMTP id c41so2144947eek.11
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:45 -0700 (PDT)
+Received: from mail-ea0-f172.google.com ([209.85.215.172]:46013 "EHLO
+	mail-ea0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751562Ab3IPQCp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:45 -0400
+Received: by mail-ea0-f172.google.com with SMTP id r16so2143820ead.31
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:44 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
 	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
 	devicetree@vger.kernel.org
-Subject: [PATCH 09/20] Documentation: dt: iio: Add binding for L3G4200D
-Date: Mon, 16 Sep 2013 17:02:15 +0100
-Message-Id: <1379347346-823-10-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 08/20] Documentation: dt: iio: Add binding for LSM303DLH - Accel
+Date: Mon, 16 Sep 2013 17:02:14 +0100
+Message-Id: <1379347346-823-9-git-send-email-lee.jones@linaro.org>
 In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-L3G4200D is a Gyroscope Sensor
+LSM303DLH is a Accelerometer Sensor
 
 Cc: devicetree@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../devicetree/bindings/iio/gyro/l3g4200d.txt       | 21 +++++++++++++++++++++
+ .../devicetree/bindings/iio/accel/lsm303dlhc.txt    | 21 +++++++++++++++++++++
  1 file changed, 21 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/lsm303dlhc.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt b/Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt
+diff --git a/Documentation/devicetree/bindings/iio/accel/lsm303dlhc.txt b/Documentation/devicetree/bindings/iio/accel/lsm303dlhc.txt
 new file mode 100644
-index 0000000..3ca2b9c
+index 0000000..5a5101a
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt
++++ b/Documentation/devicetree/bindings/iio/accel/lsm303dlhc.txt
 @@ -0,0 +1,21 @@
-+* STMicroelectronics Gyroscope Sensor
++* STMicroelectronics Accelerometer Sensor
 +
 +Required properties:
-+  - compatible: Should be "st,l3g4200d"
++  - compatible: Should be "st,lsm303dlhc_accel"
 +  - reg: The I2C address of the sensor
 +
 +Optional properties:
@@ -47,9 +47,9 @@ index 0000000..3ca2b9c
 +Example:
 +
 +i2c@80128000 {
-+	l3g4200d@68 {
-+		compatible = "st,l3g4200d";
-+		reg = <0x68>;
++	lsm303dlhc_accel@19 {
++		compatible = "st,lsm303dlhc_accel";
++		reg = <0x19>;
 +
 +		vdd-supply = <&ab8500_ldo_aux1_reg>;
 +		vddio-supply = <&db8500_vsmps2_reg>;
