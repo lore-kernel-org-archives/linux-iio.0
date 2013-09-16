@@ -1,44 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42157 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751353Ab3IPSZh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 14:25:37 -0400
-Received: from localhost.localdomain (cpc4-cmbg6-0-0-cust321.5-4.cable.virginmedia.com [81.107.37.66])
-	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 5879440441
-	for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 19:25:31 +0100 (BST)
-Message-ID: <52375B3C.8020203@kernel.org>
-Date: Mon, 16 Sep 2013 20:25:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: IIO: clarification about posting patches with device tree elements.
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-ee0-f43.google.com ([74.125.83.43]:58690 "EHLO
+	mail-ee0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750728Ab3IPQCg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:36 -0400
+Received: by mail-ee0-f43.google.com with SMTP id e52so2133008eek.16
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:35 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v4 00/20] iio: ST clean-ups and new sensor support
+Date: Mon, 16 Sep 2013 17:02:06 +0100
+Message-Id: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi All,
+Hi Jonathan,
 
-As I was unclear on when we needed Acks from the device tree maintainers
-I posted an enquiry to devietree@vger.kernel.org.  Rob Herring kindly
-replied. http://www.spinics.net/lists/devicetree/msg04669.html
+Hopefully I've covered all of your points in this new set.
 
+This patch-set includes a few clean-ups surrounding error handling and
+non-mandatory functionality along with regulator support and the addition
+of a new pressure/temperature sensor (LPS001WP).
 
-In brief:
+Everything has been tested with Device Tree.
 
-1) All device tree bindings related patches should be cc'd to
-devicetree@vger.kernel.org
+v2:
+ - Rebased onto Linux -next as requested by Jonathan
+ - Reworked clean-up patch to address Jonathan's concerns
+ - Added binding document (inc regulators)
+ - Extended regulator support in the driver
+ - Re-worked Data Ready pin handling
 
-2) Anything new (i.e. not the same as in existing drivers)
-   needs an Ack from a device tree maintainer.
+v3:
+ - Standardise sensor names: <model>_<sensor-type>
+ - Added error handling clean-ups
+ - More binding documents; for magn, accel and gyro
+ - Message on successful sensor bring-up; for press, magn, accel and gyro
+ - More device enablement for ux500 by way of CONFIGs
+ - New neat reorder/grouping of patches
 
-3) Any changes to common bindings needs an Ack from a device tree
-   maintainer.
+v4:
+ - Remove "registered" prints
+ - Remove *_<dev_name> appends
+ - Fix patch mangle
+ - CC DT ML on bindings
+ - Realisation that we're using a different Accel & Magn chip
+ - Move (irq > 0) back into the error path
+ - Squash CONFIG enablement into one patch
 
-4) Anything else 'interesting' may need an Ack.
+ Documentation/devicetree/bindings/iio/accel/lsm303dlhc.txt        |  21 +++++++++++++
+ Documentation/devicetree/bindings/iio/gyro/l3g4200d.txt           |  21 +++++++++++++
+ Documentation/devicetree/bindings/iio/magnetometer/lsm303dlhc.txt |  21 +++++++++++++
+ Documentation/devicetree/bindings/iio/pressure/lps001wp.txt       |  21 +++++++++++++
+ arch/arm/boot/dts/ste-dbx5x0.dtsi                                 |   5 ----
+ arch/arm/boot/dts/ste-snowball.dts                                |  34 +++++++++++++++++++++
+ arch/arm/configs/u8500_defconfig                                  |   5 ++++
+ drivers/iio/accel/st_accel_core.c                                 |  19 ++++++------
+ drivers/iio/common/st_sensors/st_sensors_core.c                   |  50 ++++++++++++++++++-------------
+ drivers/iio/gyro/st_gyro_core.c                                   |  19 ++++++------
+ drivers/iio/magnetometer/st_magn_core.c                           |  19 ++++++------
+ drivers/iio/pressure/st_pressure.h                                |   1 +
+ drivers/iio/pressure/st_pressure_core.c                           | 154 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------
+ drivers/iio/pressure/st_pressure_i2c.c                            |   1 +
+ include/linux/iio/common/st_sensors.h                             |   5 ++++
+ 15 files changed, 329 insertions(+), 67 deletions(-)
 
-Anyhow, please all remember to cc devicetree@vger.kernel.org for
-anything DT related.
-
-Thanks,
-
-Jonathan
