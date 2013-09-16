@@ -1,9 +1,16 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 16 Sep 2013 12:26:14 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ea0-f173.google.com ([209.85.215.173]:55368 "EHLO
+	mail-ea0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753079Ab3IPLLW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 07:11:22 -0400
+Received: by mail-ea0-f173.google.com with SMTP id g10so1954306eak.18
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 04:11:21 -0700 (PDT)
+Date: Mon, 16 Sep 2013 12:11:18 +0100
 From: Lee Jones <lee.jones@linaro.org>
 To: Denis CIOCCA <denis.ciocca@st.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"jic23@cam.ac.uk" <jic23@cam.ac.uk>,
 	"arnd@arndb.de" <arnd@arndb.de>,
@@ -11,7 +18,7 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH 38/38] iio: magn-core: st: Provide support for the
  LSM303DLH
-Message-ID: <20130916112614.GC16984@lee--X1>
+Message-ID: <20130916111118.GM3999@lee--X1>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
  <1378817379-8238-39-git-send-email-lee.jones@linaro.org>
  <5234A28D.1030409@kernel.org>
@@ -22,7 +29,8 @@ References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 In-Reply-To: <5236DADD.3040205@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 On Mon, 16 Sep 2013, Denis CIOCCA wrote:
 
@@ -37,14 +45,7 @@ On Mon, 16 Sep 2013, Denis CIOCCA wrote:
 > On LSM303DLH you have to read 0x0a 0x0b and 0x0c registers, you have to 
 > find 0x48, 0x34 and 0x33. I think in the snowball there is the LSM303DLHC.
 
-I just did that too:
-
-  Device: lsm303dlh_magn: WAI: (0x3c)
-  st_magn_common_probe():  IR: ID1 (0x48) ID2 (0x34) ID3 (0x33)
-
-It appears the LSM303DLH does have a populated WAI register after all.
-
-Now what? :)
+I'm inclined to agree with you. I'll make the necessary changes.
 
 -- 
 Lee Jones
