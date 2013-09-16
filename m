@@ -1,52 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f171.google.com ([209.85.215.171]:54071 "EHLO
-	mail-ea0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751497Ab3IPQCj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:39 -0400
-Received: by mail-ea0-f171.google.com with SMTP id n15so2108058ead.2
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:38 -0700 (PDT)
+Received: from mail-ee0-f45.google.com ([74.125.83.45]:36732 "EHLO
+	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751215Ab3IPQCi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:38 -0400
+Received: by mail-ee0-f45.google.com with SMTP id c50so2124750eek.32
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:37 -0700 (PDT)
 From: Lee Jones <lee.jones@linaro.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	jic23@cam.ac.uk
 Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
 	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 02/20] ARM: ux500: Enable the LPS001WP Pressure & Temperature sensor from DT
-Date: Mon, 16 Sep 2013 17:02:08 +0100
-Message-Id: <1379347346-823-3-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 01/20] ARM: ux500: Remove PrimeCell IDs from Nomadik I2C DT nodes
+Date: Mon, 16 Sep 2013 17:02:07 +0100
+Message-Id: <1379347346-823-2-git-send-email-lee.jones@linaro.org>
 In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-After applying this node the LPS001WP sensor chip should probe
-successfully once the driver support has also been applied.
+Turns out that they're actually not required and the driver probes just
+fine without them. The ID is incorrect at the moment anyway. They actually
+currently specify the stn8815.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/ste-snowball.dts | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm/boot/dts/ste-dbx5x0.dtsi | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/ste-snowball.dts b/arch/arm/boot/dts/ste-snowball.dts
-index 49824be..ab173eb 100644
---- a/arch/arm/boot/dts/ste-snowball.dts
-+++ b/arch/arm/boot/dts/ste-snowball.dts
-@@ -153,6 +153,16 @@
- 			status = "okay";
- 		};
+diff --git a/arch/arm/boot/dts/ste-dbx5x0.dtsi b/arch/arm/boot/dts/ste-dbx5x0.dtsi
+index a152945..9c01d66 100644
+--- a/arch/arm/boot/dts/ste-dbx5x0.dtsi
++++ b/arch/arm/boot/dts/ste-dbx5x0.dtsi
+@@ -531,7 +531,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80004000 0x1000>;
+ 			interrupts = <0 21 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
  
-+		i2c@80128000 {
-+			lps001wp@5c {
-+				compatible = "st,lps001wp";
-+				reg = <0x5c>;
-+
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
-+		};
-+
- 		uart@80120000 {
- 			status = "okay";
- 		};
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -544,7 +543,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80122000 0x1000>;
+ 			interrupts = <0 22 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -557,7 +555,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80128000 0x1000>;
+ 			interrupts = <0 55 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -570,7 +567,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x80110000 0x1000>;
+ 			interrupts = <0 12 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -583,7 +579,6 @@
+ 			compatible = "stericsson,db8500-i2c", "st,nomadik-i2c", "arm,primecell";
+ 			reg = <0x8012a000 0x1000>;
+ 			interrupts = <0 51 IRQ_TYPE_LEVEL_HIGH>;
+-			arm,primecell-periphid = <0x180024>;
+ 
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
 -- 
 1.8.1.2
 
