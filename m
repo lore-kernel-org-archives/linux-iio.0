@@ -1,91 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:42947 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752376Ab3IQIoX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 04:44:23 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
-Subject: =?UTF-8?q?=5BPATCH=201/2=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
-Date: Tue, 17 Sep 2013 09:44:06 +0500
-Message-Id: <1379393047-11772-2-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1379393047-11772-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1379393047-11772-1-git-send-email-zubair.lutfullah@gmail.com>
+Return-Path: <matthias.list@kaehlcke.net>
+Date: Mon, 16 Sep 2013 23:17:49 +0200
+From: Matthias Kaehlcke <matthias.list@kaehlcke.net>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Felipe Balbi <balbi@ti.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: ti_am335x_adc: Take touchscreen steps into account
+ for conversion timeout
+Message-ID: <20130916211749.GG24058@raspi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-Enable shared IRQ to allow ADC to share IRQ line from
-parent MFD core. Only FIFO0 IRQs are for TSC and handled
-on the TSC side.
+The calculation of the old conversion timeout value was based on the number of
+steps used by this driver. This doesn't take into account that other steps
+can be used by the touchscreen driver. Select the timeout value based on the
+steps used by both drivers
 
-Step mask would be updated from cached variable only previously.
-In rare cases when both TSC and ADC are used, the cached
-variable gets mixed up.
-The step mask is written with the required mask every time.
-
-Rachna Patil (TI) laid ground work for shared IRQ.
-
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Matthias Kaehlcke <matthias@kaehlcke.net>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c      | 4 ++--
+ drivers/mfd/ti_am335x_tscadc.c       | 1 +
+ include/linux/mfd/ti_am335x_tscadc.h | 1 +
+ 3 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e1c5300..24e625c 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			config_inp[4];
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
-+	u32			step_mask;
- };
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 3ceac3e..75be579 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -145,8 +145,8 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	u32 step = UINT_MAX;
+ 	bool found = false;
+ 	u32 step_en;
+-	unsigned long timeout = jiffies + usecs_to_jiffies
+-				(IDLE_TIMEOUT * adc_dev->channels);
++	unsigned long timeout = jiffies + usecs_to_jiffies(IDLE_TIMEOUT *
++		(adc_dev->channels + adc_dev->mfd_tscadc->tsc_steps));
+ 	step_en = get_adc_step_mask(adc_dev);
+ 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
  
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index b003a16..b2e1a1c 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -228,6 +228,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 	/* TSC Cell */
+ 	if (tsc_wires > 0) {
+ 		tscadc->tsc_cell = tscadc->used_cells;
++		tscadc->tsc_steps = readouts * 2 + 2;
+ 		cell = &tscadc->cells[tscadc->used_cells++];
+ 		cell->name = "TI-am335x-tsc";
+ 		cell->of_compatible = "ti,am3359-tsc";
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index db1791b..7e8d702 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -147,6 +147,7 @@ struct ti_tscadc_dev {
+ 	struct mfd_cell cells[TSCADC_CELLS];
+ 	u32 reg_se_cache;
+ 	spinlock_t reg_lock;
++	int tsc_steps;
  
- 	/* The steps1 … end and bit 0 for TS_Charge */
- 	stepenable = (1 << (end_step + 2)) - 1;
--	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
-+	ts_dev->step_mask = stepenable;
-+	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- }
- 
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
-+	/*
-+	 * ADC and touchscreen share the IRQ line.
-+	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
-+	 */
- 	if (status & IRQENB_FIFO0THRES) {
- 
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
-@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	if (irqclr) {
- 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
--		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- 		return IRQ_HANDLED;
- 	}
- 	return IRQ_NONE;
-@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
--			  0, pdev->dev.driver->name, ts_dev);
-+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to allocate irq.\n");
- 		goto err_free_mem;
+ 	/* tsc device */
+ 	struct titsc *tsc;
 -- 
-1.7.9.5
-
+1.8.4.rc3
