@@ -1,128 +1,166 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57430 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752255Ab3IUMCq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 08:02:46 -0400
-Message-ID: <523D9908.1030407@kernel.org>
-Date: Sat, 21 Sep 2013 14:03:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
-	denis.ciocca@st.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 16/20] iio: pressure-core: st: Provide support for the
- Vdd power supply
-References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-17-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1379347346-823-17-git-send-email-lee.jones@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:62770 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751653Ab3IPQCx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:53 -0400
+Received: by mail-ee0-f50.google.com with SMTP id d51so2105271eek.23
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:51 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 15/20] iio: pressure: st: Add support for new LPS001WP pressure sensor
+Date: Mon, 16 Sep 2013 17:02:21 +0100
+Message-Id: <1379347346-823-16-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
+References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/16/13 17:02, Lee Jones wrote:
-> The power to some of the sensors are controlled by regulators. In most
-> cases these are 'always on', but if not they will fail to work until
-> the regulator is enabled using the relevant APIs. This patch allows for
-> the Vdd power supply to be specified by either platform data or Device
-> Tree.
-> 
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Here we use existing practices to introduce support for another
+pressure/temperature sensor, the LPS001WP.
 
-I haven't yet pulled 3.12-rc1 into my togreg branch.  To keep things
-clean I'll do a pull request to Greg soon then apply these afterwards
-(when a fast forward merge is possible).
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/pressure/st_pressure.h      |  1 +
+ drivers/iio/pressure/st_pressure_core.c | 84 +++++++++++++++++++++++++++++++++
+ drivers/iio/pressure/st_pressure_i2c.c  |  1 +
+ 3 files changed, 86 insertions(+)
 
-> ---
->  drivers/iio/pressure/st_pressure_core.c | 28 ++++++++++++++++++++++++++++
->  include/linux/iio/common/st_sensors.h   |  3 +++
->  2 files changed, 31 insertions(+)
-> 
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index e879542..c801c80 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -23,6 +23,7 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/trigger.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/regulator/consumer.h>
->  #include <asm/unaligned.h>
->  
->  #include <linux/iio/common/st_sensors.h>
-> @@ -313,6 +314,29 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
->  #define ST_PRESS_TRIGGER_OPS NULL
->  #endif
->  
-> +void st_press_power_enable(struct iio_dev *indio_dev)
-> +{
-> +	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +	int err;
-> +
-> +	/* Regulators not mandatory, but if requested we should enable it. */
-> +	pdata->vdd = devm_regulator_get_optional(&indio_dev->dev, "vdd");
-> +	if (!IS_ERR(pdata->vdd)) {
-> +		err = regulator_enable(pdata->vdd);
-> +		if (err != 0)
-> +			dev_warn(&indio_dev->dev,
-> +				 "Failed to enable specified Vdd supply\n");
-> +	}
-> +}
-> +
-> +void st_press_power_disable(struct iio_dev *indio_dev)
-> +{
-> +	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +
-> +	if (!IS_ERR(pdata->vdd))
-> +		regulator_disable(pdata->vdd);
-> +}
-> +
->  int st_press_common_probe(struct iio_dev *indio_dev,
->  				struct st_sensors_platform_data *plat_data)
->  {
-> @@ -323,6 +347,8 @@ int st_press_common_probe(struct iio_dev *indio_dev,
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &press_info;
->  
-> +	st_press_power_enable(indio_dev);
-> +
->  	err = st_sensors_check_device_support(indio_dev,
->  					      ARRAY_SIZE(st_press_sensors),
->  					      st_press_sensors);
-> @@ -381,6 +407,8 @@ void st_press_common_remove(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *pdata = iio_priv(indio_dev);
->  
-> +	st_press_power_disable(indio_dev);
-> +
->  	iio_device_unregister(indio_dev);
->  	if (pdata->get_irq_data_ready(indio_dev) > 0) {
->  		st_sensors_deallocate_trigger(indio_dev);
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index e732fda..968b84e 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -16,6 +16,7 @@
->  #include <linux/irqreturn.h>
->  #include <linux/iio/trigger.h>
->  #include <linux/bitops.h>
-> +#include <linux/regulator/consumer.h>
->  
->  #include <linux/platform_data/st_sensors_pdata.h>
->  
-> @@ -201,6 +202,7 @@ struct st_sensors {
->   * @trig: The trigger in use by the core driver.
->   * @sensor: Pointer to the current sensor struct in use.
->   * @current_fullscale: Maximum range of measure by the sensor.
-> + * @vdd: Pointer to sensor's Vdd power supply
->   * @enabled: Status of the sensor (false->off, true->on).
->   * @multiread_bit: Use or not particular bit for [I2C/SPI] multiread.
->   * @buffer_data: Data used by buffer part.
-> @@ -216,6 +218,7 @@ struct st_sensor_data {
->  	struct iio_trigger *trig;
->  	struct st_sensors *sensor;
->  	struct st_sensor_fullscale_avl *current_fullscale;
-> +	struct regulator *vdd;
->  
->  	bool enabled;
->  	bool multiread_bit;
-> 
+diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
+index b0b6306..049c21a 100644
+--- a/drivers/iio/pressure/st_pressure.h
++++ b/drivers/iio/pressure/st_pressure.h
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <linux/iio/common/st_sensors.h>
+ 
++#define LPS001WP_PRESS_DEV_NAME		"lps001wp"
+ #define LPS331AP_PRESS_DEV_NAME		"lps331ap"
+ 
+ /**
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 4539953..e879542 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -64,6 +64,21 @@
+ #define ST_PRESS_LPS331AP_OUT_XL_ADDR		0x28
+ #define ST_TEMP_LPS331AP_OUT_L_ADDR		0x2b
+ 
++/* CUSTOM VALUES FOR LPS001WP SENSOR */
++#define ST_PRESS_LPS001WP_WAI_EXP		0xba
++#define ST_PRESS_LPS001WP_ODR_ADDR		0x20
++#define ST_PRESS_LPS001WP_ODR_MASK		0x30
++#define ST_PRESS_LPS001WP_ODR_AVL_1HZ_VAL	0x01
++#define ST_PRESS_LPS001WP_ODR_AVL_7HZ_VAL	0x02
++#define ST_PRESS_LPS001WP_ODR_AVL_13HZ_VAL	0x03
++#define ST_PRESS_LPS001WP_PW_ADDR		0x20
++#define ST_PRESS_LPS001WP_PW_MASK		0x40
++#define ST_PRESS_LPS001WP_BDU_ADDR		0x20
++#define ST_PRESS_LPS001WP_BDU_MASK		0x04
++#define ST_PRESS_LPS001WP_MULTIREAD_BIT		true
++#define ST_PRESS_LPS001WP_OUT_L_ADDR		0x28
++#define ST_TEMP_LPS001WP_OUT_L_ADDR		0x2a
++
+ static const struct iio_chan_spec st_press_lps331ap_channels[] = {
+ 	{
+ 		.type = IIO_PRESSURE,
+@@ -100,6 +115,40 @@ static const struct iio_chan_spec st_press_lps331ap_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(1)
+ };
+ 
++static const struct iio_chan_spec st_press_lps001wp_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.channel2 = IIO_NO_MOD,
++		.address = ST_PRESS_LPS001WP_OUT_L_ADDR,
++		.scan_index = ST_SENSORS_SCAN_X,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.modified = 0,
++	},
++	{
++		.type = IIO_TEMP,
++		.channel2 = IIO_NO_MOD,
++		.address = ST_TEMP_LPS001WP_OUT_L_ADDR,
++		.scan_index = -1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.modified = 0,
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1)
++};
++
+ static const struct st_sensors st_press_sensors[] = {
+ 	{
+ 		.wai = ST_PRESS_LPS331AP_WAI_EXP,
+@@ -148,6 +197,41 @@ static const struct st_sensors st_press_sensors[] = {
+ 		.multi_read_bit = ST_PRESS_LPS331AP_MULTIREAD_BIT,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = ST_PRESS_LPS001WP_WAI_EXP,
++		.sensors_supported = {
++			[0] = LPS001WP_PRESS_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_press_lps001wp_channels,
++		.num_ch = ARRAY_SIZE(st_press_lps001wp_channels),
++		.odr = {
++			.addr = ST_PRESS_LPS001WP_ODR_ADDR,
++			.mask = ST_PRESS_LPS001WP_ODR_MASK,
++			.odr_avl = {
++				{ 1, ST_PRESS_LPS001WP_ODR_AVL_1HZ_VAL, },
++				{ 7, ST_PRESS_LPS001WP_ODR_AVL_7HZ_VAL, },
++				{ 13, ST_PRESS_LPS001WP_ODR_AVL_13HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_PRESS_LPS001WP_PW_ADDR,
++			.mask = ST_PRESS_LPS001WP_PW_MASK,
++			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.fs = {
++			.addr = 0,
++		},
++		.bdu = {
++			.addr = ST_PRESS_LPS001WP_BDU_ADDR,
++			.mask = ST_PRESS_LPS001WP_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = 0,
++		},
++		.multi_read_bit = ST_PRESS_LPS001WP_MULTIREAD_BIT,
++		.bootime = 2,
++	},
+ };
+ 
+ static int st_press_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index 08aac5e..51eab7f 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -49,6 +49,7 @@ static int st_press_i2c_remove(struct i2c_client *client)
+ }
+ 
+ static const struct i2c_device_id st_press_id_table[] = {
++	{ LPS001WP_PRESS_DEV_NAME },
+ 	{ LPS331AP_PRESS_DEV_NAME },
+ 	{},
+ };
+-- 
+1.8.1.2
+
