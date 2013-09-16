@@ -1,85 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f45.google.com ([74.125.83.45]:59957 "EHLO
-	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755246Ab3IPIFu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 04:05:50 -0400
-Received: by mail-ee0-f45.google.com with SMTP id c50so1836751eek.18
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 01:05:49 -0700 (PDT)
-Date: Mon, 16 Sep 2013 09:05:46 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org
+Received: from eu1sys200aog122.obsmtp.com ([207.126.144.153]:49981 "EHLO
+	eu1sys200aog122.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753175Ab3IPJUo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 05:20:44 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"arnd@arndb.de" <arnd@arndb.de>,
+	"linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 16 Sep 2013 11:19:19 +0200
 Subject: Re: [PATCH 32/38] iio: accel-core: st: Move LSM303DLH into correct
  group
-Message-ID: <20130916080546.GC3999@lee--X1>
+Message-ID: <5236CD17.5010901@st.com>
 References: <1378817379-8238-1-git-send-email-lee.jones@linaro.org>
  <1378817379-8238-33-git-send-email-lee.jones@linaro.org>
- <5234A20F.7040008@kernel.org>
+ <5234A20F.7040008@kernel.org> <20130916080546.GC3999@lee--X1>
+In-Reply-To: <20130916080546.GC3999@lee--X1>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5234A20F.7040008@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 14 Sep 2013, Jonathan Cameron wrote:
-
-> On 09/10/13 13:49, Lee Jones wrote:
-> > The LSM303DLH's WAI (WhoAmI) is 0x33, meaning it should be enabled by
-> > Accel Sensor group one. For the device to probe without error, we'll
-> > need to ensure it's registered with the correct WAI.
-> > 
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> You clearly have a better datasheet than I have as for that part it doesn't even claim to
-> have the relevant register to read a who am I from.
-> 
-> Now that datasheet does list odr values as 50, 100, 400 1000 which would put it where it originally
-> was in these tables.
-> 
-> http://www.st.com/web/en/resource/technical/document/datasheet/CD00260288.pdf
-> 
-> I haven't checked other elements...
-> 
-> I'm confused but suspect we may need another type entry to deal with this one.
-
-Hmmm... on initial thought, I don't know how we can handle this one. I
-assumed the WAIs were a one-stop-shop for device identification. I also
-thought that they would only match if the functionality and register
-maps would be the same.
-
-I'll touch base with Denis on this, perhaps he can shed some light.
-
-> > ---
-> >  drivers/iio/accel/st_accel_core.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> > index ea62291..03a2b6b 100644
-> > --- a/drivers/iio/accel/st_accel_core.c
-> > +++ b/drivers/iio/accel/st_accel_core.c
-> > @@ -170,6 +170,7 @@ static const struct st_sensors st_accel_sensors[] = {
-> >  			[2] = LSM330D_ACCEL_DEV_NAME,
-> >  			[3] = LSM330DL_ACCEL_DEV_NAME,
-> >  			[4] = LSM330DLC_ACCEL_DEV_NAME,
-> > +			[5] = LSM303DLH_ACCEL_DEV_NAME,
-> >  		},
-> >  		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-> >  		.odr = {
-> > @@ -238,8 +239,7 @@ static const struct st_sensors st_accel_sensors[] = {
-> >  		.sensors_supported = {
-> >  			[0] = LIS331DLH_ACCEL_DEV_NAME,
-> >  			[1] = LSM303DL_ACCEL_DEV_NAME,
-> > -			[2] = LSM303DLH_ACCEL_DEV_NAME,
-> > -			[3] = LSM303DLM_ACCEL_DEV_NAME,
-> > +			[2] = LSM303DLM_ACCEL_DEV_NAME,
-> >  		},
-> >  		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-> >  		.odr = {
-> > 
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+SGkgTGVlLA0KPj4gT24gMDkvMTAvMTMgMTM6NDksIExlZSBKb25lcyB3cm90ZToNCj4+PiBUaGUg
+TFNNMzAzRExIJ3MgV0FJIChXaG9BbUkpIGlzIDB4MzMsIG1lYW5pbmcgaXQgc2hvdWxkIGJlIGVu
+YWJsZWQgYnkNCj4+PiBBY2NlbCBTZW5zb3IgZ3JvdXAgb25lLiBGb3IgdGhlIGRldmljZSB0byBw
+cm9iZSB3aXRob3V0IGVycm9yLCB3ZSdsbA0KPj4+IG5lZWQgdG8gZW5zdXJlIGl0J3MgcmVnaXN0
+ZXJlZCB3aXRoIHRoZSBjb3JyZWN0IFdBSS4NCj4+Pg0KPj4+IFNpZ25lZC1vZmYtYnk6IExlZSBK
+b25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+DQo+PiBZb3UgY2xlYXJseSBoYXZlIGEgYmV0dGVy
+IGRhdGFzaGVldCB0aGFuIEkgaGF2ZSBhcyBmb3IgdGhhdCBwYXJ0IGl0IGRvZXNuJ3QgZXZlbiBj
+bGFpbSB0bw0KPj4gaGF2ZSB0aGUgcmVsZXZhbnQgcmVnaXN0ZXIgdG8gcmVhZCBhIHdobyBhbSBJ
+IGZyb20uDQo+Pg0KPj4gTm93IHRoYXQgZGF0YXNoZWV0IGRvZXMgbGlzdCBvZHIgdmFsdWVzIGFz
+IDUwLCAxMDAsIDQwMCAxMDAwIHdoaWNoIHdvdWxkIHB1dCBpdCB3aGVyZSBpdCBvcmlnaW5hbGx5
+DQo+PiB3YXMgaW4gdGhlc2UgdGFibGVzLg0KPj4NCj4+IGh0dHA6Ly93d3cuc3QuY29tL3dlYi9l
+bi9yZXNvdXJjZS90ZWNobmljYWwvZG9jdW1lbnQvZGF0YXNoZWV0L0NEMDAyNjAyODgucGRmDQo+
+Pg0KPj4gSSBoYXZlbid0IGNoZWNrZWQgb3RoZXIgZWxlbWVudHMuLi4NCj4+DQo+PiBJJ20gY29u
+ZnVzZWQgYnV0IHN1c3BlY3Qgd2UgbWF5IG5lZWQgYW5vdGhlciB0eXBlIGVudHJ5IHRvIGRlYWwg
+d2l0aCB0aGlzIG9uZS4NCj4gSG1tbS4uLiBvbiBpbml0aWFsIHRob3VnaHQsIEkgZG9uJ3Qga25v
+dyBob3cgd2UgY2FuIGhhbmRsZSB0aGlzIG9uZS4gSQ0KPiBhc3N1bWVkIHRoZSBXQUlzIHdlcmUg
+YSBvbmUtc3RvcC1zaG9wIGZvciBkZXZpY2UgaWRlbnRpZmljYXRpb24uIEkgYWxzbw0KPiB0aG91
+Z2h0IHRoYXQgdGhleSB3b3VsZCBvbmx5IG1hdGNoIGlmIHRoZSBmdW5jdGlvbmFsaXR5IGFuZCBy
+ZWdpc3Rlcg0KPiBtYXBzIHdvdWxkIGJlIHRoZSBzYW1lLg0KPg0KPiBJJ2xsIHRvdWNoIGJhc2Ug
+d2l0aCBEZW5pcyBvbiB0aGlzLCBwZXJoYXBzIGhlIGNhbiBzaGVkIHNvbWUgbGlnaHQuDQo+DQpJ
+J3ZlIGp1c3QgY2hlY2tlZCwgdGhlIFdBSSBpcyAweDMyLiBJdCB3YXMgY29ycmVjdC4uLkFyZSB5
+b3Ugc3VyZSB0aGF0IA0KeW91IHVzZSB0aGUgTFNNMzAzRExIPw0KDQpEZW5pcw0KDQoNCg0KPj4+
+IC0tLQ0KPj4+ICAgZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfY29yZS5jIHwgNCArKy0tDQo+
+Pj4gICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPj4+
+DQo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsX2NvcmUuYyBiL2Ry
+aXZlcnMvaWlvL2FjY2VsL3N0X2FjY2VsX2NvcmUuYw0KPj4+IGluZGV4IGVhNjIyOTEuLjAzYTJi
+NmIgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfY29yZS5jDQo+
+Pj4gKysrIGIvZHJpdmVycy9paW8vYWNjZWwvc3RfYWNjZWxfY29yZS5jDQo+Pj4gQEAgLTE3MCw2
+ICsxNzAsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHN0X3NlbnNvcnMgc3RfYWNjZWxfc2Vuc29y
+c1tdID0gew0KPj4+ICAgCQkJWzJdID0gTFNNMzMwRF9BQ0NFTF9ERVZfTkFNRSwNCj4+PiAgIAkJ
+CVszXSA9IExTTTMzMERMX0FDQ0VMX0RFVl9OQU1FLA0KPj4+ICAgCQkJWzRdID0gTFNNMzMwRExD
+X0FDQ0VMX0RFVl9OQU1FLA0KPj4+ICsJCQlbNV0gPSBMU00zMDNETEhfQUNDRUxfREVWX05BTUUs
+DQo+Pj4gICAJCX0sDQo+Pj4gICAJCS5jaCA9IChzdHJ1Y3QgaWlvX2NoYW5fc3BlYyAqKXN0X2Fj
+Y2VsXzEyYml0X2NoYW5uZWxzLA0KPj4+ICAgCQkub2RyID0gew0KPj4+IEBAIC0yMzgsOCArMjM5
+LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzdF9zZW5zb3JzIHN0X2FjY2VsX3NlbnNvcnNbXSA9
+IHsNCj4+PiAgIAkJLnNlbnNvcnNfc3VwcG9ydGVkID0gew0KPj4+ICAgCQkJWzBdID0gTElTMzMx
+RExIX0FDQ0VMX0RFVl9OQU1FLA0KPj4+ICAgCQkJWzFdID0gTFNNMzAzRExfQUNDRUxfREVWX05B
+TUUsDQo+Pj4gLQkJCVsyXSA9IExTTTMwM0RMSF9BQ0NFTF9ERVZfTkFNRSwNCj4+PiAtCQkJWzNd
+ID0gTFNNMzAzRExNX0FDQ0VMX0RFVl9OQU1FLA0KPj4+ICsJCQlbMl0gPSBMU00zMDNETE1fQUND
+RUxfREVWX05BTUUsDQo+Pj4gICAJCX0sDQo+Pj4gICAJCS5jaCA9IChzdHJ1Y3QgaWlvX2NoYW5f
+c3BlYyAqKXN0X2FjY2VsXzEyYml0X2NoYW5uZWxzLA0KPj4+ICAgCQkub2RyID0gew0KPj4+DQo=
