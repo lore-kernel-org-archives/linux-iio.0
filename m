@@ -1,59 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57294 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752708Ab3IULvk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 07:51:40 -0400
-Message-ID: <523D9670.5090107@kernel.org>
-Date: Sat, 21 Sep 2013 13:52:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
-	denis.ciocca@st.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 13/20] iio: sensors-core: st: Clean-up error handling
- in st_sensors_read_axis_data()
-References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-14-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1379347346-823-14-git-send-email-lee.jones@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:50399 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751589Ab3IPQCt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:49 -0400
+Received: by mail-ee0-f50.google.com with SMTP id d51so2135842eek.9
+        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:48 -0700 (PDT)
+From: Lee Jones <lee.jones@linaro.org>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 12/20] iio: sensors-core: st: Clean-up error handling in st_sensors_init_sensor()
+Date: Mon, 16 Sep 2013 17:02:18 +0100
+Message-Id: <1379347346-823-13-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
+References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/16/13 17:02, Lee Jones wrote:
-> Gets rid of those unnecessary gotos.
-> 
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Applied to the togreg branch of iio.git
+Strip out all those unnecessary gotos and just return the error right away.
 
-Thanks Lee.
-> ---
->  drivers/iio/common/st_sensors/st_sensors_core.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index c5fbe58..76e573b 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -331,10 +331,8 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
->  
->  	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
-> -	if (!outdata) {
-> -		err = -EINVAL;
-> -		goto st_sensors_read_axis_data_error;
-> -	}
-> +	if (!outdata)
-> +		return -ENOMEM;
->  
->  	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
->  				ch->address, byte_for_channel,
-> @@ -349,7 +347,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  
->  st_sensors_free_memory:
->  	kfree(outdata);
-> -st_sensors_read_axis_data_error:
-> +
->  	return err;
->  }
->  
-> 
+Aids to simplicity and reduces code.
+
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 2672630..c5fbe58 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -241,29 +241,28 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 
+ 	err = st_sensors_set_enable(indio_dev, false);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	if (sdata->current_fullscale) {
+ 		err = st_sensors_set_fullscale(indio_dev,
+ 					       sdata->current_fullscale->num);
+ 		if (err < 0)
+-			goto init_error;
++			return err;
+ 	} else
+ 		dev_info(&indio_dev->dev, "Full-scale not possible\n");
+ 
+ 	err = st_sensors_set_odr(indio_dev, sdata->odr);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	/* set BDU */
+ 	err = st_sensors_write_data_with_mask(indio_dev,
+ 			sdata->sensor->bdu.addr, sdata->sensor->bdu.mask, true);
+ 	if (err < 0)
+-		goto init_error;
++		return err;
+ 
+ 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
+ 
+-init_error:
+ 	return err;
+ }
+ EXPORT_SYMBOL(st_sensors_init_sensor);
+-- 
+1.8.1.2
+
