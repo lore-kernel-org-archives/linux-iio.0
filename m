@@ -1,59 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f171.google.com ([209.85.217.171]:42835 "EHLO
-	mail-lb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751903Ab3IRLZu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 07:25:50 -0400
-Date: Wed, 18 Sep 2013 16:25:38 +0500
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:42947 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752376Ab3IQIoX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 04:44:23 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org
-Subject: Re: [PATCH 2/2] iio: ti_am335x_adc: Add continuous sampling support
-Message-ID: <20130918112536.GA17126@gmail.com>
+	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
+Subject: =?UTF-8?q?=5BPATCH=201/2=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
+Date: Tue, 17 Sep 2013 09:44:06 +0500
+Message-Id: <1379393047-11772-2-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1379393047-11772-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1379393047-11772-1-git-send-email-zubair.lutfullah@gmail.com>
- <1379393047-11772-3-git-send-email-zubair.lutfullah@gmail.com>
- <20130918042726.GB13196@core.coreip.homeip.net>
- <20130918065406.GA13451@gmail.com>
- <53771776-0d33-436d-9687-995ed0d6345d@email.android.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53771776-0d33-436d-9687-995ed0d6345d@email.android.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 18, 2013 at 10:39:42AM +0100, Jonathan Cameron wrote:
-> "Zubair Lutfullah :" <zubair.lutfullah@gmail.com> wrote:
-> >On Tue, Sep 17, 2013 at 09:27:27PM -0700, Dmitry Torokhov wrote:
-> >> Hi Zubair,
-> >> 
-> >> On Tue, Sep 17, 2013 at 09:44:07AM +0500, Zubair Lutfullah wrote:
-> >> > +
-> >> > +	ret = devm_request_threaded_irq(indio_dev->dev.parent,
-> >> > +				irq,
-> >> > +				pollfunc_th, pollfunc_bh,
-> >> > +				flags, indio_dev->name,
-> >> > +				indio_dev);
-> >> > +	if (ret)
-> >> > +		goto error_kfifo_free;
-...
-> >> > +
-> >> > +error_free_irq:
-> >> > +	devm_free_irq(indio_dev->dev.parent, irq, indio_dev);
-> >> 
-> >> What is the point of using devm_* here if you are doing explicit
-> >> management of the resource anyway (you explicitly release it in all
-> >> Dmitry
-> 
-> The devm interfaces ensure this is all cleaned when the device is removed thus avoiding the need to free the stuff explicitly.
-> Device will get freed on deliberate remove and on an error from probe. Hence you can drop all calls to devm free. The devm free functions are only needed if you wish to free in order to reallocate. This might happen if you want to change a buffer size for instance.
->
+Enable shared IRQ to allow ADC to share IRQ line from
+parent MFD core. Only FIFO0 IRQs are for TSC and handled
+on the TSC side.
 
-Thank-you for the feedback.
-Updated and resent the series.
+Step mask would be updated from cached variable only previously.
+In rare cases when both TSC and ADC are used, the cached
+variable gets mixed up.
+The step mask is written with the required mask every time.
 
-Zubair
+Rachna Patil (TI) laid ground work for shared IRQ.
+
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e1c5300..24e625c 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			config_inp[4];
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
++	u32			step_mask;
+ };
  
-> -- 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	/* The steps1 … end and bit 0 for TS_Charge */
+ 	stepenable = (1 << (end_step + 2)) - 1;
+-	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
++	ts_dev->step_mask = stepenable;
++	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int fsm;
+ 
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
++	/*
++	 * ADC and touchscreen share the IRQ line.
++	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
++	 */
+ 	if (status & IRQENB_FIFO0THRES) {
+ 
+ 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
++		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ 		return IRQ_HANDLED;
+ 	}
+ 	return IRQ_NONE;
+@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+-			  0, pdev->dev.driver->name, ts_dev);
++			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to allocate irq.\n");
+ 		goto err_free_mem;
+-- 
+1.7.9.5
+
