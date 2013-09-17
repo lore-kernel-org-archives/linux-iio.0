@@ -1,64 +1,46 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <5237E16A.6070301@samsung.com>
-Date: Tue, 17 Sep 2013 13:58:18 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org, jic23@kernel.org, rob.herring@calxeda.com,
- pawel.moll@arm.com, mark.rutland@arm.com, ian.campbell@citrix.com,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Jacek Anaszewski <j.anaszewski@samsung.com>, myungjoo.ham@samsung.com,
- Jaehoon Chung <jh80.chung@samsung.com>, Beomho Seo <beomho.seo@samsung.com>,
- "pmeerw@pmeerw.net >> Peter Meerwald l" <pmeerw@pmeerw.net>
-Subject: [PATCH v2 0/2] iio: cm36651: Add CM36651 proximity/light sensor driver
-Content-type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:51454 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751853Ab3IQIoQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 04:44:16 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
+	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
+Subject: [PATCH V9 0/2] iio: input: ti_am335x_adc: Add continuous sampling support
+Date: Tue, 17 Sep 2013 09:44:05 +0500
+Message-Id: <1379393047-11772-1-git-send-email-zubair.lutfullah@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello all,
+Hi,
 
-Thank you for your review. I have revised v1 driver.
-Please give your feedback at that time.
+This applies to togreg branch in iio.
 
-This patch is second revision for Capella CM36651 proximity and RGB light sensor driver.
-The driver exposes five channels: Red, Green, Blue, Clear and proximity.
-It also support detection proximity event.
+Round 9 updates
 
-This driver supports:
-	- Event: rising and falling proximity events.
-	- Reading channels through read_raw_callback.
+- Removed Trigger.
+- Restructured everything for INDIO_BUFFERED_HARDWARE mode.
+- Threaded IRQ with top/bottom halfs. Top half HW IRQ wakes
+bottom half threaded worker that pushes samples to iio/userspace.
+- Removed some of the patchwork to the driver that was irrelevant to the
+continuous sampling patch.
 
-v2 changed below:
-	- Add a new entry in alphabetical order at Kconfig.
-	- Use #define register and commands.
-	- Use CM36651_* prefix.
-	- Use i2c_smbus_* APIs.
-	- Fixed cm36651_read_output() function.
-	- Code cleanup
+Cleanup will be done separately once this goes through.
+Hope these patches meet the mighty kernel standards :)
 
->From 493802a4f3788579789b6f03dffaaf3a0d9fc225 Mon Sep 17 00:00:00 2001
-From: Beomho Seo <beomho.seo@samsung.com>
-Date: Tue, 17 Sep 2013 11:59:47 +0900
-Subject: [PATCH 0/2] *** SUBJECT HERE ***
+Zubair
 
-*** BLURB HERE ***
+Zubair Lutfullah (2):
+  input: ti_am335x_tsc: Enable shared IRQ for TSC
+  iio: ti_am335x_adc: Add continuous sampling support
 
-Beomho Seo (2):
-  iio: cm36651: Add CM36651 proximity/light sensor driver
-  DT: Add binding documentation for CM36651 proximity/light sensor
-
- .../devicetree/bindings/iio/light/cm36651.txt      |   24 +
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- drivers/iio/light/Kconfig                          |   11 +
- drivers/iio/light/cm36651.c                        |  591 ++++++++++++++++++++
- 4 files changed, 627 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
- create mode 100644 drivers/iio/light/cm36651.c
+ drivers/iio/adc/ti_am335x_adc.c           |  222 ++++++++++++++++++++++++++++-
+ drivers/input/touchscreen/ti_am335x_tsc.c |   12 +-
+ include/linux/mfd/ti_am335x_tscadc.h      |    9 ++
+ 3 files changed, 235 insertions(+), 8 deletions(-)
 
 -- 
 1.7.9.5
 
-Best regards,
--- 
-Beomho Seo, Assistant Engineer
-System S/W Lab., S/W Platform Team, Software Center
-Samsung Electronics
