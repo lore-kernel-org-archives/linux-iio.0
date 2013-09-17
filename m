@@ -1,36 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:59769 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751339Ab3IRHlP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 18 Sep 2013 03:41:15 -0400
-Date: Wed, 18 Sep 2013 09:41:14 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: linux-iio@vger.kernel.org
-Subject: Re: iio: adis16400 scan mask question
-In-Reply-To: <523954C0.5000500@metafoo.de>
-Message-ID: <alpine.DEB.2.01.1309180939180.13489@pmeerw.net>
-References: <alpine.DEB.2.01.1309172323201.9630@pmeerw.net> <523954C0.5000500@metafoo.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mailout2.samsung.com ([203.254.224.25]:20796 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751162Ab3IQE62 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 00:58:28 -0400
+Message-id: <5237E16C.1040101@samsung.com>
+Date: Tue, 17 Sep 2013 13:58:20 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+To: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org, jic23@kernel.org,
+	rob.herring@calxeda.com, pawel.moll@arm.com, mark.rutland@arm.com,
+	ian.campbell@citrix.com,
+	Sylwester Nawrocki <s.nawrocki@samsung.com>,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	myungjoo.ham@samsung.com, Jaehoon Chung <jh80.chung@samsung.com>,
+	Beomho Seo <beomho.seo@samsung.com>,
+	Peter Meerwald l <pmeerw@pmeerw.net>
+Subject: [PATCH v2 2/2] DT: Add documentation for cm36651 proximity/light sensor
+Content-type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> > if (!(st->variant->flags & ADIS16400_NO_BURST))
-> > 		indio_dev->available_scan_masks = adis16400_burst_scan_mask;
-> > 
-> > isn't the all-1 scan mask the same as not applying any scan mask?
 
-> A scan mask where all bits are set means that sampling can only be done with
-> all channels enabled at once. Userspace can still only select a subset of
-> these channels and the kernel will take care of properly demuxing the stream.
+This patch add device tree binding documentation for CM36651 proximity/ light sensor.
 
-ah, that's a pretty good reason
-I discovered the demuxing code later-on
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+ .../devicetree/bindings/iio/light/cm36651.txt      |   24 ++++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 2 files changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
 
-thanks, p.
+diff --git a/Documentation/devicetree/bindings/iio/light/cm36651.txt b/Documentation/devicetree/bindings/iio/light/cm36651.txt
+new file mode 100644
+index 0000000..3a6ba38
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/cm36651.txt
+@@ -0,0 +1,24 @@
++* Capella CM36651 I2C Proximity and Color Light sensor
++
++Required properties:
++- compatible: must be "capella,cm36651"
++- reg: the I2C address of the device
++- interrupts: interrupt to which the chip is connected
++- vled-supply: regulator for the sensor device, as covered
++	       in ../../regulator/regulator.txt
++
++Example:
++
++	i2c_cm36651: i2c-gpio {
++		/* ... */
++
++		cm36651@18 {
++			compatible = "capella,cm36651";
++			reg = <0x18>;
++			interrupt-parent = <&gpx0>;
++			interrupts = <2 0>;
++			vled-supply = <&ps_als_reg>;
++		};
++
++		/* ... */
++	};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index ec4d713..044796d 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -17,6 +17,7 @@ brcm	Broadcom Corporation
+ cavium	Cavium, Inc.
+ chrp	Common Hardware Reference Platform
+ cirrus	Cirrus Logic, Inc.
++capella	Capella Microsystems, Inc
+ cortina	Cortina Systems, Inc.
+ dallas	Maxim Integrated Products (formerly Dallas Semiconductor)
+ davicom	DAVICOM Semiconductor, Inc.
+-- 
+1.7.9.5
 
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Beomho Seo, Assistant Engineer
+System S/W Lab., S/W Platform Team, Software Center
+Samsung Electronics
