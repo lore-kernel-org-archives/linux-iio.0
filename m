@@ -1,91 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f174.google.com ([209.85.215.174]:54655 "EHLO
-	mail-ea0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751903Ab3IRLXS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 07:23:18 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
-Subject: =?UTF-8?q?=5BPATCH=201/2=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
-Date: Wed, 18 Sep 2013 16:23:02 +0500
-Message-Id: <1379503383-17086-2-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:35947 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751499Ab3IRJVp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 05:21:45 -0400
+Received: from eucpsbgm2.samsung.com (unknown [203.254.199.245])
+ by mailout3.w1.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0MTB002Y5DZTQE90@mailout3.w1.samsung.com> for
+ linux-iio@vger.kernel.org; Wed, 18 Sep 2013 10:21:43 +0100 (BST)
+From: Lukasz Czerwinski <l.czerwinski@samsung.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: iio_device_add_event_sysfs() bugfix
+Date: Wed, 18 Sep 2013 11:21:40 +0200
+Message-id: <1379496100-27649-1-git-send-email-l.czerwinski@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Enable shared IRQ to allow ADC to share IRQ line from
-parent MFD core. Only FIFO0 IRQs are for TSC and handled
-on the TSC side.
+Fix mask generation for modified channels.
 
-Step mask would be updated from cached variable only previously.
-In rare cases when both TSC and ADC are used, the cached
-variable gets mixed up.
-The step mask is written with the required mask every time.
-
-Rachna Patil (TI) laid ground work for shared IRQ.
-
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Lukasz Czerwinski <l.czerwinski@samsung.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/iio/industrialio-event.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e1c5300..24e625c 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			config_inp[4];
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
-+	u32			step_mask;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	/* The steps1 … end and bit 0 for TS_Charge */
- 	stepenable = (1 << (end_step + 2)) - 1;
--	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
-+	ts_dev->step_mask = stepenable;
-+	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- }
- 
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
-+	/*
-+	 * ADC and touchscreen share the IRQ line.
-+	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
-+	 */
- 	if (status & IRQENB_FIFO0THRES) {
- 
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
-@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	if (irqclr) {
- 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
--		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- 		return IRQ_HANDLED;
- 	}
- 	return IRQ_NONE;
-@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
--			  0, pdev->dev.driver->name, ts_dev);
-+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to allocate irq.\n");
- 		goto err_free_mem;
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 10aa9ef..f146acd 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -276,7 +276,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *indio_dev,
+ 			goto error_ret;
+ 		}
+ 		if (chan->modified)
+-			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
++			mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel2,
+ 						  i/IIO_EV_DIR_MAX,
+ 						  i%IIO_EV_DIR_MAX);
+ 		else if (chan->differential)
 -- 
 1.7.9.5
 
