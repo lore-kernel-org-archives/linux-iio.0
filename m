@@ -1,89 +1,45 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk,
-	dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org,
-	zubair.lutfullah@gmail.com
-Subject: =?UTF-8?q?=5BPATCH=201/3=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
-Date: Thu, 19 Sep 2013 11:24:33 +0500
-Message-Id: <1379571876-12420-2-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1379571876-12420-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1379571876-12420-1-git-send-email-zubair.lutfullah@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:36537 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752561Ab3IRVrg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 18 Sep 2013 17:47:36 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 1/4] iio: Fix tmp006 dev-to-indio_dev conversion in suspend/resume
+Date: Wed, 18 Sep 2013 23:47:30 +0200
+Message-Id: <1379540853-15189-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Enable shared IRQ to allow ADC to share IRQ line from
-parent MFD core. Only FIFO0 IRQs are for TSC and handled
-on the TSC side.
+dev_to_iio_dev() is a false friend
 
-Step mask would be updated from cached variable only previously.
-In rare cases when both TSC and ADC are used, the cached
-variable gets mixed up.
-The step mask is written with the required mask every time.
-
-Rachna Patil (TI) laid ground work for shared IRQ.
-
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/iio/temperature/tmp006.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index e1c5300..24e625c 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			config_inp[4];
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
-+	u32			step_mask;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	/* The steps1 … end and bit 0 for TS_Charge */
- 	stepenable = (1 << (end_step + 2)) - 1;
--	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
-+	ts_dev->step_mask = stepenable;
-+	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
+index 4e95097..84a0789 100644
+--- a/drivers/iio/temperature/tmp006.c
++++ b/drivers/iio/temperature/tmp006.c
+@@ -252,12 +252,14 @@ static int tmp006_remove(struct i2c_client *client)
+ #ifdef CONFIG_PM_SLEEP
+ static int tmp006_suspend(struct device *dev)
+ {
+-	return tmp006_powerdown(iio_priv(dev_to_iio_dev(dev)));
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	return tmp006_powerdown(iio_priv(indio_dev));
  }
  
- static void titsc_read_coordinates(struct titsc *ts_dev,
-@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	unsigned int fsm;
- 
- 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
-+	/*
-+	 * ADC and touchscreen share the IRQ line.
-+	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
-+	 */
- 	if (status & IRQENB_FIFO0THRES) {
- 
- 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
-@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 
- 	if (irqclr) {
- 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
--		am335x_tsc_se_update(ts_dev->mfd_tscadc);
-+		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
- 		return IRQ_HANDLED;
- 	}
- 	return IRQ_NONE;
-@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	}
- 
- 	err = request_irq(ts_dev->irq, titsc_irq,
--			  0, pdev->dev.driver->name, ts_dev);
-+			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to allocate irq.\n");
- 		goto err_free_mem;
+ static int tmp006_resume(struct device *dev)
+ {
+-	struct tmp006_data *data = iio_priv(dev_to_iio_dev(dev));
++	struct tmp006_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
+ 	return i2c_smbus_write_word_swapped(data->client, TMP006_CONFIG,
+ 		data->config | TMP006_CONFIG_MOD_MASK);
+ }
 -- 
-1.7.9.5
+1.8.4
+
