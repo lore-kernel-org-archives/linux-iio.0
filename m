@@ -1,123 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48038 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752146Ab3IRVLR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 17:11:17 -0400
-Message-ID: <523A2516.60208@kernel.org>
-Date: Wed, 18 Sep 2013 23:11:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 01/10] iio: Stop sampling when the device is removed
-References: <1379534574-11213-1-git-send-email-lars@metafoo.de> <523A2299.3050101@kernel.org> <523A165F.60709@metafoo.de>
-In-Reply-To: <523A165F.60709@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-014.synserver.de ([212.40.185.14]:1102 "EHLO
+	smtp-out-011.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753647Ab3IRUB0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 16:01:26 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 10/10] iio:buffer: Ignore noop requests for iio_update_buffers()
+Date: Wed, 18 Sep 2013 22:02:54 +0200
+Message-Id: <1379534574-11213-10-git-send-email-lars@metafoo.de>
+In-Reply-To: <1379534574-11213-1-git-send-email-lars@metafoo.de>
+References: <1379534574-11213-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/18/13 22:08, Lars-Peter Clausen wrote:
-> On 09/19/2013 12:00 AM, Jonathan Cameron wrote:
->> On 09/18/13 21:02, Lars-Peter Clausen wrote:
->>> Make sure to stop sampling when the device is removed, otherwise it will
->>> continue to sample forever.
->>
->> The intent is that you can't remove a device if there is a buffer
->> enabled. I thought we had the reference counting correct to prevent
->> this happening.  Perhaps not!
->>
-> 
-> You can't prevent a device from being removed, that's a basic property of the Linux device driver model. Device drivers
-> and subsystems need to be able to deal with hot unplug.
+Since the kernel now disables all buffers when a device is unregistered it might
+happen that a in-kernel consumer tries to disable that buffer again. So ignore
+requests where the buffer already is in the desired state.
 
-Hmm.. I hadn't thought that through. So in normal operation we still need
-any buffers to be disabled, but if someone actualy unplugs the hardware
-then it will all get nicely cleaned up. I'm way to used to nice i2c / spi
-devices without any of this modern hotplug stuff ;)
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-buffer.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Fair enough.  Thanks for cleaning this stuff up.  Still some uggly
-corners out there for the observant to find ;)
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 8ceaaaf..2b36cea 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -673,9 +673,21 @@ int iio_update_buffers(struct iio_dev *indio_dev,
+ {
+ 	int ret;
+ 
++	if (insert_buffer == remove_buffer)
++		return 0;
++
+ 	mutex_lock(&indio_dev->info_exist_lock);
+ 	mutex_lock(&indio_dev->mlock);
+ 
++	if (insert_buffer && iio_buffer_is_active(insert_buffer))
++		insert_buffer = NULL;
++
++	if (remove_buffer && !iio_buffer_is_active(remove_buffer))
++		remove_buffer = NULL;
++
++	if (!insert_buffer && !remove_buffer)
++		return 0;
++
+ 	if (indio_dev->info == NULL)
+ 		return -ENODEV;
+ 
+-- 
+1.8.0
 
-Jonathan
-> 
-> - Lars
-> 
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>> ---
->>>   drivers/iio/iio_core.h            |  4 ++++
->>>   drivers/iio/industrialio-buffer.c | 19 +++++++++++++++++++
->>>   drivers/iio/industrialio-core.c   |  6 +++++-
->>>   3 files changed, 28 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
->>> index 6be5ab8..9209f47 100644
->>> --- a/drivers/iio/iio_core.h
->>> +++ b/drivers/iio/iio_core.h
->>> @@ -49,11 +49,15 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->>>   #define iio_buffer_poll_addr (&iio_buffer_poll)
->>>   #define iio_buffer_read_first_n_outer_addr (&iio_buffer_read_first_n_outer)
->>>
->>> +void iio_disable_all_buffers(struct iio_dev *indio_dev);
->>> +
->>>   #else
->>>
->>>   #define iio_buffer_poll_addr NULL
->>>   #define iio_buffer_read_first_n_outer_addr NULL
->>>
->>> +static inline void iio_disable_all_buffers(struct iio_dev *indio_dev) {}
->>> +
->>>   #endif
->>>
->>>   int iio_device_register_eventset(struct iio_dev *indio_dev);
->>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->>> index a7ac4b5..379721a 100644
->>> --- a/drivers/iio/industrialio-buffer.c
->>> +++ b/drivers/iio/industrialio-buffer.c
->>> @@ -452,6 +452,25 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev, const long *mask,
->>>       return bytes;
->>>   }
->>>
->>> +void iio_disable_all_buffers(struct iio_dev *indio_dev)
->>> +{
->>> +    struct iio_buffer *buffer, *_buffer;
->>> +
->>> +    if (list_empty(&indio_dev->buffer_list))
->>> +        return;
->>> +
->>> +    if (indio_dev->setup_ops->predisable)
->>> +        indio_dev->setup_ops->predisable(indio_dev);
->>> +
->>> +    list_for_each_entry_safe(buffer, _buffer,
->>> +            &indio_dev->buffer_list, buffer_list)
->>> +        list_del_init(&buffer->buffer_list);
->>> +
->>> +    indio_dev->currentmode = INDIO_DIRECT_MODE;
->>> +    if (indio_dev->setup_ops->postdisable)
->>> +        indio_dev->setup_ops->postdisable(indio_dev);
->>> +}
->>> +
->>>   int iio_update_buffers(struct iio_dev *indio_dev,
->>>                  struct iio_buffer *insert_buffer,
->>>                  struct iio_buffer *remove_buffer)
->>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->>> index 24db185..96b35f0 100644
->>> --- a/drivers/iio/industrialio-core.c
->>> +++ b/drivers/iio/industrialio-core.c
->>> @@ -1120,9 +1120,13 @@ EXPORT_SYMBOL(iio_device_register);
->>>   void iio_device_unregister(struct iio_dev *indio_dev)
->>>   {
->>>       mutex_lock(&indio_dev->info_exist_lock);
->>> +
->>> +    device_del(&indio_dev->dev);
->>> +
->>> +    iio_disable_all_buffers(indio_dev);
->>> +
->>>       indio_dev->info = NULL;
->>>       mutex_unlock(&indio_dev->info_exist_lock);
->>> -    device_del(&indio_dev->dev);
->>>   }
->>>   EXPORT_SYMBOL(iio_device_unregister);
->>>   subsys_initcall(iio_init);
->>>
-> 
