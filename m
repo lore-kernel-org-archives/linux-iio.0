@@ -1,86 +1,91 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-Date: Thu, 19 Sep 2013 10:55:44 +0500
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>, jic23@cam.ac.uk,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	bigeasy@linutronix.de, gregkh@linuxfoundation.org
-Subject: Re: [PATCH 2/2] iio: ti_am335x_adc: Add continuous sampling support
-Message-ID: <20130919055542.GA7939@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ea0-f174.google.com ([209.85.215.174]:54655 "EHLO
+	mail-ea0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751903Ab3IRLXS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 07:23:18 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
+	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
+Subject: =?UTF-8?q?=5BPATCH=201/2=5D=20input=3A=20ti=5Fam335x=5Ftsc=3A=20Enable=20shared=20IRQ=20for=20TSC?=
+Date: Wed, 18 Sep 2013 16:23:02 +0500
+Message-Id: <1379503383-17086-2-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
- <1379503383-17086-3-git-send-email-zubair.lutfullah@gmail.com>
- <5239B197.2040807@jic23.retrosnub.co.uk>
- <20130919052419.GB4363@gmail.com>
- <085d9527-c80e-4307-b8b9-c008976b4be1@email.android.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <085d9527-c80e-4307-b8b9-c008976b4be1@email.android.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 19, 2013 at 06:41:22AM +0100, Jonathan Cameron wrote:
-> 
-> 
-> >...
-> >> >
-> >> >  struct tiadc_device {
-> >> >  	struct ti_tscadc_dev *mfd_tscadc;
-> >> >  	int channels;
-> >> >  	u8 channel_line[8];
-> >> >  	u8 channel_step[8];
-> >> >+	int buffer_en_ch_steps;
-> >> >+	u32 *data;
-> >> u16 *data;
-> >> 
-> >> Also it might actually save memory to simply have a fixed size array
-> >> of the maximum size used here and avoid the extra allocations for
-> >> the cost
-> >> of 16 bytes in here.
-> >> 
-> >> Hence,
-> >> 
-> >> u16 data[8];
-> >> >  };
-> >
-> >Why data[8]? The length is dynamic. 
-> >This would be valid for the usual one sample per trigger case.
-> >But here its continuous sampling and the hardware pushes samples
-> >*quickly*
-> >Dynamic allocation is needed.
-> 
-> As far as I can see you pull one set of channels into data[] then push that out to the kfifo. 
-> 
-> That is repeated lots of times but only up to 8 entries are ever used in this array. If not what is the maximum scanbytes can be?
-> 
+Enable shared IRQ to allow ADC to share IRQ line from
+parent MFD core. Only FIFO0 IRQs are for TSC and handled
+on the TSC side.
 
-You have a good eye :).
-I understand and will update.
+Step mask would be updated from cached variable only previously.
+In rare cases when both TSC and ADC are used, the cached
+variable gets mixed up.
+The step mask is written with the required mask every time.
 
-Thanks
-Zubair
+Rachna Patil (TI) laid ground work for shared IRQ.
 
-> >
-> >
-> >...
-> >
-> >> >+static irqreturn_t tiadc_worker_h(int irq, void *private)
-> >> >+{
-> >> >+	struct iio_dev *indio_dev = private;
-> >> >+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> >> >+	int i, k, fifo1count, read;
-> >> >+	u32 *data = adc_dev->data;
-> >> 	u16* data = adc_dev->data;
-> >> >+
-> >> >+	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-> >> >+	for (k = 0; k < fifo1count; k = k + i) {
-> >> >+		for (i = 0; i < (indio_dev->scan_bytes)/4; i++) {
-> >> >+			read = tiadc_readl(adc_dev, REG_FIFO1);
-> >> >+			data[i] = read & FIFOREAD_DATA_MASK;
-> 
-> i is only ever up to scanbytes / 4.
-> Hence max of 8 I think?
-> 
-> Now there is a good argument for adding some bulk filling code for the buffers but that is not happening here.
-> >> //This is a 12 bit number after the mask so will fit just fine into
-> >16 bits.
-> >
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e1c5300..24e625c 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			config_inp[4];
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
++	u32			step_mask;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -196,7 +197,8 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	/* The steps1 … end and bit 0 for TS_Charge */
+ 	stepenable = (1 << (end_step + 2)) - 1;
+-	am335x_tsc_se_set(ts_dev->mfd_tscadc, stepenable);
++	ts_dev->step_mask = stepenable;
++	am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ }
+ 
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+@@ -260,6 +262,10 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int fsm;
+ 
+ 	status = titsc_readl(ts_dev, REG_IRQSTATUS);
++	/*
++	 * ADC and touchscreen share the IRQ line.
++	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
++	 */
+ 	if (status & IRQENB_FIFO0THRES) {
+ 
+ 		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
+@@ -316,7 +322,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+-		am335x_tsc_se_update(ts_dev->mfd_tscadc);
++		am335x_tsc_se_set(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ 		return IRQ_HANDLED;
+ 	}
+ 	return IRQ_NONE;
+@@ -389,7 +395,7 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	err = request_irq(ts_dev->irq, titsc_irq,
+-			  0, pdev->dev.driver->name, ts_dev);
++			  IRQF_SHARED, pdev->dev.driver->name, ts_dev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to allocate irq.\n");
+ 		goto err_free_mem;
+-- 
+1.7.9.5
+
