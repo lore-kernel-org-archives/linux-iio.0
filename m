@@ -1,26 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog119.obsmtp.com ([207.126.144.147]:43958 "EHLO
-	eu1sys200aog119.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751556Ab3IRLcY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 07:32:24 -0400
+Return-Path: <denis.ciocca@st.com>
 From: Denis CIOCCA <denis.ciocca@st.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Wed, 18 Sep 2013 13:32:17 +0200
-Subject: Re: Fix buffers registrations in order to use generic IIO trigger
-Message-ID: <52398F41.6030205@st.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: lee.jones@linaro.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 4/4] iio:press: Register buffer also without specific trigger
+Date: Wed, 18 Sep 2013 11:00:22 +0200
+Message-Id: <1379494822-9985-5-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1379494822-9985-1-git-send-email-denis.ciocca@st.com>
 References: <1379494822-9985-1-git-send-email-denis.ciocca@st.com>
- <20130918112018.GC16984@lee--X1>
-In-Reply-To: <20130918112018.GC16984@lee--X1>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Pj4gVGhpcyBwYXRjaGVzIGZpeCBidWZmZXJzIHJlZ2lzdHJhdGlvbnMgaW4gb3JkZXIgdG8gdXNl
-IGdlbmVyaWMgSUlPIHRyaWdnZXIuDQo+PiBUaGFua3MsDQo+IEkgZG9uJ3Qga25vdyBKb25hdGhh
-biB3b3VsZCBsaWtlIHRvIGRlYWwgd2l0aCB0aGlzLCBidXQgcGxlYXNlIG5vdGUNCj4gdGhhdCBh
-bGwgb2YgdGhlc2UgcGF0Y2hlcyB3aWxsIGNvbmZsaWN0IHdpdGggbXkgcGF0Y2gtc2V0Lg0KPg0K
-SSBjYW4gcmViYXNlIHRoZSBwYXRjaGVzIHdoZW4geW91ciB3aWxsIGJlIGFwcGxpZWQhDQpJIHNl
-bnQgbm93IHRoZSBtYWlsIGZvciB5b3VyIGZlZWRiYWNrLi4uDQoNClRoYW5rcw==
+This patch fix buffer registration that allows to use generic IIO trigger.
+
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/pressure/st_pressure_core.c |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 93bff9b..312a093 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -262,11 +262,11 @@ int st_press_common_probe(struct iio_dev *indio_dev,
+ 	if (err < 0)
+ 		goto st_press_common_probe_error;
+ 
+-	if (pdata->get_irq_data_ready(indio_dev) > 0) {
+-		err = st_press_allocate_ring(indio_dev);
+-		if (err < 0)
+-			goto st_press_common_probe_error;
++	err = st_press_allocate_ring(indio_dev);
++	if (err < 0)
++		goto st_press_common_probe_error;
+ 
++	if (pdata->get_irq_data_ready(indio_dev) > 0) {
+ 		err = st_sensors_allocate_trigger(indio_dev,
+ 							ST_PRESS_TRIGGER_OPS);
+ 		if (err < 0)
+@@ -283,8 +283,7 @@ st_press_device_register_error:
+ 	if (pdata->get_irq_data_ready(indio_dev) > 0)
+ 		st_sensors_deallocate_trigger(indio_dev);
+ st_press_probe_trigger_error:
+-	if (pdata->get_irq_data_ready(indio_dev) > 0)
+-		st_press_deallocate_ring(indio_dev);
++	st_press_deallocate_ring(indio_dev);
+ st_press_common_probe_error:
+ 	return err;
+ }
+@@ -295,10 +294,10 @@ void st_press_common_remove(struct iio_dev *indio_dev)
+ 	struct st_sensor_data *pdata = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	if (pdata->get_irq_data_ready(indio_dev) > 0) {
++	if (pdata->get_irq_data_ready(indio_dev) > 0)
+ 		st_sensors_deallocate_trigger(indio_dev);
+-		st_press_deallocate_ring(indio_dev);
+-	}
++
++	st_press_deallocate_ring(indio_dev);
+ }
+ EXPORT_SYMBOL(st_press_common_remove);
+ 
+-- 
+1.7.9.5
