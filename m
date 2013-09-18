@@ -1,386 +1,262 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ea0-f173.google.com ([209.85.215.173]:61731 "EHLO
-	mail-ea0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752158Ab3IRLXX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2013 07:23:23 -0400
-From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-To: jic23@cam.ac.uk, dmitry.torokhov@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
-	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
-Subject: [PATCH 2/2] iio: ti_am335x_adc: Add continuous sampling support
-Date: Wed, 18 Sep 2013 16:23:03 +0500
-Message-Id: <1379503383-17086-3-git-send-email-zubair.lutfullah@gmail.com>
-In-Reply-To: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
-References: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@hermes.cam.ac.uk>
+Message-ID: <5239B197.2040807@jic23.retrosnub.co.uk>
+Date: Wed, 18 Sep 2013 14:58:47 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: jic23@cam.ac.uk, dmitry.torokhov@gmail.com,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-kernel@vger.kernel.org, bigeasy@linutronix.de,
+ gregkh@linuxfoundation.org
+Subject: Re: [PATCH 2/2] iio: ti_am335x_adc: Add continuous sampling support
+References: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com> <1379503383-17086-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1379503383-17086-3-git-send-email-zubair.lutfullah@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: "J.I. Cameron" <jic23@hermes.cam.ac.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Previously the driver had only one-shot reading functionality.
-This patch adds continuous sampling support to the driver.
+On 18/09/13 12:23, Zubair Lutfullah wrote:
+> Previously the driver had only one-shot reading functionality.
+> This patch adds continuous sampling support to the driver.
+>
+> Continuous sampling starts when buffer is enabled.
+> HW IRQ wakes worker thread that pushes samples to userspace.
+> Sampling stops when buffer is disabled by userspace.
+>
+> Patil Rachna (TI) laid the ground work for ADC HW register access.
+> Russ Dill (TI) fixed bugs in the driver relevant to FIFOs and IRQs.
+>
+> I fixed channel scanning so multiple ADC channels can be read
+> simultaneously and pushed to userspace.
+> Restructured the driver to fit IIO ABI.
+> And added INDIO_BUFFER_HARDWARE mode.
+>
+> Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Russ Dill <Russ.Dill@ti.com>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Continuous sampling starts when buffer is enabled.
-HW IRQ wakes worker thread that pushes samples to userspace.
-Sampling stops when buffer is disabled by userspace.
+Very very nearly there. Couple of suggestions in-line.
+(about 30 seconds work + testing ;)
 
-Patil Rachna (TI) laid the ground work for ADC HW register access.
-Russ Dill (TI) fixed bugs in the driver relevant to FIFOs and IRQs.
+I'm still unsure of why we need 32bit storage in the fifo
+for the data.  I've proposed the changes I'd make to put it in 16 bit
+storage inline.  The fact that the device is working in 32bits
+is irrelevant given we only have a 12 bit number coming out and
+it is in 12 least significant bits.  I guess there might be a tiny
+cost in doing the conversion, but you kfifo will be half the size
+as a result and that seems more likely to a worthwhile gain!
 
-I fixed channel scanning so multiple ADC channels can be read
-simultaneously and pushed to userspace.
-Restructured the driver to fit IIO ABI.
-And added INDIO_BUFFER_HARDWARE mode.
+Out of interest, are you testing this with generic_buffer.c?
+If so, what changes were necessary?  Given this driver will not
+have a trigger it would be nice to update that example code to handle
+that case if it doesn't already.
 
-Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Russ Dill <Russ.Dill@ti.com>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/iio/adc/ti_am335x_adc.c      |  216 +++++++++++++++++++++++++++++++++-
- include/linux/mfd/ti_am335x_tscadc.h |    9 ++
- 2 files changed, 220 insertions(+), 5 deletions(-)
+Thanks,
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index a952538..b4b2ea0 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -28,12 +28,19 @@
- #include <linux/iio/driver.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- struct tiadc_device {
- 	struct ti_tscadc_dev *mfd_tscadc;
- 	int channels;
- 	u8 channel_line[8];
- 	u8 channel_step[8];
-+	int buffer_en_ch_steps;
-+	u32 *data;
- };
- 
- static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-@@ -56,8 +63,14 @@ static u32 get_adc_step_mask(struct tiadc_device *adc_dev)
- 	return step_en;
- }
- 
--static void tiadc_step_config(struct tiadc_device *adc_dev)
-+static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
- {
-+	return 1 << adc_dev->channel_step[chan];
-+}
-+
-+static void tiadc_step_config(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
- 	unsigned int stepconfig;
- 	int i, steps;
- 
-@@ -72,7 +85,11 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 	 */
- 
- 	steps = TOTAL_STEPS - adc_dev->channels;
--	stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
-+	if (iio_buffer_enabled(indio_dev))
-+		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
-+					| STEPCONFIG_MODE_SWCNT;
-+	else
-+		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
- 
- 	for (i = 0; i < adc_dev->channels; i++) {
- 		int chan;
-@@ -85,7 +102,177 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
- 		adc_dev->channel_step[i] = steps;
- 		steps++;
- 	}
-+}
-+
-+static irqreturn_t tiadc_irq_h(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	unsigned int status, config;
-+	status = tiadc_readl(adc_dev, REG_IRQSTATUS);
-+
-+	/*
-+	 * ADC and touchscreen share the IRQ line.
-+	 * FIFO0 interrupts are used by TSC. Handle FIFO1 IRQs here only
-+	 */
-+	if (status & IRQENB_FIFO1OVRRUN) {
-+		/* FIFO Overrun. Clear flag. Disable/Enable ADC to recover */
-+		config = tiadc_readl(adc_dev, REG_CTRL);
-+		config &= ~(CNTRLREG_TSCSSENB);
-+		tiadc_writel(adc_dev, REG_CTRL, config);
-+		tiadc_writel(adc_dev, REG_IRQSTATUS, IRQENB_FIFO1OVRRUN
-+				| IRQENB_FIFO1UNDRFLW | IRQENB_FIFO1THRES);
-+		tiadc_writel(adc_dev, REG_CTRL, (config | CNTRLREG_TSCSSENB));
-+		return IRQ_HANDLED;
-+	} else if (status & IRQENB_FIFO1THRES) {
-+		/* Disable irq and wake worker thread */
-+		tiadc_writel(adc_dev, REG_IRQCLR, IRQENB_FIFO1THRES);
-+		return IRQ_WAKE_THREAD;
-+	}
-+
-+	return IRQ_NONE;
-+}
-+
-+static irqreturn_t tiadc_worker_h(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	int i, k, fifo1count, read;
-+	u32 *data = adc_dev->data;
-+
-+	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-+	for (k = 0; k < fifo1count; k = k + i) {
-+		for (i = 0; i < (indio_dev->scan_bytes)/4; i++) {
-+			read = tiadc_readl(adc_dev, REG_FIFO1);
-+			data[i] = read & FIFOREAD_DATA_MASK;
-+		}
-+		iio_push_to_buffers(indio_dev, (u8 *) data);
-+	}
- 
-+	tiadc_writel(adc_dev, REG_IRQSTATUS, IRQENB_FIFO1THRES);
-+	tiadc_writel(adc_dev, REG_IRQENABLE, IRQENB_FIFO1THRES);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	int i, fifo1count, read;
-+
-+	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
-+				IRQENB_FIFO1OVRRUN |
-+				IRQENB_FIFO1UNDRFLW));
-+
-+	/* Flush FIFO. Needed in corner cases in simultaneous tsc/adc use */
-+	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-+	for (i = 0; i < fifo1count; i++)
-+		read = tiadc_readl(adc_dev, REG_FIFO1);
-+
-+	return iio_sw_buffer_preenable(indio_dev);
-+}
-+
-+static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	unsigned int enb = 0;
-+	u8 bit;
-+
-+	adc_dev->data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (adc_dev->data == NULL)
-+		return -ENOMEM;
-+
-+	tiadc_step_config(indio_dev);
-+	for_each_set_bit(bit, buffer->scan_mask, adc_dev->channels)
-+		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
-+	adc_dev->buffer_en_ch_steps = enb;
-+
-+	am335x_tsc_se_set(adc_dev->mfd_tscadc, enb);
-+
-+	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
-+				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
-+	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
-+				| IRQENB_FIFO1OVRRUN);
-+
-+	return 0;
-+}
-+
-+static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	int fifo1count, i, read;
-+
-+	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
-+				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
-+	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
-+
-+	/* Flush FIFO of leftover data in the time it takes to disable adc */
-+	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-+	for (i = 0; i < fifo1count; i++)
-+		read = tiadc_readl(adc_dev, REG_FIFO1);
-+
-+	return 0;
-+}
-+
-+static int tiadc_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+
-+	tiadc_step_config(indio_dev);
-+	kfree(adc_dev->data);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops tiadc_buffer_setup_ops = {
-+	.preenable = &tiadc_buffer_preenable,
-+	.postenable = &tiadc_buffer_postenable,
-+	.predisable = &tiadc_buffer_predisable,
-+	.postdisable = &tiadc_buffer_postdisable,
-+};
-+
-+int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
-+	irqreturn_t (*pollfunc_bh)(int irq, void *p),
-+	irqreturn_t (*pollfunc_th)(int irq, void *p),
-+	int irq,
-+	unsigned long flags,
-+	const struct iio_buffer_setup_ops *setup_ops)
-+{
-+	int ret;
-+
-+	indio_dev->buffer = iio_kfifo_allocate(indio_dev);
-+	if (!indio_dev->buffer)
-+		return -ENOMEM;
-+
-+	ret = devm_request_threaded_irq(indio_dev->dev.parent,
-+				irq,
-+				pollfunc_th, pollfunc_bh,
-+				flags, indio_dev->name,
-+				indio_dev);
-+	if (ret)
-+		goto error_kfifo_free;
-+
-+	indio_dev->setup_ops = setup_ops;
-+	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
-+
-+	ret = iio_buffer_register(indio_dev,
-+				  indio_dev->channels,
-+				  indio_dev->num_channels);
-+	if (ret)
-+		goto error_kfifo_free;
-+
-+	return 0;
-+
-+error_kfifo_free:
-+	iio_kfifo_free(indio_dev->buffer);
-+	return ret;
-+}
-+
-+static void tiadc_iio_buffered_hardware_remove(struct iio_dev *indio_dev)
-+{
-+	iio_kfifo_free(indio_dev->buffer);
-+	iio_buffer_unregister(indio_dev);
- }
- 
- static const char * const chan_name_ain[] = {
-@@ -120,6 +307,7 @@ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
- 		chan->channel = adc_dev->channel_line[i];
- 		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
- 		chan->datasheet_name = chan_name_ain[chan->channel];
-+		chan->scan_index = i;
- 		chan->scan_type.sign = 'u';
- 		chan->scan_type.realbits = 12;
- 		chan->scan_type.storagebits = 32;
-@@ -147,6 +335,10 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 	u32 step_en;
- 	unsigned long timeout = jiffies + usecs_to_jiffies
- 				(IDLE_TIMEOUT * adc_dev->channels);
-+
-+	if (iio_buffer_enabled(indio_dev))
-+		return -EBUSY;
-+
- 	step_en = get_adc_step_mask(adc_dev);
- 	am335x_tsc_se_set(adc_dev->mfd_tscadc, step_en);
- 
-@@ -237,20 +429,33 @@ static int tiadc_probe(struct platform_device *pdev)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &tiadc_info;
- 
--	tiadc_step_config(adc_dev);
-+	tiadc_step_config(indio_dev);
-+	tiadc_writel(adc_dev, REG_FIFO1THR, FIFO1_THRESHOLD);
- 
- 	err = tiadc_channel_init(indio_dev, adc_dev->channels);
- 	if (err < 0)
- 		return err;
- 
--	err = iio_device_register(indio_dev);
-+	err = tiadc_iio_buffered_hardware_setup(indio_dev,
-+		&tiadc_worker_h,
-+		&tiadc_irq_h,
-+		adc_dev->mfd_tscadc->irq,
-+		IRQF_SHARED,
-+		&tiadc_buffer_setup_ops);
-+
- 	if (err)
- 		goto err_free_channels;
- 
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto err_buffer_unregister;
-+
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	return 0;
- 
-+err_buffer_unregister:
-+	tiadc_iio_buffered_hardware_remove(indio_dev);
- err_free_channels:
- 	tiadc_channels_remove(indio_dev);
- 	return err;
-@@ -263,6 +468,7 @@ static int tiadc_remove(struct platform_device *pdev)
- 	u32 step_en;
- 
- 	iio_device_unregister(indio_dev);
-+	tiadc_iio_buffered_hardware_remove(indio_dev);
- 	tiadc_channels_remove(indio_dev);
- 
- 	step_en = get_adc_step_mask(adc_dev);
-@@ -301,7 +507,7 @@ static int tiadc_resume(struct device *dev)
- 	restore &= ~(CNTRLREG_POWERDOWN);
- 	tiadc_writel(adc_dev, REG_CTRL, restore);
- 
--	tiadc_step_config(adc_dev);
-+	tiadc_step_config(indio_dev);
- 
- 	return 0;
- }
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index db1791b..7d98562 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -46,16 +46,24 @@
- /* Step Enable */
- #define STEPENB_MASK		(0x1FFFF << 0)
- #define STEPENB(val)		((val) << 0)
-+#define ENB(val)			(1 << (val))
-+#define STPENB_STEPENB		STEPENB(0x1FFFF)
-+#define STPENB_STEPENB_TC	STEPENB(0x1FFF)
- 
- /* IRQ enable */
- #define IRQENB_HW_PEN		BIT(0)
- #define IRQENB_FIFO0THRES	BIT(2)
-+#define IRQENB_FIFO0OVRRUN	BIT(3)
-+#define IRQENB_FIFO0UNDRFLW	BIT(4)
- #define IRQENB_FIFO1THRES	BIT(5)
-+#define IRQENB_FIFO1OVRRUN	BIT(6)
-+#define IRQENB_FIFO1UNDRFLW	BIT(7)
- #define IRQENB_PENUP		BIT(9)
- 
- /* Step Configuration */
- #define STEPCONFIG_MODE_MASK	(3 << 0)
- #define STEPCONFIG_MODE(val)	((val) << 0)
-+#define STEPCONFIG_MODE_SWCNT	STEPCONFIG_MODE(1)
- #define STEPCONFIG_MODE_HWSYNC	STEPCONFIG_MODE(2)
- #define STEPCONFIG_AVG_MASK	(7 << 2)
- #define STEPCONFIG_AVG(val)	((val) << 2)
-@@ -124,6 +132,7 @@
- #define	MAX_CLK_DIV		7
- #define TOTAL_STEPS		16
- #define TOTAL_CHANNELS		8
-+#define FIFO1_THRESHOLD		19
- 
- /*
- * ADC runs at 3MHz, and it takes
--- 
-1.7.9.5
+Jonathan
 
+
+> ---
+>   drivers/iio/adc/ti_am335x_adc.c      |  216 +++++++++++++++++++++++++++++++++-
+>   include/linux/mfd/ti_am335x_tscadc.h |    9 ++
+>   2 files changed, 220 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index a952538..b4b2ea0 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -28,12 +28,19 @@
+>   #include <linux/iio/driver.h>
+>
+>   #include <linux/mfd/ti_am335x_tscadc.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+>
+>   struct tiadc_device {
+>   	struct ti_tscadc_dev *mfd_tscadc;
+>   	int channels;
+>   	u8 channel_line[8];
+>   	u8 channel_step[8];
+> +	int buffer_en_ch_steps;
+> +	u32 *data;
+u16 *data;
+
+Also it might actually save memory to simply have a fixed size array of 
+the maximum size used here and avoid the extra allocations for the cost
+of 16 bytes in here.
+
+Hence,
+
+u16 data[8];
+>   };
+>
+>   static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+> @@ -56,8 +63,14 @@ static u32 get_adc_step_mask(struct tiadc_device *adc_dev)
+>   	return step_en;
+>   }
+>
+> -static void tiadc_step_config(struct tiadc_device *adc_dev)
+> +static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
+>   {
+> +	return 1 << adc_dev->channel_step[chan];
+> +}
+> +
+> +static void tiadc_step_config(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>   	unsigned int stepconfig;
+>   	int i, steps;
+>
+> @@ -72,7 +85,11 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+>   	 */
+>
+>   	steps = TOTAL_STEPS - adc_dev->channels;
+> -	stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+> +	if (iio_buffer_enabled(indio_dev))
+> +		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
+> +					| STEPCONFIG_MODE_SWCNT;
+> +	else
+> +		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+>
+>   	for (i = 0; i < adc_dev->channels; i++) {
+>   		int chan;
+> @@ -85,7 +102,177 @@ static void tiadc_step_config(struct tiadc_device *adc_dev)
+>   		adc_dev->channel_step[i] = steps;
+>   		steps++;
+>   	}
+> +}
+> +
+> +static irqreturn_t tiadc_irq_h(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev = private;
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	unsigned int status, config;
+> +	status = tiadc_readl(adc_dev, REG_IRQSTATUS);
+> +
+> +	/*
+> +	 * ADC and touchscreen share the IRQ line.
+> +	 * FIFO0 interrupts are used by TSC. Handle FIFO1 IRQs here only
+> +	 */
+> +	if (status & IRQENB_FIFO1OVRRUN) {
+> +		/* FIFO Overrun. Clear flag. Disable/Enable ADC to recover */
+> +		config = tiadc_readl(adc_dev, REG_CTRL);
+> +		config &= ~(CNTRLREG_TSCSSENB);
+> +		tiadc_writel(adc_dev, REG_CTRL, config);
+> +		tiadc_writel(adc_dev, REG_IRQSTATUS, IRQENB_FIFO1OVRRUN
+> +				| IRQENB_FIFO1UNDRFLW | IRQENB_FIFO1THRES);
+> +		tiadc_writel(adc_dev, REG_CTRL, (config | CNTRLREG_TSCSSENB));
+> +		return IRQ_HANDLED;
+> +	} else if (status & IRQENB_FIFO1THRES) {
+> +		/* Disable irq and wake worker thread */
+> +		tiadc_writel(adc_dev, REG_IRQCLR, IRQENB_FIFO1THRES);
+I guess this is necessary given the sharing will make IRQF_ONESHOT
+tricky. As disabling the source of the interrupts is nice and
+easy here this will do the job.
+> +		return IRQ_WAKE_THREAD;
+> +	}
+> +
+> +	return IRQ_NONE;
+> +}
+> +
+> +static irqreturn_t tiadc_worker_h(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev = private;
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	int i, k, fifo1count, read;
+> +	u32 *data = adc_dev->data;
+	u16* data = adc_dev->data;
+> +
+> +	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+> +	for (k = 0; k < fifo1count; k = k + i) {
+> +		for (i = 0; i < (indio_dev->scan_bytes)/4; i++) {
+> +			read = tiadc_readl(adc_dev, REG_FIFO1);
+> +			data[i] = read & FIFOREAD_DATA_MASK;
+//This is a 12 bit number after the mask so will fit just fine into 16 bits.
+> +		}
+> +		iio_push_to_buffers(indio_dev, (u8 *) data);
+> +	}
+>
+> +	tiadc_writel(adc_dev, REG_IRQSTATUS, IRQENB_FIFO1THRES);
+> +	tiadc_writel(adc_dev, REG_IRQENABLE, IRQENB_FIFO1THRES);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	int i, fifo1count, read;
+> +
+> +	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
+> +				IRQENB_FIFO1OVRRUN |
+> +				IRQENB_FIFO1UNDRFLW));
+> +
+> +	/* Flush FIFO. Needed in corner cases in simultaneous tsc/adc use */
+> +	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+> +	for (i = 0; i < fifo1count; i++)
+> +		read = tiadc_readl(adc_dev, REG_FIFO1);
+> +
+> +	return iio_sw_buffer_preenable(indio_dev);
+> +}
+> +
+> +static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct iio_buffer *buffer = indio_dev->buffer;
+> +	unsigned int enb = 0;
+> +	u8 bit;
+> +
+(can drop this if doing the array with adc_dev as suggested above)
+> +	adc_dev->data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> +	if (adc_dev->data == NULL)
+> +		return -ENOMEM;
+> +
+> +	tiadc_step_config(indio_dev);
+> +	for_each_set_bit(bit, buffer->scan_mask, adc_dev->channels)
+> +		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
+> +	adc_dev->buffer_en_ch_steps = enb;
+> +
+> +	am335x_tsc_se_set(adc_dev->mfd_tscadc, enb);
+> +
+> +	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
+> +				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
+> +	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
+> +				| IRQENB_FIFO1OVRRUN);
+> +
+> +	return 0;
+> +}
+> +
+> +static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	int fifo1count, i, read;
+> +
+> +	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
+> +				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
+> +	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
+> +
+> +	/* Flush FIFO of leftover data in the time it takes to disable adc */
+> +	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+> +	for (i = 0; i < fifo1count; i++)
+> +		read = tiadc_readl(adc_dev, REG_FIFO1);
+> +
+> +	return 0;
+> +}
+> +
+> +static int tiadc_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +
+> +	tiadc_step_config(indio_dev);
+(can drop this if doing the array withing adc_dev as suggested above)
+> +	kfree(adc_dev->data);
+This is also missbalanced with the preenable (which is true of quite
+a few drivers - one day I'll clean those up!)
+> +
+> +	return 0;
+> +}
