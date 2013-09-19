@@ -1,81 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:65012 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753406Ab3IWMQ4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 08:16:56 -0400
-Message-ID: <52403136.2080503@atmel.com>
-Date: Mon, 23 Sep 2013 14:16:54 +0200
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Thomas Meyer <thomas@m3y3r.de>, <jic23@cam.ac.uk>,
-	<grant.likely@linaro.org>, <rob.herring@calxeda.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<devicetree@vger.kernel.org>
-Subject: Re: [PATCH 3/10] iio: at91_adc: Cocci spatch "noderef"
-References: <1379604755850-858421494-0-diffsplit-thomas@m3y3r.de> <1379604755852-604229709-3-diffsplit-thomas@m3y3r.de> <523BF89E.4000508@atmel.com> <523C95B0.6070906@kernel.org> <523C971E.5090809@kernel.org>
-In-Reply-To: <523C971E.5090809@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:43357 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752035Ab3ISTgE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 19 Sep 2013 15:36:04 -0400
+Received: from localhost.localdomain (83-215-0-241.stadt.dyn.salzburg-online.at [83.215.0.241])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: pmeerw)
+	by pmeerw.net (Postfix) with ESMTPSA id 34C28C50171
+	for <linux-iio@vger.kernel.org>; Thu, 19 Sep 2013 21:36:01 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Subject: [PATCH v2 00/15] staging:iio:hmc5843 cleanup
+Date: Thu, 19 Sep 2013 21:35:45 +0200
+Message-Id: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/09/2013 20:42, Jonathan Cameron :
-> On 09/20/13 19:36, Jonathan Cameron wrote:
->> On 09/20/13 08:26, Nicolas Ferre wrote:
->>> On 19/09/2013 23:42, Thomas Meyer :
->>>> sizeof when applied to a pointer typed expression gives the size of the
->>>> pointer.
->>>> Found by coccinelle spatch "misc/noderef.cocci"
->>>>
->>>> Signed-off-by: Thomas Meyer <thomas@m3y3r.de>
->>>
->>> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
->> Applied to the fixes-togreg branch of
->> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->
-> Actually, change of plan. Applied to the togreg branch of that
-> tree.  Whilst technically more correct to have it as you say,
-> we are dealing with the size of a struct iio_trig ** vs
-> a struct iio_trig *  so it isn't actually a bug, just a
-> less than ideal bit of code ;)
+updated v2 patch series of the hmc5843 cleanup, addressnig comments by 
+Jonathan Cameron
 
-Absolutely.
+patch 1: correctly dereferencing dev, fixed suspend/resume
+patch 7: checked CALIBSCALE, output is as follows
 
-> It was so obviously a fix I didn't initially check if it
-> was a 'real' bug or not. oops.
+  # cat calibscale_available 
+  0.880000 1.300000 1.900000 2.500000 4.0 4.700000 5.600000 8.100000
+  # cat in_magn_calibscale 
+  1.300000
+  # cat in_magn_scale 
+  0.000009174
+  # cat in_magn_x_raw 
+  252
+  # echo 1.900000 > in_magn_calibscale
+  # cat in_magn_scale 
+  0.000012195
+  # cat in_magn_x_raw 
+  198
+  # echo 0.88 > in_magn_calibscale
+  # cat in_magn_scale 
+  0.000007299
+  # cat in_magn_x_raw
+  318
 
-Yes, I took this path myself as well ;-)
+  calibscale adjusts the measurement range and scale is used to keep Gauss
+  reading the same
+  
+patch 9: buffer is now part of hmc5843_data, using IIO core demux as suggested
 
-Bye,
+remaining patches should not have changed
 
+Peter Meerwald (15):
+  staging:iio:hmc5843: Add pointer to i2c client to data struct
+  staging:iio:hmc5843: Rewrite init function
+  staging:iio:hmc5843: Use INFO_SAMP_FREQ
+  staging:iio:hmc5843: Remove unused LSB register #defines
+  staging:iio:hmc5843: Tighten comments
+  staging:iio:hmc5843: Introduce helper functions to show/check list of
+    int pairs
+  staging:iio:hmc5843: Use CALIBSCALE instead of magn_range
+  staging:iio:hmc5843: Always read all channels values otherwise no
+    updates
+  staging:iio:hmc5843: Add trigger handling
+  staging:iio:hmc5843: Remove ability to change operating mode
+  staging:iio:hmc5843: Rename _configure() to _set_mode()
+  staging:iio:hmc5843: Reorganize _set_meas_conf()
+  staging:iio:hmc5843: Rename _set_rate() to _set_samp_freq()
+  staging:iio:hmc5843: Introduce _set_range_gain()
+  staging:iio:hmc5843: Check initialization and chip identifier
 
->>>> ---
->>>>
->>>> diff -u -p a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
->>>> --- a/drivers/iio/adc/at91_adc.c
->>>> +++ b/drivers/iio/adc/at91_adc.c
->>>> @@ -279,7 +279,7 @@ static int at91_adc_trigger_init(struct
->>>>        int i, ret;
->>>>
->>>>        st->trig = devm_kzalloc(&idev->dev,
->>>> -                st->trigger_number * sizeof(st->trig),
->>>> +                st->trigger_number * sizeof(*st->trig),
->>>>                    GFP_KERNEL);
->>>>
->>>>        if (st->trig == NULL) {
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe devicetree" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->>>
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
+ drivers/staging/iio/magnetometer/hmc5843.c | 612 ++++++++++++++---------------
+ 1 file changed, 287 insertions(+), 325 deletions(-)
 
 -- 
-Nicolas Ferre
+1.8.4
+
