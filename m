@@ -1,48 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:56212 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751337Ab3IVEqb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Sep 2013 00:46:31 -0400
-Date: Sun, 22 Sep 2013 09:46:18 +0500
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	bigeasy@linutronix.de, gregkh@linuxfoundation.org
-Subject: Re: [PATCH 3/3] iio: ti_am335x_adc: Add continuous sampling support
-Message-ID: <20130922044616.GB2989@gmail.com>
+Return-Path: <zubair.lutfullah@gmail.com>
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk,
+	dmitry.torokhov@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	bigeasy@linutronix.de,
+	gregkh@linuxfoundation.org,
+	zubair.lutfullah@gmail.com
+Subject: [PATCH 2/3] iio: ti_am335x_adc: optimize memory usage
+Date: Thu, 19 Sep 2013 11:24:34 +0500
+Message-Id: <1379571876-12420-3-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1379571876-12420-1-git-send-email-zubair.lutfullah@gmail.com>
 References: <1379571876-12420-1-git-send-email-zubair.lutfullah@gmail.com>
- <1379571876-12420-4-git-send-email-zubair.lutfullah@gmail.com>
- <523DE550.4070107@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <523DE550.4070107@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 21, 2013 at 07:28:32PM +0100, Jonathan Cameron wrote:
-> On 09/19/13 07:24, Zubair Lutfullah wrote:
-> > Previously the driver had only one-shot reading functionality.
-> > This patch adds continuous sampling support to the driver.
-...
-> I've added a SELECT IIO_KFIFO_BUF after the autobuilders picked
-> up that was missing.
-> 
-Thank-you.
+12 bit ADC data is stored in 32 bits of storage.
+Change from u32 to u16 to reduce wasted memory.
 
-> One other thing I'd missed until I was reviewing the updated patch.
-> Do you still need the trigger headers?  I can't immediately see why.
-> If not, could you post a follow up patch to drop them?
-> 
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Sure.
-
-Zubair
-
-> Thanks,
-> 
-> Jonathan
-> > ---
-> >  drivers/iio/adc/ti_am335x_adc.c      |  213 +++++++++++++++++++++++++++++++++-
-> >  include/linux/mfd/ti_am335x_tscadc.h |    9 ++
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index a952538..ebe93eb 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -122,7 +122,7 @@ static int tiadc_channel_init(struct iio_dev *indio_dev, int channels)
+ 		chan->datasheet_name = chan_name_ain[chan->channel];
+ 		chan->scan_type.sign = 'u';
+ 		chan->scan_type.realbits = 12;
+-		chan->scan_type.storagebits = 32;
++		chan->scan_type.storagebits = 16;
+ 	}
+ 
+ 	indio_dev->channels = chan_array;
+@@ -186,7 +186,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 		if (stepid == map_val) {
+ 			read = read & FIFOREAD_DATA_MASK;
+ 			found = true;
+-			*val = read;
++			*val = (u16) read;
+ 		}
+ 	}
+ 
+-- 
+1.7.9.5
