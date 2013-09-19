@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:43364 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:43366 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752628Ab3ISTgJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1752691Ab3ISTgJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Thu, 19 Sep 2013 15:36:09 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 13/15] staging:iio:hmc5843: Rename _set_rate() to _set_samp_freq()
-Date: Thu, 19 Sep 2013 21:35:58 +0200
-Message-Id: <1379619360-8150-14-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH v2 12/15] staging:iio:hmc5843: Reorganize _set_meas_conf()
+Date: Thu, 19 Sep 2013 21:35:57 +0200
+Message-Id: <1379619360-8150-13-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
 References: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
@@ -18,60 +18,81 @@ move locking inside _set() function
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/staging/iio/magnetometer/hmc5843.c | 42 ++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index abbddc4..3c3a3dd 100644
+index 2bbaea1..abbddc4 100644
 --- a/drivers/staging/iio/magnetometer/hmc5843.c
 +++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -348,12 +348,18 @@ static ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
- 
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hmc5843_show_samp_freq_avail);
- 
--static s32 hmc5843_set_rate(struct hmc5843_data *data, u8 rate)
-+static int hmc5843_set_samp_freq(struct hmc5843_data *data, u8 rate)
+@@ -261,19 +261,24 @@ static int hmc5843_read_measurement(struct hmc5843_data *data,
+  */
+ static s32 hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
  {
--	u8 reg_val = data->meas_conf | (rate << HMC5843_RATE_OFFSET);
+-	u8 reg_val;
+-	reg_val = (meas_conf & HMC5843_MEAS_CONF_MASK) |
+-		(data->rate << HMC5843_RATE_OFFSET);
+-	return i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
+-		reg_val);
 +	int ret;
 +
 +	mutex_lock(&data->lock);
 +	ret = i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
-+		data->meas_conf | (rate << HMC5843_RATE_OFFSET));
++		(meas_conf & HMC5843_MEAS_CONF_MASK) |
++		(data->rate << HMC5843_RATE_OFFSET));
 +	if (ret >= 0)
-+		data->rate = rate;
++		data->meas_conf = meas_conf;
 +	mutex_unlock(&data->lock);
- 
--	return i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
--		reg_val);
++
 +	return ret;
  }
  
- static int hmc5843_check_samp_freq(struct hmc5843_data *data,
-@@ -421,13 +427,7 @@ static int hmc5843_write_raw(struct iio_dev *indio_dev,
- 		if (rate < 0)
- 			return -EINVAL;
- 
--		mutex_lock(&data->lock);
--		ret = hmc5843_set_rate(data, rate);
--		if (ret >= 0)
--			data->rate = rate;
--		mutex_unlock(&data->lock);
--
--		return ret;
-+		return hmc5843_set_samp_freq(data, rate);
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		range = hmc5843_check_range(data, val, val2);
- 		if (range < 0)
-@@ -542,7 +542,7 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- static void hmc5843_init(struct hmc5843_data *data)
+ static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
  {
- 	hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
--	hmc5843_set_rate(data, HMC5843_RATE_DEFAULT);
-+	hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
- 	hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
- 	i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_B,
- 		HMC5843_RANGE_GAIN_DEFAULT);
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct hmc5843_data *data = iio_priv(indio_dev);
++	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
+ 	return sprintf(buf, "%d\n", data->meas_conf);
+ }
+ 
+@@ -282,28 +287,19 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
+ 						const char *buf,
+ 						size_t count)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct hmc5843_data *data = iio_priv(indio_dev);
++	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
+ 	unsigned long meas_conf = 0;
+-	int error;
++	int ret;
+ 
+-	error = kstrtoul(buf, 10, &meas_conf);
+-	if (error)
+-		return error;
++	ret = kstrtoul(buf, 10, &meas_conf);
++	if (ret)
++		return ret;
+ 	if (meas_conf >= HMC5843_MEAS_CONF_NOT_USED)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&data->lock);
+-	dev_dbg(dev, "set measurement configuration to %lu\n", meas_conf);
+-	if (hmc5843_set_meas_conf(data, meas_conf)) {
+-		count = -EINVAL;
+-		goto exit;
+-	}
+-	data->meas_conf = meas_conf;
++	ret = hmc5843_set_meas_conf(data, meas_conf);
+ 
+-exit:
+-	mutex_unlock(&data->lock);
+-	return count;
++	return (ret < 0) ? ret : count;
+ }
+ 
+ static IIO_DEVICE_ATTR(meas_conf,
 -- 
 1.8.4
 
