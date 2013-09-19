@@ -1,30 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:43669 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751924Ab3IUXpo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 19:45:44 -0400
-Date: Sat, 21 Sep 2013 16:46:19 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.12
-Message-ID: <20130921234619.GB4272@kroah.com>
-References: <523DB8C3.9000902@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <523DB8C3.9000902@kernel.org>
+Received: from www17.your-server.de ([213.133.104.17]:58623 "EHLO
+	www17.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752150Ab3ISWL0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Sep 2013 18:11:26 -0400
+Subject: [PATCH 3/10] iio: at91_adc: Cocci spatch "noderef"
+From: Thomas Meyer <thomas@m3y3r.de>
+To: jic23@cam.ac.uk, grant.likely@linaro.org, rob.herring@calxeda.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Message-ID: <1379604755852-604229709-3-diffsplit-thomas@m3y3r.de>
+References: <1379604755850-858421494-0-diffsplit-thomas@m3y3r.de>
+In-Reply-To: <1379604755850-858421494-0-diffsplit-thomas@m3y3r.de>
+Date: Thu, 19 Sep 2013 23:42:22 +0200
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Sep 21, 2013 at 04:18:27PM +0100, Jonathan Cameron wrote:
-> The following changes since commit c3cb718acc17f8e0d6b4b8d1f8ca9a20d1999159:
-> 
->   staging: line6: add bounds check in snd_toneport_source_put() (2013-09-17 07:39:28 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.12a
+sizeof when applied to a pointer typed expression gives the size of the
+pointer.
+Found by coccinelle spatch "misc/noderef.cocci"
 
-Pulled and pushed out, thanks.
+Signed-off-by: Thomas Meyer <thomas@m3y3r.de>
+---
 
-greg k-h
+diff -u -p a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -279,7 +279,7 @@ static int at91_adc_trigger_init(struct
+ 	int i, ret;
+ 
+ 	st->trig = devm_kzalloc(&idev->dev,
+-				st->trigger_number * sizeof(st->trig),
++				st->trigger_number * sizeof(*st->trig),
+ 				GFP_KERNEL);
+ 
+ 	if (st->trig == NULL) {
