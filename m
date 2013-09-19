@@ -1,82 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48635 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419Ab3ITTEl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 Sep 2013 15:04:41 -0400
-Message-ID: <523CAA6C.5000400@kernel.org>
-Date: Fri, 20 Sep 2013 21:05:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 00/15] staging:iio:hmc5843 cleanup
-References: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
+Received: from ns.pmeerw.net ([87.118.82.44]:43364 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752838Ab3ISTgK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 19 Sep 2013 15:36:10 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 15/15] staging:iio:hmc5843: Check initialization and chip identifier
+Date: Thu, 19 Sep 2013 21:36:00 +0200
+Message-Id: <1379619360-8150-16-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/19/13 20:35, Peter Meerwald wrote:
-> updated v2 patch series of the hmc5843 cleanup, addressnig comments by 
-> Jonathan Cameron
-> 
-All fine except for the outstanding question of why you need calibscale?
-> patch 1: correctly dereferencing dev, fixed suspend/resume
-> patch 7: checked CALIBSCALE, output is as follows
-> 
->   # cat calibscale_available 
->   0.880000 1.300000 1.900000 2.500000 4.0 4.700000 5.600000 8.100000
->   # cat in_magn_calibscale 
->   1.300000
->   # cat in_magn_scale 
->   0.000009174
->   # cat in_magn_x_raw 
->   252
->   # echo 1.900000 > in_magn_calibscale
->   # cat in_magn_scale 
->   0.000012195
-Whilst we do 'allow' for any attribute to result in a change in any other,
-it is nice to avoid it if possible (and it is kind of assumed
-that changes to calibscale and caliboffset are for tweaking miss
-calibrate hardware, not gross changes like this), hence just have
-echo 0.000012195 > in_magn_scale
-rather than the
-1.9 to > in_magn_calibscale
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/magnetometer/hmc5843.c | 33 ++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
->   # cat in_magn_x_raw 
->   198
->   # echo 0.88 > in_magn_calibscale
->   # cat in_magn_scale 
->   0.000007299
->   # cat in_magn_x_raw
->   318
-> 
->   calibscale adjusts the measurement range and scale is used to keep Gauss
->   reading the same
->   
-> patch 9: buffer is now part of hmc5843_data, using IIO core demux as suggested
-> 
-> remaining patches should not have changed
-> 
-> Peter Meerwald (15):
->   staging:iio:hmc5843: Add pointer to i2c client to data struct
->   staging:iio:hmc5843: Rewrite init function
->   staging:iio:hmc5843: Use INFO_SAMP_FREQ
->   staging:iio:hmc5843: Remove unused LSB register #defines
->   staging:iio:hmc5843: Tighten comments
->   staging:iio:hmc5843: Introduce helper functions to show/check list of
->     int pairs
->   staging:iio:hmc5843: Use CALIBSCALE instead of magn_range
->   staging:iio:hmc5843: Always read all channels values otherwise no
->     updates
->   staging:iio:hmc5843: Add trigger handling
->   staging:iio:hmc5843: Remove ability to change operating mode
->   staging:iio:hmc5843: Rename _configure() to _set_mode()
->   staging:iio:hmc5843: Reorganize _set_meas_conf()
->   staging:iio:hmc5843: Rename _set_rate() to _set_samp_freq()
->   staging:iio:hmc5843: Introduce _set_range_gain()
->   staging:iio:hmc5843: Check initialization and chip identifier
-> 
->  drivers/staging/iio/magnetometer/hmc5843.c | 612 ++++++++++++++---------------
->  1 file changed, 287 insertions(+), 325 deletions(-)
-> 
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+index 9f4571f..4b4b2e2 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -33,6 +33,7 @@
+ #define HMC5843_MODE_REG			0x02
+ #define HMC5843_DATA_OUT_MSB_REGS		0x03
+ #define HMC5843_STATUS_REG			0x09
++#define HMC5843_ID_REG				0x0a
+ 
+ enum hmc5843_ids {
+ 	HMC5843_ID,
+@@ -545,12 +546,30 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+ 	},
+ };
+ 
+-static void hmc5843_init(struct hmc5843_data *data)
++static int hmc5843_init(struct hmc5843_data *data)
+ {
+-	hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
+-	hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
+-	hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
+-	hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
++	int ret;
++	u8 id[3];
++
++	ret = i2c_smbus_read_i2c_block_data(data->client, HMC5843_ID_REG,
++		sizeof(id), id);
++	if (ret < 0)
++		return ret;
++	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
++		dev_err(&data->client->dev, "no HMC5843/5883/5883L sensor\n");
++		return -ENODEV;
++	}
++
++	ret = hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
++	if (ret < 0)
++		return ret;
++	ret = hmc5843_set_samp_freq(data, HMC5843_RATE_DEFAULT);
++	if (ret < 0)
++		return ret;
++	ret = hmc5843_set_range_gain(data, HMC5843_RANGE_GAIN_DEFAULT);
++	if (ret < 0)
++		return ret;
++	return hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
+ }
+ 
+ static const struct iio_info hmc5843_info = {
+@@ -588,7 +607,9 @@ static int hmc5843_probe(struct i2c_client *client,
+ 	indio_dev->num_channels = 4;
+ 	indio_dev->available_scan_masks = hmc5843_scan_masks;
+ 
+-	hmc5843_init(data);
++	ret = hmc5843_init(data);
++	if (ret < 0)
++		return ret;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 		hmc5843_trigger_handler, NULL);
+-- 
+1.8.4
+
