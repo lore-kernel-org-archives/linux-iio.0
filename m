@@ -1,252 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55859 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752044Ab3IUJpq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 05:45:46 -0400
-Message-ID: <523D78EB.9070205@kernel.org>
-Date: Sat, 21 Sep 2013 11:46:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 01/15] staging:iio:hmc5843: Add pointer to i2c client
- to data struct
-References: <1379619360-8150-1-git-send-email-pmeerw@pmeerw.net> <1379619360-8150-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1379619360-8150-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
+	Josh Wu <josh.wu@atmel.com>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Ge Gao <ggao@invensense.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Jacek Anaszewski <j.anaszewski@samsung.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Marek Vasut <marex@denx.de>
+Subject: [PATCH 01/24] iio: Add iio_push_buffers_with_timestamp() helper
+Date: Thu, 19 Sep 2013 14:59:38 +0200
+Message-Id: <1379595601-26448-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/19/13 20:35, Peter Meerwald wrote:
-> and use it to simplify code
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Drivers using software buffers often store the timestamp in their data buffer
+before calling iio_push_to_buffers() with that data buffer. Storing the
+timestamp in the buffer usually involves some ugly pointer arithmetic. This
+patch adds a new helper function called iio_push_buffers_with_timestamp() which
+is similar to iio_push_to_buffers but takes an additional timestamp parameter.
+The function will help to hide to uglyness in one central place instead of
+exposing it in every driver. If timestamps are enabled for the IIO device
+iio_push_buffers_with_timestamp() will store the timestamp as the last element
+in buffer, before passing the buffer on to iio_push_buffers(). The buffer needs
+large enough to hold the timestamp in this case. If timestamps are disabled
+iio_push_buffers_with_timestamp() will behave just like iio_push_buffers().
 
-  CHECK   drivers/staging/iio/magnetometer/hmc5843.c
-drivers/staging/iio/magnetometer/hmc5843.c:441:34: warning: incorrect type in argument 1 (different base types)
-drivers/staging/iio/magnetometer/hmc5843.c:441:34:    expected struct hmc5843_data *data
-drivers/staging/iio/magnetometer/hmc5843.c:441:34:    got struct i2c_client *client
-  CC [M]  drivers/staging/iio/magnetometer/hmc5843.o
-drivers/staging/iio/magnetometer/hmc5843.c: In function 'hmc5843_set_sampling_frequency':
-drivers/staging/iio/magnetometer/hmc5843.c:441:2: warning: passing argument 1 of 'hmc5843_set_rate' from incompatible
-pointer type
-drivers/staging/iio/magnetometer/hmc5843.c:394:12: note: expected 'struct hmc5843_data *' but argument is of type
-'struct i2c_client *'
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Cc: Josh Wu <josh.wu@atmel.com>
+Cc: Denis Ciocca <denis.ciocca@gmail.com>
+Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Cc: Ge Gao <ggao@invensense.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Jacek Anaszewski <j.anaszewski@samsung.com>
+Cc: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Marek Vasut <marex@denx.de>
+---
+ include/linux/iio/buffer.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-You missed one call by the look of it.
-
-
-> ---
->  drivers/staging/iio/magnetometer/hmc5843.c | 61 ++++++++++++------------------
->  1 file changed, 25 insertions(+), 36 deletions(-)
->
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-> index 76e0cf4..1b4e972 100644
-> --- a/drivers/staging/iio/magnetometer/hmc5843.c
-> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
-> @@ -182,6 +182,7 @@ struct hmc5843_chip_info {
->
->  /* Each client has this additional data */
->  struct hmc5843_data {
-> +	struct i2c_client *client;
->  	struct mutex lock;
->  	u8 rate;
->  	u8 meas_conf;
-> @@ -200,18 +201,15 @@ static s32 hmc5843_configure(struct i2c_client *client,
->  }
->
->  /* Return the measurement value from the specified channel */
-> -static int hmc5843_read_measurement(struct iio_dev *indio_dev,
-> -				    int address,
-> -				    int *val)
-> +static int hmc5843_read_measurement(struct hmc5843_data *data,
-> +				    int address, int *val)
->  {
-> -	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
->  	s32 result;
->  	int tries = 150;
->
->  	mutex_lock(&data->lock);
->  	while (tries-- > 0) {
-> -		result = i2c_smbus_read_byte_data(client,
-> +		result = i2c_smbus_read_byte_data(data->client,
->  			HMC5843_STATUS_REG);
->  		if (result & HMC5843_DATA_READY)
->  			break;
-> @@ -219,12 +217,12 @@ static int hmc5843_read_measurement(struct iio_dev *indio_dev,
->  	}
->
->  	if (tries < 0) {
-> -		dev_err(&client->dev, "data not ready\n");
-> +		dev_err(&data->client->dev, "data not ready\n");
->  		mutex_unlock(&data->lock);
->  		return -EIO;
->  	}
->
-> -	result = i2c_smbus_read_word_swapped(client, address);
-> +	result = i2c_smbus_read_word_swapped(data->client, address);
->  	mutex_unlock(&data->lock);
->  	if (result < 0)
->  		return -EINVAL;
-> @@ -318,15 +316,13 @@ static IIO_DEVICE_ATTR(operating_mode,
->   *     and BN.
->   *
->   */
-> -static s32 hmc5843_set_meas_conf(struct i2c_client *client,
-> -				      u8 meas_conf)
-> +static s32 hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
->  {
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
->  	u8 reg_val;
->  	reg_val = (meas_conf & HMC5843_MEAS_CONF_MASK) |
->  		(data->rate << HMC5843_RATE_OFFSET);
-> -	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-> +	return i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
-> +		reg_val);
->  }
->
->  static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
-> @@ -344,7 +340,6 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
->  						size_t count)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
->  	struct hmc5843_data *data = iio_priv(indio_dev);
->  	unsigned long meas_conf = 0;
->  	int error;
-> @@ -357,7 +352,7 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
->
->  	mutex_lock(&data->lock);
->  	dev_dbg(dev, "set measurement configuration to %lu\n", meas_conf);
-> -	if (hmc5843_set_meas_conf(client, meas_conf)) {
-> +	if (hmc5843_set_meas_conf(data, meas_conf)) {
->  		count = -EINVAL;
->  		goto exit;
->  	}
-> @@ -396,21 +391,19 @@ static ssize_t hmc5843_show_sampling_frequencies_available(struct device *dev,
->
->  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hmc5843_show_sampling_frequencies_available);
->
-> -static s32 hmc5843_set_rate(struct i2c_client *client,
-> -				u8 rate)
-> +static s32 hmc5843_set_rate(struct hmc5843_data *data, u8 rate)
->  {
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -	struct hmc5843_data *data = iio_priv(indio_dev);
->  	u8 reg_val;
->
->  	if (rate >= HMC5843_RATE_NOT_USED) {
-> -		dev_err(&client->dev,
-> +		dev_err(&data->client->dev,
->  			"data output rate is not supported\n");
->  		return -EINVAL;
->  	}
->
->  	reg_val = data->meas_conf | (rate << HMC5843_RATE_OFFSET);
-> -	return i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_A, reg_val);
-> +	return i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
-> +		reg_val);
->  }
->
->  static int hmc5843_check_sampling_frequency(struct hmc5843_data *data,
-> @@ -433,20 +426,19 @@ static ssize_t hmc5843_set_sampling_frequency(struct device *dev,
->  {
->
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
->  	struct hmc5843_data *data = iio_priv(indio_dev);
->  	int rate;
->
->  	rate = hmc5843_check_sampling_frequency(data, buf);
->  	if (rate < 0) {
-> -		dev_err(&client->dev,
-> +		dev_err(&data->client->dev,
->  			"sampling frequency is not supported\n");
->  		return rate;
->  	}
->
->  	mutex_lock(&data->lock);
->  	dev_dbg(dev, "set rate to %d\n", rate);
-> -	if (hmc5843_set_rate(client, rate)) {
-> +	if (hmc5843_set_rate(data->client, rate)) {
->  		count = -EINVAL;
->  		goto exit;
->  	}
-> @@ -461,12 +453,11 @@ static ssize_t hmc5843_show_sampling_frequency(struct device *dev,
->  			struct device_attribute *attr, char *buf)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	struct hmc5843_data *data = iio_priv(indio_dev);
->  	s32 rate;
->
-> -	rate = i2c_smbus_read_byte_data(client, this_attr->address);
-> +	rate = i2c_smbus_read_byte_data(data->client, this_attr->address);
->  	if (rate < 0)
->  		return rate;
->  	rate = (rate & HMC5843_RATE_BITMASK) >> HMC5843_RATE_OFFSET;
-> @@ -497,7 +488,6 @@ static ssize_t hmc5843_set_range_gain(struct device *dev,
->  			size_t count)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct i2c_client *client = to_i2c_client(indio_dev->dev.parent);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	struct hmc5843_data *data = iio_priv(indio_dev);
->  	unsigned long range = 0;
-> @@ -518,7 +508,7 @@ static ssize_t hmc5843_set_range_gain(struct device *dev,
->
->  	data->range = range;
->  	range = range << HMC5843_RANGE_GAIN_OFFSET;
-> -	if (i2c_smbus_write_byte_data(client, this_attr->address, range))
-> +	if (i2c_smbus_write_byte_data(data->client, this_attr->address, range))
->  		count = -EINVAL;
->
->  exit:
-> @@ -541,9 +531,7 @@ static int hmc5843_read_raw(struct iio_dev *indio_dev,
->
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		return hmc5843_read_measurement(indio_dev,
-> -						chan->address,
-> -						val);
-> +		return hmc5843_read_measurement(data, chan->address, val);
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 0;
->  		*val2 = data->variant->regval_to_nanoscale[data->range];
-> @@ -621,8 +609,8 @@ static void hmc5843_init_client(struct i2c_client *client,
->  	data->variant = &hmc5843_chip_info_tbl[id->driver_data];
->  	indio_dev->channels = data->variant->channels;
->  	indio_dev->num_channels = 3;
-> -	hmc5843_set_meas_conf(client, data->meas_conf);
-> -	hmc5843_set_rate(client, data->rate);
-> +	hmc5843_set_meas_conf(data, data->meas_conf);
-> +	hmc5843_set_rate(data, data->rate);
->  	hmc5843_configure(client, data->operating_mode);
->  	i2c_smbus_write_byte_data(client, HMC5843_CONFIG_REG_B, data->range);
->  	mutex_init(&data->lock);
-> @@ -649,6 +637,7 @@ static int hmc5843_probe(struct i2c_client *client,
->
->  	/* default settings at probe */
->  	data = iio_priv(indio_dev);
-> +	data->client = client;
->  	data->meas_conf = HMC5843_MEAS_CONF_NORMAL;
->  	data->range = HMC5843_RANGE_GAIN_DEFAULT;
->  	data->operating_mode = HMC5843_MODE_CONVERSION_CONTINUOUS;
-> @@ -687,10 +676,10 @@ static int hmc5843_suspend(struct device *dev)
->
->  static int hmc5843_resume(struct device *dev)
->  {
-> -	struct i2c_client *client = to_i2c_client(dev);
-> -	struct hmc5843_data *data = iio_priv(i2c_get_clientdata(client));
-> +	struct hmc5843_data *data = iio_priv(i2c_get_clientdata(
-> +		to_i2c_client(dev)));
->
-> -	hmc5843_configure(client, data->operating_mode);
-> +	hmc5843_configure(data->client, data->operating_mode);
->
->  	return 0;
->  }
->
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index e5507e9..a1124bd 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -122,6 +122,31 @@ int iio_scan_mask_set(struct iio_dev *indio_dev,
+  */
+ int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);
+ 
++/*
++ * iio_push_to_buffers_with_timestamp() - push data and timestamp to buffers
++ * @indio_dev:		iio_dev structure for device.
++ * @data:		sample data
++ * @timestamp:		timestamp for the sample data
++ *
++ * Pushes data to the IIO device's buffers. If timestamps are enabled for the
++ * device the function will store the supplied timestamp as the last element in
++ * the sample data buffer before pushing it to the device buffers. The sample
++ * data buffer needs to be large enough to hold the additional timestamp
++ * (usually the buffer should be indio->scan_bytes bytes large).
++ *
++ * Returns 0 on success, a negative error code otherwise.
++ */
++static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
++	void *data, int64_t timestamp)
++{
++	if (indio_dev->scan_timestamp) {
++		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
++		((int64_t *)data)[ts_offset] = timestamp;
++	}
++
++	return iio_push_to_buffers(indio_dev, data);
++}
++
+ int iio_update_demux(struct iio_dev *indio_dev);
+ 
+ /**
+-- 
+1.8.0
