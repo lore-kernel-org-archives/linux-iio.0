@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56473 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56424 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752266Ab3IUKsE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 06:48:04 -0400
-Message-ID: <523D8787.2010402@kernel.org>
-Date: Sat, 21 Sep 2013 12:48:23 +0100
+	with ESMTP id S1752281Ab3IUKnn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 06:43:43 -0400
+Message-ID: <523D8683.5030400@kernel.org>
+Date: Sat, 21 Sep 2013 12:44:03 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -22,9 +22,14 @@ On 09/18/13 21:02, Lars-Peter Clausen wrote:
 > for it.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+Back ported to the fixes-togreg branch and applied.
 
-Thanks,
+Lars.  Either these should have been based on that branch, or
+you should have sent a good reason why not.  Whilst these are
+rather large and invasive, they are fixing real bugs so
+should go into mainline asap as far as I can see.
+
+Jonathan
 > ---
 >  drivers/iio/industrialio-core.c  |  4 ++++
 >  drivers/iio/industrialio-event.c | 19 ++++++++++++++-----
