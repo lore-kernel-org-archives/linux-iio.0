@@ -1,56 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f54.google.com ([74.125.83.54]:47818 "EHLO
-	mail-ee0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751337Ab3IPQCu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2013 12:02:50 -0400
-Received: by mail-ee0-f54.google.com with SMTP id e53so2171994eek.27
-        for <linux-iio@vger.kernel.org>; Mon, 16 Sep 2013 09:02:49 -0700 (PDT)
-From: Lee Jones <lee.jones@linaro.org>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk
-Cc: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 13/20] iio: sensors-core: st: Clean-up error handling in st_sensors_read_axis_data()
-Date: Mon, 16 Sep 2013 17:02:19 +0100
-Message-Id: <1379347346-823-14-git-send-email-lee.jones@linaro.org>
-In-Reply-To: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
-References: <1379347346-823-1-git-send-email-lee.jones@linaro.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57294 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752708Ab3IULvk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 07:51:40 -0400
+Message-ID: <523D9670.5090107@kernel.org>
+Date: Sat, 21 Sep 2013 13:52:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lee Jones <lee.jones@linaro.org>
+CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
+	denis.ciocca@st.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 13/20] iio: sensors-core: st: Clean-up error handling
+ in st_sensors_read_axis_data()
+References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-14-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1379347346-823-14-git-send-email-lee.jones@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Gets rid of those unnecessary gotos.
+On 09/16/13 17:02, Lee Jones wrote:
+> Gets rid of those unnecessary gotos.
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Applied to the togreg branch of iio.git
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_core.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index c5fbe58..76e573b 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -331,10 +331,8 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
- 
- 	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
--	if (!outdata) {
--		err = -EINVAL;
--		goto st_sensors_read_axis_data_error;
--	}
-+	if (!outdata)
-+		return -ENOMEM;
- 
- 	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
- 				ch->address, byte_for_channel,
-@@ -349,7 +347,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 
- st_sensors_free_memory:
- 	kfree(outdata);
--st_sensors_read_axis_data_error:
-+
- 	return err;
- }
- 
--- 
-1.8.1.2
-
+Thanks Lee.
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_core.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index c5fbe58..76e573b 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -331,10 +331,8 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>  	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
+>  
+>  	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+> -	if (!outdata) {
+> -		err = -EINVAL;
+> -		goto st_sensors_read_axis_data_error;
+> -	}
+> +	if (!outdata)
+> +		return -ENOMEM;
+>  
+>  	err = sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+>  				ch->address, byte_for_channel,
+> @@ -349,7 +347,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>  
+>  st_sensors_free_memory:
+>  	kfree(outdata);
+> -st_sensors_read_axis_data_error:
+> +
+>  	return err;
+>  }
+>  
+> 
