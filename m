@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58629 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57430 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753198Ab3IWSST (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 14:18:19 -0400
-Message-ID: <52409409.6080306@kernel.org>
-Date: Mon, 23 Sep 2013 20:18:33 +0100
+	with ESMTP id S1752255Ab3IUMCq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Sep 2013 08:02:46 -0400
+Message-ID: <523D9908.1030407@kernel.org>
+Date: Sat, 21 Sep 2013 14:03:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lee Jones <lee.jones@linaro.org>
 CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org
+	jic23@cam.ac.uk, arnd@arndb.de, linus.walleij@linaro.org,
+	denis.ciocca@st.com, linux-iio@vger.kernel.org
 Subject: Re: [PATCH 16/20] iio: pressure-core: st: Provide support for the
  Vdd power supply
 References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-17-git-send-email-lee.jones@linaro.org>
@@ -28,7 +28,9 @@ On 09/16/13 17:02, Lee Jones wrote:
 > 
 > Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-Applied to the togreg branch of iio.git with a static in front of each of the functions.
+I haven't yet pulled 3.12-rc1 into my togreg branch.  To keep things
+clean I'll do a pull request to Greg soon then apply these afterwards
+(when a fast forward merge is possible).
 
 > ---
 >  drivers/iio/pressure/st_pressure_core.c | 28 ++++++++++++++++++++++++++++
