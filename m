@@ -1,26 +1,38 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Sun, 22 Sep 2013 11:31:22 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers, driver features, core functionality and
- cleanups for 3.13
-Message-ID: <20130922183122.GA29424@kroah.com>
-References: <523F42FA.1020706@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <523F42FA.1020706@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:58877 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752120Ab3IVIUQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Sep 2013 04:20:16 -0400
+From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+To: jic23@cam.ac.uk
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
+Subject: [PATCH 0/3] iio: ti_am335x_adc: small fix and cleanup
+Date: Sun, 22 Sep 2013 13:20:02 +0500
+Message-Id: <1379838005-15158-1-git-send-email-zubair.lutfullah@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Sep 22, 2013 at 08:20:26PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 91121c103ae93ef117e58712786864270d7f488e:
-> 
->   staging: dwc2: make dwc2_core_params documentation more complete (2013-08-30 14:14:54 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.13a
+These apply on togreg branch.
 
-Pulled and pushed out, thanks.
+Fix/cleanup the am335x-adc driver.
 
-greg k-h
+1. Autobuilder picked up a missing static in function header
+2. Trigger related code is redundant as driver is not using it
+3. An error case that I could not figure out does what and why. 
+Seemed like debug code to me. Removed it. ADC works without it.
+
+Thanks
+Zubair
+
+Zubair Lutfullah (3):
+  iio: ti_am335x_adc: fix static in function header
+  iio: ti_am335x_adc: cleanup trigger related code
+  iio: ti_am335x_adc: cleanup error case
+
+ drivers/iio/adc/ti_am335x_adc.c |   16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
+-- 
+1.7.9.5
+
