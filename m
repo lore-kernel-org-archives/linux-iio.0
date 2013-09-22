@@ -1,38 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f46.google.com ([74.125.82.46]:58877 "EHLO
-	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752120Ab3IVIUQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Sep 2013 04:20:16 -0400
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:63086 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752649Ab3IVIUZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Sep 2013 04:20:25 -0400
 From: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 To: jic23@cam.ac.uk
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	gregkh@linuxfoundation.org, zubair.lutfullah@gmail.com
-Subject: [PATCH 0/3] iio: ti_am335x_adc: small fix and cleanup
-Date: Sun, 22 Sep 2013 13:20:02 +0500
-Message-Id: <1379838005-15158-1-git-send-email-zubair.lutfullah@gmail.com>
+Subject: [PATCH 3/3] iio: ti_am335x_adc: cleanup error case
+Date: Sun, 22 Sep 2013 13:20:05 +0500
+Message-Id: <1379838005-15158-4-git-send-email-zubair.lutfullah@gmail.com>
+In-Reply-To: <1379838005-15158-1-git-send-email-zubair.lutfullah@gmail.com>
+References: <1379838005-15158-1-git-send-email-zubair.lutfullah@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-These apply on togreg branch.
+Driver is functional without this error case. Cleaned up.
 
-Fix/cleanup the am335x-adc driver.
+Signed-off-by: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+---
+ drivers/iio/adc/ti_am335x_adc.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
-1. Autobuilder picked up a missing static in function header
-2. Trigger related code is redundant as driver is not using it
-3. An error case that I could not figure out does what and why. 
-Seemed like debug code to me. Removed it. ADC works without it.
-
-Thanks
-Zubair
-
-Zubair Lutfullah (3):
-  iio: ti_am335x_adc: fix static in function header
-  iio: ti_am335x_adc: cleanup trigger related code
-  iio: ti_am335x_adc: cleanup error case
-
- drivers/iio/adc/ti_am335x_adc.c |   16 +---------------
- 1 file changed, 1 insertion(+), 15 deletions(-)
-
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 4eb63eb..8fb5429 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -323,7 +323,6 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+ 	int i, map_val;
+ 	unsigned int fifo1count, read, stepid;
+-	u32 step = UINT_MAX;
+ 	bool found = false;
+ 	u32 step_en;
+ 	unsigned long timeout = jiffies + usecs_to_jiffies
+@@ -353,15 +352,6 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	 * Hence we need to flush out this data.
+ 	 */
+ 
+-	for (i = 0; i < ARRAY_SIZE(adc_dev->channel_step); i++) {
+-		if (chan->channel == adc_dev->channel_line[i]) {
+-			step = adc_dev->channel_step[i];
+-			break;
+-		}
+-	}
+-	if (WARN_ON_ONCE(step == UINT_MAX))
+-		return -EINVAL;
+-
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	for (i = 0; i < fifo1count; i++) {
+ 		read = tiadc_readl(adc_dev, REG_FIFO1);
 -- 
 1.7.9.5
 
