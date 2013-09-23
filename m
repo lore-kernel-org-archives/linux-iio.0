@@ -1,22 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51055 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:51053 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752578Ab3IWOgx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 10:36:53 -0400
+	with ESMTP id S1752298Ab3IWOgw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 10:36:52 -0400
 From: Juergen Beisert <jbe@pengutronix.de>
 To: linux-iio@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
 	marex@denx.de, fabio.estevam@freescale.com, jic23@cam.ac.uk,
 	linux-input@vger.kernel.org
-Subject: [PATCH 9/9] Staging/iio: add TODO reminder
-Date: Mon, 23 Sep 2013 16:36:38 +0200
-Message-Id: <1379946998-23041-10-git-send-email-jbe@pengutronix.de>
+Subject: [PATCH 2/9] Staging/iio/adc/touchscreen/MXS: distinguish i.MX23's and i.MX28's LRADC
+Date: Mon, 23 Sep 2013 16:36:31 +0200
+Message-Id: <1379946998-23041-3-git-send-email-jbe@pengutronix.de>
 In-Reply-To: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
 References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some things have still to be done to the LRADC driver.
+The LRADC units in i.MX23 and i.MX28 differ and we need to distinguish both
+SoC variants in order to make the touchscreen work on i.MX23
 
 Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
 CC: linux-arm-kernel@lists.infradead.org
@@ -26,31 +27,30 @@ CC: Marek Vasut <marex@denx.de>
 CC: Fabio Estevam <fabio.estevam@freescale.com>
 CC: Jonathan Cameron <jic23@cam.ac.uk>
 ---
- drivers/staging/iio/TODO | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/staging/iio/adc/mxs-lradc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
-index 04c2326..c22a0ed 100644
---- a/drivers/staging/iio/TODO
-+++ b/drivers/staging/iio/TODO
-@@ -13,6 +13,17 @@ Would be nice
- 3) Expand device set. Lots of other maxim adc's have very
-    similar interfaces.
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 00b61ac..3abc91f 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -177,6 +177,8 @@ struct mxs_lradc {
  
-+MXS LRADC driver:
-+This is a classic MFD device as it combines the following subdevices
-+ - touchscreen controller (input subsystem related device)
-+ - general purpose ADC channels
-+ - battery voltage monitor (power subsystem related device)
-+ - die temperature monitor (thermal management)
+ 	struct input_dev	*ts_input;
+ 	struct work_struct	ts_work;
 +
-+At least the battery voltage and die temperature feature is required in-kernel
-+by a driver of the SoC's battery charging unit to avoid any damage to the
-+silicon and the battery.
-+
- TSL2561
- Would be nice
- 1) Open question of userspace vs kernel space balance when
++	enum mxs_lradc_id	soc;
+ };
+ 
+ #define	LRADC_CTRL0				0x00
+@@ -923,6 +925,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	lradc = iio_priv(iio);
++	lradc->soc = (enum mxs_lradc_id)of_id->data;
+ 
+ 	/* Grab the memory area */
+ 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
 1.8.4.rc3
 
