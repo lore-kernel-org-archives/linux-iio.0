@@ -1,33 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:50574 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753493Ab3IWNbW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 09:31:22 -0400
-Message-ID: <524042A2.2070005@linutronix.de>
-Date: Mon, 23 Sep 2013 15:31:14 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: Matthias Kaehlcke <matthias.list@kaehlcke.net>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	"Patil, Rachna" <rachna@ti.com>, Felipe Balbi <balbi@ti.com>,
+Return-Path: <matthias.list@kaehlcke.net>
+Date: Mon, 23 Sep 2013 18:46:37 +0200
+From: Matthias Kaehlcke <matthias.list@kaehlcke.net>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>, "Patil, Rachna" <rachna@ti.com>,
+	Felipe Balbi <balbi@ti.com>,
 	Pantelis Antoniou <panto@antoniou-consulting.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] iio: ti_am335x_adc: Take touchscreen channels into
  account for conversion timeout
-References: <f1830a7d0debce351966d2f3232158313d87dcc0.1378846446.git.matthias@kaehlcke.net> <20130910210228.GC30481@raspi>
-In-Reply-To: <20130910210228.GC30481@raspi>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <20130923164637.GF27515@raspi>
+References: <f1830a7d0debce351966d2f3232158313d87dcc0.1378846446.git.matthias@kaehlcke.net>
+ <20130910210228.GC30481@raspi>
+ <524042A2.2070005@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <524042A2.2070005@linutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/10/2013 11:02 PM, Matthias Kaehlcke wrote:
-> The calculation of the old conversion timeout value was based on the number of
-> channels used by this driver. This doesn't take into account that other channels
-> can be used by the touchscreen driver. Adjust the timeout value to the maximum
-> if the touchscreen driver is enabled
+Hi Sebastian,
 
-What bug / miss behave are you trying to fix?
-The difference in timming is minimal and therefore I would prefer to get
-rid of this ifdef and assume the max value of those two instead.
+El Mon, Sep 23, 2013 at 03:31:14PM +0200 Sebastian Andrzej Siewior ha dit:
 
-Sebastian
+> On 09/10/2013 11:02 PM, Matthias Kaehlcke wrote:
+> > The calculation of the old conversion timeout value was based on the number of
+> > channels used by this driver. This doesn't take into account that other channels
+> > can be used by the touchscreen driver. Adjust the timeout value to the maximum
+> > if the touchscreen driver is enabled
+> 
+> What bug / miss behave are you trying to fix?
+
+I ran into timeouts when using the touchscreen driver at the same time
+as the general purpose ADC and reviewed the timeout calculations. I found
+that the IDLE_TIMEOUT value is/was wrong (I submitted another patch
+for this) and that the ADC driver doesn't take into account the
+steps used by the touchscreen driver
+
+> The difference in timming is minimal and therefore I would prefer to get
+> rid of this ifdef and assume the max value of those two instead.
+
+Jonathan also expressed his concerns about this, I submitted a
+follow-up patch without the ifdef (https://lkml.org/lkml/2013/9/16/460).
+I would appreciate your comments on this patch
+
+note that the timing difference isn't that minimal with the correct
+IDLE_TIMEOUT (~100us instead of 10us), it sums up to a max timeout of
+~1.6ms (16 steps) and we are busy looping (though in the non-error
+case we will bail out as soon as the conversion cycle is finished)
+
+best regards
+
+-- 
+Matthias Kaehlcke
+Embedded Linux Developer
+Amsterdam
+
+    In the absence of clearly-defined goals, we become strangely loyal to
+      performing daily trivia until ultimately we become enslaved by it
+                           (Robert Heinlein)
+                                                                 .''`.
+    using free software / Debian GNU/Linux | http://debian.org  : :'  :
+                                                                `. `'`
+gpg --keyserver pgp.mit.edu --recv-keys 47D8E5D4                  `-
