@@ -1,114 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32872 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751014Ab3IYRJw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Sep 2013 13:09:52 -0400
-In-Reply-To: <52430F81.6030601@metafoo.de>
-References: <524106f9.teHmhjmgqBH0qZNH%fengguang.wu@intel.com> <5242907D.2060203@metafoo.de> <cbf017e1-1d05-42e9-b0bf-851a22e3c9bb@email.android.com> <31c01b8f-6ba1-438d-87e5-42fba9566086@email.android.com> <52430F81.6030601@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [next:master 1495/1772] drivers/staging/iio/iio_simple_dummy_buffer.c:86:2: error: implicit declaration of function 'iio_push_to_buffers_with_timestamp'
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 25 Sep 2013 18:09:46 +0100
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>
-Message-ID: <de21550d-6bcc-4011-9460-90bf8fad1425@email.android.com>
+Received: from mail.skitlab.ru ([217.65.220.135]:46478 "EHLO mail.skitlab.ru"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752113Ab3IWOTV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 Sep 2013 10:19:21 -0400
+From: Aida Mynzhasova <aida.mynzhasova@skitlab.ru>
+To: axel.lin@ingics.com
+Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
+	gregkh@linuxfoundation.org
+Subject: [PATCH v2] iio: dac: ad5446: Add support for AD5641
+Date: Mon, 23 Sep 2013 18:19:15 +0400
+Message-Id: <1379945955-9545-1-git-send-email-aida.mynzhasova@skitlab.ru>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch adds support for the AD5641 single channel,
+14-bit, buffered voltage output DAC.
 
+Signed-off-by: Aida Mynzhasova <aida.mynzhasova@skitlab.ru>
+---
+ drivers/iio/dac/Kconfig  | 2 +-
+ drivers/iio/dac/ad5446.c | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-Lars-Peter Clausen <lars@metafoo.de> wrote:
->On 09/25/2013 06:22 PM, Jonathan Cameron wrote:
->> 
->> 
->> Jonathan Cameron <jic23@kernel.org> wrote:
->>>
->>>
->>> Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>> On 09/24/2013 05:28 AM, kbuild test robot wrote:
->>>>> tree:  
->>>> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
->>>> master
->>>>> head:   1fa8f71dfa6e28c89afad7ac71dcb19b8c8da8b7
->>>>> commit: 09a799d04eb17e19bbc80cb0e350a3ec89552b01 [1495/1772]
->>>> staging:iio:dummy: Use iio_push_to_buffers_with_timestamp()
->>>>> config: i386-randconfig-j6-09240827 (attached as .config)
->>>>>
->>>>> All error/warnings:
->>>>>
->>>>>     drivers/staging/iio/iio_simple_dummy_buffer.c: In function
->>>> 'iio_simple_dummy_trigger_h':
->>>>>>> drivers/staging/iio/iio_simple_dummy_buffer.c:86:2: error:
->>> implicit
->>>> declaration of function 'iio_push_to_buffers_with_timestamp'
->>>> [-Werror=implicit-function-declaration]
->>>>>       iio_push_to_buffers_with_timestamp(indio_dev, data,
->>>> iio_get_time_ns());
->>>>>       ^
->>>>>     drivers/staging/iio/iio_simple_dummy_buffer.c: At top level:
->>>>>     drivers/staging/iio/iio_simple_dummy_buffer.c:108:16: error:
->>>> 'iio_sw_buffer_preenable' undeclared here (not in a function)
->>>>>       .preenable = &iio_sw_buffer_preenable,
->>>>>                     ^
->>>>>     drivers/staging/iio/iio_simple_dummy_buffer.c: In function
->>>> 'iio_simple_dummy_configure_buffer':
->>>>>     drivers/staging/iio/iio_simple_dummy_buffer.c:141:8: error:
->>>> dereferencing pointer to incomplete type
->>>>>       buffer->scan_timestamp = true;
->>>>>             ^
->>>>>     cc1: some warnings being treated as errors
->>>>>
->>>>> vim +/iio_push_to_buffers_with_timestamp +86
->>>> drivers/staging/iio/iio_simple_dummy_buffer.c
->>>>>
->>>>>      80				/* random access read from the 'device' */
->>>>>      81				data[i] = fakedata[j];
->>>>>      82				len += 2;
->>>>>      83			}
->>>>>      84		}
->>>>>      85	
->>>>>    > 86		iio_push_to_buffers_with_timestamp(indio_dev, data,
->>>> iio_get_time_ns());
->>>>>      87	
->>>>>      88		kfree(data);
->>>>>      89	
->>>>
->>>>
->>>> Hm, the config that generated this has:
->>>>
->>>> CONFIG_IIO=m
->>>> # CONFIG_IIO_BUFFER is not set
->>>> CONFIG_IIO_KFIFO_BUF=m
->>>>
->>>> How is it possible that IIO_KFIFO_BUF is selected but not
->IIO_BUFFER?
->>>>
->>> How does a SELECT interact with an IF in kconfig?  I am not sure..
->>>
->>> We select the kfifo_buf and that is under IF IIO_BUFFER.
->> 
->> The documentation for select makes it clear that it does not enforce
->dependencies so I guess any select of Kfifo_buf must also select
->iio_buffer?  Sometimes there seems to be no right way of doing this
->stuff...
->
->Just wanted to say that we never do this, but then looked at the latest
->iio/togreg and the commit that causes it seems to be "ca9a5638 iio:
->ti_am335x_adc: Add continuous sampling support". Which selects the
->KFIFO
->buffer without either selecting IIO_BUFFER as well or depending on
->IIO_BUFFER.
-
-Yup my bad given I put that in the original patch based on an earlier autobuilder message and didn't think it through properly.
-
-Sorry about that. Will get a fix in place shortly.
-
-Jonathan
->
->- Lars
-
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index c9c33ce..c1715a9 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -62,7 +62,7 @@ config AD5446
+ 	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+ 	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
+ 	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5602, AD5611, AD5612,
+-	  AD5620, AD5621, AD5622, AD5640, AD5660, AD5662 DACs.
++	  AD5620, AD5621, AD5622, AD5640, AD5641, AD5660, AD5662 DACs.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5446.
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index cae8f60..b543d09 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -338,6 +338,7 @@ enum ad5446_supported_spi_device_ids {
+ 	ID_AD5601,
+ 	ID_AD5611,
+ 	ID_AD5621,
++	ID_AD5641,
+ 	ID_AD5620_2500,
+ 	ID_AD5620_1250,
+ 	ID_AD5640_2500,
+@@ -400,6 +401,10 @@ static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
+ 		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+ 		.write = ad5446_write,
+ 	},
++	[ID_AD5641] = {
++		.channel = AD5446_CHANNEL_POWERDOWN(14, 16, 0),
++		.write = ad5446_write,
++	},
+ 	[ID_AD5620_2500] = {
+ 		.channel = AD5446_CHANNEL_POWERDOWN(12, 16, 2),
+ 		.int_vref_mv = 2500,
+@@ -454,6 +459,7 @@ static const struct spi_device_id ad5446_spi_ids[] = {
+ 	{"ad5601", ID_AD5601},
+ 	{"ad5611", ID_AD5611},
+ 	{"ad5621", ID_AD5621},
++	{"ad5641", ID_AD5641},
+ 	{"ad5620-2500", ID_AD5620_2500}, /* AD5620/40/60: */
+ 	{"ad5620-1250", ID_AD5620_1250}, /* part numbers may look differently */
+ 	{"ad5640-2500", ID_AD5640_2500},
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.8.1.2
+
