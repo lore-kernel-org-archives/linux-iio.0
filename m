@@ -1,45 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:45745 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753493Ab3IWL42 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 07:56:28 -0400
-From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
-To: linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCHv5] staging/iio/adc: change the MXS touchscreen driver implementation
-Date: Mon, 23 Sep 2013 13:57:54 +0200
-Cc: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, fabio.estevam@freescale.com,
-	jic23@cam.ac.uk,
-	Lothar =?iso-8859-1?q?Wa=DFmann?= <LW@karo-electronics.de>
-References: <1379593369-22010-1-git-send-email-jbe@pengutronix.de> <201309231235.56309.jbe@pengutronix.de> <201309231236.27554.marex@denx.de>
-In-Reply-To: <201309231236.27554.marex@denx.de>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201309231357.54137.jbe@pengutronix.de>
+Received: from mail.karo-electronics.de ([81.173.242.67]:60413 "EHLO
+	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753395Ab3IWJ0M (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 05:26:12 -0400
+Message-ID: <21056.2292.381138.583291@ipc1.ka-ro>
+Date: Mon, 23 Sep 2013 11:25:08 +0200
+From: =?utf-8?Q?Lothar_Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+To: =?utf-8?Q?J=C3=BCrgen?= Beisert <jbe@pengutronix.de>
+Cc: linux-arm-kernel@lists.infradead.org, Marek Vasut <marex@denx.de>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	fabio.estevam@freescale.com, jic23@cam.ac.uk
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Subject: Re: [PATCHv5] staging/iio/adc: change the MXS touchscreen driver
+ implementation
+In-Reply-To: <201309230955.58828.jbe@pengutronix.de>
+References: <1379593369-22010-1-git-send-email-jbe@pengutronix.de>
+	<201309230155.04914.marex@denx.de>
+	<201309230955.58828.jbe@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Marek,
+Hi,
 
-On Monday 23 September 2013 12:36:27 Marek Vasut wrote:
-> > [...]
-> > I also found an MX28EVK with a touchscreen here and: yes it does not work
-> > with the modified driver. But now I'm confused, because of Lothar's
-> > statement about the TX28 platform.
-> >
-> > @Lothar: What kernel revision did you use? I had to go back to 3.9 to get
-> > a working kernel on the MX28EVK. More recent vanilla kernels stop working
-> > (MMC and network fail here).
->
-> Can you fix the SD and Network or at least show the fail log ?
+J√ºrgen Beisert writes:
+> Hi Marek,
+> 
+> Seems the very first touch detection does not work. A colleague just told me, 
+> we have an i.MX28 based hardware here and maybe a touchscreen from a different 
+> platform which maybe can be used with the i.MX28 platform. Stay tuned...
+> 
+> > btw. the touchscreen connection on M28EVK is pretty much the same as on
+> > MX28EVK.
+> 
+> I think the touchscreen connection on MX28EVK is exactly the same as on 
+> MX28EVK! ;) (/me needs more coffee as well)
+> 
+Just tested the touchscreen driver on our TX28 module and I could not
+find any problems.
 
-Arrgh. My fault. I used the wrong devicetree. (imx28-m28evk.dt instead of 
-imx28-evk.dtb). I still need more coffee...
 
-Regards,
-Juergen
-
+Lothar Wa√ümann
 -- 
-Pengutronix e.K. † † † † † † † † † † † † † † †| Juergen Beisert † † † † † † |
-Linux Solutions for Science and Industry † † †| http://www.pengutronix.de/  |
+___________________________________________________________
+
+Ka-Ro electronics GmbH | Pascalstra√üe 22 | D - 52076 Aachen
+Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
+Gesch√§ftsf√ºhrer: Matthias Kaussen
+Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
+
+www.karo-electronics.de | info@karo-electronics.de
+___________________________________________________________
