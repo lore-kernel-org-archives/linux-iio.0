@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	lars@metafoo.de,
 	sachin.kamat@linaro.org
-Subject: [PATCH 6/8] iio: adc: twl6030-gpadc: Use devm_iio_device_register
-Date: Tue, 24 Sep 2013 17:35:36 +0530
-Message-Id: <1380024338-30204-7-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 5/8] iio: adc: ti-adc081c: Use devm_iio_device_register
+Date: Tue, 24 Sep 2013 17:35:35 +0530
+Message-Id: <1380024338-30204-6-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1380024338-30204-1-git-send-email-sachin.kamat@linaro.org>
 References: <1380024338-30204-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,31 +15,29 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/iio/adc/twl6030-gpadc.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/iio/adc/ti-adc081c.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-index 0ea96c0..cd16077 100644
---- a/drivers/iio/adc/twl6030-gpadc.c
-+++ b/drivers/iio/adc/twl6030-gpadc.c
-@@ -948,17 +948,14 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
- 	indio_dev->channels = pdata->iio_channels;
- 	indio_dev->num_channels = pdata->nchannels;
+diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+index ee5f72b..f0b7e73 100644
+--- a/drivers/iio/adc/ti-adc081c.c
++++ b/drivers/iio/adc/ti-adc081c.c
+@@ -97,7 +97,7 @@ static int adc081c_probe(struct i2c_client *client,
+ 	iio->channels = &adc081c_channel;
+ 	iio->num_channels = 1;
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+-	err = iio_device_register(iio);
++	err = devm_iio_device_register(&client->dev, iio);
+ 	if (err < 0)
+ 		goto regulator_disable;
  
- 	return ret;
- }
+@@ -116,7 +116,6 @@ static int adc081c_remove(struct i2c_client *client)
+ 	struct iio_dev *iio = i2c_get_clientdata(client);
+ 	struct adc081c *adc = iio_priv(iio);
  
- static int twl6030_gpadc_remove(struct platform_device *pdev)
- {
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--
- 	twl6030_gpadc_disable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
--	iio_device_unregister(indio_dev);
+-	iio_device_unregister(iio);
+ 	regulator_disable(adc->ref);
  
  	return 0;
- }
 -- 
 1.7.9.5
