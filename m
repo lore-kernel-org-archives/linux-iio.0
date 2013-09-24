@@ -1,71 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51058 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:36812 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753986Ab3IWOgx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Sep 2013 10:36:53 -0400
-From: Juergen Beisert <jbe@pengutronix.de>
-To: linux-iio@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
-	marex@denx.de, fabio.estevam@freescale.com, jic23@cam.ac.uk,
-	linux-input@vger.kernel.org
-Subject: [PATCHv6] staging/iio/adc: change the MXS touchscreen driver implementation
-Date: Mon, 23 Sep 2013 16:36:29 +0200
-Message-Id: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
+	with ESMTP id S1750733Ab3IXHt2 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Sep 2013 03:49:28 -0400
+From: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
+To: linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/9] Staging/iio/adc/touchscreen/MXS: add proper clock handling
+Date: Tue, 24 Sep 2013 09:50:54 +0200
+Cc: Fabio Estevam <fabio.estevam@freescale.com>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	marex@denx.de, jic23@cam.ac.uk, linux-input@vger.kernel.org
+References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de> <1379946998-23041-2-git-send-email-jbe@pengutronix.de> <52405A7F.1050801@freescale.com>
+In-Reply-To: <52405A7F.1050801@freescale.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201309240950.54789.jbe@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following series replaces the current busy loop touchscreen implementation
-for i.MX28/i.MX23 SoCs by a fully interrupt driven implementation.
+Hi Fabio,
 
-Since i.MX23 and i.MX28 silicon differs, the existing implementation can
-be used for the i.MX28 SoC only.
+On Monday 23 September 2013 17:13:03 Fabio Estevam wrote:
+> On 09/23/2013 11:36 AM, Juergen Beisert wrote:
+> > +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> > +	clk_prepare_enable(lradc->clk);
+>
+> clk_prepare_enable() may fail, so better check its return value.
 
-The first patch adds proper clock handling. Various platforms seems to disable
-the internal 2 kHz clock which is used by the LRADC delay units.
+Thanks for the comment. Better this way?
 
-The next two patches of this series move the i.MX28 specific definitions
-out of the way. The forth patch simplifies the register access to make it easier
-to add the i.MX23 support. Then the i.MX23 specific definitions are added, also
-the code to distinguish both SoCs at run-time.
-Up to here the existing touchscreen driver will now run on an i.MX23 Soc as well.
+commit 825c5bb787a0dc9d25d480178e117be08810639c
+Author: Juergen Beisert <jbe@pengutronix.de>
+Date:   Mon Sep 23 16:10:56 2013 +0200
 
-When these i.MX SoCs are running from battery it seems not to be a good idea to
-run a busy loop to detect touches and their location. The 6th patch adds a
-fully interrupt driven implementation which makes use of the built-in delay
-and multiple sample features of the touchscreen controller. This will reduce
-the interrupt load to a minimum.
+    Staging/iio/adc/touchscreen/MXS: add proper clock handling
+    
+    The delay units inside the LRADC depend on the presence of a 2 kHz clock.
+    This change enables the clock to be able to use the delay unit for the
+    touchscreen part of the driver.
+    
+    Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
 
-The remaining patches in this series just removes the existing busy loop
-implementation, add a proposal for devicetree binding and a reminder what has
-still to be done with the LRADC driver.
-
-Changes since v5:
-
-- add missing clock handling which prevents the delay units from work (this
-  should make it work on the MX28EVK and M28EVK as well)
-
-Changes since v4:
-
-- honor Jonathan's comments about function names
-- honor Dmitry's comments about workqueue canceling and interrupts
-- adding devicetree bindings proposal
-
-Changes since v3:
-
-- split adding register access functions and i.MX23 support into two patches
-
-Changes since v2:
-
-- useless debug output removed
-
-Changes since v1:
-
-- adding register access functions to make the existing code more readable
-- adding some functions to distinguish the SoCs at run-time to avoid if-else
-  contructs whenever differences in the register layout between i.MX23 and
-  i.MX28 must be handled
-
-Comments are welcome.
-
+diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
+index 28b5ce2..07caf76 100644
+--- a/arch/arm/boot/dts/imx23.dtsi
++++ b/arch/arm/boot/dts/imx23.dtsi
+@@ -430,6 +430,7 @@
+ 				reg = <0x80050000 0x2000>;
+ 				interrupts = <36 37 38 39 40 41 42 43 44>;
+ 				status = "disabled";
++				clocks = <&clks 26>;
+ 			};
+ 
+ 			spdif@80054000 {
+diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
+index 7363fde..175deef 100644
+--- a/arch/arm/boot/dts/imx28.dtsi
++++ b/arch/arm/boot/dts/imx28.dtsi
+@@ -902,6 +902,7 @@
+ 				interrupts = <10 14 15 16 17 18 19
+ 						20 21 22 23 24 25>;
+ 				status = "disabled";
++				clocks = <&clks 41>;
+ 			};
+ 
+ 			spdif: spdif@80054000 {
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index a08c173..eaca1ae 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -35,6 +35,7 @@
+ #include <linux/completion.h>
+ #include <linux/delay.h>
+ #include <linux/input.h>
++#include <linux/clk.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+@@ -134,6 +135,8 @@ struct mxs_lradc {
+ 	void __iomem		*base;
+ 	int			irq[13];
+ 
++	struct clk		*clk;
++
+ 	uint32_t		*buffer;
+ 	struct iio_trigger	*trig;
+ 
+@@ -928,6 +931,17 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(lradc->base))
+ 		return PTR_ERR(lradc->base);
+ 
++	lradc->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(lradc->clk)) {
++		dev_err(dev, "Failed to get the delay unit clock\n");
++		return PTR_ERR(lradc->clk);
++	}
++	ret = clk_prepare_enable(lradc->clk);
++	if (ret != 0) {
++		dev_err(dev, "Failed to enable the delay unit clock\n");
++		return ret;
++	}
++
+ 	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+ 
+ 	/* Check if touchscreen is enabled in DT. */
+@@ -1020,6 +1034,7 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+ 	iio_triggered_buffer_cleanup(iio);
+ 	mxs_lradc_trigger_remove(iio);
+ 
++	clk_disable_unprepare(lradc->clk);
+ 	return 0;
+ }
+ 
 Juergen
 
+-- 
+Pengutronix e.K.                              | Juergen Beisert             |
+Linux Solutions for Science and Industry      | http://www.pengutronix.de/  |
