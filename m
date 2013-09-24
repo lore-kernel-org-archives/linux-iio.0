@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	lars@metafoo.de,
 	sachin.kamat@linaro.org
-Subject: [PATCH 5/8] iio: adc: ti-adc081c: Use devm_iio_device_register
-Date: Tue, 24 Sep 2013 17:35:35 +0530
-Message-Id: <1380024338-30204-6-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 4/8] iio: adc: mcp3422: Use devm_iio_device_register
+Date: Tue, 24 Sep 2013 17:35:34 +0530
+Message-Id: <1380024338-30204-5-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1380024338-30204-1-git-send-email-sachin.kamat@linaro.org>
 References: <1380024338-30204-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,29 +15,42 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/iio/adc/ti-adc081c.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/adc/mcp3422.c |    9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-index ee5f72b..f0b7e73 100644
---- a/drivers/iio/adc/ti-adc081c.c
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -97,7 +97,7 @@ static int adc081c_probe(struct i2c_client *client,
- 	iio->channels = &adc081c_channel;
- 	iio->num_channels = 1;
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index bc93f53..f172c29 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -361,7 +361,7 @@ static int mcp3422_probe(struct i2c_client *client,
+ 		| MCP3422_SAMPLE_RATE_VALUE(MCP3422_SRATE_240));
+ 	mcp3422_update_config(adc, config);
  
--	err = iio_device_register(iio);
-+	err = devm_iio_device_register(&client->dev, iio);
+-	err = iio_device_register(indio_dev);
++	err = devm_iio_device_register(&client->dev, indio_dev);
  	if (err < 0)
- 		goto regulator_disable;
+ 		return err;
  
-@@ -116,7 +116,6 @@ static int adc081c_remove(struct i2c_client *client)
- 	struct iio_dev *iio = i2c_get_clientdata(client);
- 	struct adc081c *adc = iio_priv(iio);
- 
--	iio_device_unregister(iio);
- 	regulator_disable(adc->ref);
- 
+@@ -370,12 +370,6 @@ static int mcp3422_probe(struct i2c_client *client,
  	return 0;
+ }
+ 
+-static int mcp3422_remove(struct i2c_client *client)
+-{
+-	iio_device_unregister(i2c_get_clientdata(client));
+-	return 0;
+-}
+-
+ static const struct i2c_device_id mcp3422_id[] = {
+ 	{ "mcp3422", 2 },
+ 	{ "mcp3423", 3 },
+@@ -399,7 +393,6 @@ static struct i2c_driver mcp3422_driver = {
+ 		.of_match_table = of_match_ptr(mcp3422_of_match),
+ 	},
+ 	.probe = mcp3422_probe,
+-	.remove = mcp3422_remove,
+ 	.id_table = mcp3422_id,
+ };
+ module_i2c_driver(mcp3422_driver);
 -- 
 1.7.9.5
