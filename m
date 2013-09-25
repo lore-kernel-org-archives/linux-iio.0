@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	lars@metafoo.de,
 	sachin.kamat@linaro.org
-Subject: [PATCH 31/32] staging: iio: ad2s90: Use devm_iio_device_register
-Date: Wed, 25 Sep 2013 16:20:07 +0530
-Message-Id: <1380106208-6948-32-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 30/32] staging: iio: ad2s1200: Use devm_iio_device_register
+Date: Wed, 25 Sep 2013 16:20:06 +0530
+Message-Id: <1380106208-6948-31-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 References: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,15 +15,15 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/resolver/ad2s90.c |   10 +---------
+ drivers/staging/iio/resolver/ad2s1200.c |   10 +---------
  1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index e24c589..a18ebe2 100644
---- a/drivers/staging/iio/resolver/ad2s90.c
-+++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -79,7 +79,7 @@ static int ad2s90_probe(struct spi_device *spi)
- 	indio_dev->num_channels = 1;
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index 62d3017..36eedd8 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -131,7 +131,7 @@ static int ad2s1200_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = ARRAY_SIZE(ad2s1200_channels);
  	indio_dev->name = spi_get_device_id(spi)->name;
  
 -	ret = iio_device_register(indio_dev);
@@ -31,27 +31,27 @@ index e24c589..a18ebe2 100644
  	if (ret)
  		return ret;
  
-@@ -91,13 +91,6 @@ static int ad2s90_probe(struct spi_device *spi)
+@@ -142,13 +142,6 @@ static int ad2s1200_probe(struct spi_device *spi)
  	return 0;
  }
  
--static int ad2s90_remove(struct spi_device *spi)
+-static int ad2s1200_remove(struct spi_device *spi)
 -{
 -	iio_device_unregister(spi_get_drvdata(spi));
 -
 -	return 0;
 -}
 -
- static const struct spi_device_id ad2s90_id[] = {
- 	{ "ad2s90" },
- 	{}
-@@ -110,7 +103,6 @@ static struct spi_driver ad2s90_driver = {
+ static const struct spi_device_id ad2s1200_id[] = {
+ 	{ "ad2s1200" },
+ 	{ "ad2s1205" },
+@@ -162,7 +155,6 @@ static struct spi_driver ad2s1200_driver = {
  		.owner = THIS_MODULE,
  	},
- 	.probe = ad2s90_probe,
--	.remove = ad2s90_remove,
- 	.id_table = ad2s90_id,
+ 	.probe = ad2s1200_probe,
+-	.remove = ad2s1200_remove,
+ 	.id_table = ad2s1200_id,
  };
- module_spi_driver(ad2s90_driver);
+ module_spi_driver(ad2s1200_driver);
 -- 
 1.7.9.5
