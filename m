@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	lars@metafoo.de,
 	sachin.kamat@linaro.org
-Subject: [PATCH 19/32] staging: iio: ad5930: Use devm_iio_device_register
-Date: Wed, 25 Sep 2013 16:19:55 +0530
-Message-Id: <1380106208-6948-20-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 18/32] staging: iio: ad7746: Use devm_iio_device_register
+Date: Wed, 25 Sep 2013 16:19:54 +0530
+Message-Id: <1380106208-6948-19-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 References: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,42 +15,45 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/frequency/ad5930.c |   10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/staging/iio/cdc/ad7746.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/staging/iio/frequency/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
-index a4aeee6..662cfb9 100644
---- a/drivers/staging/iio/frequency/ad5930.c
-+++ b/drivers/staging/iio/frequency/ad5930.c
-@@ -106,7 +106,7 @@ static int ad5930_probe(struct spi_device *spi)
- 	idev->info = &ad5930_info;
- 	idev->modes = INDIO_DIRECT_MODE;
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 75a533b..023284d 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -748,7 +748,7 @@ static int ad7746_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
  
--	ret = iio_device_register(idev);
-+	ret = devm_iio_device_register(&spi->dev, idev);
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
  	if (ret)
  		return ret;
- 	spi->max_speed_hz = 2000000;
-@@ -117,20 +117,12 @@ static int ad5930_probe(struct spi_device *spi)
+ 
+@@ -757,15 +757,6 @@ static int ad7746_probe(struct i2c_client *client,
  	return 0;
  }
  
--static int ad5930_remove(struct spi_device *spi)
+-static int ad7746_remove(struct i2c_client *client)
 -{
--	iio_device_unregister(spi_get_drvdata(spi));
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
 -
 -	return 0;
 -}
 -
- static struct spi_driver ad5930_driver = {
- 	.driver = {
- 		.name = DRV_NAME,
- 		.owner = THIS_MODULE,
+ static const struct i2c_device_id ad7746_id[] = {
+ 	{ "ad7745", 7745 },
+ 	{ "ad7746", 7746 },
+@@ -780,7 +771,6 @@ static struct i2c_driver ad7746_driver = {
+ 		.name = KBUILD_MODNAME,
  	},
- 	.probe = ad5930_probe,
--	.remove = ad5930_remove,
+ 	.probe = ad7746_probe,
+-	.remove = ad7746_remove,
+ 	.id_table = ad7746_id,
  };
- module_spi_driver(ad5930_driver);
- 
+ module_i2c_driver(ad7746_driver);
 -- 
 1.7.9.5
