@@ -1,115 +1,59 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <52430FA2.9030903@metafoo.de>
-Date: Wed, 25 Sep 2013 18:30:26 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH Resend 00/32] iio: Introduce devm_iio_device_{register,unregister}
-References: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org> <9b84c130-be02-477f-9cce-6b0b066d70f5@email.android.com>
-In-Reply-To: <9b84c130-be02-477f-9cce-6b0b066d70f5@email.android.com>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	lars@metafoo.de,
+	sachin.kamat@linaro.org
+Subject: [PATCH 32/32] staging: iio: ad7152: Use devm_iio_device_register
+Date: Wed, 25 Sep 2013 16:20:08 +0530
+Message-Id: <1380106208-6948-33-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
+References: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/25/2013 06:24 PM, Jonathan Cameron wrote:
-> 
-> 
-> Sachin Kamat <sachin.kamat@linaro.org> wrote:
->> With the conversion of iio drivers to use device managed APIs, several
->> drivers now have a remove function with only the
->> iio_device_unregister()
->> call. Thus introduce device managed version of iio_device_register() to
->> clean up lot of such code. 3 patches also removes the unregister call
->> in drivers
->> where it happens to be the last call before return statement.
->>
->> This is only compile tested as I do not have any actual hardware to
->> test ATM.
-> 
-> Hi all.
-> 
-> I definitely want to gather opinions on this idea.
-> It makes me nervous but the stats speak for themselves.
+devm_iio_device_register simplifies the code.
 
-Same here.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/staging/iio/cdc/ad7152.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-> 
-> Jonathan
->>
->> Sachin Kamat (32):
->>  iio: core: Implement devm_iio_device_{register,unregister}
->>  iio: accel: kxsd9: Use devm_iio_device_register
->>  iio: adc: mcp3422: Use devm_iio_device_register
->>  iio: adc: twl6030-gpadc: Use devm_iio_device_register
->>  iio: adc: viperboard: Use devm_iio_device_register
->>  iio: dac: ad5421: Use devm_iio_device_register
->>  iio: dac: ad5755: Use devm_iio_device_register
->>  iio: dac: max517: Use devm_iio_device_register
->>  iio: dac: mcp4725: Use devm_iio_device_register
->>  iio: gyro: adis16130: Use devm_iio_device_register
->>  iio: gyro: adxrs450: Use devm_iio_device_register
->>  iio: light: vcnl4000: Use devm_iio_device_register
->>  staging: iio: adis16220: Use devm_iio_device_register
->>  staging: iio: ad7816: Use devm_iio_device_register
->>  staging: iio: lpc32xx_adc: Use devm_iio_device_register
->>  staging: iio: addac: Use devm_iio_device_register
->>  staging: iio: ad7150: Use devm_iio_device_register
->>  staging: iio: ad7746: Use devm_iio_device_register
->>  staging: iio: ad5930: Use devm_iio_device_register
->>  staging: iio: ad9850: Use devm_iio_device_register
->>  staging: iio: ad9852: Use devm_iio_device_register
->>  staging: iio: ad9910: Use devm_iio_device_register
->>  staging: iio: ad9951: Use devm_iio_device_register
->>  staging: iio: adis16060: Use devm_iio_device_register
->>  staging: iio: isl29018: Use devm_iio_device_register
->>  staging: iio: isl29028: Use devm_iio_device_register
->>  staging: iio: tsl2583: Use devm_iio_device_register
->>  staging: iio: tsl2x7x_core: Use devm_iio_device_register
->>  staging: iio: ade7854: Use devm_iio_device_register
->>  staging: iio: ad2s1200: Use devm_iio_device_register
->>  staging: iio: ad2s90: Use devm_iio_device_register
->>  staging: iio: ad7152: Use devm_iio_device_register
->>
->> Documentation/driver-model/devres.txt      |    2 ++
->> drivers/iio/accel/kxsd9.c                  |   10 +-------
->> drivers/iio/adc/mcp3422.c                  |    9 +------
->> drivers/iio/adc/twl6030-gpadc.c            |    5 +---
->> drivers/iio/adc/viperboard_adc.c           |   12 +---------
->> drivers/iio/dac/ad5421.c                   |   12 +---------
->> drivers/iio/dac/ad5755.c                   |   12 +---------
->> drivers/iio/dac/max517.c                   |    9 +------
->> drivers/iio/dac/mcp4725.c                  |    9 +------
->> drivers/iio/gyro/adis16130.c               |    9 +------
->> drivers/iio/gyro/adxrs450.c                |   14 ++---------
->> drivers/iio/industrialio-core.c            |   35
->> ++++++++++++++++++++++++++++
->> drivers/iio/light/vcnl4000.c               |    9 +------
->> drivers/staging/iio/accel/adis16220_core.c |    7 ++----
->> drivers/staging/iio/adc/ad7816.c           |   12 +---------
->> drivers/staging/iio/adc/lpc32xx_adc.c      |   12 +---------
->> drivers/staging/iio/addac/adt7316-i2c.c    |    6 -----
->> drivers/staging/iio/addac/adt7316-spi.c    |    6 -----
->> drivers/staging/iio/addac/adt7316.c        |   12 +---------
->> drivers/staging/iio/addac/adt7316.h        |    1 -
->> drivers/staging/iio/cdc/ad7150.c           |   12 +---------
->> drivers/staging/iio/cdc/ad7152.c           |   12 +---------
->> drivers/staging/iio/cdc/ad7746.c           |   12 +---------
->> drivers/staging/iio/frequency/ad5930.c     |   10 +-------
->> drivers/staging/iio/frequency/ad9850.c     |   10 +-------
->> drivers/staging/iio/frequency/ad9852.c     |   10 +-------
->> drivers/staging/iio/frequency/ad9910.c     |   10 +-------
->> drivers/staging/iio/frequency/ad9951.c     |   10 +-------
->> drivers/staging/iio/gyro/adis16060_core.c  |   10 +-------
->> drivers/staging/iio/light/isl29018.c       |   13 +----------
->> drivers/staging/iio/light/isl29028.c       |   11 +--------
->> drivers/staging/iio/light/tsl2583.c        |   10 +-------
->> drivers/staging/iio/light/tsl2x7x_core.c   |    4 +---
->> drivers/staging/iio/meter/ade7854-i2c.c    |    6 -----
->> drivers/staging/iio/meter/ade7854-spi.c    |    7 ------
->> drivers/staging/iio/meter/ade7854.c        |   14 +----------
->> drivers/staging/iio/meter/ade7854.h        |    1 -
->> drivers/staging/iio/resolver/ad2s1200.c    |   10 +-------
->> drivers/staging/iio/resolver/ad2s90.c      |   10 +-------
->> include/linux/iio/iio.h                    |   25 ++++++++++++++++++++
->> 40 files changed, 95 insertions(+), 315 deletions(-)
-> 
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index f2c309d..f925ecb 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -502,7 +502,7 @@ static int ad7152_probe(struct i2c_client *client,
+ 	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -511,15 +511,6 @@ static int ad7152_probe(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int ad7152_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
+-
+-	return 0;
+-}
+-
+ static const struct i2c_device_id ad7152_id[] = {
+ 	{ "ad7152", 0 },
+ 	{ "ad7153", 1 },
+@@ -533,7 +524,6 @@ static struct i2c_driver ad7152_driver = {
+ 		.name = KBUILD_MODNAME,
+ 	},
+ 	.probe = ad7152_probe,
+-	.remove = ad7152_remove,
+ 	.id_table = ad7152_id,
+ };
+ module_i2c_driver(ad7152_driver);
+-- 
+1.7.9.5
