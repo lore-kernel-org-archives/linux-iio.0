@@ -1,87 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-166.synserver.de ([212.40.185.166]:1032 "EHLO
-	smtp-out-165.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753221Ab3I1KMG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Sep 2013 06:12:06 -0400
-Message-ID: <5246ABDB.5090005@metafoo.de>
-Date: Sat, 28 Sep 2013 12:13:47 +0200
+Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:40292 "EHLO
+	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751883Ab3IYH1Q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Sep 2013 03:27:16 -0400
+Message-ID: <5242907D.2060203@metafoo.de>
+Date: Wed, 25 Sep 2013 09:27:57 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:trigger: Added iio-hrtimer-trigger
-References: <1380014789-8636-1-git-send-email-denis.ciocca@st.com> <1380014789-8636-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1380014789-8636-2-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [next:master 1495/1772] drivers/staging/iio/iio_simple_dummy_buffer.c:86:2:
+ error: implicit declaration of function 'iio_push_to_buffers_with_timestamp'
+References: <524106f9.teHmhjmgqBH0qZNH%fengguang.wu@intel.com>
+In-Reply-To: <524106f9.teHmhjmgqBH0qZNH%fengguang.wu@intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/24/2013 11:26 AM, Denis CIOCCA wrote:
-> This patch adds high resolution timer trigger support for iio framework.
-> 
+On 09/24/2013 05:28 AM, kbuild test robot wrote:
+> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> head:   1fa8f71dfa6e28c89afad7ac71dcb19b8c8da8b7
+> commit: 09a799d04eb17e19bbc80cb0e350a3ec89552b01 [1495/1772] staging:iio:dummy: Use iio_push_to_buffers_with_timestamp()
+> config: i386-randconfig-j6-09240827 (attached as .config)
+>
+> All error/warnings:
+>
+>     drivers/staging/iio/iio_simple_dummy_buffer.c: In function 'iio_simple_dummy_trigger_h':
+>>> drivers/staging/iio/iio_simple_dummy_buffer.c:86:2: error: implicit declaration of function 'iio_push_to_buffers_with_timestamp' [-Werror=implicit-function-declaration]
+>       iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
+>       ^
+>     drivers/staging/iio/iio_simple_dummy_buffer.c: At top level:
+>     drivers/staging/iio/iio_simple_dummy_buffer.c:108:16: error: 'iio_sw_buffer_preenable' undeclared here (not in a function)
+>       .preenable = &iio_sw_buffer_preenable,
+>                     ^
+>     drivers/staging/iio/iio_simple_dummy_buffer.c: In function 'iio_simple_dummy_configure_buffer':
+>     drivers/staging/iio/iio_simple_dummy_buffer.c:141:8: error: dereferencing pointer to incomplete type
+>       buffer->scan_timestamp = true;
+>             ^
+>     cc1: some warnings being treated as errors
+>
+> vim +/iio_push_to_buffers_with_timestamp +86 drivers/staging/iio/iio_simple_dummy_buffer.c
+>
+>      80				/* random access read from the 'device' */
+>      81				data[i] = fakedata[j];
+>      82				len += 2;
+>      83			}
+>      84		}
+>      85	
+>    > 86		iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
+>      87	
+>      88		kfree(data);
+>      89	
 
-I think the driver is mostly fine (a couple of minor comments inline). But
-maybe we should give some more though how we want to deal with the creation
-and deletion of software triggers like this one. Half of the code in this
-drivers is boiler plate code copied from the sysfs trigger and is dealing
-with creating and deleting the triggers.
 
-[...]
-> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-> index 0694dae..4e1876d 100644
-> --- a/drivers/iio/trigger/Makefile
-> +++ b/drivers/iio/trigger/Makefile
-> @@ -5,3 +5,4 @@
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
->  obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-> +obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
+Hm, the config that generated this has:
 
-Alphabetical order, please.
+CONFIG_IIO=m
+# CONFIG_IIO_BUFFER is not set
+CONFIG_IIO_KFIFO_BUF=m
 
-[...]
-> +static ssize_t iio_hrtimer_trigger_set_freq_value(struct device *dev,
-> +		struct device_attribute *attr, const char *buf, size_t len)
-> +{
-> +	int ret;
-> +	u16 frequency;
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +	struct iio_hrtimer_trigger_data *trig_data =
-> +						iio_trigger_get_drvdata(trig);
-> +
-> +	ret = kstrtou16(buf, 10, &frequency);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (frequency > MAX_UNSIGNED_INT16)
+How is it possible that IIO_KFIFO_BUF is selected but not IIO_BUFFER?
 
-Will never be true with frequency being a u16.
-
-> +		return -EINVAL;
-> +
-> +	trig_data->freq = frequency;
-> +
-> +	if (frequency)
-> +		trig_data->period =
-> +				ktime_set(0, NSEC_PER_SEC / trig_data->freq);
-> +
-> +	return len;
-> +}
-[...]
-> +
-> +enum hrtimer_restart iio_hrtimer_trigger_func(struct hrtimer *timer)
-> +{
-> +	struct iio_hrtimer_trigger_data *trig_data;
-> +
-> +	trig_data = container_of(timer, struct iio_hrtimer_trigger_data, timer);
-> +
-> +	hrtimer_forward_now(timer, trig_data->period);
-> +	iio_trigger_poll(trig_data->trig, 0);
-
-iio_trigger_poll(trig_data->trig, iio_get_time_ns());
-
-> +
-> +	return HRTIMER_RESTART;
-> +}
-[...]
+- Lars
 
