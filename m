@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	lars@metafoo.de,
 	sachin.kamat@linaro.org
-Subject: [PATCH 32/32] staging: iio: ad7152: Use devm_iio_device_register
-Date: Wed, 25 Sep 2013 16:20:08 +0530
-Message-Id: <1380106208-6948-33-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 31/32] staging: iio: ad2s90: Use devm_iio_device_register
+Date: Wed, 25 Sep 2013 16:20:07 +0530
+Message-Id: <1380106208-6948-32-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 References: <1380106208-6948-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -15,45 +15,43 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/cdc/ad7152.c |   12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ drivers/staging/iio/resolver/ad2s90.c |   10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index f2c309d..f925ecb 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -502,7 +502,7 @@ static int ad7152_probe(struct i2c_client *client,
- 	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
- 	indio_dev->modes = INDIO_DIRECT_MODE;
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index e24c589..a18ebe2 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -79,7 +79,7 @@ static int ad2s90_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = 1;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
  
 -	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&client->dev, indio_dev);
++	ret = devm_iio_device_register(&spi->dev, indio_dev);
  	if (ret)
  		return ret;
  
-@@ -511,15 +511,6 @@ static int ad7152_probe(struct i2c_client *client,
+@@ -91,13 +91,6 @@ static int ad2s90_probe(struct spi_device *spi)
  	return 0;
  }
  
--static int ad7152_remove(struct i2c_client *client)
+-static int ad2s90_remove(struct spi_device *spi)
 -{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--
--	iio_device_unregister(indio_dev);
+-	iio_device_unregister(spi_get_drvdata(spi));
 -
 -	return 0;
 -}
 -
- static const struct i2c_device_id ad7152_id[] = {
- 	{ "ad7152", 0 },
- 	{ "ad7153", 1 },
-@@ -533,7 +524,6 @@ static struct i2c_driver ad7152_driver = {
- 		.name = KBUILD_MODNAME,
+ static const struct spi_device_id ad2s90_id[] = {
+ 	{ "ad2s90" },
+ 	{}
+@@ -110,7 +103,6 @@ static struct spi_driver ad2s90_driver = {
+ 		.owner = THIS_MODULE,
  	},
- 	.probe = ad7152_probe,
--	.remove = ad7152_remove,
- 	.id_table = ad7152_id,
+ 	.probe = ad2s90_probe,
+-	.remove = ad2s90_remove,
+ 	.id_table = ad2s90_id,
  };
- module_i2c_driver(ad7152_driver);
+ module_spi_driver(ad2s90_driver);
 -- 
 1.7.9.5
