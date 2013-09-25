@@ -1,66 +1,39 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <5243B54E.7000804@samsung.com>
-Date: Thu, 26 Sep 2013 13:17:18 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34439 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751384Ab3IYThE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Sep 2013 15:37:04 -0400
+From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org, jic23@kernel.org, rob.herring@calxeda.com,
- pawel.moll@arm.com, mark.rutland@arm.com, ian.campbell@citrix.com,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Jacek Anaszewski <j.anaszewski@samsung.com>, myungjoo.ham@samsung.com,
- Jaehoon Chung <jh80.chung@samsung.com>, Peter Meerwald l <pmeerw@pmeerw.net>
-Subject: [PATCH v3 0/2] iio: cm36651: Add CM36651 proximity/light sensor driver
-Content-type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Cc: zubair.lutfullah@gmail.com, lars@metafoo.de,
+	fengguang.wu@intel.com, Russ.Dill@ti.com, kbuild-all@01.org,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio:ti_am335x_adc ensure that IIO_KFIFO_BUF is not selected witout IIO_BUFFER
+Date: Wed, 25 Sep 2013 21:37:21 +0100
+Message-Id: <1380141441-9133-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello all,
+This avoids build problems such iio_push_to_buffers* not being defined.
 
-Thank you for your review. I have revised v2 driver.
-Please give your feedback at that time.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+---
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-This patch is the third revision for Capella CM36651 proximity and RGB light sensor driver.
-The driver exposes five channels: Red, Green, Blue, Clear and proximity.
-It also support detection proximity event.
-
-This driver supports
-	- Event: rising and falling proximity events.
-	- Reading channel through read_raw callback.
-	- Writing sensor data integration time each channel through write_raw callback.
-
-v3 changed below:
-	- Revised a binding documentation.
-	- fixed vendor-prefixes documentation in alphabetical order.
-	- Add/ Remove/ Revise some #define register and commands.
-	- Add write_raw callback function for set/get sensor data integration time.
-	- Use IIO_CONST_ATTR API for *_integration_time_available.
-	- Revised some comments and message.
-	- code cleanup
-
->>From 51e47f86e8ac9c4acf2ff2b5ede0b392cc3f2837 Mon Sep 17 00:00:00 2001
-From: Beomho Seo <beomho.seo@samsung.com>
-Date: Thu, 26 Sep 2013 10:34:53 +0900
-Subject: [PATCH 0/2] *** SUBJECT HERE ***
-
-*** BLURB HERE ***
-
-Beomho Seo (2):
-  iio: cm36651: Add CM36651 proximity/light sensor driver
-  DT: Add documentation for cm36651 proximity/light sensor
-
- .../devicetree/bindings/iio/light/cm36651.txt      |   25 +
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- drivers/iio/light/Kconfig                          |   11 +
- drivers/iio/light/cm36651.c                        |  715 ++++++++++++++++++++
- 4 files changed, 752 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
- create mode 100644 drivers/iio/light/cm36651.c
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8b88518..2209f28 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -177,6 +177,7 @@ config TI_ADC081C
+ config TI_AM335X_ADC
+ 	tristate "TI's AM335X ADC driver"
+ 	depends on MFD_TI_AM335X_TSCADC
++	select IIO_BUFFER
+ 	select IIO_KFIFO_BUF
+ 	help
+ 	  Say yes here to build support for Texas Instruments ADC
 -- 
-1.7.9.5
+1.8.4
 
--- 
-Best Regards,
-
-Beomho Seo, Assistant Engineer
-System S/W Lab., S/W Platform Team, Software Center
-Samsung Electronics
