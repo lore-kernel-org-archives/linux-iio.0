@@ -2,291 +2,222 @@ Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jon Brenner <jbrenner@taosinc.com>
-Subject: [PATCH 13/18] staging:iio:tsl2x7x: Switch to new event config interface
-Date: Thu, 26 Sep 2013 14:58:32 +0200
-Message-Id: <1380200317-19355-13-git-send-email-lars@metafoo.de>
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 12/18] staging:iio:simple_dummy: Switch to new event config interface
+Date: Thu, 26 Sep 2013 14:58:31 +0200
+Message-Id: <1380200317-19355-12-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 References: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Switch the tsl2x7x driver to the new IIO event config interface as the old one
-is going to be removed.
+Switch the simple_dummy driver to the new IIO event config interface as the old
+one is going to be removed.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jon Brenner <jbrenner@taosinc.com>
 ---
- drivers/staging/iio/light/tsl2x7x_core.c | 116 +++++++++++++++++++------------
- 1 file changed, 71 insertions(+), 45 deletions(-)
+ drivers/staging/iio/iio_simple_dummy.c        | 30 ++++++++++++-------
+ drivers/staging/iio/iio_simple_dummy.h        | 20 +++++++++----
+ drivers/staging/iio/iio_simple_dummy_events.c | 43 +++++++++++++++++++--------
+ 3 files changed, 65 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-index 9c43dcf..1466f47 100644
---- a/drivers/staging/iio/light/tsl2x7x_core.c
-+++ b/drivers/staging/iio/light/tsl2x7x_core.c
-@@ -124,11 +124,6 @@
- #define TSL2X7X_mA13                   0xD0
- #define TSL2X7X_MAX_TIMER_CNT          (0xFF)
- 
--/*Common device IIO EventMask */
--#define TSL2X7X_EVENT_MASK \
--		(IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING)),
--
- #define TSL2X7X_MIN_ITIME 3
- 
- /* TAOS txx2x7x Device family members */
-@@ -1222,12 +1217,14 @@ static ssize_t tsl2x7x_do_prox_calibrate(struct device *dev,
- }
- 
- static int tsl2x7x_read_interrupt_config(struct iio_dev *indio_dev,
--					 u64 event_code)
-+					 const struct iio_chan_spec *chan,
-+					 enum iio_event_type type,
-+					 enum iio_event_direction dir)
- {
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 	int ret;
- 
--	if (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code) == IIO_INTENSITY)
-+	if (chan->type == IIO_INTENSITY)
- 		ret = !!(chip->tsl2x7x_settings.interrupts_en & 0x10);
- 	else
- 		ret = !!(chip->tsl2x7x_settings.interrupts_en & 0x20);
-@@ -1236,12 +1233,14 @@ static int tsl2x7x_read_interrupt_config(struct iio_dev *indio_dev,
- }
- 
- static int tsl2x7x_write_interrupt_config(struct iio_dev *indio_dev,
--					  u64 event_code,
-+					  const struct iio_chan_spec *chan,
-+					  enum iio_event_type type,
-+					  enum iio_event_direction dir,
- 					  int val)
- {
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 
--	if (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code) == IIO_INTENSITY) {
-+	if (chan->type == IIO_INTENSITY) {
- 		if (val)
- 			chip->tsl2x7x_settings.interrupts_en |= 0x10;
- 		else
-@@ -1259,13 +1258,16 @@ static int tsl2x7x_write_interrupt_config(struct iio_dev *indio_dev,
- }
- 
- static int tsl2x7x_write_thresh(struct iio_dev *indio_dev,
--				  u64 event_code,
--				  int val)
-+				const struct iio_chan_spec *chan,
-+				enum iio_event_type type,
-+				enum iio_event_direction dir,
-+				enum iio_event_info info,
-+				int val)
- {
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 
--	if (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code) == IIO_INTENSITY) {
--		switch (IIO_EVENT_CODE_EXTRACT_DIR(event_code)) {
-+	if (chan->type == IIO_INTENSITY) {
-+		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			chip->tsl2x7x_settings.als_thresh_high = val;
- 			break;
-@@ -1276,7 +1278,7 @@ static int tsl2x7x_write_thresh(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		}
- 	} else {
--		switch (IIO_EVENT_CODE_EXTRACT_DIR(event_code)) {
-+		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			chip->tsl2x7x_settings.prox_thres_high = val;
- 			break;
-@@ -1294,13 +1296,16 @@ static int tsl2x7x_write_thresh(struct iio_dev *indio_dev,
- }
- 
- static int tsl2x7x_read_thresh(struct iio_dev *indio_dev,
--			       u64 event_code,
-+			       const struct iio_chan_spec *chan,
-+			       enum iio_event_type type,
-+			       enum iio_event_direction dir,
-+				   enum iio_event_info info,
- 			       int *val)
- {
- 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
- 
--	if (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code) == IIO_INTENSITY) {
--		switch (IIO_EVENT_CODE_EXTRACT_DIR(event_code)) {
-+	if (chan->type == IIO_INTENSITY) {
-+		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			*val = chip->tsl2x7x_settings.als_thresh_high;
- 			break;
-@@ -1311,7 +1316,7 @@ static int tsl2x7x_read_thresh(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		}
- 	} else {
--		switch (IIO_EVENT_CODE_EXTRACT_DIR(event_code)) {
-+		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			*val = chip->tsl2x7x_settings.prox_thres_high;
- 			break;
-@@ -1667,10 +1672,10 @@ static const struct iio_info tsl2X7X_device_info[] = {
- 		.driver_module = THIS_MODULE,
- 		.read_raw = &tsl2x7x_read_raw,
- 		.write_raw = &tsl2x7x_write_raw,
--		.read_event_value = &tsl2x7x_read_thresh,
--		.write_event_value = &tsl2x7x_write_thresh,
--		.read_event_config = &tsl2x7x_read_interrupt_config,
--		.write_event_config = &tsl2x7x_write_interrupt_config,
-+		.read_event_value_new = &tsl2x7x_read_thresh,
-+		.write_event_value_new = &tsl2x7x_write_thresh,
-+		.read_event_config_new = &tsl2x7x_read_interrupt_config,
-+		.write_event_config_new = &tsl2x7x_write_interrupt_config,
- 	},
- 	[PRX] = {
- 		.attrs = &tsl2X7X_device_attr_group_tbl[PRX],
-@@ -1678,10 +1683,10 @@ static const struct iio_info tsl2X7X_device_info[] = {
- 		.driver_module = THIS_MODULE,
- 		.read_raw = &tsl2x7x_read_raw,
- 		.write_raw = &tsl2x7x_write_raw,
--		.read_event_value = &tsl2x7x_read_thresh,
--		.write_event_value = &tsl2x7x_write_thresh,
--		.read_event_config = &tsl2x7x_read_interrupt_config,
--		.write_event_config = &tsl2x7x_write_interrupt_config,
-+		.read_event_value_new = &tsl2x7x_read_thresh,
-+		.write_event_value_new = &tsl2x7x_write_thresh,
-+		.read_event_config_new = &tsl2x7x_read_interrupt_config,
-+		.write_event_config_new = &tsl2x7x_write_interrupt_config,
- 	},
- 	[ALSPRX] = {
- 		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX],
-@@ -1689,10 +1694,10 @@ static const struct iio_info tsl2X7X_device_info[] = {
- 		.driver_module = THIS_MODULE,
- 		.read_raw = &tsl2x7x_read_raw,
- 		.write_raw = &tsl2x7x_write_raw,
--		.read_event_value = &tsl2x7x_read_thresh,
--		.write_event_value = &tsl2x7x_write_thresh,
--		.read_event_config = &tsl2x7x_read_interrupt_config,
--		.write_event_config = &tsl2x7x_write_interrupt_config,
-+		.read_event_value_new = &tsl2x7x_read_thresh,
-+		.write_event_value_new = &tsl2x7x_write_thresh,
-+		.read_event_config_new = &tsl2x7x_read_interrupt_config,
-+		.write_event_config_new = &tsl2x7x_write_interrupt_config,
- 	},
- 	[PRX2] = {
- 		.attrs = &tsl2X7X_device_attr_group_tbl[PRX2],
-@@ -1700,10 +1705,10 @@ static const struct iio_info tsl2X7X_device_info[] = {
- 		.driver_module = THIS_MODULE,
- 		.read_raw = &tsl2x7x_read_raw,
- 		.write_raw = &tsl2x7x_write_raw,
--		.read_event_value = &tsl2x7x_read_thresh,
--		.write_event_value = &tsl2x7x_write_thresh,
--		.read_event_config = &tsl2x7x_read_interrupt_config,
--		.write_event_config = &tsl2x7x_write_interrupt_config,
-+		.read_event_value_new = &tsl2x7x_read_thresh,
-+		.write_event_value_new = &tsl2x7x_write_thresh,
-+		.read_event_config_new = &tsl2x7x_read_interrupt_config,
-+		.write_event_config_new = &tsl2x7x_write_interrupt_config,
- 	},
- 	[ALSPRX2] = {
- 		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX2],
-@@ -1711,10 +1716,24 @@ static const struct iio_info tsl2X7X_device_info[] = {
- 		.driver_module = THIS_MODULE,
- 		.read_raw = &tsl2x7x_read_raw,
- 		.write_raw = &tsl2x7x_write_raw,
--		.read_event_value = &tsl2x7x_read_thresh,
--		.write_event_value = &tsl2x7x_write_thresh,
--		.read_event_config = &tsl2x7x_read_interrupt_config,
--		.write_event_config = &tsl2x7x_write_interrupt_config,
-+		.read_event_value_new = &tsl2x7x_read_thresh,
-+		.write_event_value_new = &tsl2x7x_write_thresh,
-+		.read_event_config_new = &tsl2x7x_read_interrupt_config,
-+		.write_event_config_new = &tsl2x7x_write_interrupt_config,
-+	},
-+};
-+
-+static const struct iio_event_spec tsl2x7x_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
- 	},
+diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+index 141ec61..cdb8898 100644
+--- a/drivers/staging/iio/iio_simple_dummy.c
++++ b/drivers/staging/iio/iio_simple_dummy.c
+@@ -57,6 +57,20 @@ static const struct iio_dummy_accel_calibscale dummy_scales[] = {
+ 	{ 733, 13, 0x9 }, /* 733.000013 */
  };
  
-@@ -1733,7 +1752,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_CALIBSCALE) |
- 				BIT(IIO_CHAN_INFO_CALIBBIAS),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			}, {
- 			.type = IIO_INTENSITY,
- 			.indexed = 1,
-@@ -1750,7 +1770,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.indexed = 1,
- 			.channel = 0,
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			},
++#ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
++
++/*
++ * simple event - triggered when value rises above
++ * a threshold
++ */
++static const struct iio_event_spec iio_dummy_event = {
++	.type = IIO_EV_TYPE_THRESH,
++	.dir = IIO_EV_DIR_RISING,
++	.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
++};
++
++#endif
++
+ /*
+  * iio_dummy_channels - Description of available channels
+  *
+@@ -104,12 +118,8 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
+ 			.shift = 0, /* zero shift */
  		},
- 	.chan_table_elements = 1,
-@@ -1770,7 +1791,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_CALIBSCALE) |
- 				BIT(IIO_CHAN_INFO_CALIBBIAS),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			}, {
- 			.type = IIO_INTENSITY,
- 			.indexed = 1,
-@@ -1781,7 +1803,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.indexed = 1,
- 			.channel = 0,
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			},
- 		},
- 	.chan_table_elements = 4,
-@@ -1795,7 +1818,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.channel = 0,
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_CALIBSCALE),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			},
- 		},
- 	.chan_table_elements = 1,
-@@ -1815,7 +1839,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_CALIBSCALE) |
- 				BIT(IIO_CHAN_INFO_CALIBBIAS),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			}, {
- 			.type = IIO_INTENSITY,
- 			.indexed = 1,
-@@ -1827,7 +1852,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
- 			.channel = 0,
- 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_CALIBSCALE),
--			.event_mask = TSL2X7X_EVENT_MASK
-+			.event_spec = tsl2x7x_events,
-+			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
- 			},
- 		},
- 	.chan_table_elements = 4,
+ #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
+-		/*
+-		 * simple event - triggered when value rises above
+-		 * a threshold
+-		 */
+-		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH,
+-					 IIO_EV_DIR_RISING),
++		.event_spec = &iio_dummy_event,
++		.num_event_specs = 1,
+ #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+ 	},
+ 	/* Differential ADC channel in_voltage1-voltage2_raw etc*/
+@@ -360,10 +370,10 @@ static const struct iio_info iio_dummy_info = {
+ 	.read_raw = &iio_dummy_read_raw,
+ 	.write_raw = &iio_dummy_write_raw,
+ #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
+-	.read_event_config = &iio_simple_dummy_read_event_config,
+-	.write_event_config = &iio_simple_dummy_write_event_config,
+-	.read_event_value = &iio_simple_dummy_read_event_value,
+-	.write_event_value = &iio_simple_dummy_write_event_value,
++	.read_event_config_new = &iio_simple_dummy_read_event_config,
++	.write_event_config_new = &iio_simple_dummy_write_event_config,
++	.read_event_value_new = &iio_simple_dummy_read_event_value,
++	.write_event_value_new = &iio_simple_dummy_write_event_value,
+ #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+ };
+ 
+diff --git a/drivers/staging/iio/iio_simple_dummy.h b/drivers/staging/iio/iio_simple_dummy.h
+index c9e8702..341a2af 100644
+--- a/drivers/staging/iio/iio_simple_dummy.h
++++ b/drivers/staging/iio/iio_simple_dummy.h
+@@ -45,19 +45,27 @@ struct iio_dummy_state {
+ struct iio_dev;
+ 
+ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
+-				       u64 event_code);
++				       const struct iio_chan_spec *chan,
++				       enum iio_event_type type,
++				       enum iio_event_direction dir);
+ 
+ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+-					u64 event_code,
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir,
+ 					int state);
+ 
+ int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
+-				      u64 event_code,
+-				      int *val);
++				      const struct iio_chan_spec *chan,
++				      enum iio_event_type type,
++				      enum iio_event_direction dir,
++				      enum iio_event_info info, int *val);
+ 
+ int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
+-				       u64 event_code,
+-				       int val);
++				       const struct iio_chan_spec *chan,
++				       enum iio_event_type type,
++				       enum iio_event_direction dir,
++				       enum iio_event_info info, int val);
+ 
+ int iio_simple_dummy_events_register(struct iio_dev *indio_dev);
+ int iio_simple_dummy_events_unregister(struct iio_dev *indio_dev);
+diff --git a/drivers/staging/iio/iio_simple_dummy_events.c b/drivers/staging/iio/iio_simple_dummy_events.c
+index 317b774..7448e483 100644
+--- a/drivers/staging/iio/iio_simple_dummy_events.c
++++ b/drivers/staging/iio/iio_simple_dummy_events.c
+@@ -23,13 +23,17 @@
+ /**
+  * iio_simple_dummy_read_event_config() - is event enabled?
+  * @indio_dev: the device instance data
+- * @event_code: event code of the event being queried
++ * @chan: channel for the event whose state is being queried
++ * @type: type of the event whose state is being queried
++ * @dir: direction of the vent whose state is being queried
+  *
+  * This function would normally query the relevant registers or a cache to
+  * discover if the event generation is enabled on the device.
+  */
+ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
+-				       u64 event_code)
++				       const struct iio_chan_spec *chan,
++				       enum iio_event_type type,
++				       enum iio_event_direction dir)
+ {
+ 	struct iio_dummy_state *st = iio_priv(indio_dev);
+ 
+@@ -39,7 +43,9 @@ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
+ /**
+  * iio_simple_dummy_write_event_config() - set whether event is enabled
+  * @indio_dev: the device instance data
+- * @event_code: event code of event being enabled/disabled
++ * @chan: channel for the event whose state is being set
++ * @type: type of the event whose state is being set
++ * @dir: direction of the vent whose state is being set
+  * @state: whether to enable or disable the device.
+  *
+  * This function would normally set the relevant registers on the devices
+@@ -47,7 +53,9 @@ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
+  * value.
+  */
+ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+-					u64 event_code,
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir,
+ 					int state)
+ {
+ 	struct iio_dummy_state *st = iio_priv(indio_dev);
+@@ -56,12 +64,11 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+ 	 *  Deliberately over the top code splitting to illustrate
+ 	 * how this is done when multiple events exist.
+ 	 */
+-	switch (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code)) {
++	switch (chan->type) {
+ 	case IIO_VOLTAGE:
+-		switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++		switch (type) {
+ 		case IIO_EV_TYPE_THRESH:
+-			if (IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			    IIO_EV_DIR_RISING)
++			if (dir == IIO_EV_DIR_RISING)
+ 				st->event_en = state;
+ 			else
+ 				return -EINVAL;
+@@ -79,7 +86,10 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+ /**
+  * iio_simple_dummy_read_event_value() - get value associated with event
+  * @indio_dev: device instance specific data
+- * @event_code: event code for the event whose value is being queried
++ * @chan: channel for the event whose value is being read
++ * @type: type of the event whose value is being read
++ * @dir: direction of the vent whose value is being read
++ * @info: info type of the event whose value is being read
+  * @val: value for the event code.
+  *
+  * Many devices provide a large set of events of which only a subset may
+@@ -89,7 +99,10 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+  * the enabled event is changed.
+  */
+ int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
+-				      u64 event_code,
++				      const struct iio_chan_spec *chan,
++				      enum iio_event_type type,
++				      enum iio_event_direction dir,
++					  enum iio_event_info info,
+ 				      int *val)
+ {
+ 	struct iio_dummy_state *st = iio_priv(indio_dev);
+@@ -102,11 +115,17 @@ int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
+ /**
+  * iio_simple_dummy_write_event_value() - set value associate with event
+  * @indio_dev: device instance specific data
+- * @event_code: event code for the event whose value is being set
++ * @chan: channel for the event whose value is being set
++ * @type: type of the event whose value is being set
++ * @dir: direction of the vent whose value is being set
++ * @info: info type of the event whose value is being set
+  * @val: the value to be set.
+  */
+ int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
+-				       u64 event_code,
++				       const struct iio_chan_spec *chan,
++				       enum iio_event_type type,
++				       enum iio_event_direction dir,
++					   enum iio_event_info info,
+ 				       int val)
+ {
+ 	struct iio_dummy_state *st = iio_priv(indio_dev);
 -- 
 1.8.0
