@@ -3,134 +3,114 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 16/18] staging:iio:ad799x: Simplify threshold register look-up
-Date: Thu, 26 Sep 2013 14:58:35 +0200
-Message-Id: <1380200317-19355-16-git-send-email-lars@metafoo.de>
+Subject: [PATCH 15/18] iio: Add a hysteresis event info attribute
+Date: Thu, 26 Sep 2013 14:58:34 +0200
+Message-Id: <1380200317-19355-15-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 References: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Given a channel number the corresponding threshold and hysteresis registers can
-easily be calculated. No need to use a look-up table.
+For some devices it is possible to configure a hysteresis for threshold (or
+similar) events. This patch adds a new hysteresis event info type which allows
+for easy creation and read/write handling of the sysfs attribute.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad799x.h      | 16 ++++------------
- drivers/staging/iio/adc/ad799x_core.c | 34 ++++++++++++++--------------------
- 2 files changed, 18 insertions(+), 32 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 56 +++++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-event.c        |  1 +
+ include/linux/iio/types.h               |  1 +
+ 3 files changed, 58 insertions(+)
 
-diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
-index b51680c..a591aa6 100644
---- a/drivers/staging/iio/adc/ad799x.h
-+++ b/drivers/staging/iio/adc/ad799x.h
-@@ -36,18 +36,10 @@
- #define AD7998_ALERT_STAT_REG			0x1
- #define AD7998_CONF_REG				0x2
- #define AD7998_CYCLE_TMR_REG			0x3
--#define AD7998_DATALOW_CH1_REG			0x4
--#define AD7998_DATAHIGH_CH1_REG			0x5
--#define AD7998_HYST_CH1_REG			0x6
--#define AD7998_DATALOW_CH2_REG			0x7
--#define AD7998_DATAHIGH_CH2_REG			0x8
--#define AD7998_HYST_CH2_REG			0x9
--#define AD7998_DATALOW_CH3_REG			0xA
--#define AD7998_DATAHIGH_CH3_REG			0xB
--#define AD7998_HYST_CH3_REG			0xC
--#define AD7998_DATALOW_CH4_REG			0xD
--#define AD7998_DATAHIGH_CH4_REG			0xE
--#define AD7998_HYST_CH4_REG			0xF
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index ab1047c..bdc6f3b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -537,6 +537,62 @@ Description:
+ 		value is in raw device units or in processed units (as _raw
+ 		and _input do on sysfs direct channel read attributes).
+ 
++What:		/sys/.../events/in_accel_x_thresh_rising_hysteresis
++What:		/sys/.../events/in_accel_x_thresh_falling_hysteresis
++What:		/sys/.../events/in_accel_x_thresh_hysteresis
++What:		/sys/.../events/in_accel_y_thresh_rising_hysteresis
++What:		/sys/.../events/in_accel_y_thresh_falling_hysteresis
++What:		/sys/.../events/in_accel_y_thresh_hysteresis
++What:		/sys/.../events/in_accel_z_thresh_rising_hysteresis
++What:		/sys/.../events/in_accel_z_thresh_falling_hysteresis
++What:		/sys/.../events/in_accel_z_thresh_hysteresis
++What:		/sys/.../events/in_anglvel_x_thresh_rising_hysteresis
++What:		/sys/.../events/in_anglvel_x_thresh_falling_hysteresis
++What:		/sys/.../events/in_anglvel_x_thresh_hysteresis
++What:		/sys/.../events/in_anglvel_y_thresh_rising_hysteresis
++What:		/sys/.../events/in_anglvel_y_thresh_falling_hysteresis
++What:		/sys/.../events/in_anglvel_y_thresh_hysteresis
++What:		/sys/.../events/in_anglvel_z_thresh_rising_hysteresis
++What:		/sys/.../events/in_anglvel_z_thresh_falling_hysteresis
++What:		/sys/.../events/in_anglvel_z_thresh_hysteresis
++What:		/sys/.../events/in_magn_x_thresh_rising_hysteresis
++What:		/sys/.../events/in_magn_x_thresh_falling_hysteresis
++What:		/sys/.../events/in_magn_x_thresh_hysteresis
++What:		/sys/.../events/in_magn_y_thresh_rising_hysteresis
++What:		/sys/.../events/in_magn_y_thresh_falling_hysteresis
++What:		/sys/.../events/in_magn_y_thresh_hysteresis
++What:		/sys/.../events/in_magn_z_thresh_rising_hysteresis
++What:		/sys/.../events/in_magn_z_thresh_falling_hysteresis
++What:		/sys/.../events/in_magn_z_thresh_hysteresis
++What:		/sys/.../events/in_voltageY_thresh_rising_hysteresis
++What:		/sys/.../events/in_voltageY_thresh_falling_hysteresis
++What:		/sys/.../events/in_voltageY_thresh_hysteresis
++What:		/sys/.../events/in_tempY_thresh_rising_hysteresis
++What:		/sys/.../events/in_tempY_thresh_falling_hysteresis
++What:		/sys/.../events/in_tempY_thresh_hysteresis
++What:		/sys/.../events/in_illuminance0_thresh_falling_hysteresis
++what:		/sys/.../events/in_illuminance0_thresh_rising_hysteresis
++what:		/sys/.../events/in_illuminance0_thresh_hysteresis
++what:		/sys/.../events/in_proximity0_thresh_falling_hysteresis
++what:		/sys/.../events/in_proximity0_thresh_rising_hysteresis
++what:		/sys/.../events/in_proximity0_thresh_hysteresis
++KernelVersion:	3.13
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the hysteresis of threshold that the device is comparing
++		against for the events enabled by
++		<type>Y[_name]_thresh[_(rising|falling)]_hysteresis.
++		If separate attributes exist for the two directions, but
++		direction is not specified for this attribute, then a single
++		hysteresis value applies to both directions.
++		For falling events the hysteresis is added to the _value attribute for
++		this event to get the upper threshold for when the event goes back to
++		normal, for rising events the hysteresis is subtracted from the _value
++		attribute. E.g. if in_voltage0_raw_thresh_rising_value is set to 1200
++		and in_voltage0_raw_thresh_rising_hysteresis is set to 50. The event
++		will get activated once in_voltage0_raw goes above 1200 and will become
++		deactived again once the value falls below 1150.
 +
-+#define AD7998_DATALOW_REG(x)			((x) * 3 + 0x4)
-+#define AD7998_DATAHIGH_REG(x)			((x) * 3 + 0x5)
-+#define AD7998_HYST_REG(x)			((x) * 3 + 0x6)
+ What:		/sys/.../events/in_accel_x_raw_roc_rising_value
+ What:		/sys/.../events/in_accel_x_raw_roc_falling_value
+ What:		/sys/.../events/in_accel_y_raw_roc_rising_value
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index f4fa690..a3bf5bb 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -185,6 +185,7 @@ static const char * const iio_ev_dir_text[] = {
+ static const char * const iio_ev_info_text[] = {
+ 	[IIO_EV_INFO_ENABLE] = "en",
+ 	[IIO_EV_INFO_VALUE] = "value",
++	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
+ };
  
- #define AD7998_CYC_MASK				0x7
- #define AD7998_CYC_DIS				0x0
-diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-index 73f7604..24e0749 100644
---- a/drivers/staging/iio/adc/ad799x_core.c
-+++ b/drivers/staging/iio/adc/ad799x_core.c
-@@ -261,12 +261,14 @@ static int ad799x_read_event_config(struct iio_dev *indio_dev,
- 	return 1;
- }
+ static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 18339ef..4ac928e 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -65,6 +65,7 @@ enum iio_event_type {
+ enum iio_event_info {
+ 	IIO_EV_INFO_ENABLE,
+ 	IIO_EV_INFO_VALUE,
++	IIO_EV_INFO_HYSTERESIS,
+ };
  
--static const u8 ad799x_threshold_addresses[][2] = {
--	{ AD7998_DATALOW_CH1_REG, AD7998_DATAHIGH_CH1_REG },
--	{ AD7998_DATALOW_CH2_REG, AD7998_DATAHIGH_CH2_REG },
--	{ AD7998_DATALOW_CH3_REG, AD7998_DATAHIGH_CH3_REG },
--	{ AD7998_DATALOW_CH4_REG, AD7998_DATAHIGH_CH4_REG },
--};
-+static int ad799x_threshold_reg(const struct iio_chan_spec *chan,
-+					enum iio_event_direction dir)
-+{
-+	if (dir == IIO_EV_DIR_FALLING)
-+		return AD7998_DATALOW_REG(chan->channel);
-+	else
-+		return AD7998_DATAHIGH_REG(chan->channel);
-+}
- 
- static int ad799x_write_event_value(struct iio_dev *indio_dev,
- 				    const struct iio_chan_spec *chan,
-@@ -277,13 +279,9 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ad799x_state *st = iio_priv(indio_dev);
--	int direction = dir == IIO_EV_DIR_FALLING;
--	int number = chan->channel;
- 
- 	mutex_lock(&indio_dev->mlock);
--	ret = ad799x_i2c_write16(st,
--				 ad799x_threshold_addresses[number][direction],
--				 val);
-+	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir), val);
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret;
-@@ -298,14 +296,10 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ad799x_state *st = iio_priv(indio_dev);
--	int direction = dir == IIO_EV_DIR_FALLING;
--	int number = chan->channel;
- 	u16 valin;
- 
- 	mutex_lock(&indio_dev->mlock);
--	ret = ad799x_i2c_read16(st,
--				ad799x_threshold_addresses[number][direction],
--				&valin);
-+	ret = ad799x_i2c_read16(st, ad799x_threshold_reg(chan, dir), &valin);
- 	mutex_unlock(&indio_dev->mlock);
- 	if (ret < 0)
- 		return ret;
-@@ -393,25 +387,25 @@ static IIO_DEVICE_ATTR(in_voltage0_thresh_both_hyst_raw,
- 		       S_IRUGO | S_IWUSR,
- 		       ad799x_read_channel_config,
- 		       ad799x_write_channel_config,
--		       AD7998_HYST_CH1_REG);
-+		       AD7998_HYST_REG(0));
- 
- static IIO_DEVICE_ATTR(in_voltage1_thresh_both_hyst_raw,
- 		       S_IRUGO | S_IWUSR,
- 		       ad799x_read_channel_config,
- 		       ad799x_write_channel_config,
--		       AD7998_HYST_CH2_REG);
-+		       AD7998_HYST_REG(1));
- 
- static IIO_DEVICE_ATTR(in_voltage2_thresh_both_hyst_raw,
- 		       S_IRUGO | S_IWUSR,
- 		       ad799x_read_channel_config,
- 		       ad799x_write_channel_config,
--		       AD7998_HYST_CH3_REG);
-+		       AD7998_HYST_REG(2));
- 
- static IIO_DEVICE_ATTR(in_voltage3_thresh_both_hyst_raw,
- 		       S_IRUGO | S_IWUSR,
- 		       ad799x_read_channel_config,
- 		       ad799x_write_channel_config,
--		       AD7998_HYST_CH4_REG);
-+		       AD7998_HYST_REG(3));
- 
- static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
- 			      ad799x_read_frequency,
+ enum iio_event_direction {
 -- 
 1.8.0
