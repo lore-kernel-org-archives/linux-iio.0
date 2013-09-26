@@ -1,223 +1,350 @@
-Return-Path: <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-234.synserver.de ([212.40.185.234]:1285 "EHLO
+	smtp-out-232.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1757023Ab3IZM5N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Sep 2013 08:57:13 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 12/18] staging:iio:simple_dummy: Switch to new event config interface
-Date: Thu, 26 Sep 2013 14:58:31 +0200
-Message-Id: <1380200317-19355-12-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 11/18] staging:iio:ad7150: Switch to new event config interface
+Date: Thu, 26 Sep 2013 14:58:30 +0200
+Message-Id: <1380200317-19355-11-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 References: <1380200317-19355-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Switch the simple_dummy driver to the new IIO event config interface as the old
-one is going to be removed.
+Switch the ad7150 driver to the new IIO event config interface as the old one
+is going to be removed.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/iio_simple_dummy.c        | 30 ++++++++++++-------
- drivers/staging/iio/iio_simple_dummy.h        | 20 +++++++++----
- drivers/staging/iio/iio_simple_dummy_events.c | 43 +++++++++++++++++++--------
- 3 files changed, 65 insertions(+), 28 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 150 ++++++++++++++++++++++++---------------
+ 1 file changed, 94 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index 141ec61..cdb8898 100644
---- a/drivers/staging/iio/iio_simple_dummy.c
-+++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -57,6 +57,20 @@ static const struct iio_dummy_accel_calibscale dummy_scales[] = {
- 	{ 733, 13, 0x9 }, /* 733.000013 */
- };
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index f4a0341..ec2cf6e 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -123,14 +123,14 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
  
-+#ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
+-static int ad7150_read_event_config(struct iio_dev *indio_dev, u64 event_code)
++static int ad7150_read_event_config(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, enum iio_event_type type,
++	enum iio_event_direction dir)
+ {
+ 	int ret;
+ 	u8 threshtype;
+ 	bool adaptive;
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			IIO_EV_DIR_RISING);
+ 
+ 	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
+ 	if (ret < 0)
+@@ -139,42 +139,47 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev, u64 event_code)
+ 	threshtype = (ret >> 5) & 0x03;
+ 	adaptive = !!(ret & 0x80);
+ 
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+-		if (rising)
++		if (dir == IIO_EV_DIR_RISING)
+ 			return adaptive && (threshtype == 0x1);
+ 		else
+ 			return adaptive && (threshtype == 0x0);
+ 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+-		if (rising)
++		if (dir == IIO_EV_DIR_RISING)
+ 			return adaptive && (threshtype == 0x3);
+ 		else
+ 			return adaptive && (threshtype == 0x2);
+ 
+ 	case IIO_EV_TYPE_THRESH:
+-		if (rising)
++		if (dir == IIO_EV_DIR_RISING)
+ 			return !adaptive && (threshtype == 0x1);
+ 		else
+ 			return !adaptive && (threshtype == 0x0);
++	default:
++		break;
+ 	}
+ 	return -EINVAL;
+ }
+ 
+ /* lock should be held */
+-static int ad7150_write_event_params(struct iio_dev *indio_dev, u64 event_code)
++static int ad7150_write_event_params(struct iio_dev *indio_dev,
++	 unsigned int chan, enum iio_event_type type,
++	 enum iio_event_direction dir)
+ {
+ 	int ret;
+ 	u16 value;
+ 	u8 sens, timeout;
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+-	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			IIO_EV_DIR_RISING);
++	int rising = (dir == IIO_EV_DIR_RISING);
++	u64 event_code;
 +
-+/*
-+ * simple event - triggered when value rises above
-+ * a threshold
-+ */
-+static const struct iio_event_spec iio_dummy_event = {
-+	.type = IIO_EV_TYPE_THRESH,
-+	.dir = IIO_EV_DIR_RISING,
-+	.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
++	event_code = IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE, chan, type, dir);
+ 
+ 	if (event_code != chip->current_event)
+ 		return 0;
+ 
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++	switch (type) {
+ 		/* Note completely different from the adaptive versions */
+ 	case IIO_EV_TYPE_THRESH:
+ 		value = chip->threshold[rising][chan];
+@@ -211,18 +216,20 @@ static int ad7150_write_event_params(struct iio_dev *indio_dev, u64 event_code)
+ }
+ 
+ static int ad7150_write_event_config(struct iio_dev *indio_dev,
+-				     u64 event_code, int state)
++	const struct iio_chan_spec *chan, enum iio_event_type type,
++	enum iio_event_direction dir, int state)
+ {
+ 	u8 thresh_type, cfg, adaptive;
+ 	int ret;
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			IIO_EV_DIR_RISING);
++	int rising = (dir == IIO_EV_DIR_RISING);
++	u64 event_code;
+ 
+ 	/* Something must always be turned on */
+ 	if (state == 0)
+ 		return -EINVAL;
+ 
++	event_code = IIO_UNMOD_EVENT_CODE(chan->type, chan->channel, type, dir);
+ 	if (event_code == chip->current_event)
+ 		return 0;
+ 	mutex_lock(&chip->state_lock);
+@@ -232,7 +239,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	cfg = ret & ~((0x03 << 5) | (0x1 << 7));
+ 
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+ 		adaptive = 1;
+ 		if (rising)
+@@ -268,7 +275,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
+ 	chip->current_event = event_code;
+ 
+ 	/* update control attributes */
+-	ret = ad7150_write_event_params(indio_dev, event_code);
++	ret = ad7150_write_event_params(indio_dev, chan->channel, type, dir);
+ error_ret:
+ 	mutex_unlock(&chip->state_lock);
+ 
+@@ -276,26 +283,27 @@ error_ret:
+ }
+ 
+ static int ad7150_read_event_value(struct iio_dev *indio_dev,
+-				   u64 event_code,
++				   const struct iio_chan_spec *chan,
++				   enum iio_event_type type,
++				   enum iio_event_direction dir,
++				   enum iio_event_info info,
+ 				   int *val)
+ {
+-	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			IIO_EV_DIR_RISING);
++	int rising = (dir == IIO_EV_DIR_RISING);
+ 
+ 	/* Complex register sharing going on here */
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+-		*val = chip->mag_sensitivity[rising][chan];
++		*val = chip->mag_sensitivity[rising][chan->channel];
+ 		return 0;
+ 
+ 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+-		*val = chip->thresh_sensitivity[rising][chan];
++		*val = chip->thresh_sensitivity[rising][chan->channel];
+ 		return 0;
+ 
+ 	case IIO_EV_TYPE_THRESH:
+-		*val = chip->threshold[rising][chan];
++		*val = chip->threshold[rising][chan->channel];
+ 		return 0;
+ 
+ 	default:
+@@ -304,25 +312,26 @@ static int ad7150_read_event_value(struct iio_dev *indio_dev,
+ }
+ 
+ static int ad7150_write_event_value(struct iio_dev *indio_dev,
+-				   u64 event_code,
++				   const struct iio_chan_spec *chan,
++				   enum iio_event_type type,
++				   enum iio_event_direction dir,
++				   enum iio_event_info info,
+ 				   int val)
+ {
+ 	int ret;
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+-	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			IIO_EV_DIR_RISING);
++	int rising = (dir == IIO_EV_DIR_RISING);
+ 
+ 	mutex_lock(&chip->state_lock);
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
++	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+-		chip->mag_sensitivity[rising][chan] = val;
++		chip->mag_sensitivity[rising][chan->channel] = val;
+ 		break;
+ 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+-		chip->thresh_sensitivity[rising][chan] = val;
++		chip->thresh_sensitivity[rising][chan->channel] = val;
+ 		break;
+ 	case IIO_EV_TYPE_THRESH:
+-		chip->threshold[rising][chan] = val;
++		chip->threshold[rising][chan->channel] = val;
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -330,7 +339,7 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	/* write back if active */
+-	ret = ad7150_write_event_params(indio_dev, event_code);
++	ret = ad7150_write_event_params(indio_dev, chan->channel, type, dir);
+ 
+ error_ret:
+ 	mutex_unlock(&chip->state_lock);
+@@ -374,17 +383,22 @@ static ssize_t ad7150_store_timeout(struct device *dev,
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
+-	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address) ==
+-			IIO_EV_DIR_RISING);
++	enum iio_event_direction dir;
++	enum iio_event_type type;
++	int rising;
+ 	u8 data;
+ 	int ret;
+ 
++	type = IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address);
++	dir = IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address);
++	rising = (dir == IIO_EV_DIR_RISING);
++
+ 	ret = kstrtou8(buf, 10, &data);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	mutex_lock(&chip->state_lock);
+-	switch (IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address)) {
++	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+ 		chip->mag_timeout[rising][chan] = data;
+ 		break;
+@@ -396,7 +410,7 @@ static ssize_t ad7150_store_timeout(struct device *dev,
+ 		goto error_ret;
+ 	}
+ 
+-	ret = ad7150_write_event_params(indio_dev, this_attr->address);
++	ret = ad7150_write_event_params(indio_dev, chan, type, dir);
+ error_ret:
+ 	mutex_unlock(&chip->state_lock);
+ 
+@@ -424,6 +438,40 @@ static AD7150_TIMEOUT(0, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
+ static AD7150_TIMEOUT(1, thresh_adaptive, rising, THRESH_ADAPTIVE, RISING);
+ static AD7150_TIMEOUT(1, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
+ 
++static const struct iio_event_spec ad7150_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	}, {
++		.type = IIO_EV_TYPE_MAG_ADAPTIVE,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	}, {
++		.type = IIO_EV_TYPE_MAG_ADAPTIVE,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++			BIT(IIO_EV_INFO_ENABLE),
++	},
 +};
 +
-+#endif
-+
- /*
-  * iio_dummy_channels - Description of available channels
-  *
-@@ -104,12 +118,8 @@ static const struct iio_chan_spec iio_dummy_channels[] = {
- 			.shift = 0, /* zero shift */
- 		},
- #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
--		/*
--		 * simple event - triggered when value rises above
--		 * a threshold
--		 */
--		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH,
--					 IIO_EV_DIR_RISING),
-+		.event_spec = &iio_dummy_event,
-+		.num_event_specs = 1,
- #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
+ static const struct iio_chan_spec ad7150_channels[] = {
+ 	{
+ 		.type = IIO_CAPACITANCE,
+@@ -431,26 +479,16 @@ static const struct iio_chan_spec ad7150_channels[] = {
+ 		.channel = 0,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
+-		.event_mask =
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_FALLING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_FALLING)
++		.event_spec = ad7150_events,
++		.num_event_specs = ARRAY_SIZE(ad7150_events),
+ 	}, {
+ 		.type = IIO_CAPACITANCE,
+ 		.indexed = 1,
+ 		.channel = 1,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
+-		.event_mask =
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_FALLING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_RISING) |
+-		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_FALLING)
++		.event_spec = ad7150_events,
++		.num_event_specs = ARRAY_SIZE(ad7150_events),
  	},
- 	/* Differential ADC channel in_voltage1-voltage2_raw etc*/
-@@ -360,10 +370,10 @@ static const struct iio_info iio_dummy_info = {
- 	.read_raw = &iio_dummy_read_raw,
- 	.write_raw = &iio_dummy_write_raw,
- #ifdef CONFIG_IIO_SIMPLE_DUMMY_EVENTS
--	.read_event_config = &iio_simple_dummy_read_event_config,
--	.write_event_config = &iio_simple_dummy_write_event_config,
--	.read_event_value = &iio_simple_dummy_read_event_value,
--	.write_event_value = &iio_simple_dummy_write_event_value,
-+	.read_event_config_new = &iio_simple_dummy_read_event_config,
-+	.write_event_config_new = &iio_simple_dummy_write_event_config,
-+	.read_event_value_new = &iio_simple_dummy_read_event_value,
-+	.write_event_value_new = &iio_simple_dummy_write_event_value,
- #endif /* CONFIG_IIO_SIMPLE_DUMMY_EVENTS */
  };
  
-diff --git a/drivers/staging/iio/iio_simple_dummy.h b/drivers/staging/iio/iio_simple_dummy.h
-index c9e8702..341a2af 100644
---- a/drivers/staging/iio/iio_simple_dummy.h
-+++ b/drivers/staging/iio/iio_simple_dummy.h
-@@ -45,19 +45,27 @@ struct iio_dummy_state {
- struct iio_dev;
+@@ -541,10 +579,10 @@ static const struct iio_info ad7150_info = {
+ 	.event_attrs = &ad7150_event_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = &ad7150_read_raw,
+-	.read_event_config = &ad7150_read_event_config,
+-	.write_event_config = &ad7150_write_event_config,
+-	.read_event_value = &ad7150_read_event_value,
+-	.write_event_value = &ad7150_write_event_value,
++	.read_event_config_new = &ad7150_read_event_config,
++	.write_event_config_new = &ad7150_write_event_config,
++	.read_event_value_new = &ad7150_read_event_value,
++	.write_event_value_new = &ad7150_write_event_value,
+ };
  
- int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
--				       u64 event_code);
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir);
- 
- int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
--					u64 event_code,
-+					const struct iio_chan_spec *chan,
-+					enum iio_event_type type,
-+					enum iio_event_direction dir,
- 					int state);
- 
- int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
--				      u64 event_code,
--				      int *val);
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir,
-+				      enum iio_event_info info, int *val);
- 
- int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
--				       u64 event_code,
--				       int val);
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir,
-+				       enum iio_event_info info, int val);
- 
- int iio_simple_dummy_events_register(struct iio_dev *indio_dev);
- int iio_simple_dummy_events_unregister(struct iio_dev *indio_dev);
-diff --git a/drivers/staging/iio/iio_simple_dummy_events.c b/drivers/staging/iio/iio_simple_dummy_events.c
-index 317b774..7448e483 100644
---- a/drivers/staging/iio/iio_simple_dummy_events.c
-+++ b/drivers/staging/iio/iio_simple_dummy_events.c
-@@ -23,13 +23,17 @@
- /**
-  * iio_simple_dummy_read_event_config() - is event enabled?
-  * @indio_dev: the device instance data
-- * @event_code: event code of the event being queried
-+ * @chan: channel for the event whose state is being queried
-+ * @type: type of the event whose state is being queried
-+ * @dir: direction of the vent whose state is being queried
-  *
-  * This function would normally query the relevant registers or a cache to
-  * discover if the event generation is enabled on the device.
-  */
- int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
--				       u64 event_code)
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir)
- {
- 	struct iio_dummy_state *st = iio_priv(indio_dev);
- 
-@@ -39,7 +43,9 @@ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
- /**
-  * iio_simple_dummy_write_event_config() - set whether event is enabled
-  * @indio_dev: the device instance data
-- * @event_code: event code of event being enabled/disabled
-+ * @chan: channel for the event whose state is being set
-+ * @type: type of the event whose state is being set
-+ * @dir: direction of the vent whose state is being set
-  * @state: whether to enable or disable the device.
-  *
-  * This function would normally set the relevant registers on the devices
-@@ -47,7 +53,9 @@ int iio_simple_dummy_read_event_config(struct iio_dev *indio_dev,
-  * value.
-  */
- int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
--					u64 event_code,
-+					const struct iio_chan_spec *chan,
-+					enum iio_event_type type,
-+					enum iio_event_direction dir,
- 					int state)
- {
- 	struct iio_dummy_state *st = iio_priv(indio_dev);
-@@ -56,12 +64,11 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
- 	 *  Deliberately over the top code splitting to illustrate
- 	 * how this is done when multiple events exist.
- 	 */
--	switch (IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(event_code)) {
-+	switch (chan->type) {
- 	case IIO_VOLTAGE:
--		switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+		switch (type) {
- 		case IIO_EV_TYPE_THRESH:
--			if (IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			    IIO_EV_DIR_RISING)
-+			if (dir == IIO_EV_DIR_RISING)
- 				st->event_en = state;
- 			else
- 				return -EINVAL;
-@@ -79,7 +86,10 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
- /**
-  * iio_simple_dummy_read_event_value() - get value associated with event
-  * @indio_dev: device instance specific data
-- * @event_code: event code for the event whose value is being queried
-+ * @chan: channel for the event whose value is being read
-+ * @type: type of the event whose value is being read
-+ * @dir: direction of the vent whose value is being read
-+ * @info: info type of the event whose value is being read
-  * @val: value for the event code.
-  *
-  * Many devices provide a large set of events of which only a subset may
-@@ -89,7 +99,10 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
-  * the enabled event is changed.
-  */
- int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
--				      u64 event_code,
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir,
-+					  enum iio_event_info info,
- 				      int *val)
- {
- 	struct iio_dummy_state *st = iio_priv(indio_dev);
-@@ -102,11 +115,17 @@ int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
- /**
-  * iio_simple_dummy_write_event_value() - set value associate with event
-  * @indio_dev: device instance specific data
-- * @event_code: event code for the event whose value is being set
-+ * @chan: channel for the event whose value is being set
-+ * @type: type of the event whose value is being set
-+ * @dir: direction of the vent whose value is being set
-+ * @info: info type of the event whose value is being set
-  * @val: the value to be set.
-  */
- int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
--				       u64 event_code,
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir,
-+					   enum iio_event_info info,
- 				       int val)
- {
- 	struct iio_dummy_state *st = iio_priv(indio_dev);
+ /*
 -- 
 1.8.0
+
