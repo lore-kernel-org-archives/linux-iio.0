@@ -1,268 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-234.synserver.de ([212.40.185.234]:1285 "EHLO
-	smtp-out-232.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1757023Ab3IZM5N (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Sep 2013 08:57:13 -0400
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 11/18] staging:iio:ad7150: Switch to new event config interface
-Date: Thu, 26 Sep 2013 14:58:30 +0200
-Message-Id: <1380200317-19355-11-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 10/18] staging:iio:ad799x: Switch to new event config interface
+Date: Thu, 26 Sep 2013 14:58:29 +0200
+Message-Id: <1380200317-19355-10-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 References: <1380200317-19355-1-git-send-email-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Switch the ad7150 driver to the new IIO event config interface as the old one
+Switch the ad799x driver to the new IIO event config interface as the old one
 is going to be removed.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/cdc/ad7150.c | 150 ++++++++++++++++++++++++---------------
- 1 file changed, 94 insertions(+), 56 deletions(-)
+ drivers/staging/iio/adc/ad799x_core.c | 139 ++++++++++++++++++++--------------
+ 1 file changed, 82 insertions(+), 57 deletions(-)
 
-diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index f4a0341..ec2cf6e 100644
---- a/drivers/staging/iio/cdc/ad7150.c
-+++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -123,14 +123,14 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
- 	}
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 3f5142b..2b51cb4 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -254,7 +254,9 @@ error_ret_mutex:
  }
  
--static int ad7150_read_event_config(struct iio_dev *indio_dev, u64 event_code)
-+static int ad7150_read_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir)
+ static int ad799x_read_event_config(struct iio_dev *indio_dev,
+-				    u64 event_code)
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
+ {
+ 	return 1;
+ }
+@@ -267,14 +269,16 @@ static const u8 ad799x_threshold_addresses[][2] = {
+ };
+ 
+ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+-				    u64 event_code,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir,
++					enum iio_event_info info,
+ 				    int val)
  {
  	int ret;
- 	u8 threshtype;
- 	bool adaptive;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			IIO_EV_DIR_RISING);
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	int direction = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			   IIO_EV_DIR_FALLING);
+-	int number = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
++	int direction = dir == IIO_EV_DIR_FALLING;
++	int number = chan->channel;
  
- 	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
- 	if (ret < 0)
-@@ -139,42 +139,47 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev, u64 event_code)
- 	threshtype = (ret >> 5) & 0x03;
- 	adaptive = !!(ret & 0x80);
- 
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
--		if (rising)
-+		if (dir == IIO_EV_DIR_RISING)
- 			return adaptive && (threshtype == 0x1);
- 		else
- 			return adaptive && (threshtype == 0x0);
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		if (rising)
-+		if (dir == IIO_EV_DIR_RISING)
- 			return adaptive && (threshtype == 0x3);
- 		else
- 			return adaptive && (threshtype == 0x2);
- 
- 	case IIO_EV_TYPE_THRESH:
--		if (rising)
-+		if (dir == IIO_EV_DIR_RISING)
- 			return !adaptive && (threshtype == 0x1);
- 		else
- 			return !adaptive && (threshtype == 0x0);
-+	default:
-+		break;
- 	}
- 	return -EINVAL;
+ 	mutex_lock(&indio_dev->mlock);
+ 	ret = ad799x_i2c_write16(st,
+@@ -286,14 +290,16 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
  }
  
- /* lock should be held */
--static int ad7150_write_event_params(struct iio_dev *indio_dev, u64 event_code)
-+static int ad7150_write_event_params(struct iio_dev *indio_dev,
-+	 unsigned int chan, enum iio_event_type type,
-+	 enum iio_event_direction dir)
+ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+-				    u64 event_code,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir,
++					enum iio_event_info info,
+ 				    int *val)
  {
  	int ret;
- 	u16 value;
- 	u8 sens, timeout;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			IIO_EV_DIR_RISING);
-+	int rising = (dir == IIO_EV_DIR_RISING);
-+	u64 event_code;
-+
-+	event_code = IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE, chan, type, dir);
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	int direction = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
+-			   IIO_EV_DIR_FALLING);
+-	int number = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
++	int direction = dir == IIO_EV_DIR_FALLING;
++	int number = chan->channel;
+ 	u16 valin;
  
- 	if (event_code != chip->current_event)
- 		return 0;
+ 	mutex_lock(&indio_dev->mlock);
+@@ -448,26 +454,37 @@ static const struct iio_info ad7991_info = {
+ static const struct iio_info ad7992_info = {
+ 	.read_raw = &ad799x_read_raw,
+ 	.event_attrs = &ad7992_event_attrs_group,
+-	.read_event_config = &ad799x_read_event_config,
+-	.read_event_value = &ad799x_read_event_value,
+-	.write_event_value = &ad799x_write_event_value,
++	.read_event_config_new = &ad799x_read_event_config,
++	.read_event_value_new = &ad799x_read_event_value,
++	.write_event_value_new = &ad799x_write_event_value,
+ 	.driver_module = THIS_MODULE,
+ };
  
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+	switch (type) {
- 		/* Note completely different from the adaptive versions */
- 	case IIO_EV_TYPE_THRESH:
- 		value = chip->threshold[rising][chan];
-@@ -211,18 +216,20 @@ static int ad7150_write_event_params(struct iio_dev *indio_dev, u64 event_code)
- }
+ static const struct iio_info ad7993_4_7_8_info = {
+ 	.read_raw = &ad799x_read_raw,
+ 	.event_attrs = &ad7993_4_7_8_event_attrs_group,
+-	.read_event_config = &ad799x_read_event_config,
+-	.read_event_value = &ad799x_read_event_value,
+-	.write_event_value = &ad799x_write_event_value,
++	.read_event_config_new = &ad799x_read_event_config,
++	.read_event_value_new = &ad799x_read_event_value,
++	.write_event_value_new = &ad799x_write_event_value,
+ 	.driver_module = THIS_MODULE,
+ 	.update_scan_mode = ad7997_8_update_scan_mode,
+ };
  
- static int ad7150_write_event_config(struct iio_dev *indio_dev,
--				     u64 event_code, int state)
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, int state)
- {
- 	u8 thresh_type, cfg, adaptive;
- 	int ret;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			IIO_EV_DIR_RISING);
-+	int rising = (dir == IIO_EV_DIR_RISING);
-+	u64 event_code;
- 
- 	/* Something must always be turned on */
- 	if (state == 0)
- 		return -EINVAL;
- 
-+	event_code = IIO_UNMOD_EVENT_CODE(chan->type, chan->channel, type, dir);
- 	if (event_code == chip->current_event)
- 		return 0;
- 	mutex_lock(&chip->state_lock);
-@@ -232,7 +239,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
- 
- 	cfg = ret & ~((0x03 << 5) | (0x1 << 7));
- 
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
- 		adaptive = 1;
- 		if (rising)
-@@ -268,7 +275,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
- 	chip->current_event = event_code;
- 
- 	/* update control attributes */
--	ret = ad7150_write_event_params(indio_dev, event_code);
-+	ret = ad7150_write_event_params(indio_dev, chan->channel, type, dir);
- error_ret:
- 	mutex_unlock(&chip->state_lock);
- 
-@@ -276,26 +283,27 @@ error_ret:
- }
- 
- static int ad7150_read_event_value(struct iio_dev *indio_dev,
--				   u64 event_code,
-+				   const struct iio_chan_spec *chan,
-+				   enum iio_event_type type,
-+				   enum iio_event_direction dir,
-+				   enum iio_event_info info,
- 				   int *val)
- {
--	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			IIO_EV_DIR_RISING);
-+	int rising = (dir == IIO_EV_DIR_RISING);
- 
- 	/* Complex register sharing going on here */
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
--		*val = chip->mag_sensitivity[rising][chan];
-+		*val = chip->mag_sensitivity[rising][chan->channel];
- 		return 0;
- 
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		*val = chip->thresh_sensitivity[rising][chan];
-+		*val = chip->thresh_sensitivity[rising][chan->channel];
- 		return 0;
- 
- 	case IIO_EV_TYPE_THRESH:
--		*val = chip->threshold[rising][chan];
-+		*val = chip->threshold[rising][chan->channel];
- 		return 0;
- 
- 	default:
-@@ -304,25 +312,26 @@ static int ad7150_read_event_value(struct iio_dev *indio_dev,
- }
- 
- static int ad7150_write_event_value(struct iio_dev *indio_dev,
--				   u64 event_code,
-+				   const struct iio_chan_spec *chan,
-+				   enum iio_event_type type,
-+				   enum iio_event_direction dir,
-+				   enum iio_event_info info,
- 				   int val)
- {
- 	int ret;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(event_code);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(event_code) ==
--			IIO_EV_DIR_RISING);
-+	int rising = (dir == IIO_EV_DIR_RISING);
- 
- 	mutex_lock(&chip->state_lock);
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(event_code)) {
-+	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
--		chip->mag_sensitivity[rising][chan] = val;
-+		chip->mag_sensitivity[rising][chan->channel] = val;
- 		break;
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		chip->thresh_sensitivity[rising][chan] = val;
-+		chip->thresh_sensitivity[rising][chan->channel] = val;
- 		break;
- 	case IIO_EV_TYPE_THRESH:
--		chip->threshold[rising][chan] = val;
-+		chip->threshold[rising][chan->channel] = val;
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -330,7 +339,7 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
- 	}
- 
- 	/* write back if active */
--	ret = ad7150_write_event_params(indio_dev, event_code);
-+	ret = ad7150_write_event_params(indio_dev, chan->channel, type, dir);
- 
- error_ret:
- 	mutex_unlock(&chip->state_lock);
-@@ -374,17 +383,22 @@ static ssize_t ad7150_store_timeout(struct device *dev,
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
--	int rising = !!(IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address) ==
--			IIO_EV_DIR_RISING);
-+	enum iio_event_direction dir;
-+	enum iio_event_type type;
-+	int rising;
- 	u8 data;
- 	int ret;
- 
-+	type = IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address);
-+	dir = IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address);
-+	rising = (dir == IIO_EV_DIR_RISING);
-+
- 	ret = kstrtou8(buf, 10, &data);
- 	if (ret < 0)
- 		return ret;
- 
- 	mutex_lock(&chip->state_lock);
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address)) {
-+	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
- 		chip->mag_timeout[rising][chan] = data;
- 		break;
-@@ -396,7 +410,7 @@ static ssize_t ad7150_store_timeout(struct device *dev,
- 		goto error_ret;
- 	}
- 
--	ret = ad7150_write_event_params(indio_dev, this_attr->address);
-+	ret = ad7150_write_event_params(indio_dev, chan, type, dir);
- error_ret:
- 	mutex_unlock(&chip->state_lock);
- 
-@@ -424,6 +438,40 @@ static AD7150_TIMEOUT(0, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
- static AD7150_TIMEOUT(1, thresh_adaptive, rising, THRESH_ADAPTIVE, RISING);
- static AD7150_TIMEOUT(1, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
- 
-+static const struct iio_event_spec ad7150_events[] = {
+-#define AD799X_EV_MASK (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
+-			IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
++static const struct iio_event_spec ad799x_events[] = {
 +	{
 +		.type = IIO_EV_TYPE_THRESH,
 +		.dir = IIO_EV_DIR_RISING,
@@ -271,80 +112,162 @@ index f4a0341..ec2cf6e 100644
 +	}, {
 +		.type = IIO_EV_TYPE_THRESH,
 +		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_MAG_ADAPTIVE,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	}, {
-+		.type = IIO_EV_TYPE_MAG_ADAPTIVE,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
 +			BIT(IIO_EV_INFO_ENABLE),
 +	},
 +};
+ 
+-#define AD799X_CHANNEL(_index, _realbits, _evmask) { \
++#define _AD799X_CHANNEL(_index, _realbits, _ev_spec, _num_ev_spec) { \
+ 	.type = IIO_VOLTAGE, \
+ 	.indexed = 1, \
+ 	.channel = (_index), \
+@@ -475,16 +492,24 @@ static const struct iio_info ad7993_4_7_8_info = {
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+ 	.scan_index = (_index), \
+ 	.scan_type = IIO_ST('u', _realbits, 16, 12 - (_realbits)), \
+-	.event_mask = (_evmask), \
++	.event_spec = _ev_spec, \
++	.num_event_specs = _num_ev_spec, \
+ }
+ 
++#define AD799X_CHANNEL(_index, _realbits) \
++	_AD799X_CHANNEL(_index, _realbits, NULL, 0)
 +
- static const struct iio_chan_spec ad7150_channels[] = {
- 	{
- 		.type = IIO_CAPACITANCE,
-@@ -431,26 +479,16 @@ static const struct iio_chan_spec ad7150_channels[] = {
- 		.channel = 0,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
--		.event_mask =
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_FALLING) |
--		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_FALLING)
-+		.event_spec = ad7150_events,
-+		.num_event_specs = ARRAY_SIZE(ad7150_events),
- 	}, {
- 		.type = IIO_CAPACITANCE,
- 		.indexed = 1,
- 		.channel = 1,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
--		.event_mask =
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_THRESH_ADAPTIVE, IIO_EV_DIR_FALLING) |
--		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_RISING) |
--		IIO_EV_BIT(IIO_EV_TYPE_MAG_ADAPTIVE, IIO_EV_DIR_FALLING)
-+		.event_spec = ad7150_events,
-+		.num_event_specs = ARRAY_SIZE(ad7150_events),
++#define AD799X_CHANNEL_WITH_EVENTS(_index, _realbits) \
++	_AD799X_CHANNEL(_index, _realbits, ad799x_events, \
++		ARRAY_SIZE(ad799x_events))
++
+ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	[ad7991] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 12, 0),
+-			AD799X_CHANNEL(1, 12, 0),
+-			AD799X_CHANNEL(2, 12, 0),
+-			AD799X_CHANNEL(3, 12, 0),
++			AD799X_CHANNEL(0, 12),
++			AD799X_CHANNEL(1, 12),
++			AD799X_CHANNEL(2, 12),
++			AD799X_CHANNEL(3, 12),
+ 			IIO_CHAN_SOFT_TIMESTAMP(4),
+ 		},
+ 		.num_channels = 5,
+@@ -492,10 +517,10 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
  	},
- };
- 
-@@ -541,10 +579,10 @@ static const struct iio_info ad7150_info = {
- 	.event_attrs = &ad7150_event_attribute_group,
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7150_read_raw,
--	.read_event_config = &ad7150_read_event_config,
--	.write_event_config = &ad7150_write_event_config,
--	.read_event_value = &ad7150_read_event_value,
--	.write_event_value = &ad7150_write_event_value,
-+	.read_event_config_new = &ad7150_read_event_config,
-+	.write_event_config_new = &ad7150_write_event_config,
-+	.read_event_value_new = &ad7150_read_event_value,
-+	.write_event_value_new = &ad7150_write_event_value,
- };
- 
- /*
+ 	[ad7995] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 10, 0),
+-			AD799X_CHANNEL(1, 10, 0),
+-			AD799X_CHANNEL(2, 10, 0),
+-			AD799X_CHANNEL(3, 10, 0),
++			AD799X_CHANNEL(0, 10),
++			AD799X_CHANNEL(1, 10),
++			AD799X_CHANNEL(2, 10),
++			AD799X_CHANNEL(3, 10),
+ 			IIO_CHAN_SOFT_TIMESTAMP(4),
+ 		},
+ 		.num_channels = 5,
+@@ -503,10 +528,10 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7999] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 8, 0),
+-			AD799X_CHANNEL(1, 8, 0),
+-			AD799X_CHANNEL(2, 8, 0),
+-			AD799X_CHANNEL(3, 8, 0),
++			AD799X_CHANNEL(0, 8),
++			AD799X_CHANNEL(1, 8),
++			AD799X_CHANNEL(2, 8),
++			AD799X_CHANNEL(3, 8),
+ 			IIO_CHAN_SOFT_TIMESTAMP(4),
+ 		},
+ 		.num_channels = 5,
+@@ -514,8 +539,8 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7992] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(1, 12, AD799X_EV_MASK),
++			AD799X_CHANNEL_WITH_EVENTS(0, 12),
++			AD799X_CHANNEL_WITH_EVENTS(1, 12),
+ 			IIO_CHAN_SOFT_TIMESTAMP(3),
+ 		},
+ 		.num_channels = 3,
+@@ -524,10 +549,10 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7993] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(1, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(2, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(3, 10, AD799X_EV_MASK),
++			AD799X_CHANNEL_WITH_EVENTS(0, 10),
++			AD799X_CHANNEL_WITH_EVENTS(1, 10),
++			AD799X_CHANNEL_WITH_EVENTS(2, 10),
++			AD799X_CHANNEL_WITH_EVENTS(3, 10),
+ 			IIO_CHAN_SOFT_TIMESTAMP(4),
+ 		},
+ 		.num_channels = 5,
+@@ -536,10 +561,10 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7994] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(1, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(2, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(3, 12, AD799X_EV_MASK),
++			AD799X_CHANNEL_WITH_EVENTS(0, 12),
++			AD799X_CHANNEL_WITH_EVENTS(1, 12),
++			AD799X_CHANNEL_WITH_EVENTS(2, 12),
++			AD799X_CHANNEL_WITH_EVENTS(3, 12),
+ 			IIO_CHAN_SOFT_TIMESTAMP(4),
+ 		},
+ 		.num_channels = 5,
+@@ -548,14 +573,14 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7997] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(1, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(2, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(3, 10, AD799X_EV_MASK),
+-			AD799X_CHANNEL(4, 10, 0),
+-			AD799X_CHANNEL(5, 10, 0),
+-			AD799X_CHANNEL(6, 10, 0),
+-			AD799X_CHANNEL(7, 10, 0),
++			AD799X_CHANNEL_WITH_EVENTS(0, 10),
++			AD799X_CHANNEL_WITH_EVENTS(1, 10),
++			AD799X_CHANNEL_WITH_EVENTS(2, 10),
++			AD799X_CHANNEL_WITH_EVENTS(3, 10),
++			AD799X_CHANNEL(4, 10),
++			AD799X_CHANNEL(5, 10),
++			AD799X_CHANNEL(6, 10),
++			AD799X_CHANNEL(7, 10),
+ 			IIO_CHAN_SOFT_TIMESTAMP(8),
+ 		},
+ 		.num_channels = 9,
+@@ -564,14 +589,14 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
+ 	[ad7998] = {
+ 		.channel = {
+-			AD799X_CHANNEL(0, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(1, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(2, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(3, 12, AD799X_EV_MASK),
+-			AD799X_CHANNEL(4, 12, 0),
+-			AD799X_CHANNEL(5, 12, 0),
+-			AD799X_CHANNEL(6, 12, 0),
+-			AD799X_CHANNEL(7, 12, 0),
++			AD799X_CHANNEL_WITH_EVENTS(0, 12),
++			AD799X_CHANNEL_WITH_EVENTS(1, 12),
++			AD799X_CHANNEL_WITH_EVENTS(2, 12),
++			AD799X_CHANNEL_WITH_EVENTS(3, 12),
++			AD799X_CHANNEL(4, 12),
++			AD799X_CHANNEL(5, 12),
++			AD799X_CHANNEL(6, 12),
++			AD799X_CHANNEL(7, 12),
+ 			IIO_CHAN_SOFT_TIMESTAMP(8),
+ 		},
+ 		.num_channels = 9,
 -- 
 1.8.0
-
