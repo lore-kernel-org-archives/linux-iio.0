@@ -3,9 +3,9 @@ From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 18/18] staging:iio:ad7291: Use event spec for threshold hysteresis
-Date: Thu, 26 Sep 2013 14:58:37 +0200
-Message-Id: <1380200317-19355-18-git-send-email-lars@metafoo.de>
+Subject: [PATCH 17/18] staging:iio:ad799x: Use event spec for threshold hysteresis
+Date: Thu, 26 Sep 2013 14:58:36 +0200
+Message-Id: <1380200317-19355-17-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 References: <1380200317-19355-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,185 +16,197 @@ portion of boiler-plate code.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7291.c | 138 ++++++++-------------------------------
- 1 file changed, 27 insertions(+), 111 deletions(-)
+ drivers/staging/iio/adc/ad799x_core.c | 132 ++++++++--------------------------
+ 1 file changed, 29 insertions(+), 103 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index dcd24ab..6fac246 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -164,92 +164,8 @@ static irqreturn_t ad7291_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 24e0749..05641f0 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -261,13 +261,23 @@ static int ad799x_read_event_config(struct iio_dev *indio_dev,
+ 	return 1;
  }
  
--static inline ssize_t ad7291_show_hyst(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7291_chip_info *chip = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	u16 data;
--	int ret;
--
--	ret = ad7291_i2c_read(chip, this_attr->address, &data);
--	if (ret < 0)
--		return ret;
--
--	return sprintf(buf, "%d\n", data & AD7291_VALUE_MASK);
--}
--
--static inline ssize_t ad7291_set_hyst(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf,
--				      size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7291_chip_info *chip = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	u16 data;
--	int ret;
--
--	ret = kstrtou16(buf, 10, &data);
--
--	if (ret < 0)
--		return ret;
--	if (data > AD7291_VALUE_MASK)
--		return -EINVAL;
--
--	ret = ad7291_i2c_write(chip, this_attr->address, data);
--	if (ret < 0)
--		return ret;
--
--	return len;
--}
--
--static IIO_DEVICE_ATTR(in_temp0_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst,
--		       AD7291_HYST(8));
--static IIO_DEVICE_ATTR(in_voltage0_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(0));
--static IIO_DEVICE_ATTR(in_voltage1_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(1));
--static IIO_DEVICE_ATTR(in_voltage2_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(2));
--static IIO_DEVICE_ATTR(in_voltage3_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(3));
--static IIO_DEVICE_ATTR(in_voltage4_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(4));
--static IIO_DEVICE_ATTR(in_voltage5_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(5));
--static IIO_DEVICE_ATTR(in_voltage6_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(6));
--static IIO_DEVICE_ATTR(in_voltage7_thresh_both_hyst_raw,
--		       S_IRUGO | S_IWUSR,
--		       ad7291_show_hyst, ad7291_set_hyst, AD7291_HYST(7));
--
--static struct attribute *ad7291_event_attributes[] = {
--	&iio_dev_attr_in_temp0_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage0_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage1_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage2_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage3_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage4_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage5_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage6_thresh_both_hyst_raw.dev_attr.attr,
--	&iio_dev_attr_in_voltage7_thresh_both_hyst_raw.dev_attr.attr,
--	NULL,
--};
--
- static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
--	enum iio_event_direction dir)
-+	enum iio_event_direction dir, enum iio_event_info info)
+-static int ad799x_threshold_reg(const struct iio_chan_spec *chan,
+-					enum iio_event_direction dir)
++static unsigned int ad799x_threshold_reg(const struct iio_chan_spec *chan,
++					 enum iio_event_direction dir,
++					 enum iio_event_info info)
  {
- 	unsigned int offset;
- 
-@@ -264,10 +180,18 @@ static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
- 	    return 0;
- 	}
- 
 -	if (dir == IIO_EV_DIR_FALLING)
--		return AD7291_DATA_LOW(offset);
+-		return AD7998_DATALOW_REG(chan->channel);
 -	else
--		return AD7291_DATA_HIGH(offset);
+-		return AD7998_DATAHIGH_REG(chan->channel);
 +	switch (info) {
 +	case IIO_EV_INFO_VALUE:
-+			if (dir == IIO_EV_DIR_FALLING)
-+					return AD7291_DATA_HIGH(offset);
-+			else
-+					return AD7291_DATA_LOW(offset);
++		if (dir == IIO_EV_DIR_FALLING)
++			return AD7998_DATALOW_REG(chan->channel);
++		else
++			return AD7998_DATAHIGH_REG(chan->channel);
 +	case IIO_EV_INFO_HYSTERESIS:
-+			return AD7291_HYST(offset);
++		return AD7998_HYST_REG(chan->channel);
 +	default:
-+			break;
++		return -EINVAL;
 +	}
-+	return 0;
- }
- 
- static int ad7291_read_event_value(struct iio_dev *indio_dev,
-@@ -281,20 +205,17 @@ static int ad7291_read_event_value(struct iio_dev *indio_dev,
- 	int ret;
- 	u16 uval;
- 
--	ret = ad7291_i2c_read(chip, ad7291_threshold_reg(chan, dir), &uval);
-+	ret = ad7291_i2c_read(chip, ad7291_threshold_reg(chan, dir, info),
-+		&uval);
- 	if (ret < 0)
- 		return ret;
- 
--	switch (chan->type) {
--	case IIO_VOLTAGE:
-+	if (info == IIO_EV_INFO_HYSTERESIS || chan->type == IIO_VOLTAGE)
- 		*val = uval & AD7291_VALUE_MASK;
--		return 0;
--	case IIO_TEMP:
-+	else
- 		*val = sign_extend32(uval, 11);
--		return 0;
--	default:
--		return -EINVAL;
--	};
 +
 +	return 0;
  }
  
- static int ad7291_write_event_value(struct iio_dev *indio_dev,
-@@ -306,20 +227,16 @@ static int ad7291_write_event_value(struct iio_dev *indio_dev,
- {
- 	struct ad7291_chip_info *chip = iio_priv(indio_dev);
+ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+@@ -281,7 +291,8 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+ 	struct ad799x_state *st = iio_priv(indio_dev);
  
--	switch (chan->type) {
--	case IIO_VOLTAGE:
-+	if (info == IIO_EV_INFO_HYSTERESIS || chan->type == IIO_VOLTAGE) {
- 		if (val > AD7291_VALUE_MASK || val < 0)
- 			return -EINVAL;
--		break;
--	case IIO_TEMP:
-+	} else {
- 		if (val > 2047 || val < -2048)
- 			return -EINVAL;
--		break;
--	default:
--		return -EINVAL;
- 	}
- 
--	return ad7291_i2c_write(chip, ad7291_threshold_reg(chan, dir), val);
-+	return ad7291_i2c_write(chip, ad7291_threshold_reg(chan, dir, info),
+ 	mutex_lock(&indio_dev->mlock);
+-	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir), val);
++	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir, info),
 +		val);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return ret;
+@@ -299,7 +310,8 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+ 	u16 valin;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+-	ret = ad799x_i2c_read16(st, ad799x_threshold_reg(chan, dir), &valin);
++	ret = ad799x_i2c_read16(st, ad799x_threshold_reg(chan, dir, info),
++		&valin);
+ 	mutex_unlock(&indio_dev->mlock);
+ 	if (ret < 0)
+ 		return ret;
+@@ -308,46 +320,6 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+ 	return 0;
  }
  
- static int ad7291_read_event_config(struct iio_dev *indio_dev,
-@@ -493,6 +410,10 @@ static const struct iio_event_spec ad7291_events[] = {
+-static ssize_t ad799x_read_channel_config(struct device *dev,
+-					struct device_attribute *attr,
+-					char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad799x_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-
+-	int ret;
+-	u16 val;
+-	ret = ad799x_i2c_read16(st, this_attr->address, &val);
+-	if (ret)
+-		return ret;
+-
+-	return sprintf(buf, "%d\n", val);
+-}
+-
+-static ssize_t ad799x_write_channel_config(struct device *dev,
+-					 struct device_attribute *attr,
+-					 const char *buf,
+-					 size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad799x_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-
+-	long val;
+-	int ret;
+-
+-	ret = kstrtol(buf, 10, &val);
+-	if (ret)
+-		return ret;
+-
+-	mutex_lock(&indio_dev->mlock);
+-	ret = ad799x_i2c_write16(st, this_attr->address, val);
+-	mutex_unlock(&indio_dev->mlock);
+-
+-	return ret ? ret : len;
+-}
+-
+ static irqreturn_t ad799x_event_handler(int irq, void *private)
+ {
+ 	struct iio_dev *indio_dev = private;
+@@ -383,60 +355,19 @@ done:
+ 	return IRQ_HANDLED;
+ }
+ 
+-static IIO_DEVICE_ATTR(in_voltage0_thresh_both_hyst_raw,
+-		       S_IRUGO | S_IWUSR,
+-		       ad799x_read_channel_config,
+-		       ad799x_write_channel_config,
+-		       AD7998_HYST_REG(0));
+-
+-static IIO_DEVICE_ATTR(in_voltage1_thresh_both_hyst_raw,
+-		       S_IRUGO | S_IWUSR,
+-		       ad799x_read_channel_config,
+-		       ad799x_write_channel_config,
+-		       AD7998_HYST_REG(1));
+-
+-static IIO_DEVICE_ATTR(in_voltage2_thresh_both_hyst_raw,
+-		       S_IRUGO | S_IWUSR,
+-		       ad799x_read_channel_config,
+-		       ad799x_write_channel_config,
+-		       AD7998_HYST_REG(2));
+-
+-static IIO_DEVICE_ATTR(in_voltage3_thresh_both_hyst_raw,
+-		       S_IRUGO | S_IWUSR,
+-		       ad799x_read_channel_config,
+-		       ad799x_write_channel_config,
+-		       AD7998_HYST_REG(3));
+-
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 			      ad799x_read_frequency,
+ 			      ad799x_write_frequency);
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("15625 7812 3906 1953 976 488 244 0");
+ 
+-static struct attribute *ad7993_4_7_8_event_attributes[] = {
+-	&iio_dev_attr_in_voltage0_thresh_both_hyst_raw.dev_attr.attr,
+-	&iio_dev_attr_in_voltage1_thresh_both_hyst_raw.dev_attr.attr,
+-	&iio_dev_attr_in_voltage2_thresh_both_hyst_raw.dev_attr.attr,
+-	&iio_dev_attr_in_voltage3_thresh_both_hyst_raw.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static struct attribute_group ad7993_4_7_8_event_attrs_group = {
+-	.attrs = ad7993_4_7_8_event_attributes,
+-	.name = "events",
+-};
+-
+-static struct attribute *ad7992_event_attributes[] = {
+-	&iio_dev_attr_in_voltage0_thresh_both_hyst_raw.dev_attr.attr,
+-	&iio_dev_attr_in_voltage1_thresh_both_hyst_raw.dev_attr.attr,
++static struct attribute *ad799x_event_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+-static struct attribute_group ad7992_event_attrs_group = {
+-	.attrs = ad7992_event_attributes,
++static struct attribute_group ad799x_event_attrs_group = {
++	.attrs = ad799x_event_attributes,
+ 	.name = "events",
+ };
+ 
+@@ -445,18 +376,9 @@ static const struct iio_info ad7991_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+-static const struct iio_info ad7992_info = {
+-	.read_raw = &ad799x_read_raw,
+-	.event_attrs = &ad7992_event_attrs_group,
+-	.read_event_config = &ad799x_read_event_config,
+-	.read_event_value = &ad799x_read_event_value,
+-	.write_event_value = &ad799x_write_event_value,
+-	.driver_module = THIS_MODULE,
+-};
+-
+ static const struct iio_info ad7993_4_7_8_info = {
+ 	.read_raw = &ad799x_read_raw,
+-	.event_attrs = &ad7993_4_7_8_event_attrs_group,
++	.event_attrs = &ad799x_event_attrs_group,
+ 	.read_event_config = &ad799x_read_event_config,
+ 	.read_event_value = &ad799x_read_event_value,
+ 	.write_event_value = &ad799x_write_event_value,
+@@ -475,6 +397,10 @@ static const struct iio_event_spec ad799x_events[] = {
  		.dir = IIO_EV_DIR_FALLING,
- 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+ 		.mask_separate = BIT(IIO_EV_INFO_VALUE),
  			BIT(IIO_EV_INFO_ENABLE),
 +	}, {
 +		.type = IIO_EV_TYPE_THRESH,
@@ -203,23 +215,14 @@ index dcd24ab..6fac246 100644
  	},
  };
  
-@@ -528,17 +449,12 @@ static const struct iio_chan_spec ad7291_channels[] = {
- 	}
- };
- 
--static struct attribute_group ad7291_event_attribute_group = {
--	.attrs = ad7291_event_attributes,
--};
--
- static const struct iio_info ad7291_info = {
- 	.read_raw = &ad7291_read_raw,
- 	.read_event_config = &ad7291_read_event_config,
- 	.write_event_config = &ad7291_write_event_config,
- 	.read_event_value = &ad7291_read_event_value,
- 	.write_event_value = &ad7291_write_event_value,
--	.event_attrs = &ad7291_event_attribute_group,
- 	.driver_module = THIS_MODULE,
- };
- 
+@@ -539,7 +465,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 		},
+ 		.num_channels = 3,
+ 		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7992_info,
++		.info = &ad7993_4_7_8_info,
+ 	},
+ 	[ad7993] = {
+ 		.channel = {
 -- 
 1.8.0
