@@ -1,31 +1,43 @@
-Return-Path: <groeck7@gmail.com>
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Fri, 27 Sep 2013 09:12:14 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Mark Brown <broonie@kernel.org>, Jean Delvare <khali@linux-fr.org>,
-	Jonathan Cameron <jic23@kernel.org>, lm-sensors@lm-sensors.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: Re: [PATCH 2/3] hwmon: (adt7310) Use spi_w8r16be() instead
- spi_w8r16()
-Message-ID: <20130927161214.GA10392@roeck-us.net>
-References: <1380292469-17347-1-git-send-email-lars@metafoo.de>
- <1380292469-17347-2-git-send-email-lars@metafoo.de>
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:iio-trig-bfin-timer: Fix compile error
+Date: Fri, 27 Sep 2013 15:50:38 +0200
+Message-Id: <1380289838-27029-1-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1380292469-17347-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Sep 27, 2013 at 04:34:28PM +0200, Lars-Peter Clausen wrote:
-> Using spi_w8r16be() instead of spi_w8r16() in this driver makes a code a bit
-> shorter and cleaner.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+This patch fixes the following compile errors for the iio-trig-bfin-timer
+driver:
+	drivers/staging/iio/trigger/iio-trig-bfin-timer.c: In function ‘iio_bfin_tmr_frequency_store’:
+	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:121: error: invalid storage class for function ‘iio_bfin_tmr_frequency_show’
+	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:118: warning: ISO C90 forbids mixed declarations and code
+	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:135: error: initializer element is not constant
+	...
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+The issue was introduced in commit e5e26dd5 ("staging: iio: replace
+strict_strto*() with kstrto*()") by leaving an excess opening bracket.
 
-Would this patch go through the SPI tree ?
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Guenter
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index ebb189c..26e1ca0 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -91,7 +91,7 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (val > 100000) {
++	if (val > 100000)
+ 		return -EINVAL;
+ 
+ 	enabled = get_enabled_gptimers() & st->t->bit;
+-- 
+1.8.0
