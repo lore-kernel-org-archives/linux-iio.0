@@ -1,371 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:64644 "EHLO
-	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753761Ab3I0QcZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Sep 2013 12:32:25 -0400
-From: Lukasz Czerwinski <l.czerwinski@samsung.com>
-To: jic23@cam.ac.uk
-Cc: denis.ciocca@st.com, linux-iio@vger.kernel.org,
-	lee.jones@linaro.org, devicetree@vger.kernel.org
-Subject: [RFC v2 PATCH 01/14] iio: st_common: New interrupt interface
-Date: Fri, 27 Sep 2013 18:32:05 +0200
-Message-id: <1380299538-22047-2-git-send-email-l.czerwinski@samsung.com>
-In-reply-to: <1380299538-22047-1-git-send-email-l.czerwinski@samsung.com>
-References: <1380299538-22047-1-git-send-email-l.czerwinski@samsung.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Mark Brown <broonie@kernel.org>,
+	Jean Delvare <khali@linux-fr.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: lm-sensors@lm-sensors.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/3] spi: Add a spi_w8r16be() helper
+Date: Fri, 27 Sep 2013 16:34:27 +0200
+Message-Id: <1380292469-17347-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds two interrupts handling by the st_common library.
-Additional second interrupt is used to indetify enabled event support for
-chosen ST device. It supports board files and dt.
+This patch adds a new spi_w8r16be() helper, which is similar to spi_w8r16()
+except that it converts the read data word from big endian to native endianness
+before returning it. The reason for introducing this new helper is that for SPI
+slave devices it is quite common that the read 16 bit data word is in big
+endian. So users of spi_w8r16() have to convert the result to native endianness
+manually. A second reason is that in this case the endianness of the return
+value of spi_w8r16() depends on its sign. If it is negative (i.e. a error code)
+it is already in native endianness, if it is positive it is in big endian. The
+sparse code checker doesn't like this kind of mixed endianness and special
+annotations are necessary to keep it quiet (E.g. casting to be16 using __force).
+Doing the conversion to native endianness in the helper function does not
+require such annotations since we are not mixing different endiannesses in the
+same variable.
 
-For dt interface multiple interrupts are passed through interrupt-names
-property.
-
-Read drdy_int_pin value is moved to the st_sensors_parse_platform_data()
-in the st_sensors_i2c.c and st_sensors_spi.c Now drdy_int_pin can be
-also configured via dt.
-
-Signed-off-by: Lukasz Czerwinski <l.czerwinski@samsung.com>
-Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c |   36 +----------
- drivers/iio/common/st_sensors/st_sensors_i2c.c  |   75 +++++++++++++++++++++-
- drivers/iio/common/st_sensors/st_sensors_spi.c  |   77 ++++++++++++++++++++++-
- include/linux/iio/common/st_sensors.h           |   13 +++-
- include/linux/platform_data/st_sensors_pdata.h  |    2 +
- 5 files changed, 160 insertions(+), 43 deletions(-)
+I don't expect any conflicts, so in my opinion it should be fine to merge the
+two users also through the SPI tree. Otherwise we can also just hold them off by
+one release.
+---
+ include/linux/spi/spi.h | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 7ba1ef2..697b16d 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -198,47 +198,13 @@ int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
- }
- EXPORT_SYMBOL(st_sensors_set_axis_enable);
- 
--static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
--				       struct st_sensors_platform_data *pdata)
--{
--	struct st_sensor_data *sdata = iio_priv(indio_dev);
--
--	switch (pdata->drdy_int_pin) {
--	case 1:
--		if (sdata->sensor->drdy_irq.mask_int1 == 0) {
--			dev_err(&indio_dev->dev,
--					"DRDY on INT1 not available.\n");
--			return -EINVAL;
--		}
--		sdata->drdy_int_pin = 1;
--		break;
--	case 2:
--		if (sdata->sensor->drdy_irq.mask_int2 == 0) {
--			dev_err(&indio_dev->dev,
--					"DRDY on INT2 not available.\n");
--			return -EINVAL;
--		}
--		sdata->drdy_int_pin = 2;
--		break;
--	default:
--		dev_err(&indio_dev->dev, "DRDY on pdata not valid.\n");
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
--int st_sensors_init_sensor(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata)
-+int st_sensors_init_sensor(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 	int err = 0;
- 
- 	mutex_init(&sdata->tb.buf_lock);
- 
--	if (pdata)
--		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
--
- 	err = st_sensors_set_enable(indio_dev, false);
- 	if (err < 0)
- 		return err;
-diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-index 38af944..79a9e9e 100644
---- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-@@ -12,17 +12,82 @@
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/iio/iio.h>
-+#include <linux/of.h>
-+#include <linux/of_irq.h>
- 
- #include <linux/iio/common/st_sensors_i2c.h>
- 
- 
- #define ST_SENSORS_I2C_MULTIREAD	0x80
- 
--static unsigned int st_sensors_i2c_get_irq(struct iio_dev *indio_dev)
-+static unsigned int st_sensors_i2c_get_data_rdy_irq(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
--	return to_i2c_client(sdata->dev)->irq;
-+	return sdata->irq_map[ST_SENSORS_INT1];
-+}
-+EXPORT_SYMBOL(st_sensors_i2c_get_data_rdy_irq);
-+
-+static unsigned int st_sensors_i2c_get_event_irq(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	return sdata->irq_map[ST_SENSORS_INT2];
-+}
-+EXPORT_SYMBOL(st_sensors_i2c_get_event_irq);
-+
-+static void st_sensors_parse_platform_data(struct i2c_client *client,
-+		struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	struct device_node *np = client->dev.of_node;
-+	struct st_sensors_platform_data *pdata = client->dev.platform_data;
-+
-+	if (pdata)
-+		sdata->drdy_int_pin = pdata->drdy_int_pin;
-+	else if (np)
-+		of_property_read_u8(np, "st,drdy-int-pin",
-+			(u8 *)&sdata->drdy_int_pin);
-+}
-+
-+static unsigned int st_sensors_i2c_map_irq(struct i2c_client *client,
-+		unsigned int irq_num)
-+{
-+	struct device_node *np = client->dev.of_node;
-+	struct st_sensors_platform_data *pdata = client->dev.platform_data;
-+	int index = 0;
-+
-+	if (pdata)
-+		return pdata->irqs[irq_num];
-+	else if (np) {
-+		switch (irq_num) {
-+		case ST_SENSORS_INT1:
-+			index = of_property_match_string(np,
-+					"interrupt-names",
-+					ST_SENSORS_DRDY_IRQ_NAME);
-+			break;
-+		case ST_SENSORS_INT2:
-+			index = of_property_match_string(np,
-+					"interrupt-names",
-+					ST_SENSORS_EVENT_IRQ_NAME);
-+		default:
-+			break;
-+		}
-+		return index < 0 ? 0 : irq_of_parse_and_map(np, index);
-+	}
-+	return 0;
-+}
-+
-+static void st_sensors_i2c_map_irqs(struct i2c_client *client,
-+		struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	sdata->irq_map[ST_SENSORS_INT1] =
-+		st_sensors_i2c_map_irq(client, ST_SENSORS_INT1);
-+
-+	sdata->irq_map[ST_SENSORS_INT2] =
-+		st_sensors_i2c_map_irq(client, ST_SENSORS_INT2);
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index 887116d..0e0aebd 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -823,6 +823,33 @@ static inline ssize_t spi_w8r16(struct spi_device *spi, u8 cmd)
+ 	return (status < 0) ? status : result;
  }
  
- static int st_sensors_i2c_read_byte(struct st_sensor_transfer_buffer *tb,
-@@ -71,8 +136,12 @@ void st_sensors_i2c_configure(struct iio_dev *indio_dev,
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = client->name;
- 
-+	st_sensors_parse_platform_data(client, indio_dev);
++/**
++ * spi_w8r16be - SPI synchronous 8 bit write followed by 16 bit big-endian read
++ * @spi: device with which data will be exchanged
++ * @cmd: command to be written before data is read back
++ * Context: can sleep
++ *
++ * This returns the (unsigned) sixteen bit number returned by the device in cpu
++ * endianness, or else a negative error code. Callable only from contexts that
++ * can sleep.
++ *
++ * This function is similar to spi_w8r16, with the exception that it will
++ * convert the read 16 bit data word from big-endian to native endianness.
++ *
++ */
++static inline ssize_t spi_w8r16be(struct spi_device *spi, u8 cmd)
 +
- 	sdata->tf = &st_sensors_tf_i2c;
--	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
-+	st_sensors_i2c_map_irqs(client, indio_dev);
-+	sdata->get_irq_data_ready = st_sensors_i2c_get_data_rdy_irq;
-+	sdata->get_irq_event = st_sensors_i2c_get_event_irq;
- }
- EXPORT_SYMBOL(st_sensors_i2c_configure);
- 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 251baf6..fc04cfc 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -8,10 +8,14 @@
-  * Licensed under the GPL-2.
-  */
- 
-+#include <linux/of.h>
-+#include <linux/of_irq.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/iio/iio.h>
-+#include <linux/of.h>
-+#include <linux/of_irq.h>
- 
- #include <linux/iio/common/st_sensors_spi.h>
- 
-@@ -19,11 +23,74 @@
- #define ST_SENSORS_SPI_MULTIREAD	0xc0
- #define ST_SENSORS_SPI_READ		0x80
- 
--static unsigned int st_sensors_spi_get_irq(struct iio_dev *indio_dev)
-+static unsigned int st_sensors_spi_get_data_rdy_irq(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
--	return to_spi_device(sdata->dev)->irq;
-+	return sdata->irq_map[ST_SENSORS_INT1];
-+}
-+EXPORT_SYMBOL(st_sensors_spi_get_data_rdy_irq);
-+
-+static unsigned int st_sensors_spi_get_event_irq(struct iio_dev *indio_dev)
 +{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
++	ssize_t status;
++	__be16 result;
 +
-+	return sdata->irq_map[ST_SENSORS_INT2];
-+}
-+EXPORT_SYMBOL(st_sensors_spi_get_event_irq);
++	status = spi_write_then_read(spi, &cmd, 1, &result, 2);
++	if (status < 0)
++		return status;
 +
-+static void st_sensors_parse_platform_data(struct spi_device *spi,
-+		struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	struct device_node *np = spi->dev.of_node;
-+	struct st_sensors_platform_data *pdata = spi->dev.platform_data;
-+
-+	if (pdata)
-+		sdata->drdy_int_pin = pdata->drdy_int_pin;
-+	else if (np)
-+		of_property_read_u8(np, "drdy-int-pin",
-+			(u8 *)&sdata->drdy_int_pin);
++	return be16_to_cpu(result);
 +}
 +
-+static unsigned int st_sensors_spi_map_irq(struct spi_device *spi,
-+		unsigned int irq_num)
-+{
-+	struct device_node *np = spi->dev.of_node;
-+	struct st_sensors_platform_data *pdata = spi->dev.platform_data;
-+	int index = 0;
-+
-+	if (pdata)
-+		return pdata->irqs[irq_num];
-+	else if (np) {
-+		switch (irq_num) {
-+		case ST_SENSORS_INT1:
-+			index = of_property_match_string(np,
-+					"interrupt-names",
-+					ST_SENSORS_DRDY_IRQ_NAME);
-+			break;
-+		case ST_SENSORS_INT2:
-+			index = of_property_match_string(np,
-+					"interrupt-names",
-+					ST_SENSORS_EVENT_IRQ_NAME);
-+		default:
-+			break;
-+		}
-+		return index < 0 ? 0 : irq_of_parse_and_map(np, index);
-+	}
-+	return 0;
-+}
-+
-+static void st_sensors_spi_map_irqs(struct spi_device *spi,
-+		struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+
-+	sdata->irq_map[ST_SENSORS_INT1] =
-+		st_sensors_spi_map_irq(spi, ST_SENSORS_INT1);
-+
-+	sdata->irq_map[ST_SENSORS_INT2] =
-+		st_sensors_spi_map_irq(spi, ST_SENSORS_INT2);
- }
+ /*---------------------------------------------------------------------------*/
  
- static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
-@@ -111,8 +178,12 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi->modalias;
- 
-+	st_sensors_parse_platform_data(spi, indio_dev);
-+
- 	sdata->tf = &st_sensors_tf_spi;
--	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
-+	st_sensors_spi_map_irqs(spi, indio_dev);
-+	sdata->get_irq_data_ready = st_sensors_spi_get_data_rdy_irq;
-+	sdata->get_irq_event = st_sensors_spi_get_event_irq;
- }
- EXPORT_SYMBOL(st_sensors_spi_configure);
- 
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 3c005eb..3f4a0f7 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -41,6 +41,12 @@
- #define ST_SENSORS_MAX_NAME			17
- #define ST_SENSORS_MAX_4WAI			7
- 
-+#define ST_SENSORS_INT_MAX			2
-+#define ST_SENSORS_INT1				0
-+#define ST_SENSORS_INT2				1
-+#define ST_SENSORS_DRDY_IRQ_NAME		"drdy-int"
-+#define ST_SENSORS_EVENT_IRQ_NAME		"event-int"
-+
- #define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
- 					ch2, s, endian, rbits, sbits, addr) \
- { \
-@@ -209,8 +215,10 @@ struct st_sensors {
-  * @buffer_data: Data used by buffer part.
-  * @odr: Output data rate of the sensor [Hz].
-  * num_data_channels: Number of data channels used in buffer.
-+ * @irq_map: Container of mapped IRQs.
-  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
-  * @get_irq_data_ready: Function to get the IRQ used for data ready signal.
-+ * @get_irq_event: Function to get the IRQ used for event signal.
-  * @tf: Transfer function structure used by I/O operations.
-  * @tb: Transfer buffers and mutex used by I/O operations.
-  */
-@@ -229,10 +237,12 @@ struct st_sensor_data {
- 
- 	unsigned int odr;
- 	unsigned int num_data_channels;
-+	unsigned int irq_map[ST_SENSORS_INT_MAX];
- 
- 	u8 drdy_int_pin;
- 
- 	unsigned int (*get_irq_data_ready) (struct iio_dev *indio_dev);
-+	unsigned int (*get_irq_event) (struct iio_dev *indio_dev);
- 
- 	const struct st_sensor_transfer_function *tf;
- 	struct st_sensor_transfer_buffer tb;
-@@ -262,8 +272,7 @@ static inline void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
- }
- #endif
- 
--int st_sensors_init_sensor(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata);
-+int st_sensors_init_sensor(struct iio_dev *indio_dev);
- 
- int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
- 
-diff --git a/include/linux/platform_data/st_sensors_pdata.h b/include/linux/platform_data/st_sensors_pdata.h
-index 7538391..991db72 100644
---- a/include/linux/platform_data/st_sensors_pdata.h
-+++ b/include/linux/platform_data/st_sensors_pdata.h
-@@ -19,6 +19,8 @@
-  */
- struct st_sensors_platform_data {
- 	u8 drdy_int_pin;
-+
-+	unsigned int irqs[2];
- };
- 
- #endif /* ST_SENSORS_PDATA_H */
+ /*
 -- 
-1.7.9.5
-
+1.8.0
