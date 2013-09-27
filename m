@@ -1,52 +1,128 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41508 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752821Ab3I1JqH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Sep 2013 05:46:07 -0400
-Message-ID: <5246B388.2060101@kernel.org>
-Date: Sat, 28 Sep 2013 11:46:32 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging:iio:iio-trig-bfin-timer: Fix compile error
-References: <1380289838-27029-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1380289838-27029-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	sachin.kamat@linaro.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/1] iio: core: Implement devm_iio_device_{register,unregister}
+Date: Fri, 27 Sep 2013 10:07:03 +0530
+Message-Id: <1380256624-12588-1-git-send-email-sachin.kamat@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/27/13 14:50, Lars-Peter Clausen wrote:
-> This patch fixes the following compile errors for the iio-trig-bfin-timer
-> driver:
-> 	drivers/staging/iio/trigger/iio-trig-bfin-timer.c: In function ‘iio_bfin_tmr_frequency_store’:
-> 	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:121: error: invalid storage class for function ‘iio_bfin_tmr_frequency_show’
-> 	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:118: warning: ISO C90 forbids mixed declarations and code
-> 	drivers/staging/iio/trigger/iio-trig-bfin-timer.c:135: error: initializer element is not constant
-> 	...
-> 
-> The issue was introduced in commit e5e26dd5 ("staging: iio: replace
-> strict_strto*() with kstrto*()") by leaving an excess opening bracket.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+Add device managed devm_iio_device_{register,unregister}()
+to automatically unregister IIO drivers thus leading to
+simplified IIO driver code.
 
-Thanks,
-> ---
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> index ebb189c..26e1ca0 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> @@ -91,7 +91,7 @@ static ssize_t iio_bfin_tmr_frequency_store(struct device *dev,
->  	if (ret)
->  		return ret;
->  
-> -	if (val > 100000) {
-> +	if (val > 100000)
->  		return -EINVAL;
->  
->  	enabled = get_enabled_gptimers() & st->t->bit;
-> 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+Changes since v1:
+Incorporated review comments from Lars-Peter Clausen
+* Renamed variables
+* Fixed the broken implementation
+* Moved kernel doc from .h to .c file
+---
+ Documentation/driver-model/devres.txt |    2 ++
+ drivers/iio/industrialio-core.c       |   59 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h               |    3 ++
+ 3 files changed, 64 insertions(+)
+
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index fcb34a5..ffeab1d 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -242,6 +242,8 @@ IIO
+   devm_iio_device_free()
+   devm_iio_trigger_alloc()
+   devm_iio_trigger_free()
++  devm_iio_device_register()
++  devm_iio_device_unregister()
+ 
+ IO region
+   devm_request_region()
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 24db185..9f2f5fb 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1125,6 +1125,65 @@ void iio_device_unregister(struct iio_dev *indio_dev)
+ 	device_del(&indio_dev->dev);
+ }
+ EXPORT_SYMBOL(iio_device_unregister);
++
++static void devm_iio_device_unreg(struct device *dev, void *res)
++{
++	iio_device_unregister(*(struct iio_dev **)res);
++}
++
++/**
++ * devm_iio_device_register - Resource-managed iio_device_register()
++ * @dev:	Device to allocate iio_dev for
++ * @indio_dev:	Device structure filled by the device driver
++ *
++ * Managed iio_device_register.  The IIO device registered with this
++ * function is automatically unregistered on driver detach. This function
++ * calls iio_device_register() internally. Refer to that function for more
++ * information.
++ *
++ * If an iio_dev registered with this function needs to be unregistered
++ * separately, devm_iio_device_unregister() must be used.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
++{
++	struct iio_dev **ptr;
++	int ret;
++
++	ptr = devres_alloc(devm_iio_device_unreg, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
++	*ptr = indio_dev;
++	ret = iio_device_register(indio_dev);
++	if (!ret)
++		devres_add(dev, ptr);
++	else
++		devres_free(ptr);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_register);
++
++/**
++ * devm_iio_device_unregister - Resource-managed iio_device_unregister()
++ * @dev:	Device this iio_dev belongs to
++ * @indio_dev:	the iio_dev associated with the device
++ *
++ * Unregister iio_dev registered with devm_iio_device_register().
++ */
++void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
++{
++	int rc;
++
++	rc = devres_release(dev, devm_iio_device_unreg,
++			    devm_iio_device_match, indio_dev);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
++
+ subsys_initcall(iio_init);
+ module_exit(iio_exit);
+ 
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index ac1cb8f..bdda69f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -452,6 +452,9 @@ int iio_device_register(struct iio_dev *indio_dev);
+  **/
+ void iio_device_unregister(struct iio_dev *indio_dev);
+ 
++int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
++void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
++
+ /**
+  * iio_push_event() - try to add event to the list for userspace reading
+  * @indio_dev:		IIO device structure
+-- 
+1.7.9.5
