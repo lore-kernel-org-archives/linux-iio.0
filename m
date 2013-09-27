@@ -1,69 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:38618 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750909Ab3I2Maj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Sep 2013 08:30:39 -0400
-Date: Sun, 29 Sep 2013 13:30:19 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Mark Brown <broonie@kernel.org>,
+	Jean Delvare <khali@linux-fr.org>,
 	Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>, lm-sensors@lm-sensors.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org, viresh.linux@gmail.com
-Message-ID: <20130929123019.GT19304@sirena.org.uk>
+	Jonathan Cameron <jic23@kernel.org>
+Cc: lm-sensors@lm-sensors.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/3] staging:iio:ade7753/ade7754/ade7759: Use spi_w8r16be() instead of spi_w8r16()
+Date: Fri, 27 Sep 2013 16:34:29 +0200
+Message-Id: <1380292469-17347-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1380292469-17347-1-git-send-email-lars@metafoo.de>
 References: <1380292469-17347-1-git-send-email-lars@metafoo.de>
- <20130927183456.GM19304@sirena.org.uk>
- <5245D2A0.4090909@metafoo.de>
- <20130927192233.GN19304@sirena.org.uk>
- <5245E420.2030207@metafoo.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="t5UUIFOgpLXgUtsP"
-In-Reply-To: <5245E420.2030207@metafoo.de>
-Subject: Re: [PATCH 1/3] spi: Add a spi_w8r16be() helper
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
+Using spi_w8r16be() will do the conversion of the result from big endian to
+native endian in the helper function. This makes the code a bit smaller and also
+keeps sparse happy. Fixes the following sparse warnings:
 
---t5UUIFOgpLXgUtsP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+	drivers/staging/iio/meter/ade7753.c:97:29: warning: incorrect type in argument 1 (different base types)
+	drivers/staging/iio/meter/ade7753.c:97:29:    expected restricted __be16 const [usertype] *p
+	drivers/staging/iio/meter/ade7753.c:97:29:    got unsigned short [usertype] *val
 
-On Fri, Sep 27, 2013 at 10:01:36PM +0200, Lars-Peter Clausen wrote:
-> On 09/27/2013 09:22 PM, Mark Brown wrote:
+	drivers/staging/iio/meter/ade7754.c:97:29: warning: incorrect type in argument 1 (different base types)
+	drivers/staging/iio/meter/ade7754.c:97:29:    expected restricted __be16 const [usertype] *p
+	drivers/staging/iio/meter/ade7754.c:97:29:    got unsigned short [usertype] *val
 
-> > Indeed.  I don't think that's terribly well thought through though,
-> > especially not now we have annotations for endianness (as you noticed!).
+	drivers/staging/iio/meter/ade7759.c:97:29: warning: incorrect type in argument 1 (different base types)
+	drivers/staging/iio/meter/ade7759.c:97:29:    expected restricted __be16 const [usertype] *p
+	drivers/staging/iio/meter/ade7759.c:97:29:    got unsigned short [usertype] *val
 
-> I wouldn't mind updating spi_w8r16() to do the conversion to big-endian.
-> Especially considering that a driver using the function will probably always
-> need to do a endian conversion anyway to work correctly on both
-> endiannesses. We can add a LE variant if we should ever need it.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/meter/ade7753.c | 3 +--
+ drivers/staging/iio/meter/ade7754.c | 3 +--
+ drivers/staging/iio/meter/ade7759.c | 3 +--
+ 3 files changed, 3 insertions(+), 6 deletions(-)
 
-I think that's probably the way to go, the API seems to error prone as
-it is.
-
---t5UUIFOgpLXgUtsP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSSB1YAAoJELSic+t+oim9swIP/Ar+YLONmmhw4thOHhhhH6WK
-nYkzvvge2z5KeBOYtuMi9/O0cW+uwONmqj05a9sCMaUn1cwTNlaRTEMvma1/v1s/
-VNkZFyg4+TnebJZzHwcATJAuOIUbgKYKCo/BNZJga7/79T/gvJw6eecqv1wsCb2f
-UUXpE4pRxAh7WsH+meJgLAXAp0dAy+ZXPPT4k543nSef9ttgiyil6mc/KtHI2rdO
-wnZWUTG3JXGmkqLwATqygFCO1hnGnLg2z2JA8CceRXiQPTYehwMqEh9MNny8W8jn
-qfiiUnDFiCkY4cvPyjg6/NIzTDUHiPPSEJ3q2P3YlEGdNd7HEIsucaeDyL8DV839
-m3NeM1FhXkdWc0Vh54OFQ5CtbtHER5CprHZEJmzWLRyCk7lFLd0+QlpjRU8cLrMw
-FPVZo2ZT4eVueI5s8Eu4CibDOYVtKnRyyx5kn19T7HTmURpVqHeDX8NoCwAr9dTo
-l1+3/mcl6tdLxSN17q6udu/uKPMADEhoRed1wwCya1MJmDwicv+cjP0do1jhQ+Ok
-OD6s2zDFuWXzWSgT7Fok+RMEMYyutk80MYe1CCZ0w07CyggUFJ6bvomEV2WkPunE
-b5XvZVp27NpT1vzwtsFVHSDxaglg2q+BfJzxT1ckPtovuBE+AWFBAcV/1W/Qplvc
-a9NIYr6Or2+ifrbpohps
-=xABi
------END PGP SIGNATURE-----
-
---t5UUIFOgpLXgUtsP--
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index 6200335..00492ca 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -86,7 +86,7 @@ static int ade7753_spi_read_reg_16(struct device *dev,
+ 	struct ade7753_state *st = iio_priv(indio_dev);
+ 	ssize_t ret;
+ 
+-	ret = spi_w8r16(st->us, ADE7753_READ_REG(reg_address));
++	ret = spi_w8r16be(st->us, ADE7753_READ_REG(reg_address));
+ 	if (ret < 0) {
+ 		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
+ 			reg_address);
+@@ -94,7 +94,6 @@ static int ade7753_spi_read_reg_16(struct device *dev,
+ 	}
+ 
+ 	*val = ret;
+-	*val = be16_to_cpup(val);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 2e046f6..e0aa13a 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -86,7 +86,7 @@ static int ade7754_spi_read_reg_16(struct device *dev,
+ 	struct ade7754_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = spi_w8r16(st->us, ADE7754_READ_REG(reg_address));
++	ret = spi_w8r16be(st->us, ADE7754_READ_REG(reg_address));
+ 	if (ret < 0) {
+ 		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
+ 			reg_address);
+@@ -94,7 +94,6 @@ static int ade7754_spi_read_reg_16(struct device *dev,
+ 	}
+ 
+ 	*val = ret;
+-	*val = be16_to_cpup(val);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 145f896..ea0c9de 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -86,7 +86,7 @@ static int ade7759_spi_read_reg_16(struct device *dev,
+ 	struct ade7759_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = spi_w8r16(st->us, ADE7759_READ_REG(reg_address));
++	ret = spi_w8r16be(st->us, ADE7759_READ_REG(reg_address));
+ 	if (ret < 0) {
+ 		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
+ 			reg_address);
+@@ -94,7 +94,6 @@ static int ade7759_spi_read_reg_16(struct device *dev,
+ 	}
+ 
+ 	*val = ret;
+-	*val = be16_to_cpup(val);
+ 
+ 	return 0;
+ }
+-- 
+1.8.0
