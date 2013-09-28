@@ -1,352 +1,42 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: lars@metafoo.de, jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio:trigger: Added iio-hrtimer-trigger
-Date: Sun, 29 Sep 2013 21:36:52 +0200
-Message-Id: <1380483412-13458-2-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1380483412-13458-1-git-send-email-denis.ciocca@st.com>
-References: <1380483412-13458-1-git-send-email-denis.ciocca@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-164.synserver.de ([212.40.185.164]:1031 "EHLO
+	smtp-out-163.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752814Ab3I1Ja1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Sep 2013 05:30:27 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 01/25] iio:ad5064: Report scale as fractional value
+Date: Sat, 28 Sep 2013 11:31:33 +0200
+Message-Id: <1380360717-26103-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds high resolution timer trigger support for iio framework.
+Move the complexity of calculating the fixed point scale to the core.
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/trigger/Kconfig            |    9 +
- drivers/iio/trigger/Makefile           |    1 +
- drivers/iio/trigger/iio-trig-hrtimer.c |  292 ++++++++++++++++++++++++++++++++
- 3 files changed, 302 insertions(+)
- create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+ drivers/iio/dac/ad5064.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 7999612..f0da684 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -5,6 +5,15 @@
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index b18e8c4..cb9c636 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -239,10 +239,9 @@ static int ad5064_read_raw(struct iio_dev *indio_dev,
+ 		if (scale_uv < 0)
+ 			return scale_uv;
  
- menu "Triggers - standalone"
- 
-+config IIO_HRTIMER_TRIGGER
-+	tristate "HRTIMER trigger"
-+	help
-+	  Provides support for using HRTIMER entries as IIO triggers.
-+	  If unsure, say N (but it's safe to say "Y").
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called iio-trig-hrtimer.
-+
- config IIO_INTERRUPT_TRIGGER
- 	tristate "Generic interrupt trigger"
- 	help
-diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-index 0694dae..424032c 100644
---- a/drivers/iio/trigger/Makefile
-+++ b/drivers/iio/trigger/Makefile
-@@ -3,5 +3,6 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
- obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
- obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
-new file mode 100644
-index 0000000..245c51d
---- /dev/null
-+++ b/drivers/iio/trigger/iio-trig-hrtimer.c
-@@ -0,0 +1,292 @@
-+/*
-+ * Industrial I/O - hrtimer trigger support
-+ *
-+ * Copyright 2013 STMicroelectronics Inc.
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/hrtimer.h>
-+#include <linux/ktime.h>
-+#include <linux/slab.h>
-+#include <linux/list.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+
-+struct iio_hrtimer_trigger_data {
-+	struct iio_trigger *trig;
-+	struct hrtimer timer;
-+	struct list_head l;
-+	ktime_t period;
-+	u16  freq;
-+	int id;
-+};
-+
-+static LIST_HEAD(iio_hrtimer_trigger_list);
-+static DEFINE_MUTEX(iio_hrtimer_trigger_list_mut);
-+
-+static int iio_hrtimer_trigger_probe(int id);
-+static int iio_hrtimer_trigger_remove(int id);
-+
-+static ssize_t iio_sysfs_hrtimer_trig_add(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t len)
-+{
-+	int ret;
-+	unsigned int input;
-+
-+	ret = kstrtouint(buf, 10, &input);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_hrtimer_trigger_probe(input);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+static DEVICE_ATTR(add_trigger, S_IWUSR, NULL, &iio_sysfs_hrtimer_trig_add);
-+
-+static ssize_t iio_sysfs_hrtimer_trig_remove(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t len)
-+{
-+	int ret;
-+	unsigned int input;
-+
-+	ret = kstrtouint(buf, 10, &input);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_hrtimer_trigger_remove(input);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+static DEVICE_ATTR(remove_trigger, S_IWUSR,
-+					NULL, &iio_sysfs_hrtimer_trig_remove);
-+
-+static struct attribute *iio_hrtimer_trig_attrs[] = {
-+	&dev_attr_add_trigger.attr,
-+	&dev_attr_remove_trigger.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group iio_hrtimer_trig_group = {
-+	.attrs = iio_hrtimer_trig_attrs,
-+};
-+
-+static const struct attribute_group *iio_hrtimer_trig_groups[] = {
-+	&iio_hrtimer_trig_group,
-+	NULL,
-+};
-+
-+static struct device iio_hrtimer_trig_dev = {
-+	.bus = &iio_bus_type,
-+	.groups = iio_hrtimer_trig_groups,
-+};
-+
-+static int iio_hrtimer_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_hrtimer_trigger_data *trig_data =
-+						iio_trigger_get_drvdata(trig);
-+
-+	if (trig_data->freq == 0)
-+		return -EINVAL;
-+
-+	if (state)
-+		hrtimer_start(&trig_data->timer,
-+					trig_data->period, HRTIMER_MODE_REL);
-+	else
-+		hrtimer_cancel(&trig_data->timer);
-+
-+	return 0;
-+}
-+
-+static ssize_t iio_hrtimer_trigger_set_freq_value(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t len)
-+{
-+	int ret;
-+	u16 frequency;
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct iio_hrtimer_trigger_data *trig_data =
-+						iio_trigger_get_drvdata(trig);
-+
-+	ret = kstrtou16(buf, 10, &frequency);
-+	if (ret < 0)
-+		return ret;
-+
-+	trig_data->freq = frequency;
-+
-+	if (frequency)
-+		trig_data->period =
-+				ktime_set(0, NSEC_PER_SEC / trig_data->freq);
-+
-+	return len;
-+}
-+
-+static ssize_t iio_hrtimer_trigger_get_freq_value(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct iio_hrtimer_trigger_data *trig_data =
-+						iio_trigger_get_drvdata(trig);
-+
-+	return sprintf(buf, "%hu\n", trig_data->freq);
-+}
-+
-+static DEVICE_ATTR(frequency, S_IWUSR | S_IRUGO,
-+					iio_hrtimer_trigger_get_freq_value,
-+					iio_hrtimer_trigger_set_freq_value);
-+
-+static ssize_t iio_hrtimer_trigger_get_id(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct iio_hrtimer_trigger_data *trig_data =
-+						iio_trigger_get_drvdata(trig);
-+
-+	return sprintf(buf, "%d\n", trig_data->id);
-+}
-+
-+static DEVICE_ATTR(id, S_IRUGO, iio_hrtimer_trigger_get_id, NULL);
-+
-+static struct attribute *iio_hrtimer_trigger_attrs[] = {
-+	&dev_attr_frequency.attr,
-+	&dev_attr_id.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group iio_hrtimer_trigger_attr_group = {
-+	.attrs = iio_hrtimer_trigger_attrs,
-+};
-+
-+static const struct attribute_group *iio_hrtimer_trigger_attr_groups[] = {
-+	&iio_hrtimer_trigger_attr_group,
-+	NULL,
-+};
-+
-+static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = &iio_hrtimer_trig_set_state,
-+};
-+
-+enum hrtimer_restart iio_hrtimer_trigger_func(struct hrtimer *timer)
-+{
-+	struct iio_hrtimer_trigger_data *trig_data;
-+
-+	trig_data = container_of(timer, struct iio_hrtimer_trigger_data, timer);
-+
-+	hrtimer_forward_now(timer, trig_data->period);
-+	iio_trigger_poll(trig_data->trig, iio_get_time_ns());
-+
-+	return HRTIMER_RESTART;
-+}
-+
-+static int iio_hrtimer_trigger_probe(int id)
-+{
-+	int err;
-+	bool foundit = false;
-+	struct iio_hrtimer_trigger_data *trig_data;
-+
-+	mutex_lock(&iio_hrtimer_trigger_list_mut);
-+	list_for_each_entry(trig_data, &iio_hrtimer_trigger_list, l) {
-+		if (id == trig_data->id) {
-+			foundit = true;
-+			break;
-+		}
-+	}
-+	if (foundit) {
-+		err = -EINVAL;
-+		goto iio_hrtimer_mutex_unlock;
-+	}
-+
-+	trig_data = kmalloc(sizeof(*trig_data), GFP_KERNEL);
-+	if (trig_data == NULL) {
-+		err = -ENOMEM;
-+		goto iio_hrtimer_mutex_unlock;
-+	}
-+
-+	trig_data->id = id;
-+	trig_data->trig = iio_trigger_alloc("hrtimer_trig%d", id);
-+	if (!trig_data->trig) {
-+		err = -ENOMEM;
-+		goto iio_hrtimer_free_trig_data;
-+	}
-+
-+	trig_data->trig->dev.groups = iio_hrtimer_trigger_attr_groups;
-+	trig_data->trig->ops = &iio_hrtimer_trigger_ops;
-+	trig_data->trig->dev.parent = &iio_hrtimer_trig_dev;
-+	iio_trigger_set_drvdata(trig_data->trig, trig_data);
-+
-+	trig_data->freq = 0;
-+	hrtimer_init(&trig_data->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+	trig_data->timer.function = &iio_hrtimer_trigger_func;
-+
-+	err = iio_trigger_register(trig_data->trig);
-+	if (err)
-+		goto iio_hrtimer_free_trig_data;
-+
-+	list_add(&trig_data->l, &iio_hrtimer_trigger_list);
-+	__module_get(THIS_MODULE);
-+	mutex_unlock(&iio_hrtimer_trigger_list_mut);
-+
-+	return 0;
-+
-+iio_hrtimer_free_trig_data:
-+	kfree(trig_data);
-+iio_hrtimer_mutex_unlock:
-+	mutex_unlock(&iio_hrtimer_trigger_list_mut);
-+	return err;
-+}
-+
-+static int iio_hrtimer_trigger_remove(int id)
-+{
-+	bool foundit = false;
-+	struct iio_hrtimer_trigger_data *trig_data;
-+
-+	mutex_lock(&iio_hrtimer_trigger_list_mut);
-+	list_for_each_entry(trig_data, &iio_hrtimer_trigger_list, l) {
-+		if (id == trig_data->id) {
-+			foundit = true;
-+			break;
-+		}
-+	}
-+	if (!foundit) {
-+		mutex_unlock(&iio_hrtimer_trigger_list_mut);
-+		return -EINVAL;
-+	}
-+
-+	iio_trigger_unregister(trig_data->trig);
-+	iio_trigger_free(trig_data->trig);
-+
-+	list_del(&trig_data->l);
-+	kfree(trig_data);
-+	module_put(THIS_MODULE);
-+	mutex_unlock(&iio_hrtimer_trigger_list_mut);
-+
-+	return 0;
-+}
-+
-+static int __init iio_hrtimer_trig_init(void)
-+{
-+	device_initialize(&iio_hrtimer_trig_dev);
-+	dev_set_name(&iio_hrtimer_trig_dev, "iio_hrtimer_trigger");
-+	return device_add(&iio_hrtimer_trig_dev);
-+}
-+module_init(iio_hrtimer_trig_init);
-+
-+static void __exit iio_hrtimer_trig_exit(void)
-+{
-+	device_unregister(&iio_hrtimer_trig_dev);
-+}
-+module_exit(iio_hrtimer_trig_exit);
-+
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("Hrtimer trigger for the iio subsystem");
-+MODULE_LICENSE("GPL v2");
+-		scale_uv = (scale_uv * 100) >> chan->scan_type.realbits;
+-		*val =  scale_uv / 100000;
+-		*val2 = (scale_uv % 100000) * 10;
+-		return IIO_VAL_INT_PLUS_MICRO;
++		*val = scale_uv / 1000;
++		*val2 = chan->scan_type.realbits;
++		return IIO_VAL_FRACTIONAL_LOG2;
+ 	default:
+ 		break;
+ 	}
 -- 
-1.7.9.5
+1.8.0
+
