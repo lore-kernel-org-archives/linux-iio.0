@@ -1,50 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-164.synserver.de ([212.40.185.164]:1057 "EHLO
+Received: from smtp-out-164.synserver.de ([212.40.185.164]:1177 "EHLO
 	smtp-out-163.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753381Ab3I1Ja6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Sep 2013 05:30:58 -0400
+	by vger.kernel.org with ESMTP id S1753381Ab3I1Ja5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Sep 2013 05:30:57 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 25/25] iio: Update unit of the voltage scale in the documentation
-Date: Sat, 28 Sep 2013 11:31:57 +0200
-Message-Id: <1380360717-26103-25-git-send-email-lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Stefan Roese <sr@denx.de>
+Subject: [PATCH 24/25] staging:iio:spear_adc: Report scale as fractional value
+Date: Sat, 28 Sep 2013 11:31:56 +0200
+Message-Id: <1380360717-26103-24-git-send-email-lars@metafoo.de>
 In-Reply-To: <1380360717-26103-1-git-send-email-lars@metafoo.de>
 References: <1380360717-26103-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The documentation says that the result of raw * scale should be in microvolts,
-but in reallity all drivers actually report the scale so that the result is in
-millivolts. So update the documentation to match reallity.
+Move the complexity of calculating the fixed point scale to the core.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Stefan Roese <sr@denx.de>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/spear_adc.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index ab1047c..2d736208 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -79,7 +79,7 @@ Description:
- 		correspond to externally available input one of the named
- 		versions may be used. The number must always be specified and
- 		unique to allow association with event codes. Units after
--		application of scale and offset are microvolts.
-+		application of scale and offset are millivolts.
+diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+index 20f2d55..657e01b 100644
+--- a/drivers/staging/iio/adc/spear_adc.c
++++ b/drivers/staging/iio/adc/spear_adc.c
+@@ -168,10 +168,9 @@ static int spear_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
  
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_raw
- KernelVersion:	2.6.35
-@@ -90,7 +90,7 @@ Description:
- 		physically equivalent inputs when non differential readings are
- 		separately available. In differential only parts, then all that
- 		is required is a consistent labeling.  Units after application
--		of scale and offset are microvolts.
-+		of scale and offset are millivolts.
+ 	case IIO_CHAN_INFO_SCALE:
+-		scale_mv = (info->vref_external * 1000) >> DATA_BITS;
+-		*val =  scale_mv / 1000;
+-		*val2 = (scale_mv % 1000) * 1000;
+-		return IIO_VAL_INT_PLUS_MICRO;
++		*val = info->vref_external;
++		*val2 = DATA_BITS;
++		return IIO_VAL_FRACTIONAL_LOG2;
+ 	}
  
- What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
- KernelVersion:	3.2
+ 	return -EINVAL;
 -- 
 1.8.0
 
