@@ -1,67 +1,67 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <52496AA1.3010503@samsung.com>
-Date: Mon, 30 Sep 2013 21:12:17 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- jic23@kernel.org, "rob.herring@calxeda.com" <rob.herring@calxeda.com>,
- pawel.moll@arm.com, Mark Rutland <mark.rutland@arm.com>,
- "ian.campbell@citrix.com" <ian.campbell@citrix.com>,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Jacek Anaszewski <j.anaszewski@samsung.com>, myungjoo.ham@samsung.com,
- Jaehoon Chung <jh80.chung@samsung.com>, Peter Meerwald l <pmeerw@pmeerw.net>
-Subject: [PATCH v4 0/2] iio: cm36651: Add CM36651 proximity/light sensor
-Content-type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58536 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755121Ab3I2T4N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Sep 2013 15:56:13 -0400
+Message-ID: <52489407.4050302@kernel.org>
+Date: Sun, 29 Sep 2013 21:56:39 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.12 set 2
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello all,
+The following changes since commit bda2f8fca20b564ac8edb2b9c080d942c2144359:
 
-Thank you for your review. I have revised v3 driver.
-Please give your feedback at that time.
+  iio:buffer_cb: Add missing iio_buffer_init() (2013-09-21 12:52:50 +0100)
 
-This patch is the fourth revision for Capella CM36651 proximity and RGB light sensor driver.
-The driver exposes five channels: Red, Green, Blue, Clear and proximity.
-It also support detection proximity event.
+are available in the git repository at:
 
-This driver supports
-	- Event: rising and falling proximity events.
-	- Reading channel through read_raw callback.
-	- writing sensor data integration time each channel through write_raw callback.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.12b
 
-v4 changed below:
-	- Revised a binding documentation
-	- add description to cm36651.txt
-	- revise proximity sensor duty_ratio Macros.
-	- fix be wrote register value.
-	- fix return value at cm36651_read_raw function.
-	- remove double space and blank line.
-	- remove some APIs.(IIO_EVENT_EXTRACT_*)
-	- remove some check code and unnecessary dbg/err message.
-	- code cleanup
+for you to fetch changes up to f09b44ed1d8553c8a91b8de8cfa05f2ea585ab0d:
 
-Subject: [PATCH 0/2] *** SUBJECT HERE ***
+  iio:magnetometer: Bugfix magnetometer default output registers (2013-09-28 12:03:24 +0100)
 
-*** BLURB HERE ***
+----------------------------------------------------------------
+Second set of IIO fixes for the 3.12 cycle.
 
-Beomho Seo (2):
-  iio: cm36651: Add CM36651 proximity/light sensor driver
-  DT: Add documentation for cm36651 proximity/light sensor
+One large fix here to add reference counting to IIO's buffers
+in order to prevent them being prematurely freed. The actual code addition
+is small but needs to be repeated in a number of different places.
 
- .../devicetree/bindings/iio/light/cm36651.txt      |   26 +
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- drivers/iio/light/Kconfig                          |   11 +
- drivers/iio/light/cm36651.c                        |  704 ++++++++++++++++++++
- 4 files changed, 742 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
- create mode 100644 drivers/iio/light/cm36651.c
+A few small additional fixes:
+1) Make sure that debugfs entries are removed early enough to prevent
+a race.
+2) Drop a stray regulator_put from ad8366 left over from the devm_ patches.
+3) The ST magnetometer driver had incorrect register addresses for the
+   actual data channels.
 
--- 
-1.7.9.5
+----------------------------------------------------------------
+Denis CIOCCA (1):
+      iio:magnetometer: Bugfix magnetometer default output registers
 
--- 
-Best Regards,
+Lars-Peter Clausen (2):
+      iio: Add reference counting for buffers
+      iio: Remove debugfs entries in iio_device_unregister()
 
-Beomho Seo, Assistant Engineer
-System S/W Lab., S/W Platform Team, Software Center
-Samsung Electronics
+Sachin Kamat (1):
+      iio: amplifiers: ad8366: Remove regulator_put
+
+ drivers/iio/amplifiers/ad8366.c                 |  4 +--
+ drivers/iio/buffer_cb.c                         | 21 +++++++----
+ drivers/iio/industrialio-buffer.c               | 41 +++++++++++++++++++---
+ drivers/iio/industrialio-core.c                 |  6 +++-
+ drivers/iio/industrialio-triggered-buffer.c     |  7 ++--
+ drivers/iio/kfifo_buf.c                         |  8 ++++-
+ drivers/iio/magnetometer/st_magn_core.c         | 18 +++++-----
+ drivers/staging/iio/accel/lis3l02dq_ring.c      |  2 +-
+ drivers/staging/iio/accel/sca3000_ring.c        | 13 ++++---
+ drivers/staging/iio/iio_simple_dummy_buffer.c   |  2 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c |  8 +++--
+ drivers/staging/iio/meter/ade7758_ring.c        |  7 ++--
+ include/linux/iio/buffer.h                      | 46 +++++++++++++++++++++++++
+ 13 files changed, 146 insertions(+), 37 deletions(-)
