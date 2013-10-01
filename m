@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51545 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51535 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751509Ab3JAHx2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 03:53:28 -0400
-Message-ID: <524A8DA3.1050201@kernel.org>
-Date: Tue, 01 Oct 2013 09:53:55 +0100
+	with ESMTP id S1751518Ab3JAHxJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 03:53:09 -0400
+Message-ID: <524A8D91.2080807@kernel.org>
+Date: Tue, 01 Oct 2013 09:53:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 09/25] iio:ad5755: Report scale as fractional value
-References: <1380360717-26103-1-git-send-email-lars@metafoo.de> <1380360717-26103-9-git-send-email-lars@metafoo.de>
-In-Reply-To: <1380360717-26103-9-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 08/25] iio:ad5686: Report scale as fractional value
+References: <1380360717-26103-1-git-send-email-lars@metafoo.de> <1380360717-26103-8-git-send-email-lars@metafoo.de>
+In-Reply-To: <1380360717-26103-8-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -20,48 +20,37 @@ On 09/28/13 10:31, Lars-Peter Clausen wrote:
 > Move the complexity of calculating the fixed point scale to the core.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
+Applied
 > ---
->  drivers/iio/dac/ad5755.c | 17 +++++------------
->  1 file changed, 5 insertions(+), 12 deletions(-)
+>  drivers/iio/dac/ad5686.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index f305a0c..bd31dbc 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -253,15 +253,6 @@ static inline int ad5755_get_offset(struct ad5755_state *st,
->  	return (min * (1 << chan->scan_type.realbits)) / (max - min);
->  }
->  
-> -static inline int ad5755_get_scale(struct ad5755_state *st,
-> -	struct iio_chan_spec const *chan)
-> -{
-> -	int min, max;
-> -
-> -	ad5755_get_min_max(st, chan, &min, &max);
-> -	return ((max - min) * 1000000000ULL) >> chan->scan_type.realbits;
-> -}
-> -
->  static int ad5755_chan_reg_info(struct ad5755_state *st,
->  	struct iio_chan_spec const *chan, long info, bool write,
->  	unsigned int *reg, unsigned int *shift, unsigned int *offset)
-> @@ -303,13 +294,15 @@ static int ad5755_read_raw(struct iio_dev *indio_dev,
+> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> index f472b48..30e506e 100644
+> --- a/drivers/iio/dac/ad5686.c
+> +++ b/drivers/iio/dac/ad5686.c
+> @@ -201,7 +201,6 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+>  			   long m)
 >  {
->  	struct ad5755_state *st = iio_priv(indio_dev);
->  	unsigned int reg, shift, offset;
-> +	int min, max;
+>  	struct ad5686_state *st = iio_priv(indio_dev);
+> -	unsigned long scale_uv;
 >  	int ret;
 >  
->  	switch (info) {
+>  	switch (m) {
+> @@ -214,12 +213,9 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+>  		*val = ret;
+>  		return IIO_VAL_INT;
 >  	case IIO_CHAN_INFO_SCALE:
-> -		*val = 0;
-> -		*val2 = ad5755_get_scale(st, chan);
-> -		return IIO_VAL_INT_PLUS_NANO;
-> +		ad5755_get_min_max(st, chan, &min, &max);
-> +		*val = max - min;
+> -		scale_uv = (st->vref_mv * 100000)
+> -			>> (chan->scan_type.realbits);
+> -		*val =  scale_uv / 100000;
+> -		*val2 = (scale_uv % 100000) * 10;
+> -		return IIO_VAL_INT_PLUS_MICRO;
+> -
+> +		*val = st->vref_mv;
 > +		*val2 = chan->scan_type.realbits;
 > +		return IIO_VAL_FRACTIONAL_LOG2;
->  	case IIO_CHAN_INFO_OFFSET:
->  		*val = ad5755_get_offset(st, chan);
->  		return IIO_VAL_INT;
+>  	}
+>  	return -EINVAL;
+>  }
 > 
