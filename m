@@ -1,48 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-192.synserver.de ([212.40.185.192]:1033 "EHLO
-	smtp-out-190.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754994Ab3JCQL0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Oct 2013 12:11:26 -0400
-Message-ID: <524D9798.70902@metafoo.de>
-Date: Thu, 03 Oct 2013 18:13:12 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Sangjung Woo <sangjung.woo@samsung.com>
-CC: Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging:iio: fix wrong usage of dev_set_name()
-References: <1380812241-11589-1-git-send-email-sangjung.woo@samsung.com>
-In-Reply-To: <1380812241-11589-1-git-send-email-sangjung.woo@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	holler@ahsoftware.de,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] HID RTC: Open sensor hub open close
+Date: Tue,  1 Oct 2013 09:22:12 -0700
+Message-Id: <1380644532-29927-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/03/2013 04:57 PM, Sangjung Woo wrote:
-> The second parameter of dev_set_name() is format string. In order to
-> avoid any potential accidents such as segmentation fault, basic format
-> parameter "%s" should be used in this case.
+Open sensor hub when module is loaded and close when module is removed.
+This helps saving power by opening HID transport only when there is an
+user.
 
-Since "iio_evgen" is a constant string there is really no need for this.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Acked-by: Alessandro Zummo <a.zummo@towertech.it>
+---
+ drivers/rtc/rtc-hid-sensor-time.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-> 
-> Signed-off-by: Sangjung Woo <sangjung.woo@samsung.com>
-> ---
->  drivers/staging/iio/iio_dummy_evgen.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/iio_dummy_evgen.c b/drivers/staging/iio/iio_dummy_evgen.c
-> index 132d278..2c06d16 100644
-> --- a/drivers/staging/iio/iio_dummy_evgen.c
-> +++ b/drivers/staging/iio/iio_dummy_evgen.c
-> @@ -205,7 +205,7 @@ static __init int iio_dummy_evgen_init(void)
->  	if (ret < 0)
->  		return ret;
->  	device_initialize(&iio_evgen_dev);
-> -	dev_set_name(&iio_evgen_dev, "iio_evgen");
-> +	dev_set_name(&iio_evgen_dev, "%s", "iio_evgen");
->  	return device_add(&iio_evgen_dev);
->  }
->  module_init(iio_dummy_evgen_init);
-> 
-
+diff --git a/drivers/rtc/rtc-hid-sensor-time.c b/drivers/rtc/rtc-hid-sensor-time.c
+index 4e2a818..45560ff 100644
+--- a/drivers/rtc/rtc-hid-sensor-time.c
++++ b/drivers/rtc/rtc-hid-sensor-time.c
+@@ -275,6 +275,12 @@ static int hid_time_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	ret = sensor_hub_device_open(hsdev);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to open sensor hub device!\n");
++		goto err_open;
++	}
++
+ 	time_state->rtc = devm_rtc_device_register(&pdev->dev,
+ 					"hid-sensor-time", &hid_time_rtc_ops,
+ 					THIS_MODULE);
+@@ -282,17 +288,24 @@ static int hid_time_probe(struct platform_device *pdev)
+ 	if (IS_ERR_OR_NULL(time_state->rtc)) {
+ 		ret = time_state->rtc ? PTR_ERR(time_state->rtc) : -ENODEV;
+ 		time_state->rtc = NULL;
+-		sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
+ 		dev_err(&pdev->dev, "rtc device register failed!\n");
++		goto err_rtc;
+ 	}
+ 
+ 	return ret;
++
++err_rtc:
++	sensor_hub_device_close(hsdev);
++err_open:
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
++	return ret;
+ }
+ 
+ static int hid_time_remove(struct platform_device *pdev)
+ {
+ 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+ 
++	sensor_hub_device_close(hsdev);
+ 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TIME);
+ 
+ 	return 0;
+-- 
+1.8.3.1
