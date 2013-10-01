@@ -1,38 +1,70 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <5252B696.7010607@linutronix.de>
-Date: Mon, 07 Oct 2013 15:26:46 +0200
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34428 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750994Ab3JAUJU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 16:09:20 -0400
+Message-ID: <524B3A19.9050509@kernel.org>
+Date: Tue, 01 Oct 2013 22:09:45 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Zubair Lutfullah : <zubair.lutfullah@gmail.com>
-CC: "Zubair Lutfullah: zubair.lutfullah"@gmail.com, jic23@cam.ac.uk,
- dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
- gregkh@linuxfoundation.org, Felipe Balbi <balbi@ti.com>
-Subject: Re: Testing ti_am335x_adc continuous mode (WAS: Re: [PATCH 2/2]
-References: <1379503383-17086-1-git-send-email-zubair.lutfullah@gmail.com> <1379503383-17086-3-git-send-email-zubair.lutfullah@gmail.com> <20131007115317.GA6135@linutronix.de> <20131007125025.GA4655@gmail.com> <5252B02C.2080707@linutronix.de> <20131007131854.GB4655@gmail.com>
-In-Reply-To: <20131007131854.GB4655@gmail.com>
+To: Lee Jones <lee.jones@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@cam.ac.uk
+CC: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 07/20] Documentation: dt: iio: Add binding for LPS001WP
+References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-8-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1379347346-823-8-git-send-email-lee.jones@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/07/2013 03:18 PM, Zubair Lutfullah : wrote:
-> On Mon, Oct 07, 2013 at 02:59:24PM +0200, Sebastian Andrzej Siewior wrote:
->>
->>> Also, I used generic_buffer.c after removing the trigger checks.
->>
->> Do you mind posting it?
->>
-> Don't have the file handy as its inside the beaglebone black.
-> And I'm 'technically' on vacation for my wedding :)
-
-Ah, okay then. Congratulations to you and your future spouse :)
-
-> If I remember correctly, i simply hacked generic_buffer.c
-> by commenting trigger related goto error statements.
+On 09/16/13 17:02, Lee Jones wrote:
+> LPS001WP is a Pressure and Temperature sensor.
 > 
-> Hope that helps.
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Hi Lee,
 
-yup, should be enough. Thanks.
+I'm planning to drop this set of bindings in favour of the unified ones
+proposed by Lukasz Czerwinski.
 
-> ZubairLK
+Could you take a look at those and perhaps propose the additional bits and pieces
+needed to ensure everything is covered by the resulting files?
 
-Sebastian
+Thanks,
+
+Jonathan
+> ---
+>  .../devicetree/bindings/iio/pressure/lps001wp.txt   | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+> new file mode 100644
+> index 0000000..45cb45c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
+> @@ -0,0 +1,21 @@
+> +* STMicroelectronics Pressure Sensor
+> +
+> +Required properties:
+> +  - compatible: Should be "st,lps001wp"
+> +  - reg: The I2C address of the sensor
+> +
+> +Optional properties:
+> +  - vdd-supply: Phandle to the Vdd supply regulator
+> +  - vddio-supply: Phandle to the Vdd-IO supply regulator
+> +
+> +Example:
+> +
+> +i2c@80128000 {
+> +        lps001wp@5c {
+> +                compatible = "st,lps001wp";
+> +                reg = <0x5c>;
+> +
+> +                vdd-supply = <&ab8500_ldo_aux1_reg>;
+> +                vddio-supply = <&db8500_vsmps2_reg>;
+> +        };
+> +};
+> 
