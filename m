@@ -1,80 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34481 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52220 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752650Ab3JAUMf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 16:12:35 -0400
-Message-ID: <524B3ADE.9060602@kernel.org>
-Date: Tue, 01 Oct 2013 22:13:02 +0100
+	with ESMTP id S1751509Ab3JAIca (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 04:32:30 -0400
+Message-ID: <524A96C8.7010707@kernel.org>
+Date: Tue, 01 Oct 2013 10:32:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@cam.ac.uk
-CC: arnd@arndb.de, linus.walleij@linaro.org, denis.ciocca@st.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 07/20] Documentation: dt: iio: Add binding for LPS001WP
-References: <1379347346-823-1-git-send-email-lee.jones@linaro.org> <1379347346-823-8-git-send-email-lee.jones@linaro.org> <524B3A19.9050509@kernel.org>
-In-Reply-To: <524B3A19.9050509@kernel.org>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+CC: Josh Wu <josh.wu@atmel.com>, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, plagnioj@jcrosoft.com,
+	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
+	mark.rutland@arm.com, b.brezillon@overkiz.com
+Subject: Re: [PATCH v3 4/6] iio: at91: ADC start-up time calculation changed
+ since at91sam9x5
+References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com> <1377602932-1899-5-git-send-email-josh.wu@atmel.com> <20130828090354.GP2695@lukather> <521FB660.8010607@kernel.org>
+In-Reply-To: <521FB660.8010607@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/01/13 22:09, Jonathan Cameron wrote:
-> On 09/16/13 17:02, Lee Jones wrote:
->> LPS001WP is a Pressure and Temperature sensor.
->>
->> Cc: devicetree@vger.kernel.org
->> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> Hi Lee,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 08/29/13 22:00, Jonathan Cameron wrote:
+> On 08/28/13 10:03, Maxime Ripard wrote:
+>> Hi Josh,
+>> 
+>> On Tue, Aug 27, 2013 at 07:28:50PM +0800, Josh Wu wrote:
+>>> Since in at91sam9x5, sama5d3x chip. the start up time calucation is changed. This patch can choose different 
+>>> start up time calculation formula for different chips.
+>>> 
+>>> Signed-off-by: Josh Wu <josh.wu@atmel.com>
+>> 
+>> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>> 
+> Unfortunately this one has a dependency on the fix patch which is going in through my fixes branch so will have to
+> wait until that hits my upstream.
 > 
-> I'm planning to drop this set of bindings in favour of the unified ones
-> proposed by Lukasz Czerwinski.
-Sorry, I just realised this is unclear.  I'm proposing to drop the
-documentation added in this patch in favour of the other version
-in which a file per type of sensor is used rather than one per
-individual sensor chip.
+> I'd like 5 and 6 to sit a while longer anyway (and 6 needs Dmitry's sign off before I take that.)
 > 
-> Could you take a look at those and perhaps propose the additional bits and pieces
-> needed to ensure everything is covered by the resulting files?
-> 
-> Thanks,
-> 
-> Jonathan
->> ---
->>  .../devicetree/bindings/iio/pressure/lps001wp.txt   | 21 +++++++++++++++++++++
->>  1 file changed, 21 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
->> new file mode 100644
->> index 0000000..45cb45c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/pressure/lps001wp.txt
->> @@ -0,0 +1,21 @@
->> +* STMicroelectronics Pressure Sensor
->> +
->> +Required properties:
->> +  - compatible: Should be "st,lps001wp"
->> +  - reg: The I2C address of the sensor
->> +
->> +Optional properties:
->> +  - vdd-supply: Phandle to the Vdd supply regulator
->> +  - vddio-supply: Phandle to the Vdd-IO supply regulator
->> +
->> +Example:
->> +
->> +i2c@80128000 {
->> +        lps001wp@5c {
->> +                compatible = "st,lps001wp";
->> +                reg = <0x5c>;
->> +
->> +                vdd-supply = <&ab8500_ldo_aux1_reg>;
->> +                vddio-supply = <&db8500_vsmps2_reg>;
->> +        };
->> +};
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Hi All,
+
+This patch no longer applies unfortunately. Josh, could you bring
+it up to date and repost the last 3 patches of this series?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iQIcBAEBAgAGBQJSSpbIAAoJEFSFNJnE9BaIi48QALwC0aVUQNU94RpUBRBqFVkF
+H8AB2pLBLYV4JlLD1kg9/ksltZh9+xegd/mM/C/lqZoHaokbSSF0bcAPSV2E3lXN
+MJ3sRx0ubmGAMNWOYI22pqD1BQwEWMdjmS/BaZ2FxkOdJyIV/jkR8NpA3BrvL7e2
+iOv9k7nBkOI1B//0K/xr4B0MWotnbmq45KeHTR1VnItqGWHDG7gyB+sbnymyf53M
+XY99HUpkLggBJrbp05PYmp9RTvyV7NYlMvgMtwUWcM6VaA0YrSRR349P+UsIcmwV
+60yXRDRZCM5Vu3HDAVnbGDtumGjSFYsXXVkJQoN8izCBn0ZsbdSzc4bJyGzn90WK
+vpt5rpd4k+ne/TTuJSiIiz8g/7aZvlWWSQ17j2Qb+IOfh2yROHuA+yyikfFV8N4e
+8jkd5HSMMRoL1Bv1vsf8eOJVlIMTOkG/2Wa7rXJOiWwzmc09Fxp13SoOIOxEMqJY
+lCj8In1fYLryMBCjxR2C/ysnullAbTwBv9HtudPm3Lu80eR8GL7lB4VrrhJyHILP
+ROvJE4ETYpYQTxQZMJKgVAQBFUAhBmckdc1A/SXMcDJgZKraP9aFvJPYbFR4OlFz
+UfjWWS6TzHFgFe2r804DzT+A7fpdZNFrbxyM40ttg7kJ81DgT9aQncEM96dEmiWh
+nXz0iA/maOXKkqJluLWl
+=HbYR
+-----END PGP SIGNATURE-----
