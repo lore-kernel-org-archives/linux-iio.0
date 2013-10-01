@@ -1,77 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58271 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52108 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753055Ab3IQSgF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2013 14:36:05 -0400
-Message-ID: <5238AF33.6010201@kernel.org>
-Date: Tue, 17 Sep 2013 20:36:19 +0100
+	with ESMTP id S1751587Ab3JAIZW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 04:25:22 -0400
+Message-ID: <524A951A.5050606@kernel.org>
+Date: Tue, 01 Oct 2013 10:25:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: =?UTF-8?B?xYF1a2FzeiBDemVyd2nFhHNraQ==?= <l.czerwinski@samsung.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: st_sensors: Add threshold events support
-References: <1372767338-13179-1-git-send-email-l.czerwinski@samsung.com> <1372767338-13179-3-git-send-email-l.czerwinski@samsung.com> <51FE6B68.2040202@kernel.org> <5238262E.1000901@samsung.com>
-In-Reply-To: <5238262E.1000901@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+To: Juergen Beisert <jbe@pengutronix.de>, linux-iio@vger.kernel.org
+CC: linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org,
+	marex@denx.de, fabio.estevam@freescale.com, jic23@cam.ac.uk,
+	linux-input@vger.kernel.org
+Subject: Re: [PATCHv6] staging/iio/adc: change the MXS touchscreen driver
+ implementation
+References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
+In-Reply-To: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
->>>
->>> +#define ST_SENSORS_LSM_EVENTS_MASK \
->>> +        (IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING) | \
->>> +        IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING))
->>> +
->>>   #define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
->>> -                    ch2, s, endian, rbits, sbits, addr) \
->>> +                    ch, s, endian, rbits, sbits, addr) \
->>>   { \
->>>       .type = device_type, \
->>>       .modified = mod, \
->>>       .info_mask_separate = mask, \
->>>       .scan_index = index, \
->>> -    .channel2 = ch2, \
->>> +    .channel = ch, \
->>> +    .channel2 = ch, \
->> This is 'interesting'.  What is the intent?
->>
->> The result will be writing the modifier to both channel and channel2.
->> I don't htink that will have any effect, but it is incorrect so please
->> drop the setting of channel.  It might be more appropriate to name
->> you ch instead as mod or something like that to make it clear what
->> is going on?
->>
-> Sorry for no explanation. This was my quick workaround. Probably there is a bug in the industrialio-event.c.
-> Documentation says
-> 
->  * @channel2:        If there is a second number for a differential
->  *            channel then this is it. If modified is set then the
->  *            value here specifies the modifier.
-> 
-> So when channel is modified third parameter passed to the IIO_MOD_EVENT_CODE should be chan->channel2 not chan->channel
-> 
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index 10aa9ef..f146acd 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -276,7 +276,7 @@ static int iio_device_add_event_sysfs(struct iio_dev *indio_dev,
->                         goto error_ret;
->                 }
->                 if (chan->modified)
-> -                       mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel,
-> +                       mask = IIO_MOD_EVENT_CODE(chan->type, 0, chan->channel2,
->                                                   i/IIO_EV_DIR_MAX,
->                                                   i%IIO_EV_DIR_MAX);
->                 else if (chan->differential)
-> 
->>>       .address = addr, \
->>>       .scan_type = { \
->>>           .sign = s, \
-
-Ahh, you are quite correct.
-Please could you post that patch formally and I'll push it out as a fix.
-If not I'll sort it out at the weekend.
-
-Thanks,
+I'm looking for some Tested-by: or Acks on this before applying the series.
+I got the impression from the comments on the previous version that the
+series has now been reasonably thoroughly tested on both i.MX28 and i.MX23 boards.
+This is not yet reflected in the sign off trail and in fact a couple of the patch
+descriptions say that they are untested on i.MX28.
 
 Jonathan
+
+
+On 09/23/13 15:36, Juergen Beisert wrote:
+> The following series replaces the current busy loop touchscreen implementation
+> for i.MX28/i.MX23 SoCs by a fully interrupt driven implementation.
+> 
+> Since i.MX23 and i.MX28 silicon differs, the existing implementation can
+> be used for the i.MX28 SoC only.
+> 
+> The first patch adds proper clock handling. Various platforms seems to disable
+> the internal 2 kHz clock which is used by the LRADC delay units.
+> 
+> The next two patches of this series move the i.MX28 specific definitions
+> out of the way. The forth patch simplifies the register access to make it easier
+> to add the i.MX23 support. Then the i.MX23 specific definitions are added, also
+> the code to distinguish both SoCs at run-time.
+> Up to here the existing touchscreen driver will now run on an i.MX23 Soc as well.
+> 
+> When these i.MX SoCs are running from battery it seems not to be a good idea to
+> run a busy loop to detect touches and their location. The 6th patch adds a
+> fully interrupt driven implementation which makes use of the built-in delay
+> and multiple sample features of the touchscreen controller. This will reduce
+> the interrupt load to a minimum.
+> 
+> The remaining patches in this series just removes the existing busy loop
+> implementation, add a proposal for devicetree binding and a reminder what has
+> still to be done with the LRADC driver.
+> 
+> Changes since v5:
+> 
+> - add missing clock handling which prevents the delay units from work (this
+>   should make it work on the MX28EVK and M28EVK as well)
+> 
+> Changes since v4:
+> 
+> - honor Jonathan's comments about function names
+> - honor Dmitry's comments about workqueue canceling and interrupts
+> - adding devicetree bindings proposal
+> 
+> Changes since v3:
+> 
+> - split adding register access functions and i.MX23 support into two patches
+> 
+> Changes since v2:
+> 
+> - useless debug output removed
+> 
+> Changes since v1:
+> 
+> - adding register access functions to make the existing code more readable
+> - adding some functions to distinguish the SoCs at run-time to avoid if-else
+>   contructs whenever differences in the register layout between i.MX23 and
+>   i.MX28 must be handled
+> 
+> Comments are welcome.
+> 
+> Juergen
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
