@@ -1,18 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51855 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51831 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752496Ab3JAIIv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 04:08:51 -0400
-Message-ID: <524A913F.7080507@kernel.org>
-Date: Tue, 01 Oct 2013 10:09:19 +0100
+	with ESMTP id S1751688Ab3JAIIU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 04:08:20 -0400
+Message-ID: <524A911F.4040201@kernel.org>
+Date: Tue, 01 Oct 2013 10:08:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 19/25] staging:iio:ad7280a: Report scale as fractional
- value
-References: <1380360717-26103-1-git-send-email-lars@metafoo.de> <1380360717-26103-19-git-send-email-lars@metafoo.de>
-In-Reply-To: <1380360717-26103-19-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 18/25] iio:max1363: Report scale as fractional value
+References: <1380360717-26103-1-git-send-email-lars@metafoo.de> <1380360717-26103-18-git-send-email-lars@metafoo.de>
+In-Reply-To: <1380360717-26103-18-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -21,39 +20,37 @@ On 09/28/13 10:31, Lars-Peter Clausen wrote:
 > Move the complexity of calculating the fixed point scale to the core.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied
+Applied to the togreg branch of iio.git
+
+Thanks,
 > ---
->  drivers/staging/iio/adc/ad7280a.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/max1363.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index e7191e4..8209fa5 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -783,7 +783,6 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
->  			   long m)
+> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+> index b4bc166..2b34d2f 100644
+> --- a/drivers/iio/adc/max1363.c
+> +++ b/drivers/iio/adc/max1363.c
+> @@ -397,7 +397,6 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
 >  {
->  	struct ad7280_state *st = iio_priv(indio_dev);
-> -	unsigned int scale_uv;
+>  	struct max1363_state *st = iio_priv(indio_dev);
 >  	int ret;
+> -	unsigned long scale_uv;
 >  
 >  	switch (m) {
-> @@ -804,13 +803,12 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_RAW:
+> @@ -406,10 +405,9 @@ static int max1363_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
 >  		return IIO_VAL_INT;
 >  	case IIO_CHAN_INFO_SCALE:
->  		if ((chan->address & 0xFF) <= AD7280A_CELL_VOLTAGE_6)
-> -			scale_uv = (4000 * 1000) >> AD7280A_BITS;
-> +			*val = 4000;
->  		else
-> -			scale_uv = (5000 * 1000) >> AD7280A_BITS;
-> +			*val = 5000;
->  
-> -		*val =  scale_uv / 1000;
+> -		scale_uv = st->vref_uv >> st->chip_info->bits;
+> -		*val = scale_uv / 1000;
 > -		*val2 = (scale_uv % 1000) * 1000;
 > -		return IIO_VAL_INT_PLUS_MICRO;
-> +		*val2 = AD7280A_BITS;
+> +		*val = st->vref_uv / 1000;
+> +		*val2 = st->chip_info->bits;
 > +		return IIO_VAL_FRACTIONAL_LOG2;
+>  	default:
+>  		return -EINVAL;
 >  	}
->  	return -EINVAL;
->  }
 > 
