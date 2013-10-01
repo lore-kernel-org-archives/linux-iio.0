@@ -1,56 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53615 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53745 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752784Ab3JAJus (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 05:50:48 -0400
-Message-ID: <524AA91F.7000906@kernel.org>
-Date: Tue, 01 Oct 2013 11:51:11 +0100
+	with ESMTP id S1752965Ab3JAJ5N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Oct 2013 05:57:13 -0400
+Message-ID: <524AAAA4.6060006@kernel.org>
+Date: Tue, 01 Oct 2013 11:57:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: =?ISO-8859-1?Q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
-CC: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, marex@denx.de,
-	fabio.estevam@freescale.com,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, jic23@cam.ac.uk,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 6/9] Staging/iio/adc/touchscreen/MXS: add interrupt driven
- touch detection
-References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de> <1379946998-23041-7-git-send-email-jbe@pengutronix.de> <201310011128.38928.jbe@pengutronix.de>
-In-Reply-To: <201310011128.38928.jbe@pengutronix.de>
+To: =?ISO-8859-1?Q?J=FCrgen_Beisert?= <jbe@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org
+CC: Fabio Estevam <fabio.estevam@freescale.com>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	marex@denx.de, jic23@cam.ac.uk, linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/9] Staging/iio/adc/touchscreen/MXS: add proper clock
+ handling
+References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de> <1379946998-23041-2-git-send-email-jbe@pengutronix.de> <52405A7F.1050801@freescale.com> <201309240950.54789.jbe@pengutronix.de>
+In-Reply-To: <201309240950.54789.jbe@pengutronix.de>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/01/13 10:28, Jürgen Beisert wrote:
-> Hi Jonathan,
+On 09/24/13 08:50, Jürgen Beisert wrote:
+> Hi Fabio,
 > 
-> On Tuesday 01 October 2013 11:25:46 Jonathan Cameron wrote:
->> a couple of the patch descriptions say that they are untested on i.MX28.
-> 
-> On Monday 23 September 2013 16:36:35 Juergen Beisert wrote:
->> For battery driven systems it is a very bad idea to collect the touchscreen
->> data within a kernel busy loop.
+> On Monday 23 September 2013 17:13:03 Fabio Estevam wrote:
+>> On 09/23/2013 11:36 AM, Juergen Beisert wrote:
+>>> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+>>> +	clk_prepare_enable(lradc->clk);
 >>
->> This change uses the features of the hardware to delay and accumulate
->> samples in hardware to avoid a high interrupt and CPU load.
->>
->> Note: this is only tested on an i.MX23 SoC yet.
+>> clk_prepare_enable() may fail, so better check its return value.
 > 
-> This note is no longer true. Marek tested it on his M28EVK, Lothar on his TX28 
-> and myself also on an i.MX28EVK.
+> Thanks for the comment. Better this way?
 > 
-> For the IIO part of the driver I tested on my i.MX23 based ChumbyOne and some 
-> customer hardware and it seems still to work (I can only guess if the values I 
-> read from the sysfs entries are correct, sorry).
+> commit 825c5bb787a0dc9d25d480178e117be08810639c
+> Author: Juergen Beisert <jbe@pengutronix.de>
+> Date:   Mon Sep 23 16:10:56 2013 +0200
+Applied.  If you are going to have a new patch version in the middle of the thread
+please generate it with git format-patch and then send it as a reply to the email
+you are responding to.  Applying a patch like this is no where near as easy.
 
-Excellent. I'll assume everyone is happy then and add some appropriate
-tested-by tags. I'd missed Marek's reply saying he was fine with this.
+Applied to the togreg branch of iio.git
 
-
-Thanks,
-
-Jonathan
+Thanks
 > 
-> Regards,
+>     Staging/iio/adc/touchscreen/MXS: add proper clock handling
+>     
+>     The delay units inside the LRADC depend on the presence of a 2 kHz clock.
+>     This change enables the clock to be able to use the delay unit for the
+>     touchscreen part of the driver.
+>     
+>     Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+> 
+> diff --git a/arch/arm/boot/dts/imx23.dtsi b/arch/arm/boot/dts/imx23.dtsi
+> index 28b5ce2..07caf76 100644
+> --- a/arch/arm/boot/dts/imx23.dtsi
+> +++ b/arch/arm/boot/dts/imx23.dtsi
+> @@ -430,6 +430,7 @@
+>  				reg = <0x80050000 0x2000>;
+>  				interrupts = <36 37 38 39 40 41 42 43 44>;
+>  				status = "disabled";
+> +				clocks = <&clks 26>;
+>  			};
+>  
+>  			spdif@80054000 {
+> diff --git a/arch/arm/boot/dts/imx28.dtsi b/arch/arm/boot/dts/imx28.dtsi
+> index 7363fde..175deef 100644
+> --- a/arch/arm/boot/dts/imx28.dtsi
+> +++ b/arch/arm/boot/dts/imx28.dtsi
+> @@ -902,6 +902,7 @@
+>  				interrupts = <10 14 15 16 17 18 19
+>  						20 21 22 23 24 25>;
+>  				status = "disabled";
+> +				clocks = <&clks 41>;
+>  			};
+>  
+>  			spdif: spdif@80054000 {
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index a08c173..eaca1ae 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -35,6 +35,7 @@
+>  #include <linux/completion.h>
+>  #include <linux/delay.h>
+>  #include <linux/input.h>
+> +#include <linux/clk.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+> @@ -134,6 +135,8 @@ struct mxs_lradc {
+>  	void __iomem		*base;
+>  	int			irq[13];
+>  
+> +	struct clk		*clk;
+> +
+>  	uint32_t		*buffer;
+>  	struct iio_trigger	*trig;
+>  
+> @@ -928,6 +931,17 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+>  	if (IS_ERR(lradc->base))
+>  		return PTR_ERR(lradc->base);
+>  
+> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(lradc->clk)) {
+> +		dev_err(dev, "Failed to get the delay unit clock\n");
+> +		return PTR_ERR(lradc->clk);
+> +	}
+> +	ret = clk_prepare_enable(lradc->clk);
+> +	if (ret != 0) {
+> +		dev_err(dev, "Failed to enable the delay unit clock\n");
+> +		return ret;
+> +	}
+> +
+>  	INIT_WORK(&lradc->ts_work, mxs_lradc_ts_work);
+>  
+>  	/* Check if touchscreen is enabled in DT. */
+> @@ -1020,6 +1034,7 @@ static int mxs_lradc_remove(struct platform_device *pdev)
+>  	iio_triggered_buffer_cleanup(iio);
+>  	mxs_lradc_trigger_remove(iio);
+>  
+> +	clk_disable_unprepare(lradc->clk);
+>  	return 0;
+>  }
+>  
 > Juergen
 > 
