@@ -1,25 +1,43 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Mon, 30 Sep 2013 19:27:41 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.12 set 2 (take 2)
-Message-ID: <20131001022741.GA22012@kroah.com>
-References: <5249E431.5050902@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <524DA508.2030606@metafoo.de>
+Date: Thu, 03 Oct 2013 19:10:32 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5249E431.5050902@kernel.org>
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: IIO hrtimer trigger
+References: <1380483412-13458-1-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1380483412-13458-1-git-send-email-denis.ciocca@st.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Sep 30, 2013 at 09:50:57PM +0100, Jonathan Cameron wrote:
-> The following changes since commit bda2f8fca20b564ac8edb2b9c080d942c2144359:
+On 09/29/2013 09:36 PM, Denis CIOCCA wrote:
+> Hi Lars,
 > 
->   iio:buffer_cb: Add missing iio_buffer_init() (2013-09-21 12:52:50 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.12b2
+> Thanks for your review.
+> I reviewed the code in accordance with your comments, for the other point
+> can you explain me better please?
+> You intend to use one driver to manage all triggers added by sysfs?
 
-Much better, thanks, now pulled and pushed out.
+Not necessarily, but I think we should have some common code that manages
+the software triggers. But what I'm most concerned about is the userspace
+ABI, since once we have added it, we have to maintain it forever. So the big
+question do we think that the current ABI implemented by that patch is good
+enough. Some thoughts:
 
-greg k-h
+* Should it maybe be called timer instead of hrtimer.
+* Do we only want to allow names which follow "hrtimer-%d" or do we want to
+allow arbitrary names.
+* Do we want to have a top-level folder for each sw trigger type
+* Is sysfs actually the right place for this, or should it go into configfs?
+  Quote from Documentation/filesystems/configs:
+  "configfs is a ram-based filesystem that provides the converse of
+   sysfs's functionality.  Where sysfs is a filesystem-based view of
+   kernel objects, configfs is a filesystem-based manager of kernel
+   objects, or config_items. [...] Unlike sysfs, the
+   lifetime of the representation is completely driven by userspace.  The
+   kernel modules backing the items must respond to this."
+
+I think especially the last one deserves some though.
+
+- Lars
