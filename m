@@ -1,73 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:52413 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751710Ab3JCLAB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Oct 2013 07:00:01 -0400
-Date: Thu, 3 Oct 2013 11:59:43 +0100
+Return-Path: <broonie@sirena.org.uk>
+Date: Thu, 3 Oct 2013 13:53:02 +0100
 From: Mark Brown <broonie@kernel.org>
 To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>,
-	Guenter Roeck <linux@roeck-us.net>,
+Cc: Jean Delvare <khali@linux-fr.org>, Guenter Roeck <linux@roeck-us.net>,
 	Jonathan Cameron <jic23@kernel.org>, lm-sensors@lm-sensors.org,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
-Message-ID: <20131003105943.GJ27287@sirena.org.uk>
+	linux-spi@vger.kernel.org
+Message-ID: <20131003125302.GM27287@sirena.org.uk>
 References: <1380292469-17347-1-git-send-email-lars@metafoo.de>
- <20130927183456.GM19304@sirena.org.uk>
- <5245D2A0.4090909@metafoo.de>
- <20130927192233.GN19304@sirena.org.uk>
- <5245E420.2030207@metafoo.de>
- <20130929123019.GT19304@sirena.org.uk>
- <524D4967.4030300@metafoo.de>
+ <1380292469-17347-2-git-send-email-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/8E7gjuj425jZz9t"
-In-Reply-To: <524D4967.4030300@metafoo.de>
-Subject: Re: [PATCH 1/3] spi: Add a spi_w8r16be() helper
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	protocol="application/pgp-signature"; boundary="2OzUYMsT4j3Kc+NU"
+In-Reply-To: <1380292469-17347-2-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 2/3] hwmon: (adt7310) Use spi_w8r16be() instead
+ spi_w8r16()
+List-ID: <linux-iio@vger.kernel.org>
 
 
---/8E7gjuj425jZz9t
+--2OzUYMsT4j3Kc+NU
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, Oct 03, 2013 at 12:39:35PM +0200, Lars-Peter Clausen wrote:
-> On 09/29/2013 02:30 PM, Mark Brown wrote:
+On Fri, Sep 27, 2013 at 04:34:28PM +0200, Lars-Peter Clausen wrote:
+> Using spi_w8r16be() instead of spi_w8r16() in this driver makes a code a bit
+> shorter and cleaner.
 
-> > I think that's probably the way to go, the API seems to error prone as
-> > it is.
+Applied, thanks.
 
-> It looks as if for the ads7871 the wire order is actually little endian.
-
-Why do hardware engineers get all the best drugs?
-
-> endian word. Maybe we can merge this series as it is, then add a LE version
-> for the ads7871 and STMPE driver and afterward remove the wire-order
-> spi_w8r16().
-
-Yeah, that's probably about as good as it gets.
-
---/8E7gjuj425jZz9t
+--2OzUYMsT4j3Kc+NU
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.21 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSTU4cAAoJELSic+t+oim9mN0P/iBFTv8hp1fyqVL45aFnfntO
-KH3MuqlJURq8FMjcgeQL4YEQxm28zt5ay7je6fApyZF2NqS5bU+C76isJM75kElq
-u2vXKbALTQna0OhGwlzxp7wdkDzbHrN25i1xYlmE6JaglwQ8rNMCjAhVQXwwH06i
-Tk16a+pOAXJCrX8K9WbYadz4pWTYcU04Ea1YZPheFPMaLweO7NzLdI7cY30jmZdH
-AfFMLhF7aHd2Lpa/z1l6hFuqlHnL1xH0BDAsxruhginbpGDebRjHiVdumBcOjBT8
-F62mLrDDlFlWm1wGaC9Thm7kkbD+42q2/ntTsk5H1iCe931LizqnS/iSnE7iGJMx
-kaCw0nBosmQ7zDF+2YIIzKlhgU+crR5nuA27b9z4dn6ropxPSd8YMvSUPJ3fEzFQ
-7dSBiBuwIXJugRv/LY01Vdg/648f8NEmBF1Pqzrv5a0pEwAOttNEVl2mJGlzWJsO
-9sL0tbnunM3D3iCOv72f9PGQb1cCN/Kz8ZlZ3fGsXeCRtoXCg/VenbkMpkEd8Z0t
-DeeiFQefPZ1XWnr6CqXCkmFlvByxfLdaHu1mDGFtNTR39ma2+3JWll/QDsE4SUWO
-5Cc8N6LfGl1jRFw3oMojMxnYIapDnBSblUuP9Iyly3mDk69f37MJycqV/XzxgEyp
-5CvxULPf5VObA/ve/tZo
-=sOEF
+iQIcBAEBAgAGBQJSTWirAAoJELSic+t+oim9SZ0QAI0ZHtcvBBLbH3e8y7cijW3L
+DipKdZHYLlZcw4c19RS8FcBjorEchoQkXHOqGGFO9IQ61meh0Ne6BuaK2Dxf8+80
+QCQCClttGHTp6+471XKnnqwaq2zRYKnaGZzYe5vmhfm4dj2yVeqnre8j9P7smCP6
+5MPCdF43zbiQOykB52v0Jgkbu1pCCuN1nmu8DCKxn82w/2PBEijgV3/U1cki/b1o
+D7WcabBNmxJfwl8u8U2dJyUVpKAMVyR2xT7qoGIWfRiMw1EAYcnMTsSQZ2cOhI2T
+rZi4xDRhngN5gvkCq45hS4tQpTKUbJJK1BFyK9peR2YNXuvm+wCmXMEGcMst9rE3
+FOf/iAyu8vspRNs5WAQdStBjGQS55yVWTlEI3YrD6u43RpZWlpp53tBGJ2PB5ZVq
+pWBs87qGw5cvhi9CkD1rSPMQA/Rck2M0mrUrZIecW+bIr5LlQEW6hKqrcFKXRt7z
+s7PeLBjQkXnqr7f9Rjc98zF227eiEeuQnSE9Czz0kkUi70VZ38+KejfwtbhStR6s
+HF/pYzEWfGY1WxGFxxGWQsHoKHnTkXWXR03sNpMevkWUZ5wK3FGnC1s22THWFC44
+Hq+t/j0USF7kfzZ1+MxASV95iZZ3nJJ1kuPnJHkFenaEJlLwP3buepLU76IERS0R
+UQwS1zNXMBKxx/7+9wz2
+=Czjv
 -----END PGP SIGNATURE-----
 
---/8E7gjuj425jZz9t--
+--2OzUYMsT4j3Kc+NU--
