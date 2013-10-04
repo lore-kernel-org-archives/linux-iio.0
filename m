@@ -1,86 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47263 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751890Ab3JLLGT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2013 07:06:19 -0400
-Message-ID: <52593B5A.1020006@kernel.org>
-Date: Sat, 12 Oct 2013 13:06:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio:buffer: Ignore noop requests for iio_update_buffers()
-References: <1380884822-17035-1-git-send-email-lars@metafoo.de> <1380884822-17035-5-git-send-email-lars@metafoo.de> <52592E09.30507@kernel.org> <5259221C.4040309@metafoo.de> <52593B2F.6090102@kernel.org>
-In-Reply-To: <52593B2F.6090102@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-241.synserver.de ([212.40.185.241]:1088 "EHLO
+	smtp-out-240.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751817Ab3JDLFQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Oct 2013 07:05:16 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 4/5] iio:buffer: Add proper locking for iio_update_buffers()
+Date: Fri,  4 Oct 2013 13:07:01 +0200
+Message-Id: <1380884822-17035-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1380884822-17035-1-git-send-email-lars@metafoo.de>
+References: <1380884822-17035-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/12/13 13:06, Jonathan Cameron wrote:
-> On 10/12/13 11:19, Lars-Peter Clausen wrote:
->> On 10/12/2013 01:10 PM, Jonathan Cameron wrote:
->>> On 10/04/13 12:07, Lars-Peter Clausen wrote:
->>>> Since the kernel now disables all buffers when a device is unregistered it might
->>>> happen that a in-kernel consumer tries to disable that buffer again. So ignore
->>>> requests where the buffer already is in the desired state.
->>>>
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+We need to make sure that in-kernel users of iio_update_buffers() do not race
+against each other or against unregistration of the device. So we need to take
+both the mlock and the info_exist_lock when calling iio_update_buffers() from a
+in-kernel consumer.
 
-Thanks,
->>>> ---
->>>> No changes since v1
->>>> ---
->>>>  drivers/iio/industrialio-buffer.c | 14 ++++++++++++++
->>>>  1 file changed, 14 insertions(+)
->>>>
->>>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->>>> index d6a5455..fd3f3af 100644
->>>> --- a/drivers/iio/industrialio-buffer.c
->>>> +++ b/drivers/iio/industrialio-buffer.c
->>>> @@ -681,9 +681,23 @@ int iio_update_buffers(struct iio_dev *indio_dev,
->>>>  {
->>>>  	int ret;
->>>>  
->>>> +	if (insert_buffer == remove_buffer)
->>>> +		return 0;
->>>> +
->>>>  	mutex_lock(&indio_dev->info_exist_lock);
->>>>  	mutex_lock(&indio_dev->mlock);
->>>>  
->>>> +	if (insert_buffer && iio_buffer_is_active(insert_buffer))
->>>> +		insert_buffer = NULL;
->>>> +
->>>> +	if (remove_buffer && !iio_buffer_is_active(remove_buffer))
->>>> +		remove_buffer = NULL;
->>>> +
->>> So this condition will occur iff insert_buffer = 0 and remove buffer = 0?
->>>
->>> If so, then insert_buffer == remove_buffer and you'll have already returned 0 above??
->>
->> This is to catch the case where we've set one (or both) of them to NULL
->> because it was already in the requested state.
->>
-> Ah, as I said. Not enough coffee ;)
->>>
->>> Entirely possible I'm needing more coffee this morning...
->>>> +	if (!insert_buffer && !remove_buffer) {
->>>> +		ret = 0;
->>>> +		goto out_unlock;
->>>> +	}
->>>> +
->>>>  	if (indio_dev->info == NULL) {
->>>>  		ret = -ENODEV;
->>>>  		goto out_unlock;
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+No changes since v1
+---
+ drivers/iio/industrialio-buffer.c | 29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 5a46c57..d6a5455 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -509,7 +509,7 @@ void iio_disable_all_buffers(struct iio_dev *indio_dev)
+ 		indio_dev->setup_ops->postdisable(indio_dev);
+ }
+ 
+-int iio_update_buffers(struct iio_dev *indio_dev,
++static int __iio_update_buffers(struct iio_dev *indio_dev,
+ 		       struct iio_buffer *insert_buffer,
+ 		       struct iio_buffer *remove_buffer)
+ {
+@@ -674,6 +674,29 @@ error_ret:
+ 
+ 	return ret;
+ }
++
++int iio_update_buffers(struct iio_dev *indio_dev,
++		       struct iio_buffer *insert_buffer,
++		       struct iio_buffer *remove_buffer)
++{
++	int ret;
++
++	mutex_lock(&indio_dev->info_exist_lock);
++	mutex_lock(&indio_dev->mlock);
++
++	if (indio_dev->info == NULL) {
++		ret = -ENODEV;
++		goto out_unlock;
++	}
++
++	ret = __iio_update_buffers(indio_dev, insert_buffer, remove_buffer);
++
++out_unlock:
++	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&indio_dev->info_exist_lock);
++
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(iio_update_buffers);
+ 
+ ssize_t iio_buffer_store_enable(struct device *dev,
+@@ -699,10 +722,10 @@ ssize_t iio_buffer_store_enable(struct device *dev,
+ 		goto done;
+ 
+ 	if (requested_state)
+-		ret = iio_update_buffers(indio_dev,
++		ret = __iio_update_buffers(indio_dev,
+ 					 indio_dev->buffer, NULL);
+ 	else
+-		ret = iio_update_buffers(indio_dev,
++		ret = __iio_update_buffers(indio_dev,
+ 					 NULL, indio_dev->buffer);
+ 
+ 	if (ret < 0)
+-- 
+1.8.0
+
