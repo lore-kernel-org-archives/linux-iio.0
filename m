@@ -1,51 +1,47 @@
-Return-Path: <sachin.kamat@linaro.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <524E7E7D.9020204@metafoo.de>
+Date: Fri, 04 Oct 2013 10:38:21 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <12c105d8-29b0-4914-ac8a-ce0d560d4274@email.android.com>
-References: <1380256624-12588-1-git-send-email-sachin.kamat@linaro.org>
-	<CAK9yfHx2dK1KSTQXoCtbhPaA9jYkyoC3_3NggAMio1TpPiY+9A@mail.gmail.com>
-	<524C55A0.30008@metafoo.de>
-	<12c105d8-29b0-4914-ac8a-ce0d560d4274@email.android.com>
-Date: Thu, 3 Oct 2013 22:24:40 +0530
-Message-ID: <CAK9yfHxBsjkpzPuf6DOWDpmOwswDckD-ez=qkAmJvoRR0TiA-w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] iio: core: Implement devm_iio_device_{register,unregister}
-From: Sachin Kamat <sachin.kamat@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 01/18] iio: Extend the event config interface
+References: <1380200317-19355-1-git-send-email-lars@metafoo.de> <52487515.7080601@kernel.org> <524877DF.8050005@metafoo.de> <52488AF4.1030802@kernel.org>
+In-Reply-To: <52488AF4.1030802@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2 October 2013 23:09, Jonathan Cameron <jic23@kernel.org> wrote:
->
->
-> Lars-Peter Clausen <lars@metafoo.de> wrote:
->>On 10/02/2013 06:54 PM, Sachin Kamat wrote:
->>> Hi,
->>>
->>> On 27 September 2013 10:07, Sachin Kamat <sachin.kamat@linaro.org>
->>wrote:
->>>> Add device managed devm_iio_device_{register,unregister}()
->>>> to automatically unregister IIO drivers thus leading to
->>>> simplified IIO driver code.
->>>>
->>>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
->>>> Cc: Lars-Peter Clausen <lars@metafoo.de>
->>>> ---
->>>> Changes since v1:
->>>> Incorporated review comments from Lars-Peter Clausen
->>>> * Renamed variables
->>>> * Fixed the broken implementation
->>>> * Moved kernel doc from .h to .c file
->>>> ---
->>>
->>> Does this look good now?
->>>
+On 09/29/2013 10:17 PM, Jonathan Cameron wrote:
+> On 09/29/13 19:56, Lars-Peter Clausen wrote:
+>> I think a transparent union should work nicely and doesn't cause any code
+>> churn. Maybe even with a direct pointer to the event_spec.
 >>
->>Yes, but I want to at least test it once before I ack it.
->
-> And I am waiting on Lars' ack before taking it :)
+>> Something like:
+>>
+>> struct iio_dev_attr {
+>> 	...
+>> 	union {
+>> 		u64 address;
+>> 		struct {
+>> 			struct iio_event_spec *spec;
+>> 			enum iio_event_info info;
+>> 		} event;
+>> 	};
+>> 	...
+>> };
+> Looks good to me.
 
-Fair enough :)
+There is a bug[1] in gcc < 4.6 that breaks this for static struct
+initializers. E.g.
 
--- 
-With warm regards,
-Sachin
+static struct iio_dev_attr attr = {
+	...
+	.address = 123,
+	...
+};
+
+wont work. So I guess this means we can't use it for now.
+
+- Lars
+
+[1] http://gcc.gnu.org/bugzilla/show_bug.cgi?id=10676
