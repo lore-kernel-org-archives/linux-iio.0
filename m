@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32914 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32904 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751408Ab3JEKAO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Oct 2013 06:00:14 -0400
-Message-ID: <524FF15E.9020302@kernel.org>
-Date: Sat, 05 Oct 2013 12:00:46 +0100
+	with ESMTP id S1751408Ab3JEJ7s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Oct 2013 05:59:48 -0400
+Message-ID: <524FF144.40302@kernel.org>
+Date: Sat, 05 Oct 2013 12:00:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -23,7 +23,7 @@ On 10/05/13 08:45, Lars-Peter Clausen wrote:
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Applied to the togreg branch of iio.git
 
-Thanks,
+thanks,
 > ---
 >  drivers/iio/gyro/adis16130.c | 6 +-----
 >  1 file changed, 1 insertion(+), 5 deletions(-)
