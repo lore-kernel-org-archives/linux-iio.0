@@ -1,204 +1,149 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46601 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46876 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753032Ab3JLKRa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2013 06:17:30 -0400
-Message-ID: <52592FE9.4040506@kernel.org>
-Date: Sat, 12 Oct 2013 12:18:01 +0100
+	with ESMTP id S1753735Ab3JFR0P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 6 Oct 2013 13:26:15 -0400
+Message-ID: <5251AB64.7090302@kernel.org>
+Date: Sun, 06 Oct 2013 19:26:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Add a helper to free a list of IIO device attributes
-References: <1381146621-9326-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1381146621-9326-1-git-send-email-lars@metafoo.de>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO new driver features and cleanups for 3.13 - set 3
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/07/13 12:50, Lars-Peter Clausen wrote:
-> We have the same code to free a IIO device attribute list in multiple place.
-> This patch adds a new helper function to take care of this and replaces the
-> custom instances with a call to the helper function. Note that we do not need to
-> call list_del() for each of the list items since we will never look at any of
-> the list items nor the list itself again.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Sensible patch, thanks.
+The following changes since commit de40d1209898884ad5d15a7b5003d13f4f3263d5:
 
-Applied to the togreg branch of iio.git
+  staging: lustre: fix bug with LL_MRF_RETURN in loop_make_request (2013-09-30 20:46:36 -0700)
 
+are available in the git repository at:
 
-> ---
->  drivers/iio/iio_core.h            |  1 +
->  drivers/iio/industrialio-buffer.c | 21 ++-------------------
->  drivers/iio/industrialio-core.c   | 34 ++++++++++++++++++----------------
->  drivers/iio/industrialio-event.c  | 15 ++-------------
->  4 files changed, 23 insertions(+), 48 deletions(-)
-> 
-> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
-> index 9209f47..c5e3e86 100644
-> --- a/drivers/iio/iio_core.h
-> +++ b/drivers/iio/iio_core.h
-> @@ -33,6 +33,7 @@ int __iio_add_chan_devattr(const char *postfix,
->  			   enum iio_shared_by shared_by,
->  			   struct device *dev,
->  			   struct list_head *attr_list);
-> +void iio_free_chan_devattr_list(struct list_head *attr_list);
->  
->  /* Event interface flags */
->  #define IIO_BUSY_BIT_POS 1
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index e9f389b..9ab8dba 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -251,23 +251,6 @@ error_ret:
->  	return ret;
->  }
->  
-> -static void iio_buffer_remove_and_free_scan_dev_attr(struct iio_dev *indio_dev,
-> -						     struct iio_dev_attr *p)
-> -{
-> -	kfree(p->dev_attr.attr.name);
-> -	kfree(p);
-> -}
-> -
-> -static void __iio_buffer_attr_cleanup(struct iio_dev *indio_dev)
-> -{
-> -	struct iio_dev_attr *p, *n;
-> -	struct iio_buffer *buffer = indio_dev->buffer;
-> -
-> -	list_for_each_entry_safe(p, n,
-> -				 &buffer->scan_el_dev_attr_list, l)
-> -		iio_buffer_remove_and_free_scan_dev_attr(indio_dev, p);
-> -}
-> -
->  static const char * const iio_scan_elements_group_name = "scan_elements";
->  
->  int iio_buffer_register(struct iio_dev *indio_dev,
-> @@ -344,7 +327,7 @@ int iio_buffer_register(struct iio_dev *indio_dev,
->  error_free_scan_mask:
->  	kfree(buffer->scan_mask);
->  error_cleanup_dynamic:
-> -	__iio_buffer_attr_cleanup(indio_dev);
-> +	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
->  
->  	return ret;
->  }
-> @@ -354,7 +337,7 @@ void iio_buffer_unregister(struct iio_dev *indio_dev)
->  {
->  	kfree(indio_dev->buffer->scan_mask);
->  	kfree(indio_dev->buffer->scan_el_group.attrs);
-> -	__iio_buffer_attr_cleanup(indio_dev);
-> +	iio_free_chan_devattr_list(&indio_dev->buffer->scan_el_dev_attr_list);
->  }
->  EXPORT_SYMBOL(iio_buffer_unregister);
->  
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 863aa01..c9f3d73 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -793,11 +793,22 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  	return attrcount;
->  }
->  
-> -static void iio_device_remove_and_free_read_attr(struct iio_dev *indio_dev,
-> -						 struct iio_dev_attr *p)
-> +/**
-> + * iio_free_chan_devattr_list() - Free a list of IIO device attributes
-> + * @attr_list: List of IIO device attributes
-> + *
-> + * This function frees the memory allocated for each of the IIO device
-> + * attributes in the list. Note: if you want to reuse the list after calling
-> + * this function you have to reinitialize it using INIT_LIST_HEAD().
-> + */
-> +void iio_free_chan_devattr_list(struct list_head *attr_list)
->  {
-> -	kfree(p->dev_attr.attr.name);
-> -	kfree(p);
-> +	struct iio_dev_attr *p, *n;
-> +
-> +	list_for_each_entry_safe(p, n, attr_list, l) {
-> +		kfree(p->dev_attr.attr.name);
-> +		kfree(p);
-> +	}
->  }
->  
->  static ssize_t iio_show_dev_name(struct device *dev,
-> @@ -813,7 +824,7 @@ static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
->  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
->  {
->  	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
-> -	struct iio_dev_attr *p, *n;
-> +	struct iio_dev_attr *p;
->  	struct attribute **attr;
->  
->  	/* First count elements in any existing group */
-> @@ -866,11 +877,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
->  	return 0;
->  
->  error_clear_attrs:
-> -	list_for_each_entry_safe(p, n,
-> -				 &indio_dev->channel_attr_list, l) {
-> -		list_del(&p->l);
-> -		iio_device_remove_and_free_read_attr(indio_dev, p);
-> -	}
-> +	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
->  
->  	return ret;
->  }
-> @@ -878,12 +885,7 @@ error_clear_attrs:
->  static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
->  {
->  
-> -	struct iio_dev_attr *p, *n;
-> -
-> -	list_for_each_entry_safe(p, n, &indio_dev->channel_attr_list, l) {
-> -		list_del(&p->l);
-> -		iio_device_remove_and_free_read_attr(indio_dev, p);
-> -	}
-> +	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
->  	kfree(indio_dev->chan_attr_group.attrs);
->  }
->  
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index 36f0c8e..32c9bc2 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -339,17 +339,6 @@ error_ret:
->  	return ret;
->  }
->  
-> -static inline void __iio_remove_event_config_attrs(struct iio_dev *indio_dev)
-> -{
-> -	struct iio_dev_attr *p, *n;
-> -	list_for_each_entry_safe(p, n,
-> -				 &indio_dev->event_interface->
-> -				 dev_attr_list, l) {
-> -		kfree(p->dev_attr.attr.name);
-> -		kfree(p);
-> -	}
-> -}
-> -
->  static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
->  {
->  	int j, ret, attrcount = 0;
-> @@ -441,7 +430,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
->  	return 0;
->  
->  error_free_setup_event_lines:
-> -	__iio_remove_event_config_attrs(indio_dev);
-> +	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
->  	kfree(indio_dev->event_interface);
->  error_ret:
->  
-> @@ -452,7 +441,7 @@ void iio_device_unregister_eventset(struct iio_dev *indio_dev)
->  {
->  	if (indio_dev->event_interface == NULL)
->  		return;
-> -	__iio_remove_event_config_attrs(indio_dev);
-> +	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
->  	kfree(indio_dev->event_interface->group.attrs);
->  	kfree(indio_dev->event_interface);
->  }
-> 
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.13c
+
+for you to fetch changes up to 3658a71b10c8471ac217983ddf2a2bdde71008af:
+
+  staging:iio:ad9951: Use spi_sync_transfer() (2013-10-05 12:01:12 +0100)
+
+----------------------------------------------------------------
+Third set of new functionality and cleanups for IIO in the 3.13 cycle.
+
+Driver New Functionality
+* MXS - new interrupt driven touch screen support for i.MX23/28. Old
+  polled implementation dropped.
+
+Driver Cleanups
+* Some spi_sync boilerplate dropped by using spi_sync_transfer
+* Some switching of drivers to the fractional type for scale reading.
+  Moves the ugly calculation into one place.
+* Fix the documentation for *_voltage_scale which is never been correct
+  or as implemented in any driver.
+* HID sensor hub and children : Open the sensor hub only when someone cares.
+* hmc5843 - various minor
+
+----------------------------------------------------------------
+Juergen Beisert (9):
+      Staging/iio/adc/touchscreen/MXS: add proper clock handling
+      Staging/iio/adc/touchscreen/MXS: distinguish i.MX23's and i.MX28's LRADC
+      Staging/iio/adc/touchscreen/MXS: separate i.MX28 specific register bits
+      Staging/iio/adc/touchscreen/MXS: simplify register access
+      Staging/iio/adc/touchscreen/MXS: add i.MX23 support to the LRADC touchscreen driver
+      Staging/iio/adc/touchscreen/MXS: add interrupt driven touch detection
+      Staging/iio/adc/touchscreen/MXS: remove old touchscreen detection implementation
+      Staging/iio/adc/touchscreen/MXS: provide devicetree adaption
+      Staging/iio: add TODO reminder
+
+Lars-Peter Clausen (33):
+      iio:ad5064: Report scale as fractional value
+      iio:ad5360: Report scale as fractional value
+      iio:ad5380: Report scale as fractional value
+      iio:ad5421: Report scale as fractional value
+      iio:ad5446: Report scale as fractional value
+      iio:ad5504: Report scale as fractional value
+      iio:ad5624r: Report scale as fractional value
+      iio:ad5686: Report scale as fractional value
+      iio:ad5755: Report scale as fractional value
+      iio:ad5764: Report scale as fractional value
+      iio:ad5791: Report scale as fractional value
+      iio:max517: Report scale as fractional value
+      iio:mcp4725: Report scale as fractional value
+      iio:ad7266: Report scale as fractional value
+      iio:ad7476: Report scale as fractional value
+      iio:ad7791: Report scale as fractional value
+      iio:at91: Report scale as fractional value
+      iio:max1363: Report scale as fractional value
+      staging:iio:ad7280a: Report scale as fractional value
+      staging:iio:ad7606: Report scale as fractional value
+      staging:iio:ad7780: Report scale as fractional value
+      staging:iio:ad799x: Report scale as fractional value
+      staging:iio:ad7746: Report scale as fractional value
+      staging:iio:spear_adc: Report scale as fractional value
+      iio: Update unit of the voltage scale in the documentation
+      iio:ad5449: Use spi_sync_transfer()
+      iio:adis16080: Use spi_sync_transfer()
+      iio:adxrs450: Use spi_sync_transfer()
+      iio:adis16130: Use spi_sync_transfer()
+      staging:iio:adis16220: Use spi_sync_transfer()
+      staging:iio:ad9852: Use spi_sync_transfer()
+      staging:iio:ad9910: Use spi_sync_transfer()
+      staging:iio:ad9951: Use spi_sync_transfer()
+
+Peter Meerwald (6):
+      staging:iio:hmc5843: Add pointer to i2c client to data struct
+      staging:iio:hmc5843: Rewrite init function
+      staging:iio:hmc5843: Use INFO_SAMP_FREQ
+      staging:iio:hmc5843: Remove unused LSB register #defines
+      staging:iio:hmc5843: Tighten comments
+      staging:iio:hmc5843: Introduce helper functions to show/check list of int pairs
+
+Srinivas Pandruvada (3):
+      HID: Delay opening HID device
+      IIO: call sensor hub open close function
+      HID RTC: Open sensor hub open close
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   4 +-
+ .../bindings/staging/iio/adc/mxs-lradc.txt         |  36 +-
+ arch/arm/boot/dts/imx23.dtsi                       |   1 +
+ arch/arm/boot/dts/imx28-evk.dts                    |   4 +
+ arch/arm/boot/dts/imx28.dtsi                       |   1 +
+ drivers/hid/hid-sensor-hub.c                       |  45 +-
+ drivers/iio/adc/ad7266.c                           |  21 +-
+ drivers/iio/adc/ad7476.c                           |   7 +-
+ drivers/iio/adc/ad7791.c                           |  18 +-
+ drivers/iio/adc/at91_adc.c                         |   6 +-
+ drivers/iio/adc/max1363.c                          |   8 +-
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |   6 +
+ drivers/iio/dac/ad5064.c                           |   7 +-
+ drivers/iio/dac/ad5360.c                           |  11 +-
+ drivers/iio/dac/ad5380.c                           |  40 +-
+ drivers/iio/dac/ad5421.c                           |  16 +-
+ drivers/iio/dac/ad5446.c                           |   9 +-
+ drivers/iio/dac/ad5449.c                           |   7 +-
+ drivers/iio/dac/ad5504.c                           |   9 +-
+ drivers/iio/dac/ad5624r_spi.c                      |   9 +-
+ drivers/iio/dac/ad5686.c                           |  10 +-
+ drivers/iio/dac/ad5755.c                           |  17 +-
+ drivers/iio/dac/ad5764.c                           |  10 +-
+ drivers/iio/dac/ad5791.c                           |   6 +-
+ drivers/iio/dac/max517.c                           |   8 +-
+ drivers/iio/dac/mcp4725.c                          |   8 +-
+ drivers/iio/gyro/adis16080.c                       |   7 +-
+ drivers/iio/gyro/adis16130.c                       |   6 +-
+ drivers/iio/gyro/adxrs450.c                        |  12 +-
+ drivers/rtc/rtc-hid-sensor-time.c                  |  15 +-
+ drivers/staging/iio/TODO                           |  11 +
+ drivers/staging/iio/accel/adis16220_core.c         |   6 +-
+ drivers/staging/iio/adc/ad7280a.c                  |  10 +-
+ drivers/staging/iio/adc/ad7606_core.c              |   9 +-
+ drivers/staging/iio/adc/ad7780.c                   |   9 +-
+ drivers/staging/iio/adc/ad799x_core.c              |   8 +-
+ drivers/staging/iio/adc/mxs-lradc.c                | 969 ++++++++++++++-------
+ drivers/staging/iio/adc/spear_adc.c                |   7 +-
+ drivers/staging/iio/cdc/ad7746.c                   |  13 +-
+ drivers/staging/iio/frequency/ad9852.c             |  45 +-
+ drivers/staging/iio/frequency/ad9910.c             |  82 +-
+ drivers/staging/iio/frequency/ad9951.c             |  26 +-
+ drivers/staging/iio/magnetometer/hmc5843.c         | 259 +++---
+ include/linux/hid-sensor-hub.h                     |  18 +
+ 44 files changed, 1058 insertions(+), 778 deletions(-)
