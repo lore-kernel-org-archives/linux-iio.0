@@ -1,138 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36769 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754491Ab3JITL7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Oct 2013 15:11:59 -0400
-Message-ID: <5255B8AD.3040109@kernel.org>
-Date: Wed, 09 Oct 2013 21:12:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Josh Wu <josh.wu@atmel.com>, dmitry.torokhov@gmail.com
-CC: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	maxime.ripard@free-electrons.com, plagnioj@jcrosoft.com,
-	nicolas.ferre@atmel.com, thomas.petazzoni@free-electrons.com,
-	mark.rutland@arm.com, b.brezillon@overkiz.com
-Subject: Re: [PATCH 1/3] iio: at91: ADC start-up time calculation changed
- since at91sam9x5
-References: <1381204136-32322-1-git-send-email-josh.wu@atmel.com> <1381204136-32322-2-git-send-email-josh.wu@atmel.com>
-In-Reply-To: <1381204136-32322-2-git-send-email-josh.wu@atmel.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 01/20] iio: Factor IIO value formating into its own function
+Date: Mon,  7 Oct 2013 16:11:15 +0200
+Message-Id: <1381155094-20166-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/08/13 04:48, Josh Wu wrote:
-> Since in at91sam9x5, sama5d3x chip. the start up time calucation is changed.
-> This patch can choose different start up time calculation formula for different
-> chips.
-> 
-> Signed-off-by: Josh Wu <josh.wu@atmel.com>
-> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Applied to the togreg branch of iio.git
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/iio_core.h          |  2 ++
+ drivers/iio/industrialio-core.c | 38 ++++++++++++++++++++++++++------------
+ 2 files changed, 28 insertions(+), 12 deletions(-)
 
-Thanks
-> ---
->  drivers/iio/adc/at91_adc.c |   53 ++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 46 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 0f16b55..cee04a4 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -40,6 +40,9 @@
->  	(writel_relaxed(val, st->reg_base + reg))
->  
->  struct at91_adc_caps {
-> +	/* startup time calculate function */
-> +	u32 (*calc_startup_ticks)(u8 startup_time, u32 adc_clk_khz);
-> +
->  	struct at91_adc_reg_desc registers;
->  };
->  
-> @@ -434,6 +437,45 @@ ret:
->  	return ret;
->  }
->  
-> +static u32 calc_startup_ticks_9260(u8 startup_time, u32 adc_clk_khz)
-> +{
-> +	/*
-> +	 * Number of ticks needed to cover the startup time of the ADC
-> +	 * as defined in the electrical characteristics of the board,
-> +	 * divided by 8. The formula thus is :
-> +	 *   Startup Time = (ticks + 1) * 8 / ADC Clock
-> +	 */
-> +	return round_up((startup_time * adc_clk_khz / 1000) - 1, 8) / 8;
-> +}
-> +
-> +static u32 calc_startup_ticks_9x5(u8 startup_time, u32 adc_clk_khz)
-> +{
-> +	/*
-> +	 * For sama5d3x and at91sam9x5, the formula changes to:
-> +	 * Startup Time = <lookup_table_value> / ADC Clock
-> +	 */
-> +	const int startup_lookup[] = {
-> +		0  , 8  , 16 , 24 ,
-> +		64 , 80 , 96 , 112,
-> +		512, 576, 640, 704,
-> +		768, 832, 896, 960
-> +		};
-> +	int i, size = ARRAY_SIZE(startup_lookup);
-> +	unsigned int ticks;
-> +
-> +	ticks = startup_time * adc_clk_khz / 1000;
-> +	for (i = 0; i < size; i++)
-> +		if (ticks < startup_lookup[i])
-> +			break;
-> +
-> +	ticks = i;
-> +	if (ticks == size)
-> +		/* Reach the end of lookup table */
-> +		ticks = size - 1;
-> +
-> +	return ticks;
-> +}
-> +
->  static const struct of_device_id at91_adc_dt_ids[];
->  
->  static int at91_adc_probe_dt(struct at91_adc_state *st,
-> @@ -657,15 +699,9 @@ static int at91_adc_probe(struct platform_device *pdev)
->  		ret = -EINVAL;
->  		goto error_disable_adc_clk;
->  	}
-> +	ticks = (*st->caps->calc_startup_ticks)(st->startup_time, adc_clk_khz);
->  
->  	/*
-> -	 * Number of ticks needed to cover the startup time of the ADC as
-> -	 * defined in the electrical characteristics of the board, divided by 8.
-> -	 * The formula thus is : Startup Time = (ticks + 1) * 8 / ADC Clock
-> -	 */
-> -	ticks = round_up((st->startup_time * adc_clk_khz /
-> -			  1000) - 1, 8) / 8;
-> -	/*
->  	 * a minimal Sample and Hold Time is necessary for the ADC to guarantee
->  	 * the best converted final value between two channels selection
->  	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
-> @@ -742,6 +778,7 @@ static int at91_adc_remove(struct platform_device *pdev)
->  
->  #ifdef CONFIG_OF
->  static struct at91_adc_caps at91sam9260_caps = {
-> +	.calc_startup_ticks = calc_startup_ticks_9260,
->  	.registers = {
->  		.channel_base = AT91_ADC_CHR(0),
->  		.drdy_mask = AT91_ADC_DRDY,
-> @@ -753,6 +790,7 @@ static struct at91_adc_caps at91sam9260_caps = {
->  };
->  
->  static struct at91_adc_caps at91sam9g45_caps = {
-> +	.calc_startup_ticks = calc_startup_ticks_9260,	/* same as 9260 */
->  	.registers = {
->  		.channel_base = AT91_ADC_CHR(0),
->  		.drdy_mask = AT91_ADC_DRDY,
-> @@ -764,6 +802,7 @@ static struct at91_adc_caps at91sam9g45_caps = {
->  };
->  
->  static struct at91_adc_caps at91sam9x5_caps = {
-> +	.calc_startup_ticks = calc_startup_ticks_9x5,
->  	.registers = {
->  		.channel_base = AT91_ADC_CDR0_9X5,
->  		.drdy_mask = AT91_ADC_SR_DRDY_9X5,
-> 
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index 9209f47..0157686 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -34,6 +34,8 @@ int __iio_add_chan_devattr(const char *postfix,
+ 			   struct device *dev,
+ 			   struct list_head *attr_list);
+ 
++ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
++
+ /* Event interface flags */
+ #define IIO_BUSY_BIT_POS 1
+ 
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 863aa01..af69723 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -362,22 +362,20 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(iio_enum_write);
+ 
+-static ssize_t iio_read_channel_info(struct device *dev,
+-				     struct device_attribute *attr,
+-				     char *buf)
++/**
++ * iio_format_value() - Formats a IIO value into its string representation
++ * @buf: The buffer to which the formated value gets written
++ * @type: One of the IIO_VAL_... constants. This decides how the val and val2
++ *        parameters are formatted.
++ * @val: First part of the value, exact meaning depends on the type parameter.
++ * @val2: Second part of the value, exact meaning depends on the type parameter.
++ */
++ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	unsigned long long tmp;
+-	int val, val2;
+ 	bool scale_db = false;
+-	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+-					    &val, &val2, this_attr->address);
+ 
+-	if (ret < 0)
+-		return ret;
+-
+-	switch (ret) {
++	switch (type) {
+ 	case IIO_VAL_INT:
+ 		return sprintf(buf, "%d\n", val);
+ 	case IIO_VAL_INT_PLUS_MICRO_DB:
+@@ -409,6 +407,22 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ 	}
+ }
+ 
++static ssize_t iio_read_channel_info(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	int val, val2;
++	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
++					    &val, &val2, this_attr->address);
++
++	if (ret < 0)
++		return ret;
++
++	return iio_format_value(buf, ret, val, val2);
++}
++
+ /**
+  * iio_str_to_fixpoint() - Parse a fixed-point number from a string
+  * @str: The string to parse
+-- 
+1.8.0
