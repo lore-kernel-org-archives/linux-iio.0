@@ -1,88 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47809 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751731Ab3JLMEn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2013 08:04:43 -0400
-Message-ID: <5259490B.3040101@kernel.org>
-Date: Sat, 12 Oct 2013 14:05:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 18/20] staging:iio:ad799x: Use event spec for threshold
- hysteresis
-References: <1381155094-20166-1-git-send-email-lars@metafoo.de> <1381155094-20166-18-git-send-email-lars@metafoo.de> <52593A44.3080007@kernel.org> <5259352B.5070906@metafoo.de>
-In-Reply-To: <5259352B.5070906@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-020.synserver.de ([212.40.185.20]:1104 "EHLO
+	smtp-out-017.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1755415Ab3JGOJx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Oct 2013 10:09:53 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 17/20] staging:iio:ad799x: Simplify threshold register look-up
+Date: Mon,  7 Oct 2013 16:11:31 +0200
+Message-Id: <1381155094-20166-17-git-send-email-lars@metafoo.de>
+In-Reply-To: <1381155094-20166-1-git-send-email-lars@metafoo.de>
+References: <1381155094-20166-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/12/13 12:40, Lars-Peter Clausen wrote:
-> On 10/12/2013 02:02 PM, Jonathan Cameron wrote:
->> On 10/07/13 15:11, Lars-Peter Clausen wrote:
->>> Register the event threshold hysteresis attributes by using the new
->>> IIO_EV_INFO_HYSTERESIS event spec type. This allows us to throw away a good
->>> portion of boiler-plate code.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>
->> Applied, as here as it is a great improvement.
->>
->> I do wonder if we can handle the EITHER direction of the event more
->> cleanly, now we have the different event masks.
->>
->> Maybe that is even uglier than the current option.
->>
->> What do you think?
-> [...]
->>> +	}, {
->>> +		.type = IIO_EV_TYPE_THRESH,
->>> +		.dir = IIO_EV_DIR_EITHER,
->>> +		.mask_separate = BIT(IIO_EV_INFO_HYSTERESIS),
->> This is a little ugly, but I can see why you did it.  Do we need to allow an additional
->> event_mask, perhaps
->> mask_shared_by_both_directions ?
->>
->> Then we could drop the IIO_EV_DIR_EITHER direction entirely.
-> 
-> Yes, you are right this is not exactly beautiful. I had to struggle with
-> myself a bit to convince me that it could go in as it is. I've tried a few
-> alternatives, but couldn't really find anything better. The problem is that
-> the setting whether we want to share the attribute by event direction and
-> e.g. by channel type are orthogonal. It is possible that an attribute is
-> shared by both event direction and channel type. That's why a separate event
-> mask doesn't work. The other two options I saw were:
-> 1) Encoding the direction directly in the bit mask like we did before with
-> the old style event mask and the IIO_EV_BIT() macro. E.g. something like:
-> .mask_separate = IIO_EV_BIT(IIO_EV_DIR_EITHER, IIO_EV_INFO_HYSTERESIS)
-> 
-> The problem with this approach is that it takes up a lot of space in the
-> mask and limits the number of info attributes we can have.
-> 
-> 2) Have one entry in the event spec array for each attribute e.g.
-> 
-> {
-> 	.type = IIO_EV_TYPE_THRESH.
-> 	.dir = IIO_EV_DIR_EITHER,
-> 	.info = IIO_EV_INFO_HYSTERESIS,
-> 	.shared_by = IIO_SEPARATE,
-> }
-> 
-> This again takes up extra space considering that the type and direction are
-> usually shared between the event attributes.
-> 
-> So the current approach is kind of a hybrid between the two. It allows you
-> to have multiple entries when necessary, but also allows you to group
-> similar attributes together.
-So a case of the least bad option.  Fair enough. We'll go with it as
-currently defined and if anyone comes up with anything better it can be
-revisited.
+Given a channel number the corresponding threshold and hysteresis registers can
+easily be calculated. No need to use a look-up table.
 
-> 
-> - Lars
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad799x.h      | 16 ++++------------
+ drivers/staging/iio/adc/ad799x_core.c | 34 ++++++++++++++--------------------
+ 2 files changed, 18 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+index b51680c..a591aa6 100644
+--- a/drivers/staging/iio/adc/ad799x.h
++++ b/drivers/staging/iio/adc/ad799x.h
+@@ -36,18 +36,10 @@
+ #define AD7998_ALERT_STAT_REG			0x1
+ #define AD7998_CONF_REG				0x2
+ #define AD7998_CYCLE_TMR_REG			0x3
+-#define AD7998_DATALOW_CH1_REG			0x4
+-#define AD7998_DATAHIGH_CH1_REG			0x5
+-#define AD7998_HYST_CH1_REG			0x6
+-#define AD7998_DATALOW_CH2_REG			0x7
+-#define AD7998_DATAHIGH_CH2_REG			0x8
+-#define AD7998_HYST_CH2_REG			0x9
+-#define AD7998_DATALOW_CH3_REG			0xA
+-#define AD7998_DATAHIGH_CH3_REG			0xB
+-#define AD7998_HYST_CH3_REG			0xC
+-#define AD7998_DATALOW_CH4_REG			0xD
+-#define AD7998_DATAHIGH_CH4_REG			0xE
+-#define AD7998_HYST_CH4_REG			0xF
++
++#define AD7998_DATALOW_REG(x)			((x) * 3 + 0x4)
++#define AD7998_DATAHIGH_REG(x)			((x) * 3 + 0x5)
++#define AD7998_HYST_REG(x)			((x) * 3 + 0x6)
+ 
+ #define AD7998_CYC_MASK				0x7
+ #define AD7998_CYC_DIS				0x0
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 57bc540..fa0ada1 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -259,12 +259,14 @@ static int ad799x_read_event_config(struct iio_dev *indio_dev,
+ 	return 1;
+ }
+ 
+-static const u8 ad799x_threshold_addresses[][2] = {
+-	{ AD7998_DATALOW_CH1_REG, AD7998_DATAHIGH_CH1_REG },
+-	{ AD7998_DATALOW_CH2_REG, AD7998_DATAHIGH_CH2_REG },
+-	{ AD7998_DATALOW_CH3_REG, AD7998_DATAHIGH_CH3_REG },
+-	{ AD7998_DATALOW_CH4_REG, AD7998_DATAHIGH_CH4_REG },
+-};
++static int ad799x_threshold_reg(const struct iio_chan_spec *chan,
++					enum iio_event_direction dir)
++{
++	if (dir == IIO_EV_DIR_FALLING)
++		return AD7998_DATALOW_REG(chan->channel);
++	else
++		return AD7998_DATAHIGH_REG(chan->channel);
++}
+ 
+ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+ 				    const struct iio_chan_spec *chan,
+@@ -275,13 +277,9 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+ {
+ 	int ret;
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	int direction = dir == IIO_EV_DIR_FALLING;
+-	int number = chan->channel;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+-	ret = ad799x_i2c_write16(st,
+-				 ad799x_threshold_addresses[number][direction],
+-				 val);
++	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir), val);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return ret;
+@@ -296,14 +294,10 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+ {
+ 	int ret;
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+-	int direction = dir == IIO_EV_DIR_FALLING;
+-	int number = chan->channel;
+ 	u16 valin;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+-	ret = ad799x_i2c_read16(st,
+-				ad799x_threshold_addresses[number][direction],
+-				&valin);
++	ret = ad799x_i2c_read16(st, ad799x_threshold_reg(chan, dir), &valin);
+ 	mutex_unlock(&indio_dev->mlock);
+ 	if (ret < 0)
+ 		return ret;
+@@ -391,25 +385,25 @@ static IIO_DEVICE_ATTR(in_voltage0_thresh_both_hyst_raw,
+ 		       S_IRUGO | S_IWUSR,
+ 		       ad799x_read_channel_config,
+ 		       ad799x_write_channel_config,
+-		       AD7998_HYST_CH1_REG);
++		       AD7998_HYST_REG(0));
+ 
+ static IIO_DEVICE_ATTR(in_voltage1_thresh_both_hyst_raw,
+ 		       S_IRUGO | S_IWUSR,
+ 		       ad799x_read_channel_config,
+ 		       ad799x_write_channel_config,
+-		       AD7998_HYST_CH2_REG);
++		       AD7998_HYST_REG(1));
+ 
+ static IIO_DEVICE_ATTR(in_voltage2_thresh_both_hyst_raw,
+ 		       S_IRUGO | S_IWUSR,
+ 		       ad799x_read_channel_config,
+ 		       ad799x_write_channel_config,
+-		       AD7998_HYST_CH3_REG);
++		       AD7998_HYST_REG(2));
+ 
+ static IIO_DEVICE_ATTR(in_voltage3_thresh_both_hyst_raw,
+ 		       S_IRUGO | S_IWUSR,
+ 		       ad799x_read_channel_config,
+ 		       ad799x_write_channel_config,
+-		       AD7998_HYST_CH4_REG);
++		       AD7998_HYST_REG(3));
+ 
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+ 			      ad799x_read_frequency,
+-- 
+1.8.0
+
