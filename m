@@ -1,152 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46181 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752344Ab3JLJoY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2013 05:44:24 -0400
-Message-ID: <52592822.2030304@kernel.org>
-Date: Sat, 12 Oct 2013 11:44:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Joe Perches <joe@perches.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: linux-iio <linux-iio@vger.kernel.org>,
-	devel <devel@driverdev.osuosl.org>,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Trivial PATCH] staging: Remove unnecessary semicolons
-References: <1381446479.14017.16.camel@joe-AO722>
-In-Reply-To: <1381446479.14017.16.camel@joe-AO722>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] iio: hid-sensors: Fix power and report state
+Date: Tue,  8 Oct 2013 14:32:43 -0700
+Message-Id: <1381267963-14669-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/11/13 00:07, Joe Perches wrote:
-> These aren't necessary after switch, if and while statements.
-> 
-> Also remove some unnecessary braces where these
-> semicolons were removed around single statement
-> and some unnecessary blank lines.
-> 
-> Signed-off-by: Joe Perches <joe@perches.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-(for the iio ones).
-> ---
->  drivers/staging/iio/adc/ad7291.c                |  2 +-
->  drivers/staging/iio/cdc/ad7150.c                |  2 +-
->  drivers/staging/imx-drm/imx-tve.c               |  2 +-
->  drivers/staging/lustre/lustre/lvfs/lvfs_linux.c |  2 +-
->  drivers/staging/rtl8188eu/core/rtw_recv.c       |  2 +-
->  drivers/staging/rtl8192e/rtl8192e/rtl_core.c    | 10 ++--------
->  6 files changed, 7 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-> index 1dae1ef..ccaa8d6f8 100644
-> --- a/drivers/staging/iio/adc/ad7291.c
-> +++ b/drivers/staging/iio/adc/ad7291.c
-> @@ -290,7 +290,7 @@ static int ad7291_read_event_value(struct iio_dev *indio_dev,
->  		return 0;
->  	default:
->  		return -EINVAL;
-> -	};
-> +	}
->  }
->  
->  static int ad7291_write_event_value(struct iio_dev *indio_dev,
-> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-> index f4a0341..618d820 100644
-> --- a/drivers/staging/iio/cdc/ad7150.c
-> +++ b/drivers/staging/iio/cdc/ad7150.c
-> @@ -300,7 +300,7 @@ static int ad7150_read_event_value(struct iio_dev *indio_dev,
->  
->  	default:
->  		return -EINVAL;
-> -	};
-> +	}
->  }
->  
->  static int ad7150_write_event_value(struct iio_dev *indio_dev,
-> diff --git a/drivers/staging/imx-drm/imx-tve.c b/drivers/staging/imx-drm/imx-tve.c
-> index 33d6525..59dd4d5 100644
-> --- a/drivers/staging/imx-drm/imx-tve.c
-> +++ b/drivers/staging/imx-drm/imx-tve.c
-> @@ -696,7 +696,7 @@ static int imx_tve_probe(struct platform_device *pdev)
->  	if (val != 0x00100000) {
->  		dev_err(&pdev->dev, "configuration register default value indicates this is not a TVEv2\n");
->  		return -ENODEV;
-> -	};
-> +	}
->  
->  	/* disable cable detection for VGA mode */
->  	ret = regmap_write(tve->regmap, TVE_CD_CONT_REG, 0);
-> diff --git a/drivers/staging/lustre/lustre/lvfs/lvfs_linux.c b/drivers/staging/lustre/lustre/lvfs/lvfs_linux.c
-> index f6268dc..ea37715 100644
-> --- a/drivers/staging/lustre/lustre/lvfs/lvfs_linux.c
-> +++ b/drivers/staging/lustre/lustre/lvfs/lvfs_linux.c
-> @@ -282,7 +282,7 @@ __s64 lprocfs_read_helper(struct lprocfs_counter *lc,
->  		break;
->  	default:
->  		break;
-> -	};
-> +	}
->  
->  	return ret;
->  }
-> diff --git a/drivers/staging/rtl8188eu/core/rtw_recv.c b/drivers/staging/rtl8188eu/core/rtw_recv.c
-> index ba8e534..9f0f30f7 100644
-> --- a/drivers/staging/rtl8188eu/core/rtw_recv.c
-> +++ b/drivers/staging/rtl8188eu/core/rtw_recv.c
-> @@ -1586,7 +1586,7 @@ _func_enter_;
->  
->  		pfhdr->attrib.icv_len = pnfhdr->attrib.icv_len;
->  		plist = get_next(plist);
-> -	};
-> +	}
->  
->  	/* free the defrag_q queue and return the prframe */
->  	rtw_free_recvframe_queue(defrag_q, pfree_recv_queue);
-> diff --git a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-> index 7d322f3..b01f6f5 100644
-> --- a/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-> +++ b/drivers/staging/rtl8192e/rtl8192e/rtl_core.c
-> @@ -1888,9 +1888,8 @@ void rtl8192_hard_data_xmit(struct sk_buff *skb, struct net_device *dev,
->  	memcpy((unsigned char *)(skb->cb), &dev, sizeof(dev));
->  	skb_push(skb, priv->rtllib->tx_headroom);
->  	ret = rtl8192_tx(dev, skb);
-> -	if (ret != 0) {
-> +	if (ret != 0)
->  		kfree_skb(skb);
-> -	};
->  
->  	if (queue_index != MGNT_QUEUE) {
->  		priv->rtllib->stats.tx_bytes += (skb->len -
-> @@ -1898,7 +1897,6 @@ void rtl8192_hard_data_xmit(struct sk_buff *skb, struct net_device *dev,
->  		priv->rtllib->stats.tx_packets++;
->  	}
->  
-> -
->  	return;
->  }
->  
-> @@ -1930,15 +1928,11 @@ int rtl8192_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
->  		tcb_desc->bTxEnableFwCalcDur = 1;
->  		skb_push(skb, priv->rtllib->tx_headroom);
->  		ret = rtl8192_tx(dev, skb);
-> -		if (ret != 0) {
-> +		if (ret != 0)
->  			kfree_skb(skb);
-> -		};
->  	}
->  
-> -
-> -
->  	return ret;
-> -
->  }
->  
->  static void rtl8192_tx_isr(struct net_device *dev, int prio)
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+In the original HID sensor specifications all Named array enums stated
+to be 0-based. But the most commercial devices implemented as 1-based,
+because of the implementation by one of the major OS vendor. To fix this
+we added a quirk, which required module to be recompiled. Instead now
+added a module parameter, so that it can be switched at runtime.
+By default it will be 1-based to be compatible with majority of devices.
+This is true for both power and report state usage id for hid sensors.
+Also added defines for power on values for D0 to D4 and using it for
+clarity.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/Kconfig             |  9 --------
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 26 +++++++++++++++++-----
+ include/linux/hid-sensor-ids.h                     | 12 ++++++++++
+ 3 files changed, 33 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
+index 1178121..39188b7 100644
+--- a/drivers/iio/common/hid-sensors/Kconfig
++++ b/drivers/iio/common/hid-sensors/Kconfig
+@@ -25,13 +25,4 @@ config HID_SENSOR_IIO_TRIGGER
+ 	  If this driver is compiled as a module, it will be named
+ 	  hid-sensor-trigger.
+ 
+-config HID_SENSOR_ENUM_BASE_QUIRKS
+-	bool "ENUM base quirks for HID Sensor IIO drivers"
+-	depends on HID_SENSOR_IIO_COMMON
+-	help
+-	  Say yes here to build support for sensor hub FW using
+-	  enumeration, which is using 1 as base instead of 0.
+-	  Since logical minimum is still set 0 instead of 1,
+-	  there is no easy way to differentiate.
+-
+ endmenu
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index b6e77e0..dbc9141 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -28,21 +28,37 @@
+ #include <linux/iio/sysfs.h>
+ #include "hid-sensor-trigger.h"
+ 
++#define	HID_SENSOR_NAMED_ARRAY_BASE	1
++static int hid_sensor_named_array_base = HID_SENSOR_NAMED_ARRAY_BASE;
++module_param(hid_sensor_named_array_base, int, 0644);
++MODULE_PARM_DESC(hid_sensor_named_array_base,
++	"HID SENSOR NAMED ARRAY BASE (0 or 1).");
++
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
+ {
+ 	struct hid_sensor_common *st = iio_trigger_get_drvdata(trig);
+ 	int state_val;
++	int report_state;
+ 
+ 	if (state) {
+ 		if (sensor_hub_device_open(st->hsdev))
+ 			return -EIO;
+-	} else
++		state_val =
++		HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM;
++		report_state =
++		HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM;
++	} else {
+ 		sensor_hub_device_close(st->hsdev);
+-
+-	state_val = state ? 1 : 0;
+-	if (IS_ENABLED(CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS))
++		state_val =
++		HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM;
++		report_state =
++		HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM;
++	}
++	if (hid_sensor_named_array_base) {
+ 		++state_val;
++		++report_state;
++	}
+ 	st->data_ready = state;
+ 	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
+ 					st->power_state.index,
+@@ -50,7 +66,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ 	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
+ 					st->report_state.index,
+-					(s32)state_val);
++					(s32)report_state);
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 4f945d3..8323775 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -117,4 +117,16 @@
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+ #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
+ 
++/* Power state enumerations */
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM		0x00
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM		0x01
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D1_LOW_POWER_ENUM		0x02
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D2_STANDBY_WITH_WAKE_ENUM	0x03
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D3_SLEEP_WITH_WAKE_ENUM	0x04
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM		0x05
++
++/* Report State enumerations */
++#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM		0x00
++#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM		0x01
++
+ #endif
+-- 
+1.8.3.1
