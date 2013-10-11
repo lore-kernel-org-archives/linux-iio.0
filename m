@@ -1,76 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from nasmtp01.atmel.com ([192.199.1.245]:17609 "EHLO
-	DVREDG01.corp.atmel.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751995Ab3JHDpp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Oct 2013 23:45:45 -0400
-Message-ID: <52537FA3.10205@atmel.com>
-Date: Tue, 8 Oct 2013 11:44:35 +0800
-From: Josh Wu <josh.wu@atmel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <plagnioj@jcrosoft.com>,
-	<nicolas.ferre@atmel.com>, <thomas.petazzoni@free-electrons.com>,
-	<mark.rutland@arm.com>, <b.brezillon@overkiz.com>
-Subject: Re: [PATCH v3 4/6] iio: at91: ADC start-up time calculation changed
- since at91sam9x5
-References: <1377602932-1899-1-git-send-email-josh.wu@atmel.com> <1377602932-1899-5-git-send-email-josh.wu@atmel.com> <20130828090354.GP2695@lukather> <521FB660.8010607@kernel.org> <524A96C8.7010707@kernel.org>
-In-Reply-To: <524A96C8.7010707@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Received: from mailout4.samsung.com ([203.254.224.34]:40384 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752314Ab3JKIVj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Oct 2013 04:21:39 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, tomasz.figa@gmail.com
+Subject: [PATCH v3] iio: exynos_adc: use wait_for_completion_timeout instead of
+ interruptible
+Date: Fri, 11 Oct 2013 13:53:41 +0530
+Message-id: <1381479821-17276-1-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1365048389-6364-1-git-send-email-naveenkrishna.ch@gmail.com>
+References: <1365048389-6364-1-git-send-email-naveenkrishna.ch@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi, Jonathan
+This patch does the following
+1. use wait_for_completion_timeout instead of
+   wait_for_completion_interruptible_timeout
+2. Reset software if a timeout happens.
+3. Also reduce the timeout to 100milli secs
 
-On 10/1/2013 5:32 PM, Jonathan Cameron wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 08/29/13 22:00, Jonathan Cameron wrote:
->> On 08/28/13 10:03, Maxime Ripard wrote:
->>> Hi Josh,
->>>
->>> On Tue, Aug 27, 2013 at 07:28:50PM +0800, Josh Wu wrote:
->>>> Since in at91sam9x5, sama5d3x chip. the start up time calucation is changed. This patch can choose different
->>>> start up time calculation formula for different chips.
->>>>
->>>> Signed-off-by: Josh Wu <josh.wu@atmel.com>
->>> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
->>>
->> Unfortunately this one has a dependency on the fix patch which is going in through my fixes branch so will have to
->> wait until that hits my upstream.
->>
->> I'd like 5 and 6 to sit a while longer anyway (and 6 needs Dmitry's sign off before I take that.)
->>
-> Hi All,
->
-> This patch no longer applies unfortunately. Josh, could you bring
-> it up to date and repost the last 3 patches of this series?
+Note: submitted for review at https://patchwork.kernel.org/patch/2279591/
 
-Sorry for the later reply since I just come back from the holiday.
-I will send the last 3 patches of this series (include this one) base on 
-the mainline Linux. Thanks.
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: Doug Anderson <dianders@chromium.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+---
+Changes since v1:
+As per discussion at
+http://marc.info/?l=linux-kernel&m=136517637228869&w=3
 
-Best Regards,
-Josh Wu
+This patch does the following
+1. use wait_for_completion_timeout instead of
+   wait_for_completion_interruptible_timeout
+2. Reset software if a timeout happens.
+3. Also reduce the timeout to 100milli secs
 
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v2.0.21 (GNU/Linux)
-> Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
->
-> iQIcBAEBAgAGBQJSSpbIAAoJEFSFNJnE9BaIi48QALwC0aVUQNU94RpUBRBqFVkF
-> H8AB2pLBLYV4JlLD1kg9/ksltZh9+xegd/mM/C/lqZoHaokbSSF0bcAPSV2E3lXN
-> MJ3sRx0ubmGAMNWOYI22pqD1BQwEWMdjmS/BaZ2FxkOdJyIV/jkR8NpA3BrvL7e2
-> iOv9k7nBkOI1B//0K/xr4B0MWotnbmq45KeHTR1VnItqGWHDG7gyB+sbnymyf53M
-> XY99HUpkLggBJrbp05PYmp9RTvyV7NYlMvgMtwUWcM6VaA0YrSRR349P+UsIcmwV
-> 60yXRDRZCM5Vu3HDAVnbGDtumGjSFYsXXVkJQoN8izCBn0ZsbdSzc4bJyGzn90WK
-> vpt5rpd4k+ne/TTuJSiIiz8g/7aZvlWWSQ17j2Qb+IOfh2yROHuA+yyikfFV8N4e
-> 8jkd5HSMMRoL1Bv1vsf8eOJVlIMTOkG/2Wa7rXJOiWwzmc09Fxp13SoOIOxEMqJY
-> lCj8In1fYLryMBCjxR2C/ysnullAbTwBv9HtudPm3Lu80eR8GL7lB4VrrhJyHILP
-> ROvJE4ETYpYQTxQZMJKgVAQBFUAhBmckdc1A/SXMcDJgZKraP9aFvJPYbFR4OlFz
-> UfjWWS6TzHFgFe2r804DzT+A7fpdZNFrbxyM40ttg7kJ81DgT9aQncEM96dEmiWh
-> nXz0iA/maOXKkqJluLWl
-> =HbYR
-> -----END PGP SIGNATURE-----
+Changes since v2:
+None.
+Rebased and reposting.
+
+---
+ drivers/iio/adc/exynos_adc.c |   66 +++++++++++++++++++++++-------------------
+ 1 file changed, 36 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index d25b262..f18ed7e 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -82,7 +82,7 @@ enum adc_version {
+ #define ADC_CON_EN_START	(1u << 0)
+ #define ADC_DATX_MASK		0xFFF
+ 
+-#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
++#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+ 
+ struct exynos_adc {
+ 	void __iomem		*regs;
+@@ -112,6 +112,30 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
+ 	return (unsigned int)match->data;
+ }
+ 
++static void exynos_adc_hw_init(struct exynos_adc *info)
++{
++	u32 con1, con2;
++
++	if (info->version == ADC_V2) {
++		con1 = ADC_V2_CON1_SOFT_RESET;
++		writel(con1, ADC_V2_CON1(info->regs));
++
++		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
++			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
++		writel(con2, ADC_V2_CON2(info->regs));
++
++		/* Enable interrupts */
++		writel(1, ADC_V2_INT_EN(info->regs));
++	} else {
++		/* set default prescaler values and Enable prescaler */
++		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
++
++		/* Enable 12-bit ADC resolution */
++		con1 |= ADC_V1_CON_RES;
++		writel(con1, ADC_V1_CON(info->regs));
++	}
++}
++
+ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+ 				int *val,
+@@ -121,6 +145,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 	unsigned long timeout;
+ 	u32 con1, con2;
++	int ret;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+ 		return -EINVAL;
+@@ -145,16 +170,21 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				ADC_V1_CON(info->regs));
+ 	}
+ 
+-	timeout = wait_for_completion_interruptible_timeout
++	timeout = wait_for_completion_timeout
+ 			(&info->completion, EXYNOS_ADC_TIMEOUT);
++	if (timeout == 0) {
++		dev_warn(&indio_dev->dev, "Conversion timed out reseting\n");
++		exynos_adc_hw_init(info);
++		ret = -ETIMEDOUT;
++	} else {
++		*val = info->value;
++		ret = IIO_VAL_INT;
++	}
+ 	*val = info->value;
+ 
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+-	if (timeout == 0)
+-		return -ETIMEDOUT;
+-
+-	return IIO_VAL_INT;
++	return ret;
+ }
+ 
+ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+@@ -226,30 +256,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+ 	return 0;
+ }
+ 
+-static void exynos_adc_hw_init(struct exynos_adc *info)
+-{
+-	u32 con1, con2;
+-
+-	if (info->version == ADC_V2) {
+-		con1 = ADC_V2_CON1_SOFT_RESET;
+-		writel(con1, ADC_V2_CON1(info->regs));
+-
+-		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+-			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+-		writel(con2, ADC_V2_CON2(info->regs));
+-
+-		/* Enable interrupts */
+-		writel(1, ADC_V2_INT_EN(info->regs));
+-	} else {
+-		/* set default prescaler values and Enable prescaler */
+-		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+-
+-		/* Enable 12-bit ADC resolution */
+-		con1 |= ADC_V1_CON_RES;
+-		writel(con1, ADC_V1_CON(info->regs));
+-	}
+-}
+-
+ static int exynos_adc_probe(struct platform_device *pdev)
+ {
+ 	struct exynos_adc *info = NULL;
+-- 
+1.7.10.4
 
