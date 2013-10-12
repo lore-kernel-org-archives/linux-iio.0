@@ -1,56 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54284 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756719Ab3JNVNv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2013 17:13:51 -0400
-Message-ID: <525C6CC2.7050109@kernel.org>
-Date: Mon, 14 Oct 2013 23:14:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH v2 1/3] staging:iio:spear_adc: Fix sparse warning
-References: <1381586159-31120-1-git-send-email-lars@metafoo.de>
+Received: from smtp-out-045.synserver.de ([212.40.185.45]:1183 "EHLO
+	smtp-out-045.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750766Ab3JLNyF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2013 09:54:05 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Stefan Roese <sr@denx.de>, Roland Stigge <stigge@antcom.de>
+Subject: [PATCH v2 3/3] staging:iio: Allow to build SoC specific drivers when COMPILE_TEST is set
+Date: Sat, 12 Oct 2013 15:55:59 +0200
+Message-Id: <1381586159-31120-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1381586159-31120-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1381586159-31120-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/12/13 14:55, Lars-Peter Clausen wrote:
-> The driver is casting from one __iomem pointer to another. Make sure to include
-> __iomem in the cast, otherwise sparse will complain with the following warning:
-> 
-> 	drivers/staging/iio/adc/spear_adc.c:321:18: warning: cast removes address space of expression
-> 	drivers/staging/iio/adc/spear_adc.c:320:33: warning: incorrect type in assignment (different address spaces)
-> 	drivers/staging/iio/adc/spear_adc.c:320:33:    expected struct adc_regs_spear3xx [noderef] <asn:2>*adc_base_spear3xx
-> 	drivers/staging/iio/adc/spear_adc.c:320:33:    got struct adc_regs_spear3xx *<noident>
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Stefan Roese <sr@denx.de>
-Applied to the togreg branch of iio.git
+None of the SPEAr, LPC32XX or MXS ADC drivers have a compile time dependency on
+their respective platform. So make it possible to build the drivers when
+CONFIG_COMPILE_TEST is set. This makes it easier to compile test changes.
 
-Seems to have cleaned up that warning nicely.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Reviewed-by: Marek Vasut <marex@denx.de>
+Cc: Stefan Roese <sr@denx.de>
+Cc: Roland Stigge <stigge@antcom.de>
+---
+No changes in v2, but fixed up a linker error and a sparse warning in patch 1
+and 2 in this series.
+---
+ drivers/staging/iio/adc/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thanks Lars,
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 52d92a1..1cf4764 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -102,7 +102,7 @@ config AD7280
+ 
+ config LPC32XX_ADC
+ 	tristate "NXP LPC32XX ADC"
+-	depends on ARCH_LPC32XX
++	depends on ARCH_LPC32XX || COMPILE_TEST
+ 	help
+ 	  Say yes here to build support for the integrated ADC inside the
+ 	  LPC32XX SoC. Note that this feature uses the same hardware as the
+@@ -113,7 +113,7 @@ config LPC32XX_ADC
+ 
+ config MXS_LRADC
+ 	tristate "Freescale i.MX23/i.MX28 LRADC"
+-	depends on ARCH_MXS
++	depends on ARCH_MXS || COMPILE_TEST
+ 	select STMP_DEVICE
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+@@ -126,7 +126,7 @@ config MXS_LRADC
+ 
+ config SPEAR_ADC
+ 	tristate "ST SPEAr ADC"
+-	depends on PLAT_SPEAR
++	depends on PLAT_SPEAR || COMPILE_TEST
+ 	help
+ 	  Say yes here to build support for the integrated ADC inside the
+ 	  ST SPEAr SoC. Provides direct access via sysfs.
+-- 
+1.8.0
 
-
-> ---
-> New in v2
-> ---
->  drivers/staging/iio/adc/spear_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
-> index fc99598..e6555b6 100644
-> --- a/drivers/staging/iio/adc/spear_adc.c
-> +++ b/drivers/staging/iio/adc/spear_adc.c
-> @@ -318,7 +318,7 @@ static int spear_adc_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  	}
->  	info->adc_base_spear3xx =
-> -		(struct adc_regs_spear3xx *)info->adc_base_spear6xx;
-> +		(struct adc_regs_spear3xx __iomem *)info->adc_base_spear6xx;
->  
->  	info->clk = clk_get(dev, NULL);
->  	if (IS_ERR(info->clk)) {
-> 
