@@ -1,116 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39712 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759562Ab3JORTH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2013 13:19:07 -0400
-Message-ID: <525D8740.2020007@kernel.org>
-Date: Tue, 15 Oct 2013 19:19:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio:kfifo: Protect against concurrent access from
- userspace
-References: <1381825830-25581-1-git-send-email-lars@metafoo.de> <1381825830-25581-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1381825830-25581-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ns.pmeerw.net ([87.118.82.44]:34185 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932271Ab3JNVfC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Oct 2013 17:35:02 -0400
+Received: from sirene.lan (83-215-0-241.stadt.dyn.salzburg-online.at [83.215.0.241])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: pmeerw)
+	by pmeerw.net (Postfix) with ESMTPSA id A6CACC50171
+	for <linux-iio@vger.kernel.org>; Mon, 14 Oct 2013 23:35:00 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Subject: [PATCH v3 00/10] hmc5843 cleanup
+Date: Mon, 14 Oct 2013 23:34:48 +0200
+Message-Id: <1381786498-25954-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/15/13 09:30, Lars-Peter Clausen wrote:
-> It is possible for userspace to concurrently access the buffer from multiple
-> threads or processes. To avoid corruption of the internal state of the buffer we
-> need to add proper locking. It is possible for multiple processes to try to read
-> from the buffer concurrently and it is also possible that one process causes a
-> buffer re-allocation while a different process still access the buffer. Both can
-> be fixed by protecting the calls to kfifo_to_user() and kfifo_alloc() by the
-> same mutex. In iio_read_first_n_kfifo() we also use kfifo_recsize() instead of
-> the buffers bytes_per_datum to avoid a race that can happen if bytes_per_datum
-> has been changed, but the buffer has not been reallocated yet.
-> 
-> Note that all access to the buffer from within the kernel is already properly
-> synchronized, so there is no need for extra locking in iio_store_to_kfifo().
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+Hello,
 
-Thanks,
-> ---
-> Changes sinve v1:
-> 	* No need to call iio_to_kfifo twice in the release callback
-> ---
->  drivers/iio/kfifo_buf.c | 20 +++++++++++++++-----
->  1 file changed, 15 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-> index ce51092..c95b61f 100644
-> --- a/drivers/iio/kfifo_buf.c
-> +++ b/drivers/iio/kfifo_buf.c
-> @@ -12,6 +12,7 @@
->  struct iio_kfifo {
->  	struct iio_buffer buffer;
->  	struct kfifo kf;
-> +	struct mutex user_lock;
->  	int update_needed;
->  };
->  
-> @@ -34,10 +35,12 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
->  
->  	if (!buf->update_needed)
->  		goto error_ret;
-> +	mutex_lock(&buf->user_lock);
->  	kfifo_free(&buf->kf);
->  	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
->  				   buf->buffer.length);
->  	r->stufftoread = false;
-> +	mutex_unlock(&buf->user_lock);
->  error_ret:
->  	return ret;
->  }
-> @@ -114,12 +117,13 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
->  	int ret, copied;
->  	struct iio_kfifo *kf = iio_to_kfifo(r);
->  
-> -	if (n < r->bytes_per_datum || r->bytes_per_datum == 0)
-> -		return -EINVAL;
-> +	if (mutex_lock_interruptible(&kf->user_lock))
-> +		return -ERESTARTSYS;
->  
-> -	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
-> +		ret = -EINVAL;
-> +	else
-> +		ret = kfifo_to_user(&kf->kf, buf, n, &copied);
->  
->  	if (kfifo_is_empty(&kf->kf))
->  		r->stufftoread = false;
-> @@ -127,6 +131,10 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
->  	if (!kfifo_is_empty(&kf->kf))
->  		r->stufftoread = true;
->  
-> +	mutex_unlock(&kf->user_lock);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	return copied;
->  }
->  
-> @@ -134,6 +142,7 @@ static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
->  {
->  	struct iio_kfifo *kf = iio_to_kfifo(buffer);
->  
-> +	mutex_destroy(&kf->user_lock);
->  	kfifo_free(&kf->kf);
->  	kfree(kf);
->  }
-> @@ -161,6 +170,7 @@ struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
->  	kf->buffer.attrs = &iio_kfifo_attribute_group;
->  	kf->buffer.access = &kfifo_access_funcs;
->  	kf->buffer.length = 2;
-> +	mutex_init(&kf->user_lock);
->  	return &kf->buffer;
->  }
->  EXPORT_SYMBOL(iio_kfifo_allocate);
-> 
+remaining patches for the hmc5843 cleanup; the main
+change over v2 is in patch 1: use SCALE to show/set the 
+range/gain of the measurement; in v2 this was done with
+CALIBSCALE to show/set the range and SCALE to show the multiplier
+
+patch 10 is new and has two trivial cleanups
+
+regards, p.
+
+Peter Meerwald (10):
+  staging:iio:hmc5843: Use SCALE instead of magn_range
+  staging:iio:hmc5843: Always read all channels values otherwise no updates
+  staging:iio:hmc5843: Add trigger handling
+  staging:iio:hmc5843: Remove ability to change operating mode
+  staging:iio:hmc5843: Rename _configure() to _set_mode()
+  staging:iio:hmc5843: Reorganize _set_meas_conf()
+  staging:iio:hmc5843: Rename _set_rate() to _set_samp_freq()
+  staging:iio:hmc5843: Introduce _set_range_gain()
+  staging:iio:hmc5843: Check initialization and chip identifier
+  staging:iio:hmc5843: Trivial cleanups
+
+ drivers/staging/iio/magnetometer/hmc5843.c | 482 ++++++++++++++---------------
+ 1 file changed, 230 insertions(+), 252 deletions(-)
+
+-- 
+1.8.4
+
