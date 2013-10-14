@@ -1,54 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55398 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756675Ab3JPRKt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Oct 2013 13:10:49 -0400
-Message-ID: <525ED6CF.4040809@kernel.org>
-Date: Wed, 16 Oct 2013 19:11:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH 02/17] iio:st_accel: Drop redundant call to iio_sw_buffer_preenable()
-References: <1381769370-17100-1-git-send-email-lars@metafoo.de> <1381769370-17100-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1381769370-17100-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-149.synserver.de ([212.40.185.149]:1053 "EHLO
+	smtp-out-149.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751015Ab3JNPHS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2013 11:07:18 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/3] iio:kfifo: Protect against concurrent access from userspace
+Date: Mon, 14 Oct 2013 17:09:08 +0200
+Message-Id: <1381763350-8930-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/14/13 17:49, Lars-Peter Clausen wrote:
-> The equivalent of iio_sw_buffer_preenable() is now done in the IIO buffer core,
-> so there is no need to do this from the driver anymore.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-Applied to the togreg branch of iio.git
+It is possible for userspace to concurrently access the buffer from multiple
+threads or processes. To avoid corruption of the internal state of the buffer we
+need to add proper locking. It is possible for multiple processes to try to read
+from the buffer concurrently and it is also possible that one process causes a
+buffer re-allocation while a different process still access the buffer. Both can
+be fixed by protecting the calls to kfifo_to_user() and kfifo_alloc() by the
+same mutex. In iio_read_first_n_kfifo() we also use kfifo_recsize() instead of
+the buffers bytes_per_datum to avoid a race that can happen if bytes_per_datum
+has been changed, but the buffer has not been reallocated yet.
 
-Thanks,
-> ---
->  drivers/iio/accel/st_accel_buffer.c | 11 +----------
->  1 file changed, 1 insertion(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
-> index d9b3507..a1e642e 100644
-> --- a/drivers/iio/accel/st_accel_buffer.c
-> +++ b/drivers/iio/accel/st_accel_buffer.c
-> @@ -32,16 +32,7 @@ int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
->  
->  static int st_accel_buffer_preenable(struct iio_dev *indio_dev)
->  {
-> -	int err;
-> -
-> -	err = st_sensors_set_enable(indio_dev, true);
-> -	if (err < 0)
-> -		goto st_accel_set_enable_error;
-> -
-> -	err = iio_sw_buffer_preenable(indio_dev);
-> -
-> -st_accel_set_enable_error:
-> -	return err;
-> +	return st_sensors_set_enable(indio_dev, true);
->  }
->  
->  static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
-> 
+Note that all access to the buffer from within the kernel is already properly
+synchronized, so there is no need for extra locking in iio_store_to_kfifo().
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/kfifo_buf.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index b4ac55a..b7f4617 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -12,6 +12,7 @@
+ struct iio_kfifo {
+ 	struct iio_buffer buffer;
+ 	struct kfifo kf;
++	struct mutex user_lock;
+ 	int update_needed;
+ };
+ 
+@@ -34,10 +35,12 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
+ 
+ 	if (!buf->update_needed)
+ 		goto error_ret;
++	mutex_lock(&buf->user_lock);
+ 	kfifo_free(&buf->kf);
+ 	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
+ 				   buf->buffer.length);
+ 	r->stufftoread = false;
++	mutex_unlock(&buf->user_lock);
+ error_ret:
+ 	return ret;
+ }
+@@ -114,12 +117,13 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	int ret, copied;
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+ 
+-	if (n < r->bytes_per_datum || r->bytes_per_datum == 0)
+-		return -EINVAL;
++	if (mutex_lock_interruptible(&kf->user_lock))
++		return -ERESTARTSYS;
+ 
+-	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
+-	if (ret < 0)
+-		return ret;
++	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
++		ret = -EINVAL;
++	else
++		ret = kfifo_to_user(&kf->kf, buf, n, &copied);
+ 
+ 	if (kfifo_is_empty(&kf->kf))
+ 		r->stufftoread = false;
+@@ -127,11 +131,17 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
+ 	if (!kfifo_is_empty(&kf->kf))
+ 		r->stufftoread = true;
+ 
++	mutex_unlock(&kf->user_lock);
++	if (ret < 0)
++		return ret;
++
+ 	return copied;
+ }
+ 
+ static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
+ {
++	struct iio_kfifo *kf = iio_to_kfifo(buffer);
++	mutex_destroy(&kf->user_lock);
+ 	kfree(iio_to_kfifo(buffer));
+ }
+ 
+@@ -158,6 +168,7 @@ struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
+ 	kf->buffer.attrs = &iio_kfifo_attribute_group;
+ 	kf->buffer.access = &kfifo_access_funcs;
+ 	kf->buffer.length = 2;
++	mutex_init(&kf->user_lock);
+ 	return &kf->buffer;
+ }
+ EXPORT_SYMBOL(iio_kfifo_allocate);
+-- 
+1.8.0
+
