@@ -1,117 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54126 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757416Ab3JNVD3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2013 17:03:29 -0400
-Message-ID: <525C6A55.6030907@kernel.org>
-Date: Mon, 14 Oct 2013 23:04:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio:kfifo: Protect against concurrent access from
- userspace
-References: <1381763350-8930-1-git-send-email-lars@metafoo.de>
+Received: from smtp-out-149.synserver.de ([212.40.185.149]:1057 "EHLO
+	smtp-out-149.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756423Ab3JNPHT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2013 11:07:19 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/3] iio:kfifo: Set update_needed to false after allocating a new buffer
+Date: Mon, 14 Oct 2013 17:09:10 +0200
+Message-Id: <1381763350-8930-3-git-send-email-lars@metafoo.de>
 In-Reply-To: <1381763350-8930-1-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1381763350-8930-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/14/13 16:09, Lars-Peter Clausen wrote:
-> It is possible for userspace to concurrently access the buffer from multiple
-> threads or processes. To avoid corruption of the internal state of the buffer we
-> need to add proper locking. It is possible for multiple processes to try to read
-> from the buffer concurrently and it is also possible that one process causes a
-> buffer re-allocation while a different process still access the buffer. Both can
-> be fixed by protecting the calls to kfifo_to_user() and kfifo_alloc() by the
-> same mutex. In iio_read_first_n_kfifo() we also use kfifo_recsize() instead of
-> the buffers bytes_per_datum to avoid a race that can happen if bytes_per_datum
-> has been changed, but the buffer has not been reallocated yet.
-> 
-> Note that all access to the buffer from within the kernel is already properly
-> synchronized, so there is no need for extra locking in iio_store_to_kfifo().
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-One nitpick.
+update_needed is used to decide whether the kfifo buffer needs to be
+re-allocated. It is set to true whenever the size of the buffer is changed. It
+is never set to false though, causing the buffer to always be re-allocated.
+Setting update_needed to false after the new buffer has been allocated fixes the
+problem.
 
-Amazing number of errors due to my having not thought all of this
-stuff through thoroughly enough. Oops and thanks for clearing it up!
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/kfifo_buf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Jonathan
-> ---
->  drivers/iio/kfifo_buf.c | 21 ++++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-> index b4ac55a..b7f4617 100644
-> --- a/drivers/iio/kfifo_buf.c
-> +++ b/drivers/iio/kfifo_buf.c
-> @@ -12,6 +12,7 @@
->  struct iio_kfifo {
->  	struct iio_buffer buffer;
->  	struct kfifo kf;
-> +	struct mutex user_lock;
->  	int update_needed;
->  };
->  
-> @@ -34,10 +35,12 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
->  
->  	if (!buf->update_needed)
->  		goto error_ret;
-> +	mutex_lock(&buf->user_lock);
->  	kfifo_free(&buf->kf);
->  	ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
->  				   buf->buffer.length);
->  	r->stufftoread = false;
-> +	mutex_unlock(&buf->user_lock);
->  error_ret:
->  	return ret;
->  }
-> @@ -114,12 +117,13 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
->  	int ret, copied;
->  	struct iio_kfifo *kf = iio_to_kfifo(r);
->  
-> -	if (n < r->bytes_per_datum || r->bytes_per_datum == 0)
-> -		return -EINVAL;
-> +	if (mutex_lock_interruptible(&kf->user_lock))
-> +		return -ERESTARTSYS;
->  
-> -	ret = kfifo_to_user(&kf->kf, buf, n, &copied);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
-> +		ret = -EINVAL;
-> +	else
-> +		ret = kfifo_to_user(&kf->kf, buf, n, &copied);
->  
->  	if (kfifo_is_empty(&kf->kf))
->  		r->stufftoread = false;
-> @@ -127,11 +131,17 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
->  	if (!kfifo_is_empty(&kf->kf))
->  		r->stufftoread = true;
->  
-> +	mutex_unlock(&kf->user_lock);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	return copied;
->  }
->  
->  static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
->  {
-> +	struct iio_kfifo *kf = iio_to_kfifo(buffer);
-> +	mutex_destroy(&kf->user_lock);
->  	kfree(iio_to_kfifo(buffer));
-Given you have the pointer passed to this kfree available, would be
-nice to use it for that as well.
->  }
->  
-> @@ -158,6 +168,7 @@ struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
->  	kf->buffer.attrs = &iio_kfifo_attribute_group;
->  	kf->buffer.access = &kfifo_access_funcs;
->  	kf->buffer.length = 2;
-> +	mutex_init(&kf->user_lock);
->  	return &kf->buffer;
->  }
->  EXPORT_SYMBOL(iio_kfifo_allocate);
-> 
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index a050b18..920e383 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -40,6 +40,7 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
+ 		kfifo_free(&buf->kf);
+ 		ret = __iio_allocate_kfifo(buf, buf->buffer.bytes_per_datum,
+ 				   buf->buffer.length);
++		buf->update_needed = false;
+ 	}
+ 	r->stufftoread = false;
+ 	mutex_unlock(&buf->user_lock);
+-- 
+1.8.0
+
