@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55338 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54055 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752298Ab3JPRJX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Oct 2013 13:09:23 -0400
-Message-ID: <525ED676.3010806@kernel.org>
-Date: Wed, 16 Oct 2013 19:09:58 +0100
+	with ESMTP id S1757060Ab3JNVAM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2013 17:00:12 -0400
+Message-ID: <525C698E.7000208@kernel.org>
+Date: Mon, 14 Oct 2013 23:00:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -34,15 +34,20 @@ On 10/14/13 17:49, Lars-Peter Clausen wrote:
 > 
 > Moving this to the core allows us to drop the individual calls to
 > iio_sw_buffer_preenable() from drivers.
+
+A very sensible little cleanup.  I'll let this sit for a day or two to
+let anyone else comment.  The previous approach was definitely one of
+those bits of code that evolved into something far from ideal!
+
+Thanks,
+
+Jonathan
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > Cc: Denis Ciocca <denis.ciocca@st.com>
 > Cc: Marek Vasut <marex@denx.de>
 > Cc: Zubair Lutfullah <zubair.lutfullah@gmail.com>
 > Cc: Jacek Anaszewski <j.anaszewski@samsung.com>
-Applied to the togreg branch of iio.git
-
-Thanks
 > ---
 >  drivers/iio/industrialio-buffer.c | 18 +++++++++++++++++-
 >  1 file changed, 17 insertions(+), 1 deletion(-)
