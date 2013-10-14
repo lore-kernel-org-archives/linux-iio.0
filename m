@@ -1,107 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:34192 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:34191 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932301Ab3JNVfD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S932300Ab3JNVfD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Mon, 14 Oct 2013 17:35:03 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 06/10] staging:iio:hmc5843: Reorganize _set_meas_conf()
-Date: Mon, 14 Oct 2013 23:34:54 +0200
-Message-Id: <1381786498-25954-7-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH v3 05/10] staging:iio:hmc5843: Rename _configure() to _set_mode()
+Date: Mon, 14 Oct 2013 23:34:53 +0200
+Message-Id: <1381786498-25954-6-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1381786498-25954-1-git-send-email-pmeerw@pmeerw.net>
 References: <1381786498-25954-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-move locking inside _set() function
+and be consistent with other setter functions in that first argument
+is hmc5843_data
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/magnetometer/hmc5843.c | 45 +++++++++++++-----------------
- 1 file changed, 20 insertions(+), 25 deletions(-)
+ drivers/staging/iio/magnetometer/hmc5843.c | 27 ++++++++++++++++-----------
+ 1 file changed, 16 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index 2bae26c..fb57386 100644
+index 91b5ddf..2bae26c 100644
 --- a/drivers/staging/iio/magnetometer/hmc5843.c
 +++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -73,7 +73,6 @@ enum hmc5843_ids {
- #define HMC5843_MEAS_CONF_NORMAL		0x00
- #define HMC5843_MEAS_CONF_POSITIVE_BIAS		0x01
- #define HMC5843_MEAS_CONF_NEGATIVE_BIAS		0x02
--#define HMC5843_MEAS_CONF_NOT_USED		0x03
- #define HMC5843_MEAS_CONF_MASK			0x03
+@@ -131,12 +131,18 @@ struct hmc5843_data {
+ };
  
- /* Scaling factors: 10000000/Gain */
-@@ -211,19 +210,24 @@ static int hmc5843_read_measurement(struct hmc5843_data *data,
-  */
- static s32 hmc5843_set_meas_conf(struct hmc5843_data *data, u8 meas_conf)
+ /* The lower two bits contain the current conversion mode */
+-static s32 hmc5843_configure(struct i2c_client *client,
+-				       u8 operating_mode)
++static s32 hmc5843_set_mode(struct hmc5843_data *data, u8 operating_mode)
  {
--	u8 reg_val;
--	reg_val = (meas_conf & HMC5843_MEAS_CONF_MASK) |
--		(data->rate << HMC5843_RATE_OFFSET);
--	return i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
--		reg_val);
+-	return i2c_smbus_write_byte_data(client,
+-					HMC5843_MODE_REG,
 +	int ret;
 +
 +	mutex_lock(&data->lock);
-+	ret = i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_A,
-+		(meas_conf & HMC5843_MEAS_CONF_MASK) |
-+		(data->rate << HMC5843_RATE_OFFSET));
++	ret = i2c_smbus_write_byte_data(data->client, HMC5843_MODE_REG,
+ 					operating_mode & HMC5843_MODE_MASK);
 +	if (ret >= 0)
-+		data->meas_conf = meas_conf;
++		data->operating_mode = operating_mode;
 +	mutex_unlock(&data->lock);
 +
 +	return ret;
  }
  
- static ssize_t hmc5843_show_measurement_configuration(struct device *dev,
- 						struct device_attribute *attr,
- 						char *buf)
+ static int hmc5843_wait_measurement(struct hmc5843_data *data)
+@@ -510,7 +516,7 @@ static void hmc5843_init(struct hmc5843_data *data)
  {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct hmc5843_data *data = iio_priv(indio_dev);
-+	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
- 	return sprintf(buf, "%d\n", data->meas_conf);
+ 	hmc5843_set_meas_conf(data, HMC5843_MEAS_CONF_NORMAL);
+ 	hmc5843_set_rate(data, HMC5843_RATE_DEFAULT);
+-	hmc5843_configure(data->client, HMC5843_MODE_CONVERSION_CONTINUOUS);
++	hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
+ 	i2c_smbus_write_byte_data(data->client, HMC5843_CONFIG_REG_B,
+ 		HMC5843_RANGE_GAIN_DEFAULT);
+ }
+@@ -577,7 +583,7 @@ static int hmc5843_remove(struct i2c_client *client)
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	 /*  sleep mode to save power */
+-	hmc5843_configure(client, HMC5843_MODE_SLEEP);
++	hmc5843_set_mode(iio_priv(indio_dev), HMC5843_MODE_SLEEP);
+ 
+ 	return 0;
+ }
+@@ -585,9 +591,10 @@ static int hmc5843_remove(struct i2c_client *client)
+ #ifdef CONFIG_PM_SLEEP
+ static int hmc5843_suspend(struct device *dev)
+ {
+-	hmc5843_configure(to_i2c_client(dev), HMC5843_MODE_SLEEP);
++	struct hmc5843_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
+ 
+-	return 0;
++	return hmc5843_set_mode(data, HMC5843_MODE_SLEEP);
  }
  
-@@ -232,28 +236,19 @@ static ssize_t hmc5843_set_measurement_configuration(struct device *dev,
- 						const char *buf,
- 						size_t count)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct hmc5843_data *data = iio_priv(indio_dev);
-+	struct hmc5843_data *data = iio_priv(dev_to_iio_dev(dev));
- 	unsigned long meas_conf = 0;
--	int error;
-+	int ret;
+ static int hmc5843_resume(struct device *dev)
+@@ -595,9 +602,7 @@ static int hmc5843_resume(struct device *dev)
+ 	struct hmc5843_data *data = iio_priv(i2c_get_clientdata(
+ 		to_i2c_client(dev)));
  
--	error = kstrtoul(buf, 10, &meas_conf);
--	if (error)
--		return error;
--	if (meas_conf >= HMC5843_MEAS_CONF_NOT_USED)
-+	ret = kstrtoul(buf, 10, &meas_conf);
-+	if (ret)
-+		return ret;
-+	if (meas_conf >= HMC5843_MEAS_CONF_MASK)
- 		return -EINVAL;
- 
--	mutex_lock(&data->lock);
--	dev_dbg(dev, "set measurement configuration to %lu\n", meas_conf);
--	if (hmc5843_set_meas_conf(data, meas_conf)) {
--		count = -EINVAL;
--		goto exit;
--	}
--	data->meas_conf = meas_conf;
-+	ret = hmc5843_set_meas_conf(data, meas_conf);
- 
--exit:
--	mutex_unlock(&data->lock);
--	return count;
-+	return (ret < 0) ? ret : count;
+-	hmc5843_configure(data->client, data->operating_mode);
+-
+-	return 0;
++	return hmc5843_set_mode(data, HMC5843_MODE_CONVERSION_CONTINUOUS);
  }
  
- static IIO_DEVICE_ATTR(meas_conf,
+ static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops, hmc5843_suspend, hmc5843_resume);
 -- 
 1.8.4
 
