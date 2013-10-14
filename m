@@ -1,54 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55408 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1761112Ab3JPRLr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Oct 2013 13:11:47 -0400
-Message-ID: <525ED709.5080502@kernel.org>
-Date: Wed, 16 Oct 2013 19:12:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 03/17] iio:ad7266: Remove redundant call to iio_sw_preenable()
-References: <1381769370-17100-1-git-send-email-lars@metafoo.de> <1381769370-17100-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1381769370-17100-3-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 02/17] iio:st_accel: Drop redundant call to iio_sw_buffer_preenable()
+Date: Mon, 14 Oct 2013 18:49:15 +0200
+Message-Id: <1381769370-17100-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1381769370-17100-1-git-send-email-lars@metafoo.de>
+References: <1381769370-17100-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/14/13 17:49, Lars-Peter Clausen wrote:
-> The equivalent of iio_sw_buffer_preenable() is now done in the IIO buffer core,
-> so there is no need to do this from the driver anymore.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+The equivalent of iio_sw_buffer_preenable() is now done in the IIO buffer core,
+so there is no need to do this from the driver anymore.
 
-Thanks
-> ---
->  drivers/iio/adc/ad7266.c | 12 +-----------
->  1 file changed, 1 insertion(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-> index f5723cb..58e9455 100644
-> --- a/drivers/iio/adc/ad7266.c
-> +++ b/drivers/iio/adc/ad7266.c
-> @@ -61,17 +61,7 @@ static int ad7266_powerdown(struct ad7266_state *st)
->  static int ad7266_preenable(struct iio_dev *indio_dev)
->  {
->  	struct ad7266_state *st = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	ret = ad7266_wakeup(st);
-> -	if (ret)
-> -		return ret;
-> -
-> -	ret = iio_sw_buffer_preenable(indio_dev);
-> -	if (ret)
-> -		ad7266_powerdown(st);
-> -
-> -	return ret;
-> +	return ad7266_wakeup(st);
->  }
->  
->  static int ad7266_postdisable(struct iio_dev *indio_dev)
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/accel/st_accel_buffer.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
+
+diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
+index d9b3507..a1e642e 100644
+--- a/drivers/iio/accel/st_accel_buffer.c
++++ b/drivers/iio/accel/st_accel_buffer.c
+@@ -32,16 +32,7 @@ int st_accel_trig_set_state(struct iio_trigger *trig, bool state)
+ 
+ static int st_accel_buffer_preenable(struct iio_dev *indio_dev)
+ {
+-	int err;
+-
+-	err = st_sensors_set_enable(indio_dev, true);
+-	if (err < 0)
+-		goto st_accel_set_enable_error;
+-
+-	err = iio_sw_buffer_preenable(indio_dev);
+-
+-st_accel_set_enable_error:
+-	return err;
++	return st_sensors_set_enable(indio_dev, true);
+ }
+ 
+ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
+-- 
+1.8.0
