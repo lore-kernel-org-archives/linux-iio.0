@@ -1,53 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56380 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42135 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932136Ab3JQVOI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Oct 2013 17:14:08 -0400
-Message-ID: <5260614D.20508@kernel.org>
-Date: Thu, 17 Oct 2013 23:14:37 +0100
+	with ESMTP id S1759775Ab3JOVE0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2013 17:04:26 -0400
+Message-ID: <525DBC0B.9050903@kernel.org>
+Date: Tue, 15 Oct 2013 23:04:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 2/2] staging:iio:spear_adc: Fix IRQ check
-References: <1381956352-13311-1-git-send-email-lars@metafoo.de> <1381956352-13311-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1381956352-13311-2-git-send-email-lars@metafoo.de>
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.12 set 3
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/16/13 21:45, Lars-Peter Clausen wrote:
-> The test in the spear_adc driver which checks whether the IRQ number returned
-> by platform_get_irq() has multiple problems. It accepts 0 even though this is
-> an invalid IRQ. It also rejects IRQ numbers that are larger or equal than
-> NR_IRQS. First of all drivers should never need to reference NR_IRQS and
-> secondly with CONFIG_SPARSE_IRQ NR_IRQS is not the upper limit, so the check
-> might reject valid IRQ numbers. This patch modifies the check to only test
-> against less or equal to 0.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Reported-by: kbuild test robot <fengguang.wu@intel.com>
-> Cc: Stefan Roese <sr@denx.de>
-Applied to the togreg branch of iio.git
+The following changes since commit d0e639c9e06d44e713170031fe05fb60ebe680af:
 
-Thanks for dealing with this so quickly.
+  Linux 3.12-rc4 (2013-10-06 14:00:20 -0700)
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/spear_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
-> index e6555b6..970d9ed 100644
-> --- a/drivers/staging/iio/adc/spear_adc.c
-> +++ b/drivers/staging/iio/adc/spear_adc.c
-> @@ -333,7 +333,7 @@ static int spear_adc_probe(struct platform_device *pdev)
->  	}
->  
->  	irq = platform_get_irq(pdev, 0);
-> -	if ((irq < 0) || (irq >= NR_IRQS)) {
-> +	if (irq <= 0) {
->  		dev_err(dev, "failed getting interrupt resource\n");
->  		ret = -EINVAL;
->  		goto errout3;
-> 
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.12c
+
+for you to fetch changes up to e086ed76671252d5b539854a83f8506be7bea05c:
+
+  iio:buffer: Free active scan mask in iio_disable_all_buffers() (2013-10-15 19:26:43 +0100)
+
+----------------------------------------------------------------
+Third set of IIO fixes for the 3.12 cycle.
+
+Two little ones this time:
+
+1) A missing clk_unprepare in adf4350.
+2) A missing free of the active_scan_mask when iio_disable_all_buffers is
+called during an unexpected device removal.  This leak was introduced by
+the fix
+a87c82e454f184a9473f8cdfd4d304205f585f65 iio: Stop sampling when the device is removed
+and hence is a regression fix.
+
+----------------------------------------------------------------
+Lars-Peter Clausen (1):
+      iio:buffer: Free active scan mask in iio_disable_all_buffers()
+
+Wei Yongjun (1):
+      iio: frequency: adf4350: add missing clk_disable_unprepare() on error in adf4350_probe()
+
+ drivers/iio/frequency/adf4350.c   | 6 ++++--
+ drivers/iio/industrialio-buffer.c | 3 +++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
