@@ -1,23 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:33708 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752188Ab3J1FjS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Oct 2013 01:39:18 -0400
+Received: from mailout3.samsung.com ([203.254.224.33]:23141 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752561Ab3JOFN2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2013 01:13:28 -0400
 From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 To: linux-iio@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
 	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, grundler@chromium.org,
-	cpgs@samsung.com
-Subject: [PATCH v5] iio: exynos_adc: use wait_for_completion_timeout instead of
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com
+Subject: [PATCH v4] iio: exynos_adc: use wait_for_completion_timeout instead of
  interruptible
-Date: Mon, 28 Oct 2013 11:11:05 +0530
-Message-id: <1382938865-3779-1-git-send-email-ch.naveen@samsung.com>
+Date: Tue, 15 Oct 2013 10:45:35 +0530
+Message-id: <1381814135-16252-1-git-send-email-ch.naveen@samsung.com>
 In-reply-to: <1381479821-17276-1-git-send-email-ch.naveen@samsung.com>
 References: <1381479821-17276-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch does the following
 1. The irq routine is so simple (just one register read) shouldn't be long
    Hence, reduce the timeout to 100milli secs,
 2. With 100ms of wait time, interruptible is very much unnecessary.
@@ -31,8 +31,6 @@ Note: submitted for review at https://patchwork.kernel.org/patch/2279591/
 Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 Cc: Doug Anderson <dianders@chromium.org>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-on: https://chromium-review.googlesource.com/172724
-Reviewed-by: Doug Anderson <dianders@chromium.org>
 ---
 Changes since v1:
 As per discussion at
@@ -46,18 +44,14 @@ Changes since v3:
 1. commit message change and
 2. removed an unncessary assignment
 
-Changes since v4:
-Moved INIT_COMPLETION call to the starting of the function
-
-
- drivers/iio/adc/exynos_adc.c | 69 ++++++++++++++++++++++++--------------------
+ drivers/iio/adc/exynos_adc.c |   69 +++++++++++++++++++++++-------------------
  1 file changed, 38 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 0f2ca60..a675751 100644
+index d25b262..ac25e3e 100644
 --- a/drivers/iio/adc/exynos_adc.c
 +++ b/drivers/iio/adc/exynos_adc.c
-@@ -81,7 +81,7 @@ enum adc_version {
+@@ -82,7 +82,7 @@ enum adc_version {
  #define ADC_CON_EN_START	(1u << 0)
  #define ADC_DATX_MASK		0xFFF
  
@@ -66,7 +60,7 @@ index 0f2ca60..a675751 100644
  
  struct exynos_adc {
  	void __iomem		*regs;
-@@ -111,6 +111,30 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
+@@ -112,6 +112,30 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
  	return (unsigned int)match->data;
  }
  
@@ -97,7 +91,7 @@ index 0f2ca60..a675751 100644
  static int exynos_read_raw(struct iio_dev *indio_dev,
  				struct iio_chan_spec const *chan,
  				int *val,
-@@ -120,11 +144,13 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+@@ -121,6 +145,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
  	struct exynos_adc *info = iio_priv(indio_dev);
  	unsigned long timeout;
  	u32 con1, con2;
@@ -105,27 +99,22 @@ index 0f2ca60..a675751 100644
  
  	if (mask != IIO_CHAN_INFO_RAW)
  		return -EINVAL;
- 
- 	mutex_lock(&indio_dev->mlock);
-+	INIT_COMPLETION(info->completion);
- 
- 	/* Select the channel to be used and Trigger conversion */
- 	if (info->version == ADC_V2) {
-@@ -144,16 +170,21 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+@@ -145,16 +170,22 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
  				ADC_V1_CON(info->regs));
  	}
  
 -	timeout = wait_for_completion_interruptible_timeout
++	INIT_COMPLETION(info->completion);
++
 +	timeout = wait_for_completion_timeout
  			(&info->completion, EXYNOS_ADC_TIMEOUT);
 -	*val = info->value;
 +	if (timeout == 0) {
-+		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
++		dev_warn(&indio_dev->dev, "Conversion timed out reseting\n");
 +		exynos_adc_hw_init(info);
 +		ret = -ETIMEDOUT;
 +	} else {
 +		*val = info->value;
-+		*val2 = 0;
 +		ret = IIO_VAL_INT;
 +	}
  
@@ -139,7 +128,7 @@ index 0f2ca60..a675751 100644
  }
  
  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
-@@ -225,30 +256,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+@@ -226,30 +257,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
  	return 0;
  }
  
@@ -171,5 +160,5 @@ index 0f2ca60..a675751 100644
  {
  	struct exynos_adc *info = NULL;
 -- 
-1.7.12.4
+1.7.10.4
 
