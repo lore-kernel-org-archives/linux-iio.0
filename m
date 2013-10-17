@@ -1,81 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56932 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758245Ab3JQVme (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Oct 2013 17:42:34 -0400
-Message-ID: <526067DF.3020801@kernel.org>
-Date: Thu, 17 Oct 2013 23:42:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Beomho Seo <beomho.seo@samsung.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, myungjoo.ham@samsung.com,
-	Jaehoon Chung <jh80.chung@samsung.com>,
-	Peter Meerwald l <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v7 1/2] iio: cm36651: Add CM36651 proximity/light sensor
-References: <525F49F8.70604@samsung.com>
-In-Reply-To: <525F49F8.70604@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <beomho.seo@samsung.com>
+Message-id: <525F49F6.702@samsung.com>
+Date: Thu, 17 Oct 2013 11:22:46 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ jic23@kernel.org, Mark Rutland <mark.rutland@arm.com>,
+ myungjoo.ham@samsung.com, Jaehoon Chung <jh80.chung@samsung.com>,
+ Peter Meerwald l <pmeerw@pmeerw.net>
+Subject: [PATCH v7 0/2] iio: cm36651: Add CM36651 proximity/light sensor
+Content-type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/17/13 03:22, Beomho Seo wrote:
-> 
-> This patch adds a new driver for Capella CM36651 proximity and RGB sensor.
-> 
-> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-I have fixed the typo in the makefile and applied this to the
-togreg branch of iio.git.
+hello all,
 
-It does make me a little nervous that you clearly have not tested
-the last few versions, but the changes have been simple enough, I'm
-assuming that nothing has broken from the point of view of the driver
-actually working.
+Thank you for your comments. I have revised some issues of v6 revision.
 
-Thanks,
-> ---
->  drivers/iio/light/Kconfig   |   11 +
->  drivers/iio/light/Makefile  |    1 +
->  drivers/iio/light/cm36651.c |  708 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 720 insertions(+)
->  create mode 100644 drivers/iio/light/cm36651.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 0a25ae6..f98c2b5 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -27,6 +27,17 @@ config APDS9300
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called apds9300.
->  
-> +config CM36651
-> +	depends on I2C
-> +	tristate "CM36651 driver"
-> +	help
-> +	 Say Y here if you use cm36651.
-> +	 This option enables proximity & RGB sensor using
-> +	 Capella cm36651 device driver.
-> +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called cm36651.
-> +
->  config GP2AP020A00F
->  	tristate "Sharp GP2AP020A00F Proximity/ALS sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index cef590f..b615cf3 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -5,6 +5,7 @@
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> +obj-$(CONFIG_COM36651)		+= cm36651.o
-CONFIG_CM36651
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
-> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-> new file mode 100644
-> index 0000000..ff4bcd2
+This patch is the seventh revision for Capella CM36651 proximity and RGB light sensor driver.
+The driver exposes five channels: Red, Green, Blue, Clear and proximity.
+It also support detection proximity event.
+
+This driver supports:
+	- Event: rising and falling proximity events.
+	- Reading channel through read_raw callback.
+	- Writing sensor data integration time each channel through write_raw callback.
+
+Changes from v7 to v6:
+	- Add a new entry in alphabetical order at Makefile
+	- Remove/revise some goto 
+	- Include linux/err.h
+
+Changes form v6 to v5:
+	- Remove enable/disable_irq APIs.
+	- Add some macros.
+	- Code cleanup
+
+Changes from v5 to v4:
+	- Use *_REG_NUM macro at size of array.
+	- Revised error handling in probe function.
+
+Changes from v4 to v3:
+	- Revised a binding documentation.
+	- Add description to cm36651.txt
+	- Revised proximitysensor duty_ratio Macros.
+	- Fix be wrote register value.
+	- Fix return value at cm36651_read_raw function.
+	- Remove double space and blank line.
+	- Remove some APIs. (IIO_EVENT_EXTRACT_*)
+	- Remove some check code and unnecessary dbg/err message.
+	- code cleanup
+
+Changes from v3 to v2:
+	- Revised a binding documentation.
+	- fixed vendor-prefixes documentation in alphabetical order.
+	- Add/ Remove/ Revise some #define register and commands.
+	- Add write_raw callback function for set/get sensor data integration time.
+	- Use IIO_CONST_ATTR API for *_integration_time_available.
+	- Revised some comments and message.
+	- Code cleanup
+
+Changes from v2 to v1:
+	- Add a new entry in alphabetical order at Kconfig.
+	- Use #define register and commands.
+	- Use CM36651_* prefix.
+	- Use i2c_smbus_* APIs.
+	- Fix cm36651_read_output() function.
+	- Code cleanup
+
+>From ea0ed756d449ab71db28f5d0561d478a19b21d73 Mon Sep 17 00:00:00 2001
+From: Beomho Seo <beomho.seo@samsung.com>
+Date: Thu, 17 Oct 2013 10:51:28 +0900
+Subject: [PATCH 0/2] *** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Beomho Seo (2):
+  iio: cm36651: Add CM36651 proximity/light sensor
+  DT: Add documentation for cm36651 proximity/light sensor
+
+ .../devicetree/bindings/iio/light/cm36651.txt      |   26 +
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ drivers/iio/light/Kconfig                          |   11 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/cm36651.c                        |  708 ++++++++++++++++++++
+ 5 files changed, 747 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm36651.txt
+ create mode 100644 drivers/iio/light/cm36651.c
+
+-- 
+1.7.9.5
+
+-- 
+Best Regards,
+
+Beomho Seo, Assistant Engineer
+System S/W Lab., S/W Platform Team, Software Center
+Samsung Electronics
