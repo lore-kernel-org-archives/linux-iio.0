@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:38243 "EHLO
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:38192 "EHLO
 	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753154Ab3JULTW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2013 07:19:22 -0400
-Date: Mon, 21 Oct 2013 12:19:14 +0100
+	by vger.kernel.org with ESMTP id S1753154Ab3JULQm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2013 07:16:42 -0400
+Date: Mon, 21 Oct 2013 12:16:32 +0100
 From: Mark Rutland <mark.rutland@arm.com>
 To: Lukasz Czerwinski <l.czerwinski@samsung.com>
 Cc: "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
@@ -11,61 +11,106 @@ Cc: "jic23@cam.ac.uk" <jic23@cam.ac.uk>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"lee.jones@linaro.org" <lee.jones@linaro.org>,
 	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [RFC v2 PATCH 12/14] Documentation: Add st_gyro binding
+Subject: Re: [RFC v2 PATCH 11/14] Documentation: Add st_magn binding
  documentation
-Message-ID: <20131021111914.GC8144@kartoffel>
+Message-ID: <20131021111631.GB8144@kartoffel>
 References: <1380299538-22047-1-git-send-email-l.czerwinski@samsung.com>
- <1380299538-22047-13-git-send-email-l.czerwinski@samsung.com>
+ <1380299538-22047-12-git-send-email-l.czerwinski@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1380299538-22047-13-git-send-email-l.czerwinski@samsung.com>
+In-Reply-To: <1380299538-22047-12-git-send-email-l.czerwinski@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Sep 27, 2013 at 05:32:16PM +0100, Lukasz Czerwinski wrote:
-> This patch adds the document for STMicroeletronics Angular Velocity Sensors
-> driver under Documentation/devicetree/bindings/iio/.
+On Fri, Sep 27, 2013 at 05:32:15PM +0100, Lukasz Czerwinski wrote:
+> This patch adds the document for STMicroeletronics Magnetic Sensors driver under
+> Documentation/devicetree/bindings/iio/.
 > 
 > Signed-off-by: Lukasz Czerwinski <l.czerwinski@samsung.com>
 > Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
 > ---
->  .../bindings/iio/gyroscope/st_gyroscope.txt        |   38 ++++++++++++++++++++
->  1 file changed, 38 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/st_gyroscope.txt
+>  .../bindings/iio/magnetometer/st_magnometer.txt    |   33 ++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/st_magnometer.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/st_gyroscope.txt b/Documentation/devicetree/bindings/iio/gyroscope/st_gyroscope.txt
+> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/st_magnometer.txt b/Documentation/devicetree/bindings/iio/magnetometer/st_magnometer.txt
 > new file mode 100644
-> index 0000000..8a6a9be
+> index 0000000..fb4f473
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/gyroscope/st_gyroscope.txt
-> @@ -0,0 +1,38 @@
-> +STMicroelectronics Angular Velocity  Sensors
+> +++ b/Documentation/devicetree/bindings/iio/magnetometer/st_magnometer.txt
+> @@ -0,0 +1,33 @@
+> +STMicroelectronics Magnetic Sensors
 > +
 > +Required properties:
 > +
 > +  - compatible : value should be one of the following:
-> +	(a) "st,l3g4200d" for gyroscope in L3G4200D
-> +	(b) "st,lsm330d-gyro" for gyroscope in LSM330D
-> +	(c) "st,lsm330dl-gyro" for gyroscope in LSM330DL
-> +	(d) "st,lsm330dlc-gyro" for gyroscope in LSM330DLC
-> +	(e) "st,l3gd20" for gyroscope in L3GD20
-> +	(f) "st,l3gd20h" for gyroscope in L3GD20H
-> +	(g) "st,l3g4is-ui" for gyroscope in L3G4IS
-> +	(h) "st,lsm330-gyro" for gyroscope in LSM330
+
+s/should be/should contain/ -- we might have a future variant that's compatible.
+
+> +	(a) "st,lsm303dlhc" for magnetometer in LSM330DLHC
+> +	(b) "st,lsm303dlm" for magnetometer in LIS3DH
+> +	(c) "st,lis3mdl" for magnetometer in LSM330
+
+I'd drop the (a), (b), (c) here, it'll just make it more painful to add future
+variants. It's probably better to use "*" instead.
+
 > +
-> +  - reg : the I2C address of the gyroscope
+> +  - reg : the I2C address of the magnetometer
 > +
 > +Optional properties:
 > +
 > +  - st,drdy-int-pin : redirect DRDY on pin INT1 (1) or pin INT2 (2) (u8)
+
+Could you elaborate on this?
+
+What does this property mena?
+
+What values are valid?
+
 > +
-> +  - interrupts : Interrupt numbers for the ST gyroscopes, as an array
-> +	in case the gyroscope have more interrupt lines:
+> +  - interrupts : Interrupt numbers for the ST accelerometers, as an array
+> +	in case the magnetometer have more interrupt lines:
 > +	<DataReady irq>,
 > +	<Event irq>;
 > +
 > +  - interrupt-names : Array of strings associated with the interrupt numbers
 
-All my comments from patch 11 apply here too.
+Nit: Interrupts are described by interrupt-specifiers.
 
+Please describe the names explicitly, otherwise there's no point having them at
+all, as no-one knows what they are...
+
+How about something like:
+
+- interrupts: a list of interrupt-specifiers, one for each entry in interrupt-names
+- interrupt names: a list of strings. Should contain
+  * "drdy" for the ???? interrupt
+  * "event" for the ???? interrupt
+
+
+> +
+> +Example:
+> +
+> +lis3mdl@1c {
+> +	compatible = "st,lis3mdl";
+> +	reg = <0x1C>;
+> +
+> +	st,drdy-int-pin = /bits/ 8 <1>;
+
+The use of /bits/ is remarkably uncommon, why do you need it here?
+
+Thanks,
 Mark.
+
+> +	interrupt-parent = <&gpf0>;
+> +	interrupts = <5 0>, <6 0>;
+> +	interrupt-names = "drdy-int", "event-int";
+> +};
+> -- 
+> 1.7.9.5
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
