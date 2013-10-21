@@ -1,85 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59065 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754151Ab3JXHfa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Oct 2013 03:35:30 -0400
-Message-ID: <5268DBFD.6080108@kernel.org>
-Date: Thu, 24 Oct 2013 09:36:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: Add support for humidity sensors
-References: <E1VYf44-0000gV-4n@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1VYf44-0000gV-4n@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/9] iio: Fix crash in trigger unregister
+Date: Mon, 21 Oct 2013 14:01:09 -0700
+Message-Id: <1382389277-7932-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/22/13 17:44, Harald Geyer wrote:
-> There are already humidity sensors in the hwmon subsystem,
-> so we use their unit (milli percent) here as well.
-> 
-> Signed-off-by: Harald Geyer <harald@ccbib.org>
-> ---
-> Reposting this unchanged (except for the kernel verion update in
-> the ABI document) from the patch I sent two month ago, as I didn't
-> get any feedback back then. 
-It's fine (sorry should have said). I won't merge it until the accompanying driver is
-ready to go.  Right now I'm leaving reviewing that to Peter who is doing a great job :)
-(the driver looks more or less fine to me as well).
+User space can write a triger name via trigger/current_trigger.
+But it is possible that it can't find this name. In this case
+iio_trigger_find_by_name will return NULL. Even if it is NULL,
+it sets indio_dev->trig to this NULL value. But when iio drivers
+calls iio_trigger_unregister, it will crash because it will try
+to dereference NULL pointer. So either every driver checks for
+NULL before calling iio_trigger_unregister or make sure that
+NULL is not assigned because of invalid trigger name. The later
+is better and has less impact.
 
-> 
->  Documentation/ABI/testing/sysfs-bus-iio |   13 +++++++++++++
->  drivers/iio/industrialio-core.c         |    1 +
->  include/linux/iio/types.h               |    1 +
->  3 files changed, 15 insertions(+), 0 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 39c8de0..76f8f08 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -197,6 +197,19 @@ Description:
->  		Raw pressure measurement from channel Y. Units after
->  		application of scale and offset are kilopascal.
->  
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_raw
-> +KernelVersion:	3.13
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw humidity measurement of air. Units after application of
-> +		scale and offset are milli percent.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_input
-> +KernelVersion:	3.13
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Scaled humidity measurement in milli percent.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index f95c697..5062987 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -66,6 +66,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_ALTVOLTAGE] = "altvoltage",
->  	[IIO_CCT] = "cct",
->  	[IIO_PRESSURE] = "pressure",
-> +	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
->  };
->  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 88bf0f0..f822b3d 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -29,6 +29,7 @@ enum iio_chan_type {
->  	IIO_ALTVOLTAGE,
->  	IIO_CCT,
->  	IIO_PRESSURE,
-> +	IIO_HUMIDITYRELATIVE,
->  };
->  
->  enum iio_modifier {
-> 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/industrialio-trigger.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index bf5e70a..4dc4247 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -342,13 +342,16 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+ 	if (oldtrig == trig)
+ 		return len;
+ 
+-	if (trig && indio_dev->info->validate_trigger) {
++	if (!trig)
++		return -EINVAL;
++
++	if (indio_dev->info->validate_trigger) {
+ 		ret = indio_dev->info->validate_trigger(indio_dev, trig);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+-	if (trig && trig->ops && trig->ops->validate_device) {
++	if (trig->ops && trig->ops->validate_device) {
+ 		ret = trig->ops->validate_device(trig, indio_dev);
+ 		if (ret)
+ 			return ret;
+-- 
+1.8.3.1
