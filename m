@@ -1,95 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37003 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754935Ab3JXOMX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Oct 2013 10:12:23 -0400
-Message-ID: <526938FE.4080309@kernel.org>
-Date: Thu, 24 Oct 2013 16:13:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jon Brenner <Jon.Brenner@ams.com>,
-	Sebastian Reichel <sre@debian.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Rob Herring <rob.herring@calxeda.com>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Stephen Warren <swarren@wwwdotorg.org>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Rob Landley <rob@landley.net>,
-	Jonathan Cameron <jic23@cam.ac.uk>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bill Pemberton <wfp5p@virginia.edu>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio:light:tsl2563: Add DT support
-References: <1382565063-17083-1-git-send-email-sre@debian.org> <5268DA76.6060503@kernel.org> <20131024134259.GB3681@earth.universe> <3C879D35B299F147B1DEDFBEE12F2E06012E5631C1@SUX2182.office.amsiag.com>
-In-Reply-To: <3C879D35B299F147B1DEDFBEE12F2E06012E5631C1@SUX2182.office.amsiag.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtprelay0111.hostedemail.com ([216.40.44.111]:50755 "EHLO
+	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751513Ab3JWTPW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Oct 2013 15:15:22 -0400
+From: Joe Perches <joe@perches.com>
+To: linux-kernel@vger.kernel.org
+Cc: linux-doc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	cbe-oss-dev@lists.ozlabs.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-media@vger.kernel.org,
+	acpi4asus-user@lists.sourceforge.net,
+	platform-driver-x86@vger.kernel.org,
+	ibm-acpi-devel@lists.sourceforge.net, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [PATCH 0/8] treewide: Remove OOM message after input_alloc_device
+Date: Wed, 23 Oct 2013 12:14:46 -0700
+Message-Id: <cover.1382555436.git.joe@perches.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Joe Perches (8):
+  Documentation: Remove OOM message after input_allocate_device
+  cell: Remove OOM message after input_allocate_device
+  hid: Remove OOM message after input_allocate_device
+  input: Remove OOM message after input_allocate_device
+  media: Remove OOM message after input_allocate_device
+  platform:x86: Remove OOM message after input_allocate_device
+  staging: Remove OOM message after input_allocate_device
+  sound: Remove OOM message after input_allocate_device
 
-On 10/24/13 14:58, Jon Brenner wrote:
-> AMS-TAOS
+ Documentation/input/input-programming.txt     | 1 -
+ arch/powerpc/platforms/cell/cbe_powerbutton.c | 1 -
+ drivers/hid/hid-input.c                       | 1 -
+ drivers/hid/hid-picolcd_core.c                | 5 ++---
+ drivers/input/joystick/as5011.c               | 2 --
+ drivers/input/joystick/db9.c                  | 1 -
+ drivers/input/joystick/gamecon.c              | 4 +---
+ drivers/input/joystick/turbografx.c           | 1 -
+ drivers/input/joystick/walkera0701.c          | 1 -
+ drivers/input/keyboard/amikbd.c               | 4 +---
+ drivers/input/keyboard/davinci_keyscan.c      | 1 -
+ drivers/input/keyboard/gpio_keys.c            | 1 -
+ drivers/input/keyboard/lpc32xx-keys.c         | 1 -
+ drivers/input/keyboard/max7359_keypad.c       | 1 -
+ drivers/input/keyboard/mcs_touchkey.c         | 1 -
+ drivers/input/keyboard/mpr121_touchkey.c      | 1 -
+ drivers/input/keyboard/nomadik-ske-keypad.c   | 1 -
+ drivers/input/keyboard/opencores-kbd.c        | 1 -
+ drivers/input/keyboard/pmic8xxx-keypad.c      | 1 -
+ drivers/input/keyboard/pxa27x_keypad.c        | 1 -
+ drivers/input/keyboard/pxa930_rotary.c        | 1 -
+ drivers/input/keyboard/qt1070.c               | 1 -
+ drivers/input/keyboard/qt2160.c               | 1 -
+ drivers/input/keyboard/sh_keysc.c             | 1 -
+ drivers/input/keyboard/tc3589x-keypad.c       | 1 -
+ drivers/input/keyboard/tnetv107x-keypad.c     | 1 -
+ drivers/input/keyboard/w90p910_keypad.c       | 1 -
+ drivers/input/misc/88pm80x_onkey.c            | 1 -
+ drivers/input/misc/88pm860x_onkey.c           | 1 -
+ drivers/input/misc/arizona-haptics.c          | 4 +---
+ drivers/input/misc/atlas_btns.c               | 4 +---
+ drivers/input/misc/da9052_onkey.c             | 1 -
+ drivers/input/misc/da9055_onkey.c             | 4 +---
+ drivers/input/misc/ideapad_slidebar.c         | 1 -
+ drivers/input/misc/ims-pcu.c                  | 7 +------
+ drivers/input/misc/kxtj9.c                    | 4 +---
+ drivers/input/misc/max8997_haptic.c           | 1 -
+ drivers/input/misc/mc13783-pwrbutton.c        | 4 +---
+ drivers/input/misc/mpu3050.c                  | 1 -
+ drivers/input/misc/pcf8574_keypad.c           | 1 -
+ drivers/input/misc/pm8xxx-vibrator.c          | 1 -
+ drivers/input/misc/pmic8xxx-pwrkey.c          | 1 -
+ drivers/input/misc/pwm-beeper.c               | 1 -
+ drivers/input/misc/twl4030-pwrbutton.c        | 4 +---
+ drivers/input/misc/twl6040-vibra.c            | 1 -
+ drivers/input/mouse/appletouch.c              | 4 +---
+ drivers/input/mouse/bcm5974.c                 | 4 +---
+ drivers/input/mouse/cyapa.c                   | 4 +---
+ drivers/input/mouse/inport.c                  | 1 -
+ drivers/input/mouse/logibm.c                  | 1 -
+ drivers/input/mouse/pc110pad.c                | 1 -
+ drivers/input/mouse/pxa930_trkball.c          | 1 -
+ drivers/input/tablet/aiptek.c                 | 5 +----
+ drivers/input/tablet/gtco.c                   | 1 -
+ drivers/input/touchscreen/88pm860x-ts.c       | 1 -
+ drivers/input/touchscreen/atmel_mxt_ts.c      | 1 -
+ drivers/input/touchscreen/atmel_tsadcc.c      | 1 -
+ drivers/input/touchscreen/bu21013_ts.c        | 1 -
+ drivers/input/touchscreen/cyttsp4_core.c      | 2 --
+ drivers/input/touchscreen/da9034-ts.c         | 1 -
+ drivers/input/touchscreen/edt-ft5x06.c        | 1 -
+ drivers/input/touchscreen/eeti_ts.c           | 5 +----
+ drivers/input/touchscreen/htcpen.c            | 1 -
+ drivers/input/touchscreen/intel-mid-touch.c   | 1 -
+ drivers/input/touchscreen/lpc32xx_ts.c        | 1 -
+ drivers/input/touchscreen/mcs5000_ts.c        | 1 -
+ drivers/input/touchscreen/migor_ts.c          | 1 -
+ drivers/input/touchscreen/mk712.c             | 1 -
+ drivers/input/touchscreen/pixcir_i2c_ts.c     | 1 -
+ drivers/input/touchscreen/s3c2410_ts.c        | 1 -
+ drivers/input/touchscreen/ti_am335x_tsc.c     | 1 -
+ drivers/input/touchscreen/tnetv107x-ts.c      | 1 -
+ drivers/media/rc/imon.c                       | 8 ++------
+ drivers/media/usb/em28xx/em28xx-input.c       | 4 +---
+ drivers/media/usb/pwc/pwc-if.c                | 1 -
+ drivers/platform/x86/asus-laptop.c            | 5 ++---
+ drivers/platform/x86/eeepc-laptop.c           | 4 +---
+ drivers/platform/x86/ideapad-laptop.c         | 4 +---
+ drivers/platform/x86/intel_mid_powerbtn.c     | 4 +---
+ drivers/platform/x86/panasonic-laptop.c       | 5 +----
+ drivers/platform/x86/thinkpad_acpi.c          | 1 -
+ drivers/platform/x86/topstar-laptop.c         | 4 +---
+ drivers/platform/x86/toshiba_acpi.c           | 4 +---
+ drivers/staging/cptm1217/clearpad_tm1217.c    | 2 --
+ drivers/staging/iio/adc/mxs-lradc.c           | 4 +---
+ drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c | 2 --
+ sound/pci/hda/hda_beep.c                      | 4 +---
+ 87 files changed, 29 insertions(+), 152 deletions(-)
 
-amstaos
+-- 
+1.8.1.2.459.gbcd45b4.dirty
 
-so lowercase, and based on their being no other hyphenated
-names (ST-Ericson is ste for example)
-
-
-> 
-> -----Original Message-----
-> From: Sebastian Reichel [mailto:sre@debian.org] 
-> Sent: Thursday, October 24, 2013 8:43 AM
-> To: Jonathan Cameron
-> Cc: linux-iio@vger.kernel.org; Rob Herring; Pawel Moll; Mark Rutland; Stephen Warren; Ian Campbell; Rob Landley; Jonathan Cameron; Peter Meerwald; Greg Kroah-Hartman; Bill Pemberton; Sachin Kamat; devicetree@vger.kernel.org; linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org; Jon Brenner
-> Subject: Re: [PATCH] iio:light:tsl2563: Add DT support
-> 
-> On Thu, Oct 24, 2013 at 09:29:42AM +0100, Jonathan Cameron wrote:
->> On 10/23/13 22:51, Sebastian Reichel wrote:
->>> Add Device Tree support for the TSL2563 driver and document the 
->>> binding.
->>>
->>> Signed-off-by: Sebastian Reichel <sre@debian.org>
->>> ---
->>>  .../devicetree/bindings/iio/light/tsl2563.txt         | 19 +++++++++++++++++++
->>>  drivers/iio/light/tsl2563.c                           |  4 ++++
->>>  2 files changed, 23 insertions(+)
->>>  create mode 100644 
->>> Documentation/devicetree/bindings/iio/light/tsl2563.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2563.txt 
->>> b/Documentation/devicetree/bindings/iio/light/tsl2563.txt
->>> new file mode 100644
->>> index 0000000..b52cf4b
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/light/tsl2563.txt
->>> @@ -0,0 +1,19 @@
->>> +* TAOS TSL2563 ambient light sensor
->>> +
->>> +Required properties:
->>> +
->>> +  - compatible : should be "taos,tsl2563"
->>> +  - reg : the I2C address of the sensor
->>> +
->>> +Optional properties:
->>> +
->> So two options for this one.  Either pitch it as a possible general 
->> parameter, or mark it with a vendor prefix.  It seems like something 
->> fairly general, but in that case it probably needs a more detailed proposal and explanation of exactly what it is.
-> 
-> OK, I will add a vendor prefix in a PATCHv2. When I converted the driver to DT I had a look how this is used and I don't think it's "fairly general".
-> 
->> Also, is taos listed in vendor-prefixes.txt?  Jon, is that the right vendor prefix to use?
->> I'm guessing you have some non mainline bindings out there already so 
->> it would be good to match those...
-> 
-> taos is currently not listed in the vendor-prefixes.txt file. Also it seems that "TAOS Inc." has been absorbed by "ams AG" in 2011.
-> So how to proceed with the patch?
-> 
-> -- Sebastian
-> 
