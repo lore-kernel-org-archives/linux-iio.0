@@ -1,130 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:28964 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751447Ab3JWTL1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Oct 2013 15:11:27 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v2 2/9] iio: hid-sensors: Add connection type
-Date: Wed, 23 Oct 2013 12:11:09 -0700
-Message-Id: <1382555476-15826-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from www.linutronix.de ([62.245.132.108]:60086 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751275Ab3JWRAi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Oct 2013 13:00:38 -0400
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] iio: adc: ti_am335x_adc: do not free the kfifo twice
+Date: Wed, 23 Oct 2013 19:00:23 +0200
+Message-Id: <1382547624-15256-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some sensor hub firmware are very strict about the connection type
-setting. The connection type specifies whether it is an integrated
-or external sensor hub.
-By default choosing integrated type unless changed via a module
-param.
-Also a fix a minor typo for POWER_STATE.
+Since commit 9e69c9 ("iio: Add reference counting for buffers") the iio
+core frees the buffer. So if the driver does it as well then bad things
+will happen.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 12 +++++++++---
- drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  8 ++++++++
- include/linux/hid-sensor-hub.h                         |  1 +
- include/linux/hid-sensor-ids.h                         |  6 +++++-
- 4 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index 75b5473..dacd98d 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -226,7 +226,7 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+By no means I am the expert here but the other users of iio_kfifo_free() like
+
+drivers/iio/industrialio-triggered-buffer.c:    iio_kfifo_free(indio_dev->buffer);
+drivers/iio/industrialio-triggered-buffer.c:    iio_kfifo_free(indio_dev->buffer);
+
+are probably wrong, too. Not to mention staging. So *I* think iio_kfifo_free()
+should vanish from the tree.
+
+ drivers/iio/adc/ti_am335x_adc.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index f974dea..3d70f09 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -254,8 +254,6 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
  
- 	sensor_hub_input_get_attribute_info(hsdev,
- 					HID_FEATURE_REPORT, usage_id,
--					HID_USAGE_SENSOR_PROY_POWER_STATE,
-+					HID_USAGE_SENSOR_PROT_POWER_STATE,
- 					&st->power_state);
- 
- 	sensor_hub_input_get_attribute_info(hsdev,
-@@ -234,11 +234,17 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
- 			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
- 			 &st->sensitivity);
- 
--	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
-+	sensor_hub_input_get_attribute_info(hsdev,
-+				HID_FEATURE_REPORT, usage_id,
-+				HID_USAGE_SENSOR_PROP_SENSOR_CONNECTION_TYPE,
-+				&st->conn_type);
-+
-+	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x %x:%x\n",
- 			st->poll.index, st->poll.report_id,
- 			st->report_state.index, st->report_state.report_id,
- 			st->power_state.index, st->power_state.report_id,
--			st->sensitivity.index, st->sensitivity.report_id);
-+			st->sensitivity.index, st->sensitivity.report_id,
-+			st->conn_type.index, st->conn_type.report_id);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 759582d..9aff8c3 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -34,6 +34,10 @@ module_param(hid_sensor_named_array_base, int, 0644);
- MODULE_PARM_DESC(hid_sensor_named_array_base,
- 	"HID SENSOR NAMED ARRAY BASE (0 or 1).");
- 
-+static int hid_sensor_conn_type = HID_USAGE_SENSOR_PROP_CONNEC_TYPE_PC_INT_ENUM;
-+module_param(hid_sensor_conn_type, int, 0644);
-+MODULE_PARM_DESC(hid_sensor_conn_type, "HID SENSOR CONNECT TYPE (1 to 3).");
-+
- static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 						bool state)
- {
-@@ -68,6 +72,10 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 					st->report_state.index,
- 					(s32)report_state);
- 
-+	sensor_hub_set_feature(st->hsdev, st->conn_type.report_id,
-+					st->conn_type.index,
-+					hid_sensor_conn_type);
-+
- 	return 0;
+ error_free_irq:
+ 	free_irq(irq, indio_dev);
+-error_kfifo_free:
+-	iio_kfifo_free(indio_dev->buffer);
+ 	return ret;
  }
  
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-index 107baec4..27116b4 100644
---- a/include/linux/hid-sensor-hub.h
-+++ b/include/linux/hid-sensor-hub.h
-@@ -189,6 +189,7 @@ struct hid_sensor_common {
- 	struct hid_sensor_hub_attribute_info report_state;
- 	struct hid_sensor_hub_attribute_info power_state;
- 	struct hid_sensor_hub_attribute_info sensitivity;
-+	struct hid_sensor_hub_attribute_info conn_type;
- };
+@@ -264,7 +262,6 @@ static void tiadc_iio_buffered_hardware_remove(struct iio_dev *indio_dev)
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
  
- /* Convert from hid unit expo to regular exponent */
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index 8323775..714e3e1 100644
---- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -106,6 +106,7 @@
- #define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND		0x15
+ 	free_irq(adc_dev->mfd_tscadc->irq, indio_dev);
+-	iio_kfifo_free(indio_dev->buffer);
+ 	iio_buffer_unregister(indio_dev);
+ }
  
- /* Common selectors */
-+#define HID_USAGE_SENSOR_PROP_SENSOR_CONNECTION_TYPE		0x200309
- #define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
- #define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
- #define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
-@@ -115,7 +116,10 @@
- #define HID_USAGE_SENSOR_PROP_RANGE_MAXIMUM			0x200314
- #define HID_USAGE_SENSOR_PROP_RANGE_MINIMUM			0x200315
- #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
--#define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
-+#define HID_USAGE_SENSOR_PROT_POWER_STATE			0x200319
-+
-+/* Default connection type */
-+#define HID_USAGE_SENSOR_PROP_CONNEC_TYPE_PC_INT_ENUM		0x01
- 
- /* Power state enumerations */
- #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM		0x00
 -- 
-1.8.3.2
+1.8.4.rc3
 
