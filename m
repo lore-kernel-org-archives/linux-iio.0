@@ -1,60 +1,130 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:28964 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751447Ab3JWTL1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Oct 2013 15:11:27 -0400
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v2 3/9] iio: hid-sensors: accelerometer: Add sensitivity
-Date: Wed, 23 Oct 2013 12:11:10 -0700
-Message-Id: <1382555476-15826-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2 2/9] iio: hid-sensors: Add connection type
+Date: Wed, 23 Oct 2013 12:11:09 -0700
+Message-Id: <1382555476-15826-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-A number of Properties that can be applied to Data Fields are per data
-field basis or for all data fields. Adding sensitivity field for all
-accelerometer fields, which is most commonly used in currently
-available sensor hubs.
+Some sensor hub firmware are very strict about the connection type
+setting. The connection type specifies whether it is an integrated
+or external sensor hub.
+By default choosing integrated type unless changed via a module
+param.
+Also a fix a minor typo for POWER_STATE.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c | 12 ++++++++++++
- include/linux/hid-sensor-ids.h          |  1 +
- 2 files changed, 13 insertions(+)
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 12 +++++++++---
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  8 ++++++++
+ include/linux/hid-sensor-hub.h                         |  1 +
+ include/linux/hid-sensor-ids.h                         |  6 +++++-
+ 4 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 7fbe136..b89ba92 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -261,6 +261,18 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- 			st->accel[1].index, st->accel[1].report_id,
- 			st->accel[2].index, st->accel[2].report_id);
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 75b5473..dacd98d 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -226,7 +226,7 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
  
-+	/* Set Sensitivity field ids, when there is no individual modifier */
-+	if (st->common_attributes.sensitivity.index < 0) {
-+		sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-+			HID_USAGE_SENSOR_DATA_ACCELERATION,
-+			&st->common_attributes.sensitivity);
-+		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
-+			st->common_attributes.sensitivity.index,
-+			st->common_attributes.sensitivity.report_id);
-+	}
+ 	sensor_hub_input_get_attribute_info(hsdev,
+ 					HID_FEATURE_REPORT, usage_id,
+-					HID_USAGE_SENSOR_PROY_POWER_STATE,
++					HID_USAGE_SENSOR_PROT_POWER_STATE,
+ 					&st->power_state);
+ 
+ 	sensor_hub_input_get_attribute_info(hsdev,
+@@ -234,11 +234,17 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
+ 			 &st->sensitivity);
+ 
+-	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
++	sensor_hub_input_get_attribute_info(hsdev,
++				HID_FEATURE_REPORT, usage_id,
++				HID_USAGE_SENSOR_PROP_SENSOR_CONNECTION_TYPE,
++				&st->conn_type);
 +
- 	return ret;
++	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x %x:%x\n",
+ 			st->poll.index, st->poll.report_id,
+ 			st->report_state.index, st->report_state.report_id,
+ 			st->power_state.index, st->power_state.report_id,
+-			st->sensitivity.index, st->sensitivity.report_id);
++			st->sensitivity.index, st->sensitivity.report_id,
++			st->conn_type.index, st->conn_type.report_id);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 759582d..9aff8c3 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -34,6 +34,10 @@ module_param(hid_sensor_named_array_base, int, 0644);
+ MODULE_PARM_DESC(hid_sensor_named_array_base,
+ 	"HID SENSOR NAMED ARRAY BASE (0 or 1).");
+ 
++static int hid_sensor_conn_type = HID_USAGE_SENSOR_PROP_CONNEC_TYPE_PC_INT_ENUM;
++module_param(hid_sensor_conn_type, int, 0644);
++MODULE_PARM_DESC(hid_sensor_conn_type, "HID SENSOR CONNECT TYPE (1 to 3).");
++
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
+ {
+@@ -68,6 +72,10 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 					st->report_state.index,
+ 					(s32)report_state);
+ 
++	sensor_hub_set_feature(st->hsdev, st->conn_type.report_id,
++					st->conn_type.index,
++					hid_sensor_conn_type);
++
+ 	return 0;
  }
  
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 107baec4..27116b4 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -189,6 +189,7 @@ struct hid_sensor_common {
+ 	struct hid_sensor_hub_attribute_info report_state;
+ 	struct hid_sensor_hub_attribute_info power_state;
+ 	struct hid_sensor_hub_attribute_info sensitivity;
++	struct hid_sensor_hub_attribute_info conn_type;
+ };
+ 
+ /* Convert from hid unit expo to regular exponent */
 diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index 714e3e1..d9efa2b 100644
+index 8323775..714e3e1 100644
 --- a/include/linux/hid-sensor-ids.h
 +++ b/include/linux/hid-sensor-ids.h
-@@ -23,6 +23,7 @@
+@@ -106,6 +106,7 @@
+ #define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND		0x15
  
- /* Accel 3D (200073) */
- #define HID_USAGE_SENSOR_ACCEL_3D				0x200073
-+#define HID_USAGE_SENSOR_DATA_ACCELERATION			0x200452
- #define HID_USAGE_SENSOR_ACCEL_X_AXIS				0x200453
- #define HID_USAGE_SENSOR_ACCEL_Y_AXIS				0x200454
- #define HID_USAGE_SENSOR_ACCEL_Z_AXIS				0x200455
+ /* Common selectors */
++#define HID_USAGE_SENSOR_PROP_SENSOR_CONNECTION_TYPE		0x200309
+ #define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
+ #define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
+ #define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
+@@ -115,7 +116,10 @@
+ #define HID_USAGE_SENSOR_PROP_RANGE_MAXIMUM			0x200314
+ #define HID_USAGE_SENSOR_PROP_RANGE_MINIMUM			0x200315
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+-#define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
++#define HID_USAGE_SENSOR_PROT_POWER_STATE			0x200319
++
++/* Default connection type */
++#define HID_USAGE_SENSOR_PROP_CONNEC_TYPE_PC_INT_ENUM		0x01
+ 
+ /* Power state enumerations */
+ #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM		0x00
 -- 
 1.8.3.2
+
