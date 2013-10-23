@@ -1,141 +1,569 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49151 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751502Ab3J2Gyq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 02:54:46 -0400
-In-Reply-To: <526EF6ED.4010900@linux.intel.com>
-References: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1382555476-15826-8-git-send-email-srinivas.pandruvada@linux.intel.com> <52690209.8020604@kernel.org> <526939F3.9060303@linux.intel.com> <526948E9.4020507@kernel.org> <526EF6ED.4010900@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v2 8/9] iio: Add channel modifiers for Quaternion Rotations
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 29 Oct 2013 06:54:40 +0000
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Message-ID: <d4528ff0-e1a2-4f8a-a9f7-cb144f296895@email.android.com>
+Received: from mga09.intel.com ([134.134.136.24]:25536 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752013Ab3JWTL2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Oct 2013 15:11:28 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2 7/9] iio: hid-sensors: Added Inclinometer 3D
+Date: Wed, 23 Oct 2013 12:11:14 -0700
+Message-Id: <1382555476-15826-7-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1382555476-15826-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Added usage id processing for Inclinometer 3D. This uses IIO
+interfaces for triggered buffer to present data to user
+mode.This uses HID sensor framework for registering callback
+events from the sensor hub.
 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/Kconfig                          |   1 +
+ drivers/iio/Makefile                         |   1 +
+ drivers/iio/orientation/Kconfig              |  19 ++
+ drivers/iio/orientation/Makefile             |   6 +
+ drivers/iio/orientation/hid-sensor-incl-3d.c | 428 +++++++++++++++++++++++++++
+ include/linux/hid-sensor-ids.h               |   9 +
+ 6 files changed, 464 insertions(+)
+ create mode 100644 drivers/iio/orientation/Kconfig
+ create mode 100644 drivers/iio/orientation/Makefile
+ create mode 100644 drivers/iio/orientation/hid-sensor-incl-3d.c
 
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->On 10/24/2013 09:20 AM, Jonathan Cameron wrote:
->> On 10/24/13 16:17, Srinivas Pandruvada wrote:
->>> Hi Jonathan,
->>> On 10/24/2013 04:18 AM, Jonathan Cameron wrote:
->>>> On 10/23/13 20:11, Srinivas Pandruvada wrote:
->>>>> A quaternion is composed of four components: a vector with x, y, z
->>>>> coordinates and a w rotation. Added channel modifiers for
->exporting
->>>>> these four components via user space.
->>>>>
->>>>> Signed-off-by: Srinivas Pandruvada
-><srinivas.pandruvada@linux.intel.com>
->>>> Quaternions are one of the 'interesting' cases that make me wonder
->if we need
->>>> a slightly more generic form of read_raw.  The quaternion only has
->meaning
->>>> with an associated scale.  Hence you really have to guarantee that
->you can grab all
->>>> 4 components together.
->What if we add two members in iio_chan_info:
->IIO_CHAN_INFO_TRIG_RAW_SYNC  (WR): To trigger a read of and store
->sample 
->in internal memory
->(As per HID sensor spec you have to read/write all quaternion
->components 
->together, data is also packed together. )
->IIO_CHAN_INFO_RAW_SYNC  (RD): To return individual channel raw data 
->captured during IIO_CHAN_INFO_TRIG_RAW_SYNC
->In this way four reads will give all component data but they are
->related 
->to each other.
-That is a bit ugly. I would rather consider a single channel that outputs all 4 components and change the handling to cope.
-If people want synchronized data across multiple normal channels then they should be using the buffer...
->>>>
->>>> Do we need to rethink how the read callback works?
->>>>
->>>> Mind you, if we do that then we need to extend the description of
->the buffer element
->>>> in the scan_mask.  We could define a compound description for a
->channel, but that is 'interesting'.
->For scan elements we have to specify a way so that the scan_elem
->doesn't 
->contain per channel enable/disable.
->We create one global channel enable sysfs entry. This is what you are 
->thinking?
-No. Either we have a single channel which contains all 4 components or just handle them separately. If anyone requests only some of them from user space it does not matter to us even if the data will be useless.
->
->Thanks,
->Srinivas
->
->
->>>> I also don't like this being defined as type IIO_ROT - the units
->(such as exist are different).
->>>> See next patch for what I'm referring to here.
->>> I didn't receive your next patch with comments. Can you please
->resend?
->>> Thanks,
->> Sorry for not being clear, I simply meant the IIO_ROT bit was in the
->next batch,
->> but as it is connected to my comment here, didn't want to start
->another discussion
->> in reply to that patch.
->>
->> (hence I never replied to that patch)
->>> Srinivas
->>>> I've cc'd a few people who might have views on this.
->>>>
->>>>
->>>>
->>>>> ---
->>>>>    drivers/iio/industrialio-core.c | 4 ++++
->>>>>    include/linux/iio/types.h       | 4 ++++
->>>>>    2 files changed, 8 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iio/industrialio-core.c
->b/drivers/iio/industrialio-core.c
->>>>> index f95c697..4ffaead 100644
->>>>> --- a/drivers/iio/industrialio-core.c
->>>>> +++ b/drivers/iio/industrialio-core.c
->>>>> @@ -80,6 +80,10 @@ static const char * const iio_modifier_names[]
->= {
->>>>>        [IIO_MOD_LIGHT_RED] = "red",
->>>>>        [IIO_MOD_LIGHT_GREEN] = "green",
->>>>>        [IIO_MOD_LIGHT_BLUE] = "blue",
->>>>> +    [IIO_MOD_QUATERNION_X] = "quat_x",
->>>>> +    [IIO_MOD_QUATERNION_Y] = "quat_y",
->>>>> +    [IIO_MOD_QUATERNION_Z] = "quat_z",
->>>>> +    [IIO_MOD_QUATERNION_W] = "quat_w",
->>>>>    };
->>>>>      /* relies on pairs of these shared then separate */
->>>>> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
->>>>> index 88bf0f0..ac2345c 100644
->>>>> --- a/include/linux/iio/types.h
->>>>> +++ b/include/linux/iio/types.h
->>>>> @@ -52,6 +52,10 @@ enum iio_modifier {
->>>>>        IIO_MOD_LIGHT_RED,
->>>>>        IIO_MOD_LIGHT_GREEN,
->>>>>        IIO_MOD_LIGHT_BLUE,
->>>>> +    IIO_MOD_QUATERNION_X,
->>>>> +    IIO_MOD_QUATERNION_Y,
->>>>> +    IIO_MOD_QUATERNION_Z,
->>>>> +    IIO_MOD_QUATERNION_W,
->>>>>    };
->>>>>      #define IIO_VAL_INT 1
->>>>>
->>> -- 
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 90cf0cd..73ff5bb 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -68,6 +68,7 @@ source "drivers/iio/gyro/Kconfig"
+ source "drivers/iio/imu/Kconfig"
+ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
++source "drivers/iio/orientation/Kconfig"
+ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index bcf7e9e..c682e1b 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -21,6 +21,7 @@ obj-y += frequency/
+ obj-y += imu/
+ obj-y += light/
+ obj-y += magnetometer/
++obj-y += orientation/
+ obj-y += pressure/
+ obj-y += temperature/
+ obj-y += trigger/
+diff --git a/drivers/iio/orientation/Kconfig b/drivers/iio/orientation/Kconfig
+new file mode 100644
+index 0000000..58c62c8
+--- /dev/null
++++ b/drivers/iio/orientation/Kconfig
+@@ -0,0 +1,19 @@
++#
++# Inclinometer sensors
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Inclinometer sensors"
++
++config HID_SENSOR_INCLINOMETER_3D
++	depends on HID_SENSOR_HUB
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select HID_SENSOR_IIO_COMMON
++	select HID_SENSOR_IIO_TRIGGER
++	tristate "HID Inclinometer 3D"
++	help
++	  Say yes here to build support for the HID SENSOR
++	  Inclinometer 3D.
++
++endmenu
+diff --git a/drivers/iio/orientation/Makefile b/drivers/iio/orientation/Makefile
+new file mode 100644
+index 0000000..2c97572
+--- /dev/null
++++ b/drivers/iio/orientation/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for industrial I/O Inclinometer sensor drivers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_HID_SENSOR_INCLINOMETER_3D) += hid-sensor-incl-3d.o
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+new file mode 100644
+index 0000000..148d4e5
+--- /dev/null
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -0,0 +1,428 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2013, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program; if not, write to the Free Software Foundation, Inc.
++ *
++ */
++
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/slab.h>
++#include <linux/hid-sensor-hub.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include "../common/hid-sensors/hid-sensor-trigger.h"
++
++enum incl_3d_channel {
++	CHANNEL_SCAN_INDEX_X,
++	CHANNEL_SCAN_INDEX_Y,
++	CHANNEL_SCAN_INDEX_Z,
++	INCLI_3D_CHANNEL_MAX,
++};
++
++struct incl_3d_state {
++	struct hid_sensor_hub_callbacks callbacks;
++	struct hid_sensor_common common_attributes;
++	struct hid_sensor_hub_attribute_info incl[INCLI_3D_CHANNEL_MAX];
++	u32 incl_val[INCLI_3D_CHANNEL_MAX];
++};
++
++static const u32 incl_3d_addresses[INCLI_3D_CHANNEL_MAX] = {
++	HID_USAGE_SENSOR_ORIENT_TILT_X,
++	HID_USAGE_SENSOR_ORIENT_TILT_Y,
++	HID_USAGE_SENSOR_ORIENT_TILT_Z
++};
++
++/* Channel definitions */
++static const struct iio_chan_spec incl_3d_channels[] = {
++	{
++		.type = IIO_INCLI,
++		.modified = 1,
++		.channel2 = IIO_MOD_X,
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_X,
++	}, {
++		.type = IIO_INCLI,
++		.modified = 1,
++		.channel2 = IIO_MOD_Y,
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_Y,
++	}, {
++		.type = IIO_INCLI,
++		.modified = 1,
++		.channel2 = IIO_MOD_Z,
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_Z,
++	}
++};
++
++/* Adjust channel real bits based on report descriptor */
++static void incl_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
++						int channel, int size)
++{
++	channels[channel].scan_type.sign = 's';
++	/* Real storage bits will change based on the report desc. */
++	channels[channel].scan_type.realbits = size * 8;
++	/* Maximum size of a sample to capture is u32 */
++	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
++}
++
++/* Channel read_raw handler */
++static int incl_3d_read_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int *val, int *val2,
++			      long mask)
++{
++	struct incl_3d_state *incl_state = iio_priv(indio_dev);
++	int report_id = -1;
++	u32 address;
++	int ret_type;
++
++	*val = 0;
++	*val2 = 0;
++	switch (mask) {
++	case 0:
++		report_id =
++			incl_state->incl[chan->scan_index].report_id;
++		address = incl_3d_addresses[chan->scan_index];
++		if (report_id >= 0)
++			*val = sensor_hub_input_attr_get_raw_value(
++				incl_state->common_attributes.hsdev,
++				HID_USAGE_SENSOR_INCLINOMETER_3D, address,
++				report_id);
++		else {
++			return -EINVAL;
++		}
++		ret_type = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		*val = incl_state->incl[CHANNEL_SCAN_INDEX_X].units;
++		ret_type = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = hid_sensor_convert_exponent(
++			incl_state->incl[CHANNEL_SCAN_INDEX_X].unit_expo);
++		ret_type = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret_type = hid_sensor_read_samp_freq_value(
++			&incl_state->common_attributes, val, val2);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret_type = hid_sensor_read_raw_hyst_value(
++			&incl_state->common_attributes, val, val2);
++		break;
++	default:
++		ret_type = -EINVAL;
++		break;
++	}
++
++	return ret_type;
++}
++
++/* Channel write_raw handler */
++static int incl_3d_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val,
++			       int val2,
++			       long mask)
++{
++	struct incl_3d_state *incl_state = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = hid_sensor_write_samp_freq_value(
++				&incl_state->common_attributes, val, val2);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret = hid_sensor_write_raw_hyst_value(
++				&incl_state->common_attributes, val, val2);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info incl_3d_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &incl_3d_read_raw,
++	.write_raw = &incl_3d_write_raw,
++};
++
++/* Function to push data to buffer */
++static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
++{
++	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
++	iio_push_to_buffers(indio_dev, (u8 *)data);
++}
++
++/* Callback handler to send event after all samples are received and captured */
++static int incl_3d_proc_event(struct hid_sensor_hub_device *hsdev,
++				unsigned usage_id,
++				void *priv)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(priv);
++	struct incl_3d_state *incl_state = iio_priv(indio_dev);
++
++	dev_dbg(&indio_dev->dev, "incl_3d_proc_event [%d]\n",
++				incl_state->common_attributes.data_ready);
++	if (incl_state->common_attributes.data_ready)
++		hid_sensor_push_data(indio_dev,
++				(u8 *)incl_state->incl_val,
++				sizeof(incl_state->incl_val));
++
++	return 0;
++}
++
++/* Capture samples in local storage */
++static int incl_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
++				unsigned usage_id,
++				size_t raw_len, char *raw_data,
++				void *priv)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(priv);
++	struct incl_3d_state *incl_state = iio_priv(indio_dev);
++	int ret = 0;
++
++	switch (usage_id) {
++	case HID_USAGE_SENSOR_ORIENT_TILT_X:
++		incl_state->incl_val[CHANNEL_SCAN_INDEX_X] = *(u32 *)raw_data;
++	break;
++	case HID_USAGE_SENSOR_ORIENT_TILT_Y:
++		incl_state->incl_val[CHANNEL_SCAN_INDEX_Y] = *(u32 *)raw_data;
++	break;
++	case HID_USAGE_SENSOR_ORIENT_TILT_Z:
++		incl_state->incl_val[CHANNEL_SCAN_INDEX_Z] = *(u32 *)raw_data;
++	break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++/* Parse report which is specific to an usage id*/
++static int incl_3d_parse_report(struct platform_device *pdev,
++				struct hid_sensor_hub_device *hsdev,
++				struct iio_chan_spec *channels,
++				unsigned usage_id,
++				struct incl_3d_state *st)
++{
++	int ret;
++
++	ret = sensor_hub_input_get_attribute_info(hsdev,
++				HID_INPUT_REPORT,
++				usage_id,
++				HID_USAGE_SENSOR_ORIENT_TILT_X,
++				&st->incl[CHANNEL_SCAN_INDEX_X]);
++	if (ret)
++		return ret;
++	incl_3d_adjust_channel_bit_mask(channels,
++				CHANNEL_SCAN_INDEX_X,
++				st->incl[CHANNEL_SCAN_INDEX_X].size);
++
++	ret = sensor_hub_input_get_attribute_info(hsdev,
++				HID_INPUT_REPORT,
++				usage_id,
++				HID_USAGE_SENSOR_ORIENT_TILT_Y,
++				&st->incl[CHANNEL_SCAN_INDEX_Y]);
++	if (ret)
++		return ret;
++	incl_3d_adjust_channel_bit_mask(channels,
++				CHANNEL_SCAN_INDEX_Y,
++				st->incl[CHANNEL_SCAN_INDEX_Y].size);
++
++	ret = sensor_hub_input_get_attribute_info(hsdev,
++				HID_INPUT_REPORT,
++				usage_id,
++				HID_USAGE_SENSOR_ORIENT_TILT_Z,
++				&st->incl[CHANNEL_SCAN_INDEX_Z]);
++	if (ret)
++		return ret;
++	incl_3d_adjust_channel_bit_mask(channels,
++				CHANNEL_SCAN_INDEX_Z,
++				st->incl[CHANNEL_SCAN_INDEX_Z].size);
++
++	dev_dbg(&pdev->dev, "incl_3d %x:%x, %x:%x, %x:%x\n",
++			st->incl[0].index,
++			st->incl[0].report_id,
++			st->incl[1].index, st->incl[1].report_id,
++			st->incl[2].index, st->incl[2].report_id);
++
++	/* Set Sensitivity field ids, when there is no individual modifier */
++	if (st->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_DATA_ORIENTATION,
++			&st->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->common_attributes.sensitivity.index,
++			st->common_attributes.sensitivity.report_id);
++	}
++	return ret;
++}
++
++/* Function to initialize the processing for usage id */
++static int hid_incl_3d_probe(struct platform_device *pdev)
++{
++	int ret;
++	static char *name = "incli_3d";
++	struct iio_dev *indio_dev;
++	struct incl_3d_state *incl_state;
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct iio_chan_spec *channels;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev,
++					  sizeof(struct incl_3d_state));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	incl_state = iio_priv(indio_dev);
++	incl_state->common_attributes.hsdev = hsdev;
++	incl_state->common_attributes.pdev = pdev;
++
++	ret = hid_sensor_parse_common_attributes(hsdev,
++				HID_USAGE_SENSOR_INCLINOMETER_3D,
++				&incl_state->common_attributes);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup common attributes\n");
++		return ret;
++	}
++
++	channels = kmemdup(incl_3d_channels, sizeof(incl_3d_channels),
++			   GFP_KERNEL);
++	if (!channels) {
++		dev_err(&pdev->dev, "failed to duplicate channels\n");
++		return -ENOMEM;
++	}
++
++	ret = incl_3d_parse_report(pdev, hsdev, channels,
++				HID_USAGE_SENSOR_INCLINOMETER_3D, incl_state);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup attributes\n");
++		goto error_free_dev_mem;
++	}
++
++	indio_dev->channels = channels;
++	indio_dev->num_channels = ARRAY_SIZE(incl_3d_channels);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->info = &incl_3d_info;
++	indio_dev->name = name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++		NULL, NULL);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
++		goto error_free_dev_mem;
++	}
++	incl_state->common_attributes.data_ready = false;
++	ret = hid_sensor_setup_trigger(indio_dev, name,
++					&incl_state->common_attributes);
++	if (ret) {
++		dev_err(&pdev->dev, "trigger setup failed\n");
++		goto error_unreg_buffer_funcs;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "device register failed\n");
++		goto error_remove_trigger;
++	}
++
++	incl_state->callbacks.send_event = incl_3d_proc_event;
++	incl_state->callbacks.capture_sample = incl_3d_capture_sample;
++	incl_state->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev,
++					HID_USAGE_SENSOR_INCLINOMETER_3D,
++					&incl_state->callbacks);
++	if (ret) {
++		dev_err(&pdev->dev, "callback reg failed\n");
++		goto error_iio_unreg;
++	}
++
++	return 0;
++
++error_iio_unreg:
++	iio_device_unregister(indio_dev);
++error_remove_trigger:
++	hid_sensor_remove_trigger(&incl_state->common_attributes);
++error_unreg_buffer_funcs:
++	iio_triggered_buffer_cleanup(indio_dev);
++error_free_dev_mem:
++	kfree(indio_dev->channels);
++	return ret;
++}
++
++/* Function to deinitialize the processing for usage id */
++static int hid_incl_3d_remove(struct platform_device *pdev)
++{
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct incl_3d_state *incl_state = iio_priv(indio_dev);
++
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_INCLINOMETER_3D);
++	iio_device_unregister(indio_dev);
++	hid_sensor_remove_trigger(&incl_state->common_attributes);
++	iio_triggered_buffer_cleanup(indio_dev);
++	kfree(indio_dev->channels);
++
++	return 0;
++}
++
++static struct platform_device_id hid_incl_3d_ids[] = {
++	{
++		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
++		.name = "HID-SENSOR-200086",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, hid_incl_3d_ids);
++
++static struct platform_driver hid_incl_3d_platform_driver = {
++	.id_table = hid_incl_3d_ids,
++	.driver = {
++		.name	= KBUILD_MODNAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= hid_incl_3d_probe,
++	.remove		= hid_incl_3d_remove,
++};
++module_platform_driver(hid_incl_3d_platform_driver);
++
++MODULE_DESCRIPTION("HID Sensor Inclinometer 3D");
++MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 3f349fa..9521286 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -42,6 +42,7 @@
+ 
+ /* ORIENTATION: Compass 3D: (200083) */
+ #define HID_USAGE_SENSOR_COMPASS_3D				0x200083
++#define HID_USAGE_SENSOR_DATA_ORIENTATION			0x200470
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING			0x200471
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_X			0x200472
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_HEADING_Y			0x200473
+@@ -57,10 +58,14 @@
+ #define HID_USAGE_SENSOR_ORIENT_DISTANCE_Y			0x20047B
+ #define HID_USAGE_SENSOR_ORIENT_DISTANCE_Z			0x20047C
+ #define HID_USAGE_SENSOR_ORIENT_DISTANCE_OUT_OF_RANGE		0x20047D
++
++/* ORIENTATION: Inclinometer 3D: (200086) */
++#define HID_USAGE_SENSOR_INCLINOMETER_3D			0x200086
+ #define HID_USAGE_SENSOR_ORIENT_TILT				0x20047E
+ #define HID_USAGE_SENSOR_ORIENT_TILT_X				0x20047F
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Y				0x200480
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
++
+ #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
+ #define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
+@@ -136,4 +141,8 @@
+ #define HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM		0x00
+ #define HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM		0x01
+ 
++/* Per data field properties */
++#define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
++#define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
++
+ #endif
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.8.3.2
+
