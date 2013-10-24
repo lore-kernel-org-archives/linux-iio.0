@@ -1,30 +1,36 @@
-Return-Path: <sre@ring0.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([91.143.88.219]:46699 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755094Ab3JXO1X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 24 Oct 2013 10:27:23 -0400
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>, linux-iio@vger.kernel.org
-Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Stephen Warren <swarren@wwwdotorg.org>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Rob Landley <rob@landley.net>, Jonathan Cameron <jic23@cam.ac.uk>,
-        Kumar Gala <galak@codeaurora.org>, Sebastian Reichel <sre@debian.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bill Pemberton <wfp5p@virginia.edu>,
-        Sachin Kamat <sachin.kamat@linaro.org>, devicetree@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCHv3] iio:light:tsl2563: Add DT support
-Date: Fri, 25 Oct 2013 11:10:10 +0200
-Message-Id: <1382692210-9692-1-git-send-email-sre@debian.org>
+Cc: Rob Herring <rob.herring@calxeda.com>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Stephen Warren <swarren@wwwdotorg.org>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Rob Landley <rob@landley.net>,
+	Jonathan Cameron <jic23@cam.ac.uk>,
+	Sebastian Reichel <sre@debian.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Bill Pemberton <wfp5p@virginia.edu>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCHv2] iio:light:tsl2563: Add DT support
+Date: Thu, 24 Oct 2013 16:27:15 +0200
+Message-Id: <1382624835-10228-1-git-send-email-sre@debian.org>
 In-Reply-To: <1382565063-17083-1-git-send-email-sre@debian.org>
 References: <1382565063-17083-1-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add Device Tree support for the TSL2563 driver,
-document the binding and add AMS-TAOS Inc. to the
-list of vendor prefixes.
+Add Device Tree support for the TSL2563 driver
+and document the binding.
 
 Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Kumar Gala <galak@codeaurora.org>
 ---
  .../devicetree/bindings/iio/light/tsl2563.txt         | 19 +++++++++++++++++++
  Documentation/devicetree/bindings/vendor-prefixes.txt |  1 +
@@ -58,14 +64,14 @@ index 0000000..f91e809
 +	amstaos,cover-comp-gain = <16>;
 +};
 diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 2cc3dad..8cf3edf 100644
+index 2cc3dad..d26c834 100644
 --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
 +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
 @@ -9,6 +9,7 @@ aeroflexgaisler	Aeroflex Gaisler AB
  ak	Asahi Kasei Corp.
  altr	Altera Corp.
  amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
-+amstaos	AMS-Taos Inc.
++amstaos	AMS Taos Inc.
  apm	Applied Micro Circuits Corporation (APM)
  arm	ARM Ltd.
  atmel	Atmel Corporation
@@ -93,3 +99,4 @@ index ebb962c..261660a 100644
  
 -- 
 1.8.4.rc3
+
