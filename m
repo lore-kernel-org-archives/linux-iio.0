@@ -1,52 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-171.synserver.de ([212.40.185.171]:1037 "EHLO
-	smtp-out-170.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753860Ab3JXIzZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Oct 2013 04:55:25 -0400
-Date: Wed, 23 Oct 2013 18:44:18 +0100
-Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: do not free the kfifo
- twice
-Message-ID: <9ctn6ye3lkct930eq1ivw2wc.1382550258829@email.android.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60248 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754103Ab3JXJMq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Oct 2013 05:12:46 -0400
+Message-ID: <5268F2C9.5010104@kernel.org>
+Date: Thu, 24 Oct 2013 11:13:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: do not free the kfifo twice
+References: <9ctn6ye3lkct930eq1ivw2wc.1382550258829@email.android.com>
+In-Reply-To: <9ctn6ye3lkct930eq1ivw2wc.1382550258829@email.android.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-VGhlIGNvZGUgaXMgYWN0dWFsbHkgZmluZSBhcyBpdCBpcy4gVGhlIGlpb19rZmlmb19mcmVlKCkg
-ZnVuY3Rpb24gZHJvcHMgYSByZWZlcmVuY2UsIGJ1dCBkb2VzIG5vdCBmcmVlIHRoZSBidWZmZXIn
-cyBtZW1vcnkgaWYgc29tZWJvZHkgZWxzZSBpcyBzdGlsbCBob2xkaW5nIGEgcmVmZXJlbmNlLgoK
-LSBMYXJzCgpTZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9uaXguZGU+
-IHdyb3RlOgoKPlNpbmNlIGNvbW1pdCA5ZTY5YzkgKCJpaW86IEFkZCByZWZlcmVuY2UgY291bnRp
-bmcgZm9yIGJ1ZmZlcnMiKSB0aGUgaWlvCj5jb3JlIGZyZWVzIHRoZSBidWZmZXIuIFNvIGlmIHRo
-ZSBkcml2ZXIgZG9lcyBpdCBhcyB3ZWxsIHRoZW4gYmFkIHRoaW5ncwo+d2lsbCBoYXBwZW4uCj4K
-PkNjOiBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4KPlNpZ25lZC1vZmYtYnk6
-IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3IgPGJpZ2Vhc3lAbGludXRyb25peC5kZT4KPi0tLQo+
-Cj5CeSBubyBtZWFucyBJIGFtIHRoZSBleHBlcnQgaGVyZSBidXQgdGhlIG90aGVyIHVzZXJzIG9m
-IGlpb19rZmlmb19mcmVlKCkgbGlrZQo+Cj5kcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tdHJpZ2dl
-cmVkLWJ1ZmZlci5jOiAgICBpaW9fa2ZpZm9fZnJlZShpbmRpb19kZXYtPmJ1ZmZlcik7Cj5kcml2
-ZXJzL2lpby9pbmR1c3RyaWFsaW8tdHJpZ2dlcmVkLWJ1ZmZlci5jOiAgICBpaW9fa2ZpZm9fZnJl
-ZShpbmRpb19kZXYtPmJ1ZmZlcik7Cj4KPmFyZSBwcm9iYWJseSB3cm9uZywgdG9vLiBOb3QgdG8g
-bWVudGlvbiBzdGFnaW5nLiBTbyAqSSogdGhpbmsgaWlvX2tmaWZvX2ZyZWUoKQo+c2hvdWxkIHZh
-bmlzaCBmcm9tIHRoZSB0cmVlLgo+Cj4gZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYyB8
-IDMgLS0tCj4gMSBmaWxlIGNoYW5nZWQsIDMgZGVsZXRpb25zKC0pCj4KPmRpZmYgLS1naXQgYS9k
-cml2ZXJzL2lpby9hZGMvdGlfYW0zMzV4X2FkYy5jIGIvZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1
-eF9hZGMuYwo+aW5kZXggZjk3NGRlYS4uM2Q3MGYwOSAxMDA2NDQKPi0tLSBhL2RyaXZlcnMvaWlv
-L2FkYy90aV9hbTMzNXhfYWRjLmMKPisrKyBiL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMzNXhfYWRj
-LmMKPkBAIC0yNTQsOCArMjU0LDYgQEAgc3RhdGljIGludCB0aWFkY19paW9fYnVmZmVyZWRfaGFy
-ZHdhcmVfc2V0dXAoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwKPiAKPiBlcnJvcl9mcmVlX2ly
-cToKPiAJZnJlZV9pcnEoaXJxLCBpbmRpb19kZXYpOwo+LWVycm9yX2tmaWZvX2ZyZWU6Cj4tCWlp
-b19rZmlmb19mcmVlKGluZGlvX2Rldi0+YnVmZmVyKTsKPiAJcmV0dXJuIHJldDsKPiB9Cj4gCj5A
-QCAtMjY0LDcgKzI2Miw2IEBAIHN0YXRpYyB2b2lkIHRpYWRjX2lpb19idWZmZXJlZF9oYXJkd2Fy
-ZV9yZW1vdmUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikKPiAJc3RydWN0IHRpYWRjX2Rldmlj
-ZSAqYWRjX2RldiA9IGlpb19wcml2KGluZGlvX2Rldik7Cj4gCj4gCWZyZWVfaXJxKGFkY19kZXYt
-Pm1mZF90c2NhZGMtPmlycSwgaW5kaW9fZGV2KTsKPi0JaWlvX2tmaWZvX2ZyZWUoaW5kaW9fZGV2
-LT5idWZmZXIpOwo+IAlpaW9fYnVmZmVyX3VucmVnaXN0ZXIoaW5kaW9fZGV2KTsKPiB9Cj4gCj4t
-LSAKPjEuOC40LnJjMwo+Cj4tLQo+VG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQg
-dGhlIGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4LWlpbyIgaW4KPnRoZSBib2R5IG9mIGEgbWVzc2Fn
-ZSB0byBtYWpvcmRvbW9Admdlci5rZXJuZWwub3JnCj5Nb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBo
-dHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwK
-
+On 10/23/13 18:44, Lars-Peter Clausen wrote:
+> The code is actually fine as it is. The iio_kfifo_free() function drops a reference, but does not free the buffer's memory if somebody else is still holding a reference.
+> 
+> - Lars
+I'm guessing this came from a crash though.... Sebastian, what motivated the patch?
+> 
+> Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+> 
+>> Since commit 9e69c9 ("iio: Add reference counting for buffers") the iio
+>> core frees the buffer. So if the driver does it as well then bad things
+>> will happen.
+>>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>> ---
+>>
+>> By no means I am the expert here but the other users of iio_kfifo_free() like
+>>
+>> drivers/iio/industrialio-triggered-buffer.c:    iio_kfifo_free(indio_dev->buffer);
+>> drivers/iio/industrialio-triggered-buffer.c:    iio_kfifo_free(indio_dev->buffer);
+>>
+>> are probably wrong, too. Not to mention staging. So *I* think iio_kfifo_free()
+>> should vanish from the tree.
+>>
+>> drivers/iio/adc/ti_am335x_adc.c | 3 ---
+>> 1 file changed, 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>> index f974dea..3d70f09 100644
+>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>> @@ -254,8 +254,6 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
+>>
+>> error_free_irq:
+>> 	free_irq(irq, indio_dev);
+>> -error_kfifo_free:
+>> -	iio_kfifo_free(indio_dev->buffer);
+>> 	return ret;
+>> }
+>>
+>> @@ -264,7 +262,6 @@ static void tiadc_iio_buffered_hardware_remove(struct iio_dev *indio_dev)
+>> 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>>
+>> 	free_irq(adc_dev->mfd_tscadc->irq, indio_dev);
+>> -	iio_kfifo_free(indio_dev->buffer);
+>> 	iio_buffer_unregister(indio_dev);
+>> }
+>>
+>> -- 
+>> 1.8.4.rc3
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> 
