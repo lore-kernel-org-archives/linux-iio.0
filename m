@@ -1,37 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:35477 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756893Ab3J2BAD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 28 Oct 2013 21:00:03 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 2/4] iio: Fix mag3110 Kconfig dependencies
-Date: Tue, 29 Oct 2013 01:59:55 +0100
-Message-Id: <1383008397-8721-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1383008397-8721-1-git-send-email-pmeerw@pmeerw.net>
-References: <1383008397-8721-1-git-send-email-pmeerw@pmeerw.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57413 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752672Ab3J0Va2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 27 Oct 2013 17:30:28 -0400
+Received: from localhost.localdomain (cpc4-cmbg6-0-0-cust321.5-4.cable.virginm.net [81.107.37.66])
+	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id C77CF4029E
+	for <linux-iio@vger.kernel.org>; Sun, 27 Oct 2013 21:30:26 +0000 (GMT)
+Message-ID: <526D9431.4010706@kernel.org>
+Date: Sun, 27 Oct 2013 22:31:13 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: IIO merge probably closed until after the 3.13 merge window
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/magnetometer/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+Hi All,
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index 0cf0963..d86d226 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -19,6 +19,8 @@ config AK8975
- config MAG3110
- 	tristate "Freescale MAG3110 3-Axis Magnetometer"
- 	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for the Freescale MAG3110 3-Axis
- 	  magnetometer.
--- 
-1.8.4.1
+Linus has said that 3.12 will probably be out in around a week and the
+main kernel merge window will open then.
 
+Hence, I am unlikely to send any more pull requests to Greg KH now
+until after 3.13-rc1 is out.
+
+Sorry to those who have unreviewed patches, but anything that isn't
+a fix will now be destined for 3.14.
+
+Jonathan
