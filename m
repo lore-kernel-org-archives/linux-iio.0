@@ -1,53 +1,28 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Thu, 3 Oct 2013 13:53:02 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jean Delvare <khali@linux-fr.org>, Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>, lm-sensors@lm-sensors.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Message-ID: <20131003125302.GM27287@sirena.org.uk>
-References: <1380292469-17347-1-git-send-email-lars@metafoo.de>
- <1380292469-17347-2-git-send-email-lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-028.synserver.de ([212.40.185.28]:1043 "EHLO
+	smtp-out-028.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753542Ab3J1Jbn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Oct 2013 05:31:43 -0400
+Message-ID: <526E2EF8.9090005@metafoo.de>
+Date: Mon, 28 Oct 2013 10:31:36 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2OzUYMsT4j3Kc+NU"
-In-Reply-To: <1380292469-17347-2-git-send-email-lars@metafoo.de>
-Subject: Re: [PATCH 2/3] hwmon: (adt7310) Use spi_w8r16be() instead
- spi_w8r16()
-List-ID: <linux-iio@vger.kernel.org>
+To: Sachin Kamat <sachin.kamat@linaro.org>
+CC: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH v2 1/1] iio: core: Implement devm_iio_device_{register,unregister}
+References: <1380256624-12588-1-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1380256624-12588-1-git-send-email-sachin.kamat@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 09/27/2013 06:37 AM, Sachin Kamat wrote:
+> Add device managed devm_iio_device_{register,unregister}()
+> to automatically unregister IIO drivers thus leading to
+> simplified IIO driver code.
+> 
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
 
---2OzUYMsT4j3Kc+NU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Sep 27, 2013 at 04:34:28PM +0200, Lars-Peter Clausen wrote:
-> Using spi_w8r16be() instead of spi_w8r16() in this driver makes a code a bit
-> shorter and cleaner.
-
-Applied, thanks.
-
---2OzUYMsT4j3Kc+NU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSTWirAAoJELSic+t+oim9SZ0QAI0ZHtcvBBLbH3e8y7cijW3L
-DipKdZHYLlZcw4c19RS8FcBjorEchoQkXHOqGGFO9IQ61meh0Ne6BuaK2Dxf8+80
-QCQCClttGHTp6+471XKnnqwaq2zRYKnaGZzYe5vmhfm4dj2yVeqnre8j9P7smCP6
-5MPCdF43zbiQOykB52v0Jgkbu1pCCuN1nmu8DCKxn82w/2PBEijgV3/U1cki/b1o
-D7WcabBNmxJfwl8u8U2dJyUVpKAMVyR2xT7qoGIWfRiMw1EAYcnMTsSQZ2cOhI2T
-rZi4xDRhngN5gvkCq45hS4tQpTKUbJJK1BFyK9peR2YNXuvm+wCmXMEGcMst9rE3
-FOf/iAyu8vspRNs5WAQdStBjGQS55yVWTlEI3YrD6u43RpZWlpp53tBGJ2PB5ZVq
-pWBs87qGw5cvhi9CkD1rSPMQA/Rck2M0mrUrZIecW+bIr5LlQEW6hKqrcFKXRt7z
-s7PeLBjQkXnqr7f9Rjc98zF227eiEeuQnSE9Czz0kkUi70VZ38+KejfwtbhStR6s
-HF/pYzEWfGY1WxGFxxGWQsHoKHnTkXWXR03sNpMevkWUZ5wK3FGnC1s22THWFC44
-Hq+t/j0USF7kfzZ1+MxASV95iZZ3nJJ1kuPnJHkFenaEJlLwP3buepLU76IERS0R
-UQwS1zNXMBKxx/7+9wz2
-=Czjv
------END PGP SIGNATURE-----
-
---2OzUYMsT4j3Kc+NU--
+Tested-by: Lars-Peter Clausen <lars@metafoo.de>
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
