@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f51.google.com ([209.85.160.51]:49734 "EHLO
-	mail-pb0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751911Ab3J2LmH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:42:07 -0400
-Received: by mail-pb0-f51.google.com with SMTP id wz7so7886586pbc.10
-        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:42:07 -0700 (PDT)
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:47323 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751911Ab3J2LmF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:42:05 -0400
+Received: by mail-pd0-f178.google.com with SMTP id x10so8282184pdj.9
+        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:42:05 -0700 (PDT)
 From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org
-Subject: [PATCH 20/33] staging: iio: ad5930: Use devm_iio_device_register
-Date: Tue, 29 Oct 2013 17:09:43 +0530
-Message-Id: <1383046796-329-21-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 19/33] staging: iio: ad7746: Use devm_iio_device_register
+Date: Tue, 29 Oct 2013 17:09:42 +0530
+Message-Id: <1383046796-329-20-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,43 +20,46 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/frequency/ad5930.c |   10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/staging/iio/cdc/ad7746.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/staging/iio/frequency/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
-index a4aeee6..662cfb9 100644
---- a/drivers/staging/iio/frequency/ad5930.c
-+++ b/drivers/staging/iio/frequency/ad5930.c
-@@ -106,7 +106,7 @@ static int ad5930_probe(struct spi_device *spi)
- 	idev->info = &ad5930_info;
- 	idev->modes = INDIO_DIRECT_MODE;
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 862d68d..51d56fe 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -749,7 +749,7 @@ static int ad7746_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
  
--	ret = iio_device_register(idev);
-+	ret = devm_iio_device_register(&spi->dev, idev);
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
  	if (ret)
  		return ret;
- 	spi->max_speed_hz = 2000000;
-@@ -117,20 +117,12 @@ static int ad5930_probe(struct spi_device *spi)
+ 
+@@ -758,15 +758,6 @@ static int ad7746_probe(struct i2c_client *client,
  	return 0;
  }
  
--static int ad5930_remove(struct spi_device *spi)
+-static int ad7746_remove(struct i2c_client *client)
 -{
--	iio_device_unregister(spi_get_drvdata(spi));
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
 -
 -	return 0;
 -}
 -
- static struct spi_driver ad5930_driver = {
- 	.driver = {
- 		.name = DRV_NAME,
- 		.owner = THIS_MODULE,
+ static const struct i2c_device_id ad7746_id[] = {
+ 	{ "ad7745", 7745 },
+ 	{ "ad7746", 7746 },
+@@ -781,7 +772,6 @@ static struct i2c_driver ad7746_driver = {
+ 		.name = KBUILD_MODNAME,
  	},
- 	.probe = ad5930_probe,
--	.remove = ad5930_remove,
+ 	.probe = ad7746_probe,
+-	.remove = ad7746_remove,
+ 	.id_table = ad7746_id,
  };
- module_spi_driver(ad5930_driver);
- 
+ module_i2c_driver(ad7746_driver);
 -- 
 1.7.9.5
 
