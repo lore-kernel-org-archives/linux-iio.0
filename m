@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f180.google.com ([209.85.192.180]:52638 "EHLO
-	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754576Ab3J2Llj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:41:39 -0400
-Received: by mail-pd0-f180.google.com with SMTP id p10so8409921pdj.11
-        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:41:39 -0700 (PDT)
+Received: from mail-pa0-f49.google.com ([209.85.220.49]:34165 "EHLO
+	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753970Ab3J2Llg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:41:36 -0400
+Received: by mail-pa0-f49.google.com with SMTP id lj1so8605565pab.8
+        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:41:36 -0700 (PDT)
 From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org
-Subject: [PATCH 09/33] iio: dac: max517: Use devm_iio_device_register
-Date: Tue, 29 Oct 2013 17:09:32 +0530
-Message-Id: <1383046796-329-10-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 08/33] iio: dac: ad5755: Use devm_iio_device_register
+Date: Tue, 29 Oct 2013 17:09:31 +0530
+Message-Id: <1383046796-329-9-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,36 +20,39 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/iio/dac/max517.c |    9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/iio/dac/ad5755.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-index 6e19035..073b705 100644
---- a/drivers/iio/dac/max517.c
-+++ b/drivers/iio/dac/max517.c
-@@ -191,13 +191,7 @@ static int max517_probe(struct i2c_client *client,
- 		data->vref_mv[1] = platform_data->vref_mv[1];
- 	}
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index 9a78d5a..ee1e95a 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -589,16 +589,7 @@ static int ad5755_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
  
 -	return iio_device_register(indio_dev);
 -}
 -
--static int max517_remove(struct i2c_client *client)
+-static int ad5755_remove(struct spi_device *spi)
 -{
--	iio_device_unregister(i2c_get_clientdata(client));
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-
+-	iio_device_unregister(indio_dev);
+-
 -	return 0;
-+	return devm_iio_device_register(&client->dev, indio_dev);
++	return devm_iio_device_register(&spi->dev, indio_dev);
  }
  
- static const struct i2c_device_id max517_id[] = {
-@@ -214,7 +208,6 @@ static struct i2c_driver max517_driver = {
- 		.pm		= MAX517_PM_OPS,
+ static const struct spi_device_id ad5755_id[] = {
+@@ -617,7 +608,6 @@ static struct spi_driver ad5755_driver = {
+ 		.owner = THIS_MODULE,
  	},
- 	.probe		= max517_probe,
--	.remove		= max517_remove,
- 	.id_table	= max517_id,
+ 	.probe = ad5755_probe,
+-	.remove = ad5755_remove,
+ 	.id_table = ad5755_id,
  };
- module_i2c_driver(max517_driver);
+ module_spi_driver(ad5755_driver);
 -- 
 1.7.9.5
 
