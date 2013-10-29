@@ -1,126 +1,394 @@
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:35497 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751756Ab3J2BB3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Oct 2013 21:01:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	sachin.kamat@linaro.org
-Subject: [PATCH 01/33] iio: core: Implement devm_iio_device_{register,unregister}
-Date: Tue, 29 Oct 2013 17:09:24 +0530
-Message-Id: <1383046796-329-2-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: Add Freescale MPL3115A2 pressure / temperature sensor driver
+Date: Tue, 29 Oct 2013 02:01:26 +0100
+Message-Id: <1383008486-10424-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add device managed devm_iio_device_{register,unregister}()
-to automatically unregister IIO drivers thus leading to
-simplified IIO driver code.
+I2C-controlled MEMS sensor with 20-bit pressure measurement (pascal) and
+12-bit temperature measurement
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Tested-by: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+driver only exposes basic functionality, see TODO remarks
+
+datasheet: http://cache.freescale.com/files/sensors/doc/data_sheet/MPL3115A2.pdf
+
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- Documentation/driver-model/devres.txt |    2 ++
- drivers/iio/industrialio-core.c       |   59 +++++++++++++++++++++++++++++++++
- include/linux/iio/iio.h               |    3 ++
- 3 files changed, 64 insertions(+)
+ drivers/iio/pressure/Kconfig   |  12 ++
+ drivers/iio/pressure/Makefile  |   1 +
+ drivers/iio/pressure/mpl3115.c | 321 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 334 insertions(+)
+ create mode 100644 drivers/iio/pressure/mpl3115.c
 
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index fcb34a5..ffeab1d 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -242,6 +242,8 @@ IIO
-   devm_iio_device_free()
-   devm_iio_trigger_alloc()
-   devm_iio_trigger_free()
-+  devm_iio_device_register()
-+  devm_iio_device_unregister()
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 4f2e0f9..a8b9cae 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -5,6 +5,18 @@
  
- IO region
-   devm_request_region()
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 18f72e3..1c280b5 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1161,6 +1161,65 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- 	mutex_unlock(&indio_dev->info_exist_lock);
- }
- EXPORT_SYMBOL(iio_device_unregister);
+ menu "Pressure sensors"
+ 
++config MPL3115
++	tristate "Freescale MPL3115A2 pressure sensor driver"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the Freescale MPL3115A2
++	  pressure sensor / altimeter.
 +
-+static void devm_iio_device_unreg(struct device *dev, void *res)
++          To compile this driver as a module, choose M here: the module
++          will be called mpl3115.
++
+ config IIO_ST_PRESS
+ 	tristate "STMicroelectronics pressure sensor Driver"
+ 	depends on (I2C || SPI_MASTER) && SYSFS
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index be71464..42bb9fc 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_MPL3115) += mpl3115.o
+ obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+ st_pressure-y := st_pressure_core.o
+ st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
+new file mode 100644
+index 0000000..cb74934
+--- /dev/null
++++ b/drivers/iio/pressure/mpl3115.c
+@@ -0,0 +1,321 @@
++/*
++ * mpl3115.c - Support for Freescale MPL3115A2 pressure/temperature sensor
++ *
++ * Copyright (c) 2013 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * (7-bit I2C slave address 0x60)
++ *
++ * TODO: FIFO buffer, altimeter mode, oversampling, continuous mode,
++ * interrupts, user offset correction, raw mode
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/delay.h>
++
++#define MPL3115_STATUS 0x00
++#define MPL3115_OUT_PRESS 0x01 /* MSB first, 20 bit */
++#define MPL3115_OUT_TEMP 0x04 /* MSB first, 12 bit */
++#define MPL3115_WHO_AM_I 0x0c
++#define MPL3115_CTRL_REG1 0x26
++
++#define MPL3115_DEVICE_ID 0xc4
++
++#define MPL3115_STATUS_PRESS_RDY BIT(2)
++#define MPL3115_STATUS_TEMP_RDY BIT(1)
++
++#define MPL3115_CTRL_RESET BIT(2) /* software reset */
++#define MPL3115_CTRL_OST BIT(1) /* initiate measurement */
++#define MPL3115_CTRL_ACTIVE BIT(0) /* continuous measurement */
++#define MPL3115_CTRL_OS_258MS (BIT(5) | BIT(4)) /* 64x oversampling */
++
++struct mpl3115_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u8 ctrl_reg1;
++};
++
++static int mpl3115_request(struct mpl3115_data *data)
 +{
-+	iio_device_unregister(*(struct iio_dev **)res);
++	int ret, tries = 15;
++
++	/* trigger measurement */
++	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
++		data->ctrl_reg1 | MPL3115_CTRL_OST);
++	if (ret < 0)
++		return ret;
++
++	while (tries-- > 0) {
++		ret = i2c_smbus_read_byte_data(data->client, MPL3115_CTRL_REG1);
++		if (ret < 0)
++			return ret;
++		/* wait for data ready, i.e. OST cleared */
++		if (!(ret & MPL3115_CTRL_OST))
++			break;
++		msleep(20);
++	}
++
++	if (tries < 0) {
++		dev_err(&data->client->dev, "data not ready\n");
++		return -EIO;
++	}
++
++	return 0;
 +}
 +
-+/**
-+ * devm_iio_device_register - Resource-managed iio_device_register()
-+ * @dev:	Device to allocate iio_dev for
-+ * @indio_dev:	Device structure filled by the device driver
-+ *
-+ * Managed iio_device_register.  The IIO device registered with this
-+ * function is automatically unregistered on driver detach. This function
-+ * calls iio_device_register() internally. Refer to that function for more
-+ * information.
-+ *
-+ * If an iio_dev registered with this function needs to be unregistered
-+ * separately, devm_iio_device_unregister() must be used.
-+ *
-+ * RETURNS:
-+ * 0 on success, negative error number on failure.
-+ */
-+int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
++static int mpl3115_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
 +{
-+	struct iio_dev **ptr;
++	struct mpl3115_data *data = iio_priv(indio_dev);
++	s32 tmp = 0;
 +	int ret;
 +
-+	ptr = devres_alloc(devm_iio_device_unreg, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_PRESSURE: /* in 0.25 pascal / LSB */
++			mutex_lock(&data->lock);
++			ret = mpl3115_request(data);
++			if (ret < 0) {
++				mutex_unlock(&data->lock);
++				return ret;
++			}
++			ret = i2c_smbus_read_i2c_block_data(data->client,
++				MPL3115_OUT_PRESS, 3, (u8 *) &tmp);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++			*val = sign_extend32(be32_to_cpu(tmp) >> 12, 23);
++			return IIO_VAL_INT;
++		case IIO_TEMP: /* in 0.0625 celsius / LSB */
++			mutex_lock(&data->lock);
++			ret = mpl3115_request(data);
++			if (ret < 0) {
++				mutex_unlock(&data->lock);
++				return ret;
++			}
++			ret = i2c_smbus_read_i2c_block_data(data->client,
++				MPL3115_OUT_TEMP, 2, (u8 *) &tmp);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++			*val = sign_extend32(be32_to_cpu(tmp) >> 20, 15);
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			*val = 0;
++			*val2 = 250; /* want kilopascal */
++			return IIO_VAL_INT_PLUS_MICRO;
++		case IIO_TEMP:
++			*val = 0;
++			*val2 = 62500;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	}
++	return -EINVAL;
++}
++
++static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct mpl3115_data *data = iio_priv(indio_dev);
++	u8 buf[16]; /* 24-bit channel + 16-bit channel + padding + ts */
++	int ret, pos = 0;
++
++	mutex_lock(&data->lock);
++	ret = mpl3115_request(data);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		goto done;
++	}
++
++	if (test_bit(0, indio_dev->active_scan_mask)) {
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++			MPL3115_OUT_PRESS, 3, &buf[pos]);
++		if (ret < 0)
++			goto done;
++		pos += 3;
++	}
++
++	if (test_bit(1, indio_dev->active_scan_mask)) {
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++			MPL3115_OUT_TEMP, 2, &buf[pos]);
++		if (ret < 0)
++			goto done;
++	}
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++		iio_get_time_ns());
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++static const struct iio_chan_spec mpl3115_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++			BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 20,
++			.storagebits = 24,
++			.shift = 4,
++			.endianness = IIO_BE,
++		}
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++			BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 12,
++			.storagebits = 16,
++			.shift = 4,
++			.endianness = IIO_BE,
++		}
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
++};
++
++static const struct iio_info mpl3115_info = {
++	.read_raw = &mpl3115_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int mpl3115_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct mpl3115_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(client, MPL3115_WHO_AM_I);
++	if (ret < 0)
++		return ret;
++	if (ret != MPL3115_DEVICE_ID)
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	*ptr = indio_dev;
-+	ret = iio_device_register(indio_dev);
-+	if (!ret)
-+		devres_add(dev, ptr);
-+	else
-+		devres_free(ptr);
++	data = iio_priv(indio_dev);
++	data->client = client;
++	mutex_init(&data->lock);
 +
++	i2c_set_clientdata(client, indio_dev);
++	indio_dev->info = &mpl3115_info;
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mpl3115_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mpl3115_channels);
++
++	/* software reset, I2C transfer is aborted (fails) */
++	i2c_smbus_write_byte_data(client, MPL3115_CTRL_REG1,
++		MPL3115_CTRL_RESET);
++	msleep(50);
++
++	data->ctrl_reg1 = MPL3115_CTRL_OS_258MS;
++	ret = i2c_smbus_write_byte_data(client, MPL3115_CTRL_REG1,
++		data->ctrl_reg1);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++		mpl3115_trigger_handler, NULL);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto buffer_cleanup;
++	return 0;
++
++buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_device_register);
 +
-+/**
-+ * devm_iio_device_unregister - Resource-managed iio_device_unregister()
-+ * @dev:	Device this iio_dev belongs to
-+ * @indio_dev:	the iio_dev associated with the device
-+ *
-+ * Unregister iio_dev registered with devm_iio_device_register().
-+ */
-+void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
++static int mpl3115_standby(struct mpl3115_data *data)
 +{
-+	int rc;
-+
-+	rc = devres_release(dev, devm_iio_device_unreg,
-+			    devm_iio_device_match, indio_dev);
-+	WARN_ON(rc);
++	return i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
++		data->ctrl_reg1 & ~MPL3115_CTRL_ACTIVE);
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
 +
- subsys_initcall(iio_init);
- module_exit(iio_exit);
- 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 256a90a..a8cabda 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -510,6 +510,9 @@ int iio_device_register(struct iio_dev *indio_dev);
-  **/
- void iio_device_unregister(struct iio_dev *indio_dev);
- 
-+int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
-+void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
++static int mpl3115_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 +
- /**
-  * iio_push_event() - try to add event to the list for userspace reading
-  * @indio_dev:		IIO device structure
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	mpl3115_standby(iio_priv(indio_dev));
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int mpl3115_suspend(struct device *dev)
++{
++	return mpl3115_standby(iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev))));
++}
++
++static int mpl3115_resume(struct device *dev)
++{
++	struct mpl3115_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
++
++	return i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
++		data->ctrl_reg1);
++}
++
++static SIMPLE_DEV_PM_OPS(mpl3115_pm_ops, mpl3115_suspend, mpl3115_resume);
++#define MPL3115_PM_OPS (&mpl3115_pm_ops)
++#else
++#define MPL3115_PM_OPS NULL
++#endif
++
++static const struct i2c_device_id mpl3115_id[] = {
++	{ "mpl3115", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, mpl3115_id);
++
++static struct i2c_driver mpl3115_driver = {
++	.driver = {
++		.name	= "mpl3115",
++		.pm	= MPL3115_PM_OPS,
++	},
++	.probe = mpl3115_probe,
++	.remove = mpl3115_remove,
++	.id_table = mpl3115_id,
++};
++module_i2c_driver(mpl3115_driver);
++
++MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
++MODULE_DESCRIPTION("Freescale MPL3115 pressure/temperature driver");
++MODULE_LICENSE("GPL");
 -- 
-1.7.9.5
+1.8.4.1
+
