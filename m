@@ -1,47 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45994 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750882Ab3J3RNF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Oct 2013 13:13:05 -0400
-In-Reply-To: <CAK9yfHwNpWGLSCf6pGUfAz52OwB7DhYA12akw=gpZNJwwnraDQ@mail.gmail.com>
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <2b6c890f-c0e3-43a8-9687-f340c6050dcc@email.android.com> <CAK9yfHwNpWGLSCf6pGUfAz52OwB7DhYA12akw=gpZNJwwnraDQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH Resend 00/33] iio: Implement and use devm_iio_device_register
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 30 Oct 2013 17:12:58 +0000
-To: Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <cbef0086-083c-488f-9d55-9d1cdc51da54@email.android.com>
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:57223 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754697Ab3J2Lml (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:42:41 -0400
+Received: by mail-pd0-f179.google.com with SMTP id y10so8439313pdj.38
+        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:42:41 -0700 (PDT)
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org
+Subject: [PATCH 33/33] staging: iio: ad7152: Use devm_iio_device_register
+Date: Tue, 29 Oct 2013 17:09:56 +0530
+Message-Id: <1383046796-329-34-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
+References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+devm_iio_device_register simplifies the code.
 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/staging/iio/cdc/ad7152.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-Sachin Kamat <sachin.kamat@linaro.org> wrote:
->Hi Jonathan,
->
->On 29 October 2013 18:41, Jonathan Cameron <jic23@kernel.org> wrote:
->> Hi Sachin.
->>
->> It may be a few days before I get to thee bit as previously discussed
->at least some of these have simpler remove functions than they should
->have...
->>
->> As such I will push back on some of these ..
->>
->
->You could probably add the core patches first and then others on a
->case-by-case basis.
-That is indeed my plan :)
->
->Regards,
->Sachin
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index f2c309d..f925ecb 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -502,7 +502,7 @@ static int ad7152_probe(struct i2c_client *client,
+ 	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -511,15 +511,6 @@ static int ad7152_probe(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static int ad7152_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
+-
+-	return 0;
+-}
+-
+ static const struct i2c_device_id ad7152_id[] = {
+ 	{ "ad7152", 0 },
+ 	{ "ad7153", 1 },
+@@ -533,7 +524,6 @@ static struct i2c_driver ad7152_driver = {
+ 		.name = KBUILD_MODNAME,
+ 	},
+ 	.probe = ad7152_probe,
+-	.remove = ad7152_remove,
+ 	.id_table = ad7152_id,
+ };
+ module_i2c_driver(ad7152_driver);
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.9.5
+
