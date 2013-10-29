@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:60004 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754576Ab3J2Llw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:41:52 -0400
-Received: by mail-pd0-f178.google.com with SMTP id x10so8157774pdj.23
-        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:41:52 -0700 (PDT)
+Received: from mail-pa0-f45.google.com ([209.85.220.45]:57102 "EHLO
+	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754576Ab3J2Llt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Oct 2013 07:41:49 -0400
+Received: by mail-pa0-f45.google.com with SMTP id kp14so8393070pab.18
+        for <linux-iio@vger.kernel.org>; Tue, 29 Oct 2013 04:41:48 -0700 (PDT)
 From: Sachin Kamat <sachin.kamat@linaro.org>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, lars@metafoo.de, sachin.kamat@linaro.org
-Subject: [PATCH 14/33] staging: iio: adis16220: Use devm_iio_device_register
-Date: Tue, 29 Oct 2013 17:09:37 +0530
-Message-Id: <1383046796-329-15-git-send-email-sachin.kamat@linaro.org>
+Subject: [PATCH 13/33] iio: light: vcnl4000: Use devm_iio_device_register
+Date: Tue, 29 Oct 2013 17:09:36 +0530
+Message-Id: <1383046796-329-14-git-send-email-sachin.kamat@linaro.org>
 In-Reply-To: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,46 +20,36 @@ devm_iio_device_register simplifies the code.
 
 Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 ---
- drivers/staging/iio/accel/adis16220_core.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iio/light/vcnl4000.c |    9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/adis16220_core.c b/drivers/staging/iio/accel/adis16220_core.c
-index 4c9364b..6f38ca9 100644
---- a/drivers/staging/iio/accel/adis16220_core.c
-+++ b/drivers/staging/iio/accel/adis16220_core.c
-@@ -439,13 +439,13 @@ static int adis16220_probe(struct spi_device *spi)
- 	indio_dev->channels = adis16220_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(adis16220_channels);
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index ecb3341..384ac23 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -179,13 +179,7 @@ static int vcnl4000_probe(struct i2c_client *client,
+ 	indio_dev->name = VCNL4000_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&spi->dev, indio_dev);
- 	if (ret)
- 		return ret;
- 
- 	ret = sysfs_create_bin_file(&indio_dev->dev.kobj, &accel_bin);
- 	if (ret)
--		goto error_unregister_dev;
-+		return ret;
- 
- 	ret = sysfs_create_bin_file(&indio_dev->dev.kobj, &adc1_bin);
- 	if (ret)
-@@ -470,8 +470,6 @@ error_rm_adc1_bin:
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc1_bin);
- error_rm_accel_bin:
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &accel_bin);
--error_unregister_dev:
--	iio_device_unregister(indio_dev);
- 	return ret;
+-	return iio_device_register(indio_dev);
+-}
+-
+-static int vcnl4000_remove(struct i2c_client *client)
+-{
+-	iio_device_unregister(i2c_get_clientdata(client));
+-	return 0;
++	return devm_iio_device_register(&client->dev, indio_dev);
  }
  
-@@ -482,7 +480,6 @@ static int adis16220_remove(struct spi_device *spi)
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc2_bin);
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &adc1_bin);
- 	sysfs_remove_bin_file(&indio_dev->dev.kobj, &accel_bin);
--	iio_device_unregister(indio_dev);
+ static struct i2c_driver vcnl4000_driver = {
+@@ -194,7 +188,6 @@ static struct i2c_driver vcnl4000_driver = {
+ 		.owner  = THIS_MODULE,
+ 	},
+ 	.probe  = vcnl4000_probe,
+-	.remove = vcnl4000_remove,
+ 	.id_table = vcnl4000_id,
+ };
  
- 	return 0;
- }
 -- 
 1.7.9.5
 
