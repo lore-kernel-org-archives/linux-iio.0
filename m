@@ -1,76 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52688 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751544Ab3KIMvf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Nov 2013 07:51:35 -0500
-Message-ID: <527E3E1F.6090202@kernel.org>
-Date: Sat, 09 Nov 2013 13:52:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-CC: Lars Poeschel <poeschel@lemonage.de>
-Subject: Re: [PATCH 2/2] iio: Drop scan_type from viperboard adc driver
-References: <1383421488-5167-1-git-send-email-pmeerw@pmeerw.net> <1383421488-5167-2-git-send-email-pmeerw@pmeerw.net> <527E2100.408@kernel.org>
-In-Reply-To: <527E2100.408@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <neilb@suse.de>
+Date: Fri, 1 Nov 2013 16:35:23 +1100
+From: NeilBrown <neilb@suse.de>
+To: Jonathan Cameron <jic23@cam.ac.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Shubhrajyoti Datta <shubhrajyoti@ti.com>
+Subject: [PATCH] hmc5843 - add basic dt support
+Message-ID: <20131101163523.10fed501@notabene.brown>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/HVL5=Zr4ubuUMeMxrO4j793"; protocol="application/pgp-signature"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/09/13 11:48, Jonathan Cameron wrote:
-> On 11/02/13 19:44, Peter Meerwald wrote:
->> the driver does not support buffering, hence scan_type is not needed
->>
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->> Cc: Lars Poeschel <poeschel@lemonage.de>
-> We've left this sort of thing in in the past as it acts as documentation whilst
-> doing little harm.
-> 
-> Still in this driver there is nothing 'interesting' in the definition
-> so I've applied your patch to the togreg branch of iio.git
-> 
-> Thanks,
-> 
-> Jonathan
->> ---
->>  drivers/iio/adc/viperboard_adc.c | 7 +------
->>  1 file changed, 1 insertion(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
->> index 09727a7..94f404d 100644
->> --- a/drivers/iio/adc/viperboard_adc.c
->> +++ b/drivers/iio/adc/viperboard_adc.c
->> @@ -42,11 +42,6 @@ struct vprbrd_adc {
->>  	.indexed = 1,					\
->>  	.channel = _index,				\
->>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->> -	.scan_index = _index,				\
->> -	.scan_type = {					\
->> -		.sign = 'u',				\
->> -		.realbits = 8,				\
->> -		.storagebits = 8,			\
->>  	},						\
-Too many brackets here - picked up by the autobuilders.
+--Sig_/HVL5=Zr4ubuUMeMxrO4j793
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Now fixed up in my tree (note I now push to a testing branch specifically
-to get build coverage) before I push out to the togreg branch.
 
-thanks,
 
-Jonathan
->>  }
->>  
->> @@ -73,7 +68,7 @@ static int vprbrd_iio_read_raw(struct iio_dev *iio_dev,
->>  		mutex_lock(&vb->lock);
->>  
->>  		admsg->cmd = VPRBRD_ADC_CMD_GET;
->> -		admsg->chan = chan->scan_index;
->> +		admsg->chan = chan->channel;
->>  		admsg->val = 0x00;
->>  
->>  		ret = usb_control_msg(vb->usb_dev,
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+No configuration, just a compatible string and documentation.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt=
+ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
+new file mode 100644
+index 000000000000..90d5f34db04e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
+@@ -0,0 +1,17 @@
++* Honeywell HMC5843 magnetometer sensor
++
++Required properties:
++
++  - compatible : should be "honeywell,hmc5843"
++  - reg : the I2C address of the magnetometer - typically 0x1e
++
++Optional properties:
++
++  - gpios : should be device tree identifier of the magnetometer DRDY pin
++
++Example:
++
++hmc5843@1e {
++        compatible =3D "honeywell,hmc5843"
++        reg =3D <0x1e>;
++};
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/i=
+io/magnetometer/hmc5843.c
+index c3f3f539e787..829734a82f69 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.c
++++ b/drivers/staging/iio/magnetometer/hmc5843.c
+@@ -719,10 +719,17 @@ static const struct i2c_device_id hmc5843_id[] =3D {
+ };
+ MODULE_DEVICE_TABLE(i2c, hmc5843_id);
+=20
++static const struct of_device_id hmc5843_of_match[] =3D {
++	{ .compatible =3D "honeywell,hmc5843" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, hmc5843_of_match);
++
+ static struct i2c_driver hmc5843_driver =3D {
+ 	.driver =3D {
+ 		.name	=3D "hmc5843",
+ 		.pm	=3D HMC5843_PM_OPS,
++		.of_match_table =3D of_match_ptr(hmc5843_of_match),
+ 	},
+ 	.id_table	=3D hmc5843_id,
+ 	.probe		=3D hmc5843_probe,
+
+--Sig_/HVL5=Zr4ubuUMeMxrO4j793
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iQIVAwUBUnM9mznsnt1WYoG5AQIzRA//VnX2/SZp33/xFK51uzRi3bF0803q2h4G
+0uErbMF/y6DAF00qMveLMrkRcgBxagtLeg83oGpmCXSzBHLUCPusCfCdGE7Yx96v
+1nEogmthAuOUMGxup9p0I3ERStGIvWHtrFKM66Mr1CYYD4Cgbp+HmWQsr3J1P2h+
+9J7rGSlshwrOHrR9K/CNm4ylFXwnHmXB8ZaeCwpOQ1A7113Znzv42CoYJLiR7Vqp
+nrX4mrhq8jms8uxKNg+7kOqvp5Sr3whm11Ivbe1CcrsEvmP3Qu9EgizaBNbN/xwC
+cyzLDEuCSFFws3YPeF5B5dNfuxDZDW0SjfbNwAwcFWfr8R4CdQ9jEk4ikHBOQb8M
+LwImKUMFDRqgQ2DgEFxYjmb2spGTLz1S6Wy6et47BC5cZ0aTof3fPW8owOMKK88z
+xatQnffG7KhqclQKZZFefT9UIIP6idc+3aPMnNiy6vsfSN64ZZFTvq7gL3exF5Tc
+2f1OJ6gg9UD5jSTN0TAA+i5BsC4DitH17pteY4aw2MgeL/Ov1TBysBSEXsl6myuy
+wsybOqmaiCO/4iu1RdcOX4gd3L2shGirLvSSUVRr9GxgRToQ3vzZEbRcv/YQgA7o
+yHAqwrpyQNuLiRpXqUUfsB6H3mkBpohoYHHF65WSZgbh81GcqmY/tz9Y/E0PM5fc
+gdXGhErJtgo=
+=wKGC
+-----END PGP SIGNATURE-----
+
+--Sig_/HVL5=Zr4ubuUMeMxrO4j793--
