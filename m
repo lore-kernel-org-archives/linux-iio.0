@@ -1,308 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54757 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54743 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753773Ab3KIQoi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Nov 2013 11:44:38 -0500
-Message-ID: <527E74BF.5040002@kernel.org>
-Date: Sat, 09 Nov 2013 17:45:35 +0000
+	with ESMTP id S1753773Ab3KIQnN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 9 Nov 2013 11:43:13 -0500
+Message-ID: <527E7467.8000103@kernel.org>
+Date: Sat, 09 Nov 2013 17:44:07 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org
 CC: lars@metafoo.de
-Subject: Re: [PATCH 02/33] iio: core: Move kernel doc to the right location
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-3-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1383046796-329-3-git-send-email-sachin.kamat@linaro.org>
+Subject: Re: [PATCH 01/33] iio: core: Implement devm_iio_device_{register,unregister}
+References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-2-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1383046796-329-2-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 10/29/13 11:39, Sachin Kamat wrote:
-> Documentation related to function should be placed above
-> its implementation. Move it accordingly.
+> Add device managed devm_iio_device_{register,unregister}()
+> to automatically unregister IIO drivers thus leading to
+> simplified IIO driver code.
 > 
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 > Cc: Lars-Peter Clausen <lars@metafoo.de>
-This particular convention annoys me from time to time, but it is the
-convention so:
+> Tested-by: Lars-Peter Clausen <lars@metafoo.de>
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
 Applied to the togreg branch of iio.git
 
-Thanks,
+Thanks
+
 > ---
->  drivers/iio/industrialio-core.c    |   42 +++++++++++++++++++
->  drivers/iio/industrialio-event.c   |    6 +++
->  drivers/iio/industrialio-trigger.c |   24 +++++++++++
->  include/linux/iio/iio.h            |   80 ------------------------------------
->  4 files changed, 72 insertions(+), 80 deletions(-)
+>  Documentation/driver-model/devres.txt |    2 ++
+>  drivers/iio/industrialio-core.c       |   59 +++++++++++++++++++++++++++++++++
+>  include/linux/iio/iio.h               |    3 ++
+>  3 files changed, 64 insertions(+)
 > 
+> diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+> index fcb34a5..ffeab1d 100644
+> --- a/Documentation/driver-model/devres.txt
+> +++ b/Documentation/driver-model/devres.txt
+> @@ -242,6 +242,8 @@ IIO
+>    devm_iio_device_free()
+>    devm_iio_trigger_alloc()
+>    devm_iio_trigger_free()
+> +  devm_iio_device_register()
+> +  devm_iio_device_unregister()
+>  
+>  IO region
+>    devm_request_region()
 > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 1c280b5..2fe88c1 100644
+> index 18f72e3..1c280b5 100644
 > --- a/drivers/iio/industrialio-core.c
 > +++ b/drivers/iio/industrialio-core.c
-> @@ -107,6 +107,11 @@ static const char * const iio_chan_info_postfix[] = {
->  	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
->  };
->  
-> +/**
-> + * iio_find_channel_from_si() - get channel from its scan index
-> + * @indio_dev:		device
-> + * @si:			scan index to match
-> + */
->  const struct iio_chan_spec
->  *iio_find_channel_from_si(struct iio_dev *indio_dev, int si)
->  {
-> @@ -922,6 +927,10 @@ struct device_type iio_device_type = {
->  	.release = iio_dev_release,
->  };
->  
-> +/**
-> + * iio_device_alloc() - allocate an iio_dev from a driver
-> + * @sizeof_priv:	Space to allocate for private structure.
-> + **/
->  struct iio_dev *iio_device_alloc(int sizeof_priv)
->  {
->  	struct iio_dev *dev;
-> @@ -962,6 +971,10 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+> @@ -1161,6 +1161,65 @@ void iio_device_unregister(struct iio_dev *indio_dev)
+>  	mutex_unlock(&indio_dev->info_exist_lock);
 >  }
->  EXPORT_SYMBOL(iio_device_alloc);
->  
+>  EXPORT_SYMBOL(iio_device_unregister);
+> +
+> +static void devm_iio_device_unreg(struct device *dev, void *res)
+> +{
+> +	iio_device_unregister(*(struct iio_dev **)res);
+> +}
+> +
 > +/**
-> + * iio_device_free() - free an iio_dev from a driver
-> + * @dev:		the iio_dev associated with the device
-> + **/
->  void iio_device_free(struct iio_dev *dev)
->  {
->  	if (dev)
-> @@ -984,6 +997,20 @@ static int devm_iio_device_match(struct device *dev, void *res, void *data)
->  	return *r == data;
->  }
->  
-> +/**
-> + * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-> + * @dev:		Device to allocate iio_dev for
-> + * @sizeof_priv:	Space to allocate for private structure.
+> + * devm_iio_device_register - Resource-managed iio_device_register()
+> + * @dev:	Device to allocate iio_dev for
+> + * @indio_dev:	Device structure filled by the device driver
 > + *
-> + * Managed iio_device_alloc. iio_dev allocated with this function is
-> + * automatically freed on driver detach.
+> + * Managed iio_device_register.  The IIO device registered with this
+> + * function is automatically unregistered on driver detach. This function
+> + * calls iio_device_register() internally. Refer to that function for more
+> + * information.
 > + *
-> + * If an iio_dev allocated with this function needs to be freed separately,
-> + * devm_iio_device_free() must be used.
+> + * If an iio_dev registered with this function needs to be unregistered
+> + * separately, devm_iio_device_unregister() must be used.
 > + *
 > + * RETURNS:
-> + * Pointer to allocated iio_dev on success, NULL on failure.
+> + * 0 on success, negative error number on failure.
 > + */
->  struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
->  {
->  	struct iio_dev **ptr, *iio_dev;
-> @@ -1006,6 +1033,13 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
->  }
->  EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
->  
+> +int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dev **ptr;
+> +	int ret;
+> +
+> +	ptr = devres_alloc(devm_iio_device_unreg, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr)
+> +		return -ENOMEM;
+> +
+> +	*ptr = indio_dev;
+> +	ret = iio_device_register(indio_dev);
+> +	if (!ret)
+> +		devres_add(dev, ptr);
+> +	else
+> +		devres_free(ptr);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_device_register);
+> +
 > +/**
-> + * devm_iio_device_free - Resource-managed iio_device_free()
-> + * @dev:		Device this iio_dev belongs to
-> + * @iio_dev:		the iio_dev associated with the device
+> + * devm_iio_device_unregister - Resource-managed iio_device_unregister()
+> + * @dev:	Device this iio_dev belongs to
+> + * @indio_dev:	the iio_dev associated with the device
 > + *
-> + * Free iio_dev allocated with devm_iio_device_alloc().
+> + * Unregister iio_dev registered with devm_iio_device_register().
 > + */
->  void devm_iio_device_free(struct device *dev, struct iio_dev *iio_dev)
->  {
->  	int rc;
-> @@ -1080,6 +1114,10 @@ static const struct file_operations iio_buffer_fileops = {
+> +void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
+> +{
+> +	int rc;
+> +
+> +	rc = devres_release(dev, devm_iio_device_unreg,
+> +			    devm_iio_device_match, indio_dev);
+> +	WARN_ON(rc);
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
+> +
+>  subsys_initcall(iio_init);
+>  module_exit(iio_exit);
 >  
->  static const struct iio_buffer_setup_ops noop_ring_setup_ops;
->  
-> +/**
-> + * iio_device_register() - register a device with the IIO subsystem
-> + * @indio_dev:		Device structure filled by the device driver
-> + **/
->  int iio_device_register(struct iio_dev *indio_dev)
->  {
->  	int ret;
-> @@ -1141,6 +1179,10 @@ error_ret:
->  }
->  EXPORT_SYMBOL(iio_device_register);
->  
-> +/**
-> + * iio_device_unregister() - unregister a device from the IIO subsystem
-> + * @indio_dev:		Device structure representing the device.
-> + **/
->  void iio_device_unregister(struct iio_dev *indio_dev)
->  {
->  	mutex_lock(&indio_dev->info_exist_lock);
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index dac15b9..32b2c2d 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -42,6 +42,12 @@ struct iio_event_interface {
->  	struct attribute_group	group;
->  };
->  
-> +/**
-> + * iio_push_event() - try to add event to the list for userspace reading
-> + * @indio_dev:		IIO device structure
-> + * @ev_code:		What event
-> + * @timestamp:		When the event occurred
-> + **/
->  int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
->  {
->  	struct iio_event_interface *ev_int = indio_dev->event_interface;
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index bf5e70a..8bd092b 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -506,6 +506,23 @@ static int devm_iio_trigger_match(struct device *dev, void *res, void *data)
->  	return *r == data;
->  }
->  
-> +/**
-> + * devm_iio_trigger_alloc - Resource-managed iio_trigger_alloc()
-> + * @dev:		Device to allocate iio_trigger for
-> + * @fmt:		trigger name format. If it includes format
-> + *			specifiers, the additional arguments following
-> + *			format are formatted and inserted in the resulting
-> + *			string replacing their respective specifiers.
-> + *
-> + * Managed iio_trigger_alloc.  iio_trigger allocated with this function is
-> + * automatically freed on driver detach.
-> + *
-> + * If an iio_trigger allocated with this function needs to be freed separately,
-> + * devm_iio_trigger_free() must be used.
-> + *
-> + * RETURNS:
-> + * Pointer to allocated iio_trigger on success, NULL on failure.
-> + */
->  struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
->  						const char *fmt, ...)
->  {
-> @@ -532,6 +549,13 @@ struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
->  }
->  EXPORT_SYMBOL_GPL(devm_iio_trigger_alloc);
->  
-> +/**
-> + * devm_iio_trigger_free - Resource-managed iio_trigger_free()
-> + * @dev:		Device this iio_dev belongs to
-> + * @iio_trig:		the iio_trigger associated with the device
-> + *
-> + * Free iio_trigger allocated with devm_iio_trigger_alloc().
-> + */
->  void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
->  {
->  	int rc;
 > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index a8cabda..5b125fd 100644
+> index 256a90a..a8cabda 100644
 > --- a/include/linux/iio/iio.h
 > +++ b/include/linux/iio/iio.h
-> @@ -490,35 +490,12 @@ struct iio_dev {
->  #endif
->  };
->  
-> -/**
-> - * iio_find_channel_from_si() - get channel from its scan index
-> - * @indio_dev:		device
-> - * @si:			scan index to match
-> - */
->  const struct iio_chan_spec
->  *iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
-> -
-> -/**
-> - * iio_device_register() - register a device with the IIO subsystem
-> - * @indio_dev:		Device structure filled by the device driver
-> - **/
->  int iio_device_register(struct iio_dev *indio_dev);
-> -
-> -/**
-> - * iio_device_unregister() - unregister a device from the IIO subsystem
-> - * @indio_dev:		Device structure representing the device.
-> - **/
+> @@ -510,6 +510,9 @@ int iio_device_register(struct iio_dev *indio_dev);
+>   **/
 >  void iio_device_unregister(struct iio_dev *indio_dev);
-> -
->  int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
->  void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
-> -
-> -/**
-> - * iio_push_event() - try to add event to the list for userspace reading
-> - * @indio_dev:		IIO device structure
-> - * @ev_code:		What event
-> - * @timestamp:		When the event occurred
-> - **/
->  int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
 >  
->  extern struct bus_type iio_bus_type;
-> @@ -582,10 +559,6 @@ static inline void *iio_device_get_drvdata(struct iio_dev *indio_dev)
->  
->  /* Can we make this smaller? */
->  #define IIO_ALIGN L1_CACHE_BYTES
-> -/**
-> - * iio_device_alloc() - allocate an iio_dev from a driver
-> - * @sizeof_priv: 	Space to allocate for private structure.
-> - **/
->  struct iio_dev *iio_device_alloc(int sizeof_priv);
->  
->  static inline void *iio_priv(const struct iio_dev *indio_dev)
-> @@ -599,64 +572,11 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
->  				  ALIGN(sizeof(struct iio_dev), IIO_ALIGN));
->  }
->  
-> -/**
-> - * iio_device_free() - free an iio_dev from a driver
-> - * @indio_dev: 		the iio_dev associated with the device
-> - **/
->  void iio_device_free(struct iio_dev *indio_dev);
-> -
-> -/**
-> - * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-> - * @dev: 		Device to allocate iio_dev for
-> - * @sizeof_priv: 	Space to allocate for private structure.
-> - *
-> - * Managed iio_device_alloc.  iio_dev allocated with this function is
-> - * automatically freed on driver detach.
-> - *
-> - * If an iio_dev allocated with this function needs to be freed separately,
-> - * devm_iio_device_free() must be used.
-> - *
-> - * RETURNS:
-> - * Pointer to allocated iio_dev on success, NULL on failure.
-> - */
->  struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
-> -
-> -/**
-> - * devm_iio_device_free - Resource-managed iio_device_free()
-> - * @dev:		Device this iio_dev belongs to
-> - * @indio_dev: 		the iio_dev associated with the device
-> - *
-> - * Free iio_dev allocated with devm_iio_device_alloc().
-> - */
->  void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
-> -
-> -/**
-> - * devm_iio_trigger_alloc - Resource-managed iio_trigger_alloc()
-> - * @dev:		Device to allocate iio_trigger for
-> - * @fmt:		trigger name format. If it includes format
-> - *			specifiers, the additional arguments following
-> - *			format are formatted and inserted in the resulting
-> - *			string replacing their respective specifiers.
-> - *
-> - * Managed iio_trigger_alloc.  iio_trigger allocated with this function is
-> - * automatically freed on driver detach.
-> - *
-> - * If an iio_trigger allocated with this function needs to be freed separately,
-> - * devm_iio_trigger_free() must be used.
-> - *
-> - * RETURNS:
-> - * Pointer to allocated iio_trigger on success, NULL on failure.
-> - */
->  struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
->  						const char *fmt, ...);
-> -
-> -/**
-> - * devm_iio_trigger_free - Resource-managed iio_trigger_free()
-> - * @dev:		Device this iio_dev belongs to
-> - * @iio_trig:		the iio_trigger associated with the device
-> - *
-> - * Free iio_trigger allocated with devm_iio_trigger_alloc().
-> - */
->  void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
->  
+> +int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
+> +void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
+> +
 >  /**
+>   * iio_push_event() - try to add event to the list for userspace reading
+>   * @indio_dev:		IIO device structure
 > 
