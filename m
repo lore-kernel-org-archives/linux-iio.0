@@ -1,284 +1,304 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50311 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50310 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751964Ab3KQOOL (ORCPT
+	with ESMTP id S1751689Ab3KQOOL (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Nov 2013 09:14:11 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 06/11] iio: ad_sigma_delta provide macro parameters for available info masks
-Date: Sun, 17 Nov 2013 15:14:57 +0000
-Message-Id: <1384701302-26564-7-git-send-email-jic23@kernel.org>
+Subject: [PATCH 05/11] iio:st sensors: remove custom sampling frequence attribute in favour of core support.
+Date: Sun, 17 Nov 2013 15:14:56 +0000
+Message-Id: <1384701302-26564-6-git-send-email-jic23@kernel.org>
 In-Reply-To: <1384701302-26564-1-git-send-email-jic23@kernel.org>
 References: <1384701302-26564-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-For now all are set to 0 to allow the drivers to undergo conversion
-one at a time.
+This allows in kernel client drivers to access this
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/adc/ad7791.c               | 14 +++----
- drivers/iio/adc/ad7793.c               | 69 ++++++++++++++++++++++------------
- drivers/staging/iio/adc/ad7192.c       | 16 ++++----
- drivers/staging/iio/adc/ad7780.c       |  2 +-
- include/linux/iio/adc/ad_sigma_delta.h | 47 +++++++++++++++++------
- 5 files changed, 97 insertions(+), 51 deletions(-)
+ drivers/iio/accel/st_accel_core.c               | 12 ++++++++--
+ drivers/iio/common/st_sensors/st_sensors_core.c | 29 -------------------------
+ drivers/iio/gyro/st_gyro_core.c                 | 12 ++++++++--
+ drivers/iio/magnetometer/st_magn_core.c         | 12 ++++++++--
+ drivers/iio/pressure/st_pressure_core.c         | 27 +++++++++++++++++++++--
+ include/linux/iio/common/st_sensors.h           | 15 +++++--------
+ 6 files changed, 61 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
-index c19f8fd1b4b7..a5abc1c2453e 100644
---- a/drivers/iio/adc/ad7791.c
-+++ b/drivers/iio/adc/ad7791.c
-@@ -68,23 +68,23 @@
- #define DECLARE_AD7787_CHANNELS(name, bits, storagebits) \
- const struct iio_chan_spec name[] = { \
- 	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
--		(bits), (storagebits), 0), \
--	AD_SD_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
-+	AD_SD_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0, 0, 0, 0), \
- 	AD_SD_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
--		(bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
- 	AD_SD_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
--		(bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(4), \
- }
- 
- #define DECLARE_AD7791_CHANNELS(name, bits, storagebits) \
- const struct iio_chan_spec name[] = { \
- 	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
--		(bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
- 	AD_SD_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
--		(bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
- 	AD_SD_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
--		(bits), (storagebits), 0), \
-+		(bits), (storagebits), 0, 0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(3), \
- }
- 
-diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index 4dddeabdfbb0..0af42b693eb4 100644
---- a/drivers/iio/adc/ad7793.c
-+++ b/drivers/iio/adc/ad7793.c
-@@ -586,45 +586,66 @@ static const struct iio_info ad7797_info = {
- 
- #define DECLARE_AD7793_CHANNELS(_name, _b, _sb, _s) \
- const struct iio_chan_spec _name##_channels[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), (_s)), \
--	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), (_s)), \
--	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), (_s)), \
--	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), (_s)), \
--	AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, (_b), (_sb), (_s)), \
--	AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), (_s)), \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), (_s), \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), (_s), \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), (_s), \
-+	0, 0, 0), \
-+	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), (_s), \
-+	0, 0, 0), \
-+	AD_SD_TEMP_CHANNEL(4, AD7793_CH_TEMP, (_b), (_sb), (_s), 0, 0, 0), \
-+	AD_SD_SUPPLY_CHANNEL(5, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), (_s), \
-+	0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(6), \
- }
- 
- #define DECLARE_AD7795_CHANNELS(_name, _b, _sb) \
- const struct iio_chan_spec _name##_channels[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(3, 3, 3, AD7795_CH_AIN4P_AIN4M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(4, 4, 4, AD7795_CH_AIN5P_AIN5M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(5, 5, 5, AD7795_CH_AIN6P_AIN6M, (_b), (_sb), 0), \
--	AD_SD_SHORTED_CHANNEL(6, 0, AD7795_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
--	AD_SD_TEMP_CHANNEL(7, AD7793_CH_TEMP, (_b), (_sb), 0), \
--	AD_SD_SUPPLY_CHANNEL(8, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(3, 3, 3, AD7795_CH_AIN4P_AIN4M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(4, 4, 4, AD7795_CH_AIN5P_AIN5M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(5, 5, 5, AD7795_CH_AIN6P_AIN6M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_SHORTED_CHANNEL(6, 0, AD7795_CH_AIN1M_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_TEMP_CHANNEL(7, AD7793_CH_TEMP, (_b), (_sb), 0, 0, 0, 0),	\
-+	AD_SD_SUPPLY_CHANNEL(8, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0, \
-+	0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(9), \
- }
- 
- #define DECLARE_AD7797_CHANNELS(_name, _b, _sb) \
- const struct iio_chan_spec _name##_channels[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
--	AD_SD_SHORTED_CHANNEL(1, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
--	AD_SD_TEMP_CHANNEL(2, AD7793_CH_TEMP, (_b), (_sb), 0), \
--	AD_SD_SUPPLY_CHANNEL(3, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_SHORTED_CHANNEL(1, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_TEMP_CHANNEL(2, AD7793_CH_TEMP, (_b), (_sb), 0, 0, 0, 0),	\
-+	AD_SD_SUPPLY_CHANNEL(3, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0, \
-+	0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(4), \
- }
- 
- #define DECLARE_AD7799_CHANNELS(_name, _b, _sb) \
- const struct iio_chan_spec _name##_channels[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0), \
--	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0), \
--	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0), \
--	AD_SD_SUPPLY_CHANNEL(4, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0), \
-+	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7793_CH_AIN1P_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(1, 1, 1, AD7793_CH_AIN2P_AIN2M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_DIFF_CHANNEL(2, 2, 2, AD7793_CH_AIN3P_AIN3M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_SHORTED_CHANNEL(3, 0, AD7793_CH_AIN1M_AIN1M, (_b), (_sb), 0, \
-+	0, 0, 0), \
-+	AD_SD_SUPPLY_CHANNEL(4, 3, AD7793_CH_AVDD_MONITOR, (_b), (_sb), 0, \
-+	0, 0, 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(5), \
- }
- 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 83bb44b38152..75187fc8e4b4 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -595,14 +595,14 @@ static const struct iio_info ad7195_info = {
- };
- 
- static const struct iio_chan_spec ad7192_channels[] = {
--	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M, 24, 32, 0),
--	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M, 24, 32, 0),
--	AD_SD_TEMP_CHANNEL(2, AD7192_CH_TEMP, 24, 32, 0),
--	AD_SD_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M, 24, 32, 0),
--	AD_SD_CHANNEL(4, 1, AD7192_CH_AIN1, 24, 32, 0),
--	AD_SD_CHANNEL(5, 2, AD7192_CH_AIN2, 24, 32, 0),
--	AD_SD_CHANNEL(6, 3, AD7192_CH_AIN3, 24, 32, 0),
--	AD_SD_CHANNEL(7, 4, AD7192_CH_AIN4, 24, 32, 0),
-+	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M, 24, 32, 0, 0, 0, 0),
-+	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M, 24, 32, 0, 0, 0, 0),
-+	AD_SD_TEMP_CHANNEL(2, AD7192_CH_TEMP, 24, 32, 0, 0, 0, 0),
-+	AD_SD_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M, 24, 32, 0, 0, 0, 0),
-+	AD_SD_CHANNEL(4, 1, AD7192_CH_AIN1, 24, 32, 0, 0, 0, 0),
-+	AD_SD_CHANNEL(5, 2, AD7192_CH_AIN2, 24, 32, 0, 0, 0, 0),
-+	AD_SD_CHANNEL(6, 3, AD7192_CH_AIN3, 24, 32, 0, 0, 0, 0),
-+	AD_SD_CHANNEL(7, 4, AD7192_CH_AIN4, 24, 32, 0, 0, 0, 0),
- 	IIO_CHAN_SOFT_TIMESTAMP(8),
- };
- 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 273add3ed63f..f4827dfaec65 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -131,7 +131,7 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
- };
- 
- #define AD7780_CHANNEL(bits, wordsize) \
--	AD_SD_CHANNEL(1, 0, 0, bits, 32, wordsize - bits)
-+	AD_SD_CHANNEL(1, 0, 0, bits, 32, wordsize - bits, 0, 0, 0)
- 
- static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 	[ID_AD7170] = {
-diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-index e7fdec4db9da..c19f4711a1e0 100644
---- a/include/linux/iio/adc/ad_sigma_delta.h
-+++ b/include/linux/iio/adc/ad_sigma_delta.h
-@@ -124,7 +124,9 @@ void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
- int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
- 
- #define __AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--	_storagebits, _shift, _extend_name, _type) \
-+	_storagebits, _shift, _extend_name, _type, \
-+	_im_shared_by_all, \
-+	_im_shared_all_av, _im_shared_type_av) \
- 	{ \
- 		.type = (_type), \
- 		.differential = (_channel2 == -1 ? 0 : 1), \
-@@ -136,6 +138,9 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
- 			BIT(IIO_CHAN_INFO_OFFSET), \
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+		.info_mask_shared_by_all = _im_shared_by_all, \
-+		.info_mask_shared_by_all_available = _im_shared_all_av, \
-+		.info_mask_shared_by_type_available = _im_shared_type_av, \
- 		.scan_index = (_si), \
- 		.scan_type = { \
- 			.sign = 'u', \
-@@ -147,27 +152,47 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 38caedc76b98..237d85142ad8 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -393,6 +393,9 @@ static int st_accel_read_raw(struct iio_dev *indio_dev,
+ 		*val = 0;
+ 		*val2 = adata->current_fullscale->gain;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = adata->odr;
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
  	}
+@@ -410,6 +413,13 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val2)
++			return -EINVAL;
++		mutex_lock(&indio_dev->mlock);
++		err = st_sensors_set_odr(indio_dev, val);
++		mutex_unlock(&indio_dev->mlock);
++		return err;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -417,14 +427,12 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
+ 	return err;
+ }
  
- #define AD_SD_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--	_storagebits, _shift) \
-+	_storagebits, _shift, \
-+	_shared_by_all, \
-+	_shared_by_all_available, _shared_by_type_available)	\
- 	__AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_VOLTAGE)
-+		_storagebits, _shift, NULL, IIO_VOLTAGE, \
-+		_shared_by_all, \
-+		_shared_by_all_available, _shared_by_type_available)
+-static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+ static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+ static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_accel_scale_available);
  
- #define AD_SD_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
--	_storagebits, _shift) \
-+	_storagebits, _shift, \
-+	_shared_by_all, \
-+	_shared_by_all_available, _shared_by_type_available) \
- 	__AD_SD_CHANNEL(_si, _channel, _channel, _address, _bits, \
--		_storagebits, _shift, "shorted", IIO_VOLTAGE)
-+		_storagebits, _shift, "shorted", IIO_VOLTAGE, \
-+		_shared_by_all, \
-+		_shared_by_all_available, _shared_by_type_available)
+ static struct attribute *st_accel_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	NULL,
+ };
  
- #define AD_SD_CHANNEL(_si, _channel, _address, _bits, \
--	_storagebits, _shift) \
-+	_storagebits, _shift, \
-+	_shared_by_all, \
-+	_shared_by_all_available, _shared_by_type_available) \
- 	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_VOLTAGE)
-+		_storagebits, _shift, NULL, IIO_VOLTAGE, \
-+		_shared_by_all, \
-+		_shared_by_all_available, _shared_by_type_available)
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 7ba1ef270213..890bdc83cafb 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -426,35 +426,6 @@ read_wai_error:
+ }
+ EXPORT_SYMBOL(st_sensors_check_device_support);
  
--#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
-+#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift, \
-+	_shared_by_all, \
-+	_shared_by_all_available, _shared_by_type_available) \
- 	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_TEMP)
-+		_storagebits, _shift, NULL, IIO_TEMP, \
-+		_shared_by_all, \
-+		_shared_by_all_available, _shared_by_type_available)
+-ssize_t st_sensors_sysfs_get_sampling_frequency(struct device *dev,
+-				struct device_attribute *attr, char *buf)
+-{
+-	struct st_sensor_data *adata = iio_priv(dev_get_drvdata(dev));
+-
+-	return sprintf(buf, "%d\n", adata->odr);
+-}
+-EXPORT_SYMBOL(st_sensors_sysfs_get_sampling_frequency);
+-
+-ssize_t st_sensors_sysfs_set_sampling_frequency(struct device *dev,
+-		struct device_attribute *attr, const char *buf, size_t size)
+-{
+-	int err;
+-	unsigned int odr;
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-
+-	err = kstrtoint(buf, 10, &odr);
+-	if (err < 0)
+-		goto conversion_error;
+-
+-	mutex_lock(&indio_dev->mlock);
+-	err = st_sensors_set_odr(indio_dev, odr);
+-	mutex_unlock(&indio_dev->mlock);
+-
+-conversion_error:
+-	return err < 0 ? err : size;
+-}
+-EXPORT_SYMBOL(st_sensors_sysfs_set_sampling_frequency);
+-
+ ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index d53d91adfb55..fc9f449a342a 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -246,6 +246,9 @@ static int st_gyro_read_raw(struct iio_dev *indio_dev,
+ 		*val = 0;
+ 		*val2 = gdata->current_fullscale->gain;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = gdata->odr;
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -263,6 +266,13 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val2)
++			return -EINVAL;
++		mutex_lock(&indio_dev->mlock);
++		err = st_sensors_set_odr(indio_dev, val);
++		mutex_unlock(&indio_dev->mlock);
++		return err;
+ 	default:
+ 		err = -EINVAL;
+ 	}
+@@ -270,14 +280,12 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
+ 	return err;
+ }
  
- #define AD_SD_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
--	_shift) \
-+	_shift, \
-+	_shared_by_all, \
-+	_shared_by_all_available, _shared_by_type_available) \
- 	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
--		_storagebits, _shift, "supply", IIO_VOLTAGE)
-+		_storagebits, _shift, "supply", IIO_VOLTAGE, \
-+		_shared_by_all, \
-+		_shared_by_all_available, _shared_by_type_available)
+-static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+ static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+ static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_anglvel_scale_available);
  
- #endif
+ static struct attribute *st_gyro_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	NULL,
+ };
+ 
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 52bbcfa1e077..34fc1a70a974 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -299,6 +299,9 @@ static int st_magn_read_raw(struct iio_dev *indio_dev,
+ 		else
+ 			*val2 = mdata->current_fullscale->gain;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = mdata->odr;
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -316,6 +319,13 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val2)
++			return -EINVAL;
++		mutex_lock(&indio_dev->mlock);
++		err = st_sensors_set_odr(indio_dev, val);
++		mutex_unlock(&indio_dev->mlock);
++		return err;
+ 	default:
+ 		err = -EINVAL;
+ 	}
+@@ -323,14 +333,12 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
+ 	return err;
+ }
+ 
+-static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+ static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+ static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_magn_scale_available);
+ 
+ static struct attribute *st_magn_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_magn_scale_available.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	NULL,
+ };
+ 
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 58083f9d51c5..a6d2855cefb0 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -235,6 +235,27 @@ static const struct st_sensors st_press_sensors[] = {
+ 	},
+ };
+ 
++static int st_press_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *ch,
++			      int val,
++			      int val2,
++			      long mask)
++{
++	int err;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val2)
++			return -EINVAL;
++		mutex_lock(&indio_dev->mlock);
++		err = st_sensors_set_odr(indio_dev, val);
++		mutex_unlock(&indio_dev->mlock);
++		return err;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int st_press_read_raw(struct iio_dev *indio_dev,
+ 			struct iio_chan_spec const *ch, int *val,
+ 							int *val2, long mask)
+@@ -277,6 +298,9 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		return IIO_VAL_FRACTIONAL;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = pdata->odr;
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -285,12 +309,10 @@ read_error:
+ 	return err;
+ }
+ 
+-static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+ static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+ 
+ static struct attribute *st_press_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -302,6 +324,7 @@ static const struct iio_info press_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.attrs = &st_press_attribute_group,
+ 	.read_raw = &st_press_read_raw,
++	.write_raw = &st_press_write_raw,
+ };
+ 
+ #ifdef CONFIG_IIO_TRIGGER
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 3c005eb3a0a4..ffcd1f2b96c9 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -47,6 +47,7 @@
+ 	.type = device_type, \
+ 	.modified = mod, \
+ 	.info_mask_separate = mask, \
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+ 	.scan_index = index, \
+ 	.channel2 = ch2, \
+ 	.address = addr, \
+@@ -59,11 +60,6 @@
+ 	}, \
+ }
+ 
+-#define ST_SENSOR_DEV_ATTR_SAMP_FREQ() \
+-		IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO, \
+-			st_sensors_sysfs_get_sampling_frequency, \
+-			st_sensors_sysfs_set_sampling_frequency)
+-
+ #define ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL() \
+ 		IIO_DEV_ATTR_SAMP_FREQ_AVAIL( \
+ 			st_sensors_sysfs_sampling_frequency_avail)
+@@ -281,11 +277,12 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ int st_sensors_check_device_support(struct iio_dev *indio_dev,
+ 			int num_sensors_list, const struct st_sensors *sensors);
+ 
+-ssize_t st_sensors_sysfs_get_sampling_frequency(struct device *dev,
+-				struct device_attribute *attr, char *buf);
++int st_sensors_get_sampling_frequency(struct iio_dev *indio_dev,
++				      int *val,
++				      int *val2);
+ 
+-ssize_t st_sensors_sysfs_set_sampling_frequency(struct device *dev,
+-		struct device_attribute *attr, const char *buf, size_t size);
++int st_sensors_set_sampling_frequency(struct iio_dev *indio_dev, int *val,
++				      int *val2);
+ 
+ ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
+ 				struct device_attribute *attr, char *buf);
 -- 
 1.8.4.2
 
