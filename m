@@ -1,74 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43353 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50303 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752483Ab3KXVEO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Nov 2013 16:04:14 -0500
-Message-ID: <529269CC.3050007@kernel.org>
-Date: Sun, 24 Nov 2013 21:04:12 +0000
+	with ESMTP id S1751826Ab3KQOOK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Nov 2013 09:14:10 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: NeilBrown <neilb@suse.de>, Sebastian Reichel <sre@debian.org>
-CC: Grant Likely <grant.likely@linaro.org>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	Mark Rutland <mark.rutland@arm.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] itg3200: add dt support.
-References: <20131119113013.39dae3cd@notabene.brown>	<20131119014938.GA20782@earth.universe> <20131119164839.7cd3f4f1@notabene.brown>
-In-Reply-To: <20131119164839.7cd3f4f1@notabene.brown>
-Content-Type: text/plain; charset=ISO-8859-1
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [RFC PATCH 00/11] IIO: Add core support for _available interfaces
+Date: Sun, 17 Nov 2013 15:14:51 +0000
+Message-Id: <1384701302-26564-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Dear All,
 
-On 11/19/13 05:48, NeilBrown wrote:
-> On Tue, 19 Nov 2013 02:49:38 +0100 Sebastian Reichel <sre@debian.org> wrote:
-> 
->> Hi,
->> 
->> On Tue, Nov 19, 2013 at 11:30:13AM +1100, NeilBrown wrote:
->>> No new configuration, just a 'compatible' string and documentation.
->> 
->> itg3200 looks like a candidate for the list of trivial i2c devices [0] to me.
->> 
->> [0] Documentation/devicetree/bindings/i2c/trivial-devices.txt
->> 
->> -- Sebastian
-> 
-> Hmmm... a file that isn't referenced anywhere else in the kernel documentation so is unlikely to be found except by
-> people who know it is there....
-> 
-> I can see that having lots of files for trivial devices is rather clumsy, but there must be a better way. I don't
-> suppose we could just put the documentation in the device-driver file in some format similar to kernel-doc and just
-> extract it if it is wanted separately?  I think people read code a lot more than they read documentation. I know I
-> do.
-> 
-> But I can re-send with an update to trivial-devices.txt is that is what is wanted.
-Given that typically people will need to grep for the name of the actual
-device they have to find the docs (not always obvious where in the documentation
-their bindings will lie), it perhaps makes sense to put these simple devices
-in trivial-devices.txt.
+Firstly this is an RFC rather than a final proposal for a couple of reasons
+1) Others may have better idea of the the interface, particularly wrt to te
+   range attributes (we are restricted by existing userspace interface for
+   the list of available options one).
+2) I've only converted a small number of drivers and honestly I suspect I've
+   broken some of them trying to avoid multiple coppies of the same data.
+3) The range version isn't documented yet.
 
-Anyhow, it is how it is currently done and we can always unwind it later to separate
-files so, yes - please do move this and if missing add the invense entry as well
-as Mark has requested.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+In brief what I propose here has come up a few times in the depths of random
+driver reviews: An interface to tell the subsystem what values are possible
+for a given info_mask element.  This is then exported to userspace with the
+same interface as was being used by the 'custom' attributes previously deployed
+to indicate this stuff.  It is importantly also available to inkernel
+consumers of the IIO channels.
 
-iQIcBAEBAgAGBQJSkmnMAAoJEFSFNJnE9BaI2QQP/R9wloBWmMKiuF+2MFD4qPSM
-GCgKVVptzk/qgV1TYvj7OsuYigGkCcVdTptRg3uDgrg2gL/1beYz8HqbeIRALcCp
-G2rPKhFGF9R6LalHUU0eMVGvvTqUe7J2gXCnxoINp0QM+fAyFfkMk5FZJJur4drI
-GnwroRToRcrIRloIFNstDc5m5/jphshCB++sEDh/uTZT64ZcH5VKlcsHmuzMGOEm
-VO/gebr5kHogGA54HUB4C8psrMJncKm3XFt57yq9tkhHkDk/VijDdROuhbOMY/K0
-6eLLl7oIUkYtQ0AOowg2pDG3B5mvBexfi2W5JWf9yxiK/GBE54OQwyPNXWSeR4Jo
-yLFs+anAtoNVYJuX5O0hs5NXzAJCAhcsXVggzKAmBY5IQkUZ5HzyBxwpH7aB1c1N
-xZY89s1gx4Fke3GNPxqQ7tTDnFy5qZvnZ1/RM0F1j6D6zVMVSM5rRtjZrn3jdpue
-gvzoYSV7f6la+BVj6S2tR2bEFkEssiaUkPn844e+EPZ+iSt8rLVD7WRA0M7bVp4t
-R5ruRioF7D3LGzSfJwhna5/SNCytKuUBKc98PL0VZRx1707GAa2Ucl/YAIp/Gnkh
-ERq9T5GbeT+9zMAfQpeE7Jaz+CwrS8ib0ul+IZzA9q+CqOdZZo3/xjdkQjSw9D9C
-IL28pFxuFOKYabdZ9kQC
-=EsOI
------END PGP SIGNATURE-----
+There are two forms:
+
+1. The conventional list of values.  A flat array is provided by the driver
+with either one element (IIO_VAL_INT) or two (IIO_VAL_INT_PLUS etc) per value.
+Note this array must be constant at the time of passing to ensure no race
+conditions occur.
+
+2. A new range approach. The format for this is open to discussion.
+In this proposal 3 (single or pairs of) values are provided in a flat array.
+These provide inclusive end markers and a step size between them.
+Thus [0..1..3] is the equivalent of 0 1 2 3.
+
+I would envision that many more of our info_mask elements will have
+_available attributes than currently, many of which will make use of this
+second interface.
+
+The actual conversions of drivers is only painful in the 'clever' common
+library ones.  The solution proposed here for the AD_SD drivers is clunky
+but I can't immediately see how to do things in a cleaner fashion.
+
+Anyhow, all comments welcome!  Whilst I think we need an interface
+to provide this functionality, I am far from fixed on this necessarily
+being the right way to do it.  It's just the best one I've thought up
+yet.
+
+Jonathan
+
+Jonathan Cameron (11):
+  iio:core: add a callback to allow drivers to provide _available
+    attributes
+  staging:iio:dummy driver: Add example usecases for the new *_available
+    interface.
+  iio:accel:bma180 use new read_avail to replace *_available attrs.
+  iio:accel:kxsd9 use new read_avail to replace accel_scan_available.
+  iio:st sensors: remove custom sampling frequence attribute in favour
+    of core support.
+  iio: ad_sigma_delta provide macro parameters for available info masks
+  iio:adc:ad7793: use samp_freq element of info_mask_shared_by_all.
+  iio:adc:ad7793: Use the read_avail callback to provide the scale and
+    sampling frequency interfaces.
+  iio:adc:ad7791 Provide sampling frequency and scale_available access
+    via core.
+  staging:iio:adc:ad7192 use infomask* to provide access to sampling
+    frequency and scale_available
+  iio:adc:mcp3422: use core to provide _available information rather
+    than custom attrs.
+
+ drivers/iio/accel/bma180.c                      |  61 +++---
+ drivers/iio/accel/kxsd9.c                       |  52 ++---
+ drivers/iio/accel/st_accel_core.c               |  12 +-
+ drivers/iio/adc/ad7791.c                        | 106 ++++-----
+ drivers/iio/adc/ad7793.c                        | 275 ++++++++++++------------
+ drivers/iio/adc/mcp3422.c                       |  72 ++++---
+ drivers/iio/common/st_sensors/st_sensors_core.c |  29 ---
+ drivers/iio/gyro/st_gyro_core.c                 |  12 +-
+ drivers/iio/industrialio-core.c                 | 209 ++++++++++++++++--
+ drivers/iio/magnetometer/st_magn_core.c         |  12 +-
+ drivers/iio/pressure/st_pressure_core.c         |  27 ++-
+ drivers/staging/iio/adc/ad7192.c                | 166 ++++++--------
+ drivers/staging/iio/adc/ad7780.c                |   2 +-
+ drivers/staging/iio/iio_simple_dummy.c          |  29 ++-
+ include/linux/iio/adc/ad_sigma_delta.h          |  47 +++-
+ include/linux/iio/common/st_sensors.h           |  15 +-
+ include/linux/iio/iio.h                         |  11 +
+ include/linux/iio/types.h                       |   5 +
+ 18 files changed, 696 insertions(+), 446 deletions(-)
+
+-- 
+1.8.4.2
+
