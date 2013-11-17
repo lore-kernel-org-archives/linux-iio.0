@@ -1,101 +1,147 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50303 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50321 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751826Ab3KQOOK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Nov 2013 09:14:10 -0500
+	with ESMTP id S1751850Ab3KQOOM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Nov 2013 09:14:12 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [RFC PATCH 00/11] IIO: Add core support for _available interfaces
-Date: Sun, 17 Nov 2013 15:14:51 +0000
-Message-Id: <1384701302-26564-1-git-send-email-jic23@kernel.org>
+Subject: [PATCH 11/11] iio:adc:mcp3422: use core to provide _available information rather than custom attrs.
+Date: Sun, 17 Nov 2013 15:15:02 +0000
+Message-Id: <1384701302-26564-12-git-send-email-jic23@kernel.org>
+In-Reply-To: <1384701302-26564-1-git-send-email-jic23@kernel.org>
+References: <1384701302-26564-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear All,
+Passing this information through the new core callbacks makes it available
+to in kernel consumers of the channels.
 
-Firstly this is an RFC rather than a final proposal for a couple of reasons
-1) Others may have better idea of the the interface, particularly wrt to te
-   range attributes (we are restricted by existing userspace interface for
-   the list of available options one).
-2) I've only converted a small number of drivers and honestly I suspect I've
-   broken some of them trying to avoid multiple coppies of the same data.
-3) The range version isn't documented yet.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/adc/mcp3422.c | 72 ++++++++++++++++++++++++-----------------------
+ 1 file changed, 37 insertions(+), 35 deletions(-)
 
-In brief what I propose here has come up a few times in the depths of random
-driver reviews: An interface to tell the subsystem what values are possible
-for a given info_mask element.  This is then exported to userspace with the
-same interface as was being used by the 'custom' attributes previously deployed
-to indicate this stuff.  It is importantly also available to inkernel
-consumers of the IIO channels.
-
-There are two forms:
-
-1. The conventional list of values.  A flat array is provided by the driver
-with either one element (IIO_VAL_INT) or two (IIO_VAL_INT_PLUS etc) per value.
-Note this array must be constant at the time of passing to ensure no race
-conditions occur.
-
-2. A new range approach. The format for this is open to discussion.
-In this proposal 3 (single or pairs of) values are provided in a flat array.
-These provide inclusive end markers and a step size between them.
-Thus [0..1..3] is the equivalent of 0 1 2 3.
-
-I would envision that many more of our info_mask elements will have
-_available attributes than currently, many of which will make use of this
-second interface.
-
-The actual conversions of drivers is only painful in the 'clever' common
-library ones.  The solution proposed here for the AD_SD drivers is clunky
-but I can't immediately see how to do things in a cleaner fashion.
-
-Anyhow, all comments welcome!  Whilst I think we need an interface
-to provide this functionality, I am far from fixed on this necessarily
-being the right way to do it.  It's just the best one I've thought up
-yet.
-
-Jonathan
-
-Jonathan Cameron (11):
-  iio:core: add a callback to allow drivers to provide _available
-    attributes
-  staging:iio:dummy driver: Add example usecases for the new *_available
-    interface.
-  iio:accel:bma180 use new read_avail to replace *_available attrs.
-  iio:accel:kxsd9 use new read_avail to replace accel_scan_available.
-  iio:st sensors: remove custom sampling frequence attribute in favour
-    of core support.
-  iio: ad_sigma_delta provide macro parameters for available info masks
-  iio:adc:ad7793: use samp_freq element of info_mask_shared_by_all.
-  iio:adc:ad7793: Use the read_avail callback to provide the scale and
-    sampling frequency interfaces.
-  iio:adc:ad7791 Provide sampling frequency and scale_available access
-    via core.
-  staging:iio:adc:ad7192 use infomask* to provide access to sampling
-    frequency and scale_available
-  iio:adc:mcp3422: use core to provide _available information rather
-    than custom attrs.
-
- drivers/iio/accel/bma180.c                      |  61 +++---
- drivers/iio/accel/kxsd9.c                       |  52 ++---
- drivers/iio/accel/st_accel_core.c               |  12 +-
- drivers/iio/adc/ad7791.c                        | 106 ++++-----
- drivers/iio/adc/ad7793.c                        | 275 ++++++++++++------------
- drivers/iio/adc/mcp3422.c                       |  72 ++++---
- drivers/iio/common/st_sensors/st_sensors_core.c |  29 ---
- drivers/iio/gyro/st_gyro_core.c                 |  12 +-
- drivers/iio/industrialio-core.c                 | 209 ++++++++++++++++--
- drivers/iio/magnetometer/st_magn_core.c         |  12 +-
- drivers/iio/pressure/st_pressure_core.c         |  27 ++-
- drivers/staging/iio/adc/ad7192.c                | 166 ++++++--------
- drivers/staging/iio/adc/ad7780.c                |   2 +-
- drivers/staging/iio/iio_simple_dummy.c          |  29 ++-
- include/linux/iio/adc/ad_sigma_delta.h          |  47 +++-
- include/linux/iio/common/st_sensors.h           |  15 +-
- include/linux/iio/iio.h                         |  11 +
- include/linux/iio/types.h                       |   5 +
- 18 files changed, 696 insertions(+), 446 deletions(-)
-
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index dbdbd77f69ea..1f627cce1029 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -55,6 +55,8 @@
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) \
+ 				| BIT(IIO_CHAN_INFO_SCALE), \
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
+ 	}
+ 
+ /* LSB is in nV to eliminate floating point */
+@@ -66,11 +68,11 @@ static const u32 rates_to_lsb[] = {1000000, 250000, 62500, 15625};
+  *  pga is 1 for 0, 2
+  */
+ 
+-static const int mcp3422_scales[4][4] = {
+-	{ 1000000, 250000, 62500, 15625 },
+-	{ 500000 , 125000, 31250, 7812 },
+-	{ 250000 , 62500 , 15625, 3906 },
+-	{ 125000 , 31250 , 7812 , 1953 } };
++static const int mcp3422_scales[4][8] = {
++	{ 0, 1000000, 0, 250000, 0, 62500, 0, 15625 },
++	{ 0, 500000, 0, 125000, 0, 31250, 0, 7812 },
++	{ 0, 250000, 0, 62500, 0, 15625, 0, 3906 },
++	{ 0, 125000, 0, 31250, 0, 7812 , 0, 1953 } };
+ 
+ /* Constant msleep times for data acquisitions */
+ static const int mcp3422_read_times[4] = {
+@@ -181,8 +183,8 @@ static int mcp3422_read_raw(struct iio_dev *iio,
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+ 
+-		*val1 = 0;
+-		*val2 = mcp3422_scales[sample_rate][pga];
++		*val1 = mcp3422_scales[sample_rate][pga * 2 + 0];
++		*val2 = mcp3422_scales[sample_rate][pga * 2 + 1];
+ 		return IIO_VAL_INT_PLUS_NANO;
+ 
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+@@ -196,6 +198,33 @@ static int mcp3422_read_raw(struct iio_dev *iio,
+ 	return -EINVAL;
+ }
+ 
++static const int mcp3422_samp_freqs[] = { 240, 60, 15, 3 };
++static int mcp3422_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      const int **vals,
++			      int *type,
++			      int *length,
++			      long mask_el)
++{
++	struct mcp3422 *adc = iio_priv(indio_dev);
++	u8 sample_rate;
++
++	switch (mask_el) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*vals = mcp3422_samp_freqs;
++		*length = ARRAY_SIZE(mcp3422_samp_freqs);
++		*type = IIO_VAL_INT;
++		return IIO_AVAIL_LIST;
++	case IIO_CHAN_INFO_SCALE:
++		sample_rate = MCP3422_SAMPLE_RATE(adc->config);
++		*vals = mcp3422_scales[sample_rate];
++		*length = ARRAY_SIZE(mcp3422_scales[0]);
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
++	}
++	return -EINVAL;
++}
++
+ static int mcp3422_write_raw(struct iio_dev *iio,
+ 			struct iio_chan_spec const *channel, int val1,
+ 			int val2, long mask)
+@@ -271,33 +300,6 @@ static int mcp3422_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static ssize_t mcp3422_show_scales(struct device *dev,
+-		struct device_attribute *attr, char *buf)
+-{
+-	struct mcp3422 *adc = iio_priv(dev_to_iio_dev(dev));
+-	u8 sample_rate = MCP3422_SAMPLE_RATE(adc->config);
+-
+-	return sprintf(buf, "0.%09u 0.%09u 0.%09u 0.%09u\n",
+-		mcp3422_scales[sample_rate][0],
+-		mcp3422_scales[sample_rate][1],
+-		mcp3422_scales[sample_rate][2],
+-		mcp3422_scales[sample_rate][3]);
+-}
+-
+-static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("240 60 15 3");
+-static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+-		mcp3422_show_scales, NULL, 0);
+-
+-static struct attribute *mcp3422_attributes[] = {
+-	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+-	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group mcp3422_attribute_group = {
+-	.attrs = mcp3422_attributes,
+-};
+-
+ static const struct iio_chan_spec mcp3422_channels[] = {
+ 	MCP3422_CHAN(0),
+ 	MCP3422_CHAN(1),
+@@ -312,9 +314,9 @@ static const struct iio_chan_spec mcp3424_channels[] = {
+ 
+ static const struct iio_info mcp3422_info = {
+ 	.read_raw = mcp3422_read_raw,
++	.read_avail = mcp3422_read_avail,
+ 	.write_raw = mcp3422_write_raw,
+ 	.write_raw_get_fmt = mcp3422_write_raw_get_fmt,
+-	.attrs = &mcp3422_attribute_group,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
 -- 
 1.8.4.2
 
