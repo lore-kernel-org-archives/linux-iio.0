@@ -1,104 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:37240 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750731Ab3KAEtI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 1 Nov 2013 00:49:08 -0400
-Date: Fri, 1 Nov 2013 15:48:54 +1100
-From: NeilBrown <neilb@suse.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>,
-	Grant Likely <grant.likely@linaro.org>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] itg3200: add dt support.
-Message-ID: <20131101154854.2d7d1432@notabene.brown>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/1D4iUvW/8qhMypbgIll/z08"; protocol="application/pgp-signature"
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:49021 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751171Ab3KRL55 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Nov 2013 06:57:57 -0500
+Date: Mon, 18 Nov 2013 11:57:42 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: NeilBrown <neilb@suse.de>
+Cc: Jonathan Cameron <jic23@cam.ac.uk>,
+	"grant.likely@linaro.org" <grant.likely@linaro.org>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] itg3200: add dt support.
+Message-ID: <20131118115742.GG30853@e106331-lin.cambridge.arm.com>
+References: <20131101154854.2d7d1432@notabene.brown>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20131101154854.2d7d1432@notabene.brown>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---Sig_/1D4iUvW/8qhMypbgIll/z08
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Nov 01, 2013 at 04:48:54AM +0000, NeilBrown wrote:
+> 
+> 
+> No new configuration, just a 'compatible' string and documentation.
+> 
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+> new file mode 100644
+> index 000000000000..4581620632df
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+> @@ -0,0 +1,20 @@
+> +* InvenSense ITG3200 3-axis gyroscope
+> +
+> +Required properties:
+> +
+> +  - compatible : "invensense,itg3200"
+> +  - reg : I2C address, typically 0x68
+> +
+> +Optional properties:
+> +
+> +  - interrupt-parent : should be the phandle for the interrupt controller
+> +  - interrupts : interrupt mapping for GPIO IRQ
+
+Why is this a "GPIO IRQ"? This device das no GPIO. The fact that it
+might be wired to a GPIO controller has nothing to do with the ITG3200,
+and shouldn't be a concern of its binding.
+
+Thanks,
+Mark.
+
+> +
+> +Example:
+> +
+> +itg3200@68 {
+> +	compatible = "invensense,itg3200";
+> +	reg = <0x68>;
+> +	interrupt-parent = <&gpio2>;
+> +	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
+> +};
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> index 4d3f3b92b361..1ed3003ef41a 100644
+> --- a/drivers/iio/gyro/itg3200_core.c
+> +++ b/drivers/iio/gyro/itg3200_core.c
+> @@ -374,10 +374,17 @@ static const struct i2c_device_id itg3200_id[] = {
+>  };
+>  MODULE_DEVICE_TABLE(i2c, itg3200_id);
+>  
+> +static const struct of_device_id itg3200_of_match[] = {
+> +	{ .compatible = "invensense,itg3200", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, itg3200_of_match);
+> +
+>  static struct i2c_driver itg3200_driver = {
+>  	.driver = {
+>  		.owner  = THIS_MODULE,
+>  		.name	= "itg3200",
+> +		.of_match_table = of_match_ptr(itg3200_of_match),
+>  	},
+>  	.id_table	= itg3200_id,
+>  	.probe		= itg3200_probe,
 
 
-
-No new configuration, just a 'compatible' string and documentation.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
-
-diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Docum=
-entation/devicetree/bindings/iio/gyro/itg3200.txt
-new file mode 100644
-index 000000000000..4581620632df
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
-@@ -0,0 +1,20 @@
-+* InvenSense ITG3200 3-axis gyroscope
-+
-+Required properties:
-+
-+  - compatible : "invensense,itg3200"
-+  - reg : I2C address, typically 0x68
-+
-+Optional properties:
-+
-+  - interrupt-parent : should be the phandle for the interrupt controller
-+  - interrupts : interrupt mapping for GPIO IRQ
-+
-+Example:
-+
-+itg3200@68 {
-+	compatible =3D "invensense,itg3200";
-+	reg =3D <0x68>;
-+	interrupt-parent =3D <&gpio2>;
-+	interrupts =3D <24 IRQ_TYPE_EDGE_RISING>;
-+};
-diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_cor=
-e.c
-index 4d3f3b92b361..1ed3003ef41a 100644
---- a/drivers/iio/gyro/itg3200_core.c
-+++ b/drivers/iio/gyro/itg3200_core.c
-@@ -374,10 +374,17 @@ static const struct i2c_device_id itg3200_id[] =3D {
- };
- MODULE_DEVICE_TABLE(i2c, itg3200_id);
-=20
-+static const struct of_device_id itg3200_of_match[] =3D {
-+	{ .compatible =3D "invensense,itg3200", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, itg3200_of_match);
-+
- static struct i2c_driver itg3200_driver =3D {
- 	.driver =3D {
- 		.owner  =3D THIS_MODULE,
- 		.name	=3D "itg3200",
-+		.of_match_table =3D of_match_ptr(itg3200_of_match),
- 	},
- 	.id_table	=3D itg3200_id,
- 	.probe		=3D itg3200_probe,
-
---Sig_/1D4iUvW/8qhMypbgIll/z08
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIVAwUBUnMytjnsnt1WYoG5AQLiWA/+Nibv+NNGtFcOpNN04LERDj55EdvwGdCz
-4rExzoKTb6/aE7SvuyfQ1Vv1eZemJxOW8SOyepunzE/ZiSO4hX226FKZzMYFm4Gj
-TN30sugLVkggjf/tJKOG6RQOdxfod9OYEZac1clF/7DIZG4luRTvEJjd+09Pqjrp
-g2bkNwk0+zfqa4a5wNdqZo1OZSgA1vypuatNTL/KLkqZMqKiTvgfi8oCxVXmpPuB
-82g4ajGR0TBmiTG8NcwvWut1v2X4Fywp1JGyVv+g5MFa+YtH8N8hCNdAYC05l8d5
-TTRciV2ILR2srw65z3cj9+2w+VQVOzvxz4NafOjmx4/W7K27HjTq51b35uin6Mz9
-65ef6hiQGtsPt0JFJy7LDvc6OIijIcRFM+QvYYJSDnCziQ8klb5wxdAIj3wlOYDk
-ts4hvLN19/oZjMxqjkanXfi1mHGabJo1R6Vhf3Vo8aZxvfR0V2DXoJSfi01rexjW
-IhANs19D3lXLRKDdLEQx0f6DoCYxGcHJtfGTYHMBFriLBnCqnguLceRYMJ/1JJaJ
-HTj+itF5gq9VnkSOre9owIC8SW5O9tiw2H6aT1id0dJIlCLTVHD3Qdxm4+4g9kXM
-BVikGWRGs7k7AN5RTjEoXvSI2Wfx4qWmtEnzcFtkVVWjm18JYW01hWXwlg/Thr/e
-RVXn9bkyL5U=
-=VA0q
------END PGP SIGNATURE-----
-
---Sig_/1D4iUvW/8qhMypbgIll/z08--
