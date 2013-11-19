@@ -1,35 +1,57 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:47337 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751343Ab3KSPzH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Nov 2013 10:55:07 -0500
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
 	Brian Lilly <brian@crystalfontz.com>,
-	Brent-Crosby <brent@crystalfontz.com>, Jim Wall <jimwall@q.com>
-Date: Mon, 25 Nov 2013 09:37:26 +0100
-Subject: Re: [RFC PATCH 0/3] DT support for ST micro accelerometers and
- gyroscopes
-Message-ID: <52930C46.801@st.com>
+	Brent-Crosby <brent@crystalfontz.com>, Jim Wall <jimwall@q.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [RFC PATCH 3/3] ARM: cfa10057: Add the accelerometer and gyroscope to the device tree
+Date: Tue, 19 Nov 2013 16:50:33 +0100
+Message-Id: <1384876234-1211-4-git-send-email-maxime.ripard@free-electrons.com>
+In-Reply-To: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
 References: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
- <528DF164.8060009@st.com> <20131121131402.GF1029@lukather>
- <52926901.9080004@kernel.org>
-In-Reply-To: <52926901.9080004@kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
->> Yes, it is, but only for i2c as far as I'm aware, and usually the DT com=
-patibles are with - as a separator (I
->> looked into the ePAPR, but couldn't get any explanations or requirements=
- on this, even though it's used in all of
->> their examples)
-> In other discussions, where the defacto i2c device tree bindings have
-> been followed, the conclusion has been that to change to a - from _
-> would result in userspace ABI changes, so whilst no one wants _
-> the discussion has concluded we can't really avoid it.
-Ok, I understood the point. Thanks,
+The CFA-10057 has an embedded ST Micro LSM330 DLC accelerometer and
+gyroscope wired on the the i2c0 bus. Add those to the DT.
 
-Denis=
+Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+---
+ arch/arm/boot/dts/imx28-cfa10057.dts | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx28-cfa10057.dts b/arch/arm/boot/dts/imx28-cfa10057.dts
+index 0333c0532f28..fc289465c30f 100644
+--- a/arch/arm/boot/dts/imx28-cfa10057.dts
++++ b/arch/arm/boot/dts/imx28-cfa10057.dts
+@@ -119,6 +119,19 @@
+ 				status = "okay";
+ 			};
+ 
++			i2c0: i2c@80058000 {
++				accel: accel@19 {
++					compatible = "st,lsm330dlc-accel";
++					reg = <0x19>;
++				};
++
++				gyro: gyro@6a {
++					compatible = "st,lsm330dlc-gyro";
++					reg = <0x6a>;
++				};
++			};
++
++
+ 			i2c1: i2c@8005a000 {
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&i2c1_pins_a>;
+-- 
+1.8.4.2
+
