@@ -1,24 +1,21 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:47330 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751343Ab3KSPzG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Nov 2013 10:55:06 -0500
+Return-Path: <maxime.ripard@free-electrons.com>
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
 To: Shawn Guo <shawn.guo@linaro.org>,
 	Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>, linux-iio@vger.kernel.org,
+Cc: Denis Ciocca <denis.ciocca@st.com>,
+	linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
 	Brian Lilly <brian@crystalfontz.com>,
-	Brent-Crosby <brent@crystalfontz.com>, Jim Wall <jimwall@q.com>,
+	Brent-Crosby <brent@crystalfontz.com>,
+	Jim Wall <jimwall@q.com>,
 	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [RFC PATCH 2/3] iio: accel: Add device tree probing for STMicro gyroscopes
-Date: Tue, 19 Nov 2013 16:50:32 +0100
-Message-Id: <1384876234-1211-3-git-send-email-maxime.ripard@free-electrons.com>
+Subject: [RFC PATCH 1/3] iio: accel: Add device tree probing for STMicro accelerometers
+Date: Tue, 19 Nov 2013 16:50:31 +0100
+Message-Id: <1384876234-1211-2-git-send-email-maxime.ripard@free-electrons.com>
 In-Reply-To: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
 References: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Add the compatibles supported by the st_sensors library. This uses kind
 of a hack, since the st_sensors core will actively check at probe time
@@ -27,42 +24,44 @@ probing, and that this name will be different with device tree.
 
 Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 ---
- .../devicetree/bindings/iio/gyro/st_gyro_i2c.txt   | 20 ++++++++++++++
- drivers/iio/gyro/st_gyro_i2c.c                     | 31 ++++++++++++++++++++++
- 2 files changed, 51 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyro/st_gyro_i2c.txt
+ .../devicetree/bindings/iio/accel/st_accel_i2c.txt | 22 +++++++++++++++
+ drivers/iio/accel/st_accel_i2c.c                   | 33 ++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/st_accel_i2c.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/gyro/st_gyro_i2c.txt b/Documentation/devicetree/bindings/iio/gyro/st_gyro_i2c.txt
+diff --git a/Documentation/devicetree/bindings/iio/accel/st_accel_i2c.txt b/Documentation/devicetree/bindings/iio/accel/st_accel_i2c.txt
 new file mode 100644
-index 000000000000..39e434c80771
+index 000000000000..4a1efdf1775f
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyro/st_gyro_i2c.txt
-@@ -0,0 +1,20 @@
-+* ST Micro gyroscopes sensors 
++++ b/Documentation/devicetree/bindings/iio/accel/st_accel_i2c.txt
+@@ -0,0 +1,22 @@
++* ST Micro accelerometer sensors 
 +
 +Required properties:
 +  - compatible : should be either:
-+	* "st,l3g4200d"
-+	* "st,lsm330-gyro"
-+	* "st,lsm330d-gyro"
-+	* "st,lsm330dl-gyro"
-+	* "st,lsm330dlc-gyro"
-+	* "st,l3gd20"
-+	* "st,l3gd20h"
-+	* "st,l3g4is-ui"
++	* "st,lis3dh"
++	* "st,lis331dlh"
++	* "st,lsm303dl-accel"
++	* "st,lsm303dlh-accel"
++	* "st,lsm303dlhc-accel"
++	* "st,lsm303dlm-accel"
++	* "st,lsm330-accel"
++	* "st,lsm330d-accel"
++	* "st,lsm330dl-accel"
++	* "st,lsm330dlc-accel"
 +  - reg : the I2C address of the sensor
 +
 +Example:
 +
-+gyro: gyro@6a {
-+	compatible = "st,lsm330dlc-gyro";
-+	reg = <0x6a>;
++accel: accel@19 {
++	compatible = "st,lsm330dlc-accel";
++	reg = <0x19>;
 +};
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 16b8b8d70bf1..f82c1d9c4be9 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -13,11 +13,25 @@
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index d7bedbdfc81d..de2bf76378d8 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -13,11 +13,27 @@
  #include <linux/slab.h>
  #include <linux/i2c.h>
  #include <linux/iio/iio.h>
@@ -70,27 +69,29 @@ index 16b8b8d70bf1..f82c1d9c4be9 100644
  
  #include <linux/iio/common/st_sensors.h>
  #include <linux/iio/common/st_sensors_i2c.h>
- #include "st_gyro.h"
+ #include "st_accel.h"
  
-+static const struct of_device_id st_gyro_of_table[] = {
-+	{ .compatible = "st,l3g4200d", .data = L3G4200D_GYRO_DEV_NAME },
-+	{ .compatible = "st,lsm330-gyro", .data = LSM330_GYRO_DEV_NAME },
-+	{ .compatible = "st,lsm330d-gyro", .data = LSM330D_GYRO_DEV_NAME },
-+	{ .compatible = "st,lsm330dl-gyro", .data = LSM330DL_GYRO_DEV_NAME },
-+	{ .compatible = "st,lsm330dlc-gyro", .data = LSM330DLC_GYRO_DEV_NAME },
-+	{ .compatible = "st,l3gd20", .data = L3GD20_GYRO_DEV_NAME },
-+	{ .compatible = "st,l3gd20h", .data = L3GD20H_GYRO_DEV_NAME },
-+	{ .compatible = "st,l3g4is-ui", .data = L3G4IS_GYRO_DEV_NAME },
++static const struct of_device_id st_accel_of_table[] = {
++	{ .compatible = "st,lis3dh", .data = LIS3DH_ACCEL_DEV_NAME },
++	{ .compatible = "st,lis331dlh", .data = LIS331DLH_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm303dl-accel", .data = LSM303DL_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm303dlh-accel", .data = LSM303DLH_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm303dlhc-accel", .data = LSM303DLHC_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm303dlm-accel", .data = LSM303DLM_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm330-accel", .data = LSM330_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm330d-accel", .data = LSM330D_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm330dl-accel", .data = LSM330DL_ACCEL_DEV_NAME },
++	{ .compatible = "st,lsm330dlc-accel", .data = LSM330DLC_ACCEL_DEV_NAME },
 +	{},
 +};
-+MODULE_DEVICE_TABLE(of, st_gyro_of_table);
++MODULE_DEVICE_TABLE(of, st_accel_of_table);
 +
- static int st_gyro_i2c_probe(struct i2c_client *client,
+ static int st_accel_i2c_probe(struct i2c_client *client,
  						const struct i2c_device_id *id)
  {
-@@ -34,6 +48,22 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
+@@ -34,6 +50,22 @@ static int st_accel_i2c_probe(struct i2c_client *client,
  
- 	st_sensors_i2c_configure(indio_dev, client, gdata);
+ 	st_sensors_i2c_configure(indio_dev, client, adata);
  
 +	/*
 +	 * If we are probed through DT, st_sensors_i2c_configure will
@@ -104,21 +105,20 @@ index 16b8b8d70bf1..f82c1d9c4be9 100644
 +	 */
 +	if (client->dev.of_node) {
 +		const struct of_device_id *device;
-+		device = of_match_device(st_gyro_of_table, &client->dev);
++		device = of_match_device(st_accel_of_table, &client->dev);
 +		indio_dev->name = device->data;
 +	}
 +
- 	err = st_gyro_common_probe(indio_dev,
- 				(struct st_sensors_platform_data *)&gyro_pdata);
+ 	err = st_accel_common_probe(indio_dev, client->dev.platform_data);
  	if (err < 0)
-@@ -66,6 +96,7 @@ static struct i2c_driver st_gyro_driver = {
+ 		return err;
+@@ -67,6 +99,7 @@ static struct i2c_driver st_accel_driver = {
  	.driver = {
  		.owner = THIS_MODULE,
- 		.name = "st-gyro-i2c",
-+		.of_match_table = of_match_ptr(st_gyro_of_table),
+ 		.name = "st-accel-i2c",
++		.of_match_table = of_match_ptr(st_accel_of_table),
  	},
- 	.probe = st_gyro_i2c_probe,
- 	.remove = st_gyro_i2c_remove,
+ 	.probe = st_accel_i2c_probe,
+ 	.remove = st_accel_i2c_remove,
 -- 
 1.8.4.2
-
