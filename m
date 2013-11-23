@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56004 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55993 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751988Ab3KWMd7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 07:33:59 -0500
-Message-ID: <5290AF0C.2050508@kernel.org>
-Date: Sat, 23 Nov 2013 13:35:08 +0000
+	with ESMTP id S1751988Ab3KWMdB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 07:33:01 -0500
+Message-ID: <5290AED2.30500@kernel.org>
+Date: Sat, 23 Nov 2013 13:34:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org
 CC: lars@metafoo.de
-Subject: Re: [PATCH 08/33] iio: dac: ad5755: Use devm_iio_device_register
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-9-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1383046796-329-9-git-send-email-sachin.kamat@linaro.org>
+Subject: Re: [PATCH 07/33] iio: dac: ad5421: Use devm_iio_device_register
+References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-8-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1383046796-329-8-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -24,21 +24,21 @@ Applied to the togreg branch of iio.git
 
 Thanks,
 > ---
->  drivers/iio/dac/ad5755.c |   12 +-----------
+>  drivers/iio/dac/ad5421.c |   12 +-----------
 >  1 file changed, 1 insertion(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-> index 9a78d5a..ee1e95a 100644
-> --- a/drivers/iio/dac/ad5755.c
-> +++ b/drivers/iio/dac/ad5755.c
-> @@ -589,16 +589,7 @@ static int ad5755_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
+> diff --git a/drivers/iio/dac/ad5421.c b/drivers/iio/dac/ad5421.c
+> index 3eeaa82..7d1e908 100644
+> --- a/drivers/iio/dac/ad5421.c
+> +++ b/drivers/iio/dac/ad5421.c
+> @@ -514,16 +514,7 @@ static int ad5421_probe(struct spi_device *spi)
+>  			return ret;
+>  	}
 >  
 > -	return iio_device_register(indio_dev);
 > -}
 > -
-> -static int ad5755_remove(struct spi_device *spi)
+> -static int ad5421_remove(struct spi_device *spi)
 > -{
 > -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
 > -
@@ -48,13 +48,13 @@ Thanks,
 > +	return devm_iio_device_register(&spi->dev, indio_dev);
 >  }
 >  
->  static const struct spi_device_id ad5755_id[] = {
-> @@ -617,7 +608,6 @@ static struct spi_driver ad5755_driver = {
->  		.owner = THIS_MODULE,
+>  static struct spi_driver ad5421_driver = {
+> @@ -532,7 +523,6 @@ static struct spi_driver ad5421_driver = {
+>  		   .owner = THIS_MODULE,
 >  	},
->  	.probe = ad5755_probe,
-> -	.remove = ad5755_remove,
->  	.id_table = ad5755_id,
+>  	.probe = ad5421_probe,
+> -	.remove = ad5421_remove,
 >  };
->  module_spi_driver(ad5755_driver);
+>  module_spi_driver(ad5421_driver);
+>  
 > 
