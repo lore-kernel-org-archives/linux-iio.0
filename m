@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59090 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59059 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755549Ab3KWRfT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 12:35:19 -0500
-Message-ID: <5290F5AB.10407@kernel.org>
-Date: Sat, 23 Nov 2013 18:36:27 +0000
+	with ESMTP id S1755549Ab3KWRcs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 12:32:48 -0500
+Message-ID: <5290F515.902@kernel.org>
+Date: Sat, 23 Nov 2013 18:33:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org
 CC: lars@metafoo.de
-Subject: Re: [PATCH 31/33] staging: iio: ad2s1200: Use devm_iio_device_register
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-32-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1383046796-329-32-git-send-email-sachin.kamat@linaro.org>
+Subject: Re: [PATCH 30/33] staging: iio: ade7854: Use devm_iio_device_register
+References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-31-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1383046796-329-31-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -20,46 +20,103 @@ On 10/29/13 11:39, Sachin Kamat wrote:
 > devm_iio_device_register simplifies the code.
 > 
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Applied to the togreg branch of iio.git
-
-Thanks,
+Another device that has lots of control of its power and should be
+turning most if not all of it off after the unregister, but isn't...
 > ---
->  drivers/staging/iio/resolver/ad2s1200.c |   10 +---------
->  1 file changed, 1 insertion(+), 9 deletions(-)
+>  drivers/staging/iio/meter/ade7854-i2c.c |    6 ------
+>  drivers/staging/iio/meter/ade7854-spi.c |    7 -------
+>  drivers/staging/iio/meter/ade7854.c     |   14 +-------------
+>  drivers/staging/iio/meter/ade7854.h     |    1 -
+>  4 files changed, 1 insertion(+), 27 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> index 62d3017..36eedd8 100644
-> --- a/drivers/staging/iio/resolver/ad2s1200.c
-> +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> @@ -131,7 +131,7 @@ static int ad2s1200_probe(struct spi_device *spi)
->  	indio_dev->num_channels = ARRAY_SIZE(ad2s1200_channels);
->  	indio_dev->name = spi_get_device_id(spi)->name;
->  
-> -	ret = iio_device_register(indio_dev);
-> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
->  	if (ret)
->  		return ret;
->  
-> @@ -142,13 +142,6 @@ static int ad2s1200_probe(struct spi_device *spi)
->  	return 0;
+> diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+> index 5b33c7f..7d913cb 100644
+> --- a/drivers/staging/iio/meter/ade7854-i2c.c
+> +++ b/drivers/staging/iio/meter/ade7854-i2c.c
+> @@ -229,11 +229,6 @@ static int ade7854_i2c_probe(struct i2c_client *client,
+>  	return ret;
 >  }
 >  
-> -static int ad2s1200_remove(struct spi_device *spi)
+> -static int ade7854_i2c_remove(struct i2c_client *client)
 > -{
-> -	iio_device_unregister(spi_get_drvdata(spi));
+> -	return ade7854_remove(i2c_get_clientdata(client));
+> -}
+> -
+>  static const struct i2c_device_id ade7854_id[] = {
+>  	{ "ade7854", 0 },
+>  	{ "ade7858", 0 },
+> @@ -248,7 +243,6 @@ static struct i2c_driver ade7854_i2c_driver = {
+>  		.name = "ade7854",
+>  	},
+>  	.probe    = ade7854_i2c_probe,
+> -	.remove   = ade7854_i2c_remove,
+>  	.id_table = ade7854_id,
+>  };
+>  module_i2c_driver(ade7854_i2c_driver);
+> diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
+> index 94f73bb..d6a155c 100644
+> --- a/drivers/staging/iio/meter/ade7854-spi.c
+> +++ b/drivers/staging/iio/meter/ade7854-spi.c
+> @@ -300,12 +300,6 @@ static int ade7854_spi_probe(struct spi_device *spi)
+>  	return ret;
+>  }
+>  
+> -static int ade7854_spi_remove(struct spi_device *spi)
+> -{
+> -	ade7854_remove(spi_get_drvdata(spi));
 > -
 > -	return 0;
 > -}
-> -
->  static const struct spi_device_id ad2s1200_id[] = {
->  	{ "ad2s1200" },
->  	{ "ad2s1205" },
-> @@ -162,7 +155,6 @@ static struct spi_driver ad2s1200_driver = {
+>  static const struct spi_device_id ade7854_id[] = {
+>  	{ "ade7854", 0 },
+>  	{ "ade7858", 0 },
+> @@ -321,7 +315,6 @@ static struct spi_driver ade7854_driver = {
 >  		.owner = THIS_MODULE,
 >  	},
->  	.probe = ad2s1200_probe,
-> -	.remove = ad2s1200_remove,
->  	.id_table = ad2s1200_id,
+>  	.probe = ade7854_spi_probe,
+> -	.remove = ade7854_spi_remove,
+>  	.id_table = ade7854_id,
 >  };
->  module_spi_driver(ad2s1200_driver);
+>  module_spi_driver(ade7854_driver);
+> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
+> index d620bbd..11a88ae 100644
+> --- a/drivers/staging/iio/meter/ade7854.c
+> +++ b/drivers/staging/iio/meter/ade7854.c
+> @@ -555,24 +555,12 @@ int ade7854_probe(struct iio_dev *indio_dev, struct device *dev)
+>  	/* Get the device into a sane initial state */
+>  	ret = ade7854_initial_setup(indio_dev);
+>  	if (ret)
+> -		goto error_unreg_dev;
+> +		return ret;
+>  
+>  	return 0;
+> -
+> -error_unreg_dev:
+> -	iio_device_unregister(indio_dev);
+> -	return ret;
+>  }
+>  EXPORT_SYMBOL(ade7854_probe);
+>  
+> -int ade7854_remove(struct iio_dev *indio_dev)
+> -{
+> -	iio_device_unregister(indio_dev);
+> -
+> -	return 0;
+> -}
+> -EXPORT_SYMBOL(ade7854_remove);
+> -
+>  MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+>  MODULE_DESCRIPTION("Analog Devices ADE7854/58/68/78 Polyphase Energy Meter");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
+> index 0653457..fac6497 100644
+> --- a/drivers/staging/iio/meter/ade7854.h
+> +++ b/drivers/staging/iio/meter/ade7854.h
+> @@ -169,6 +169,5 @@ struct ade7854_state {
+>  };
+>  
+>  extern int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
+> -extern int ade7854_remove(struct iio_dev *indio_dev);
+>  
+>  #endif
 > 
