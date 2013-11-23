@@ -1,97 +1,76 @@
-Return-Path: <neilb@suse.de>
-Date: Fri, 1 Nov 2013 16:35:23 +1100
-From: NeilBrown <neilb@suse.de>
-To: Jonathan Cameron <jic23@cam.ac.uk>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54849 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750864Ab3KWK7d (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 05:59:33 -0500
+Message-ID: <529098E8.5080109@kernel.org>
+Date: Sat, 23 Nov 2013 12:00:40 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: NeilBrown <neilb@suse.de>, Jonathan Cameron <jic23@cam.ac.uk>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+CC: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Shubhrajyoti Datta <shubhrajyoti@ti.com>
-Subject: [PATCH] hmc5843 - add basic dt support
-Message-ID: <20131101163523.10fed501@notabene.brown>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/HVL5=Zr4ubuUMeMxrO4j793"; protocol="application/pgp-signature"
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] hmc5843 - add basic dt support
+References: <20131101163523.10fed501@notabene.brown>
+In-Reply-To: <20131101163523.10fed501@notabene.brown>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---Sig_/HVL5=Zr4ubuUMeMxrO4j793
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
+On 11/01/13 05:35, NeilBrown wrote:
+> 
+> 
+> No configuration, just a compatible string and documentation.
+> 
+> Signed-off-by: NeilBrown <neilb@suse.de>
+Looks fine to me and it's been a 3 weeks without any negative feedback so
+applied to the togreg branch of iio.git.
 
+Looking briefly at the datasheet it seems likely that this binding might
+gain a pair of regulators at some point, but we can do that when anyone
+cares.
 
-No configuration, just a compatible string and documentation.
+Thanks,
 
-Signed-off-by: NeilBrown <neilb@suse.de>
-
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt=
- b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
-new file mode 100644
-index 000000000000..90d5f34db04e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
-@@ -0,0 +1,17 @@
-+* Honeywell HMC5843 magnetometer sensor
-+
-+Required properties:
-+
-+  - compatible : should be "honeywell,hmc5843"
-+  - reg : the I2C address of the magnetometer - typically 0x1e
-+
-+Optional properties:
-+
-+  - gpios : should be device tree identifier of the magnetometer DRDY pin
-+
-+Example:
-+
-+hmc5843@1e {
-+        compatible =3D "honeywell,hmc5843"
-+        reg =3D <0x1e>;
-+};
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/i=
-io/magnetometer/hmc5843.c
-index c3f3f539e787..829734a82f69 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -719,10 +719,17 @@ static const struct i2c_device_id hmc5843_id[] =3D {
- };
- MODULE_DEVICE_TABLE(i2c, hmc5843_id);
-=20
-+static const struct of_device_id hmc5843_of_match[] =3D {
-+	{ .compatible =3D "honeywell,hmc5843" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, hmc5843_of_match);
-+
- static struct i2c_driver hmc5843_driver =3D {
- 	.driver =3D {
- 		.name	=3D "hmc5843",
- 		.pm	=3D HMC5843_PM_OPS,
-+		.of_match_table =3D of_match_ptr(hmc5843_of_match),
- 	},
- 	.id_table	=3D hmc5843_id,
- 	.probe		=3D hmc5843_probe,
-
---Sig_/HVL5=Zr4ubuUMeMxrO4j793
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
+Jonathan
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
+> b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt new file mode 100644 index
+> 000000000000..90d5f34db04e --- /dev/null +++ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt @@
+> -0,0 +1,17 @@ +* Honeywell HMC5843 magnetometer sensor + +Required properties: + +  - compatible : should be
+> "honeywell,hmc5843" +  - reg : the I2C address of the magnetometer - typically 0x1e + +Optional properties: + +  -
+> gpios : should be device tree identifier of the magnetometer DRDY pin + +Example: + +hmc5843@1e { +
+> compatible = "honeywell,hmc5843" +        reg = <0x1e>; +}; diff --git a/drivers/staging/iio/magnetometer/hmc5843.c
+> b/drivers/staging/iio/magnetometer/hmc5843.c index c3f3f539e787..829734a82f69 100644 ---
+> a/drivers/staging/iio/magnetometer/hmc5843.c +++ b/drivers/staging/iio/magnetometer/hmc5843.c @@ -719,10 +719,17 @@
+> static const struct i2c_device_id hmc5843_id[] = { }; MODULE_DEVICE_TABLE(i2c, hmc5843_id);
+> 
+> +static const struct of_device_id hmc5843_of_match[] = { +	{ .compatible = "honeywell,hmc5843" }, +	{} +}; 
+> +MODULE_DEVICE_TABLE(of, hmc5843_of_match); + static struct i2c_driver hmc5843_driver = { .driver = { .name	=
+> "hmc5843", .pm	= HMC5843_PM_OPS, +		.of_match_table = of_match_ptr(hmc5843_of_match), }, .id_table	= hmc5843_id, 
+> .probe		= hmc5843_probe,
+> 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
+Version: GnuPG v2.0.22 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQIVAwUBUnM9mznsnt1WYoG5AQIzRA//VnX2/SZp33/xFK51uzRi3bF0803q2h4G
-0uErbMF/y6DAF00qMveLMrkRcgBxagtLeg83oGpmCXSzBHLUCPusCfCdGE7Yx96v
-1nEogmthAuOUMGxup9p0I3ERStGIvWHtrFKM66Mr1CYYD4Cgbp+HmWQsr3J1P2h+
-9J7rGSlshwrOHrR9K/CNm4ylFXwnHmXB8ZaeCwpOQ1A7113Znzv42CoYJLiR7Vqp
-nrX4mrhq8jms8uxKNg+7kOqvp5Sr3whm11Ivbe1CcrsEvmP3Qu9EgizaBNbN/xwC
-cyzLDEuCSFFws3YPeF5B5dNfuxDZDW0SjfbNwAwcFWfr8R4CdQ9jEk4ikHBOQb8M
-LwImKUMFDRqgQ2DgEFxYjmb2spGTLz1S6Wy6et47BC5cZ0aTof3fPW8owOMKK88z
-xatQnffG7KhqclQKZZFefT9UIIP6idc+3aPMnNiy6vsfSN64ZZFTvq7gL3exF5Tc
-2f1OJ6gg9UD5jSTN0TAA+i5BsC4DitH17pteY4aw2MgeL/Ov1TBysBSEXsl6myuy
-wsybOqmaiCO/4iu1RdcOX4gd3L2shGirLvSSUVRr9GxgRToQ3vzZEbRcv/YQgA7o
-yHAqwrpyQNuLiRpXqUUfsB6H3mkBpohoYHHF65WSZgbh81GcqmY/tz9Y/E0PM5fc
-gdXGhErJtgo=
-=wKGC
+iQIcBAEBAgAGBQJSkJjnAAoJEFSFNJnE9BaIBIgP/10EKlKid2t3dLwv3fEEZvUr
+mM6e/CfaTM41U9iHY6/MZ06EHw+3AIlUEj7VrwtVaYBuOxA7QGdjlRS7LM5MGHfd
++W1LCk4x/vtdE2nr0VpeaNzV9vkok/HayDj/GiBhRjTLC0GXTUPv+mrvPL+XsCOL
+RlGKOUiQmrhNbHje4hSyrtcrRtiQ25VgEef6XMo7QhL2plcEBLH5WA6sP7+aQZ0S
++OLNRZ+0s/nlh23nnlvqRSSl24r+N5HbSkicmUXN6G4IT0LB/MIA/t6irA6eGAws
+6DEm/Syz62YV/j3N5vZLHtofXeDiYLM6hWHXwvk+Q8XJc7euZ1Mz7r5EA1ZGYNHJ
+5GTBRma1uo1+CfrvZgJWagI70fPiKV6FMRME+mpmyX1NkYKe2VlL9CCtAkx53qfa
+joZ5FDc2IU1IL2O9YNtBu2dgxOeQOTBr3K5cpn4gY2oFxDetOQJRvArbcN/j/PHv
+wQesd2HNrqGpwVRI3HN70XPl8dRTU+Jl2tFVv6hON+1f1nD7qFGo/LCyWBCppQy+
+5tDwNaLPFdjGNY5OQHx41WRfL0ckVyqmCd5y2za7FI7DDjUi+zJ4/e2lCqyFqr4t
+dN5mjRM7ZPopL+zb/GYAClea0XrzKkh4REaRfrH14/tU2ba5DlSSqgdHDjc8jiU3
+HWL7Qy9UI6jzBt45yAsv
+=ZOuh
 -----END PGP SIGNATURE-----
-
---Sig_/HVL5=Zr4ubuUMeMxrO4j793--
