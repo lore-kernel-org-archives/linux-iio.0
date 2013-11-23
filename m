@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56043 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56004 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752187Ab3KWMg1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 07:36:27 -0500
-Message-ID: <5290AF9F.5040607@kernel.org>
-Date: Sat, 23 Nov 2013 13:37:35 +0000
+	with ESMTP id S1751988Ab3KWMd7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 07:33:59 -0500
+Message-ID: <5290AF0C.2050508@kernel.org>
+Date: Sat, 23 Nov 2013 13:35:08 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org
 CC: lars@metafoo.de
-Subject: Re: [PATCH 09/33] iio: dac: max517: Use devm_iio_device_register
-References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-10-git-send-email-sachin.kamat@linaro.org>
-In-Reply-To: <1383046796-329-10-git-send-email-sachin.kamat@linaro.org>
+Subject: Re: [PATCH 08/33] iio: dac: ad5755: Use devm_iio_device_register
+References: <1383046796-329-1-git-send-email-sachin.kamat@linaro.org> <1383046796-329-9-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1383046796-329-9-git-send-email-sachin.kamat@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -20,40 +20,41 @@ On 10/29/13 11:39, Sachin Kamat wrote:
 > devm_iio_device_register simplifies the code.
 > 
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-Another driver where it should probably be putting the device into power down
-mode on driver removal.   The give away again is that there is something
-that makes sense when going into suspend.
+Applied to the togreg branch of iio.git
 
-Jonathan
+Thanks,
 > ---
->  drivers/iio/dac/max517.c |    9 +--------
->  1 file changed, 1 insertion(+), 8 deletions(-)
+>  drivers/iio/dac/ad5755.c |   12 +-----------
+>  1 file changed, 1 insertion(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-> index 6e19035..073b705 100644
-> --- a/drivers/iio/dac/max517.c
-> +++ b/drivers/iio/dac/max517.c
-> @@ -191,13 +191,7 @@ static int max517_probe(struct i2c_client *client,
->  		data->vref_mv[1] = platform_data->vref_mv[1];
->  	}
+> diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+> index 9a78d5a..ee1e95a 100644
+> --- a/drivers/iio/dac/ad5755.c
+> +++ b/drivers/iio/dac/ad5755.c
+> @@ -589,16 +589,7 @@ static int ad5755_probe(struct spi_device *spi)
+>  	if (ret)
+>  		return ret;
 >  
 > -	return iio_device_register(indio_dev);
 > -}
 > -
-> -static int max517_remove(struct i2c_client *client)
+> -static int ad5755_remove(struct spi_device *spi)
 > -{
-> -	iio_device_unregister(i2c_get_clientdata(client));
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> -
+> -	iio_device_unregister(indio_dev);
+> -
 > -	return 0;
-> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +	return devm_iio_device_register(&spi->dev, indio_dev);
 >  }
 >  
->  static const struct i2c_device_id max517_id[] = {
-> @@ -214,7 +208,6 @@ static struct i2c_driver max517_driver = {
->  		.pm		= MAX517_PM_OPS,
+>  static const struct spi_device_id ad5755_id[] = {
+> @@ -617,7 +608,6 @@ static struct spi_driver ad5755_driver = {
+>  		.owner = THIS_MODULE,
 >  	},
->  	.probe		= max517_probe,
-> -	.remove		= max517_remove,
->  	.id_table	= max517_id,
+>  	.probe = ad5755_probe,
+> -	.remove = ad5755_remove,
+>  	.id_table = ad5755_id,
 >  };
->  module_i2c_driver(max517_driver);
+>  module_spi_driver(ad5755_driver);
 > 
