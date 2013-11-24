@@ -1,86 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:54872 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750707Ab3KSFs5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Nov 2013 00:48:57 -0500
-Date: Tue, 19 Nov 2013 16:48:39 +1100
-From: NeilBrown <neilb@suse.de>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Jonathan Cameron <jic23@cam.ac.uk>,
-	Grant Likely <grant.likely@linaro.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43353 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752483Ab3KXVEO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Nov 2013 16:04:14 -0500
+Message-ID: <529269CC.3050007@kernel.org>
+Date: Sun, 24 Nov 2013 21:04:12 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: NeilBrown <neilb@suse.de>, Sebastian Reichel <sre@debian.org>
+CC: Grant Likely <grant.likely@linaro.org>,
 	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
 	Mark Rutland <mark.rutland@arm.com>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
 Subject: Re: [PATCH v2] itg3200: add dt support.
-Message-ID: <20131119164839.7cd3f4f1@notabene.brown>
-In-Reply-To: <20131119014938.GA20782@earth.universe>
-References: <20131119113013.39dae3cd@notabene.brown>
-	<20131119014938.GA20782@earth.universe>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_//XwP1PsStxcHcGrjfeISlYD"; protocol="application/pgp-signature"
+References: <20131119113013.39dae3cd@notabene.brown>	<20131119014938.GA20782@earth.universe> <20131119164839.7cd3f4f1@notabene.brown>
+In-Reply-To: <20131119164839.7cd3f4f1@notabene.brown>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---Sig_//XwP1PsStxcHcGrjfeISlYD
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Tue, 19 Nov 2013 02:49:38 +0100 Sebastian Reichel <sre@debian.org> wrote:
+On 11/19/13 05:48, NeilBrown wrote:
+> On Tue, 19 Nov 2013 02:49:38 +0100 Sebastian Reichel <sre@debian.org> wrote:
+> 
+>> Hi,
+>> 
+>> On Tue, Nov 19, 2013 at 11:30:13AM +1100, NeilBrown wrote:
+>>> No new configuration, just a 'compatible' string and documentation.
+>> 
+>> itg3200 looks like a candidate for the list of trivial i2c devices [0] to me.
+>> 
+>> [0] Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> 
+>> -- Sebastian
+> 
+> Hmmm... a file that isn't referenced anywhere else in the kernel documentation so is unlikely to be found except by
+> people who know it is there....
+> 
+> I can see that having lots of files for trivial devices is rather clumsy, but there must be a better way. I don't
+> suppose we could just put the documentation in the device-driver file in some format similar to kernel-doc and just
+> extract it if it is wanted separately?  I think people read code a lot more than they read documentation. I know I
+> do.
+> 
+> But I can re-send with an update to trivial-devices.txt is that is what is wanted.
+Given that typically people will need to grep for the name of the actual
+device they have to find the docs (not always obvious where in the documentation
+their bindings will lie), it perhaps makes sense to put these simple devices
+in trivial-devices.txt.
 
-> Hi,
->=20
-> On Tue, Nov 19, 2013 at 11:30:13AM +1100, NeilBrown wrote:
-> > No new configuration, just a 'compatible' string and
-> > documentation.
->=20
-> itg3200 looks like a candidate for the list of trivial i2c
-> devices [0] to me.
->=20
-> [0] Documentation/devicetree/bindings/i2c/trivial-devices.txt
->=20
-> -- Sebastian
-
-Hmmm... a file that isn't referenced anywhere else in the kernel
-documentation so is unlikely to be found except by people who know it is
-there....
-
-I can see that having lots of files for trivial devices is rather clumsy, b=
-ut
-there must be a better way.
-I don't suppose we could just put the documentation in the device-driver fi=
-le
-in some format similar to kernel-doc and just extract it if it is wanted
-separately?  I think people read code a lot more than they read
-documentation. I know I do.
-
-But I can re-send with an update to trivial-devices.txt is that is what is
-wanted.
-
-Thanks,
-NeilBrown
-
---Sig_//XwP1PsStxcHcGrjfeISlYD
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
+Anyhow, it is how it is currently done and we can always unwind it later to separate
+files so, yes - please do move this and if missing add the invense entry as well
+as Mark has requested.
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
+Version: GnuPG v2.0.22 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQIVAwUBUor7tznsnt1WYoG5AQJVxhAAtjwgPu/xThBn/uG19TfyH9EPA3r0LUSr
-1YXQTcK5iI7soYxSXAbYLZDyGVk/JEd7a6+78/zADRG1YH5WiZHSLo9ns9sJ6lNF
-/VGz6SxrSVctrps4sowsIeZCHLuW8hPGQpTRCrQMO/pclZnoERwlYOIMXNO8bAD2
-UrGACHZcUiMZDWztwAmgsapAmKRFjW4+RS+XSthiLbDVgErSjJoI6mtJcwz1pj3E
-flKEaQhGtD8t8awtjZHYbAQbBlBgwLn9LyfsRcBmoiX7AQ6Rn1DuOIOzojye+PGO
-PYng8ks08Dq5R6h3TuM0vEOZphf5uK26lLbjkSnygMFWYxCuVzvnFqW06Tjq41ch
-A8GbQZPA6iGo9oaFNCX/Z5AOTEo7xXPydvzfMAoM3YBKHAtqujpFOBq7NA13rPVF
-gSwNRPgudabj7Ffbr+pUilLonYjwI+KGfvsIlCwUlr15oqMVexwdkxAWRAjLnI5/
-hCeiV/dEBXzSweaERYehEkFwUQUY21EA4TZwPmSmhkGL7pqfT3UNulkNEzNJIEH+
-VO8L4qbrT0j+nPYWiFAZ68MdcTalcRe2N3Sj2xeeDrQqdmSlXj+p6D4miXAp0zTq
-jbbJfqpDGRhh1I9q4dNWaqhIEZFq16ZiNAAVvtdL5cWNr+G7CoEPUxlTlB4XToCg
-1+Yg30BvvOM=
-=Yxmd
+iQIcBAEBAgAGBQJSkmnMAAoJEFSFNJnE9BaI2QQP/R9wloBWmMKiuF+2MFD4qPSM
+GCgKVVptzk/qgV1TYvj7OsuYigGkCcVdTptRg3uDgrg2gL/1beYz8HqbeIRALcCp
+G2rPKhFGF9R6LalHUU0eMVGvvTqUe7J2gXCnxoINp0QM+fAyFfkMk5FZJJur4drI
+GnwroRToRcrIRloIFNstDc5m5/jphshCB++sEDh/uTZT64ZcH5VKlcsHmuzMGOEm
+VO/gebr5kHogGA54HUB4C8psrMJncKm3XFt57yq9tkhHkDk/VijDdROuhbOMY/K0
+6eLLl7oIUkYtQ0AOowg2pDG3B5mvBexfi2W5JWf9yxiK/GBE54OQwyPNXWSeR4Jo
+yLFs+anAtoNVYJuX5O0hs5NXzAJCAhcsXVggzKAmBY5IQkUZ5HzyBxwpH7aB1c1N
+xZY89s1gx4Fke3GNPxqQ7tTDnFy5qZvnZ1/RM0F1j6D6zVMVSM5rRtjZrn3jdpue
+gvzoYSV7f6la+BVj6S2tR2bEFkEssiaUkPn844e+EPZ+iSt8rLVD7WRA0M7bVp4t
+R5ruRioF7D3LGzSfJwhna5/SNCytKuUBKc98PL0VZRx1707GAa2Ucl/YAIp/Gnkh
+ERq9T5GbeT+9zMAfQpeE7Jaz+CwrS8ib0ul+IZzA9q+CqOdZZo3/xjdkQjSw9D9C
+IL28pFxuFOKYabdZ9kQC
+=EsOI
 -----END PGP SIGNATURE-----
-
---Sig_//XwP1PsStxcHcGrjfeISlYD--
