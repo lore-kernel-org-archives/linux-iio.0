@@ -1,132 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48204 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751119Ab3K3LHO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Nov 2013 06:07:14 -0500
-Message-ID: <5299C6E1.8030307@kernel.org>
-Date: Sat, 30 Nov 2013 11:07:13 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from am1ehsobe004.messaging.microsoft.com ([213.199.154.207]:41566
+	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751986Ab3KYJ7K (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 04:59:10 -0500
+From: Fugang Duan <B38611@freescale.com>
+To: <jic23@kernel.org>, <sachin.kamat@linaro.org>
+CC: <shawn.guo@linaro.org>, <b20596@freescale.com>,
+	<linux-iio@vger.kernel.org>
+Subject: [PATCH v1 0/3] *** iio:adc:imx: Add Freescale Vybrid/IMX ADC driver support ***
+Date: Mon, 25 Nov 2013 17:34:28 +0800
+Message-ID: <1385372071-5108-1-git-send-email-B38611@freescale.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 02/15] iio:ad5504: Do not store transfer buffers on the
- stack
-References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1385383327-28181-2-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/25/13 12:41, Lars-Peter Clausen wrote:
-> Some SPI controllers may not be able to handle transfer buffers that are placed
-> on the stack.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
+The patch set is to enable Vybrid VF610 ADC driver. It is the init version.
 
-Thanks
-> ---
->  drivers/iio/dac/ad5504.c | 40 ++++++++++++++++++++--------------------
->  1 file changed, 20 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-> index 6cd0dd6..d44c8f5 100644
-> --- a/drivers/iio/dac/ad5504.c
-> +++ b/drivers/iio/dac/ad5504.c
-> @@ -47,14 +47,16 @@
->   * @vref_mv:		actual reference voltage used
->   * @pwr_down_mask	power down mask
->   * @pwr_down_mode	current power down mode
-> + * @data:		transfer buffer
->   */
-> -
->  struct ad5504_state {
->  	struct spi_device		*spi;
->  	struct regulator		*reg;
->  	unsigned short			vref_mv;
->  	unsigned			pwr_down_mask;
->  	unsigned			pwr_down_mode;
-> +
-> +	__be16				data[2] ____cacheline_aligned;
->  };
->  
->  /**
-> @@ -66,31 +68,29 @@ enum ad5504_supported_device_ids {
->  	ID_AD5501,
->  };
->  
-> -static int ad5504_spi_write(struct spi_device *spi, u8 addr, u16 val)
-> +static int ad5504_spi_write(struct ad5504_state *st, u8 addr, u16 val)
->  {
-> -	__be16 tmp = cpu_to_be16(AD5504_CMD_WRITE |
-> -			      AD5504_ADDR(addr) |
-> +	st->data[0] = cpu_to_be16(AD5504_CMD_WRITE | AD5504_ADDR(addr) |
->  			      (val & AD5504_RES_MASK));
->  
-> -	return spi_write(spi, (u8 *)&tmp, 2);
-> +	return spi_write(st->spi, &st->data[0], 2);
->  }
->  
-> -static int ad5504_spi_read(struct spi_device *spi, u8 addr)
-> +static int ad5504_spi_read(struct ad5504_state *st, u8 addr)
->  {
-> -	__be16 tmp = cpu_to_be16(AD5504_CMD_READ | AD5504_ADDR(addr));
-> -	__be16 val;
->  	int ret;
-> -	struct spi_transfer	t = {
-> -			.tx_buf		= &tmp,
-> -			.rx_buf		= &val,
-> -			.len		= 2,
-> -		};
-> -	ret = spi_sync_transfer(spi, &t, 1);
-> -
-> +	struct spi_transfer t = {
-> +	    .tx_buf = &st->data[0],
-> +	    .rx_buf = &st->data[1],
-> +	    .len = 2,
-> +	};
-> +
-> +	st->data[0] = cpu_to_be16(AD5504_CMD_READ | AD5504_ADDR(addr));
-> +	ret = spi_sync_transfer(st->spi, &t, 1);
->  	if (ret < 0)
->  		return ret;
->  
-> -	return be16_to_cpu(val) & AD5504_RES_MASK;
-> +	return be16_to_cpu(st->data[1]) & AD5504_RES_MASK;
->  }
->  
->  static int ad5504_read_raw(struct iio_dev *indio_dev,
-> @@ -104,7 +104,7 @@ static int ad5504_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -		ret = ad5504_spi_read(st->spi, chan->address);
-> +		ret = ad5504_spi_read(st, chan->address);
->  		if (ret < 0)
->  			return ret;
->  
-> @@ -133,7 +133,7 @@ static int ad5504_write_raw(struct iio_dev *indio_dev,
->  		if (val >= (1 << chan->scan_type.realbits) || val < 0)
->  			return -EINVAL;
->  
-> -		return ad5504_spi_write(st->spi, chan->address, val);
-> +		return ad5504_spi_write(st, chan->address, val);
->  	default:
->  		ret = -EINVAL;
->  	}
-> @@ -197,12 +197,12 @@ static ssize_t ad5504_write_dac_powerdown(struct iio_dev *indio_dev,
->  	else
->  		st->pwr_down_mask &= ~(1 << chan->channel);
->  
-> -	ret = ad5504_spi_write(st->spi, AD5504_ADDR_CTRL,
-> +	ret = ad5504_spi_write(st, AD5504_ADDR_CTRL,
->  				AD5504_DAC_PWRDWN_MODE(st->pwr_down_mode) |
->  				AD5504_DAC_PWR(st->pwr_down_mask));
->  
->  	/* writes to the CTRL register must be followed by a NOOP */
-> -	ad5504_spi_write(st->spi, AD5504_ADDR_NOOP, 0);
-> +	ad5504_spi_write(st, AD5504_ADDR_NOOP, 0);
->  
->  	return ret ? ret : len;
->  }
-> 
+Please see the Reference Manual of the ADC:
+http://cache.freescale.com/files/32bit/doc/ref_manual/VYBRIDRM.pdf?fpsp=1&WT_TYPE=
+Reference%20Manuals&WT_VENDOR=FREESCALE&WT_FILE_FORMAT=pdf&WT_ASSET=Documentation
+
+Feature:
+* Enable Vybrid vf610 board ADC0 in dts file.
+* ADC driver only support software trigger for the init version.
+* ADC configuration support dts set.
+
+Note: Since the ADC IP is used for Freescale Vybrid VF610, i.MX6SLX, i.MX7 serial sillicons,
+      we name the driver name to "imx_adc".
+
+Test:
+* Vybrid vf610-twr board connect ADC0 SE5 pin to one sliding rheostat for ADC test, so
+  after kernel up, get the voltage from sys interface:
+	cat /sys/bus/iio/devices/iio\:device0/in_voltage5_raw
+	cat /sys/bus/iio/devices/iio\:device0/in_voltage_scale
+
+	The current voltage = in_voltage5_raw * in_voltage_scale (uV).
+
+
+Fugang Duan (3):
+  ARM: dts: vf610-twr: Add ADC support
+  iio:adc:imx: add Freescale Vybrid board adc driver
+  Documentation: add the binding file for Freescale (Vybrid/IMX) ADC
+    driver
+
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |   57 ++
+ arch/arm/boot/dts/vf610-twr.dts                    |   14 +
+ arch/arm/boot/dts/vf610.dtsi                       |   26 +
+ drivers/iio/adc/Kconfig                            |   10 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/imx_adc.c                          |  748 ++++++++++++++++++++
+ 6 files changed, 856 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+ create mode 100644 drivers/iio/adc/imx_adc.c
+
+-- 
+1.7.2.rc3
+
+
