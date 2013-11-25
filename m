@@ -1,77 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db8lp0184.outbound.messaging.microsoft.com ([213.199.154.184]:33997
-	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751679Ab3KZBHY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 20:07:24 -0500
-From: Fugang Duan <fugang.duan@freescale.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"sachin.kamat@linaro.org" <sachin.kamat@linaro.org>
-CC: "shawn.guo@linaro.org" <shawn.guo@linaro.org>,
-	Frank Li <Frank.Li@freescale.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"marex@denx.de" <marex@denx.de>
-Subject: RE: [PATCH v1 0/3] *** iio:adc:imx: Add Freescale Vybrid/IMX ADC
- driver support ***
-Date: Tue, 26 Nov 2013 01:07:18 +0000
-Message-ID: <9848F2DB572E5649BA045B288BE08FBE018952DD@039-SN2MPN1-023.039d.mgd.msft.net>
+Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:3913
+	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752190Ab3KYJ7L (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 04:59:11 -0500
+From: Fugang Duan <B38611@freescale.com>
+To: <jic23@kernel.org>, <sachin.kamat@linaro.org>
+CC: <shawn.guo@linaro.org>, <b20596@freescale.com>,
+	<linux-iio@vger.kernel.org>
+Subject: [PATCH v1 3/3] Documentation: add the binding file for Freescale (Vybrid/IMX) ADC driver
+Date: Mon, 25 Nov 2013 17:34:31 +0800
+Message-ID: <1385372071-5108-4-git-send-email-B38611@freescale.com>
+In-Reply-To: <1385372071-5108-1-git-send-email-B38611@freescale.com>
 References: <1385372071-5108-1-git-send-email-B38611@freescale.com>
- <f427f209-0557-4894-b607-5d5f6c6b82ae@email.android.com>
-In-Reply-To: <f427f209-0557-4894-b607-5d5f6c6b82ae@email.android.com>
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-RnJvbTogSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz4NCkRhdGE6IFR1ZXNkYXks
-IE5vdmVtYmVyIDI2LCAyMDEzIDE6MjMgQU0NCg0KPlRvOiBEdWFuIEZ1Z2FuZy1CMzg2MTE7IHNh
-Y2hpbi5rYW1hdEBsaW5hcm8ub3JnDQo+Q2M6IHNoYXduLmd1b0BsaW5hcm8ub3JnOyBMaSBGcmFu
-ay1CMjA1OTY7IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7DQo+bWFyZXhAZGVueC5kZQ0KPlN1
-YmplY3Q6IFJlOiBbUEFUQ0ggdjEgMC8zXSAqKiogaWlvOmFkYzppbXg6IEFkZCBGcmVlc2NhbGUg
-VnlicmlkL0lNWCBBREMNCj5kcml2ZXIgc3VwcG9ydCAqKioNCj4NCj4NCj4NCj5GdWdhbmcgRHVh
-biA8QjM4NjExQGZyZWVzY2FsZS5jb20+IHdyb3RlOg0KPj5UaGUgcGF0Y2ggc2V0IGlzIHRvIGVu
-YWJsZSBWeWJyaWQgVkY2MTAgQURDIGRyaXZlci4gSXQgaXMgdGhlIGluaXQNCj4+dmVyc2lvbi4N
-Cj4+DQo+PlBsZWFzZSBzZWUgdGhlIFJlZmVyZW5jZSBNYW51YWwgb2YgdGhlIEFEQzoNCj4+aHR0
-cDovL2NhY2hlLmZyZWVzY2FsZS5jb20vZmlsZXMvMzJiaXQvZG9jL3JlZl9tYW51YWwvVllCUklE
-Uk0ucGRmP2Zwc3ANCj4+PTEmV1RfVFlQRT0NCj4+UmVmZXJlbmNlJTIwTWFudWFscyZXVF9WRU5E
-T1I9RlJFRVNDQUxFJldUX0ZJTEVfRk9STUFUPXBkZiZXVF9BU1NFVD1Eb2MNCj4+dW1lbnRhdGlv
-bg0KPj4NCj4+RmVhdHVyZToNCj4+KiBFbmFibGUgVnlicmlkIHZmNjEwIGJvYXJkIEFEQzAgaW4g
-ZHRzIGZpbGUuDQo+PiogQURDIGRyaXZlciBvbmx5IHN1cHBvcnQgc29mdHdhcmUgdHJpZ2dlciBm
-b3IgdGhlIGluaXQgdmVyc2lvbi4NCj4+KiBBREMgY29uZmlndXJhdGlvbiBzdXBwb3J0IGR0cyBz
-ZXQuDQo+Pg0KPj5Ob3RlOiBTaW5jZSB0aGUgQURDIElQIGlzIHVzZWQgZm9yIEZyZWVzY2FsZSBW
-eWJyaWQgVkY2MTAsIGkuTVg2U0xYLA0KPj5pLk1YNyBzZXJpYWwgc2lsbGljb25zLA0KPj4gICAg
-ICB3ZSBuYW1lIHRoZSBkcml2ZXIgbmFtZSB0byAiaW14X2FkYyIuDQo+Pg0KPkl0IHdpbGwgYmUg
-YSBsaXR0bGUgd2hpbGUgYmVmb3JlIEkgaGF2ZSBhIGNoYW5jZSB0byBnaXZlIHRoaXMgYSB0aG9y
-b3VnaCByZXZpZXcNCj5idXQgaW4gdGhlIG1lYW50aW1lLi4uDQo+DQo+VGhlIG5hbWluZyBpcyBw
-cm9iYWJseSB0b28gZ2VuZXJpYy4gV2UgYWxyZWFkeSBoYXZlIGFub3RoZXIgSS5NWCBBREMgZHJp
-dmVyLg0KPk14cy1scmFkYyB3aGljaCBpcyBvbiB0aGUgSS5NWDIzIGFuZCBJLm14MjgNCj4NCj5J
-IHdvdWxkIGdvIGZvciBuYW1pbmcgaXQgYWZ0ZXIgb25lIHBhcnQgdGhlbiByZWx5IG9uIGtjb25m
-aWcgaGVscCBhbmQgZ3JlcCB0bw0KPmVuc3VyZSBwZW9wbGUgd29yayBvdXQgd2hhdCB0aGUgZHJp
-dmVyIGNvdmVycy4NCj5Db21wYXRpYmxlIHN0cmluZ3MgaW4gRFQgYWxzbyBoZWxwIG9mIGNvdXJz
-ZQ0KDQpJIGFncmVlLCBJIHdpbGwgbmFtZSBpdCBhZnRlciAidmY2MTBfYWRjIiwgYW5kIHRoZW4g
-c2VuZCBvdXQgdGhlIHBhdGNoIHNldC4NCg0KVGhhbmtzLA0KQW5keQ0KDQo+DQo+PlRlc3Q6DQo+
-PiogVnlicmlkIHZmNjEwLXR3ciBib2FyZCBjb25uZWN0IEFEQzAgU0U1IHBpbiB0byBvbmUgc2xp
-ZGluZyByaGVvc3RhdA0KPj5mb3IgQURDIHRlc3QsIHNvDQo+PiAgYWZ0ZXIga2VybmVsIHVwLCBn
-ZXQgdGhlIHZvbHRhZ2UgZnJvbSBzeXMgaW50ZXJmYWNlOg0KPj4JY2F0IC9zeXMvYnVzL2lpby9k
-ZXZpY2VzL2lpb1w6ZGV2aWNlMC9pbl92b2x0YWdlNV9yYXcNCj4+CWNhdCAvc3lzL2J1cy9paW8v
-ZGV2aWNlcy9paW9cOmRldmljZTAvaW5fdm9sdGFnZV9zY2FsZQ0KPj4NCj4+CVRoZSBjdXJyZW50
-IHZvbHRhZ2UgPSBpbl92b2x0YWdlNV9yYXcgKiBpbl92b2x0YWdlX3NjYWxlICh1VikuDQo+Pg0K
-Pj4NCj4+RnVnYW5nIER1YW4gKDMpOg0KPj4gIEFSTTogZHRzOiB2ZjYxMC10d3I6IEFkZCBBREMg
-c3VwcG9ydA0KPj4gIGlpbzphZGM6aW14OiBhZGQgRnJlZXNjYWxlIFZ5YnJpZCBib2FyZCBhZGMg
-ZHJpdmVyDQo+PiAgRG9jdW1lbnRhdGlvbjogYWRkIHRoZSBiaW5kaW5nIGZpbGUgZm9yIEZyZWVz
-Y2FsZSAoVnlicmlkL0lNWCkgQURDDQo+PiAgICBkcml2ZXINCj4+DQo+PiAuLi4vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9paW8vYWRjL3ZmNjEwLWFkYy50eHQgICAgICB8ICAgNTcgKysNCj4+IGFyY2gv
-YXJtL2Jvb3QvZHRzL3ZmNjEwLXR3ci5kdHMgICAgICAgICAgICAgICAgICAgIHwgICAxNCArDQo+
-PiBhcmNoL2FybS9ib290L2R0cy92ZjYxMC5kdHNpICAgICAgICAgICAgICAgICAgICAgICB8ICAg
-MjYgKw0KPj4gZHJpdmVycy9paW8vYWRjL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgfCAgIDEwICsNCj4+IGRyaXZlcnMvaWlvL2FkYy9NYWtlZmlsZSAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIHwgICAgMSArDQo+PmRyaXZlcnMvaWlvL2FkYy9pbXhfYWRjLmMgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHwgIDc0OA0KPj4rKysrKysrKysrKysrKysrKysrKw0KPj4gNiBmaWxl
-cyBjaGFuZ2VkLCA4NTYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkgY3JlYXRlIG1vZGUg
-MTAwNjQ0DQo+PkRvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL3ZmNjEw
-LWFkYy50eHQNCj4+IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9hZGMvaW14X2FkYy5j
-DQo+DQo+LS0NCj5TZW50IGZyb20gbXkgQW5kcm9pZCBwaG9uZSB3aXRoIEstOSBNYWlsLiBQbGVh
-c2UgZXhjdXNlIG15IGJyZXZpdHkuDQo+LS0NCj5UbyB1bnN1YnNjcmliZSBmcm9tIHRoaXMgbGlz
-dDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtaWlvIiBpbiB0aGUNCj5ib2R5IG9m
-IGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJuZWwub3JnIE1vcmUgbWFqb3Jkb21vIGlu
-Zm8gYXQNCj5odHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg==
+The patch adds the binding file for Freescale (Vybrid/IMX) ADC driver.
+
+Signed-off-by: Fugang Duan <B38611@freescale.com>
+---
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |   57 ++++++++++++++++++++
+ 1 files changed, 57 insertions(+), 0 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+new file mode 100644
+index 0000000..7a5b53e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+@@ -0,0 +1,57 @@
++Freescale vf610 Analog to Digital Converter bindings
++
++The devicetree bindings are for the new ADC driver written for
++vf610/i.MX6slx and upward SoCs from Freescale.
++
++Required properties:
++- compatible: Should be "fsl,vf610-adc"
++  (* the future expander for i.MX6slx, i.MX7 will be "fsl,imx-adc")
++- reg: Offset and length of the register set for the device
++- interrupts: Should contain the interrupt for the device
++- clocks: The clocks needed by the ADC controller
++- clock-names: the name of the clocks
++
++Optional properties:
++- imx,adc-io-pinctl: Enable field for the I/O port control of MCU pins used as analog inputs.
++- imx,adc-vref: ADC refrence voltage value, unit is uV.
++- imx,adc-clk-div: Current clock divider value, such as 1,2,4,8,16 and so on.
++- imx,adc-res: ADC conversion mode selection, such as 8 for 8-bit, 10 for 10-bit, 12 for 12-bit mode.
++- imx,adc-sam-time: ADC sample time duration, number of ADC clocks, such as 2, 4, 6, 8, 12, 16, 20, 24
++- imx,adc-aver-sam-sel: Determines how many ADC conversions will be averaged to create the ADC average result.
++			The Optional value is 4, 8, 16, 32.
++- imx,adc-hw-aver-en: Bool type to decide enable hardware average function.
++- imx,adc-low-power-mode: Bool type to decide enable ADC low power mode.
++- imx,adc-high-speed-conv: Bool type to decide enable ADC high speed mode.
++
++Example:
++adc0: adc@4003b000 {
++	compatible = "fsl,vf610-adc";
++	reg = <0x4003b000 0x1000>;
++	interrupts = <0 53 0x04>;
++	clocks = <&clks VF610_CLK_ADC0>;
++	clock-names = "adc";
++	status = "disabled";
++};
++
++adc1: adc@400bb000 {
++	compatible = "fsl,vf610-adc";
++	reg = <0x400bb000 0x1000>;
++	interrupts = <0 54 0x04>;
++	clocks = <&clks VF610_CLK_ADC1>;
++	clock-names = "adc";
++	status = "disabled";
++};
++
++&adc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc0_ad5>;
++	imx,adc-io-pinctl = <0x20>;
++	imx,adc-vref = <3300000>;
++	imx,adc-clk-div = <2>;
++	imx,adc-res = <12>;
++	imx,adc-sam-time = <4>;
++	imx,adc-aver-sam-sel = <4>;
++	imx,adc-hw-aver-en;
++	imx,adc-low-power-mode;
++	status = "okay";
++};
+-- 
+1.7.2.rc3
+
 
