@@ -1,41 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55961 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756767Ab3KYRNV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 12:13:21 -0500
-In-Reply-To: <CA+r1ZhinxJBB3dgCKxoMXV0ioVR0jrS7ha=SY-qT212AvDSkVQ@mail.gmail.com>
+Return-Path: <bp@alien8.de>
+Date: Mon, 25 Nov 2013 18:13:01 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Jim Davis <jim.epost@gmail.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: randconfig build error with next-20131125, in drivers/iio/light
+Message-ID: <20131125171301.GB11463@pd.tnic>
 References: <CA+r1ZhinxJBB3dgCKxoMXV0ioVR0jrS7ha=SY-qT212AvDSkVQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: randconfig build error with next-20131125, in drivers/iio/light
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 25 Nov 2013 17:13:09 +0000
-To: Jim Davis <jim.epost@gmail.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Message-ID: <1bbe329e-a128-4d08-b79c-d9285dbf4aae@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CA+r1ZhinxJBB3dgCKxoMXV0ioVR0jrS7ha=SY-qT212AvDSkVQ@mail.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Thanks for the report. We have a fix queued up. I have just been a bit lax sending the pull request. Note I believe the issue is in Linus' tree as well.
+On Mon, Nov 25, 2013 at 10:04:44AM -0700, Jim Davis wrote:
+> Building with the attached random configuration file,
+> 
+> drivers/iio/light/tcs3472.c: In function ‘tcs3472_trigger_handler’:
+> drivers/iio/light/tcs3472.c:195:2: error: implicit declaration of
+> function ‘iio_push_to_buffers_with_timestamp’
+> [-Werror=implicit-function-declaration]
+>   iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>   ^
+> cc1: some warnings being treated as errors
+> make[3]: *** [drivers/iio/light/tcs3472.o] Error 1
 
-Thanks again
+Feel like giving it a try to write a fix for it? It seems to me
+tcs3472.c should depend on IIO_BUFFER... :-)
 
-Jonathan
-
-Jim Davis <jim.epost@gmail.com> wrote:
->Building with the attached random configuration file,
->
->drivers/iio/light/tcs3472.c: In function ‘tcs3472_trigger_handler’:
->drivers/iio/light/tcs3472.c:195:2: error: implicit declaration of
->function ‘iio_push_to_buffers_with_timestamp’
->[-Werror=implicit-function-declaration]
->  iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->  ^
->cc1: some warnings being treated as errors
->make[3]: *** [drivers/iio/light/tcs3472.o] Error 1
+HTH.
 
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+Regards/Gruss,
+    Boris.
+
+Sent from a fat crate under my desk. Formatting is fine.
+--
