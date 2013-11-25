@@ -1,109 +1,143 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48307 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751729Ab3K3LK5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Nov 2013 06:10:57 -0500
-Message-ID: <5299C7C0.7060005@kernel.org>
-Date: Sat, 30 Nov 2013 11:10:56 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 08/15] iio:ad7266: Mark transfer buffer as __be16
-References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1385383327-28181-8-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 07/15] iio:ad5791: Do not store transfer buffers on the stack
+Date: Mon, 25 Nov 2013 13:41:59 +0100
+Message-Id: <1385383327-28181-7-git-send-email-lars@metafoo.de>
+In-Reply-To: <1385383327-28181-1-git-send-email-lars@metafoo.de>
+References: <1385383327-28181-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/25/13 12:42, Lars-Peter Clausen wrote:
-> Fixes the following warnings from sparse:
-> 	drivers/iio/adc/ad7266.c:140:16: warning: cast to restricted __be16
-> 	drivers/iio/adc/ad7266.c:140:16: warning: cast to restricted __be16
-> 	drivers/iio/adc/ad7266.c:140:16: warning: cast to restricted __be16
-> 	drivers/iio/adc/ad7266.c:140:16: warning: cast to restricted __be16
+Some SPI controllers may not be able to handle transfer buffers that are placed
+on the stack.
 
-Technically this does a fair bit of other refactoring, but that's all good
-anyway.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/dac/ad5791.c | 46 +++++++++++++++++++++-------------------------
+ 1 file changed, 21 insertions(+), 25 deletions(-)
 
-Applied to the togreg branch of iio.git
-
-Thanks.
-
-> ---
->  drivers/iio/adc/ad7266.c | 21 ++++++++++++---------
->  1 file changed, 12 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-> index 58e9455..70f78c3 100644
-> --- a/drivers/iio/adc/ad7266.c
-> +++ b/drivers/iio/adc/ad7266.c
-> @@ -43,19 +43,22 @@ struct ad7266_state {
->  	 * The buffer needs to be large enough to hold two samples (4 bytes) and
->  	 * the naturally aligned timestamp (8 bytes).
->  	 */
-> -	uint8_t data[ALIGN(4, sizeof(s64)) + sizeof(s64)] ____cacheline_aligned;
-> +	struct {
-> +		__be16 sample[2];
-> +		s64 timestamp;
-> +	} data ____cacheline_aligned;
->  };
->  
->  static int ad7266_wakeup(struct ad7266_state *st)
->  {
->  	/* Any read with >= 2 bytes will wake the device */
-> -	return spi_read(st->spi, st->data, 2);
-> +	return spi_read(st->spi, &st->data.sample[0], 2);
->  }
->  
->  static int ad7266_powerdown(struct ad7266_state *st)
->  {
->  	/* Any read with < 2 bytes will powerdown the device */
-> -	return spi_read(st->spi, st->data, 1);
-> +	return spi_read(st->spi, &st->data.sample[0], 1);
->  }
->  
->  static int ad7266_preenable(struct iio_dev *indio_dev)
-> @@ -84,9 +87,9 @@ static irqreturn_t ad7266_trigger_handler(int irq, void *p)
->  	struct ad7266_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> -	ret = spi_read(st->spi, st->data, 4);
-> +	ret = spi_read(st->spi, st->data.sample, 4);
->  	if (ret == 0) {
-> -		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
-> +		iio_push_to_buffers_with_timestamp(indio_dev, &st->data,
->  			    pf->timestamp);
->  	}
->  
-> @@ -137,7 +140,7 @@ static int ad7266_read_single(struct ad7266_state *st, int *val,
->  	ad7266_select_input(st, address);
->  
->  	ret = spi_sync(st->spi, &st->single_msg);
-> -	*val = be16_to_cpu(st->data[address % 2]);
-> +	*val = be16_to_cpu(st->data.sample[address % 2]);
->  
->  	return ret;
->  }
-> @@ -442,15 +445,15 @@ static int ad7266_probe(struct spi_device *spi)
->  	ad7266_init_channels(indio_dev);
->  
->  	/* wakeup */
-> -	st->single_xfer[0].rx_buf = &st->data;
-> +	st->single_xfer[0].rx_buf = &st->data.sample[0];
->  	st->single_xfer[0].len = 2;
->  	st->single_xfer[0].cs_change = 1;
->  	/* conversion */
-> -	st->single_xfer[1].rx_buf = &st->data;
-> +	st->single_xfer[1].rx_buf = st->data.sample;
->  	st->single_xfer[1].len = 4;
->  	st->single_xfer[1].cs_change = 1;
->  	/* powerdown */
-> -	st->single_xfer[2].tx_buf = &st->data;
-> +	st->single_xfer[2].tx_buf = &st->data.sample[0];
->  	st->single_xfer[2].len = 1;
->  
->  	spi_message_init(&st->single_msg);
-> 
+diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
+index 1e7f4cd..79bf199 100644
+--- a/drivers/iio/dac/ad5791.c
++++ b/drivers/iio/dac/ad5791.c
+@@ -91,6 +91,11 @@ struct ad5791_state {
+ 	unsigned			ctrl;
+ 	unsigned			pwr_down_mode;
+ 	bool				pwr_down;
++
++	union {
++		__be32 d32;
++		u8 d8[4];
++	} data[3] ____cacheline_aligned;
+ };
+ 
+ /**
+@@ -104,48 +109,39 @@ enum ad5791_supported_device_ids {
+ 	ID_AD5791,
+ };
+ 
+-static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
++static int ad5791_spi_write(struct ad5791_state *st, u8 addr, u32 val)
+ {
+-	union {
+-		__be32 d32;
+-		u8 d8[4];
+-	} data;
+-
+-	data.d32 = cpu_to_be32(AD5791_CMD_WRITE |
++	st->data[0].d32 = cpu_to_be32(AD5791_CMD_WRITE |
+ 			      AD5791_ADDR(addr) |
+ 			      (val & AD5791_DAC_MASK));
+ 
+-	return spi_write(spi, &data.d8[1], 3);
++	return spi_write(st->spi, &st->data[0].d8[1], 3);
+ }
+ 
+-static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
++static int ad5791_spi_read(struct ad5791_state *st, u8 addr, u32 *val)
+ {
+-	union {
+-		__be32 d32;
+-		u8 d8[4];
+-	} data[3];
+ 	int ret;
+ 	struct spi_transfer xfers[] = {
+ 		{
+-			.tx_buf = &data[0].d8[1],
++			.tx_buf = &st->data[0].d8[1],
+ 			.bits_per_word = 8,
+ 			.len = 3,
+ 			.cs_change = 1,
+ 		}, {
+-			.tx_buf = &data[1].d8[1],
+-			.rx_buf = &data[2].d8[1],
++			.tx_buf = &st->data[1].d8[1],
++			.rx_buf = &st->data[2].d8[1],
+ 			.bits_per_word = 8,
+ 			.len = 3,
+ 		},
+ 	};
+ 
+-	data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
++	st->data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
+ 			      AD5791_ADDR(addr));
+-	data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
++	st->data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
+ 
+-	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
++	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+ 
+-	*val = be32_to_cpu(data[2].d32);
++	*val = be32_to_cpu(st->data[2].d32);
+ 
+ 	return ret;
+ }
+@@ -210,7 +206,7 @@ static ssize_t ad5791_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	}
+ 	st->pwr_down = pwr_down;
+ 
+-	ret = ad5791_spi_write(st->spi, AD5791_ADDR_CTRL, st->ctrl);
++	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl);
+ 
+ 	return ret ? ret : len;
+ }
+@@ -263,7 +259,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = ad5791_spi_read(st->spi, chan->address, val);
++		ret = ad5791_spi_read(st, chan->address, val);
+ 		if (ret)
+ 			return ret;
+ 		*val &= AD5791_DAC_MASK;
+@@ -330,7 +326,7 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
+ 		val &= AD5791_RES_MASK(chan->scan_type.realbits);
+ 		val <<= chan->scan_type.shift;
+ 
+-		return ad5791_spi_write(st->spi, chan->address, val);
++		return ad5791_spi_write(st, chan->address, val);
+ 
+ 	default:
+ 		return -EINVAL;
+@@ -393,7 +389,7 @@ static int ad5791_probe(struct spi_device *spi)
+ 		dev_warn(&spi->dev, "reference voltage unspecified\n");
+ 	}
+ 
+-	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
++	ret = ad5791_spi_write(st, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+ 	if (ret)
+ 		goto error_disable_reg_neg;
+ 
+@@ -405,7 +401,7 @@ static int ad5791_probe(struct spi_device *spi)
+ 		  | ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
+ 		  AD5791_CTRL_BIN2SC;
+ 
+-	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
++	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl |
+ 		AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
+ 	if (ret)
+ 		goto error_disable_reg_neg;
+-- 
+1.8.0
