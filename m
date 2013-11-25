@@ -1,38 +1,80 @@
-Return-Path: <bp@alien8.de>
-Date: Mon, 25 Nov 2013 18:13:01 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Jim Davis <jim.epost@gmail.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: randconfig build error with next-20131125, in drivers/iio/light
-Message-ID: <20131125171301.GB11463@pd.tnic>
-References: <CA+r1ZhinxJBB3dgCKxoMXV0ioVR0jrS7ha=SY-qT212AvDSkVQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CA+r1ZhinxJBB3dgCKxoMXV0ioVR0jrS7ha=SY-qT212AvDSkVQ@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-048.synserver.de ([212.40.185.48]:1222 "EHLO
+	smtp-out-025.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754433Ab3KYO4b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 09:56:31 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/3] iio: Add data_available callback for buffers
+Date: Mon, 25 Nov 2013 15:56:42 +0100
+Message-Id: <1385391404-3112-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Nov 25, 2013 at 10:04:44AM -0700, Jim Davis wrote:
-> Building with the attached random configuration file,
-> 
-> drivers/iio/light/tcs3472.c: In function ‘tcs3472_trigger_handler’:
-> drivers/iio/light/tcs3472.c:195:2: error: implicit declaration of
-> function ‘iio_push_to_buffers_with_timestamp’
-> [-Werror=implicit-function-declaration]
->   iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->   ^
-> cc1: some warnings being treated as errors
-> make[3]: *** [drivers/iio/light/tcs3472.o] Error 1
+This patch adds a new data_available() callback to the iio_buffer_access_funcs
+struct. The callback is used to indicate whether data is available in the buffer
+for reading. It is meant to replace the stufftoread flag from the iio_buffer
+struct. The reasoning for this is that the buffer implementation usually can
+determine whether data is available rather easily based on its state, on the
+other hand it can be rather tricky to update the stufftoread flag in a race free
+way.
 
-Feel like giving it a try to write a fix for it? It seems to me
-tcs3472.c should depend on IIO_BUFFER... :-)
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-buffer.c | 10 +++++++++-
+ include/linux/iio/buffer.h        |  3 +++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
 
-HTH.
-
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 7f9152c..4dcc3a0 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -37,6 +37,14 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
+ 	return !list_empty(&buf->buffer_list);
+ }
+ 
++static bool iio_buffer_data_available(struct iio_buffer *buf)
++{
++	if (buf->access->data_available)
++		return buf->access->data_available(buf);
++
++	return buf->stufftoread;
++}
++
+ /**
+  * iio_buffer_read_first_n_outer() - chrdev read for buffer access
+  *
+@@ -70,7 +78,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+ 		return -ENODEV;
+ 
+ 	poll_wait(filp, &rb->pollq, wait);
+-	if (rb->stufftoread)
++	if (iio_buffer_data_available(rb))
+ 		return POLLIN | POLLRDNORM;
+ 	/* need a way of knowing if there may be enough data... */
+ 	return 0;
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 15607b4..5193927 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -21,6 +21,8 @@ struct iio_buffer;
+  * struct iio_buffer_access_funcs - access functions for buffers.
+  * @store_to:		actually store stuff to the buffer
+  * @read_first_n:	try to get a specified number of bytes (must exist)
++ * @data_available:	indicates whether data for reading from the buffer is
++ *			available.
+  * @request_update:	if a parameter change has been marked, update underlying
+  *			storage.
+  * @get_bytes_per_datum:get current bytes per datum
+@@ -43,6 +45,7 @@ struct iio_buffer_access_funcs {
+ 	int (*read_first_n)(struct iio_buffer *buffer,
+ 			    size_t n,
+ 			    char __user *buf);
++	bool (*data_available)(struct iio_buffer *buffer);
+ 
+ 	int (*request_update)(struct iio_buffer *buffer);
+ 
 -- 
-Regards/Gruss,
-    Boris.
+1.8.0
 
-Sent from a fat crate under my desk. Formatting is fine.
---
