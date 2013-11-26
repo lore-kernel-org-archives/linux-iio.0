@@ -1,99 +1,111 @@
-Return-Path: <fugang.duan@freescale.com>
-From: Fugang Duan <fugang.duan@freescale.com>
-To: Otavio Salvador <otavio@ossystems.com.br>
-CC: Shawn Guo <shawn.guo@linaro.org>, "jic23@kernel.org" <jic23@kernel.org>,
-	"sachin.kamat@linaro.org" <sachin.kamat@linaro.org>, Frank Li
-	<Frank.Li@freescale.com>, "linux-iio@vger.kernel.org"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-db9lp0249.outbound.messaging.microsoft.com ([213.199.154.249]:17177
+	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751635Ab3KZCHh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 21:07:37 -0500
+From: Fugang Duan <B38611@freescale.com>
+To: <jic23@kernel.org>, <sachin.kamat@linaro.org>
+CC: <shawn.guo@linaro.org>, <b20596@freescale.com>,
 	<linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v2 2/3] iio:adc:imx: add Freescale Vybrid vf610 adc
- driver
-Date: Wed, 27 Nov 2013 01:42:29 +0000
-Message-ID: <9848F2DB572E5649BA045B288BE08FBE018988F2@039-SN2MPN1-023.039d.mgd.msft.net>
+Subject: [PATCH v2 1/3] ARM: dts: vf610-twr: Add ADC support
+Date: Tue, 26 Nov 2013 09:42:50 +0800
+Message-ID: <1385430172-16642-2-git-send-email-B38611@freescale.com>
+In-Reply-To: <1385430172-16642-1-git-send-email-B38611@freescale.com>
 References: <1385430172-16642-1-git-send-email-B38611@freescale.com>
-	<1385430172-16642-3-git-send-email-B38611@freescale.com>
-	<20131126072058.GM30476@S2101-09.ap.freescale.net>
-	<9848F2DB572E5649BA045B288BE08FBE01895AF4@039-SN2MPN1-023.039d.mgd.msft.net>
-	<20131126080343.GO30476@S2101-09.ap.freescale.net>
-	<CAP9ODKqSnhJPFjmVRim290h7dnBPcDwtLoJQHXY9NLPCDMBjpg@mail.gmail.com>
-	<9848F2DB572E5649BA045B288BE08FBE018988A3@039-SN2MPN1-023.039d.mgd.msft.net>
- <CAP9ODKqQAmCfTjrWdMB6enM-x_pZhf0K5FOtb6H9uQhBUC_6gw@mail.gmail.com>
-In-Reply-To: <CAP9ODKqQAmCfTjrWdMB6enM-x_pZhf0K5FOtb6H9uQhBUC_6gw@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Otavio Salvador <otavio@ossystems.com.br>
-Data: Wednesday, November 27, 2013 9:37 AM
+vf610 have two ADC controllers, and vf610-twr board ADC0_SE5 pin connect
+to sliding rheostat for ADC test, other ADC pins connect to connectors for
+future use.
 
->To: Duan Fugang-B38611
->Cc: Shawn Guo; jic23@kernel.org; sachin.kamat@linaro.org; Li Frank-B20596;
->linux-iio@vger.kernel.org
->Subject: Re: [PATCH v2 2/3] iio:adc:imx: add Freescale Vybrid vf610 adc dr=
-iver
->
->On Tue, Nov 26, 2013 at 11:34 PM, Fugang Duan <fugang.duan@freescale.com> =
-wrote:
->> From: Otavio Salvador <otavio@ossystems.com.br>
->> Data: Wednesday, November 27, 2013 8:17 AM
->>
->>>To: Shawn Guo
->>>Cc: Duan Fugang-B38611; jic23@kernel.org; sachin.kamat@linaro.org; Li
->>>Frank- B20596; linux-iio@vger.kernel.org
->>>Subject: Re: [PATCH v2 2/3] iio:adc:imx: add Freescale Vybrid vf610
->>>adc driver
->>>
->>>On Tue, Nov 26, 2013 at 6:03 AM, Shawn Guo <shawn.guo@linaro.org> wrote:
->>>> On Tue, Nov 26, 2013 at 07:33:11AM +0000, Fugang Duan wrote:
->>>>> >> +static const struct of_device_id vf610_adc_match[] =3D {
->>>>> >> +  { .compatible =3D "fsl,vf610-adc", .data =3D (void *)VF610_ADC,
->>>>> >> +},
->>>>> >
->>>>> >We should .data for now, since it's currently unused.
->>>>>
->>>>> Ok, I will change it as below.
->>>>> { .compatible =3D "fsl,vf610-adc", .data =3D (void *)0, },
->>>>
->>>> The following is enough.
->>>>
->>>>  { .compatible =3D "fsl,vf610-adc", }
->>>>
->>>> <snip>
->>>>
->>>>> >> +static int vf610_adc_probe(struct platform_device *pdev) {
->>>>> >> +  struct vf610_adc *info =3D NULL;
->>>>> >> +  struct device_node *np =3D pdev->dev.of_node;
->>>>> >> +  struct iio_dev *indio_dev;
->>>>> >> +  struct resource *mem;
->>>>> >> +  int ret =3D -ENODEV;
->>>>> >> +
->>>>> >> +  if (!np)
->>>>> >> +          return ret;
->>>>> >
->>>>> >Unnecessary check.  We will not be here at all if np is NULL.
->>>>>
->>>>> Great. There still have many drivers do it like this.
->>>>
->>>> It's unnecessary for platforms that only support DT probe, like
->>>> VF610 and IMX6.
->>>
->>>I know this is not my call but I would prefer it had a imx-adc and in
->>>the Kconfig help you explain clearly which SoCs it will/support. It
->>>will be strange to have i.MX6SLX using a VF610 ADC :-(
->>
->> i.MX6SLX ADC IP inherit VF610 ADC IP. The VF610 ADC support hardware tri=
-gger
->from PDB (The Programmable Delay Block), but i.MX6SLX don't support hardwa=
-re
->trigger.
->> So, for the driver feature expander, there have difference for VF610 and
->i.MX6SLX. VF610 use the compatible "vf610-adc", i.MX6SLX use "imx-adc".
->
->I see; but the source code will be vf610_adc.c; I'd expect it to be imx_ad=
-c.c
->
+Add support for ADC0_SE5.
 
-Yes, the ADC patch set V1 version name the driver after imx_adc.c, but Jona=
-than Cameron think it is generic and suggest to name it one silicon name.
+Signed-off-by: Fugang Duan <B38611@freescale.com>
+---
+ arch/arm/boot/dts/vf610-twr.dts |   14 ++++++++++++++
+ arch/arm/boot/dts/vf610.dtsi    |   26 ++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+), 0 deletions(-)
 
-Thanks,
-Andy
+diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+index c8047ca..db069ef 100644
+--- a/arch/arm/boot/dts/vf610-twr.dts
++++ b/arch/arm/boot/dts/vf610-twr.dts
+@@ -36,6 +36,20 @@
+ 
+ };
+ 
++&adc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc0_ad5>;
++	vf610,adc-io-pinctl = <0x20>;
++	vf610,adc-vref = <3300000>;
++	vf610,adc-clk-div = <2>;
++	vf610,adc-res = <12>;
++	vf610,adc-sam-time = <4>;
++	vf610,adc-aver-sam-sel = <4>;
++	vf610,adc-hw-aver-en;
++	vf610,adc-low-power-mode;
++	status = "okay";
++};
++
+ &dspi0 {
+ 	bus-num = <0>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
+index d31ce1b..b5b21ea 100644
+--- a/arch/arm/boot/dts/vf610.dtsi
++++ b/arch/arm/boot/dts/vf610.dtsi
+@@ -152,6 +152,15 @@
+ 				clock-names = "pit";
+ 			};
+ 
++			adc0: adc@4003b000 {
++				compatible = "fsl,vf610-adc";
++				reg = <0x4003b000 0x1000>;
++				interrupts = <0 53 0x04>;
++				clocks = <&clks VF610_CLK_ADC0>;
++				clock-names = "adc";
++				status = "disabled";
++			};
++
+ 			wdog@4003e000 {
+ 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
+ 				reg = <0x4003e000 0x1000>;
+@@ -178,6 +187,14 @@
+ 
+ 				/* functions and groups pins */
+ 
++				adc0 {
++					pinctrl_adc0_ad5: adc0_ad5 {
++						fsl,pins = <
++						VF610_PAD_PTC30__ADC0_SE5	0xa1
++						>;
++					};
++				};
++
+ 				dcu0 {
+ 					pinctrl_dcu0_1: dcu0grp_1 {
+ 						fsl,pins = <
+@@ -450,6 +467,15 @@
+ 				status = "disabled";
+ 			};
+ 
++			adc1: adc@400bb000 {
++				compatible = "fsl,vf610-adc";
++				reg = <0x400bb000 0x1000>;
++				interrupts = <0 54 0x04>;
++				clocks = <&clks VF610_CLK_ADC1>;
++				clock-names = "adc";
++				status = "disabled";
++			};
++
+ 			fec0: ethernet@400d0000 {
+ 				compatible = "fsl,mvf600-fec";
+ 				reg = <0x400d0000 0x1000>;
+-- 
+1.7.2.rc3
+
+
