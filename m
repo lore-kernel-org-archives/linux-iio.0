@@ -1,76 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56091 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751976Ab3KYRXH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 12:23:07 -0500
-In-Reply-To: <1385372071-5108-1-git-send-email-B38611@freescale.com>
+Received: from mail-db8lp0184.outbound.messaging.microsoft.com ([213.199.154.184]:33997
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751679Ab3KZBHY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Nov 2013 20:07:24 -0500
+From: Fugang Duan <fugang.duan@freescale.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	"sachin.kamat@linaro.org" <sachin.kamat@linaro.org>
+CC: "shawn.guo@linaro.org" <shawn.guo@linaro.org>,
+	Frank Li <Frank.Li@freescale.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"marex@denx.de" <marex@denx.de>
+Subject: RE: [PATCH v1 0/3] *** iio:adc:imx: Add Freescale Vybrid/IMX ADC
+ driver support ***
+Date: Tue, 26 Nov 2013 01:07:18 +0000
+Message-ID: <9848F2DB572E5649BA045B288BE08FBE018952DD@039-SN2MPN1-023.039d.mgd.msft.net>
 References: <1385372071-5108-1-git-send-email-B38611@freescale.com>
+ <f427f209-0557-4894-b607-5d5f6c6b82ae@email.android.com>
+In-Reply-To: <f427f209-0557-4894-b607-5d5f6c6b82ae@email.android.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v1 0/3] *** iio:adc:imx: Add Freescale Vybrid/IMX ADC driver support ***
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 25 Nov 2013 17:23:01 +0000
-To: Fugang Duan <B38611@freescale.com>, sachin.kamat@linaro.org
-CC: shawn.guo@linaro.org, b20596@freescale.com,
-	linux-iio@vger.kernel.org, marex@denx.de
-Message-ID: <f427f209-0557-4894-b607-5d5f6c6b82ae@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+RnJvbTogSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz4NCkRhdGE6IFR1ZXNkYXks
+IE5vdmVtYmVyIDI2LCAyMDEzIDE6MjMgQU0NCg0KPlRvOiBEdWFuIEZ1Z2FuZy1CMzg2MTE7IHNh
+Y2hpbi5rYW1hdEBsaW5hcm8ub3JnDQo+Q2M6IHNoYXduLmd1b0BsaW5hcm8ub3JnOyBMaSBGcmFu
+ay1CMjA1OTY7IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7DQo+bWFyZXhAZGVueC5kZQ0KPlN1
+YmplY3Q6IFJlOiBbUEFUQ0ggdjEgMC8zXSAqKiogaWlvOmFkYzppbXg6IEFkZCBGcmVlc2NhbGUg
+VnlicmlkL0lNWCBBREMNCj5kcml2ZXIgc3VwcG9ydCAqKioNCj4NCj4NCj4NCj5GdWdhbmcgRHVh
+biA8QjM4NjExQGZyZWVzY2FsZS5jb20+IHdyb3RlOg0KPj5UaGUgcGF0Y2ggc2V0IGlzIHRvIGVu
+YWJsZSBWeWJyaWQgVkY2MTAgQURDIGRyaXZlci4gSXQgaXMgdGhlIGluaXQNCj4+dmVyc2lvbi4N
+Cj4+DQo+PlBsZWFzZSBzZWUgdGhlIFJlZmVyZW5jZSBNYW51YWwgb2YgdGhlIEFEQzoNCj4+aHR0
+cDovL2NhY2hlLmZyZWVzY2FsZS5jb20vZmlsZXMvMzJiaXQvZG9jL3JlZl9tYW51YWwvVllCUklE
+Uk0ucGRmP2Zwc3ANCj4+PTEmV1RfVFlQRT0NCj4+UmVmZXJlbmNlJTIwTWFudWFscyZXVF9WRU5E
+T1I9RlJFRVNDQUxFJldUX0ZJTEVfRk9STUFUPXBkZiZXVF9BU1NFVD1Eb2MNCj4+dW1lbnRhdGlv
+bg0KPj4NCj4+RmVhdHVyZToNCj4+KiBFbmFibGUgVnlicmlkIHZmNjEwIGJvYXJkIEFEQzAgaW4g
+ZHRzIGZpbGUuDQo+PiogQURDIGRyaXZlciBvbmx5IHN1cHBvcnQgc29mdHdhcmUgdHJpZ2dlciBm
+b3IgdGhlIGluaXQgdmVyc2lvbi4NCj4+KiBBREMgY29uZmlndXJhdGlvbiBzdXBwb3J0IGR0cyBz
+ZXQuDQo+Pg0KPj5Ob3RlOiBTaW5jZSB0aGUgQURDIElQIGlzIHVzZWQgZm9yIEZyZWVzY2FsZSBW
+eWJyaWQgVkY2MTAsIGkuTVg2U0xYLA0KPj5pLk1YNyBzZXJpYWwgc2lsbGljb25zLA0KPj4gICAg
+ICB3ZSBuYW1lIHRoZSBkcml2ZXIgbmFtZSB0byAiaW14X2FkYyIuDQo+Pg0KPkl0IHdpbGwgYmUg
+YSBsaXR0bGUgd2hpbGUgYmVmb3JlIEkgaGF2ZSBhIGNoYW5jZSB0byBnaXZlIHRoaXMgYSB0aG9y
+b3VnaCByZXZpZXcNCj5idXQgaW4gdGhlIG1lYW50aW1lLi4uDQo+DQo+VGhlIG5hbWluZyBpcyBw
+cm9iYWJseSB0b28gZ2VuZXJpYy4gV2UgYWxyZWFkeSBoYXZlIGFub3RoZXIgSS5NWCBBREMgZHJp
+dmVyLg0KPk14cy1scmFkYyB3aGljaCBpcyBvbiB0aGUgSS5NWDIzIGFuZCBJLm14MjgNCj4NCj5J
+IHdvdWxkIGdvIGZvciBuYW1pbmcgaXQgYWZ0ZXIgb25lIHBhcnQgdGhlbiByZWx5IG9uIGtjb25m
+aWcgaGVscCBhbmQgZ3JlcCB0bw0KPmVuc3VyZSBwZW9wbGUgd29yayBvdXQgd2hhdCB0aGUgZHJp
+dmVyIGNvdmVycy4NCj5Db21wYXRpYmxlIHN0cmluZ3MgaW4gRFQgYWxzbyBoZWxwIG9mIGNvdXJz
+ZQ0KDQpJIGFncmVlLCBJIHdpbGwgbmFtZSBpdCBhZnRlciAidmY2MTBfYWRjIiwgYW5kIHRoZW4g
+c2VuZCBvdXQgdGhlIHBhdGNoIHNldC4NCg0KVGhhbmtzLA0KQW5keQ0KDQo+DQo+PlRlc3Q6DQo+
+PiogVnlicmlkIHZmNjEwLXR3ciBib2FyZCBjb25uZWN0IEFEQzAgU0U1IHBpbiB0byBvbmUgc2xp
+ZGluZyByaGVvc3RhdA0KPj5mb3IgQURDIHRlc3QsIHNvDQo+PiAgYWZ0ZXIga2VybmVsIHVwLCBn
+ZXQgdGhlIHZvbHRhZ2UgZnJvbSBzeXMgaW50ZXJmYWNlOg0KPj4JY2F0IC9zeXMvYnVzL2lpby9k
+ZXZpY2VzL2lpb1w6ZGV2aWNlMC9pbl92b2x0YWdlNV9yYXcNCj4+CWNhdCAvc3lzL2J1cy9paW8v
+ZGV2aWNlcy9paW9cOmRldmljZTAvaW5fdm9sdGFnZV9zY2FsZQ0KPj4NCj4+CVRoZSBjdXJyZW50
+IHZvbHRhZ2UgPSBpbl92b2x0YWdlNV9yYXcgKiBpbl92b2x0YWdlX3NjYWxlICh1VikuDQo+Pg0K
+Pj4NCj4+RnVnYW5nIER1YW4gKDMpOg0KPj4gIEFSTTogZHRzOiB2ZjYxMC10d3I6IEFkZCBBREMg
+c3VwcG9ydA0KPj4gIGlpbzphZGM6aW14OiBhZGQgRnJlZXNjYWxlIFZ5YnJpZCBib2FyZCBhZGMg
+ZHJpdmVyDQo+PiAgRG9jdW1lbnRhdGlvbjogYWRkIHRoZSBiaW5kaW5nIGZpbGUgZm9yIEZyZWVz
+Y2FsZSAoVnlicmlkL0lNWCkgQURDDQo+PiAgICBkcml2ZXINCj4+DQo+PiAuLi4vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9paW8vYWRjL3ZmNjEwLWFkYy50eHQgICAgICB8ICAgNTcgKysNCj4+IGFyY2gv
+YXJtL2Jvb3QvZHRzL3ZmNjEwLXR3ci5kdHMgICAgICAgICAgICAgICAgICAgIHwgICAxNCArDQo+
+PiBhcmNoL2FybS9ib290L2R0cy92ZjYxMC5kdHNpICAgICAgICAgICAgICAgICAgICAgICB8ICAg
+MjYgKw0KPj4gZHJpdmVycy9paW8vYWRjL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgfCAgIDEwICsNCj4+IGRyaXZlcnMvaWlvL2FkYy9NYWtlZmlsZSAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHwgICAgMSArDQo+PmRyaXZlcnMvaWlvL2FkYy9pbXhfYWRjLmMgICAgICAgICAg
+ICAgICAgICAgICAgICAgIHwgIDc0OA0KPj4rKysrKysrKysrKysrKysrKysrKw0KPj4gNiBmaWxl
+cyBjaGFuZ2VkLCA4NTYgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkgY3JlYXRlIG1vZGUg
+MTAwNjQ0DQo+PkRvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL3ZmNjEw
+LWFkYy50eHQNCj4+IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9hZGMvaW14X2FkYy5j
+DQo+DQo+LS0NCj5TZW50IGZyb20gbXkgQW5kcm9pZCBwaG9uZSB3aXRoIEstOSBNYWlsLiBQbGVh
+c2UgZXhjdXNlIG15IGJyZXZpdHkuDQo+LS0NCj5UbyB1bnN1YnNjcmliZSBmcm9tIHRoaXMgbGlz
+dDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtaWlvIiBpbiB0aGUNCj5ib2R5IG9m
+IGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJuZWwub3JnIE1vcmUgbWFqb3Jkb21vIGlu
+Zm8gYXQNCj5odHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg==
 
-
-Fugang Duan <B38611@freescale.com> wrote:
->The patch set is to enable Vybrid VF610 ADC driver. It is the init
->version.
->
->Please see the Reference Manual of the ADC:
->http://cache.freescale.com/files/32bit/doc/ref_manual/VYBRIDRM.pdf?fpsp=1&WT_TYPE=
->Reference%20Manuals&WT_VENDOR=FREESCALE&WT_FILE_FORMAT=pdf&WT_ASSET=Documentation
->
->Feature:
->* Enable Vybrid vf610 board ADC0 in dts file.
->* ADC driver only support software trigger for the init version.
->* ADC configuration support dts set.
->
->Note: Since the ADC IP is used for Freescale Vybrid VF610, i.MX6SLX,
->i.MX7 serial sillicons,
->      we name the driver name to "imx_adc".
->
-It will be a little while before I have a chance to give this a thorough review but in the meantime...
-
-The naming is probably too generic. We already have another I.MX ADC driver. Mxs-lradc which is on the I.MX23 and I.mx28
-
-I would go for naming it after one part then rely on kconfig help and grep to ensure people work out what the driver covers.
-Compatible strings in DT also help of course 
-
->Test:
->* Vybrid vf610-twr board connect ADC0 SE5 pin to one sliding rheostat
->for ADC test, so
->  after kernel up, get the voltage from sys interface:
->	cat /sys/bus/iio/devices/iio\:device0/in_voltage5_raw
->	cat /sys/bus/iio/devices/iio\:device0/in_voltage_scale
->
->	The current voltage = in_voltage5_raw * in_voltage_scale (uV).
->
->
->Fugang Duan (3):
->  ARM: dts: vf610-twr: Add ADC support
->  iio:adc:imx: add Freescale Vybrid board adc driver
->  Documentation: add the binding file for Freescale (Vybrid/IMX) ADC
->    driver
->
-> .../devicetree/bindings/iio/adc/vf610-adc.txt      |   57 ++
-> arch/arm/boot/dts/vf610-twr.dts                    |   14 +
-> arch/arm/boot/dts/vf610.dtsi                       |   26 +
-> drivers/iio/adc/Kconfig                            |   10 +
-> drivers/iio/adc/Makefile                           |    1 +
->drivers/iio/adc/imx_adc.c                          |  748
->++++++++++++++++++++
-> 6 files changed, 856 insertions(+), 0 deletions(-)
->create mode 100644
->Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> create mode 100644 drivers/iio/adc/imx_adc.c
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
