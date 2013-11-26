@@ -1,204 +1,202 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55443 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755124Ab3KWLs6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2013 06:48:58 -0500
-Message-ID: <5290A47E.5070105@kernel.org>
-Date: Sat, 23 Nov 2013 12:50:06 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "Haimovich, Yoav" <yoav.haimovich@intel.com>,
-	"Yuniverg, Michael" <michael.yuniverg@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Return-Path: <yoav.haimovich@intel.com>
+From: "Haimovich, Yoav" <yoav.haimovich@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, "Yuniverg, Michael"
+	<michael.yuniverg@intel.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
 CC: "Drubin, Daniel" <daniel.drubin@intel.com>
-Subject: Re: IIO devices flexibility
-References: <0423FED8EB79934F939F077EAF96DBD717DB65DA@HASMSX105.ger.corp.intel.com> <107c4dbf-5ad0-4a33-8307-818979ebe49f@email.android.com> <99374EB591328D43AAACEEAF87774A7E2144C41D@HASMSX103.ger.corp.intel.com>
-In-Reply-To: <99374EB591328D43AAACEEAF87774A7E2144C41D@HASMSX103.ger.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: RE: IIO devices flexibility
+Date: Tue, 26 Nov 2013 07:26:10 +0000
+Message-ID: <99374EB591328D43AAACEEAF87774A7E23344924@HASMSX103.ger.corp.intel.com>
+References: <0423FED8EB79934F939F077EAF96DBD717DB65DA@HASMSX105.ger.corp.intel.com>
+ <107c4dbf-5ad0-4a33-8307-818979ebe49f@email.android.com>
+ <99374EB591328D43AAACEEAF87774A7E2144C41D@HASMSX103.ger.corp.intel.com>
+ <5290A47E.5070105@kernel.org>
+In-Reply-To: <5290A47E.5070105@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/14/13 07:50, Haimovich, Yoav wrote:
-> Hi,
-> 
-Hi,
-
-Firstly, sorry for the slow reply!  Been an interesting couple of weeks.
-
-Anyhow,
-> The sensors we would like to add are the ones supported by Android KitKat and are found at:
-> http://source.android.com/devices/reference/sensors_8h_source.html
-The bit about virtual sensors is interesting but I guess you'll do this in userspace.
-Any application of transforms to the axes of the data should probably be done in userspace
-so I'll just ignore that.
-
-To make life easier for others who wish to join this thread, I'll list them all and give
-my opinions on them.
-
-Acceleration - Sensible choice to use SI units. (present in IIO)
-Geomagnetic field - (present in IIO)
-Orientation - Euler angles - I think, it's been a while...
-		Conversion isn't horendous from quaternions which we already
-              	have a proposal for.  If hardware spits out Euler angles, then we can certainly
-		add an appropriate interface for them.
-
-Gyroscope - (present in IIO)
-
-light - (present in IIO) There definition is rather limiting as doesn't include different
-        frequencies.  Lux is a measure of illuminance so I guess they care only about human
-        perception of light intensity. (which makes sense)
-
-presure (present in IIO) different units but I guess that isn't a problem?
-
-temp (present, but deprecated)
-
-proximity (present in IIO though I don't think we have anything yet that gives a clean
-	measurement)
-
-gravity - Not present in IIO. I haven't yet seen this implemented on a device, but easy enough
-	to add if there is hardware doing this. (I know some high end IMUs do this but even
-	then you often get a better result doing it in software)
-
-rotation vector - (proposed, but not yet present).  I've been promising to propose how to handle
-	this as a single 'measurement' as the individual elements have no meaning on their own).
-	Keep not getting around to it  :(
-
-relative humidity - (proposed and the first driver is just waiting for some device tree name
-	changes)
-
-ambient temperature - Hmm.  I wonder how best to provide the meta data to distinguish this
-	from any other temperature sensor. Otherwise, supported.
-
-magnetic-filed uncalibrated - just a different use of meta data found in sysfs.
-
-game-rotation-vector - This is just a conventional drifting gyroscope (rather than the rate
-	sensors that mems gyros are).  Again we may want metadata to make it clear that
-	some hardware is doing this in a random basis.
-
-gyroscope-uncalibrated - we don't have explicity way so separately outputing the drift estimate,
-	but would be easy enough to add (as an additional channel).
-
-signficant motion - IIO event.
-
-step detector - either an IIO event, or in userspace.
-
-step counter - interesting - would be easy to implement an event counter if this is of sufficient
-	use.  I'm guessing some hardware provides this on device.  Would become an additional
-	property of the event in question.
-
-
-
-> 
-> And also the sensors that are defined in the HID Sensor usage document:	
-> http://www.usb.org/developers/hidpage/HUTRR39b.pdf‎
-> 
-For this one some stuff is obviously not within the scope of IIO.
-
-Biometric (out of scope - or processed in userspace from an IIO device).
-Electrical : Available in IIO though we have no indunctance or resistance types yet or period
-(though that might be established from frequency.) I don't think we have any frequency measuring
-devices yet, but we do have output ones so the interface is fairly well defined.
-
-Wind direction, wind speed. These are just orientation and velocity sensors (possibly with
-explicity meta data )
-
-Light - present in IIO though might need an additional modifier for consumer infrared.
-
-Location - probably not in scope.
-
-Mechanical - likely to be userspace computed values from IIO sensor rather than directly
-	provided. Not a problem to add this if desired though.
-
-Motion - Accel, gyro covered. Speedometer not, and motion detector is likely to be an
-	IIO event on a particular device.
-
-Orientation - Compass and inclinometer covered.  Distance not yet, but easy addition when
-	first device driver is proposed.
-
-scanner - out of scope.
-
-time - partly covered, though we could definitely improve our handling of this when it is
-	a timestamp for some other data.  Direct use as rtc etc is out of scope of IIO.
-
-Custom devices.  These exist for anything that is out of scope of the parts defined by this
-spec.  THat doesn't mean they can't have a definition in IIO.  I am not really interested
-in providing a 'custom' interface.  It should always be possible to identify what is being
-measured and provide a real interface.  One stated use in the spec is to obfiscate
-data.  As per other linux userspace interfaces, we are very much against any attempt to
-pass undocumented binary streams out of the kernel to close source binaries.  Hence I'll
-ignore that usage and assume it is just for stuff that no one has thought of yet!
-
-Hence in conclusion.  If you have something that falls into the HID specs 'custom' category
-then just 'make up an interface' for it and propose it as an addition to IIO. I don't see anything
-in either of these documents (that lies within the vaguely defined scope of IIO) that will cause
-any real trouble to add support for.
-
-Looking forward to lots of 'interesting' drivers ;)
-
-Jonathan
-
-> The latter document also includes a definition of the custom sensor we would like to support.
-> 
-> Best regards,
-> Yoav Haimovich
-> 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org] 
-> Sent: Wednesday, November 06, 2013 19:27
-> To: Yuniverg, Michael; Jonathan Cameron; linux-iio@vger.kernel.org
-> Cc: Drubin, Daniel; Haimovich, Yoav
-> Subject: Re: IIO devices flexibility
-> 
-> 
-> 
-> "Yuniverg, Michael" <michael.yuniverg@intel.com> wrote:
->> Hello Jonathan, guys
->>
->> We are using iio now for 4 standard sensors and we are rather satisfied 
->> with its execution and robustness.
->> Now implementing new sensors we came across a limitation -
->>
->> --
->> static const char * const iio_chan_type_name_spec[] = {  [IIO_VOLTAGE] 
->> = "voltage",  [IIO_CURRENT] = "current",  [IIO_POWER] = "power",  
->> [IIO_ACCEL] = "accel",  [IIO_ANGL_VEL] = "anglvel",  [IIO_MAGN] = 
->> "magn",  [IIO_LIGHT] = "illuminance",  [IIO_INTENSITY] = "intensity",  
->> [IIO_PROXIMITY] = "proximity",  [IIO_TEMP] = "temp",  [IIO_INCLI] = 
->> "incli",  [IIO_ROT] = "rot",  [IIO_ANGL] = "angl",  [IIO_TIMESTAMP] = 
->> "timestamp",  [IIO_CAPACITANCE] = "capacitance",  [IIO_ALTVOLTAGE] = 
->> "altvoltage",  [IIO_CCT] = "cct",  [IIO_PRESSURE] = "pressure",
->> --
->>
->> To our understanding, that means these are only data channels we have.
->> We need however new channels and even more - custom/generic channels 
->> including some proprietary info Does that fit your vision of IIO?
-> 
-> These channel types get added whenever a new device needs one.
-> 
-> Hence feel free to propose additions to the list above along with an example device that needs it. There are a couple more under review at the moment. One of these is particularly interesting in that it presents a quaternion which will need some additional core support.
-> 
-> As for proprietary info and custom/generic channels... Could you give some examples of what you have in mind?
-> 
-> Thanks
-> 
-> Jonathan
->>
->> Thanks, Michael
->> ---------------------------------------------------------------------
->> Intel Israel (74) Limited
->>
->> This e-mail and any attachments may contain confidential material for 
->> the sole use of the intended recipient(s). Any review or distribution 
->> by others is strictly prohibited. If you are not the intended 
->> recipient, please contact the sender and delete all copies.
-> 
-> --
-> Sent from my Android phone with K-9 Mail. Please excuse my brevity.
-> ---------------------------------------------------------------------
-> Intel Israel (74) Limited
-> 
-> This e-mail and any attachments may contain confidential material for
-> the sole use of the intended recipient(s). Any review or distribution
-> by others is strictly prohibited. If you are not the intended
-> recipient, please contact the sender and delete all copies.
-> 
+SGksDQoNCk1vc3Qgb2YgdGhlIGl0ZW1zIGluIHRoZSBBbmRyb2lkIEhBTCBhcmUgaW5kZWVkIGFs
+cmVhZHkgc3VwcG9ydGVkIGluIElJTyAoaW4gc29tZSBjYXNlcyBhY2NvbW1vZGF0ZWQgd2l0aCBt
+aW5vciBjb252ZXJzaW9ucyBpbiB0aGUgSEFMIGxheWVyKSBhcyB5b3UgbWVudGlvbi4gDQoNClRo
+ZXJlIGlzIGhhcmR3YXJlKC9maXJtd2FyZSkgdGhhdCBkb2VzIGFsbCBvZiB0aGUgc3R1ZmYgaW4g
+dGhlIEFuZHJvaWQgSEFMLCBpbmNsdWRpbmcgZ3Jhdml0eSwgc3RlcCBkZXRlY3RvciwgYW5kIHN0
+ZXAgY291bnRlci4gRm9yIGV4YW1wbGUgeW91IGNhbiBmaW5kIGFsbW9zdCBhbGwgb2YgdGhlc2Ug
+aW1wbGVtZW50ZWQgaW4gdGhlIE5leHVzIDUuIFRoZSBwb2ludCBvZiBoYXZpbmcgdGhlc2UgaW4g
+aGFyZHdhcmUgYW5kIG5vdCBpbiB1c2Vyc3BhY2UgaXMgdG8gYXZvaWQga2VlcGluZyB0aGUgY29y
+ZSBwcm9jZXNzb3IgYXdha2UsIHRodXMgc2F2aW5nIHBvd2VyLg0KDQpSZWdhcmRpbmcgdGhlIHNl
+bnNvcnMgZGVmaW5lZCBpbiB0aGUgSElEIFNlbnNvciB1c2FnZSBkb2N1bWVudDoNCkRvIHlvdSBj
+b25zaWRlciBiaW9tZXRyaWMgc2Vuc29ycyBvdXQgb2Ygc2NvcGU/IFRoZXNlIGFyZSBub3QgaW1w
+bGVtZW50ZWQgaW4gc29mdHdhcmUgZHVlIHRvIHRoZSBmYWN0IHRoYXQgdGhleSBuZWVkIHRvIGFs
+c28gYmUgYXZhaWxhYmxlIGR1cmluZyBzbGVlcCBzdGF0ZSwgYW5kIHRoZXJlZm9yZSBzaG91bGQg
+bm90IGtlZXAgdGhlIGhvc3QgcHJvY2Vzc29yIGF3YWtlLg0KDQpSZWdhcmRpbmcgdGhlIGN1c3Rv
+bSBzZW5zb3IgLSB3ZSBkb24ndCBuZWVkIHRoaXMgZm9yIG9iZnVzY2F0aW5nIGRhdGEsIHdlIGFj
+dHVhbGx5IHdhbnQgdGhpcyBmb3IgYSB0cnVlICJjdXN0b20iIHNlbnNvciAtIGEgcHJvZ3JhbW1h
+YmxlIHNlbnNvci4NCk1hbnkgb2YgdGhlIHNlbnNvcnMgbGlzdGVkIGluIGJvdGggdGhlIEFuZHJv
+aWQgSEFMIGFuZCBpbiB0aGUgSElEIHVzYWdlIGRvY3VtZW50IGFyZSBhY3R1YWxseSB2aXJ0dWFs
+IGZ1c2lvbiBzZW5zb3JzIGRlcml2ZWQgZnJvbSBvdGhlciBzZW5zb3JzJyBkYXRhIHZpYSBzb21l
+IGFsZ29yaXRobS4gVGhlIHBvaW50IG9mIGhhdmluZyB0aGVzZSB2aXJ0dWFsIHNlbnNvcnMgaW1w
+bGVtZW50ZWQgaW4gaGFyZHdhcmUvZmlybXdhcmUgaXMgdG8gbWluaW1pemUgdGhlIGNvcmUgcHJv
+Y2Vzc29yIHdha2UgdGltZSBhbmQgdG8gc2F2ZSBwb3dlci4gU3VwcG9ydGluZyBhICJjdXN0b20i
+IHByb2dyYW1tYWJsZSBzZW5zb3Igd291bGQgZW5hYmxlIGFwcGxpY2F0aW9uIGRldmVsb3BlcnMg
+dG8gbG9hZCBzdWNoIGEgdmlydHVhbCBzZW5zb3IgaW50byB0aGUgaGFyZHdhcmUgb24gdGhlIGZs
+eSwgYW5kIGhhdmUgdGhhdCBzZW5zb3IgcmVhZGlseSBhdmFpbGFibGUgdG8gdGhlIGFwcGxpY2F0
+aW9uIHdpdGhvdXQgdGhlIG5lZWQgdG8gcHJvdmlkZSBhIGRyaXZlci4gDQoNCkJlc3QgcmVnYXJk
+cywNCllvYXYgSGFpbW92aWNoDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBK
+b25hdGhhbiBDYW1lcm9uIFttYWlsdG86amljMjNAa2VybmVsLm9yZ10gDQpTZW50OiBTYXR1cmRh
+eSwgTm92ZW1iZXIgMjMsIDIwMTMgMTQ6NTANClRvOiBIYWltb3ZpY2gsIFlvYXY7IFl1bml2ZXJn
+LCBNaWNoYWVsOyBsaW51eC1paW9Admdlci5rZXJuZWwub3JnDQpDYzogRHJ1YmluLCBEYW5pZWwN
+ClN1YmplY3Q6IFJlOiBJSU8gZGV2aWNlcyBmbGV4aWJpbGl0eQ0KDQpPbiAxMS8xNC8xMyAwNzo1
+MCwgSGFpbW92aWNoLCBZb2F2IHdyb3RlOg0KPiBIaSwNCj4gDQpIaSwNCg0KRmlyc3RseSwgc29y
+cnkgZm9yIHRoZSBzbG93IHJlcGx5ISAgQmVlbiBhbiBpbnRlcmVzdGluZyBjb3VwbGUgb2Ygd2Vl
+a3MuDQoNCkFueWhvdywNCj4gVGhlIHNlbnNvcnMgd2Ugd291bGQgbGlrZSB0byBhZGQgYXJlIHRo
+ZSBvbmVzIHN1cHBvcnRlZCBieSBBbmRyb2lkIEtpdEthdCBhbmQgYXJlIGZvdW5kIGF0Og0KPiBo
+dHRwOi8vc291cmNlLmFuZHJvaWQuY29tL2RldmljZXMvcmVmZXJlbmNlL3NlbnNvcnNfOGhfc291
+cmNlLmh0bWwNClRoZSBiaXQgYWJvdXQgdmlydHVhbCBzZW5zb3JzIGlzIGludGVyZXN0aW5nIGJ1
+dCBJIGd1ZXNzIHlvdSdsbCBkbyB0aGlzIGluIHVzZXJzcGFjZS4NCkFueSBhcHBsaWNhdGlvbiBv
+ZiB0cmFuc2Zvcm1zIHRvIHRoZSBheGVzIG9mIHRoZSBkYXRhIHNob3VsZCBwcm9iYWJseSBiZSBk
+b25lIGluIHVzZXJzcGFjZSBzbyBJJ2xsIGp1c3QgaWdub3JlIHRoYXQuDQoNClRvIG1ha2UgbGlm
+ZSBlYXNpZXIgZm9yIG90aGVycyB3aG8gd2lzaCB0byBqb2luIHRoaXMgdGhyZWFkLCBJJ2xsIGxp
+c3QgdGhlbSBhbGwgYW5kIGdpdmUgbXkgb3BpbmlvbnMgb24gdGhlbS4NCg0KQWNjZWxlcmF0aW9u
+IC0gU2Vuc2libGUgY2hvaWNlIHRvIHVzZSBTSSB1bml0cy4gKHByZXNlbnQgaW4gSUlPKSBHZW9t
+YWduZXRpYyBmaWVsZCAtIChwcmVzZW50IGluIElJTykgT3JpZW50YXRpb24gLSBFdWxlciBhbmds
+ZXMgLSBJIHRoaW5rLCBpdCdzIGJlZW4gYSB3aGlsZS4uLg0KCQlDb252ZXJzaW9uIGlzbid0IGhv
+cmVuZG91cyBmcm9tIHF1YXRlcm5pb25zIHdoaWNoIHdlIGFscmVhZHkNCiAgICAgICAgICAgICAg
+CWhhdmUgYSBwcm9wb3NhbCBmb3IuICBJZiBoYXJkd2FyZSBzcGl0cyBvdXQgRXVsZXIgYW5nbGVz
+LCB0aGVuIHdlIGNhbiBjZXJ0YWlubHkNCgkJYWRkIGFuIGFwcHJvcHJpYXRlIGludGVyZmFjZSBm
+b3IgdGhlbS4NCg0KR3lyb3Njb3BlIC0gKHByZXNlbnQgaW4gSUlPKQ0KDQpsaWdodCAtIChwcmVz
+ZW50IGluIElJTykgVGhlcmUgZGVmaW5pdGlvbiBpcyByYXRoZXIgbGltaXRpbmcgYXMgZG9lc24n
+dCBpbmNsdWRlIGRpZmZlcmVudA0KICAgICAgICBmcmVxdWVuY2llcy4gIEx1eCBpcyBhIG1lYXN1
+cmUgb2YgaWxsdW1pbmFuY2Ugc28gSSBndWVzcyB0aGV5IGNhcmUgb25seSBhYm91dCBodW1hbg0K
+ICAgICAgICBwZXJjZXB0aW9uIG9mIGxpZ2h0IGludGVuc2l0eS4gKHdoaWNoIG1ha2VzIHNlbnNl
+KQ0KDQpwcmVzdXJlIChwcmVzZW50IGluIElJTykgZGlmZmVyZW50IHVuaXRzIGJ1dCBJIGd1ZXNz
+IHRoYXQgaXNuJ3QgYSBwcm9ibGVtPw0KDQp0ZW1wIChwcmVzZW50LCBidXQgZGVwcmVjYXRlZCkN
+Cg0KcHJveGltaXR5IChwcmVzZW50IGluIElJTyB0aG91Z2ggSSBkb24ndCB0aGluayB3ZSBoYXZl
+IGFueXRoaW5nIHlldCB0aGF0IGdpdmVzIGEgY2xlYW4NCgltZWFzdXJlbWVudCkNCg0KZ3Jhdml0
+eSAtIE5vdCBwcmVzZW50IGluIElJTy4gSSBoYXZlbid0IHlldCBzZWVuIHRoaXMgaW1wbGVtZW50
+ZWQgb24gYSBkZXZpY2UsIGJ1dCBlYXN5IGVub3VnaA0KCXRvIGFkZCBpZiB0aGVyZSBpcyBoYXJk
+d2FyZSBkb2luZyB0aGlzLiAoSSBrbm93IHNvbWUgaGlnaCBlbmQgSU1VcyBkbyB0aGlzIGJ1dCBl
+dmVuDQoJdGhlbiB5b3Ugb2Z0ZW4gZ2V0IGEgYmV0dGVyIHJlc3VsdCBkb2luZyBpdCBpbiBzb2Z0
+d2FyZSkNCg0Kcm90YXRpb24gdmVjdG9yIC0gKHByb3Bvc2VkLCBidXQgbm90IHlldCBwcmVzZW50
+KS4gIEkndmUgYmVlbiBwcm9taXNpbmcgdG8gcHJvcG9zZSBob3cgdG8gaGFuZGxlDQoJdGhpcyBh
+cyBhIHNpbmdsZSAnbWVhc3VyZW1lbnQnIGFzIHRoZSBpbmRpdmlkdWFsIGVsZW1lbnRzIGhhdmUg
+bm8gbWVhbmluZyBvbiB0aGVpciBvd24pLg0KCUtlZXAgbm90IGdldHRpbmcgYXJvdW5kIHRvIGl0
+ICA6KA0KDQpyZWxhdGl2ZSBodW1pZGl0eSAtIChwcm9wb3NlZCBhbmQgdGhlIGZpcnN0IGRyaXZl
+ciBpcyBqdXN0IHdhaXRpbmcgZm9yIHNvbWUgZGV2aWNlIHRyZWUgbmFtZQ0KCWNoYW5nZXMpDQoN
+CmFtYmllbnQgdGVtcGVyYXR1cmUgLSBIbW0uICBJIHdvbmRlciBob3cgYmVzdCB0byBwcm92aWRl
+IHRoZSBtZXRhIGRhdGEgdG8gZGlzdGluZ3Vpc2ggdGhpcw0KCWZyb20gYW55IG90aGVyIHRlbXBl
+cmF0dXJlIHNlbnNvci4gT3RoZXJ3aXNlLCBzdXBwb3J0ZWQuDQoNCm1hZ25ldGljLWZpbGVkIHVu
+Y2FsaWJyYXRlZCAtIGp1c3QgYSBkaWZmZXJlbnQgdXNlIG9mIG1ldGEgZGF0YSBmb3VuZCBpbiBz
+eXNmcy4NCg0KZ2FtZS1yb3RhdGlvbi12ZWN0b3IgLSBUaGlzIGlzIGp1c3QgYSBjb252ZW50aW9u
+YWwgZHJpZnRpbmcgZ3lyb3Njb3BlIChyYXRoZXIgdGhhbiB0aGUgcmF0ZQ0KCXNlbnNvcnMgdGhh
+dCBtZW1zIGd5cm9zIGFyZSkuICBBZ2FpbiB3ZSBtYXkgd2FudCBtZXRhZGF0YSB0byBtYWtlIGl0
+IGNsZWFyIHRoYXQNCglzb21lIGhhcmR3YXJlIGlzIGRvaW5nIHRoaXMgaW4gYSByYW5kb20gYmFz
+aXMuDQoNCmd5cm9zY29wZS11bmNhbGlicmF0ZWQgLSB3ZSBkb24ndCBoYXZlIGV4cGxpY2l0eSB3
+YXkgc28gc2VwYXJhdGVseSBvdXRwdXRpbmcgdGhlIGRyaWZ0IGVzdGltYXRlLA0KCWJ1dCB3b3Vs
+ZCBiZSBlYXN5IGVub3VnaCB0byBhZGQgKGFzIGFuIGFkZGl0aW9uYWwgY2hhbm5lbCkuDQoNCnNp
+Z25maWNhbnQgbW90aW9uIC0gSUlPIGV2ZW50Lg0KDQpzdGVwIGRldGVjdG9yIC0gZWl0aGVyIGFu
+IElJTyBldmVudCwgb3IgaW4gdXNlcnNwYWNlLg0KDQpzdGVwIGNvdW50ZXIgLSBpbnRlcmVzdGlu
+ZyAtIHdvdWxkIGJlIGVhc3kgdG8gaW1wbGVtZW50IGFuIGV2ZW50IGNvdW50ZXIgaWYgdGhpcyBp
+cyBvZiBzdWZmaWNpZW50DQoJdXNlLiAgSSdtIGd1ZXNzaW5nIHNvbWUgaGFyZHdhcmUgcHJvdmlk
+ZXMgdGhpcyBvbiBkZXZpY2UuICBXb3VsZCBiZWNvbWUgYW4gYWRkaXRpb25hbA0KCXByb3BlcnR5
+IG9mIHRoZSBldmVudCBpbiBxdWVzdGlvbi4NCg0KDQoNCj4gDQo+IEFuZCBhbHNvIHRoZSBzZW5z
+b3JzIHRoYXQgYXJlIGRlZmluZWQgaW4gdGhlIEhJRCBTZW5zb3IgdXNhZ2UgZG9jdW1lbnQ6CQ0K
+PiBodHRwOi8vd3d3LnVzYi5vcmcvZGV2ZWxvcGVycy9oaWRwYWdlL0hVVFJSMzliLnBkZuKAjg0K
+PiANCkZvciB0aGlzIG9uZSBzb21lIHN0dWZmIGlzIG9idmlvdXNseSBub3Qgd2l0aGluIHRoZSBz
+Y29wZSBvZiBJSU8uDQoNCkJpb21ldHJpYyAob3V0IG9mIHNjb3BlIC0gb3IgcHJvY2Vzc2VkIGlu
+IHVzZXJzcGFjZSBmcm9tIGFuIElJTyBkZXZpY2UpLg0KRWxlY3RyaWNhbCA6IEF2YWlsYWJsZSBp
+biBJSU8gdGhvdWdoIHdlIGhhdmUgbm8gaW5kdW5jdGFuY2Ugb3IgcmVzaXN0YW5jZSB0eXBlcyB5
+ZXQgb3IgcGVyaW9kICh0aG91Z2ggdGhhdCBtaWdodCBiZSBlc3RhYmxpc2hlZCBmcm9tIGZyZXF1
+ZW5jeS4pIEkgZG9uJ3QgdGhpbmsgd2UgaGF2ZSBhbnkgZnJlcXVlbmN5IG1lYXN1cmluZyBkZXZp
+Y2VzIHlldCwgYnV0IHdlIGRvIGhhdmUgb3V0cHV0IG9uZXMgc28gdGhlIGludGVyZmFjZSBpcyBm
+YWlybHkgd2VsbCBkZWZpbmVkLg0KDQpXaW5kIGRpcmVjdGlvbiwgd2luZCBzcGVlZC4gVGhlc2Ug
+YXJlIGp1c3Qgb3JpZW50YXRpb24gYW5kIHZlbG9jaXR5IHNlbnNvcnMgKHBvc3NpYmx5IHdpdGgg
+ZXhwbGljaXR5IG1ldGEgZGF0YSApDQoNCkxpZ2h0IC0gcHJlc2VudCBpbiBJSU8gdGhvdWdoIG1p
+Z2h0IG5lZWQgYW4gYWRkaXRpb25hbCBtb2RpZmllciBmb3IgY29uc3VtZXIgaW5mcmFyZWQuDQoN
+CkxvY2F0aW9uIC0gcHJvYmFibHkgbm90IGluIHNjb3BlLg0KDQpNZWNoYW5pY2FsIC0gbGlrZWx5
+IHRvIGJlIHVzZXJzcGFjZSBjb21wdXRlZCB2YWx1ZXMgZnJvbSBJSU8gc2Vuc29yIHJhdGhlciB0
+aGFuIGRpcmVjdGx5DQoJcHJvdmlkZWQuIE5vdCBhIHByb2JsZW0gdG8gYWRkIHRoaXMgaWYgZGVz
+aXJlZCB0aG91Z2guDQoNCk1vdGlvbiAtIEFjY2VsLCBneXJvIGNvdmVyZWQuIFNwZWVkb21ldGVy
+IG5vdCwgYW5kIG1vdGlvbiBkZXRlY3RvciBpcyBsaWtlbHkgdG8gYmUgYW4NCglJSU8gZXZlbnQg
+b24gYSBwYXJ0aWN1bGFyIGRldmljZS4NCg0KT3JpZW50YXRpb24gLSBDb21wYXNzIGFuZCBpbmNs
+aW5vbWV0ZXIgY292ZXJlZC4gIERpc3RhbmNlIG5vdCB5ZXQsIGJ1dCBlYXN5IGFkZGl0aW9uIHdo
+ZW4NCglmaXJzdCBkZXZpY2UgZHJpdmVyIGlzIHByb3Bvc2VkLg0KDQpzY2FubmVyIC0gb3V0IG9m
+IHNjb3BlLg0KDQp0aW1lIC0gcGFydGx5IGNvdmVyZWQsIHRob3VnaCB3ZSBjb3VsZCBkZWZpbml0
+ZWx5IGltcHJvdmUgb3VyIGhhbmRsaW5nIG9mIHRoaXMgd2hlbiBpdCBpcw0KCWEgdGltZXN0YW1w
+IGZvciBzb21lIG90aGVyIGRhdGEuICBEaXJlY3QgdXNlIGFzIHJ0YyBldGMgaXMgb3V0IG9mIHNj
+b3BlIG9mIElJTy4NCg0KQ3VzdG9tIGRldmljZXMuICBUaGVzZSBleGlzdCBmb3IgYW55dGhpbmcg
+dGhhdCBpcyBvdXQgb2Ygc2NvcGUgb2YgdGhlIHBhcnRzIGRlZmluZWQgYnkgdGhpcyBzcGVjLiAg
+VEhhdCBkb2Vzbid0IG1lYW4gdGhleSBjYW4ndCBoYXZlIGEgZGVmaW5pdGlvbiBpbiBJSU8uICBJ
+IGFtIG5vdCByZWFsbHkgaW50ZXJlc3RlZCBpbiBwcm92aWRpbmcgYSAnY3VzdG9tJyBpbnRlcmZh
+Y2UuICBJdCBzaG91bGQgYWx3YXlzIGJlIHBvc3NpYmxlIHRvIGlkZW50aWZ5IHdoYXQgaXMgYmVp
+bmcgbWVhc3VyZWQgYW5kIHByb3ZpZGUgYSByZWFsIGludGVyZmFjZS4gIE9uZSBzdGF0ZWQgdXNl
+IGluIHRoZSBzcGVjIGlzIHRvIG9iZmlzY2F0ZSBkYXRhLiAgQXMgcGVyIG90aGVyIGxpbnV4IHVz
+ZXJzcGFjZSBpbnRlcmZhY2VzLCB3ZSBhcmUgdmVyeSBtdWNoIGFnYWluc3QgYW55IGF0dGVtcHQg
+dG8gcGFzcyB1bmRvY3VtZW50ZWQgYmluYXJ5IHN0cmVhbXMgb3V0IG9mIHRoZSBrZXJuZWwgdG8g
+Y2xvc2Ugc291cmNlIGJpbmFyaWVzLiAgSGVuY2UgSSdsbCBpZ25vcmUgdGhhdCB1c2FnZSBhbmQg
+YXNzdW1lIGl0IGlzIGp1c3QgZm9yIHN0dWZmIHRoYXQgbm8gb25lIGhhcyB0aG91Z2h0IG9mIHll
+dCENCg0KSGVuY2UgaW4gY29uY2x1c2lvbi4gIElmIHlvdSBoYXZlIHNvbWV0aGluZyB0aGF0IGZh
+bGxzIGludG8gdGhlIEhJRCBzcGVjcyAnY3VzdG9tJyBjYXRlZ29yeSB0aGVuIGp1c3QgJ21ha2Ug
+dXAgYW4gaW50ZXJmYWNlJyBmb3IgaXQgYW5kIHByb3Bvc2UgaXQgYXMgYW4gYWRkaXRpb24gdG8g
+SUlPLiBJIGRvbid0IHNlZSBhbnl0aGluZyBpbiBlaXRoZXIgb2YgdGhlc2UgZG9jdW1lbnRzICh0
+aGF0IGxpZXMgd2l0aGluIHRoZSB2YWd1ZWx5IGRlZmluZWQgc2NvcGUgb2YgSUlPKSB0aGF0IHdp
+bGwgY2F1c2UgYW55IHJlYWwgdHJvdWJsZSB0byBhZGQgc3VwcG9ydCBmb3IuDQoNCkxvb2tpbmcg
+Zm9yd2FyZCB0byBsb3RzIG9mICdpbnRlcmVzdGluZycgZHJpdmVycyA7KQ0KDQpKb25hdGhhbg0K
+DQo+IFRoZSBsYXR0ZXIgZG9jdW1lbnQgYWxzbyBpbmNsdWRlcyBhIGRlZmluaXRpb24gb2YgdGhl
+IGN1c3RvbSBzZW5zb3Igd2Ugd291bGQgbGlrZSB0byBzdXBwb3J0Lg0KPiANCj4gQmVzdCByZWdh
+cmRzLA0KPiBZb2F2IEhhaW1vdmljaA0KPiANCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+Cj4gRnJvbTogSm9uYXRoYW4gQ2FtZXJvbiBbbWFpbHRvOmppYzIzQGtlcm5lbC5vcmddDQo+IFNl
+bnQ6IFdlZG5lc2RheSwgTm92ZW1iZXIgMDYsIDIwMTMgMTk6MjcNCj4gVG86IFl1bml2ZXJnLCBN
+aWNoYWVsOyBKb25hdGhhbiBDYW1lcm9uOyBsaW51eC1paW9Admdlci5rZXJuZWwub3JnDQo+IENj
+OiBEcnViaW4sIERhbmllbDsgSGFpbW92aWNoLCBZb2F2DQo+IFN1YmplY3Q6IFJlOiBJSU8gZGV2
+aWNlcyBmbGV4aWJpbGl0eQ0KPiANCj4gDQo+IA0KPiAiWXVuaXZlcmcsIE1pY2hhZWwiIDxtaWNo
+YWVsLnl1bml2ZXJnQGludGVsLmNvbT4gd3JvdGU6DQo+PiBIZWxsbyBKb25hdGhhbiwgZ3V5cw0K
+Pj4NCj4+IFdlIGFyZSB1c2luZyBpaW8gbm93IGZvciA0IHN0YW5kYXJkIHNlbnNvcnMgYW5kIHdl
+IGFyZSByYXRoZXIgDQo+PiBzYXRpc2ZpZWQgd2l0aCBpdHMgZXhlY3V0aW9uIGFuZCByb2J1c3Ru
+ZXNzLg0KPj4gTm93IGltcGxlbWVudGluZyBuZXcgc2Vuc29ycyB3ZSBjYW1lIGFjcm9zcyBhIGxp
+bWl0YXRpb24gLQ0KPj4NCj4+IC0tDQo+PiBzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0IGlpb19j
+aGFuX3R5cGVfbmFtZV9zcGVjW10gPSB7ICANCj4+IFtJSU9fVk9MVEFHRV0gPSAidm9sdGFnZSIs
+ICBbSUlPX0NVUlJFTlRdID0gImN1cnJlbnQiLCAgW0lJT19QT1dFUl0gPSANCj4+ICJwb3dlciIs
+IFtJSU9fQUNDRUxdID0gImFjY2VsIiwgIFtJSU9fQU5HTF9WRUxdID0gImFuZ2x2ZWwiLCAgDQo+
+PiBbSUlPX01BR05dID0gIm1hZ24iLCAgW0lJT19MSUdIVF0gPSAiaWxsdW1pbmFuY2UiLCAgW0lJ
+T19JTlRFTlNJVFldID0gDQo+PiAiaW50ZW5zaXR5IiwgW0lJT19QUk9YSU1JVFldID0gInByb3hp
+bWl0eSIsICBbSUlPX1RFTVBdID0gInRlbXAiLCAgDQo+PiBbSUlPX0lOQ0xJXSA9ICJpbmNsaSIs
+ICBbSUlPX1JPVF0gPSAicm90IiwgIFtJSU9fQU5HTF0gPSAiYW5nbCIsICANCj4+IFtJSU9fVElN
+RVNUQU1QXSA9ICJ0aW1lc3RhbXAiLCAgW0lJT19DQVBBQ0lUQU5DRV0gPSAiY2FwYWNpdGFuY2Ui
+LCAgDQo+PiBbSUlPX0FMVFZPTFRBR0VdID0gImFsdHZvbHRhZ2UiLCAgW0lJT19DQ1RdID0gImNj
+dCIsICBbSUlPX1BSRVNTVVJFXSANCj4+ID0gInByZXNzdXJlIiwNCj4+IC0tDQo+Pg0KPj4gVG8g
+b3VyIHVuZGVyc3RhbmRpbmcsIHRoYXQgbWVhbnMgdGhlc2UgYXJlIG9ubHkgZGF0YSBjaGFubmVs
+cyB3ZSBoYXZlLg0KPj4gV2UgbmVlZCBob3dldmVyIG5ldyBjaGFubmVscyBhbmQgZXZlbiBtb3Jl
+IC0gY3VzdG9tL2dlbmVyaWMgY2hhbm5lbHMgDQo+PiBpbmNsdWRpbmcgc29tZSBwcm9wcmlldGFy
+eSBpbmZvIERvZXMgdGhhdCBmaXQgeW91ciB2aXNpb24gb2YgSUlPPw0KPiANCj4gVGhlc2UgY2hh
+bm5lbCB0eXBlcyBnZXQgYWRkZWQgd2hlbmV2ZXIgYSBuZXcgZGV2aWNlIG5lZWRzIG9uZS4NCj4g
+DQo+IEhlbmNlIGZlZWwgZnJlZSB0byBwcm9wb3NlIGFkZGl0aW9ucyB0byB0aGUgbGlzdCBhYm92
+ZSBhbG9uZyB3aXRoIGFuIGV4YW1wbGUgZGV2aWNlIHRoYXQgbmVlZHMgaXQuIFRoZXJlIGFyZSBh
+IGNvdXBsZSBtb3JlIHVuZGVyIHJldmlldyBhdCB0aGUgbW9tZW50LiBPbmUgb2YgdGhlc2UgaXMg
+cGFydGljdWxhcmx5IGludGVyZXN0aW5nIGluIHRoYXQgaXQgcHJlc2VudHMgYSBxdWF0ZXJuaW9u
+IHdoaWNoIHdpbGwgbmVlZCBzb21lIGFkZGl0aW9uYWwgY29yZSBzdXBwb3J0Lg0KPiANCj4gQXMg
+Zm9yIHByb3ByaWV0YXJ5IGluZm8gYW5kIGN1c3RvbS9nZW5lcmljIGNoYW5uZWxzLi4uIENvdWxk
+IHlvdSBnaXZlIHNvbWUgZXhhbXBsZXMgb2Ygd2hhdCB5b3UgaGF2ZSBpbiBtaW5kPw0KPiANCj4g
+VGhhbmtzDQo+IA0KPiBKb25hdGhhbg0KPj4NCj4+IFRoYW5rcywgTWljaGFlbA0KPj4gLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tDQo+PiBJbnRlbCBJc3JhZWwgKDc0KSBMaW1pdGVkDQo+Pg0KPj4gVGhpcyBlLW1haWwg
+YW5kIGFueSBhdHRhY2htZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9y
+IA0KPj4gdGhlIHNvbGUgdXNlIG9mIHRoZSBpbnRlbmRlZCByZWNpcGllbnQocykuIEFueSByZXZp
+ZXcgb3IgZGlzdHJpYnV0aW9uIA0KPj4gYnkgb3RoZXJzIGlzIHN0cmljdGx5IHByb2hpYml0ZWQu
+IElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCANCj4+IHJlY2lwaWVudCwgcGxlYXNlIGNvbnRh
+Y3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuDQo+IA0KPiAtLQ0KPiBTZW50IGZy
+b20gbXkgQW5kcm9pZCBwaG9uZSB3aXRoIEstOSBNYWlsLiBQbGVhc2UgZXhjdXNlIG15IGJyZXZp
+dHkuDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiBJbnRlbCBJc3JhZWwgKDc0KSBMaW1pdGVkDQo+IA0KPiBU
+aGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1heSBjb250YWluIGNvbmZpZGVudGlhbCBt
+YXRlcmlhbCBmb3IgDQo+IHRoZSBzb2xlIHVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMp
+LiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbiANCj4gYnkgb3RoZXJzIGlzIHN0cmljdGx5IHBy
+b2hpYml0ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCANCj4gcmVjaXBpZW50LCBwbGVh
+c2UgY29udGFjdCB0aGUgc2VuZGVyIGFuZCBkZWxldGUgYWxsIGNvcGllcy4NCj4gDQotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0KSW50ZWwgSXNyYWVsICg3NCkgTGltaXRlZAoKVGhpcyBlLW1haWwgYW5kIGFueSBhdHRh
+Y2htZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgbWF0ZXJpYWwgZm9yCnRoZSBzb2xlIHVz
+ZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBBbnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlv
+bgpieSBvdGhlcnMgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGFyZSBub3QgdGhlIGlu
+dGVuZGVkCnJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3QgdGhlIHNlbmRlciBhbmQgZGVsZXRlIGFs
+bCBjb3BpZXMuCg==
