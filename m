@@ -1,208 +1,166 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53777 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751012Ab3K0ISD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Nov 2013 03:18:03 -0500
-In-Reply-To: <9848F2DB572E5649BA045B288BE08FBE01898D6F@039-SN2MPN1-023.039d.mgd.msft.net>
-References: <1385463394-11157-1-git-send-email-B38611@freescale.com> <1385463394-11157-4-git-send-email-B38611@freescale.com> <20131126140926.GA5402@e106331-lin.cambridge.arm.com> <9848F2DB572E5649BA045B288BE08FBE01898D6F@039-SN2MPN1-023.039d.mgd.msft.net>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: RE: [PATCH v3 3/3] Documentation: add the binding file for Freescale vf610 ADC driver
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 27 Nov 2013 08:09:35 +0000
-To: Fugang Duan <fugang.duan@freescale.com>,
-	Mark Rutland <mark.rutland@arm.com>
+Return-Path: <fugang.duan@freescale.com>
+From: Fugang Duan <fugang.duan@freescale.com>
+To: Jonathan Cameron <jic23@kernel.org>, Mark Rutland <mark.rutland@arm.com>
 CC: "sachin.kamat@linaro.org" <sachin.kamat@linaro.org>,
 	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"shawn.guo@linaro.org" <shawn.guo@linaro.org>,
-	Frank Li <Frank.Li@freescale.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <56212a87-d3e7-4ef7-8198-0cb059b98979@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	"shawn.guo@linaro.org" <shawn.guo@linaro.org>, Frank Li
+	<Frank.Li@freescale.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: RE: [PATCH v3 3/3] Documentation: add the binding file for
+ Freescale vf610 ADC driver
+Date: Wed, 27 Nov 2013 08:55:05 +0000
+Message-ID: <9848F2DB572E5649BA045B288BE08FBE018991DC@039-SN2MPN1-023.039d.mgd.msft.net>
+References: <1385463394-11157-1-git-send-email-B38611@freescale.com>
+ <1385463394-11157-4-git-send-email-B38611@freescale.com>
+ <20131126140926.GA5402@e106331-lin.cambridge.arm.com>
+ <9848F2DB572E5649BA045B288BE08FBE01898D6F@039-SN2MPN1-023.039d.mgd.msft.net>
+ <56212a87-d3e7-4ef7-8198-0cb059b98979@email.android.com>
+In-Reply-To: <56212a87-d3e7-4ef7-8198-0cb059b98979@email.android.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-
-
-Fugang Duan <fugang.duan@freescale.com> wrote:
->From: Mark Rutland [mailto:mark.rutland@arm.com]
->Data: Tuesday, November 26, 2013 10:09 PM
->
->>To: Duan Fugang-B38611
->>Cc: jic23@kernel.org; sachin.kamat@linaro.org;
->devicetree@vger.kernel.org;
->>shawn.guo@linaro.org; Li Frank-B20596; linux-iio@vger.kernel.org
->>Subject: Re: [PATCH v3 3/3] Documentation: add the binding file for
->Freescale
->>vf610 ADC driver
->>
->>On Tue, Nov 26, 2013 at 10:56:34AM +0000, Fugang Duan wrote:
->>> The patch adds the binding file for Freescale vf610 ADC driver.
->>>
->>> Signed-off-by: Fugang Duan <B38611@freescale.com>
->>> ---
->>>  .../devicetree/bindings/iio/adc/vf610-adc.txt      |   57
->>++++++++++++++++++++
->>>  1 files changed, 57 insertions(+), 0 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->>> b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->>> new file mode 100644
->>> index 0000000..4101516
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->>> @@ -0,0 +1,57 @@
->>> +Freescale vf610 Analog to Digital Converter bindings
->>> +
->>> +The devicetree bindings are for the new ADC driver written for
->>> +vf610/i.MX6slx and upward SoCs from Freescale.
->>> +
->>> +Required properties:
->>> +- compatible: Should be "fsl,vf610-adc"
->>
->>s/be/contain/
->>
->>> +- reg: Offset and length of the register set for the device
->>> +- interrupts: Should contain the interrupt for the device
->>> +- clocks: The clocks needed by the ADC controller
->>
->>How many? Which ones?
->>
->>> +- clock-names: the name of the clocks
->>
->>Either define the set of names, or don't use clock-names. It's useless
->if it
->>doesn't tell you anything.
->>
->>> +
->>> +Optional properties:
->>> +- fsl,adc-io-pinctl: Enable field for the I/O port control of MCU
->pins used
->>as analog inputs.
->>> +- fsl,adc-vref: ADC refrence voltage value, unit is uV.
->>
->>Can you not query the regulator to figure this out?
->
->This is optional, some board design have no fixed regulator, just
->supply fixed voltage from MCU digital power which
->Cannot handled by the module.
-Fixed regulators are used when things either supplied by an actual fixed reg or when
- directly connected to another supply. It does not have to correspond to a bit of real
- hardware though that MCU digital power is coming from somewhere!
-
-Hence this definitely wants to be a regulator 
->
->>
->>> +- fsl,adc-clk-div: Current clock divider value, such as 1,2,4,8,16
->and so on.
->>
->>Could you elaborate on this? What's it used for and why is it needed?
->
->Exp: ADC clock source is ipg bus clock, the clk divider can control the
->ADC sample speed while other setting don't change:
->	The sample speed that clock divider is equal to 1 is twice  than the
->divider is equal to 2.
->
->Anyway, it can control sample speed by user. 
-If left in device tree then this might be best implemented as a very simple clock.
-I would prefer it to be controlled from user space as sampling_frequency.
->
->>
->>> +- fsl,adc-res: ADC conversion mode selection, such as 8 for 8-bit,
->10 for
->>10-bit, 12 for 12-bit mode.
->>
->>This sounds like something that could be changed at runtime. Why does
->this need
->>to be configured in the DT?
->>
->>> +- fsl,adc-sam-time: ADC sample time duration, number of ADC clocks,
->>> +such as 2, 4, 6, 8, 12, 16, 20, 24
->>
->>Likewise.
->>
->>Please don't poinltessly abbreviate, "sample" is much better than
->"sam"
->>here...
->>
->>> +- fsl,adc-aver-sam-sel: Determines how many ADC conversions will be
->averaged
->>to create the ADC average result.
->>> +			The Optional value is 4, 8, 16, 32.
->>
->>Likewise.
->
->
->For above ADC configuration, ADC conversion mode, sample time duration,
->hardware average sample selection, and so on.
->All of them can changed at runtime. The only method is to introduce the
->ioctl interface for user to change them at runtime.
->How about you think ?  
-No it is not. Like all similar controls these
-Should be via sysfs attributes created via
-The standard channel structures in IIO.
-Sample duration might be integration_time
- or sampling_frequency depending on its exact semantics. Averaging is a form of low pass filter and should be specified as such.
-
-If it is not already in the abi then propose something new.
-
-The only one here that I can see an issue with doing that way is the resolution. So far it hasn't actually made sense to make this controllable..
-Couple of questions on that.
-1. What effect on speed of sampling does changing this have? Note that we probably do not care about this if using sysfs reading.
-2. What other disadvantages are there to always running in 12 bit mode?
-
-I have no problem with adding write support for the type of buffer elements though it would require some IIO core infrastructure.
-However I do want a well described reason to bother with the added complexity.
-
->
->>
->>> +- fsl,adc-hw-aver-en: Bool type to decide enable hardware average
->function.
->>
->>When would you wnat this and when wouldn't you?
->>
->>Similarly, "averages" is far clearer than "aver".
->
->Ok, I see. Thanks.
->>
->>> +- fsl,adc-low-power-mode: Bool type to decide enable ADC low power
->mode.
->>
->>Similarly?
-This one is interesting. What effects does it have in this device? Sometimes it is a
- sampling frequency restriction... 
->>
->>> +- fsl,adc-high-speed-conv: Bool type to decide enable ADC high
->speed mode.
->>
->>Similarly?
->>
->>> +- vref: The regulator to support ADC refrence voltage.
->>
->>s/vref/vref-supply/
->>
->>Thanks,
->>Mark.
->
->Thanks for your review.
->Summary, there have many comments why don't let some ADC configuration
->change at runtime.
->The driver still don't add ioctl interface for user to configurate the
->ADC setting. So the setting are got from DT.
->
->Do you have one good method to change the configuration at runtime ?
-See above :)
-
-In short...Add relevant bits to info_mask_* in all the iio_Chan_spec structures then put the
- relevant handling in the read_raw and write_raw iio_info callbacks.
->
->Thanks,
->Andy
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+RnJvbTogSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz4NCkRhdGE6IFdlZG5lc2Rh
+eSwgTm92ZW1iZXIgMjcsIDIwMTMgNDoxMCBQTQ0KDQo+VG86IER1YW4gRnVnYW5nLUIzODYxMTsg
+TWFyayBSdXRsYW5kDQo+Q2M6IHNhY2hpbi5rYW1hdEBsaW5hcm8ub3JnOyBkZXZpY2V0cmVlQHZn
+ZXIua2VybmVsLm9yZzsgc2hhd24uZ3VvQGxpbmFyby5vcmc7DQo+TGkgRnJhbmstQjIwNTk2OyBs
+aW51eC1paW9Admdlci5rZXJuZWwub3JnDQo+U3ViamVjdDogUkU6IFtQQVRDSCB2MyAzLzNdIERv
+Y3VtZW50YXRpb246IGFkZCB0aGUgYmluZGluZyBmaWxlIGZvciBGcmVlc2NhbGUNCj52ZjYxMCBB
+REMgZHJpdmVyDQo+DQo+DQo+DQo+RnVnYW5nIER1YW4gPGZ1Z2FuZy5kdWFuQGZyZWVzY2FsZS5j
+b20+IHdyb3RlOg0KPj5Gcm9tOiBNYXJrIFJ1dGxhbmQgW21haWx0bzptYXJrLnJ1dGxhbmRAYXJt
+LmNvbV0NCj4+RGF0YTogVHVlc2RheSwgTm92ZW1iZXIgMjYsIDIwMTMgMTA6MDkgUE0NCj4+DQo+
+Pj5UbzogRHVhbiBGdWdhbmctQjM4NjExDQo+Pj5DYzogamljMjNAa2VybmVsLm9yZzsgc2FjaGlu
+LmthbWF0QGxpbmFyby5vcmc7DQo+PmRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOw0KPj4+c2hh
+d24uZ3VvQGxpbmFyby5vcmc7IExpIEZyYW5rLUIyMDU5NjsgbGludXgtaWlvQHZnZXIua2VybmVs
+Lm9yZw0KPj4+U3ViamVjdDogUmU6IFtQQVRDSCB2MyAzLzNdIERvY3VtZW50YXRpb246IGFkZCB0
+aGUgYmluZGluZyBmaWxlIGZvcg0KPj5GcmVlc2NhbGUNCj4+PnZmNjEwIEFEQyBkcml2ZXINCj4+
+Pg0KPj4+T24gVHVlLCBOb3YgMjYsIDIwMTMgYXQgMTA6NTY6MzRBTSArMDAwMCwgRnVnYW5nIER1
+YW4gd3JvdGU6DQo+Pj4+IFRoZSBwYXRjaCBhZGRzIHRoZSBiaW5kaW5nIGZpbGUgZm9yIEZyZWVz
+Y2FsZSB2ZjYxMCBBREMgZHJpdmVyLg0KPj4+Pg0KPj4+PiBTaWduZWQtb2ZmLWJ5OiBGdWdhbmcg
+RHVhbiA8QjM4NjExQGZyZWVzY2FsZS5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgLi4uL2RldmljZXRy
+ZWUvYmluZGluZ3MvaWlvL2FkYy92ZjYxMC1hZGMudHh0ICAgICAgfCAgIDU3DQo+Pj4rKysrKysr
+KysrKysrKysrKysrKw0KPj4+PiAgMSBmaWxlcyBjaGFuZ2VkLCA1NyBpbnNlcnRpb25zKCspLCAw
+IGRlbGV0aW9ucygtKQ0KPj4+Pg0KPj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZp
+Y2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvdmY2MTAtYWRjLnR4dA0KPj4+PiBiL0RvY3VtZW50YXRp
+b24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL3ZmNjEwLWFkYy50eHQNCj4+Pj4gbmV3IGZp
+bGUgbW9kZSAxMDA2NDQNCj4+Pj4gaW5kZXggMDAwMDAwMC4uNDEwMTUxNg0KPj4+PiAtLS0gL2Rl
+di9udWxsDQo+Pj4+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8v
+YWRjL3ZmNjEwLWFkYy50eHQNCj4+Pj4gQEAgLTAsMCArMSw1NyBAQA0KPj4+PiArRnJlZXNjYWxl
+IHZmNjEwIEFuYWxvZyB0byBEaWdpdGFsIENvbnZlcnRlciBiaW5kaW5ncw0KPj4+PiArDQo+Pj4+
+ICtUaGUgZGV2aWNldHJlZSBiaW5kaW5ncyBhcmUgZm9yIHRoZSBuZXcgQURDIGRyaXZlciB3cml0
+dGVuIGZvcg0KPj4+PiArdmY2MTAvaS5NWDZzbHggYW5kIHVwd2FyZCBTb0NzIGZyb20gRnJlZXNj
+YWxlLg0KPj4+PiArDQo+Pj4+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPj4+PiArLSBjb21wYXRp
+YmxlOiBTaG91bGQgYmUgImZzbCx2ZjYxMC1hZGMiDQo+Pj4NCj4+PnMvYmUvY29udGFpbi8NCj4+
+Pg0KPj4+PiArLSByZWc6IE9mZnNldCBhbmQgbGVuZ3RoIG9mIHRoZSByZWdpc3RlciBzZXQgZm9y
+IHRoZSBkZXZpY2UNCj4+Pj4gKy0gaW50ZXJydXB0czogU2hvdWxkIGNvbnRhaW4gdGhlIGludGVy
+cnVwdCBmb3IgdGhlIGRldmljZQ0KPj4+PiArLSBjbG9ja3M6IFRoZSBjbG9ja3MgbmVlZGVkIGJ5
+IHRoZSBBREMgY29udHJvbGxlcg0KPj4+DQo+Pj5Ib3cgbWFueT8gV2hpY2ggb25lcz8NCj4+Pg0K
+Pj4+PiArLSBjbG9jay1uYW1lczogdGhlIG5hbWUgb2YgdGhlIGNsb2Nrcw0KPj4+DQo+Pj5FaXRo
+ZXIgZGVmaW5lIHRoZSBzZXQgb2YgbmFtZXMsIG9yIGRvbid0IHVzZSBjbG9jay1uYW1lcy4gSXQn
+cyB1c2VsZXNzDQo+PmlmIGl0DQo+Pj5kb2Vzbid0IHRlbGwgeW91IGFueXRoaW5nLg0KPj4+DQo+
+Pj4+ICsNCj4+Pj4gK09wdGlvbmFsIHByb3BlcnRpZXM6DQo+Pj4+ICstIGZzbCxhZGMtaW8tcGlu
+Y3RsOiBFbmFibGUgZmllbGQgZm9yIHRoZSBJL08gcG9ydCBjb250cm9sIG9mIE1DVQ0KPj5waW5z
+IHVzZWQNCj4+PmFzIGFuYWxvZyBpbnB1dHMuDQo+Pj4+ICstIGZzbCxhZGMtdnJlZjogQURDIHJl
+ZnJlbmNlIHZvbHRhZ2UgdmFsdWUsIHVuaXQgaXMgdVYuDQo+Pj4NCj4+PkNhbiB5b3Ugbm90IHF1
+ZXJ5IHRoZSByZWd1bGF0b3IgdG8gZmlndXJlIHRoaXMgb3V0Pw0KPj4NCj4+VGhpcyBpcyBvcHRp
+b25hbCwgc29tZSBib2FyZCBkZXNpZ24gaGF2ZSBubyBmaXhlZCByZWd1bGF0b3IsIGp1c3QNCj4+
+c3VwcGx5IGZpeGVkIHZvbHRhZ2UgZnJvbSBNQ1UgZGlnaXRhbCBwb3dlciB3aGljaCBDYW5ub3Qg
+aGFuZGxlZCBieSB0aGUNCj4+bW9kdWxlLg0KPkZpeGVkIHJlZ3VsYXRvcnMgYXJlIHVzZWQgd2hl
+biB0aGluZ3MgZWl0aGVyIHN1cHBsaWVkIGJ5IGFuIGFjdHVhbCBmaXhlZCByZWcgb3INCj53aGVu
+ICBkaXJlY3RseSBjb25uZWN0ZWQgdG8gYW5vdGhlciBzdXBwbHkuIEl0IGRvZXMgbm90IGhhdmUg
+dG8gY29ycmVzcG9uZCB0byBhDQo+Yml0IG9mIHJlYWwgIGhhcmR3YXJlIHRob3VnaCB0aGF0IE1D
+VSBkaWdpdGFsIHBvd2VyIGlzIGNvbWluZyBmcm9tIHNvbWV3aGVyZSENCj4NCj5IZW5jZSB0aGlz
+IGRlZmluaXRlbHkgd2FudHMgdG8gYmUgYSByZWd1bGF0b3INCg0KR29vZCBzdWdnZXN0aW9uLCB0
+aGFua3MgIQ0KDQo+Pg0KPj4+DQo+Pj4+ICstIGZzbCxhZGMtY2xrLWRpdjogQ3VycmVudCBjbG9j
+ayBkaXZpZGVyIHZhbHVlLCBzdWNoIGFzIDEsMiw0LDgsMTYNCj4+YW5kIHNvIG9uLg0KPj4+DQo+
+Pj5Db3VsZCB5b3UgZWxhYm9yYXRlIG9uIHRoaXM/IFdoYXQncyBpdCB1c2VkIGZvciBhbmQgd2h5
+IGlzIGl0IG5lZWRlZD8NCj4+DQo+PkV4cDogQURDIGNsb2NrIHNvdXJjZSBpcyBpcGcgYnVzIGNs
+b2NrLCB0aGUgY2xrIGRpdmlkZXIgY2FuIGNvbnRyb2wgdGhlDQo+PkFEQyBzYW1wbGUgc3BlZWQg
+d2hpbGUgb3RoZXIgc2V0dGluZyBkb24ndCBjaGFuZ2U6DQo+PglUaGUgc2FtcGxlIHNwZWVkIHRo
+YXQgY2xvY2sgZGl2aWRlciBpcyBlcXVhbCB0byAxIGlzIHR3aWNlICB0aGFuIHRoZQ0KPj5kaXZp
+ZGVyIGlzIGVxdWFsIHRvIDIuDQo+Pg0KPj5Bbnl3YXksIGl0IGNhbiBjb250cm9sIHNhbXBsZSBz
+cGVlZCBieSB1c2VyLg0KPklmIGxlZnQgaW4gZGV2aWNlIHRyZWUgdGhlbiB0aGlzIG1pZ2h0IGJl
+IGJlc3QgaW1wbGVtZW50ZWQgYXMgYSB2ZXJ5IHNpbXBsZQ0KPmNsb2NrLg0KPkkgd291bGQgcHJl
+ZmVyIGl0IHRvIGJlIGNvbnRyb2xsZWQgZnJvbSB1c2VyIHNwYWNlIGFzIHNhbXBsaW5nX2ZyZXF1
+ZW5jeS4NCj4+DQo+Pj4NCj4+Pj4gKy0gZnNsLGFkYy1yZXM6IEFEQyBjb252ZXJzaW9uIG1vZGUg
+c2VsZWN0aW9uLCBzdWNoIGFzIDggZm9yIDgtYml0LA0KPj4xMCBmb3INCj4+PjEwLWJpdCwgMTIg
+Zm9yIDEyLWJpdCBtb2RlLg0KPj4+DQo+Pj5UaGlzIHNvdW5kcyBsaWtlIHNvbWV0aGluZyB0aGF0
+IGNvdWxkIGJlIGNoYW5nZWQgYXQgcnVudGltZS4gV2h5IGRvZXMNCj4+dGhpcyBuZWVkDQo+Pj50
+byBiZSBjb25maWd1cmVkIGluIHRoZSBEVD8NCj4+Pg0KPj4+PiArLSBmc2wsYWRjLXNhbS10aW1l
+OiBBREMgc2FtcGxlIHRpbWUgZHVyYXRpb24sIG51bWJlciBvZiBBREMgY2xvY2tzLA0KPj4+PiAr
+c3VjaCBhcyAyLCA0LCA2LCA4LCAxMiwgMTYsIDIwLCAyNA0KPj4+DQo+Pj5MaWtld2lzZS4NCj4+
+Pg0KPj4+UGxlYXNlIGRvbid0IHBvaW5sdGVzc2x5IGFiYnJldmlhdGUsICJzYW1wbGUiIGlzIG11
+Y2ggYmV0dGVyIHRoYW4NCj4+InNhbSINCj4+PmhlcmUuLi4NCj4+Pg0KPj4+PiArLSBmc2wsYWRj
+LWF2ZXItc2FtLXNlbDogRGV0ZXJtaW5lcyBob3cgbWFueSBBREMgY29udmVyc2lvbnMgd2lsbCBi
+ZQ0KPj5hdmVyYWdlZA0KPj4+dG8gY3JlYXRlIHRoZSBBREMgYXZlcmFnZSByZXN1bHQuDQo+Pj4+
+ICsJCQlUaGUgT3B0aW9uYWwgdmFsdWUgaXMgNCwgOCwgMTYsIDMyLg0KPj4+DQo+Pj5MaWtld2lz
+ZS4NCj4+DQo+Pg0KPj5Gb3IgYWJvdmUgQURDIGNvbmZpZ3VyYXRpb24sIEFEQyBjb252ZXJzaW9u
+IG1vZGUsIHNhbXBsZSB0aW1lIGR1cmF0aW9uLA0KPj5oYXJkd2FyZSBhdmVyYWdlIHNhbXBsZSBz
+ZWxlY3Rpb24sIGFuZCBzbyBvbi4NCj4+QWxsIG9mIHRoZW0gY2FuIGNoYW5nZWQgYXQgcnVudGlt
+ZS4gVGhlIG9ubHkgbWV0aG9kIGlzIHRvIGludHJvZHVjZSB0aGUNCj4+aW9jdGwgaW50ZXJmYWNl
+IGZvciB1c2VyIHRvIGNoYW5nZSB0aGVtIGF0IHJ1bnRpbWUuDQo+PkhvdyBhYm91dCB5b3UgdGhp
+bmsgPw0KPk5vIGl0IGlzIG5vdC4gTGlrZSBhbGwgc2ltaWxhciBjb250cm9scyB0aGVzZSBTaG91
+bGQgYmUgdmlhIHN5c2ZzIGF0dHJpYnV0ZXMNCj5jcmVhdGVkIHZpYSBUaGUgc3RhbmRhcmQgY2hh
+bm5lbCBzdHJ1Y3R1cmVzIGluIElJTy4NCj5TYW1wbGUgZHVyYXRpb24gbWlnaHQgYmUgaW50ZWdy
+YXRpb25fdGltZSAgb3Igc2FtcGxpbmdfZnJlcXVlbmN5IGRlcGVuZGluZyBvbg0KPml0cyBleGFj
+dCBzZW1hbnRpY3MuIEF2ZXJhZ2luZyBpcyBhIGZvcm0gb2YgbG93IHBhc3MgZmlsdGVyIGFuZCBz
+aG91bGQgYmUNCj5zcGVjaWZpZWQgYXMgc3VjaC4NCj4NCj5JZiBpdCBpcyBub3QgYWxyZWFkeSBp
+biB0aGUgYWJpIHRoZW4gcHJvcG9zZSBzb21ldGhpbmcgbmV3Lg0KPg0KPlRoZSBvbmx5IG9uZSBo
+ZXJlIHRoYXQgSSBjYW4gc2VlIGFuIGlzc3VlIHdpdGggZG9pbmcgdGhhdCB3YXkgaXMgdGhlIHJl
+c29sdXRpb24uDQo+U28gZmFyIGl0IGhhc24ndCBhY3R1YWxseSBtYWRlIHNlbnNlIHRvIG1ha2Ug
+dGhpcyBjb250cm9sbGFibGUuLg0KPkNvdXBsZSBvZiBxdWVzdGlvbnMgb24gdGhhdC4NCj4xLiBX
+aGF0IGVmZmVjdCBvbiBzcGVlZCBvZiBzYW1wbGluZyBkb2VzIGNoYW5naW5nIHRoaXMgaGF2ZT8g
+Tm90ZSB0aGF0IHdlDQo+cHJvYmFibHkgZG8gbm90IGNhcmUgYWJvdXQgdGhpcyBpZiB1c2luZyBz
+eXNmcyByZWFkaW5nLg0KPjIuIFdoYXQgb3RoZXIgZGlzYWR2YW50YWdlcyBhcmUgdGhlcmUgdG8g
+YWx3YXlzIHJ1bm5pbmcgaW4gMTIgYml0IG1vZGU/DQo+DQo+SSBoYXZlIG5vIHByb2JsZW0gd2l0
+aCBhZGRpbmcgd3JpdGUgc3VwcG9ydCBmb3IgdGhlIHR5cGUgb2YgYnVmZmVyIGVsZW1lbnRzDQo+
+dGhvdWdoIGl0IHdvdWxkIHJlcXVpcmUgc29tZSBJSU8gY29yZSBpbmZyYXN0cnVjdHVyZS4NCj5I
+b3dldmVyIEkgZG8gd2FudCBhIHdlbGwgZGVzY3JpYmVkIHJlYXNvbiB0byBib3RoZXIgd2l0aCB0
+aGUgYWRkZWQgY29tcGxleGl0eS4NCj4NClRoYW5rcyB2ZXJ5IG11Y2ghIFlvdXIgc3VnZ2VzdGlv
+biBpcyB2ZXJ5IHVzZWZ1bCBmb3IgbWUuIEkgd2lsbCB1c2UgdGhlIHN0YW5kYXJkIHN5cyBpbnRl
+cmZhY2UgZm9yIEFEQyBjb25maWd1cmF0aW9uLg0KDQpBbmQgZm9yIHlvdXIgcXVlc3Rpb246DQox
+LiBlZmZlY3Qgb24gc3BlZWQgb2Ygc2FtcGxpbmc6IA0KCS0gQURDIHNhbXBsZSB0aW1lIGR1cmF0
+aW9uLCBudW1iZXIgb2YgQURDIGNsb2Nrcywgc3VjaCBhcyAyLCA0LCA2LCA4LCAxMiwgMTYsIDIw
+LCAyNA0KCS0gY2xvY2ssIHRoZSBjbG9jayBzb3VyY2UgaXMgaXBnIGJ1cyBjbG9jaywgY3VycmVu
+dCBjbG9jayBkaXZpZGVyIHZhbHVlIGZvciBBREMsIHN1Y2ggYXMgMSwyLDQsOCwxNiBhbmQgc28g
+b24NCgktIGlmIGhhcmR3YXJlIGF2ZXJhZ2UgZnVuY3Rpb24gZW5hYmxlLA0KCQlUaGUgQURDIGF2
+ZXJhZ2Ugc2FtcGxlIG51bWJlciBhbHNvIGFmZmVjdCBzcGVlZCwgZGV0ZXJtaW5lcyBob3cgbWFu
+eSBBREMgY29udmVyc2lvbnMgd2lsbCBiZSBhdmVyYWdlZCB0byBjcmVhdGUgdGhlIEFEQyBhdmVy
+YWdlIHJlc3VsdC4NCglBbGwgb2YgYWJvdmUgc2V0dGluZyBhZmZlY3QgdGhlIHNwZWVkIG9mIHNh
+bXBsaW5nLg0KDQoJSWYgdXNlIHRoZSBzeXNmcyByZWFkaW5nLCB0aGUgc3BlZWQgZG9uJ3QgbmVl
+ZCBjYXJlLiANCglTbyBJIGhhdmUgc29tZSBxdWVzdGlvbnM6DQoJYS4gRm9yIGhpZ2ggc3BlZWQg
+c2FtcGxpbmcsIElJTyBzdWJzeXN0ZW0gaG93IHRvIGhhbmRsZSBpdCBpZiB0aGVyZSBubyBpb2N0
+bCBpbnRlcmZhY2UgZm9yIHVzZXIgPyANCgkgICBpdCBpcyBpaW8gYnVmZmVyL2ZpZm8gPw0KCWIu
+IEZvciBzb2Z0d2FyZSB0cmlnZ2VyLCB0aGUgc3BlZWQgb2Ygc2FtcGxpbmcgYWxzbyBkb24ndCBu
+ZWVkIHRvIGNhcmUsIGlzIGl0IHJpZ2h0ID8gDQoJYy4gSWYgdXNlIGNhc2UgbmVlZCBoaWdoIHNw
+ZWVkIHNhbXBsaW5nLCB0aGVyZSBtdXN0IGhhdmUgaGFyZXdhcmUgdHJpZ2dlciBhbmQgaWlvIGJ1
+ZmZlciBmb3IgaXQsIHJpZ2h0ID8gDQogDQoyLiBubyBkaXNhZHZhbnRhZ2UsIEkgaGF2ZSB2YWxp
+ZGF0ZWQgQURDIGNhbiB3b3JrIGZpbmUgYXQgOC1iaXQsIDEwLWJpdCwgMTItYml0IG1vZGUuDQoN
+Cj4+DQo+Pj4NCj4+Pj4gKy0gZnNsLGFkYy1ody1hdmVyLWVuOiBCb29sIHR5cGUgdG8gZGVjaWRl
+IGVuYWJsZSBoYXJkd2FyZSBhdmVyYWdlDQo+PmZ1bmN0aW9uLg0KPj4+DQo+Pj5XaGVuIHdvdWxk
+IHlvdSB3bmF0IHRoaXMgYW5kIHdoZW4gd291bGRuJ3QgeW91Pw0KPj4+DQo+Pj5TaW1pbGFybHks
+ICJhdmVyYWdlcyIgaXMgZmFyIGNsZWFyZXIgdGhhbiAiYXZlciIuDQo+Pg0KPj5PaywgSSBzZWUu
+IFRoYW5rcy4NCj4+Pg0KPj4+PiArLSBmc2wsYWRjLWxvdy1wb3dlci1tb2RlOiBCb29sIHR5cGUg
+dG8gZGVjaWRlIGVuYWJsZSBBREMgbG93IHBvd2VyDQo+Pm1vZGUuDQo+Pj4NCj4+PlNpbWlsYXJs
+eT8NCj5UaGlzIG9uZSBpcyBpbnRlcmVzdGluZy4gV2hhdCBlZmZlY3RzIGRvZXMgaXQgaGF2ZSBp
+biB0aGlzIGRldmljZT8gU29tZXRpbWVzIGl0DQo+aXMgYSAgc2FtcGxpbmcgZnJlcXVlbmN5IHJl
+c3RyaWN0aW9uLi4uDQo+Pj4NCj4+Pj4gKy0gZnNsLGFkYy1oaWdoLXNwZWVkLWNvbnY6IEJvb2wg
+dHlwZSB0byBkZWNpZGUgZW5hYmxlIEFEQyBoaWdoDQo+PnNwZWVkIG1vZGUuDQo+Pj4NCj4+PlNp
+bWlsYXJseT8NCj4+Pg0KPj4+PiArLSB2cmVmOiBUaGUgcmVndWxhdG9yIHRvIHN1cHBvcnQgQURD
+IHJlZnJlbmNlIHZvbHRhZ2UuDQo+Pj4NCj4+PnMvdnJlZi92cmVmLXN1cHBseS8NCj4+Pg0KPj4+
+VGhhbmtzLA0KPj4+TWFyay4NCj4+DQo+PlRoYW5rcyBmb3IgeW91ciByZXZpZXcuDQo+PlN1bW1h
+cnksIHRoZXJlIGhhdmUgbWFueSBjb21tZW50cyB3aHkgZG9uJ3QgbGV0IHNvbWUgQURDIGNvbmZp
+Z3VyYXRpb24NCj4+Y2hhbmdlIGF0IHJ1bnRpbWUuDQo+PlRoZSBkcml2ZXIgc3RpbGwgZG9uJ3Qg
+YWRkIGlvY3RsIGludGVyZmFjZSBmb3IgdXNlciB0byBjb25maWd1cmF0ZSB0aGUNCj4+QURDIHNl
+dHRpbmcuIFNvIHRoZSBzZXR0aW5nIGFyZSBnb3QgZnJvbSBEVC4NCj4+DQo+PkRvIHlvdSBoYXZl
+IG9uZSBnb29kIG1ldGhvZCB0byBjaGFuZ2UgdGhlIGNvbmZpZ3VyYXRpb24gYXQgcnVudGltZSA/
+DQo+U2VlIGFib3ZlIDopDQo+DQo+SW4gc2hvcnQuLi5BZGQgcmVsZXZhbnQgYml0cyB0byBpbmZv
+X21hc2tfKiBpbiBhbGwgdGhlIGlpb19DaGFuX3NwZWMgc3RydWN0dXJlcw0KPnRoZW4gcHV0IHRo
+ZSAgcmVsZXZhbnQgaGFuZGxpbmcgaW4gdGhlIHJlYWRfcmF3IGFuZCB3cml0ZV9yYXcgaWlvX2lu
+Zm8NCj5jYWxsYmFja3MuDQo+Pg0KPj5UaGFua3MsDQo+PkFuZHkNCj4+DQo+Pi0tDQo+PlRvIHVu
+c3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51
+eC1paW8iIGluDQo+PnRoZSBib2R5IG9mIGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJu
+ZWwub3JnIE1vcmUgbWFqb3Jkb21vIGluZm8NCj4+YXQgIGh0dHA6Ly92Z2VyLmtlcm5lbC5vcmcv
+bWFqb3Jkb21vLWluZm8uaHRtbA0KPg0KPi0tDQo+U2VudCBmcm9tIG15IEFuZHJvaWQgcGhvbmUg
+d2l0aCBLLTkgTWFpbC4gUGxlYXNlIGV4Y3VzZSBteSBicmV2aXR5Lg0KDQpUaGFua3MgZm9yIHlv
+dXIgcmV2aWV3IGFuZCBhbnN3ZXJzLg0KDQpBbmR5DQo=
