@@ -1,100 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48612 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751320Ab3K3Lb4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Nov 2013 06:31:56 -0500
-Message-ID: <5299CCAA.6090100@kernel.org>
-Date: Sat, 30 Nov 2013 11:31:54 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	jkosina@suse.cz
-CC: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] HID: hid-sensor-hub: Add logical min and max
-References: <1385590783-27604-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mga02.intel.com ([134.134.136.20]:15572 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755553Ab3K0WVE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 27 Nov 2013 17:21:04 -0500
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jkosina@suse.cz, jic23@kernel.org
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/2] iio: hid-sensors: Fix power and report state
+Date: Wed, 27 Nov 2013 14:19:43 -0800
+Message-Id: <1385590783-27604-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1385590783-27604-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1385590783-27604-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/27/13 22:19, Srinivas Pandruvada wrote:
-> Exporting logical minimum and maximum of HID fields as part of the
-> hid sensor attribute info. This can be used for range checking and
-> to calculate enumeration base for NAry fields of HID sensor hub.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Hi,  I would have preffred this being done in two patches, the first
-refactoring the function call and the second doing the min and max.
+In the original HID sensor hub firmwares all Named array enums were
+to 0-based. But the most recent hub implemented as 1-based,
+because of the implementation by one of the major OS vendor.
+Using logical minimum for the field as the base of enum. So we add
+logical minimum to the selector values before setting those fields.
+Some sensor hub FWs already changed logical minimum from 0 to 1
+to reflect this and hope every other vendor will follow.
+There is no easy way to add a common HID quirk for NAry elements,
+even if the standard specifies these field as NAry, the collection
+used to describe selectors is still just "logical".
 
-Anyhow, I'll take it anyway.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/Kconfig              |  9 ---------
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 20 +++++++++++++++-----
+ include/linux/hid-sensor-ids.h                      | 12 ++++++++++++
+ 3 files changed, 27 insertions(+), 14 deletions(-)
 
-Applied to the togreg branch of iio.git.
+diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
+index 1178121..39188b7 100644
+--- a/drivers/iio/common/hid-sensors/Kconfig
++++ b/drivers/iio/common/hid-sensors/Kconfig
+@@ -25,13 +25,4 @@ config HID_SENSOR_IIO_TRIGGER
+ 	  If this driver is compiled as a module, it will be named
+ 	  hid-sensor-trigger.
+ 
+-config HID_SENSOR_ENUM_BASE_QUIRKS
+-	bool "ENUM base quirks for HID Sensor IIO drivers"
+-	depends on HID_SENSOR_IIO_COMMON
+-	help
+-	  Say yes here to build support for sensor hub FW using
+-	  enumeration, which is using 1 as base instead of 0.
+-	  Since logical minimum is still set 0 instead of 1,
+-	  there is no easy way to differentiate.
+-
+ endmenu
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index b6e77e0..781d3fa 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -33,24 +33,34 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ {
+ 	struct hid_sensor_common *st = iio_trigger_get_drvdata(trig);
+ 	int state_val;
++	int report_val;
+ 
+ 	if (state) {
+ 		if (sensor_hub_device_open(st->hsdev))
+ 			return -EIO;
+-	} else
++		state_val =
++		HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM;
++		report_val =
++		HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM;
++
++	} else {
+ 		sensor_hub_device_close(st->hsdev);
++		state_val =
++		HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM;
++		report_val =
++		HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM;
++	}
+ 
+-	state_val = state ? 1 : 0;
+-	if (IS_ENABLED(CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS))
+-		++state_val;
+ 	st->data_ready = state;
++	state_val += st->power_state.logical_minimum;
++	report_val += st->report_state.logical_minimum;
+ 	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
+ 					st->power_state.index,
+ 					(s32)state_val);
+ 
+ 	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
+ 					st->report_state.index,
+-					(s32)state_val);
++					(s32)report_val);
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 4f945d3..8323775 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -117,4 +117,16 @@
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+ #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
+ 
++/* Power state enumerations */
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM		0x00
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM		0x01
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D1_LOW_POWER_ENUM		0x02
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D2_STANDBY_WITH_WAKE_ENUM	0x03
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D3_SLEEP_WITH_WAKE_ENUM	0x04
++#define HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM		0x05
++
++/* Report State enumerations */
++#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM		0x00
++#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM		0x01
++
+ #endif
+-- 
+1.8.3.2
 
-
-> ---
->  drivers/hid/hid-sensor-hub.c   | 20 ++++++++------------
->  include/linux/hid-sensor-hub.h |  2 ++
->  2 files changed, 10 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-> index a184e19..d87f7cb 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -112,13 +112,15 @@ static int sensor_hub_get_physical_device_count(
->  
->  static void sensor_hub_fill_attr_info(
->  		struct hid_sensor_hub_attribute_info *info,
-> -		s32 index, s32 report_id, s32 units, s32 unit_expo, s32 size)
-> +		s32 index, s32 report_id, struct hid_field *field)
->  {
->  	info->index = index;
->  	info->report_id = report_id;
-> -	info->units = units;
-> -	info->unit_expo = unit_expo;
-> -	info->size = size/8;
-> +	info->units = field->unit;
-> +	info->unit_expo = field->unit_exponent;
-> +	info->size = (field->report_size * field->report_count)/8;
-> +	info->logical_minimum = field->logical_minimum;
-> +	info->logical_maximum = field->logical_maximum;
->  }
->  
->  static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
-> @@ -325,9 +327,7 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
->  			if (field->physical == usage_id &&
->  				field->logical == attr_usage_id) {
->  				sensor_hub_fill_attr_info(info, i, report->id,
-> -					field->unit, field->unit_exponent,
-> -					field->report_size *
-> -							field->report_count);
-> +							  field);
->  				ret = 0;
->  			} else {
->  				for (j = 0; j < field->maxusage; ++j) {
-> @@ -336,11 +336,7 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
->  					field->usage[j].collection_index ==
->  					collection_index) {
->  						sensor_hub_fill_attr_info(info,
-> -							i, report->id,
-> -							field->unit,
-> -							field->unit_exponent,
-> -							field->report_size *
-> -							field->report_count);
-> +							  i, report->id, field);
->  						ret = 0;
->  						break;
->  					}
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index a265af2..fd66e45 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -40,6 +40,8 @@ struct hid_sensor_hub_attribute_info {
->  	s32 units;
->  	s32 unit_expo;
->  	s32 size;
-> +	s32 logical_minimum;
-> +	s32 logical_maximum;
->  };
->  
->  /**
-> 
