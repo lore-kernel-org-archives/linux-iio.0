@@ -1,87 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49036 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751851Ab3K3MCH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Nov 2013 07:02:07 -0500
-Message-ID: <5299D3BA.8080700@kernel.org>
-Date: Sat, 30 Nov 2013 12:02:02 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-CC: Denis CIOCCA <denis.ciocca@st.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
+Return-Path: <maxime.ripard@free-electrons.com>
+Date: Sat, 30 Nov 2013 15:13:15 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis CIOCCA <denis.ciocca@st.com>, Shawn Guo <shawn.guo@linaro.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
 	Brian Lilly <brian@crystalfontz.com>,
 	Brent-Crosby <brent@crystalfontz.com>, Jim Wall <jimwall@q.com>,
 	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
 	Jean Delvare <khali@linux-fr.org>
-Subject: Re: [RFC PATCH 0/3] DT support for ST micro accelerometers and gyroscopes
-References: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com> <528DF164.8060009@st.com> <20131121131402.GF1029@lukather> <52926901.9080004@kernel.org> <20131125094044.GE3176@lukather>
-In-Reply-To: <20131125094044.GE3176@lukather>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: Re: [RFC PATCH 0/3] DT support for ST micro accelerometers and
+ gyroscopes
+Message-ID: <20131130141315.GC3002@lukather>
+References: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
+ <528DF164.8060009@st.com>
+ <20131121131402.GF1029@lukather>
+ <52926901.9080004@kernel.org>
+ <20131125094044.GE3176@lukather>
+ <5299D3BA.8080700@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5G06lTa6Jq83wMTw"
+In-Reply-To: <5299D3BA.8080700@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
-On 11/25/13 09:40, Maxime Ripard wrote:
-> Hi Jonathan,
-> 
-> On Sun, Nov 24, 2013 at 09:00:49PM +0000, Jonathan Cameron wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> On 11/21/13 13:14, Maxime Ripard wrote:
->>> Hi Denis,
->>> 
->>> On Thu, Nov 21, 2013 at 12:41:24PM +0100, Denis CIOCCA wrote:
->>>> only one point: it's possible to use the same names with DT? (using _ instead of -)
->>> 
->>> Yes, it is, but only for i2c as far as I'm aware, and usually the DT compatibles are with - as a separator (I
->>> looked into the ePAPR, but couldn't get any explanations or requirements on this, even though it's used in all
->>> of their examples)
->> 
->> In other discussions, where the defacto i2c device tree bindings have been followed, the conclusion has been that
->> to change to a - from _ would result in userspace ABI changes, so whilst no one wants _ the discussion has
->> concluded we can't really avoid it.
-> 
-> What kind of userspace ABI changes are we talking about?
-IIRC:
+--5G06lTa6Jq83wMTw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-i2c has a generic binding that matches to the name bit of the i2c_device_id
-array.  That is then exported in sysfs.  There are quite a lot of instances
-of underscores out there in these names.  Thus unforutnately they can't
-be changed without possibly breaking userspace.  Typically those same names
-are also output by IIO though obviously we could keep that the same whilst
-changing the dt binding.
+On Sat, Nov 30, 2013 at 12:02:02PM +0000, Jonathan Cameron wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>=20
+> On 11/25/13 09:40, Maxime Ripard wrote:
+> > Hi Jonathan,
+> >=20
+> > On Sun, Nov 24, 2013 at 09:00:49PM +0000, Jonathan Cameron wrote:
+> >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
+> >>=20
+> >> On 11/21/13 13:14, Maxime Ripard wrote:
+> >>> Hi Denis,
+> >>>=20
+> >>> On Thu, Nov 21, 2013 at 12:41:24PM +0100, Denis CIOCCA wrote:
+> >>>> only one point: it's possible to use the same names with DT? (using =
+_ instead of -)
+> >>>=20
+> >>> Yes, it is, but only for i2c as far as I'm aware, and usually the DT =
+compatibles are with - as a separator (I
+> >>> looked into the ePAPR, but couldn't get any explanations or requireme=
+nts on this, even though it's used in all
+> >>> of their examples)
+> >>=20
+> >> In other discussions, where the defacto i2c device tree bindings have =
+been followed, the conclusion has been that
+> >> to change to a - from _ would result in userspace ABI changes, so whil=
+st no one wants _ the discussion has
+> >> concluded we can't really avoid it.
+> >=20
+> > What kind of userspace ABI changes are we talking about?
+> IIRC:
+>=20
+> i2c has a generic binding that matches to the name bit of the i2c_device_=
+id
+> array.  That is then exported in sysfs.  There are quite a lot of instanc=
+es
+> of underscores out there in these names.  Thus unforutnately they can't
+> be changed without possibly breaking userspace.  Typically those same nam=
+es
+> are also output by IIO though obviously we could keep that the same whilst
+> changing the dt binding.
+>=20
+> Also the i2c binding allows binding after dropping the vendor prefix which
+> is even more 'interesting'. See of_modialias_node in drivers/of/base.c
+>=20
+> I'd therefore argue in favour of just leaving the underscores in existing
+> drivers as a nasty bit of legacy and doing our best to not introduce any
+> new ones!
 
-Also the i2c binding allows binding after dropping the vendor prefix which
-is even more 'interesting'. See of_modialias_node in drivers/of/base.c
+Except I'm not removing anything, just adding new stuff. Therefore,
+I'm not breaking anything. The existing users of the underscore stuff
+in DT will still work, (if some ever exist, last time I checked, it
+wasn't the case) just like they used to.
 
-I'd therefore argue in favour of just leaving the underscores in existing
-drivers as a nasty bit of legacy and doing our best to not introduce any
-new ones!
+If we have the occasion of having the thing done like it's done
+anywhere else, at no cost, I don't get what the issue is.
 
-Jonathan
+Especially since these devices are also usable on other buses than
+i2c, which make it quite inconsistent from one bus to another.
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--5G06lTa6Jq83wMTw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.14 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSmdOzAAoJEFSFNJnE9BaIilUP/RPwSswdYi9wWtN0tBEFfZvo
-JO0bybjw342LE2xt3DXd7fo04v1+LspWxatw6kht1mJ/aU6O4HwNHQpPO7Md5pDm
-4HPoPSREaDbYEOqhVSjXaBUOXIOYSe392KtqKJMRSxRs3XiIeqYPfojqtIE2KF7a
-W3EEjud5wrWuOLKtdQWjRt+UpDnewImR+qORtRUoA7NY2YIHvdarOQFlfDqLXSRK
-GvE49O8jCtQvcjI1rsybMRXQkUF3GE8hLyATaf/SbvgVeILbHSl6OvaN7O7nNJ+b
-DGGrzAzmKwj56G47imQ7z2v/D9ExWNwr1DZ2CMPt+yXQ15OBXDnAmWGXTr45/dUl
-G8PjaZA9GKsp0dE713b0RN/eJnsoFsJd8bDCeXh9IpVblmkQzW3HsvI8p2Uj8xga
-5d/txeXytLNvHj+3OiiVTaKA3Y9/dFNq9dwI+QAMbLY87T4ft70z533liTZRnMWG
-2O8x2oHYnoFRH3qmpg6jy3/qCFe6wTTXy1yMFQ0Ds/bJ93vhrv7SiXXsxX3CNl9X
-KI8t74zx51GMxBV5pMixgX9aBH7Wrn+WSXmUKkMkm7JGbeicZEjk259EjAluuohD
-HHh0cehjCuVPY6PTUhkXTfCFDfpFtwOkXsZb6fOMS2wDKK4BLwb3SPwyn+ID7XJs
-u/RQzwNNjvdsR2hmBQOw
-=lpwt
+iQIcBAEBAgAGBQJSmfJ7AAoJEBx+YmzsjxAgEdsQAJkMVSCa61l0LlxW8llYA/g/
+Moog9lBzwT1UmNDcau8H8+fzRkisXR2rRindwZ1d3qKjQViDm4NhIriz1rgzVTNF
+VC9JioXZNOkGnhnL1r4TWFYTHXDY6TblBiw1yGnUWoPn60eeZV/0WjQ5/V+67q4a
+ptSlM2LZfbBKdJkzsQS8cmux/wW3QcajYoqMRNQCDeK1T9qUYxmsA7JNNM2uJae7
+YTYfg6sjdLjwbLJfSgPyQUjieeAOydtGV8boa+SBFExRMP2bYd2/7WpOr6N2QXZC
+n7eRfgYTcf8IbMbVdlJT6SFRFEolJ6VRip7l4Cg4xEljCIMs/iHOk9lyDVT5HuSj
+XkC+Ls0Dt86U+SnXmEQEMHsuagTtYt185O3FHWX6Fjm2a1pDCVJukZeXv3laUUv7
+DwVuYOoQcKIgRMVJyH1n+38pGHjD/9BoeqJAPW3vcnKGLs/ETZU6rqJoiQ1hzaXF
+1jj0WfdJYBVvXFhrgrzsWQm2p7il9wkUxr9vmUtSLrtQ7xuOmqGtxxJH/ybq0mXo
+l8C515AhSUO2U5n+piSvqRKyAs/oZ7lp5zIlbYh4AtifzOojjXEvT/TmLrJ6LF8H
+Y6hIO1cLafmliWKe2vrCw0s7IvI+sWuZHmzYFtYjyEgt37qZptrom+GDfrqG7Yk4
+qXTf2A7IMd6Eoeg8cCvk
+=85aa
 -----END PGP SIGNATURE-----
+
+--5G06lTa6Jq83wMTw--
