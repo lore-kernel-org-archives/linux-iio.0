@@ -1,165 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54607 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755576Ab3LGTtZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Dec 2013 14:49:25 -0500
-Message-ID: <52A37BC1.7030506@kernel.org>
-Date: Sat, 07 Dec 2013 19:49:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.cosmopool.net ([178.63.74.76]:51078 "EHLO
+	mail.cosmopool.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751075Ab3LAPIc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Dec 2013 10:08:32 -0500
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org
+Subject: [PATCH v3 1/2] iio: Add support for humidity sensors
+In-reply-to: <5292474A.8040101@kernel.org>
+References: <E1VYf74-0000gd-5Z@stardust.g4.wien.funkfeuer.at> <alpine.DEB.2.01.1310222030570.23009@pmeerw.net> <E1VYiDp-0000pb-1i@stardust.g4.wien.funkfeuer.at> <alpine.DEB.2.01.1310222210230.23009@pmeerw.net> <E1VYjUo-0000uN-OY@stardust.g4.wien.funkfeuer.at> <5267E795.7030804@metafoo.de> <E1VZfrE-0000lZ-Ma@stardust.g4.wien.funkfeuer.at> <52909438.8000602@kernel.org> <E1VkHFl-00012T-4U@stardust.g4.wien.funkfeuer.at> <5292474A.8040101@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 7/8] iio: Add quaternion channel
-References: <1383173333-18618-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1383173333-18618-7-git-send-email-srinivas.pandruvada@linux.intel.com> <52797AF9.2080502@kernel.org> <527988E3.6010900@linux.intel.com> <83ccbb80-ad75-4ecd-bc79-914525420679@email.android.com> <52A25346.304@linux.intel.com>
-In-Reply-To: <52A25346.304@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+Date: Sun, 01 Dec 2013 16:08:26 +0100
+Message-Id: <E1Vn8dG-0001HO-AJ@stardust.g4.wien.funkfeuer.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/13 22:44, Srinivas Pandruvada wrote:
-> Hi Jonathan,
-> 
-> On 11/05/2013 11:58 PM, Jonathan Cameron wrote:
->>
->> Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->>> On 11/05/2013 03:10 PM, Jonathan Cameron wrote:
->>>> On 10/30/13 22:48, Srinivas Pandruvada wrote:
->>>>> A quaternion channel type is added. Here channel information is
->>>>> composed of four components: a vector with x, y, z coordinates and
->>>>> a w rotation. Reusing x, y, z channel modifiers, but added "w"
->>>>> component in the modifier list.
->>>>>
->>>>> Signed-off-by: Srinivas Pandruvada
->>> <srinivas.pandruvada@linux.intel.com>
->>>> In brief I am against this for the same reason I didn't like this
->>> before.
->>>> A quaternion has no meaning if it isn't all present.  Hence we need
->>> to
->>>> ensure that it is always presented to userspace with all four
->>> components
->>>> present.
->>>>
->>>> I'll hopefully have a few mins at the weekend to to bash out some
->>> example
->>>> code for how I would suggest we handle this.
->>>>
->>>> If you could repost the patches before this one with everything that
->>> should
->>>> be in them then hopefully we can take those whilst still 'discussing'
->>>> how to handle the last 2!
-> If you get chance, please send me some info on how you want to handle this.
-> 
-Sorry for the delay on this - I might get time tomorrow to go into this in more
-detail but maybe not so I'll give a very brief outline here.
+There are already humidity sensors in the hwmon subsystem,
+so we use their unit (milli percent) here as well.
 
-Constraints:
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
 
-1) Quaternions may have 4 elements but they all interact in a way that makes
-   them effectively a 'single value'.  Thus they need to be handled as one.
+No changes since v2 except for
+KernelVersion: 3.14
 
-Solutions
+No changes since v1.
 
-1) Introduce a IIO_VAL_*  - probably IIO_VAL_QUATERNION
-2) Introduced a replacement for read_raw that has the following form
-	int (*read)(struct iio_dev *indio_dev,
-			struct iio_chan_spec const *chan,
-			int *vals,
-			long mask);
-- for previous cases vals[0] <- val and vals[1] <- val2
-- for quaternion vals[0] <- i component, vals[1] <- j component etc
+ Documentation/ABI/testing/sysfs-bus-iio |   13 +++++++++++++
+ drivers/iio/industrialio-core.c         |    1 +
+ include/linux/iio/types.h               |    1 +
+ 3 files changed, 15 insertions(+), 0 deletions(-)
 
-3) Add a case to iio_read_channel_info in industrialio-core.c to handle
-the new type and pretty print it appropriately - possibly expand
-iio_format_value to handle the new parameters.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index b20e829..25aebeb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -197,6 +197,19 @@ Description:
+ 		Raw pressure measurement from channel Y. Units after
+ 		application of scale and offset are kilopascal.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_raw
++KernelVersion:	3.14
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw humidity measurement of air. Units after application of
++		scale and offset are milli percent.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_input
++KernelVersion:	3.14
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scaled humidity measurement in milli percent.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2fe88c1..acc911a 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -69,6 +69,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
++	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4ac928e..084d882 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -29,6 +29,7 @@ enum iio_chan_type {
+ 	IIO_ALTVOLTAGE,
+ 	IIO_CCT,
+ 	IIO_PRESSURE,
++	IIO_HUMIDITYRELATIVE,
+ };
+ 
+ enum iio_modifier {
+-- 
+1.7.2.5
 
-4) Buffered support is only trickier in that the buffer element needs
-describing and there is a lot of possible flexibility in there...
-
-current format is :
-
- [be|le]:[s|u]bits/storagebits[>>shift].
-
-Reasonable to assume that whole thing is either be or le and that elements are byte aligned
-plus all are signed (but need to state this)
-
-Hence perhaps either
-
-[be|le]:[s|u]bitsI/storagebitsI,bitsJ/storagebitsJ,bitsK/storagebitsK,bitsA/storagebitsA
-
-or we assume that the elements are effectively independent but have the same placement and
-indicated perhaps as
-
-be:s12/16x4 or similar?
-
-Either way this would need some extensions to the struct iio_chan_spec substructure
-scan_type.
-
-> Thanks,
-> Srinivas
-> 
->>> Sorry about the issues with previous patches. I was trying to order new
->>>
->>> driver at the end and missed dependencies.
->> Not to worry. We all make that mistake occasionally!
->>> I have applied all patches which I am sending after this email safely
->>> apply to fixes-togreg branch.
->>> For the last two, I will wait for your suggestion.
->>>
->>> Thanks,
->>> Srinivas
->>>> Jonathan
->>>>> ---
->>>>>    drivers/iio/industrialio-core.c | 2 ++
->>>>>    include/linux/iio/types.h       | 2 ++
->>>>>    2 files changed, 4 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iio/industrialio-core.c
->>> b/drivers/iio/industrialio-core.c
->>>>> index f95c697..b754f50 100644
->>>>> --- a/drivers/iio/industrialio-core.c
->>>>> +++ b/drivers/iio/industrialio-core.c
->>>>> @@ -66,6 +66,7 @@ static const char * const
->>> iio_chan_type_name_spec[] = {
->>>>>        [IIO_ALTVOLTAGE] = "altvoltage",
->>>>>        [IIO_CCT] = "cct",
->>>>>        [IIO_PRESSURE] = "pressure",
->>>>> +    [IIO_QUAT_ROT] = "quat_rot",
->>>>>    };
->>>>>       static const char * const iio_modifier_names[] = {
->>>>> @@ -80,6 +81,7 @@ static const char * const iio_modifier_names[] = {
->>>>>        [IIO_MOD_LIGHT_RED] = "red",
->>>>>        [IIO_MOD_LIGHT_GREEN] = "green",
->>>>>        [IIO_MOD_LIGHT_BLUE] = "blue",
->>>>> +    [IIO_MOD_W] = "w",
->>>>>    };
->>>>>       /* relies on pairs of these shared then separate */
->>>>> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
->>>>> index 88bf0f0..4565f5c 100644
->>>>> --- a/include/linux/iio/types.h
->>>>> +++ b/include/linux/iio/types.h
->>>>> @@ -29,6 +29,7 @@ enum iio_chan_type {
->>>>>        IIO_ALTVOLTAGE,
->>>>>        IIO_CCT,
->>>>>        IIO_PRESSURE,
->>>>> +    IIO_QUAT_ROT,
->>>>>    };
->>>>>       enum iio_modifier {
->>>>> @@ -52,6 +53,7 @@ enum iio_modifier {
->>>>>        IIO_MOD_LIGHT_RED,
->>>>>        IIO_MOD_LIGHT_GREEN,
->>>>>        IIO_MOD_LIGHT_BLUE,
->>>>> +    IIO_MOD_W,
->>>>>    };
->>>>>       #define IIO_VAL_INT 1
->>>>>
->>>> -- 
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->>> in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>> -- 
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
