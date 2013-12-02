@@ -1,54 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55752 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753753Ab3LBVNR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Dec 2013 16:13:17 -0500
-Message-ID: <529CF7EA.6090500@kernel.org>
-Date: Mon, 02 Dec 2013 21:13:14 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>,
-	Jacek Anaszewski <j.anaszewski@samsung.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] Fix build failure for gp2ap020a00f.c
-References: <20131202112558.GF16735@n2100.arm.linux.org.uk>
-In-Reply-To: <20131202112558.GF16735@n2100.arm.linux.org.uk>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <axel.lin@ingics.com>
+Message-ID: <1385953044.30717.5.camel@phoenix>
+Subject: [PATCH] iio:trigger: Convert to use ATTRIBUTE_GROUPS
+From: Axel Lin <axel.lin@ingics.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Date: Mon, 02 Dec 2013 10:57:24 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/02/13 11:25, Russell King - ARM Linux wrote:
-> drivers/built-in.o: In function `gp2ap020a00f_thresh_event_handler':
-> powercap_sys.c:(.text+0x15f90c): undefined reference to `irq_work_queue'
-> make[1]: *** [vmlinux] Error 1
-> make[1]: Target `uImage' not remade because of errors.
-> make: *** [sub-make] Error 2
-> make: Target `uImage' not remade because of errors.
-> 
-> You need the IRQ work support, but GP2AP020A00F is not selecting this
-> symbol.
-> 
-> Signed-off-by: Russell King <rmk+kernel@arm.linux.org.uk>
-Thanks Russell,
+Use new ATTRIBUTE_GROUPS macro to declare attribute groups.
 
-Applied to the fixes-togreg branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/iio/industrialio-trigger.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/light/Kconfig |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index b0d65df3ede2..a022f27c6690 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -43,6 +43,7 @@ config GP2AP020A00F
->  	depends on I2C
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-> +	select IRQ_WORK
->  	help
->  	  Say Y here if you have a Sharp GP2AP020A00F proximity/ALS combo-chip
->  	  hooked to an I2C bus.
-> 
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 7ba2f00..766fab2 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -55,15 +55,7 @@ static struct attribute *iio_trig_dev_attrs[] = {
+ 	&dev_attr_name.attr,
+ 	NULL,
+ };
+-
+-static struct attribute_group iio_trig_attr_group = {
+-	.attrs	= iio_trig_dev_attrs,
+-};
+-
+-static const struct attribute_group *iio_trig_attr_groups[] = {
+-	&iio_trig_attr_group,
+-	NULL
+-};
++ATTRIBUTE_GROUPS(iio_trig_dev);
+ 
+ int iio_trigger_register(struct iio_trigger *trig_info)
+ {
+@@ -403,7 +395,7 @@ static void iio_trig_release(struct device *device)
+ 
+ static struct device_type iio_trig_type = {
+ 	.release = iio_trig_release,
+-	.groups = iio_trig_attr_groups,
++	.groups = iio_trig_dev_groups,
+ };
+ 
+ static void iio_trig_subirqmask(struct irq_data *d)
+-- 
+1.8.1.2
