@@ -1,192 +1,90 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47748 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754163Ab3LVRnx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Dec 2013 12:43:53 -0500
-Message-ID: <52B724D8.1080107@kernel.org>
-Date: Sun, 22 Dec 2013 17:43:52 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <maxime.ripard@free-electrons.com>
+Date: Tue, 3 Dec 2013 22:29:14 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Jean Delvare <khali@linux-fr.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, Denis CIOCCA <denis.ciocca@st.com>,
+	Shawn Guo <shawn.guo@linaro.org>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Brian Lilly <brian@crystalfontz.com>,
+	Brent-Crosby <brent@crystalfontz.com>, Jim Wall <jimwall@q.com>,
+	devicetree@vger.kernel.org
+Subject: Re: [RFC PATCH 0/3] DT support for ST micro accelerometers and
+ gyroscopes
+Message-ID: <20131203212914.GC31496@lukather>
+References: <1384876234-1211-1-git-send-email-maxime.ripard@free-electrons.com>
+ <528DF164.8060009@st.com>
+ <20131121131402.GF1029@lukather>
+ <52926901.9080004@kernel.org>
+ <20131125094044.GE3176@lukather>
+ <5299D3BA.8080700@kernel.org>
+ <20131130140402.21abae28@endymion.delvare>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 07/15] iio:ad5791: Do not store transfer buffers on the
- stack
-References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-7-git-send-email-lars@metafoo.de> <5299C779.3070601@kernel.org> <52B72314.2040400@kernel.org> <52B7241F.7090305@metafoo.de>
-In-Reply-To: <52B7241F.7090305@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5QAgd0e35j3NYeGe"
+In-Reply-To: <20131130140402.21abae28@endymion.delvare>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/22/13 17:40, Lars-Peter Clausen wrote:
-> On 12/22/2013 06:36 PM, Jonathan Cameron wrote:
->> On 11/30/13 11:09, Jonathan Cameron wrote:
->>> On 11/25/13 12:41, Lars-Peter Clausen wrote:
->>>> Some SPI controllers may not be able to handle transfer buffers that are placed
->>>> on the stack.
->>>>
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>> Applied to the togreg branch of iio.git
->>>
->>> Thanks
->>
->> I really didn't review this series well enough.  This should probably have
->> gone in as a fix rather that through the togreg branch as should the other sp
->> driver.  Bit late now though given the size of the patch.
->>
->> Sorry it has taken me so long to do a pull request to Greg.  I always
->> get a bit lazy on the stuff for next as can always do it tomorrow!
->>
->> Slipped rather long this time though!
-> 
-> I think most SPI driver simply don't care as they don't do any DMA. So as long as there is a board with a DMA SPI
-> controller + this chip combination that is in active use I don't think the patch needs to go into fixes.
 
-Not vital, but generally I'd got for fixes for this sort of thing, because it's entirely plausible
-someone will base there tree off an old mainline with patches adding dma support to their driver.
+--5QAgd0e35j3NYeGe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Never mind though ;)
-> 
->>
->> Jonathan
->>
->>>> ---
->>>>   drivers/iio/dac/ad5791.c | 46 +++++++++++++++++++++-------------------------
->>>>   1 file changed, 21 insertions(+), 25 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
->>>> index 1e7f4cd..79bf199 100644
->>>> --- a/drivers/iio/dac/ad5791.c
->>>> +++ b/drivers/iio/dac/ad5791.c
->>>> @@ -91,6 +91,11 @@ struct ad5791_state {
->>>>       unsigned            ctrl;
->>>>       unsigned            pwr_down_mode;
->>>>       bool                pwr_down;
->>>> +
->>>> +    union {
->>>> +        __be32 d32;
->>>> +        u8 d8[4];
->>>> +    } data[3] ____cacheline_aligned;
->>>>   };
->>>>
->>>>   /**
->>>> @@ -104,48 +109,39 @@ enum ad5791_supported_device_ids {
->>>>       ID_AD5791,
->>>>   };
->>>>
->>>> -static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
->>>> +static int ad5791_spi_write(struct ad5791_state *st, u8 addr, u32 val)
->>>>   {
->>>> -    union {
->>>> -        __be32 d32;
->>>> -        u8 d8[4];
->>>> -    } data;
->>>> -
->>>> -    data.d32 = cpu_to_be32(AD5791_CMD_WRITE |
->>>> +    st->data[0].d32 = cpu_to_be32(AD5791_CMD_WRITE |
->>>>                     AD5791_ADDR(addr) |
->>>>                     (val & AD5791_DAC_MASK));
->>>>
->>>> -    return spi_write(spi, &data.d8[1], 3);
->>>> +    return spi_write(st->spi, &st->data[0].d8[1], 3);
->>>>   }
->>>>
->>>> -static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
->>>> +static int ad5791_spi_read(struct ad5791_state *st, u8 addr, u32 *val)
->>>>   {
->>>> -    union {
->>>> -        __be32 d32;
->>>> -        u8 d8[4];
->>>> -    } data[3];
->>>>       int ret;
->>>>       struct spi_transfer xfers[] = {
->>>>           {
->>>> -            .tx_buf = &data[0].d8[1],
->>>> +            .tx_buf = &st->data[0].d8[1],
->>>>               .bits_per_word = 8,
->>>>               .len = 3,
->>>>               .cs_change = 1,
->>>>           }, {
->>>> -            .tx_buf = &data[1].d8[1],
->>>> -            .rx_buf = &data[2].d8[1],
->>>> +            .tx_buf = &st->data[1].d8[1],
->>>> +            .rx_buf = &st->data[2].d8[1],
->>>>               .bits_per_word = 8,
->>>>               .len = 3,
->>>>           },
->>>>       };
->>>>
->>>> -    data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
->>>> +    st->data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
->>>>                     AD5791_ADDR(addr));
->>>> -    data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
->>>> +    st->data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
->>>>
->>>> -    ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
->>>> +    ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
->>>>
->>>> -    *val = be32_to_cpu(data[2].d32);
->>>> +    *val = be32_to_cpu(st->data[2].d32);
->>>>
->>>>       return ret;
->>>>   }
->>>> @@ -210,7 +206,7 @@ static ssize_t ad5791_write_dac_powerdown(struct iio_dev *indio_dev,
->>>>       }
->>>>       st->pwr_down = pwr_down;
->>>>
->>>> -    ret = ad5791_spi_write(st->spi, AD5791_ADDR_CTRL, st->ctrl);
->>>> +    ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl);
->>>>
->>>>       return ret ? ret : len;
->>>>   }
->>>> @@ -263,7 +259,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
->>>>
->>>>       switch (m) {
->>>>       case IIO_CHAN_INFO_RAW:
->>>> -        ret = ad5791_spi_read(st->spi, chan->address, val);
->>>> +        ret = ad5791_spi_read(st, chan->address, val);
->>>>           if (ret)
->>>>               return ret;
->>>>           *val &= AD5791_DAC_MASK;
->>>> @@ -330,7 +326,7 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
->>>>           val &= AD5791_RES_MASK(chan->scan_type.realbits);
->>>>           val <<= chan->scan_type.shift;
->>>>
->>>> -        return ad5791_spi_write(st->spi, chan->address, val);
->>>> +        return ad5791_spi_write(st, chan->address, val);
->>>>
->>>>       default:
->>>>           return -EINVAL;
->>>> @@ -393,7 +389,7 @@ static int ad5791_probe(struct spi_device *spi)
->>>>           dev_warn(&spi->dev, "reference voltage unspecified\n");
->>>>       }
->>>>
->>>> -    ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
->>>> +    ret = ad5791_spi_write(st, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
->>>>       if (ret)
->>>>           goto error_disable_reg_neg;
->>>>
->>>> @@ -405,7 +401,7 @@ static int ad5791_probe(struct spi_device *spi)
->>>>             | ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
->>>>             AD5791_CTRL_BIN2SC;
->>>>
->>>> -    ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
->>>> +    ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl |
->>>>           AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
->>>>       if (ret)
->>>>           goto error_disable_reg_neg;
->>>>
->>> -- 
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hi Jean,
+
+On Sat, Nov 30, 2013 at 02:04:02PM +0100, Jean Delvare wrote:
+> > i2c has a generic binding that matches to the name bit of the
+> > i2c_device_id array.  That is then exported in sysfs.  There are
+> > quite a lot of instances of underscores out there in these names.
+> > Thus unforutnately they can't be changed without possibly breaking
+> > userspace.  Typically those same names are also output by IIO
+> > though obviously we could keep that the same whilst changing the
+> > dt binding.
+> >=20
+> > Also the i2c binding allows binding after dropping the vendor
+> > prefix which is even more 'interesting'. See of_modialias_node in
+> > drivers/of/base.c
+> >=20
+> > I'd therefore argue in favour of just leaving the underscores in
+> > existing drivers as a nasty bit of legacy and doing our best to
+> > not introduce any new ones!
+>=20
+> I don't know what is the problem with underscores, but please note
+> that hwmon i2c devices are NOT allowed to have dashes in their name
+> because that would break libsensors.
+
+As far as I remember, hwmon doesn't handle the accelerometers or
+gyroscopes, does it?
+
+Thanks,
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
+
+--5QAgd0e35j3NYeGe
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.14 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSnk0qAAoJEBx+YmzsjxAgUMQP/RXdP2Eg8gOKv6h0AOya8bVz
+SayyVZTFXVa1un/ZmtSydJimsrzogcy97TntJGUmJmO5QKqM6v2AWwHXapqU3M0p
+QDwMMNfGlS0LSq5QFBk7rPQdxi0FxB6QbSuaMXu5pzrWz6iHwfHk5ITPI71e1Cya
+3gkKkSgJ6ruFkAcRcef+zARlrB1l+ACBT5jQzODvhFQ1/fx+KaQMXjxcn3z1Ru7s
+LpCWV+rwpEFEmqeX6dW5Mb31ISxLQO/VpEqHDS5nlqQwPb3So5FKYDsL1oph0iQ8
+Ws6ZUc6AJ8kA1fBR35hluiiHKGaBC7D2AqDqxmTf4TIdhH0YgxBiYKDRITW7MxJa
+kQh1qWAf6heVm2BuqGmMfDrKUpTY+qItGewBS2dI+P0JRQpXuO3U1qNB7XWkLUCz
+8QS9BfIUA6bXLbEeREWAVA8Skkp9JAguNNvvgaBfviDkTCzewrR+2591AnDi6Uz/
+BRofXikBU4jzmFc1ekMZfrTZFzh0EpmueJPzzTkVj+d362EVA0rIf1/80Ikci2xf
+tSaFwVGa2FJ3MXqzcsaSJkEMEh2RRvkYiMOF2aHyXWzkWmkMg+chNC7m7t3syLHs
+qQlVBA+gF8FtAMUZkhrLzMVhpHWPBrflY4If5V7bUprMzRuYd1+xIo8CM1VLrjwf
+Mxi4AZSWShe5+cUSyny+
+=jdUk
+-----END PGP SIGNATURE-----
+
+--5QAgd0e35j3NYeGe--
