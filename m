@@ -1,131 +1,59 @@
-Return-Path: <shawn.guo@linaro.org>
-Date: Mon, 9 Dec 2013 10:35:05 +0800
-From: Shawn Guo <shawn.guo@linaro.org>
-To: Fugang Duan <B38611@freescale.com>
-CC: <jic23@kernel.org>, <b20596@freescale.com>, <mark.rutland@arm.com>,
-	<otavio@ossystems.com.br>, <pmeerw@pmeerw.net>, <lars@metafoo.de>,
-	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v4 1/3] ARM: dts: vf610-twr: Add ADC support
-Message-ID: <20131209023503.GB825@S2101-09.ap.freescale.net>
-References: <1386151203-29728-1-git-send-email-B38611@freescale.com>
- <1386151203-29728-2-git-send-email-B38611@freescale.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ppsw-32.csi.cam.ac.uk ([131.111.8.132]:53073 "EHLO
+	ppsw-32.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755206Ab3LCVPj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Dec 2013 16:15:39 -0500
+Message-ID: <529E43F1.207@cam.ac.uk>
+Date: Tue, 03 Dec 2013 20:49:53 +0000
+From: Jonathan Cameron <jic23@cam.ac.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <1386151203-29728-2-git-send-email-B38611@freescale.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.13 set 2
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Dec 04, 2013 at 06:00:01PM +0800, Fugang Duan wrote:
-> vf610 have two ADC controllers, and vf610-twr board ADC0_SE5 pin connect
-> to sliding rheostat for ADC test, other ADC pins connect to connectors for
-> future use.
-> 
-> Add support for ADC0_SE5.
-> 
-> CC: Shawn Guo <shawn.guo@linaro.org>
-> CC: Jonathan Cameron <jic23@kernel.org>
-> CC: Mark Rutland <mark.rutland@arm.com>
-> CC: Otavio Salvador <otavio@ossystems.com.br>
-> CC: Peter Meerwald <pmeerw@pmeerw.net>
-> CC: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Fugang Duan <B38611@freescale.com>
-> ---
->  arch/arm/boot/dts/vf610-twr.dts |   19 +++++++++++++++++++
->  arch/arm/boot/dts/vf610.dtsi    |   26 ++++++++++++++++++++++++++
->  2 files changed, 45 insertions(+), 0 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
-> index c8047ca..8bf37d4 100644
-> --- a/arch/arm/boot/dts/vf610-twr.dts
-> +++ b/arch/arm/boot/dts/vf610-twr.dts
-> @@ -34,6 +34,25 @@
->  		};
->  	};
->  
-> +	regulators {
-> +		compatible = "simple-bus";
-> +
-> +		reg_vcc_3v3_mcu: vcc_3v3_mcu_supply {
+The following changes since commit 930ba4a374b96560ef9fde2145cdc454a164ddcc:
 
-Please be aware of the patch below and use generic node name in
-regulator@num form.
+  Staging: tidspbridge: disable driver (2013-11-27 09:32:49 -0800)
 
-https://git.linaro.org/people/shawn.guo/linux-2.6.git/commitdiff/2e95ed8ec5911e71f6ccf6f4a1869e2501e5df73
+are available in the git repository at:
 
-Shawn
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.13b
 
-> +			compatible = "regulator-fixed";
-> +			regulator-name = "vcc_3v3_mcu";
-> +			regulator-min-microvolt = <3300000>;
-> +			regulator-max-microvolt = <3300000>;
-> +		};
-> +	};
-> +
-> +};
-> +
-> +&adc0 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_adc0_ad5>;
-> +	fsl,adc-io-pinctl = <0x20>;
-> +	vref-supply = <&reg_vcc_3v3_mcu>;
-> +	status = "okay";
->  };
->  
->  &dspi0 {
-> diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-> index d31ce1b..b5b21ea 100644
-> --- a/arch/arm/boot/dts/vf610.dtsi
-> +++ b/arch/arm/boot/dts/vf610.dtsi
-> @@ -152,6 +152,15 @@
->  				clock-names = "pit";
->  			};
->  
-> +			adc0: adc@4003b000 {
-> +				compatible = "fsl,vf610-adc";
-> +				reg = <0x4003b000 0x1000>;
-> +				interrupts = <0 53 0x04>;
-> +				clocks = <&clks VF610_CLK_ADC0>;
-> +				clock-names = "adc";
-> +				status = "disabled";
-> +			};
-> +
->  			wdog@4003e000 {
->  				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
->  				reg = <0x4003e000 0x1000>;
-> @@ -178,6 +187,14 @@
->  
->  				/* functions and groups pins */
->  
-> +				adc0 {
-> +					pinctrl_adc0_ad5: adc0_ad5 {
-> +						fsl,pins = <
-> +						VF610_PAD_PTC30__ADC0_SE5	0xa1
-> +						>;
-> +					};
-> +				};
-> +
+for you to fetch changes up to 419a4aaeb0f7a96359f7e937201b004f23e61976:
 
+  Fix build failure for gp2ap020a00f.c (2013-12-02 21:11:30 +0000)
 
+----------------------------------------------------------------
+Second round of IIO fixes for the 3.13 cycle.
 
->  				dcu0 {
->  					pinctrl_dcu0_1: dcu0grp_1 {
->  						fsl,pins = <
-> @@ -450,6 +467,15 @@
->  				status = "disabled";
->  			};
->  
-> +			adc1: adc@400bb000 {
-> +				compatible = "fsl,vf610-adc";
-> +				reg = <0x400bb000 0x1000>;
-> +				interrupts = <0 54 0x04>;
-> +				clocks = <&clks VF610_CLK_ADC1>;
-> +				clock-names = "adc";
-> +				status = "disabled";
-> +			};
-> +
->  			fec0: ethernet@400d0000 {
->  				compatible = "fsl,mvf600-fec";
->  				reg = <0x400d0000 0x1000>;
-> -- 
-> 1.7.2.rc3
-> 
-> 
+2 fixes here.
+
+* The gp2ap020a00f is a simple missing kconfig dependency.
+
+* The hid sensors hub fix is a work around for an issue introduced by hardware
+changes due to a certain large software vendor having an 'interesting'
+interpretation of the specification and hence indexing some arrays from 1
+rather than 0.  The fix takes advantage of the logical min and max reading
+facilities introduced by the precursor patch to figure out whether we have
+a 0 indexed or 1 indexed device and to adjust appropriately.  It also
+drops a previous kconfig option that allowed this issue to be worked around
+at build time.
+
+----------------------------------------------------------------
+Russell King - ARM Linux (1):
+      Fix build failure for gp2ap020a00f.c
+
+Srinivas Pandruvada (2):
+      HID: hid-sensor-hub: Add logical min and max
+      iio: hid-sensors: Fix power and report state
+
+ drivers/hid/hid-sensor-hub.c                        | 20 ++++++++------------
+ drivers/iio/common/hid-sensors/Kconfig              |  9 ---------
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 20 +++++++++++++++-----
+ drivers/iio/light/Kconfig                           |  1 +
+ include/linux/hid-sensor-hub.h                      |  2 ++
+ include/linux/hid-sensor-ids.h                      | 12 ++++++++++++
+ 6 files changed, 38 insertions(+), 26 deletions(-)
