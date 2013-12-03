@@ -1,183 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52320 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753031Ab3LBRLY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Dec 2013 12:11:24 -0500
-In-Reply-To: <529CB329.2020101@linux.intel.com>
-References: <1385590783-27604-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1385590783-27604-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5299CBD0.4030403@kernel.org> <529CB329.2020101@linux.intel.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <529DB20A.6050500@metafoo.de>
+Date: Tue, 03 Dec 2013 11:27:22 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 2/2] iio: hid-sensors: Fix power and report state
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 02 Dec 2013 17:11:16 +0000
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: jkosina@suse.cz, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
-Message-ID: <d48a86d5-b6a0-494e-9de2-a09afc02a695@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 14/15] staging:iio:ad9832: Mark transfer buffers as __be16
+References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-14-git-send-email-lars@metafoo.de> <5299C882.8020509@kernel.org>
+In-Reply-To: <5299C882.8020509@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
+On 11/30/2013 12:14 PM, Jonathan Cameron wrote:
+> On 11/25/13 12:42, Lars-Peter Clausen wrote:
+>> Fixes the following warnings from sparse:
+>> 	drivers/staging/iio/frequency/ad9832.c:43:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:43:26:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:43:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:46:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:46:26:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:46:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:49:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:49:26:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:49:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:52:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:52:26:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:52:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:65:27: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:65:27:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:65:27:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:68:27: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:68:27:    expected unsigned short [unsigned] [short] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:68:27:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:107:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:107:26:    expected unsigned short [unsigned] data
+>> 	drivers/staging/iio/frequency/ad9832.c:107:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:120:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:120:26:    expected unsigned short [unsigned] data
+>> 	drivers/staging/iio/frequency/ad9832.c:120:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:133:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:133:26:    expected unsigned short [unsigned] data
+>> 	drivers/staging/iio/frequency/ad9832.c:133:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:144:26: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:144:26:    expected unsigned short [unsigned] data
+>> 	drivers/staging/iio/frequency/ad9832.c:144:26:    got restricted __be16 [usertype] <noident>
+>> 	drivers/staging/iio/frequency/ad9832.c:277:18: warning: incorrect type in assignment (different base types)
+>> 	drivers/staging/iio/frequency/ad9832.c:277:18:    expected unsigned short [unsigned] data
+>> 	drivers/staging/iio/frequency/ad9832.c:277:18:    got restricted __be16 [usertype] <noident>
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Applied to the togreg branch of iio.git
 
+Thanks, for taking care of the patches. Somehow this one and the ad9834
+didn't make it. Shall I resend?
 
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->On 11/30/2013 03:28 AM, Jonathan Cameron wrote:
->> On 11/27/13 22:19, Srinivas Pandruvada wrote:
->>> In the original HID sensor hub firmwares all Named array enums were
->>> to 0-based. But the most recent hub implemented as 1-based,
->>> because of the implementation by one of the major OS vendor.
->>> Using logical minimum for the field as the base of enum. So we add
->>> logical minimum to the selector values before setting those fields.
->>> Some sensor hub FWs already changed logical minimum from 0 to 1
->>> to reflect this and hope every other vendor will follow.
->>> There is no easy way to add a common HID quirk for NAry elements,
->>> even if the standard specifies these field as NAry, the collection
->>> used to describe selectors is still just "logical".
->>>
->>> Signed-off-by: Srinivas Pandruvada
-><srinivas.pandruvada@linux.intel.com>
->> Looks like a good solution to me.
->>
->> This one is a little interesting.  Technically I 'believe' we don't
->have
->> a bug as it is possible to make these devices work via the kconfig
->option
->> and it definitely isn't a regression.  As such I have applied this to
->the
->> branch intended for the next kernel cycled (togreg) rather than to
->the
->> fixes branch.
->The intention of the patch (originally submitted with a quirk and
->module 
->param, which was commented on by you and Jiri),
->is also to bring report state enumeration also under the quirk to have 
->"1" based same as power state.
->So there is a fix to include reporting state enum also. So if possible,
->
->I would like to treat as bug fix.
-
-Will do then.
->
->Thanks,
->Srinivas
->> If people have a very strong feeling about this then shout reasonably
->quickly - I'll
->> probably hold off sending that branch to Greg for a few days anyway.
->>
->> I've cc'd GregKH to see if he has any input on the path this should
->take.
->>
->> Jonathan
->>
->>> ---
->>>   drivers/iio/common/hid-sensors/Kconfig              |  9 ---------
->>>   drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 20
->+++++++++++++++-----
->>>   include/linux/hid-sensor-ids.h                      | 12
->++++++++++++
->>>   3 files changed, 27 insertions(+), 14 deletions(-)
->>>
->>> diff --git a/drivers/iio/common/hid-sensors/Kconfig
->b/drivers/iio/common/hid-sensors/Kconfig
->>> index 1178121..39188b7 100644
->>> --- a/drivers/iio/common/hid-sensors/Kconfig
->>> +++ b/drivers/iio/common/hid-sensors/Kconfig
->>> @@ -25,13 +25,4 @@ config HID_SENSOR_IIO_TRIGGER
->>>   	  If this driver is compiled as a module, it will be named
->>>   	  hid-sensor-trigger.
->>>
->>> -config HID_SENSOR_ENUM_BASE_QUIRKS
->>> -	bool "ENUM base quirks for HID Sensor IIO drivers"
->>> -	depends on HID_SENSOR_IIO_COMMON
->>> -	help
->>> -	  Say yes here to build support for sensor hub FW using
->>> -	  enumeration, which is using 1 as base instead of 0.
->>> -	  Since logical minimum is still set 0 instead of 1,
->>> -	  there is no easy way to differentiate.
->>> -
->>>   endmenu
->>> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->>> index b6e77e0..781d3fa 100644
->>> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->>> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->>> @@ -33,24 +33,34 @@ static int
->hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
->>>   {
->>>   	struct hid_sensor_common *st = iio_trigger_get_drvdata(trig);
->>>   	int state_val;
->>> +	int report_val;
->>>
->>>   	if (state) {
->>>   		if (sensor_hub_device_open(st->hsdev))
->>>   			return -EIO;
->>> -	} else
->>> +		state_val =
->>> +		HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM;
->>> +		report_val =
->>> +		HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM;
->>> +
->>> +	} else {
->>>   		sensor_hub_device_close(st->hsdev);
->>> +		state_val =
->>> +		HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM;
->>> +		report_val =
->>> +		HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM;
->>> +	}
->>>
->>> -	state_val = state ? 1 : 0;
->>> -	if (IS_ENABLED(CONFIG_HID_SENSOR_ENUM_BASE_QUIRKS))
->>> -		++state_val;
->>>   	st->data_ready = state;
->>> +	state_val += st->power_state.logical_minimum;
->>> +	report_val += st->report_state.logical_minimum;
->>>   	sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
->>>   					st->power_state.index,
->>>   					(s32)state_val);
->>>
->>>   	sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
->>>   					st->report_state.index,
->>> -					(s32)state_val);
->>> +					(s32)report_val);
->>>
->>>   	return 0;
->>>   }
->>> diff --git a/include/linux/hid-sensor-ids.h
->b/include/linux/hid-sensor-ids.h
->>> index 4f945d3..8323775 100644
->>> --- a/include/linux/hid-sensor-ids.h
->>> +++ b/include/linux/hid-sensor-ids.h
->>> @@ -117,4 +117,16 @@
->>>   #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
->>>   #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
->>>
->>> +/* Power state enumerations */
->>> +#define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM		0x00
->>> +#define HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM		0x01
->>> +#define HID_USAGE_SENSOR_PROP_POWER_STATE_D1_LOW_POWER_ENUM		0x02
->>> +#define
->HID_USAGE_SENSOR_PROP_POWER_STATE_D2_STANDBY_WITH_WAKE_ENUM	0x03
->>> +#define
->HID_USAGE_SENSOR_PROP_POWER_STATE_D3_SLEEP_WITH_WAKE_ENUM	0x04
->>> +#define HID_USAGE_SENSOR_PROP_POWER_STATE_D4_POWER_OFF_ENUM		0x05
->>> +
->>> +/* Report State enumerations */
->>> +#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM		0x00
->>> +#define HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM		0x01
->>> +
->>>   #endif
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe
->linux-input" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+- Lars
