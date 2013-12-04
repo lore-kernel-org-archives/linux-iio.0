@@ -1,168 +1,68 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <52A2F9CD.1030305@kernel.org>
-Date: Sat, 07 Dec 2013 10:34:53 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <fugang.duan@freescale.com>
+From: Fugang Duan <B38611@freescale.com>
+To: <jic23@kernel.org>
+CC: <shawn.guo@linaro.org>, <b20596@freescale.com>, <mark.rutland@arm.com>,
+	<otavio@ossystems.com.br>, <pmeerw@pmeerw.net>, <lars@metafoo.de>,
+	<linux-iio@vger.kernel.org>
+Subject: [PATCH v4 0/3] *** iio:adc:imx: Add Freescale vf610 ADC driver support ***
+Date: Wed, 4 Dec 2013 18:00:00 +0800
+Message-ID: <1386151203-29728-1-git-send-email-B38611@freescale.com>
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- Jonathan Cameron <jic23@cam.ac.uk>
-CC: Maxime Ripard <maxime.ripard@free-electrons.com>, jimwall@q.com,
- brian@crystalfontz.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCHv2] iio: mxs-lradc: compute temperature from channel 8
- and 9
-References: <1386358279-25474-1-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1386358279-25474-1-git-send-email-alexandre.belloni@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/06/13 19:31, Alexandre Belloni wrote:
-> The mxs LRADC is able to read an internal die temperature sensor. The
-> temperature has to be calculated from the value read on channel 8 and channel 9.
-> To be able to expose the result to hwmon, implement iio channel 8 as
-> (channel 9 - channel 8). Then, implement IIO_CHAN_INFO_SCALE and
-> IIO_CHAN_INFO_OFFSET so that it can be processed by hwmon through the in kernel
-> provider/consumer mechanism.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Thanks for doing the rebase. Applied to the togreg branch (initially pushed out as testing)
-of iio.git
+The patch set is to enable Vybrid VF610 ADC driver.
 
+Please see the Reference Manual of the ADC:
+http://cache.freescale.com/files/32bit/doc/ref_manual/VYBRIDRM.pdf?fpsp=1&WT_TYPE=
+Reference%20Manuals&WT_VENDOR=FREESCALE&WT_FILE_FORMAT=pdf&WT_ASSET=Documentation
 
-> ---
-> Changes in v2:
->   - rebased on v3.13.0-rc3
-> 
->  drivers/staging/iio/adc/mxs-lradc.c | 91 +++++++++++++++++++++++++++++++------
->  1 file changed, 78 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index e2dd7830b320..5a4499c3d22a 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -759,20 +759,11 @@ static void mxs_lradc_handle_touch(struct mxs_lradc *lradc)
->  /*
->   * Raw I/O operations
->   */
-> -static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-> -			const struct iio_chan_spec *chan,
-> -			int *val, int *val2, long m)
-> +static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
->  {
->  	struct mxs_lradc *lradc = iio_priv(iio_dev);
->  	int ret;
->  
-> -	if (m != IIO_CHAN_INFO_RAW)
-> -		return -EINVAL;
-> -
-> -	/* Check for invalid channel */
-> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-> -		return -EINVAL;
-> -
->  	/*
->  	 * See if there is no buffered operation in progess. If there is, simply
->  	 * bail out. This can be improved to support both buffered and raw IO at
-> @@ -797,7 +788,7 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->  
->  	/* Clean the slot's previous content, then set new one. */
->  	mxs_lradc_reg_clear(lradc, LRADC_CTRL4_LRADCSELECT_MASK(0), LRADC_CTRL4);
-> -	mxs_lradc_reg_set(lradc, chan->channel, LRADC_CTRL4);
-> +	mxs_lradc_reg_set(lradc, chan, LRADC_CTRL4);
->  
->  	mxs_lradc_reg_wrt(lradc, 0, LRADC_CH(0));
->  
-> @@ -824,6 +815,71 @@ err:
->  	return ret;
->  }
->  
-> +static int mxs_lradc_read_temp(struct iio_dev *iio_dev, int *val)
-> +{
-> +	int ret, min, max;
-> +
-> +	ret = mxs_lradc_read_single(iio_dev, 8, &min);
-> +	if (ret != IIO_VAL_INT)
-> +		return ret;
-> +
-> +	ret = mxs_lradc_read_single(iio_dev, 9, &max);
-> +	if (ret != IIO_VAL_INT)
-> +		return ret;
-> +
-> +	*val = max - min;
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
-> +			const struct iio_chan_spec *chan,
-> +			int *val, int *val2, long m)
-> +{
-> +	/* Check for invalid channel */
-> +	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-> +		return -EINVAL;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type == IIO_TEMP)
-> +			return mxs_lradc_read_temp(iio_dev, val);
-> +
-> +		return mxs_lradc_read_single(iio_dev, chan->channel, val);
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_TEMP) {
-> +			/* From the datasheet, we have to multiply by 1.012 and
-> +			 * divide by 4
-> +			 */
-> +			*val = 0;
-> +			*val2 = 253000;
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +
-> +		return -EINVAL;
-> +
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		if (chan->type == IIO_TEMP) {
-> +			/* The calculated value from the ADC is in Kelvin, we
-> +			 * want Celsius for hwmon so the offset is
-> +			 * -272.15 * scale
-> +			 */
-> +			*val = -1075;
-> +			*val2 = 691699;
-> +
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +
-> +		return -EINVAL;
-> +
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
->  static const struct iio_info mxs_lradc_iio_info = {
->  	.driver_module		= THIS_MODULE,
->  	.read_raw		= mxs_lradc_read_raw,
-> @@ -1151,8 +1207,17 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
->  	MXS_ADC_CHAN(5, IIO_VOLTAGE),
->  	MXS_ADC_CHAN(6, IIO_VOLTAGE),
->  	MXS_ADC_CHAN(7, IIO_VOLTAGE),	/* VBATT */
-> -	MXS_ADC_CHAN(8, IIO_TEMP),	/* Temp sense 0 */
-> -	MXS_ADC_CHAN(9, IIO_TEMP),	/* Temp sense 1 */
-> +	/* Combined Temperature sensors */
-> +	{
-> +		.type = IIO_TEMP,
-> +		.indexed = 1,
-> +		.scan_index = 8,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_OFFSET) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.channel = 8,
-> +		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
-> +	},
->  	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
->  	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
->  	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
-> 
+*** Change Log***
+* V4: (review by:
+	Shawn Guo <shawn.guo@linaro.org>
+	Jonathan Cameron <jic23@kernel.org>
+	Mark Rutland <mark.rutland@arm.com>
+	Otavio Salvador <otavio@ossystems.com.br>
+	Peter Meerwald <pmeerw@pmeerw.net>
+	Lars-Peter Clausen <lars@metafoo.de>)
+- Describe ADC refrence voltage with fixed regulator.
+- Remove ADC configuration from DT, let them change at runtime.
+- Add "VF610_" prefix for ADC register define.
+- Update devicetree binding Documentation.
+
+* V3: (review by Shawn Guo)
+- DTS properties: use prefix "fsl," instead of "vf610".
+- Drop DTS unnessary comments, and add "vref" optional propert comments.
+- Modify driver format.
+- Remove driver debug code.
+- Remove the of_device_id .data init.
+- Remove unnecessary device node check.
+- Add clk_prepare_enable() return check.
+
+* V2: (Simply review by Jonathan Cameron)
+- Rename the driver after "vf610_adc".
+
+* V1:
+Feature:
+- Enable Vybrid vf610 board ADC0 in dts file.
+- ADC driver only support software trigger for the init version.
+- ADC configuration support dts set.
+Note: Since the ADC IP is used for Freescale Vybrid VF610, i.MX6SLX, i.MX7 serial sillicons.
+
+Fugang Duan (3):
+  ARM: dts: vf610-twr: Add ADC support
+  iio:adc:imx: add Freescale Vybrid vf610 adc driver
+  Documentation: add the binding file for Freescale vf610 ADC driver
+
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |   42 +
+ arch/arm/boot/dts/vf610-twr.dts                    |   19 +
+ arch/arm/boot/dts/vf610.dtsi                       |   26 +
+ drivers/iio/adc/Kconfig                            |   10 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/vf610_adc.c                        |  954 ++++++++++++++++++++
+ 6 files changed, 1052 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+ create mode 100644 drivers/iio/adc/vf610_adc.c
+
+-- 
+1.7.2.rc3
