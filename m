@@ -1,83 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34579 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750831Ab3LOVDp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Dec 2013 16:03:45 -0500
-Message-ID: <52AE192E.9000803@kernel.org>
-Date: Sun, 15 Dec 2013 21:03:42 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: cm36651: Changed return value of read function
-References: <52A5284D.4080906@samsung.com> <52AC3E47.4010007@kernel.org> <52ADA8CE.8090309@metafoo.de>
-In-Reply-To: <52ADA8CE.8090309@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from smtp-out-165.synserver.de ([212.40.185.165]:1055 "EHLO
+	smtp-out-151.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754119Ab3LGKot (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 7 Dec 2013 05:44:49 -0500
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Beomho Seo <beomho.seo@samsung.com>
+Subject: [PATCH 1/2] iio:cm36651: Convert to new event config interface
+Date: Sat,  7 Dec 2013 11:45:19 +0100
+Message-Id: <1386413120-13289-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/15/13 13:04, Lars-Peter Clausen wrote:
-> On 12/14/2013 12:17 PM, Jonathan Cameron wrote:
->> On 12/09/13 02:17, Beomho Seo wrote:
->>> Hello,
->>>
->>> I have fixed cm36651 driver.
->>> Some return value of callback have been changed to IIO_VAL_INT.
->>> If not IIO_VAL_INT, driver will print wrong value(*_read_int_time) or not print(*_read_prox_thresh).
->>>
->>> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
->> Applied to the fixes-togreg branch of iio.git
->>
->> This is going to cause a merge conflict with the reworking of the event
->> handling in the togreg branch, but the solution is simple so shouldn't
->> cause any problems (hopefully I'll remember to metion it when I send
->> the pull requests!)
-> 
-> Actually the patch should be split into two parts. The first hunk is a fix
-> for the a problem which is already present in the current (as in Linus tree)
-> version of the driver. While the problem, which is fixed in the second hunk,
-> is something I introduced with the conversion to the new style event
-> interface. So only the first part should go to fixes-togreg and the second
-> to togreg. I don't think there will be any conflicts that way.
-> 
-Ah, good point.
+Switch the cm36651 driver to the new IIO event config interface as the old one
+is going to be removed.
 
-Anyhow, I've switched the original patch for one that only does the first change.  Will
-deal with the second one when I have a bored moment.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Beomho Seo <beomho.seo@samsung.com>
+---
+ drivers/iio/light/cm36651.c | 41 ++++++++++++++++++++++++++++++++---------
+ 1 file changed, 32 insertions(+), 9 deletions(-)
 
-Jonathan
-> - Lars
-> 
->>> ---
->>>  drivers/iio/light/cm36651.c |    4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
->>> index 21df571..0206eab 100644
->>> --- a/drivers/iio/light/cm36651.c
->>> +++ b/drivers/iio/light/cm36651.c
->>> @@ -387,7 +387,7 @@ static int cm36651_read_int_time(struct cm36651_data *cm36651,
->>>  		return -EINVAL;
->>>  	}
->>>
->>> -	return IIO_VAL_INT_PLUS_MICRO;
->>> +	return IIO_VAL_INT;
->>>  }
->>>
->>>  static int cm36651_write_int_time(struct cm36651_data *cm36651,
->>> @@ -494,7 +494,7 @@ static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
->>>
->>>  	*val = cm36651->ps_ctrl_regs[CM36651_PS_THD];
->>>
->>> -	return 0;
->>> +	return IIO_VAL_INT;
->>>  }
->>>
->>>  static int cm36651_write_prox_thresh(struct iio_dev *indio_dev,
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index 21df571..2a0eb8d 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -488,7 +488,11 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
+-					u64 event_code, int *val)
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir,
++					enum iio_event_info info,
++					int *val, int *val2)
+ {
+ 	struct cm36651_data *cm36651 = iio_priv(indio_dev);
+ 
+@@ -498,7 +502,11 @@ static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
+ }
+ 
+ static int cm36651_write_prox_thresh(struct iio_dev *indio_dev,
+-					u64 event_code, int val)
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir,
++					enum iio_event_info info,
++					int val, int val2)
+ {
+ 	struct cm36651_data *cm36651 = iio_priv(indio_dev);
+ 	struct i2c_client *client = cm36651->client;
+@@ -520,7 +528,10 @@ static int cm36651_write_prox_thresh(struct iio_dev *indio_dev,
+ }
+ 
+ static int cm36651_write_prox_event_config(struct iio_dev *indio_dev,
+-					u64 event_code, int state)
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir,
++					int state)
+ {
+ 	struct cm36651_data *cm36651 = iio_priv(indio_dev);
+ 	int cmd, ret = -EINVAL;
+@@ -536,7 +547,9 @@ static int cm36651_write_prox_event_config(struct iio_dev *indio_dev,
+ }
+ 
+ static int cm36651_read_prox_event_config(struct iio_dev *indio_dev,
+-							u64 event_code)
++					const struct iio_chan_spec *chan,
++					enum iio_event_type type,
++					enum iio_event_direction dir)
+ {
+ 	struct cm36651_data *cm36651 = iio_priv(indio_dev);
+ 	int event_en;
+@@ -559,12 +572,22 @@ static int cm36651_read_prox_event_config(struct iio_dev *indio_dev,
+ 	.channel2 = IIO_MOD_LIGHT_##_color,		\
+ }							\
+ 
++static const struct iio_event_spec cm36651_event_spec[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++				BIT(IIO_EV_INFO_ENABLE),
++	}
++};
++
+ static const struct iio_chan_spec cm36651_channels[] = {
+ 	{
+ 		.type = IIO_PROXIMITY,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				BIT(IIO_CHAN_INFO_INT_TIME),
+-		.event_mask = IIO_EV_BIT(IIO_EV_TYPE_THRESH, IIO_EV_DIR_EITHER)
++		.event_spec = cm36651_event_spec,
++		.num_event_specs = ARRAY_SIZE(cm36651_event_spec),
+ 	},
+ 	CM36651_LIGHT_CHANNEL(RED, CM36651_LIGHT_CHANNEL_IDX_RED),
+ 	CM36651_LIGHT_CHANNEL(GREEN, CM36651_LIGHT_CHANNEL_IDX_GREEN),
+@@ -591,10 +614,10 @@ static const struct iio_info cm36651_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= &cm36651_read_raw,
+ 	.write_raw		= &cm36651_write_raw,
+-	.read_event_value	= &cm36651_read_prox_thresh,
+-	.write_event_value	= &cm36651_write_prox_thresh,
+-	.read_event_config	= &cm36651_read_prox_event_config,
+-	.write_event_config	= &cm36651_write_prox_event_config,
++	.read_event_value_new	= &cm36651_read_prox_thresh,
++	.write_event_value_new	= &cm36651_write_prox_thresh,
++	.read_event_config_new	= &cm36651_read_prox_event_config,
++	.write_event_config_new	= &cm36651_write_prox_event_config,
+ 	.attrs			= &cm36651_attribute_group,
+ };
+ 
+-- 
+1.8.0
+
