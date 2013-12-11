@@ -1,48 +1,106 @@
-Return-Path: <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59653 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750800Ab3LKSpr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2013 13:45:47 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	o.v.kravchenko@globallogic.com,
-	stigge@antcom.de,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 01/24] staging:iio:mag:hmc5843 fix incorrect endianness of channel as a result of missuse of the IIO_ST macro.
-Date: Wed, 11 Dec 2013 18:45:19 +0000
-Message-Id: <1386787542-19666-2-git-send-email-jic23@kernel.org>
-In-Reply-To: <1386787542-19666-1-git-send-email-jic23@kernel.org>
-References: <1386787542-19666-1-git-send-email-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: lars@metafoo.de, pmeerw@pmeerw.net, o.v.kravchenko@globallogic.com,
+	stigge@antcom.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 00/24] Drop the IIO_ST macro for setting scan_type elements.
+Date: Wed, 11 Dec 2013 18:45:18 +0000
+Message-Id: <1386787542-19666-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This driver sets the shift value equal to IIO_BE (or 1) rather than setting
-that to 0 and specificying the endianness.  This means the channel type is
-missreported as
-[be|le]:u16/16>>1 where the be|le is dependent on the cpu native endianness,
-rather than
-be:u16/16>>0 resulting in any userspace code using this information, miss
-converting the channel and generating thoroughly trashed data.
+This macro is no longer fit for purpose given it doesn't allow the endianness
+of the element to be set. Missuse of the macro has also been responsible for
+a couple of bugs including some fixed in this series.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/magnetometer/hmc5843.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+If everyone is happy I'll be apply the fixes through the fixes-togreg branch
+and follow up with the others after those have worked their way through.
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
-index bdb018878296..680eb743df9a 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843.c
-@@ -451,7 +451,12 @@ done:
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
- 			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
- 		.scan_index = idx,					\
--		.scan_type = IIO_ST('s', 16, 16, IIO_BE),		\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 16,				\
-+			.storagebits = 16,				\
-+			.endianness = IIO_BE,				\
-+			},						\
- 	}
- 
- static const struct iio_chan_spec hmc5843_channels[] = {
+Please do check the fixes in particular as I'm not entirely sure they are
+correct (particularly the ad7887 which gave me a headache on a train last
+night at the end of a very long day).
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (24):
+  staging:iio:mag:hmc5843 fix incorrect endianness of channel as a
+    result of missuse of the IIO_ST macro.
+  iio:imu:adis16400 fix pressure channel scan type
+  iio:adc:ad7887 Fix channel reported endianness from cpu to big endian
+  iio:accel:bma180 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:mag:mag3110 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5064 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5360 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5380 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5421 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5446 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5449 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5504 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5624r replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5686 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5755 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5764 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:ad5791 replaces IIO_ST macro with explicit entries to struct
+    scan_type
+  iio:dac:max517 drop specification of scan type as unused in this
+    driver.
+  iio:dac:mcp4725 drop specification of scan type as unused in this
+    driver.
+  iio:light:adjd_s311 replaces IIO_ST macro with explicit entries to
+    struct scan_type
+  iio:light:tcs3472 replaces IIO_ST macro with explicit entries to
+    struct scan_type
+  staging:iio:ad7606 replaces IIO_ST macro with explicit entries to
+    struct scan_type
+  staging:iio:ad799x replaces IIO_ST macro with explicit entries to
+    struct scan_type
+  iio:drop IIO_ST macro
+
+ drivers/iio/accel/bma180.c                 |  7 ++++++-
+ drivers/iio/adc/ad7887.c                   | 16 ++++++++++++++--
+ drivers/iio/dac/ad5064.c                   |  7 ++++++-
+ drivers/iio/dac/ad5360.c                   |  7 ++++++-
+ drivers/iio/dac/ad5380.c                   |  7 ++++++-
+ drivers/iio/dac/ad5421.c                   |  6 +++++-
+ drivers/iio/dac/ad5446.c                   |  9 +++++++--
+ drivers/iio/dac/ad5449.c                   |  7 ++++++-
+ drivers/iio/dac/ad5504.c                   |  6 +++++-
+ drivers/iio/dac/ad5624r_spi.c              |  7 ++++++-
+ drivers/iio/dac/ad5686.c                   |  9 +++++++--
+ drivers/iio/dac/ad5755.c                   |  7 ++++++-
+ drivers/iio/dac/ad5764.c                   |  7 ++++++-
+ drivers/iio/dac/ad5791.c                   |  9 +++++++--
+ drivers/iio/dac/max517.c                   |  1 -
+ drivers/iio/dac/mcp4725.c                  |  1 -
+ drivers/iio/imu/adis16400_core.c           |  7 ++++++-
+ drivers/iio/light/adjd_s311.c              |  7 ++++++-
+ drivers/iio/light/tcs3472.c                |  7 ++++++-
+ drivers/iio/magnetometer/mag3110.c         |  6 +++++-
+ drivers/staging/iio/adc/ad7606_core.c      |  7 ++++++-
+ drivers/staging/iio/adc/ad799x_core.c      |  8 +++++++-
+ drivers/staging/iio/magnetometer/hmc5843.c |  7 ++++++-
+ include/linux/iio/iio.h                    | 16 ++++++++++------
+ 24 files changed, 145 insertions(+), 33 deletions(-)
+
 -- 
 1.8.4.2
+
