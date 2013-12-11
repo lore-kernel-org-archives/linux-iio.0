@@ -1,106 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59653 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59666 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750800Ab3LKSpr (ORCPT
+	with ESMTP id S1751053Ab3LKSpr (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2013 13:45:47 -0500
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: lars@metafoo.de, pmeerw@pmeerw.net, o.v.kravchenko@globallogic.com,
 	stigge@antcom.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 00/24] Drop the IIO_ST macro for setting scan_type elements.
-Date: Wed, 11 Dec 2013 18:45:18 +0000
-Message-Id: <1386787542-19666-1-git-send-email-jic23@kernel.org>
+Subject: [PATCH 02/24] iio:imu:adis16400 fix pressure channel scan type
+Date: Wed, 11 Dec 2013 18:45:20 +0000
+Message-Id: <1386787542-19666-3-git-send-email-jic23@kernel.org>
+In-Reply-To: <1386787542-19666-1-git-send-email-jic23@kernel.org>
+References: <1386787542-19666-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This macro is no longer fit for purpose given it doesn't allow the endianness
-of the element to be set. Missuse of the macro has also been responsible for
-a couple of bugs including some fixed in this series.
+A single channel in this driver was using the IIO_ST macro.
+This does not provide a parameter for setting the endianness of
+the channel.  Thus this channel will have been reported as whatever
+is the native endianness of the cpu rather than big endian. This
+means it would be incorrect on little endian platforms.
 
-If everyone is happy I'll be apply the fixes through the fixes-togreg branch
-and follow up with the others after those have worked their way through.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/imu/adis16400_core.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Please do check the fixes in particular as I'm not entirely sure they are
-correct (particularly the ad7887 which gave me a headache on a train last
-night at the end of a very long day).
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (24):
-  staging:iio:mag:hmc5843 fix incorrect endianness of channel as a
-    result of missuse of the IIO_ST macro.
-  iio:imu:adis16400 fix pressure channel scan type
-  iio:adc:ad7887 Fix channel reported endianness from cpu to big endian
-  iio:accel:bma180 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:mag:mag3110 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5064 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5360 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5380 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5421 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5446 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5449 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5504 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5624r replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5686 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5755 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5764 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:ad5791 replaces IIO_ST macro with explicit entries to struct
-    scan_type
-  iio:dac:max517 drop specification of scan type as unused in this
-    driver.
-  iio:dac:mcp4725 drop specification of scan type as unused in this
-    driver.
-  iio:light:adjd_s311 replaces IIO_ST macro with explicit entries to
-    struct scan_type
-  iio:light:tcs3472 replaces IIO_ST macro with explicit entries to
-    struct scan_type
-  staging:iio:ad7606 replaces IIO_ST macro with explicit entries to
-    struct scan_type
-  staging:iio:ad799x replaces IIO_ST macro with explicit entries to
-    struct scan_type
-  iio:drop IIO_ST macro
-
- drivers/iio/accel/bma180.c                 |  7 ++++++-
- drivers/iio/adc/ad7887.c                   | 16 ++++++++++++++--
- drivers/iio/dac/ad5064.c                   |  7 ++++++-
- drivers/iio/dac/ad5360.c                   |  7 ++++++-
- drivers/iio/dac/ad5380.c                   |  7 ++++++-
- drivers/iio/dac/ad5421.c                   |  6 +++++-
- drivers/iio/dac/ad5446.c                   |  9 +++++++--
- drivers/iio/dac/ad5449.c                   |  7 ++++++-
- drivers/iio/dac/ad5504.c                   |  6 +++++-
- drivers/iio/dac/ad5624r_spi.c              |  7 ++++++-
- drivers/iio/dac/ad5686.c                   |  9 +++++++--
- drivers/iio/dac/ad5755.c                   |  7 ++++++-
- drivers/iio/dac/ad5764.c                   |  7 ++++++-
- drivers/iio/dac/ad5791.c                   |  9 +++++++--
- drivers/iio/dac/max517.c                   |  1 -
- drivers/iio/dac/mcp4725.c                  |  1 -
- drivers/iio/imu/adis16400_core.c           |  7 ++++++-
- drivers/iio/light/adjd_s311.c              |  7 ++++++-
- drivers/iio/light/tcs3472.c                |  7 ++++++-
- drivers/iio/magnetometer/mag3110.c         |  6 +++++-
- drivers/staging/iio/adc/ad7606_core.c      |  7 ++++++-
- drivers/staging/iio/adc/ad799x_core.c      |  8 +++++++-
- drivers/staging/iio/magnetometer/hmc5843.c |  7 ++++++-
- include/linux/iio/iio.h                    | 16 ++++++++++------
- 24 files changed, 145 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index 3fb7757a1028..368660dfe135 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -651,7 +651,12 @@ static const struct iio_chan_spec adis16448_channels[] = {
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = ADIS16448_BARO_OUT,
+ 		.scan_index = ADIS16400_SCAN_BARO,
+-		.scan_type = IIO_ST('s', 16, 16, 0),
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 	},
+ 	ADIS16400_TEMP_CHAN(ADIS16448_TEMP_OUT, 12),
+ 	IIO_CHAN_SOFT_TIMESTAMP(11)
 -- 
 1.8.4.2
 
