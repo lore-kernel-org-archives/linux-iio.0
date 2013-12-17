@@ -1,27 +1,49 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 17 Dec 2013 13:00:59 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.13 - set 3
-Message-ID: <20131217210059.GA29567@kroah.com>
-References: <52B0B92A.8090108@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <52B0B92A.8090108@kernel.org>
+Return-Path: <b.brezillon@overkiz.com>
+From: Boris BREZILLON <b.brezillon@overkiz.com>
+To: Rob Landley <rob@landley.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Arnd Bergmann <arnd@arndb.de>
+Cc: devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	Boris BREZILLON <b.brezillon@overkiz.com>
+Subject: [PATCH] iio: at91: document ADC clock properties
+Date: Tue, 17 Dec 2013 17:16:13 +0100
+Message-Id: <1387296973-7779-1-git-send-email-b.brezillon@overkiz.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Dec 17, 2013 at 08:50:50PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 55ef003e4ae684d5660f984eb2352df12572d9df:
-> 
->   Merge tag 'iio-fixes-for-3.13b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus
-> (2013-12-03 13:24:58 -0800)
-> 
-> are available in the git repository at:
-> 
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.13c
+Document the clock properties required by the at91 ADC driver.
 
-Pulled and pushed out, thanks.
+Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
+---
+ .../devicetree/bindings/arm/atmel-adc.txt          |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-greg k-h
+diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+index d106146..9a1175b 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
+@@ -5,6 +5,9 @@ Required properties:
+     <chip> can be "at91sam9260", "at91sam9g45" or "at91sam9x5"
+   - reg: Should contain ADC registers location and length
+   - interrupts: Should contain the IRQ line for the ADC
++  - clock-names: tuple listing input clock names.
++	Required elements: "adc_clk", "adc_op_clk".
++  - clocks: phandles to input clocks.
+   - atmel,adc-channels-used: Bitmask of the channels muxed and enable for this
+     device
+   - atmel,adc-startup-time: Startup Time of the ADC in microseconds as
+@@ -44,6 +47,8 @@ adc0: adc@fffb0000 {
+ 	compatible = "atmel,at91sam9260-adc";
+ 	reg = <0xfffb0000 0x100>;
+ 	interrupts = <20 4>;
++	clocks = <&adc_clk>, <&adc_op_clk>;
++	clock-names = "adc_clk", "adc_op_clk";
+ 	atmel,adc-channel-base = <0x30>;
+ 	atmel,adc-channels-used = <0xff>;
+ 	atmel,adc-drdy-mask = <0x10000>;
+-- 
+1.7.9.5
