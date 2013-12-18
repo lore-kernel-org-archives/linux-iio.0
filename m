@@ -1,121 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:51147 "EHLO
+Received: from www.linutronix.de ([62.245.132.108]:46181 "EHLO
 	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751525Ab3LSKgY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Dec 2013 05:36:24 -0500
-Message-ID: <52B2CC20.8040308@linutronix.de>
-Date: Thu, 19 Dec 2013 11:36:16 +0100
+	with ESMTP id S1754748Ab3LRQxR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Dec 2013 11:53:17 -0500
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
 	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
 	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] mfd: input: iio: ti_amm335x: rework TSC/ADC synchronisation
-References: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de> <1387385577-24447-6-git-send-email-bigeasy@linutronix.de> <20131219084206.GC2621@lee--X1>
-In-Reply-To: <20131219084206.GC2621@lee--X1>
-Content-Type: text/plain; charset=UTF-8
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 4/5] mfd: ti_am335x: drop am335x_tsc_se_update() from resume path
+Date: Wed, 18 Dec 2013 17:52:56 +0100
+Message-Id: <1387385577-24447-5-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de>
+References: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/19/2013 09:42 AM, Lee Jones wrote:
-> Spell check this entire block.
+The update of the SE register in MFD doesn't look right as it has
+nothing to do with it. The better place to do it is in TSC driver (which
+is already doint it) and in the ADC driver which needs this only in the
+continues mode.
 
-will do.
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iio/adc/ti_am335x_adc.c | 2 ++
+ drivers/mfd/ti_am335x_tscadc.c  | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-> Smileys in commit messages are generally a bad idea.
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 9ad9bd9..e737eef 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -199,6 +199,7 @@ static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
+ 	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
+ 				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
+ 	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
++	adc_dev->buffer_en_ch_steps = 0;
+ 
+ 	/* Flush FIFO of leftover data in the time it takes to disable adc */
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+@@ -494,6 +495,7 @@ static int tiadc_resume(struct device *dev)
+ 	tiadc_writel(adc_dev, REG_CTRL, restore);
+ 
+ 	tiadc_step_config(indio_dev);
++	am335x_tsc_se_set(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 2948a41..ad560c6 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -309,7 +309,6 @@ static int tscadc_resume(struct device *dev)
+ 
+ 	if (tscadc_dev->tsc_cell != -1)
+ 		tscadc_idle_config(tscadc_dev);
+-	am335x_tsc_se_update(tscadc_dev);
+ 	restore = tscadc_readl(tscadc_dev, REG_CTRL);
+ 	tscadc_writel(tscadc_dev, REG_CTRL,
+ 			(restore | CNTRLREG_TSCSSENB));
+-- 
+1.8.5.1
 
-will drop.
-
-> Please insert '\n's between paragraphs.
-
-Okay.
-
-> Proof read, as some of the sentences are not comprehensible.
-
-I am going to retry.
-
-> /* MFD Parts */
-> 
->> --- a/drivers/mfd/ti_am335x_tscadc.c
->> +++ b/drivers/mfd/ti_am335x_tscadc.c
->> @@ -24,6 +24,7 @@
-> 
->> -static void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc)
->> +void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val)
->>  {
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&tsadc->reg_lock, flags);
->> +	tsadc->reg_se_cache |= val;
->>  	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
->> +	spin_unlock_irqrestore(&tsadc->reg_lock, flags);
->>  }
->> +EXPORT_SYMBOL_GPL(am335x_tsc_se_set);
->>  
->> -void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val)
->> +void am335x_tsc_se_tsc_set(struct ti_tscadc_dev *tsadc, u32 val)
-> 
-> What's the difference between:
-> 
-> am335x_tsc_se_set()
-> and
-> am335x_tsc_se_tsc_set()
-
-The code is the same. I tried to avoid to call the function with the
-tsc in its name from the adc part. The continuous mode is still using
-this interface because its content has to remain while the TSC is
-updating the register. Only the write of the ADC in single-shot-mode is
-used as a "one-time-thing" and not required later.
-
-> Why don't you have a am335x_tsc_se_tsc_set_tsc_se_tsc_set() ;)
-> 
-> Perhaps a better function name might be in order.
-
-the am335x_tsc is the namespace. se the register followed by the user
-which is tsc or adc but I know what you mean. I will try to replace it
-with _cached and _once so we get rid of the part where is twice in the
-name of the function.
-
-> 
->>  {
->>  	unsigned long flags;
->>  
->>  	spin_lock_irqsave(&tsadc->reg_lock, flags);
->> -	tsadc->reg_se_cache |= val;
->> -	am335x_tsc_se_update(tsadc);
->> +	tsadc->reg_se_cache = val;
->> +	if (tsadc->adc_in_use || tsadc->adc_waiting) {
->> +		if (tsadc->adc_waiting)
->> +			wake_up(&tsadc->reg_se_wait);
-> 
-> So if we're either in-use or waiting, the step mask is never set?
-> 
-> But I guess that the touchscreen driver assumes it has been set.
-> 
-> Is this okay?
-
-Yes this is okay because the ADC driver is waiting to use it
-exclusively. The ADC driver invokes am335x_tsc_se_adc_done() once it is
-done so TSC's mask which is saved here will then be written to the
-register.
-
-> 
->> +	} else {
->> +		tscadc_writel(tsadc, REG_SE, val);
->> +	}
-> 
-> I think this would be better represented as:
-> 
->         if (tsadc->adc_waiting)
->                 wake_up(&tsadc->reg_se_wait);
->         else if (!tsadc->adc_in_use)
->                 tscadc_writel(tsadc, REG_SE, val);
-
-I think that looks fine. I will double check it and take your proposal
-if nothing goes wrong.
-
-Sebastian
