@@ -1,49 +1,63 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 19 Dec 2013 08:56:07 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www.linutronix.de ([62.245.132.108]:46179 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752600Ab3LRQxO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Dec 2013 11:53:14 -0500
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
 	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
 	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] mfd: ti_am335x_tscadc: don't read back REG_SE
-Message-ID: <20131219085607.GG2621@lee--X1>
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 2/5] mfd: ti_am335x_tscadc: make am335x_tsc_se_update() local
+Date: Wed, 18 Dec 2013 17:52:54 +0100
+Message-Id: <1387385577-24447-3-git-send-email-bigeasy@linutronix.de>
+In-Reply-To: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de>
 References: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de>
- <1387385577-24447-4-git-send-email-bigeasy@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1387385577-24447-4-git-send-email-bigeasy@linutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 18 Dec 2013, Sebastian Andrzej Siewior wrote:
+since the "recent" changes, am335x_tsc_se_update() has no longer any
+users outside of this file so make it local.
 
-> The purpose of reg_se_cache has been defeated. It should avoid the
-> read-back of the register to avoid the latency and the fact that the
-> bits are reset to 0 after the individual conversation took place.
-> 
-> The reason why this is required like this to work, is that read-back of
-> the register removes the bits of the ADC so they do not start another
-> conversation after the register is re-written from the TSC side for the
-> update.
-> To avoid the unrequired read-back I introduce a "set adc" variant which
-> does not update the cache mask. After the conversation completes, the
-> register bit is removed from the SE reister anyway and we don't plan a
-> new conversation "any time soon".
-> This is a small preparation for a larger sync-rework.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      |  2 +-
->  drivers/mfd/ti_am335x_tscadc.c       | 12 ++++++++++--
->  include/linux/mfd/ti_am335x_tscadc.h |  1 +
->  3 files changed, 12 insertions(+), 3 deletions(-)
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/mfd/ti_am335x_tscadc.c       | 3 +--
+ include/linux/mfd/ti_am335x_tscadc.h | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-Looks about right: Acked-by: Lee Jones <lee.jones@linaro.org>
-
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 88718ab..67d0eb4 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -48,11 +48,10 @@ static const struct regmap_config tscadc_regmap_config = {
+ 	.val_bits = 32,
+ };
+ 
+-void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc)
++static void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc)
+ {
+ 	tscadc_writel(tsadc, REG_SE, tsadc->reg_se_cache);
+ }
+-EXPORT_SYMBOL_GPL(am335x_tsc_se_update);
+ 
+ void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val)
+ {
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index d498d98f..1fe7219 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -176,7 +176,6 @@ static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
+ 	return *tscadc_dev;
+ }
+ 
+-void am335x_tsc_se_update(struct ti_tscadc_dev *tsadc);
+ void am335x_tsc_se_set(struct ti_tscadc_dev *tsadc, u32 val);
+ void am335x_tsc_se_clr(struct ti_tscadc_dev *tsadc, u32 val);
+ 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.5.1
+
