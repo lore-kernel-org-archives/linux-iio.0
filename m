@@ -1,42 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:46778 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751639Ab3LRSex (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Dec 2013 13:34:53 -0500
-Message-ID: <52B1EAC5.4020104@linutronix.de>
-Date: Wed, 18 Dec 2013 19:34:45 +0100
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:51569 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753075Ab3LSIsw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Dec 2013 03:48:52 -0500
+Received: by mail-wi0-f181.google.com with SMTP id hq4so1818233wib.2
+        for <linux-iio@vger.kernel.org>; Thu, 19 Dec 2013 00:48:51 -0800 (PST)
+Date: Thu, 19 Dec 2013 08:48:47 +0000
+From: Lee Jones <lee.jones@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>,
 	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
 	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: am335x: IIO/ADC fixes if used together with TSC
-References: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de> <d916c9be-2614-41b8-ae92-67bf1a57ed74@email.android.com>
-In-Reply-To: <d916c9be-2614-41b8-ae92-67bf1a57ed74@email.android.com>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <20131219084847.GD2621@lee--X1>
+References: <1387385577-24447-1-git-send-email-bigeasy@linutronix.de>
+ <d916c9be-2614-41b8-ae92-67bf1a57ed74@email.android.com>
+ <52B1EAC5.4020104@linutronix.de>
+ <a3513779-5ede-4e33-b29d-0cc8e73f8282@email.android.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <a3513779-5ede-4e33-b29d-0cc8e73f8282@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/18/2013 06:25 PM, Jonathan Cameron wrote:
-> Given timing I suspect that by the we have reviewed these will be too late in this cycle so will hit in the merge window plus stable.
+> >> Given timing I suspect that by the we have reviewed these will be too
+> >late in this cycle so will hit in the merge window plus stable.
+> >> 
+> >> Also some of these are cleanups rather than fixes so should normally
+> >be separate from fixes and applied after them as they are not 
+> >> Stable material.
+> >
+> >I tried to keep 5/5 as small as possible so I factor individual and
+> >separate changes as good as possible as long as the drivers remained
+> >functional. That means 1-4 are mostly pre-work for 5/5 and that makes
+> >5/5 depends on them.
+> >
+> >Tagging 5/5 stable I would prefer to take 1-4, too to keep the backport
+> >effort small. The clash due to the continues mode which is v3.13 is
+> >probably small. This said, I think it is the best to backport it stable
+> >if someone asks for it (unless the majority here thinks otherwise).
+> >
+> >Are you saying this is too late for v3.13 or v3.14-rc1?
+> >
+> >Sebastian
 > 
-> Also some of these are cleanups rather than fixes so should normally be separate from fixes and applied after them as they are not 
-> Stable material.
+> Too late for 3.13. Probably fine for next merge window if reviews are all good or as a
+>  fix post 3.14-rc1 of it misses the cutoff for the merge window.
 
-I tried to keep 5/5 as small as possible so I factor individual and
-separate changes as good as possible as long as the drivers remained
-functional. That means 1-4 are mostly pre-work for 5/5 and that makes
-5/5 depends on them.
+I think this set should go in via -next. So it will hit the v3.14
+merge window.
 
-Tagging 5/5 stable I would prefer to take 1-4, too to keep the backport
-effort small. The clash due to the continues mode which is v3.13 is
-probably small. This said, I think it is the best to backport it stable
-if someone asks for it (unless the majority here thinks otherwise).
-
-Are you saying this is too late for v3.13 or v3.14-rc1?
-
-Sebastian
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
