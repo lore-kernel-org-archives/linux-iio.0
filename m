@@ -1,67 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46363 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752241Ab3LXSsj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Dec 2013 13:48:39 -0500
-In-Reply-To: <20131224182258.GA4587@kroah.com>
-References: <52B71A03.5000907@kernel.org> <20131224182258.GA4587@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PULL] IIO fixes 3.13 - set 4
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 24 Dec 2013 18:48:34 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <ee29edca-ee76-46b4-8237-76e2f39f5705@email.android.com>
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:61048 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751472Ab3LUKKh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Dec 2013 05:10:37 -0500
+Received: by mail-pd0-f181.google.com with SMTP id p10so3487676pdj.40
+        for <linux-iio@vger.kernel.org>; Sat, 21 Dec 2013 02:10:37 -0800 (PST)
+From: Sachin Kamat <sachin.kamat@linaro.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, sachin.kamat@linaro.org
+Subject: [PATCH 1/1] iio: cm36651: Remove redundant of_match_ptr helper
+Date: Sat, 21 Dec 2013 15:37:21 +0530
+Message-Id: <1387620441-28694-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+'cm36651_of_match' is always compiled in. Hence the
+helper macro is not needed.
 
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/iio/light/cm36651.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Greg KH <gregkh@linuxfoundation.org> wrote:
->On Sun, Dec 22, 2013 at 04:57:39PM +0000, Jonathan Cameron wrote:
->> The following changes since commit
->c6236c0ce39c809c336ca929f68cf8ad02cf94e0:
->> 
->>   staging: comedi: drivers: fix return value of
->comedi_load_firmware() (2013-12-17 13:05:53 -0800)
->> 
->> are available in the git repository at:
->> 
->>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->tags/iio-fixes-for-3.13d
->> 
->> for you to fetch changes up to
->83d5f3246fc05a629278240c09688fd9960b97db:
->> 
->>   staging:iio:ad799x fix incorrect endianness specification for
->buffer elements (2013-12-17 21:50:54 +0000)
->> 
->> ----------------------------------------------------------------
->> 4th round of iio fixes for the 3.13 cycle.
->> 
->> * Another miss reported endian fix that missed the last pull request
->due
->>   to a bug in the first version posted (which made it look like a
->cleanup
->>   rather than a fix).
->
->Is this a regression fix? 
-Nope. It was never right though I guess at one point it was not specified rather than incorrectly specified. Long ago though!
-
-> Can it wait for 3.14-rc1 and then go into
->3.13-stable as I really didn't want to have any more pull requests for
->3.13-final due to vacations...
-
-Sure.  Have a good vacation.
-
->
->thanks,
->
->greg k-h
-
-
-
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index 0922e39b0ea9..328ef3d760c3 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -693,7 +693,7 @@ static const struct of_device_id cm36651_of_match[] = {
+ static struct i2c_driver cm36651_driver = {
+ 	.driver = {
+ 		.name	= "cm36651",
+-		.of_match_table = of_match_ptr(cm36651_of_match),
++		.of_match_table = cm36651_of_match,
+ 		.owner	= THIS_MODULE,
+ 	},
+ 	.probe		= cm36651_probe,
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.9.5
+
