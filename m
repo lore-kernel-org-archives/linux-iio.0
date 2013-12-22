@@ -1,92 +1,168 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47480 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47649 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754018Ab3LVRW2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Dec 2013 12:22:28 -0500
-Message-ID: <52B71FD2.6040004@kernel.org>
-Date: Sun, 22 Dec 2013 17:22:26 +0000
+	with ESMTP id S1754163Ab3LVRgW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Dec 2013 12:36:22 -0500
+Message-ID: <52B72314.2040400@kernel.org>
+Date: Sun, 22 Dec 2013 17:36:20 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 13/15] staging:iio:ad7746: Do not store the transfer buffer
- on the stack
-References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-13-git-send-email-lars@metafoo.de> <5299C868.7060306@kernel.org>
-In-Reply-To: <5299C868.7060306@kernel.org>
+Subject: Re: [PATCH 07/15] iio:ad5791: Do not store transfer buffers on the
+ stack
+References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-7-git-send-email-lars@metafoo.de> <5299C779.3070601@kernel.org>
+In-Reply-To: <5299C779.3070601@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/30/13 11:13, Jonathan Cameron wrote:
-> On 11/25/13 12:42, Lars-Peter Clausen wrote:
->> Some I2C controllers might not be able to handle transfer buffers that are
->> stored on stack.
+On 11/30/13 11:09, Jonathan Cameron wrote:
+> On 11/25/13 12:41, Lars-Peter Clausen wrote:
+>> Some SPI controllers may not be able to handle transfer buffers that are placed
+>> on the stack.
 >>
 >> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > Applied to the togreg branch of iio.git
 > 
-> Thanks,
-Hi Lars,
+> Thanks
 
-I let this one through without quite enough scrutiny.  It's a valid cleanup, but the statement
-that some i2c controllers migh tnot be able to handle transfer buffers that are stored on the
-stack is missleading, seeing as the relevant i2c calls do an explicit memcpy - (curriously to
-another buffer that is also on the stack...)  I guess this might change in future.  In the pull
-request I've mentioned that it isn't a problem right now.
+I really didn't review this series well enough.  This should probably have
+gone in as a fix rather that through the togreg branch as should the other sp
+driver.  Bit late now though given the size of the patch.
 
-So I should have picked up on the commit message content!
+Sorry it has taken me so long to do a pull request to Greg.  I always
+get a bit lazy on the stuff for next as can always do it tomorrow!
 
-oops.
+Slipped rather long this time though!
 
-I'm not rebasing for a missleading bit of comment though so hopefully no one upstream will care
-too much!
+Jonathan
+
 >> ---
->>  drivers/staging/iio/cdc/ad7746.c | 14 +++++++-------
->>  1 file changed, 7 insertions(+), 7 deletions(-)
+>>  drivers/iio/dac/ad5791.c | 46 +++++++++++++++++++++-------------------------
+>>  1 file changed, 21 insertions(+), 25 deletions(-)
 >>
->> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
->> index 01e15e2..cbb1588 100644
->> --- a/drivers/staging/iio/cdc/ad7746.c
->> +++ b/drivers/staging/iio/cdc/ad7746.c
->> @@ -105,6 +105,11 @@ struct ad7746_chip_info {
->>  	u8	vt_setup;
->>  	u8	capdac[2][2];
->>  	s8	capdac_set;
+>> diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
+>> index 1e7f4cd..79bf199 100644
+>> --- a/drivers/iio/dac/ad5791.c
+>> +++ b/drivers/iio/dac/ad5791.c
+>> @@ -91,6 +91,11 @@ struct ad5791_state {
+>>  	unsigned			ctrl;
+>>  	unsigned			pwr_down_mode;
+>>  	bool				pwr_down;
 >> +
 >> +	union {
 >> +		__be32 d32;
 >> +		u8 d8[4];
->> +	} data ____cacheline_aligned;
+>> +	} data[3] ____cacheline_aligned;
 >>  };
 >>  
->>  enum ad7746_chan {
->> @@ -566,11 +571,6 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
->>  	int ret, delay;
->>  	u8 regval, reg;
+>>  /**
+>> @@ -104,48 +109,39 @@ enum ad5791_supported_device_ids {
+>>  	ID_AD5791,
+>>  };
 >>  
+>> -static int ad5791_spi_write(struct spi_device *spi, u8 addr, u32 val)
+>> +static int ad5791_spi_write(struct ad5791_state *st, u8 addr, u32 val)
+>>  {
 >> -	union {
 >> -		__be32 d32;
 >> -		u8 d8[4];
 >> -	} data;
 >> -
->>  	mutex_lock(&indio_dev->mlock);
+>> -	data.d32 = cpu_to_be32(AD5791_CMD_WRITE |
+>> +	st->data[0].d32 = cpu_to_be32(AD5791_CMD_WRITE |
+>>  			      AD5791_ADDR(addr) |
+>>  			      (val & AD5791_DAC_MASK));
 >>  
->>  	switch (mask) {
->> @@ -591,12 +591,12 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
->>  		/* Now read the actual register */
+>> -	return spi_write(spi, &data.d8[1], 3);
+>> +	return spi_write(st->spi, &st->data[0].d8[1], 3);
+>>  }
 >>  
->>  		ret = i2c_smbus_read_i2c_block_data(chip->client,
->> -			chan->address >> 8, 3, &data.d8[1]);
->> +			chan->address >> 8, 3, &chip->data.d8[1]);
+>> -static int ad5791_spi_read(struct spi_device *spi, u8 addr, u32 *val)
+>> +static int ad5791_spi_read(struct ad5791_state *st, u8 addr, u32 *val)
+>>  {
+>> -	union {
+>> -		__be32 d32;
+>> -		u8 d8[4];
+>> -	} data[3];
+>>  	int ret;
+>>  	struct spi_transfer xfers[] = {
+>>  		{
+>> -			.tx_buf = &data[0].d8[1],
+>> +			.tx_buf = &st->data[0].d8[1],
+>>  			.bits_per_word = 8,
+>>  			.len = 3,
+>>  			.cs_change = 1,
+>>  		}, {
+>> -			.tx_buf = &data[1].d8[1],
+>> -			.rx_buf = &data[2].d8[1],
+>> +			.tx_buf = &st->data[1].d8[1],
+>> +			.rx_buf = &st->data[2].d8[1],
+>>  			.bits_per_word = 8,
+>>  			.len = 3,
+>>  		},
+>>  	};
 >>  
->>  		if (ret < 0)
->>  			goto out;
+>> -	data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
+>> +	st->data[0].d32 = cpu_to_be32(AD5791_CMD_READ |
+>>  			      AD5791_ADDR(addr));
+>> -	data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
+>> +	st->data[1].d32 = cpu_to_be32(AD5791_ADDR(AD5791_ADDR_NOOP));
 >>  
->> -		*val = (be32_to_cpu(data.d32) & 0xFFFFFF) - 0x800000;
->> +		*val = (be32_to_cpu(chip->data.d32) & 0xFFFFFF) - 0x800000;
+>> -	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
+>> +	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
 >>  
->>  		switch (chan->type) {
->>  		case IIO_TEMP:
+>> -	*val = be32_to_cpu(data[2].d32);
+>> +	*val = be32_to_cpu(st->data[2].d32);
+>>  
+>>  	return ret;
+>>  }
+>> @@ -210,7 +206,7 @@ static ssize_t ad5791_write_dac_powerdown(struct iio_dev *indio_dev,
+>>  	}
+>>  	st->pwr_down = pwr_down;
+>>  
+>> -	ret = ad5791_spi_write(st->spi, AD5791_ADDR_CTRL, st->ctrl);
+>> +	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl);
+>>  
+>>  	return ret ? ret : len;
+>>  }
+>> @@ -263,7 +259,7 @@ static int ad5791_read_raw(struct iio_dev *indio_dev,
+>>  
+>>  	switch (m) {
+>>  	case IIO_CHAN_INFO_RAW:
+>> -		ret = ad5791_spi_read(st->spi, chan->address, val);
+>> +		ret = ad5791_spi_read(st, chan->address, val);
+>>  		if (ret)
+>>  			return ret;
+>>  		*val &= AD5791_DAC_MASK;
+>> @@ -330,7 +326,7 @@ static int ad5791_write_raw(struct iio_dev *indio_dev,
+>>  		val &= AD5791_RES_MASK(chan->scan_type.realbits);
+>>  		val <<= chan->scan_type.shift;
+>>  
+>> -		return ad5791_spi_write(st->spi, chan->address, val);
+>> +		return ad5791_spi_write(st, chan->address, val);
+>>  
+>>  	default:
+>>  		return -EINVAL;
+>> @@ -393,7 +389,7 @@ static int ad5791_probe(struct spi_device *spi)
+>>  		dev_warn(&spi->dev, "reference voltage unspecified\n");
+>>  	}
+>>  
+>> -	ret = ad5791_spi_write(spi, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+>> +	ret = ad5791_spi_write(st, AD5791_ADDR_SW_CTRL, AD5791_SWCTRL_RESET);
+>>  	if (ret)
+>>  		goto error_disable_reg_neg;
+>>  
+>> @@ -405,7 +401,7 @@ static int ad5791_probe(struct spi_device *spi)
+>>  		  | ((pdata && pdata->use_rbuf_gain2) ? 0 : AD5791_CTRL_RBUF) |
+>>  		  AD5791_CTRL_BIN2SC;
+>>  
+>> -	ret = ad5791_spi_write(spi, AD5791_ADDR_CTRL, st->ctrl |
+>> +	ret = ad5791_spi_write(st, AD5791_ADDR_CTRL, st->ctrl |
+>>  		AD5791_CTRL_OPGND | AD5791_CTRL_DACTRI);
+>>  	if (ret)
+>>  		goto error_disable_reg_neg;
 >>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
