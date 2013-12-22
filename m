@@ -1,98 +1,95 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <529E3B01.5070602@metafoo.de>
-Date: Tue, 03 Dec 2013 21:11:45 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47480 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754018Ab3LVRW2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Dec 2013 12:22:28 -0500
+Message-ID: <52B71FD2.6040004@kernel.org>
+Date: Sun, 22 Dec 2013 17:22:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 14/15] staging:iio:ad9832: Mark transfer buffers as __be16
-References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-14-git-send-email-lars@metafoo.de> <5299C882.8020509@kernel.org> <529DB20A.6050500@metafoo.de> <c7a6d755-a2e3-4180-a690-d97434e32db7@email.android.com> <529E3A96.4060503@kernel.org>
-In-Reply-To: <529E3A96.4060503@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 13/15] staging:iio:ad7746: Do not store the transfer buffer
+ on the stack
+References: <1385383327-28181-1-git-send-email-lars@metafoo.de> <1385383327-28181-13-git-send-email-lars@metafoo.de> <5299C868.7060306@kernel.org>
+In-Reply-To: <5299C868.7060306@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/03/2013 09:09 PM, Jonathan Cameron wrote:
-> On 12/03/13 14:56, Jonathan Cameron wrote:
+On 11/30/13 11:13, Jonathan Cameron wrote:
+> On 11/25/13 12:42, Lars-Peter Clausen wrote:
+>> Some I2C controllers might not be able to handle transfer buffers that are
+>> stored on stack.
 >>
->>
->> Lars-Peter Clausen <lars@metafoo.de> wrote:
->>> On 11/30/2013 12:14 PM, Jonathan Cameron wrote:
->>>> On 11/25/13 12:42, Lars-Peter Clausen wrote:
->>>>> Fixes the following warnings from sparse:
->>>>> 	drivers/staging/iio/frequency/ad9832.c:43:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:43:26:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:43:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:46:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:46:26:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:46:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:49:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:49:26:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:49:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:52:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:52:26:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:52:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:65:27: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:65:27:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:65:27:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:68:27: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:68:27:    expected unsigned
->>> short [unsigned] [short] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:68:27:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:107:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:107:26:    expected unsigned
->>> short [unsigned] data
->>>>> 	drivers/staging/iio/frequency/ad9832.c:107:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:120:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:120:26:    expected unsigned
->>> short [unsigned] data
->>>>> 	drivers/staging/iio/frequency/ad9832.c:120:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:133:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:133:26:    expected unsigned
->>> short [unsigned] data
->>>>> 	drivers/staging/iio/frequency/ad9832.c:133:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:144:26: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:144:26:    expected unsigned
->>> short [unsigned] data
->>>>> 	drivers/staging/iio/frequency/ad9832.c:144:26:    got restricted
->>> __be16 [usertype] <noident>
->>>>> 	drivers/staging/iio/frequency/ad9832.c:277:18: warning: incorrect
->>> type in assignment (different base types)
->>>>> 	drivers/staging/iio/frequency/ad9832.c:277:18:    expected unsigned
->>> short [unsigned] data
->>>>> 	drivers/staging/iio/frequency/ad9832.c:277:18:    got restricted
->>> __be16 [usertype] <noident>
->>>>>
->>>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>>> Applied to the togreg branch of iio.git
->>>
->>> Thanks, for taking care of the patches. Somehow this one and the ad9834
->>> didn't make it. Shall I resend?
->>>
->> Oops I probably got distracted. Don't worry about the resending. I will track them down.
-> Both have now 'actually' been applied and pushed out.
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Applied to the togreg branch of iio.git
+> 
+> Thanks,
+Hi Lars,
 
-thanks.
+I let this one through without quite enough scrutiny.  It's a valid cleanup, but the statement
+that some i2c controllers migh tnot be able to handle transfer buffers that are stored on the
+stack is missleading, seeing as the relevant i2c calls do an explicit memcpy - (curriously to
+another buffer that is also on the stack...)  I guess this might change in future.  In the pull
+request I've mentioned that it isn't a problem right now.
+
+So I should have picked up on the commit message content!
+
+oops.
+
+I'm not rebasing for a missleading bit of comment though so hopefully no one upstream will care
+too much!
+>> ---
+>>  drivers/staging/iio/cdc/ad7746.c | 14 +++++++-------
+>>  1 file changed, 7 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+>> index 01e15e2..cbb1588 100644
+>> --- a/drivers/staging/iio/cdc/ad7746.c
+>> +++ b/drivers/staging/iio/cdc/ad7746.c
+>> @@ -105,6 +105,11 @@ struct ad7746_chip_info {
+>>  	u8	vt_setup;
+>>  	u8	capdac[2][2];
+>>  	s8	capdac_set;
+>> +
+>> +	union {
+>> +		__be32 d32;
+>> +		u8 d8[4];
+>> +	} data ____cacheline_aligned;
+>>  };
+>>  
+>>  enum ad7746_chan {
+>> @@ -566,11 +571,6 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+>>  	int ret, delay;
+>>  	u8 regval, reg;
+>>  
+>> -	union {
+>> -		__be32 d32;
+>> -		u8 d8[4];
+>> -	} data;
+>> -
+>>  	mutex_lock(&indio_dev->mlock);
+>>  
+>>  	switch (mask) {
+>> @@ -591,12 +591,12 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+>>  		/* Now read the actual register */
+>>  
+>>  		ret = i2c_smbus_read_i2c_block_data(chip->client,
+>> -			chan->address >> 8, 3, &data.d8[1]);
+>> +			chan->address >> 8, 3, &chip->data.d8[1]);
+>>  
+>>  		if (ret < 0)
+>>  			goto out;
+>>  
+>> -		*val = (be32_to_cpu(data.d32) & 0xFFFFFF) - 0x800000;
+>> +		*val = (be32_to_cpu(chip->data.d32) & 0xFFFFFF) - 0x800000;
+>>  
+>>  		switch (chan->type) {
+>>  		case IIO_TEMP:
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
