@@ -1,62 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:40516 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752817Ab3LXBua (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Dec 2013 20:50:30 -0500
-From: Marek Vasut <marex@denx.de>
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCHv5 RESEND 0/4] iio: mxs-lradc: add support to optional divider_by_two
-Date: Tue, 24 Dec 2013 02:50:00 +0100
-Cc: Jonathan Cameron <jic23@kernel.org>, lars@metafoo.de,
-	harald@ccbib.org, hector.palacios@digi.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1387820884-28140-1-git-send-email-alexandre.belloni@free-electrons.com> <201312231954.36124.marex@denx.de> <52B88D5C.4080402@free-electrons.com>
-In-Reply-To: <52B88D5C.4080402@free-electrons.com>
-MIME-Version: 1.0
-Message-Id: <201312240250.00629.marex@denx.de>
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: lars@metafoo.de,
+	Marek Vasut <marex@denx.de>,
+	harald@ccbib.org,
+	hector.palacios@digi.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv5 RESEND 4/4] iio: mxs-lradc: convert is_divided to a bitmap
+Date: Mon, 23 Dec 2013 18:48:04 +0100
+Message-Id: <1387820884-28140-5-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1387820884-28140-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1387820884-28140-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Monday, December 23, 2013 at 08:22:04 PM, Alexandre Belloni wrote:
-> On 23/12/2013 19:54, Marek Vasut wrote:
-> > On Monday, December 23, 2013 at 06:48:00 PM, Alexandre Belloni wrote:
-> >> Hello,
-> >> 
-> >> This is v5 of the patchset that adds support to the optional
-> >> divider_by_two of LRADC channels.
-> >> 
-> >> Changes since v4:
-> >>  - moved enum mxs_lradc_divbytwo to the third patch
-> >>  - added a fourth patch to convert is_divided to a bitmap. I did that in
-> >>  a
-> >>  
-> >>    separated patch for review and copyright attribution purposes.
-> >> 
-> >> This was tested on a custom i.MX28 platform.
-> >> 
-> >> Alexandre Belloni (1):
-> >>   iio: mxs-lradc: convert is_divided to a bitmap
-> >> 
-> >> Hector Palacios (3):
-> >>   iio: mxs-lradc: add scale attribute to channels
-> >>   iio: mxs-lradc: add scale_available file to channels
-> >>   iio: mxs-lradc: add write_raw function to modify scale
-> >>  
-> >>  drivers/staging/iio/adc/mxs-lradc.c | 222
-> >> 
-> >> +++++++++++++++++++++++++++++++++++- 1 file changed, 219 insertions(+),
-> >> 3 deletions(-)
-> > 
-> > Why is there a resend please ?
-> 
-> I don't know how but I screwed Jonathan's mail address. As he is the
-> main maintainer, I though it would be a good idea to get his attention.
+mxs_lradc.is_divided was an unsigned long array. Convert it to a bitmap to save
+some memory.
 
-Ah, now I see that ^C there :)
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/staging/iio/adc/mxs-lradc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-btw. I wish you a Merry Christmas and a happy New Year, guys!
-
-Best regards,
-Marek Vasut
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index a58c6aaa94d3..df71669bb60e 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -211,7 +211,7 @@ struct mxs_lradc {
+ 
+ 	const uint32_t		*vref_mv;
+ 	struct mxs_lradc_scale	scale_avail[LRADC_MAX_TOTAL_CHANS][2];
+-	unsigned int		is_divided[LRADC_MAX_TOTAL_CHANS];
++	unsigned long		is_divided;
+ 
+ 	/*
+ 	 * Touchscreen LRADC channels receives a private slot in the CTRL4
+@@ -920,7 +920,7 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+ 
+ 		*val = lradc->vref_mv[chan->channel];
+ 		*val2 = chan->scan_type.realbits -
+-			lradc->is_divided[chan->channel];
++			test_bit(chan->channel, &lradc->is_divided);
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 
+ 	case IIO_CHAN_INFO_OFFSET:
+@@ -965,14 +965,14 @@ static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
+ 			/* divider by two disabled */
+ 			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
+ 			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
+-			lradc->is_divided[chan->channel] = 0;
++			clear_bit(chan->channel, &lradc->is_divided);
+ 			ret = 0;
+ 		} else if (val == scale_avail[MXS_LRADC_DIV_ENABLED].integer &&
+ 			   val2 == scale_avail[MXS_LRADC_DIV_ENABLED].nano) {
+ 			/* divider by two enabled */
+ 			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
+ 			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
+-			lradc->is_divided[chan->channel] = 1;
++			set_bit(chan->channel, &lradc->is_divided);
+ 			ret = 0;
+ 		}
+ 
+-- 
+1.8.3.2
