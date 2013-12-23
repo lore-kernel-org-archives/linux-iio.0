@@ -1,24 +1,34 @@
-Return-Path: <ktsai@capellamicro.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp104.biz.mail.ne1.yahoo.com ([98.138.207.11]:33159 "HELO
+	smtp104.biz.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with SMTP id S1758299Ab3LWXv4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Dec 2013 18:51:56 -0500
 From: Kevin Tsai <ktsai@capellamicro.com>
 To: Kevin Tsai <ktsai@capellamicro.com>,
-  Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>,
-  Mark Rutland <mark.rutland@arm.com>,
-  Ian Campbell <ijc+devicetree@hellion.org.uk>,
-  Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>,
-  Jonathan Cameron <jic23@kernel.org>, Grant Likely <grant.likely@linaro.org>,
-  Peter Huewe <peterhuewe@gmx.de>,
-  Jason Gunthorpe <jgunthorpe@obsidianresearch.com>,
-  Teddy Reed <teddy@prosauce.org>, Kent Yoder <key@linux.vnet.ibm.com>,
-  Arnaud Ebalard <arno@natisbad.org>, Peter Meerwald <pmeerw@pmeerw.net>,
-  Lars-Peter Clausen <lars@metafoo.de>,
-  Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
-  Jacek Anaszewski <j.anaszewski@samsung.com>
+	Rob Herring <rob.herring@calxeda.com>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Rob Landley <rob@landley.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Peter Huewe <peterhuewe@gmx.de>,
+	Jason Gunthorpe <jgunthorpe@obsidianresearch.com>,
+	Teddy Reed <teddy@prosauce.org>,
+	Kent Yoder <key@linux.vnet.ibm.com>,
+	Arnaud Ebalard <arno@natisbad.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>,
+	Jacek Anaszewski <j.anaszewski@samsung.com>
 Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-  linux-iio@vger.kernel.org
-Subject: [PATCH V4 1/1] iio: add Capella CM32181 ambient light sensor driver.
-Date: Mon, 23 Dec 2013 17:53:55 -0800
-Message-Id: <1387850035-4030-1-git-send-email-ktsai@capellamicro.com>
-List-ID: <linux-iio@vger.kernel.org>
+	linux-iio@vger.kernel.org
+Subject: [PATCH V3 1/1] iio: add Capella CM32181 ambient light sensor driver.
+Date: Mon, 23 Dec 2013 15:52:34 -0800
+Message-Id: <1387842754-5323-1-git-send-email-ktsai@capellamicro.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Add Capella Microsystem CM32181 Ambient Light Sensor IIO driver.
 This driver will convert raw data to lux value under open-air
@@ -29,8 +39,8 @@ Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
  drivers/iio/light/Kconfig                          |  11 +
  drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/cm32181.c                        | 380 +++++++++++++++++++++
- 4 files changed, 393 insertions(+)
+ drivers/iio/light/cm32181.c                        | 383 +++++++++++++++++++++
+ 4 files changed, 396 insertions(+)
  create mode 100644 drivers/iio/light/cm32181.c
 
 diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
@@ -81,10 +91,10 @@ index daa327f..60e35ac 100644
  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
 diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
 new file mode 100644
-index 0000000..40cc394
+index 0000000..c7004a8
 --- /dev/null
 +++ b/drivers/iio/light/cm32181.c
-@@ -0,0 +1,380 @@
+@@ -0,0 +1,383 @@
 +/*
 + * Copyright (C) 2013 Capella Microsystems Inc.
 + * Author: Kevin Tsai <ktsai@capellamicro.com>
@@ -139,8 +149,7 @@ index 0000000..40cc394
 +};
 +
 +static const int als_it_bits[] = {12, 8, 0, 1, 2, 3};
-+static const int als_it_value[] = {25000, 50000, 100000, 200000, 400000,
-+	800000};
++static int als_it_value[] = {25000, 50000, 100000, 200000, 400000, 800000};
 +
 +struct cm32181_chip {
 +	struct i2c_client *client;
@@ -204,9 +213,11 @@ index 0000000..40cc394
 +	als_it = cm32181->conf_regs[CM32181_REG_ADDR_CMD];
 +	als_it &= CM32181_CMD_ALS_IT_MASK;
 +	als_it >>= CM32181_CMD_ALS_IT_SHIFT;
-+	for (i = 0; i < ARRAY_SIZE(als_it_bits); i++) {
++	for (i = 0; i < sizeof(als_it_bits)/sizeof(als_it_bits[0]); i++) {
 +		if (als_it == als_it_bits[i]) {
 +			*val = als_it_value[i];
++			if (*val == 0)
++				return -EINVAL;
 +			return IIO_VAL_INT;
 +		}
 +	}
@@ -229,7 +240,7 @@ index 0000000..40cc394
 +	u16 als_it;
 +	int ret, i, n;
 +
-+	n = ARRAY_SIZE(als_it_value);
++	n = sizeof(als_it_value)/sizeof(als_it_value[0]);
 +	for (i = 0; i < n; i++)
 +		if (val <= als_it_value[i])
 +			break;
@@ -287,7 +298,7 @@ index 0000000..40cc394
 +	if (lux > 0xFFFF)
 +		lux = 0xFFFF;
 +
-+	return lux;
++	return (int)lux;
 +}
 +
 +static int cm32181_read_raw(struct iio_dev *indio_dev,
@@ -349,7 +360,7 @@ index 0000000..40cc394
 +{
 +	int i, n, len;
 +
-+	n = ARRAY_SIZE(als_it_value);
++	n = sizeof(als_it_value)/sizeof(als_it_value[0]);
 +	for (i = 0, len = 0; i < n; i++)
 +		len += sprintf(buf + len, "%d ", als_it_value[i]);
 +	return len + sprintf(buf + len, "\n");
@@ -358,6 +369,8 @@ index 0000000..40cc394
 +static const struct iio_chan_spec cm32181_channels[] = {
 +	{
 +		.type = IIO_LIGHT,
++		.indexed = 0,
++		.channel = 0,
 +		.info_mask_separate =
 +			BIT(IIO_CHAN_INFO_PROCESSED) |
 +			BIT(IIO_CHAN_INFO_CALIBSCALE) |
@@ -467,3 +480,4 @@ index 0000000..40cc394
 +MODULE_LICENSE("GPL");
 -- 
 1.8.3.1
+
