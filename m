@@ -1,74 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f174.google.com ([74.125.82.174]:40322 "EHLO
-	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755464Ab3LVWrY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Dec 2013 17:47:24 -0500
-Date: Sun, 22 Dec 2013 22:47:15 +0500
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: iio_utils.h bug?
-Message-ID: <20131222174713.GA3931@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46444 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752223Ab3LXSx3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Dec 2013 13:53:29 -0500
+In-Reply-To: <20131222174713.GA3931@gmail.com>
+References: <20131222174713.GA3931@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: iio_utils.h bug?
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Tue, 24 Dec 2013 18:53:26 +0000
+To: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <244177bb-694e-4176-9a42-afae241fc27c@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-
-A guy posted this fix on my blog. I couldn't make sense of it.
-
-Thought I'd post it here. I'll send a proper patch file if 
-I knew what commit log I needed to write.
-And I can't exactly sign-off :s.
-
-I asked him to post but he couldn't/wouldn't.
-
-Regards
-ZubairLK
 
 
-"Defend against buffer overflow of ci_array:
+"Zubair Lutfullah :" <zubair.lutfullah@gmail.com> wrote:
+>Hi,
+>
+>A guy posted this fix on my blog. I couldn't make sense of it.
+>
+>Thought I'd post it here. I'll send a proper patch file if 
+>I knew what commit log I needed to write.
+>And I can't exactly sign-off :s.
+Yes you can. Patch routed through you, hence your sign is entirely correct. If you have an email address for the author then the from field can be different from the sign-off and you can add a reported-by as well to credit it as fully as possible.
 
- code always overwrites one entry beyond end of array, now fixed
---Craig Markwardt"
+Will be the weekend at least before I actually look at the code!
+>
+>I asked him to post but he couldn't/wouldn't.
+>
+>Regards
+>ZubairLK
+>
+>
+>"Defend against buffer overflow of ci_array:
+>
+> code always overwrites one entry beyond end of array, now fixed
+>--Craig Markwardt"
+>
+>iio_utils.h
+>
+>@@ -335,6 +335,7 @@ inline int build_channel_array(const char
+>*device_dir,
+>   while (ent = readdir(dp), ent != NULL) {
+>     if (strcmp(ent->d_name + strlen(ent->d_name) - strlen("_en"),
+>          "_en") == 0) {
+>+      int current_enabled = 0;
+>       current = &(*ci_array)[count++];
+>       ret = asprintf(&filename,
+>                "%s/%s", scan_el_dir, ent->d_name);
+>       if (ret < 0) {
+>         ret = -ENOMEM;
+>         /* decrement count to avoid freeing name */
+>         count--;
+>         goto error_cleanup_array;
+>       }
+>
+>       sysfsfp = fopen(filename, "r");
+>
+>       if (sysfsfp == NULL) {
+>         free(filename);
+>         ret = -errno;
+>         goto error_cleanup_array;
+>       }
+>
+>-      fscanf(sysfsfp, "%u", &current->enabled);
+>+      fscanf(sysfsfp, "%u", &current_enabled);
+>       fclose(sysfsfp);
+>
+>-      if (!current->enabled) {
+>+      if (!current_enabled) {
+>         free(filename);
+>         count--;
+>         continue;
+>       }
+>+      current->enabled = current_enabled;
+>       current->scale = 1.0;
+>       current->offset = 0;
+>       current->name = strndup(ent->d_name,
 
-iio_utils.h
-
-@@ -335,6 +335,7 @@ inline int build_channel_array(const char *device_dir,
-   while (ent = readdir(dp), ent != NULL) {
-     if (strcmp(ent->d_name + strlen(ent->d_name) - strlen("_en"),
-          "_en") == 0) {
-+      int current_enabled = 0;
-       current = &(*ci_array)[count++];
-       ret = asprintf(&filename,
-                "%s/%s", scan_el_dir, ent->d_name);
-       if (ret < 0) {
-         ret = -ENOMEM;
-         /* decrement count to avoid freeing name */
-         count--;
-         goto error_cleanup_array;
-       }
-
-       sysfsfp = fopen(filename, "r");
-
-       if (sysfsfp == NULL) {
-         free(filename);
-         ret = -errno;
-         goto error_cleanup_array;
-       }
-
--      fscanf(sysfsfp, "%u", &current->enabled);
-+      fscanf(sysfsfp, "%u", &current_enabled);
-       fclose(sysfsfp);
-
--      if (!current->enabled) {
-+      if (!current_enabled) {
-         free(filename);
-         count--;
-         continue;
-       }
-+      current->enabled = current_enabled;
-       current->scale = 1.0;
-       current->offset = 0;
-       current->name = strndup(ent->d_name,
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
