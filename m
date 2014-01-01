@@ -1,55 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46070 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753791AbaAAMrR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jan 2014 07:47:17 -0500
-Message-ID: <52C40E53.1040906@kernel.org>
-Date: Wed, 01 Jan 2014 12:47:15 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.17.20]:49652 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754750AbaAAXEQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 1 Jan 2014 18:04:16 -0500
+Received: from [192.168.0.80] ([188.102.227.0]) by mail.gmx.com (mrgmx103)
+ with ESMTPSA (Nemesis) id 0MAQMg-1WA4LE2LOM-00BZqg for
+ <linux-iio@vger.kernel.org>; Thu, 02 Jan 2014 00:04:15 +0100
+Message-ID: <52C49EED.5000206@gmx.de>
+Date: Thu, 02 Jan 2014 00:04:13 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [RFC]iio:industrialio-event fix error-handling in iio_device_add_event
-References: <52C00D75.70302@gmx.de>
-In-Reply-To: <52C00D75.70302@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+To: linux-iio@vger.kernel.org
+Subject: [PATCH V2 2/2]staging:iio:ad799x fix error_free_irq, use devm_request_threaded_irq
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Move to devm_request_threaded_irq to make device-removal easier.
 
-On 29/12/13 11:54, Hartmut Knaack wrote:
-> __iio_add_chan_devattr returns -EBUSY, when registering the event-interface of
-> ad799x, but iio_device_add_event does not catch it. So, handle it like in
-> iio_device_add_info_mask_type. Not sure, if this is the right solution, but it
-> makes the ad799x (and possibly others as well) usable.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-I think the fix is correct, but I'm not entirely sure what is triggering 
-the bug in this particular driver. All of the elements of ad799x_events 
-are in mask separate so shared_by should be IIO_SEPARATE for all calls 
-to this function.
-
-Lars, any idea's on what Hartmut is hitting?
-Also, is the below patch as valid as it appears at first glance?
-
-> ---
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index c10eab6..d37a907 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -362,7 +362,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
->   			&indio_dev->event_interface->dev_attr_list);
->   		kfree(postfix);
->
-> -		if (ret)
-> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
-> +			continue;
-> +		else if (ret < 0)
->   			return ret;
->
->   		attrcount++;
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index 3deb390..bc886f6 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -573,25 +573,23 @@ static int ad799x_probe(struct i2c_client *client,
+ 		goto error_disable_reg;
+ 
+ 	if (client->irq > 0) {
+-		ret = request_threaded_irq(client->irq,
+-					   NULL,
+-					   ad799x_event_handler,
+-					   IRQF_TRIGGER_FALLING |
+-					   IRQF_ONESHOT,
+-					   client->name,
+-					   indio_dev);
++		ret = devm_request_threaded_irq(&client->dev,
++						client->irq,
++						NULL,
++						ad799x_event_handler,
++						IRQF_TRIGGER_FALLING |
++						IRQF_ONESHOT,
++						client->name,
++						indio_dev);
+ 		if (ret)
+ 			goto error_cleanup_ring;
+ 	}
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_irq;
++		goto error_cleanup_ring;
+ 
+ 	return 0;
+ 
+-error_free_irq:
+-	if (client->irq > 0)
+-		free_irq(client->irq, indio_dev);
+ error_cleanup_ring:
+ 	ad799x_ring_cleanup(indio_dev);
+ error_disable_reg:
+@@ -607,8 +605,6 @@ static int ad799x_remove(struct i2c_client *client)
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	if (client->irq > 0)
+-		free_irq(client->irq, indio_dev);
+ 
+ 	ad799x_ring_cleanup(indio_dev);
+ 	if (!IS_ERR(st->reg))
