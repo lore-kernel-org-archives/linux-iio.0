@@ -1,75 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45917 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46263 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753575AbaAAMf4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jan 2014 07:35:56 -0500
-Message-ID: <52C40BAB.4060703@kernel.org>
-Date: Wed, 01 Jan 2014 12:35:55 +0000
+	with ESMTP id S1753883AbaAAND3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jan 2014 08:03:29 -0500
+Message-ID: <52C4121F.2020700@kernel.org>
+Date: Wed, 01 Jan 2014 13:03:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-CC: kernel-janitors@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging:iio: correct error check
-References: <1388581641-26782-1-git-send-email-Julia.Lawall@lip6.fr>
-In-Reply-To: <1388581641-26782-1-git-send-email-Julia.Lawall@lip6.fr>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH]staging:iio:ad799x use devm_request_threaded_irq
+References: <52C00CC5.3030209@gmx.de>
+In-Reply-To: <52C00CC5.3030209@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 01/01/14 13:07, Julia Lawall wrote:
-> From: Julia Lawall <Julia.Lawall@lip6.fr>
+On 29/12/13 11:51, Hartmut Knaack wrote:
+> Move to devm_request_threaded_irq to make device-removal easier, and also fix
+> error_free_irq, which did not check if an irq was requested at all.
 >
-> iio_kfifo_allocate returns NULL in case of error.
->
-> The semantic match that finds this problem is as follows:
-> (http://coccinelle.lip6.fr/)
->
-> // <smpl>
-> @@
-> expression *x;
-> identifier f;
-> statement S1,S2;
-> @@
->
-> *x = f(...);
->   if (x) { <+... when != if (...) S1 else S2
->       -ENOMEM ...+> }
-> // </smpl>
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Thanks. Certainly an 'interesting' bit of code :(
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Hi Hartmut,
 
-Applied to the fixes-togreg branch of iio.git. Giving timing in the 
-current cycle and that it isn't a recent regression, this won't go
-in now until after 3.13 is released.
+Please break this into two patches - the first fixing the irq check 
+(whilst it will go away in the second patch - we will probably want to 
+push the fix to stable, and can't do that with the other change in here).
 
-I've marked it for stable as well
+On the devm_request_threaded_irq usage, this is often considered 
+dangerous as it changes the ordering of resource freeing so that it
+doesn't match that of allocation.  Here I think you are fine, but
+haven't looked into that closely yet.
 
-Jonathan
->
+Lars, do you think this is a good idea?
+(any chance you are planning to get this driver out of staging any time 
+soon? :)
 > ---
->   drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+> index e32a555..bc886f6 100644
+> --- a/drivers/staging/iio/adc/ad799x_core.c
+> +++ b/drivers/staging/iio/adc/ad799x_core.c
+> @@ -573,24 +573,23 @@ static int ad799x_probe(struct i2c_client *client,
+>   		goto error_disable_reg;
 >
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 0a4298b..2b96665 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -629,7 +629,7 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->   	struct iio_buffer *buffer;
+>   	if (client->irq > 0) {
+> -		ret = request_threaded_irq(client->irq,
+> -					   NULL,
+> -					   ad799x_event_handler,
+> -					   IRQF_TRIGGER_FALLING |
+> -					   IRQF_ONESHOT,
+> -					   client->name,
+> -					   indio_dev);
+> +		ret = devm_request_threaded_irq(&client->dev,
+> +						client->irq,
+> +						NULL,
+> +						ad799x_event_handler,
+> +						IRQF_TRIGGER_FALLING |
+> +						IRQF_ONESHOT,
+> +						client->name,
+> +						indio_dev);
+>   		if (ret)
+>   			goto error_cleanup_ring;
+>   	}
+>   	ret = iio_device_register(indio_dev);
+>   	if (ret)
+> -		goto error_free_irq;
+> +		goto error_cleanup_ring;
 >
->   	buffer = iio_kfifo_allocate(indio_dev);
-> -	if (buffer)
-> +	if (!buffer)
->   		return -ENOMEM;
+>   	return 0;
 >
->   	iio_device_attach_buffer(indio_dev, buffer);
+> -error_free_irq:
+> -	free_irq(client->irq, indio_dev);
+>   error_cleanup_ring:
+>   	ad799x_ring_cleanup(indio_dev);
+>   error_disable_reg:
+> @@ -606,8 +605,6 @@ static int ad799x_remove(struct i2c_client *client)
+>   	struct ad799x_state *st = iio_priv(indio_dev);
 >
+>   	iio_device_unregister(indio_dev);
+> -	if (client->irq > 0)
+> -		free_irq(client->irq, indio_dev);
+>
+>   	ad799x_ring_cleanup(indio_dev);
+>   	if (!IS_ERR(st->reg))
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
