@@ -1,25 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:52049 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754750AbaAAXEJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 1 Jan 2014 18:04:09 -0500
-Received: from [192.168.0.80] ([188.102.227.0]) by mail.gmx.com (mrgmx101)
- with ESMTPSA (Nemesis) id 0Lbi2Z-1Vb0do3N5n-00lGrx for
- <linux-iio@vger.kernel.org>; Thu, 02 Jan 2014 00:04:07 +0100
-Message-ID: <52C49EE6.3090703@gmx.de>
-Date: Thu, 02 Jan 2014 00:04:06 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-Subject: [PATCH V2 0/2]staging:iio:ad799x fix error_free_irq, use devm_request_threaded_irq
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Julia.Lawall@lip6.fr>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: kernel-janitors@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging:iio: correct error check
+Date: Wed,  1 Jan 2014 14:07:21 +0100
+Message-Id: <1388581641-26782-1-git-send-email-Julia.Lawall@lip6.fr>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset will:
-  - fixes error_free_irq to check if an IRQ was requested before removal
-  - move to devm_request_threaded_irq to make device-removal easier
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+iio_kfifo_allocate returns NULL in case of error.
+
+The semantic match that finds this problem is as follows:
+(http://coccinelle.lip6.fr/)
+
+// <smpl>
+@@
+expression *x;
+identifier f;
+statement S1,S2;
+@@
+
+*x = f(...);
+ if (x) { <+... when != if (...) S1 else S2
+     -ENOMEM ...+> }
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+
 ---
-V2: Split into two patches
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 0a4298b..2b96665 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -629,7 +629,7 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 	struct iio_buffer *buffer;
+ 
+ 	buffer = iio_kfifo_allocate(indio_dev);
+-	if (buffer)
++	if (!buffer)
+ 		return -ENOMEM;
+ 
+ 	iio_device_attach_buffer(indio_dev, buffer);
