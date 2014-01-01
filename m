@@ -1,142 +1,55 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-Message-ID: <52A1FC15.9090707@free-electrons.com>
-Date: Fri, 06 Dec 2013 17:32:21 +0100
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46070 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753791AbaAAMrR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jan 2014 07:47:17 -0500
+Message-ID: <52C40E53.1040906@kernel.org>
+Date: Wed, 01 Jan 2014 12:47:15 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>,
- Hector Palacios <hector.palacios@digi.com>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
- fabio.estevam@freescale.com, marex@denx.de
-Subject: Re: [PATCH v3 5/5] iio: mxs-lradc: add write_raw function to modify
- scale
-References: <1374501843-19651-1-git-send-email-hector.palacios@digi.com> <1374501843-19651-6-git-send-email-hector.palacios@digi.com> <E1VoyGH-0001FW-4Z@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1VoyGH-0001FW-4Z@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [RFC]iio:industrialio-event fix error-handling in iio_device_add_event
+References: <52C00D75.70302@gmx.de>
+In-Reply-To: <52C00D75.70302@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
 
-On 06/12/2013 17:28, Harald Geyer wrote:
-> Hi,
+On 29/12/13 11:54, Hartmut Knaack wrote:
+> __iio_add_chan_devattr returns -EBUSY, when registering the event-interface of
+> ad799x, but iio_device_add_event does not catch it. So, handle it like in
+> iio_device_add_info_mask_type. Not sure, if this is the right solution, but it
+> makes the ad799x (and possibly others as well) usable.
 >
-> anybody knows what became of below patch?
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+I think the fix is correct, but I'm not entirely sure what is triggering 
+the bug in this particular driver. All of the elements of ad799x_events 
+are in mask separate so shared_by should be IIO_SEPARATE for all calls 
+to this function.
+
+Lars, any idea's on what Hartmut is hitting?
+Also, is the below patch as valid as it appears at first glance?
+
+> ---
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index c10eab6..d37a907 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -362,7 +362,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+>   			&indio_dev->event_interface->dev_attr_list);
+>   		kfree(postfix);
 >
-> It got a 'Reviewed-by: Marek Vasut <marex@denx.de>' but then nothing
-> happened and it never got applied it seems.
+> -		if (ret)
+> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
+> +			continue;
+> +		else if (ret < 0)
+>   			return ret;
 >
-> I'm considering working on current source support for the mxs-lradc driver
-> and would likely write something similar...
-
-
-I've started rebasing it on 3.13 and removing the DT part but I couldn't
-test it yet. I'll try to find the time to do so this week end.
-
-> Harald
+>   		attrcount++;
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
-> Hector Palacios writes:
->> Added write_raw function to manipulate the optional divider_by_two
->> through the scaling attribute out of the available scales.
->>
->> Signed-off-by: Hector Palacios <hector.palacios@digi.com>
->> ---
->>  drivers/staging/iio/adc/mxs-lradc.c | 56 ++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 55 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
->> index 5d332b1..4d3c7f5 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -213,6 +213,7 @@ struct mxs_lradc {
->>  #define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
->>  
->>  #define	LRADC_CTRL2				0x20
->> +#define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
->>  #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
->>  
->>  #define	LRADC_STATUS				0x40
->> @@ -320,7 +321,8 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>  		break;
->>  	case IIO_CHAN_INFO_SCALE:
->>  		*val = lradc->vref_mv[chan->channel];
->> -		*val2 = chan->scan_type.realbits;
->> +		*val2 = chan->scan_type.realbits -
->> +			lradc->is_divided[chan->channel];
->>  		ret = IIO_VAL_FRACTIONAL_LOG2;
->>  		break;
->>  	default:
->> @@ -333,6 +335,56 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->>  	return ret;
->>  }
->>  
->> +static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
->> +			       const struct iio_chan_spec *chan,
->> +			       int val, int val2, long m)
->> +{
->> +	struct mxs_lradc *lradc = iio_priv(iio_dev);
->> +	struct mxs_lradc_scale *scale_avail =
->> +			lradc->scale_avail[chan->channel];
->> +	int ret;
->> +
->> +	ret = mutex_trylock(&lradc->lock);
->> +	if (!ret)
->> +		return -EBUSY;
->> +
->> +	switch (m) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		ret = -EINVAL;
->> +		if (val == scale_avail[MXS_LRADC_DIV_DISABLED].integer &&
->> +		    val2 == scale_avail[MXS_LRADC_DIV_DISABLED].nano) {
->> +			/* divider by two disabled */
->> +			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
->> +			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
->> +			lradc->is_divided[chan->channel] = 0;
->> +			ret = 0;
->> +		} else if (val == scale_avail[MXS_LRADC_DIV_ENABLED].integer &&
->> +			   val2 == scale_avail[MXS_LRADC_DIV_ENABLED].nano) {
->> +			/* divider by two enabled */
->> +			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
->> +			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
->> +			lradc->is_divided[chan->channel] = 1;
->> +			ret = 0;
->> +		}
->> +
->> +		break;
->> +	default:
->> +		ret = -EINVAL;
->> +		break;
->> +	}
->> +
->> +	mutex_unlock(&lradc->lock);
->> +
->> +	return ret;
->> +}
->> +
->> +static int mxs_lradc_write_raw_get_fmt(struct iio_dev *iio_dev,
->> +				       const struct iio_chan_spec *chan,
->> +				       long m)
->> +{
->> +	return IIO_VAL_INT_PLUS_NANO;
->> +}
->> +
->>  static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
->>  		struct device_attribute *attr,
->>  		char *buf,
->> @@ -410,6 +462,8 @@ static const struct attribute_group mxs_lradc_attribute_group = {
->>  static const struct iio_info mxs_lradc_iio_info = {
->>  	.driver_module		= THIS_MODULE,
->>  	.read_raw		= mxs_lradc_read_raw,
->> +	.write_raw		= mxs_lradc_write_raw,
->> +	.write_raw_get_fmt	= mxs_lradc_write_raw_get_fmt,
->>  	.attrs			= &mxs_lradc_attribute_group,
->>  };
->>  
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
