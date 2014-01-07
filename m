@@ -1,31 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:41992 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756921AbaAHUYG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jan 2014 15:24:06 -0500
-Date: Wed, 8 Jan 2014 12:24:36 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.14 - set 3
-Message-ID: <20140108202436.GB8417@kroah.com>
-References: <52CDAE4A.7000200@kernel.org>
- <52CDAEE6.6060209@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <52CDAEE6.6060209@jic23.retrosnub.co.uk>
+Received: from ns.pmeerw.net ([87.118.82.44]:41007 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753380AbaAGW3f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 7 Jan 2014 17:29:35 -0500
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 1/2] iio: Remove obsolete variable in adjd_s311 driver
+Date: Tue,  7 Jan 2014 23:29:33 +0100
+Message-Id: <1389133774-28091-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jan 08, 2014 at 08:02:46PM +0000, Jonathan Cameron wrote:
-> Sorry all, I accidentally bcc'd linux-iio instead of cc'ing.
-> 
-> Greg, feel free to bounce this one back as too late if you like, but I thought
-> it worth a go given Linus has said there will be another RC and it would be
-> nice to get the Capella driver in 3.14!
+len variable become obsolete with
+iio_push_to_buffers_with_timestamp()
 
-Now worries, this just snuck in :)
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/light/adjd_s311.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Now pulled and pushed out, thanks.
+diff --git a/drivers/iio/light/adjd_s311.c b/drivers/iio/light/adjd_s311.c
+index f306847..1d8ecb7 100644
+--- a/drivers/iio/light/adjd_s311.c
++++ b/drivers/iio/light/adjd_s311.c
+@@ -120,7 +120,6 @@ static irqreturn_t adjd_s311_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adjd_s311_data *data = iio_priv(indio_dev);
+ 	s64 time_ns = iio_get_time_ns();
+-	int len = 0;
+ 	int i, j = 0;
+ 
+ 	int ret = adjd_s311_req_data(indio_dev);
+@@ -135,7 +134,6 @@ static irqreturn_t adjd_s311_trigger_handler(int irq, void *p)
+ 			goto done;
+ 
+ 		data->buffer[j++] = ret & ADJD_S311_DATA_MASK;
+-		len += 2;
+ 	}
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer, time_ns);
+-- 
+1.8.3.2
 
-greg k-h
