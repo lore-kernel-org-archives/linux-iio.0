@@ -1,40 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46988 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752370AbaAKLVu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 06:21:50 -0500
-Message-ID: <52D12956.1080208@kernel.org>
-Date: Sat, 11 Jan 2014 11:21:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <vivien.didelot@savoirfairelinux.com>
+Date: Thu, 9 Jan 2014 12:39:42 -0500 (EST)
+From: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, kernel@savoirfairelinux.com
+Message-ID: <2013486580.319791.1389289182921.JavaMail.root@mail>
+In-Reply-To: <235056967.112251.1389282903427.JavaMail.root@mail>
+Subject: max1363: internal reference
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: Add si7005 relative humidity and temperature
- sensor driver
-References: <1389355432-26695-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1389355432-26695-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
+Hi Jonathan,
 
+As described in the max1363.c header, the control of the internal
+reference is not currently supported by the driver.
 
-On 10/01/14 12:03, Peter Meerwald wrote:
-> sensor provides 12-bit relative humidity and 14-bit temperature
-> via I2C interface; temperature and linearity compensation is not
-> implemented (yet)
->
-> driver also supports the Si7015, but not the 2nd generation
-> sensors Si7013/Si7020/Si7021
->
-> datasheet is here
-> http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7005.pdf
->
-> v2: (thanks to Lars-Peter Clausen)
-> * fix coding style
-> * use devm_iio_device_register()
-> * change copyright year to 2014
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+We have two max11603 and max11605 which need this option. We currently
+use a monkey patch like this in max1363.c:
 
-Applied to the togreg branch of iio.git (pushed out as testing initially)
+    @@ -1414,7 +1414,12 @@ static const struct max1363_chip_info ma
+     static int max1363_initial_setup(struct max1363_state *st)
+     {
+    +#ifdef OUR_BOARD
+    +      st->setupbyte = MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_INT
+    +#else
+           st->setupbyte = MAX1363_SETUP_AIN3_IS_AIN3_REF_IS_VDD
+    +#endif
+                   | MAX1363_SETUP_POWER_UP_INT_REF
+                   | MAX1363_SETUP_INT_CLOCK
+                   | MAX1363_SETUP_UNIPOLAR
+
+In order to add the support for this, I would suggest adding a 
+platform_data for this driver such as:
+
+    struct max1363_platform_data {
+        bool internal_reference;
+    };
+
+What do you think?
+
+Best,
+Vivien
