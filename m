@@ -1,47 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49622 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751241AbaAKQJ1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 11:09:27 -0500
-Message-ID: <52D16CC0.90509@kernel.org>
-Date: Sat, 11 Jan 2014 16:09:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/5] iio:magnetometer:mag3110: Fix initialization of ctrl_reg1
-References: <1389391163-9622-1-git-send-email-pmeerw@pmeerw.net> <1389391163-9622-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1389391163-9622-4-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:58103 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754859AbaAJV70 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 10 Jan 2014 16:59:26 -0500
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 3/5] iio:magnetometer:mag3110: Scale factor missing for temperature
+Date: Fri, 10 Jan 2014 22:59:21 +0100
+Message-Id: <1389391163-9622-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1389391163-9622-1-git-send-email-pmeerw@pmeerw.net>
+References: <1389391163-9622-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+temperature is reported in milli-Celsius
 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/magnetometer/mag3110.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-On 10/01/14 21:59, Peter Meerwald wrote:
-> DR bits need to be shifted; since MAG3110_CTRL_DR_DEFAULT is
-> zero, the change has no effect
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Again, I'll hold this one for after the fixes are in.
+diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+index f66955f..02e4f97 100644
+--- a/drivers/iio/magnetometer/mag3110.c
++++ b/drivers/iio/magnetometer/mag3110.c
+@@ -183,8 +183,17 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		}
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+-		*val2 = 1000;
++		switch (chan->type) {
++		case IIO_MAGN:
++			*val = 0;
++			*val2 = 1000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case IIO_TEMP:
++			*val = 1000;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		i = data->ctrl_reg1 >> MAG3110_CTRL_DR_SHIFT;
+@@ -270,7 +279,8 @@ static const struct iio_chan_spec mag3110_channels[] = {
+ 	MAG3110_CHANNEL(Z, 2),
+ 	{
+ 		.type = IIO_TEMP,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
+ 		.scan_index = 3,
+ 		.scan_type = {
+ 			.sign = 's',
+-- 
+1.8.3.2
 
-Thanks,
-
-Jonathan
-> ---
->   drivers/iio/magnetometer/mag3110.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-> index 02e4f97..9e774de 100644
-> --- a/drivers/iio/magnetometer/mag3110.c
-> +++ b/drivers/iio/magnetometer/mag3110.c
-> @@ -339,7 +339,7 @@ static int mag3110_probe(struct i2c_client *client,
->   	indio_dev->num_channels = ARRAY_SIZE(mag3110_channels);
->   	indio_dev->available_scan_masks = mag3110_scan_masks;
->
-> -	data->ctrl_reg1 = MAG3110_CTRL_DR_DEFAULT;
-> +	data->ctrl_reg1 = MAG3110_CTRL_DR_DEFAULT << MAG3110_CTRL_DR_SHIFT;
->   	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG1,
->   		data->ctrl_reg1);
->   	if (ret < 0)
->
