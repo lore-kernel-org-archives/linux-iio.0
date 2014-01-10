@@ -1,539 +1,525 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50069 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752708AbaAKQ5o (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 11:57:44 -0500
-Message-ID: <52D1780B.2060309@kernel.org>
-Date: Sat, 11 Jan 2014 16:57:47 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] iio: Add Freescale MMA8452Q 3-axis accelerometer driver
-References: <1389391351-9727-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1389391351-9727-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:58124 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751263AbaAJWBr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 10 Jan 2014 17:01:47 -0500
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v3] iio: Add Lite-On ltr501 ambient light / proximity sensor driver
+Date: Fri, 10 Jan 2014 23:01:45 +0100
+Message-Id: <1389391305-9686-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+combined ambient light (two channels) and proximity sensor with I2C
+interface; the ALS channels are visible+IR and IR
 
+datasheet is here
+http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/P_100_LTR-501ALS-01_PrelimDS_ver1.1.pdf
 
-On 10/01/14 22:02, Peter Meerwald wrote:
-> 3-axis accelerometer sensor (2/4/8 g) with 12-bit resolution
-> and I2C interface
->
-> many extra features are unsupported (freefall detection, orientation
-> change, autosleep)
->
-> datasheet is here:
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA8452Q.pdf
->
-A few bits inline.
+v3:
+* fix use of sizeof in _read_als()
+v2: (thanks to Lars-Peter Clausen)
+* cannot use devm_iio_device_register() due to cleanup order in _remove()
+* mutex around data wait/read
+* turn info message in _probe() into check for part number
+* change copyright year to 2014
 
-I'd normally expect a device like this to either have a simple driver
-with no buffer based access, or to support both buffering and a dataready
-trigger (seeing as it has a dataready interrupt).  Here, the device can end
-up waiting a very long time for for new data if the trigger is faster than
-it should be.   This strikes me as 'interesting'.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/light/Kconfig  |  12 ++
+ drivers/iio/light/Makefile |   1 +
+ drivers/iio/light/ltr501.c | 445 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 458 insertions(+)
+ create mode 100644 drivers/iio/light/ltr501.c
 
-Other than this element, the driver looks very nice.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index c941fbe..6041fa3 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -90,6 +90,18 @@ config SENSORS_LM3533
+ 	  changes. The ALS-control output values can be set per zone for the
+ 	  three current output channels.
+ 
++config LTR501
++	tristate "LTR-501ALS-01 light sensor"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	 If you say yes here you get support for the Lite-On LTR-501ALS-01
++	 ambient light and proximity sensor.
++
++	 This driver can also be built as a module.  If so, the module
++         will be called ltr501.
++
+ config TCS3472
+ 	tristate "TAOS TCS3472 color light-to-digital converter"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index d8b482e..20fc0dd 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
+ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
++obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+ obj-$(CONFIG_SI114X)		+= si114x.o
+ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+new file mode 100644
+index 0000000..62b7072
+--- /dev/null
++++ b/drivers/iio/light/ltr501.c
+@@ -0,0 +1,445 @@
++/*
++ * ltr501.c - Support for Lite-On LTR501 ambient light and proximity sensor
++ *
++ * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * 7-bit I2C slave address 0x23
++ *
++ * TODO: interrupt, threshold, measurement rate, IR LED characteristics
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/err.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define LTR501_DRV_NAME "ltr501"
++
++#define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
++#define LTR501_PS_CONTR 0x81 /* PS operation mode */
++#define LTR501_PART_ID 0x86
++#define LTR501_MANUFAC_ID 0x87
++#define LTR501_ALS_DATA1 0x88 /* 16-bit, little endian */
++#define LTR501_ALS_DATA0 0x8a /* 16-bit, little endian */
++#define LTR501_ALS_PS_STATUS 0x8c
++#define LTR501_PS_DATA 0x8d /* 16-bit, little endian */
++
++#define LTR501_ALS_CONTR_SW_RESET BIT(2)
++#define LTR501_CONTR_PS_GAIN_MASK (BIT(3) | BIT(2))
++#define LTR501_CONTR_PS_GAIN_SHIFT 2
++#define LTR501_CONTR_ALS_GAIN_MASK BIT(3)
++#define LTR501_CONTR_ACTIVE BIT(1)
++
++#define LTR501_STATUS_ALS_RDY BIT(2)
++#define LTR501_STATUS_PS_RDY BIT(0)
++
++#define LTR501_PS_DATA_MASK 0x7ff
++
++struct ltr501_data {
++	struct i2c_client *client;
++	struct mutex lock_als, lock_ps;
++	u8 als_contr, ps_contr;
++};
++
++static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
++{
++	int tries = 100;
++	int ret;
++
++	while (tries--) {
++		ret = i2c_smbus_read_byte_data(data->client,
++			LTR501_ALS_PS_STATUS);
++		if (ret < 0)
++			return ret;
++		if ((ret & drdy_mask) == drdy_mask)
++			return 0;
++		msleep(25);
++	}
++
++	dev_err(&data->client->dev, "ltr501_drdy() failed, data not ready\n");
++	return -EIO;
++}
++
++static int ltr501_read_als(struct ltr501_data *data, __le16 buf[2])
++{
++	int ret = ltr501_drdy(data, LTR501_STATUS_ALS_RDY);
++	if (ret < 0)
++		return ret;
++	/* always read both ALS channels in given order */
++	return i2c_smbus_read_i2c_block_data(data->client,
++		LTR501_ALS_DATA1, 2 * sizeof(__le16), (u8 *) buf);
++}
++
++static int ltr501_read_ps(struct ltr501_data *data)
++{
++	int ret = ltr501_drdy(data, LTR501_STATUS_PS_RDY);
++	if (ret < 0)
++		return ret;
++	return i2c_smbus_read_word_data(data->client, LTR501_PS_DATA);
++}
++
++#define LTR501_INTENSITY_CHANNEL(_idx, _addr, _mod, _shared) { \
++	.type = IIO_INTENSITY, \
++	.modified = 1, \
++	.address = (_addr), \
++	.channel2 = (_mod), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = (_shared), \
++	.scan_index = (_idx), \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 16, \
++		.storagebits = 16, \
++		.endianness = IIO_CPU, \
++	} \
++}
++
++static const struct iio_chan_spec ltr501_channels[] = {
++	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
++	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
++		BIT(IIO_CHAN_INFO_SCALE)),
++	{
++		.type = IIO_PROXIMITY,
++		.address = LTR501_PS_DATA,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 2,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 11,
++			.storagebits = 16,
++			.endianness = IIO_CPU,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
++
++static const int ltr501_ps_gain[4][2] = {
++	{1, 0}, {0, 250000}, {0, 125000}, {0, 62500}
++};
++
++static int ltr501_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct ltr501_data *data = iio_priv(indio_dev);
++	__le16 buf[2];
++	int ret, i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
++
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			mutex_lock(&data->lock_als);
++			ret = ltr501_read_als(data, buf);
++			mutex_unlock(&data->lock_als);
++			if (ret < 0)
++				return ret;
++			*val = le16_to_cpu(chan->address == LTR501_ALS_DATA1 ?
++				buf[0] : buf[1]);
++			return IIO_VAL_INT;
++		case IIO_PROXIMITY:
++			mutex_lock(&data->lock_ps);
++			ret = ltr501_read_ps(data);
++			mutex_unlock(&data->lock_ps);
++			if (ret < 0)
++				return ret;
++			*val = ret & LTR501_PS_DATA_MASK;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			if (data->als_contr & LTR501_CONTR_ALS_GAIN_MASK) {
++				*val = 0;
++				*val2 = 5000;
++				return IIO_VAL_INT_PLUS_MICRO;
++			} else {
++				*val = 1;
++				*val2 = 0;
++				return IIO_VAL_INT;
++			}
++		case IIO_PROXIMITY:
++			i = (data->ps_contr & LTR501_CONTR_PS_GAIN_MASK) >>
++				LTR501_CONTR_PS_GAIN_SHIFT;
++			*val = ltr501_ps_gain[i][0];
++			*val2 = ltr501_ps_gain[i][1];
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	}
++	return -EINVAL;
++}
++
++static int ltr501_get_ps_gain_index(int val, int val2)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(ltr501_ps_gain); i++)
++		if (val == ltr501_ps_gain[i][0] && val2 == ltr501_ps_gain[i][1])
++			return i;
++
++	return -1;
++}
++
++static int ltr501_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val, int val2, long mask)
++{
++	struct ltr501_data *data = iio_priv(indio_dev);
++	int i;
++
++	if (iio_buffer_enabled(indio_dev))
++		return -EBUSY;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			if (val == 0 && val2 == 5000)
++				data->als_contr |= LTR501_CONTR_ALS_GAIN_MASK;
++			else if (val == 1 && val2 == 0)
++				data->als_contr &= ~LTR501_CONTR_ALS_GAIN_MASK;
++			else
++				return -EINVAL;
++			return i2c_smbus_write_byte_data(data->client,
++				LTR501_ALS_CONTR, data->als_contr);
++		case IIO_PROXIMITY:
++			i = ltr501_get_ps_gain_index(val, val2);
++			if (i < 0)
++				return -EINVAL;
++			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
++			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
++			return i2c_smbus_write_byte_data(data->client,
++				LTR501_PS_CONTR, data->ps_contr);
++		default:
++			return -EINVAL;
++		}
++	}
++	return -EINVAL;
++}
++
++static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
++static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
++
++static struct attribute *ltr501_attributes[] = {
++	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
++	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group ltr501_attribute_group = {
++	.attrs = ltr501_attributes,
++};
++
++static const struct iio_info ltr501_info = {
++	.read_raw = ltr501_read_raw,
++	.write_raw = ltr501_write_raw,
++	.attrs = &ltr501_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
++{
++	int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
++	if (ret < 0)
++		return ret;
++
++	return i2c_smbus_write_byte_data(client, LTR501_PS_CONTR, ps_val);
++}
++
++static irqreturn_t ltr501_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ltr501_data *data = iio_priv(indio_dev);
++	u16 buf[8];
++	__le16 als_buf[2];
++	u8 mask = 0;
++	int j = 0;
++	int ret;
++
++	memset(buf, 0, sizeof(buf));
++
++	/* figure out which data needs to be ready */
++	if (test_bit(0, indio_dev->active_scan_mask) ||
++		test_bit(1, indio_dev->active_scan_mask))
++		mask |= LTR501_STATUS_ALS_RDY;
++	if (test_bit(2, indio_dev->active_scan_mask))
++		mask |= LTR501_STATUS_PS_RDY;
++
++	ret = ltr501_drdy(data, mask);
++	if (ret < 0)
++		goto done;
++
++	if (mask & LTR501_STATUS_ALS_RDY) {
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++			LTR501_ALS_DATA1, sizeof(als_buf), (u8 *) als_buf);
++		if (ret < 0)
++			return ret;
++		if (test_bit(0, indio_dev->active_scan_mask))
++			buf[j++] = le16_to_cpu(als_buf[1]);
++		if (test_bit(1, indio_dev->active_scan_mask))
++			buf[j++] = le16_to_cpu(als_buf[0]);
++	}
++
++	if (mask & LTR501_STATUS_PS_RDY) {
++		ret = i2c_smbus_read_word_data(data->client, LTR501_PS_DATA);
++		if (ret < 0)
++			goto done;
++		buf[j++] = ret & LTR501_PS_DATA_MASK;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++		iio_get_time_ns());
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ltr501_init(struct ltr501_data *data)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, LTR501_ALS_CONTR);
++	if (ret < 0)
++		return ret;
++	data->als_contr = ret | LTR501_CONTR_ACTIVE;
++
++	ret = i2c_smbus_read_byte_data(data->client, LTR501_PS_CONTR);
++	if (ret < 0)
++		return ret;
++	data->ps_contr = ret | LTR501_CONTR_ACTIVE;
++
++	return ltr501_write_contr(data->client, data->als_contr,
++		data->ps_contr);
++}
++
++static int ltr501_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
++{
++	struct ltr501_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	mutex_init(&data->lock_als);
++	mutex_init(&data->lock_ps);
++
++	ret = i2c_smbus_read_byte_data(data->client, LTR501_PART_ID);
++	if (ret < 0)
++		return ret;
++	if ((ret >> 4) != 0x8)
++		return -ENODEV;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &ltr501_info;
++	indio_dev->channels = ltr501_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
++	indio_dev->name = LTR501_DRV_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = ltr501_init(data);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++		ltr501_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_unreg_buffer;
++
++	return 0;
++
++error_unreg_buffer:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
++}
++
++static int ltr501_powerdown(struct ltr501_data *data)
++{
++	return ltr501_write_contr(data->client,
++		data->als_contr & ~LTR501_CONTR_ACTIVE,
++		data->ps_contr & ~LTR501_CONTR_ACTIVE);
++}
++
++static int ltr501_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	ltr501_powerdown(iio_priv(indio_dev));
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int ltr501_suspend(struct device *dev)
++{
++	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
++	return ltr501_powerdown(data);
++}
++
++static int ltr501_resume(struct device *dev)
++{
++	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
++
++	return ltr501_write_contr(data->client, data->als_contr,
++		data->ps_contr);
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
++
++static const struct i2c_device_id ltr501_id[] = {
++	{ "ltr501", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, ltr501_id);
++
++static struct i2c_driver ltr501_driver = {
++	.driver = {
++		.name   = LTR501_DRV_NAME,
++		.pm	= &ltr501_pm_ops,
++		.owner  = THIS_MODULE,
++	},
++	.probe  = ltr501_probe,
++	.remove	= ltr501_remove,
++	.id_table = ltr501_id,
++};
++
++module_i2c_driver(ltr501_driver);
++
++MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
++MODULE_DESCRIPTION("Lite-On LTR501 ambient light and proximity sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+1.8.3.2
 
-Jonathan
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> ---
->   drivers/iio/accel/Kconfig   |  12 ++
->   drivers/iio/accel/Makefile  |   1 +
->   drivers/iio/accel/mma8452.c | 438 ++++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 451 insertions(+)
->   create mode 100644 drivers/iio/accel/mma8452.c
->
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index e23e508..1e120fa 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -65,4 +65,16 @@ config KXSD9
->   	  Say yes here to build support for the Kionix KXSD9 accelerometer.
->   	  Currently this only supports the device via an SPI interface.
->
-> +config MMA8452
-> +	tristate "Freescale MMA8452Q Accelerometer Driver"
-> +	depends on I2C
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	  Say yes here to build support for the Freescale MMA8452Q 3-axis
-> +	  accelerometer.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mma8452.
-> +
->   endmenu
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index c48d15f..dc0e379 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -6,6 +6,7 @@
->   obj-$(CONFIG_BMA180) += bma180.o
->   obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->   obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> +obj-$(CONFIG_MMA8452)	+= mma8452.o
->
->   obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
->   st_accel-y := st_accel_core.o
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> new file mode 100644
-> index 0000000..a45628c
-> --- /dev/null
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -0,0 +1,438 @@
-> +/*
-> + * mma8452.c - Support for Freescale MMA8452Q 3-axis 12-bit accelerometer
-> + *
-> + * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
-> + *
-> + * TODO: interrupt, thresholding, orientation / freefall events, autosleep
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/delay.h>
-> +
-> +#define MMA8452_STATUS 0x00
-> +#define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
-> +#define MMA8452_OUT_Y 0x03
-> +#define MMA8452_OUT_Z 0x05
-> +#define MMA8452_WHO_AM_I 0x0d
-> +#define MMA8452_DATA_CFG 0x0e
-> +#define MMA8452_OFF_X 0x2f
-> +#define MMA8452_OFF_Y 0x30
-> +#define MMA8452_OFF_Z 0x31
-> +#define MMA8452_CTRL_REG1 0x2a
-> +#define MMA8452_CTRL_REG2 0x2b
-> +
-> +#define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
-> +
-> +#define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
-> +#define MMA8452_CTRL_DR_SHIFT 3
-> +#define MMA8452_CTRL_DR_DEFAULT 0x4 /* 50 Hz sample frequency */
-> +#define MMA8452_CTRL_ACTIVE BIT(0)
-> +
-> +#define MMA8452_DATA_CFG_FS_MASK (BIT(1) | BIT(0))
-> +#define MMA8452_DATA_CFG_FS_2G 0
-> +#define MMA8452_DATA_CFG_FS_4G 1
-> +#define MMA8452_DATA_CFG_FS_8G 2
-> +
-> +#define MMA8452_DEVICE_ID 0x2a
-> +
-> +/* Each client has this additional data */
-> +struct mma8452_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	u8 ctrl_reg1;
-> +	u8 data_cfg;
-> +};
-> +
-> +static int mma8452_drdy(struct mma8452_data *data)
-> +{
-> +	int tries = 150;
-> +
-> +	while (tries-- > 0) {
-> +		int ret = i2c_smbus_read_byte_data(data->client,
-> +			MMA8452_STATUS);
-> +		if (ret < 0)
-> +			return ret;
-> +		if ((ret & MMA8452_STATUS_DRDY) == MMA8452_STATUS_DRDY)
-> +			return 0;
-> +		msleep(20);
-> +	}
-> +
-> +	dev_err(&data->client->dev, "data not ready\n");
-> +	return -EIO;
-> +}
-> +
-> +static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
-> +{
-> +	int ret = mma8452_drdy(data);
-> +	if (ret < 0)
-> +		return ret;
-> +	return i2c_smbus_read_i2c_block_data(data->client,
-> +		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
-> +}
-> +
-> +static ssize_t mma8452_show_int_plus_micros(char *buf,
-> +	const int (*vals)[2], int n)
-> +{
-> +	size_t len = 0;
-> +
-> +	while (n-- > 0)
-> +		len += scnprintf(buf + len, PAGE_SIZE - len,
-> +			"%d.%06d ", vals[n][0], vals[n][1]);
-> +
-> +	/* replace trailing space by newline */
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
-> +					int val, int val2)
-> +{
-> +	while (n-- > 0)
-> +		if (val == vals[n][0] && val2 == vals[n][1])
-> +			return n;
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const int mma8452_samp_freq[8][2] = {
-> +	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
-> +	{6, 250000}, {1, 560000}
-> +};
-> +
-> +static const int mma8452_scales[3][2] = {
-> +	{0, 977}, {0, 1953}, {0, 3906}
-> +};
-> +
-> +static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-
-I'd prefer to see the 8 done as a ARRAY_SIZE rather than explicitly.
-> +	return mma8452_show_int_plus_micros(buf, mma8452_samp_freq, 8);
-> +}
-> +
-> +static ssize_t mma8452_show_scale_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	return mma8452_show_int_plus_micros(buf, mma8452_scales, 3);
-> +}
-> +
-> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
-> +static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
-> +	mma8452_show_scale_avail, NULL, 0);
-> +
-> +static int mma8452_get_samp_freq_index(struct mma8452_data *data,
-> +	int val, int val2)
-> +{
-> +	return mma8452_get_int_plus_micros_index(mma8452_samp_freq, 8, val,
-> +		val2);
-> +}
-> +
-> +static int mma8452_get_scale_index(struct mma8452_data *data,
-> +	int val, int val2)
-> +{
-> +	return mma8452_get_int_plus_micros_index(mma8452_scales, 3, val,
-> +		val2);
-> +}
-> +
-> +static int mma8452_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	__be16 buffer[3];
-> +	int i, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
-> +
-This is a little different to normal in that you force it to wait
-for new data.  For most sysfs reads where we can't explicitly trigger
-a new read, we just use the last valid one. In this case the wait can
-be really rather long... Not sure this is a problem, just thought I'd
-observe it wasn't what I was expecting.
-> +		mutex_lock(&data->lock);
-> +		ret = mma8452_read(data, buffer);
-> +		mutex_unlock(&data->lock);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = sign_extend32(
-> +			be16_to_cpu(buffer[chan->scan_index]) >> 4, 11);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		i = data->data_cfg & MMA8452_DATA_CFG_FS_MASK;
-> +		*val = mma8452_scales[i][0];
-> +		*val2 = mma8452_scales[i][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-> +			MMA8452_CTRL_DR_SHIFT;
-> +		*val = mma8452_samp_freq[i][0];
-> +		*val2 = mma8452_samp_freq[i][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		ret = i2c_smbus_read_byte_data(data->client, MMA8452_OFF_X +
-> +			chan->scan_index);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = sign_extend32(ret, 7);
-> +		return IIO_VAL_INT;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int mma8452_standby(struct mma8452_data *data)
-> +{
-> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-> +		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
-> +}
-> +
-> +static int mma8452_active(struct mma8452_data *data)
-> +{
-> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-> +		data->ctrl_reg1);
-> +}
-> +
-> +static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	/* config can only be changed when in standby */
-> +	ret = mma8452_standby(data);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, reg, val);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	ret = mma8452_active(data);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	ret = 0;
-> +fail:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int mma8452_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		return -EBUSY;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		i = mma8452_get_samp_freq_index(data, val, val2);
-> +		if (i < 0)
-> +			return -EINVAL;
-> +
-> +		data->ctrl_reg1 &= ~MMA8452_CTRL_DR_MASK;
-> +		data->ctrl_reg1 |= i << MMA8452_CTRL_DR_SHIFT;
-> +		return mma8452_change_config(data, MMA8452_CTRL_REG1,
-> +			data->ctrl_reg1);
-> +	case IIO_CHAN_INFO_SCALE:
-> +		i = mma8452_get_scale_index(data, val, val2);
-> +		if (i < 0)
-> +			return -EINVAL;
-> +		data->data_cfg &= ~MMA8452_DATA_CFG_FS_MASK;
-> +		data->data_cfg |= i;
-> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
-> +			data->data_cfg);
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		if (val < -128 || val > 127)
-> +			return -EINVAL;
-> +		return mma8452_change_config(data, MMA8452_OFF_X +
-> +			chan->scan_index, val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static irqreturn_t mma8452_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	u8 buffer[16]; /* 3 16-bit channels + padding + ts */
-> +	int ret;
-> +
-> +	ret = mma8452_read(data, (__be16 *) buffer);
-> +	if (ret < 0)
-> +		goto done;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-> +		iio_get_time_ns());
-> +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +#define MMA8452_CHANNEL(axis, idx) { \
-> +	.type = IIO_ACCEL, \
-> +	.modified = 1, \
-> +	.channel2 = IIO_MOD_##axis, \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), \
-
-Always an awkward interaction, but would the sampling frequency be
-better as an attribute of a dataready based trigger rather than here?
-I suppose we can have both with the two interacting though.
-
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> +		BIT(IIO_CHAN_INFO_SCALE), \
-> +	.scan_index = idx, \
-> +	.scan_type = { \
-> +		.sign = 's', \
-> +		.realbits = 12, \
-> +		.storagebits = 16, \
-> +		.shift = 4, \
-> +		.endianness = IIO_BE, \
-> +	}, \
-> +}
-> +
-> +static const struct iio_chan_spec mma8452_channels[] = {
-> +	MMA8452_CHANNEL(X, 0),
-> +	MMA8452_CHANNEL(Y, 1),
-> +	MMA8452_CHANNEL(Z, 2),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +static struct attribute *mma8452_attributes[] = {
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group mma8452_group = {
-> +	.attrs = mma8452_attributes,
-> +};
-> +
-> +static const struct iio_info mma8452_info = {
-> +	.attrs = &mma8452_group,
-> +	.read_raw = &mma8452_read_raw,
-> +	.write_raw = &mma8452_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const unsigned long mma8452_scan_masks[] = {0x7, 0};
-> +
-> +static int mma8452_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct mma8452_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != MMA8452_DEVICE_ID)
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	mutex_init(&data->lock);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	indio_dev->info = &mma8452_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mma8452_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
-> +	indio_dev->available_scan_masks = mma8452_scan_masks;
-> +
-> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
-> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
-> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
-> +		data->ctrl_reg1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->data_cfg = MMA8452_DATA_CFG_FS_2G;
-> +	ret = i2c_smbus_write_byte_data(client, MMA8452_DATA_CFG,
-> +		data->data_cfg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +		mma8452_trigger_handler, NULL);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto buffer_cleanup;
-> +	return 0;
-> +
-> +buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	return ret;
-> +}
-> +
-> +static int mma8452_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	mma8452_standby(iio_priv(indio_dev));
-> +
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int mma8452_suspend(struct device *dev)
-> +{
-> +	return mma8452_standby(iio_priv(i2c_get_clientdata(
-> +		to_i2c_client(dev))));
-> +}
-> +
-> +static int mma8452_resume(struct device *dev)
-> +{
-> +	return mma8452_active(iio_priv(i2c_get_clientdata(
-> +		to_i2c_client(dev))));
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
-> +#define MMA8452_PM_OPS (&mma8452_pm_ops)
-> +#else
-> +#define MMA8452_PM_OPS NULL
-> +#endif
-> +
-> +static const struct i2c_device_id mma8452_id[] = {
-> +	{ "mma8452", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mma8452_id);
-> +
-> +static struct i2c_driver mma8452_driver = {
-> +	.driver = {
-> +		.name	= "mma8452",
-> +		.pm	= MMA8452_PM_OPS,
-> +	},
-> +	.probe = mma8452_probe,
-> +	.remove = mma8452_remove,
-> +	.id_table = mma8452_id,
-> +};
-> +module_i2c_driver(mma8452_driver);
-> +
-> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("Freescale MMA8452 accelerometer driver");
-> +MODULE_LICENSE("GPL");
->
