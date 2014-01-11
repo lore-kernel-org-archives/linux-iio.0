@@ -1,113 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38187 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753841AbaARLiZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jan 2014 06:38:25 -0500
-Message-ID: <52DA67BF.3040405@kernel.org>
-Date: Sat, 18 Jan 2014 11:38:39 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>,
-	Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-CC: pali.rohar@gmail.com, pavel@ucw.cz, linux-iio@vger.kernel.org,
+Return-Path: <marek.belisko@gmail.com>
+Sender: Belisko Marek <marek.belisko@gmail.com>
+From: Marek Belisko <marek@goldelico.com>
+To: robh+dt@kernel.org,
+	pawel.moll@arm.com,
+	mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org,
+	rob@landley.net,
+	jic23@kernel.org,
+	grant.likely@linaro.org
+Cc: devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Ivaylo Dimitrov <freemangordon@abv.bg>
-Subject: Re: [PATCH] iio: tsl2563: Use the correct channel2 member
-References: <52D30BF7.90107@kernel.org> <1389633859-5972-1-git-send-email-ivo.g.dimitrov.75@gmail.com> <alpine.DEB.2.01.1401132222150.3351@pmeerw.net> <52DA6789.4000500@kernel.org>
-In-Reply-To: <52DA6789.4000500@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-iio@vger.kernel.org,
+	Marek Belisko <marek@goldelico.com>,
+	NeilBrown <neilb@suse.de>
+Subject: [PATCH] iio: gyro: itg3200: Add DT support.
+Date: Sat, 11 Jan 2014 22:17:27 +0100
+Message-Id: <1389475047-4353-1-git-send-email-marek@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Marek Belisko <marek@goldelico.com>
+---
+ .../devicetree/bindings/iio/gyro/itg3200.txt       | 22 ++++++++++++++++++++++
+ drivers/iio/gyro/itg3200_core.c                    |  9 +++++++++
+ 2 files changed, 31 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/gyro/itg3200.txt
 
-
-On 18/01/14 11:37, Jonathan Cameron wrote:
->
->
-> On 13/01/14 21:25, Peter Meerwald wrote:
->>
->>> Use the correct channel2 member instead of channel when dealing with sysfs
->>> reads/writes
->>
->>> Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
->>
->> as a bonus, m is renamed to mask
-> Which would have been relevant back when it was a mask.  Still it doesn't
-> make things worse, so never mind ;)  One day someone might be bored enough
-> to clean up all the places in read_raw etc where the variable is called mask
-> but is infact a straight number.
->>
->> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Applied to the fixes-togreg branch of iio.git  - initially pushed out as testing
-> for the autobuilders to thoroughly hammer.
-I'm dozing this morning.  This of course the fixes-togreg branch which doesn't get
-separately pushed out for autobuilding fun and goes straight out as fixes-togreg!
-
-
->>
->>> ---
->>>   drivers/iio/light/tsl2563.c |   16 ++++++++++------
->>>   1 files changed, 10 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
->>> index 5e5d9de..2be6df3 100644
->>> --- a/drivers/iio/light/tsl2563.c
->>> +++ b/drivers/iio/light/tsl2563.c
->>> @@ -460,10 +460,14 @@ static int tsl2563_write_raw(struct iio_dev *indio_dev,
->>>   {
->>>       struct tsl2563_chip *chip = iio_priv(indio_dev);
->>>
->>> -    if (chan->channel == IIO_MOD_LIGHT_BOTH)
->>> +    if (mask != IIO_CHAN_INFO_CALIBSCALE)
->>> +        return -EINVAL;
->>> +    if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
->>>           chip->calib0 = calib_from_sysfs(val);
->>> -    else
->>> +    else if (chan->channel2 == IIO_MOD_LIGHT_IR)
->>>           chip->calib1 = calib_from_sysfs(val);
->>> +    else
->>> +        return -EINVAL;
->>>
->>>       return 0;
->>>   }
->>> @@ -472,14 +476,14 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
->>>                   struct iio_chan_spec const *chan,
->>>                   int *val,
->>>                   int *val2,
->>> -                long m)
->>> +                long mask)
->>>   {
->>>       int ret = -EINVAL;
->>>       u32 calib0, calib1;
->>>       struct tsl2563_chip *chip = iio_priv(indio_dev);
->>>
->>>       mutex_lock(&chip->lock);
->>> -    switch (m) {
->>> +    switch (mask) {
->>>       case IIO_CHAN_INFO_RAW:
->>>       case IIO_CHAN_INFO_PROCESSED:
->>>           switch (chan->type) {
->>> @@ -498,7 +502,7 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
->>>               ret = tsl2563_get_adc(chip);
->>>               if (ret)
->>>                   goto error_ret;
->>> -            if (chan->channel == 0)
->>> +            if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
->>>                   *val = chip->data0;
->>>               else
->>>                   *val = chip->data1;
->>> @@ -510,7 +514,7 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
->>>           break;
->>>
->>>       case IIO_CHAN_INFO_CALIBSCALE:
->>> -        if (chan->channel == 0)
->>> +        if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
->>>               *val = calib_to_sysfs(chip->calib0);
->>>           else
->>>               *val = calib_to_sysfs(chip->calib1);
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+new file mode 100644
+index 0000000..b1b18dc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+@@ -0,0 +1,22 @@
++* InvenSense ITG-3200 gyroscope
++
++http://www.invensense.com/mems/gyro/itg3200.html
++
++Required properties:
++
++  - compatible : should be "invensense,itg3200"
++  - reg : the I2C address of the sensor
++
++Optional properties:
++
++  - interrupt-parent : should be the phandle for the interrupt controller
++  - interrupts : interrupt mapping for GPIO IRQ
++
++Example:
++
++itg3200@68 {
++	compatible = "invensense,itg3200";
++	reg = <0x68>;
++	interrupt-parent = <&gpio2>;
++	interrupts = <29 IRQ_TYPE_EDGE_RISING>;
++};
+diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+index 4d3f3b9..adbf20d 100644
+--- a/drivers/iio/gyro/itg3200_core.c
++++ b/drivers/iio/gyro/itg3200_core.c
+@@ -374,10 +374,19 @@ static const struct i2c_device_id itg3200_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, itg3200_id);
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id itg3200_of_match[] = {
++	{ .compatible = "invensense,itg3200", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, itg3200_of_match);
++#endif
++
+ static struct i2c_driver itg3200_driver = {
+ 	.driver = {
+ 		.owner  = THIS_MODULE,
+ 		.name	= "itg3200",
++		.of_match_table = of_match_ptr(itg3200_of_match),
+ 	},
+ 	.id_table	= itg3200_id,
+ 	.probe		= itg3200_probe,
+-- 
+1.8.4.2
