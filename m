@@ -1,264 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:52246 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751328AbaAJMDy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 Jan 2014 07:03:54 -0500
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2] iio: Add si7005 relative humidity and temperature sensor driver
-Date: Fri, 10 Jan 2014 13:03:52 +0100
-Message-Id: <1389355432-26695-1-git-send-email-pmeerw@pmeerw.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46988 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752370AbaAKLVu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 06:21:50 -0500
+Message-ID: <52D12956.1080208@kernel.org>
+Date: Sat, 11 Jan 2014 11:21:58 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: Add si7005 relative humidity and temperature
+ sensor driver
+References: <1389355432-26695-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1389355432-26695-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-sensor provides 12-bit relative humidity and 14-bit temperature
-via I2C interface; temperature and linearity compensation is not
-implemented (yet)
 
-driver also supports the Si7015, but not the 2nd generation
-sensors Si7013/Si7020/Si7021
 
-datasheet is here
-http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7005.pdf
+On 10/01/14 12:03, Peter Meerwald wrote:
+> sensor provides 12-bit relative humidity and 14-bit temperature
+> via I2C interface; temperature and linearity compensation is not
+> implemented (yet)
+>
+> driver also supports the Si7015, but not the 2nd generation
+> sensors Si7013/Si7020/Si7021
+>
+> datasheet is here
+> http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7005.pdf
+>
+> v2: (thanks to Lars-Peter Clausen)
+> * fix coding style
+> * use devm_iio_device_register()
+> * change copyright year to 2014
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-v2: (thanks to Lars-Peter Clausen)
-* fix coding style
-* use devm_iio_device_register()
-* change copyright year to 2014
-
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/humidity/Kconfig  |  10 +++
- drivers/iio/humidity/Makefile |   1 +
- drivers/iio/humidity/si7005.c | 189 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 200 insertions(+)
- create mode 100644 drivers/iio/humidity/si7005.c
-
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 463c4d9..e116bd8 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -12,4 +12,14 @@ config DHT11
- 	  Other sensors should work as well as long as they speak the
- 	  same protocol.
- 
-+config SI7005
-+	tristate "SI7005 relative humidity and temperature sensor"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Silabs Si7005 relative
-+	  humidity and temperature sensor.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called si7005.
-+
- endmenu
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index d5d36c0..e3f3d94 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -3,3 +3,4 @@
- #
- 
- obj-$(CONFIG_DHT11) += dht11.o
-+obj-$(CONFIG_SI7005) += si7005.o
-diff --git a/drivers/iio/humidity/si7005.c b/drivers/iio/humidity/si7005.c
-new file mode 100644
-index 0000000..bdd586e
---- /dev/null
-+++ b/drivers/iio/humidity/si7005.c
-@@ -0,0 +1,189 @@
-+/*
-+ * si7005.c - Support for Silabs Si7005 humidity and temperature sensor
-+ *
-+ * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * (7-bit I2C slave address 0x40)
-+ *
-+ * TODO: heater, fast mode, processed mode (temp. / linearity compensation)
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/pm.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define SI7005_STATUS 0x00
-+#define SI7005_DATA 0x01 /* 16-bit, MSB */
-+#define SI7005_CONFIG 0x03
-+#define SI7005_ID 0x11
-+
-+#define SI7005_STATUS_NRDY BIT(0)
-+#define SI7005_CONFIG_TEMP BIT(4)
-+#define SI7005_CONFIG_START BIT(0)
-+
-+#define SI7005_ID_7005 0x50
-+#define SI7005_ID_7015 0xf0
-+
-+struct si7005_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	u8 config;
-+};
-+
-+static int si7005_read_measurement(struct si7005_data *data, bool temp)
-+{
-+	int tries = 50;
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	ret = i2c_smbus_write_byte_data(data->client, SI7005_CONFIG,
-+		data->config | SI7005_CONFIG_START |
-+		(temp ? SI7005_CONFIG_TEMP : 0));
-+	if (ret < 0)
-+		goto done;
-+
-+	while (tries-- > 0) {
-+		msleep(20);
-+		ret = i2c_smbus_read_byte_data(data->client, SI7005_STATUS);
-+		if (ret < 0)
-+			goto done;
-+		if (!(ret & SI7005_STATUS_NRDY))
-+			break;
-+	}
-+	if (tries < 0) {
-+		ret = -EIO;
-+		goto done;
-+	}
-+
-+	ret = i2c_smbus_read_word_swapped(data->client, SI7005_DATA);
-+
-+done:
-+	mutex_unlock(&data->lock);
-+
-+	return ret;
-+}
-+
-+static int si7005_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan, int *val,
-+			    int *val2, long mask)
-+{
-+	struct si7005_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = si7005_read_measurement(data, chan->type == IIO_TEMP);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type == IIO_TEMP) {
-+			*val = 7;
-+			*val2 = 812500;
-+		} else {
-+			*val = 3;
-+			*val2 = 906250;
-+		}
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (chan->type == IIO_TEMP)
-+			*val = -50 * 32 * 4;
-+		else
-+			*val = -24 * 16 * 16;
-+		return IIO_VAL_INT;
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_chan_spec si7005_channels[] = {
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+	},
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+	}
-+};
-+
-+static const struct iio_info si7005_info = {
-+	.read_raw = si7005_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int si7005_probe(struct i2c_client *client,
-+			 const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct si7005_data *data;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-+		return -ENODEV;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = dev_name(&client->dev);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &si7005_info;
-+
-+	indio_dev->channels = si7005_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(si7005_channels);
-+
-+	ret = i2c_smbus_read_byte_data(client, SI7005_ID);
-+	if (ret < 0)
-+		return ret;
-+	if (ret != SI7005_ID_7005 && ret != SI7005_ID_7015)
-+		return -ENODEV;
-+
-+	ret = i2c_smbus_read_byte_data(client, SI7005_CONFIG);
-+	if (ret < 0)
-+		return ret;
-+	data->config = ret;
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id si7005_id[] = {
-+	{ "si7005", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, si7005_id);
-+
-+static struct i2c_driver si7005_driver = {
-+	.driver = {
-+		.name	= "si7005",
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe = si7005_probe,
-+	.id_table = si7005_id,
-+};
-+module_i2c_driver(si7005_driver);
-+
-+MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-+MODULE_DESCRIPTION("Silabs Si7005 humidity and temperature sensor driver");
-+MODULE_LICENSE("GPL");
--- 
-1.8.3.2
-
+Applied to the togreg branch of iio.git (pushed out as testing initially)
