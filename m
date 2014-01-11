@@ -1,62 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47238 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47308 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751254AbaAKLnz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 06:43:55 -0500
-Message-ID: <52D12E83.9080807@kernel.org>
-Date: Sat, 11 Jan 2014 11:44:03 +0000
+	with ESMTP id S1751993AbaAKLuT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 06:50:19 -0500
+Message-ID: <52D13005.7000105@kernel.org>
+Date: Sat, 11 Jan 2014 11:50:29 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-CC: Kravchenko Oleksandr <x0199363@ti.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 2/2] iio:accel:bma180: Make LOW_PASS_FILTER_3DB_FREQUENCY
- shared_by_type
-References: <1389389841-7389-1-git-send-email-pmeerw@pmeerw.net> <1389389841-7389-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1389389841-7389-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH V2 2/2]staging:iio:ad799x fix error_free_irq, use devm_request_threaded_irq
+References: <52C49EED.5000206@gmx.de> <52C982DB.1010703@metafoo.de>
+In-Reply-To: <52C982DB.1010703@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 10/01/14 21:37, Peter Meerwald wrote:
-> the property is not per-channel, but shared by type
+On 05/01/14 16:05, Lars-Peter Clausen wrote:
+> On 01/02/2014 12:04 AM, Hartmut Knaack wrote:
+>> Move to devm_request_threaded_irq to make device-removal easier.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 >
-Now this one is in a sense even more interesting.
-
-1) Your fix is correct.
-2) Other than poluting sysfs with extra attributes and setting a bad
-    example, it doesn't actually matter as any attribute is defined
-    as being able to effect any other. e.g. if we had two different
-    filters, one for the z axis and another effecting both x and y
-    we would have to define all 3 as separate.
-3) In theory correctly written generic userspace code should not care
-    as it should handle both cases without a user being any the wiser.
-    Hence this should fall into the category of being able to change
-    userspace ABI if no one notices...
-
-So what shall we do?
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Kravchenko Oleksandr <x0199363@ti.com>
-> ---
->   drivers/iio/accel/bma180.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> I'm not a fan of devm_request_threaded_irq() since it makes it easy to get
+> things wrong. But well.
 >
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index bfec313..a7e68c8 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -451,9 +451,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
->   	.type = IIO_ACCEL,						\
->   	.modified = 1,							\
->   	.channel2 = IIO_MOD_##_axis,					\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
->   		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
->   	.scan_index = AXIS_##_axis,					\
->   	.scan_type = {							\
->   		.sign = 's',						\
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+I'll hold this one until patch 1 has made it into staging-next via linus'
+tree.
+
+Thanks,
+
+Jonathan
+>
+>> ---
+>> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+>> index 3deb390..bc886f6 100644
+>> --- a/drivers/staging/iio/adc/ad799x_core.c
+>> +++ b/drivers/staging/iio/adc/ad799x_core.c
+>> @@ -573,25 +573,23 @@ static int ad799x_probe(struct i2c_client *client,
+>>   		goto error_disable_reg;
+>>
+>>   	if (client->irq > 0) {
+>> -		ret = request_threaded_irq(client->irq,
+>> -					   NULL,
+>> -					   ad799x_event_handler,
+>> -					   IRQF_TRIGGER_FALLING |
+>> -					   IRQF_ONESHOT,
+>> -					   client->name,
+>> -					   indio_dev);
+>> +		ret = devm_request_threaded_irq(&client->dev,
+>> +						client->irq,
+>> +						NULL,
+>> +						ad799x_event_handler,
+>> +						IRQF_TRIGGER_FALLING |
+>> +						IRQF_ONESHOT,
+>> +						client->name,
+>> +						indio_dev);
+>>   		if (ret)
+>>   			goto error_cleanup_ring;
+>>   	}
+>>   	ret = iio_device_register(indio_dev);
+>>   	if (ret)
+>> -		goto error_free_irq;
+>> +		goto error_cleanup_ring;
+>>
+>>   	return 0;
+>>
+>> -error_free_irq:
+>> -	if (client->irq > 0)
+>> -		free_irq(client->irq, indio_dev);
+>>   error_cleanup_ring:
+>>   	ad799x_ring_cleanup(indio_dev);
+>>   error_disable_reg:
+>> @@ -607,8 +605,6 @@ static int ad799x_remove(struct i2c_client *client)
+>>   	struct ad799x_state *st = iio_priv(indio_dev);
+>>
+>>   	iio_device_unregister(indio_dev);
+>> -	if (client->irq > 0)
+>> -		free_irq(client->irq, indio_dev);
+>>
+>>   	ad799x_ring_cleanup(indio_dev);
+>>   	if (!IS_ERR(st->reg))
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
