@@ -1,81 +1,44 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sun, 12 Jan 2014 21:55:49 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-cc: jic23@kernel.org, pali.rohar@gmail.com, pavel@ucw.cz,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-    Ivaylo Dimitrov <freemangordon@abv.bg>
-Subject: Re: [PATCH] iio: tsl2563: Initialize channels
-In-Reply-To: <1389556464-692-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
-Message-ID: <alpine.DEB.2.01.1401122150210.9334@pmeerw.net>
-References: <1389556464-692-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+Return-Path: <ivo.g.dimitrov.75@gmail.com>
+Message-ID: <52D30444.5070800@gmail.com>
+Date: Sun, 12 Jan 2014 23:08:20 +0200
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Peter Meerwald <pmeerw@pmeerw.net>,
+ Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+CC: jic23@kernel.org, pali.rohar@gmail.com, pavel@ucw.cz,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Ivaylo Dimitrov <freemangordon@abv.bg>
+Subject: Re: [PATCH] iio: tsl2563: Initialize channels
+References: <1389556464-692-1-git-send-email-ivo.g.dimitrov.75@gmail.com> <alpine.DEB.2.01.1401122150210.9334@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1401122150210.9334@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+On 12.01.2014 22:55, Peter Meerwald wrote:
+>
+> I think the fix should rather be
+>
+> 	if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+> 		chip->calib0 = calib_from_sysfs(val);
+> 	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
+> 		chip->calib1 = calib_from_sysfs(val);
+> 	else
+> 		return -EINVAL;
+>
+> since only the INTENSITY channels have a CALIBSCALE info
+>
+> the light channel incorrectly sets .indexed = 1 and .channel = 0 which
+> should be unnecessary since there is only one IIO_LIGHT channel
+>
+> regards, p.
+>
 
-> Correctly initialize device channels, otherwise writing the calibration
-> values to sysfs nodes does not work
+I thought so when I was preparing the patch, but unfortunately couldn't 
+find any documentation for iio subsystem structs and defines, besides 
+what is in the header files (and it is not very descriptive), so I took 
+the easy route.
 
-I think the fix should rather be
+However, I'll send a new patch with the above (and a little more) changes.
 
-	if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
-		chip->calib0 = calib_from_sysfs(val);
-	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
-		chip->calib1 = calib_from_sysfs(val);
-	else
-		return -EINVAL;
-
-since only the INTENSITY channels have a CALIBSCALE info
-
-the light channel incorrectly sets .indexed = 1 and .channel = 0 which 
-should be unnecessary since there is only one IIO_LIGHT channel
-
-regards, p.
-
-> ---
->  drivers/iio/light/tsl2563.c |    6 ++++--
->  1 files changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
-> index 5e5d9de..a663ea2 100644
-> --- a/drivers/iio/light/tsl2563.c
-> +++ b/drivers/iio/light/tsl2563.c
-> @@ -460,7 +460,7 @@ static int tsl2563_write_raw(struct iio_dev *indio_dev,
->  {
->  	struct tsl2563_chip *chip = iio_priv(indio_dev);
->  
-> -	if (chan->channel == IIO_MOD_LIGHT_BOTH)
-> +	if (chan->channel == 0)
->  		chip->calib0 = calib_from_sysfs(val);
->  	else
->  		chip->calib1 = calib_from_sysfs(val);
-> @@ -543,11 +543,12 @@ static const struct iio_event_spec tsl2563_events[] = {
->  static const struct iio_chan_spec tsl2563_channels[] = {
->  	{
->  		.type = IIO_LIGHT,
-> +		.channel = 0,
->  		.indexed = 1,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> -		.channel = 0,
->  	}, {
->  		.type = IIO_INTENSITY,
-> +		.channel = 0,
->  		.modified = 1,
->  		.channel2 = IIO_MOD_LIGHT_BOTH,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> @@ -556,6 +557,7 @@ static const struct iio_chan_spec tsl2563_channels[] = {
->  		.num_event_specs = ARRAY_SIZE(tsl2563_events),
->  	}, {
->  		.type = IIO_INTENSITY,
-> +		.channel = 1,
->  		.modified = 1,
->  		.channel2 = IIO_MOD_LIGHT_IR,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Thanks,
+Ivo
