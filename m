@@ -1,26 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37687 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751830AbaARLFP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jan 2014 06:05:15 -0500
-Message-ID: <52DA5FF6.9050400@kernel.org>
-Date: Sat, 18 Jan 2014 11:05:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/6] staging:iio:accel:sca3000: Fix kerneldoc
-References: <1389647817-31320-1-git-send-email-pmeerw@pmeerw.net> <1389647817-31320-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1389647817-31320-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marek Vasut <marex@denx.de>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 0/3] iio: mxs-lradc fixes
+Date: Mon, 13 Jan 2014 17:02:00 +0100
+Message-Id: <1389628923-8689-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+Here are a few fixes to get in before 3.14.
 
+Two of those are because I wasn't careful engouh when reordering my patch before
+thos of Hector, it made me drop a part. and I forgot to reintroduce it when
+rebasing.
 
-On 13/01/14 21:16, Peter Meerwald wrote:
-> match function names with kerneldoc
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git, thanks.
+The first patch fixes a buffer overflow found by smatch.
 
-Jonathan
+The second patch doesn't really have any impact as we control the input but is
+there for correctness.
+
+The last one removes useless scale_available files for channel 8 and 9 as they
+are read has a temperature channel. I feel it is safe to do as no releases were
+made with those so we are not really breaking the ABI.
+
+Alexandre Belloni (3):
+  iio: mxs-lradc: fix buffer overflow
+  iio: mxs-lradc: fix invalid channel number detection
+  iio: mxs-lradc: remove useless scale_available files
+
+ drivers/staging/iio/adc/mxs-lradc.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+-- 
+1.8.3.2
