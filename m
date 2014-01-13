@@ -5,33 +5,42 @@ Cc: Marek Vasut <marex@denx.de>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 0/3] iio: mxs-lradc fixes
-Date: Mon, 13 Jan 2014 17:02:00 +0100
-Message-Id: <1389628923-8689-1-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH 3/3] iio: mxs-lradc: remove useless scale_available files
+Date: Mon, 13 Jan 2014 17:02:03 +0100
+Message-Id: <1389628923-8689-4-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1389628923-8689-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1389628923-8689-1-git-send-email-alexandre.belloni@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Here are a few fixes to get in before 3.14.
+in_voltage8_scale_available and in_voltage9_scale_available are exposed to
+userspace but useless as in_voltage8_raw and in_voltage9_raw are not available.
 
-Two of those are because I wasn't careful engouh when reordering my patch before
-thos of Hector, it made me drop a part. and I forgot to reintroduce it when
-rebasing.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/staging/iio/adc/mxs-lradc.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-The first patch fixes a buffer overflow found by smatch.
-
-The second patch doesn't really have any impact as we control the input but is
-there for correctness.
-
-The last one removes useless scale_available files for channel 8 and 9 as they
-are read has a temperature channel. I feel it is safe to do as no releases were
-made with those so we are not really breaking the ABI.
-
-Alexandre Belloni (3):
-  iio: mxs-lradc: fix buffer overflow
-  iio: mxs-lradc: fix invalid channel number detection
-  iio: mxs-lradc: remove useless scale_available files
-
- drivers/staging/iio/adc/mxs-lradc.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 2289dc1bd928..cfd95d825702 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -1035,8 +1035,6 @@ SHOW_SCALE_AVAILABLE_ATTR(4);
+ SHOW_SCALE_AVAILABLE_ATTR(5);
+ SHOW_SCALE_AVAILABLE_ATTR(6);
+ SHOW_SCALE_AVAILABLE_ATTR(7);
+-SHOW_SCALE_AVAILABLE_ATTR(8);
+-SHOW_SCALE_AVAILABLE_ATTR(9);
+ SHOW_SCALE_AVAILABLE_ATTR(10);
+ SHOW_SCALE_AVAILABLE_ATTR(11);
+ SHOW_SCALE_AVAILABLE_ATTR(12);
+@@ -1053,8 +1051,6 @@ static struct attribute *mxs_lradc_attributes[] = {
+ 	&iio_dev_attr_in_voltage5_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage6_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage7_scale_available.dev_attr.attr,
+-	&iio_dev_attr_in_voltage8_scale_available.dev_attr.attr,
+-	&iio_dev_attr_in_voltage9_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage10_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage11_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage12_scale_available.dev_attr.attr,
 -- 
 1.8.3.2
