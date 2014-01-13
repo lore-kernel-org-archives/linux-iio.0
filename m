@@ -1,56 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36003 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750962AbaALVlC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Jan 2014 16:41:02 -0500
-Message-ID: <52D30BF7.90107@kernel.org>
-Date: Sun, 12 Jan 2014 21:41:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: pali.rohar@gmail.com, pavel@ucw.cz, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ivaylo Dimitrov <freemangordon@abv.bg>
-Subject: Re: [PATCH] iio: tsl2563: Initialize channels
-References: <1389556464-692-1-git-send-email-ivo.g.dimitrov.75@gmail.com> <alpine.DEB.2.01.1401122150210.9334@pmeerw.net> <52D30444.5070800@gmail.com>
-In-Reply-To: <52D30444.5070800@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:60797 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753721AbaAMRYz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jan 2014 12:24:55 -0500
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+To: jic23@kernel.org
+Cc: pmeerw@pmeerw.net, pali.rohar@gmail.com, pavel@ucw.cz,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Ivaylo Dimitrov <freemangordon@abv.bg>,
+	Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Subject: [PATCH] iio: tsl2563: Use the correct channel2 member
+Date: Mon, 13 Jan 2014 19:24:19 +0200
+Message-Id: <1389633859-5972-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+In-Reply-To: <52D30BF7.90107@kernel.org>
+References: <52D30BF7.90107@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Ivaylo Dimitrov <freemangordon@abv.bg>
 
+Use the correct channel2 member instead of channel when dealing with sysfs
+reads/writes
 
-On 12/01/14 21:08, Ivaylo Dimitrov wrote:
-> On 12.01.2014 22:55, Peter Meerwald wrote:
->>
->> I think the fix should rather be
->>
->>     if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
->>         chip->calib0 = calib_from_sysfs(val);
->>     else if (chan->channel2 == IIO_MOD_LIGHT_IR)
->>         chip->calib1 = calib_from_sysfs(val);
->>     else
->>         return -EINVAL;
->>
->> since only the INTENSITY channels have a CALIBSCALE info
->>
->> the light channel incorrectly sets .indexed = 1 and .channel = 0 which
->> should be unnecessary since there is only one IIO_LIGHT channel
->>
->> regards, p.
->>
->
-> I thought so when I was preparing the patch, but unfortunately couldn't find any documentation for iio subsystem structs and defines, besides what is in the header files (and it is not very descriptive), so I took the easy route.
->
-> However, I'll send a new patch with the above (and a little more) changes.
-Leave the indexed bit alone.  Whilst unnecessary it is fine within the ABI
-and changing it would be a userspace ABI change.
+Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+---
+ drivers/iio/light/tsl2563.c |   16 ++++++++++------
+ 1 files changed, 10 insertions(+), 6 deletions(-)
 
-Otherwise, as described by Peter will be fine.
+diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
+index 5e5d9de..2be6df3 100644
+--- a/drivers/iio/light/tsl2563.c
++++ b/drivers/iio/light/tsl2563.c
+@@ -460,10 +460,14 @@ static int tsl2563_write_raw(struct iio_dev *indio_dev,
+ {
+ 	struct tsl2563_chip *chip = iio_priv(indio_dev);
+ 
+-	if (chan->channel == IIO_MOD_LIGHT_BOTH)
++	if (mask != IIO_CHAN_INFO_CALIBSCALE)
++		return -EINVAL;
++	if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+ 		chip->calib0 = calib_from_sysfs(val);
+-	else
++	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
+ 		chip->calib1 = calib_from_sysfs(val);
++	else
++		return -EINVAL;
+ 
+ 	return 0;
+ }
+@@ -472,14 +476,14 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int *val,
+ 			    int *val2,
+-			    long m)
++			    long mask)
+ {
+ 	int ret = -EINVAL;
+ 	u32 calib0, calib1;
+ 	struct tsl2563_chip *chip = iio_priv(indio_dev);
+ 
+ 	mutex_lock(&chip->lock);
+-	switch (m) {
++	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+@@ -498,7 +502,7 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
+ 			ret = tsl2563_get_adc(chip);
+ 			if (ret)
+ 				goto error_ret;
+-			if (chan->channel == 0)
++			if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+ 				*val = chip->data0;
+ 			else
+ 				*val = chip->data1;
+@@ -510,7 +514,7 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+-		if (chan->channel == 0)
++		if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
+ 			*val = calib_to_sysfs(chip->calib0);
+ 		else
+ 			*val = calib_to_sysfs(chip->calib1);
+-- 
+1.5.6.1
 
-Jonathan
->
-> Thanks,
-> Ivo
->
