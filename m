@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from b.ns.miles-group.at ([95.130.255.144]:1671 "EHLO radon.swed.at"
+Received: from b.ns.miles-group.at ([95.130.255.144]:1668 "EHLO radon.swed.at"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751920AbaANPqQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 Jan 2014 10:46:16 -0500
+	id S1751916AbaANPqP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jan 2014 10:46:15 -0500
 From: Richard Weinberger <richard@nod.at>
 To: kishon@ti.com, anton@enomsg.org, dwmw2@infradead.org,
 	richardcochran@gmail.com, lidza.louina@gmail.com,
@@ -13,37 +13,39 @@ Cc: sebastian.hesselbarth@gmail.com, florian@openwrt.org,
 	linux-kernel@vger.kernel.org,
 	driverdev-devel@linuxdriverproject.org, devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4/7] phy,exynos: Add dependency on HAS_IOMEM
-Date: Tue, 14 Jan 2014 16:45:42 +0100
-Message-Id: <1389714345-20165-4-git-send-email-richard@nod.at>
+Subject: [PATCH 3/7] staging,spear_adc: Add dependency on HAS_IOMEM
+Date: Tue, 14 Jan 2014 16:45:41 +0100
+Message-Id: <1389714345-20165-3-git-send-email-richard@nod.at>
 In-Reply-To: <1389714345-20165-1-git-send-email-richard@nod.at>
 References: <1389714345-20165-1-git-send-email-richard@nod.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On archs like S390 or um this driver cannot build nor work.
 Make it depend on HAS_IOMEM to bypass build failures.
 
-drivers/built-in.o: In function `exynos_mipi_video_phy_probe':
-drivers/phy/phy-exynos-mipi-video.c:130: undefined reference to `devm_ioremap_resource'
+drivers/staging/iio/adc/spear_adc.c: In function ‘spear_adc_probe’:
+drivers/staging/iio/adc/spear_adc.c:393:2: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/phy/Kconfig | 1 +
+ drivers/staging/iio/adc/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/Kconfig b/drivers/phy/Kconfig
-index 330ef2d..a8b17ce 100644
---- a/drivers/phy/Kconfig
-+++ b/drivers/phy/Kconfig
-@@ -16,6 +16,7 @@ config GENERIC_PHY
- 	  framework should select this config.
- 
- config PHY_EXYNOS_MIPI_VIDEO
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index e3d6430..7d5d675 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -128,6 +128,7 @@ config MXS_LRADC
+ config SPEAR_ADC
+ 	tristate "ST SPEAr ADC"
+ 	depends on PLAT_SPEAR || COMPILE_TEST
 +	depends on HAS_IOMEM
- 	tristate "S5P/EXYNOS SoC series MIPI CSI-2/DSI PHY driver"
  	help
- 	  Support for MIPI CSI-2 and MIPI DSI DPHY found on Samsung S5P
+ 	  Say yes here to build support for the integrated ADC inside the
+ 	  ST SPEAr SoC. Provides direct access via sysfs.
 -- 
 1.8.1.4
 
