@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from b.ns.miles-group.at ([95.130.255.144]:1674 "EHLO radon.swed.at"
+Received: from b.ns.miles-group.at ([95.130.255.144]:1671 "EHLO radon.swed.at"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751932AbaANPqS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 Jan 2014 10:46:18 -0500
+	id S1751920AbaANPqQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jan 2014 10:46:16 -0500
 From: Richard Weinberger <richard@nod.at>
 To: kishon@ti.com, anton@enomsg.org, dwmw2@infradead.org,
 	richardcochran@gmail.com, lidza.louina@gmail.com,
@@ -13,9 +13,9 @@ Cc: sebastian.hesselbarth@gmail.com, florian@openwrt.org,
 	linux-kernel@vger.kernel.org,
 	driverdev-devel@linuxdriverproject.org, devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5/7] net,marvell: Add dependency on HAS_IOMEM
-Date: Tue, 14 Jan 2014 16:45:43 +0100
-Message-Id: <1389714345-20165-5-git-send-email-richard@nod.at>
+Subject: [PATCH 4/7] phy,exynos: Add dependency on HAS_IOMEM
+Date: Tue, 14 Jan 2014 16:45:42 +0100
+Message-Id: <1389714345-20165-4-git-send-email-richard@nod.at>
 In-Reply-To: <1389714345-20165-1-git-send-email-richard@nod.at>
 References: <1389714345-20165-1-git-send-email-richard@nod.at>
 Sender: linux-iio-owner@vger.kernel.org
@@ -24,26 +24,26 @@ List-Id: linux-iio@vger.kernel.org
 On archs like S390 or um this driver cannot build nor work.
 Make it depend on HAS_IOMEM to bypass build failures.
 
-drivers/built-in.o: In function `orion_mdio_probe':
-drivers/net/ethernet/marvell/mvmdio.c:228: undefined reference to `devm_ioremap'
+drivers/built-in.o: In function `exynos_mipi_video_phy_probe':
+drivers/phy/phy-exynos-mipi-video.c:130: undefined reference to `devm_ioremap_resource'
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/net/ethernet/marvell/Kconfig | 1 +
+ drivers/phy/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-index a49e81b..6300fd2 100644
---- a/drivers/net/ethernet/marvell/Kconfig
-+++ b/drivers/net/ethernet/marvell/Kconfig
-@@ -33,6 +33,7 @@ config MV643XX_ETH
+diff --git a/drivers/phy/Kconfig b/drivers/phy/Kconfig
+index 330ef2d..a8b17ce 100644
+--- a/drivers/phy/Kconfig
++++ b/drivers/phy/Kconfig
+@@ -16,6 +16,7 @@ config GENERIC_PHY
+ 	  framework should select this config.
  
- config MVMDIO
- 	tristate "Marvell MDIO interface support"
+ config PHY_EXYNOS_MIPI_VIDEO
 +	depends on HAS_IOMEM
- 	select PHYLIB
- 	---help---
- 	  This driver supports the MDIO interface found in the network
+ 	tristate "S5P/EXYNOS SoC series MIPI CSI-2/DSI PHY driver"
+ 	help
+ 	  Support for MIPI CSI-2 and MIPI DSI DPHY found on Samsung S5P
 -- 
 1.8.1.4
 
