@@ -1,49 +1,51 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2] iio: mxs-lradc: remove useless check
-Date: Sat, 18 Jan 2014 21:33:15 +0100
-Cc: Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <1390071918-10622-1-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1390071918-10622-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from b.ns.miles-group.at ([95.130.255.144]:1662 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751672AbaANPqL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jan 2014 10:46:11 -0500
+From: Richard Weinberger <richard@nod.at>
+To: kishon@ti.com, anton@enomsg.org, dwmw2@infradead.org,
+	richardcochran@gmail.com, lidza.louina@gmail.com,
+	gregkh@linuxfoundation.org, jic23@kernel.org, davem@davemloft.net
+Cc: sebastian.hesselbarth@gmail.com, florian@openwrt.org,
+	thomas.petazzoni@free-electrons.com, lars@metafoo.de,
+	marex@denx.de, acourbot@nvidia.com, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	driverdev-devel@linuxdriverproject.org, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>
+Subject: [PATCH 1/7] ptp_pch: Add dependency on HAS_IOMEM
+Date: Tue, 14 Jan 2014 16:45:39 +0100
+Message-Id: <1389714345-20165-1-git-send-email-richard@nod.at>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201401182133.15839.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Saturday, January 18, 2014 at 08:05:18 PM, Alexandre Belloni wrote:
-> Checking the channel number is useless since mxs_lradc_read_raw() is called
-> from a controlled environment and the driver is responsible for filing the
-> struct iio_chan_spec.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c | 4 ----
->  1 file changed, 4 deletions(-)
+On archs like S390 or um this driver cannot build nor work.
+Make it depend on HAS_IOMEM to bypass build failures.
 
-Changelog's missing ;-)
+drivers/ptp/ptp_pch.c: In function ‘pch_remove’:
+drivers/ptp/ptp_pch.c:571:3: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
+drivers/ptp/ptp_pch.c: In function ‘pch_probe’:
+drivers/ptp/ptp_pch.c:621:2: error: implicit declaration of function ‘ioremap’ [-Werror=implicit-function-declaration]
 
-Acked-by: Marek Vasut <marex@denx.de>
- 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> b/drivers/staging/iio/adc/mxs-lradc.c index 7fc66a6a6e36..d304156ca2f7
-> 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -897,10 +897,6 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
->  {
->  	struct mxs_lradc *lradc = iio_priv(iio_dev);
-> 
-> -	/* Check for invalid channel */
-> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
-> -		return -EINVAL;
-> -
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
->  		if (chan->type == IIO_TEMP)
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ drivers/ptp/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best regards,
-Marek Vasut
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 5be73ba..5a7910e 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -73,6 +73,7 @@ config DP83640_PHY
+ config PTP_1588_CLOCK_PCH
+ 	tristate "Intel PCH EG20T as PTP clock"
+ 	depends on X86 || COMPILE_TEST
++	depends on HAS_IOMEM
+ 	select PTP_1588_CLOCK
+ 	help
+ 	  This driver adds support for using the PCH EG20T as a PTP
+-- 
+1.8.1.4
+
