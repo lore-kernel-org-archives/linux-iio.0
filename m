@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from b.ns.miles-group.at ([95.130.255.144]:1662 "EHLO radon.swed.at"
+Received: from b.ns.miles-group.at ([95.130.255.144]:1680 "EHLO radon.swed.at"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751672AbaANPqL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 Jan 2014 10:46:11 -0500
+	id S1751960AbaANPqV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jan 2014 10:46:21 -0500
 From: Richard Weinberger <richard@nod.at>
 To: kishon@ti.com, anton@enomsg.org, dwmw2@infradead.org,
 	richardcochran@gmail.com, lidza.louina@gmail.com,
@@ -13,39 +13,37 @@ Cc: sebastian.hesselbarth@gmail.com, florian@openwrt.org,
 	linux-kernel@vger.kernel.org,
 	driverdev-devel@linuxdriverproject.org, devel@driverdev.osuosl.org,
 	linux-iio@vger.kernel.org, Richard Weinberger <richard@nod.at>
-Subject: [PATCH 1/7] ptp_pch: Add dependency on HAS_IOMEM
-Date: Tue, 14 Jan 2014 16:45:39 +0100
-Message-Id: <1389714345-20165-1-git-send-email-richard@nod.at>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH 7/7] staging,lpc32xx_adc: Add dependency on HAS_IOMEM
+Date: Tue, 14 Jan 2014 16:45:45 +0100
+Message-Id: <1389714345-20165-7-git-send-email-richard@nod.at>
+In-Reply-To: <1389714345-20165-1-git-send-email-richard@nod.at>
+References: <1389714345-20165-1-git-send-email-richard@nod.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On archs like S390 or um this driver cannot build nor work.
 Make it depend on HAS_IOMEM to bypass build failures.
 
-drivers/ptp/ptp_pch.c: In function ‘pch_remove’:
-drivers/ptp/ptp_pch.c:571:3: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
-drivers/ptp/ptp_pch.c: In function ‘pch_probe’:
-drivers/ptp/ptp_pch.c:621:2: error: implicit declaration of function ‘ioremap’ [-Werror=implicit-function-declaration]
+drivers/built-in.o: In function `lpc32xx_adc_probe':
+drivers/staging/iio/adc/lpc32xx_adc.c:149: undefined reference to `devm_ioremap'
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/ptp/Kconfig | 1 +
+ drivers/staging/iio/adc/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 5be73ba..5a7910e 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -73,6 +73,7 @@ config DP83640_PHY
- config PTP_1588_CLOCK_PCH
- 	tristate "Intel PCH EG20T as PTP clock"
- 	depends on X86 || COMPILE_TEST
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index 7d5d675..3633298 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -103,6 +103,7 @@ config AD7280
+ config LPC32XX_ADC
+ 	tristate "NXP LPC32XX ADC"
+ 	depends on ARCH_LPC32XX || COMPILE_TEST
 +	depends on HAS_IOMEM
- 	select PTP_1588_CLOCK
  	help
- 	  This driver adds support for using the PCH EG20T as a PTP
+ 	  Say yes here to build support for the integrated ADC inside the
+ 	  LPC32XX SoC. Note that this feature uses the same hardware as the
 -- 
 1.8.1.4
 
