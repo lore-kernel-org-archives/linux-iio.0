@@ -1,117 +1,98 @@
-Return-Path: <marek.belisko@gmail.com>
-Sender: Belisko Marek <marek.belisko@gmail.com>
-From: Marek Belisko <marek@goldelico.com>
-To: robh+dt@kernel.org,
-	pawel.moll@arm.com,
-	mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org,
-	rob@landley.net,
-	jic23@kernel.org,
-	grant.likely@linaro.org
-Cc: devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	hns@goldelico.com,
-	Marek Belisko <marek@goldelico.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38396 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751966AbaARLzr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jan 2014 06:55:47 -0500
+Message-ID: <52DA6BCC.7010402@kernel.org>
+Date: Sat, 18 Jan 2014 11:55:56 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Marek Belisko <marek@goldelico.com>, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rob@landley.net, grant.likely@linaro.org
+CC: devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	NeilBrown <neilb@suse.de>
-Subject: [PATCH] iio: gyro: itg3200: Add DT support.
-Date: Sat, 18 Jan 2014 22:57:55 +0100
-Message-Id: <1390082275-8688-1-git-send-email-marek@goldelico.com>
-In-Reply-To: <1389475047-4353-1-git-send-email-marek@goldelico.com>
+Subject: Re: [PATCH] iio: gyro: itg3200: Add DT support.
 References: <1389475047-4353-1-git-send-email-marek@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1389475047-4353-1-git-send-email-marek@goldelico.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Marek Belisko <marek@goldelico.com>
----
 
-V2:
-Added entries to i2c/trivial-devices and also add invensense to vendor-prefixes file.
 
- .../devicetree/bindings/i2c/trivial-devices.txt    |  1 +
- .../devicetree/bindings/iio/gyro/itg3200.txt       | 22 ++++++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.txt        |  1 +
- drivers/iio/gyro/itg3200_core.c                    |  9 +++++++++
- 4 files changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+On 11/01/14 21:17, Marek Belisko wrote:
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> Signed-off-by: Marek Belisko <marek@goldelico.com>
+Unless it is very recent, I don't the the invensense vendor-prefix is in
+vendor-prefixes.txt. Please add that to the patch.
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index 1a1ac2e..86078de 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -40,6 +40,7 @@ fsl,sgtl5000		SGTL5000: Ultra Low-Power Audio Codec
- gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire Interface
- infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
- infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
-+invensense,itg3200	InvenSense ITG-3200, Gyroscope
- isl,isl12057		Intersil ISL12057 I2C RTC Chip
- maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
- maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
-diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
-new file mode 100644
-index 0000000..b1b18dc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
-@@ -0,0 +1,22 @@
-+* InvenSense ITG-3200 gyroscope
-+
-+http://www.invensense.com/mems/gyro/itg3200.html
-+
-+Required properties:
-+
-+  - compatible : should be "invensense,itg3200"
-+  - reg : the I2C address of the sensor
-+
-+Optional properties:
-+
-+  - interrupt-parent : should be the phandle for the interrupt controller
-+  - interrupts : interrupt mapping for GPIO IRQ
-+
-+Example:
-+
-+itg3200@68 {
-+	compatible = "invensense,itg3200";
-+	reg = <0x68>;
-+	interrupt-parent = <&gpio2>;
-+	interrupts = <29 IRQ_TYPE_EDGE_RISING>;
-+};
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index b2635c5..01bf752 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -44,6 +44,7 @@ ibm	International Business Machines (IBM)
- idt	Integrated Device Technologies, Inc.
- img	Imagination Technologies Ltd.
- intercontrol	Inter Control Group
-+invensense InvenSense
- isl	Intersil
- karo	Ka-Ro electronics GmbH
- lg	LG Corporation
-diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
-index 4d3f3b9..adbf20d 100644
---- a/drivers/iio/gyro/itg3200_core.c
-+++ b/drivers/iio/gyro/itg3200_core.c
-@@ -374,10 +374,19 @@ static const struct i2c_device_id itg3200_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, itg3200_id);
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id itg3200_of_match[] = {
-+	{ .compatible = "invensense,itg3200", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, itg3200_of_match);
-+#endif
-+
- static struct i2c_driver itg3200_driver = {
- 	.driver = {
- 		.owner  = THIS_MODULE,
- 		.name	= "itg3200",
-+		.of_match_table = of_match_ptr(itg3200_of_match),
- 	},
- 	.id_table	= itg3200_id,
- 	.probe		= itg3200_probe,
--- 
-1.8.3.2
+Otherwise, there is nothing here that isn't covered by the trivial
+i2c bindings - thus perhaps it should be an entry in bindings/i2c/trivial-devices.txt?
+
+Personally I'm not that fond of the trivial file as a single location
+for the relevant info makes more sense to me.  Still thought I'd bring
+it up as a possibility.
+
+Jonathan
+> ---
+>   .../devicetree/bindings/iio/gyro/itg3200.txt       | 22 ++++++++++++++++++++++
+>   drivers/iio/gyro/itg3200_core.c                    |  9 +++++++++
+>   2 files changed, 31 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+>
+> diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+> new file mode 100644
+> index 0000000..b1b18dc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
+> @@ -0,0 +1,22 @@
+> +* InvenSense ITG-3200 gyroscope
+> +
+> +http://www.invensense.com/mems/gyro/itg3200.html
+> +
+> +Required properties:
+> +
+> +  - compatible : should be "invensense,itg3200"
+> +  - reg : the I2C address of the sensor
+> +
+> +Optional properties:
+> +
+> +  - interrupt-parent : should be the phandle for the interrupt controller
+> +  - interrupts : interrupt mapping for GPIO IRQ
+> +
+> +Example:
+> +
+> +itg3200@68 {
+> +	compatible = "invensense,itg3200";
+> +	reg = <0x68>;
+> +	interrupt-parent = <&gpio2>;
+> +	interrupts = <29 IRQ_TYPE_EDGE_RISING>;
+> +};
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> index 4d3f3b9..adbf20d 100644
+> --- a/drivers/iio/gyro/itg3200_core.c
+> +++ b/drivers/iio/gyro/itg3200_core.c
+> @@ -374,10 +374,19 @@ static const struct i2c_device_id itg3200_id[] = {
+>   };
+>   MODULE_DEVICE_TABLE(i2c, itg3200_id);
+>
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id itg3200_of_match[] = {
+> +	{ .compatible = "invensense,itg3200", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, itg3200_of_match);
+> +#endif
+> +
+>   static struct i2c_driver itg3200_driver = {
+>   	.driver = {
+>   		.owner  = THIS_MODULE,
+>   		.name	= "itg3200",
+> +		.of_match_table = of_match_ptr(itg3200_of_match),
+>   	},
+>   	.id_table	= itg3200_id,
+>   	.probe		= itg3200_probe,
+>
