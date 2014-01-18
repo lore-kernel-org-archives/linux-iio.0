@@ -13,21 +13,42 @@ Cc: devicetree@vger.kernel.org,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
+	hns@goldelico.com,
 	Marek Belisko <marek@goldelico.com>,
 	NeilBrown <neilb@suse.de>
 Subject: [PATCH] iio: gyro: itg3200: Add DT support.
-Date: Sat, 11 Jan 2014 22:17:27 +0100
-Message-Id: <1389475047-4353-1-git-send-email-marek@goldelico.com>
+Date: Sat, 18 Jan 2014 22:57:55 +0100
+Message-Id: <1390082275-8688-1-git-send-email-marek@goldelico.com>
+In-Reply-To: <1389475047-4353-1-git-send-email-marek@goldelico.com>
+References: <1389475047-4353-1-git-send-email-marek@goldelico.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: NeilBrown <neilb@suse.de>
 Signed-off-by: Marek Belisko <marek@goldelico.com>
 ---
+
+V2:
+Added entries to i2c/trivial-devices and also add invensense to vendor-prefixes file.
+
+ .../devicetree/bindings/i2c/trivial-devices.txt    |  1 +
  .../devicetree/bindings/iio/gyro/itg3200.txt       | 22 ++++++++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.txt        |  1 +
  drivers/iio/gyro/itg3200_core.c                    |  9 +++++++++
- 2 files changed, 31 insertions(+)
+ 4 files changed, 33 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/gyro/itg3200.txt
 
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index 1a1ac2e..86078de 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -40,6 +40,7 @@ fsl,sgtl5000		SGTL5000: Ultra Low-Power Audio Codec
+ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire Interface
+ infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
+ infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
++invensense,itg3200	InvenSense ITG-3200, Gyroscope
+ isl,isl12057		Intersil ISL12057 I2C RTC Chip
+ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
+ maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
 diff --git a/Documentation/devicetree/bindings/iio/gyro/itg3200.txt b/Documentation/devicetree/bindings/iio/gyro/itg3200.txt
 new file mode 100644
 index 0000000..b1b18dc
@@ -56,6 +77,18 @@ index 0000000..b1b18dc
 +	interrupt-parent = <&gpio2>;
 +	interrupts = <29 IRQ_TYPE_EDGE_RISING>;
 +};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index b2635c5..01bf752 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -44,6 +44,7 @@ ibm	International Business Machines (IBM)
+ idt	Integrated Device Technologies, Inc.
+ img	Imagination Technologies Ltd.
+ intercontrol	Inter Control Group
++invensense InvenSense
+ isl	Intersil
+ karo	Ka-Ro electronics GmbH
+ lg	LG Corporation
 diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
 index 4d3f3b9..adbf20d 100644
 --- a/drivers/iio/gyro/itg3200_core.c
@@ -81,4 +114,4 @@ index 4d3f3b9..adbf20d 100644
  	.id_table	= itg3200_id,
  	.probe		= itg3200_probe,
 -- 
-1.8.4.2
+1.8.3.2
