@@ -1,149 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga01.intel.com ([192.55.52.88]:30580 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750707AbaATFC1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 20 Jan 2014 00:02:27 -0500
+	id S1750710AbaATFCa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 20 Jan 2014 00:02:30 -0500
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/4] IIO: core: Modify scan element type
-Date: Sun, 19 Jan 2014 21:02:20 -0800
-Message-Id: <1390194142-25058-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 3/4] IIO: core: Introduce Quaternion types
+Date: Sun, 19 Jan 2014 21:02:21 -0800
+Message-Id: <1390194142-25058-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1390194142-25058-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1390194142-25058-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The current scan element type uses the following format:
-  [be|le]:[s|u]bits/storagebits[>>shift].
-To specify multiple elements in this type, added a repeat value.
-So new format is:
-  [be|le]:([s|u]bits/storagebits){repeat}[>>shift].
-Here repeat is specifying how may times, real/storage bits are repeating.
-
-When repeat is value is 0 or 1, then repeat value is not used in the format,
-and it will be same as existing format.
+Introduced IIO_VAL_QUATERNION and its formatting. Format used here:
+x:y:z:w
+In addition IIO_QUAT_ROT is added to the channel type and name.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
- include/linux/iio/iio.h           |  9 +++++++++
- 2 files changed, 44 insertions(+), 6 deletions(-)
+ drivers/iio/industrialio-core.c | 4 ++++
+ include/linux/iio/types.h       | 3 +++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 7f9152c..ee57d94 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -121,7 +121,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
- 		type = IIO_BE;
- #endif
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index f8b730a..267b0a0 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -69,6 +69,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
++	[IIO_QUAT_ROT] = "rotquaternion",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+@@ -403,6 +404,9 @@ ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
+ 		vals[1] = do_div(tmp, 1000000000LL);
+ 		vals[0] = tmp;
+ 		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
++	case IIO_VAL_QUATERNION:
++		return sprintf(buf, "%d:%d:%d:%d\n", vals[0], vals[1], vals[2],
++							vals[3]);
+ 	default:
+ 		return 0;
  	}
--	return sprintf(buf, "%s:%c%d/%d>>%u\n",
-+	if (this_attr->c->scan_type.repeat > 1)
-+		return sprintf(buf, "%s:(%c%d/%d){%d}>>%u\n",
-+		       iio_endian_prefix[type],
-+		       this_attr->c->scan_type.sign,
-+		       this_attr->c->scan_type.realbits,
-+		       this_attr->c->scan_type.storagebits,
-+		       this_attr->c->scan_type.repeat,
-+		       this_attr->c->scan_type.shift);
-+		else
-+			return sprintf(buf, "%s:%c%d/%d>>%u\n",
- 		       iio_endian_prefix[type],
- 		       this_attr->c->scan_type.sign,
- 		       this_attr->c->scan_type.realbits,
-@@ -446,14 +455,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
- 	for_each_set_bit(i, mask,
- 			 indio_dev->masklength) {
- 		ch = iio_find_channel_from_si(indio_dev, i);
--		length = ch->scan_type.storagebits / 8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		bytes = ALIGN(bytes, length);
- 		bytes += length;
- 	}
- 	if (timestamp) {
- 		ch = iio_find_channel_from_si(indio_dev,
- 					      indio_dev->scan_index_timestamp);
--		length = ch->scan_type.storagebits / 8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		bytes = ALIGN(bytes, length);
- 		bytes += length;
- 	}
-@@ -932,7 +949,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 					       indio_dev->masklength,
- 					       in_ind + 1);
- 			ch = iio_find_channel_from_si(indio_dev, in_ind);
--			length = ch->scan_type.storagebits/8;
-+			if (ch->scan_type.repeat > 1)
-+				length = ch->scan_type.storagebits / 8 *
-+					ch->scan_type.repeat;
-+			else
-+				length = ch->scan_type.storagebits / 8;
- 			/* Make sure we are aligned */
- 			in_loc += length;
- 			if (in_loc % length)
-@@ -944,7 +965,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 			goto error_clear_mux_table;
- 		}
- 		ch = iio_find_channel_from_si(indio_dev, in_ind);
--		length = ch->scan_type.storagebits/8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		if (out_loc % length)
- 			out_loc += length - out_loc % length;
- 		if (in_loc % length)
-@@ -965,7 +990,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 		}
- 		ch = iio_find_channel_from_si(indio_dev,
- 			indio_dev->scan_index_timestamp);
--		length = ch->scan_type.storagebits/8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		if (out_loc % length)
- 			out_loc += length - out_loc % length;
- 		if (in_loc % length)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 7f76a45..0ac25a0 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -177,6 +177,14 @@ struct iio_event_spec {
-  *			shift:		Shift right by this before masking out
-  *					realbits.
-  *			endianness:	little or big endian
-+ *			repeat:		No. of times real/storage bits repeats.
-+ *					By default, when repeat is set to 0
-+ *					repeat value is treated as 1. When
-+ *					repeat value is 0 or 1, then there is
-+ *					no change in existing scan element
-+ *					type, in sysfs. When set to more than
-+ *					1, then the type element in sysfs will
-+ *					show repeat value.
-  * @info_mask_separate: What information is to be exported that is specific to
-  *			this channel.
-  * @info_mask_shared_by_type: What information is to be exported that is shared
-@@ -220,6 +228,7 @@ struct iio_chan_spec {
- 		u8	realbits;
- 		u8	storagebits;
- 		u8	shift;
-+		u8	repeat;
- 		enum iio_endian endianness;
- 	} scan_type;
- 	long			info_mask_separate;
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4ac928e..878db0e 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -29,6 +29,7 @@ enum iio_chan_type {
+ 	IIO_ALTVOLTAGE,
+ 	IIO_CCT,
+ 	IIO_PRESSURE,
++	IIO_QUAT_ROT,
+ };
+ 
+ enum iio_modifier {
+@@ -52,6 +53,7 @@ enum iio_modifier {
+ 	IIO_MOD_LIGHT_RED,
+ 	IIO_MOD_LIGHT_GREEN,
+ 	IIO_MOD_LIGHT_BLUE,
++	IIO_MOD_QUATERNION,
+ };
+ 
+ enum iio_event_type {
+@@ -78,6 +80,7 @@ enum iio_event_direction {
+ #define IIO_VAL_INT_PLUS_MICRO 2
+ #define IIO_VAL_INT_PLUS_NANO 3
+ #define IIO_VAL_INT_PLUS_MICRO_DB 4
++#define IIO_VAL_QUATERNION 5
+ #define IIO_VAL_FRACTIONAL 10
+ #define IIO_VAL_FRACTIONAL_LOG2 11
+ 
 -- 
 1.8.3.2
 
