@@ -1,111 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:40627 "EHLO pmeerw.net"
+Received: from mga01.intel.com ([192.55.52.88]:54241 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750902AbaAKPZX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 11 Jan 2014 10:25:23 -0500
-Date: Sat, 11 Jan 2014 16:25:21 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: linux-iio@vger.kernel.org, Kravchenko Oleksandr <x0199363@ti.com>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH 1/2] iio:accel:bma180: Use modifier instead of index in
- channel specification
-In-Reply-To: <52D12D6C.2020007@kernel.org>
-Message-ID: <alpine.DEB.2.01.1401111602360.9334@pmeerw.net>
-References: <1389389841-7389-1-git-send-email-pmeerw@pmeerw.net> <52D12D6C.2020007@kernel.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+	id S1751162AbaAXCuj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 23 Jan 2014 21:50:39 -0500
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org, jkosina@suse.cz
+Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/2] hid: hid-sensor-hub: Add selector api
+Date: Thu, 23 Jan 2014 18:50:21 -0800
+Message-Id: <1390531822-7640-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+In some report descriptors, they leave holes in the selectors. In
+this case if we use hardcoded selector values, this will result
+in invalid values. For example, if there is selectors defined for
+Power State from OFF to D0 to D3. We can't use indexes of these states
+if some states are not implemented or not present in the report decriptors.
+In this case, we need to get the indexes from report descriptors.
 
-> > should use channel modifiers (X/Y/Z), not channel indices
-> > timestamp channel has scan index 3, not 4
-> > 
-> Aag.  Whilst a correct fix, this is going to result in a userspace ABI
-> change.  Driver has been in since 3.12.  We may need to maintain
-> both ABI's for now and then deprecate it at some point.  Easiest way to do
-> this
-> will be to have two sets of iio_chan_specs pointing at the same underlying
-> real channels.
-> 
-> Anyone have a strong opinion about this?
-> Good spot by the way!
+One API is added to get the index of a selector. This API will
+search for usage id in the field usage list and return the index.
 
-adding another email address of Oleksandr, x0199363@ti.com bounces
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-hub.c   | 22 ++++++++++++++++++++++
+ include/linux/hid-sensor-hub.h |  3 +++
+ 2 files changed, 25 insertions(+)
 
-the IIO ABI is under "testing", not "stable" so the interface may be 
-changed due to 'grave errors'
-
-given the short timespan since 3.12 and the clear violation of the 
-documented ABI, I think this should just be fixed
-
-another suggestion:
-
-often (at least for me) it is difficult to figure out what the user-space 
-sysfs ABI is from reading the source code and I find it even more 
-difficult to sometimes guess what a particular sysfs is supposed to do 
-(e.g. what writing to a _scale actually sets in terms of the hardware); 
-
-I'd like to suggest to ask for a listing of the sysfs entries relating 
-to a new driver under review (e.g. the output of 'find 
-/sys/bus/iio/devices/iio:deviceX'); it should be feasible to provide a
-tool which compares the submitted listing against the sysfs-bus-iio 
-documentation and output appropriate warnings
-
-regards, p.
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 46f4480..ad2b869 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -291,6 +291,28 @@ err_free:
+ }
+ EXPORT_SYMBOL_GPL(sensor_hub_input_attr_get_raw_value);
  
-> > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> > Cc: Kravchenko Oleksandr <x0199363@ti.com>
-> > ---
-> >   drivers/iio/accel/bma180.c | 16 ++++++++--------
-> >   1 file changed, 8 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> > index 3bec922..bfec313 100644
-> > --- a/drivers/iio/accel/bma180.c
-> > +++ b/drivers/iio/accel/bma180.c
-> > @@ -447,14 +447,14 @@ static const struct iio_chan_spec_ext_info
-> > bma180_ext_info[] = {
-> >   	{ },
-> >   };
-> > 
-> > -#define BMA180_CHANNEL(_index) {					\
-> > +#define BMA180_CHANNEL(_axis) {					\
-> >   	.type = IIO_ACCEL,						\
-> > -	.indexed = 1,							\
-> > -	.channel = (_index),						\
-> > +	.modified = 1,							\
-> > +	.channel2 = IIO_MOD_##_axis,					\
-> >   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
-> >   		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-> >   	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-> > -	.scan_index = (_index),						\
-> > +	.scan_index = AXIS_##_axis,					\
-> >   	.scan_type = {							\
-> >   		.sign = 's',						\
-> >   		.realbits = 14,						\
-> > @@ -465,10 +465,10 @@ static const struct iio_chan_spec_ext_info
-> > bma180_ext_info[] = {
-> >   }
-> > 
-> >   static const struct iio_chan_spec bma180_channels[] = {
-> > -	BMA180_CHANNEL(AXIS_X),
-> > -	BMA180_CHANNEL(AXIS_Y),
-> > -	BMA180_CHANNEL(AXIS_Z),
-> > -	IIO_CHAN_SOFT_TIMESTAMP(4),
-> > +	BMA180_CHANNEL(X),
-> > +	BMA180_CHANNEL(Y),
-> > +	BMA180_CHANNEL(Z),
-> > +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> >   };
-> > 
-> >   static irqreturn_t bma180_trigger_handler(int irq, void *p)
-> > 
-> 
-
++int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
++				u32 report_id, int field_index, u32 usage_id)
++{
++	struct hid_report *report;
++	struct hid_field *field;
++	int i;
++
++	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
++	if (!report || (field_index >= report->maxfield))
++		goto done_proc;
++
++	field = report->field[field_index];
++	for (i = 0; i < field->maxusage; ++i) {
++		if (field->usage[i].hid == usage_id)
++			return field->usage[i].usage_index;
++	}
++
++done_proc:
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(hid_sensor_get_usage_index);
++
+ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
+ 				u8 type,
+ 				u32 usage_id,
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index b914ca3..205eba0 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -218,4 +218,7 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ 					int *val1, int *val2);
+ 
++int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
++				u32 report_id, int field_index, u32 usage_id);
++
+ #endif
 -- 
+1.8.3.2
 
-Peter Meerwald
-+43-664-2444418 (mobile)
