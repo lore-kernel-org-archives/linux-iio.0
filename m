@@ -1,46 +1,57 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <52E88BFC.6080704@samsung.com>
-Date: Wed, 29 Jan 2014 14:05:00 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Myungjoo Ham <myungjoo.ham@samsung.com>,
- Jaehoon Chung <jh80.chung@samsung.com>, ldewangan@nvidia.com
-Subject: [PATCH 0/2] iio: ak8975: Fix calculation formula and add device name
-Content-type: text/plain; charset=ISO-8859-1
+Return-Path: <pmeerw@pmeerw.net>
+Date: Wed, 29 Jan 2014 09:53:56 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Beomho Seo <beomho.seo@samsung.com>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+    Lars-Peter Clausen <lars@metafoo.de>,
+    Myungjoo Ham <myungjoo.ham@samsung.com>,
+    Jaehoon Chung <jh80.chung@samsung.com>, ldewangan@nvidia.com
+Subject: Re: [PATCH 0/2] iio: ak8975: Fix calculation formula and add device
+ name
+In-Reply-To: <52E88BFC.6080704@samsung.com>
+Message-ID: <alpine.DEB.2.01.1401290949450.17833@pmeerw.net>
+References: <52E88BFC.6080704@samsung.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
- Three months ago Lars-Peter revised description of device driver[1].
-Correctly, device's sensitivity is 0.3 uT/LSB typ and One micro tesla equal 0.01 gauss[2].
-So I have fixed calculation formula,And then add RAW_TO_GAUSS macro.
-Scale are returned as VAL_INT_PLUS_MICRO.
-Additionally, I have add device name.
+Hello,
 
-Tested on exynos4412 board, with following result:
+>  Three months ago Lars-Peter revised description of device driver[1].
 
--sh-4.1# cat name
-ak8975
--sh-4.1# cat in_magn_x_raw
-80
--sh-4.1# cat in_magn_x_scale
-0.003609
+me, not Lars-Peter
 
-Calculate the result 80 x 0.003609 = 0.28872 Gauss.
-0.28872 G equal 288.72 mG
+> Correctly, device's sensitivity is 0.3 uT/LSB typ and One micro tesla equal 0.01 gauss[2].
+> So I have fixed calculation formula,And then add RAW_TO_GAUSS macro.
+> Scale are returned as VAL_INT_PLUS_MICRO.
+> Additionally, I have add device name.
 
-I think this magnitude value is proper level[3].
++#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
 
-[1] http://marc.info/?l=linux-iio&m=138220306822747&w=2
-[2] http://en.wikipedia.org/wiki/Gauss_(unit)
-[3] http://en.wikipedia.org/wiki/Orders_of_magnitude_(magnetic_field)
+  *
+  * Since 1uT = 0.01 gauss, our final scale factor becomes:
+  *
+- * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
+- * Hadj = H * ((ASA + 128) * 30 / 256
++ * Hadj = H * ((ASA + 128) / 256) * 3/10 * 1/100
++ * Hadj = H * ((ASA + 128) * 0.003) / 256
+  *
+  * Since ASA doesn't change, we cache the resultant scale factor into the
+  * device context in ak8975_setup().
+  */
+-       data->raw_to_gauss[0] = ((data->asa[0] + 128) * 30) >> 8;
++       data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
 
-Beomho Seo (2):
-  iio: ak8975: Fix calculation formula for microtesla to gauss unit
-  iio: ak8975: Add device name
+thank you for following up on this; I don't have the hardware, so I didn't 
+dare to change the driver...
 
- drivers/iio/magnetometer/ak8975.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+the RAW_TO_GAUSS() macro doesn't match the comment Hadj = H * ... anymore
+
+maybe put this explanation in the patch comment, not the cover letter?
+
+regards, p.
 
 -- 
-Best Regards,
+
+Peter Meerwald
++43-664-2444418 (mobile)
