@@ -1,40 +1,48 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <52EB6EF4.9020203@metafoo.de>
-Date: Fri, 31 Jan 2014 10:37:56 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
- Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
- kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: dac: ad7303: remove an unneeded check
-References: <20140130115849.GI12734@elgon.mountain>
-In-Reply-To: <20140130115849.GI12734@elgon.mountain>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pb0-f49.google.com ([209.85.160.49]:62571 "EHLO
+	mail-pb0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751165AbaA3KLI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jan 2014 05:11:08 -0500
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: matt.porter@linaro.org, koen@dominion.thruhere.net,
+	pantelis.antoniou@gmail.com, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 1/2] iio: add IIO_DISTANCE type
+Date: Thu, 30 Jan 2014 02:11:12 -0800
+Message-Id: <1391076673-5623-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/30/2014 12:58 PM, Dan Carpenter wrote:
-> "ret" is zero here.  There is no need to check again.
-> 
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index acc911a..ac999ab 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
++	[IIO_DISTANCE] = "distance",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 084d882..675c2d8 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -30,6 +30,7 @@ enum iio_chan_type {
+ 	IIO_CCT,
+ 	IIO_PRESSURE,
+ 	IIO_HUMIDITYRELATIVE,
++	IIO_DISTANCE,
+ };
+ 
+ enum iio_modifier {
+-- 
+1.8.3.2
 
-Thanks.
-
-> 
-> diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
-> index d0505fd22ef4..fa2810032968 100644
-> --- a/drivers/iio/dac/ad7303.c
-> +++ b/drivers/iio/dac/ad7303.c
-> @@ -92,7 +92,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
->  	ad7303_write(st, chan->channel, st->dac_cache[chan->channel]);
->  
->  	mutex_unlock(&indio_dev->mlock);
-> -	return ret ? ret : len;
-> +	return len;
->  }
->  
->  static int ad7303_get_vref(struct ad7303_state *st,
-> 
