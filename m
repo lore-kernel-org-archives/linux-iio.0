@@ -1,264 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44651 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751574AbaBCOpM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 09:45:12 -0500
-In-Reply-To: <52EF7D05.7000500@st.com>
-References: <1391419547-18694-1-git-send-email-denis.ciocca@st.com> <656fe823-9dc0-4c96-b863-d9ace5e11904@email.android.com> <52EF7D05.7000500@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio:gyro: Bugfix L3GD20H gyroscope management
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 03 Feb 2014 14:45:07 +0000
-To: Denis CIOCCA <denis.ciocca@st.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <458d3118-545b-4536-866d-6b091637aa8e@email.android.com>
+Received: from mail-ea0-f169.google.com ([209.85.215.169]:61072 "EHLO
+	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932991AbaBAOwu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Feb 2014 09:52:50 -0500
+From: Johannes Thumshirn <morbidrsa@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Johannes Thumshirn <morbidrsa@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: viperboard: Drop platform_set_drvdata call
+Date: Sat,  1 Feb 2014 15:52:44 +0100
+Message-Id: <1391266364-14383-1-git-send-email-morbidrsa@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Description needs to say that. It isn't for us. It is for upstream distros etc deciding whether to apply the patch. Also necessary for stable.
+Drop call to platform_set_drvdata as driver data is not used anywhere in the
+driver
 
-On February 3, 2014 11:27:01 AM GMT+00:00, Denis CIOCCA <denis.ciocca@st.com> wrote:
->The probe function failed because the who-am-i was wrong!
->
->On 02/03/2014 11:53 AM, Jonathan Cameron wrote:
->> Needs a detailed description of what effects users will see.
->>
->> On February 3, 2014 9:25:47 AM GMT+00:00, Denis CIOCCA
-><denis.ciocca@st.com> wrote:
->>> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
->>> ---
->>> drivers/iio/gyro/st_gyro.h                     |    6 +-
->>> drivers/iio/gyro/st_gyro_core.c                |  102
->>> ++++++++++++++++++++++--
->>> drivers/iio/gyro/st_gyro_i2c.c                 |    3 +-
->>> drivers/iio/gyro/st_gyro_spi.c                 |    3 +-
->>> include/linux/platform_data/st_sensors_pdata.h |    2 +-
->>> 5 files changed, 101 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
->>> index f8f2bf8..3d829fc 100644
->>> --- a/drivers/iio/gyro/st_gyro.h
->>> +++ b/drivers/iio/gyro/st_gyro.h
->>> @@ -24,10 +24,10 @@
->>> #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
->>>
->>> /**
->>> - * struct st_sensors_platform_data - gyro platform data
->>> - * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
->>> + * struct st_sensors_platform_data - default gyro platform data
->>> + * @drdy_int_pin: default gyro DRDY is available on INT2 pin.
->>>   */
->>> -static const struct st_sensors_platform_data gyro_pdata = {
->>> +static const struct st_sensors_platform_data default_gyro_pdata = {
->>> 	.drdy_int_pin = 2,
->>> };
->>>
->>> diff --git a/drivers/iio/gyro/st_gyro_core.c
->>> b/drivers/iio/gyro/st_gyro_core.c
->>> index d53d91a..c4fbe3a 100644
->>> --- a/drivers/iio/gyro/st_gyro_core.c
->>> +++ b/drivers/iio/gyro/st_gyro_core.c
->>> @@ -35,6 +35,7 @@
->>> #define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
->>>
->>> /* FULLSCALE */
->>> +#define ST_GYRO_FS_AVL_245DPS			245
->>> #define ST_GYRO_FS_AVL_250DPS			250
->>> #define ST_GYRO_FS_AVL_500DPS			500
->>> #define ST_GYRO_FS_AVL_2000DPS			2000
->>> @@ -87,6 +88,31 @@
->>> #define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
->>> #define ST_GYRO_2_MULTIREAD_BIT			true
->>>
->>> +/* CUSTOM VALUES FOR SENSOR 3 */
->>> +#define ST_GYRO_3_WAI_EXP			0xd7
->>> +#define ST_GYRO_3_ODR_ADDR			0x20
->>> +#define ST_GYRO_3_ODR_MASK			0xc0
->>> +#define ST_GYRO_3_ODR_AVL_100HZ_VAL		0x00
->>> +#define ST_GYRO_3_ODR_AVL_200HZ_VAL		0x01
->>> +#define ST_GYRO_3_ODR_AVL_400HZ_VAL		0x02
->>> +#define ST_GYRO_3_ODR_AVL_800HZ_VAL		0x03
->>> +#define ST_GYRO_3_PW_ADDR			0x20
->>> +#define ST_GYRO_3_PW_MASK			0x08
->>> +#define ST_GYRO_3_FS_ADDR			0x23
->>> +#define ST_GYRO_3_FS_MASK			0x30
->>> +#define ST_GYRO_3_FS_AVL_245_VAL		0x00
->>> +#define ST_GYRO_3_FS_AVL_500_VAL		0x01
->>> +#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
->>> +#define ST_GYRO_3_FS_AVL_245_GAIN		IIO_DEGREE_TO_RAD(8750)
->>> +#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
->>> +#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
->>> +#define ST_GYRO_3_BDU_ADDR			0x23
->>> +#define ST_GYRO_3_BDU_MASK			0x80
->>> +#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
->>> +#define ST_GYRO_3_DRDY_IRQ_INT1_MASK		0x80
->>> +#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
->>> +#define ST_GYRO_3_MULTIREAD_BIT			true
->>> +
->>> static const struct iio_chan_spec st_gyro_16bit_channels[] = {
->>> 	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
->>> 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>> @@ -167,11 +193,10 @@ static const struct st_sensors
->st_gyro_sensors[]
->>> = {
->>> 		.wai = ST_GYRO_2_WAI_EXP,
->>> 		.sensors_supported = {
->>> 			[0] = L3GD20_GYRO_DEV_NAME,
->>> -			[1] = L3GD20H_GYRO_DEV_NAME,
->>> -			[2] = LSM330D_GYRO_DEV_NAME,
->>> -			[3] = LSM330DLC_GYRO_DEV_NAME,
->>> -			[4] = L3G4IS_GYRO_DEV_NAME,
->>> -			[5] = LSM330_GYRO_DEV_NAME,
->>> +			[1] = LSM330D_GYRO_DEV_NAME,
->>> +			[2] = LSM330DLC_GYRO_DEV_NAME,
->>> +			[3] = L3G4IS_GYRO_DEV_NAME,
->>> +			[4] = LSM330_GYRO_DEV_NAME,
->>> 		},
->>> 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->>> 		.odr = {
->>> @@ -226,6 +251,65 @@ static const struct st_sensors
->st_gyro_sensors[] =
->>> {
->>> 		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
->>> 		.bootime = 2,
->>> 	},
->>> +	{
->>> +		.wai = ST_GYRO_3_WAI_EXP,
->>> +		.sensors_supported = {
->>> +			[0] = L3GD20H_GYRO_DEV_NAME,
->>> +		},
->>> +		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->>> +		.odr = {
->>> +			.addr = ST_GYRO_3_ODR_ADDR,
->>> +			.mask = ST_GYRO_3_ODR_MASK,
->>> +			.odr_avl = {
->>> +				{ 100, ST_GYRO_3_ODR_AVL_100HZ_VAL, },
->>> +				{ 200, ST_GYRO_3_ODR_AVL_200HZ_VAL, },
->>> +				{ 400, ST_GYRO_3_ODR_AVL_400HZ_VAL, },
->>> +				{ 800, ST_GYRO_3_ODR_AVL_800HZ_VAL, },
->>> +			},
->>> +		},
->>> +		.pw = {
->>> +			.addr = ST_GYRO_3_PW_ADDR,
->>> +			.mask = ST_GYRO_3_PW_MASK,
->>> +			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->>> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->>> +		},
->>> +		.enable_axis = {
->>> +			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
->>> +			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->>> +		},
->>> +		.fs = {
->>> +			.addr = ST_GYRO_3_FS_ADDR,
->>> +			.mask = ST_GYRO_3_FS_MASK,
->>> +			.fs_avl = {
->>> +				[0] = {
->>> +					.num = ST_GYRO_FS_AVL_245DPS,
->>> +					.value = ST_GYRO_3_FS_AVL_245_VAL,
->>> +					.gain = ST_GYRO_3_FS_AVL_245_GAIN,
->>> +				},
->>> +				[1] = {
->>> +					.num = ST_GYRO_FS_AVL_500DPS,
->>> +					.value = ST_GYRO_3_FS_AVL_500_VAL,
->>> +					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
->>> +				},
->>> +				[2] = {
->>> +					.num = ST_GYRO_FS_AVL_2000DPS,
->>> +					.value = ST_GYRO_3_FS_AVL_2000_VAL,
->>> +					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
->>> +				},
->>> +			},
->>> +		},
->>> +		.bdu = {
->>> +			.addr = ST_GYRO_3_BDU_ADDR,
->>> +			.mask = ST_GYRO_3_BDU_MASK,
->>> +		},
->>> +		.drdy_irq = {
->>> +			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
->>> +			.mask_int1 = ST_GYRO_3_DRDY_IRQ_INT1_MASK,
->>> +			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
->>> +		},
->>> +		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
->>> +		.bootime = 2,
->>> +	},
->>> };
->>>
->>> static int st_gyro_read_raw(struct iio_dev *indio_dev,
->>> @@ -303,7 +387,7 @@ static const struct iio_trigger_ops
->>> st_gyro_trigger_ops = {
->>> #endif
->>>
->>> int st_gyro_common_probe(struct iio_dev *indio_dev,
->>> -					struct st_sensors_platform_data *pdata)
->>> +				struct st_sensors_platform_data *plat_data)
->>> {
->>> 	struct st_sensor_data *gdata = iio_priv(indio_dev);
->>> 	int irq = gdata->get_irq_data_ready(indio_dev);
->>> @@ -326,7 +410,11 @@ int st_gyro_common_probe(struct iio_dev
->>> *indio_dev,
->>> 						&gdata->sensor->fs.fs_avl[0];
->>> 	gdata->odr = gdata->sensor->odr.odr_avl[0].hz;
->>>
->>> -	err = st_sensors_init_sensor(indio_dev, pdata);
->>> +	if (!plat_data)
->>> +		plat_data =
->>> +			(struct st_sensors_platform_data *)&default_gyro_pdata;
->>> +
->>> +	err = st_sensors_init_sensor(indio_dev, plat_data);
->>> 	if (err < 0)
->>> 		return err;
->>>
->>> diff --git a/drivers/iio/gyro/st_gyro_i2c.c
->>> b/drivers/iio/gyro/st_gyro_i2c.c
->>> index 16b8b8d..7d1331a 100644
->>> --- a/drivers/iio/gyro/st_gyro_i2c.c
->>> +++ b/drivers/iio/gyro/st_gyro_i2c.c
->>> @@ -34,8 +34,7 @@ static int st_gyro_i2c_probe(struct i2c_client
->>> *client,
->>>
->>> 	st_sensors_i2c_configure(indio_dev, client, gdata);
->>>
->>> -	err = st_gyro_common_probe(indio_dev,
->>> -				(struct st_sensors_platform_data *)&gyro_pdata);
->>> +	err = st_gyro_common_probe(indio_dev, client->dev.platform_data);
->>> 	if (err < 0)
->>> 		return err;
->>>
->>> diff --git a/drivers/iio/gyro/st_gyro_spi.c
->>> b/drivers/iio/gyro/st_gyro_spi.c
->>> index 94763e2..f0c730f 100644
->>> --- a/drivers/iio/gyro/st_gyro_spi.c
->>> +++ b/drivers/iio/gyro/st_gyro_spi.c
->>> @@ -33,8 +33,7 @@ static int st_gyro_spi_probe(struct spi_device
->*spi)
->>>
->>> 	st_sensors_spi_configure(indio_dev, spi, gdata);
->>>
->>> -	err = st_gyro_common_probe(indio_dev,
->>> -				(struct st_sensors_platform_data *)&gyro_pdata);
->>> +	err = st_gyro_common_probe(indio_dev, spi->dev.platform_data);
->>> 	if (err < 0)
->>> 		return err;
->>>
->>> diff --git a/include/linux/platform_data/st_sensors_pdata.h
->>> b/include/linux/platform_data/st_sensors_pdata.h
->>> index 7538391..1e2b26c 100644
->>> --- a/include/linux/platform_data/st_sensors_pdata.h
->>> +++ b/include/linux/platform_data/st_sensors_pdata.h
->>> @@ -14,7 +14,7 @@
->>> /**
->>>   * struct st_sensors_platform_data - Platform data for the ST
->sensors
->>>   * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
->>> - *	Available only for accelerometer and pressure sensors.
->>> + *	Available only for accelerometers, gyroscopes and pressure
->sensors.
->>> *	Accelerometer DRDY on LSM330 available only on pin 1 (see
->datasheet).
->>>   */
->>> struct st_sensors_platform_data {
+Signed-off-by: Johannes Thumshirn <morbidrsa@gmail.com>
+---
+ drivers/iio/adc/viperboard_adc.c | 2 --
+ 1 file changed, 2 deletions(-)
 
+diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
+index d0add8f..9acf6b6 100644
+--- a/drivers/iio/adc/viperboard_adc.c
++++ b/drivers/iio/adc/viperboard_adc.c
+@@ -139,8 +139,6 @@ static int vprbrd_adc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	platform_set_drvdata(pdev, indio_dev);
+-
+ 	return 0;
+ }
+ 
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.8.5.3
+
