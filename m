@@ -1,52 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pb0-f44.google.com ([209.85.160.44]:57399 "EHLO
-	mail-pb0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750821AbaBAGRk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Feb 2014 01:17:40 -0500
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:44082 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751430AbaBAGRn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Feb 2014 01:17:43 -0500
 From: Matt Ranostay <mranostay@gmail.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree-discuss@lists.ozlabs.org
 Cc: matt.porter@linaro.org, koen@dominion.thruhere.net,
 	pantelis.antoniou@gmail.com, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v3 1/3] iio: Add IIO_DISTANCE type
-Date: Fri, 31 Jan 2014 22:17:40 -0800
-Message-Id: <1391235462-32453-1-git-send-email-mranostay@gmail.com>
+Subject: [PATCH v3 3/3] iio:as3935: Add DT binding docs for AS3935 driver
+Date: Fri, 31 Jan 2014 22:17:42 -0800
+Message-Id: <1391235462-32453-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1391235462-32453-1-git-send-email-mranostay@gmail.com>
+References: <1391235462-32453-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Allow drivers to report distance values, but however it is up to
-drivers to set scaling for meters, kilometers, etc.
+Document compatible string, required and optional DT properties for
+AS3935 chipset driver.
 
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/types.h       | 1 +
- 2 files changed, 2 insertions(+)
+ .../devicetree/bindings/iio/distance/as3935.txt    | 25 ++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/distance/as3935.txt
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index acc911a..ac999ab 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_DISTANCE] = "distance",
- };
- 
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 084d882..675c2d8 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -30,6 +30,7 @@ enum iio_chan_type {
- 	IIO_CCT,
- 	IIO_PRESSURE,
- 	IIO_HUMIDITYRELATIVE,
-+	IIO_DISTANCE,
- };
- 
- enum iio_modifier {
+diff --git a/Documentation/devicetree/bindings/iio/distance/as3935.txt b/Documentation/devicetree/bindings/iio/distance/as3935.txt
+new file mode 100644
+index 0000000..409b48b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/distance/as3935.txt
+@@ -0,0 +1,25 @@
++Austrian Microsystems AS3935 Franklin lightning sensor device driver
++
++Required properties:
++	- compatible: must be "ams,as3935"
++	- reg: SPI chip select number for the device
++	- spi-cpha: SPI Mode 1
++  	- interrupt-parent : should be the phandle for the interrupt controller
++	- interrupts : interrupt mapping for GPIO IRQ
++
++Optional properties:
++	- ams,tune-cap: Calibration tuning capacitor stepping value 0 - 15.
++	  Range of 0 to 120 pF, 8pF steps. This will require using the calibration
++	  data from the manufacturer.
++
++
++Example:
++
++as3935@0 {
++	compatible = "ams,as3935";
++	reg = <0>;
++	spi-cpha;
++	interrupt-parent = <&gpio1>;
++	interrupts = <16 1>;
++	ams,tune-cap = /bits/ 8 <10>;
++};
 -- 
 1.8.3.2
 
