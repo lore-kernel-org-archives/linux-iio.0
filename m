@@ -1,51 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:57978 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750731AbaBAF2M (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Feb 2014 00:28:12 -0500
-From: Marek Vasut <marex@denx.de>
-To: Matt Ranostay <mranostay@gmail.com>
-Subject: Re: [PATCH 2/2] iio: Add AS3935 lightning sensor support
-Date: Sat, 1 Feb 2014 06:28:04 +0100
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Matt Porter <matt.porter@linaro.org>,
-	Koen Kooi <koen@dominion.thruhere.net>,
-	Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-	Mark Brown <broonie@kernel.org>
-References: <1391182703-2201-1-git-send-email-mranostay@gmail.com> <201402010412.24434.marex@denx.de> <CAKzfze8b6m__TprPoNthRZ=2h9D11MfK8Q-mR9=KWySP4aDnMA@mail.gmail.com>
-In-Reply-To: <CAKzfze8b6m__TprPoNthRZ=2h9D11MfK8Q-mR9=KWySP4aDnMA@mail.gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50265 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753664AbaBCVnf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 16:43:35 -0500
+Message-ID: <52F00DA1.20104@kernel.org>
+Date: Mon, 03 Feb 2014 21:44:01 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201402010628.04324.marex@denx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Dan Carpenter <dan.carpenter@oracle.com>
+CC: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio:imu:adis16400 remove an unneeded check
+References: <20140130115914.GJ12734@elgon.mountain> <52EB6F18.5070202@metafoo.de>
+In-Reply-To: <52EB6F18.5070202@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Saturday, February 01, 2014 at 06:03:22 AM, Matt Ranostay wrote:
-> Duly noted. Will be fixed in the next rev... mutexs are pointless as you
-> say.. only corner case would be if you were changing gain_boost and a event
-> came in at the same time. But that wouldn't harm anything except slightly
-> delay the gain_boost being updated by some  x microseconds.
 
-Please stop top-posting ;-)
 
-btw I think you might need a mutex around the entire:
+On 31/01/14 09:38, Lars-Peter Clausen wrote:
+> On 01/30/2014 12:59 PM, Dan Carpenter wrote:
+>> We know "ret" is zero here so there is no need to check.
+>>
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 
-+static void calibrate_as3935(struct as3935_state *st)
-+{
-+       /* mask disturber interrupt bit */
-+       as3935_write(st, AS3935_INT, 1 << 5);
-+
-+       as3935_write(st, AS3935_CALIBRATE, 0x96);
-+       as3935_write(st, AS3935_TUNE_CAP, 1 << 5 | st->tune_cap);
-+
-+       mdelay(2);
-+       as3935_write(st, AS3935_TUNE_CAP, st->tune_cap);
-+}
-
-and similar functions where you do a bunch of register accesses. This is because 
-you probably want to protect them against concurent execution so the chip won't 
-be confused if a user were to poke something via SYSFS twice.
-
-Best regards,
-Marek Vasut
+Thanks,
+>
+> Thanks.
+>
+>>
+>> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+>> index 368660dfe135..411586f49dae 100644
+>> --- a/drivers/iio/imu/adis16400_core.c
+>> +++ b/drivers/iio/imu/adis16400_core.c
+>> @@ -281,7 +281,7 @@ static ssize_t adis16400_write_frequency(struct device *dev,
+>>   	st->variant->set_freq(st, val);
+>>   	mutex_unlock(&indio_dev->mlock);
+>>
+>> -	return ret ? ret : len;
+>> +	return len;
+>>   }
+>>
+>>   /* Power down the device */
+>>
+>
