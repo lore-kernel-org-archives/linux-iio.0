@@ -1,164 +1,264 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Mon, 3 Feb 2014 12:27:01 +0100
-Subject: Re: [PATCH] iio:gyro: Bugfix L3GD20H gyroscope management
-Message-ID: <52EF7D05.7000500@st.com>
-References: <1391419547-18694-1-git-send-email-denis.ciocca@st.com>
- <656fe823-9dc0-4c96-b863-d9ace5e11904@email.android.com>
-In-Reply-To: <656fe823-9dc0-4c96-b863-d9ace5e11904@email.android.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44651 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751574AbaBCOpM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 09:45:12 -0500
+In-Reply-To: <52EF7D05.7000500@st.com>
+References: <1391419547-18694-1-git-send-email-denis.ciocca@st.com> <656fe823-9dc0-4c96-b863-d9ace5e11904@email.android.com> <52EF7D05.7000500@st.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio:gyro: Bugfix L3GD20H gyroscope management
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 03 Feb 2014 14:45:07 +0000
+To: Denis CIOCCA <denis.ciocca@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <458d3118-545b-4536-866d-6b091637aa8e@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-VGhlIHByb2JlIGZ1bmN0aW9uIGZhaWxlZCBiZWNhdXNlIHRoZSB3aG8tYW0taSB3YXMgd3Jvbmch
-DQoNCk9uIDAyLzAzLzIwMTQgMTE6NTMgQU0sIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+IE5l
-ZWRzIGEgZGV0YWlsZWQgZGVzY3JpcHRpb24gb2Ygd2hhdCBlZmZlY3RzIHVzZXJzIHdpbGwgc2Vl
-Lg0KPg0KPiBPbiBGZWJydWFyeSAzLCAyMDE0IDk6MjU6NDcgQU0gR01UKzAwOjAwLCBEZW5pcyBD
-SU9DQ0EgPGRlbmlzLmNpb2NjYUBzdC5jb20+IHdyb3RlOg0KPj4gU2lnbmVkLW9mZi1ieTogRGVu
-aXMgQ2lvY2NhIDxkZW5pcy5jaW9jY2FAc3QuY29tPg0KPj4gLS0tDQo+PiBkcml2ZXJzL2lpby9n
-eXJvL3N0X2d5cm8uaCAgICAgICAgICAgICAgICAgICAgIHwgICAgNiArLQ0KPj4gZHJpdmVycy9p
-aW8vZ3lyby9zdF9neXJvX2NvcmUuYyAgICAgICAgICAgICAgICB8ICAxMDINCj4+ICsrKysrKysr
-KysrKysrKysrKysrKystLQ0KPj4gZHJpdmVycy9paW8vZ3lyby9zdF9neXJvX2kyYy5jICAgICAg
-ICAgICAgICAgICB8ICAgIDMgKy0NCj4+IGRyaXZlcnMvaWlvL2d5cm8vc3RfZ3lyb19zcGkuYyAg
-ICAgICAgICAgICAgICAgfCAgICAzICstDQo+PiBpbmNsdWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEv
-c3Rfc2Vuc29yc19wZGF0YS5oIHwgICAgMiArLQ0KPj4gNSBmaWxlcyBjaGFuZ2VkLCAxMDEgaW5z
-ZXJ0aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aWlvL2d5cm8vc3RfZ3lyby5oIGIvZHJpdmVycy9paW8vZ3lyby9zdF9neXJvLmgNCj4+IGluZGV4
-IGY4ZjJiZjguLjNkODI5ZmMgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lpby9neXJvL3N0X2d5
-cm8uaA0KPj4gKysrIGIvZHJpdmVycy9paW8vZ3lyby9zdF9neXJvLmgNCj4+IEBAIC0yNCwxMCAr
-MjQsMTAgQEANCj4+ICNkZWZpbmUgTFNNMzMwX0dZUk9fREVWX05BTUUJCSJsc20zMzBfZ3lybyIN
-Cj4+DQo+PiAvKioNCj4+IC0gKiBzdHJ1Y3Qgc3Rfc2Vuc29yc19wbGF0Zm9ybV9kYXRhIC0gZ3ly
-byBwbGF0Zm9ybSBkYXRhDQo+PiAtICogQGRyZHlfaW50X3BpbjogRFJEWSBvbiBneXJvcyBpcyBh
-dmFpbGFibGUgb25seSBvbiBJTlQyIHBpbi4NCj4+ICsgKiBzdHJ1Y3Qgc3Rfc2Vuc29yc19wbGF0
-Zm9ybV9kYXRhIC0gZGVmYXVsdCBneXJvIHBsYXRmb3JtIGRhdGENCj4+ICsgKiBAZHJkeV9pbnRf
-cGluOiBkZWZhdWx0IGd5cm8gRFJEWSBpcyBhdmFpbGFibGUgb24gSU5UMiBwaW4uDQo+PiAgICov
-DQo+PiAtc3RhdGljIGNvbnN0IHN0cnVjdCBzdF9zZW5zb3JzX3BsYXRmb3JtX2RhdGEgZ3lyb19w
-ZGF0YSA9IHsNCj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0IHN0X3NlbnNvcnNfcGxhdGZvcm1fZGF0
-YSBkZWZhdWx0X2d5cm9fcGRhdGEgPSB7DQo+PiAJLmRyZHlfaW50X3BpbiA9IDIsDQo+PiB9Ow0K
-Pj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9neXJvL3N0X2d5cm9fY29yZS5jDQo+PiBi
-L2RyaXZlcnMvaWlvL2d5cm8vc3RfZ3lyb19jb3JlLmMNCj4+IGluZGV4IGQ1M2Q5MWEuLmM0ZmJl
-M2EgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lpby9neXJvL3N0X2d5cm9fY29yZS5jDQo+PiAr
-KysgYi9kcml2ZXJzL2lpby9neXJvL3N0X2d5cm9fY29yZS5jDQo+PiBAQCAtMzUsNiArMzUsNyBA
-QA0KPj4gI2RlZmluZSBTVF9HWVJPX0RFRkFVTFRfT1VUX1pfTF9BRERSCQkweDJjDQo+Pg0KPj4g
-LyogRlVMTFNDQUxFICovDQo+PiArI2RlZmluZSBTVF9HWVJPX0ZTX0FWTF8yNDVEUFMJCQkyNDUN
-Cj4+ICNkZWZpbmUgU1RfR1lST19GU19BVkxfMjUwRFBTCQkJMjUwDQo+PiAjZGVmaW5lIFNUX0dZ
-Uk9fRlNfQVZMXzUwMERQUwkJCTUwMA0KPj4gI2RlZmluZSBTVF9HWVJPX0ZTX0FWTF8yMDAwRFBT
-CQkJMjAwMA0KPj4gQEAgLTg3LDYgKzg4LDMxIEBADQo+PiAjZGVmaW5lIFNUX0dZUk9fMl9EUkRZ
-X0lSUV9JTlQyX01BU0sJCTB4MDgNCj4+ICNkZWZpbmUgU1RfR1lST18yX01VTFRJUkVBRF9CSVQJ
-CQl0cnVlDQo+Pg0KPj4gKy8qIENVU1RPTSBWQUxVRVMgRk9SIFNFTlNPUiAzICovDQo+PiArI2Rl
-ZmluZSBTVF9HWVJPXzNfV0FJX0VYUAkJCTB4ZDcNCj4+ICsjZGVmaW5lIFNUX0dZUk9fM19PRFJf
-QUREUgkJCTB4MjANCj4+ICsjZGVmaW5lIFNUX0dZUk9fM19PRFJfTUFTSwkJCTB4YzANCj4+ICsj
-ZGVmaW5lIFNUX0dZUk9fM19PRFJfQVZMXzEwMEhaX1ZBTAkJMHgwMA0KPj4gKyNkZWZpbmUgU1Rf
-R1lST18zX09EUl9BVkxfMjAwSFpfVkFMCQkweDAxDQo+PiArI2RlZmluZSBTVF9HWVJPXzNfT0RS
-X0FWTF80MDBIWl9WQUwJCTB4MDINCj4+ICsjZGVmaW5lIFNUX0dZUk9fM19PRFJfQVZMXzgwMEha
-X1ZBTAkJMHgwMw0KPj4gKyNkZWZpbmUgU1RfR1lST18zX1BXX0FERFIJCQkweDIwDQo+PiArI2Rl
-ZmluZSBTVF9HWVJPXzNfUFdfTUFTSwkJCTB4MDgNCj4+ICsjZGVmaW5lIFNUX0dZUk9fM19GU19B
-RERSCQkJMHgyMw0KPj4gKyNkZWZpbmUgU1RfR1lST18zX0ZTX01BU0sJCQkweDMwDQo+PiArI2Rl
-ZmluZSBTVF9HWVJPXzNfRlNfQVZMXzI0NV9WQUwJCTB4MDANCj4+ICsjZGVmaW5lIFNUX0dZUk9f
-M19GU19BVkxfNTAwX1ZBTAkJMHgwMQ0KPj4gKyNkZWZpbmUgU1RfR1lST18zX0ZTX0FWTF8yMDAw
-X1ZBTAkJMHgwMg0KPj4gKyNkZWZpbmUgU1RfR1lST18zX0ZTX0FWTF8yNDVfR0FJTgkJSUlPX0RF
-R1JFRV9UT19SQUQoODc1MCkNCj4+ICsjZGVmaW5lIFNUX0dZUk9fM19GU19BVkxfNTAwX0dBSU4J
-CUlJT19ERUdSRUVfVE9fUkFEKDE3NTAwKQ0KPj4gKyNkZWZpbmUgU1RfR1lST18zX0ZTX0FWTF8y
-MDAwX0dBSU4JCUlJT19ERUdSRUVfVE9fUkFEKDcwMDAwKQ0KPj4gKyNkZWZpbmUgU1RfR1lST18z
-X0JEVV9BRERSCQkJMHgyMw0KPj4gKyNkZWZpbmUgU1RfR1lST18zX0JEVV9NQVNLCQkJMHg4MA0K
-Pj4gKyNkZWZpbmUgU1RfR1lST18zX0RSRFlfSVJRX0FERFIJCQkweDIyDQo+PiArI2RlZmluZSBT
-VF9HWVJPXzNfRFJEWV9JUlFfSU5UMV9NQVNLCQkweDgwDQo+PiArI2RlZmluZSBTVF9HWVJPXzNf
-RFJEWV9JUlFfSU5UMl9NQVNLCQkweDA4DQo+PiArI2RlZmluZSBTVF9HWVJPXzNfTVVMVElSRUFE
-X0JJVAkJCXRydWUNCj4+ICsNCj4+IHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBz
-dF9neXJvXzE2Yml0X2NoYW5uZWxzW10gPSB7DQo+PiAJU1RfU0VOU09SU19MU01fQ0hBTk5FTFMo
-SUlPX0FOR0xfVkVMLA0KPj4gCQkJQklUKElJT19DSEFOX0lORk9fUkFXKSB8IEJJVChJSU9fQ0hB
-Tl9JTkZPX1NDQUxFKSwNCj4+IEBAIC0xNjcsMTEgKzE5MywxMCBAQCBzdGF0aWMgY29uc3Qgc3Ry
-dWN0IHN0X3NlbnNvcnMgc3RfZ3lyb19zZW5zb3JzW10NCj4+ID0gew0KPj4gCQkud2FpID0gU1Rf
-R1lST18yX1dBSV9FWFAsDQo+PiAJCS5zZW5zb3JzX3N1cHBvcnRlZCA9IHsNCj4+IAkJCVswXSA9
-IEwzR0QyMF9HWVJPX0RFVl9OQU1FLA0KPj4gLQkJCVsxXSA9IEwzR0QyMEhfR1lST19ERVZfTkFN
-RSwNCj4+IC0JCQlbMl0gPSBMU00zMzBEX0dZUk9fREVWX05BTUUsDQo+PiAtCQkJWzNdID0gTFNN
-MzMwRExDX0dZUk9fREVWX05BTUUsDQo+PiAtCQkJWzRdID0gTDNHNElTX0dZUk9fREVWX05BTUUs
-DQo+PiAtCQkJWzVdID0gTFNNMzMwX0dZUk9fREVWX05BTUUsDQo+PiArCQkJWzFdID0gTFNNMzMw
-RF9HWVJPX0RFVl9OQU1FLA0KPj4gKwkJCVsyXSA9IExTTTMzMERMQ19HWVJPX0RFVl9OQU1FLA0K
-Pj4gKwkJCVszXSA9IEwzRzRJU19HWVJPX0RFVl9OQU1FLA0KPj4gKwkJCVs0XSA9IExTTTMzMF9H
-WVJPX0RFVl9OQU1FLA0KPj4gCQl9LA0KPj4gCQkuY2ggPSAoc3RydWN0IGlpb19jaGFuX3NwZWMg
-KilzdF9neXJvXzE2Yml0X2NoYW5uZWxzLA0KPj4gCQkub2RyID0gew0KPj4gQEAgLTIyNiw2ICsy
-NTEsNjUgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzdF9zZW5zb3JzIHN0X2d5cm9fc2Vuc29yc1td
-ID0NCj4+IHsNCj4+IAkJLm11bHRpX3JlYWRfYml0ID0gU1RfR1lST18yX01VTFRJUkVBRF9CSVQs
-DQo+PiAJCS5ib290aW1lID0gMiwNCj4+IAl9LA0KPj4gKwl7DQo+PiArCQkud2FpID0gU1RfR1lS
-T18zX1dBSV9FWFAsDQo+PiArCQkuc2Vuc29yc19zdXBwb3J0ZWQgPSB7DQo+PiArCQkJWzBdID0g
-TDNHRDIwSF9HWVJPX0RFVl9OQU1FLA0KPj4gKwkJfSwNCj4+ICsJCS5jaCA9IChzdHJ1Y3QgaWlv
-X2NoYW5fc3BlYyAqKXN0X2d5cm9fMTZiaXRfY2hhbm5lbHMsDQo+PiArCQkub2RyID0gew0KPj4g
-KwkJCS5hZGRyID0gU1RfR1lST18zX09EUl9BRERSLA0KPj4gKwkJCS5tYXNrID0gU1RfR1lST18z
-X09EUl9NQVNLLA0KPj4gKwkJCS5vZHJfYXZsID0gew0KPj4gKwkJCQl7IDEwMCwgU1RfR1lST18z
-X09EUl9BVkxfMTAwSFpfVkFMLCB9LA0KPj4gKwkJCQl7IDIwMCwgU1RfR1lST18zX09EUl9BVkxf
-MjAwSFpfVkFMLCB9LA0KPj4gKwkJCQl7IDQwMCwgU1RfR1lST18zX09EUl9BVkxfNDAwSFpfVkFM
-LCB9LA0KPj4gKwkJCQl7IDgwMCwgU1RfR1lST18zX09EUl9BVkxfODAwSFpfVkFMLCB9LA0KPj4g
-KwkJCX0sDQo+PiArCQl9LA0KPj4gKwkJLnB3ID0gew0KPj4gKwkJCS5hZGRyID0gU1RfR1lST18z
-X1BXX0FERFIsDQo+PiArCQkJLm1hc2sgPSBTVF9HWVJPXzNfUFdfTUFTSywNCj4+ICsJCQkudmFs
-dWVfb24gPSBTVF9TRU5TT1JTX0RFRkFVTFRfUE9XRVJfT05fVkFMVUUsDQo+PiArCQkJLnZhbHVl
-X29mZiA9IFNUX1NFTlNPUlNfREVGQVVMVF9QT1dFUl9PRkZfVkFMVUUsDQo+PiArCQl9LA0KPj4g
-KwkJLmVuYWJsZV9heGlzID0gew0KPj4gKwkJCS5hZGRyID0gU1RfU0VOU09SU19ERUZBVUxUX0FY
-SVNfQUREUiwNCj4+ICsJCQkubWFzayA9IFNUX1NFTlNPUlNfREVGQVVMVF9BWElTX01BU0ssDQo+
-PiArCQl9LA0KPj4gKwkJLmZzID0gew0KPj4gKwkJCS5hZGRyID0gU1RfR1lST18zX0ZTX0FERFIs
-DQo+PiArCQkJLm1hc2sgPSBTVF9HWVJPXzNfRlNfTUFTSywNCj4+ICsJCQkuZnNfYXZsID0gew0K
-Pj4gKwkJCQlbMF0gPSB7DQo+PiArCQkJCQkubnVtID0gU1RfR1lST19GU19BVkxfMjQ1RFBTLA0K
-Pj4gKwkJCQkJLnZhbHVlID0gU1RfR1lST18zX0ZTX0FWTF8yNDVfVkFMLA0KPj4gKwkJCQkJLmdh
-aW4gPSBTVF9HWVJPXzNfRlNfQVZMXzI0NV9HQUlOLA0KPj4gKwkJCQl9LA0KPj4gKwkJCQlbMV0g
-PSB7DQo+PiArCQkJCQkubnVtID0gU1RfR1lST19GU19BVkxfNTAwRFBTLA0KPj4gKwkJCQkJLnZh
-bHVlID0gU1RfR1lST18zX0ZTX0FWTF81MDBfVkFMLA0KPj4gKwkJCQkJLmdhaW4gPSBTVF9HWVJP
-XzNfRlNfQVZMXzUwMF9HQUlOLA0KPj4gKwkJCQl9LA0KPj4gKwkJCQlbMl0gPSB7DQo+PiArCQkJ
-CQkubnVtID0gU1RfR1lST19GU19BVkxfMjAwMERQUywNCj4+ICsJCQkJCS52YWx1ZSA9IFNUX0dZ
-Uk9fM19GU19BVkxfMjAwMF9WQUwsDQo+PiArCQkJCQkuZ2FpbiA9IFNUX0dZUk9fM19GU19BVkxf
-MjAwMF9HQUlOLA0KPj4gKwkJCQl9LA0KPj4gKwkJCX0sDQo+PiArCQl9LA0KPj4gKwkJLmJkdSA9
-IHsNCj4+ICsJCQkuYWRkciA9IFNUX0dZUk9fM19CRFVfQUREUiwNCj4+ICsJCQkubWFzayA9IFNU
-X0dZUk9fM19CRFVfTUFTSywNCj4+ICsJCX0sDQo+PiArCQkuZHJkeV9pcnEgPSB7DQo+PiArCQkJ
-LmFkZHIgPSBTVF9HWVJPXzNfRFJEWV9JUlFfQUREUiwNCj4+ICsJCQkubWFza19pbnQxID0gU1Rf
-R1lST18zX0RSRFlfSVJRX0lOVDFfTUFTSywNCj4+ICsJCQkubWFza19pbnQyID0gU1RfR1lST18z
-X0RSRFlfSVJRX0lOVDJfTUFTSywNCj4+ICsJCX0sDQo+PiArCQkubXVsdGlfcmVhZF9iaXQgPSBT
-VF9HWVJPXzNfTVVMVElSRUFEX0JJVCwNCj4+ICsJCS5ib290aW1lID0gMiwNCj4+ICsJfSwNCj4+
-IH07DQo+Pg0KPj4gc3RhdGljIGludCBzdF9neXJvX3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2ICpp
-bmRpb19kZXYsDQo+PiBAQCAtMzAzLDcgKzM4Nyw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlv
-X3RyaWdnZXJfb3BzDQo+PiBzdF9neXJvX3RyaWdnZXJfb3BzID0gew0KPj4gI2VuZGlmDQo+Pg0K
-Pj4gaW50IHN0X2d5cm9fY29tbW9uX3Byb2JlKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+
-PiAtCQkJCQlzdHJ1Y3Qgc3Rfc2Vuc29yc19wbGF0Zm9ybV9kYXRhICpwZGF0YSkNCj4+ICsJCQkJ
-c3RydWN0IHN0X3NlbnNvcnNfcGxhdGZvcm1fZGF0YSAqcGxhdF9kYXRhKQ0KPj4gew0KPj4gCXN0
-cnVjdCBzdF9zZW5zb3JfZGF0YSAqZ2RhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPj4gCWlu
-dCBpcnEgPSBnZGF0YS0+Z2V0X2lycV9kYXRhX3JlYWR5KGluZGlvX2Rldik7DQo+PiBAQCAtMzI2
-LDcgKzQxMCwxMSBAQCBpbnQgc3RfZ3lyb19jb21tb25fcHJvYmUoc3RydWN0IGlpb19kZXYNCj4+
-ICppbmRpb19kZXYsDQo+PiAJCQkJCQkmZ2RhdGEtPnNlbnNvci0+ZnMuZnNfYXZsWzBdOw0KPj4g
-CWdkYXRhLT5vZHIgPSBnZGF0YS0+c2Vuc29yLT5vZHIub2RyX2F2bFswXS5oejsNCj4+DQo+PiAt
-CWVyciA9IHN0X3NlbnNvcnNfaW5pdF9zZW5zb3IoaW5kaW9fZGV2LCBwZGF0YSk7DQo+PiArCWlm
-ICghcGxhdF9kYXRhKQ0KPj4gKwkJcGxhdF9kYXRhID0NCj4+ICsJCQkoc3RydWN0IHN0X3NlbnNv
-cnNfcGxhdGZvcm1fZGF0YSAqKSZkZWZhdWx0X2d5cm9fcGRhdGE7DQo+PiArDQo+PiArCWVyciA9
-IHN0X3NlbnNvcnNfaW5pdF9zZW5zb3IoaW5kaW9fZGV2LCBwbGF0X2RhdGEpOw0KPj4gCWlmIChl
-cnIgPCAwKQ0KPj4gCQlyZXR1cm4gZXJyOw0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lp
-by9neXJvL3N0X2d5cm9faTJjLmMNCj4+IGIvZHJpdmVycy9paW8vZ3lyby9zdF9neXJvX2kyYy5j
-DQo+PiBpbmRleCAxNmI4YjhkLi43ZDEzMzFhIDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy9paW8v
-Z3lyby9zdF9neXJvX2kyYy5jDQo+PiArKysgYi9kcml2ZXJzL2lpby9neXJvL3N0X2d5cm9faTJj
-LmMNCj4+IEBAIC0zNCw4ICszNCw3IEBAIHN0YXRpYyBpbnQgc3RfZ3lyb19pMmNfcHJvYmUoc3Ry
-dWN0IGkyY19jbGllbnQNCj4+ICpjbGllbnQsDQo+Pg0KPj4gCXN0X3NlbnNvcnNfaTJjX2NvbmZp
-Z3VyZShpbmRpb19kZXYsIGNsaWVudCwgZ2RhdGEpOw0KPj4NCj4+IC0JZXJyID0gc3RfZ3lyb19j
-b21tb25fcHJvYmUoaW5kaW9fZGV2LA0KPj4gLQkJCQkoc3RydWN0IHN0X3NlbnNvcnNfcGxhdGZv
-cm1fZGF0YSAqKSZneXJvX3BkYXRhKTsNCj4+ICsJZXJyID0gc3RfZ3lyb19jb21tb25fcHJvYmUo
-aW5kaW9fZGV2LCBjbGllbnQtPmRldi5wbGF0Zm9ybV9kYXRhKTsNCj4+IAlpZiAoZXJyIDwgMCkN
-Cj4+IAkJcmV0dXJuIGVycjsNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vZ3lyby9z
-dF9neXJvX3NwaS5jDQo+PiBiL2RyaXZlcnMvaWlvL2d5cm8vc3RfZ3lyb19zcGkuYw0KPj4gaW5k
-ZXggOTQ3NjNlMi4uZjBjNzMwZiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaWlvL2d5cm8vc3Rf
-Z3lyb19zcGkuYw0KPj4gKysrIGIvZHJpdmVycy9paW8vZ3lyby9zdF9neXJvX3NwaS5jDQo+PiBA
-QCAtMzMsOCArMzMsNyBAQCBzdGF0aWMgaW50IHN0X2d5cm9fc3BpX3Byb2JlKHN0cnVjdCBzcGlf
-ZGV2aWNlICpzcGkpDQo+Pg0KPj4gCXN0X3NlbnNvcnNfc3BpX2NvbmZpZ3VyZShpbmRpb19kZXYs
-IHNwaSwgZ2RhdGEpOw0KPj4NCj4+IC0JZXJyID0gc3RfZ3lyb19jb21tb25fcHJvYmUoaW5kaW9f
-ZGV2LA0KPj4gLQkJCQkoc3RydWN0IHN0X3NlbnNvcnNfcGxhdGZvcm1fZGF0YSAqKSZneXJvX3Bk
-YXRhKTsNCj4+ICsJZXJyID0gc3RfZ3lyb19jb21tb25fcHJvYmUoaW5kaW9fZGV2LCBzcGktPmRl
-di5wbGF0Zm9ybV9kYXRhKTsNCj4+IAlpZiAoZXJyIDwgMCkNCj4+IAkJcmV0dXJuIGVycjsNCj4+
-DQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wbGF0Zm9ybV9kYXRhL3N0X3NlbnNvcnNf
-cGRhdGEuaA0KPj4gYi9pbmNsdWRlL2xpbnV4L3BsYXRmb3JtX2RhdGEvc3Rfc2Vuc29yc19wZGF0
-YS5oDQo+PiBpbmRleCA3NTM4MzkxLi4xZTJiMjZjIDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9s
-aW51eC9wbGF0Zm9ybV9kYXRhL3N0X3NlbnNvcnNfcGRhdGEuaA0KPj4gKysrIGIvaW5jbHVkZS9s
-aW51eC9wbGF0Zm9ybV9kYXRhL3N0X3NlbnNvcnNfcGRhdGEuaA0KPj4gQEAgLTE0LDcgKzE0LDcg
-QEANCj4+IC8qKg0KPj4gICAqIHN0cnVjdCBzdF9zZW5zb3JzX3BsYXRmb3JtX2RhdGEgLSBQbGF0
-Zm9ybSBkYXRhIGZvciB0aGUgU1Qgc2Vuc29ycw0KPj4gICAqIEBkcmR5X2ludF9waW46IFJlZGly
-ZWN0IERSRFkgb24gcGluIDEgKDEpIG9yIHBpbiAyICgyKS4NCj4+IC0gKglBdmFpbGFibGUgb25s
-eSBmb3IgYWNjZWxlcm9tZXRlciBhbmQgcHJlc3N1cmUgc2Vuc29ycy4NCj4+ICsgKglBdmFpbGFi
-bGUgb25seSBmb3IgYWNjZWxlcm9tZXRlcnMsIGd5cm9zY29wZXMgYW5kIHByZXNzdXJlIHNlbnNv
-cnMuDQo+PiAqCUFjY2VsZXJvbWV0ZXIgRFJEWSBvbiBMU00zMzAgYXZhaWxhYmxlIG9ubHkgb24g
-cGluIDEgKHNlZSBkYXRhc2hlZXQpLg0KPj4gICAqLw0KPj4gc3RydWN0IHN0X3NlbnNvcnNfcGxh
-dGZvcm1fZGF0YSB7DQo=
+Description needs to say that. It isn't for us. It is for upstream distros etc deciding whether to apply the patch. Also necessary for stable.
+
+On February 3, 2014 11:27:01 AM GMT+00:00, Denis CIOCCA <denis.ciocca@st.com> wrote:
+>The probe function failed because the who-am-i was wrong!
+>
+>On 02/03/2014 11:53 AM, Jonathan Cameron wrote:
+>> Needs a detailed description of what effects users will see.
+>>
+>> On February 3, 2014 9:25:47 AM GMT+00:00, Denis CIOCCA
+><denis.ciocca@st.com> wrote:
+>>> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+>>> ---
+>>> drivers/iio/gyro/st_gyro.h                     |    6 +-
+>>> drivers/iio/gyro/st_gyro_core.c                |  102
+>>> ++++++++++++++++++++++--
+>>> drivers/iio/gyro/st_gyro_i2c.c                 |    3 +-
+>>> drivers/iio/gyro/st_gyro_spi.c                 |    3 +-
+>>> include/linux/platform_data/st_sensors_pdata.h |    2 +-
+>>> 5 files changed, 101 insertions(+), 15 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
+>>> index f8f2bf8..3d829fc 100644
+>>> --- a/drivers/iio/gyro/st_gyro.h
+>>> +++ b/drivers/iio/gyro/st_gyro.h
+>>> @@ -24,10 +24,10 @@
+>>> #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
+>>>
+>>> /**
+>>> - * struct st_sensors_platform_data - gyro platform data
+>>> - * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
+>>> + * struct st_sensors_platform_data - default gyro platform data
+>>> + * @drdy_int_pin: default gyro DRDY is available on INT2 pin.
+>>>   */
+>>> -static const struct st_sensors_platform_data gyro_pdata = {
+>>> +static const struct st_sensors_platform_data default_gyro_pdata = {
+>>> 	.drdy_int_pin = 2,
+>>> };
+>>>
+>>> diff --git a/drivers/iio/gyro/st_gyro_core.c
+>>> b/drivers/iio/gyro/st_gyro_core.c
+>>> index d53d91a..c4fbe3a 100644
+>>> --- a/drivers/iio/gyro/st_gyro_core.c
+>>> +++ b/drivers/iio/gyro/st_gyro_core.c
+>>> @@ -35,6 +35,7 @@
+>>> #define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
+>>>
+>>> /* FULLSCALE */
+>>> +#define ST_GYRO_FS_AVL_245DPS			245
+>>> #define ST_GYRO_FS_AVL_250DPS			250
+>>> #define ST_GYRO_FS_AVL_500DPS			500
+>>> #define ST_GYRO_FS_AVL_2000DPS			2000
+>>> @@ -87,6 +88,31 @@
+>>> #define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
+>>> #define ST_GYRO_2_MULTIREAD_BIT			true
+>>>
+>>> +/* CUSTOM VALUES FOR SENSOR 3 */
+>>> +#define ST_GYRO_3_WAI_EXP			0xd7
+>>> +#define ST_GYRO_3_ODR_ADDR			0x20
+>>> +#define ST_GYRO_3_ODR_MASK			0xc0
+>>> +#define ST_GYRO_3_ODR_AVL_100HZ_VAL		0x00
+>>> +#define ST_GYRO_3_ODR_AVL_200HZ_VAL		0x01
+>>> +#define ST_GYRO_3_ODR_AVL_400HZ_VAL		0x02
+>>> +#define ST_GYRO_3_ODR_AVL_800HZ_VAL		0x03
+>>> +#define ST_GYRO_3_PW_ADDR			0x20
+>>> +#define ST_GYRO_3_PW_MASK			0x08
+>>> +#define ST_GYRO_3_FS_ADDR			0x23
+>>> +#define ST_GYRO_3_FS_MASK			0x30
+>>> +#define ST_GYRO_3_FS_AVL_245_VAL		0x00
+>>> +#define ST_GYRO_3_FS_AVL_500_VAL		0x01
+>>> +#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
+>>> +#define ST_GYRO_3_FS_AVL_245_GAIN		IIO_DEGREE_TO_RAD(8750)
+>>> +#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
+>>> +#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
+>>> +#define ST_GYRO_3_BDU_ADDR			0x23
+>>> +#define ST_GYRO_3_BDU_MASK			0x80
+>>> +#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
+>>> +#define ST_GYRO_3_DRDY_IRQ_INT1_MASK		0x80
+>>> +#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
+>>> +#define ST_GYRO_3_MULTIREAD_BIT			true
+>>> +
+>>> static const struct iio_chan_spec st_gyro_16bit_channels[] = {
+>>> 	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
+>>> 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>>> @@ -167,11 +193,10 @@ static const struct st_sensors
+>st_gyro_sensors[]
+>>> = {
+>>> 		.wai = ST_GYRO_2_WAI_EXP,
+>>> 		.sensors_supported = {
+>>> 			[0] = L3GD20_GYRO_DEV_NAME,
+>>> -			[1] = L3GD20H_GYRO_DEV_NAME,
+>>> -			[2] = LSM330D_GYRO_DEV_NAME,
+>>> -			[3] = LSM330DLC_GYRO_DEV_NAME,
+>>> -			[4] = L3G4IS_GYRO_DEV_NAME,
+>>> -			[5] = LSM330_GYRO_DEV_NAME,
+>>> +			[1] = LSM330D_GYRO_DEV_NAME,
+>>> +			[2] = LSM330DLC_GYRO_DEV_NAME,
+>>> +			[3] = L3G4IS_GYRO_DEV_NAME,
+>>> +			[4] = LSM330_GYRO_DEV_NAME,
+>>> 		},
+>>> 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+>>> 		.odr = {
+>>> @@ -226,6 +251,65 @@ static const struct st_sensors
+>st_gyro_sensors[] =
+>>> {
+>>> 		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
+>>> 		.bootime = 2,
+>>> 	},
+>>> +	{
+>>> +		.wai = ST_GYRO_3_WAI_EXP,
+>>> +		.sensors_supported = {
+>>> +			[0] = L3GD20H_GYRO_DEV_NAME,
+>>> +		},
+>>> +		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+>>> +		.odr = {
+>>> +			.addr = ST_GYRO_3_ODR_ADDR,
+>>> +			.mask = ST_GYRO_3_ODR_MASK,
+>>> +			.odr_avl = {
+>>> +				{ 100, ST_GYRO_3_ODR_AVL_100HZ_VAL, },
+>>> +				{ 200, ST_GYRO_3_ODR_AVL_200HZ_VAL, },
+>>> +				{ 400, ST_GYRO_3_ODR_AVL_400HZ_VAL, },
+>>> +				{ 800, ST_GYRO_3_ODR_AVL_800HZ_VAL, },
+>>> +			},
+>>> +		},
+>>> +		.pw = {
+>>> +			.addr = ST_GYRO_3_PW_ADDR,
+>>> +			.mask = ST_GYRO_3_PW_MASK,
+>>> +			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+>>> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+>>> +		},
+>>> +		.enable_axis = {
+>>> +			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
+>>> +			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+>>> +		},
+>>> +		.fs = {
+>>> +			.addr = ST_GYRO_3_FS_ADDR,
+>>> +			.mask = ST_GYRO_3_FS_MASK,
+>>> +			.fs_avl = {
+>>> +				[0] = {
+>>> +					.num = ST_GYRO_FS_AVL_245DPS,
+>>> +					.value = ST_GYRO_3_FS_AVL_245_VAL,
+>>> +					.gain = ST_GYRO_3_FS_AVL_245_GAIN,
+>>> +				},
+>>> +				[1] = {
+>>> +					.num = ST_GYRO_FS_AVL_500DPS,
+>>> +					.value = ST_GYRO_3_FS_AVL_500_VAL,
+>>> +					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
+>>> +				},
+>>> +				[2] = {
+>>> +					.num = ST_GYRO_FS_AVL_2000DPS,
+>>> +					.value = ST_GYRO_3_FS_AVL_2000_VAL,
+>>> +					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
+>>> +				},
+>>> +			},
+>>> +		},
+>>> +		.bdu = {
+>>> +			.addr = ST_GYRO_3_BDU_ADDR,
+>>> +			.mask = ST_GYRO_3_BDU_MASK,
+>>> +		},
+>>> +		.drdy_irq = {
+>>> +			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
+>>> +			.mask_int1 = ST_GYRO_3_DRDY_IRQ_INT1_MASK,
+>>> +			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
+>>> +		},
+>>> +		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
+>>> +		.bootime = 2,
+>>> +	},
+>>> };
+>>>
+>>> static int st_gyro_read_raw(struct iio_dev *indio_dev,
+>>> @@ -303,7 +387,7 @@ static const struct iio_trigger_ops
+>>> st_gyro_trigger_ops = {
+>>> #endif
+>>>
+>>> int st_gyro_common_probe(struct iio_dev *indio_dev,
+>>> -					struct st_sensors_platform_data *pdata)
+>>> +				struct st_sensors_platform_data *plat_data)
+>>> {
+>>> 	struct st_sensor_data *gdata = iio_priv(indio_dev);
+>>> 	int irq = gdata->get_irq_data_ready(indio_dev);
+>>> @@ -326,7 +410,11 @@ int st_gyro_common_probe(struct iio_dev
+>>> *indio_dev,
+>>> 						&gdata->sensor->fs.fs_avl[0];
+>>> 	gdata->odr = gdata->sensor->odr.odr_avl[0].hz;
+>>>
+>>> -	err = st_sensors_init_sensor(indio_dev, pdata);
+>>> +	if (!plat_data)
+>>> +		plat_data =
+>>> +			(struct st_sensors_platform_data *)&default_gyro_pdata;
+>>> +
+>>> +	err = st_sensors_init_sensor(indio_dev, plat_data);
+>>> 	if (err < 0)
+>>> 		return err;
+>>>
+>>> diff --git a/drivers/iio/gyro/st_gyro_i2c.c
+>>> b/drivers/iio/gyro/st_gyro_i2c.c
+>>> index 16b8b8d..7d1331a 100644
+>>> --- a/drivers/iio/gyro/st_gyro_i2c.c
+>>> +++ b/drivers/iio/gyro/st_gyro_i2c.c
+>>> @@ -34,8 +34,7 @@ static int st_gyro_i2c_probe(struct i2c_client
+>>> *client,
+>>>
+>>> 	st_sensors_i2c_configure(indio_dev, client, gdata);
+>>>
+>>> -	err = st_gyro_common_probe(indio_dev,
+>>> -				(struct st_sensors_platform_data *)&gyro_pdata);
+>>> +	err = st_gyro_common_probe(indio_dev, client->dev.platform_data);
+>>> 	if (err < 0)
+>>> 		return err;
+>>>
+>>> diff --git a/drivers/iio/gyro/st_gyro_spi.c
+>>> b/drivers/iio/gyro/st_gyro_spi.c
+>>> index 94763e2..f0c730f 100644
+>>> --- a/drivers/iio/gyro/st_gyro_spi.c
+>>> +++ b/drivers/iio/gyro/st_gyro_spi.c
+>>> @@ -33,8 +33,7 @@ static int st_gyro_spi_probe(struct spi_device
+>*spi)
+>>>
+>>> 	st_sensors_spi_configure(indio_dev, spi, gdata);
+>>>
+>>> -	err = st_gyro_common_probe(indio_dev,
+>>> -				(struct st_sensors_platform_data *)&gyro_pdata);
+>>> +	err = st_gyro_common_probe(indio_dev, spi->dev.platform_data);
+>>> 	if (err < 0)
+>>> 		return err;
+>>>
+>>> diff --git a/include/linux/platform_data/st_sensors_pdata.h
+>>> b/include/linux/platform_data/st_sensors_pdata.h
+>>> index 7538391..1e2b26c 100644
+>>> --- a/include/linux/platform_data/st_sensors_pdata.h
+>>> +++ b/include/linux/platform_data/st_sensors_pdata.h
+>>> @@ -14,7 +14,7 @@
+>>> /**
+>>>   * struct st_sensors_platform_data - Platform data for the ST
+>sensors
+>>>   * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
+>>> - *	Available only for accelerometer and pressure sensors.
+>>> + *	Available only for accelerometers, gyroscopes and pressure
+>sensors.
+>>> *	Accelerometer DRDY on LSM330 available only on pin 1 (see
+>datasheet).
+>>>   */
+>>> struct st_sensors_platform_data {
+
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
