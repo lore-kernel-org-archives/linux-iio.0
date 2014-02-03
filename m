@@ -1,66 +1,60 @@
-Return-Path: <beomho.seo@samsung.com>
-To: undisclosed-recipients: ;
-Message-id: <52F08031.50703@samsung.com>
-Date: Tue, 04 Feb 2014 14:52:49 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
- Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 0/2] iio: ak8975: Fix calculation formula and add device
- name
-References: <52E88BFC.6080704@samsung.com>
- <alpine.DEB.2.01.1401290949450.17833@pmeerw.net>
-In-reply-to: <alpine.DEB.2.01.1401290949450.17833@pmeerw.net>
-Content-type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
-
-On 01/29/2014 05:53 PM, Peter Meerwald wrote:
-> Hello,
-> 
->>  Three months ago Lars-Peter revised description of device driver[1].
-> 
-> me, not Lars-Peter
-> 
-
-I'm really sorry, my mistake.
-
->> Correctly, device's sensitivity is 0.3 uT/LSB typ and One micro tesla equal 0.01 gauss[2].
->> So I have fixed calculation formula,And then add RAW_TO_GAUSS macro.
->> Scale are returned as VAL_INT_PLUS_MICRO.
->> Additionally, I have add device name.
-> 
-> +#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
-> 
->   *
->   * Since 1uT = 0.01 gauss, our final scale factor becomes:
->   *
-> - * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
-> - * Hadj = H * ((ASA + 128) * 30 / 256
-> + * Hadj = H * ((ASA + 128) / 256) * 3/10 * 1/100
-> + * Hadj = H * ((ASA + 128) * 0.003) / 256
->   *
->   * Since ASA doesn't change, we cache the resultant scale factor into the
->   * device context in ak8975_setup().
->   */
-> -       data->raw_to_gauss[0] = ((data->asa[0] + 128) * 30) >> 8;
-> +       data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
-> 
-> thank you for following up on this; I don't have the hardware, so I didn't 
-> dare to change the driver...
-> 
-> the RAW_TO_GAUSS() macro doesn't match the comment Hadj = H * ... anymore
-> 
-> maybe put this explanation in the patch comment, not the cover letter?
-> 
-
-OK. I will resend explanation in the patch comment.
-
-> regards, p.
-> 
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48466 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753495AbaBCTJ0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 14:09:26 -0500
+Message-ID: <52EFE980.7070607@kernel.org>
+Date: Mon, 03 Feb 2014 19:09:52 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Marek Vasut <marex@denx.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: mxs-lradc: remove useless check
+References: <1390071918-10622-1-git-send-email-alexandre.belloni@free-electrons.com> <201401182133.15839.marex@denx.de>
+In-Reply-To: <201401182133.15839.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
--- 
-Best Regards,
 
-Beomho Seo, Assistant Engineer
-System S/W Lab., Software Center, Samsung Electronics
+On 18/01/14 20:33, Marek Vasut wrote:
+> On Saturday, January 18, 2014 at 08:05:18 PM, Alexandre Belloni wrote:
+>> Checking the channel number is useless since mxs_lradc_read_raw() is called
+>> from a controlled environment and the driver is responsible for filing the
+>> struct iio_chan_spec.
+>>
+>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>> ---
+>>   drivers/staging/iio/adc/mxs-lradc.c | 4 ----
+>>   1 file changed, 4 deletions(-)
+>
+> Changelog's missing ;-)
+>
+> Acked-by: Marek Vasut <marex@denx.de>
+Applied to the togreg branch of iio.git - will be pushed out as testing for
+the autobuilders to play with it.
+
+Thanks.
+>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+>> b/drivers/staging/iio/adc/mxs-lradc.c index 7fc66a6a6e36..d304156ca2f7
+>> 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -897,10 +897,6 @@ static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
+>>   {
+>>   	struct mxs_lradc *lradc = iio_priv(iio_dev);
+>>
+>> -	/* Check for invalid channel */
+>> -	if (chan->channel > LRADC_MAX_TOTAL_CHANS)
+>> -		return -EINVAL;
+>> -
+>>   	switch (m) {
+>>   	case IIO_CHAN_INFO_RAW:
+>>   		if (chan->type == IIO_TEMP)
+>
+> Best regards,
+> Marek Vasut
+>
