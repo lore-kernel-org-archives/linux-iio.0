@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f179.google.com ([209.85.213.179]:41286 "EHLO
-	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751844AbaBCNkj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 08:40:39 -0500
-Received: by mail-ig0-f179.google.com with SMTP id c10so4148133igq.0
-        for <linux-iio@vger.kernel.org>; Mon, 03 Feb 2014 05:40:39 -0800 (PST)
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:45691 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752381AbaBCNkr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 08:40:47 -0500
+Received: by mail-ig0-f178.google.com with SMTP id uq10so4109315igb.5
+        for <linux-iio@vger.kernel.org>; Mon, 03 Feb 2014 05:40:47 -0800 (PST)
 From: Matt Porter <mporter@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Grant Likely <grant.likely@secretlab.ca>,
@@ -22,53 +22,53 @@ Cc: Linux IIO List <linux-iio@vger.kernel.org>,
 	Linux PWM List <linux-pwm@vger.kernel.org>,
 	Linux OMAP List <linux-omap@vger.kernel.org>,
 	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v2 0/6] IIO pulse capture support for TI ECAP
-Date: Mon,  3 Feb 2014 08:40:26 -0500
-Message-Id: <1391434832-23807-1-git-send-email-mporter@linaro.org>
+Subject: [PATCH v2 6/6] ARM: dts: AM33XX: Add ecap interrupt properties
+Date: Mon,  3 Feb 2014 08:40:32 -0500
+Message-Id: <1391434832-23807-7-git-send-email-mporter@linaro.org>
+In-Reply-To: <1391434832-23807-1-git-send-email-mporter@linaro.org>
+References: <1391434832-23807-1-git-send-email-mporter@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes since v1:
-	- Rebased to 3.14-rc1
-	- Renamed in_pulse_polarity to pulse_polarity
-	- Added ABI entries for pulse devices and TI ECAP
+Add missing interrupt properties to the ecap0, ecap1, and ecap2
+nodes.
 
-This series adds support for PWM capture devices within IIO and
-adds a TI ECAP IIO driver.
+Signed-off-by: Matt Porter <mporter@linaro.org>
+---
+ arch/arm/boot/dts/am33xx.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-PWM capture devices are supported using a new IIO "pulse" channel type.
-
-The IIO ECAP driver implements interrupt driven triggered buffer capture
-only as raw sample reads are not applicable to this hardware.
-Initially, the driver supports a single pulse width measurement with
-configurable polarity. The ECAP hardware can support measurement of a
-complete period and duty cycle but this is not yet implemented.
-
-Matt Porter (6):
-  iio: add support for pulse width capture devices
-  iio: pulse: add TI ECAP driver
-  iio: enable selection and build of pulse drivers
-  iio: Add ABI docs for pulse capture devices
-  pwm: enable TI PWMSS if the IIO tiecap driver is selected
-  ARM: dts: AM33XX: Add ecap interrupt properties
-
- Documentation/ABI/testing/sysfs-bus-iio            |  18 +
- .../ABI/testing/sysfs-bus-iio-pulse-tiecap         |   9 +
- arch/arm/boot/dts/am33xx.dtsi                      |   6 +
- drivers/iio/Kconfig                                |   1 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/industrialio-core.c                    |   1 +
- drivers/iio/pulse/Kconfig                          |  20 +
- drivers/iio/pulse/Makefile                         |   6 +
- drivers/iio/pulse/tiecap.c                         | 493 +++++++++++++++++++++
- drivers/pwm/Kconfig                                |   2 +-
- include/linux/iio/types.h                          |   1 +
- 11 files changed, 557 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
- create mode 100644 drivers/iio/pulse/Kconfig
- create mode 100644 drivers/iio/pulse/Makefile
- create mode 100644 drivers/iio/pulse/tiecap.c
-
+diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+index 6d95d3d..b4139ba 100644
+--- a/arch/arm/boot/dts/am33xx.dtsi
++++ b/arch/arm/boot/dts/am33xx.dtsi
+@@ -582,6 +582,8 @@
+ 				compatible = "ti,am33xx-ecap";
+ 				#pwm-cells = <3>;
+ 				reg = <0x48300100 0x80>;
++				interrupts = <31>;
++				interrupt-names = "ecap0";
+ 				ti,hwmods = "ecap0";
+ 				status = "disabled";
+ 			};
+@@ -610,6 +612,8 @@
+ 				compatible = "ti,am33xx-ecap";
+ 				#pwm-cells = <3>;
+ 				reg = <0x48302100 0x80>;
++				interrupts = <47>;
++				interrupt-names = "ecap1";
+ 				ti,hwmods = "ecap1";
+ 				status = "disabled";
+ 			};
+@@ -638,6 +642,8 @@
+ 				compatible = "ti,am33xx-ecap";
+ 				#pwm-cells = <3>;
+ 				reg = <0x48304100 0x80>;
++				interrupts = <61>;
++				interrupt-names = "ecap2";
+ 				ti,hwmods = "ecap2";
+ 				status = "disabled";
+ 			};
 -- 
 1.8.4
 
