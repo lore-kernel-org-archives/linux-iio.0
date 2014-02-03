@@ -1,59 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:30929 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752999AbaBDJP6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Feb 2014 04:15:58 -0500
-Received: from epcpsbgr1.samsung.com
- (u141.gpu120.samsung.co.kr [203.254.230.141])
- by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N0G00CJWSEK9620@mailout4.samsung.com> for
- linux-iio@vger.kernel.org; Tue, 04 Feb 2014 18:15:57 +0900 (KST)
-Message-id: <52F0AFCC.7030306@samsung.com>
-Date: Tue, 04 Feb 2014 18:15:56 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, ldewangan@nvidia.com,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Myungjoo Ham <myungjoo.ham@samsung.com>,
-	Jaehoon Chung <jh80.chung@samsung.com>
-Subject: [PATCH RESEND 0/2] iio: ak8975: Fix calculation formula and add device
- name
-Content-type: text/plain; charset=ISO-8859-1
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48328 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752350AbaBCTAs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 14:00:48 -0500
+Message-ID: <52EFE77A.3030802@kernel.org>
+Date: Mon, 03 Feb 2014 19:01:14 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: linux-iio@vger.kernel.org
+Subject: [PULL] IIO fixes 3.14 set 1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
- Three months ago Peter Meerwald revised description of device driver[1].
-Correctly, device's sensitivity is 0.3 uT/LSB typ and One micro tesla equal 0.01 gauss[2].
-So I have fixed calculation formula,And then add RAW_TO_GAUSS macro.
-Scale are returned as VAL_INT_PLUS_MICRO.
-Additionally, I have add device name.
+The following changes since commit c6236c0ce39c809c336ca929f68cf8ad02cf94e0:
 
-Tested on exynos4412 board, with following result:
+   staging: comedi: drivers: fix return value of comedi_load_firmware() (2013-12-17 13:05:53 -0800)
 
--sh-4.1# cat name
-ak8975
--sh-4.1# cat in_magn_x_raw
-80
--sh-4.1# cat in_magn_x_scale
-0.003609
+are available in the git repository at:
 
-Calculate the result 80 x 0.003609 = 0.28872 Gauss.
-0.28872 G equal 288.72 mG
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.14a
 
-I think this magnitude value is proper level[3].
+for you to fetch changes up to 8c314da583c9d5c67fe59aa8c92f94f15cb8de90:
 
-[1] http://marc.info/?l=linux-iio&m=138220306822747&w=2
-[2] http://en.wikipedia.org/wiki/Gauss_(unit)
-[3] http://en.wikipedia.org/wiki/Orders_of_magnitude_(magnetic_field)
+   staging:iio:lpc32xx_adc: Add dependency on HAS_IOMEM (2014-01-18 11:49:39 +0000)
 
-Beomho Seo (2):
-  iio: ak8975: Fix calculation formula for microtesla to gauss unit
-  iio: ak8975: Add device name
+----------------------------------------------------------------
+First set of IIO fixes for the 3.14 cycle.
 
- drivers/iio/magnetometer/ak8975.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+Included is the patch previously set as the fourth round for 3.13 which was
+to late to be appropriate.
 
--- 
-Best Regards,
+* Another endian fix (ad799x adc) due to missuse of the IIO_ST macro (which
+   is going away very shortly)
+* A reversed error check in ad5933 which will make the probe fail.
+* A buffer overflow in the example code in the documentation.
+* ad799x was freeing an irq that might or might not have been requested.
+* tsl2563 was checking the wrong element of chan_spec for modifiers. Thus some
+   sysfs reads would give the wrong values.
+* A missing dependency on HAS_IOMEM in spear_adc and lpc32xx was causing some
+   test build failures (on s390 and perhaps elsewhere).
+
+I also have a few fixes queued up for things that went in during the 3.14
+merge window which will follow as a separate pull request (to avoid rebasing
+my tree).
+
+----------------------------------------------------------------
+Craig Markwardt (1):
+       iio: Fix a buffer overflow in iio_utils.h example code
+
+Hartmut Knaack (1):
+       staging:iio:ad799x fix error_free_irq which was freeing an irq that may not have been requested
+
+Ivaylo Dimitrov (1):
+       iio: tsl2563: Use the correct channel2 member
+
+Jonathan Cameron (1):
+       staging:iio:ad799x fix incorrect endianness specification for buffer elements
+
+Julia Lawall (1):
+       staging:iio:impedance:ad5933: correct error check
+
+Richard Weinberger (2):
+       staging:iio:spear_adc: Add dependency on HAS_IOMEM
+       staging:iio:lpc32xx_adc: Add dependency on HAS_IOMEM
+
+  drivers/iio/light/tsl2563.c                     | 16 ++++++++++------
+  drivers/staging/iio/Documentation/iio_utils.h   |  6 +++---
+  drivers/staging/iio/adc/Kconfig                 |  2 ++
+  drivers/staging/iio/adc/ad799x_core.c           | 11 +++++++++--
+  drivers/staging/iio/impedance-analyzer/ad5933.c |  2 +-
+  5 files changed, 25 insertions(+), 12 deletions(-)
