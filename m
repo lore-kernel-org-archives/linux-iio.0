@@ -1,52 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50281 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752639AbaBCVoq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2014 16:44:46 -0500
-Message-ID: <52F00DE8.5070002@kernel.org>
-Date: Mon, 03 Feb 2014 21:45:12 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Dan Carpenter <dan.carpenter@oracle.com>
-CC: Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: dac: ad7303: remove an unneeded check
-References: <20140130115849.GI12734@elgon.mountain> <52EB6EF4.9020203@metafoo.de>
-In-Reply-To: <52EB6EF4.9020203@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <beomho.seo@samsung.com>
+To: undisclosed-recipients: ;
+Message-id: <52F08031.50703@samsung.com>
+Date: Tue, 04 Feb 2014 14:52:49 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+ Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 0/2] iio: ak8975: Fix calculation formula and add device
+ name
+References: <52E88BFC.6080704@samsung.com>
+ <alpine.DEB.2.01.1401290949450.17833@pmeerw.net>
+In-reply-to: <alpine.DEB.2.01.1401290949450.17833@pmeerw.net>
+Content-type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
+
+On 01/29/2014 05:53 PM, Peter Meerwald wrote:
+> Hello,
+> 
+>>  Three months ago Lars-Peter revised description of device driver[1].
+> 
+> me, not Lars-Peter
+> 
+
+I'm really sorry, my mistake.
+
+>> Correctly, device's sensitivity is 0.3 uT/LSB typ and One micro tesla equal 0.01 gauss[2].
+>> So I have fixed calculation formula,And then add RAW_TO_GAUSS macro.
+>> Scale are returned as VAL_INT_PLUS_MICRO.
+>> Additionally, I have add device name.
+> 
+> +#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
+> 
+>   *
+>   * Since 1uT = 0.01 gauss, our final scale factor becomes:
+>   *
+> - * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
+> - * Hadj = H * ((ASA + 128) * 30 / 256
+> + * Hadj = H * ((ASA + 128) / 256) * 3/10 * 1/100
+> + * Hadj = H * ((ASA + 128) * 0.003) / 256
+>   *
+>   * Since ASA doesn't change, we cache the resultant scale factor into the
+>   * device context in ak8975_setup().
+>   */
+> -       data->raw_to_gauss[0] = ((data->asa[0] + 128) * 30) >> 8;
+> +       data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
+> 
+> thank you for following up on this; I don't have the hardware, so I didn't 
+> dare to change the driver...
+> 
+> the RAW_TO_GAUSS() macro doesn't match the comment Hadj = H * ... anymore
+> 
+> maybe put this explanation in the patch comment, not the cover letter?
+> 
+
+OK. I will resend explanation in the patch comment.
+
+> regards, p.
+> 
 
 
+-- 
+Best Regards,
 
-On 31/01/14 09:37, Lars-Peter Clausen wrote:
-> On 01/30/2014 12:58 PM, Dan Carpenter wrote:
->> "ret" is zero here.  There is no need to check again.
->>
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
-
-Thanks,
->
-> Thanks.
->
->>
->> diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
->> index d0505fd22ef4..fa2810032968 100644
->> --- a/drivers/iio/dac/ad7303.c
->> +++ b/drivers/iio/dac/ad7303.c
->> @@ -92,7 +92,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
->>   	ad7303_write(st, chan->channel, st->dac_cache[chan->channel]);
->>
->>   	mutex_unlock(&indio_dev->mlock);
->> -	return ret ? ret : len;
->> +	return len;
->>   }
->>
->>   static int ad7303_get_vref(struct ad7303_state *st,
->>
->
+Beomho Seo, Assistant Engineer
+System S/W Lab., Software Center, Samsung Electronics
