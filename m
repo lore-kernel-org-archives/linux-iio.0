@@ -1,64 +1,174 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f170.google.com ([209.85.192.170]:34117 "EHLO
-	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751125AbaBGWTx convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Feb 2014 17:19:53 -0500
-Received: by mail-pd0-f170.google.com with SMTP id p10so3703997pdj.15
-        for <linux-iio@vger.kernel.org>; Fri, 07 Feb 2014 14:19:53 -0800 (PST)
-Date: Fri, 07 Feb 2014 14:19:59 -0800
-Subject: Re: DMA sampling and IIO
-From: John Syn <john3909@gmail.com>
-To: Mark Brown <broonie@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: <linux-iio@vger.kernel.org>, Matt Flax <flatmax@flatmax.org>
-Message-ID: <CF1A99B5.1996C%john3909@gmail.com>
-References: <CF17C5B7.1940A%john3909@gmail.com>
- <52F35C5B.7080409@metafoo.de>
- <CF19225A.196C9%john3909@gmail.com>
- <52F3FB6E.3070201@metafoo.de>
- <20140207132058.GN32298@sirena.org.uk>
-In-Reply-To: <20140207132058.GN32298@sirena.org.uk>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Michal Simek <michal.simek@xilinx.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/2] devicetree: Add Xilinx XADC binding documentation
+Date: Tue,  4 Feb 2014 18:24:51 +0100
+Message-Id: <1391534692-9049-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
+The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
+The XADC has a DRP interface for communication. Currently two different
+frontends for the DRP interface exist. One that is only available on the ZYNQ
+family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+on all series 7 platforms and is a softmacro with a AXI interface. This binding
+document describes the bindings for both of them since the bindings are very
+similar.
 
-On 2/7/14, 5:20 AM, "Mark Brown" <broonie@kernel.org> wrote:
+Each of them needs:
+	* A address range where the registers are mapped
+	* An interrupt number for the device interrupt
+	* A clock. For the the ZYNQ hardmacro interface this is the modules PCAP
+	  clock, for the AXI softmacro it is the AXI bus interface clock.
 
->On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
->
->> I guess this is because it is the traditional area where I2S is used
->>and nobody
->> cared so far about using it somewhere else in the context of the Linux
->>kernel.
->> Not having to have a extra layer of abstraction in the middle between
->>ALSA/ASoC
->> and the I2S peripheral driver helped to keep things simple.
->
->Plus many of the uses actually found that the audio APIs were doing
->useful things for them anyway - the DMA bit is reasonably useful way of
->transferring continuous streams of data and nothing much cares if that
->data is actually audio or not so long as the application on top doesn't
->mind.
-Hi Mark,
+Additionally the bindings specify whether an external multiplexer is used and in
+which mode it is used. The devicetree bindings also describe which external
+channels are connected and in which configuration.
 
-That is interesting. The ADE7878 transmits the measurements as 16
-sequential measurements (Voltage A, Voltage B, Voltage C, Current A, etc)
-and uses a frame to denote a new set of measurements. Can the audio API
-cope with 16 channels and how do I prevent any modification (equalization,
-etc) to the measurement data? Also, is it possible to break out these
-measurements into separate buffers (Voltage A buffer, Voltage B buffer,
-etc)? I guess I would access these measurement in the same way as an audio
-application like aplay?
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Pawel Moll <pawel.moll@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+Cc: Kumar Gala <galak@codeaurora.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ .../devicetree/bindings/iio/adc/xilinx-xadc.txt    | 119 +++++++++++++++++++++
+ 1 file changed, 119 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
 
-What I don¹t like about this solution is the possibility of missing
-samples. In an audio app, this isn¹t so critical, but in my app this would
-be a big problem. 
-
-Regards,
-John
->
-
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+new file mode 100644
+index 0000000..40d97c1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+@@ -0,0 +1,119 @@
++Xilinx XADC device driver
++
++The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
++The XADC has a DRP interface for communication. Currently two different
++frontends for the DRP interface exist. One that is only available on the ZYNQ
++family as a hardmacro in the SoC portion of the ZYNQ. The other one is
++available on all series 7 platforms and is a softmacro with a AXI interface.
++
++This binding document describes the bindings for both of them since the
++bindings are very similar. The Xilinx XADC is a ADC that can be found in the
++series 7 FPGAs from Xilinx. The XADC has a DRP interface for communication.
++Currently two different frontends for the DRP interface exist. One that is only
++available on the ZYNQ family as a hardmacro in the SoC portion of the ZYNQ. The
++other one is available on all series 7 platforms and is a softmacro with a AXI
++interface. This binding document describes the bindings for both of them since
++the bindings are very similar.
++
++Required properties:
++	- compatible: Should be one of
++		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
++		  configuration interface to interface to the XADC hardmacro.
++		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
++		  interface to the XADC hardmacro.
++	- reg: Address and length of the register set for the device
++	- interrupts: Interrupt for the XADC control interface.
++	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
++	  when using the AXI-XADC pcore this must be the clock that provides the
++	  clock to the AXI bus interface of the core.
++
++Optional properties:
++	- interrupt-parent: phandle to the parent interrupt controller
++	- xlnx,external-mux:
++		* "none": No external multiplexer is used, this is the default
++		  if the property is omitted.
++		* "single": External multiplexer mode is used with one
++		   multiplexer.
++		* "dual": External multiplexer mode is used with two
++		  multiplexers for simultaneous sampling.
++	- xlnx,external-mux-channel: Configures which pair of pins is used to
++	  sample data in external mux mode.
++	  Valid values for single external multiplexer mode are:
++		0: VP/VN
++		1: VAUXP[0]/VAUXN[0]
++		2: VAUXP[1]/VAUXN[1]
++		...
++		16: VAUXP[15]/VAUXN[15]
++	  Valid values for dual external multiplexer mode are:
++		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
++		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
++		...
++		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
++
++	  This property needs to be present if the device is configured for
++	  external multiplexer mode (either single or dual). If the device is
++	  not using external multiplexer mode the property is ignored.
++	- xnlx,channels: List of external channels that are connected to the ADC
++	  Required properties:
++		* #address-cells: Should be 1.
++		* #size-cells: Should be 0.
++
++	  The child nodes of this node represent the external channels which are
++	  connected to the ADC. If the property is no present no external
++	  channels will be assumed to be connected.
++
++	  Each child node represents one channel and has the following
++	  properties:
++		Required properties:
++			* reg: Pair of pins the the channel is connected to.
++				0: VP/VN
++				1: VAUXP[0]/VAUXN[0]
++				2: VAUXP[1]/VAUXN[1]
++				...
++				16: VAUXP[15]/VAUXN[15]
++			  Note each channel number should only be used at most
++			  once.
++		Optional properties:
++			* xlnx,bipolar: If set the channel is used in bipolar
++			  mode.
++
++
++Examples:
++	xadc@f8007100 {
++		compatible = "xlnx,zynq-xadc-1.00.a";
++		reg = <0xf8007100 0x20>;
++		interrupts = <0 7 4>;
++		interrupt-parent = <&gic>;
++		clocks = <&pcap_clk>;
++
++		xlnx,channels {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			channel@0 {
++				reg = <0>;
++			};
++			channel@1 {
++				reg = <1>;
++			};
++			channel@8 {
++				reg = <8>;
++			};
++		};
++	};
++
++	xadc@43200000 {
++		compatible = "xlnx,axi-xadc-1.00.a";
++		reg = <0x43200000 0x1000>;
++		interrupts = <0 53 4>;
++		interrupt-parent = <&gic>;
++		clocks = <&fpga1_clk>;
++
++		xlnx,channels {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			channel@0 {
++				reg = <0>;
++				xlnx,bipolar;
++			};
++		};
++	};
+-- 
+1.8.0
