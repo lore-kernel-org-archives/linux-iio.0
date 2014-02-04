@@ -1,31 +1,38 @@
-Return-Path: <slm@iis.fraunhofer.de>
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-To: jic23@cam.ac.uk
-Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 1/1] iio: ak8975: Set name
-Date: Wed,  5 Feb 2014 11:29:41 +0100
-Message-Id: <1391596181-21377-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: =?iso-8859-1?q?J=FCrgen_Beisert?= <jbe@pengutronix.de>
+Subject: Re: [PATCHv6] staging/iio/adc: change the MXS touchscreen driver implementation
+Date: Wed, 5 Feb 2014 00:45:08 +0100
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ devel@driverdev.osuosl.org,
+ fabio.estevam@freescale.com,
+ jic23@cam.ac.uk,
+ linux-input@vger.kernel.org
+References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de> <52CEA4AA.8050503@free-electrons.com> <201401100955.45885.jbe@pengutronix.de>
+In-Reply-To: <201401100955.45885.jbe@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201402050045.08532.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This creates the mandatory name attribute for the device.
+On Friday, January 10, 2014 at 09:55:45 AM, J=FCrgen Beisert wrote:
 
-Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
----
- drivers/iio/magnetometer/ak8975.c | 1 +
- 1 file changed, 1 insertion(+)
+[...]
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index ff284e5..c61a764 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -508,6 +508,7 @@ static int ak8975_probe(struct i2c_client *client,
- 	mutex_init(&data->lock);
- 	data->eoc_gpio = eoc_gpio;
- 	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = id->name;
- 	indio_dev->channels = ak8975_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
- 	indio_dev->info = &ak8975_info;
--- 
-1.8.3.2
+> > While this is not necessarily an issue with ts_calibrate (it is possible
+> > to click longer so it collects more samples), I don't see that working
+> > with xinput_calibrator.
+> >=20
+> > While I don't have much experience with the TS part of the code but I
+> > can investigate if you don't have any idea.
+>=20
+> You are right. I have seen the same behaviour here a few times. Currently
+> I'm short in time to dig deeper into this issue, but I will try to do so.
+
+Hi guys, is this still broken?
+
+Best regards,
+Marek Vasut
