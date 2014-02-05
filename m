@@ -1,71 +1,212 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:47170 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752847AbaBZAZK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 19:25:10 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv3 6/7] Documentation: DT: Document twl4030-madc binding
-Date: Wed, 26 Feb 2014 01:24:29 +0100
-Message-Id: <1393374270-20079-7-git-send-email-sre@debian.org>
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <slm@iis.fraunhofer.de>
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: jic23@cam.ac.uk
+Cc: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: Add tool to list IIO devices and triggers
+Date: Wed,  5 Feb 2014 14:23:01 +0100
+Message-Id: <1391606581-31638-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add devicetree binding documentation for twl4030-madc
-analog digital converter.
-
-Signed-off-by: Sebastian Reichel <sre@debian.org>
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 ---
- .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+ drivers/staging/iio/Documentation/iio_utils.h |  22 ++++
+ drivers/staging/iio/Documentation/lsiio.c     | 157 ++++++++++++++++++++++++++
+ 2 files changed, 179 insertions(+)
+ create mode 100644 drivers/staging/iio/Documentation/lsiio.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index 35154d6..8dd2671 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -652,3 +652,25 @@ error_free:
+ 	free(temp);
+ 	return ret;
+ }
++
++read_sysfs_string(const char *filename, const char *basedir, char *str)
++{
++	float ret = 0;
++	FILE  *sysfsfp;
++	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
++	if (temp == NULL) {
++		printf("Memory allocation failed");
++		return -ENOMEM;
++	}
++	sprintf(temp, "%s/%s", basedir, filename);
++	sysfsfp = fopen(temp, "r");
++	if (sysfsfp == NULL) {
++		ret = -errno;
++		goto error_free;
++	}
++	fscanf(sysfsfp, "%s\n", str);
++	fclose(sysfsfp);
++error_free:
++	free(temp);
++	return ret;
++}
+diff --git a/drivers/staging/iio/Documentation/lsiio.c b/drivers/staging/iio/Documentation/lsiio.c
 new file mode 100644
-index 0000000..6bdd214
+index 0000000..24ae969
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
-@@ -0,0 +1,24 @@
-+* TWL4030 Monitoring Analog to Digital Converter (MADC)
++++ b/drivers/staging/iio/Documentation/lsiio.c
+@@ -0,0 +1,157 @@
++/*
++ * Industrial I/O utilities - lsiio.c
++ *
++ * Copyright (c) 2010 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
 +
-+The MADC subsystem in the TWL4030 consists of a 10-bit ADC
-+combined with a 16-input analog multiplexer.
++#include <string.h>
++#include <dirent.h>
++#include <stdio.h>
++#include <errno.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/dir.h>
++#include "iio_utils.h"
 +
-+Required properties:
-+  - compatible: Should contain "ti,twl4030-madc".
-+  - interrupts: IRQ line for the MADC submodule.
-+  - #io-channel-cells: Should be set to <1>.
 +
-+Optional properties:
-+  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
-+				    should be used, which is intended to be used
-+				    by Co-Processors (e.g. a modem).
++static enum verbosity {
++	VERBLEVEL_DEFAULT,	/* 0 gives lspci behaviour */
++	VERBLEVEL_SENSORS,	/* 1 lists sensors */
++} verblevel = VERBLEVEL_DEFAULT;
 +
-+Example:
++const char *type_device = "iio:device";
++const char *type_trigger = "trigger";
 +
-+&twl {
-+	madc {
-+		compatible = "ti,twl4030-madc";
-+		interrupts = <3>;
-+		#io-channel-cells = <1>;
-+	};
-+};
++
++static inline int check_prefix(const char *str, const char *prefix)
++{
++	return strlen(str) > strlen(prefix) &&
++		strncmp(str, prefix, strlen(prefix)) == 0;
++}
++
++static inline int check_postfix(const char *str, const char *postfix)
++{
++	return strlen(str) > strlen(postfix) &&
++		strcmp(str + strlen(str) - strlen(postfix), postfix) == 0;
++}
++
++static int dump_channels(const char *dev_dir_name)
++{
++	DIR *dp;
++	const struct dirent *ent;
++	dp = opendir(dev_dir_name);
++	if (dp == NULL)
++		return -errno;
++	while (ent = readdir(dp), ent != NULL)
++		if (check_prefix(ent->d_name, "in_") &&
++		    check_postfix(ent->d_name, "_raw")) {
++			printf("   %-10s\n", ent->d_name);
++		}
++
++	return 0;
++}
++
++static int dump_one_device(const char *dev_dir_name)
++{
++	char name[IIO_MAX_NAME_LENGTH];
++	int dev_idx;
++
++	sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_device),
++			"%i", &dev_idx);
++	read_sysfs_string("name", dev_dir_name, name);
++	printf("Device %03d: %s\n", dev_idx, name);
++
++	if (verblevel >= VERBLEVEL_SENSORS) {
++		int ret = dump_channels(dev_dir_name);
++		if (ret)
++			return ret;
++	}
++	return 0;
++}
++
++static int dump_one_trigger(const char *dev_dir_name)
++{
++	char name[IIO_MAX_NAME_LENGTH];
++	int dev_idx;
++
++	sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_trigger),
++			"%i", &dev_idx);
++	read_sysfs_string("name", dev_dir_name, name);
++	printf("Trigger %03d: %s\n", dev_idx, name);
++	return 0;
++}
++
++static void dump_devices(void)
++{
++	const struct dirent *ent;
++	int number, numstrlen;
++
++	FILE *nameFile;
++	DIR *dp;
++	char thisname[IIO_MAX_NAME_LENGTH];
++	char *filename;
++
++	dp = opendir(iio_dir);
++	if (dp == NULL) {
++		printf("No industrial I/O devices available\n");
++		return;
++	}
++
++	while (ent = readdir(dp), ent != NULL) {
++		if (check_prefix(ent->d_name, type_device)) {
++			char *dev_dir_name;
++			asprintf(&dev_dir_name, "%s%s", iio_dir, ent->d_name);
++			dump_one_device(dev_dir_name);
++			free(dev_dir_name);
++			if (verblevel >= VERBLEVEL_SENSORS)
++				printf("\n");
++		}
++	}
++	rewinddir(dp);
++	while (ent = readdir(dp), ent != NULL) {
++		if (check_prefix(ent->d_name, type_trigger)) {
++			char *dev_dir_name;
++			asprintf(&dev_dir_name, "%s%s", iio_dir, ent->d_name);
++			dump_one_trigger(dev_dir_name);
++			free(dev_dir_name);
++		}
++	}
++	closedir(dp);
++}
++
++int main(int argc, char **argv)
++{
++	int c, err = 0;
++
++	while ((c = getopt(argc, argv, "d:D:v")) != EOF) {
++		switch (c) {
++		case 'v':
++			verblevel++;
++			break;
++
++		case '?':
++		default:
++			err++;
++			break;
++		}
++	}
++	if (err || argc > optind) {
++		fprintf(stderr, "Usage: lsiio [options]...\n"
++			"List industrial I/O devices\n"
++			"  -v, --verbose\n"
++			"      Increase verbosity (may be given multiple times)\n"
++			);
++		exit(1);
++	}
++
++	dump_devices();
++
++	return 0;
++}
 -- 
-1.8.5.3
-
+1.8.3.2
