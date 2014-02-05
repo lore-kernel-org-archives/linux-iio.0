@@ -1,101 +1,44 @@
-Return-Path: <mranostay@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <52F7F92E.9040508@kernel.org>
-References: <1391670015-6551-1-git-send-email-mranostay@gmail.com>
-	<1391670015-6551-2-git-send-email-mranostay@gmail.com>
-	<52F7F92E.9040508@kernel.org>
-Date: Sun, 9 Feb 2014 15:16:21 -0800
-Message-ID: <CAKzfze-VGEVJWgqJC-87KVbrFie9_CZP6wU1sTCjPuvc0XxJAA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio:as3935: Add DT binding docs for AS3935 driver
-From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Matt Porter <matt.porter@linaro.org>,
-	Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <beomho.seo@samsung.com>
+Message-id: <52F21E4D.1080005@samsung.com>
+Date: Wed, 05 Feb 2014 20:19:41 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: Re: [PATCH 1/1] iio: ak8975: Set name
+References: <1391596181-21377-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-reply-to: <1391596181-21377-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+Content-type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Feb 9, 2014 at 1:54 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 06/02/14 07:00, Matt Ranostay wrote:
->>
->> Document compatible string, required and optional DT properties for
->> AS3935 chipset driver.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->> ---
->>   .../devicetree/bindings/iio/proximity/as3935.txt   | 28
->> ++++++++++++++++++++++
->>   .../devicetree/bindings/vendor-prefixes.txt        |  1 +
->>   2 files changed, 29 insertions(+)
->>   create mode 100644
->> Documentation/devicetree/bindings/iio/proximity/as3935.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> new file mode 100644
->> index 0000000..574d49c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> @@ -0,0 +1,28 @@
->> +Austrian Microsystems AS3935 Franklin lightning sensor device driver
->> +
->> +Required properties:
->> +       - compatible: must be "ams,as3935"
->> +       - reg: SPI chip select number for the device
->> +       - spi-cpha: SPI Mode 1. Refer to spi/spi-bus.txt for generic SPI
->> +       slave node bindings.
->> +       - interrupt-parent : should be the phandle for the interrupt
->> controller
->> +       - interrupts : interrupt mapping for GPIO IRQ
->
-> Why does it need to be a GPIO IRQ?  As far as I can see any irq will do
-> (note there are devices that provide suitable interrupts without the ability
-> to read the level).  Oops, we have a couple of other IIO bindings stating
-> exactly this.  I doubt they need to be GPIOs either.
->
-No it doesn't it can be any interrupt type... Will reword better
+Hello,
 
+> This creates the mandatory name attribute for the device.
+> 
 
->
->> +
->> +       Refer to interrupt-controller/interrupts.txt for generic
->> +       interrupt client node bindings.
->> +
->> +Optional properties:
->> +       - ams,tune-cap: Calibration tuning capacitor stepping value 0 -
->> 15.
->> +         Range of 0 to 120 pF, 8pF steps. This will require using the
->> +         calibration data from the manufacturer.
->
-> Why not have this as the actual value rather than a magic number?  Might
-> as well keep the device tree as human readable as possible.
->
+Already, I have sent same patch set[1].
 
-Makes sense.
+> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index ff284e5..c61a764 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -508,6 +508,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	mutex_init(&data->lock);
+>  	data->eoc_gpio = eoc_gpio;
+>  	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = id->name;
+>  	indio_dev->channels = ak8975_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+>  	indio_dev->info = &ak8975_info;
+> 
 
->> +
->> +Example:
->> +
->> +as3935@0 {
->> +       compatible = "ams,as3935";
->> +       reg = <0>;
->> +       spi-cpha;
->> +       interrupt-parent = <&gpio1>;
->> +       interrupts = <16 1>;
->> +       ams,tune-cap = <10>;
->> +};
->> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt
->> b/Documentation/devicetree/bindings/vendor-prefixes.txt
->> index 3c31b40..9dd66ca 100644
->> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
->> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
->> @@ -10,6 +10,7 @@ aeroflexgaisler       Aeroflex Gaisler AB
->>   ak    Asahi Kasei Corp.
->>   altr  Altera Corp.
->>   amcc  Applied Micro Circuits Corporation (APM, formally AMCC)
->> +ams    AMS AG
->>   amstaos       AMS-Taos Inc.
->>   apm   Applied Micro Circuits Corporation (APM)
->>   arm   ARM Ltd.
->>
->
+[1] http://marc.info/?l=linux-iio&m=139097191528544&w=2
+
+-- 
+Best Regards,
