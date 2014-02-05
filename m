@@ -1,49 +1,104 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36655 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754473AbaBRIdy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 03:33:54 -0500
-Message-ID: <53031B17.8030608@kernel.org>
-Date: Tue, 18 Feb 2014 08:34:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Wolfram Sang <wsa@the-dreams.de>
-CC: Ge Gao <GGao@invensense.com>,
+Return-Path: <slm@iis.fraunhofer.de>
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: jic23@cam.ac.uk
+Cc: Ge Gao <ggao@invensense.com>,
 	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	lee.jones@linaro.org
-Subject: Re: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <52F623AA.6020905@kernel.org> <E7747D604FBC9F43A71AA431AFF44762104C3FB8@IUSEXCH01.invcorp.invensense.com> <201402101939.46467.manuel.stahl@iis.fraunhofer.de> <E7747D604FBC9F43A71AA431AFF44762104C57AF@IUSEXCH01.invcorp.invensense.com> <52FF5D61.4080506@kernel.org> <20140215133934.GA2579@katana>
-In-Reply-To: <20140215133934.GA2579@katana>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-iio@vger.kernel.org
+Subject: [PATCH 2/3] iio: imu: inv_mpu6050: Fix typo and formatting
+Date: Wed,  5 Feb 2014 11:34:34 +0100
+Message-Id: <1391596475-21986-2-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15/02/14 13:39, Wolfram Sang wrote:
->
->> Wolfram, what do you think?
->>
->> In short we have a device that sits on an i2c bus and supports its own
->> i2c bus (mainly so that the internal processor can use data from devices
->> on that bus) including support for passing the bus straight through.
->> The issues is the dependencies when the intermediate device is sleeping
->> for example.
->
-> Just judging from the paragraph above and not digging into the topic
-> deeper, I think the idea of an 1-1 multiplexer is suitable. Would the
-> pass-throu device then be a MFD? Are the alternative ideas?
->
-Seems like overkill to introduce an MFD for this little addition to a fairly
-large (and likely to grow driver).  Its a little ugly, but would you mind
-if the multiplexer is just handled directly within the  main driver?
-(perhaps via a config option).  It would be 'odd' to say the least if
-someone really wanted the pass through and not the complex inertial chip
-it is part of.
+Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 38 +++++++++++++++---------------
+ 2 files changed, 20 insertions(+), 20 deletions(-)
 
-Might just be simpler to do a very trivial mfd with the two parts hanging of it.
-The complexity is that the inertial sensor will often take over the device
-hanging off it completely so we will need to have it cleanly blocked as busy.
-
-Lee, what do you think?
-
-Jonathan
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index df7f1e1..fda1ee2 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+ 		return result;
+ 
+ 	if (en) {
+-		/* Wait for output stablize */
++		/* Wait for output stabilize */
+ 		msleep(INV_MPU6050_TEMP_UP_TIME);
+ 		if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+ 			/* switch internal clock to PLL */
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index f383955..0ab382b 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -126,35 +126,35 @@ struct inv_mpu6050_state {
+ #define INV_MPU6050_REG_SAMPLE_RATE_DIV     0x19
+ #define INV_MPU6050_REG_CONFIG              0x1A
+ #define INV_MPU6050_REG_GYRO_CONFIG         0x1B
+-#define INV_MPU6050_REG_ACCEL_CONFIG	    0x1C
++#define INV_MPU6050_REG_ACCEL_CONFIG        0x1C
+ 
+ #define INV_MPU6050_REG_FIFO_EN             0x23
+-#define INV_MPU6050_BIT_ACCEL_OUT                   0x08
+-#define INV_MPU6050_BITS_GYRO_OUT                   0x70
++#define INV_MPU6050_BIT_ACCEL_OUT           0x08
++#define INV_MPU6050_BITS_GYRO_OUT           0x70
+ 
+ #define INV_MPU6050_REG_INT_ENABLE          0x38
+-#define INV_MPU6050_BIT_DATA_RDY_EN                 0x01
+-#define INV_MPU6050_BIT_DMP_INT_EN                  0x02
++#define INV_MPU6050_BIT_DATA_RDY_EN         0x01
++#define INV_MPU6050_BIT_DMP_INT_EN          0x02
+ 
+ #define INV_MPU6050_REG_RAW_ACCEL           0x3B
+ #define INV_MPU6050_REG_TEMPERATURE         0x41
+ #define INV_MPU6050_REG_RAW_GYRO            0x43
+ 
+ #define INV_MPU6050_REG_USER_CTRL           0x6A
+-#define INV_MPU6050_BIT_FIFO_RST                    0x04
+-#define INV_MPU6050_BIT_DMP_RST                     0x08
+-#define INV_MPU6050_BIT_I2C_MST_EN                  0x20
+-#define INV_MPU6050_BIT_FIFO_EN                     0x40
+-#define INV_MPU6050_BIT_DMP_EN                      0x80
++#define INV_MPU6050_BIT_FIFO_RST            0x04
++#define INV_MPU6050_BIT_DMP_RST             0x08
++#define INV_MPU6050_BIT_I2C_MST_EN          0x20
++#define INV_MPU6050_BIT_FIFO_EN             0x40
++#define INV_MPU6050_BIT_DMP_EN              0x80
+ 
+ #define INV_MPU6050_REG_PWR_MGMT_1          0x6B
+-#define INV_MPU6050_BIT_H_RESET                     0x80
+-#define INV_MPU6050_BIT_SLEEP                       0x40
+-#define INV_MPU6050_BIT_CLK_MASK                    0x7
++#define INV_MPU6050_BIT_H_RESET             0x80
++#define INV_MPU6050_BIT_SLEEP               0x40
++#define INV_MPU6050_BIT_CLK_MASK            0x7
+ 
+ #define INV_MPU6050_REG_PWR_MGMT_2          0x6C
+-#define INV_MPU6050_BIT_PWR_ACCL_STBY               0x38
+-#define INV_MPU6050_BIT_PWR_GYRO_STBY               0x07
++#define INV_MPU6050_BIT_PWR_ACCL_STBY       0x38
++#define INV_MPU6050_BIT_PWR_GYRO_STBY       0x07
+ 
+ #define INV_MPU6050_REG_FIFO_COUNT_H        0x72
+ #define INV_MPU6050_REG_FIFO_R_W            0x74
+@@ -180,10 +180,10 @@ struct inv_mpu6050_state {
+ 
+ /* init parameters */
+ #define INV_MPU6050_INIT_FIFO_RATE           50
+-#define INV_MPU6050_TIME_STAMP_TOR                        5
+-#define INV_MPU6050_MAX_FIFO_RATE                         1000
+-#define INV_MPU6050_MIN_FIFO_RATE                         4
+-#define INV_MPU6050_ONE_K_HZ                              1000
++#define INV_MPU6050_TIME_STAMP_TOR           5
++#define INV_MPU6050_MAX_FIFO_RATE            1000
++#define INV_MPU6050_MIN_FIFO_RATE            4
++#define INV_MPU6050_ONE_K_HZ                 1000
+ 
+ /* scan element definition */
+ enum inv_mpu6050_scan {
+-- 
+1.8.3.2
