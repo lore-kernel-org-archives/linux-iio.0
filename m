@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f52.google.com ([209.85.219.52]:39989 "EHLO
-	mail-oa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750994AbaBETBt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2014 14:01:49 -0500
-Received: by mail-oa0-f52.google.com with SMTP id i4so1017152oah.11
-        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2014 11:01:48 -0800 (PST)
+Received: from mail-ob0-f180.google.com ([209.85.214.180]:55953 "EHLO
+	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751107AbaBETBw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2014 14:01:52 -0500
+Received: by mail-ob0-f180.google.com with SMTP id wp4so935691obc.25
+        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2014 11:01:52 -0800 (PST)
 From: Matt Porter <mporter@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Grant Likely <grant.likely@secretlab.ca>,
@@ -22,57 +22,48 @@ Cc: Linux IIO List <linux-iio@vger.kernel.org>,
 	Linux PWM List <linux-pwm@vger.kernel.org>,
 	Linux OMAP List <linux-omap@vger.kernel.org>,
 	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v3 0/6] IIO pulse capture support for TI ECAP
-Date: Wed,  5 Feb 2014 14:01:35 -0500
-Message-Id: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+Subject: [PATCH v3 1/6] iio: add support for pulse width capture devices
+Date: Wed,  5 Feb 2014 14:01:36 -0500
+Message-Id: <1391626901-31684-2-git-send-email-mporter@linaro.org>
+In-Reply-To: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+References: <1391626901-31684-1-git-send-email-mporter@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes since v2:
-	- Remove various unneeded field initialization
-	- Call iio_triggered_buffer_cleanup() on remove
+Add a channel type to support pulse width capture devices.
+These devices capture the timing of a PWM signal based on a
+configurable trigger
 
-Changes since v1:
-	- Rebased to 3.14-rc1
-	- Renamed in_pulse_polarity to pulse_polarity
-	- Added ABI entries for pulse devices and TI ECAP
+Signed-off-by: Matt Porter <mporter@linaro.org>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
 
-This series adds support for PWM capture devices within IIO and
-adds a TI ECAP IIO driver.
-
-PWM capture devices are supported using a new IIO "pulse" channel type.
-
-The IIO ECAP driver implements interrupt driven triggered buffer capture
-only as raw sample reads are not applicable to this hardware.
-Initially, the driver supports a single pulse width measurement with
-configurable polarity. The ECAP hardware can support measurement of a
-complete period and duty cycle but this is not yet implemented.
-
-Matt Porter (6):
-  iio: add support for pulse width capture devices
-  iio: pulse: add TI ECAP driver
-  iio: enable selection and build of pulse drivers
-  iio: Add ABI docs for pulse capture devices
-  pwm: enable TI PWMSS if the IIO tiecap driver is selected
-  ARM: dts: AM33XX: Add ecap interrupt properties
-
- Documentation/ABI/testing/sysfs-bus-iio            |  18 +
- .../ABI/testing/sysfs-bus-iio-pulse-tiecap         |   9 +
- arch/arm/boot/dts/am33xx.dtsi                      |   6 +
- drivers/iio/Kconfig                                |   1 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/industrialio-core.c                    |   1 +
- drivers/iio/pulse/Kconfig                          |  20 +
- drivers/iio/pulse/Makefile                         |   6 +
- drivers/iio/pulse/tiecap.c                         | 491 +++++++++++++++++++++
- drivers/pwm/Kconfig                                |   2 +-
- include/linux/iio/types.h                          |   1 +
- 11 files changed, 555 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
- create mode 100644 drivers/iio/pulse/Kconfig
- create mode 100644 drivers/iio/pulse/Makefile
- create mode 100644 drivers/iio/pulse/tiecap.c
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index acc911a..6ea0cf8 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
++	[IIO_PULSE] = "pulse",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 084d882..4fa8840 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -30,6 +30,7 @@ enum iio_chan_type {
+ 	IIO_CCT,
+ 	IIO_PRESSURE,
+ 	IIO_HUMIDITYRELATIVE,
++	IIO_PULSE,
+ };
+ 
+ enum iio_modifier {
 -- 
 1.8.4
 
