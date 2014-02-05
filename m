@@ -1,69 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f180.google.com ([209.85.214.180]:55953 "EHLO
-	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751107AbaBETBw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2014 14:01:52 -0500
-Received: by mail-ob0-f180.google.com with SMTP id wp4so935691obc.25
-        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2014 11:01:52 -0800 (PST)
-From: Matt Porter <mporter@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-lb0-f178.google.com ([209.85.217.178]:38075 "EHLO
+	mail-lb0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751317AbaBETXB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2014 14:23:01 -0500
+Received: by mail-lb0-f178.google.com with SMTP id u14so696422lbd.9
+        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2014 11:22:59 -0800 (PST)
+Message-ID: <52F29DBD.9050305@cogentembedded.com>
+Date: Wed, 05 Feb 2014 23:23:25 +0300
+From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+MIME-Version: 1.0
+To: Matt Porter <mporter@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Grant Likely <grant.likely@secretlab.ca>,
 	Rob Herring <robh+dt@kernel.org>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
 	Tony Lindgren <tony@atomide.com>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Thierry Reding <thierry.reding@gmail.com>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
+CC: Devicetree List <devicetree@vger.kernel.org>,
 	Linux PWM List <linux-pwm@vger.kernel.org>,
+	Linux IIO List <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
 	Linux OMAP List <linux-omap@vger.kernel.org>,
 	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v3 1/6] iio: add support for pulse width capture devices
-Date: Wed,  5 Feb 2014 14:01:36 -0500
-Message-Id: <1391626901-31684-2-git-send-email-mporter@linaro.org>
-In-Reply-To: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+Subject: Re: [PATCH v3 0/6] IIO pulse capture support for TI ECAP
 References: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+In-Reply-To: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a channel type to support pulse width capture devices.
-These devices capture the timing of a PWM signal based on a
-configurable trigger
+Hello.
 
-Signed-off-by: Matt Porter <mporter@linaro.org>
----
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/types.h       | 1 +
- 2 files changed, 2 insertions(+)
+On 02/05/2014 10:01 PM, Matt Porter wrote:
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index acc911a..6ea0cf8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_PULSE] = "pulse",
- };
- 
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 084d882..4fa8840 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -30,6 +30,7 @@ enum iio_chan_type {
- 	IIO_CCT,
- 	IIO_PRESSURE,
- 	IIO_HUMIDITYRELATIVE,
-+	IIO_PULSE,
- };
- 
- enum iio_modifier {
--- 
-1.8.4
+[...]
+
+> This series adds support for PWM capture devices within IIO and
+> adds a TI ECAP IIO driver.
+
+> PWM capture devices are supported using a new IIO "pulse" channel type.
+
+> The IIO ECAP driver implements interrupt driven triggered buffer capture
+> only as raw sample reads are not applicable to this hardware.
+> Initially, the driver supports a single pulse width measurement with
+> configurable polarity. The ECAP hardware can support measurement of a
+> complete period and duty cycle but this is not yet implemented.
+
+    How about pulse counting? I have the hardware that can also count pulses 
+in addition to measuring the periods, so I'm interested in this work 
+(initially I supported it in driver/misc/ but it got turned down for iio).
+
+WBR, Sergei
 
