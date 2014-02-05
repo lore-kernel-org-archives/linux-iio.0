@@ -1,44 +1,59 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <52F21E4D.1080005@samsung.com>
-Date: Wed, 05 Feb 2014 20:19:41 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Subject: Re: [PATCH 1/1] iio: ak8975: Set name
-References: <1391596181-21377-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-In-reply-to: <1391596181-21377-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-Content-type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pd0-f181.google.com ([209.85.192.181]:54287 "EHLO
+	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751470AbaBEDO5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Feb 2014 22:14:57 -0500
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: matt.porter@linaro.org, pantelis.antoniou@gmail.com,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v4 1/2] iio:as3935: Add DT binding docs for AS3935 driver
+Date: Tue,  4 Feb 2014 19:14:55 -0800
+Message-Id: <1391570096-2932-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Document compatible string, required and optional DT properties for
+AS3935 chipset driver.
 
-> This creates the mandatory name attribute for the device.
-> 
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ .../devicetree/bindings/iio/proximity/as3935.txt   | 25 ++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/as3935.txt
 
-Already, I have sent same patch set[1].
-
-> Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> ---
->  drivers/iio/magnetometer/ak8975.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index ff284e5..c61a764 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -508,6 +508,7 @@ static int ak8975_probe(struct i2c_client *client,
->  	mutex_init(&data->lock);
->  	data->eoc_gpio = eoc_gpio;
->  	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = id->name;
->  	indio_dev->channels = ak8975_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
->  	indio_dev->info = &ak8975_info;
-> 
-
-[1] http://marc.info/?l=linux-iio&m=139097191528544&w=2
-
+diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+new file mode 100644
+index 0000000..7e117cd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+@@ -0,0 +1,25 @@
++Austrian Microsystems AS3935 Franklin lightning sensor device driver
++
++Required properties:
++	- compatible: must be "ams,as3935"
++	- reg: SPI chip select number for the device
++	- spi-cpha: SPI Mode 1
++  	- interrupt-parent : should be the phandle for the interrupt controller
++	- interrupts : interrupt mapping for GPIO IRQ
++
++Optional properties:
++	- ams,tune-cap: Calibration tuning capacitor stepping value 0 - 15.
++	  Range of 0 to 120 pF, 8pF steps. This will require using the
++	  calibration data from the manufacturer.
++
++
++Example:
++
++as3935@0 {
++	compatible = "ams,as3935";
++	reg = <0>;
++	spi-cpha;
++	interrupt-parent = <&gpio1>;
++	interrupts = <16 1>;
++	ams,tune-cap = /bits/ 8 <10>;
++};
 -- 
-Best Regards,
+1.8.3.2
+
