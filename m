@@ -1,129 +1,41 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <52F4BFCF.5060304@samsung.com>
-Date: Fri, 07 Feb 2014 20:13:19 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>,
- Myungjoo Ham <myungjoo.ham@samsung.com>, Jaehoon Chung <jh80.chung@samsung.com>
-Subject: [PATCH 2/2] iio: cm32181:  Change cm32181 ambient light sensor driver
-Content-type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pb0-f53.google.com ([209.85.160.53]:62988 "EHLO
+	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751928AbaBFHAH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Feb 2014 02:00:07 -0500
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: matt.porter@linaro.org, pantelis.antoniou@gmail.com,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 0/2] AS3935 lightning sensor support
+Date: Wed,  5 Feb 2014 23:00:13 -0800
+Message-Id: <1391670015-6551-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+This series adds support for the AMS AS3935 lightning sensor that allows
+reporting back estimated storm distance and strike events.
 
-Integration time of cm32181 is guessed about milliseconds.
-But cm32181_read_als_it function return IIO_VAL_INT.
-IIO_VAL_INT print integer(25000, 50000, 100000 ...).
-So fixed to return IIO_VAL_INT_PLUS_MICRO.
-Next, change cm32181_write_als_it and add .write_raw_get_fmt callback function
-for call iio_str_to_fixpoint.
+Matt Ranostay (2):
+  iio:as3935: Add DT binding docs for AS3935 driver
+  iio: Add AS3935 lightning sensor support
 
-Cc: Kevin Tsai <ktsai@capellamicro.com>
-Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
----
- drivers/iio/light/cm32181.c |   28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index f17b4e6..78d5620 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -103,13 +103,13 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
- /**
-  *  cm32181_read_als_it() - Get sensor integration time (ms)
-  *  @cm32181:	pointer of struct cm32181
-- *  @val:	pointer of int to load the als_it value.
-+ *  @val2:	pointer of int to load the als_it value.
-  *
-  *  Report the current integartion time by millisecond.
-  *
-- *  Return: IIO_VAL_INT for success, otherwise -EINVAL.
-+ *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
-  */
--static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
-+static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
- {
- 	u16 als_it;
- 	int i;
-@@ -119,8 +119,8 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
- 	als_it >>= CM32181_CMD_ALS_IT_SHIFT;
- 	for (i = 0; i < ARRAY_SIZE(als_it_bits); i++) {
- 		if (als_it == als_it_bits[i]) {
--			*val = als_it_value[i];
--			return IIO_VAL_INT;
-+			*val2 = als_it_value[i];
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		}
- 	}
-
-@@ -136,7 +136,7 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
-  *
-  * Return: i2c_smbus_write_word_data command return value.
-  */
--static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
-+static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val2)
- {
- 	struct i2c_client *client = cm32181->client;
- 	u16 als_it;
-@@ -144,7 +144,7 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
-
- 	n = ARRAY_SIZE(als_it_value);
- 	for (i = 0; i < n; i++)
--		if (val <= als_it_value[i])
-+		if (val2 <= als_it_value[i])
- 			break;
- 	if (i >= n)
- 		i = n - 1;
-@@ -221,7 +221,7 @@ static int cm32181_read_raw(struct iio_dev *indio_dev,
- 		*val = cm32181->calibscale;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret = cm32181_read_als_it(cm32181, val);
-+		ret = cm32181_read_als_it(cm32181, val2);
- 		return ret;
- 	}
-
-@@ -240,13 +240,20 @@ static int cm32181_write_raw(struct iio_dev *indio_dev,
- 		cm32181->calibscale = val;
- 		return val;
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret = cm32181_write_als_it(cm32181, val);
-+		ret = cm32181_write_als_it(cm32181, val2);
- 		return ret;
- 	}
-
- 	return -EINVAL;
- }
-
-+static int cm32181_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				long mask)
-+{
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
- /**
-  * cm32181_get_it_available() - Get available ALS IT value
-  * @dev:	pointer of struct device.
-@@ -264,7 +271,7 @@ static ssize_t cm32181_get_it_available(struct device *dev,
-
- 	n = ARRAY_SIZE(als_it_value);
- 	for (i = 0, len = 0; i < n; i++)
--		len += sprintf(buf + len, "%d ", als_it_value[i]);
-+		len += sprintf(buf + len, "0.%06u ", als_it_value[i]);
- 	return len + sprintf(buf + len, "\n");
- }
-
-@@ -294,6 +301,7 @@ static const struct iio_info cm32181_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= &cm32181_read_raw,
- 	.write_raw		= &cm32181_write_raw,
-+	.write_raw_get_fmt	= &cm32181_write_raw_get_fmt,
- 	.attrs			= &cm32181_attribute_group,
- };
+ .../ABI/testing/sysfs-bus-iio-proximity-as3935     |  18 +
+ .../devicetree/bindings/iio/proximity/as3935.txt   |  28 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/proximity/Kconfig                      |  19 +
+ drivers/iio/proximity/Makefile                     |   6 +
+ drivers/iio/proximity/as3935.c                     | 437 +++++++++++++++++++++
+ 8 files changed, 511 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/as3935.txt
+ create mode 100644 drivers/iio/proximity/Kconfig
+ create mode 100644 drivers/iio/proximity/Makefile
+ create mode 100644 drivers/iio/proximity/as3935.c
 
 -- 
-1.7.9.5
+1.8.3.2
 
--- 
-Best Regards,
