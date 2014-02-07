@@ -1,211 +1,64 @@
-Return-Path: <jh80.chung@samsung.com>
-Message-id: <52F4C79D.6010909@samsung.com>
-Date: Fri, 07 Feb 2014 20:46:37 +0900
-From: Jaehoon Chung <jh80.chung@samsung.com>
-MIME-version: 1.0
-To: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Myungjoo Ham <myungjoo.ham@samsung.com>
-Subject: Re: [PATCH 1/2] iio: cm36651:  Fix read/write integration time
- function.
-References: <52F4BFCD.2080203@samsung.com>
-In-reply-to: <52F4BFCD.2080203@samsung.com>
-Content-type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:37837 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753030AbaBGNVN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Feb 2014 08:21:13 -0500
+Date: Fri, 7 Feb 2014 13:20:58 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: John Syn <john3909@gmail.com>, linux-iio@vger.kernel.org,
+	Matt Flax <flatmax@flatmax.org>
+Message-ID: <20140207132058.GN32298@sirena.org.uk>
+References: <CF17C5B7.1940A%john3909@gmail.com>
+ <52F35C5B.7080409@metafoo.de>
+ <CF19225A.196C9%john3909@gmail.com>
+ <52F3FB6E.3070201@metafoo.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0pBSE8Gehi89/9Xf"
+In-Reply-To: <52F3FB6E.3070201@metafoo.de>
+Subject: Re: DMA sampling and IIO
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/07/2014 08:13 PM, Beomho Seo wrote:
-> 
-> This patch is fixed [read/write] integration time function.
-> cm36651 have integration time from 1 to 640 milliseconds.
-> But, print more then the thounsand second. when call *_integration_time attribute.
-> Because read_integration_time function return IIO_VAL_INT.
-> read integration time function is changed return IIO_VAL_INT_PLUS_MICRO;
-> And then .write_raw_get_fmt callback function for parse a fixed-point number from a string.
-> Some description is revised milliseconds unit.
-> 
-> This patch have been tested on exynos4 board.
-> 
-> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-> ---
->  drivers/iio/light/cm36651.c |   71 ++++++++++++++++++++++++-------------------
->  1 file changed, 40 insertions(+), 31 deletions(-)
-> 
-> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-> index 0a142af..076780c 100644
-> --- a/drivers/iio/light/cm36651.c
-> +++ b/drivers/iio/light/cm36651.c
-> @@ -50,10 +50,10 @@
->  #define CM36651_CS_CONF2_DEFAULT_BIT	0x08
-> 
->  /* CS_CONF3 channel integration time */
-> -#define CM36651_CS_IT1			0x00 /* Integration time 80000 usec */
-> -#define CM36651_CS_IT2			0x40 /* Integration time 160000 usec */
-> -#define CM36651_CS_IT3			0x80 /* Integration time 320000 usec */
-> -#define CM36651_CS_IT4			0xC0 /* Integration time 640000 usec */
-> +#define CM36651_CS_IT1			0x00 /* Integration time 80 msec */
-> +#define CM36651_CS_IT2			0x40 /* Integration time 160 msec */
-> +#define CM36651_CS_IT3			0x80 /* Integration time 320 msec */
-> +#define CM36651_CS_IT4			0xC0 /* Integration time 640 msec */
-> 
->  /* PS_CONF1 command code */
->  #define CM36651_PS_ENABLE		0x00
-> @@ -64,10 +64,10 @@
->  #define CM36651_PS_PERS4		0x0C
-> 
->  /* PS_CONF1 command code: integration time */
-> -#define CM36651_PS_IT1			0x00 /* Integration time 320 usec */
-> -#define CM36651_PS_IT2			0x10 /* Integration time 420 usec */
-> -#define CM36651_PS_IT3			0x20 /* Integration time 520 usec */
-> -#define CM36651_PS_IT4			0x30 /* Integration time 640 usec */
-> +#define CM36651_PS_IT1			0x00 /* Integration time 0.32 msec */
-> +#define CM36651_PS_IT2			0x10 /* Integration time 0.42 msec */
-> +#define CM36651_PS_IT3			0x20 /* Integration time 0.52 msec */
-> +#define CM36651_PS_IT4			0x30 /* Integration time 0.64 msec */
-> 
->  /* PS_CONF1 command code: duty ratio */
->  #define CM36651_PS_DR1			0x00 /* Duty ratio 1/80 */
-> @@ -93,8 +93,8 @@
->  #define CM36651_CLOSE_PROXIMITY		0x32
->  #define CM36651_FAR_PROXIMITY			0x33
-> 
-> -#define CM36651_CS_INT_TIME_AVAIL	"80000 160000 320000 640000"
-> -#define CM36651_PS_INT_TIME_AVAIL	"320 420 520 640"
-> +#define CM36651_CS_INT_TIME_AVAIL	"0.08 0.16 0.32 0.64"
-> +#define CM36651_PS_INT_TIME_AVAIL	"0.000320 0.000420 0.000520 0.000640"
-> 
->  enum cm36651_operation_mode {
->  	CM36651_LIGHT_EN,
-> @@ -356,30 +356,30 @@ static int cm36651_read_channel(struct cm36651_data *cm36651,
->  }
-> 
->  static int cm36651_read_int_time(struct cm36651_data *cm36651,
-> -				struct iio_chan_spec const *chan, int *val)
-> +				struct iio_chan_spec const *chan, int *val2)
->  {
->  	switch (chan->type) {
->  	case IIO_LIGHT:
->  		if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT1)
-> -			*val = 80000;
-> +			*val2 = 80000;
->  		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT2)
-> -			*val = 160000;
-> +			*val2 = 160000;
->  		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT3)
-> -			*val = 320000;
-> +			*val2 = 320000;
->  		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT4)
-> -			*val = 640000;
-> +			*val2 = 640000;
->  		else
->  			return -EINVAL;
->  		break;
->  	case IIO_PROXIMITY:
->  		if (cm36651->ps_int_time == CM36651_PS_IT1)
-> -			*val = 320;
-> +			*val2 = 320;
->  		else if (cm36651->ps_int_time == CM36651_PS_IT2)
-> -			*val = 420;
-> +			*val2 = 420;
->  		else if (cm36651->ps_int_time == CM36651_PS_IT3)
-> -			*val = 520;
-> +			*val2 = 520;
->  		else if (cm36651->ps_int_time == CM36651_PS_IT4)
-> -			*val = 640;
-> +			*val2 = 640;
->  		else
->  			return -EINVAL;
->  		break;
-> @@ -387,11 +387,11 @@ static int cm36651_read_int_time(struct cm36651_data *cm36651,
->  		return -EINVAL;
->  	}
-> 
-> -	return IIO_VAL_INT;
-> +	return IIO_VAL_INT_PLUS_MICRO;
->  }
-> 
->  static int cm36651_write_int_time(struct cm36651_data *cm36651,
-> -				struct iio_chan_spec const *chan, int val)
-> +				struct iio_chan_spec const *chan, int val2)
-I didn't know why do you change from val to val2?
-This is just changing variable name, isn't?
 
->  {
->  	struct i2c_client *client = cm36651->client;
->  	struct i2c_client *ps_client = cm36651->ps_client;
-> @@ -399,13 +399,13 @@ static int cm36651_write_int_time(struct cm36651_data *cm36651,
-> 
->  	switch (chan->type) {
->  	case IIO_LIGHT:
-> -		if (val == 80000)
-> +		if (val2 == 80000)
->  			int_time = CM36651_CS_IT1;
-> -		else if (val == 160000)
-> +		else if (val2 == 160000)
->  			int_time = CM36651_CS_IT2;
-> -		else if (val == 320000)
-> +		else if (val2 == 320000)
->  			int_time = CM36651_CS_IT3;
-> -		else if (val == 640000)
-> +		else if (val2 == 640000)
->  			int_time = CM36651_CS_IT4;
->  		else
->  			return -EINVAL;
-> @@ -419,13 +419,13 @@ static int cm36651_write_int_time(struct cm36651_data *cm36651,
->  		cm36651->cs_int_time[chan->address] = int_time;
->  		break;
->  	case IIO_PROXIMITY:
-> -		if (val == 320)
-> +		if (val2 == 320)
->  			int_time = CM36651_PS_IT1;
-> -		else if (val == 420)
-> +		else if (val2 == 420)
->  			int_time = CM36651_PS_IT2;
-> -		else if (val == 520)
-> +		else if (val2 == 520)
->  			int_time = CM36651_PS_IT3;
-> -		else if (val == 640)
-> +		else if (val2 == 640)
->  			int_time = CM36651_PS_IT4;
->  		else
->  			return -EINVAL;
-> @@ -459,7 +459,8 @@ static int cm36651_read_raw(struct iio_dev *indio_dev,
->  		ret = cm36651_read_channel(cm36651, chan, val);
->  		break;
->  	case IIO_CHAN_INFO_INT_TIME:
-> -		ret = cm36651_read_int_time(cm36651, chan, val);
-> +		*val = 0;
-> +		ret = cm36651_read_int_time(cm36651, chan, val2);
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -479,7 +480,7 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
->  	int ret = -EINVAL;
-> 
->  	if (mask == IIO_CHAN_INFO_INT_TIME) {
-> -		ret = cm36651_write_int_time(cm36651, chan, val);
-> +		ret = cm36651_write_int_time(cm36651, chan, val2);
->  		if (ret < 0)
->  			dev_err(&client->dev, "Integration time write failed\n");
->  	}
-> @@ -487,6 +488,13 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
->  	return ret;
->  }
-> 
-> +static int cm36651_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				long mask)
-> +{
-> +	return IIO_VAL_INT_PLUS_MICRO;
-> +}
-> +
->  static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
->  					const struct iio_chan_spec *chan,
->  					enum iio_event_type type,
-> @@ -614,6 +622,7 @@ static const struct iio_info cm36651_info = {
->  	.driver_module		= THIS_MODULE,
->  	.read_raw		= &cm36651_read_raw,
->  	.write_raw		= &cm36651_write_raw,
-> +	.write_raw_get_fmt	= &cm36651_write_raw_get_fmt,
->  	.read_event_value	= &cm36651_read_prox_thresh,
->  	.write_event_value	= &cm36651_write_prox_thresh,
->  	.read_event_config	= &cm36651_read_prox_event_config,
-> 
+--0pBSE8Gehi89/9Xf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
+
+> I guess this is because it is the traditional area where I2S is used and nobody
+> cared so far about using it somewhere else in the context of the Linux kernel.
+> Not having to have a extra layer of abstraction in the middle between ALSA/ASoC
+> and the I2S peripheral driver helped to keep things simple.
+
+Plus many of the uses actually found that the audio APIs were doing
+useful things for them anyway - the DMA bit is reasonably useful way of
+transferring continuous streams of data and nothing much cares if that
+data is actually audio or not so long as the application on top doesn't
+mind.
+
+--0pBSE8Gehi89/9Xf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS9N23AAoJELSic+t+oim9wQIP/iNnWfPPqkJdpPxTZpvIy6vK
+vqduUw4EXGUaip/AHuu5dtHZuhYtFdxXc57Fi0PRGwJI+rPmPD2Llib5IqZDrSuk
+PVrk6r+IVRjPYXad9gMQzVvIvGRizwLr6R7Mgpo+iC0mcYUhkSNiLfyxX1r1GAeY
+HsTEYGvlc4ReYwZbt5EtDpvgK3LPkKGstAbSU/d6cbhNi1u4qD08X57TzpzfLJp/
+GIb/Mzlqn/9ZClirCVDpuZ29UXTmLBa6gHskkQmP/Gb+/pR5ROTOBMlJ4HPQavc6
+UJ7sHo4DpEPFEbrIrQq/bHK2BouBJpA3u17F2deQe4WWjta8m8BzK1BV1fbUZZLU
+VAu0fDDsH11gLWdXw2fFOaWQ3Ote6vn1TKaprGQyojd2hjpLv4rleG6V1FkNrM0s
+2lItPuRldOPQkuQ7uGL4mtH+mvsJ9ncq8qxkZ7y5mTsQQXkmvHXhVujH9kNWEt46
+u6hnrKM2tMKAtsXbK4EYDLyL/SriCyeg7oS9dPGelg9RPPHbvGjdt983PKP1q9OD
+QiVuyZw96LjbeAD5mnVKLp7s7Nw197AfMmUR+tABtZMPJgnwSKszR6RT9wB7tmDE
+fGFxgMnW1DOJnabZsE9Da5+SItBNRauysaSbPhPaZLrlnvHDWTYMOZGD0fxof00k
+7CSPSou3gkVbyUlQ3hR3
+=V1EA
+-----END PGP SIGNATURE-----
+
+--0pBSE8Gehi89/9Xf--
