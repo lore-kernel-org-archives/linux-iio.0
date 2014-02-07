@@ -1,87 +1,129 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f174.google.com ([209.85.214.174]:53735 "EHLO
-	mail-ob0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750727AbaBRUfc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 15:35:32 -0500
-MIME-Version: 1.0
-In-Reply-To: <530338B2.603@kernel.org>
-References: <1392387929-31491-1-git-send-email-marek@goldelico.com>
-	<530338B2.603@kernel.org>
-Date: Tue, 18 Feb 2014 21:35:30 +0100
-Message-ID: <CAAfyv36ZdwpoGsARQKRfvX4EeanZVVus5A444KSE8LOmePhyig@mail.gmail.com>
-Subject: Re: [PATCH 1/2] staging: iio: hmc5843: Add all available models to
- device tree id table.
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Rob Landley <rob@landley.net>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <beomho.seo@samsung.com>
+Message-id: <52F4BFCF.5060304@samsung.com>
+Date: Fri, 07 Feb 2014 20:13:19 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>,
+ Myungjoo Ham <myungjoo.ham@samsung.com>, Jaehoon Chung <jh80.chung@samsung.com>
+Subject: [PATCH 2/2] iio: cm32181:  Change cm32181 ambient light sensor driver
+Content-type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
 
-On Tue, Feb 18, 2014 at 11:40 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 14/02/14 14:25, Marek Belisko wrote:
->>
->> Signed-off-by: Marek Belisko <marek@goldelico.com>
->
-> I wonder how this got missed.  However, for those data elements to be
-> useful, you will
-> need to read them somewhere in the driver I think.... (if there is any magic
-> that puts this in the relevant i2c locations then point it out to me!)
-There is a table called hmc5843_chip_info_tbl which contains entries
-for all models
-which this driver can handle. And magic is that correct model variant
-is set probe function:
-line: idata->variant = &hmc5843_chip_info_tbl[id->driver_data];
-(id->driver_data contains model value).
->
->> ---
->>   drivers/staging/iio/magnetometer/hmc5843.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c
->> b/drivers/staging/iio/magnetometer/hmc5843.c
->> index d4f4dd9..f595fdc 100644
->> --- a/drivers/staging/iio/magnetometer/hmc5843.c
->> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
->> @@ -630,7 +630,9 @@ static const struct i2c_device_id hmc5843_id[] = {
->>   MODULE_DEVICE_TABLE(i2c, hmc5843_id);
->>
->>   static const struct of_device_id hmc5843_of_match[] = {
->> -       { .compatible = "honeywell,hmc5843" },
->> +       { .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
->> +       { .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
->> +       { .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID
->> },
->>         {}
->>   };
->>   MODULE_DEVICE_TABLE(of, hmc5843_of_match);
->>
->
+Integration time of cm32181 is guessed about milliseconds.
+But cm32181_read_als_it function return IIO_VAL_INT.
+IIO_VAL_INT print integer(25000, 50000, 100000 ...).
+So fixed to return IIO_VAL_INT_PLUS_MICRO.
+Next, change cm32181_write_als_it and add .write_raw_get_fmt callback function
+for call iio_str_to_fixpoint.
 
-BR,
+Cc: Kevin Tsai <ktsai@capellamicro.com>
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+ drivers/iio/light/cm32181.c |   28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-marek
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index f17b4e6..78d5620 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -103,13 +103,13 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
+ /**
+  *  cm32181_read_als_it() - Get sensor integration time (ms)
+  *  @cm32181:	pointer of struct cm32181
+- *  @val:	pointer of int to load the als_it value.
++ *  @val2:	pointer of int to load the als_it value.
+  *
+  *  Report the current integartion time by millisecond.
+  *
+- *  Return: IIO_VAL_INT for success, otherwise -EINVAL.
++ *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
+  */
+-static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
++static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
+ {
+ 	u16 als_it;
+ 	int i;
+@@ -119,8 +119,8 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
+ 	als_it >>= CM32181_CMD_ALS_IT_SHIFT;
+ 	for (i = 0; i < ARRAY_SIZE(als_it_bits); i++) {
+ 		if (als_it == als_it_bits[i]) {
+-			*val = als_it_value[i];
+-			return IIO_VAL_INT;
++			*val2 = als_it_value[i];
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		}
+ 	}
+
+@@ -136,7 +136,7 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val)
+  *
+  * Return: i2c_smbus_write_word_data command return value.
+  */
+-static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
++static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val2)
+ {
+ 	struct i2c_client *client = cm32181->client;
+ 	u16 als_it;
+@@ -144,7 +144,7 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
+
+ 	n = ARRAY_SIZE(als_it_value);
+ 	for (i = 0; i < n; i++)
+-		if (val <= als_it_value[i])
++		if (val2 <= als_it_value[i])
+ 			break;
+ 	if (i >= n)
+ 		i = n - 1;
+@@ -221,7 +221,7 @@ static int cm32181_read_raw(struct iio_dev *indio_dev,
+ 		*val = cm32181->calibscale;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_INT_TIME:
+-		ret = cm32181_read_als_it(cm32181, val);
++		ret = cm32181_read_als_it(cm32181, val2);
+ 		return ret;
+ 	}
+
+@@ -240,13 +240,20 @@ static int cm32181_write_raw(struct iio_dev *indio_dev,
+ 		cm32181->calibscale = val;
+ 		return val;
+ 	case IIO_CHAN_INFO_INT_TIME:
+-		ret = cm32181_write_als_it(cm32181, val);
++		ret = cm32181_write_als_it(cm32181, val2);
+ 		return ret;
+ 	}
+
+ 	return -EINVAL;
+ }
+
++static int cm32181_write_raw_get_fmt(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				long mask)
++{
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
+ /**
+  * cm32181_get_it_available() - Get available ALS IT value
+  * @dev:	pointer of struct device.
+@@ -264,7 +271,7 @@ static ssize_t cm32181_get_it_available(struct device *dev,
+
+ 	n = ARRAY_SIZE(als_it_value);
+ 	for (i = 0, len = 0; i < n; i++)
+-		len += sprintf(buf + len, "%d ", als_it_value[i]);
++		len += sprintf(buf + len, "0.%06u ", als_it_value[i]);
+ 	return len + sprintf(buf + len, "\n");
+ }
+
+@@ -294,6 +301,7 @@ static const struct iio_info cm32181_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= &cm32181_read_raw,
+ 	.write_raw		= &cm32181_write_raw,
++	.write_raw_get_fmt	= &cm32181_write_raw_get_fmt,
+ 	.attrs			= &cm32181_attribute_group,
+ };
 
 -- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
+1.7.9.5
 
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
+-- 
+Best Regards,
