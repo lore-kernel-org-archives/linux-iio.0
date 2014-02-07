@@ -1,64 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:37837 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753030AbaBGNVN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Feb 2014 08:21:13 -0500
-Date: Fri, 7 Feb 2014 13:20:58 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: John Syn <john3909@gmail.com>, linux-iio@vger.kernel.org,
-	Matt Flax <flatmax@flatmax.org>
-Message-ID: <20140207132058.GN32298@sirena.org.uk>
-References: <CF17C5B7.1940A%john3909@gmail.com>
- <52F35C5B.7080409@metafoo.de>
- <CF19225A.196C9%john3909@gmail.com>
- <52F3FB6E.3070201@metafoo.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0pBSE8Gehi89/9Xf"
-In-Reply-To: <52F3FB6E.3070201@metafoo.de>
+Received: from mail-pb0-f45.google.com ([209.85.160.45]:59198 "EHLO
+	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751546AbaBGSSb convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Feb 2014 13:18:31 -0500
+Received: by mail-pb0-f45.google.com with SMTP id un15so3580774pbc.32
+        for <linux-iio@vger.kernel.org>; Fri, 07 Feb 2014 10:18:30 -0800 (PST)
+Date: Fri, 07 Feb 2014 10:18:36 -0800
 Subject: Re: DMA sampling and IIO
+From: John Syn <john3909@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Alessandro Rubini <rubini@gnudd.com>
+CC: <linux-iio@vger.kernel.org>, <broonie@kernel.org>,
+	<flatmax@flatmax.org>
+Message-ID: <CF1A5DFD.198CB%john3909@gmail.com>
+References: <52F3F84F.5040001@metafoo.de>
+ <52F35C5B.7080409@metafoo.de>
+ <CF17C5B7.1940A%john3909@gmail.com>
+ <20140206205327.GA11958@mail.gnudd.com>
+ <20140206211637.GA14525@mail.gnudd.com>
+ <52F400D7.7050204@metafoo.de>
+In-Reply-To: <52F400D7.7050204@metafoo.de>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---0pBSE8Gehi89/9Xf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On 2/6/14, 1:38 PM, "Lars-Peter Clausen" <lars@metafoo.de> wrote:
 
-On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
+>On 02/06/2014 10:16 PM, Alessandro Rubini wrote:
+>>>> ZIO already supports dma. And mmaping the buffer from user space.  It
+>>>> is in the design since inception, and in the code since Feb 2012 (git
+>>>> log says).
+>>>
+>>> I know. And I did study the ZIO DMA code (among other things),
+>>> before I implemented the IIO DMA code. As you might remember from
+>>> our last discussion, my preference is to add the features that are
+>>> in ZIO but not in IIO to IIO and then ditch ZIO instead of having
+>>> two frameworks for the class of devices.
+>>
+>> I remember. And we both know that the class of devices that ZIO already
+>> supports cannot be supported by IIO, unless many incompatible changes
+>> are made (sub-nanosecond timestamps, symmetric input and output,
+>> hot-swap of buffer and trigger type, ...).
+>>
+>
+>I still don't see why it is necessary to make incompatible changes to IIO
+>to 
+>support this. There is nothing wrong with extending the API, while
+>staying 
+>backwards compatible.
+>
+>> I'm happy all accelerometers have the same interface to user space,
+>> this is definitely useful. But that's clearly not the same class of
+>> devices.
+>>
+>>> and then ditch ZIO
+>>
+>> How can you "ditch" something you don't use? Or is your employer
+>> currently using zio while helping iio catch up?
+>
+>I meant in general.
+>
+>>
+>> Our users will not stop using it, despite your desire, because it
+>> already serves them pretty well: 100MS ADC, with DMA and mmap, all
+>> sysfs-based, completely run-time configurable, and v2.6.24..v3.12 (13
+>> untested yet).
+>
+>I have no desire to stop anybody from stopping using ZIO. But my
+>recommendation 
+>is to work towards a unified framework. The sooner the switch is made the
+>easier the migration path will be.
+>
+>I think we have systems with 4x 250MS ADCs also doing DMA and mmap and
+>streaming over the network[1]. All with IIO, so again, there _is_ a huge
+>overlap of the classes of devices supported by both IIO and ZIO.
+Hi Lars and Alessandro,
 
-> I guess this is because it is the traditional area where I2S is used and nobody
-> cared so far about using it somewhere else in the context of the Linux kernel.
-> Not having to have a extra layer of abstraction in the middle between ALSA/ASoC
-> and the I2S peripheral driver helped to keep things simple.
+I don¹t think this type of discussion helps create a better solution. I¹ve
+been reading through IIO and ZIO docs and I was wondering what is it that
+the IIO framework offers that the ZIO framework doesn¹t. Clearly ZIO
+framework has several features that are not in the IIO framework. I¹m not
+talking about the number of devices supported, but rather I would like to
+concentrate on the frameworks themselves. Moving forward, I see two
+possible solutions:
 
-Plus many of the uses actually found that the audio APIs were doing
-useful things for them anyway - the DMA bit is reasonably useful way of
-transferring continuous streams of data and nothing much cares if that
-data is actually audio or not so long as the application on top doesn't
-mind.
 
---0pBSE8Gehi89/9Xf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+1) Update the IIO framework to incorporate the features of the ZIO
+framework
+2) Adopt the ZIO framework and migrate the IIO drivers to the ZIO
+framework.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Forget about ownership of any one solution, but rather ask the question,
+which solution is the least disruptive in the long term and which solution
+gets us to a comprehensive framework soonest. Incrementally updating IIO
+to add ZIO features can be very disruptive over time. Updating devices to
+the ZIO framework can also be very disruptive. Which solution is the
+better way forward? What am I missing here?
 
-iQIcBAEBAgAGBQJS9N23AAoJELSic+t+oim9wQIP/iNnWfPPqkJdpPxTZpvIy6vK
-vqduUw4EXGUaip/AHuu5dtHZuhYtFdxXc57Fi0PRGwJI+rPmPD2Llib5IqZDrSuk
-PVrk6r+IVRjPYXad9gMQzVvIvGRizwLr6R7Mgpo+iC0mcYUhkSNiLfyxX1r1GAeY
-HsTEYGvlc4ReYwZbt5EtDpvgK3LPkKGstAbSU/d6cbhNi1u4qD08X57TzpzfLJp/
-GIb/Mzlqn/9ZClirCVDpuZ29UXTmLBa6gHskkQmP/Gb+/pR5ROTOBMlJ4HPQavc6
-UJ7sHo4DpEPFEbrIrQq/bHK2BouBJpA3u17F2deQe4WWjta8m8BzK1BV1fbUZZLU
-VAu0fDDsH11gLWdXw2fFOaWQ3Ote6vn1TKaprGQyojd2hjpLv4rleG6V1FkNrM0s
-2lItPuRldOPQkuQ7uGL4mtH+mvsJ9ncq8qxkZ7y5mTsQQXkmvHXhVujH9kNWEt46
-u6hnrKM2tMKAtsXbK4EYDLyL/SriCyeg7oS9dPGelg9RPPHbvGjdt983PKP1q9OD
-QiVuyZw96LjbeAD5mnVKLp7s7Nw197AfMmUR+tABtZMPJgnwSKszR6RT9wB7tmDE
-fGFxgMnW1DOJnabZsE9Da5+SItBNRauysaSbPhPaZLrlnvHDWTYMOZGD0fxof00k
-7CSPSou3gkVbyUlQ3hR3
-=V1EA
------END PGP SIGNATURE-----
+Regards,
+John
+>
+>-Lars
+>
+>[1] https://wiki.analog.com/resources/fpga/xilinx/fmc/ad-fmcjesdadc1-ebz
+>
 
---0pBSE8Gehi89/9Xf--
+
