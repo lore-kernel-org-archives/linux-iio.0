@@ -1,68 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:57964 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750868AbaBHAHZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 7 Feb 2014 19:07:25 -0500
-Received: from [192.168.0.80] ([178.8.245.194]) by mail.gmx.com (mrgmx103)
- with ESMTPSA (Nemesis) id 0M0yaB-1VMZwx0Wsx-00v73w for
- <linux-iio@vger.kernel.org>; Sat, 08 Feb 2014 01:07:24 +0100
-Message-ID: <52F57539.7070903@gmx.de>
-Date: Sat, 08 Feb 2014 01:07:21 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:34117 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751125AbaBGWTx convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Feb 2014 17:19:53 -0500
+Received: by mail-pd0-f170.google.com with SMTP id p10so3703997pdj.15
+        for <linux-iio@vger.kernel.org>; Fri, 07 Feb 2014 14:19:53 -0800 (PST)
+Date: Fri, 07 Feb 2014 14:19:59 -0800
+Subject: Re: DMA sampling and IIO
+From: John Syn <john3909@gmail.com>
+To: Mark Brown <broonie@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [RFC]iio:industrialio-event fix error-handling in iio_device_add_event
-References: <52C00D75.70302@gmx.de> <52C40E53.1040906@kernel.org>
-In-Reply-To: <52C40E53.1040906@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
+CC: <linux-iio@vger.kernel.org>, Matt Flax <flatmax@flatmax.org>
+Message-ID: <CF1A99B5.1996C%john3909@gmail.com>
+References: <CF17C5B7.1940A%john3909@gmail.com>
+ <52F35C5B.7080409@metafoo.de>
+ <CF19225A.196C9%john3909@gmail.com>
+ <52F3FB6E.3070201@metafoo.de>
+ <20140207132058.GN32298@sirena.org.uk>
+In-Reply-To: <20140207132058.GN32298@sirena.org.uk>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> On 29/12/13 11:54, Hartmut Knaack wrote:
->> __iio_add_chan_devattr returns -EBUSY, when registering the event-interface of
->> ad799x, but iio_device_add_event does not catch it. So, handle it like in
->> iio_device_add_info_mask_type. Not sure, if this is the right solution, but it
->> makes the ad799x (and possibly others as well) usable.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> I think the fix is correct, but I'm not entirely sure what is triggering 
-> the bug in this particular driver. All of the elements of ad799x_events 
-> are in mask separate so shared_by should be IIO_SEPARATE for all calls 
-> to this function.
->
-> Lars, any idea's on what Hartmut is hitting?
-> Also, is the below patch as valid as it appears at first glance?
-I've been digging a bit more into the event interface registration, and it turned out that the problem is a typo in the ad799x driver. A patch is on the way.
-While debugging, I always encountered crashes of my machine, about 15 seconds after the device-initialization failed. You can find a short video of the screen capture at [1]. This was taken on a Linux 3.13.1 (with slight changes to ad799x_core.c for working without platform_data and fix the irq-issue). Any ideas, where to start looking for that problems?
-Besides, I'm a bit confused with all the branches of the iio.git repo. Which one shall be used, when developing for the iio subsystem (that contains all the patches you accepted)?
 
-[1] http://www.upitus.net/36zhlrijl9lh
->> ---
->> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->> index c10eab6..d37a907 100644
->> --- a/drivers/iio/industrialio-event.c
->> +++ b/drivers/iio/industrialio-event.c
->> @@ -362,7 +362,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
->>   			&indio_dev->event_interface->dev_attr_list);
->>   		kfree(postfix);
->>
->> -		if (ret)
->> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
->> +			continue;
->> +		else if (ret < 0)
->>   			return ret;
->>
->>   		attrcount++;
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On 2/7/14, 5:20 AM, "Mark Brown" <broonie@kernel.org> wrote:
+
+>On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
 >
+>> I guess this is because it is the traditional area where I2S is used
+>>and nobody
+>> cared so far about using it somewhere else in the context of the Linux
+>>kernel.
+>> Not having to have a extra layer of abstraction in the middle between
+>>ALSA/ASoC
+>> and the I2S peripheral driver helped to keep things simple.
+>
+>Plus many of the uses actually found that the audio APIs were doing
+>useful things for them anyway - the DMA bit is reasonably useful way of
+>transferring continuous streams of data and nothing much cares if that
+>data is actually audio or not so long as the application on top doesn't
+>mind.
+Hi Mark,
+
+That is interesting. The ADE7878 transmits the measurements as 16
+sequential measurements (Voltage A, Voltage B, Voltage C, Current A, etc)
+and uses a frame to denote a new set of measurements. Can the audio API
+cope with 16 channels and how do I prevent any modification (equalization,
+etc) to the measurement data? Also, is it possible to break out these
+measurements into separate buffers (Voltage A buffer, Voltage B buffer,
+etc)? I guess I would access these measurement in the same way as an audio
+application like aplay?
+
+What I don¹t like about this solution is the possibility of missing
+samples. In an audio app, this isn¹t so critical, but in my app this would
+be a big problem. 
+
+Regards,
+John
+>
+
 
