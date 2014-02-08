@@ -1,73 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49807 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751616AbaAKQ3D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jan 2014 11:29:03 -0500
-Message-ID: <52D17155.8070009@kernel.org>
-Date: Sat, 11 Jan 2014 16:29:09 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.17.21]:54929 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751004AbaBHAHl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 7 Feb 2014 19:07:41 -0500
+Received: from [192.168.0.80] ([178.8.245.194]) by mail.gmx.com (mrgmx102)
+ with ESMTPSA (Nemesis) id 0MHal6-1WD1uq0YZA-003KVQ for
+ <linux-iio@vger.kernel.org>; Sat, 08 Feb 2014 01:07:40 +0100
+Message-ID: <52F5754B.9060507@gmx.de>
+Date: Sat, 08 Feb 2014 01:07:39 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Boris BREZILLON <b.brezillon@overkiz.com>,
-	Rob Landley <rob@landley.net>
-CC: Arnd Bergmann <arnd@arndb.de>, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: at91: document ADC clock properties
-References: <1387296973-7779-1-git-send-email-b.brezillon@overkiz.com> <52B316A9.1060407@atmel.com> <52B729FD.7020507@kernel.org>
-In-Reply-To: <52B729FD.7020507@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: linux-iio@vger.kernel.org
+Subject: [PATCH]staging:iio:ad799x fix typo in ad799x_events[]
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch fixes a typo in ad799x_events[], which caused the error "Failed to register event set".
 
-
-On 22/12/13 18:05, Jonathan Cameron wrote:
-> On 12/19/13 15:54, Nicolas Ferre wrote:
->> On 17/12/2013 17:16, Boris BREZILLON :
->>> Document the clock properties required by the at91 ADC driver.
->>>
->>> Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
->>
->> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Looks fine to me.  I'm just waiting on an ack from a device tree maintainer
-> (or the 3 weeks to pass so I can pick it up anyway ;)
-That's near enough 3 weeks (one day short) so applied to the togreg branch of iio.git.
-Thanks
->
->>
->>> ---
->>>   .../devicetree/bindings/arm/atmel-adc.txt          |    5 +++++
->>>   1 file changed, 5 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/arm/atmel-adc.txt b/Documentation/devicetree/bindings/arm/atmel-adc.txt
->>> index d106146..9a1175b 100644
->>> --- a/Documentation/devicetree/bindings/arm/atmel-adc.txt
->>> +++ b/Documentation/devicetree/bindings/arm/atmel-adc.txt
->>> @@ -5,6 +5,9 @@ Required properties:
->>>       <chip> can be "at91sam9260", "at91sam9g45" or "at91sam9x5"
->>>     - reg: Should contain ADC registers location and length
->>>     - interrupts: Should contain the IRQ line for the ADC
->>> +  - clock-names: tuple listing input clock names.
->>> +	Required elements: "adc_clk", "adc_op_clk".
->>> +  - clocks: phandles to input clocks.
->>>     - atmel,adc-channels-used: Bitmask of the channels muxed and enable for this
->>>       device
->>>     - atmel,adc-startup-time: Startup Time of the ADC in microseconds as
->>> @@ -44,6 +47,8 @@ adc0: adc@fffb0000 {
->>>   	compatible = "atmel,at91sam9260-adc";
->>>   	reg = <0xfffb0000 0x100>;
->>>   	interrupts = <20 4>;
->>> +	clocks = <&adc_clk>, <&adc_op_clk>;
->>> +	clock-names = "adc_clk", "adc_op_clk";
->>>   	atmel,adc-channel-base = <0x30>;
->>>   	atmel,adc-channels-used = <0xff>;
->>>   	atmel,adc-drdy-mask = <0x10000>;
->>>
->>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+index c1b601ac..bf9081e 100644
+--- a/drivers/staging/iio/adc/ad799x_core.c
++++ b/drivers/staging/iio/adc/ad799x_core.c
+@@ -393,7 +393,7 @@ static const struct iio_event_spec ad799x_events[] = {
+ 	}, {
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_FALLING,
+-		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+ 			BIT(IIO_EV_INFO_ENABLE),
+ 	}, {
+ 		.type = IIO_EV_TYPE_THRESH,
