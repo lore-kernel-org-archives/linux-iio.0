@@ -1,48 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41534 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41570 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750842AbaBHM1d (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 07:27:33 -0500
-Message-ID: <52F622D2.4090208@kernel.org>
-Date: Sat, 08 Feb 2014 12:28:02 +0000
+	with ESMTP id S1750842AbaBHM3B (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 07:29:01 -0500
+Message-ID: <52F6232C.5040508@kernel.org>
+Date: Sat, 08 Feb 2014 12:29:32 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>, jic23@cam.ac.uk
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 CC: Ge Gao <ggao@invensense.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: imu: mpu6050: Move config entry into IMU menu
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-In-Reply-To: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
+Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Fix typo and formatting
+References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <1391596475-21986-2-git-send-email-manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <1391596475-21986-2-git-send-email-manuel.stahl@iis.fraunhofer.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/02/14 10:34, Manuel Stahl wrote:
 > Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Applied to the togreg branch of iio.igt
+Applied to the togreg branch of iio.git
 
 Thanks,
 > ---
->   drivers/iio/imu/Kconfig | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 +-
+>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 38 +++++++++++++++---------------
+>   2 files changed, 20 insertions(+), 20 deletions(-)
 >
-> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-> index 663e88a..2b0e451 100644
-> --- a/drivers/iio/imu/Kconfig
-> +++ b/drivers/iio/imu/Kconfig
-> @@ -25,6 +25,8 @@ config ADIS16480
->   	  Say yes here to build support for Analog Devices ADIS16375, ADIS16480,
->   	  ADIS16485, ADIS16488 inertial sensors.
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index df7f1e1..fda1ee2 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -117,7 +117,7 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
+>   		return result;
 >
-> +source "drivers/iio/imu/inv_mpu6050/Kconfig"
-> +
->   endmenu
+>   	if (en) {
+> -		/* Wait for output stablize */
+> +		/* Wait for output stabilize */
+>   		msleep(INV_MPU6050_TEMP_UP_TIME);
+>   		if (INV_MPU6050_BIT_PWR_GYRO_STBY == mask) {
+>   			/* switch internal clock to PLL */
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index f383955..0ab382b 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -126,35 +126,35 @@ struct inv_mpu6050_state {
+>   #define INV_MPU6050_REG_SAMPLE_RATE_DIV     0x19
+>   #define INV_MPU6050_REG_CONFIG              0x1A
+>   #define INV_MPU6050_REG_GYRO_CONFIG         0x1B
+> -#define INV_MPU6050_REG_ACCEL_CONFIG	    0x1C
+> +#define INV_MPU6050_REG_ACCEL_CONFIG        0x1C
 >
->   config IIO_ADIS_LIB
-> @@ -38,5 +40,3 @@ config IIO_ADIS_LIB_BUFFER
->   	help
->   	  A set of buffer helper functions for the Analog Devices ADIS* device
->   	  family.
-> -
-> -source "drivers/iio/imu/inv_mpu6050/Kconfig"
+>   #define INV_MPU6050_REG_FIFO_EN             0x23
+> -#define INV_MPU6050_BIT_ACCEL_OUT                   0x08
+> -#define INV_MPU6050_BITS_GYRO_OUT                   0x70
+> +#define INV_MPU6050_BIT_ACCEL_OUT           0x08
+> +#define INV_MPU6050_BITS_GYRO_OUT           0x70
+>
+>   #define INV_MPU6050_REG_INT_ENABLE          0x38
+> -#define INV_MPU6050_BIT_DATA_RDY_EN                 0x01
+> -#define INV_MPU6050_BIT_DMP_INT_EN                  0x02
+> +#define INV_MPU6050_BIT_DATA_RDY_EN         0x01
+> +#define INV_MPU6050_BIT_DMP_INT_EN          0x02
+>
+>   #define INV_MPU6050_REG_RAW_ACCEL           0x3B
+>   #define INV_MPU6050_REG_TEMPERATURE         0x41
+>   #define INV_MPU6050_REG_RAW_GYRO            0x43
+>
+>   #define INV_MPU6050_REG_USER_CTRL           0x6A
+> -#define INV_MPU6050_BIT_FIFO_RST                    0x04
+> -#define INV_MPU6050_BIT_DMP_RST                     0x08
+> -#define INV_MPU6050_BIT_I2C_MST_EN                  0x20
+> -#define INV_MPU6050_BIT_FIFO_EN                     0x40
+> -#define INV_MPU6050_BIT_DMP_EN                      0x80
+> +#define INV_MPU6050_BIT_FIFO_RST            0x04
+> +#define INV_MPU6050_BIT_DMP_RST             0x08
+> +#define INV_MPU6050_BIT_I2C_MST_EN          0x20
+> +#define INV_MPU6050_BIT_FIFO_EN             0x40
+> +#define INV_MPU6050_BIT_DMP_EN              0x80
+>
+>   #define INV_MPU6050_REG_PWR_MGMT_1          0x6B
+> -#define INV_MPU6050_BIT_H_RESET                     0x80
+> -#define INV_MPU6050_BIT_SLEEP                       0x40
+> -#define INV_MPU6050_BIT_CLK_MASK                    0x7
+> +#define INV_MPU6050_BIT_H_RESET             0x80
+> +#define INV_MPU6050_BIT_SLEEP               0x40
+> +#define INV_MPU6050_BIT_CLK_MASK            0x7
+>
+>   #define INV_MPU6050_REG_PWR_MGMT_2          0x6C
+> -#define INV_MPU6050_BIT_PWR_ACCL_STBY               0x38
+> -#define INV_MPU6050_BIT_PWR_GYRO_STBY               0x07
+> +#define INV_MPU6050_BIT_PWR_ACCL_STBY       0x38
+> +#define INV_MPU6050_BIT_PWR_GYRO_STBY       0x07
+>
+>   #define INV_MPU6050_REG_FIFO_COUNT_H        0x72
+>   #define INV_MPU6050_REG_FIFO_R_W            0x74
+> @@ -180,10 +180,10 @@ struct inv_mpu6050_state {
+>
+>   /* init parameters */
+>   #define INV_MPU6050_INIT_FIFO_RATE           50
+> -#define INV_MPU6050_TIME_STAMP_TOR                        5
+> -#define INV_MPU6050_MAX_FIFO_RATE                         1000
+> -#define INV_MPU6050_MIN_FIFO_RATE                         4
+> -#define INV_MPU6050_ONE_K_HZ                              1000
+> +#define INV_MPU6050_TIME_STAMP_TOR           5
+> +#define INV_MPU6050_MAX_FIFO_RATE            1000
+> +#define INV_MPU6050_MIN_FIFO_RATE            4
+> +#define INV_MPU6050_ONE_K_HZ                 1000
+>
+>   /* scan element definition */
+>   enum inv_mpu6050_scan {
 >
 
