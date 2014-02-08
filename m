@@ -1,145 +1,224 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41330 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41429 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751170AbaBHMHr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 07:07:47 -0500
-Message-ID: <52F61E31.6050909@kernel.org>
-Date: Sat, 08 Feb 2014 12:08:17 +0000
+	with ESMTP id S1750957AbaBHMQa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 07:16:30 -0500
+Message-ID: <52F6203C.9030308@kernel.org>
+Date: Sat, 08 Feb 2014 12:17:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [RFC]iio:industrialio-event fix error-handling in iio_device_add_event
-References: <52C00D75.70302@gmx.de> <52C40E53.1040906@kernel.org> <52F57539.7070903@gmx.de> <52F60388.1050606@kernel.org> <52F6185D.1040507@gmx.de>
-In-Reply-To: <52F6185D.1040507@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+To: Jaehoon Chung <jh80.chung@samsung.com>,
+	Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org
+CC: Myungjoo Ham <myungjoo.ham@samsung.com>
+Subject: Re: [PATCH 1/2] iio: cm36651:  Fix read/write integration time function.
+References: <52F4BFCD.2080203@samsung.com> <52F4C79D.6010909@samsung.com>
+In-Reply-To: <52F4C79D.6010909@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/02/14 11:43, Hartmut Knaack wrote:
-> Jonathan Cameron schrieb:
+On 07/02/14 11:46, Jaehoon Chung wrote:
+> On 02/07/2014 08:13 PM, Beomho Seo wrote:
 >>
->> On 08/02/14 00:07, Hartmut Knaack wrote:
->>> Jonathan Cameron schrieb:
->>>> On 29/12/13 11:54, Hartmut Knaack wrote:
->>>>> __iio_add_chan_devattr returns -EBUSY, when registering the event-interface of
->>>>> ad799x, but iio_device_add_event does not catch it. So, handle it like in
->>>>> iio_device_add_info_mask_type. Not sure, if this is the right solution, but it
->>>>> makes the ad799x (and possibly others as well) usable.
->>>>>
->>>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->>>> I think the fix is correct, but I'm not entirely sure what is triggering
->>>> the bug in this particular driver. All of the elements of ad799x_events
->>>> are in mask separate so shared_by should be IIO_SEPARATE for all calls
->>>> to this function.
->>>>
->>>> Lars, any idea's on what Hartmut is hitting?
->>>> Also, is the below patch as valid as it appears at first glance?
->>> I've been digging a bit more into the event interface registration,
->>> and it turned out that the problem is a typo in the ad799x driver. A
->>> patch is on the way. While debugging, I always encountered crashes of
->>> my machine, about 15 seconds after the device-initialization failed.
->>> You can find a short video of the screen capture at [1]. This was
->>> taken on a Linux 3.13.1 (with slight changes to ad799x_core.c for
->>> working without platform_data and fix the irq-issue). Any ideas,
->>> where to start looking for that problems?
->> Not a clue I'm afraid.  I guess we need to do some failure case testing.
->> Entirely plausible there are some issues hiding in the more obscure paths.
+>> This patch is fixed [read/write] integration time function.
+>> cm36651 have integration time from 1 to 640 milliseconds.
+>> But, print more then the thounsand second. when call *_integration_time attribute.
+>> Because read_integration_time function return IIO_VAL_INT.
+>> read integration time function is changed return IIO_VAL_INT_PLUS_MICRO;
+>> And then .write_raw_get_fmt callback function for parse a fixed-point number from a string.
+>> Some description is revised milliseconds unit.
 >>
->>> Besides, I'm a bit confused
->>> with all the branches of the iio.git repo. Which one shall be used,
->>> when developing for the iio subsystem (that contains all the patches
->>> you accepted)?
->> Unfortunately there is never a one true branch for new development.  It is
->> in the nature of maintainers trees that there are almost always two branches.
->> The first is for fixes for the current kernel version that is going through
->> release candidates (fixes-to-greg, though occasionally I have extra branches
->> around the merge window to separate out different dependencies).
->> New work for the next merge window sits in the togreg branch.  This 'typically'
->> goes upstream into staging-next every week or two and from there into linux-next.
+>> This patch have been tested on exynos4 board.
 >>
->> The key thing is that patches should not be in both the fixes branch and the new
->> stuff (togreg) branch.  They should only come together futher upstream - typically
->> first in linux-next and a week or so later in staging-next depending on cross
->> dependencies.
+>> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+>> ---
+>>   drivers/iio/light/cm36651.c |   71 ++++++++++++++++++++++++-------------------
+>>   1 file changed, 40 insertions(+), 31 deletions(-)
 >>
->> The other branch that is commonly used in the iio.git tree is testing.  That exists
->> purely to allow the autobuilders to run on a branch that I am happy to rebase.
->> I try never to rebase the other trees though it can happen if I mess something
->> up spectacularly.
+>> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+>> index 0a142af..076780c 100644
+>> --- a/drivers/iio/light/cm36651.c
+>> +++ b/drivers/iio/light/cm36651.c
+>> @@ -50,10 +50,10 @@
+>>   #define CM36651_CS_CONF2_DEFAULT_BIT	0x08
 >>
->> I should probably have started with the short answer.  Unless you are depending on
->> new stuff coming through, the best bet is to either base on Linus' tree (usually
->> the last rc to have been tagged), or staging/staging-next.  If you are basing on
->> one of the iio.git branches, then fixes that need to go through fast should be
->> on the fixes-to-greg branch, or if that's lagging too much as it was until 2 mins
->> ago (this happens around merge windows), then base on whereever is most relevant.
->> The upshot is that all patches in all trees will go upstream at somepoint, its just
->> a case of ordering.
+>>   /* CS_CONF3 channel integration time */
+>> -#define CM36651_CS_IT1			0x00 /* Integration time 80000 usec */
+>> -#define CM36651_CS_IT2			0x40 /* Integration time 160000 usec */
+>> -#define CM36651_CS_IT3			0x80 /* Integration time 320000 usec */
+>> -#define CM36651_CS_IT4			0xC0 /* Integration time 640000 usec */
+>> +#define CM36651_CS_IT1			0x00 /* Integration time 80 msec */
+>> +#define CM36651_CS_IT2			0x40 /* Integration time 160 msec */
+>> +#define CM36651_CS_IT3			0x80 /* Integration time 320 msec */
+>> +#define CM36651_CS_IT4			0xC0 /* Integration time 640 msec */
 >>
->> Hmm.. I'm sure that's as clear as mud.
+>>   /* PS_CONF1 command code */
+>>   #define CM36651_PS_ENABLE		0x00
+>> @@ -64,10 +64,10 @@
+>>   #define CM36651_PS_PERS4		0x0C
 >>
->> Jonathan
-> Thanks, I appreciate your detailed explanation. There is another
-> thing I would like to get your comment about: When reading through
-> the code, I noticed in some functions if an error-check was positive,
-> the return variable got the error code and then there is a "goto
-> error_ret", which returns the return variable. According to my
-> understanding of good coding practice, if an error occurs, the
-> function should return the error code as quick as possible. So, is
-> this structure intentional? And how are the chances, that a clean-up
-> of these occurrences get applied? Thanks
-Yes. The gotos are a bit of historical mess that we are 'slowly' getting
-rid of.   They should be there if there is any clean up to do (releasing locks
-etc).  Otherwise they should not.  Some are left over from devm conversions
-which have gotten rid of their original purpose.
-
-I'm happy to take patches with this sort of cleanup.
-
-
+>>   /* PS_CONF1 command code: integration time */
+>> -#define CM36651_PS_IT1			0x00 /* Integration time 320 usec */
+>> -#define CM36651_PS_IT2			0x10 /* Integration time 420 usec */
+>> -#define CM36651_PS_IT3			0x20 /* Integration time 520 usec */
+>> -#define CM36651_PS_IT4			0x30 /* Integration time 640 usec */
+>> +#define CM36651_PS_IT1			0x00 /* Integration time 0.32 msec */
+>> +#define CM36651_PS_IT2			0x10 /* Integration time 0.42 msec */
+>> +#define CM36651_PS_IT3			0x20 /* Integration time 0.52 msec */
+>> +#define CM36651_PS_IT4			0x30 /* Integration time 0.64 msec */
+>>
+>>   /* PS_CONF1 command code: duty ratio */
+>>   #define CM36651_PS_DR1			0x00 /* Duty ratio 1/80 */
+>> @@ -93,8 +93,8 @@
+>>   #define CM36651_CLOSE_PROXIMITY		0x32
+>>   #define CM36651_FAR_PROXIMITY			0x33
+>>
+>> -#define CM36651_CS_INT_TIME_AVAIL	"80000 160000 320000 640000"
+>> -#define CM36651_PS_INT_TIME_AVAIL	"320 420 520 640"
+>> +#define CM36651_CS_INT_TIME_AVAIL	"0.08 0.16 0.32 0.64"
+>> +#define CM36651_PS_INT_TIME_AVAIL	"0.000320 0.000420 0.000520 0.000640"
+>>
+>>   enum cm36651_operation_mode {
+>>   	CM36651_LIGHT_EN,
+>> @@ -356,30 +356,30 @@ static int cm36651_read_channel(struct cm36651_data *cm36651,
+>>   }
+>>
+>>   static int cm36651_read_int_time(struct cm36651_data *cm36651,
+>> -				struct iio_chan_spec const *chan, int *val)
+>> +				struct iio_chan_spec const *chan, int *val2)
+>>   {
+>>   	switch (chan->type) {
+>>   	case IIO_LIGHT:
+>>   		if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT1)
+>> -			*val = 80000;
+>> +			*val2 = 80000;
+>>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT2)
+>> -			*val = 160000;
+>> +			*val2 = 160000;
+>>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT3)
+>> -			*val = 320000;
+>> +			*val2 = 320000;
+>>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT4)
+>> -			*val = 640000;
+>> +			*val2 = 640000;
+>>   		else
+>>   			return -EINVAL;
+>>   		break;
+>>   	case IIO_PROXIMITY:
+>>   		if (cm36651->ps_int_time == CM36651_PS_IT1)
+>> -			*val = 320;
+>> +			*val2 = 320;
+>>   		else if (cm36651->ps_int_time == CM36651_PS_IT2)
+>> -			*val = 420;
+>> +			*val2 = 420;
+>>   		else if (cm36651->ps_int_time == CM36651_PS_IT3)
+>> -			*val = 520;
+>> +			*val2 = 520;
+>>   		else if (cm36651->ps_int_time == CM36651_PS_IT4)
+>> -			*val = 640;
+>> +			*val2 = 640;
+>>   		else
+>>   			return -EINVAL;
+>>   		break;
+>> @@ -387,11 +387,11 @@ static int cm36651_read_int_time(struct cm36651_data *cm36651,
+>>   		return -EINVAL;
+>>   	}
+>>
+>> -	return IIO_VAL_INT;
+>> +	return IIO_VAL_INT_PLUS_MICRO;
+>>   }
+>>
+>>   static int cm36651_write_int_time(struct cm36651_data *cm36651,
+>> -				struct iio_chan_spec const *chan, int val)
+>> +				struct iio_chan_spec const *chan, int val2)
+> I didn't know why do you change from val to val2?
+> This is just changing variable name, isn't?
+The reasoning is probably to match names with the variable being passed into
+the function.  I'd rather keep the amount of code in a fix like this to a minimum so
+perhaps rename the function to cm36641_write_int_time_microsecs or similar to make
+it clear what is going on?  If anything that is clearer than the change you have made
+here.
 >
-> Hartmut
->>> [1] http://www.upitus.net/36zhlrijl9lh
->>>>> ---
->>>>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->>>>> index c10eab6..d37a907 100644
->>>>> --- a/drivers/iio/industrialio-event.c
->>>>> +++ b/drivers/iio/industrialio-event.c
->>>>> @@ -362,7 +362,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
->>>>>     			&indio_dev->event_interface->dev_attr_list);
->>>>>     		kfree(postfix);
->>>>>
->>>>> -		if (ret)
->>>>> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
->>>>> +			continue;
->>>>> +		else if (ret < 0)
->>>>>     			return ret;
->>>>>
->>>>>     		attrcount++;
->>>>> --
->>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>> the body of a message to majordomo@vger.kernel.org
->>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>   {
+>>   	struct i2c_client *client = cm36651->client;
+>>   	struct i2c_client *ps_client = cm36651->ps_client;
+>> @@ -399,13 +399,13 @@ static int cm36651_write_int_time(struct cm36651_data *cm36651,
 >>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>   	switch (chan->type) {
+>>   	case IIO_LIGHT:
+>> -		if (val == 80000)
+>> +		if (val2 == 80000)
+>>   			int_time = CM36651_CS_IT1;
+>> -		else if (val == 160000)
+>> +		else if (val2 == 160000)
+>>   			int_time = CM36651_CS_IT2;
+>> -		else if (val == 320000)
+>> +		else if (val2 == 320000)
+>>   			int_time = CM36651_CS_IT3;
+>> -		else if (val == 640000)
+>> +		else if (val2 == 640000)
+>>   			int_time = CM36651_CS_IT4;
+>>   		else
+>>   			return -EINVAL;
+>> @@ -419,13 +419,13 @@ static int cm36651_write_int_time(struct cm36651_data *cm36651,
+>>   		cm36651->cs_int_time[chan->address] = int_time;
+>>   		break;
+>>   	case IIO_PROXIMITY:
+>> -		if (val == 320)
+>> +		if (val2 == 320)
+>>   			int_time = CM36651_PS_IT1;
+>> -		else if (val == 420)
+>> +		else if (val2 == 420)
+>>   			int_time = CM36651_PS_IT2;
+>> -		else if (val == 520)
+>> +		else if (val2 == 520)
+>>   			int_time = CM36651_PS_IT3;
+>> -		else if (val == 640)
+>> +		else if (val2 == 640)
+>>   			int_time = CM36651_PS_IT4;
+>>   		else
+>>   			return -EINVAL;
+>> @@ -459,7 +459,8 @@ static int cm36651_read_raw(struct iio_dev *indio_dev,
+>>   		ret = cm36651_read_channel(cm36651, chan, val);
+>>   		break;
+>>   	case IIO_CHAN_INFO_INT_TIME:
+>> -		ret = cm36651_read_int_time(cm36651, chan, val);
+>> +		*val = 0;
+>> +		ret = cm36651_read_int_time(cm36651, chan, val2);
+>>   		break;
+>>   	default:
+>>   		ret = -EINVAL;
+>> @@ -479,7 +480,7 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
+>>   	int ret = -EINVAL;
+>>
+>>   	if (mask == IIO_CHAN_INFO_INT_TIME) {
+>> -		ret = cm36651_write_int_time(cm36651, chan, val);
+>> +		ret = cm36651_write_int_time(cm36651, chan, val2);
+>>   		if (ret < 0)
+>>   			dev_err(&client->dev, "Integration time write failed\n");
+>>   	}
+>> @@ -487,6 +488,13 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
+>>   	return ret;
+>>   }
+>>
+>> +static int cm36651_write_raw_get_fmt(struct iio_dev *indio_dev,
+>> +				struct iio_chan_spec const *chan,
+>> +				long mask)
+>> +{
+>> +	return IIO_VAL_INT_PLUS_MICRO;
+>> +}
+>> +
+>>   static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
+>>   					const struct iio_chan_spec *chan,
+>>   					enum iio_event_type type,
+>> @@ -614,6 +622,7 @@ static const struct iio_info cm36651_info = {
+>>   	.driver_module		= THIS_MODULE,
+>>   	.read_raw		= &cm36651_read_raw,
+>>   	.write_raw		= &cm36651_write_raw,
+>> +	.write_raw_get_fmt	= &cm36651_write_raw_get_fmt,
+>>   	.read_event_value	= &cm36651_read_prox_thresh,
+>>   	.write_event_value	= &cm36651_write_prox_thresh,
+>>   	.read_event_config	= &cm36651_read_prox_event_config,
+>>
 >
 
