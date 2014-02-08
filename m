@@ -1,115 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40149 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40252 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750841AbaBHKOC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 05:14:02 -0500
-Message-ID: <52F60388.1050606@kernel.org>
-Date: Sat, 08 Feb 2014 10:14:32 +0000
+	with ESMTP id S1750841AbaBHKZQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 05:25:16 -0500
+Message-ID: <52F60628.6000404@kernel.org>
+Date: Sat, 08 Feb 2014 10:25:44 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [RFC]iio:industrialio-event fix error-handling in iio_device_add_event
-References: <52C00D75.70302@gmx.de> <52C40E53.1040906@kernel.org> <52F57539.7070903@gmx.de>
-In-Reply-To: <52F57539.7070903@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+To: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org,
+	ldewangan@nvidia.com
+CC: Peter Meerwald <pmeerw@pmeerw.net>,
+	Myungjoo Ham <myungjoo.ham@samsung.com>,
+	Jaehoon Chung <jh80.chung@samsung.com>
+Subject: Re: [PATCH RESEND 1/2] iio: ak8975: Fix calculation formula for convert
+ micro tesla to gauss unit
+References: <52F0AFCF.1090302@samsung.com>
+In-Reply-To: <52F0AFCF.1090302@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 08/02/14 00:07, Hartmut Knaack wrote:
-> Jonathan Cameron schrieb:
->> On 29/12/13 11:54, Hartmut Knaack wrote:
->>> __iio_add_chan_devattr returns -EBUSY, when registering the event-interface of
->>> ad799x, but iio_device_add_event does not catch it. So, handle it like in
->>> iio_device_add_info_mask_type. Not sure, if this is the right solution, but it
->>> makes the ad799x (and possibly others as well) usable.
->>>
->>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->> I think the fix is correct, but I'm not entirely sure what is triggering
->> the bug in this particular driver. All of the elements of ad799x_events
->> are in mask separate so shared_by should be IIO_SEPARATE for all calls
->> to this function.
->>
->> Lars, any idea's on what Hartmut is hitting?
->> Also, is the below patch as valid as it appears at first glance?
-> I've been digging a bit more into the event interface registration,
-> and it turned out that the problem is a typo in the ad799x driver. A
-> patch is on the way. While debugging, I always encountered crashes of
-> my machine, about 15 seconds after the device-initialization failed.
-> You can find a short video of the screen capture at [1]. This was
-> taken on a Linux 3.13.1 (with slight changes to ad799x_core.c for
-> working without platform_data and fix the irq-issue). Any ideas,
-> where to start looking for that problems?
-Not a clue I'm afraid.  I guess we need to do some failure case testing.
-Entirely plausible there are some issues hiding in the more obscure paths.
-
-> Besides, I'm a bit confused
-> with all the branches of the iio.git repo. Which one shall be used,
-> when developing for the iio subsystem (that contains all the patches
-> you accepted)?
-Unfortunately there is never a one true branch for new development.  It is
-in the nature of maintainers trees that there are almost always two branches.
-The first is for fixes for the current kernel version that is going through
-release candidates (fixes-to-greg, though occasionally I have extra branches
-around the merge window to separate out different dependencies).
-New work for the next merge window sits in the togreg branch.  This 'typically'
-goes upstream into staging-next every week or two and from there into linux-next.
-
-The key thing is that patches should not be in both the fixes branch and the new
-stuff (togreg) branch.  They should only come together futher upstream - typically
-first in linux-next and a week or so later in staging-next depending on cross
-dependencies.
-
-The other branch that is commonly used in the iio.git tree is testing.  That exists
-purely to allow the autobuilders to run on a branch that I am happy to rebase.
-I try never to rebase the other trees though it can happen if I mess something
-up spectacularly.
-
-I should probably have started with the short answer.  Unless you are depending on
-new stuff coming through, the best bet is to either base on Linus' tree (usually
-the last rc to have been tagged), or staging/staging-next.  If you are basing on
-one of the iio.git branches, then fixes that need to go through fast should be
-on the fixes-to-greg branch, or if that's lagging too much as it was until 2 mins
-ago (this happens around merge windows), then base on whereever is most relevant.
-The upshot is that all patches in all trees will go upstream at somepoint, its just
-a case of ordering.
-
-Hmm.. I'm sure that's as clear as mud.
-
-Jonathan
-
-> [1] http://www.upitus.net/36zhlrijl9lh
->>> ---
->>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->>> index c10eab6..d37a907 100644
->>> --- a/drivers/iio/industrialio-event.c
->>> +++ b/drivers/iio/industrialio-event.c
->>> @@ -362,7 +362,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
->>>    			&indio_dev->event_interface->dev_attr_list);
->>>    		kfree(postfix);
->>>
->>> -		if (ret)
->>> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
->>> +			continue;
->>> +		else if (ret < 0)
->>>    			return ret;
->>>
->>>    		attrcount++;
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+On 04/02/14 09:15, Beomho Seo wrote:
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> One micro tesla equal 0.01 gauss. So I have fixed calculation formula And add RAW_TO_GAUSS macro.
+> ASA is in the range of 0 to 255. If multiply 0.003, calculation result(in_magn_[*]_scale) is
+> always 0. So multiply 3000 and return and IIO_VAL_INT_PLUS_MICRO.
+> As a result, read_raw call back function return accurate scale value.
 >
+> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+Applied to the fixes-togreg branch of iio.git
+
+Thanks,
+> ---
+>   drivers/iio/magnetometer/ak8975.c |   16 +++++++++-------
+>   1 file changed, 9 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index ff284e5..0542354 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -85,6 +85,7 @@
+>   #define AK8975_MAX_CONVERSION_TIMEOUT	500
+>   #define AK8975_CONVERSION_DONE_POLL_TIME 10
+>   #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
+> +#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
+>
+>   /*
+>    * Per-instance context data for the device.
+> @@ -265,15 +266,15 @@ static int ak8975_setup(struct i2c_client *client)
+>    *
+>    * Since 1uT = 0.01 gauss, our final scale factor becomes:
+>    *
+> - * Hadj = H * ((ASA + 128) / 256) * 3/10 * 100
+> - * Hadj = H * ((ASA + 128) * 30 / 256
+> + * Hadj = H * ((ASA + 128) / 256) * 3/10 * 1/100
+> + * Hadj = H * ((ASA + 128) * 0.003) / 256
+>    *
+>    * Since ASA doesn't change, we cache the resultant scale factor into the
+>    * device context in ak8975_setup().
+>    */
+> -	data->raw_to_gauss[0] = ((data->asa[0] + 128) * 30) >> 8;
+> -	data->raw_to_gauss[1] = ((data->asa[1] + 128) * 30) >> 8;
+> -	data->raw_to_gauss[2] = ((data->asa[2] + 128) * 30) >> 8;
+> +	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
+> +	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
+> +	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
+>
+>   	return 0;
+>   }
+> @@ -428,8 +429,9 @@ static int ak8975_read_raw(struct iio_dev *indio_dev,
+>   	case IIO_CHAN_INFO_RAW:
+>   		return ak8975_read_axis(indio_dev, chan->address, val);
+>   	case IIO_CHAN_INFO_SCALE:
+> -		*val = data->raw_to_gauss[chan->address];
+> -		return IIO_VAL_INT;
+> +		*val = 0;
+> +		*val2 = data->raw_to_gauss[chan->address];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>   	}
+>   	return -EINVAL;
+>   }
+>
+
