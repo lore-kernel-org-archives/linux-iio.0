@@ -1,146 +1,89 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <52F657F9.3080701@metafoo.de>
-Date: Sat, 08 Feb 2014 17:14:49 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46042 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751038AbaBHTkw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 14:40:52 -0500
+Message-ID: <52F6885E.8060304@kernel.org>
+Date: Sat, 08 Feb 2014 19:41:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Michal Simek <michal.simek@xilinx.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio:adc: Add Xilinx XADC driver
-References: <1391534692-9049-1-git-send-email-lars@metafoo.de> <1391534692-9049-2-git-send-email-lars@metafoo.de> <52F63DCE.6030107@kernel.org>
-In-Reply-To: <52F63DCE.6030107@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: linux-iio@vger.kernel.org
+Subject: [PULL] IIO fixes 3.14 set 2
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 02/08/2014 03:23 PM, Jonathan Cameron wrote:
-> On 04/02/14 17:24, Lars-Peter Clausen wrote:
->> The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
->> The XADC has a DRP interface for communication. Currently two different
->> frontends for the DRP interface exist. One that is only available on the ZYNQ
->> family as a hardmacro in the SoC portion of the ZYNQ. The other one is
->> available
->> on all series 7 platforms and is a softmacro with a AXI interface. This
->> driver
->> supports both interfaces and internally has a small abstraction layer that
->> hides
->> the specifics of these interfaces from the main driver logic.
->>
->> The ADC has a couple of internal channels which are used for voltage and
->> temperature monitoring of the FPGA as well as one primary and up to 16
->> channels
->> auxiliary channels for measuring external voltages. The external auxiliary
->> channels can either be directly connected each to one physical pin on the
->> FPGA
->> or they can make use of an external multiplexer which is responsible for
->> multiplexing the external signals onto one pair of physical pins.
->>
->> The voltage and temperature monitoring channels also have an event capability
->> which allows to generate a interrupt when their value falls below or raises
->> above a set threshold.
->>
->> Buffered sampling mode is supported by the driver, but only for AXI-XADC
->> since
->> the ZYNQ XADC interface does not have capabilities for supporting buffer mode
->> (no end-of-conversion interrupt).
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Hi Lars,
+The following changes since commit 6b89db36b3ab7c4b99027873e1de4be8d07387d4:
 
-Hi,
+   wlags49_h2: Fix overflow in wireless_set_essid() (2014-02-07 11:10:08 -0800)
 
-Thanks for the review.
+are available in the git repository at:
 
->
-> One double free bug in the error handling at the end of probe and
-> a few requests for some explanatory comments.  Otherwise looks great to me.
->
-> Could you describe the two triggers in the description section of the patch.
->
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.14b
 
-Ok.
+for you to fetch changes up to 55b40d37311807a6bb2acdae0df904f54a0da3ae:
 
-> Also, if you could insert a few references to the relevant docs from Xilinx
-> that
-> would also be great!
+   iio: max1363: Use devm_regulator_get_optional for optional regulator (2014-02-08 11:46:00 +0000)
 
-I can include the names of the documents which describe the XADC. The URLs 
-seem to change on a regular basis.
+----------------------------------------------------------------
+Second round of IIO fixes for the 3.14 cycle.
 
->
-> Hmm.. To think I read this one first as it looked like it might be the easiest
-> driver in my inbox to review :)
+Another mixed bag, including some that were not in round 1 because
+they applied to elements that went in during the merge window whereas
+round 1 predated that.  I have been effectively out of action for 3 weeks
+so will take a little while to catch up with my backlog.
 
-Yea, its a beast.
+* mag3110 - report busy in read_raw / write_raw when buffered capture
+   is underway to avoid either changing the characteristics of the capture or
+   causing capture issues by reading data destined for the buffer.
+* mag3110 - fix a failure to specify leading zeros when formatting a decimal
+   number.
+* lradc - fix a buffer overflow and incorrect reporting of scale for voltage
+   channel 15
+* lradc - drop some scale_available attributes for elements that don't actually
+   exist.  These could otherwise cause some interesting issues for userspace.
+* ad799x - a typo in the events information mask resulted in some nasty crashes
+   on failed probes.
+* ak8975 - fix scale attribute output to avoid incorrect intepretation of
+   readings in userspace.
+* adis16400 - make sure the timestamp is the last element in all channel_spec
+   arrays as this assumption is made by the buffer filling code, but was not
+   true previously.
+* bma180 - correctly use modifiers to distinguish the channels rather than
+   indexes.  This brings the abi inline with the standard option for 3 axis
+   accelerometers.
+* max1363 - use devm_regulator_get_optional instead of the non optional case
+   to allow the device to successfully probe when a regulator is not specified.
 
-[...]
->> +static void xadc_zynq_write_fifo(struct xadc *xadc, uint32_t *cmd,
->> +    unsigned int n)
->> +{
->> +    unsigned int i;
->> +
->> +    for (i = 0; i < n; i++)
->> +        xadc_write_reg(xadc, XADC_ZYNQ_REG_CFIFO, cmd[i]);
->> +}
->> +
->> +static void xadc_zynq_drain_fifo(struct xadc *xadc)
->> +{
->> +    uint32_t status, tmp;
->> +
->> +    xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
->> +
->> +    while (!(status & XADC_ZYNQ_STATUS_DFIFOE)) {
->> +        xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
->> +        xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
->> +    }
->> +}
->> +
->> +static void xadc_zynq_update_intmsk(struct xadc *xadc, unsigned int mask,
->> +    unsigned int val)
->> +{
->> +    xadc->zynq_intmask &= ~mask;
->> +    xadc->zynq_intmask |= val;
->> +
->> +    xadc_write_reg(xadc, XADC_ZYNQ_REG_INTMSK,
->> +        xadc->zynq_intmask | xadc->zynq_masked_alarm);
->> +}
->> +
-> Hmm. These are complex beasts. I'm not entirely sure I've understood them
-> correctly... Might take another look at some point.
+----------------------------------------------------------------
+Alexandre Belloni (2):
+       iio: mxs-lradc: fix buffer overflow
+       iio: mxs-lradc: remove useless scale_available files
 
-The core that talks to the XADC is basically doing jtag do this. You submit 
-register writes/reads to a FIFO and then a couple of moments later you can 
-read the response from a different FIFO. I'll add a few comments explaining 
-this.
+Beomho Seo (1):
+       iio: ak8975: Fix calculation formula for convert micro tesla to gauss unit
 
-[...]
->> +static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
->> +{
->> +    struct xadc *xadc = iio_priv(indio_dev);
->> +    const struct iio_chan_spec *chan;
->> +    unsigned int offset;
->> +    uint16_t val;
->> +    int ret;
->> +
->> +    /* Temperature threshold error, we don't handle this yet */
->> +    if (event == 0)
->> +        return;
->> +
->> +    if (event < 4)
->> +        offset = event;
->> +    else
->> +        offset = event + 4;
->> +
->> +    if (event < 3)
->> +        chan = &indio_dev->channels[event];
->> +    else if (event == 3)
->> +        chan = &indio_dev->channels[0];
->> +    else
->> +        chan = &indio_dev->channels[event - 1];
->> +
->> +    if (event != 3) {
->
-> Is there any guarantee that, by the time we get here, the value will not
-> have crossed back over the threshold?   Might be better just to not
-> separate the two and use IIO_EV_DIR_EITHER.  I'm not sure either way on this
-> one.
+Guenter Roeck (1):
+       iio: max1363: Use devm_regulator_get_optional for optional regulator
 
-Hm, ok. I'm not to sure, but I'll give it a though.
+Hartmut Knaack (1):
+       staging:iio:ad799x fix typo in ad799x_events[]
+
+Marcus Folkesson (1):
+       iio: adis16400: Set timestamp as the last element in chan_spec
+
+Peter Meerwald (3):
+       iio:magnetometer:mag3110: Report busy in _read_raw() / write_raw() when buffer is enabled
+       iio:magnetometer:mag3110: Fix output of decimal digits in show_int_plus_micros()
+       iio:accel:bma180: Use modifier instead of index in channel specification
+
+  drivers/iio/accel/bma180.c            | 16 ++++++++--------
+  drivers/iio/adc/max1363.c             |  2 +-
+  drivers/iio/imu/adis16400.h           |  1 +
+  drivers/iio/imu/adis16400_core.c      | 10 +++++-----
+  drivers/iio/magnetometer/ak8975.c     | 16 +++++++++-------
+  drivers/iio/magnetometer/mag3110.c    |  8 +++++++-
+  drivers/staging/iio/adc/ad799x_core.c |  2 +-
+  drivers/staging/iio/adc/mxs-lradc.c   |  6 +-----
+  8 files changed, 33 insertions(+), 28 deletions(-)
