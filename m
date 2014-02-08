@@ -1,51 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40337 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40865 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751312AbaBHKcW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 05:32:22 -0500
-Message-ID: <52F607D3.2000507@kernel.org>
-Date: Sat, 08 Feb 2014 10:32:51 +0000
+	with ESMTP id S1751228AbaBHLZH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 06:25:07 -0500
+Message-ID: <52F6142C.3060701@kernel.org>
+Date: Sat, 08 Feb 2014 11:25:32 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org
-CC: ldewangan@nvidia.com, Peter Meerwald <pmeerw@pmeerw.net>,
-	Myungjoo Ham <myungjoo.ham@samsung.com>,
-	Jaehoon Chung <jh80.chung@samsung.com>
-Subject: Re: [PATCH RESEND 2/2] iio: ak8975: Add device name
-References: <52F0AFD0.50104@samsung.com>
-In-Reply-To: <52F0AFD0.50104@samsung.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>
+CC: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adis16400: Set timestamp as the last element in
+ chan_spec
+References: <marcus.folkesson@gmail.com> <1390562644-25124-1-git-send-email-marcus.folkesson@gmail.com> <1390562644-25124-2-git-send-email-marcus.folkesson@gmail.com> <52E26E9A.9040002@metafoo.de>
+In-Reply-To: <52E26E9A.9040002@metafoo.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/02/14 09:16, Beomho Seo wrote:
+On 24/01/14 13:46, Lars-Peter Clausen wrote:
+> On 01/24/2014 12:24 PM, Marcus Folkesson wrote:
+>> This is necessary since timestamp is calculated as the last element
+>> in iio_compute_scan_bytes().
+>>
+>> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 >
-> This patch add device name.
+> Looks good, thanks.
 >
-> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-Applied to the togreg branch of iio.git
+> Acked-by: Lars-Peter Clausen
+Applied with some fuzz to fixes-togreg.  Also marked for stable.
 
-Whilst this is bringing the driver inline with the ABI, it probably doesn't
-count as a bug fix and so can wait until the next merge window.
-
-Thanks,
+Thanks
 
 Jonathan
-> ---
->   drivers/iio/magnetometer/ak8975.c |    1 +
->   1 file changed, 1 insertion(+)
+
 >
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 0542354..74866d1 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -513,6 +513,7 @@ static int ak8975_probe(struct i2c_client *client,
->   	indio_dev->channels = ak8975_channels;
->   	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
->   	indio_dev->info = &ak8975_info;
-> +	indio_dev->name = id->name;
->   	indio_dev->modes = INDIO_DIRECT_MODE;
+> That said, I think we should try to modify the core code so that the scan
+> index for the timestamp is auto assigned to be always the last one.
+I'd be happy with such a change.  Note we need to be careful not to block other
+positions of timestamps coming from hardware timestamp generators, but for software
+time stamps it would make sense just to automate always having them at the end.
 >
->   	err = iio_device_register(indio_dev);
+>> ---
+>>   drivers/iio/imu/adis16400.h      |    1 +
+>>   drivers/iio/imu/adis16400_core.c |   10 +++++-----
+>>   2 files changed, 6 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/imu/adis16400.h b/drivers/iio/imu/adis16400.h
+>> index 2f8f9d6..0916bf6 100644
+>> --- a/drivers/iio/imu/adis16400.h
+>> +++ b/drivers/iio/imu/adis16400.h
+>> @@ -189,6 +189,7 @@ enum {
+>>   	ADIS16300_SCAN_INCLI_X,
+>>   	ADIS16300_SCAN_INCLI_Y,
+>>   	ADIS16400_SCAN_ADC,
+>> +	ADIS16400_SCAN_TIMESTAMP,
+>>   };
+>>
+>>   #ifdef CONFIG_IIO_BUFFER
+>> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+>> index 3fb7757..7f98657 100644
+>> --- a/drivers/iio/imu/adis16400_core.c
+>> +++ b/drivers/iio/imu/adis16400_core.c
+>> @@ -632,7 +632,7 @@ static const struct iio_chan_spec adis16400_channels[] = {
+>>   	ADIS16400_MAGN_CHAN(Z, ADIS16400_ZMAGN_OUT, 14),
+>>   	ADIS16400_TEMP_CHAN(ADIS16400_TEMP_OUT, 12),
+>>   	ADIS16400_AUX_ADC_CHAN(ADIS16400_AUX_ADC, 12),
+>> -	IIO_CHAN_SOFT_TIMESTAMP(12)
+>> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+>>   };
+>>
+>>   static const struct iio_chan_spec adis16448_channels[] = {
+>> @@ -654,7 +654,7 @@ static const struct iio_chan_spec adis16448_channels[] = {
+>>   		.scan_type = IIO_ST('s', 16, 16, 0),
+>>   	},
+>>   	ADIS16400_TEMP_CHAN(ADIS16448_TEMP_OUT, 12),
+>> -	IIO_CHAN_SOFT_TIMESTAMP(11)
+>> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+>>   };
+>>
+>>   static const struct iio_chan_spec adis16350_channels[] = {
+>> @@ -672,7 +672,7 @@ static const struct iio_chan_spec adis16350_channels[] = {
+>>   	ADIS16400_MOD_TEMP_CHAN(X, ADIS16350_XTEMP_OUT, 12),
+>>   	ADIS16400_MOD_TEMP_CHAN(Y, ADIS16350_YTEMP_OUT, 12),
+>>   	ADIS16400_MOD_TEMP_CHAN(Z, ADIS16350_ZTEMP_OUT, 12),
+>> -	IIO_CHAN_SOFT_TIMESTAMP(11)
+>> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+>>   };
+>>
+>>   static const struct iio_chan_spec adis16300_channels[] = {
+>> @@ -685,7 +685,7 @@ static const struct iio_chan_spec adis16300_channels[] = {
+>>   	ADIS16400_AUX_ADC_CHAN(ADIS16300_AUX_ADC, 12),
+>>   	ADIS16400_INCLI_CHAN(X, ADIS16300_PITCH_OUT, 13),
+>>   	ADIS16400_INCLI_CHAN(Y, ADIS16300_ROLL_OUT, 13),
+>> -	IIO_CHAN_SOFT_TIMESTAMP(14)
+>> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+>>   };
+>>
+>>   static const struct iio_chan_spec adis16334_channels[] = {
+>> @@ -696,7 +696,7 @@ static const struct iio_chan_spec adis16334_channels[] = {
+>>   	ADIS16400_ACCEL_CHAN(Y, ADIS16400_YACCL_OUT, 14),
+>>   	ADIS16400_ACCEL_CHAN(Z, ADIS16400_ZACCL_OUT, 14),
+>>   	ADIS16400_TEMP_CHAN(ADIS16350_XTEMP_OUT, 12),
+>> -	IIO_CHAN_SOFT_TIMESTAMP(8)
+>> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
+>>   };
+>>
+>>   static struct attribute *adis16400_attributes[] = {
+>>
 >
 
