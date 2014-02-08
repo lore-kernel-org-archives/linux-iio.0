@@ -1,88 +1,146 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:55037 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751334AbaBHOik (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 09:38:40 -0500
-From: Marek Vasut <marex@denx.de>
-To: Harald Geyer <harald@ccbib.org>
-Subject: Re: [RFC] iio: mxs-lradc: Add support for current source
-Date: Sat, 8 Feb 2014 15:38:32 +0100
-Cc: linux-iio@vger.kernel.org
-References: <E1W895a-0000yo-Tm@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1W895a-0000yo-Tm@stardust.g4.wien.funkfeuer.at>
+Return-Path: <lars@metafoo.de>
+Message-ID: <52F657F9.3080701@metafoo.de>
+Date: Sat, 08 Feb 2014 17:14:49 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201402081538.32202.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Michal Simek <michal.simek@xilinx.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio:adc: Add Xilinx XADC driver
+References: <1391534692-9049-1-git-send-email-lars@metafoo.de> <1391534692-9049-2-git-send-email-lars@metafoo.de> <52F63DCE.6030107@kernel.org>
+In-Reply-To: <52F63DCE.6030107@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tuesday, January 28, 2014 at 02:52:30 PM, Harald Geyer wrote:
-> We pretend the current source to be an independent 4-bit DAC,
-> which seems to be a valid use of the device. The channel also
-> allows reading back the value previously written.
-> 
-> Signed-off-by: Harald Geyer <harald@ccbib.org>
-> ---
-> The LRADC can drive two of its ADC channels with a defined current
-> between 0 and 300uA to allow reading thermistors without external
-> current source. I'm not sure what the right IIO ABI in this case
-> should be. The way it is done now has the advantage that no new
-> ABI is needed and somebody might actually use the device as very
-> low resolution DAC. OTOH the relationship between output and input
-> channels is a bit non obvious this way.
-> 
-> Also note, that I didn't find any documentation about the expected
-> current unit in iio. I think uA is a reasonable choice, but this
-> should be confirmed and documented at least.
-> 
-> Harald
-> 
->  drivers/staging/iio/adc/mxs-lradc.c |   80
-> +++++++++++++++++++++++++++++++++++ 1 files changed, 80 insertions(+), 0
-> deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> b/drivers/staging/iio/adc/mxs-lradc.c index df71669..48b1ed7 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -303,6 +303,11 @@ struct mxs_lradc {
->  #define	LRADC_CTRL2				0x20
->  #define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
->  #define	LRADC_CTRL2_TEMPSENSE_PWD		(1 << 15)
-> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE1	(1 << 9)
-> +#define	LRADC_CTRL2_TEMP_SENSOR_IENABLE0	(1 << 8)
-> +#define	LRADC_CTRL2_TEMP_ISRC1_OFFSET		4
-> +#define	LRADC_CTRL2_TEMP_ISRC0_OFFSET		0
-> +#define	LRADC_CTRL2_TEMP_ISRC_MASK		(0x0f)
-> 
->  #define	LRADC_STATUS				0x40
->  #define	LRADC_STATUS_TOUCH_DETECT_RAW		(1 << 0)
-> @@ -891,6 +896,31 @@ static int mxs_lradc_read_temp(struct iio_dev
-> *iio_dev, int *val) return IIO_VAL_INT;
->  }
-> 
-> +static int mxs_lradc_read_current(struct mxs_lradc *lradc,
-> +			const struct iio_chan_spec *chan, int *val)
-> +{
-> +	*val = 0;
-> +	if (chan->channel == 0) {
-> +		if ((readl(lradc->base + LRADC_CTRL2) &
-> +					LRADC_CTRL2_TEMP_SENSOR_IENABLE0) == 0)
-> +			return IIO_VAL_INT;
-> +		*val = (readl(lradc->base + LRADC_CTRL2) >>
-> +					 LRADC_CTRL2_TEMP_ISRC0_OFFSET) &
-> +				LRADC_CTRL2_TEMP_ISRC_MASK;
-> +	} else if (chan->channel == 1) {
-> +		if ((readl(lradc->base + LRADC_CTRL2) &
-> +					LRADC_CTRL2_TEMP_SENSOR_IENABLE1) == 0)
-> +			return IIO_VAL_INT;
-> +		*val = (readl(lradc->base + LRADC_CTRL2) >>
-> +					LRADC_CTRL2_TEMP_ISRC1_OFFSET) &
-> +				LRADC_CTRL2_TEMP_ISRC_MASK;
+On 02/08/2014 03:23 PM, Jonathan Cameron wrote:
+> On 04/02/14 17:24, Lars-Peter Clausen wrote:
+>> The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
+>> The XADC has a DRP interface for communication. Currently two different
+>> frontends for the DRP interface exist. One that is only available on the ZYNQ
+>> family as a hardmacro in the SoC portion of the ZYNQ. The other one is
+>> available
+>> on all series 7 platforms and is a softmacro with a AXI interface. This
+>> driver
+>> supports both interfaces and internally has a small abstraction layer that
+>> hides
+>> the specifics of these interfaces from the main driver logic.
+>>
+>> The ADC has a couple of internal channels which are used for voltage and
+>> temperature monitoring of the FPGA as well as one primary and up to 16
+>> channels
+>> auxiliary channels for measuring external voltages. The external auxiliary
+>> channels can either be directly connected each to one physical pin on the
+>> FPGA
+>> or they can make use of an external multiplexer which is responsible for
+>> multiplexing the external signals onto one pair of physical pins.
+>>
+>> The voltage and temperature monitoring channels also have an event capability
+>> which allows to generate a interrupt when their value falls below or raises
+>> above a set threshold.
+>>
+>> Buffered sampling mode is supported by the driver, but only for AXI-XADC
+>> since
+>> the ZYNQ XADC interface does not have capabilities for supporting buffer mode
+>> (no end-of-conversion interrupt).
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Hi Lars,
 
-You can use parametrized macros here, lik LRADC_CTRL2_TEMP_ISRCn_OFFSET(n) , 
-that way you'd trim down the code duplication here nicely. DTTO for the other 
-large chunk of code down below.
+Hi,
+
+Thanks for the review.
+
+>
+> One double free bug in the error handling at the end of probe and
+> a few requests for some explanatory comments.  Otherwise looks great to me.
+>
+> Could you describe the two triggers in the description section of the patch.
+>
+
+Ok.
+
+> Also, if you could insert a few references to the relevant docs from Xilinx
+> that
+> would also be great!
+
+I can include the names of the documents which describe the XADC. The URLs 
+seem to change on a regular basis.
+
+>
+> Hmm.. To think I read this one first as it looked like it might be the easiest
+> driver in my inbox to review :)
+
+Yea, its a beast.
 
 [...]
+>> +static void xadc_zynq_write_fifo(struct xadc *xadc, uint32_t *cmd,
+>> +    unsigned int n)
+>> +{
+>> +    unsigned int i;
+>> +
+>> +    for (i = 0; i < n; i++)
+>> +        xadc_write_reg(xadc, XADC_ZYNQ_REG_CFIFO, cmd[i]);
+>> +}
+>> +
+>> +static void xadc_zynq_drain_fifo(struct xadc *xadc)
+>> +{
+>> +    uint32_t status, tmp;
+>> +
+>> +    xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
+>> +
+>> +    while (!(status & XADC_ZYNQ_STATUS_DFIFOE)) {
+>> +        xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
+>> +        xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
+>> +    }
+>> +}
+>> +
+>> +static void xadc_zynq_update_intmsk(struct xadc *xadc, unsigned int mask,
+>> +    unsigned int val)
+>> +{
+>> +    xadc->zynq_intmask &= ~mask;
+>> +    xadc->zynq_intmask |= val;
+>> +
+>> +    xadc_write_reg(xadc, XADC_ZYNQ_REG_INTMSK,
+>> +        xadc->zynq_intmask | xadc->zynq_masked_alarm);
+>> +}
+>> +
+> Hmm. These are complex beasts. I'm not entirely sure I've understood them
+> correctly... Might take another look at some point.
+
+The core that talks to the XADC is basically doing jtag do this. You submit 
+register writes/reads to a FIFO and then a couple of moments later you can 
+read the response from a different FIFO. I'll add a few comments explaining 
+this.
+
+[...]
+>> +static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
+>> +{
+>> +    struct xadc *xadc = iio_priv(indio_dev);
+>> +    const struct iio_chan_spec *chan;
+>> +    unsigned int offset;
+>> +    uint16_t val;
+>> +    int ret;
+>> +
+>> +    /* Temperature threshold error, we don't handle this yet */
+>> +    if (event == 0)
+>> +        return;
+>> +
+>> +    if (event < 4)
+>> +        offset = event;
+>> +    else
+>> +        offset = event + 4;
+>> +
+>> +    if (event < 3)
+>> +        chan = &indio_dev->channels[event];
+>> +    else if (event == 3)
+>> +        chan = &indio_dev->channels[0];
+>> +    else
+>> +        chan = &indio_dev->channels[event - 1];
+>> +
+>> +    if (event != 3) {
+>
+> Is there any guarantee that, by the time we get here, the value will not
+> have crossed back over the threshold?   Might be better just to not
+> separate the two and use IIO_EV_DIR_EITHER.  I'm not sure either way on this
+> one.
+
+Hm, ok. I'm not to sure, but I'll give it a though.
