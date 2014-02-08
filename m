@@ -1,238 +1,1904 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog120.obsmtp.com ([207.126.144.149]:52531 "EHLO
-	eu1sys200aog120.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751347AbaBHNkt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 08:40:49 -0500
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio:gyro: Bugfix L3GD20H gyroscope support
-Date: Sat,  8 Feb 2014 14:37:21 +0100
-Message-Id: <1391866641-26226-1-git-send-email-denis.ciocca@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42570 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751170AbaBHOWn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 09:22:43 -0500
+Message-ID: <52F63DCE.6030107@kernel.org>
+Date: Sat, 08 Feb 2014 14:23:10 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Michal Simek <michal.simek@xilinx.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio:adc: Add Xilinx XADC driver
+References: <1391534692-9049-1-git-send-email-lars@metafoo.de> <1391534692-9049-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1391534692-9049-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fix L3GD20H gyroscope support. The driver was not able
-to manage the sensor: during probe function and wai check,
-the driver stops and writes: "device name and WhoAmI mismatch."
-The correct value of L3GD20H WAI is 0xd7 instead of 0xd4.
+On 04/02/14 17:24, Lars-Peter Clausen wrote:
+> The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
+> The XADC has a DRP interface for communication. Currently two different
+> frontends for the DRP interface exist. One that is only available on the ZYNQ
+> family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+> on all series 7 platforms and is a softmacro with a AXI interface. This driver
+> supports both interfaces and internally has a small abstraction layer that hides
+> the specifics of these interfaces from the main driver logic.
+>
+> The ADC has a couple of internal channels which are used for voltage and
+> temperature monitoring of the FPGA as well as one primary and up to 16 channels
+> auxiliary channels for measuring external voltages. The external auxiliary
+> channels can either be directly connected each to one physical pin on the FPGA
+> or they can make use of an external multiplexer which is responsible for
+> multiplexing the external signals onto one pair of physical pins.
+>
+> The voltage and temperature monitoring channels also have an event capability
+> which allows to generate a interrupt when their value falls below or raises
+> above a set threshold.
+>
+> Buffered sampling mode is supported by the driver, but only for AXI-XADC since
+> the ZYNQ XADC interface does not have capabilities for supporting buffer mode
+> (no end-of-conversion interrupt).
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Hi Lars,
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/gyro/st_gyro.h                     |   6 +-
- drivers/iio/gyro/st_gyro_core.c                | 102 +++++++++++++++++++++++--
- drivers/iio/gyro/st_gyro_i2c.c                 |   3 +-
- drivers/iio/gyro/st_gyro_spi.c                 |   3 +-
- include/linux/platform_data/st_sensors_pdata.h |   2 +-
- 5 files changed, 101 insertions(+), 15 deletions(-)
+One double free bug in the error handling at the end of probe and
+a few requests for some explanatory comments.  Otherwise looks great to me.
 
-diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-index f8f2bf8..3d829fc 100644
---- a/drivers/iio/gyro/st_gyro.h
-+++ b/drivers/iio/gyro/st_gyro.h
-@@ -24,10 +24,10 @@
- #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
- 
- /**
-- * struct st_sensors_platform_data - gyro platform data
-- * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
-+ * struct st_sensors_platform_data - default gyro platform data
-+ * @drdy_int_pin: default gyro DRDY is available on INT2 pin.
-  */
--static const struct st_sensors_platform_data gyro_pdata = {
-+static const struct st_sensors_platform_data default_gyro_pdata = {
- 	.drdy_int_pin = 2,
- };
- 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index d53d91a..c4fbe3a 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -35,6 +35,7 @@
- #define ST_GYRO_DEFAULT_OUT_Z_L_ADDR		0x2c
- 
- /* FULLSCALE */
-+#define ST_GYRO_FS_AVL_245DPS			245
- #define ST_GYRO_FS_AVL_250DPS			250
- #define ST_GYRO_FS_AVL_500DPS			500
- #define ST_GYRO_FS_AVL_2000DPS			2000
-@@ -87,6 +88,31 @@
- #define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
- #define ST_GYRO_2_MULTIREAD_BIT			true
- 
-+/* CUSTOM VALUES FOR SENSOR 3 */
-+#define ST_GYRO_3_WAI_EXP			0xd7
-+#define ST_GYRO_3_ODR_ADDR			0x20
-+#define ST_GYRO_3_ODR_MASK			0xc0
-+#define ST_GYRO_3_ODR_AVL_100HZ_VAL		0x00
-+#define ST_GYRO_3_ODR_AVL_200HZ_VAL		0x01
-+#define ST_GYRO_3_ODR_AVL_400HZ_VAL		0x02
-+#define ST_GYRO_3_ODR_AVL_800HZ_VAL		0x03
-+#define ST_GYRO_3_PW_ADDR			0x20
-+#define ST_GYRO_3_PW_MASK			0x08
-+#define ST_GYRO_3_FS_ADDR			0x23
-+#define ST_GYRO_3_FS_MASK			0x30
-+#define ST_GYRO_3_FS_AVL_245_VAL		0x00
-+#define ST_GYRO_3_FS_AVL_500_VAL		0x01
-+#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
-+#define ST_GYRO_3_FS_AVL_245_GAIN		IIO_DEGREE_TO_RAD(8750)
-+#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-+#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-+#define ST_GYRO_3_BDU_ADDR			0x23
-+#define ST_GYRO_3_BDU_MASK			0x80
-+#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
-+#define ST_GYRO_3_DRDY_IRQ_INT1_MASK		0x80
-+#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
-+#define ST_GYRO_3_MULTIREAD_BIT			true
-+
- static const struct iio_chan_spec st_gyro_16bit_channels[] = {
- 	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
- 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-@@ -167,11 +193,10 @@ static const struct st_sensors st_gyro_sensors[] = {
- 		.wai = ST_GYRO_2_WAI_EXP,
- 		.sensors_supported = {
- 			[0] = L3GD20_GYRO_DEV_NAME,
--			[1] = L3GD20H_GYRO_DEV_NAME,
--			[2] = LSM330D_GYRO_DEV_NAME,
--			[3] = LSM330DLC_GYRO_DEV_NAME,
--			[4] = L3G4IS_GYRO_DEV_NAME,
--			[5] = LSM330_GYRO_DEV_NAME,
-+			[1] = LSM330D_GYRO_DEV_NAME,
-+			[2] = LSM330DLC_GYRO_DEV_NAME,
-+			[3] = L3G4IS_GYRO_DEV_NAME,
-+			[4] = LSM330_GYRO_DEV_NAME,
- 		},
- 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
- 		.odr = {
-@@ -226,6 +251,65 @@ static const struct st_sensors st_gyro_sensors[] = {
- 		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
- 		.bootime = 2,
- 	},
-+	{
-+		.wai = ST_GYRO_3_WAI_EXP,
-+		.sensors_supported = {
-+			[0] = L3GD20H_GYRO_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
-+		.odr = {
-+			.addr = ST_GYRO_3_ODR_ADDR,
-+			.mask = ST_GYRO_3_ODR_MASK,
-+			.odr_avl = {
-+				{ 100, ST_GYRO_3_ODR_AVL_100HZ_VAL, },
-+				{ 200, ST_GYRO_3_ODR_AVL_200HZ_VAL, },
-+				{ 400, ST_GYRO_3_ODR_AVL_400HZ_VAL, },
-+				{ 800, ST_GYRO_3_ODR_AVL_800HZ_VAL, },
-+			},
-+		},
-+		.pw = {
-+			.addr = ST_GYRO_3_PW_ADDR,
-+			.mask = ST_GYRO_3_PW_MASK,
-+			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = ST_GYRO_3_FS_ADDR,
-+			.mask = ST_GYRO_3_FS_MASK,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_GYRO_FS_AVL_245DPS,
-+					.value = ST_GYRO_3_FS_AVL_245_VAL,
-+					.gain = ST_GYRO_3_FS_AVL_245_GAIN,
-+				},
-+				[1] = {
-+					.num = ST_GYRO_FS_AVL_500DPS,
-+					.value = ST_GYRO_3_FS_AVL_500_VAL,
-+					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
-+				},
-+				[2] = {
-+					.num = ST_GYRO_FS_AVL_2000DPS,
-+					.value = ST_GYRO_3_FS_AVL_2000_VAL,
-+					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = ST_GYRO_3_BDU_ADDR,
-+			.mask = ST_GYRO_3_BDU_MASK,
-+		},
-+		.drdy_irq = {
-+			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
-+			.mask_int1 = ST_GYRO_3_DRDY_IRQ_INT1_MASK,
-+			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
-+		},
-+		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
-+		.bootime = 2,
-+	},
- };
- 
- static int st_gyro_read_raw(struct iio_dev *indio_dev,
-@@ -303,7 +387,7 @@ static const struct iio_trigger_ops st_gyro_trigger_ops = {
- #endif
- 
- int st_gyro_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata)
-+				struct st_sensors_platform_data *plat_data)
- {
- 	struct st_sensor_data *gdata = iio_priv(indio_dev);
- 	int irq = gdata->get_irq_data_ready(indio_dev);
-@@ -326,7 +410,11 @@ int st_gyro_common_probe(struct iio_dev *indio_dev,
- 						&gdata->sensor->fs.fs_avl[0];
- 	gdata->odr = gdata->sensor->odr.odr_avl[0].hz;
- 
--	err = st_sensors_init_sensor(indio_dev, pdata);
-+	if (!plat_data)
-+		plat_data =
-+			(struct st_sensors_platform_data *)&default_gyro_pdata;
-+
-+	err = st_sensors_init_sensor(indio_dev, plat_data);
- 	if (err < 0)
- 		return err;
- 
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 16b8b8d..7d1331a 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -34,8 +34,7 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
- 
- 	st_sensors_i2c_configure(indio_dev, client, gdata);
- 
--	err = st_gyro_common_probe(indio_dev,
--				(struct st_sensors_platform_data *)&gyro_pdata);
-+	err = st_gyro_common_probe(indio_dev, client->dev.platform_data);
- 	if (err < 0)
- 		return err;
- 
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-index 94763e2..f0c730f 100644
---- a/drivers/iio/gyro/st_gyro_spi.c
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -33,8 +33,7 @@ static int st_gyro_spi_probe(struct spi_device *spi)
- 
- 	st_sensors_spi_configure(indio_dev, spi, gdata);
- 
--	err = st_gyro_common_probe(indio_dev,
--				(struct st_sensors_platform_data *)&gyro_pdata);
-+	err = st_gyro_common_probe(indio_dev, spi->dev.platform_data);
- 	if (err < 0)
- 		return err;
- 
-diff --git a/include/linux/platform_data/st_sensors_pdata.h b/include/linux/platform_data/st_sensors_pdata.h
-index 7538391..1e2b26c 100644
---- a/include/linux/platform_data/st_sensors_pdata.h
-+++ b/include/linux/platform_data/st_sensors_pdata.h
-@@ -14,7 +14,7 @@
- /**
-  * struct st_sensors_platform_data - Platform data for the ST sensors
-  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
-- *	Available only for accelerometer and pressure sensors.
-+ *	Available only for accelerometers, gyroscopes and pressure sensors.
-  *	Accelerometer DRDY on LSM330 available only on pin 1 (see datasheet).
-  */
- struct st_sensors_platform_data {
--- 
-1.8.5.3
+Could you describe the two triggers in the description section of the patch.
+
+Also, if you could insert a few references to the relevant docs from Xilinx that
+would also be great!
+
+Hmm.. To think I read this one first as it looked like it might be the easiest
+driver in my inbox to review :)
+
+J
+> ---
+>   drivers/iio/adc/Kconfig              |   13 +
+>   drivers/iio/adc/Makefile             |    2 +
+>   drivers/iio/adc/xilinx-xadc-core.c   | 1295 ++++++++++++++++++++++++++++++++++
+>   drivers/iio/adc/xilinx-xadc-events.c |  265 +++++++
+>   drivers/iio/adc/xilinx-xadc.h        |  205 ++++++
+>   5 files changed, 1780 insertions(+)
+>   create mode 100644 drivers/iio/adc/xilinx-xadc-core.c
+>   create mode 100644 drivers/iio/adc/xilinx-xadc-events.c
+>   create mode 100644 drivers/iio/adc/xilinx-xadc.h
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2209f28..75bd07a 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -204,4 +204,17 @@ config VIPERBOARD_ADC
+>   	  Say yes here to access the ADC part of the Nano River
+>   	  Technologies Viperboard.
+>
+> +config XILINX_XADC
+> +	tristate "Xilinx XADC driver"
+> +	depends on ARCH_ZYNQ || MICROBLAZE || COMPILE_TEST
+> +	depends on HAS_IOMEM
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  Say yes here to have support for the Xilinx XADC. The driver does support
+> +	  both the ZYNQ interface to the XADC as well as the AXI-XADC interface.
+> +
+> +	  The driver can also be build as a module. If so, the module will be called
+> +	  xilinx-xadc.
+> +
+>   endmenu
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ba9a10a..885ea70 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -22,3 +22,5 @@ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+> +xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+> +obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> new file mode 100644
+> index 0000000..ebc9463
+> --- /dev/null
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -0,0 +1,1295 @@
+> +/*
+> + * Xilinx XADC driver
+> + *
+> + * Copyright 2013-2014 Analog Devices Inc.
+> + *  Author: Lars-Peter Clauen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#include "xilinx-xadc.h"
+> +
+> +static const unsigned int XADC_ZYNQ_UNMASK_TIMEOUT = 500;
+> +
+> +/* ZYNQ register definitions */
+> +#define XADC_ZYNQ_REG_CFG	0x00
+> +#define XADC_ZYNQ_REG_INTSTS	0x04
+> +#define XADC_ZYNQ_REG_INTMSK	0x08
+> +#define XADC_ZYNQ_REG_STATUS	0x0c
+> +#define XADC_ZYNQ_REG_CFIFO	0x10
+> +#define XADC_ZYNQ_REG_DFIFO	0x14
+> +#define XADC_ZYNQ_REG_CTL		0x18
+> +
+> +#define XADC_ZYNQ_CFG_ENABLE		BIT(31)
+> +#define XADC_ZYNQ_CFG_CFIFOTH_MASK	(0xf << 20)
+> +#define XADC_ZYNQ_CFG_CFIFOTH_OFFSET	20
+> +#define XADC_ZYNQ_CFG_DFIFOTH_MASK	(0xf << 16)
+> +#define XADC_ZYNQ_CFG_DFIFOTH_OFFSET	16
+> +#define XADC_ZYNQ_CFG_WEDGE		BIT(13)
+> +#define XADC_ZYNQ_CFG_REDGE		BIT(12)
+> +#define XADC_ZYNQ_CFG_TCKRATE_MASK	(0x3 << 8)
+> +#define XADC_ZYNQ_CFG_TCKRATE_DIV2	(0x0 << 8)
+> +#define XADC_ZYNQ_CFG_TCKRATE_DIV4	(0x1 << 8)
+> +#define XADC_ZYNQ_CFG_TCKRATE_DIV8	(0x2 << 8)
+> +#define XADC_ZYNQ_CFG_TCKRATE_DIV16	(0x3 << 8)
+> +#define XADC_ZYNQ_CFG_IGAP_MASK		0x1f
+> +#define XADC_ZYNQ_CFG_IGAP(x)		(x)
+> +
+> +#define XADC_ZYNQ_INT_CFIFO_LTH		BIT(9)
+> +#define XADC_ZYNQ_INT_DFIFO_GTH		BIT(8)
+> +#define XADC_ZYNQ_INT_ALARM_MASK	0xff
+> +#define XADC_ZYNQ_INT_ALARM_OFFSET	0
+> +
+> +#define XADC_ZYNQ_STATUS_CFIFO_LVL_MASK	(0xf << 16)
+> +#define XADC_ZYNQ_STATUS_CFIFO_LVL_OFFSET	16
+> +#define XADC_ZYNQ_STATUS_DFIFO_LVL_MASK	(0xf << 12)
+> +#define XADC_ZYNQ_STATUS_DFIFO_LVL_OFFSET	12
+> +#define XADC_ZYNQ_STATUS_CFIFOF		BIT(11)
+> +#define XADC_ZYNQ_STATUS_CFIFOE		BIT(10)
+> +#define XADC_ZYNQ_STATUS_DFIFOF		BIT(9)
+> +#define XADC_ZYNQ_STATUS_DFIFOE		BIT(8)
+> +#define XADC_ZYNQ_STATUS_OT		BIT(7)
+> +#define XADC_ZYNQ_STATUS_ALM(x)		BIT(x)
+> +
+> +#define XADC_ZYNQ_CTL_RESET		BIT(4)
+> +
+> +#define XADC_ZYNQ_CMD_NOP		0x00
+> +#define XADC_ZYNQ_CMD_READ		0x01
+> +#define XADC_ZYNQ_CMD_WRITE		0x02
+> +
+> +#define XADC_ZYNQ_CMD(cmd, addr, data) (((cmd) << 26) | ((addr) << 16) | (data))
+> +
+> +/* AXI register definitions */
+> +#define XADC_AXI_REG_RESET		0x00
+> +#define XADC_AXI_REG_STATUS		0x04
+> +#define XADC_AXI_REG_ALARM_STATUS	0x08
+> +#define XADC_AXI_REG_CONVST		0x0c
+> +#define XADC_AXI_REG_XADC_RESET		0x10
+> +#define XADC_AXI_REG_GIER		0x5c
+> +#define XADC_AXI_REG_IPISR		0x60
+> +#define XADC_AXI_REG_IPIER		0x68
+> +#define XADC_AXI_ADC_REG_OFFSET		0x200
+> +
+> +#define XADC_AXI_RESET_MAGIC		0xa
+> +#define XADC_AXI_GIER_ENABLE		BIT(31)
+> +
+> +#define XADC_AXI_INT_EOS		BIT(4)
+> +#define XADC_AXI_INT_ALARM_MASK		0x3c0f
+> +
+> +#define XADC_FLAGS_BUFFERED BIT(0)
+> +
+> +static void xadc_write_reg(struct xadc *xadc, unsigned int reg,
+> +	uint32_t val)
+> +{
+> +	writel(val, xadc->base + reg);
+> +}
+> +
+> +static void xadc_read_reg(struct xadc *xadc, unsigned int reg,
+> +	uint32_t *val)
+> +{
+> +	*val = readl(xadc->base + reg);
+> +}
+> +
+> +static void xadc_zynq_write_fifo(struct xadc *xadc, uint32_t *cmd,
+> +	unsigned int n)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < n; i++)
+> +		xadc_write_reg(xadc, XADC_ZYNQ_REG_CFIFO, cmd[i]);
+> +}
+> +
+> +static void xadc_zynq_drain_fifo(struct xadc *xadc)
+> +{
+> +	uint32_t status, tmp;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
+> +
+> +	while (!(status & XADC_ZYNQ_STATUS_DFIFOE)) {
+> +		xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
+> +		xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &status);
+> +	}
+> +}
+> +
+> +static void xadc_zynq_update_intmsk(struct xadc *xadc, unsigned int mask,
+> +	unsigned int val)
+> +{
+> +	xadc->zynq_intmask &= ~mask;
+> +	xadc->zynq_intmask |= val;
+> +
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTMSK,
+> +		xadc->zynq_intmask | xadc->zynq_masked_alarm);
+> +}
+> +
+Hmm. These are complex beasts. I'm not entirely sure I've understood them
+correctly... Might take another look at some point.
+> +static int xadc_zynq_write_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t val)
+> +{
+> +	uint32_t cmd[1];
+> +	uint32_t tmp;
+> +	int ret;
+> +
+> +	spin_lock_irq(&xadc->lock);
+> +	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+> +			XADC_ZYNQ_INT_DFIFO_GTH);
+> +
+> +	reinit_completion(&xadc->completion);
+> +
+> +	cmd[0] = XADC_ZYNQ_CMD(XADC_ZYNQ_CMD_WRITE, reg, val);
+> +	xadc_zynq_write_fifo(xadc, cmd, ARRAY_SIZE(cmd));
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_CFG, &tmp);
+> +	tmp &= ~XADC_ZYNQ_CFG_DFIFOTH_MASK;
+> +	tmp |= 0 << XADC_ZYNQ_CFG_DFIFOTH_OFFSET;
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_CFG, tmp);
+> +
+> +	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH, 0);
+> +	spin_unlock_irq(&xadc->lock);
+> +
+> +	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+> +	if (ret == 0)
+> +		ret = -EIO;
+> +	else
+> +		ret = 0;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
+> +
+> +	return ret;
+> +}
+> +
+> +static int xadc_zynq_read_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t *val)
+> +{
+> +	uint32_t cmd[2];
+> +	uint32_t resp, tmp;
+> +	int ret;
+> +
+> +	cmd[0] = XADC_ZYNQ_CMD(XADC_ZYNQ_CMD_READ, reg, 0);
+> +	cmd[1] = XADC_ZYNQ_CMD(XADC_ZYNQ_CMD_NOP, 0, 0);
+> +
+> +	spin_lock_irq(&xadc->lock);
+> +	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+> +			XADC_ZYNQ_INT_DFIFO_GTH);
+> +	xadc_zynq_drain_fifo(xadc);
+> +	reinit_completion(&xadc->completion);
+> +
+> +	xadc_zynq_write_fifo(xadc, cmd, ARRAY_SIZE(cmd));
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_CFG, &tmp);
+> +	tmp &= ~XADC_ZYNQ_CFG_DFIFOTH_MASK;
+> +	tmp |= 1 << XADC_ZYNQ_CFG_DFIFOTH_OFFSET;
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_CFG, tmp);
+> +
+> +	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH, 0);
+> +	spin_unlock_irq(&xadc->lock);
+> +	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+> +	if (ret == 0)
+> +		ret = -EIO;
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &resp);
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &resp);
+> +
+> +	*val = resp & 0xffff;
+> +
+> +	return 0;
+> +}
+> +
+> +static unsigned int xadc_zynq_transform_alarm(unsigned int alarm)
+> +{
+> +	return ((alarm & 0x80) >> 4) |
+> +		((alarm & 0x78) << 1) |
+> +		(alarm & 0x07);
+> +}
+> +
+> +/*
+> + * The ZYNQ threshold interrupts are level sensitive. Since we can't make the
+> + * threshold condition go way from within the interrupt handler, this means as
+> + * soon as a threshold condition is present we would enter the interrupt handler
+> + * again and again. To work around this we mask all active thresholds interrupts
+> + * in the interrupt handler and start a timer. In this timer we poll the
+> + * interrupt status and only if the interrupt is inactive we unmask it again.
+> + */
+> +static void xadc_zynq_unmask_worker(struct work_struct *work)
+> +{
+> +	struct xadc *xadc = container_of(work, struct xadc, zynq_unmask_work.work);
+> +	unsigned int misc_sts, unmask;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_STATUS, &misc_sts);
+> +
+> +	misc_sts &= XADC_ZYNQ_INT_ALARM_MASK;
+> +
+> +	spin_lock_irq(&xadc->lock);
+> +
+> +	/* Clear those bits which are not active anymore */
+> +	unmask = (xadc->zynq_masked_alarm ^ misc_sts) & xadc->zynq_masked_alarm;
+> +	xadc->zynq_masked_alarm &= misc_sts;
+> +
+> +	/* Also clear those which are masked out anyway */
+> +	xadc->zynq_masked_alarm &= ~xadc->zynq_intmask;
+> +
+> +	/* Clear the interrupts before we unmask them */
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, unmask);
+> +
+> +	xadc_zynq_update_intmsk(xadc, 0, 0);
+> +
+> +	spin_unlock_irq(&xadc->lock);
+> +
+> +	/* if still pending some alarm re-trigger the timer */
+> +	if (xadc->zynq_masked_alarm) {
+> +		schedule_delayed_work(&xadc->zynq_unmask_work,
+> +				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+> +	}
+> +}
+> +
+> +static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
+> +{
+> +	struct iio_dev *indio_dev = devid;
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned int alarm;
+> +
+> +	spin_lock_irq(&xadc->lock);
+> +	alarm = xadc->zynq_alarm;
+> +	xadc->zynq_alarm = 0;
+> +	spin_unlock_irq(&xadc->lock);
+> +
+> +	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
+> +
+> +	/* unmask the required interrupts in timer. */
+> +	schedule_delayed_work(&xadc->zynq_unmask_work,
+> +			msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+> +{
+> +	struct iio_dev *indio_dev = devid;
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	irqreturn_t ret = IRQ_HANDLED;
+> +	uint32_t status;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
+> +
+> +	status &= ~(xadc->zynq_intmask | xadc->zynq_masked_alarm);
+> +
+> +	if (!status)
+> +		return IRQ_NONE;
+> +
+> +	spin_lock(&xadc->lock);
+> +
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, status);
+> +
+> +	if (status & XADC_ZYNQ_INT_DFIFO_GTH) {
+> +		xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+> +			XADC_ZYNQ_INT_DFIFO_GTH);
+> +		complete(&xadc->completion);
+> +	}
+> +
+> +	status &= XADC_ZYNQ_INT_ALARM_MASK;
+> +	if (status) {
+> +		xadc->zynq_alarm |= status;
+> +		xadc->zynq_masked_alarm |= status;
+> +		/*
+> +		 * mask the current event interrupt,
+> +		 * unmask it when the interrupt is no more active.
+> +		 */
+> +		xadc_zynq_update_intmsk(xadc, 0, 0);
+> +		ret = IRQ_WAKE_THREAD;
+> +	}
+> +	spin_unlock(&xadc->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +#define XADC_ZYNQ_TCK_RATE_MAX 50000000
+> +#define XADC_ZYNQ_IGAP_DEFAULT 20
+> +
+> +static int xadc_zynq_setup(struct platform_device *pdev,
+> +	struct iio_dev *indio_dev, int irq)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned long pcap_rate;
+> +	unsigned int tck_div;
+> +	unsigned int div;
+> +	unsigned int igap;
+> +	unsigned int tck_rate;
+> +
+> +	/* TODO: Figure out how to make igap and tck_rate configurable */
+> +	igap = XADC_ZYNQ_IGAP_DEFAULT;
+> +	tck_rate = XADC_ZYNQ_TCK_RATE_MAX;
+> +
+> +	xadc->zynq_intmask = ~0;
+> +
+> +	pcap_rate = clk_get_rate(xadc->clk);
+> +
+> +	if (tck_rate > XADC_ZYNQ_TCK_RATE_MAX)
+> +		tck_rate = XADC_ZYNQ_TCK_RATE_MAX;
+> +	if (tck_rate > pcap_rate / 2) {
+> +		div = 2;
+> +	} else {
+> +		div = pcap_rate / tck_rate;
+> +		if (pcap_rate / div > XADC_ZYNQ_TCK_RATE_MAX)
+> +			div++;
+> +	}
+> +
+> +	if (div <= 3)
+> +		tck_div = XADC_ZYNQ_CFG_TCKRATE_DIV2;
+> +	else if (div <= 7)
+> +		tck_div = XADC_ZYNQ_CFG_TCKRATE_DIV4;
+> +	else if (div <= 15)
+> +		tck_div = XADC_ZYNQ_CFG_TCKRATE_DIV8;
+> +	else
+> +		tck_div = XADC_ZYNQ_CFG_TCKRATE_DIV16;
+> +
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_CTL, XADC_ZYNQ_CTL_RESET);
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_CTL, 0);
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, ~0);
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTMSK, xadc->zynq_intmask);
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_CFG, XADC_ZYNQ_CFG_ENABLE |
+> +			XADC_ZYNQ_CFG_REDGE | XADC_ZYNQ_CFG_WEDGE |
+> +			tck_div | XADC_ZYNQ_CFG_IGAP(igap));
+> +
+> +	return 0;
+> +}
+> +
+> +static unsigned long xadc_zynq_get_dclk_rate(struct xadc *xadc)
+> +{
+> +	unsigned int div;
+> +	uint32_t val;
+> +
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_CFG, &val);
+> +
+> +	switch (val & XADC_ZYNQ_CFG_TCKRATE_MASK) {
+> +	case XADC_ZYNQ_CFG_TCKRATE_DIV4:
+> +		div = 4;
+> +		break;
+> +	case XADC_ZYNQ_CFG_TCKRATE_DIV8:
+> +		div = 8;
+> +		break;
+> +	case XADC_ZYNQ_CFG_TCKRATE_DIV16:
+> +		div = 16;
+> +		break;
+> +	default:
+> +		div = 2;
+> +		break;
+> +	}
+> +
+> +	return clk_get_rate(xadc->clk) / div;
+> +}
+> +
+> +static void xadc_zynq_update_alarm(struct xadc *xadc, unsigned int alarm)
+> +{
+> +	unsigned long flags;
+> +	uint32_t status;
+> +
+> +	/* Move OT to bit 7 */
+> +	alarm = ((alarm & 0x08) << 4) | ((alarm & 0xf0) >> 1) | (alarm & 0x07);
+> +
+> +	spin_lock_irqsave(&xadc->lock, flags);
+> +
+> +	/* Clear previous interrupts if any. */
+> +	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
+> +	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, status & alarm);
+> +
+> +	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_ALARM_MASK,
+> +		~alarm & XADC_ZYNQ_INT_ALARM_MASK);
+> +
+> +	spin_unlock_irqrestore(&xadc->lock, flags);
+> +}
+> +
+> +static const struct xadc_ops xadc_zynq_ops = {
+> +	.read = xadc_zynq_read_adc_reg,
+> +	.write = xadc_zynq_write_adc_reg,
+> +	.setup = xadc_zynq_setup,
+> +	.get_dclk_rate = xadc_zynq_get_dclk_rate,
+> +	.interrupt_handler = xadc_zynq_interrupt_handler,
+> +	.threaded_interrupt_handler = xadc_zynq_threaded_interrupt_handler,
+> +	.update_alarm = xadc_zynq_update_alarm,
+> +};
+> +
+> +static int xadc_axi_read_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t *val)
+> +{
+> +	uint32_t val32;
+> +
+> +	xadc_read_reg(xadc, XADC_AXI_ADC_REG_OFFSET + reg * 4, &val32);
+> +	*val = val32 & 0xffff;
+> +
+> +	return 0;
+> +}
+> +
+> +static int xadc_axi_write_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t val)
+> +{
+> +	xadc_write_reg(xadc, XADC_AXI_ADC_REG_OFFSET + reg * 4, val);
+> +
+> +	return 0;
+> +}
+> +
+> +static int xadc_axi_setup(struct platform_device *pdev,
+> +	struct iio_dev *indio_dev, int irq)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +
+> +	xadc_write_reg(xadc, XADC_AXI_REG_RESET, XADC_AXI_RESET_MAGIC);
+> +	xadc_write_reg(xadc, XADC_AXI_REG_GIER, XADC_AXI_GIER_ENABLE);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t xadc_axi_interrupt_handler(int irq, void *devid)
+> +{
+> +	struct iio_dev *indio_dev = devid;
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	uint32_t status, mask;
+> +	unsigned int events;
+> +
+> +	xadc_read_reg(xadc, XADC_AXI_REG_IPISR, &status);
+> +	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &mask);
+> +	status &= mask;
+> +
+> +	if (!status)
+> +		return IRQ_NONE;
+> +
+> +	if ((status & XADC_AXI_INT_EOS) && xadc->trigger)
+> +		iio_trigger_poll(xadc->trigger, 0);
+> +
+> +	if (status & XADC_AXI_INT_ALARM_MASK) {
+> +		events = (status & 0x000e) >> 1;
+> +		events |= (status & 0x0001) << 3;
+> +		events |= (status & 0x3c00) >> 6;
+> +		xadc_handle_events(indio_dev, events);
+> +	}
+> +
+> +	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, status);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static void xadc_axi_update_alarm(struct xadc *xadc, unsigned int alarm)
+> +{
+> +	uint32_t val;
+> +	unsigned long flags;
+> +
+> +	alarm = ((alarm & 0x07) << 1) | ((alarm & 0x08) >> 3) |
+> +			((alarm & 0xf0) << 6);
+> +
+> +	spin_lock_irqsave(&xadc->lock, flags);
+> +	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+> +	val &= ~XADC_AXI_INT_ALARM_MASK;
+> +	val |= alarm;
+> +	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+> +	spin_unlock_irqrestore(&xadc->lock, flags);
+> +}
+> +
+> +static unsigned long xadc_axi_get_dclk(struct xadc *xadc)
+> +{
+> +	return clk_get_rate(xadc->clk);
+> +}
+> +
+> +static const struct xadc_ops xadc_axi_ops = {
+> +	.read = xadc_axi_read_adc_reg,
+> +	.write = xadc_axi_write_adc_reg,
+> +	.setup = xadc_axi_setup,
+> +	.get_dclk_rate = xadc_axi_get_dclk,
+> +	.update_alarm = xadc_axi_update_alarm,
+> +	.interrupt_handler = xadc_axi_interrupt_handler,
+> +	.flags = XADC_FLAGS_BUFFERED,
+> +};
+> +
+> +static int xadc_update_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t mask, uint16_t val)
+> +{
+> +	uint16_t tmp;
+> +	int ret;
+> +
+> +	mutex_lock(&xadc->mutex);
+> +
+> +	ret = _xadc_read_adc_reg(xadc, reg, &tmp);
+> +	if (ret)
+> +		goto err_unlock;
+> +
+> +	ret = _xadc_write_adc_reg(xadc, reg, (tmp & ~mask) | val);
+> +err_unlock:
+> +	mutex_unlock(&xadc->mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +static unsigned long xadc_get_dclk_rate(struct xadc *xadc)
+> +{
+> +	return xadc->ops->get_dclk_rate(xadc);
+> +}
+> +
+> +static int xadc_update_scan_mode(struct iio_dev *indio_dev,
+> +	const unsigned long *mask)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned int n;
+> +
+> +	n = bitmap_weight(mask, indio_dev->masklength);
+> +
+> +	kfree(xadc->data);
+> +	xadc->data = kcalloc(n, sizeof(*xadc->data), GFP_KERNEL);
+> +	if (!xadc->data)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +
+> +static unsigned int xadc_scan_index_to_channel(unsigned int scan_index)
+> +{
+> +	switch (scan_index) {
+> +	case 5:
+> +		return XADC_REG_VCCPINT;
+> +	case 6:
+> +		return XADC_REG_VCCPAUX;
+> +	case 7:
+> +		return XADC_REG_VCCO_DDR;
+> +	case 8:
+> +		return XADC_REG_TEMP;
+> +	case 9:
+> +		return XADC_REG_VCCINT;
+> +	case 10:
+> +		return XADC_REG_VCCAUX;
+> +	case 11:
+> +		return XADC_REG_VPVN;
+> +	case 12:
+> +		return XADC_REG_VREFP;
+> +	case 13:
+> +		return XADC_REG_VREFN;
+> +	case 14:
+> +		return XADC_REG_VCCBRAM;
+> +	default:
+> +		return XADC_REG_VAUX(scan_index - 16);
+> +	}
+> +}
+> +
+> +static irqreturn_t xadc_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned int chan;
+> +	int i, j;
+> +
+> +	if (!xadc->data)
+> +		goto out;
+> +
+> +	j = 0;
+> +	for_each_set_bit(i, indio_dev->active_scan_mask,
+> +		indio_dev->masklength) {
+> +		chan = xadc_scan_index_to_channel(i);
+> +		xadc_read_adc_reg(xadc, chan, &xadc->data[j]);
+> +		j++;
+> +	}
+> +
+> +	iio_push_to_buffers(indio_dev, xadc->data);
+> +
+> +out:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
+> +{
+> +	struct xadc *xadc = iio_trigger_get_drvdata(trigger);
+> +	unsigned long flags;
+> +	unsigned int convst;
+> +	unsigned int val;
+> +	int ret = 0;
+> +
+> +	mutex_lock(&xadc->mutex);
+> +
+> +	if (state) {
+> +		/* Only one of the two triggers can be active at the a time. */
+> +		if (xadc->trigger != NULL) {
+> +			ret = -EBUSY;
+> +			goto err_out;
+> +		} else {
+> +			xadc->trigger = trigger;
+> +			if (trigger == xadc->convst_trigger)
+> +				convst = XADC_CONF0_EC;
+> +			else
+> +				convst = 0;
+> +		}
+> +		ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF0_EC,
+> +					convst);
+> +		if (ret)
+> +			goto err_out;
+> +	} else {
+> +		xadc->trigger = NULL;
+> +	}
+> +
+> +	spin_lock_irqsave(&xadc->lock, flags);
+> +	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+> +	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, val & XADC_AXI_INT_EOS);
+> +	if (state)
+> +		val |= XADC_AXI_INT_EOS;
+> +	else
+> +		val &= ~XADC_AXI_INT_EOS;
+> +	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+> +	spin_unlock_irqrestore(&xadc->lock, flags);
+> +
+> +err_out:
+> +	mutex_unlock(&xadc->mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_trigger_ops xadc_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = &xadc_trigger_set_state,
+> +};
+> +
+> +static struct iio_trigger *xadc_alloc_trigger(struct iio_dev *indio_dev,
+> +	const char *name)
+> +{
+> +	struct iio_trigger *trig;
+> +	int ret;
+> +
+> +	trig = iio_trigger_alloc("%s-%s%d", indio_dev->name, name,
+> +				indio_dev->id);
+> +	if (trig == NULL)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	trig->dev.parent = indio_dev->dev.parent;
+> +	trig->ops = &xadc_trigger_ops;
+> +	iio_trigger_set_drvdata(trig, iio_priv(indio_dev));
+> +
+> +	ret = iio_trigger_register(trig);
+> +	if (ret)
+> +		goto error_free_trig;
+> +
+> +	return trig;
+> +
+> +error_free_trig:
+> +	iio_trigger_free(trig);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
+> +{
+> +	uint16_t val;
+> +
+> +	switch (seq_mode) {
+> +	case XADC_CONF1_SEQ_SIMULTANEOUS:
+> +	case XADC_CONF1_SEQ_INDEPENDENT:
+> +		val = XADC_CONF2_PD_ADC_B;
+> +		break;
+> +	default:
+> +		val = 0;
+> +		break;
+> +	}
+> +
+> +	return xadc_update_adc_reg(xadc, XADC_REG_CONF2, XADC_CONF2_PD_MASK,
+> +		val);
+> +}
+> +
+> +static int xadc_get_seq_mode(struct xadc *xadc, unsigned long scan_mode)
+> +{
+> +	unsigned int aux_scan_mode = scan_mode >> 16;
+> +
+> +	if (xadc->external_mux_mode == XADC_EXTERNAL_MUX_DUAL)
+> +		return XADC_CONF1_SEQ_SIMULTANEOUS;
+> +
+> +	if ((aux_scan_mode & 0xff00) == 0 ||
+> +		(aux_scan_mode & 0x00ff) == 0)
+> +		return XADC_CONF1_SEQ_CONTINUOUS;
+> +
+> +	return XADC_CONF1_SEQ_SIMULTANEOUS;
+> +}
+> +
+> +static int xadc_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned long scan_mask;
+> +	int ret;
+> +	int i;
+> +
+> +	scan_mask = 1; /* Run calibration as part of the sequence */
+> +	for (i = 0; i < indio_dev->num_channels; i++)
+> +		scan_mask |= BIT(indio_dev->channels[i].scan_index);
+> +
+> +	/* Enable all channels and calibration */
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(0), scan_mask & 0xffff);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(1), scan_mask >> 16);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
+> +		XADC_CONF1_SEQ_CONTINUOUS);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return xadc_power_adc_b(xadc, XADC_CONF1_SEQ_CONTINUOUS);
+> +}
+> +
+> +static int xadc_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned long scan_mask;
+> +	int seq_mode;
+> +	int ret;
+> +
+> +	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
+> +		XADC_CONF1_SEQ_DEFAULT);
+> +	if (ret)
+> +		goto err;
+> +
+> +	scan_mask = *indio_dev->active_scan_mask;
+> +	seq_mode = xadc_get_seq_mode(xadc, scan_mask);
+> +
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(0), scan_mask & 0xffff);
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(1), scan_mask >> 16);
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret = xadc_power_adc_b(xadc, seq_mode);
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
+> +		seq_mode);
+> +	if (ret)
+> +		goto err;
+> +
+> +	return 0;
+> +err:
+> +	xadc_postdisable(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static struct iio_buffer_setup_ops xadc_buffer_ops = {
+> +	.preenable = &xadc_preenable,
+> +	.postenable = &iio_triggered_buffer_postenable,
+> +	.predisable = &iio_triggered_buffer_predisable,
+> +	.postdisable = &xadc_postdisable,
+> +};
+> +
+> +static int xadc_read_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int *val, int *val2, long info)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned int div;
+> +	uint16_t val16;
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+> +		ret = xadc_read_adc_reg(xadc, chan->address, &val16);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		val16 >>= 4;
+> +		if (chan->scan_type.sign == 'u')
+> +			*val = val16;
+> +		else
+> +			*val = sign_extend32(val16, 11);
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_VOLTAGE:
+> +			/* V = (val * 3.0) / 4096 */
+> +			switch (chan->address) {
+> +			case XADC_REG_VCCINT:
+> +			case XADC_REG_VCCAUX:
+> +			case XADC_REG_VCCBRAM:
+> +			case XADC_REG_VCCPINT:
+> +			case XADC_REG_VCCPAUX:
+> +			case XADC_REG_VCCO_DDR:
+> +				*val = 3000;
+> +				break;
+> +			default:
+> +				*val = 1000;
+> +				break;
+> +			}
+> +			*val2 = 12;
+> +			return IIO_VAL_FRACTIONAL_LOG2;
+> +		case IIO_TEMP:
+> +			/* Temp in C = (val * 503.975) / 4096 - 273.15 */
+> +			*val = 503975;
+> +			*val2 = 12;
+> +			return IIO_VAL_FRACTIONAL_LOG2;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/* Only the temperature channel has an offset */
+> +		*val = -((273150 << 12) / 503975);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		ret = xadc_read_adc_reg(xadc, XADC_REG_CONF2, &val16);
+> +		if (ret)
+> +			return ret;
+> +
+> +		div = (val16 & XADC_CONF2_DIV_MASK) >> XADC_CONF2_DIV_OFFSET;
+> +		if (div < 2)
+> +			div = 2;
+> +
+> +		*val = xadc_get_dclk_rate(xadc) / div / 26;
+> +
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int xadc_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long info)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned long clk_rate = xadc_get_dclk_rate(xadc);
+> +	unsigned int div;
+> +
+> +	if (info != IIO_CHAN_INFO_SAMP_FREQ)
+> +		return -EINVAL;
+> +
+> +	if (val <= 0)
+> +		return -EINVAL;
+> +
+> +	/* Max. 150 kSPS */
+> +	if (val > 150000)
+> +		val = 150000;
+> +
+> +	val *= 26;
+> +
+> +	/* Min 1MHz */
+> +	if (val < 1000000)
+> +		val = 1000000;
+> +
+> +	/*
+> +	 * We want to round down, but only if we do not exceed the 150 kSPS
+> +	 * limit.
+> +	 */
+> +	div = clk_rate / val;
+> +	if (clk_rate / div / 26 > 150000)
+> +		div++;
+> +	if (div < 2)
+> +		div = 2;
+> +	else if (div > 0xff)
+> +		div = 0xff;
+> +
+> +	return xadc_update_adc_reg(xadc, XADC_REG_CONF2, XADC_CONF2_DIV_MASK,
+> +		div << XADC_CONF2_DIV_OFFSET);
+> +}
+> +
+> +static const struct iio_event_spec xadc_temp_events[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				BIT(IIO_EV_INFO_VALUE) |
+> +				BIT(IIO_EV_INFO_HYSTERESIS),
+> +	},
+> +};
+> +
+> +static const struct iio_event_spec xadc_voltage_events[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				BIT(IIO_EV_INFO_VALUE),
+> +	}, {
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				BIT(IIO_EV_INFO_VALUE),
+> +	},
+> +};
+> +
+> +#define XADC_CHAN_TEMP(_chan, _scan_index, _addr) { \
+> +	.type = IIO_TEMP, \
+> +	.indexed = 1, \
+> +	.channel = (_chan), \
+> +	.address = (_addr), \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +		BIT(IIO_CHAN_INFO_SCALE) | \
+> +		BIT(IIO_CHAN_INFO_OFFSET), \
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+> +	.event_spec = xadc_temp_events, \
+> +	.num_event_specs = ARRAY_SIZE(xadc_temp_events), \
+> +	.scan_index = (_scan_index), \
+> +	.scan_type = { \
+> +		.sign = 'u', \
+> +		.realbits = 12, \
+> +		.storagebits = 16, \
+> +		.shift = 4, \
+> +		.endianness = IIO_CPU, \
+> +	}, \
+> +}
+> +
+> +#define XADC_CHAN_VOLTAGE(_chan, _scan_index, _addr, _ext, _alarm) { \
+> +	.type = IIO_VOLTAGE, \
+> +	.indexed = 1, \
+> +	.channel = (_chan), \
+> +	.address = (_addr), \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +		BIT(IIO_CHAN_INFO_SCALE), \
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+> +	.event_spec = (_alarm) ? xadc_voltage_events : NULL, \
+> +	.num_event_specs = (_alarm) ? ARRAY_SIZE(xadc_voltage_events) : 0, \
+> +	.scan_index = (_scan_index), \
+> +	.scan_type = { \
+> +		.sign = 'u', \
+> +		.realbits = 12, \
+> +		.storagebits = 16, \
+> +		.shift = 4, \
+> +		.endianness = IIO_CPU, \
+> +	}, \
+> +	.extend_name = _ext, \
+> +}
+> +
+I rather like your approach to customising the connected channels.
+It's quite clean and allows for a simple fixed set.  Very nice.
+> +static const struct iio_chan_spec xadc_channels[] = {
+> +	XADC_CHAN_TEMP(0, 8, XADC_REG_TEMP),
+> +	XADC_CHAN_VOLTAGE(0, 9, XADC_REG_VCCINT, "vccint", true),
+> +	XADC_CHAN_VOLTAGE(1, 10, XADC_REG_VCCINT, "vccaux", true),
+> +	XADC_CHAN_VOLTAGE(2, 14, XADC_REG_VCCBRAM, "vccbram", true),
+> +	XADC_CHAN_VOLTAGE(3, 5, XADC_REG_VCCPINT, "vccpint", true),
+> +	XADC_CHAN_VOLTAGE(4, 6, XADC_REG_VCCPAUX, "vccpaux", true),
+> +	XADC_CHAN_VOLTAGE(5, 7, XADC_REG_VCCO_DDR, "vcco_ddr", true),
+> +	XADC_CHAN_VOLTAGE(6, 12, XADC_REG_VREFP, "vrefp", false),
+> +	XADC_CHAN_VOLTAGE(7, 13, XADC_REG_VREFN, "vrefn", false),
+> +	XADC_CHAN_VOLTAGE(8, 11, XADC_REG_VPVN, NULL, false),
+> +	XADC_CHAN_VOLTAGE(9, 16, XADC_REG_VAUX(0), NULL, false),
+> +	XADC_CHAN_VOLTAGE(10, 17, XADC_REG_VAUX(1), NULL, false),
+> +	XADC_CHAN_VOLTAGE(11, 18, XADC_REG_VAUX(2), NULL, false),
+> +	XADC_CHAN_VOLTAGE(12, 19, XADC_REG_VAUX(3), NULL, false),
+> +	XADC_CHAN_VOLTAGE(13, 20, XADC_REG_VAUX(4), NULL, false),
+> +	XADC_CHAN_VOLTAGE(14, 21, XADC_REG_VAUX(5), NULL, false),
+> +	XADC_CHAN_VOLTAGE(15, 22, XADC_REG_VAUX(6), NULL, false),
+> +	XADC_CHAN_VOLTAGE(16, 23, XADC_REG_VAUX(7), NULL, false),
+> +	XADC_CHAN_VOLTAGE(17, 24, XADC_REG_VAUX(8), NULL, false),
+> +	XADC_CHAN_VOLTAGE(18, 25, XADC_REG_VAUX(9), NULL, false),
+> +	XADC_CHAN_VOLTAGE(19, 26, XADC_REG_VAUX(10), NULL, false),
+> +	XADC_CHAN_VOLTAGE(20, 27, XADC_REG_VAUX(11), NULL, false),
+> +	XADC_CHAN_VOLTAGE(21, 28, XADC_REG_VAUX(12), NULL, false),
+> +	XADC_CHAN_VOLTAGE(22, 29, XADC_REG_VAUX(13), NULL, false),
+> +	XADC_CHAN_VOLTAGE(23, 30, XADC_REG_VAUX(14), NULL, false),
+> +	XADC_CHAN_VOLTAGE(24, 31, XADC_REG_VAUX(15), NULL, false),
+> +};
+> +
+> +static const struct iio_info xadc_info = {
+> +	.read_raw = &xadc_read_raw,
+> +	.write_raw = &xadc_write_raw,
+> +	.read_event_config = &xadc_read_event_config,
+> +	.write_event_config = &xadc_write_event_config,
+> +	.read_event_value = &xadc_read_event_value,
+> +	.write_event_value = &xadc_write_event_value,
+> +	.update_scan_mode = &xadc_update_scan_mode,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const struct of_device_id xadc_of_match_table[] = {
+> +	{ .compatible = "xlnx,zynq-xadc-1.00.a", (void *)&xadc_zynq_ops },
+> +	{ .compatible = "xlnx,axi-xadc-1.00.a", (void *)&xadc_axi_ops },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, xadc_of_match_table);
+> +
+> +static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+> +	unsigned int *conf)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	struct iio_chan_spec *channels, *chan;
+> +	struct device_node *chan_node, *child;
+> +	unsigned int num_channels;
+> +	const char *external_mux;
+> +	u32 ext_mux_chan;
+> +	int reg;
+> +	int ret;
+> +
+> +	*conf = 0;
+> +
+> +	ret = of_property_read_string(np, "xlnx,external-mux", &external_mux);
+> +	if (ret < 0 || strcasecmp(external_mux, "none") == 0)
+> +		xadc->external_mux_mode = XADC_EXTERNAL_MUX_NONE;
+> +	else if (strcasecmp(external_mux, "single") == 0)
+> +		xadc->external_mux_mode = XADC_EXTERNAL_MUX_SINGLE;
+> +	else if (strcasecmp(external_mux, "dual") == 0)
+> +		xadc->external_mux_mode = XADC_EXTERNAL_MUX_DUAL;
+> +	else
+> +		return -EINVAL;
+> +
+> +	if (xadc->external_mux_mode != XADC_EXTERNAL_MUX_NONE) {
+> +		ret = of_property_read_u32(np, "xlnx,external-mux-channel",
+> +					&ext_mux_chan);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		if (xadc->external_mux_mode == XADC_EXTERNAL_MUX_SINGLE) {
+> +			if (ext_mux_chan == 0)
+> +				ext_mux_chan = XADC_REG_VPVN;
+> +			else if (ext_mux_chan <= 16)
+> +				ext_mux_chan = XADC_REG_VAUX(ext_mux_chan - 1);
+> +			else
+> +				return -EINVAL;
+> +		} else {
+> +			if (ext_mux_chan > 0 && ext_mux_chan <= 8)
+> +				ext_mux_chan = XADC_REG_VAUX(ext_mux_chan - 1);
+> +			else
+> +				return -EINVAL;
+> +		}
+> +
+> +		*conf |= XADC_CONF0_MUX | XADC_CONF0_CHAN(ext_mux_chan);
+> +	}
+> +
+> +	channels = kmemdup(xadc_channels, sizeof(xadc_channels), GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
+> +
+> +	num_channels = 9;
+> +	chan = &channels[9];
+> +
+> +	chan_node = of_find_node_by_name(np, "xlnx,channels");
+> +	if (chan_node) {
+> +		for_each_child_of_node(chan_node, child) {
+> +			if (num_channels >= ARRAY_SIZE(xadc_channels))
+> +				break;
+> +
+> +			ret = of_property_read_u32(child, "reg", &reg);
+> +			if (ret || reg > 16)
+> +				continue;
+> +
+> +			if (of_property_read_bool(child, "xlnx,bipolar"))
+> +				chan->scan_type.sign = 's';
+> +
+> +			if (reg == 0) {
+> +				chan->scan_index = 11;
+> +				chan->address = XADC_REG_VPVN;
+> +			} else {
+> +				chan->scan_index = 15 + reg;
+> +				chan->scan_index = XADC_REG_VAUX(reg - 1);
+> +			}
+> +			num_channels++;
+> +			chan++;
+> +		}
+> +	}
+> +
+> +	indio_dev->num_channels = num_channels;
+> +	indio_dev->channels = krealloc(channels, sizeof(*channels) *
+> +					num_channels, GFP_KERNEL);
+> +	/* If we can't resize the channels array, just use the original */
+> +	if (!indio_dev->channels)
+> +		indio_dev->channels = channels;
+> +
+> +	return 0;
+> +}
+> +
+> +static int xadc_probe(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *id;
+> +	struct iio_dev *indio_dev;
+> +	unsigned int bipolar_mask;
+> +	struct resource *mem;
+> +	unsigned int conf0;
+> +	struct xadc *xadc;
+> +	int ret;
+> +	int irq;
+> +	int i;
+> +
+> +	if (!pdev->dev.of_node)
+> +		return -ENODEV;
+> +
+> +	id = of_match_node(xadc_of_match_table, pdev->dev.of_node);
+> +	if (!id)
+> +		return -EINVAL;
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq <= 0)
+> +		return -ENXIO;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*xadc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	xadc = iio_priv(indio_dev);
+> +	xadc->ops = id->data;
+> +	init_completion(&xadc->completion);
+> +	mutex_init(&xadc->mutex);
+> +	spin_lock_init(&xadc->lock);
+> +	INIT_DELAYED_WORK(&xadc->zynq_unmask_work, xadc_zynq_unmask_worker);
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	xadc->base = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(xadc->base))
+> +		return PTR_ERR(xadc->base);
+> +
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->name = "xadc";
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &xadc_info;
+> +
+> +	ret = xadc_parse_dt(indio_dev, pdev->dev.of_node, &conf0);
+> +	if (ret)
+> +		goto err_device_free;
+> +
+> +	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+> +		ret = iio_triggered_buffer_setup(indio_dev,
+> +			&iio_pollfunc_store_time, &xadc_trigger_handler,
+> +			&xadc_buffer_ops);
+> +		if (ret)
+> +			goto err_device_free;
+> +
+> +		xadc->convst_trigger = xadc_alloc_trigger(indio_dev, "convst");
+> +		if (IS_ERR(xadc->convst_trigger))
+> +			goto err_triggered_buffer_cleanup;
+> +		xadc->samplerate_trigger = xadc_alloc_trigger(indio_dev,
+> +			"samplerate");
+> +		if (IS_ERR(xadc->samplerate_trigger))
+> +			goto err_free_convst_trigger;
+> +	}
+> +
+> +	xadc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(xadc->clk)) {
+> +		ret = PTR_ERR(xadc->clk);
+> +		goto err_free_samplerate_trigger;
+> +	}
+> +	clk_prepare_enable(xadc->clk);
+> +
+> +	ret = xadc->ops->setup(pdev, indio_dev, irq);
+> +	if (ret)
+> +		goto err_free_samplerate_trigger;
+> +
+> +	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
+> +				xadc->ops->threaded_interrupt_handler,
+> +				0, dev_name(&pdev->dev), indio_dev);
+> +	if (ret)
+> +		goto err_clk_disable_unprepare;
+> +
+> +	for (i = 0; i < 16; i++)
+> +		xadc_read_adc_reg(xadc, XADC_REG_THRESHOLD(i),
+> +			&xadc->threshold[i]);
+> +
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_CONF0, conf0);
+> +	if (ret)
+> +		goto err_free_irq;
+> +
+> +	bipolar_mask = 0;
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+> +		if (indio_dev->channels[i].scan_type.sign == 's')
+> +			bipolar_mask |= BIT(indio_dev->channels[i].scan_index);
+> +	}
+> +
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_INPUT_MODE(0), bipolar_mask);
+> +	if (ret)
+> +		goto err_free_irq;
+> +	ret = xadc_write_adc_reg(xadc, XADC_REG_INPUT_MODE(1),
+> +		bipolar_mask >> 16);
+> +	if (ret)
+> +		goto err_free_irq;
+> +
+> +	/* Disable all alarms */
+> +	xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_ALARM_MASK,
+> +		XADC_CONF1_ALARM_MASK);
+> +
+> +	/* Set thresholds to min/max */
+> +	for (i = 0; i < 16; i++) {
+> +		/*
+> +		 * Set max voltage threshold and both temperature thresholds to
+> +		 * 0xffff, min voltage threshold to 0.
+> +		 */
+> +		if (i % 8 < 4 || i == 7)
+> +			xadc->threshold[i] = 0xffff;
+> +		else
+> +			xadc->threshold[i] = 0;
+> +		xadc_write_adc_reg(xadc, XADC_REG_THRESHOLD(i),
+> +			xadc->threshold[i]);
+> +	}
+> +
+> +	/* Go to non-buffered mode */
+> +	xadc_postdisable(indio_dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_free_irq;
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	return 0;
+> +
+> +err_free_irq:
+> +	free_irq(irq, indio_dev);
+> +err_free_samplerate_trigger:
+> +	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+> +		iio_trigger_free(xadc->samplerate_trigger);
+> +err_free_convst_trigger:
+> +	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+> +		iio_trigger_free(xadc->convst_trigger);
+> +err_triggered_buffer_cleanup:
+> +	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+> +		iio_triggered_buffer_cleanup(indio_dev);
+> +err_clk_disable_unprepare:
+> +	clk_disable_unprepare(xadc->clk);
+> +err_device_free:
+> +	kfree(indio_dev->channels);
+> +	iio_device_free(indio_dev);
+Don't want the iio_device_free given you've use devm_iio_device_alloc
+> +
+> +	return ret;
+> +}
+> +
+> +static int xadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	int irq = platform_get_irq(pdev, 0);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+> +		iio_trigger_free(xadc->convst_trigger);
+> +		iio_trigger_free(xadc->samplerate_trigger);
+It is trivial but your ordering here doesn't reverse that in probe.
+Please flip the two lines above.
+
+> +		iio_triggered_buffer_cleanup(indio_dev);
+> +	}
+> +	free_irq(irq, indio_dev);
+> +	clk_disable_unprepare(xadc->clk);
+> +	cancel_delayed_work(&xadc->zynq_unmask_work);
+> +	kfree(xadc->data);
+> +	kfree(indio_dev->channels);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver xadc_driver = {
+> +	.probe = xadc_probe,
+> +	.remove = xadc_remove,
+> +	.driver = {
+> +		.name = "xadc",
+> +		.owner = THIS_MODULE,
+> +		.of_match_table = xadc_of_match_table,
+> +	},
+> +};
+> +module_platform_driver(xadc_driver);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+> +MODULE_DESCRIPTION("Xilinx XADC IIO driver");
+> diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
+> new file mode 100644
+> index 0000000..e94035f
+> --- /dev/null
+> +++ b/drivers/iio/adc/xilinx-xadc-events.c
+> @@ -0,0 +1,265 @@
+> +/*
+> + * Xilinx XADC driver
+> + *
+> + * Copyright 2013 Analog Devices Inc.
+> + *  Author: Lars-Peter Clauen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/kernel.h>
+> +
+> +#include "xilinx-xadc.h"
+> +
+> +static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
+> +{
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	const struct iio_chan_spec *chan;
+> +	unsigned int offset;
+> +	uint16_t val;
+> +	int ret;
+> +
+> +	/* Temperature threshold error, we don't handle this yet */
+> +	if (event == 0)
+> +		return;
+> +
+> +	if (event < 4)
+> +		offset = event;
+> +	else
+> +		offset = event + 4;
+> +
+> +	if (event < 3)
+> +		chan = &indio_dev->channels[event];
+> +	else if (event == 3)
+> +		chan = &indio_dev->channels[0];
+> +	else
+> +		chan = &indio_dev->channels[event - 1];
+> +
+> +	if (event != 3) {
+
+Is there any guarantee that, by the time we get here, the value will not
+have crossed back over the threshold?   Might be better just to not
+separate the two and use IIO_EV_DIR_EITHER.  I'm not sure either way on this
+one.
+
+> +		ret = xadc_read_adc_reg(xadc, chan->address, &val);
+> +		if (ret)
+> +			return;
+> +
+> +		if ((xadc->threshold_state & BIT(offset)) &&
+> +			val >= xadc->threshold[offset]) {
+> +			iio_push_event(indio_dev,
+> +				IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
+> +					IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
+> +				iio_get_time_ns());
+> +		}
+> +
+> +		if ((xadc->threshold_state & BIT(offset + 4))
+> +			&& val <= xadc->threshold[offset + 4]) {
+> +			iio_push_event(indio_dev,
+> +				IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
+> +					IIO_EV_TYPE_THRESH, IIO_EV_DIR_FALLING),
+> +				iio_get_time_ns());
+> +		}
+> +
+> +	} else {
+> +		iio_push_event(indio_dev,
+> +			IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
+> +				IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
+> +			iio_get_time_ns());
+> +	}
+> +
+> +}
+> +
+> +void xadc_handle_events(struct iio_dev *indio_dev, unsigned long events)
+> +{
+> +	unsigned int i;
+> +
+> +	for_each_set_bit(i, &events, 8)
+> +		xadc_handle_event(indio_dev, i);
+> +}
+> +
+> +static unsigned int xadc_get_active_alarms(struct xadc *xadc)
+> +{
+> +	unsigned int alarm;
+> +	unsigned int state = xadc->threshold_state;
+> +
+Ouch this is confusing.  Perhaps a comment to explain what is going on?
+> +	alarm = ((state & 0x00f0) >> 4) | (state & 0x000f);
+> +	alarm |= ((state & 0xf000) >> 8) | ((state & 0x0f00) >> 4);
+> +
+> +	return alarm;
+> +}
+> +
+> +static unsigned xadc_get_threshold_offset(const struct iio_chan_spec *chan,
+> +	enum iio_event_type type, enum iio_event_direction dir)
+> +{
+> +	unsigned int offset;
+> +
+> +	if (chan->type == IIO_TEMP) {
+> +		offset = 3;
+> +	} else {
+> +		if (chan->channel < 2)
+> +			offset = chan->channel + 1;
+> +		else
+> +			offset = chan->channel + 6;
+> +	}
+> +
+> +	if (dir == IIO_EV_DIR_FALLING)
+> +		offset += 4;
+> +
+> +	return offset;
+> +}
+> +
+> +static int xadc_write_event_threshold(struct xadc *xadc,
+> +	const struct iio_chan_spec *chan, unsigned int offset,
+> +	unsigned int val)
+> +{
+> +	int ret;
+> +
+> +	if (offset == 3) {
+> +		/*
+> +		 * According to the datasheet we need to set the lower 4 bits to
+> +		 * 0x3, otherwise 125 degree celsius will be used as the
+> +		 * threshold.
+> +		 */
+> +		val = (val & ~0xf) | 0x3;
+> +	}
+> +
+> +	ret = _xadc_write_adc_reg(xadc, XADC_REG_THRESHOLD(offset), val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (chan->type == IIO_TEMP) {
+> +		ret = _xadc_write_adc_reg(xadc, XADC_REG_THRESHOLD(offset + 4),
+> +			xadc->threshold[offset + 4]);
+> +	}
+> +	return ret;
+> +}
+> +
+> +int xadc_read_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir)
+> +{
+> +	unsigned int offset = xadc_get_threshold_offset(chan, type, dir);
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +
+> +	return (bool)(xadc->threshold_state & BIT(offset));
+> +}
+> +
+> +int xadc_write_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, int state)
+> +{
+> +	unsigned int offset = xadc_get_threshold_offset(chan, type, dir);
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	unsigned int alarm;
+> +	uint16_t val, cfg, old_cfg;
+> +	int ret;
+> +
+> +	mutex_lock(&xadc->mutex);
+> +
+> +	if (!state) {
+> +		/*
+> +		 * Unfortunately there is only one alarm interrupt signal per
+> +		 * channel and it is triggered by both low and high threshold
+> +		 * events. So if we enable
+disable? Or you mean enable the other threshold?
+> a threshold set the limit to the
+> +		 * min/max value to avoid accidentally triggering the threshold.
+> +		 */
+> +		if (dir == IIO_EV_DIR_FALLING)
+> +			val = 0;
+> +		else
+> +			val = 0xffff;
+> +	} else {
+> +		val = xadc->threshold[offset];
+> +	}
+> +
+> +	ret = xadc_write_event_threshold(xadc, chan, offset, val);
+> +	if (ret)
+> +		goto err_out;
+> +
+> +	if (state)
+> +		xadc->threshold_state |= BIT(offset);
+> +	else
+> +		xadc->threshold_state &= ~BIT(offset);
+> +
+> +	alarm = xadc_get_active_alarms(xadc);
+> +
+> +	xadc->ops->update_alarm(xadc, alarm);
+> +
+> +	ret = _xadc_read_adc_reg(xadc, XADC_REG_CONF1, &cfg);
+> +	if (ret)
+> +		goto err_out;
+> +	old_cfg = cfg;
+> +	cfg |= XADC_CONF1_ALARM_MASK;
+> +	cfg &= ~((alarm & 0xf0) << 4); /* bram, pint, paux, ddr */
+> +	cfg &= ~((alarm & 0x08) >> 3); /* ot */
+> +	cfg &= ~((alarm & 0x07) << 1); /* temp, vccint, vccaux */
+> +	if (old_cfg != cfg)
+> +		ret = _xadc_write_adc_reg(xadc, XADC_REG_CONF1, cfg);
+> +
+> +err_out:
+> +	mutex_unlock(&xadc->mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +int xadc_read_event_value(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info,
+> +	int *val, int *val2)
+> +{
+> +	unsigned int offset = xadc_get_threshold_offset(chan, type, dir);
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		*val = xadc->threshold[offset] >> 4;
+> +		break;
+> +	case IIO_EV_INFO_HYSTERESIS:
+> +		*val = xadc->temp_hysteresis >> 4;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +int xadc_write_event_value(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info,
+> +	int val, int val2)
+> +{
+> +	unsigned int offset = xadc_get_threshold_offset(chan, type, dir);
+> +	struct xadc *xadc = iio_priv(indio_dev);
+> +	int ret = 0;
+> +
+> +	val <<= 4;
+> +
+> +	if (val < 0 || val > 0xffff)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&xadc->mutex);
+> +
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		xadc->threshold[offset] = val;
+> +		break;
+> +	case IIO_EV_INFO_HYSTERESIS:
+> +		xadc->temp_hysteresis = val;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+This next bit could do with an explanatory comment. I think I know what
+is going on, but it's not obvious.
+> +	if (chan->type == IIO_TEMP) {
+> +		if (xadc->threshold[offset] < xadc->temp_hysteresis) {
+> +			xadc->threshold[offset + 4] = 0;
+> +		} else {
+> +			xadc->threshold[offset + 4] = xadc->threshold[offset] -
+> +					xadc->temp_hysteresis;
+> +		}
+> +	}
+> +
+> +	if (xadc->threshold_state & BIT(offset))
+> +		ret = xadc_write_event_threshold(xadc, chan, offset, val);
+> +	mutex_unlock(&xadc->mutex);
+> +
+> +	return ret;
+> +}
+> diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+> new file mode 100644
+> index 0000000..a346fbb
+> --- /dev/null
+> +++ b/drivers/iio/adc/xilinx-xadc.h
+> @@ -0,0 +1,205 @@
+> +/*
+> + * Xilinx XADC driver
+> + *
+> + * Copyright 2013 Analog Devices Inc.
+> + *  Author: Lars-Peter Clauen <lars@metafoo.de>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +
+> +#ifndef __IIO_XILINX_XADC__
+> +#define __IIO_XILINX_XADC__
+> +
+> +#include <linux/interrupt.h>
+> +#include <linux/mutex.h>
+> +#include <linux/spinlock.h>
+> +
+> +struct iio_dev;
+> +struct clk;
+> +struct xadc_ops;
+> +struct platform_device;
+> +
+> +void xadc_handle_events(struct iio_dev *indio_dev, unsigned long events);
+> +
+> +int xadc_read_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir);
+> +int xadc_write_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, int state);
+> +int xadc_read_event_value(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info,
+> +	int *val, int *val2);
+> +int xadc_write_event_value(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info,
+> +	int val, int val2);
+> +
+> +enum xadc_external_mux_mode {
+> +	XADC_EXTERNAL_MUX_NONE,
+> +	XADC_EXTERNAL_MUX_SINGLE,
+> +	XADC_EXTERNAL_MUX_DUAL,
+> +};
+> +
+> +struct xadc {
+> +	void __iomem *base;
+> +	struct clk *clk;
+> +
+> +	const struct xadc_ops *ops;
+> +
+> +	uint16_t threshold[16];
+> +	unsigned int threshold_state;
+> +	unsigned int temp_hysteresis;
+> +
+> +	uint16_t *data;
+> +
+> +	struct iio_trigger *trigger;
+> +	struct iio_trigger *convst_trigger;
+> +	struct iio_trigger *samplerate_trigger;
+> +
+> +	enum xadc_external_mux_mode external_mux_mode;
+> +
+> +	unsigned int zynq_alarm;
+> +	unsigned int zynq_masked_alarm;
+> +	unsigned int zynq_intmask;
+> +	struct delayed_work zynq_unmask_work;
+> +
+> +	struct mutex mutex;
+> +	spinlock_t lock;
+> +
+> +	struct completion completion;
+> +};
+> +
+> +struct xadc_ops {
+> +	int (*read)(struct xadc *, unsigned int, uint16_t *);
+> +	int (*write)(struct xadc *, unsigned int, uint16_t);
+> +	int (*setup)(struct platform_device *pdev, struct iio_dev *indio_dev,
+> +			int irq);
+> +	void (*update_alarm)(struct xadc *, unsigned int);
+> +	unsigned long (*get_dclk_rate)(struct xadc *);
+> +	irqreturn_t (*interrupt_handler)(int, void *);
+> +	irqreturn_t (*threaded_interrupt_handler)(int, void *);
+> +
+> +	unsigned int flags;
+> +};
+> +
+> +static inline int _xadc_read_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t *val)
+> +{
+> +	return xadc->ops->read(xadc, reg, val);
+> +}
+> +
+> +static inline int _xadc_write_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t val)
+> +{
+> +	return xadc->ops->write(xadc, reg, val);
+> +}
+> +
+> +static inline int xadc_read_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t *val)
+> +{
+> +	int ret;
+> +	mutex_lock(&xadc->mutex);
+> +	ret = _xadc_read_adc_reg(xadc, reg, val);
+> +	mutex_unlock(&xadc->mutex);
+> +	return ret;
+> +}
+> +
+> +static inline int xadc_write_adc_reg(struct xadc *xadc, unsigned int reg,
+> +	uint16_t val)
+> +{
+> +	int ret;
+> +	mutex_lock(&xadc->mutex);
+> +	ret = _xadc_write_adc_reg(xadc, reg, val);
+> +	mutex_unlock(&xadc->mutex);
+> +	return ret;
+> +}
+> +
+> +/* XADC hardmacro register definitions */
+> +#define XADC_REG_TEMP		0x00
+> +#define XADC_REG_VCCINT		0x01
+> +#define XADC_REG_VCCAUX		0x02
+> +#define XADC_REG_VPVN		0x03
+> +#define XADC_REG_VREFP		0x04
+> +#define XADC_REG_VREFN		0x05
+> +#define XADC_REG_VCCBRAM	0x06
+> +
+> +#define XADC_REG_VCCPINT	0x0d
+> +#define XADC_REG_VCCPAUX	0x0e
+> +#define XADC_REG_VCCO_DDR	0x0f
+> +#define XADC_REG_VAUX(x)	(0x10 + (x))
+> +
+> +#define XADC_REG_MAX_TEMP	0x20
+> +#define XADC_REG_MAX_VCCINT	0x21
+> +#define XADC_REG_MAX_VCCAUX	0x22
+> +#define XADC_REG_MAX_VCCBRAM	0x23
+> +#define XADC_REG_MIN_TEMP	0x24
+> +#define XADC_REG_MIN_VCCINT	0x25
+> +#define XADC_REG_MIN_VCCAUX	0x26
+> +#define XADC_REG_MIN_VCCBRAM	0x27
+> +#define XADC_REG_MAX_VCCPINT	0x28
+> +#define XADC_REG_MAX_VCCPAUX	0x29
+> +#define XADC_REG_MAX_VCCO_DDR	0x2a
+> +#define XADC_REG_MIN_VCCPINT	0x2b
+> +#define XADC_REG_MIN_VCCPAUX	0x2c
+> +#define XADC_REG_MIN_VCCO_DDR	0x2d
+> +
+> +#define XADC_REG_CONF0		0x40
+> +#define XADC_REG_CONF1		0x41
+> +#define XADC_REG_CONF2		0x42
+> +#define XADC_REG_SEQ(x)		(0x48 + (x))
+> +#define XADC_REG_INPUT_MODE(x)	(0x4c + (x))
+> +#define XADC_REG_THRESHOLD(x)	(0x50 + (x))
+> +
+> +#define XADC_REG_FLAG		0x3f
+> +
+> +#define XADC_CONF0_EC			BIT(9)
+> +#define XADC_CONF0_ACQ			BIT(8)
+> +#define XADC_CONF0_MUX			BIT(11)
+> +#define XADC_CONF0_CHAN(x)		(x)
+> +
+> +#define XADC_CONF1_SEQ_MASK		(0xf << 12)
+> +#define XADC_CONF1_SEQ_DEFAULT		(0 << 12)
+> +#define XADC_CONF1_SEQ_SINGLE_PASS	(1 << 12)
+> +#define XADC_CONF1_SEQ_CONTINUOUS	(2 << 12)
+> +#define XADC_CONF1_SEQ_SINGLE_CHANNEL	(3 << 12)
+> +#define XADC_CONF1_SEQ_SIMULTANEOUS	(4 << 12)
+> +#define XADC_CONF1_SEQ_INDEPENDENT	(8 << 12)
+> +#define XADC_CONF1_ALARM_MASK		0x0f0f
+> +
+> +#define XADC_CONF2_DIV_MASK	0xff00
+> +#define XADC_CONF2_DIV_OFFSET	8
+> +
+> +#define XADC_CONF2_PD_MASK	(0x3 << 4)
+> +#define XADC_CONF2_PD_NONE	(0x0 << 4)
+> +#define XADC_CONF2_PD_ADC_B	(0x2 << 4)
+> +#define XADC_CONF2_PD_BOTH	(0x3 << 4)
+> +
+> +#define XADC_ALARM_TEMP_MASK		BIT(0)
+> +#define XADC_ALARM_VCCINT_MASK		BIT(1)
+> +#define XADC_ALARM_VCCAUX_MASK		BIT(2)
+> +#define XADC_ALARM_OT_MASK		BIT(3)
+> +#define XADC_ALARM_VCCBRAM_MASK		BIT(4)
+> +#define XADC_ALARM_VCCPINT_MASK		BIT(5)
+> +#define XADC_ALARM_VCCPAUX_MASK		BIT(6)
+> +#define XADC_ALARM_VCCODDR_MASK		BIT(7)
+> +
+> +#define XADC_THRESHOLD_TEMP_MAX		0x0
+> +#define XADC_THRESHOLD_VCCINT_MAX	0x1
+> +#define XADC_THRESHOLD_VCCAUX_MAX	0x2
+> +#define XADC_THRESHOLD_OT_MAX		0x3
+> +#define XADC_THRESHOLD_TEMP_MIN		0x4
+> +#define XADC_THRESHOLD_VCCINT_MIN	0x5
+> +#define XADC_THRESHOLD_VCCAUX_MIN	0x6
+> +#define XADC_THRESHOLD_OT_MIN		0x7
+> +#define XADC_THRESHOLD_VCCBRAM_MAX	0x8
+> +#define XADC_THRESHOLD_VCCPINT_MAX	0x9
+> +#define XADC_THRESHOLD_VCCPAUX_MAX	0xa
+> +#define XADC_THRESHOLD_VCCODDR_MAX	0xb
+> +#define XADC_THRESHOLD_VCCBRAM_MIN	0xc
+> +#define XADC_THRESHOLD_VCCPINT_MIN	0xd
+> +#define XADC_THRESHOLD_VCCPAUX_MIN	0xe
+> +#define XADC_THRESHOLD_VCCODDR_MIN	0xf
+> +
+> +#endif
+>
 
