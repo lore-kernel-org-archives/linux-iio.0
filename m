@@ -1,113 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40865 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40952 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751228AbaBHLZH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 06:25:07 -0500
-Message-ID: <52F6142C.3060701@kernel.org>
-Date: Sat, 08 Feb 2014 11:25:32 +0000
+	with ESMTP id S1751140AbaBHLgh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Feb 2014 06:36:37 -0500
+Message-ID: <52F616E2.2000706@kernel.org>
+Date: Sat, 08 Feb 2014 11:37:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>
-CC: Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adis16400: Set timestamp as the last element in
- chan_spec
-References: <marcus.folkesson@gmail.com> <1390562644-25124-1-git-send-email-marcus.folkesson@gmail.com> <1390562644-25124-2-git-send-email-marcus.folkesson@gmail.com> <52E26E9A.9040002@metafoo.de>
-In-Reply-To: <52E26E9A.9040002@metafoo.de>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, Kravchenko Oleksandr <x0199363@ti.com>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH 1/2] iio:accel:bma180: Use modifier instead of index in
+ channel specification
+References: <1389389841-7389-1-git-send-email-pmeerw@pmeerw.net> <52D12D6C.2020007@kernel.org> <alpine.DEB.2.01.1401111602360.9334@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1401111602360.9334@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/01/14 13:46, Lars-Peter Clausen wrote:
-> On 01/24/2014 12:24 PM, Marcus Folkesson wrote:
->> This is necessary since timestamp is calculated as the last element
->> in iio_compute_scan_bytes().
->>
->> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+On 11/01/14 15:25, Peter Meerwald wrote:
+> Hello,
 >
-> Looks good, thanks.
+>>> should use channel modifiers (X/Y/Z), not channel indices
+>>> timestamp channel has scan index 3, not 4
+>>>
+>> Aag.  Whilst a correct fix, this is going to result in a userspace ABI
+>> change.  Driver has been in since 3.12.  We may need to maintain
+>> both ABI's for now and then deprecate it at some point.  Easiest way to do
+>> this
+>> will be to have two sets of iio_chan_specs pointing at the same underlying
+>> real channels.
+>>
+>> Anyone have a strong opinion about this?
+>> Good spot by the way!
 >
-> Acked-by: Lars-Peter Clausen
-Applied with some fuzz to fixes-togreg.  Also marked for stable.
-
-Thanks
-
-Jonathan
-
+> adding another email address of Oleksandr, x0199363@ti.com bounces
 >
-> That said, I think we should try to modify the core code so that the scan
-> index for the timestamp is auto assigned to be always the last one.
-I'd be happy with such a change.  Note we need to be careful not to block other
-positions of timestamps coming from hardware timestamp generators, but for software
-time stamps it would make sense just to automate always having them at the end.
+> the IIO ABI is under "testing", not "stable" so the interface may be
+> changed due to 'grave errors'
 >
->> ---
->>   drivers/iio/imu/adis16400.h      |    1 +
->>   drivers/iio/imu/adis16400_core.c |   10 +++++-----
->>   2 files changed, 6 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/imu/adis16400.h b/drivers/iio/imu/adis16400.h
->> index 2f8f9d6..0916bf6 100644
->> --- a/drivers/iio/imu/adis16400.h
->> +++ b/drivers/iio/imu/adis16400.h
->> @@ -189,6 +189,7 @@ enum {
->>   	ADIS16300_SCAN_INCLI_X,
->>   	ADIS16300_SCAN_INCLI_Y,
->>   	ADIS16400_SCAN_ADC,
->> +	ADIS16400_SCAN_TIMESTAMP,
->>   };
->>
->>   #ifdef CONFIG_IIO_BUFFER
->> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
->> index 3fb7757..7f98657 100644
->> --- a/drivers/iio/imu/adis16400_core.c
->> +++ b/drivers/iio/imu/adis16400_core.c
->> @@ -632,7 +632,7 @@ static const struct iio_chan_spec adis16400_channels[] = {
->>   	ADIS16400_MAGN_CHAN(Z, ADIS16400_ZMAGN_OUT, 14),
->>   	ADIS16400_TEMP_CHAN(ADIS16400_TEMP_OUT, 12),
->>   	ADIS16400_AUX_ADC_CHAN(ADIS16400_AUX_ADC, 12),
->> -	IIO_CHAN_SOFT_TIMESTAMP(12)
->> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->>   };
->>
->>   static const struct iio_chan_spec adis16448_channels[] = {
->> @@ -654,7 +654,7 @@ static const struct iio_chan_spec adis16448_channels[] = {
->>   		.scan_type = IIO_ST('s', 16, 16, 0),
->>   	},
->>   	ADIS16400_TEMP_CHAN(ADIS16448_TEMP_OUT, 12),
->> -	IIO_CHAN_SOFT_TIMESTAMP(11)
->> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->>   };
->>
->>   static const struct iio_chan_spec adis16350_channels[] = {
->> @@ -672,7 +672,7 @@ static const struct iio_chan_spec adis16350_channels[] = {
->>   	ADIS16400_MOD_TEMP_CHAN(X, ADIS16350_XTEMP_OUT, 12),
->>   	ADIS16400_MOD_TEMP_CHAN(Y, ADIS16350_YTEMP_OUT, 12),
->>   	ADIS16400_MOD_TEMP_CHAN(Z, ADIS16350_ZTEMP_OUT, 12),
->> -	IIO_CHAN_SOFT_TIMESTAMP(11)
->> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->>   };
->>
->>   static const struct iio_chan_spec adis16300_channels[] = {
->> @@ -685,7 +685,7 @@ static const struct iio_chan_spec adis16300_channels[] = {
->>   	ADIS16400_AUX_ADC_CHAN(ADIS16300_AUX_ADC, 12),
->>   	ADIS16400_INCLI_CHAN(X, ADIS16300_PITCH_OUT, 13),
->>   	ADIS16400_INCLI_CHAN(Y, ADIS16300_ROLL_OUT, 13),
->> -	IIO_CHAN_SOFT_TIMESTAMP(14)
->> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->>   };
->>
->>   static const struct iio_chan_spec adis16334_channels[] = {
->> @@ -696,7 +696,7 @@ static const struct iio_chan_spec adis16334_channels[] = {
->>   	ADIS16400_ACCEL_CHAN(Y, ADIS16400_YACCL_OUT, 14),
->>   	ADIS16400_ACCEL_CHAN(Z, ADIS16400_ZACCL_OUT, 14),
->>   	ADIS16400_TEMP_CHAN(ADIS16350_XTEMP_OUT, 12),
->> -	IIO_CHAN_SOFT_TIMESTAMP(8)
->> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->>   };
->>
->>   static struct attribute *adis16400_attributes[] = {
+> given the short timespan since 3.12 and the clear violation of the
+> documented ABI, I think this should just be fixed
+Fine, I've applied this to fixes-togreg and marked it for stable.
+>
+> another suggestion:
+>
+> often (at least for me) it is difficult to figure out what the user-space
+> sysfs ABI is from reading the source code and I find it even more
+> difficult to sometimes guess what a particular sysfs is supposed to do
+> (e.g. what writing to a _scale actually sets in terms of the hardware);
+>
+> I'd like to suggest to ask for a listing of the sysfs entries relating
+> to a new driver under review (e.g. the output of 'find
+> /sys/bus/iio/devices/iio:deviceX'); it should be feasible to provide a
+> tool which compares the submitted listing against the sysfs-bus-iio
+> documentation and output appropriate warnings
+It would certainly be helpful to do this. I'll start asking for complex
+drivers, but am not going to bother for really simple ones.
+(obviously I'd be happy if the cover letter contained it in all drivers!)
+>
+> regards, p.
+>
+>>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>>> Cc: Kravchenko Oleksandr <x0199363@ti.com>
+>>> ---
+>>>    drivers/iio/accel/bma180.c | 16 ++++++++--------
+>>>    1 file changed, 8 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+>>> index 3bec922..bfec313 100644
+>>> --- a/drivers/iio/accel/bma180.c
+>>> +++ b/drivers/iio/accel/bma180.c
+>>> @@ -447,14 +447,14 @@ static const struct iio_chan_spec_ext_info
+>>> bma180_ext_info[] = {
+>>>    	{ },
+>>>    };
+>>>
+>>> -#define BMA180_CHANNEL(_index) {					\
+>>> +#define BMA180_CHANNEL(_axis) {					\
+>>>    	.type = IIO_ACCEL,						\
+>>> -	.indexed = 1,							\
+>>> -	.channel = (_index),						\
+>>> +	.modified = 1,							\
+>>> +	.channel2 = IIO_MOD_##_axis,					\
+>>>    	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+>>>    		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
+>>>    	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+>>> -	.scan_index = (_index),						\
+>>> +	.scan_index = AXIS_##_axis,					\
+>>>    	.scan_type = {							\
+>>>    		.sign = 's',						\
+>>>    		.realbits = 14,						\
+>>> @@ -465,10 +465,10 @@ static const struct iio_chan_spec_ext_info
+>>> bma180_ext_info[] = {
+>>>    }
+>>>
+>>>    static const struct iio_chan_spec bma180_channels[] = {
+>>> -	BMA180_CHANNEL(AXIS_X),
+>>> -	BMA180_CHANNEL(AXIS_Y),
+>>> -	BMA180_CHANNEL(AXIS_Z),
+>>> -	IIO_CHAN_SOFT_TIMESTAMP(4),
+>>> +	BMA180_CHANNEL(X),
+>>> +	BMA180_CHANNEL(Y),
+>>> +	BMA180_CHANNEL(Z),
+>>> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>>>    };
+>>>
+>>>    static irqreturn_t bma180_trigger_handler(int irq, void *p)
+>>>
 >>
 >
 
