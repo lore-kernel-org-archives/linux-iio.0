@@ -1,76 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:40832 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752097AbaBJE1k (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 9 Feb 2014 23:27:40 -0500
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: matt.porter@linaro.org, pantelis.antoniou@gmail.com,
-	Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v6 1/2] iio:as3935: Add DT binding docs for AS3935 driver
-Date: Sun,  9 Feb 2014 20:27:30 -0800
-Message-Id: <1392006451-7818-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1392006451-7818-1-git-send-email-mranostay@gmail.com>
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:53864 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751564AbaBJK6L (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Feb 2014 05:58:11 -0500
+Date: Mon, 10 Feb 2014 10:58:08 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"matt.porter@linaro.org" <matt.porter@linaro.org>,
+	"pantelis.antoniou@gmail.com" <pantelis.antoniou@gmail.com>
+Subject: Re: [PATCH v6 1/2] iio:as3935: Add DT binding docs for AS3935
+ driver
+Message-ID: <20140210105807.GU25314@e106331-lin.cambridge.arm.com>
 References: <1392006451-7818-1-git-send-email-mranostay@gmail.com>
+ <1392006451-7818-2-git-send-email-mranostay@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1392006451-7818-2-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Document compatible string, required and optional DT properties for
-AS3935 chipset driver.
+On Mon, Feb 10, 2014 at 04:27:30AM +0000, Matt Ranostay wrote:
+> Document compatible string, required and optional DT properties for
+> AS3935 chipset driver.
+> 
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  .../devicetree/bindings/iio/proximity/as3935.txt   | 27 ++++++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.txt        |  1 +
+>  2 files changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/as3935.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+> new file mode 100644
+> index 0000000..0453254
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+> @@ -0,0 +1,27 @@
+> +Austrian Microsystems AS3935 Franklin lightning sensor device driver
+> +
+> +Required properties:
+> +	- compatible: must be "ams,as3935"
+> +	- reg: SPI chip select number for the device
+> +	- spi-cpha: SPI Mode 1. Refer to spi/spi-bus.txt for generic SPI
+> +	slave node bindings.
+> +	- interrupt-parent : should be the phandle for the interrupt controller
+> +	- interrupts : interrupt mapping
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- .../devicetree/bindings/iio/proximity/as3935.txt   | 27 ++++++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.txt        |  1 +
- 2 files changed, 28 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/as3935.txt
+Nit: Please don't use the term "interrupt mapping", as it's undefined
+and clashes with the "interrupt-map" property on an interrupt nexus.
+There are a lot of bindings using it, and it would be nice to get them
+fixed up too.
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
-new file mode 100644
-index 0000000..0453254
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
-@@ -0,0 +1,27 @@
-+Austrian Microsystems AS3935 Franklin lightning sensor device driver
-+
-+Required properties:
-+	- compatible: must be "ams,as3935"
-+	- reg: SPI chip select number for the device
-+	- spi-cpha: SPI Mode 1. Refer to spi/spi-bus.txt for generic SPI
-+	slave node bindings.
-+	- interrupt-parent : should be the phandle for the interrupt controller
-+	- interrupts : interrupt mapping
-+
-+	Refer to interrupt-controller/interrupts.txt for generic
-+	interrupt client node bindings.
-+
-+Optional properties:
-+	- ams,tune-cap: Calibration tuning capacitor stepping value 0 - 120pF.
-+	  This will require using the calibration data from the manufacturer.
-+
-+Example:
-+
-+as3935@0 {
-+	compatible = "ams,as3935";
-+	reg = <0>;
-+	spi-cpha;
-+	interrupt-parent = <&gpio1>;
-+	interrupts = <16 1>;
-+	ams,tune-cap = <80>;
-+};
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index e9d19e2..03e50ff 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -11,6 +11,7 @@ ak	Asahi Kasei Corp.
- allwinner	Allwinner Technology Co., Ltd.
- altr	Altera Corp.
- amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
-+ams	AMS AG
- amstaos	AMS-Taos Inc.
- apm	Applied Micro Circuits Corporation (APM)
- arm	ARM Ltd.
--- 
-1.8.3.2
+As interrupts can be described in a couple of ways it probably doesn't
+make sense to state the exact format here, but could this be something
+like the following instead:
 
+- interrupts: the sole interrupt generated by the device.
+
+> +
+> +	Refer to interrupt-controller/interrupts.txt for generic
+> +	interrupt client node bindings.
+> +
+> +Optional properties:
+> +	- ams,tune-cap: Calibration tuning capacitor stepping value 0 - 120pF.
+> +	  This will require using the calibration data from the manufacturer.
+
+I think "tune-cap" is a little terse. Also "cap" is used as an
+abbreviation for "capability" elsewhere, and it would be nice to make
+it clear that in this case it means "capacitor".
+
+Could this be "ams,tuning-capacitor-pf" instead? That would make it
+clear at a glance what the value is and the units (though people would
+still ahve to refer to documentation to figure out precisely what this
+means).
+
+> +
+> +Example:
+> +
+> +as3935@0 {
+> +	compatible = "ams,as3935";
+> +	reg = <0>;
+> +	spi-cpha;
+> +	interrupt-parent = <&gpio1>;
+> +	interrupts = <16 1>;
+> +	ams,tune-cap = <80>;
+> +};
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index e9d19e2..03e50ff 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -11,6 +11,7 @@ ak	Asahi Kasei Corp.
+>  allwinner	Allwinner Technology Co., Ltd.
+>  altr	Altera Corp.
+>  amcc	Applied Micro Circuits Corporation (APM, formally AMCC)
+> +ams	AMS AG
+
+The vendor-prefix addition looks fine to me.	
+
+Thanks,
+Mark.
