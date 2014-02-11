@@ -1,167 +1,69 @@
-Return-Path: <manuel.stahl@iis.fraunhofer.de>
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-To: Ge Gao <GGao@invensense.com>
-Subject: Re: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-Date: Mon, 10 Feb 2014 19:39:46 +0100
-Cc: Jonathan Cameron <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de> <52F623AA.6020905@kernel.org> <E7747D604FBC9F43A71AA431AFF44762104C3FB8@IUSEXCH01.invcorp.invensense.com>
-In-Reply-To: <E7747D604FBC9F43A71AA431AFF44762104C3FB8@IUSEXCH01.invcorp.invensense.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ipmail06.adl2.internode.on.net ([150.101.137.129]:1557 "EHLO
+	ipmail06.adl2.internode.on.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750758AbaBKHeA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Feb 2014 02:34:00 -0500
+Message-ID: <52F9D18A.4020002@flatmax.org>
+Date: Tue, 11 Feb 2014 18:30:18 +1100
+From: Matt Flax <flatmax@flatmax.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201402101939.46467.manuel.stahl@iis.fraunhofer.de>
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Subject: Re: iio for the end user
+References: <52F408F8.7080307@flatmax.org>
+In-Reply-To: <52F408F8.7080307@flatmax.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Ge,
+Hi again,
 
-thanks for your approval. You're right, that the compass should be accessed internally. Actually I had some problems with the bypass mode (I can not disable it, but might be a problem of the PCB), so I started with the minimal approach.
+I would like to ask a second time.
 
-Best regards,
-Manuel Stahl
+Are there any end user systems which support IIO ?
 
-Am Montag, 10. Februar 2014, 19:20:59 schrieb Ge Gao:
-> This is looks fine to me. It is used for primary bus for compass. However, the actual use for MPU9150 is through a secondary bus interface for MPU9150. This interface send a fixed preprogrammed command to AK8975 compass to make it work. The compass result can be read through registers located in MPU9150. 
-> 
-> Thanks.
-> 
-> Best Regards,
-> 
-> Ge GAO
-> 
-> 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org] 
-> Sent: Saturday, February 08, 2014 4:32 AM
-> To: Manuel Stahl; jic23@cam.ac.uk
-> Cc: Ge Gao; linux-iio@vger.kernel.org
-> Subject: Re: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-> 
-> On 05/02/14 10:34, Manuel Stahl wrote:
-> > The magnetometer included in the mpu9150 will be exported to the I2C 
-> > bus at address 0x0C and can be accessed by the IIO driver ak8975.
-> >
-> > Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> This looks straight forward to me, but I'll let it sit for a few days to give Ge an oportunity to comment.
-> 
-> Jonathan
-> 
-> > ---
-> >   drivers/iio/imu/inv_mpu6050/Kconfig        |  6 ++++--
-> >   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 21 ++++++++++++++++++++-
-> >   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
-> >   3 files changed, 28 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig 
-> > b/drivers/iio/imu/inv_mpu6050/Kconfig
-> > index 361b232..9843f9e 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/Kconfig
-> > +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-> > @@ -3,12 +3,14 @@
-> >   #
-> >
-> >   config INV_MPU6050_IIO
-> > -	tristate "Invensense MPU6050 devices"
-> > +	tristate "Invensense MPU6050 and MPU9150 devices"
-> >   	depends on I2C && SYSFS
-> >   	select IIO_BUFFER
-> >   	select IIO_TRIGGERED_BUFFER
-> >   	help
-> > -	  This driver supports the Invensense MPU6050 devices.
-> > +	  This driver supports the Invensense MPU6050 and MPU9150 devices.
-> >   	  It is a gyroscope/accelerometer combo device.
-> > +	  The MPU9150 has an additional magnetometer, but this is currently
-> > +	  only exported as a separate device on I2C address 0x0C.
-> >   	  This driver can be built as a module. The module will be called
-> >   	  inv-mpu6050.
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
-> > b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > index fda1ee2..a121b5c 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > @@ -71,6 +71,12 @@ static const struct inv_mpu6050_hw hw_info[INV_NUM_PARTS] = {
-> >   		.reg = &reg_set_6050,
-> >   		.config = &chip_config_6050,
-> >   	},
-> > +	{
-> > +		.num_reg = 118,
-> > +		.name = "MPU9150",
-> > +		.reg = &reg_set_6050,
-> > +		.config = &chip_config_6050,
-> > +	},
-> >   };
-> >
-> >   int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 
-> > d) @@ -616,7 +622,12 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
-> >   {
-> >   	int result;
-> >
-> > -	st->chip_type = INV_MPU6050;
-> > +	st->chip_type = (unsigned)id->driver_data;
-> > +	if (st->chip_type >= INV_NUM_PARTS) {
-> > +		dev_err(&st->client->dev,
-> > +			"Invalid chip type: %s.\n", id->name);
-> > +		return -ENODEV;
-> > +	}
-> >   	st->hw  = &hw_info[st->chip_type];
-> >   	st->reg = hw_info[st->chip_type].reg;
-> >
-> > @@ -646,6 +657,11 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
-> >   	if (result)
-> >   		return result;
-> >
-> > +	/* set to bypass mode */
-> > +	result = inv_mpu6050_write_reg(st, INV_MPU6050_REG_INT_PIN_CFG,
-> > +			INV_MPU6050_BIT_BYPASS_EN);
-> > +	if (result)
-> > +		return result;
-> >   	return 0;
-> >   }
-> >
-> > @@ -719,6 +735,8 @@ static int inv_mpu_probe(struct i2c_client *client,
-> >   		goto out_remove_trigger;
-> >   	}
-> >
-> > +	dev_info(&st->client->dev, "IMU %s found\n", id->name);
-> > +
-> >   	return 0;
-> >
-> >   out_remove_trigger:
-> > @@ -765,6 +783,7 @@ static SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
-> >    */
-> >   static const struct i2c_device_id inv_mpu_id[] = {
-> >   	{"mpu6050", INV_MPU6050},
-> > +	{"mpu9150", INV_MPU9150},
-> >   	{}
-> >   };
-> >
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
-> > b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > index 0ab382b..d91b1e4 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > @@ -59,6 +59,7 @@ struct inv_mpu6050_reg_map {
-> >   /*device enum */
-> >   enum inv_devices {
-> >   	INV_MPU6050,
-> > +	INV_MPU9150,
-> >   	INV_NUM_PARTS
-> >   };
-> >
-> > @@ -132,6 +133,9 @@ struct inv_mpu6050_state {
-> >   #define INV_MPU6050_BIT_ACCEL_OUT           0x08
-> >   #define INV_MPU6050_BITS_GYRO_OUT           0x70
-> >
-> > +#define INV_MPU6050_REG_INT_PIN_CFG         0x37
-> > +#define INV_MPU6050_BIT_BYPASS_EN           0x02
-> > +
-> >   #define INV_MPU6050_REG_INT_ENABLE          0x38
-> >   #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
-> >   #define INV_MPU6050_BIT_DMP_INT_EN          0x02
-> >
-> 
-> --
+If not then are there any efforts for a networking protocol/library/API 
+for IIO streaming ? Particularly interested in multi device input 
+streaming at this point in time.
+
+I have been working further on the jack IIO driver, however it seems 
+that the concept of getting such high sample rates running on embedded 
+cores may prove to challenging for audio subsystems. Whilst reading in 
+the jack 'driver' space is ok, connecting clients to the 'driver' is 
+difficult when trying to keep up with the higher then traditional audio 
+sample rates.
+
+thanks
+Matt
+
+On 07/02/14 09:13, Matt Flax wrote:
+> Hi there,
+>
+> I have been working towards getting something together which allows 
+> the end user to use IIO with 'standard applications' and also support 
+> network connectivity. I have a set of ADCs running using IIO at the 
+> moment, so I am focussing on input. I am aware that this paradigm may 
+> fall over for very  high sample rates, but for lower sample rates, of 
+> the order of 1 MHz, it should work.
+>
+> I am writing to this list to find out if there are other networkable 
+> approaches in linking iio into other existing protocols/software which 
+> would suit the end user ? I am new to this list and didn't find much 
+> in the archives, however perhaps I missed something ?
+>
+> My first attempt for user space IIO is to use Jack and integrate iio 
+> into Jack as a driver. I have successfully created this iio driver for 
+> jack [1] and I can get the driver to run with very low latencies.
+> The best spec. without overruns is :  4 channels at 1MHz with mmap 
+> block sizes of 256 samples using 3 periods ... thats roughly 0.75 ms 
+> maximum latency at the jack driver level.
+> The current stage of development is  to connect a jack client to this 
+> new iio driver and I am in the stage of debugging that work.
+>
+> thanks
+> Matt
+> [1] https://github.com/flatmax/jack1
+> -- 
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+
