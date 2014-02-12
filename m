@@ -1,67 +1,63 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Wed, 12 Feb 2014 16:10:46 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Harald Geyer <harald@ccbib.org>, linux-iio@vger.kernel.org,
-	Marek Vasut <marex@denx.de>, Liam Girdwood <lgirdwood@gmail.com>
-Message-ID: <20140212161046.GC28112@sirena.org.uk>
-References: <E1W895a-0000yo-Tm@stardust.g4.wien.funkfeuer.at>
- <52F61C2A.90101@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ipmail04.adl6.internode.on.net ([150.101.137.141]:5417 "EHLO
+	ipmail04.adl6.internode.on.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750840AbaBLHkD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Feb 2014 02:40:03 -0500
+Message-ID: <52FB2477.9080108@flatmax.org>
+Date: Wed, 12 Feb 2014 18:36:23 +1100
+From: Matt Flax <flatmax@flatmax.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bc2iwAtkAaXP8cWF"
-In-Reply-To: <52F61C2A.90101@kernel.org>
-Subject: Re: [RFC] iio: mxs-lradc: Add support for current source
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Subject: iio and jack -  1MHz sample rate success
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
---bc2iwAtkAaXP8cWF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I have implemented the jack2 iio driver and have done a couple of tests.
 
-On Sat, Feb 08, 2014 at 11:59:38AM +0000, Jonathan Cameron wrote:
-> On 28/01/14 13:52, Harald Geyer wrote:
+In a preliminary finding, waiting for more time to test and re-test, I 
+have had success.
+I don't see any overruns reported (when setup properly), and I haven't 
+put a signal through the system to highlight any un-reported overruns. 
+Next week I will look into this more.
 
-> >The LRADC can drive two of its ADC channels with a defined current
-> >between 0 and 300uA to allow reading thermistors without external
-> >current source. I'm not sure what the right IIO ABI in this case
+Firstly I would like to say that writing a driver for jack2 is a little 
+difficult because there is not much documentation ... at least I 
+couldn't find simple information. Some inline src doc would be good ... 
+mind you, I could have put more into my driver as well :)
 
-> I'd be tempted to do this via the regulator framework instead of IIO.
-> At somepoint we could have a bridge to allow an iio interface on a regulator
-> if anyone wants it (you never know)
+On the system with IIO devices I ran :
+jackd -iio
 
-I'm very worried about the idea of an ABI - if IIO wants to offer
-something that is implemented using the regulator API that's fine but
-doing it directly from the regulator API sounds worrying.
+I then setup and ran netjack on both computers.
 
-> I guess the main advantage in doing it in IIO would be to keep stuff in
-> one logical group.  Still they might just as easily be using an external
-> regulator to drive thermistors so using the regulator framework would be
-> more consistent...
+On the other computer I used :
+jack_capture -c 2 -p system:capture*
 
-The current that's driven seems more a property of the thermistor than
-of the regulator if it is a generic regulator.
+... wahlah ... it worked ! with an MTU of 1500. Thats 2 channels @ 1 MHz
 
---bc2iwAtkAaXP8cWF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Everything reporting 1MHz sample rates and so on a so forth, no xruns 
+and the wav file looked like what I expected ...
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+When I tried to record 4 channels @ 1 MHz, I had to increase the MTU to 
+6000 to get rid of xruns on the ARM core. But still ... 4 channels @ 
+1MHz over a network ... pretty good start !
 
-iQIcBAEBAgAGBQJS+50DAAoJELSic+t+oim9JPgP/R8rlyAv7wVIAKUYa5dpZHOh
-W7sS+H4UZezrSEo+khD4KAQxQtogXv2xBmNCMM4E+5/M77eZ0PCrfpH+uCcdMQVX
-uBPRXx44GFHgCy5QHo3BpkCBlBPISZVnC2ofGA0n0iUUaIw6hpvUg+yefL1LLlY0
-ImtpvhpHWlM3V+A8K9kkbNOhrWIclp/XMicvOa9bJZTOAPUx2PJ1nxuFcgyQPNd4
-n/pUGVxeBZnVDfFUOsc6CbH+lEruT/9YEmQ6HgAo27E3C0fZzjCpYayX2Y+05c1M
-YzCIzJRIbIDFQq23PN7W4XKvIehA2z6PM8sJZUjHBU+RaW0vnNWd+orSJZawWT/o
-L7oxghNUdqP3r6buoRuLfaXhgDGlqD4xXs2QUTFC1HGDgmd6xYoG0UAjItdJEoju
-k0byamnrs1L7MAc0u0M88y9DcUFmrQL4N7XnT1M+RXtoT5DuiBlF4R/5AHyDi8Op
-Gf+SEzxANfK7pzYgIYR6fM6r61gNVj5HKLx4vurh22eTYZlS+aTV5iWEApgEOjJA
-pLAToBLHLY0TPbNFOXLPI7gd7c/RA7geuCsU6Ok/xWCcyuVFvWaErgyQ2UPKjBke
-K2s/Fnj4hgMXgPJv9lVsaIOMspuoOHQrO3asefadfq1nU/wF3IK+Y/Ws9UjH7MFC
-MMrGaB8f1mbDd02H2m87
-=u0zh
------END PGP SIGNATURE-----
+I would like to integrate my both of my iio branchs into the jack1 and 
+jack2 repos, but for now I have forked the jack2 repo here :
+https://github.com/flatmax/jack2/tree/iio
 
---bc2iwAtkAaXP8cWF--
+I have some questions for other developers of jack2.
+is it necessary to use :
+     JackDriver::CycleTakeBeginTime();
+and
+     JackDriver::CycleTakeEndTime();
+
+?
+
+thanks
+Matt
+p.s. Don't forget that these findings are very preliminary and things 
+need to be neatened up, debugged more and so on and so forth.
+
