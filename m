@@ -1,100 +1,27 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:59892 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751772AbaBNSyM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 14 Feb 2014 13:54:12 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv1 1/4] mfd: twl4030-madc: Use managed resources
-Date: Fri, 14 Feb 2014 19:46:23 +0100
-Message-Id: <1392403586-30540-1-git-send-email-sre@debian.org>
-In-Reply-To: <20140214174040.GB26969@earth.universe>
-References: <20140214174040.GB26969@earth.universe>
+Received: from eu1sys200aog125.obsmtp.com ([207.126.144.159]:37205 "EHLO
+	eu1sys200aog125.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752014AbaBNPQw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Feb 2014 10:16:52 -0500
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D2D55B8
+	for <linux-iio@vger.kernel.org>; Fri, 14 Feb 2014 15:16:48 +0000 (GMT)
+Received: from mail7.sgp.st.com (unknown [164.129.223.81])
+	by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6E37C16963
+	for <linux-iio@vger.kernel.org>; Fri, 14 Feb 2014 15:16:48 +0000 (GMT)
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: linux-iio@vger.kernel.org
+Subject: use devm_iio_device_free on common probe failed and remove
+Date: Fri, 14 Feb 2014 16:16:39 +0100
+Message-Id: <1392391005-2719-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Update twl4030-madc driver to use managed resources.
+Hi all,
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+sorry for the previous 4 patches, are wrong!
+I've sent the wrong test code. I just sent the correct series.
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
- }
- 
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
- 
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
--- 
-1.8.5.3
+Thanks,
+Denis
 
