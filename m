@@ -1,180 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:24728 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751108AbaBNKES (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Feb 2014 05:04:18 -0500
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N0Z007IVDB4EK10@mailout1.samsung.com> for
- linux-iio@vger.kernel.org; Fri, 14 Feb 2014 19:04:16 +0900 (KST)
-Message-id: <52FDEA17.2020808@samsung.com>
-Date: Fri, 14 Feb 2014 19:04:07 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
+Return-Path: <denis.ciocca@st.com>
+From: Denis CIOCCA <denis.ciocca@st.com>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Myungjoo Ham <myungjoo.ham@samsung.com>,
-	Jaehoon Chung <jh80.chung@samsung.com>
-Subject: [PATCH v2 1/2] iio: cm36651:  Fix read/write integration time function.
-Content-type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH] iio:gyro: bug on L3GD20H gyroscope support
+Date: Fri, 14 Feb 2014 15:15:37 +0100
+Message-Id: <1392387337-25324-1-git-send-email-denis.ciocca@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+The driver was not able to manage the sensor: during probe function
+and wai check, the driver stops and writes: "device name and WhoAmI mismatch."
+The correct value of L3GD20H wai is 0xd7 instead of 0xd4.
+Dropped support for the sensor.
 
-This patch is fixed [read/write] integration time function.
-cm36651 have integration time from 1 to 640 milliseconds.
-But, print more then the thousand second. when call *_integration_time attribute.
-Because read_integration_time function return IIO_VAL_INT.
-read integration time function is changed return IIO_VAL_INT_PLUS_MICRO;
-And then .write_raw_get_fmt callback function for parse a fixed-point number from a string.
-Some description is revised milliseconds unit.
-
-v2: cm36651_write_int_time function fixed as it was.
-
-Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/iio/light/cm36651.c |   53 +++++++++++++++++++++++++------------------
- 1 file changed, 31 insertions(+), 22 deletions(-)
+ drivers/iio/gyro/Kconfig        | 2 +-
+ drivers/iio/gyro/st_gyro.h      | 1 -
+ drivers/iio/gyro/st_gyro_core.c | 9 ++++-----
+ drivers/iio/gyro/st_gyro_i2c.c  | 1 -
+ drivers/iio/gyro/st_gyro_spi.c  | 1 -
+ 5 files changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-index 0a142af..3dd84ca 100644
---- a/drivers/iio/light/cm36651.c
-+++ b/drivers/iio/light/cm36651.c
-@@ -50,10 +50,10 @@
- #define CM36651_CS_CONF2_DEFAULT_BIT	0x08
-
- /* CS_CONF3 channel integration time */
--#define CM36651_CS_IT1			0x00 /* Integration time 80000 usec */
--#define CM36651_CS_IT2			0x40 /* Integration time 160000 usec */
--#define CM36651_CS_IT3			0x80 /* Integration time 320000 usec */
--#define CM36651_CS_IT4			0xC0 /* Integration time 640000 usec */
-+#define CM36651_CS_IT1			0x00 /* Integration time 80 msec */
-+#define CM36651_CS_IT2			0x40 /* Integration time 160 msec */
-+#define CM36651_CS_IT3			0x80 /* Integration time 320 msec */
-+#define CM36651_CS_IT4			0xC0 /* Integration time 640 msec */
-
- /* PS_CONF1 command code */
- #define CM36651_PS_ENABLE		0x00
-@@ -64,10 +64,10 @@
- #define CM36651_PS_PERS4		0x0C
-
- /* PS_CONF1 command code: integration time */
--#define CM36651_PS_IT1			0x00 /* Integration time 320 usec */
--#define CM36651_PS_IT2			0x10 /* Integration time 420 usec */
--#define CM36651_PS_IT3			0x20 /* Integration time 520 usec */
--#define CM36651_PS_IT4			0x30 /* Integration time 640 usec */
-+#define CM36651_PS_IT1			0x00 /* Integration time 0.32 msec */
-+#define CM36651_PS_IT2			0x10 /* Integration time 0.42 msec */
-+#define CM36651_PS_IT3			0x20 /* Integration time 0.52 msec */
-+#define CM36651_PS_IT4			0x30 /* Integration time 0.64 msec */
-
- /* PS_CONF1 command code: duty ratio */
- #define CM36651_PS_DR1			0x00 /* Duty ratio 1/80 */
-@@ -93,8 +93,8 @@
- #define CM36651_CLOSE_PROXIMITY		0x32
- #define CM36651_FAR_PROXIMITY			0x33
-
--#define CM36651_CS_INT_TIME_AVAIL	"80000 160000 320000 640000"
--#define CM36651_PS_INT_TIME_AVAIL	"320 420 520 640"
-+#define CM36651_CS_INT_TIME_AVAIL	"0.08 0.16 0.32 0.64"
-+#define CM36651_PS_INT_TIME_AVAIL	"0.000320 0.000420 0.000520 0.000640"
-
- enum cm36651_operation_mode {
- 	CM36651_LIGHT_EN,
-@@ -356,30 +356,30 @@ static int cm36651_read_channel(struct cm36651_data *cm36651,
- }
-
- static int cm36651_read_int_time(struct cm36651_data *cm36651,
--				struct iio_chan_spec const *chan, int *val)
-+				struct iio_chan_spec const *chan, int *val2)
- {
- 	switch (chan->type) {
- 	case IIO_LIGHT:
- 		if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT1)
--			*val = 80000;
-+			*val2 = 80000;
- 		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT2)
--			*val = 160000;
-+			*val2 = 160000;
- 		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT3)
--			*val = 320000;
-+			*val2 = 320000;
- 		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT4)
--			*val = 640000;
-+			*val2 = 640000;
- 		else
- 			return -EINVAL;
- 		break;
- 	case IIO_PROXIMITY:
- 		if (cm36651->ps_int_time == CM36651_PS_IT1)
--			*val = 320;
-+			*val2 = 320;
- 		else if (cm36651->ps_int_time == CM36651_PS_IT2)
--			*val = 420;
-+			*val2 = 420;
- 		else if (cm36651->ps_int_time == CM36651_PS_IT3)
--			*val = 520;
-+			*val2 = 520;
- 		else if (cm36651->ps_int_time == CM36651_PS_IT4)
--			*val = 640;
-+			*val2 = 640;
- 		else
- 			return -EINVAL;
- 		break;
-@@ -387,7 +387,7 @@ static int cm36651_read_int_time(struct cm36651_data *cm36651,
- 		return -EINVAL;
- 	}
-
--	return IIO_VAL_INT;
-+	return IIO_VAL_INT_PLUS_MICRO;
- }
-
- static int cm36651_write_int_time(struct cm36651_data *cm36651,
-@@ -459,7 +459,8 @@ static int cm36651_read_raw(struct iio_dev *indio_dev,
- 		ret = cm36651_read_channel(cm36651, chan, val);
- 		break;
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret = cm36651_read_int_time(cm36651, chan, val);
-+		*val = 0;
-+		ret = cm36651_read_int_time(cm36651, chan, val2);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -479,7 +480,7 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
- 	int ret = -EINVAL;
-
- 	if (mask == IIO_CHAN_INFO_INT_TIME) {
--		ret = cm36651_write_int_time(cm36651, chan, val);
-+		ret = cm36651_write_int_time(cm36651, chan, val2);
- 		if (ret < 0)
- 			dev_err(&client->dev, "Integration time write failed\n");
- 	}
-@@ -487,6 +488,13 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
-
-+static int cm36651_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				long mask)
-+{
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
- static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
- 					const struct iio_chan_spec *chan,
- 					enum iio_event_type type,
-@@ -614,6 +622,7 @@ static const struct iio_info cm36651_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= &cm36651_read_raw,
- 	.write_raw		= &cm36651_write_raw,
-+	.write_raw_get_fmt	= &cm36651_write_raw_get_fmt,
- 	.read_event_value	= &cm36651_read_prox_thresh,
- 	.write_event_value	= &cm36651_write_prox_thresh,
- 	.read_event_config	= &cm36651_read_prox_event_config,
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index 41c64a4..ac2d69e 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -70,7 +70,7 @@ config IIO_ST_GYRO_3AXIS
+ 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+ 	help
+ 	  Say yes here to build support for STMicroelectronics gyroscopes:
+-	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
++	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
+ 
+ 	  This driver can also be built as a module. If so, these modules
+ 	  will be created:
+diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
+index f8f2bf8..c197360 100644
+--- a/drivers/iio/gyro/st_gyro.h
++++ b/drivers/iio/gyro/st_gyro.h
+@@ -19,7 +19,6 @@
+ #define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
+ #define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
+ #define L3GD20_GYRO_DEV_NAME		"l3gd20"
+-#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
+ #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
+ #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
+ 
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index d53d91a..a8e174a 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -167,11 +167,10 @@ static const struct st_sensors st_gyro_sensors[] = {
+ 		.wai = ST_GYRO_2_WAI_EXP,
+ 		.sensors_supported = {
+ 			[0] = L3GD20_GYRO_DEV_NAME,
+-			[1] = L3GD20H_GYRO_DEV_NAME,
+-			[2] = LSM330D_GYRO_DEV_NAME,
+-			[3] = LSM330DLC_GYRO_DEV_NAME,
+-			[4] = L3G4IS_GYRO_DEV_NAME,
+-			[5] = LSM330_GYRO_DEV_NAME,
++			[1] = LSM330D_GYRO_DEV_NAME,
++			[2] = LSM330DLC_GYRO_DEV_NAME,
++			[3] = L3G4IS_GYRO_DEV_NAME,
++			[4] = LSM330_GYRO_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.odr = {
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+index 16b8b8d..23c12f3 100644
+--- a/drivers/iio/gyro/st_gyro_i2c.c
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -55,7 +55,6 @@ static const struct i2c_device_id st_gyro_id_table[] = {
+ 	{ LSM330DL_GYRO_DEV_NAME },
+ 	{ LSM330DLC_GYRO_DEV_NAME },
+ 	{ L3GD20_GYRO_DEV_NAME },
+-	{ L3GD20H_GYRO_DEV_NAME },
+ 	{ L3G4IS_GYRO_DEV_NAME },
+ 	{ LSM330_GYRO_DEV_NAME },
+ 	{},
+diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+index 94763e2..b4ad3be 100644
+--- a/drivers/iio/gyro/st_gyro_spi.c
++++ b/drivers/iio/gyro/st_gyro_spi.c
+@@ -54,7 +54,6 @@ static const struct spi_device_id st_gyro_id_table[] = {
+ 	{ LSM330DL_GYRO_DEV_NAME },
+ 	{ LSM330DLC_GYRO_DEV_NAME },
+ 	{ L3GD20_GYRO_DEV_NAME },
+-	{ L3GD20H_GYRO_DEV_NAME },
+ 	{ L3G4IS_GYRO_DEV_NAME },
+ 	{ LSM330_GYRO_DEV_NAME },
+ 	{},
 -- 
-1.7.9.5
-
--- 
-Best Regards,
+1.8.5.4
