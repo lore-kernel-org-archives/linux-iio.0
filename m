@@ -1,243 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:47072 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753787AbaBZAYv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 19:24:51 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv3 2/7] mfd: twl4030-madc: Add DT support and convert to IIO framework
-Date: Wed, 26 Feb 2014 01:24:25 +0100
-Message-Id: <1393374270-20079-3-git-send-email-sre@debian.org>
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45023 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752955AbaBOMc2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 07:32:28 -0500
+Message-ID: <52FF5E7E.9010701@kernel.org>
+Date: Sat, 15 Feb 2014 12:33:02 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Marek Vasut <marex@denx.de>, Fabio Estevam <festevam@gmail.com>
+CC: linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH] iio: mxs-lradc: Propagate the real error code on platform_get_irq()
+ failure
+References: <1392348515-11420-1-git-send-email-festevam@gmail.com> <201402140922.50329.marex@denx.de>
+In-Reply-To: <201402140922.50329.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This converts twl4030-madc module to use the Industrial IO ADC
-framework and adds device tree support.
+On 14/02/14 08:22, Marek Vasut wrote:
+> On Friday, February 14, 2014 at 04:28:35 AM, Fabio Estevam wrote:
+>> From: Fabio Estevam <fabio.estevam@freescale.com>
+>>
+>> No need to return a 'fake' return value on platform_get_irq() failure.
+>>
+>> Just return the error code itself instead.
+>>
+>> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+>
+> Acked-by: Marek Vasut <marex@denx.de>
+>
+Applied to the togreg branch of iio.git
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- drivers/mfd/twl4030-madc.c | 122 ++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 115 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 5458561..81484ee 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -47,6 +47,8 @@
- #include <linux/gfp.h>
- #include <linux/err.h>
- 
-+#include <linux/iio/iio.h>
-+
- /*
-  * struct twl4030_madc_data - a container for madc info
-  * @dev - pointer to device structure for madc
-@@ -59,10 +61,74 @@ struct twl4030_madc_data {
- 	struct device *dev;
- 	struct mutex lock;	/* mutex protecting this data structure */
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
-+	bool use_second_irq;
- 	int imr;
- 	int isr;
- };
- 
-+static int twl4030_madc_read(struct iio_dev *iio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
-+	struct twl4030_madc_request req;
-+	int channel = chan->channel;
-+	int ret;
-+
-+	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
-+
-+	req.channels = BIT(channel);
-+	req.active = false;
-+	req.func_cb = NULL;
-+	req.type = TWL4030_MADC_WAIT;
-+	req.raw = !(mask == IIO_CHAN_INFO_PROCESSED);
-+	req.do_avg = (mask == IIO_CHAN_INFO_AVERAGE_RAW);
-+
-+	ret = twl4030_madc_conversion(&req);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = req.rbuf[channel];
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static const struct iio_info twl4030_madc_iio_info = {
-+	.read_raw = &twl4030_madc_read,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define TWL4030_ADC_CHANNEL(_channel, _type, _name, _mask) {	\
-+	.type = _type,					\
-+	.channel = _channel,				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
-+			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
-+			      _mask,			\
-+	.datasheet_name = _name,			\
-+	.indexed = 1,					\
-+}
-+
-+static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
-+	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0", 0),
-+	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1",
-+		BIT(IIO_CHAN_INFO_PROCESSED)),
-+	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2", 0),
-+	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3", 0),
-+	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4", 0),
-+	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5", 0),
-+	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6", 0),
-+	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7", 0),
-+	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8", 0),
-+	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9", 0),
-+	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10",
-+		BIT(IIO_CHAN_INFO_PROCESSED)),
-+	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11", 0),
-+	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12", 0),
-+	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13", 0),
-+	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14", 0),
-+	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15", 0),
-+};
-+
- static struct twl4030_madc_data *twl4030_madc;
- 
- struct twl4030_prescale_divider_ratios {
-@@ -702,28 +768,50 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
-+	struct device_node *np = pdev->dev.of_node;
- 	int irq, ret;
- 	u8 regval;
-+	struct iio_dev *iio_dev = NULL;
- 
--	if (!pdata) {
-+	if (!pdata && !np) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
--	if (!madc)
-+
-+	iio_dev = devm_iio_device_alloc(&pdev->dev,
-+					sizeof(struct twl4030_madc_data));
-+	if (!iio_dev) {
-+		dev_err(&pdev->dev, "failed allocating iio device\n");
- 		return -ENOMEM;
-+	}
- 
-+	madc = iio_priv(iio_dev);
- 	madc->dev = &pdev->dev;
- 
-+	iio_dev->name = dev_name(&pdev->dev);
-+	iio_dev->dev.parent = &pdev->dev;
-+	iio_dev->dev.of_node = pdev->dev.of_node;
-+	iio_dev->info = &twl4030_madc_iio_info;
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+	iio_dev->channels = twl4030_madc_iio_channels;
-+	iio_dev->num_channels = 16;
-+
- 	/*
- 	 * Phoenix provides 2 interrupt lines. The first one is connected to
- 	 * the OMAP. The other one can be connected to the other processor such
- 	 * as modem. Hence two separate ISR and IMR registers.
- 	 */
--	madc->imr = (pdata->irq_line == 1) ?
-+	if (pdata)
-+		madc->use_second_irq = pdata->irq_line != 1;
-+	else
-+		madc->use_second_irq = of_property_read_bool(np,
-+				       "ti,system-uses-second-madc-irq");
-+
-+	madc->imr = (madc->use_second_irq == 1) ?
- 	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
--	madc->isr = (pdata->irq_line == 1) ?
-+	madc->isr = (madc->use_second_irq == 1) ?
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
-+
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
- 		return ret;
-@@ -768,7 +856,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	platform_set_drvdata(pdev, madc);
-+	platform_set_drvdata(pdev, iio_dev);
- 	mutex_init(&madc->lock);
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -780,7 +868,15 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		goto err_i2c;
- 	}
- 	twl4030_madc = madc;
-+
-+	ret = iio_device_register(iio_dev);
-+	if (ret) {
-+		dev_dbg(&pdev->dev, "could not register iio device\n");
-+		goto err_i2c;
-+	}
-+
- 	return 0;
-+
- err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
-@@ -790,20 +886,32 @@ err_current_generator:
- 
- static int twl4030_madc_remove(struct platform_device *pdev)
- {
--	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
-+	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
- 
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
- 
-+	iio_device_unregister(iio_dev);
-+
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id twl_madc_of_match[] = {
-+	{.compatible = "ti,twl4030-madc", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, twl_madc_of_match);
-+#endif
-+
- static struct platform_driver twl4030_madc_driver = {
- 	.probe = twl4030_madc_probe,
- 	.remove = twl4030_madc_remove,
- 	.driver = {
- 		   .name = "twl4030_madc",
- 		   .owner = THIS_MODULE,
-+		   .of_match_table = of_match_ptr(twl_madc_of_match),
- 		   },
- };
- 
--- 
-1.8.5.3
+Thanks,
+> Best regards,
+> Marek Vasut
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
