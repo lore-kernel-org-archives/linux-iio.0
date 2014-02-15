@@ -1,261 +1,188 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:42350 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755837AbaBRPv1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 18 Feb 2014 10:51:27 -0500
-Date: Tue, 18 Feb 2014 16:51:25 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: Add MEN 16z188 ADC driver
-In-Reply-To: <1392737654-22682-4-git-send-email-johannes.thumshirn@men.de>
-Message-ID: <alpine.DEB.2.01.1402181644420.22831@pmeerw.net>
-References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de> <1392737654-22682-4-git-send-email-johannes.thumshirn@men.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44406 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752297AbaBOLjv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:39:51 -0500
+Message-ID: <52FF5220.3010702@kernel.org>
+Date: Sat, 15 Feb 2014 11:40:16 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Matt Porter <mporter@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <robh+dt@kernel.org>,
+	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Thierry Reding <thierry.reding@gmail.com>
+CC: Linux IIO List <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>,
+	Linux PWM List <linux-pwm@vger.kernel.org>,
+	Linux OMAP List <linux-omap@vger.kernel.org>,
+	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v3 4/6] iio: Add ABI docs for pulse capture devices
+References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <1391626901-31684-5-git-send-email-mporter@linaro.org>
+In-Reply-To: <1391626901-31684-5-git-send-email-mporter@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-some quick comments below...
-
-> Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
- 
-> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+On 05/02/14 19:01, Matt Porter wrote:
+> Add standard ABI entries for pulse capture devices. Also add
+> a separate ABI entry for the TI ECAP driver polarity option.
+>
+> Signed-off-by: Matt Porter <mporter@linaro.org>
+Lars, I've cc'd you for the various Analog devices dds and frequency devices.
+Ideally we want a consistent interface for devices capturing info about these
+waveforms and devices generating them.  Please CC anyone else who might have
+opinions.  This interface is not obvious, so we need to spend some time getting
+it right.
 > ---
->  drivers/iio/adc/Kconfig        |  10 +++
->  drivers/iio/adc/Makefile       |   1 +
->  drivers/iio/adc/men_z188_adc.c | 172 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 183 insertions(+)
->  create mode 100644 drivers/iio/adc/men_z188_adc.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 2209f28..5209437 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -204,4 +204,14 @@ config VIPERBOARD_ADC
->  	  Say yes here to access the ADC part of the Nano River
->  	  Technologies Viperboard.
->  
-> +config MEN_Z188_ADC
-> +	tristate "MEN 16z188 ADC IP Core support"
-> +	depends on MCB
-> +	help
-> +	  Say yes here to access support the MEN 16z188 ADC IP-Core on a MCB
-> +	  carrier.
-
-support _for_ the 
-
+>   Documentation/ABI/testing/sysfs-bus-iio              | 18 ++++++++++++++++++
+>   Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap |  9 +++++++++
+>   2 files changed, 27 insertions(+)
+>   create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 6e02c50..918a201 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -210,6 +210,14 @@ Contact:	linux-iio@vger.kernel.org
+>   Description:
+>   		Scaled humidity measurement in milli percent.
+>
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_raw
+> +KernelVersion:	3.15
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw pulse measurement from channel Y. Units after
+> +		application of scale and offset are nanoseconds.
 > +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called men_z188_adc.
-> +
->  endmenu
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index ba9a10a..1584391 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -22,3 +22,4 @@ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
->  obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-> +obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-> diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
+I wonder if we are being a little bit too specific in this interface.  What other things
+might we want to capture about a pulse?  Right now you have it either capturing the
+'high width' or the 'low width'.  Presumably there are devices that will capture
+both via different 'channels'?
+
+So lets list what we might capture about a wave - including values computable from
+the base quantities.
+* High time
+* Low time
+* Mark Space Ratio
+* Period (rising edge to rising edge  or falling edge to falling edge).
+(This might be treated as instantaneous frequency - as would be done in
+frequency modulation)
+* Peak to peak Amplitude.
+
+For imperfect waves
+* Rise time,
+* Fall time,
+
+Funnily enough this is pretty much what an oscilloscope will allow you to automatically
+measure on a square wave...
+
+So next question is base units for the time measurements.
+I'd prefer the base to be seconds rather than nano seconds
+for consistency with the other time measurements already in the ABI.  All it will do is
+change the type for scale factors output in sysfs.  Userspace can trivially convert
+back to nano seconds if that is what it wants.  If we need to futher expand our small
+units, then that is fine.
+
+Next, the question is do we want to cover other waveform types. The dds drivers that
+are most relevant are still in staging, so we can mess around with their interfaces
+without 'too' much pain.  They allow specifying of a waveform 'type' (square, triangle,
+sine so far I think).
+
+So do we want to have an iio type corresponding to a time feature of a waveform then
+use modifiers for the various characteristics. I'll describe this in the sysfs attribute
+names (they translate directly into the buffer channels, but are easier to read!)
+
+
+We do have a few modifiers that lead to different units already so there is precedence
+e.g. IIO_MOD_SUM_SQUARED_X_Y_Z, (often (m/s^2)^2
+for the following (as long as well documented!)
+in_waveformX_type - (Square, triangle etc).
+
+in_waveformX_hightime_raw
+in_waveformX_lowtime_raw
+in_waveformX_period_raw
+in_waveformX_markspace_raw
+in_waveformX_peaktopeak_raw (similar to existing peak abi elements - these are not typically
+                             read from a buffer and hence we have rushed them in as a modifier).
+in_waveformX_risetime_raw
+in_waveformX_falltime_raw
+
+
+Would this work for both this sort of capture device and for synthesis chips?
+
+
+
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
+> @@ -220,6 +228,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_offset
+>   KernelVersion:	2.6.35
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> @@ -251,6 +261,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_scale
+>   KernelVersion:	2.6.35
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> @@ -784,6 +796,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_en
+>   KernelVersion:	2.6.37
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> @@ -799,6 +813,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
+>   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_type
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_type
+>   KernelVersion:	2.6.37
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> @@ -845,6 +861,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_index
+>   KernelVersion:	2.6.37
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap b/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
 > new file mode 100644
-> index 0000000..8bc66cf
+> index 0000000..a9e4a9f
 > --- /dev/null
-> +++ b/drivers/iio/adc/men_z188_adc.c
-> @@ -0,0 +1,172 @@
-> +/*
-> + * MEN 16z188 Analoge to Digial Converter
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
+> @@ -0,0 +1,9 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/pulse_polarityY
+> +What:		/sys/bus/iio/devices/iio:deviceX/pulse_polarity
+> +Date:		January 2014
+> +KernelVersion:	3.15
+> +Contact:	Matt Porter <mporter@linaro.org>
+> +Description:
+> +		Get and set the polarity of the pulse signal to be captured
+> +		for channel Y.  1 indicates a high pulse signal and 0
+> +		indicates a low pulse signal.
+>
 
-Analog
-
-> + *
-> + * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
-> + * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License as published by the Free
-> + * Software Foundation; version 2 of the License.
-> + */
-
-newline
-
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/mcb.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#define Z188_ADC_MAX_CHAN	8
-> +#define Z188_ADC_GAIN		0x0700000
-> +#define Z188_MODE_VOLTAGE	BIT(27)
-> +#define Z188_CFG_AUTO		0x1
-> +#define Z188_CTRL_REG		0x40
-> +
-> +#define ADC_DATA(x) (((x) >> 2) & 0x7ffffc)
-> +#define ADC_OVR(x) ((x) & 0x1)
-> +
-> +struct z188_adc {
-> +	struct resource *mem;
-> +	void __iomem *base;
-> +};
-> +
-> +#define Z188_ADC_CHANNEL(idx) {					\
-> +		.type = IIO_VOLTAGE,				\
-> +		.indexed = 1,					\
-> +		.channel = (idx),				\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
-> +}
-> +
-> +static struct iio_chan_spec z188_adc_iio_channels[] = {
-> +	Z188_ADC_CHANNEL(0),
-> +	Z188_ADC_CHANNEL(1),
-> +	Z188_ADC_CHANNEL(2),
-> +	Z188_ADC_CHANNEL(3),
-> +	Z188_ADC_CHANNEL(4),
-> +	Z188_ADC_CHANNEL(5),
-> +	Z188_ADC_CHANNEL(6),
-> +	Z188_ADC_CHANNEL(7),
-> +};
-> +
-> +static int z188_iio_read_raw(struct iio_dev *iio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val,
-> +			int *val2,
-> +			long info)
-> +{
-> +	struct z188_adc *adc = iio_priv(iio_dev);
-> +	int ret = 0;
-> +	u16 tmp = 0;
-> +
-
-no need to init ret, tmp
-delete extra newline
-
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		tmp = readw(adc->base + chan->channel * 4);
-> +
-> +		if (ADC_OVR(tmp)) {
-> +			dev_info(&iio_dev->dev,
-> +				"Oversampling error on ADC channel %d\n",
-> +				chan->channel);
-> +			return -EIO;
-> +		}
-> +		*val = ADC_DATA(tmp);
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static struct iio_info z188_adc_info = {
-> +	.read_raw = &z188_iio_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static void men_z188_config_channels(void __iomem *addr)
-> +{
-> +	int i;
-> +	u32 cfg;
-> +	u32 ctl;
-> +
-> +	ctl = readl(addr + Z188_CTRL_REG);
-> +	ctl |= Z188_CFG_AUTO;
-> +	writel(ctl, addr + Z188_CTRL_REG);
-> +
-> +	for (i = 0; i < Z188_ADC_MAX_CHAN; i++) {
-> +		cfg = readl(addr + i);
-> +		cfg &= ~Z188_ADC_GAIN;
-> +		cfg |= Z188_MODE_VOLTAGE;
-> +		writel(cfg, addr + i);
-> +	}
-> +}
-> +
-> +static int men_z188_probe(struct mcb_device *dev,
-> +			const struct mcb_device_id *id)
-> +{
-> +	struct z188_adc *adc;
-> +	struct iio_dev *indio_dev;
-> +	struct resource *mem;
-> +
-> +	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	adc = iio_priv(indio_dev);
-> +	indio_dev->name = "z188-adc";
-> +	indio_dev->dev.parent = &dev->dev;
-> +	indio_dev->info = &z188_adc_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = z188_adc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
-> +
-> +	mem = mcb_request_mem(dev, "z188-adc");
-> +	if (!mem)
-> +		return -ENOMEM;
-> +
-> +	adc->base = ioremap(mem->start, resource_size(mem));
-> +	if (adc->base == NULL)
-> +		goto err;
-> +
-> +	men_z188_config_channels(adc->base);
-> +
-> +	adc->mem = mem;
-> +	mcb_set_drvdata(dev, indio_dev);
-> +
-> +	return  devm_iio_device_register(&dev->dev, indio_dev);
-
-extra space 
-
-> +
-> +err:
-> +	mcb_release_mem(mem);
-> +	return -ENXIO;
-> +}
-> +
-> +static void men_z188_remove(struct mcb_device *dev)
-> +{
-> +	struct iio_dev *indio_dev  = mcb_get_drvdata(dev);
-> +	struct z188_adc *adc = iio_priv(indio_dev);
-> +
-> +	iounmap(adc->base);
-> +	mcb_release_mem(adc->mem);
-> +
-> +	mcb_set_drvdata(dev, NULL);
-> +}
-> +
-> +static struct mcb_device_id men_z188_ids[] = {
-> +	{ .device = 0xbc },
-> +};
-> +MODULE_DEVICE_TABLE(mcb, men_z188_ids);
-> +
-> +static struct mcb_driver men_z188_driver = {
-> +	.driver = {
-> +		.name = "z188-adc",
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe = men_z188_probe,
-> +	.remove = men_z188_remove,
-> +	.id_table = men_z188_ids,
-> +};
-> +module_mcb_driver(men_z188_driver);
-> +
-> +MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("IIO ADC driver for MEN 16z188 ADC Core");
-> +MODULE_ALIAS("mcb:16z188");
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
