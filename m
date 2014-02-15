@@ -1,13 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44438 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44534 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752297AbaBOLlF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:41:05 -0500
-Message-ID: <52FF5274.5060408@kernel.org>
-Date: Sat, 15 Feb 2014 11:41:40 +0000
+	with ESMTP id S1752297AbaBOLru (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:47:50 -0500
+Message-ID: <52FF5409.8050903@kernel.org>
+Date: Sat, 15 Feb 2014 11:48:25 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Matt Porter <mporter@linaro.org>,
+To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+	Matt Porter <mporter@linaro.org>,
 	Grant Likely <grant.likely@secretlab.ca>,
 	Rob Herring <robh+dt@kernel.org>,
 	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
@@ -17,58 +18,57 @@ To: Matt Porter <mporter@linaro.org>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Thierry Reding <thierry.reding@gmail.com>
-CC: Linux IIO List <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
+CC: Devicetree List <devicetree@vger.kernel.org>,
 	Linux PWM List <linux-pwm@vger.kernel.org>,
+	Linux IIO List <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
 	Linux OMAP List <linux-omap@vger.kernel.org>,
 	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3 3/6] iio: enable selection and build of pulse drivers
-References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <1391626901-31684-4-git-send-email-mporter@linaro.org>
-In-Reply-To: <1391626901-31684-4-git-send-email-mporter@linaro.org>
+Subject: Re: [PATCH v3 0/6] IIO pulse capture support for TI ECAP
+References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <52F29DBD.9050305@cogentembedded.com>
+In-Reply-To: <52F29DBD.9050305@cogentembedded.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/02/14 19:01, Matt Porter wrote:
-> Add the pulse driver subdirectory when configuring and building
-> IIO.
+On 05/02/14 20:23, Sergei Shtylyov wrote:
+> Hello.
 >
-> Signed-off-by: Matt Porter <mporter@linaro.org>
-Hi Matt,
+> On 02/05/2014 10:01 PM, Matt Porter wrote:
+>
+> [...]
+>
+>> This series adds support for PWM capture devices within IIO and
+>> adds a TI ECAP IIO driver.
+>
+>> PWM capture devices are supported using a new IIO "pulse" channel type.
+>
+>> The IIO ECAP driver implements interrupt driven triggered buffer capture
+>> only as raw sample reads are not applicable to this hardware.
+>> Initially, the driver supports a single pulse width measurement with
+>> configurable polarity. The ECAP hardware can support measurement of a
+>> complete period and duty cycle but this is not yet implemented.
+>
 
-This wants rolling into the driver patch before it.  No point it giving it
-it's own patch.  This will just lead to confusion on git bisections etc.
+> How about pulse counting? I have the hardware that can also
+> countpulses in addition to measuring the periods, so I'm interested
+> in this work (initially I supported it in driver/misc/ but it got
+> turned down for iio).
+>
+I'm afraid I'd forgotten this completely if you can dig out some links
+to that discussion it would be great. Only one I can find right now
+is a request that you post an ABI introducing this as a generic pulse
+counter rather than a speed measurement.
 
+Good point though - under my previous sketched outline, perhaps
 
-Jonathan
-> ---
->   drivers/iio/Kconfig  | 1 +
->   drivers/iio/Makefile | 1 +
->   2 files changed, 2 insertions(+)
+in_waveform_cyclecount_input?  (I would imagine that it doesn't come
+out needing scaling!)
+
+> WBR, Sergei
 >
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 5dd0e12..286acc3 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -74,6 +74,7 @@ if IIO_TRIGGER
->      source "drivers/iio/trigger/Kconfig"
->   endif #IIO_TRIGGER
->   source "drivers/iio/pressure/Kconfig"
-> +source "drivers/iio/pulse/Kconfig"
->   source "drivers/iio/temperature/Kconfig"
->
->   endif # IIO
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 887d390..9a953c9 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -24,5 +24,6 @@ obj-y += light/
->   obj-y += magnetometer/
->   obj-y += orientation/
->   obj-y += pressure/
-> +obj-y += pulse/
->   obj-y += temperature/
->   obj-y += trigger/
->
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
