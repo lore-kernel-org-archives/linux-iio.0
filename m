@@ -1,271 +1,809 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35105 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43407 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751131AbaBZRUM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2014 12:20:12 -0500
-In-Reply-To: <1393432147-31355-4-git-send-email-johannes.thumshirn@men.de>
-References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de> <1393432147-31355-4-git-send-email-johannes.thumshirn@men.de>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v3 3/3] iio: adc: Add MEN 16z188 ADC driver
+	with ESMTP id S1752100AbaBOKRo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 05:17:44 -0500
+Message-ID: <52FF3EEA.30606@kernel.org>
+Date: Sat, 15 Feb 2014 10:18:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 26 Feb 2014 17:20:03 +0000
-To: Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <b6961624-add3-480a-8757-c2ff2893622f@email.android.com>
+MIME-Version: 1.0
+To: Fugang Duan <B38611@freescale.com>
+CC: shawn.guo@linaro.org, sachin.kamat@linaro.org, pmeerw@pmeerw.net,
+	lars@metafoo.de, mark.rutland@arm.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 2/3] iio:adc:imx: add Freescale Vybrid vf610 adc driver
+References: <1390714773-23066-1-git-send-email-B38611@freescale.com> <1390714773-23066-3-git-send-email-B38611@freescale.com>
+In-Reply-To: <1390714773-23066-3-git-send-email-B38611@freescale.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On February 26, 2014 4:29:07 PM GMT+00:00, Johannes Thumshirn <johannes.thumshirn@men.de> wrote:
->Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
+On 26/01/14 05:39, Fugang Duan wrote:
+> Add Freescale Vybrid vf610 adc driver. The driver only support
+> ADC software trigger.
 >
->Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+> VF610 ADC device documentation is available at below reference manual
+> (chapter 37):
+> http://cache.freescale.com/files/32bit/doc/ref_manual/VYBRIDRM.pdf?
+> fpsp=1&WT_TYPE=Reference%20Manuals&WT_VENDOR=FREESCALE&WT_FILE_FORMAT
+> =pdf&WT_ASSET=Documentation
+>
+> CC: Shawn Guo <shawn.guo@linaro.org>
+> CC: Jonathan Cameron <jic23@kernel.org>
+> CC: Mark Rutland <mark.rutland@arm.com>
+> CC: Otavio Salvador <otavio@ossystems.com.br>
+> CC: Peter Meerwald <pmeerw@pmeerw.net>
+> CC: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Fugang Duan <B38611@freescale.com>
 
-The other two patches look sane to me as well.
+I very much like the simplified approach you have taken for this initial
+merge.  Much easier to start simple and build up to the more complex
+functionality.
 
-Anyhow, assuming everyone is happy with those (not yet clear)... Greg do you want to
- take this directly or would you prefer if I pick the series up and send on to you via the IIO
- tree? I'm happy either way.
+There was one missing mutex unlock in an error path (noted below). I have
+fixed that and applied to the togreg branch of iio.git.   This will initially
+go out as the testing branch for the autobuilders to play with it.
+
+Also devm_irq requests always make me nervous, but I think this one is fine
+so have left it alone
 
 Jonathan
 
+> ---
+>   drivers/iio/adc/Kconfig     |    9 +
+>   drivers/iio/adc/Makefile    |    1 +
+>   drivers/iio/adc/vf610_adc.c |  709 +++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 719 insertions(+), 0 deletions(-)
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2209f28..3677165 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -197,6 +197,15 @@ config TWL6030_GPADC
+>   	  This driver can also be built as a module. If so, the module will be
+>   	  called twl6030-gpadc.
+>
+> +config VF610_ADC
+> +	tristate "Freescale vf610 ADC driver"
+> +	help
+> +	  Say yes here to support for Vybrid board analog-to-digital converter.
+> +	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called vf610_adc.
+> +
+>   config VIPERBOARD_ADC
+>   	tristate "Viperboard ADC support"
+>   	depends on MFD_VIPERBOARD && USB
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ba9a10a..6d96b0f 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -21,4 +21,5 @@ obj-$(CONFIG_NAU7802) += nau7802.o
+>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+> +obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+>   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> new file mode 100644
+> index 0000000..84c7aac
+> --- /dev/null
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -0,0 +1,709 @@
+> +/*
+> + * Freescale Vybrid vf610 ADC driver
+> + *
+> + * Copyright 2013 Freescale Semiconductor, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + *
+> + *  You should have received a copy of the GNU General Public License
+> + *  along with this program; if not, write to the Free Software
+> + *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/delay.h>
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/io.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/err.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/driver.h>
+> +
+> +/* This will be the driver name the kernel reports */
+> +#define DRIVER_NAME "vf610-adc"
+> +
+> +/* Vybrid/IMX ADC registers */
+> +#define VF610_REG_ADC_HC0		0x00
+> +#define VF610_REG_ADC_HC1		0x04
+> +#define VF610_REG_ADC_HS		0x08
+> +#define VF610_REG_ADC_R0		0x0c
+> +#define VF610_REG_ADC_R1		0x10
+> +#define VF610_REG_ADC_CFG		0x14
+> +#define VF610_REG_ADC_GC		0x18
+> +#define VF610_REG_ADC_GS		0x1c
+> +#define VF610_REG_ADC_CV		0x20
+> +#define VF610_REG_ADC_OFS		0x24
+> +#define VF610_REG_ADC_CAL		0x28
+> +#define VF610_REG_ADC_PCTL		0x30
+> +
+> +/* Configuration register field define */
+> +#define VF610_ADC_MODE_BIT8		0x00
+> +#define VF610_ADC_MODE_BIT10		0x04
+> +#define VF610_ADC_MODE_BIT12		0x08
+> +#define VF610_ADC_MODE_MASK		0x0c
+> +#define VF610_ADC_BUSCLK2_SEL		0x01
+> +#define VF610_ADC_ALTCLK_SEL		0x02
+> +#define VF610_ADC_ADACK_SEL		0x03
+> +#define VF610_ADC_ADCCLK_MASK		0x03
+> +#define VF610_ADC_CLK_DIV2		0x20
+> +#define VF610_ADC_CLK_DIV4		0x40
+> +#define VF610_ADC_CLK_DIV8		0x60
+> +#define VF610_ADC_CLK_MASK		0x60
+> +#define VF610_ADC_ADLSMP_LONG		0x10
+> +#define VF610_ADC_ADSTS_MASK		0x300
+> +#define VF610_ADC_ADLPC_EN		0x80
+> +#define VF610_ADC_ADHSC_EN		0x400
+> +#define VF610_ADC_REFSEL_VALT		0x100
+> +#define VF610_ADC_REFSEL_VBG		0x1000
+> +#define VF610_ADC_ADTRG_HARD		0x2000
+> +#define VF610_ADC_AVGS_8		0x4000
+> +#define VF610_ADC_AVGS_16		0x8000
+> +#define VF610_ADC_AVGS_32		0xC000
+> +#define VF610_ADC_AVGS_MASK		0xC000
+> +#define VF610_ADC_OVWREN		0x10000
+> +
+> +/* General control register field define */
+> +#define VF610_ADC_ADACKEN		0x1
+> +#define VF610_ADC_DMAEN			0x2
+> +#define VF610_ADC_ACREN			0x4
+> +#define VF610_ADC_ACFGT			0x8
+> +#define VF610_ADC_ACFE			0x10
+> +#define VF610_ADC_AVGEN			0x20
+> +#define VF610_ADC_ADCON			0x40
+> +#define VF610_ADC_CAL			0x80
+> +
+> +/* Other field define */
+> +#define VF610_ADC_ADCHC(x)		((x) & 0xF)
+> +#define VF610_ADC_AIEN			(0x1 << 7)
+> +#define VF610_ADC_CONV_DISABLE		0x1F
+> +#define VF610_ADC_HS_COCO0		0x1
+> +#define VF610_ADC_CALF			0x2
+> +#define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
+> +
+> +enum clk_sel {
+> +	VF610_ADCIOC_BUSCLK_SET,
+> +	VF610_ADCIOC_ALTCLK_SET,
+> +	VF610_ADCIOC_ADACK_SET,
+> +};
+> +
+> +enum vol_ref {
+> +	VF610_ADCIOC_VR_VREF_SET,
+> +	VF610_ADCIOC_VR_VALT_SET,
+> +	VF610_ADCIOC_VR_VBG_SET,
+> +};
+> +
+> +enum average_sel {
+> +	VF610_ADC_SAMPLE_1,
+> +	VF610_ADC_SAMPLE_4,
+> +	VF610_ADC_SAMPLE_8,
+> +	VF610_ADC_SAMPLE_16,
+> +	VF610_ADC_SAMPLE_32,
+> +};
 
->---
+> +
+> +struct vf610_adc_feature {
+> +	enum clk_sel	clk_sel;
+> +	enum vol_ref	vol_ref;
+> +
+> +	int	clk_div;
+> +	int     sample_rate;
+> +	int	res_mode;
+> +
+> +	bool	lpm;
+> +	bool	calibration;
+> +	bool	ovwren;
+> +};
+> +
+> +struct vf610_adc {
+> +	struct device *dev;
+> +	void __iomem *regs;
+> +	struct clk *clk;
+> +
+> +	u32 vref_uv;
+> +	u32 value;
+> +	struct regulator *vref;
+> +	struct vf610_adc_feature adc_feature;
+> +
+> +	struct completion completion;
+> +};
+> +
+> +#define VF610_ADC_CHAN(_idx, _chan_type) {			\
+> +	.type = (_chan_type),					\
+> +	.indexed = 1,						\
+> +	.channel = (_idx),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +}
+> +
+> +static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+> +	VF610_ADC_CHAN(0, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(1, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(2, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(3, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(4, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(5, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(6, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(7, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(8, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(9, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(10, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(11, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(12, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(13, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(14, IIO_VOLTAGE),
+> +	VF610_ADC_CHAN(15, IIO_VOLTAGE),
+> +	/* sentinel */
+> +};
+> +
+> +/*
+> + * ADC sample frequency, unit is ADCK cycles.
+> + * ADC clk source is ipg clock, which is the same as bus clock.
+> + *
+> + * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
+> + * SFCAdder: fixed to 6 ADCK cycles
+> + * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+> + * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> + * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> + *
+> + * By default, enable 12 bit resolution mode, clock source
+> + * set to ipg clock, So get below frequency group:
+> + */
+> +static const u32 vf610_sample_freq_avail[5] =
+> +{1941176, 559332, 286957, 145374, 73171};
+> +
+> +static inline void vf610_adc_cfg_init(struct vf610_adc *info)
+> +{
+> +	/* set default Configuration for ADC controller */
+> +	info->adc_feature.clk_sel = VF610_ADCIOC_BUSCLK_SET;
+> +	info->adc_feature.vol_ref = VF610_ADCIOC_VR_VREF_SET;
+> +
+> +	info->adc_feature.calibration = true;
+> +	info->adc_feature.ovwren = true;
+> +
+> +	info->adc_feature.clk_div = 1;
+> +	info->adc_feature.res_mode = 12;
+> +	info->adc_feature.sample_rate = 1;
+> +	info->adc_feature.lpm = true;
+> +}
+> +
+> +static void vf610_adc_cfg_post_set(struct vf610_adc *info)
+> +{
+> +	struct vf610_adc_feature *adc_feature = &info->adc_feature;
+> +	int cfg_data = 0;
+> +	int gc_data = 0;
+> +
+> +	switch (adc_feature->clk_sel) {
+> +	case VF610_ADCIOC_ALTCLK_SET:
+> +		cfg_data |= VF610_ADC_ALTCLK_SEL;
+> +		break;
+> +	case VF610_ADCIOC_ADACK_SET:
+> +		cfg_data |= VF610_ADC_ADACK_SEL;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* low power set for calibration */
+> +	cfg_data |= VF610_ADC_ADLPC_EN;
+> +
+> +	/* enable high speed for calibration */
+> +	cfg_data |= VF610_ADC_ADHSC_EN;
+> +
+> +	/* voltage reference */
+> +	switch (adc_feature->vol_ref) {
+> +	case VF610_ADCIOC_VR_VREF_SET:
+> +		break;
+> +	case VF610_ADCIOC_VR_VALT_SET:
+> +		cfg_data |= VF610_ADC_REFSEL_VALT;
+> +		break;
+> +	case VF610_ADCIOC_VR_VBG_SET:
+> +		cfg_data |= VF610_ADC_REFSEL_VBG;
+> +		break;
+> +	default:
+> +		dev_err(info->dev, "error voltage reference\n");
+> +	}
+> +
+> +	/* data overwrite enable */
+> +	if (adc_feature->ovwren)
+> +		cfg_data |= VF610_ADC_OVWREN;
+> +
+> +	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
+> +	writel(gc_data, info->regs + VF610_REG_ADC_GC);
+> +}
+> +
+> +static void vf610_adc_calibration(struct vf610_adc *info)
+> +{
+> +	int adc_gc, hc_cfg;
+> +	int timeout;
+> +
+> +	if (!info->adc_feature.calibration)
+> +		return;
+> +
+> +	/* enable calibration interrupt */
+> +	hc_cfg = VF610_ADC_AIEN | VF610_ADC_CONV_DISABLE;
+> +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+> +
+> +	adc_gc = readl(info->regs + VF610_REG_ADC_GC);
+> +	writel(adc_gc | VF610_ADC_CAL, info->regs + VF610_REG_ADC_GC);
+> +
+> +	timeout = wait_for_completion_timeout
+> +			(&info->completion, VF610_ADC_TIMEOUT);
+> +	if (timeout == 0)
+> +		dev_err(info->dev, "Timeout for adc calibration\n");
+> +
+> +	adc_gc = readl(info->regs + VF610_REG_ADC_GS);
+> +	if (adc_gc & VF610_ADC_CALF)
+> +		dev_err(info->dev, "ADC calibration failed\n");
+> +
+> +	info->adc_feature.calibration = false;
+> +}
+> +
+> +static void vf610_adc_cfg_set(struct vf610_adc *info)
+> +{
+> +	struct vf610_adc_feature *adc_feature = &(info->adc_feature);
+> +	int cfg_data;
+> +
+> +	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
+> +
+> +	/* low power configuration */
+> +	cfg_data &= ~VF610_ADC_ADLPC_EN;
+> +	if (adc_feature->lpm)
+> +		cfg_data |= VF610_ADC_ADLPC_EN;
+> +
+> +	/* disable high speed */
+> +	cfg_data &= ~VF610_ADC_ADHSC_EN;
+> +
+> +	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
+> +}
+> +
+> +static void vf610_adc_sample_set(struct vf610_adc *info)
+> +{
+> +	struct vf610_adc_feature *adc_feature = &(info->adc_feature);
+> +	int cfg_data, gc_data;
+> +
+> +	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
+> +	gc_data = readl(info->regs + VF610_REG_ADC_GC);
+> +
+> +	/* resolution mode */
+> +	cfg_data &= ~VF610_ADC_MODE_MASK;
+> +	switch (adc_feature->res_mode) {
+> +	case 8:
+> +		cfg_data |= VF610_ADC_MODE_BIT8;
+> +		break;
+> +	case 10:
+> +		cfg_data |= VF610_ADC_MODE_BIT10;
+> +		break;
+> +	case 12:
+> +		cfg_data |= VF610_ADC_MODE_BIT12;
+> +		break;
+> +	default:
+> +		dev_err(info->dev, "error resolution mode\n");
+> +		break;
+> +	}
+> +
+> +	/* clock select and clock divider */
+> +	cfg_data &= ~(VF610_ADC_CLK_MASK | VF610_ADC_ADCCLK_MASK);
+> +	switch (adc_feature->clk_div) {
+> +	case 1:
+> +		break;
+> +	case 2:
+> +		cfg_data |= VF610_ADC_CLK_DIV2;
+> +		break;
+> +	case 4:
+> +		cfg_data |= VF610_ADC_CLK_DIV4;
+> +		break;
+> +	case 8:
+> +		cfg_data |= VF610_ADC_CLK_DIV8;
+> +		break;
+> +	case 16:
+> +		switch (adc_feature->clk_sel) {
+> +		case VF610_ADCIOC_BUSCLK_SET:
+> +			cfg_data |= VF610_ADC_BUSCLK2_SEL | VF610_ADC_CLK_DIV8;
+> +			break;
+> +		default:
+> +			dev_err(info->dev, "error clk divider\n");
+> +			break;
+> +		}
+> +		break;
+> +	}
+> +
+> +	/* Use the short sample mode */
+> +	cfg_data &= ~(VF610_ADC_ADLSMP_LONG | VF610_ADC_ADSTS_MASK);
+> +
+> +	/* update hardware average selection */
+> +	cfg_data &= ~VF610_ADC_AVGS_MASK;
+> +	gc_data &= ~VF610_ADC_AVGEN;
+> +	switch (adc_feature->sample_rate) {
+> +	case VF610_ADC_SAMPLE_1:
+> +		break;
+> +	case VF610_ADC_SAMPLE_4:
+> +		gc_data |= VF610_ADC_AVGEN;
+> +		break;
+> +	case VF610_ADC_SAMPLE_8:
+> +		gc_data |= VF610_ADC_AVGEN;
+> +		cfg_data |= VF610_ADC_AVGS_8;
+> +		break;
+> +	case VF610_ADC_SAMPLE_16:
+> +		gc_data |= VF610_ADC_AVGEN;
+> +		cfg_data |= VF610_ADC_AVGS_16;
+> +		break;
+> +	case VF610_ADC_SAMPLE_32:
+> +		gc_data |= VF610_ADC_AVGEN;
+> +		cfg_data |= VF610_ADC_AVGS_32;
+> +		break;
+> +	default:
+> +		dev_err(info->dev,
+> +			"error hardware sample average select\n");
+> +	}
+> +
+> +	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
+> +	writel(gc_data, info->regs + VF610_REG_ADC_GC);
+> +}
+> +
+> +static void vf610_adc_hw_init(struct vf610_adc *info)
+> +{
+> +	/* CFG: Feature set */
+> +	vf610_adc_cfg_post_set(info);
+> +	vf610_adc_sample_set(info);
+> +
+> +	/* adc calibration */
+> +	vf610_adc_calibration(info);
+> +
+> +	/* CFG: power and speed set */
+> +	vf610_adc_cfg_set(info);
+> +}
+> +
+> +static int vf610_adc_read_data(struct vf610_adc *info)
+> +{
+> +	int result;
+> +
+> +	result = readl(info->regs + VF610_REG_ADC_R0);
+> +
+> +	switch (info->adc_feature.res_mode) {
+> +	case 8:
+> +		result &= 0xFF;
+> +		break;
+> +	case 10:
+> +		result &= 0x3FF;
+> +		break;
+> +	case 12:
+> +		result &= 0xFFF;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return result;
+> +}
+> +
+> +static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+> +{
+> +	struct vf610_adc *info = (struct vf610_adc *)dev_id;
+> +	int coco;
+> +
+> +	coco = readl(info->regs + VF610_REG_ADC_HS);
+> +	if (coco & VF610_ADC_HS_COCO0) {
+> +		info->value = vf610_adc_read_data(info);
+> +		complete(&info->completion);
+> +	}
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1941176, 559332, 286957, 145374, 73171");
+> +
+> +static struct attribute *vf610_attributes[] = {
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group vf610_attribute_group = {
+> +	.attrs = vf610_attributes,
+> +};
+> +
+> +static int vf610_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val,
+> +			int *val2,
+> +			long mask)
+> +{
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +	unsigned int hc_cfg;
+> +	unsigned long ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&indio_dev->mlock);
+> +		reinit_completion(&info->completion);
+> +
+> +		hc_cfg = VF610_ADC_ADCHC(chan->channel);
+> +		hc_cfg |= VF610_ADC_AIEN;
+> +		writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+> +		ret = wait_for_completion_interruptible_timeout
+> +				(&info->completion, VF610_ADC_TIMEOUT);
+> +		if (ret == 0)
+The mutex is still held here.
+> +			return -ETIMEDOUT;
+> +		if (ret < 0) {
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return ret;
+> +		}
+> +
+> +		*val = info->value;
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = info->vref_uv / 1000;
+> +		*val2 = info->adc_feature.res_mode;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = vf610_sample_freq_avail[info->adc_feature.sample_rate];
+> +		*val2 = 0;
+> +		return IIO_VAL_INT;
+> +
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int vf610_write_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int val,
+> +			int val2,
+> +			long mask)
+> +{
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	switch (mask) {
+> +		case IIO_CHAN_INFO_SAMP_FREQ:
+> +			for (i = 0;
+> +				i < ARRAY_SIZE(vf610_sample_freq_avail);
+> +				i++)
+> +				if (val == vf610_sample_freq_avail[i]) {
+> +					info->adc_feature.sample_rate = i;
+> +					vf610_adc_sample_set(info);
+> +					return 0;
+> +				}
+> +			break;
+> +
+> +		default:
+> +			break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int vf610_adc_reg_access(struct iio_dev *indio_dev,
+> +			unsigned reg, unsigned writeval,
+> +			unsigned *readval)
+> +{
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +
+> +	if ((readval == NULL) ||
+> +		(!(reg % 4) || (reg > VF610_REG_ADC_PCTL)))
+> +		return -EINVAL;
+> +
+> +	*readval = readl(info->regs + reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info vf610_adc_iio_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = &vf610_read_raw,
+> +	.write_raw = &vf610_write_raw,
+> +	.debugfs_reg_access = &vf610_adc_reg_access,
+> +	.attrs = &vf610_attribute_group,
+> +};
+> +
+> +static const struct of_device_id vf610_adc_match[] = {
+> +	{ .compatible = "fsl,vf610-adc", },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, vf610_adc_dt_ids);
+> +
+> +static int vf610_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct vf610_adc *info;
+> +	struct iio_dev *indio_dev;
+> +	struct resource *mem;
+> +	int irq;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct vf610_adc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "Failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	info = iio_priv(indio_dev);
+> +	info->dev = &pdev->dev;
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(info->regs))
+> +		return PTR_ERR(info->regs);
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq <= 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		return -EINVAL;
+> +	}
+> +
+Hmm. Devm requests for irqs always make me nervous.  I 'think' this one
+is fine, but it is rather too easy to use something in the handler that
+is freed via a route other than managed resources...  Still if you are sure
+then leave it be.
+> +	ret = devm_request_irq(info->dev, irq,
+> +				vf610_adc_isr, 0,
+> +				dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
+> +		return ret;
+> +	}
+> +
+> +	info->clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(info->clk)) {
+> +		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+> +						PTR_ERR(info->clk));
+> +		ret = PTR_ERR(info->clk);
+> +		return ret;
+> +	}
+> +
+> +	info->vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR(info->vref))
+> +		return PTR_ERR(info->vref);
+> +
+> +	ret = regulator_enable(info->vref);
+> +	if (ret)
+> +		return ret;
+> +
+> +	info->vref_uv = regulator_get_voltage(info->vref);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	init_completion(&info->completion);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &vf610_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = vf610_adc_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(vf610_adc_iio_channels);
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"Could not prepare or enable the clock.\n");
+> +		goto error_adc_clk_enable;
+> +	}
+> +
+> +	vf610_adc_cfg_init(info);
+> +	vf610_adc_hw_init(info);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> +		goto error_iio_device_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +
+> +error_iio_device_register:
+> +	clk_disable_unprepare(info->clk);
+> +error_adc_clk_enable:
+> +	regulator_disable(info->vref);
+> +
+> +	return ret;
+> +}
+> +
+> +static int vf610_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	regulator_disable(info->vref);
+> +	clk_disable_unprepare(info->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int vf610_adc_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +	int hc_cfg;
+> +
+> +	/* ADC controller enters to stop mode */
+> +	hc_cfg = readl(info->regs + VF610_REG_ADC_HC0);
+> +	hc_cfg |= VF610_ADC_CONV_DISABLE;
+> +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+> +
+> +	clk_disable_unprepare(info->clk);
+> +	regulator_disable(info->vref);
+> +
+> +	return 0;
+> +}
+> +
+> +static int vf610_adc_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct vf610_adc *info = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regulator_enable(info->vref);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	vf610_adc_hw_init(info);
+> +
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(vf610_adc_pm_ops,
+> +			vf610_adc_suspend,
+> +			vf610_adc_resume);
+> +
+> +static struct platform_driver vf610_adc_driver = {
+> +	.probe          = vf610_adc_probe,
+> +	.remove         = vf610_adc_remove,
+> +	.driver         = {
+> +		.name   = DRIVER_NAME,
+> +		.owner  = THIS_MODULE,
+> +		.of_match_table = vf610_adc_match,
+> +		.pm     = &vf610_adc_pm_ops,
+> +	},
+> +};
+> +
+> +module_platform_driver(vf610_adc_driver);
+> +
+> +MODULE_AUTHOR("Fugang Duan <B38611@freescale.com>");
+> +MODULE_DESCRIPTION("Freescale VF610 ADC driver");
+> +MODULE_LICENSE("GPL v2");
 >
->Changes to v2:
->* changed devm_iio_register_driver() to
->iio_register_driver()/iio_unregister_driver()
->
-> drivers/iio/adc/Kconfig        |  10 +++
-> drivers/iio/adc/Makefile       |   1 +
->drivers/iio/adc/men_z188_adc.c | 171
->+++++++++++++++++++++++++++++++++++++++++
-> 3 files changed, 182 insertions(+)
-> create mode 100644 drivers/iio/adc/men_z188_adc.c
->
->diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->index 2209f28..5c63f091 100644
->--- a/drivers/iio/adc/Kconfig
->+++ b/drivers/iio/adc/Kconfig
->@@ -155,6 +155,16 @@ config MCP3422
->	  This driver can also be built as a module. If so, the module will be
-> 	  called mcp3422.
->
->+config MEN_Z188_ADC
->+	tristate "MEN 16z188 ADC IP Core support"
->+	depends on MCB
->+	help
->+	  Say yes here to enable support for the MEN 16z188 ADC IP-Core on a
->MCB
->+	  carrier.
->+
->+	  This driver can also be built as a module. If so, the module will
->be
->+	  called men_z188_adc.
->+
-> config NAU7802
-> 	tristate "Nuvoton NAU7802 ADC driver"
-> 	depends on I2C
->diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->index ba9a10a..85a4a04 100644
->--- a/drivers/iio/adc/Makefile
->+++ b/drivers/iio/adc/Makefile
->@@ -17,6 +17,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> obj-$(CONFIG_MAX1363) += max1363.o
-> obj-$(CONFIG_MCP320X) += mcp320x.o
-> obj-$(CONFIG_MCP3422) += mcp3422.o
->+obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-> obj-$(CONFIG_NAU7802) += nau7802.o
-> obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
-> obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->diff --git a/drivers/iio/adc/men_z188_adc.c
->b/drivers/iio/adc/men_z188_adc.c
->new file mode 100644
->index 0000000..7036503
->--- /dev/null
->+++ b/drivers/iio/adc/men_z188_adc.c
->@@ -0,0 +1,171 @@
->+/*
->+ * MEN 16z188 Analog to Digial Converter
->+ *
->+ * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
->+ * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
->+ *
->+ * This program is free software; you can redistribute it and/or
->modify it
->+ * under the terms of the GNU General Public License as published by
->the Free
->+ * Software Foundation; version 2 of the License.
->+ */
->+
->+#include <linux/kernel.h>
->+#include <linux/module.h>
->+#include <linux/mcb.h>
->+#include <linux/iio/iio.h>
->+
->+#define Z188_ADC_MAX_CHAN	8
->+#define Z188_ADC_GAIN		0x0700000
->+#define Z188_MODE_VOLTAGE	BIT(27)
->+#define Z188_CFG_AUTO		0x1
->+#define Z188_CTRL_REG		0x40
->+
->+#define ADC_DATA(x) (((x) >> 2) & 0x7ffffc)
->+#define ADC_OVR(x) ((x) & 0x1)
->+
->+struct z188_adc {
->+	struct resource *mem;
->+	void __iomem *base;
->+};
->+
->+#define Z188_ADC_CHANNEL(idx) {					\
->+		.type = IIO_VOLTAGE,				\
->+		.indexed = 1,					\
->+		.channel = (idx),				\
->+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
->+}
->+
->+static const struct iio_chan_spec z188_adc_iio_channels[] = {
->+	Z188_ADC_CHANNEL(0),
->+	Z188_ADC_CHANNEL(1),
->+	Z188_ADC_CHANNEL(2),
->+	Z188_ADC_CHANNEL(3),
->+	Z188_ADC_CHANNEL(4),
->+	Z188_ADC_CHANNEL(5),
->+	Z188_ADC_CHANNEL(6),
->+	Z188_ADC_CHANNEL(7),
->+};
->+
->+static int z188_iio_read_raw(struct iio_dev *iio_dev,
->+			struct iio_chan_spec const *chan,
->+			int *val,
->+			int *val2,
->+			long info)
->+{
->+	struct z188_adc *adc = iio_priv(iio_dev);
->+	int ret;
->+	u16 tmp;
->+
->+	switch (info) {
->+	case IIO_CHAN_INFO_RAW:
->+		tmp = readw(adc->base + chan->channel * 4);
->+
->+		if (ADC_OVR(tmp)) {
->+			dev_info(&iio_dev->dev,
->+				"Oversampling error on ADC channel %d\n",
->+				chan->channel);
->+			return -EIO;
->+		}
->+		*val = ADC_DATA(tmp);
->+		ret = IIO_VAL_INT;
->+		break;
->+	default:
->+		ret = -EINVAL;
->+		break;
->+	}
->+
->+	return ret;
->+}
->+
->+static struct iio_info z188_adc_info = {
->+	.read_raw = &z188_iio_read_raw,
->+	.driver_module = THIS_MODULE,
->+};
->+
->+static void men_z188_config_channels(void __iomem *addr)
->+{
->+	int i;
->+	u32 cfg;
->+	u32 ctl;
->+
->+	ctl = readl(addr + Z188_CTRL_REG);
->+	ctl |= Z188_CFG_AUTO;
->+	writel(ctl, addr + Z188_CTRL_REG);
->+
->+	for (i = 0; i < Z188_ADC_MAX_CHAN; i++) {
->+		cfg = readl(addr + i);
->+		cfg &= ~Z188_ADC_GAIN;
->+		cfg |= Z188_MODE_VOLTAGE;
->+		writel(cfg, addr + i);
->+	}
->+}
->+
->+static int men_z188_probe(struct mcb_device *dev,
->+			const struct mcb_device_id *id)
->+{
->+	struct z188_adc *adc;
->+	struct iio_dev *indio_dev;
->+	struct resource *mem;
->+
->+	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct
->z188_adc));
->+	if (!indio_dev)
->+		return -ENOMEM;
->+
->+	adc = iio_priv(indio_dev);
->+	indio_dev->name = "z188-adc";
->+	indio_dev->dev.parent = &dev->dev;
->+	indio_dev->info = &z188_adc_info;
->+	indio_dev->modes = INDIO_DIRECT_MODE;
->+	indio_dev->channels = z188_adc_iio_channels;
->+	indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
->+
->+	mem = mcb_request_mem(dev, "z188-adc");
->+	if (!mem)
->+		return -ENOMEM;
->+
->+	adc->base = ioremap(mem->start, resource_size(mem));
->+	if (adc->base == NULL)
->+		goto err;
->+
->+	men_z188_config_channels(adc->base);
->+
->+	adc->mem = mem;
->+	mcb_set_drvdata(dev, indio_dev);
->+
->+	return iio_device_register(indio_dev);
->+
->+err:
->+	mcb_release_mem(mem);
->+	return -ENXIO;
->+}
->+
->+static void men_z188_remove(struct mcb_device *dev)
->+{
->+	struct iio_dev *indio_dev  = mcb_get_drvdata(dev);
->+	struct z188_adc *adc = iio_priv(indio_dev);
->+
->+	iio_device_unregister(indio_dev);
->+	iounmap(adc->base);
->+	mcb_release_mem(adc->mem);
->+}
->+
->+static const struct mcb_device_id men_z188_ids[] = {
->+	{ .device = 0xbc },
->+};
->+MODULE_DEVICE_TABLE(mcb, men_z188_ids);
->+
->+static struct mcb_driver men_z188_driver = {
->+	.driver = {
->+		.name = "z188-adc",
->+		.owner = THIS_MODULE,
->+	},
->+	.probe = men_z188_probe,
->+	.remove = men_z188_remove,
->+	.id_table = men_z188_ids,
->+};
->+module_mcb_driver(men_z188_driver);
->+
->+MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
->+MODULE_LICENSE("GPL");
->+MODULE_DESCRIPTION("IIO ADC driver for MEN 16z188 ADC Core");
->+MODULE_ALIAS("mcb:16z188");
->--
->1.8.5.4
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
