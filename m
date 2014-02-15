@@ -1,40 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.114]:41979 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751122AbaBSKMc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Feb 2014 05:12:32 -0500
-Date: Wed, 19 Feb 2014 11:12:27 +0100
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 3/3] iio: adc: Add MEN 16z188 ADC driver
-Message-ID: <20140219101227.GD16649@jtlinux>
-References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
- <1392737654-22682-4-git-send-email-johannes.thumshirn@men.de>
- <15736e39-f1b0-45b3-a70c-c81370cf49f1@email.android.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43072 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752167AbaBOJrN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 04:47:13 -0500
+Message-ID: <52FF37C2.5030600@kernel.org>
+Date: Sat, 15 Feb 2014 09:47:46 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <15736e39-f1b0-45b3-a70c-c81370cf49f1@email.android.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Denis CIOCCA <denis.ciocca@st.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio:accel: call devm_iio_device_free function if
+ common_proble fails
+References: <1392391005-2719-1-git-send-email-denis.ciocca@st.com> <1392391005-2719-2-git-send-email-denis.ciocca@st.com> <52FE404B.3050307@metafoo.de>
+In-Reply-To: <52FE404B.3050307@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 18, 2014 at 07:17:04PM +0000, Jonathan Cameron wrote:
+On 14/02/14 16:11, Lars-Peter Clausen wrote:
+> On 02/14/2014 04:16 PM, Denis CIOCCA wrote:
+>> If st_accel_common_probe function fails, the device must be freed.
+>> Added devm_iio_device_free also on common_remove function.
 >
+> When the device is allocated with devm_iio_device... you do not need to manually free the device. If probe fails the device will be freed automatically.
 >
-> On February 18, 2014 3:34:14 PM GMT+00:00, Johannes Thumshirn <johannes.thumshirn@men.de> wrote:
-> >Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
-> >
-> >Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
-> Looks pretty good apart from the nitpicks. One more little thing...
+> - Lars
+Indeed - the handling in these drivers appears entirely correct.
+The allocs are done with devm so under any error conditions or
+deliberate removal they will be cleared up.
 
-Thanks, I'll rework this and the comments from Peter Meerwald and Lars-Peter
-Clausen in v2 of the patch series as well.
+The register should not be done using devm as that would mean the
+unregister would occur late.  As the register is done last, there
+are no error conditions that can require it being removed in the
+probe function.  Hence the code looks fine to me as it stands.
 
-I think it'll be done by monday.
+So Denis, do you have an observed problem that prompted these patches?
 
-Thanks,
-Johannes
+Jonathan
