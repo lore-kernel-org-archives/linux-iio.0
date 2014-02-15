@@ -1,85 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eu1sys200aog103.obsmtp.com ([207.126.144.115]:55668 "EHLO
-	eu1sys200aog103.obsmtp.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752026AbaBNPQw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Feb 2014 10:16:52 -0500
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C2737A9
-	for <linux-iio@vger.kernel.org>; Fri, 14 Feb 2014 15:16:49 +0000 (GMT)
-Received: from mail7.sgp.st.com (unknown [164.129.223.81])
-	by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 088821696B
-	for <linux-iio@vger.kernel.org>; Fri, 14 Feb 2014 15:16:49 +0000 (GMT)
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: linux-iio@vger.kernel.org
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 2/4] iio:gyro: call devm_iio_device_free function if common_proble fails
-Date: Fri, 14 Feb 2014 16:16:41 +0100
-Message-Id: <1392391005-2719-3-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1392391005-2719-1-git-send-email-denis.ciocca@st.com>
-References: <1392391005-2719-1-git-send-email-denis.ciocca@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43989 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752800AbaBOLEs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:04:48 -0500
+Message-ID: <52FF49F3.8010301@kernel.org>
+Date: Sat, 15 Feb 2014 11:05:23 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+CC: Kravchenko Oleksandr <x0199363@ti.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 2/2] iio:accel:bma180: Make LOW_PASS_FILTER_3DB_FREQUENCY
+ shared_by_type
+References: <1389389841-7389-1-git-send-email-pmeerw@pmeerw.net> <1389389841-7389-2-git-send-email-pmeerw@pmeerw.net> <52D12E83.9080807@kernel.org> <52F617C4.2010303@kernel.org>
+In-Reply-To: <52F617C4.2010303@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If st_gyro_common_probe function fails, the device must be freed.
-Added devm_iio_device_free also on common_remove function.
+On 08/02/14 11:40, Jonathan Cameron wrote:
+> On 11/01/14 11:44, Jonathan Cameron wrote:
+>>
+>>
+>> On 10/01/14 21:37, Peter Meerwald wrote:
+>>> the property is not per-channel, but shared by type
+>>>
+>> Now this one is in a sense even more interesting.
+>>
+>> 1) Your fix is correct.
+>> 2) Other than poluting sysfs with extra attributes and setting a bad
+>>     example, it doesn't actually matter as any attribute is defined
+>>     as being able to effect any other. e.g. if we had two different
+>>     filters, one for the z axis and another effecting both x and y
+>>     we would have to define all 3 as separate.
+>> 3) In theory correctly written generic userspace code should not care
+>>     as it should handle both cases without a user being any the wiser.
+>>     Hence this should fall into the category of being able to change
+>>     userspace ABI if no one notices...
+>>
+>> So what shall we do?
+>>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>>> Cc: Kravchenko Oleksandr <x0199363@ti.com>
+> Peter, I'm not going to put this one through as a fix as the current interface
+> is fine, if messy.  Given it's dependency on patch 1 of this series, I'll  wait
+> for that to propogate through. Could you remind me to apply this if I forget!
+Applied to the togreg branch of iio.git
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/gyro/st_gyro_core.c | 1 +
- drivers/iio/gyro/st_gyro_i2c.c  | 6 +++++-
- drivers/iio/gyro/st_gyro_spi.c  | 6 +++++-
- 3 files changed, 11 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index a8e174a..33295ef 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -365,6 +365,7 @@ void st_gyro_common_remove(struct iio_dev *indio_dev)
- 		st_sensors_deallocate_trigger(indio_dev);
- 
- 	st_gyro_deallocate_ring(indio_dev);
-+	devm_iio_device_free(gdata->dev, indio_dev);
- }
- EXPORT_SYMBOL(st_gyro_common_remove);
- 
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 23c12f3..12c1b97 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -37,9 +37,13 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
- 	err = st_gyro_common_probe(indio_dev,
- 				(struct st_sensors_platform_data *)&gyro_pdata);
- 	if (err < 0)
--		return err;
-+		goto device_unregister;
- 
- 	return 0;
-+
-+device_unregister:
-+	devm_iio_device_free(&client->dev, indio_dev);
-+	return err;
- }
- 
- static int st_gyro_i2c_remove(struct i2c_client *client)
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-index b4ad3be..7aaa290 100644
---- a/drivers/iio/gyro/st_gyro_spi.c
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -36,9 +36,13 @@ static int st_gyro_spi_probe(struct spi_device *spi)
- 	err = st_gyro_common_probe(indio_dev,
- 				(struct st_sensors_platform_data *)&gyro_pdata);
- 	if (err < 0)
--		return err;
-+		goto device_unregister;
- 
- 	return 0;
-+
-+device_unregister:
-+	devm_iio_device_free(&spi->dev, indio_dev);
-+	return err;
- }
- 
- static int st_gyro_spi_remove(struct spi_device *spi)
--- 
-1.8.5.4
+>>> ---
+>>>   drivers/iio/accel/bma180.c | 4 ++--
+>>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+>>> index bfec313..a7e68c8 100644
+>>> --- a/drivers/iio/accel/bma180.c
+>>> +++ b/drivers/iio/accel/bma180.c
+>>> @@ -451,9 +451,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+>>>       .type = IIO_ACCEL,                        \
+>>>       .modified = 1,                            \
+>>>       .channel2 = IIO_MOD_##_axis,                    \
+>>> -    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |            \
+>>> +    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),            \
+>>> +    .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |        \
+>>>           BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),    \
+>>> -    .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),        \
+>>>       .scan_index = AXIS_##_axis,                    \
+>>>       .scan_type = {                            \
+>>>           .sign = 's',                        \
+>>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
