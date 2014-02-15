@@ -1,40 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43072 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44438 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752167AbaBOJrN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 04:47:13 -0500
-Message-ID: <52FF37C2.5030600@kernel.org>
-Date: Sat, 15 Feb 2014 09:47:46 +0000
+	with ESMTP id S1752297AbaBOLlF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:41:05 -0500
+Message-ID: <52FF5274.5060408@kernel.org>
+Date: Sat, 15 Feb 2014 11:41:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Denis CIOCCA <denis.ciocca@st.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio:accel: call devm_iio_device_free function if
- common_proble fails
-References: <1392391005-2719-1-git-send-email-denis.ciocca@st.com> <1392391005-2719-2-git-send-email-denis.ciocca@st.com> <52FE404B.3050307@metafoo.de>
-In-Reply-To: <52FE404B.3050307@metafoo.de>
+To: Matt Porter <mporter@linaro.org>,
+	Grant Likely <grant.likely@secretlab.ca>,
+	Rob Herring <robh+dt@kernel.org>,
+	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Thierry Reding <thierry.reding@gmail.com>
+CC: Linux IIO List <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>,
+	Linux PWM List <linux-pwm@vger.kernel.org>,
+	Linux OMAP List <linux-omap@vger.kernel.org>,
+	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v3 3/6] iio: enable selection and build of pulse drivers
+References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <1391626901-31684-4-git-send-email-mporter@linaro.org>
+In-Reply-To: <1391626901-31684-4-git-send-email-mporter@linaro.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/02/14 16:11, Lars-Peter Clausen wrote:
-> On 02/14/2014 04:16 PM, Denis CIOCCA wrote:
->> If st_accel_common_probe function fails, the device must be freed.
->> Added devm_iio_device_free also on common_remove function.
+On 05/02/14 19:01, Matt Porter wrote:
+> Add the pulse driver subdirectory when configuring and building
+> IIO.
 >
-> When the device is allocated with devm_iio_device... you do not need to manually free the device. If probe fails the device will be freed automatically.
->
-> - Lars
-Indeed - the handling in these drivers appears entirely correct.
-The allocs are done with devm so under any error conditions or
-deliberate removal they will be cleared up.
+> Signed-off-by: Matt Porter <mporter@linaro.org>
+Hi Matt,
 
-The register should not be done using devm as that would mean the
-unregister would occur late.  As the register is done last, there
-are no error conditions that can require it being removed in the
-probe function.  Hence the code looks fine to me as it stands.
+This wants rolling into the driver patch before it.  No point it giving it
+it's own patch.  This will just lead to confusion on git bisections etc.
 
-So Denis, do you have an observed problem that prompted these patches?
 
 Jonathan
+> ---
+>   drivers/iio/Kconfig  | 1 +
+>   drivers/iio/Makefile | 1 +
+>   2 files changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 5dd0e12..286acc3 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -74,6 +74,7 @@ if IIO_TRIGGER
+>      source "drivers/iio/trigger/Kconfig"
+>   endif #IIO_TRIGGER
+>   source "drivers/iio/pressure/Kconfig"
+> +source "drivers/iio/pulse/Kconfig"
+>   source "drivers/iio/temperature/Kconfig"
+>
+>   endif # IIO
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 887d390..9a953c9 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -24,5 +24,6 @@ obj-y += light/
+>   obj-y += magnetometer/
+>   obj-y += orientation/
+>   obj-y += pressure/
+> +obj-y += pulse/
+>   obj-y += temperature/
+>   obj-y += trigger/
+>
+
