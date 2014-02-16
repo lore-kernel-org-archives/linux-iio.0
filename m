@@ -1,64 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:47121 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753829AbaBZAZB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 19:25:01 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv3 4/7] mfd: twl-core: Add twl_i2c_read/write_u16
-Date: Wed, 26 Feb 2014 01:24:27 +0100
-Message-Id: <1393374270-20079-5-git-send-email-sre@debian.org>
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
+Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:42679
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750830AbaBPHtY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Feb 2014 02:49:24 -0500
+Date: Sun, 16 Feb 2014 15:50:23 +0800
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Fugang Duan <B38611@freescale.com>
+CC: <jic23@kernel.org>, <sachin.kamat@linaro.org>, <pmeerw@pmeerw.net>,
+	<lars@metafoo.de>, <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v5 1/3] ARM: dts: vf610-twr: Add ADC support
+Message-ID: <20140216075021.GB2946@S2101-09.ap.freescale.net>
+References: <1390714773-23066-1-git-send-email-B38611@freescale.com>
+ <1390714773-23066-2-git-send-email-B38611@freescale.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1390714773-23066-2-git-send-email-B38611@freescale.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a simple twl_i2c_read/write_u16 wrapper over
-the twl_i2c_read/write, which is similar to the
-twl_i2c_read/write_u8 wrapper.
+On Sun, Jan 26, 2014 at 01:39:31PM +0800, Fugang Duan wrote:
+> @@ -178,6 +187,14 @@
+>  
+>  				/* functions and groups pins */
+>  
+> +				adc0 {
+> +					pinctrl_adc0_ad5: adc0_ad5 {
+> +						fsl,pins = <
+> +						VF610_PAD_PTC30__ADC0_SE5	0xa1
+> +						>;
+> +					};
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- include/linux/i2c/twl.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+We have been moving pinctrl setting nodes into board dts.  Please rebase
+the patch against my for-next branch.
 
-diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
-index ade1c06..d2b1670 100644
---- a/include/linux/i2c/twl.h
-+++ b/include/linux/i2c/twl.h
-@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
- 	return twl_i2c_read(mod_no, val, reg, 1);
- }
- 
-+static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
-+	val = cpu_to_le16(val);
-+	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
-+}
-+
-+static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
-+	int ret;
-+	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
-+	*val = le16_to_cpu(*val);
-+	return ret;
-+}
-+
- int twl_get_type(void);
- int twl_get_version(void);
- int twl_get_hfclk_rate(void);
--- 
-1.8.5.3
+Shawn
+
+> +				};
+> +
+
 
