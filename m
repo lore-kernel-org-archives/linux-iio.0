@@ -1,64 +1,151 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Sat, 15 Feb 2014 14:39:34 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Ge Gao <GGao@invensense.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-Message-ID: <20140215133934.GA2579@katana>
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
- <52F623AA.6020905@kernel.org>
- <E7747D604FBC9F43A71AA431AFF44762104C3FB8@IUSEXCH01.invcorp.invensense.com>
- <201402101939.46467.manuel.stahl@iis.fraunhofer.de>
- <E7747D604FBC9F43A71AA431AFF44762104C57AF@IUSEXCH01.invcorp.invensense.com>
- <52FF5D61.4080506@kernel.org>
+Return-Path: <shawn.guo@linaro.org>
+Date: Sun, 16 Feb 2014 15:48:53 +0800
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Fugang Duan <B38611@freescale.com>
+CC: <jic23@kernel.org>, <sachin.kamat@linaro.org>, <pmeerw@pmeerw.net>,
+	<lars@metafoo.de>, <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>, Rob
+ Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, Pawel
+ Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v5 1/3] ARM: dts: vf610-twr: Add ADC support
+Message-ID: <20140216074850.GA2946@S2101-09.ap.freescale.net>
+References: <1390714773-23066-1-git-send-email-B38611@freescale.com>
+ <1390714773-23066-2-git-send-email-B38611@freescale.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
-In-Reply-To: <52FF5D61.4080506@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1390714773-23066-2-git-send-email-B38611@freescale.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Copy more DT folks and lists, as I want to make sure everyone agrees on
+how the fixed regulators should organized in the device tree sources,
+before I apply the patch.
 
---HcAYCG3uE/tztfnV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Sun, Jan 26, 2014 at 01:39:31PM +0800, Fugang Duan wrote:
+> vf610 has two ADC controllers, and vf610-twr board ADC0_SE5 pin connect
+> to sliding rheostat for ADC test, other ADC pins connect to connectors for
+> future use.
+> 
+> Add support for ADC0_SE5.
+> 
+> CC: Shawn Guo <shawn.guo@linaro.org>
+> CC: Jonathan Cameron <jic23@kernel.org>
+> CC: Mark Rutland <mark.rutland@arm.com>
+> CC: Otavio Salvador <otavio@ossystems.com.br>
+> CC: Peter Meerwald <pmeerw@pmeerw.net>
+> CC: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Fugang Duan <B38611@freescale.com>
+> ---
+>  arch/arm/boot/dts/vf610-twr.dts |   21 +++++++++++++++++++++
+>  arch/arm/boot/dts/vf610.dtsi    |   26 ++++++++++++++++++++++++++
+>  2 files changed, 47 insertions(+), 0 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+> index c8047ca..d867be3 100644
+> --- a/arch/arm/boot/dts/vf610-twr.dts
+> +++ b/arch/arm/boot/dts/vf610-twr.dts
+> @@ -34,6 +34,27 @@
+>  		};
+>  	};
+>  
+> +	regulators {
+> +		compatible = "simple-bus";
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		reg_vcc_3v3_mcu: regulator@0 {
+> +			compatible = "regulator-fixed";
+> +			reg = <0>;
+> +			regulator-name = "vcc_3v3_mcu";
+> +			regulator-min-microvolt = <3300000>;
+> +			regulator-max-microvolt = <3300000>;
+> +		};
+> +	};
 
+Per discussion [1], Mark Rutland suggests that instead of organizing
+the fixed regulator nodes in a simple-bus container, it should be put
+under root node directly like below.
 
-> Wolfram, what do you think?
->=20
-> In short we have a device that sits on an i2c bus and supports its own
-> i2c bus (mainly so that the internal processor can use data from devices
-> on that bus) including support for passing the bus straight through.
-> The issues is the dependencies when the intermediate device is sleeping
-> for example.
+/ {
+	reg_vcc_3v3_mcu: regulator_0 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_3v3_mcu";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+};
 
-Just judging from the paragraph above and not digging into the topic
-deeper, I think the idea of an 1-1 multiplexer is suitable. Would the
-pass-throu device then be a MFD? Are the alternative ideas?
+Is this what all DT folks agree on?  At least the node name should be
+'regulator-0' since it's more idiomatic to use '-' than '_' in node
+name?
 
+Shawn
 
---HcAYCG3uE/tztfnV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+[1] http://thread.gmane.org/gmane.linux.drivers.devicetree/61467/focus=300895
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
-
-iQIcBAEBAgAGBQJS/24WAAoJEBQN5MwUoCm2vHoP/3iGh5Gu9Ue9tUYO3RK+YEdy
-TCbDsR7tjLYwzO4AEV1mrGQ6MxZbkrOeoekpw3CCLRCu9BvnSngRX4MGn/tEELIn
-X0JXBpN0Yq3F/N9EZRmUhCK6285FuNt69XjOZHOln9RLZjsA3vB8ZTnPuO+UC86l
-GRJZbJfz5Bso56MXFSj1LXtA9NqoEwep1vyVhbkTDpQoRcaXrvfSLnHSxZL0bFxx
-thqlSNlyemEPSON3ZqrFAEPluWQMBn/cA+K3CaL0aRcMK6UFs6XccM4899+R31nk
-D1FxhOP3Wl22BRRfGwu1YgbExOCebWNIvMdaLrA+6D6tFB6RFfZeD/GZv/HmrWfZ
-ipIr9bw0G7xQACMwSKCk2szLG6z9IMzLCWS+ToFrO/IvIgqCkWDwYk0Oi2MI1Lxi
-Ov3POWhklVw3PiN5hEiaZ/saE4Fnmr5odPt+r6Mm9hLzFEAKXV1uylQWidiz/D1U
-GpBfbqHzjvcuDmaL/OHzOxw8vvGp6C4cduSACMpKNBO+HONgYF5XMcnOi34KAe+3
-e+CYZwAVaW1xdXTNkLIuBkk7JwQh3QbS7PLONzRETT3YtDjuXQBOY3G+HuOEVVeh
-5/xE35a+OyhNSEuqgYLTUAphI6oxV57+TSrOqPGhukk1lOwuoeycb3IZ+p5gGY4C
-zgEpnCxPhSKfgZRreNqd
-=vP8p
------END PGP SIGNATURE-----
-
---HcAYCG3uE/tztfnV--
+> +
+> +};
+> +
+> +&adc0 {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pinctrl_adc0_ad5>;
+> +	vref-supply = <&reg_vcc_3v3_mcu>;
+> +	status = "okay";
+>  };
+>  
+>  &dspi0 {
+> diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
+> index d31ce1b..b5b21ea 100644
+> --- a/arch/arm/boot/dts/vf610.dtsi
+> +++ b/arch/arm/boot/dts/vf610.dtsi
+> @@ -152,6 +152,15 @@
+>  				clock-names = "pit";
+>  			};
+>  
+> +			adc0: adc@4003b000 {
+> +				compatible = "fsl,vf610-adc";
+> +				reg = <0x4003b000 0x1000>;
+> +				interrupts = <0 53 0x04>;
+> +				clocks = <&clks VF610_CLK_ADC0>;
+> +				clock-names = "adc";
+> +				status = "disabled";
+> +			};
+> +
+>  			wdog@4003e000 {
+>  				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
+>  				reg = <0x4003e000 0x1000>;
+> @@ -178,6 +187,14 @@
+>  
+>  				/* functions and groups pins */
+>  
+> +				adc0 {
+> +					pinctrl_adc0_ad5: adc0_ad5 {
+> +						fsl,pins = <
+> +						VF610_PAD_PTC30__ADC0_SE5	0xa1
+> +						>;
+> +					};
+> +				};
+> +
+>  				dcu0 {
+>  					pinctrl_dcu0_1: dcu0grp_1 {
+>  						fsl,pins = <
+> @@ -450,6 +467,15 @@
+>  				status = "disabled";
+>  			};
+>  
+> +			adc1: adc@400bb000 {
+> +				compatible = "fsl,vf610-adc";
+> +				reg = <0x400bb000 0x1000>;
+> +				interrupts = <0 54 0x04>;
+> +				clocks = <&clks VF610_CLK_ADC1>;
+> +				clock-names = "adc";
+> +				status = "disabled";
+> +			};
+> +
+>  			fec0: ethernet@400d0000 {
+>  				compatible = "fsl,mvf600-fec";
+>  				reg = <0x400d0000 0x1000>;
+> -- 
+> 1.7.2.rc3
+> 
+> 
