@@ -1,88 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f172.google.com ([209.85.214.172]:55442 "EHLO
-	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751255AbaB0Veg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Feb 2014 16:34:36 -0500
+Received: from smtp.codeaurora.org ([198.145.11.231]:37944 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753202AbaBRXWp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 18:22:45 -0500
+Date: Tue, 18 Feb 2014 17:20:17 -0600
+From: Josh Cartwright <joshc@codeaurora.org>
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] mcb: Add PCI carrier for MEN Chameleon Bus
+Message-ID: <20140218232017.GA31820@joshc.qualcomm.com>
+References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
+ <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
-In-Reply-To: <20140226215452.GA11468@earth.universe>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
-	<1393375569-21751-2-git-send-email-sre@debian.org>
-	<CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
-	<20140226215452.GA11468@earth.universe>
-Date: Thu, 27 Feb 2014 22:34:35 +0100
-Message-ID: <CAAfyv340pA2ihUAoFytBgevLtedvtj5Z0aw_=G9Rbx5occtyqw@mail.gmail.com>
-Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	=?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Sebastian,
+On Tue, Feb 18, 2014 at 04:34:13PM +0100, Johannes Thumshirn wrote:
+> Add support for MCB over PCI devices. Both PCI attached on-board Chameleon FPGAs
+> as well as CompactPCI based MCB carrier cards are supported with this driver.
+> 
+> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+> ---
+>  drivers/mcb/Kconfig   |  13 ++++++
+>  drivers/mcb/Makefile  |   2 +
+>  drivers/mcb/mcb-pci.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 123 insertions(+)
+>  create mode 100644 drivers/mcb/mcb-pci.c
+> 
+> diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
+> index 9e7d6f5..8b058bc 100644
+> --- a/drivers/mcb/Kconfig
+> +++ b/drivers/mcb/Kconfig
+> @@ -14,3 +14,16 @@ menuconfig MCB
+>  
+>  	   If build as a module, the module is called mcb.ko
+>  
+> +if MCB
+> +config MCB_PCI
+> +	   tristate "PCI based MCB carrier"
+> +	   default m if MCB
 
-On Wed, Feb 26, 2014 at 10:54 PM, Sebastian Reichel <sre@debian.org> wrote:
-> Hi,
->
-> On Wed, Feb 26, 2014 at 10:43:40PM +0100, Belisko Marek wrote:
->> [...]
->> > +       int val, err;
->> > +       err = iio_read_channel_average_raw(channel, &val);
->> Where this function comes from? I cannot find it in current linux-next
->> (only iio_read_channel_raw()). Am I missing some patches? Thx.
->
-> Ah right. I planned to send a patch adding this function together
-> with the rx51-battery patchset, but it seems I forgot to include it.
->
-> Sorry for the inconvenience. I will send it out as a separate patch
-> now.
->
->> BTW when I convert to iio consumer and use DT some of values work
->> but some of them just report 0 :( (I don't have latest twl4030-madc
->> iio patches).
->
-> Can you retry with the twl4030-madc iio patch from today? The
-> older patchsets, which do not contain the "tested on real hw"
-> note are slightly broken.
-Well I've tried and it's worse :). I got during booting:
-[    2.218383] ERROR: could not get IIO channel /battery:temp(0)
-[    2.224639] platform battery.4: Driver twl4030_madc_battery
-requests probe deferral
-Not sure if it's just error or warning but temp is always reported as
-0 (and also other values in sysfs).
+'if MCB' is redundant (MCB has to be set for this option to even be
+available).
 
-My patches ca be found here:
-https://patchwork.kernel.org/patch/3735981/
-https://patchwork.kernel.org/patch/3735961/
-https://patchwork.kernel.org/patch/3735941/
+[..]
+> +++ b/drivers/mcb/mcb-pci.c
+> @@ -0,0 +1,108 @@
 
->
-> -- Sebastian
+Copyright/license blurb?
 
-BR,
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/mcb.h>
+> +
+> +#include "mcb-internal.h"
+> +
+> +static struct mcb_bus *bus;
+> +struct priv {
+> +	void __iomem *base;
+> +};
 
-marek
+This seems weird.  Why is the bus not part of your private data?  Seems
+like you're unnecessarily restricting yourself to supporting only one of
+these devices at a time...
+
+> +
+> +static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> +{
+> +	struct priv *priv;
+> +	phys_addr_t mapbase;
+> +	int ret = 0;
+
+No need to initialize.
+
+> +	int num_cells;
+> +	unsigned long flags;
+> +
+> +	priv = devm_kzalloc(&pdev->dev, sizeof(struct priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	ret = pci_enable_device(pdev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to enable PCI device\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	mapbase = pci_resource_start(pdev, 0);
+> +	if (!mapbase) {
+> +		dev_err(&pdev->dev, "No PCI resource\n");
+> +		goto err_start;
+> +	}
+> +
+> +	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
+> +		goto err_start;
+> +	}
+> +
+> +	priv->base = pci_iomap(pdev, 0, 0);
+
+Hmm.  There should really be a devm_* variant for PCI resources.
+
+[..]
+> +
+> +static void mcb_pci_remove(struct pci_dev *pdev)
+> +{
+> +	struct priv *priv = pci_get_drvdata(pdev);
+> +
+> +	mcb_release_bus(bus);
+> +
+> +	pci_iounmap(pdev, priv->base);
+> +	pci_release_region(pdev, 0);
+> +	pci_disable_device(pdev);
+> +	pci_set_drvdata(pdev, NULL);
+> +}
+> +
+> +static struct pci_device_id mcb_pci_tbl[] = {
+
+const?
 
 -- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
-
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+hosted by The Linux Foundation
