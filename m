@@ -1,242 +1,254 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:59270 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752312AbaBWWIU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Feb 2014 17:08:20 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv2 2/5] mfd: twl4030-madc: Add DT support and convert to IIO framework
-Date: Sun, 23 Feb 2014 23:07:48 +0100
-Message-Id: <1393193271-16717-3-git-send-email-sre@debian.org>
-In-Reply-To: <1393193271-16717-1-git-send-email-sre@debian.org>
-References: <20140223220140.GA1258@earth.universe>
- <1393193271-16717-1-git-send-email-sre@debian.org>
+Received: from smtp-out-136.synserver.de ([212.40.185.136]:1037 "EHLO
+	smtp-out-025.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754994AbaBRLhj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 06:37:39 -0500
+Message-ID: <5303460C.7060800@metafoo.de>
+Date: Tue, 18 Feb 2014 12:37:48 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:event: Fix and cleanup locking
+References: <1392403786-22127-1-git-send-email-lars@metafoo.de> <53033BE7.3040004@kernel.org>
+In-Reply-To: <53033BE7.3040004@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This converts twl4030-madc module to use the Industrial IO ADC
-framework and adds device tree support.
+On 02/18/2014 11:54 AM, Jonathan Cameron wrote:
+> On 14/02/14 18:49, Lars-Peter Clausen wrote:
+>> The event code currently holds a spinlock with IRQs disabled while calling
+>> kfifo_to_user(). kfifo_to_user() can generate a page fault though, which
+>> means
+>> we have to be able to sleep, which is not possible if the interrupts are
+>> disabled. The good thing is that kfifo handles concurrent read and write
+>> access
+>> just fine as long as there is only one reader and one writer, so we do not
+>> any
+>> locking to protect against concurrent access from the read and writer
+>> thread. It
+>> is possible though that userspace is trying to read from the event FIFO from
+>> multiple concurrent threads, so we need to add locking to protect against
+>> this.
+>> This is done using a mutex. The mutex will only protect the kfifo_to_user()
+>> call, it will not protect the waitqueue. This means that multiple threads
+>> can be
+>> waiting for new data and once a new event is added to the FIFO all waiting
+>> threads will be woken up. If one of those threads is unable to read any data
+>> (because another thread already read all the data) it will go back to
+>> sleep. The
+>> only remaining issue is that now that the clearing of the BUSY flag and the
+>> emptying of the FIFO does no longer happen in one atomic step it is possible
+>> that a event is added to the FIFO after it has been emptied and this
+>> sample will
+>> be visible the next time a new event file descriptor is created. To avoid
+>> this
+>> rather move the emptying of the FIFO from iio_event_chrdev_release to
+>> iio_event_getfd().
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> The patch looks fine.  I'm a little worried that's too involved for this stage
+> in the merge cycle.  So is this an issue observed in the wild (in which case
+> I probably want to get it upstream asap) or is it just a theoretical issue
+> at the moment? (e.g. can I leave it for the next merge window).
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- drivers/mfd/twl4030-madc.c | 121 ++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 114 insertions(+), 7 deletions(-)
+I haven't seen it in the wild. I only noticed it when I was working on the 
+locking for the kfifo buffer, where the issue actually did happen. The issue 
+will happen if the page that backs the userspace memory that the event is 
+supposed to be copied into is not mapped. That certainly can happen, but 
+given that nobody complained I guess it does not happen that often, so I 
+guess there is no need to let it go through fixes.
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 5458561..5e67c75 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -47,6 +47,8 @@
- #include <linux/gfp.h>
- #include <linux/err.h>
- 
-+#include <linux/iio/iio.h>
-+
- /*
-  * struct twl4030_madc_data - a container for madc info
-  * @dev - pointer to device structure for madc
-@@ -59,10 +61,73 @@ struct twl4030_madc_data {
- 	struct device *dev;
- 	struct mutex lock;	/* mutex protecting this data structure */
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
-+	bool use_second_irq;
- 	int imr;
- 	int isr;
- };
- 
-+static int twl4030_madc_read(struct iio_dev *iio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
-+	struct twl4030_madc_request req;
-+	int channel = chan->channel;
-+	int ret;
-+
-+	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
-+
-+	req.channels = BIT(channel);
-+	req.active = 0;
-+	req.func_cb = NULL;
-+	req.raw = !(mask & IIO_CHAN_INFO_PROCESSED);
-+	req.do_avg = !!(mask & IIO_CHAN_INFO_AVERAGE_RAW);
-+
-+	ret = twl4030_madc_conversion(&req);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = req.rbuf[channel];
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static const struct iio_info twl4030_madc_iio_info = {
-+	.read_raw = &twl4030_madc_read,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define TWL4030_ADC_CHANNEL(_channel, _type, _name, _mask) {	\
-+	.type = _type,					\
-+	.channel = _channel,				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
-+			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
-+			      _mask,			\
-+	.datasheet_name = _name,			\
-+	.indexed = 1,					\
-+}
-+
-+static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
-+	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0", 0),
-+	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1",
-+		BIT(IIO_CHAN_INFO_PROCESSED)),
-+	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2", 0),
-+	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3", 0),
-+	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4", 0),
-+	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5", 0),
-+	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6", 0),
-+	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7", 0),
-+	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8", 0),
-+	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9", 0),
-+	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10",
-+		BIT(IIO_CHAN_INFO_PROCESSED)),
-+	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11", 0),
-+	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12", 0),
-+	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13", 0),
-+	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14", 0),
-+	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15", 0),
-+};
-+
- static struct twl4030_madc_data *twl4030_madc;
- 
- struct twl4030_prescale_divider_ratios {
-@@ -702,28 +767,50 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
-+	struct device_node *np = pdev->dev.of_node;
- 	int irq, ret;
- 	u8 regval;
-+	struct iio_dev *iio_dev = NULL;
- 
--	if (!pdata) {
-+	if (!pdata && !np) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
--	if (!madc)
-+
-+	iio_dev = devm_iio_device_alloc(&pdev->dev,
-+					sizeof(struct twl4030_madc_data));
-+	if (!iio_dev) {
-+		dev_err(&pdev->dev, "failed allocating iio device\n");
- 		return -ENOMEM;
-+	}
- 
-+	madc = iio_priv(iio_dev);
- 	madc->dev = &pdev->dev;
- 
-+	iio_dev->name = dev_name(&pdev->dev);
-+	iio_dev->dev.parent = &pdev->dev;
-+	iio_dev->dev.of_node = pdev->dev.of_node;
-+	iio_dev->info = &twl4030_madc_iio_info;
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+	iio_dev->channels = twl4030_madc_iio_channels;
-+	iio_dev->num_channels = 16;
-+
- 	/*
- 	 * Phoenix provides 2 interrupt lines. The first one is connected to
- 	 * the OMAP. The other one can be connected to the other processor such
- 	 * as modem. Hence two separate ISR and IMR registers.
- 	 */
--	madc->imr = (pdata->irq_line == 1) ?
-+	if (pdata)
-+		madc->use_second_irq = pdata->irq_line != 1;
-+	else
-+		madc->use_second_irq = of_property_read_bool(np,
-+				       "ti,system-uses-second-madc-irq");
-+
-+	madc->imr = (madc->use_second_irq == 1) ?
- 	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
--	madc->isr = (pdata->irq_line == 1) ?
-+	madc->isr = (madc->use_second_irq == 1) ?
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
-+
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
- 		return ret;
-@@ -768,7 +855,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	platform_set_drvdata(pdev, madc);
-+	platform_set_drvdata(pdev, iio_dev);
- 	mutex_init(&madc->lock);
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -780,7 +867,15 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		goto err_i2c;
- 	}
- 	twl4030_madc = madc;
-+
-+	ret = iio_device_register(iio_dev);
-+	if (ret) {
-+		dev_dbg(&pdev->dev, "could not register iio device\n");
-+		goto err_i2c;
-+	}
-+
- 	return 0;
-+
- err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
-@@ -790,20 +885,32 @@ err_current_generator:
- 
- static int twl4030_madc_remove(struct platform_device *pdev)
- {
--	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
-+	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
- 
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
- 
-+	iio_device_unregister(iio_dev);
-+
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id twl_madc_of_match[] = {
-+	{.compatible = "ti,twl4030-madc", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, twl_madc_of_match);
-+#endif
-+
- static struct platform_driver twl4030_madc_driver = {
- 	.probe = twl4030_madc_probe,
- 	.remove = twl4030_madc_remove,
- 	.driver = {
- 		   .name = "twl4030_madc",
- 		   .owner = THIS_MODULE,
-+		   .of_match_table = of_match_ptr(twl_madc_of_match),
- 		   },
- };
- 
--- 
-1.8.5.3
+>
+> Actually without the spin lock in getfd, is there any path where it would
+> allocate
+> two anon file descriptors?
+
+The test_and_set_bit is atomic, so we'll never get past that if there are 
+concurrent iio_event_getfd() calls.
+
+>
+> Jonathan
+>> ---
+>>   drivers/iio/industrialio-event.c | 83
+>> ++++++++++++++++++++--------------------
+>>   1 file changed, 41 insertions(+), 42 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-event.c
+>> b/drivers/iio/industrialio-event.c
+>> index c9c1419..0719443 100644
+>> --- a/drivers/iio/industrialio-event.c
+>> +++ b/drivers/iio/industrialio-event.c
+>> @@ -40,6 +40,7 @@ struct iio_event_interface {
+>>       struct list_head    dev_attr_list;
+>>       unsigned long        flags;
+>>       struct attribute_group    group;
+>> +    struct mutex        read_lock;
+>>   };
+>>
+>>   /**
+>> @@ -47,16 +48,17 @@ struct iio_event_interface {
+>>    * @indio_dev:        IIO device structure
+>>    * @ev_code:        What event
+>>    * @timestamp:        When the event occurred
+>> + *
+>> + * Note: The caller must make sure that this function is not running
+>> + * concurrently for the same indio_dev more than once.
+>>    **/
+>>   int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp)
+>>   {
+>>       struct iio_event_interface *ev_int = indio_dev->event_interface;
+>>       struct iio_event_data ev;
+>> -    unsigned long flags;
+>>       int copied;
+>>
+>>       /* Does anyone care? */
+>> -    spin_lock_irqsave(&ev_int->wait.lock, flags);
+>>       if (test_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>>
+>>           ev.id = ev_code;
+>> @@ -64,9 +66,8 @@ int iio_push_event(struct iio_dev *indio_dev, u64
+>> ev_code, s64 timestamp)
+>>
+>>           copied = kfifo_put(&ev_int->det_events, ev);
+>>           if (copied != 0)
+>> -            wake_up_locked_poll(&ev_int->wait, POLLIN);
+>> +            wake_up_poll(&ev_int->wait, POLLIN);
+>>       }
+>> -    spin_unlock_irqrestore(&ev_int->wait.lock, flags);
+>>
+>>       return 0;
+>>   }
+>> @@ -87,10 +88,8 @@ static unsigned int iio_event_poll(struct file *filep,
+>>
+>>       poll_wait(filep, &ev_int->wait, wait);
+>>
+>> -    spin_lock_irq(&ev_int->wait.lock);
+>>       if (!kfifo_is_empty(&ev_int->det_events))
+>>           events = POLLIN | POLLRDNORM;
+>> -    spin_unlock_irq(&ev_int->wait.lock);
+>>
+>>       return events;
+>>   }
+>> @@ -111,31 +110,40 @@ static ssize_t iio_event_chrdev_read(struct file
+>> *filep,
+>>       if (count < sizeof(struct iio_event_data))
+>>           return -EINVAL;
+>>
+>> -    spin_lock_irq(&ev_int->wait.lock);
+>> -    if (kfifo_is_empty(&ev_int->det_events)) {
+>> -        if (filep->f_flags & O_NONBLOCK) {
+>> -            ret = -EAGAIN;
+>> -            goto error_unlock;
+>> -        }
+>> -        /* Blocking on device; waiting for something to be there */
+>> -        ret = wait_event_interruptible_locked_irq(ev_int->wait,
+>> +    do {
+>> +        if (kfifo_is_empty(&ev_int->det_events)) {
+>> +            if (filep->f_flags & O_NONBLOCK)
+>> +                return -EAGAIN;
+>> +
+>> +            ret = wait_event_interruptible(ev_int->wait,
+>>                       !kfifo_is_empty(&ev_int->det_events) ||
+>>                       indio_dev->info == NULL);
+>> -        if (ret)
+>> -            goto error_unlock;
+>> -        if (indio_dev->info == NULL) {
+>> -            ret = -ENODEV;
+>> -            goto error_unlock;
+>> +            if (ret)
+>> +                return ret;
+>> +            if (indio_dev->info == NULL)
+>> +                return -ENODEV;
+>>           }
+>> -        /* Single access device so no one else can get the data */
+>> -    }
+>>
+>> -    ret = kfifo_to_user(&ev_int->det_events, buf, count, &copied);
+>> +        if (mutex_lock_interruptible(&ev_int->read_lock))
+>> +            return -ERESTARTSYS;
+>> +        ret = kfifo_to_user(&ev_int->det_events, buf, count, &copied);
+>> +        mutex_unlock(&ev_int->read_lock);
+>> +
+>> +        if (ret)
+>> +            return ret;
+>> +
+>> +        /*
+>> +         * If we couldn't read anything from the fifo (a different
+>> +         * thread might have been faster) we either return -EAGAIN if
+>> +         * the file descriptor is non-blocking, otherwise we go back to
+>> +         * sleep and wait for more data to arrive.
+>> +         */
+>> +        if (copied == 0 && (filep->f_flags & O_NONBLOCK))
+>> +            return -EAGAIN;
+>>
+>> -error_unlock:
+>> -    spin_unlock_irq(&ev_int->wait.lock);
+>> +    } while (copied == 0);
+>>
+>> -    return ret ? ret : copied;
+>> +    return copied;
+>>   }
+>>
+>>   static int iio_event_chrdev_release(struct inode *inode, struct file
+>> *filep)
+>> @@ -143,15 +151,7 @@ static int iio_event_chrdev_release(struct inode
+>> *inode, struct file *filep)
+>>       struct iio_dev *indio_dev = filep->private_data;
+>>       struct iio_event_interface *ev_int = indio_dev->event_interface;
+>>
+>> -    spin_lock_irq(&ev_int->wait.lock);
+>> -    __clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>> -    /*
+>> -     * In order to maintain a clean state for reopening,
+>> -     * clear out any awaiting events. The mask will prevent
+>> -     * any new __iio_push_event calls running.
+>> -     */
+>> -    kfifo_reset_out(&ev_int->det_events);
+>> -    spin_unlock_irq(&ev_int->wait.lock);
+>> +    clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>>
+>>       iio_device_put(indio_dev);
+>>
+>> @@ -174,22 +174,20 @@ int iio_event_getfd(struct iio_dev *indio_dev)
+>>       if (ev_int == NULL)
+>>           return -ENODEV;
+>>
+>> -    spin_lock_irq(&ev_int->wait.lock);
+>> -    if (__test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags)) {
+>> -        spin_unlock_irq(&ev_int->wait.lock);
+>> +    if (test_and_set_bit(IIO_BUSY_BIT_POS, &ev_int->flags))
+>>           return -EBUSY;
+>> -    }
+>> -    spin_unlock_irq(&ev_int->wait.lock);
+>> +
+>>       iio_device_get(indio_dev);
+>>
+>>       fd = anon_inode_getfd("iio:event", &iio_event_chrdev_fileops,
+>>                   indio_dev, O_RDONLY | O_CLOEXEC);
+>>       if (fd < 0) {
+>> -        spin_lock_irq(&ev_int->wait.lock);
+>> -        __clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>> -        spin_unlock_irq(&ev_int->wait.lock);
+>> +        clear_bit(IIO_BUSY_BIT_POS, &ev_int->flags);
+>>           iio_device_put(indio_dev);
+>> +    } else {
+>> +        kfifo_reset_out(&ev_int->det_events);
+>>       }
+>> +
+>>       return fd;
+>>   }
+>>
+>> @@ -425,6 +423,7 @@ static void iio_setup_ev_int(struct
+>> iio_event_interface *ev_int)
+>>   {
+>>       INIT_KFIFO(ev_int->det_events);
+>>       init_waitqueue_head(&ev_int->wait);
+>> +    mutex_init(&ev_int->read_lock);
+>>   }
+>>
+>>   static const char *iio_event_group_name = "events";
+>>
+>
 
