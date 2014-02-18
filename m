@@ -1,77 +1,108 @@
-Return-Path: <pali.rohar@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38264 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754892AbaBRKZY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:25:24 -0500
+Message-ID: <5303353B.8050603@kernel.org>
+Date: Tue, 18 Feb 2014 10:26:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1393375569-21751-1-git-send-email-sre@debian.org>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
-From: =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
-Date: Wed, 26 Feb 2014 08:40:54 +0100
-Message-ID: <CAHYPw2EeEnDn2FUYSMWbywprmhJmcRRyaTPn1YZK0xPvuiJQFw@mail.gmail.com>
-Subject: Re: [PATCHv1 0/2] Convert rx51-battery to IIO API and add DT support
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>,
-	Marek Belisko <marek@goldelico.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>, LKML <linux-kernel@vger.kernel.org>,
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	Ivajlo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Denis CIOCCA <denis.ciocca@st.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:gyro: bug on L3GD20H gyroscope support
+References: <1392387337-25324-1-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1392387337-25324-1-git-send-email-denis.ciocca@st.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi!
-
-2014-02-26 1:46 GMT+01:00 Sebastian Reichel <sre@debian.org>:
-> Hi,
+On 14/02/14 14:15, Denis CIOCCA wrote:
+> The driver was not able to manage the sensor: during probe function
+> and wai check, the driver stops and writes: "device name and WhoAmI mismatch."
+> The correct value of L3GD20H wai is 0xd7 instead of 0xd4.
+> Dropped support for the sensor.
 >
-> This is PATCHv1 for converting rx51-battery to the IIO API
-> and adding DT support. The patchset compiles and has been
-> tested on my Nokia N900. It depends on another patchset
-> converting twl4030-madc to the IIO API:
+> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Applied to the the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
+
+Jonathan
+> ---
+>   drivers/iio/gyro/Kconfig        | 2 +-
+>   drivers/iio/gyro/st_gyro.h      | 1 -
+>   drivers/iio/gyro/st_gyro_core.c | 9 ++++-----
+>   drivers/iio/gyro/st_gyro_i2c.c  | 1 -
+>   drivers/iio/gyro/st_gyro_spi.c  | 1 -
+>   5 files changed, 5 insertions(+), 9 deletions(-)
 >
-> https://lkml.org/lkml/2014/2/25/627
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 41c64a4..ac2d69e 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -70,7 +70,7 @@ config IIO_ST_GYRO_3AXIS
+>   	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+>   	help
+>   	  Say yes here to build support for STMicroelectronics gyroscopes:
+> -	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
+> +	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
 >
-> -- Sebastian
+>   	  This driver can also be built as a module. If so, these modules
+>   	  will be created:
+> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
+> index f8f2bf8..c197360 100644
+> --- a/drivers/iio/gyro/st_gyro.h
+> +++ b/drivers/iio/gyro/st_gyro.h
+> @@ -19,7 +19,6 @@
+>   #define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
+>   #define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
+>   #define L3GD20_GYRO_DEV_NAME		"l3gd20"
+> -#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
+>   #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
+>   #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
 >
-> Sebastian Reichel (2):
->   rx51_battery: convert to iio consumer
->   Documentation: DT: Document rx51-battery binding
+> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+> index d53d91a..a8e174a 100644
+> --- a/drivers/iio/gyro/st_gyro_core.c
+> +++ b/drivers/iio/gyro/st_gyro_core.c
+> @@ -167,11 +167,10 @@ static const struct st_sensors st_gyro_sensors[] = {
+>   		.wai = ST_GYRO_2_WAI_EXP,
+>   		.sensors_supported = {
+>   			[0] = L3GD20_GYRO_DEV_NAME,
+> -			[1] = L3GD20H_GYRO_DEV_NAME,
+> -			[2] = LSM330D_GYRO_DEV_NAME,
+> -			[3] = LSM330DLC_GYRO_DEV_NAME,
+> -			[4] = L3G4IS_GYRO_DEV_NAME,
+> -			[5] = LSM330_GYRO_DEV_NAME,
+> +			[1] = LSM330D_GYRO_DEV_NAME,
+> +			[2] = LSM330DLC_GYRO_DEV_NAME,
+> +			[3] = L3G4IS_GYRO_DEV_NAME,
+> +			[4] = LSM330_GYRO_DEV_NAME,
+>   		},
+>   		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+>   		.odr = {
+> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+> index 16b8b8d..23c12f3 100644
+> --- a/drivers/iio/gyro/st_gyro_i2c.c
+> +++ b/drivers/iio/gyro/st_gyro_i2c.c
+> @@ -55,7 +55,6 @@ static const struct i2c_device_id st_gyro_id_table[] = {
+>   	{ LSM330DL_GYRO_DEV_NAME },
+>   	{ LSM330DLC_GYRO_DEV_NAME },
+>   	{ L3GD20_GYRO_DEV_NAME },
+> -	{ L3GD20H_GYRO_DEV_NAME },
+>   	{ L3G4IS_GYRO_DEV_NAME },
+>   	{ LSM330_GYRO_DEV_NAME },
+>   	{},
+> diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+> index 94763e2..b4ad3be 100644
+> --- a/drivers/iio/gyro/st_gyro_spi.c
+> +++ b/drivers/iio/gyro/st_gyro_spi.c
+> @@ -54,7 +54,6 @@ static const struct spi_device_id st_gyro_id_table[] = {
+>   	{ LSM330DL_GYRO_DEV_NAME },
+>   	{ LSM330DLC_GYRO_DEV_NAME },
+>   	{ L3GD20_GYRO_DEV_NAME },
+> -	{ L3GD20H_GYRO_DEV_NAME },
+>   	{ L3G4IS_GYRO_DEV_NAME },
+>   	{ LSM330_GYRO_DEV_NAME },
+>   	{},
 >
->  .../devicetree/bindings/power/rx51-battery.txt     | 25 ++++++++
->  drivers/power/rx51_battery.c                       | 68 ++++++++++++++--=
-------
->  2 files changed, 70 insertions(+), 23 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/power/rx51-battery.=
-txt
->
-> --
-> 1.8.5.3
->
 
-Thanks for patch!
-
-I would like to ask other kernel developers what do you think about
-moving ADC channel numbers from rx51_battery.ko driver code to DT.
-Driver rx51_battery.ko is platform specific for Nokia RX-51 (N900) so
-it is usefull only for this one device.
-
-Before this patch all driver data (look-up tables, adc channel
-numbers, etc...) were in driver code. Now after this patch adc channel
-numbers were moved to DT. What do you think? It is better to have all
-data in one place (driver code) or some in DT and some in driver code?
-
-For me it does not make sense to move these numbers to DT, because
-driver is rx51 device specific and chaning it in DT does not make
-sense. And I think it is better to have add driver data in one place
-and not in two...
-
-Sebastian already wrote me that this is normal to have numbers in DT
-and other code in driver. But I think that driver which can be used
-only in one device (so specified only in one DT file) does not need to
-have configuration (via DT or board files).
-
-Or do you think that driver specified only for one device needs to
-have ADC numbers configuration via DT?
-
---=20
-Pali Roh=C3=A1r
-pali.rohar@gmail.com
