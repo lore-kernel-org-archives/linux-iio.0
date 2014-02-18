@@ -1,43 +1,63 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 27 Feb 2014 08:03:49 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [RFCv4 3/7] mfd: twl4030-madc: Cleanup driver
-Message-ID: <20140227080349.GR9195@lee--X1>
-References: <1393374270-20079-1-git-send-email-sre@debian.org>
- <1393444990-28140-1-git-send-email-sre@debian.org>
- <1393444990-28140-4-git-send-email-sre@debian.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36787 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754057AbaBRInn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 03:43:43 -0500
+Message-ID: <53031D66.8090004@kernel.org>
+Date: Tue, 18 Feb 2014 08:44:22 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1393444990-28140-4-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH]iio:max1363 fix typos of int_vref_mv
+References: <5300A545.5040308@gmx.de>
+In-Reply-To: <5300A545.5040308@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Some style fixes in twl4030-madc driver.
-> 
-> Reported-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
+On 16/02/14 11:47, Hartmut Knaack wrote:
+> This patch fixes some typos in max1363_chip_info_tbl[].
+>
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Good spot.  As it has been there for quite some time and no one has
+noticed, I'll put this through the togreg branch rather than fixes-togreg.
+
+Applied to the togreg branch of iio.git.  Thanks.
 > ---
->  drivers/mfd/twl4030-madc.c       | 106 ++++++++++++++++++---------------------
->  include/linux/i2c/twl4030-madc.h |   2 +-
->  2 files changed, 51 insertions(+), 57 deletions(-)
-> 
-> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+> index e283f2f..de7d3b4 100644
+> --- a/drivers/iio/adc/max1363.c
+> +++ b/drivers/iio/adc/max1363.c
+> @@ -1253,7 +1253,7 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>   	},
+>   	[max11604] = {
+>   		.bits = 8,
+> -		.int_vref_mv = 4098,
+> +		.int_vref_mv = 4096,
+>   		.mode_list = max1238_mode_list,
+>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>   		.default_mode = s0to11,
+> @@ -1313,7 +1313,7 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>   	},
+>   	[max11610] = {
+>   		.bits = 10,
+> -		.int_vref_mv = 4098,
+> +		.int_vref_mv = 4096,
+>   		.mode_list = max1238_mode_list,
+>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>   		.default_mode = s0to11,
+> @@ -1373,7 +1373,7 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>   	},
+>   	[max11616] = {
+>   		.bits = 12,
+> -		.int_vref_mv = 4098,
+> +		.int_vref_mv = 4096,
+>   		.mode_list = max1238_mode_list,
+>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>   		.default_mode = s0to11,
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
