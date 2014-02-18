@@ -1,72 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:59202 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751592AbaBWWIA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Feb 2014 17:08:00 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv2 0/5] Convert twl4030-madc to IIO API
-Date: Sun, 23 Feb 2014 23:07:46 +0100
-Message-Id: <1393193271-16717-1-git-send-email-sre@debian.org>
-In-Reply-To: <20140223220140.GA1258@earth.universe>
-References: <20140223220140.GA1258@earth.universe>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36700 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754212AbaBRIhZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 03:37:25 -0500
+Message-ID: <53031BEC.3070004@kernel.org>
+Date: Tue, 18 Feb 2014 08:38:04 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH]staging:iio:ad799x fix typo in copyright message
+References: <5300A79B.6060209@gmx.de> <530109F8.2060402@metafoo.de>
+In-Reply-To: <530109F8.2060402@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 16/02/14 18:56, Lars-Peter Clausen wrote:
+> On 02/16/2014 12:57 PM, Hartmut Knaack wrote:
+>> Fix a typo in the copyright message.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 
-This is RFCv2 for converting twl4030-madc to the IIO API and
-adding DT support. The patchset compiles, but has not yet been
-tested on real hardware. I plan to convert rx51-battery to the
-IIO framework in the near future and test this patchset on my
-Nokia N900.
-
-Changes since RFCv1:
- * Add ti,system-uses-second-madc-irq DT property needed by Belisko Marek
- * Fix issues reported by Jonathan Cameron
-
-TODO:
- * Test patchset on real hardware
- * Convert consumer drivers to IIO API
-  - rx51-battery
-  - twl4030-madc-battery
-  - twl4030-madc-hwmon (=> deprecate in favour of iio-hwmon)
- * remove old kernel API from twl4030-madc
-
--- Sebastian
-
-Sebastian Reichel (5):
-  mfd: twl4030-madc: Use managed resources
-  mfd: twl4030-madc: Add DT support and convert to IIO framework
-  mfd: twl4030-madc: Cleanup driver
-  Documentation: DT: Document twl4030-madc binding
-  mfd: twl4030-madc: Move driver to drivers/iio/adc
-
- .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 +
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/twl4030-madc.c                     | 914 +++++++++++++++++++++
- drivers/mfd/Kconfig                                |  10 -
- drivers/mfd/Makefile                               |   1 -
- drivers/mfd/twl4030-madc.c                         | 818 ------------------
- 7 files changed, 949 insertions(+), 829 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
- create mode 100644 drivers/iio/adc/twl4030-madc.c
- delete mode 100644 drivers/mfd/twl4030-madc.c
-
--- 
-1.8.5.3
+Thanks,
+>
+>> ---
+>> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
+>> index 13a944f..570c594 100644
+>> --- a/drivers/staging/iio/adc/ad799x_core.c
+>> +++ b/drivers/staging/iio/adc/ad799x_core.c
+>> @@ -1,6 +1,6 @@
+>>   /*
+>>    * iio/adc/ad799x.c
+>> - * Copyright (C) 2010-1011 Michael Hennerich, Analog Devices Inc.
+>> + * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
+>>    *
+>>    * based on iio/adc/max1363
+>>    * Copyright (C) 2008-2010 Jonathan Cameron
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
