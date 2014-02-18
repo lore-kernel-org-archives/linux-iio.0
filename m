@@ -1,54 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36700 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38298 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754212AbaBRIhZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 03:37:25 -0500
-Message-ID: <53031BEC.3070004@kernel.org>
-Date: Tue, 18 Feb 2014 08:38:04 +0000
+	with ESMTP id S1754030AbaBRK04 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:26:56 -0500
+Message-ID: <53033597.1010503@kernel.org>
+Date: Tue, 18 Feb 2014 10:27:35 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH]staging:iio:ad799x fix typo in copyright message
-References: <5300A79B.6060209@gmx.de> <530109F8.2060402@metafoo.de>
-In-Reply-To: <530109F8.2060402@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [PATCH 1/2] iio: Don't include extended name in shared attributes
+References: <1392387566-8411-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1392387566-8411-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/02/14 18:56, Lars-Peter Clausen wrote:
-> On 02/16/2014 12:57 PM, Hartmut Knaack wrote:
->> Fix a typo in the copyright message.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+On 14/02/14 14:19, Lars-Peter Clausen wrote:
+> The extended name is channel specific and should not be included in shared
+> attributes.
 >
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Applied to the togreg branch of iio.git
 
-Thanks,
+> ---
+> It's a fix, but there are no drivers yet, which have channels with extended
+> names and shared attributes, so no need to apply it to the fixes branch.
+Thanks for making this clear - saves me checking ;)
+> ---
+>   drivers/iio/industrialio-core.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
->> ---
->> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
->> index 13a944f..570c594 100644
->> --- a/drivers/staging/iio/adc/ad799x_core.c
->> +++ b/drivers/staging/iio/adc/ad799x_core.c
->> @@ -1,6 +1,6 @@
->>   /*
->>    * iio/adc/ad799x.c
->> - * Copyright (C) 2010-1011 Michael Hennerich, Analog Devices Inc.
->> + * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
->>    *
->>    * based on iio/adc/max1363
->>    * Copyright (C) 2008-2010 Jonathan Cameron
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index acc911a..fd96e8b 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -558,7 +558,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+>   								    ->channel2],
+>   						 postfix);
+>   	} else {
+> -		if (chan->extend_name == NULL)
+> +		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
+>   			full_postfix = kstrdup(postfix, GFP_KERNEL);
+>   		else
+>   			full_postfix = kasprintf(GFP_KERNEL,
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
