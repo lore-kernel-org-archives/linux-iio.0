@@ -1,179 +1,261 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.137]:32566 "EHLO
-	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932104AbaBRPkt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 10:40:49 -0500
-From: Johannes Thumshirn <johannes.thumshirn@men.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>
-Subject: [PATCH 2/3] mcb: Add PCI carrier for MEN Chameleon Bus
-Date: Tue, 18 Feb 2014 16:34:13 +0100
-Message-ID: <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
-In-Reply-To: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
-References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
+Received: from ns.pmeerw.net ([87.118.82.44]:42350 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755837AbaBRPv1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 18 Feb 2014 10:51:27 -0500
+Date: Tue, 18 Feb 2014 16:51:25 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: adc: Add MEN 16z188 ADC driver
+In-Reply-To: <1392737654-22682-4-git-send-email-johannes.thumshirn@men.de>
+Message-ID: <alpine.DEB.2.01.1402181644420.22831@pmeerw.net>
+References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de> <1392737654-22682-4-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for MCB over PCI devices. Both PCI attached on-board Chameleon FPGAs
-as well as CompactPCI based MCB carrier cards are supported with this driver.
 
-Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
----
- drivers/mcb/Kconfig   |  13 ++++++
- drivers/mcb/Makefile  |   2 +
- drivers/mcb/mcb-pci.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 123 insertions(+)
- create mode 100644 drivers/mcb/mcb-pci.c
+some quick comments below...
 
-diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
-index 9e7d6f5..8b058bc 100644
---- a/drivers/mcb/Kconfig
-+++ b/drivers/mcb/Kconfig
-@@ -14,3 +14,16 @@ menuconfig MCB
+> Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
  
- 	   If build as a module, the module is called mcb.ko
- 
-+if MCB
-+config MCB_PCI
-+	   tristate "PCI based MCB carrier"
-+	   default m if MCB
-+	   help
-+
-+	   This is a MCB carrier on a PCI device. Both PCI attached on-board
-+	   FPGAs as well as CompactPCI attached MCB FPGAs are supported with
-+	   this driver.
-+
-+	   If build as a module, the module is called mcb-pci.ko
-+
-+endif # MCB
-diff --git a/drivers/mcb/Makefile b/drivers/mcb/Makefile
-index 2d9a751..1ae1413 100644
---- a/drivers/mcb/Makefile
-+++ b/drivers/mcb/Makefile
-@@ -3,3 +3,5 @@ obj-$(CONFIG_MCB) += mcb.o
- 
- mcb-y += mcb-core.o
- mcb-y += mcb-parse.o
-+
-+obj-$(CONFIG_MCB_PCI) += mcb-pci.o
-diff --git a/drivers/mcb/mcb-pci.c b/drivers/mcb/mcb-pci.c
-new file mode 100644
-index 0000000..0b1eafa
---- /dev/null
-+++ b/drivers/mcb/mcb-pci.c
-@@ -0,0 +1,108 @@
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/mcb.h>
-+
-+#include "mcb-internal.h"
-+
-+static struct mcb_bus *bus;
-+struct priv {
-+	void __iomem *base;
-+};
-+
-+static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct priv *priv;
-+	phys_addr_t mapbase;
-+	int ret = 0;
-+	int num_cells;
-+	unsigned long flags;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(struct priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	ret = pci_enable_device(pdev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-+		return -ENODEV;
-+	}
-+
-+	mapbase = pci_resource_start(pdev, 0);
-+	if (!mapbase) {
-+		dev_err(&pdev->dev, "No PCI resource\n");
-+		goto err_start;
-+	}
-+
-+	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
-+		goto err_start;
-+	}
-+
-+	priv->base = pci_iomap(pdev, 0, 0);
-+	if (!priv->base) {
-+		dev_err(&pdev->dev, "Cannot ioremap\n");
-+		ret = -ENOMEM;
-+		goto err_ioremap;
-+	}
-+
-+	flags = pci_resource_flags(pdev, 0);
-+	if (flags & IORESOURCE_IO) {
-+		ret = -ENOTSUPP;
-+		dev_err(&pdev->dev,
-+			"IO mapped PCI devices are not supported\n");
-+		goto err_ioremap;
-+	}
-+
-+	pci_set_drvdata(pdev, priv);
-+
-+	bus = mcb_alloc_bus();
-+
-+	ret = parse_chameleon_cells(bus, mapbase, priv->base);
-+	if (ret < 0)
-+		goto err_drvdata;
-+	num_cells = ret;
-+
-+	dev_dbg(&pdev->dev, "Found %d cells\n", num_cells);
-+
-+	mcb_bus_add_devices(bus);
-+
-+err_drvdata:
-+	pci_iounmap(pdev, priv->base);
-+err_ioremap:
-+	pci_release_region(pdev, 0);
-+err_start:
-+	pci_disable_device(pdev);
-+	return ret;
-+}
-+
-+static void mcb_pci_remove(struct pci_dev *pdev)
-+{
-+	struct priv *priv = pci_get_drvdata(pdev);
-+
-+	mcb_release_bus(bus);
-+
-+	pci_iounmap(pdev, priv->base);
-+	pci_release_region(pdev, 0);
-+	pci_disable_device(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+}
-+
-+static struct pci_device_id mcb_pci_tbl[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MEN, PCI_DEVICE_ID_MEN_CHAMELEON) },
-+	{ 0 },
-+};
-+MODULE_DEVICE_TABLE(pci, mcb_pci_tbl);
-+
-+static struct pci_driver mcb_pci_driver = {
-+	.name = "mcb-pci",
-+	.id_table = mcb_pci_tbl,
-+	.probe = mcb_pci_probe,
-+	.remove = mcb_pci_remove,
-+};
-+
-+module_pci_driver(mcb_pci_driver);
-+
-+MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("MCB over PCI support");
+> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+> ---
+>  drivers/iio/adc/Kconfig        |  10 +++
+>  drivers/iio/adc/Makefile       |   1 +
+>  drivers/iio/adc/men_z188_adc.c | 172 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 183 insertions(+)
+>  create mode 100644 drivers/iio/adc/men_z188_adc.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2209f28..5209437 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -204,4 +204,14 @@ config VIPERBOARD_ADC
+>  	  Say yes here to access the ADC part of the Nano River
+>  	  Technologies Viperboard.
+>  
+> +config MEN_Z188_ADC
+> +	tristate "MEN 16z188 ADC IP Core support"
+> +	depends on MCB
+> +	help
+> +	  Say yes here to access support the MEN 16z188 ADC IP-Core on a MCB
+> +	  carrier.
+
+support _for_ the 
+
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called men_z188_adc.
+> +
+>  endmenu
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ba9a10a..1584391 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -22,3 +22,4 @@ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>  obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+> +obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+> diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
+> new file mode 100644
+> index 0000000..8bc66cf
+> --- /dev/null
+> +++ b/drivers/iio/adc/men_z188_adc.c
+> @@ -0,0 +1,172 @@
+> +/*
+> + * MEN 16z188 Analoge to Digial Converter
+
+Analog
+
+> + *
+> + * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
+> + * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License as published by the Free
+> + * Software Foundation; version 2 of the License.
+> + */
+
+newline
+
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/mcb.h>
+> +#include <linux/iio/iio.h>
+> +
+> +#define Z188_ADC_MAX_CHAN	8
+> +#define Z188_ADC_GAIN		0x0700000
+> +#define Z188_MODE_VOLTAGE	BIT(27)
+> +#define Z188_CFG_AUTO		0x1
+> +#define Z188_CTRL_REG		0x40
+> +
+> +#define ADC_DATA(x) (((x) >> 2) & 0x7ffffc)
+> +#define ADC_OVR(x) ((x) & 0x1)
+> +
+> +struct z188_adc {
+> +	struct resource *mem;
+> +	void __iomem *base;
+> +};
+> +
+> +#define Z188_ADC_CHANNEL(idx) {					\
+> +		.type = IIO_VOLTAGE,				\
+> +		.indexed = 1,					\
+> +		.channel = (idx),				\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
+> +}
+> +
+> +static struct iio_chan_spec z188_adc_iio_channels[] = {
+> +	Z188_ADC_CHANNEL(0),
+> +	Z188_ADC_CHANNEL(1),
+> +	Z188_ADC_CHANNEL(2),
+> +	Z188_ADC_CHANNEL(3),
+> +	Z188_ADC_CHANNEL(4),
+> +	Z188_ADC_CHANNEL(5),
+> +	Z188_ADC_CHANNEL(6),
+> +	Z188_ADC_CHANNEL(7),
+> +};
+> +
+> +static int z188_iio_read_raw(struct iio_dev *iio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val,
+> +			int *val2,
+> +			long info)
+> +{
+> +	struct z188_adc *adc = iio_priv(iio_dev);
+> +	int ret = 0;
+> +	u16 tmp = 0;
+> +
+
+no need to init ret, tmp
+delete extra newline
+
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		tmp = readw(adc->base + chan->channel * 4);
+> +
+> +		if (ADC_OVR(tmp)) {
+> +			dev_info(&iio_dev->dev,
+> +				"Oversampling error on ADC channel %d\n",
+> +				chan->channel);
+> +			return -EIO;
+> +		}
+> +		*val = ADC_DATA(tmp);
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static struct iio_info z188_adc_info = {
+> +	.read_raw = &z188_iio_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static void men_z188_config_channels(void __iomem *addr)
+> +{
+> +	int i;
+> +	u32 cfg;
+> +	u32 ctl;
+> +
+> +	ctl = readl(addr + Z188_CTRL_REG);
+> +	ctl |= Z188_CFG_AUTO;
+> +	writel(ctl, addr + Z188_CTRL_REG);
+> +
+> +	for (i = 0; i < Z188_ADC_MAX_CHAN; i++) {
+> +		cfg = readl(addr + i);
+> +		cfg &= ~Z188_ADC_GAIN;
+> +		cfg |= Z188_MODE_VOLTAGE;
+> +		writel(cfg, addr + i);
+> +	}
+> +}
+> +
+> +static int men_z188_probe(struct mcb_device *dev,
+> +			const struct mcb_device_id *id)
+> +{
+> +	struct z188_adc *adc;
+> +	struct iio_dev *indio_dev;
+> +	struct resource *mem;
+> +
+> +	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	adc = iio_priv(indio_dev);
+> +	indio_dev->name = "z188-adc";
+> +	indio_dev->dev.parent = &dev->dev;
+> +	indio_dev->info = &z188_adc_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = z188_adc_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
+> +
+> +	mem = mcb_request_mem(dev, "z188-adc");
+> +	if (!mem)
+> +		return -ENOMEM;
+> +
+> +	adc->base = ioremap(mem->start, resource_size(mem));
+> +	if (adc->base == NULL)
+> +		goto err;
+> +
+> +	men_z188_config_channels(adc->base);
+> +
+> +	adc->mem = mem;
+> +	mcb_set_drvdata(dev, indio_dev);
+> +
+> +	return  devm_iio_device_register(&dev->dev, indio_dev);
+
+extra space 
+
+> +
+> +err:
+> +	mcb_release_mem(mem);
+> +	return -ENXIO;
+> +}
+> +
+> +static void men_z188_remove(struct mcb_device *dev)
+> +{
+> +	struct iio_dev *indio_dev  = mcb_get_drvdata(dev);
+> +	struct z188_adc *adc = iio_priv(indio_dev);
+> +
+> +	iounmap(adc->base);
+> +	mcb_release_mem(adc->mem);
+> +
+> +	mcb_set_drvdata(dev, NULL);
+> +}
+> +
+> +static struct mcb_device_id men_z188_ids[] = {
+> +	{ .device = 0xbc },
+> +};
+> +MODULE_DEVICE_TABLE(mcb, men_z188_ids);
+> +
+> +static struct mcb_driver men_z188_driver = {
+> +	.driver = {
+> +		.name = "z188-adc",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = men_z188_probe,
+> +	.remove = men_z188_remove,
+> +	.id_table = men_z188_ids,
+> +};
+> +module_mcb_driver(men_z188_driver);
+> +
+> +MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("IIO ADC driver for MEN 16z188 ADC Core");
+> +MODULE_ALIAS("mcb:16z188");
+> 
+
 -- 
-1.8.5.4
 
+Peter Meerwald
++43-664-2444418 (mobile)
