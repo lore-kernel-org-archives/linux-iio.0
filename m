@@ -1,208 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f42.google.com ([209.85.219.42]:62684 "EHLO
-	mail-oa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751466AbaBZVnm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2014 16:43:42 -0500
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38169 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755024AbaBRKTi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:19:38 -0500
+Message-ID: <530333DF.90808@kernel.org>
+Date: Tue, 18 Feb 2014 10:20:15 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1393375569-21751-2-git-send-email-sre@debian.org>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
-	<1393375569-21751-2-git-send-email-sre@debian.org>
-Date: Wed, 26 Feb 2014 22:43:40 +0100
-Message-ID: <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
-Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	=?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org
+CC: Myungjoo Ham <myungjoo.ham@samsung.com>,
+	Jaehoon Chung <jh80.chung@samsung.com>
+Subject: Re: [PATCH v2 1/2] iio: cm36651:  Fix read/write integration time
+ function.
+References: <52FDEA17.2020808@samsung.com>
+In-Reply-To: <52FDEA17.2020808@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Sebastian,
-
-On Wed, Feb 26, 2014 at 1:46 AM, Sebastian Reichel <sre@debian.org> wrote:
-> Update rx51-battery driver to use the new IIO API of
-> twl4030-madc and add DT support.
+On 14/02/14 10:04, Beomho Seo wrote:
 >
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> This patch is fixed [read/write] integration time function.
+> cm36651 have integration time from 1 to 640 milliseconds.
+> But, print more then the thousand second. when call *_integration_time attribute.
+> Because read_integration_time function return IIO_VAL_INT.
+> read integration time function is changed return IIO_VAL_INT_PLUS_MICRO;
+> And then .write_raw_get_fmt callback function for parse a fixed-point number from a string.
+> Some description is revised milliseconds unit.
+>
+> v2: cm36651_write_int_time function fixed as it was.
+>
+> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+I have dropped the get_write_fmt callback as int_plus_micro is the default if that isn't
+provided.  Hence the callback is unnecessary.
+
+Applied to the fixes-togreg branch of iio.git.
+
+Thanks,
+
 > ---
->  drivers/power/rx51_battery.c | 68 +++++++++++++++++++++++++++++---------------
->  1 file changed, 45 insertions(+), 23 deletions(-)
+>   drivers/iio/light/cm36651.c |   53 +++++++++++++++++++++++++------------------
+>   1 file changed, 31 insertions(+), 22 deletions(-)
 >
-> diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
-> index 1bc5857..f7cb58e 100644
-> --- a/drivers/power/rx51_battery.c
-> +++ b/drivers/power/rx51_battery.c
-> @@ -24,34 +24,27 @@
->  #include <linux/power_supply.h>
->  #include <linux/slab.h>
->  #include <linux/i2c/twl4030-madc.h>
-> -
-> -/* RX51 specific channels */
-> -#define TWL4030_MADC_BTEMP_RX51        TWL4030_MADC_ADCIN0
-> -#define TWL4030_MADC_BCI_RX51  TWL4030_MADC_ADCIN4
-> +#include <linux/iio/consumer.h>
-> +#include <linux/of.h>
+> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+> index 0a142af..3dd84ca 100644
+> --- a/drivers/iio/light/cm36651.c
+> +++ b/drivers/iio/light/cm36651.c
+> @@ -50,10 +50,10 @@
+>   #define CM36651_CS_CONF2_DEFAULT_BIT	0x08
 >
->  struct rx51_device_info {
->         struct device *dev;
->         struct power_supply bat;
-> +       struct iio_channel *channel_temp;
-> +       struct iio_channel *channel_bsi;
-> +       struct iio_channel *channel_vbat;
->  };
+>   /* CS_CONF3 channel integration time */
+> -#define CM36651_CS_IT1			0x00 /* Integration time 80000 usec */
+> -#define CM36651_CS_IT2			0x40 /* Integration time 160000 usec */
+> -#define CM36651_CS_IT3			0x80 /* Integration time 320000 usec */
+> -#define CM36651_CS_IT4			0xC0 /* Integration time 640000 usec */
+> +#define CM36651_CS_IT1			0x00 /* Integration time 80 msec */
+> +#define CM36651_CS_IT2			0x40 /* Integration time 160 msec */
+> +#define CM36651_CS_IT3			0x80 /* Integration time 320 msec */
+> +#define CM36651_CS_IT4			0xC0 /* Integration time 640 msec */
 >
->  /*
->   * Read ADCIN channel value, code copied from maemo kernel
->   */
-> -static int rx51_battery_read_adc(int channel)
-> +static int rx51_battery_read_adc(struct iio_channel *channel)
->  {
-> -       struct twl4030_madc_request req;
-> -
-> -       req.channels = channel;
-> -       req.do_avg = 1;
-> -       req.method = TWL4030_MADC_SW1;
-> -       req.func_cb = NULL;
-> -       req.type = TWL4030_MADC_WAIT;
-> -       req.raw = true;
-> -
-> -       if (twl4030_madc_conversion(&req) <= 0)
-> -               return -ENODATA;
-> -
-> -       return req.rbuf[ffs(channel) - 1];
-> +       int val, err;
-> +       err = iio_read_channel_average_raw(channel, &val);
-Where this function comes from? I cannot find it in current linux-next
-(only iio_read_channel_raw()).
-Am I missing some patches? Thx. BTW when I convert to iio consumer and
-use DT some of values work
-but some of them just report 0 :( (I don't have latest twl4030-madc
-iio patches).
-> +       if (err < 0)
-> +               return err;
-> +       return val;
->  }
+>   /* PS_CONF1 command code */
+>   #define CM36651_PS_ENABLE		0x00
+> @@ -64,10 +64,10 @@
+>   #define CM36651_PS_PERS4		0x0C
 >
->  /*
-> @@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
->   */
->  static int rx51_battery_read_voltage(struct rx51_device_info *di)
->  {
-> -       int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
-> +       int voltage = rx51_battery_read_adc(di->channel_vbat);
+>   /* PS_CONF1 command code: integration time */
+> -#define CM36651_PS_IT1			0x00 /* Integration time 320 usec */
+> -#define CM36651_PS_IT2			0x10 /* Integration time 420 usec */
+> -#define CM36651_PS_IT3			0x20 /* Integration time 520 usec */
+> -#define CM36651_PS_IT4			0x30 /* Integration time 640 usec */
+> +#define CM36651_PS_IT1			0x00 /* Integration time 0.32 msec */
+> +#define CM36651_PS_IT2			0x10 /* Integration time 0.42 msec */
+> +#define CM36651_PS_IT3			0x20 /* Integration time 0.52 msec */
+> +#define CM36651_PS_IT4			0x30 /* Integration time 0.64 msec */
 >
-> -       if (voltage < 0)
-> +       if (voltage < 0) {
-> +               dev_err(di->dev, "Could not read ADC: %d\n", voltage);
->                 return voltage;
-> +       }
+>   /* PS_CONF1 command code: duty ratio */
+>   #define CM36651_PS_DR1			0x00 /* Duty ratio 1/80 */
+> @@ -93,8 +93,8 @@
+>   #define CM36651_CLOSE_PROXIMITY		0x32
+>   #define CM36651_FAR_PROXIMITY			0x33
 >
->         return 1000 * (10000 * voltage / 1705);
->  }
-> @@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
->  {
->         int min = 0;
->         int max = ARRAY_SIZE(rx51_temp_table2) - 1;
-> -       int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
-> +       int raw = rx51_battery_read_adc(di->channel_temp);
+> -#define CM36651_CS_INT_TIME_AVAIL	"80000 160000 320000 640000"
+> -#define CM36651_PS_INT_TIME_AVAIL	"320 420 520 640"
+> +#define CM36651_CS_INT_TIME_AVAIL	"0.08 0.16 0.32 0.64"
+> +#define CM36651_PS_INT_TIME_AVAIL	"0.000320 0.000420 0.000520 0.000640"
+>
+>   enum cm36651_operation_mode {
+>   	CM36651_LIGHT_EN,
+> @@ -356,30 +356,30 @@ static int cm36651_read_channel(struct cm36651_data *cm36651,
+>   }
+>
+>   static int cm36651_read_int_time(struct cm36651_data *cm36651,
+> -				struct iio_chan_spec const *chan, int *val)
+> +				struct iio_chan_spec const *chan, int *val2)
+>   {
+>   	switch (chan->type) {
+>   	case IIO_LIGHT:
+>   		if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT1)
+> -			*val = 80000;
+> +			*val2 = 80000;
+>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT2)
+> -			*val = 160000;
+> +			*val2 = 160000;
+>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT3)
+> -			*val = 320000;
+> +			*val2 = 320000;
+>   		else if (cm36651->cs_int_time[chan->address] == CM36651_CS_IT4)
+> -			*val = 640000;
+> +			*val2 = 640000;
+>   		else
+>   			return -EINVAL;
+>   		break;
+>   	case IIO_PROXIMITY:
+>   		if (cm36651->ps_int_time == CM36651_PS_IT1)
+> -			*val = 320;
+> +			*val2 = 320;
+>   		else if (cm36651->ps_int_time == CM36651_PS_IT2)
+> -			*val = 420;
+> +			*val2 = 420;
+>   		else if (cm36651->ps_int_time == CM36651_PS_IT3)
+> -			*val = 520;
+> +			*val2 = 520;
+>   		else if (cm36651->ps_int_time == CM36651_PS_IT4)
+> -			*val = 640;
+> +			*val2 = 640;
+>   		else
+>   			return -EINVAL;
+>   		break;
+> @@ -387,7 +387,7 @@ static int cm36651_read_int_time(struct cm36651_data *cm36651,
+>   		return -EINVAL;
+>   	}
+>
+> -	return IIO_VAL_INT;
+> +	return IIO_VAL_INT_PLUS_MICRO;
+>   }
+>
+>   static int cm36651_write_int_time(struct cm36651_data *cm36651,
+> @@ -459,7 +459,8 @@ static int cm36651_read_raw(struct iio_dev *indio_dev,
+>   		ret = cm36651_read_channel(cm36651, chan, val);
+>   		break;
+>   	case IIO_CHAN_INFO_INT_TIME:
+> -		ret = cm36651_read_int_time(cm36651, chan, val);
+> +		*val = 0;
+> +		ret = cm36651_read_int_time(cm36651, chan, val2);
+>   		break;
+>   	default:
+>   		ret = -EINVAL;
+> @@ -479,7 +480,7 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
+>   	int ret = -EINVAL;
+>
+>   	if (mask == IIO_CHAN_INFO_INT_TIME) {
+> -		ret = cm36651_write_int_time(cm36651, chan, val);
+> +		ret = cm36651_write_int_time(cm36651, chan, val2);
+>   		if (ret < 0)
+>   			dev_err(&client->dev, "Integration time write failed\n");
+>   	}
+> @@ -487,6 +488,13 @@ static int cm36651_write_raw(struct iio_dev *indio_dev,
+>   	return ret;
+>   }
+>
+> +static int cm36651_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				long mask)
+> +{
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
 > +
-> +       if (raw < 0)
-> +               dev_err(di->dev, "Could not read ADC: %d\n", raw);
->
->         /* Zero and negative values are undefined */
->         if (raw <= 0)
-> @@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
->   */
->  static int rx51_battery_read_capacity(struct rx51_device_info *di)
->  {
-> -       int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
-> +       int capacity = rx51_battery_read_adc(di->channel_bsi);
->
-> -       if (capacity < 0)
-> +       if (capacity < 0) {
-> +               dev_err(di->dev, "Could not read ADC: %d\n", capacity);
->                 return capacity;
-> +       }
->
->         return 1280 * (1200 * capacity)/(1024 - capacity);
->  }
-> @@ -213,12 +213,25 @@ static int rx51_battery_probe(struct platform_device *pdev)
->
->         platform_set_drvdata(pdev, di);
->
-> +       di->dev = &pdev->dev;
->         di->bat.name = dev_name(&pdev->dev);
->         di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
->         di->bat.properties = rx51_battery_props;
->         di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
->         di->bat.get_property = rx51_battery_get_property;
->
-> +       di->channel_temp = iio_channel_get(di->dev, "temp");
-> +       if (IS_ERR(di->channel_temp))
-> +               return PTR_ERR(di->channel_temp);
-> +
-> +       di->channel_bsi  = iio_channel_get(di->dev, "bsi");
-> +       if (IS_ERR(di->channel_bsi))
-> +               return PTR_ERR(di->channel_bsi);
-> +
-> +       di->channel_vbat = iio_channel_get(di->dev, "vbat");
-> +       if (IS_ERR(di->channel_vbat))
-> +               return PTR_ERR(di->channel_vbat);
-> +
->         ret = power_supply_register(di->dev, &di->bat);
->         if (ret)
->                 return ret;
-> @@ -235,12 +248,21 @@ static int rx51_battery_remove(struct platform_device *pdev)
->         return 0;
->  }
->
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id n900_battery_of_match[] = {
-> +       {.compatible = "nokia,n900-battery", },
-> +       { },
-> +};
-> +MODULE_DEVICE_TABLE(of, n900_battery_of_match);
-> +#endif
-> +
->  static struct platform_driver rx51_battery_driver = {
->         .probe = rx51_battery_probe,
->         .remove = rx51_battery_remove,
->         .driver = {
->                 .name = "rx51-battery",
->                 .owner = THIS_MODULE,
-> +               .of_match_table = of_match_ptr(n900_battery_of_match),
->         },
->  };
->  module_platform_driver(rx51_battery_driver);
-> --
-> 1.8.5.3
+>   static int cm36651_read_prox_thresh(struct iio_dev *indio_dev,
+>   					const struct iio_chan_spec *chan,
+>   					enum iio_event_type type,
+> @@ -614,6 +622,7 @@ static const struct iio_info cm36651_info = {
+>   	.driver_module		= THIS_MODULE,
+>   	.read_raw		= &cm36651_read_raw,
+>   	.write_raw		= &cm36651_write_raw,
+> +	.write_raw_get_fmt	= &cm36651_write_raw_get_fmt,
+>   	.read_event_value	= &cm36651_read_prox_thresh,
+>   	.write_event_value	= &cm36651_write_prox_thresh,
+>   	.read_event_config	= &cm36651_read_prox_event_config,
 >
 
-BR,
-
-marek
-
--- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
-
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
