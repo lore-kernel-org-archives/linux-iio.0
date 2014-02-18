@@ -1,48 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38298 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38522 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754030AbaBRK04 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:26:56 -0500
-Message-ID: <53033597.1010503@kernel.org>
-Date: Tue, 18 Feb 2014 10:27:35 +0000
+	with ESMTP id S1754030AbaBRKkO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:40:14 -0500
+Message-ID: <530338B2.603@kernel.org>
+Date: Tue, 18 Feb 2014 10:40:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: Don't include extended name in shared attributes
-References: <1392387566-8411-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1392387566-8411-1-git-send-email-lars@metafoo.de>
+To: Marek Belisko <marek@goldelico.com>, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rob@landley.net
+CC: pmeerw@pmeerw.net, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	hns@goldelico.com
+Subject: Re: [PATCH 1/2] staging: iio: hmc5843: Add all available models to
+ device tree id table.
+References: <1392387929-31491-1-git-send-email-marek@goldelico.com>
+In-Reply-To: <1392387929-31491-1-git-send-email-marek@goldelico.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/02/14 14:19, Lars-Peter Clausen wrote:
-> The extended name is channel specific and should not be included in shared
-> attributes.
->
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git
-
+On 14/02/14 14:25, Marek Belisko wrote:
+> Signed-off-by: Marek Belisko <marek@goldelico.com>
+I wonder how this got missed.  However, for those data elements to be useful, you will
+need to read them somewhere in the driver I think.... (if there is any magic
+that puts this in the relevant i2c locations then point it out to me!)
 > ---
-> It's a fix, but there are no drivers yet, which have channels with extended
-> names and shared attributes, so no need to apply it to the fixes branch.
-Thanks for making this clear - saves me checking ;)
-> ---
->   drivers/iio/industrialio-core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/staging/iio/magnetometer/hmc5843.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index acc911a..fd96e8b 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -558,7 +558,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
->   								    ->channel2],
->   						 postfix);
->   	} else {
-> -		if (chan->extend_name == NULL)
-> +		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
->   			full_postfix = kstrdup(postfix, GFP_KERNEL);
->   		else
->   			full_postfix = kasprintf(GFP_KERNEL,
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c b/drivers/staging/iio/magnetometer/hmc5843.c
+> index d4f4dd9..f595fdc 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
+> @@ -630,7 +630,9 @@ static const struct i2c_device_id hmc5843_id[] = {
+>   MODULE_DEVICE_TABLE(i2c, hmc5843_id);
+>
+>   static const struct of_device_id hmc5843_of_match[] = {
+> -	{ .compatible = "honeywell,hmc5843" },
+> +	{ .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
+> +	{ .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
+> +	{ .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID },
+>   	{}
+>   };
+>   MODULE_DEVICE_TABLE(of, hmc5843_of_match);
 >
 
