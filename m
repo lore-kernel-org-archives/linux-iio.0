@@ -1,108 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38264 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754892AbaBRKZY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 05:25:24 -0500
-Message-ID: <5303353B.8050603@kernel.org>
-Date: Tue, 18 Feb 2014 10:26:03 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.137]:32566 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932104AbaBRPkt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 10:40:49 -0500
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH 2/3] mcb: Add PCI carrier for MEN Chameleon Bus
+Date: Tue, 18 Feb 2014 16:34:13 +0100
+Message-ID: <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
+In-Reply-To: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
+References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:gyro: bug on L3GD20H gyroscope support
-References: <1392387337-25324-1-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1392387337-25324-1-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/02/14 14:15, Denis CIOCCA wrote:
-> The driver was not able to manage the sensor: during probe function
-> and wai check, the driver stops and writes: "device name and WhoAmI mismatch."
-> The correct value of L3GD20H wai is 0xd7 instead of 0xd4.
-> Dropped support for the sensor.
->
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-Applied to the the fixes-togreg branch of iio.git and marked for stable.
+Add support for MCB over PCI devices. Both PCI attached on-board Chameleon FPGAs
+as well as CompactPCI based MCB carrier cards are supported with this driver.
 
-Thanks,
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+---
+ drivers/mcb/Kconfig   |  13 ++++++
+ drivers/mcb/Makefile  |   2 +
+ drivers/mcb/mcb-pci.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 123 insertions(+)
+ create mode 100644 drivers/mcb/mcb-pci.c
 
-Jonathan
-> ---
->   drivers/iio/gyro/Kconfig        | 2 +-
->   drivers/iio/gyro/st_gyro.h      | 1 -
->   drivers/iio/gyro/st_gyro_core.c | 9 ++++-----
->   drivers/iio/gyro/st_gyro_i2c.c  | 1 -
->   drivers/iio/gyro/st_gyro_spi.c  | 1 -
->   5 files changed, 5 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 41c64a4..ac2d69e 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -70,7 +70,7 @@ config IIO_ST_GYRO_3AXIS
->   	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->   	help
->   	  Say yes here to build support for STMicroelectronics gyroscopes:
-> -	  L3G4200D, LSM330DL, L3GD20, L3GD20H, LSM330DLC, L3G4IS, LSM330.
-> +	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330.
->
->   	  This driver can also be built as a module. If so, these modules
->   	  will be created:
-> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-> index f8f2bf8..c197360 100644
-> --- a/drivers/iio/gyro/st_gyro.h
-> +++ b/drivers/iio/gyro/st_gyro.h
-> @@ -19,7 +19,6 @@
->   #define LSM330DL_GYRO_DEV_NAME		"lsm330dl_gyro"
->   #define LSM330DLC_GYRO_DEV_NAME		"lsm330dlc_gyro"
->   #define L3GD20_GYRO_DEV_NAME		"l3gd20"
-> -#define L3GD20H_GYRO_DEV_NAME		"l3gd20h"
->   #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
->   #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
->
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index d53d91a..a8e174a 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -167,11 +167,10 @@ static const struct st_sensors st_gyro_sensors[] = {
->   		.wai = ST_GYRO_2_WAI_EXP,
->   		.sensors_supported = {
->   			[0] = L3GD20_GYRO_DEV_NAME,
-> -			[1] = L3GD20H_GYRO_DEV_NAME,
-> -			[2] = LSM330D_GYRO_DEV_NAME,
-> -			[3] = LSM330DLC_GYRO_DEV_NAME,
-> -			[4] = L3G4IS_GYRO_DEV_NAME,
-> -			[5] = LSM330_GYRO_DEV_NAME,
-> +			[1] = LSM330D_GYRO_DEV_NAME,
-> +			[2] = LSM330DLC_GYRO_DEV_NAME,
-> +			[3] = L3G4IS_GYRO_DEV_NAME,
-> +			[4] = LSM330_GYRO_DEV_NAME,
->   		},
->   		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->   		.odr = {
-> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-> index 16b8b8d..23c12f3 100644
-> --- a/drivers/iio/gyro/st_gyro_i2c.c
-> +++ b/drivers/iio/gyro/st_gyro_i2c.c
-> @@ -55,7 +55,6 @@ static const struct i2c_device_id st_gyro_id_table[] = {
->   	{ LSM330DL_GYRO_DEV_NAME },
->   	{ LSM330DLC_GYRO_DEV_NAME },
->   	{ L3GD20_GYRO_DEV_NAME },
-> -	{ L3GD20H_GYRO_DEV_NAME },
->   	{ L3G4IS_GYRO_DEV_NAME },
->   	{ LSM330_GYRO_DEV_NAME },
->   	{},
-> diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-> index 94763e2..b4ad3be 100644
-> --- a/drivers/iio/gyro/st_gyro_spi.c
-> +++ b/drivers/iio/gyro/st_gyro_spi.c
-> @@ -54,7 +54,6 @@ static const struct spi_device_id st_gyro_id_table[] = {
->   	{ LSM330DL_GYRO_DEV_NAME },
->   	{ LSM330DLC_GYRO_DEV_NAME },
->   	{ L3GD20_GYRO_DEV_NAME },
-> -	{ L3GD20H_GYRO_DEV_NAME },
->   	{ L3G4IS_GYRO_DEV_NAME },
->   	{ LSM330_GYRO_DEV_NAME },
->   	{},
->
+diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
+index 9e7d6f5..8b058bc 100644
+--- a/drivers/mcb/Kconfig
++++ b/drivers/mcb/Kconfig
+@@ -14,3 +14,16 @@ menuconfig MCB
+ 
+ 	   If build as a module, the module is called mcb.ko
+ 
++if MCB
++config MCB_PCI
++	   tristate "PCI based MCB carrier"
++	   default m if MCB
++	   help
++
++	   This is a MCB carrier on a PCI device. Both PCI attached on-board
++	   FPGAs as well as CompactPCI attached MCB FPGAs are supported with
++	   this driver.
++
++	   If build as a module, the module is called mcb-pci.ko
++
++endif # MCB
+diff --git a/drivers/mcb/Makefile b/drivers/mcb/Makefile
+index 2d9a751..1ae1413 100644
+--- a/drivers/mcb/Makefile
++++ b/drivers/mcb/Makefile
+@@ -3,3 +3,5 @@ obj-$(CONFIG_MCB) += mcb.o
+ 
+ mcb-y += mcb-core.o
+ mcb-y += mcb-parse.o
++
++obj-$(CONFIG_MCB_PCI) += mcb-pci.o
+diff --git a/drivers/mcb/mcb-pci.c b/drivers/mcb/mcb-pci.c
+new file mode 100644
+index 0000000..0b1eafa
+--- /dev/null
++++ b/drivers/mcb/mcb-pci.c
+@@ -0,0 +1,108 @@
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/mcb.h>
++
++#include "mcb-internal.h"
++
++static struct mcb_bus *bus;
++struct priv {
++	void __iomem *base;
++};
++
++static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	struct priv *priv;
++	phys_addr_t mapbase;
++	int ret = 0;
++	int num_cells;
++	unsigned long flags;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(struct priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	ret = pci_enable_device(pdev);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		return -ENODEV;
++	}
++
++	mapbase = pci_resource_start(pdev, 0);
++	if (!mapbase) {
++		dev_err(&pdev->dev, "No PCI resource\n");
++		goto err_start;
++	}
++
++	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
++		goto err_start;
++	}
++
++	priv->base = pci_iomap(pdev, 0, 0);
++	if (!priv->base) {
++		dev_err(&pdev->dev, "Cannot ioremap\n");
++		ret = -ENOMEM;
++		goto err_ioremap;
++	}
++
++	flags = pci_resource_flags(pdev, 0);
++	if (flags & IORESOURCE_IO) {
++		ret = -ENOTSUPP;
++		dev_err(&pdev->dev,
++			"IO mapped PCI devices are not supported\n");
++		goto err_ioremap;
++	}
++
++	pci_set_drvdata(pdev, priv);
++
++	bus = mcb_alloc_bus();
++
++	ret = parse_chameleon_cells(bus, mapbase, priv->base);
++	if (ret < 0)
++		goto err_drvdata;
++	num_cells = ret;
++
++	dev_dbg(&pdev->dev, "Found %d cells\n", num_cells);
++
++	mcb_bus_add_devices(bus);
++
++err_drvdata:
++	pci_iounmap(pdev, priv->base);
++err_ioremap:
++	pci_release_region(pdev, 0);
++err_start:
++	pci_disable_device(pdev);
++	return ret;
++}
++
++static void mcb_pci_remove(struct pci_dev *pdev)
++{
++	struct priv *priv = pci_get_drvdata(pdev);
++
++	mcb_release_bus(bus);
++
++	pci_iounmap(pdev, priv->base);
++	pci_release_region(pdev, 0);
++	pci_disable_device(pdev);
++	pci_set_drvdata(pdev, NULL);
++}
++
++static struct pci_device_id mcb_pci_tbl[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_MEN, PCI_DEVICE_ID_MEN_CHAMELEON) },
++	{ 0 },
++};
++MODULE_DEVICE_TABLE(pci, mcb_pci_tbl);
++
++static struct pci_driver mcb_pci_driver = {
++	.name = "mcb-pci",
++	.id_table = mcb_pci_tbl,
++	.probe = mcb_pci_probe,
++	.remove = mcb_pci_remove,
++};
++
++module_pci_driver(mcb_pci_driver);
++
++MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("MCB over PCI support");
+-- 
+1.8.5.4
 
