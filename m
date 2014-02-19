@@ -1,102 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:47023 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753725AbaBZAYo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 19:24:44 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv3 1/7] mfd: twl4030-madc: Use managed resources
-Date: Wed, 26 Feb 2014 01:24:24 +0100
-Message-Id: <1393374270-20079-2-git-send-email-sre@debian.org>
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <53053609.40806@gmx.de>
+Date: Wed, 19 Feb 2014 23:54:01 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [RFC]coding style for NULL pointer checks
+References: <5300ACC6.90509@gmx.de> <530109DE.3010607@metafoo.de> <53031C67.8060202@kernel.org>
+In-Reply-To: <53031C67.8060202@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-Update twl4030-madc driver to use managed resources.
+Jonathan Cameron schrieb:
+> On 16/02/14 18:56, Lars-Peter Clausen wrote:
+>> On 02/16/2014 01:19 PM, Hartmut Knaack wrote:
+>>> Hi together,
+>>> I noticed, that many pointers in the IIO subsystem are checked for successful allocation in the way of "if (pointer == NULL)" or "if (pointer != NULL)", while in a few cases the form of simply "if (!pointer)" or "if (pointer)" is used. So, is there any interest in having a more consistent style, and if so, for which one?
+>>> My personal preference is for the latter one.
+>> I think enforcing this is a bit to much nitpicking. So if you clean this up the other pattern will probably appear again in new drivers at some point.
+>>
+>> Otherwise, if you feel strongly about this, go ahead and send a patch.
+> My inclination on this is that there are better things to spend time on
+> but as they say scratch the itch if you really want to!
+>
+> I'd rather have the nice error patch cleanups you've been doing or
+> if you are really bored, there are lots of staging drivers in need of
+> tendour loving care!
+>
+> J
+Well, never mind then. Do you have some kind of To-Do-List? Otherwise I would get back to my other projects.
+Concerning the staging drivers, I miss some motivation to work on device drivers that I don't have the devices for. Therefor I was mainly focusing on the ad799x. So, by the way, which are currently the show-stoppers for the ad799x preventing a move out of staging?
+And, are there any plans to provide documentation about the supported IIO devices (similar to hwmon)?
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
- }
- 
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
- 
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
--- 
-1.8.5.3
-
+Hartmut
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
