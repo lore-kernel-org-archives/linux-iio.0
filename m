@@ -1,129 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.11.231]:37944 "EHLO
-	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753202AbaBRXWp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 18:22:45 -0500
-Date: Tue, 18 Feb 2014 17:20:17 -0600
-From: Josh Cartwright <joshc@codeaurora.org>
-To: Johannes Thumshirn <johannes.thumshirn@men.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] mcb: Add PCI carrier for MEN Chameleon Bus
-Message-ID: <20140218232017.GA31820@joshc.qualcomm.com>
-References: <1392737654-22682-1-git-send-email-johannes.thumshirn@men.de>
- <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
+Received: from co9ehsobe001.messaging.microsoft.com ([207.46.163.24]:3635 "EHLO
+	co9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750761AbaBSFHk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Feb 2014 00:07:40 -0500
+Date: Wed, 19 Feb 2014 13:07:22 +0800
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Fugang Duan <B38611@freescale.com>
+CC: <jic23@kernel.org>, <sachin.kamat@linaro.org>, <pmeerw@pmeerw.net>,
+	<lars@metafoo.de>, <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	<devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v5 1/3] ARM: dts: vf610-twr: Add ADC support
+Message-ID: <20140219050716.GA3010@S2101-09.ap.freescale.net>
+References: <1390714773-23066-1-git-send-email-B38611@freescale.com>
+ <1390714773-23066-2-git-send-email-B38611@freescale.com>
+ <20140216074850.GA2946@S2101-09.ap.freescale.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1392737654-22682-3-git-send-email-johannes.thumshirn@men.de>
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20140216074850.GA2946@S2101-09.ap.freescale.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 18, 2014 at 04:34:13PM +0100, Johannes Thumshirn wrote:
-> Add support for MCB over PCI devices. Both PCI attached on-board Chameleon FPGAs
-> as well as CompactPCI based MCB carrier cards are supported with this driver.
+On Sun, Feb 16, 2014 at 03:48:53PM +0800, Shawn Guo wrote:
+> Copy more DT folks and lists, as I want to make sure everyone agrees on
+> how the fixed regulators should organized in the device tree sources,
+> before I apply the patch.
 > 
-> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
-> ---
->  drivers/mcb/Kconfig   |  13 ++++++
->  drivers/mcb/Makefile  |   2 +
->  drivers/mcb/mcb-pci.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 123 insertions(+)
->  create mode 100644 drivers/mcb/mcb-pci.c
+> On Sun, Jan 26, 2014 at 01:39:31PM +0800, Fugang Duan wrote:
+> > vf610 has two ADC controllers, and vf610-twr board ADC0_SE5 pin connect
+> > to sliding rheostat for ADC test, other ADC pins connect to connectors for
+> > future use.
+> > 
+> > Add support for ADC0_SE5.
+> > 
+> > CC: Shawn Guo <shawn.guo@linaro.org>
+> > CC: Jonathan Cameron <jic23@kernel.org>
+> > CC: Mark Rutland <mark.rutland@arm.com>
+> > CC: Otavio Salvador <otavio@ossystems.com.br>
+> > CC: Peter Meerwald <pmeerw@pmeerw.net>
+> > CC: Lars-Peter Clausen <lars@metafoo.de>
+> > Signed-off-by: Fugang Duan <B38611@freescale.com>
+> > ---
+> >  arch/arm/boot/dts/vf610-twr.dts |   21 +++++++++++++++++++++
+> >  arch/arm/boot/dts/vf610.dtsi    |   26 ++++++++++++++++++++++++++
+> >  2 files changed, 47 insertions(+), 0 deletions(-)
+> > 
+> > diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+> > index c8047ca..d867be3 100644
+> > --- a/arch/arm/boot/dts/vf610-twr.dts
+> > +++ b/arch/arm/boot/dts/vf610-twr.dts
+> > @@ -34,6 +34,27 @@
+> >  		};
+> >  	};
+> >  
+> > +	regulators {
+> > +		compatible = "simple-bus";
+> > +		#address-cells = <1>;
+> > +		#size-cells = <0>;
+> > +
+> > +		reg_vcc_3v3_mcu: regulator@0 {
+> > +			compatible = "regulator-fixed";
+> > +			reg = <0>;
+> > +			regulator-name = "vcc_3v3_mcu";
+> > +			regulator-min-microvolt = <3300000>;
+> > +			regulator-max-microvolt = <3300000>;
+> > +		};
+> > +	};
 > 
-> diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
-> index 9e7d6f5..8b058bc 100644
-> --- a/drivers/mcb/Kconfig
-> +++ b/drivers/mcb/Kconfig
-> @@ -14,3 +14,16 @@ menuconfig MCB
->  
->  	   If build as a module, the module is called mcb.ko
->  
-> +if MCB
-> +config MCB_PCI
-> +	   tristate "PCI based MCB carrier"
-> +	   default m if MCB
+> Per discussion [1], Mark Rutland suggests that instead of organizing
+> the fixed regulator nodes in a simple-bus container, it should be put
+> under root node directly like below.
+> 
+> / {
+> 	reg_vcc_3v3_mcu: regulator_0 {
+> 		compatible = "regulator-fixed";
+> 		regulator-name = "vcc_3v3_mcu";
+> 		regulator-min-microvolt = <3300000>;
+> 		regulator-max-microvolt = <3300000>;
+> 	};
+> };
+> 
+> Is this what all DT folks agree on?  At least the node name should be
+> 'regulator-0' since it's more idiomatic to use '-' than '_' in node
+> name?
 
-'if MCB' is redundant (MCB has to be set for this option to even be
-available).
+It looks that Mark is giving up [1].  And we're fine with the original
+code then.
 
-[..]
-> +++ b/drivers/mcb/mcb-pci.c
-> @@ -0,0 +1,108 @@
+Shawn
 
-Copyright/license blurb?
+[1] http://thread.gmane.org/gmane.linux.drivers.devicetree/61894/focus=62405
 
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +#include <linux/mcb.h>
-> +
-> +#include "mcb-internal.h"
-> +
-> +static struct mcb_bus *bus;
-> +struct priv {
-> +	void __iomem *base;
-> +};
-
-This seems weird.  Why is the bus not part of your private data?  Seems
-like you're unnecessarily restricting yourself to supporting only one of
-these devices at a time...
-
-> +
-> +static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> +{
-> +	struct priv *priv;
-> +	phys_addr_t mapbase;
-> +	int ret = 0;
-
-No need to initialize.
-
-> +	int num_cells;
-> +	unsigned long flags;
-> +
-> +	priv = devm_kzalloc(&pdev->dev, sizeof(struct priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	ret = pci_enable_device(pdev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	mapbase = pci_resource_start(pdev, 0);
-> +	if (!mapbase) {
-> +		dev_err(&pdev->dev, "No PCI resource\n");
-> +		goto err_start;
-> +	}
-> +
-> +	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
-> +		goto err_start;
-> +	}
-> +
-> +	priv->base = pci_iomap(pdev, 0, 0);
-
-Hmm.  There should really be a devm_* variant for PCI resources.
-
-[..]
-> +
-> +static void mcb_pci_remove(struct pci_dev *pdev)
-> +{
-> +	struct priv *priv = pci_get_drvdata(pdev);
-> +
-> +	mcb_release_bus(bus);
-> +
-> +	pci_iounmap(pdev, priv->base);
-> +	pci_release_region(pdev, 0);
-> +	pci_disable_device(pdev);
-> +	pci_set_drvdata(pdev, NULL);
-> +}
-> +
-> +static struct pci_device_id mcb_pci_tbl[] = {
-
-const?
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-hosted by The Linux Foundation
