@@ -1,30 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:51099 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752885AbaBPSx6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Feb 2014 13:53:58 -0500
-Message-ID: <530109DE.3010607@metafoo.de>
-Date: Sun, 16 Feb 2014 19:56:30 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [RFC]coding style for NULL pointer checks
-References: <5300ACC6.90509@gmx.de>
-In-Reply-To: <5300ACC6.90509@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mpa@pengutronix.de>
+From: Markus Pargmann <mpa@pengutronix.de>
+To: devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	kernel@pengutronix.de,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH 0/3] arm imx25 touchscreen/ADC drivers
+Date: Thu, 20 Feb 2014 17:21:49 +0100
+Message-Id: <1392913312-9030-1-git-send-email-mpa@pengutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/16/2014 01:19 PM, Hartmut Knaack wrote:
-> Hi together,
-> I noticed, that many pointers in the IIO subsystem are checked for successful allocation in the way of "if (pointer == NULL)" or "if (pointer != NULL)", while in a few cases the form of simply "if (!pointer)" or "if (pointer)" is used. So, is there any interest in having a more consistent style, and if so, for which one?
-> My personal preference is for the latter one.
+Hi,
 
-I think enforcing this is a bit to much nitpicking. So if you clean this up the 
-other pattern will probably appear again in new drivers at some point.
+This series adds 3 drivers to support the i.MX25 Touchscreen/ADC device.
+The device has 3 parts. The core controls some generic functions of the
+complete device, including the clock and IRQs. A touchscreen specific
+conversion queue that works with the central ADC to detect and convert touch
+positions. And a generic conversion queue which is the same hardware as the
+touchscreen conversion queue but is supposed to be used for generic ADC
+conversions.
 
-Otherwise, if you feel strongly about this, go ahead and send a patch.
+There are 3 drivers to support all parts. fsl-imx25-tsadc is a MFD driver which
+controls the core. fsl-imx25-tcq is the touchscreen conversion queue driver
+which registers a touchscreen input device. fsl-imx25-gcq is the generic
+conversion queue driver that registers a iio device for all inputs available.
 
-- Lars
+All drivers are initialized using devicetree bindings.
 
+Regards,
+
+Markus Pargmann
+
+
+Markus Pargmann (3):
+  mfd: fsl imx25 Touchscreen ADC driver
+  input: touchscreen: imx25 tcq driver
+  iio: adc: fsl,imx25-gcq driver
+
+ .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  54 ++
+ .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  29 +
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++
+ drivers/iio/adc/Kconfig                            |   7 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/fsl-imx25-gcq.c                    | 325 ++++++++++++
+ drivers/input/touchscreen/Kconfig                  |   6 +
+ drivers/input/touchscreen/Makefile                 |   1 +
+ drivers/input/touchscreen/fsl-imx25-tcq.c          | 589 +++++++++++++++++++++
+ drivers/mfd/Kconfig                                |   9 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/fsl-imx25-tsadc.c                      | 234 ++++++++
+ include/linux/mfd/imx25-tsadc.h                    | 138 +++++
+ 13 files changed, 1441 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+ create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+ create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+ create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+ create mode 100644 include/linux/mfd/imx25-tsadc.h
+
+-- 
+1.8.5.3
