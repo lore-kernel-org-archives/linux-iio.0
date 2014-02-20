@@ -1,480 +1,295 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54229 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751151AbaBVNFR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Feb 2014 08:05:17 -0500
-Message-ID: <5308A0B6.8060908@kernel.org>
-Date: Sat, 22 Feb 2014 13:05:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-232.synserver.de ([212.40.185.232]:1601 "EHLO
+	smtp-out-145.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754647AbaBTSJj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Feb 2014 13:09:39 -0500
+Message-ID: <53063F72.9070006@metafoo.de>
+Date: Thu, 20 Feb 2014 18:46:26 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Archana Patni <archana.patni@linux.intel.com>
-CC: linux-iio@vger.kernel.org, jkosina@suse.cz,
-	srinivas.pandruvada@linux.intel.com,
-	Archana Patni <archana.patni@intel.com>
-Subject: Re: [PATCH 2/2] iio: hid-sensors: Added Pressure Sensor driver
-References: <1392877827-5994-1-git-send-email-archana.patni@linux.intel.com>
-In-Reply-To: <1392877827-5994-1-git-send-email-archana.patni@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Markus Pargmann <mpa@pengutronix.de>
+CC: devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: Re: [PATCH 3/3] iio: adc: fsl,imx25-gcq driver
+References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de> <1392913312-9030-4-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1392913312-9030-4-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/02/14 06:30, Archana Patni wrote:
-> Added usage id processing for Pressure Sensor. This uses IIO
-> interfaces for triggered buffer to present data to user
-> mode. This uses HID sensor framework for registering callback
-> events from the sensor hub.
+On 02/20/2014 05:21 PM, Markus Pargmann wrote:
+> This is a conversion queue driver for the mx25 SoC. It uses the central
+> ADC which is used by two seperate independent queues. This driver
+> prepares different conversion configurations for each possible input.
+> For a conversion it creates a conversionqueue of one item with the
+> correct configuration for the chosen channel. It then executes the queue
+> once and disables the conversion queue afterwards.
 >
-> Signed-off-by: Archana Patni <archana.patni@intel.com>
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Likewise, this one looks fine to me.
+> The reference voltages are configurable through devicetree subnodes,
+> depending on the connections of the ADC inputs.
+>
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 
-Applied to the togreg branch of iio.git
+Looks good mostly. Just a couple of minor code-style issues. Try to run 
+checkpatch, sparse and friends on your driver before submission. They catch 
+most of the stuff that needs to be fixed in this driver.
 
-Thanks
-
-Jonathan
-> ---
->   drivers/iio/pressure/Kconfig            |   14 ++
->   drivers/iio/pressure/Makefile           |    1 +
->   drivers/iio/pressure/hid-sensor-press.c |  376 +++++++++++++++++++++++++++++++
->   include/linux/hid-sensor-ids.h          |    5 +
->   4 files changed, 396 insertions(+)
->   create mode 100644 drivers/iio/pressure/hid-sensor-press.c
+[..]
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2209f28..a421445 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -113,6 +113,13 @@ config EXYNOS_ADC
+>   	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+>   	  this resource.
 >
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index a8b9cae..6215761 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -5,6 +5,20 @@
->
->   menu "Pressure sensors"
->
-> +config HID_SENSOR_PRESS
-> +	depends on HID_SENSOR_HUB
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	select HID_SENSOR_IIO_COMMON
-> +	select HID_SENSOR_IIO_TRIGGER
-> +	tristate "HID PRESS"
+> +config MX25_ADC
+> +	tristate "Freescale MX25 ADC driver"
+> +	depends on MFD_MX25_TSADC
 > +	help
-> +	  Say yes here to build support for the HID SENSOR
-> +	  Pressure driver
+> +	  Generic Conversion Queue driver used for general purpose ADC in the
+> +	  MX25. This driver supports single measurements using the MX25 ADC.
 > +
-> +          To compile this driver as a module, choose M here: the module
-> +          will be called hid-sensor-press.
-> +
->   config MPL3115
->   	tristate "Freescale MPL3115A2 pressure sensor driver"
->   	depends on I2C
-> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> index 42bb9fc..4a57bf6 100644
-> --- a/drivers/iio/pressure/Makefile
-> +++ b/drivers/iio/pressure/Makefile
-> @@ -3,6 +3,7 @@
->   #
->
->   # When adding new entries keep the list in alphabetical order
-> +obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
->   obj-$(CONFIG_MPL3115) += mpl3115.o
->   obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
->   st_pressure-y := st_pressure_core.o
-> diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-> new file mode 100644
-> index 0000000..e0e6409
-> --- /dev/null
-> +++ b/drivers/iio/pressure/hid-sensor-press.c
-> @@ -0,0 +1,376 @@
-> +/*
-> + * HID Sensors Driver
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along with
-> + * this program.
-> + *
-> + */
-> +#include <linux/device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/module.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/slab.h>
-> +#include <linux/hid-sensor-hub.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include "../common/hid-sensors/hid-sensor-trigger.h"
-> +
-> +#define CHANNEL_SCAN_INDEX_PRESSURE 0
-> +
-> +struct press_state {
-> +	struct hid_sensor_hub_callbacks callbacks;
-> +	struct hid_sensor_common common_attributes;
-> +	struct hid_sensor_hub_attribute_info press_attr;
-> +	u32 press_data;
+
+alphabetical order
+
+>   config LP8788_ADC
+>   	bool "LP8788 ADC driver"
+>   	depends on MFD_LP8788
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ba9a10a..63daa2c 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -22,3 +22,4 @@ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+> +obj-$(CONFIG_MX25_ADC) += fsl-imx25-gcq.o
+
+Here too
+
+[...]
+
+> +const struct iio_chan_spec mx25_gcq_channels[MX25_NUM_CFGS] = {
+
+static
+
+> +	MX25_IIO_CHAN(0, "xp"),
+> +	MX25_IIO_CHAN(1, "yp"),
+> +	MX25_IIO_CHAN(2, "xn"),
+> +	MX25_IIO_CHAN(3, "yn"),
+> +	MX25_IIO_CHAN(4, "wiper"),
+> +	MX25_IIO_CHAN(5, "inaux0"),
+> +	MX25_IIO_CHAN(6, "inaux1"),
+> +	MX25_IIO_CHAN(7, "inaux2"),
 > +};
 > +
-> +/* Channel definitions */
-> +static const struct iio_chan_spec press_channels[] = {
-> +	{
-> +		.type = IIO_PRESSURE,
-> +		.modified = 1,
-> +		.channel2 = IIO_NO_MOD,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> +		BIT(IIO_CHAN_INFO_SCALE) |
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> +		.scan_index = CHANNEL_SCAN_INDEX_PRESSURE,
-> +	}
+
+> +struct iio_info mx25_gcq_iio_info = {
+
+static const
+
+> +	.read_raw = mx25_gcq_read_raw,
 > +};
 > +
-> +/* Adjust channel real bits based on report descriptor */
-> +static void press_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-> +					int channel, int size)
+> +static struct regmap_config mx25_gcq_regconfig = {
+
+const
+
+> +	.fast_io = true,
+
+You don't need to set fast_io since this is already done at the regmap_bus 
+level.
+
+> +	.max_register = 0x5c,
+> +	.reg_bits = 32,
+> +	.val_bits = 32,
+> +	.reg_stride = 4,
+> +};
+> +
+> +static void mx25_gcq_iio_dev_setup(struct platform_device *pdev,
+> +		struct iio_dev *idev)
 > +{
-> +	channels[channel].scan_type.sign = 's';
-> +	/* Real storage bits will change based on the report desc. */
-> +	channels[channel].scan_type.realbits = size * 8;
-> +	/* Maximum size of a sample to capture is u32 */
-> +	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
+> +	idev->dev.parent = &pdev->dev;
+> +	idev->channels = mx25_gcq_channels;
+> +	idev->num_channels = ARRAY_SIZE(mx25_gcq_channels);
+> +	idev->info = &mx25_gcq_iio_info;
+
+Any reason why this needs to be in a separate function and can't be inlined 
+in probe()?
+
 > +}
 > +
-> +/* Channel read_raw handler */
-> +static int press_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2,
-> +			      long mask)
+> +static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
+> +		struct mx25_gcq_priv *priv)
 > +{
-> +	struct press_state *press_state = iio_priv(indio_dev);
-> +	int report_id = -1;
-> +	u32 address;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct device_node *child;
+> +	struct device *dev = &pdev->dev;
 > +	int ret;
-> +	int ret_type;
+> +	int i;
 > +
-> +	*val = 0;
-> +	*val2 = 0;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->scan_index) {
-> +		case  CHANNEL_SCAN_INDEX_PRESSURE:
-> +			report_id = press_state->press_attr.report_id;
-> +			address =
-> +			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE;
-> +			break;
-> +		default:
-> +			report_id = -1;
-> +			break;
+> +	/* Setup all configurations registers with a default conversion
+> +	 * configuration for each input */
+> +	for (i = 0; i != MX25_NUM_CFGS; ++i)
+> +		regmap_write(priv->regs, MX25_ADCQ_CFG(i),
+> +				MX25_ADCQ_CFG_YPLL_OFF |
+> +				MX25_ADCQ_CFG_XNUR_OFF |
+> +				MX25_ADCQ_CFG_XPUL_OFF |
+> +				MX25_ADCQ_CFG_REFP_INT |
+> +				(i << 4) |
+> +				MX25_ADCQ_CFG_REFN_NGND2);
+> +
+> +	for_each_child_of_node(np, child) {
+> +		u32 reg;
+> +		u32 refn;
+> +		u32 refp;
+> +
+> +		ret = of_property_read_u32(child, "reg", &reg);
+> +		if (ret) {
+> +			dev_err(dev, "Failed to get reg property\n");
+> +			return ret;
 > +		}
-> +		if (report_id >= 0)
-> +			*val = sensor_hub_input_attr_get_raw_value(
-> +				press_state->common_attributes.hsdev,
-> +				HID_USAGE_SENSOR_PRESSURE, address,
-> +				report_id);
-> +		else {
-> +			*val = 0;
+> +		if (reg > MX25_NUM_CFGS) {
+> +			dev_err(dev, "reg value is greater than the number of available configuration registers\n");
 > +			return -EINVAL;
 > +		}
-> +		ret_type = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = press_state->press_attr.units;
-> +		ret_type = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = hid_sensor_convert_exponent(
-> +				press_state->press_attr.unit_expo);
-> +		ret_type = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_read_samp_freq_value(
-> +				&press_state->common_attributes, val, val2);
-> +		ret_type = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_read_raw_hyst_value(
-> +				&press_state->common_attributes, val, val2);
-> +		ret_type = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	default:
-> +		ret_type = -EINVAL;
-> +		break;
+> +
+> +		ret = of_property_read_u32(child, "fsl,adc-refn", &refn);
+> +		if (ret) {
+> +			dev_err(dev, "Failed to get fsl,adc-refn property\n");
+> +			return ret;
+> +		}
+> +
+> +		ret = of_property_read_u32(child, "fsl,adc-refp", &refp);
+> +		if (ret) {
+> +			dev_err(dev, "Failed to get fsl,adc-refp property\n");
+> +			return ret;
+> +		}
+
+Range check for refp and refn?
+
+> +
+> +		regmap_update_bits(priv->regs, MX25_ADCQ_CFG(reg),
+> +				MX25_ADCQ_CFG_REFP_MASK |
+> +				MX25_ADCQ_CFG_REFN_MASK,
+> +				(refp << 7) | (refn << 2));
 > +	}
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST,
+> +			MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST);
 > +
-> +	return ret_type;
-> +}
-> +
-> +/* Channel write_raw handler */
-> +static int press_write_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val,
-> +			       int val2,
-> +			       long mask)
-> +{
-> +	struct press_state *press_state = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_write_samp_freq_value(
-> +				&press_state->common_attributes, val, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_write_raw_hyst_value(
-> +				&press_state->common_attributes, val, val2);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info press_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &press_read_raw,
-> +	.write_raw = &press_write_raw,
-> +};
-> +
-> +/* Function to push data to buffer */
-> +static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
-> +					int len)
-> +{
-> +	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
-> +	iio_push_to_buffers(indio_dev, data);
-> +}
-> +
-> +/* Callback handler to send event after all samples are received and captured */
-> +static int press_proc_event(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id,
-> +				void *priv)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> +	struct press_state *press_state = iio_priv(indio_dev);
-> +
-> +	dev_dbg(&indio_dev->dev, "press_proc_event [%d]\n",
-> +				press_state->common_attributes.data_ready);
-> +	if (press_state->common_attributes.data_ready)
-> +		hid_sensor_push_data(indio_dev,
-> +				&press_state->press_data,
-> +				sizeof(press_state->press_data));
+> +	regmap_write(priv->regs, MX25_ADCQ_CR,
+> +			MX25_ADCQ_CR_PDMSK |
+> +			MX25_ADCQ_CR_QSM_FQS);
 > +
 > +	return 0;
 > +}
 > +
-> +/* Capture samples in local storage */
-> +static int press_capture_sample(struct hid_sensor_hub_device *hsdev,
-> +				unsigned usage_id,
-> +				size_t raw_len, char *raw_data,
-> +				void *priv)
+> +static int mx25_gcq_probe(struct platform_device *pdev)
 > +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> +	struct press_state *press_state = iio_priv(indio_dev);
-> +	int ret = -EINVAL;
-> +
-> +	switch (usage_id) {
-> +	case HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE:
-> +		press_state->press_data = *(u32 *)raw_data;
-> +		ret = 0;
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +/* Parse report which is specific to an usage id*/
-> +static int press_parse_report(struct platform_device *pdev,
-> +				struct hid_sensor_hub_device *hsdev,
-> +				struct iio_chan_spec *channels,
-> +				unsigned usage_id,
-> +				struct press_state *st)
-> +{
+> +	struct iio_dev *idev;
+> +	struct mx25_gcq_priv *priv;
+> +	struct resource *res;
+> +	struct device *dev = &pdev->dev;
 > +	int ret;
+> +	int irq;
+> +	void __iomem *mem;
 > +
-> +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-> +			usage_id,
-> +			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE,
-> +			&st->press_attr);
-> +	if (ret < 0)
-> +		return ret;
-> +	press_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_PRESSURE,
-> +					st->press_attr.size);
-> +
-> +	dev_dbg(&pdev->dev, "press %x:%x\n", st->press_attr.index,
-> +			st->press_attr.report_id);
-> +
-> +	/* Set Sensitivity field ids, when there is no individual modifier */
-> +	if (st->common_attributes.sensitivity.index < 0) {
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_DATA_ATMOSPHERIC_PRESSURE,
-> +			&st->common_attributes.sensitivity);
-> +		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
-> +			st->common_attributes.sensitivity.index,
-> +			st->common_attributes.sensitivity.report_id);
-> +	}
-> +	return ret;
-> +}
-> +
-> +/* Function to initialize the processing for usage id */
-> +static int hid_press_probe(struct platform_device *pdev)
-> +{
-> +	int ret = 0;
-> +	static const char *name = "press";
-> +	struct iio_dev *indio_dev;
-> +	struct press_state *press_state;
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct iio_chan_spec *channels;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> +				sizeof(struct press_state));
-> +	if (!indio_dev)
+> +	idev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+> +	if (!idev)
 > +		return -ENOMEM;
-> +	platform_set_drvdata(pdev, indio_dev);
 > +
-> +	press_state = iio_priv(indio_dev);
-> +	press_state->common_attributes.hsdev = hsdev;
-> +	press_state->common_attributes.pdev = pdev;
+> +	priv = iio_priv(idev);
 > +
-> +	ret = hid_sensor_parse_common_attributes(hsdev,
-> +					HID_USAGE_SENSOR_PRESSURE,
-> +					&press_state->common_attributes);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup common attributes\n");
-> +		return ret;
-> +	}
-> +
-> +	channels = kmemdup(press_channels, sizeof(press_channels), GFP_KERNEL);
-> +	if (!channels) {
-> +		dev_err(&pdev->dev, "failed to duplicate channels\n");
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mem = devm_ioremap_resource(dev, res);
+> +	if (!mem) {
+> +		dev_err(dev, "Failed to get iomem");
+
+devm_ioremap_resource already prints a error message for you
+
 > +		return -ENOMEM;
 > +	}
 > +
-> +	ret = press_parse_report(pdev, hsdev, channels,
-> +				HID_USAGE_SENSOR_PRESSURE, press_state);
+> +	priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_gcq_regconfig);
+> +	if (IS_ERR(priv->regs)) {
+> +		dev_err(dev, "Failed to initialize regmap\n");
+> +		return PTR_ERR(priv->regs);
+> +	}
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+
+0 is not a valid IRQ number either
+
+> +		dev_err(dev, "Failed to get IRQ\n");
+> +		return irq;
+> +	}
+> +
+> +	ret = devm_request_irq(dev, irq, mx25_gcq_irq, IRQF_ONESHOT, pdev->name,
+> +			priv);
+
+IRQF_ONESHOT does not make much sense for non-threaded IRQs. Also it is 
+probably safer to use the non managed variant of request_irq here.
+
 > +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to setup attributes\n");
-> +		goto error_free_dev_mem;
+> +		dev_err(dev, "Failed requesting IRQ\n");
+
+It usually makes sense to include the error number in the message. Same for 
+the other error messages in probe.
+
+> +		return ret;
 > +	}
 > +
-> +	indio_dev->channels = channels;
-> +	indio_dev->num_channels =
-> +				ARRAY_SIZE(press_channels);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &press_info;
-> +	indio_dev->name = name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	ret = mx25_gcq_setup_cfgs(pdev, priv);
+> +	if (ret)
+> +		return ret;
 > +
-> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +		NULL, NULL);
+> +	mx25_gcq_iio_dev_setup(pdev, idev);
+> +
+> +	ret = iio_device_register(idev);
 > +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
-> +		goto error_free_dev_mem;
+> +		dev_err(dev, "Failed to register iio device\n");
+> +		return ret;
 > +	}
-> +	press_state->common_attributes.data_ready = false;
-> +	ret = hid_sensor_setup_trigger(indio_dev, name,
-> +				&press_state->common_attributes);
+> +
+> +	init_completion(&priv->completed);
+
+Should be done before the interrupt handler is registered. You reference it 
+in there.
+
+> +
+> +	priv->clk = mx25_tsadc_get_ipg(pdev->dev.parent);
+> +	ret = clk_prepare_enable(priv->clk);
+
+The clock should probably also be enabled before the interrupt handler and 
+the IIO device are registered.
+
 > +	if (ret) {
-> +		dev_err(&pdev->dev, "trigger setup failed\n");
-> +		goto error_unreg_buffer_funcs;
+> +		dev_err(dev, "Failed to enable clock\n");
+> +		return ret;
 > +	}
 > +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "device register failed\n");
-> +		goto error_remove_trigger;
-> +	}
-> +
-> +	press_state->callbacks.send_event = press_proc_event;
-> +	press_state->callbacks.capture_sample = press_capture_sample;
-> +	press_state->callbacks.pdev = pdev;
-> +	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_PRESSURE,
-> +					&press_state->callbacks);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "callback reg failed\n");
-> +		goto error_iio_unreg;
-> +	}
-> +
-> +	return ret;
-> +
-> +error_iio_unreg:
-> +	iio_device_unregister(indio_dev);
-> +error_remove_trigger:
-> +	hid_sensor_remove_trigger(&press_state->common_attributes);
-> +error_unreg_buffer_funcs:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +error_free_dev_mem:
-> +	kfree(indio_dev->channels);
-> +	return ret;
-> +}
-> +
-> +/* Function to deinitialize the processing for usage id */
-> +static int hid_press_remove(struct platform_device *pdev)
-> +{
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct press_state *press_state = iio_priv(indio_dev);
-> +
-> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_PRESSURE);
-> +	iio_device_unregister(indio_dev);
-> +	hid_sensor_remove_trigger(&press_state->common_attributes);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	kfree(indio_dev->channels);
+> +	platform_set_drvdata(pdev, priv);
 > +
 > +	return 0;
 > +}
 > +
-> +static struct platform_device_id hid_press_ids[] = {
-> +	{
-> +		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-> +		.name = "HID-SENSOR-200031",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, hid_press_ids);
+> +static int mx25_gcq_remove(struct platform_device *pdev)
+> +{
+> +	struct mx25_gcq_priv *priv = platform_get_drvdata(pdev);
 > +
-> +static struct platform_driver hid_press_platform_driver = {
-> +	.id_table = hid_press_ids,
-> +	.driver = {
-> +		.name	= KBUILD_MODNAME,
-> +		.owner	= THIS_MODULE,
-> +	},
-> +	.probe		= hid_press_probe,
-> +	.remove		= hid_press_remove,
-> +};
-> +module_platform_driver(hid_press_platform_driver);
+
+iio_device_unregister().
+
+> +	clk_disable_unprepare(priv->clk);
 > +
-> +MODULE_DESCRIPTION("HID Sensor Pressure");
-> +MODULE_AUTHOR("Archana Patni <archana.patni@intel.com>");
-> +MODULE_LICENSE("GPL");
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 9bc9e35..537161a 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -38,6 +38,11 @@
->   #define HID_USAGE_SENSOR_DATA_PRESENCE                          0x2004b0
->   #define HID_USAGE_SENSOR_HUMAN_PRESENCE                         0x2004b1
->
-> +/* Pressure (200031) */
-> +#define HID_USAGE_SENSOR_PRESSURE                               0x200031
-> +#define HID_USAGE_SENSOR_DATA_ATMOSPHERIC_PRESSURE              0x200430
-> +#define HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE                   0x200431
-> +
->   /* Gyro 3D: (200076) */
->   #define HID_USAGE_SENSOR_GYRO_3D				0x200076
->   #define HID_USAGE_SENSOR_DATA_ANGL_VELOCITY			0x200456
->
+> +	return 0;
+> +}
 
