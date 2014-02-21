@@ -1,32 +1,118 @@
-Return-Path: <shawn.guo@linaro.org>
-Date: Fri, 21 Feb 2014 13:38:36 +0800
-From: Shawn Guo <shawn.guo@linaro.org>
-To: "fugang.duan@freescale.com" <fugang.duan@freescale.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>, "sachin.kamat@linaro.org"
-	<sachin.kamat@linaro.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"lars@metafoo.de" <lars@metafoo.de>, "mark.rutland@arm.com"
-	<mark.rutland@arm.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Grant Likely
-	<grant.likely@linaro.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell
-	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v5 1/3] ARM: dts: vf610-twr: Add ADC support
-Message-ID: <20140221053834.GT3010@S2101-09.ap.freescale.net>
-References: <1390714773-23066-1-git-send-email-B38611@freescale.com>
- <1390714773-23066-2-git-send-email-B38611@freescale.com>
- <20140216074850.GA2946@S2101-09.ap.freescale.net>
- <20140219050716.GA3010@S2101-09.ap.freescale.net>
- <da1f0ce0784e434d8a384aa34e271a18@BLUPR03MB373.namprd03.prod.outlook.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from va3ehsobe001.messaging.microsoft.com ([216.32.180.11]:37554
+	"EHLO va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751010AbaBUGHu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Feb 2014 01:07:50 -0500
+From: Fugang Duan <B38611@freescale.com>
+To: <shawn.guo@linaro.org>
+CC: <linux-iio@vger.kernel.org>
+Subject: [PATCH v6 1/1] ARM: dts: vf610-twr: Add ADC support
+Date: Fri, 21 Feb 2014 13:24:16 +0800
+Message-ID: <1392960256-23561-1-git-send-email-B38611@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <da1f0ce0784e434d8a384aa34e271a18@BLUPR03MB373.namprd03.prod.outlook.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 21, 2014 at 05:17:20AM +0000, fugang.duan@freescale.com wrote:
-> So, you apply the original patch ? Do I need to resend it again ?
+vf610 has two ADC controllers, and vf610-twr board ADC0_SE5 pin connect
+to sliding rheostat for ADC test, other ADC pins connect to connectors for
+future use.
 
-You still need to rebase it against my for-next branch to resolve my
-comment on pinctrl setting.
+Add support for ADC0_SE5.
 
-Shawn
+CC: Shawn Guo <shawn.guo@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>
+CC: Mark Rutland <mark.rutland@arm.com>
+CC: Otavio Salvador <otavio@ossystems.com.br>
+CC: Peter Meerwald <pmeerw@pmeerw.net>
+CC: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Fugang Duan <B38611@freescale.com>
+---
+ arch/arm/boot/dts/vf610-twr.dts |   26 ++++++++++++++++++++++++++
+ arch/arm/boot/dts/vf610.dtsi    |   18 ++++++++++++++++++
+ 2 files changed, 44 insertions(+), 0 deletions(-)
+
+diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+index e3a3805..38898f7 100644
+--- a/arch/arm/boot/dts/vf610-twr.dts
++++ b/arch/arm/boot/dts/vf610-twr.dts
+@@ -34,6 +34,26 @@
+ 		};
+ 	};
+ 
++	regulators {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		reg_vcc_3v3_mcu: regulator@0 {
++			compatible = "regulator-fixed";
++			reg = <0>;
++			regulator-name = "vcc_3v3_mcu";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++		};
++	};
++};
++
++&adc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc0_ad5>;
++	vref-supply = <&reg_vcc_3v3_mcu>;
++	status = "okay";
+ };
+ 
+ &dspi0 {
+@@ -76,6 +96,12 @@
+ 
+ &iomuxc {
+ 	vf610-twr {
++		pinctrl_adc0_ad5: adc0_ad5 {
++			fsl,pins = <
++				VF610_PAD_PTC30__ADC0_SE5		0xa1
++			>;
++		};
++
+ 		pinctrl_dspi0: dspi0grp {
+ 			fsl,pins = <
+ 				VF610_PAD_PTB19__DSPI0_CS0		0x1182
+diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
+index 91a7757..b0e5351 100644
+--- a/arch/arm/boot/dts/vf610.dtsi
++++ b/arch/arm/boot/dts/vf610.dtsi
+@@ -180,6 +180,15 @@
+ 				clock-names = "pit";
+ 			};
+ 
++			adc0: adc@4003b000 {
++				compatible = "fsl,vf610-adc";
++				reg = <0x4003b000 0x1000>;
++				interrupts = <0 53 0x04>;
++				clocks = <&clks VF610_CLK_ADC0>;
++				clock-names = "adc";
++				status = "disabled";
++			};
++
+ 			wdog@4003e000 {
+ 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
+ 				reg = <0x4003e000 0x1000>;
+@@ -323,6 +332,15 @@
+ 				status = "disabled";
+ 			};
+ 
++			adc1: adc@400bb000 {
++				compatible = "fsl,vf610-adc";
++				reg = <0x400bb000 0x1000>;
++				interrupts = <0 54 0x04>;
++				clocks = <&clks VF610_CLK_ADC1>;
++				clock-names = "adc";
++				status = "disabled";
++			};
++
+ 			fec0: ethernet@400d0000 {
+ 				compatible = "fsl,mvf600-fec";
+ 				reg = <0x400d0000 0x1000>;
+-- 
+1.7.2.rc3
+
+
