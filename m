@@ -1,114 +1,162 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:44942 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753310AbaBXQXX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Feb 2014 11:23:23 -0500
-Received: by mail-wi0-f171.google.com with SMTP id cc10so3286748wib.16
-        for <linux-iio@vger.kernel.org>; Mon, 24 Feb 2014 08:23:22 -0800 (PST)
-Date: Mon, 24 Feb 2014 16:23:17 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Wolfram Sang <wsa@the-dreams.de>, Ge Gao <GGao@invensense.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-Message-ID: <20140224162317.GG15847@lee--X1>
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
- <52F623AA.6020905@kernel.org>
- <E7747D604FBC9F43A71AA431AFF44762104C3FB8@IUSEXCH01.invcorp.invensense.com>
- <201402101939.46467.manuel.stahl@iis.fraunhofer.de>
- <E7747D604FBC9F43A71AA431AFF44762104C57AF@IUSEXCH01.invcorp.invensense.com>
- <52FF5D61.4080506@kernel.org>
- <20140215133934.GA2579@katana>
- <53031B17.8030608@kernel.org>
+Return-Path: <mpa@pengutronix.de>
+Date: Fri, 21 Feb 2014 11:18:39 +0100
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	Sascha Hauer <kernel@pengutronix.de>
+Subject: Re: [PATCH 1/3] mfd: fsl imx25 Touchscreen ADC driver
+Message-ID: <20140221101839.GD24758@pengutronix.de>
+References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de>
+ <1392913312-9030-2-git-send-email-mpa@pengutronix.de>
+ <CAOMZO5BDyyvXs9CxJQOkuEpxZ8fqamCPB67sNhJxES+XU2XkXQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RIYY1s2vRbPFwWeW"
+In-Reply-To: <CAOMZO5BDyyvXs9CxJQOkuEpxZ8fqamCPB67sNhJxES+XU2XkXQ@mail.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
+
+
+--RIYY1s2vRbPFwWeW
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <53031B17.8030608@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> >>Wolfram, what do you think?
-> >>
-> >>In short we have a device that sits on an i2c bus and supports its own
-> >>i2c bus (mainly so that the internal processor can use data from devices
-> >>on that bus) including support for passing the bus straight through.
-> >>The issues is the dependencies when the intermediate device is sleeping
-> >>for example.
+Hi Fabio,
+
+On Thu, Feb 20, 2014 at 02:17:33PM -0300, Fabio Estevam wrote:
+> Hi Markus,
+>=20
+> On Thu, Feb 20, 2014 at 1:21 PM, Markus Pargmann <mpa@pengutronix.de> wro=
+te:
+> > This is the core driver for imx25 touchscreen/adc driver. The module
+> > has one shared ADC and two different conversion queues which use the
+> > ADC. The two queues are identical. Both can be used for general purpose
+> > ADC but one is meant to be used for touchscreens.
 > >
-> >Just judging from the paragraph above and not digging into the topic
-> >deeper, I think the idea of an 1-1 multiplexer is suitable. Would the
-> >pass-throu device then be a MFD? Are the alternative ideas?
+> > This driver is the core which manages the central components and
+> > registers of the TSC/ADC unit. It manages the IRQs and forwards them to
+> > the correct components.
 > >
-> Seems like overkill to introduce an MFD for this little addition to a fairly
-> large (and likely to grow driver).  Its a little ugly, but would you mind
-> if the multiplexer is just handled directly within the  main driver?
-> (perhaps via a config option).  It would be 'odd' to say the least if
-> someone really wanted the pass through and not the complex inertial chip
-> it is part of.
-> 
-> Might just be simpler to do a very trivial mfd with the two parts hanging of it.
-> The complexity is that the inertial sensor will often take over the device
-> hanging off it completely so we will need to have it cleanly blocked as busy.
-> 
-> Lee, what do you think?
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+>=20
+> That's great :-) Nice work!
+>=20
+> > ---
+> >  .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++++
+> >  drivers/mfd/Kconfig                                |   9 +
+> >  drivers/mfd/Makefile                               |   2 +
+> >  drivers/mfd/fsl-imx25-tsadc.c                      | 234 +++++++++++++=
+++++++++
+> >  include/linux/mfd/imx25-tsadc.h                    | 138 ++++++++++++
+> >  5 files changed, 429 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsa=
+dc.txt
+> >  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+> >  create mode 100644 include/linux/mfd/imx25-tsadc.h
+> >
+> > diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt =
+b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> > new file mode 100644
+> > index 0000000..a857af0e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+> > @@ -0,0 +1,46 @@
+> > +Freescale mx25 ADC/TSC multifunction device
+> > +
+> > +This device combines two general purpose conversion queues one used fo=
+r general
+> > +ADC and the other used for touchscreens.
+> > +
+> > +Required properties:
+> > + - compatible: Should be "fsl,imx25-tsadc".
+> > + - reg: Memory range of the device.
+> > + - interrupts: Interrupt for this device as described in
+> > +   interrupts/interrupts.txt
+> > + - clocks: An 'ipg' clock defined as described in clocks/clock.txt
+> > + - interrupt-controller: This device is an interrupt controller. It co=
+ntrols
+> > +   the interrupts of both conversion queues.
+> > + - #interrupt-cells: Should be '<1>'.
+> > + - #address-cells: Should be '<1>'.
+> > + - #size-cells: Should be '<1>'.
+> > + - ranges
+> > +
+> > +This device includes two conversion queues which can be added as subno=
+des.
+> > +The first queue is for the touchscreen, the second for general purpose=
+ ADC.
+> > +
+> > +Example:
+> > +       tscadc: tscadc@50030000 {
+> > +               compatible =3D "fsl,imx25-tsadc";
+> > +               reg =3D <0x50030000 0xc>;
+> > +               interrupts =3D <46>;
+> > +               clocks =3D <&clks 119>;
+> > +               clock-names =3D "ipg";
+> > +               interrupt-controller;
+> > +               #interrupt-cells =3D <1>;
+> > +               #address-cells =3D <1>;
+> > +               #size-cells =3D <1>;
+> > +               ranges;
+> > +
+> > +               tsc: tcq@50030400 {
+> > +                       compatible =3D "fsl,imx25-tcq";
+> > +                       reg =3D <0x50030400 0x60>;
+> > +                       ...
+> > +               };
+> > +
+> > +               adc: gcq@50030800 {
+> > +                       compatible =3D "fsl,imx25-gcq";
+> > +                       reg =3D <0x50030800 0x60>;
+> > +                       ...
+> > +               };
+> > +       };
+>=20
+> The meaning of 'tcq' and 'gcq' acronyms are not obvious. Could they be
+> written more explicitily?
+>=20
+> Also, what does the '...' mean?
 
-Sorry for the delay, I was off last week.
+I forgot to answer this one. The bindings for tcq and gcq are described
+in the other files, so I didn't want to show any details that are not
+relevant for this driver.
 
-Doesn't look like an MFD to me:
+Regards,
 
-Features:
+Markus
 
-    Digital-output 9-axis MotionFusion data in rotation matrix,
-    quaternion, Euler Angle, or raw data format
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-    Tri-Axis angular rate sensor (gyro) with a sensitivity up to 131
-    LSBs/dps and a full-scale range of ±250, ±500, ±1000, and ±2000dps
+--RIYY1s2vRbPFwWeW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-    Tri-Axis accelerometer with a programmable full scale range of ±2g,
-    ±4g, ±8g and ±16g
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (GNU/Linux)
 
-    Tri-axis compass with a full scale range of ±1200µT
-    Reduced settling effects and sensor drift by elimination of
-    board-level cross-axis alignment errors between accelerometer,
-    gyroscope, and compass
+iQIbBAEBAgAGBQJTByf/AAoJEEpcgKtcEGQQiXUP93rS5tDu5ityARC/KWbvzdMM
+F1kYSB5OC6Xq1mzNvZp50/1XdvBwTlgbI99L97IND2FkSffQ6af/vvGNPrfXqlz8
+eA8meJNcVTUcG0NKFyZaTRTKs8hNHgU0L6VsGUaIbwf2FJWfuFmQApkZcj7twIO/
+feIlH6Qhws3PG4GjcXo7dIUr4fMsU/6URYrJ8HFpDgCmFvR81dP9sI9GDziD2n9X
+lDJoI456mIfGcYqp2njge3MfP2LqnPj404KuEcRjkcI+TdNc6ytmeahyCnIt7tdL
+zdx3FoFhM8TnEvrlni6oWpcorjDpldQCw3rpZ1qMOsbvuiFcfxTxas3BWFqoT0Eo
+wvI/747v51PH8N+n0OT7/tTbXi+r1oprYDNhls5g1eHdxEAPD4z+1+Lr82lC5t9a
+oZTeTsr+78GWyEnb/8/GVAdMfHzngu7TD8mcI4CecrV6Btpf9vEvouExkxmaeSgP
+jU2WpjLcimz978A3YirMOCX9XqQ3HK6eg+luFvjbNV9Nd2XQ+xrR6zCbwmeYKaoR
+PrOtjo1eoeGFWv5hMUfiAfzgoTxI6vbqSIEXEECMcYCndU+SMHJb0IRUp6Vq6Ptq
+2d0xXPF4T5jc11poNIT/BEvJHcQSrFMMUzq19Rp1PKEgPmnjquvQH2jWsTls8zif
+YKbgnclHf4aC4LEuLwo=
+=y+Ov
+-----END PGP SIGNATURE-----
 
-    Digital Motion Processing™ (DMP™) engine offloads complex
-    MotionFusion, sensor timing synchronization and gesture detection
-
-    MotionApps™ Platform support for Android, Linux, and Windows
-    Embedded algorithms for run-time bias and compass calibration. No user
-    intervention required
-
-    Digital-output temperature sensor
-    Digital input on FSYNC pin to support video Electronic Image
-    Stabilization and GPS
-
-    Programmable interrupt supports gesture recognition, panning, zooming,
-    scrolling, tap detection, and shake detection
-
-    VDD Supply voltage range of 2.4V–3.46V; VLOGIC of 1.8V±5% or VDD
-    Gyro operating current: 3.6mA (full power, gyro at all rates)
-    Gyro + Accel operating current: 3.8mA (full power, gyro at all rates,
-    accel at 1kHz sample rate)
-
-    Gyro + Accel + Compass + DMP operating current: 4.25mA (full power,
-    gyro at all rates, accel at 1kHz sample rate, compass at 8Hz rate)
-
-    Accel low power mode operating current: 10µA at 1Hz, 20µA at 5Hz, 70µA
-    at 20Hz, 140µA at 40Hz
-
-    Full Chip Idle Mode Supply Current: 8µA
-    400kHz Fast Mode I²C serial host interface
-    On-chip timing generator with ±1% frequency variation over full
-    temperature range
-
-    User self test
-    10,000g shock tolerant
-    Smallest and thinnest package for portable devices (4x4x1mm)
-    RoHS and Green compliant
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+--RIYY1s2vRbPFwWeW--
