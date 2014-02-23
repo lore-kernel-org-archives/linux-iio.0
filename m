@@ -1,42 +1,71 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53053609.40806@gmx.de>
-Date: Wed, 19 Feb 2014 23:54:01 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [RFC]coding style for NULL pointer checks
-References: <5300ACC6.90509@gmx.de> <530109DE.3010607@metafoo.de> <53031C67.8060202@kernel.org>
-In-Reply-To: <53031C67.8060202@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([5.45.105.125]:59346 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752453AbaBWWI3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Feb 2014 17:08:29 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv2 4/5] Documentation: DT: Document twl4030-madc binding
+Date: Sun, 23 Feb 2014 23:07:50 +0100
+Message-Id: <1393193271-16717-5-git-send-email-sre@debian.org>
+In-Reply-To: <1393193271-16717-1-git-send-email-sre@debian.org>
+References: <20140223220140.GA1258@earth.universe>
+ <1393193271-16717-1-git-send-email-sre@debian.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> On 16/02/14 18:56, Lars-Peter Clausen wrote:
->> On 02/16/2014 01:19 PM, Hartmut Knaack wrote:
->>> Hi together,
->>> I noticed, that many pointers in the IIO subsystem are checked for successful allocation in the way of "if (pointer == NULL)" or "if (pointer != NULL)", while in a few cases the form of simply "if (!pointer)" or "if (pointer)" is used. So, is there any interest in having a more consistent style, and if so, for which one?
->>> My personal preference is for the latter one.
->> I think enforcing this is a bit to much nitpicking. So if you clean this up the other pattern will probably appear again in new drivers at some point.
->>
->> Otherwise, if you feel strongly about this, go ahead and send a patch.
-> My inclination on this is that there are better things to spend time on
-> but as they say scratch the itch if you really want to!
->
-> I'd rather have the nice error patch cleanups you've been doing or
-> if you are really bored, there are lots of staging drivers in need of
-> tendour loving care!
->
-> J
-Well, never mind then. Do you have some kind of To-Do-List? Otherwise I would get back to my other projects.
-Concerning the staging drivers, I miss some motivation to work on device drivers that I don't have the devices for. Therefor I was mainly focusing on the ad799x. So, by the way, which are currently the show-stoppers for the ad799x preventing a move out of staging?
-And, are there any plans to provide documentation about the supported IIO devices (similar to hwmon)?
+Add devicetree binding documentation for twl4030-madc
+analog digital converter.
 
-Hartmut
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+new file mode 100644
+index 0000000..6bdd214
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+@@ -0,0 +1,24 @@
++* TWL4030 Monitoring Analog to Digital Converter (MADC)
++
++The MADC subsystem in the TWL4030 consists of a 10-bit ADC
++combined with a 16-input analog multiplexer.
++
++Required properties:
++  - compatible: Should contain "ti,twl4030-madc".
++  - interrupts: IRQ line for the MADC submodule.
++  - #io-channel-cells: Should be set to <1>.
++
++Optional properties:
++  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
++				    should be used, which is intended to be used
++				    by Co-Processors (e.g. a modem).
++
++Example:
++
++&twl {
++	madc {
++		compatible = "ti,twl4030-madc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
++};
+-- 
+1.8.5.3
+
