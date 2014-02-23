@@ -1,133 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailhost.informatik.uni-hamburg.de ([134.100.9.70]:51246 "EHLO
-	mailhost.informatik.uni-hamburg.de" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752894AbaBPSzR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Feb 2014 13:55:17 -0500
-Message-ID: <53010A35.2040102@metafoo.de>
-Date: Sun, 16 Feb 2014 19:57:57 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH]staging:iio:ad799x use regulator for vref
-References: <5300A8DA.3070107@gmx.de>
-In-Reply-To: <5300A8DA.3070107@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Received: from mga02.intel.com ([134.134.136.20]:25356 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751508AbaBWTug (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Feb 2014 14:50:36 -0500
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 5/5] iio: Added ABI description for quaternion
+Date: Sun, 23 Feb 2014 11:50:48 -0800
+Message-Id: <1393185048-4004-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/16/2014 01:02 PM, Hartmut Knaack wrote:
-> Switch the ad799x driver to use the regulator framework and add binding for reference voltage.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Added documentation for reading quaternion components for 3D rotations.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-> ---
-> diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
-> index a591aa6..fc8c852 100644
-> --- a/drivers/staging/iio/adc/ad799x.h
-> +++ b/drivers/staging/iio/adc/ad799x.h
-> @@ -95,7 +95,7 @@ struct ad799x_state {
->   	struct i2c_client		*client;
->   	const struct ad799x_chip_info	*chip_info;
->   	struct regulator		*reg;
-> -	u16				int_vref_mv;
-> +	struct regulator		*vref;
->   	unsigned			id;
->   	u16				config;
->
-> @@ -103,14 +103,6 @@ struct ad799x_state {
->   	unsigned int			transfer_size;
->   };
->
-> -/*
-> - * TODO: struct ad799x_platform_data needs to go into include/linux/iio
-> - */
-> -
-> -struct ad799x_platform_data {
-> -	u16				vref_mv;
-> -};
-> -
->   #ifdef CONFIG_AD799X_RING_BUFFER
->   int ad799x_register_ring_funcs_and_init(struct iio_dev *indio_dev);
->   void ad799x_ring_cleanup(struct iio_dev *indio_dev);
-> diff --git a/drivers/staging/iio/adc/ad799x_core.c b/drivers/staging/iio/adc/ad799x_core.c
-> index 570c594..747d1da 100644
-> --- a/drivers/staging/iio/adc/ad799x_core.c
-> +++ b/drivers/staging/iio/adc/ad799x_core.c
-> @@ -179,7 +179,10 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
->   			RES_MASK(chan->scan_type.realbits);
->   		return IIO_VAL_INT;
->   	case IIO_CHAN_INFO_SCALE:
-> -		*val = st->int_vref_mv;
-> +		ret = regulator_get_voltage(st->vref);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret / 1000;
->   		*val2 = chan->scan_type.realbits;
->   		return IIO_VAL_FRACTIONAL_LOG2;
->   	}
-> @@ -527,7 +530,6 @@ static int ad799x_probe(struct i2c_client *client,
->   				   const struct i2c_device_id *id)
->   {
->   	int ret;
-> -	struct ad799x_platform_data *pdata = client->dev.platform_data;
->   	struct ad799x_state *st;
->   	struct iio_dev *indio_dev;
->
-> @@ -545,17 +547,21 @@ static int ad799x_probe(struct i2c_client *client,
->
->   	/* TODO: Add pdata options for filtering and bit delay */
->
-> -	if (!pdata)
-> -		return -EINVAL;
-> -
-> -	st->int_vref_mv = pdata->vref_mv;
-> -
->   	st->reg = devm_regulator_get(&client->dev, "vcc");
-> -	if (!IS_ERR(st->reg)) {
-> -		ret = regulator_enable(st->reg);
-> -		if (ret)
-> -			return ret;
-> +	if (IS_ERR(st->reg))
-> +		return PTR_ERR(st->reg);
-> +	ret = regulator_enable(st->reg);
-> +	if (ret)
-> +		return ret;
-> +	st->vref = devm_regulator_get(&client->dev, "vref");
-> +	if (IS_ERR(st->vref)) {
-> +		ret = PTR_ERR(st->vref);
-> +		goto error_disable_reg;
->   	}
-> +	ret = regulator_enable(st->vref);
-> +	if (ret)
-> +		goto error_disable_reg;
-> +
->   	st->client = client;
->
->   	indio_dev->dev.parent = &client->dev;
-> @@ -592,6 +598,8 @@ error_free_irq:
->   error_cleanup_ring:
->   	ad799x_ring_cleanup(indio_dev);
->   error_disable_reg:
-> +	if (!IS_ERR(st->vref))
-> +		regulator_disable(st->vref);
->   	if (!IS_ERR(st->reg))
->   		regulator_disable(st->reg);
->
-> @@ -608,6 +616,8 @@ static int ad799x_remove(struct i2c_client *client)
->   		free_irq(client->irq, indio_dev);
->
->   	ad799x_ring_cleanup(indio_dev);
-> +	if (!IS_ERR(st->vref))
-> +		regulator_disable(st->vref);
->   	if (!IS_ERR(st->reg))
->   		regulator_disable(st->reg);
->   	kfree(st->rx_buf);
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6e02c50..8daa91a 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -891,3 +891,12 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to get/set the integration time in
+ 		seconds.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_rotquaternion_raw
++KernelVersion:	3.15
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw value of quaternion components using a format
++		x:y:z:w. Here x, y, and z component represents the axis about
++		which a rotation will occur and w component represents the
++		amount of rotation.
+-- 
+1.8.3.2
 
