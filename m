@@ -1,280 +1,242 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36809 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754578AbaBRIrA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Feb 2014 03:47:00 -0500
-Message-ID: <53031E2A.3010709@kernel.org>
-Date: Tue, 18 Feb 2014 08:47:38 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH]iio get rid of unneccessary error_ret
-References: <5300A6CE.2090707@gmx.de>
-In-Reply-To: <5300A6CE.2090707@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Received: from ring0.de ([5.45.105.125]:59270 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752312AbaBWWIU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Feb 2014 17:08:20 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv2 2/5] mfd: twl4030-madc: Add DT support and convert to IIO framework
+Date: Sun, 23 Feb 2014 23:07:48 +0100
+Message-Id: <1393193271-16717-3-git-send-email-sre@debian.org>
+In-Reply-To: <1393193271-16717-1-git-send-email-sre@debian.org>
+References: <20140223220140.GA1258@earth.universe>
+ <1393193271-16717-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/02/14 11:53, Hartmut Knaack wrote:
-> Get rid of obsolete uses of goto error_ret and some empty lines.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-Nice little cleanup of what is mostly my old bad habbits back
-when I was younger.
+This converts twl4030-madc module to use the Industrial IO ADC
+framework and adds device tree support.
 
-Thanks for doing this,
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ drivers/mfd/twl4030-madc.c | 121 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 114 insertions(+), 7 deletions(-)
 
-Applied to the togreg branch of iio.git.  Pushed out as testing initially.
-
-Jonathan
-> ---
-> diff --git a/drivers/iio/buffer_cb.c b/drivers/iio/buffer_cb.c
-> index 2d9c6f8..eb46e72 100644
-> --- a/drivers/iio/buffer_cb.c
-> +++ b/drivers/iio/buffer_cb.c
-> @@ -46,10 +46,8 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
->   	struct iio_channel *chan;
->
->   	cb_buff = kzalloc(sizeof(*cb_buff), GFP_KERNEL);
-> -	if (cb_buff == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (cb_buff == NULL)
-> +		return ERR_PTR(-ENOMEM);
->
->   	iio_buffer_init(&cb_buff->buffer);
->
-> @@ -91,7 +89,6 @@ error_release_channels:
->   	iio_channel_release_all(cb_buff->channels);
->   error_free_cb_buff:
->   	kfree(cb_buff);
-> -error_ret:
->   	return ERR_PTR(ret);
->   }
->   EXPORT_SYMBOL_GPL(iio_channel_get_all_cb);
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index c67d83b..e108f2a 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -264,7 +264,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
->   				     &indio_dev->dev,
->   				     &buffer->scan_el_dev_attr_list);
->   	if (ret)
-> -		goto error_ret;
-> +		return ret;
->   	attrcount++;
->   	ret = __iio_add_chan_devattr("type",
->   				     chan,
-> @@ -275,7 +275,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
->   				     &indio_dev->dev,
->   				     &buffer->scan_el_dev_attr_list);
->   	if (ret)
-> -		goto error_ret;
-> +		return ret;
->   	attrcount++;
->   	if (chan->type != IIO_TIMESTAMP)
->   		ret = __iio_add_chan_devattr("en",
-> @@ -296,10 +296,9 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
->   					     &indio_dev->dev,
->   					     &buffer->scan_el_dev_attr_list);
->   	if (ret)
-> -		goto error_ret;
-> +		return ret;
->   	attrcount++;
->   	ret = attrcount;
-> -error_ret:
->   	return ret;
->   }
->
-> @@ -553,13 +552,13 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->   		if (indio_dev->setup_ops->predisable) {
->   			ret = indio_dev->setup_ops->predisable(indio_dev);
->   			if (ret)
-> -				goto error_ret;
-> +				return ret;
->   		}
->   		indio_dev->currentmode = INDIO_DIRECT_MODE;
->   		if (indio_dev->setup_ops->postdisable) {
->   			ret = indio_dev->setup_ops->postdisable(indio_dev);
->   			if (ret)
-> -				goto error_ret;
-> +				return ret;
->   		}
->   	}
->   	/* Keep a copy of current setup to allow roll back */
-> @@ -613,7 +612,7 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->   			else {
->   				kfree(compound_mask);
->   				ret = -EINVAL;
-> -				goto error_ret;
-> +				return ret;
->   			}
->   		}
->   	} else {
-> @@ -696,13 +695,10 @@ error_run_postdisable:
->   	if (indio_dev->setup_ops->postdisable)
->   		indio_dev->setup_ops->postdisable(indio_dev);
->   error_remove_inserted:
-> -
->   	if (insert_buffer)
->   		iio_buffer_deactivate(insert_buffer);
->   	indio_dev->active_scan_mask = old_mask;
->   	kfree(compound_mask);
-> -error_ret:
-> -
->   	return ret;
->   }
->
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index acc911a..a85b660 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -692,10 +692,8 @@ int __iio_add_chan_devattr(const char *postfix,
->   	struct iio_dev_attr *iio_attr, *t;
->
->   	iio_attr = kzalloc(sizeof(*iio_attr), GFP_KERNEL);
-> -	if (iio_attr == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (iio_attr == NULL)
-> +		return -ENOMEM;
->   	ret = __iio_device_attr_init(&iio_attr->dev_attr,
->   				     postfix, chan,
->   				     readfunc, writefunc, shared_by);
-> @@ -720,7 +718,6 @@ error_device_attr_deinit:
->   	__iio_device_attr_deinit(&iio_attr->dev_attr);
->   error_iio_dev_attr_free:
->   	kfree(iio_attr);
-> -error_ret:
->   	return ret;
->   }
->
-> @@ -1134,7 +1131,7 @@ int iio_device_register(struct iio_dev *indio_dev)
->   	if (ret) {
->   		dev_err(indio_dev->dev.parent,
->   			"Failed to register debugfs interfaces\n");
-> -		goto error_ret;
-> +		return ret;
->   	}
->   	ret = iio_device_register_sysfs(indio_dev);
->   	if (ret) {
-> @@ -1175,7 +1172,6 @@ error_free_sysfs:
->   	iio_device_unregister_sysfs(indio_dev);
->   error_unreg_debugfs:
->   	iio_device_unregister_debugfs(indio_dev);
-> -error_ret:
->   	return ret;
->   }
->   EXPORT_SYMBOL(iio_device_register);
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index c9c1419..2e6f8e0 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -366,32 +366,31 @@ static int iio_device_add_event_sysfs(struct iio_dev *indio_dev,
->   		ret = iio_device_add_event(indio_dev, chan, i, type, dir,
->   			IIO_SEPARATE, &chan->event_spec[i].mask_separate);
->   		if (ret < 0)
-> -			goto error_ret;
-> +			return ret;
->   		attrcount += ret;
->
->   		ret = iio_device_add_event(indio_dev, chan, i, type, dir,
->   			IIO_SHARED_BY_TYPE,
->   			&chan->event_spec[i].mask_shared_by_type);
->   		if (ret < 0)
-> -			goto error_ret;
-> +			return ret;
->   		attrcount += ret;
->
->   		ret = iio_device_add_event(indio_dev, chan, i, type, dir,
->   			IIO_SHARED_BY_DIR,
->   			&chan->event_spec[i].mask_shared_by_dir);
->   		if (ret < 0)
-> -			goto error_ret;
-> +			return ret;
->   		attrcount += ret;
->
->   		ret = iio_device_add_event(indio_dev, chan, i, type, dir,
->   			IIO_SHARED_BY_ALL,
->   			&chan->event_spec[i].mask_shared_by_all);
->   		if (ret < 0)
-> -			goto error_ret;
-> +			return ret;
->   		attrcount += ret;
->   	}
->   	ret = attrcount;
-> -error_ret:
->   	return ret;
->   }
->
-> @@ -440,10 +439,8 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
->
->   	indio_dev->event_interface =
->   		kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
-> -	if (indio_dev->event_interface == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (indio_dev->event_interface == NULL)
-> +		return -ENOMEM;
->
->   	INIT_LIST_HEAD(&indio_dev->event_interface->dev_attr_list);
->
-> @@ -489,8 +486,6 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
->   error_free_setup_event_lines:
->   	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
->   	kfree(indio_dev->event_interface);
-> -error_ret:
-> -
->   	return ret;
->   }
->
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 766fab2..3383b02 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -62,10 +62,9 @@ int iio_trigger_register(struct iio_trigger *trig_info)
->   	int ret;
->
->   	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
-> -	if (trig_info->id < 0) {
-> -		ret = trig_info->id;
-> -		goto error_ret;
-> -	}
-> +	if (trig_info->id < 0)
-> +		return trig_info->id;
-> +
->   	/* Set the name used for the sysfs directory etc */
->   	dev_set_name(&trig_info->dev, "trigger%ld",
->   		     (unsigned long) trig_info->id);
-> @@ -83,7 +82,6 @@ int iio_trigger_register(struct iio_trigger *trig_info)
->
->   error_unregister_id:
->   	ida_simple_remove(&iio_trigger_ida, trig_info->id);
-> -error_ret:
->   	return ret;
->   }
->   EXPORT_SYMBOL(iio_trigger_register);
-> @@ -234,13 +232,12 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
->   	if (trig->ops && trig->ops->set_trigger_state && no_other_users) {
->   		ret = trig->ops->set_trigger_state(trig, false);
->   		if (ret)
-> -			goto error_ret;
-> +			return ret;
->   	}
->   	iio_trigger_put_irq(trig, pf->irq);
->   	free_irq(pf->irq, pf);
->   	module_put(pf->indio_dev->info->driver_module);
->
-> -error_ret:
->   	return ret;
->   }
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 5458561..5e67c75 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -47,6 +47,8 @@
+ #include <linux/gfp.h>
+ #include <linux/err.h>
+ 
++#include <linux/iio/iio.h>
++
+ /*
+  * struct twl4030_madc_data - a container for madc info
+  * @dev - pointer to device structure for madc
+@@ -59,10 +61,73 @@ struct twl4030_madc_data {
+ 	struct device *dev;
+ 	struct mutex lock;	/* mutex protecting this data structure */
+ 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
++	bool use_second_irq;
+ 	int imr;
+ 	int isr;
+ };
+ 
++static int twl4030_madc_read(struct iio_dev *iio_dev,
++			     const struct iio_chan_spec *chan,
++			     int *val, int *val2, long mask)
++{
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
++	struct twl4030_madc_request req;
++	int channel = chan->channel;
++	int ret;
++
++	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
++
++	req.channels = BIT(channel);
++	req.active = 0;
++	req.func_cb = NULL;
++	req.raw = !(mask & IIO_CHAN_INFO_PROCESSED);
++	req.do_avg = !!(mask & IIO_CHAN_INFO_AVERAGE_RAW);
++
++	ret = twl4030_madc_conversion(&req);
++	if (ret < 0)
++		return ret;
++
++	*val = req.rbuf[channel];
++
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info twl4030_madc_iio_info = {
++	.read_raw = &twl4030_madc_read,
++	.driver_module = THIS_MODULE,
++};
++
++#define TWL4030_ADC_CHANNEL(_channel, _type, _name, _mask) {	\
++	.type = _type,					\
++	.channel = _channel,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
++			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
++			      _mask,			\
++	.datasheet_name = _name,			\
++	.indexed = 1,					\
++}
++
++static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
++	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0", 0),
++	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1",
++		BIT(IIO_CHAN_INFO_PROCESSED)),
++	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2", 0),
++	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3", 0),
++	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4", 0),
++	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5", 0),
++	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6", 0),
++	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7", 0),
++	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8", 0),
++	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9", 0),
++	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10",
++		BIT(IIO_CHAN_INFO_PROCESSED)),
++	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11", 0),
++	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12", 0),
++	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13", 0),
++	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14", 0),
++	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15", 0),
++};
++
+ static struct twl4030_madc_data *twl4030_madc;
+ 
+ struct twl4030_prescale_divider_ratios {
+@@ -702,28 +767,50 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct device_node *np = pdev->dev.of_node;
+ 	int irq, ret;
+ 	u8 regval;
++	struct iio_dev *iio_dev = NULL;
+ 
+-	if (!pdata) {
++	if (!pdata && !np) {
+ 		dev_err(&pdev->dev, "platform_data not available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+-	if (!madc)
++
++	iio_dev = devm_iio_device_alloc(&pdev->dev,
++					sizeof(struct twl4030_madc_data));
++	if (!iio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
+ 		return -ENOMEM;
++	}
+ 
++	madc = iio_priv(iio_dev);
+ 	madc->dev = &pdev->dev;
+ 
++	iio_dev->name = dev_name(&pdev->dev);
++	iio_dev->dev.parent = &pdev->dev;
++	iio_dev->dev.of_node = pdev->dev.of_node;
++	iio_dev->info = &twl4030_madc_iio_info;
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->channels = twl4030_madc_iio_channels;
++	iio_dev->num_channels = 16;
++
+ 	/*
+ 	 * Phoenix provides 2 interrupt lines. The first one is connected to
+ 	 * the OMAP. The other one can be connected to the other processor such
+ 	 * as modem. Hence two separate ISR and IMR registers.
+ 	 */
+-	madc->imr = (pdata->irq_line == 1) ?
++	if (pdata)
++		madc->use_second_irq = pdata->irq_line != 1;
++	else
++		madc->use_second_irq = of_property_read_bool(np,
++				       "ti,system-uses-second-madc-irq");
++
++	madc->imr = (madc->use_second_irq == 1) ?
+ 	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
+-	madc->isr = (pdata->irq_line == 1) ?
++	madc->isr = (madc->use_second_irq == 1) ?
+ 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
++
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+ 		return ret;
+@@ -768,7 +855,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	platform_set_drvdata(pdev, madc);
++	platform_set_drvdata(pdev, iio_dev);
+ 	mutex_init(&madc->lock);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+@@ -780,7 +867,15 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		goto err_i2c;
+ 	}
+ 	twl4030_madc = madc;
++
++	ret = iio_device_register(iio_dev);
++	if (ret) {
++		dev_dbg(&pdev->dev, "could not register iio device\n");
++		goto err_i2c;
++	}
++
+ 	return 0;
++
+ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+@@ -790,20 +885,32 @@ err_current_generator:
+ 
+ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+-	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
++	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
+ 
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+ 
++	iio_device_unregister(iio_dev);
++
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id twl_madc_of_match[] = {
++	{.compatible = "ti,twl4030-madc", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, twl_madc_of_match);
++#endif
++
+ static struct platform_driver twl4030_madc_driver = {
+ 	.probe = twl4030_madc_probe,
+ 	.remove = twl4030_madc_remove,
+ 	.driver = {
+ 		   .name = "twl4030_madc",
+ 		   .owner = THIS_MODULE,
++		   .of_match_table = of_match_ptr(twl_madc_of_match),
+ 		   },
+ };
+ 
+-- 
+1.8.5.3
 
