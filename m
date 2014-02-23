@@ -1,463 +1,234 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43970 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752873AbaBOLDJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:03:09 -0500
-Message-ID: <52FF498F.1000801@kernel.org>
-Date: Sat, 15 Feb 2014 11:03:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jim Davis <jim.epost@gmail.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	linux-next <linux-next@vger.kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: Re: randconfig build error with next-20140205, in drivers/iio/kfifo_buf.c
-References: <CA+r1ZhiPkKQ8gghUhNoM2rb00ppjye8hPyq97n2nxgz0L4CUfg@mail.gmail.com>
-In-Reply-To: <CA+r1ZhiPkKQ8gghUhNoM2rb00ppjye8hPyq97n2nxgz0L4CUfg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mga02.intel.com ([134.134.136.20]:47623 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751508AbaBWTuf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Feb 2014 14:50:35 -0500
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 1/5] IIO: core: Introduce read_raw_multi
+Date: Sun, 23 Feb 2014 11:50:44 -0800
+Message-Id: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/02/14 22:56, Jim Davis wrote:
-> Building with the attached random configuration file,
->
-> warning: (AD5933 && IIO_SIMPLE_DUMMY_BUFFER && TI_AM335X_ADC) selects
-> IIO_KFIFO_BUF which has unmet direct dependencies (IIO && IIO_BUFFER)
->
-> drivers/iio/kfifo_buf.c:13:20: error: field 'buffer' has incomplete type
->    struct iio_buffer buffer;
->                      ^
-> In file included from /home/jim/linux/arch/x86/include/asm/percpu.h:44:0,
->                   from /home/jim/linux/arch/x86/include/asm/preempt.h:5,
->                   from include/linux/preempt.h:18,
->                   from include/linux/spinlock.h:50,
->                   from include/linux/mmzone.h:7,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> drivers/iio/kfifo_buf.c: In function 'iio_request_update_kfifo':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:34:26: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *buf = iio_to_kfifo(r);
->                            ^
-> include/linux/kernel.h:833:48: warning: (near initialization for
-> 'buf') [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:34:26: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *buf = iio_to_kfifo(r);
->                            ^
-> drivers/iio/kfifo_buf.c: In function 'iio_get_length_kfifo':
-> drivers/iio/kfifo_buf.c:52:10: error: dereferencing pointer to incomplete type
->    return r->length;
->            ^
-> drivers/iio/kfifo_buf.c: At top level:
-> drivers/iio/kfifo_buf.c:55:8: error: type defaults to 'int' in
-> declaration of 'IIO_BUFFER_ENABLE_ATTR' [-Werror=implicit-int]
->   static IIO_BUFFER_ENABLE_ATTR;
->          ^
-> drivers/iio/kfifo_buf.c:56:8: error: type defaults to 'int' in
-> declaration of 'IIO_BUFFER_LENGTH_ATTR' [-Werror=implicit-int]
->   static IIO_BUFFER_LENGTH_ATTR;
->          ^
-> drivers/iio/kfifo_buf.c:59:3: error: 'dev_attr_length' undeclared here
-> (not in a function)
->    &dev_attr_length.attr,
->     ^
-> drivers/iio/kfifo_buf.c:60:3: error: 'dev_attr_enable' undeclared here
-> (not in a function)
->    &dev_attr_enable.attr,
->     ^
-> drivers/iio/kfifo_buf.c: In function 'iio_get_bytes_per_datum_kfifo':
-> drivers/iio/kfifo_buf.c:71:10: error: dereferencing pointer to incomplete type
->    return r->bytes_per_datum;
->            ^
-> drivers/iio/kfifo_buf.c:71:10: error: request for member
-> 'bytes_per_datum' in something not a structure or union
-> drivers/iio/kfifo_buf.c:71:2: warning: return makes integer from
-> pointer without a cast [enabled by default]
->    return r->bytes_per_datum;
->    ^
-> In file included from /home/jim/linux/arch/x86/include/asm/percpu.h:44:0,
->                   from /home/jim/linux/arch/x86/include/asm/preempt.h:5,
->                   from include/linux/preempt.h:18,
->                   from include/linux/spinlock.h:50,
->                   from include/linux/mmzone.h:7,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> drivers/iio/kfifo_buf.c: In function 'iio_mark_update_needed_kfifo':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:76:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:833:48: warning: (near initialization for 'kf')
-> [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:76:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:834:27: error: invalid operands to binary -
-> (have 'char *' and 'struct attribute **')
->    (type *)( (char *)__mptr - offsetof(type,member) );})
->                             ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:76:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> drivers/iio/kfifo_buf.c: In function 'iio_set_bytes_per_datum_kfifo':
-> drivers/iio/kfifo_buf.c:83:7: error: dereferencing pointer to incomplete type
->    if (r->bytes_per_datum != bpd) {
->         ^
-> drivers/iio/kfifo_buf.c:83:7: error: request for member
-> 'bytes_per_datum' in something not a structure or union
-> drivers/iio/kfifo_buf.c:83:25: warning: comparison between pointer and
-> integer [enabled by default]
->    if (r->bytes_per_datum != bpd) {
->                           ^
-> drivers/iio/kfifo_buf.c:84:4: error: dereferencing pointer to incomplete type
->     r->bytes_per_datum = bpd;
->      ^
-> drivers/iio/kfifo_buf.c:84:4: error: request for member
-> 'bytes_per_datum' in something not a structure or union
-> drivers/iio/kfifo_buf.c:84:3: warning: statement with no effect [-Wunused-value]
->     r->bytes_per_datum = bpd;
->     ^
-> drivers/iio/kfifo_buf.c: In function 'iio_set_length_kfifo':
-> drivers/iio/kfifo_buf.c:95:7: error: dereferencing pointer to incomplete type
->    if (r->length != length) {
->         ^
-> drivers/iio/kfifo_buf.c:95:7: error: request for member 'length' in
-> something not a structure or union
-> drivers/iio/kfifo_buf.c:95:16: warning: comparison between pointer and
-> integer [enabled by default]
->    if (r->length != length) {
->                  ^
-> drivers/iio/kfifo_buf.c:96:4: error: dereferencing pointer to incomplete type
->     r->length = length;
->      ^
-> drivers/iio/kfifo_buf.c:96:4: error: request for member 'length' in
-> something not a structure or union
-> drivers/iio/kfifo_buf.c:96:3: warning: statement with no effect [-Wunused-value]
->     r->length = length;
->     ^
-> In file included from /home/jim/linux/arch/x86/include/asm/percpu.h:44:0,
->                   from /home/jim/linux/arch/x86/include/asm/preempt.h:5,
->                   from include/linux/preempt.h:18,
->                   from include/linux/spinlock.h:50,
->                   from include/linux/mmzone.h:7,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> drivers/iio/kfifo_buf.c: In function 'iio_store_to_kfifo':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:106:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:833:48: warning: (near initialization for 'kf')
-> [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:106:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:834:27: error: invalid operands to binary -
-> (have 'char *' and 'struct attribute **')
->    (type *)( (char *)__mptr - offsetof(type,member) );})
->                             ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:106:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> In file included from include/linux/mmzone.h:9:0,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> drivers/iio/kfifo_buf.c:111:31: error: dereferencing pointer to incomplete type
->    wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
->                                 ^
-> include/linux/wait.h:178:12: note: in definition of macro
-> 'wake_up_interruptible_poll'
->    __wake_up(x, TASK_INTERRUPTIBLE, 1, (void *) (m))
->              ^
-> drivers/iio/kfifo_buf.c:111:31: error: request for member 'pollq' in
-> something not a structure or union
->    wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
->                                 ^
-> include/linux/wait.h:178:12: note: in definition of macro
-> 'wake_up_interruptible_poll'
->    __wake_up(x, TASK_INTERRUPTIBLE, 1, (void *) (m))
->              ^
-> drivers/iio/kfifo_buf.c:111:2: warning: passing argument 1 of
-> '__wake_up' from incompatible pointer type [enabled by default]
->    wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
->    ^
-> In file included from include/linux/mmzone.h:9:0,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> include/linux/wait.h:144:6: note: expected 'struct wait_queue_head_t
-> *' but argument is of type 'struct attribute * (*)[1]'
->   void __wake_up(wait_queue_head_t *q, unsigned int mode, int nr, void *key);
->        ^
-> In file included from /home/jim/linux/arch/x86/include/asm/percpu.h:44:0,
->                   from /home/jim/linux/arch/x86/include/asm/preempt.h:5,
->                   from include/linux/preempt.h:18,
->                   from include/linux/spinlock.h:50,
->                   from include/linux/mmzone.h:7,
->                   from include/linux/gfp.h:5,
->                   from include/linux/slab.h:14,
->                   from drivers/iio/kfifo_buf.c:1:
-> drivers/iio/kfifo_buf.c: In function 'iio_read_first_n_kfifo':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:120:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:833:48: warning: (near initialization for 'kf')
-> [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:120:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:834:27: error: invalid operands to binary -
-> (have 'char *' and 'struct attribute **')
->    (type *)( (char *)__mptr - offsetof(type,member) );})
->                             ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:120:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> drivers/iio/kfifo_buf.c: In function 'iio_kfifo_buf_data_available':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:138:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:833:48: warning: (near initialization for 'kf')
-> [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:138:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> include/linux/kernel.h:834:27: error: invalid operands to binary -
-> (have 'char *' and 'struct attribute **')
->    (type *)( (char *)__mptr - offsetof(type,member) );})
->                             ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:138:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(r);
->                           ^
-> drivers/iio/kfifo_buf.c: In function 'iio_kfifo_buffer_release':
-> include/linux/kernel.h:833:48: warning: initialization from
-> incompatible pointer type [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:150:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(buffer);
->                           ^
-> include/linux/kernel.h:833:48: warning: (near initialization for 'kf')
-> [enabled by default]
->    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
->                                                  ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:150:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(buffer);
->                           ^
-> include/linux/kernel.h:834:27: error: invalid operands to binary -
-> (have 'char *' and 'struct attribute **')
->    (type *)( (char *)__mptr - offsetof(type,member) );})
->                             ^
-> drivers/iio/kfifo_buf.c:19:25: note: in expansion of macro 'container_of'
->   #define iio_to_kfifo(r) container_of(r, struct iio_kfifo, buffer)
->                           ^
-> drivers/iio/kfifo_buf.c:150:25: note: in expansion of macro 'iio_to_kfifo'
->    struct iio_kfifo *kf = iio_to_kfifo(buffer);
->                           ^
-> drivers/iio/kfifo_buf.c: At top level:
-> drivers/iio/kfifo_buf.c:157:21: error: variable 'kfifo_access_funcs'
-> has initializer but incomplete type
->   static const struct iio_buffer_access_funcs kfifo_access_funcs = {
->                       ^
-> drivers/iio/kfifo_buf.c:158:2: error: unknown field 'store_to'
-> specified in initializer
->    .store_to = &iio_store_to_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:158:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:158:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:159:2: error: unknown field 'read_first_n'
-> specified in initializer
->    .read_first_n = &iio_read_first_n_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:159:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:159:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:160:2: error: unknown field 'data_available'
-> specified in initializer
->    .data_available = iio_kfifo_buf_data_available,
->    ^
-> drivers/iio/kfifo_buf.c:160:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:160:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:161:2: error: unknown field 'request_update'
-> specified in initializer
->    .request_update = &iio_request_update_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:161:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:161:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:162:2: error: unknown field
-> 'get_bytes_per_datum' specified in initializer
->    .get_bytes_per_datum = &iio_get_bytes_per_datum_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:162:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:162:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:163:2: error: unknown field
-> 'set_bytes_per_datum' specified in initializer
->    .set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:163:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:163:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:164:2: error: unknown field 'get_length'
-> specified in initializer
->    .get_length = &iio_get_length_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:164:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:164:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:165:2: error: unknown field 'set_length'
-> specified in initializer
->    .set_length = &iio_set_length_kfifo,
->    ^
-> drivers/iio/kfifo_buf.c:165:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:165:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c:166:2: error: unknown field 'release'
-> specified in initializer
->    .release = &iio_kfifo_buffer_release,
->    ^
-> drivers/iio/kfifo_buf.c:166:2: warning: excess elements in struct
-> initializer [enabled by default]
-> drivers/iio/kfifo_buf.c:166:2: warning: (near initialization for
-> 'kfifo_access_funcs') [enabled by default]
-> drivers/iio/kfifo_buf.c: In function 'iio_kfifo_allocate':
-> drivers/iio/kfifo_buf.c:177:2: error: implicit declaration of function
-> 'iio_buffer_init' [-Werror=implicit-function-declaration]
->    iio_buffer_init(&kf->buffer);
->    ^
-> drivers/iio/kfifo_buf.c:178:12: error: request for member 'attrs' in
-> something not a structure or union
->    kf->buffer.attrs = &iio_kfifo_attribute_group;
->              ^
-> drivers/iio/kfifo_buf.c:178:2: warning: statement with no effect
-> [-Wunused-value]
->    kf->buffer.attrs = &iio_kfifo_attribute_group;
->    ^
-> drivers/iio/kfifo_buf.c:179:12: error: request for member 'access' in
-> something not a structure or union
->    kf->buffer.access = &kfifo_access_funcs;
->              ^
-> drivers/iio/kfifo_buf.c:179:2: warning: statement with no effect
-> [-Wunused-value]
->    kf->buffer.access = &kfifo_access_funcs;
->    ^
-> drivers/iio/kfifo_buf.c:180:12: error: request for member 'length' in
-> something not a structure or union
->    kf->buffer.length = 2;
->              ^
-> drivers/iio/kfifo_buf.c:180:2: warning: statement with no effect
-> [-Wunused-value]
->    kf->buffer.length = 2;
->    ^
-> drivers/iio/kfifo_buf.c:182:2: warning: return from incompatible
-> pointer type [enabled by default]
->    return &kf->buffer;
->    ^
-> drivers/iio/kfifo_buf.c: At top level:
->    LD      sound/soc/codecs/snd-soc-wm8782.o
-> drivers/iio/kfifo_buf.c:55:8: warning: 'IIO_BUFFER_ENABLE_ATTR'
-> defined but not used [-Wunused-variable]
->   static IIO_BUFFER_ENABLE_ATTR;
->          ^
-> drivers/iio/kfifo_buf.c:56:8: warning: 'IIO_BUFFER_LENGTH_ATTR'
-> defined but not used [-Wunused-variable]
->   static IIO_BUFFER_LENGTH_ATTR;
->          ^
-> cc1: some warnings being treated as errors
-> make[2]: *** [drivers/iio/kfifo_buf.o] Error 1\
->
-Fixed by iio:ti_am335x_adc ensure that IIO_KFIFO_BUF is not selected witout IIO_BUFFER
-09f33c332018be05cdaebf14a75ea232810948d0
+This callback is introduced to overcome some limitations of existing
+read_raw callback. The functionality of both existing read_raw and
+read_raw_multi is similar, both are used to request values from the
+device. The current read_raw callback allows only two return values.
+The new read_raw_multi allows returning multiple values. Instead of
+passing just address of val and val2, it passes length and pointer
+to values. Depending on the type and length of passed buffer, iio
+client drivers can return multiple values.
 
-Thanks
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/iio_core.h           |  2 +-
+ drivers/iio/industrialio-core.c  | 51 +++++++++++++++++++++++-----------------
+ drivers/iio/industrialio-event.c |  6 +++--
+ drivers/iio/inkern.c             | 15 ++++++++++--
+ include/linux/iio/iio.h          | 16 +++++++++++++
+ 5 files changed, 63 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index f6db6af..4172f22 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
+ 			   struct list_head *attr_list);
+ void iio_free_chan_devattr_list(struct list_head *attr_list);
+ 
+-ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
++ssize_t iio_format_value(char *buf, unsigned int type, int *val);
+ 
+ /* Event interface flags */
+ #define IIO_BUSY_BIT_POS 1
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index acc911a..b1225a4 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -373,41 +373,42 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
+  * @buf: The buffer to which the formated value gets written
+  * @type: One of the IIO_VAL_... constants. This decides how the val and val2
+  *        parameters are formatted.
+- * @val: First part of the value, exact meaning depends on the type parameter.
+- * @val2: Second part of the value, exact meaning depends on the type parameter.
++ * @vals: pointer to the values, exact meaning depends on the type parameter.
+  */
+-ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
++ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
+ {
+ 	unsigned long long tmp;
+ 	bool scale_db = false;
+ 
+ 	switch (type) {
+ 	case IIO_VAL_INT:
+-		return sprintf(buf, "%d\n", val);
++		return sprintf(buf, "%d\n", vals[0]);
+ 	case IIO_VAL_INT_PLUS_MICRO_DB:
+ 		scale_db = true;
+ 	case IIO_VAL_INT_PLUS_MICRO:
+-		if (val2 < 0)
+-			return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
++		if (vals[1] < 0)
++			return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
++					-vals[1],
+ 				scale_db ? " dB" : "");
+ 		else
+-			return sprintf(buf, "%d.%06u%s\n", val, val2,
++			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+ 				scale_db ? " dB" : "");
+ 	case IIO_VAL_INT_PLUS_NANO:
+-		if (val2 < 0)
+-			return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
++		if (vals[1] < 0)
++			return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
++					-vals[1]);
+ 		else
+-			return sprintf(buf, "%d.%09u\n", val, val2);
++			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+ 	case IIO_VAL_FRACTIONAL:
+-		tmp = div_s64((s64)val * 1000000000LL, val2);
+-		val2 = do_div(tmp, 1000000000LL);
+-		val = tmp;
+-		return sprintf(buf, "%d.%09u\n", val, val2);
++		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
++		vals[1] = do_div(tmp, 1000000000LL);
++		vals[0] = tmp;
++		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+ 	case IIO_VAL_FRACTIONAL_LOG2:
+-		tmp = (s64)val * 1000000000LL >> val2;
+-		val2 = do_div(tmp, 1000000000LL);
+-		val = tmp;
+-		return sprintf(buf, "%d.%09u\n", val, val2);
++		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
++		vals[1] = do_div(tmp, 1000000000LL);
++		vals[0] = tmp;
++		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+ 	default:
+ 		return 0;
+ 	}
+@@ -419,14 +420,20 @@ static ssize_t iio_read_channel_info(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int val, val2;
+-	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+-					    &val, &val2, this_attr->address);
++	int vals[INDIO_MAX_RAW_ELEMENTS];
++	int ret;
++
++	if (indio_dev->info->read_raw_multi)
++		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
++			    INDIO_MAX_RAW_ELEMENTS, vals, this_attr->address);
++	else
++		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
++				    &vals[0], &vals[1], this_attr->address);
+ 
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return iio_format_value(buf, ret, val, val2);
++	return iio_format_value(buf, ret, vals);
+ }
+ 
+ /**
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index c9c1419..0f7f78e 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -272,7 +272,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int val, val2;
++	int val, val2, val_arr[2];
+ 	int ret;
+ 
+ 	ret = indio_dev->info->read_event_value(indio_dev,
+@@ -281,7 +281,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
+ 		&val, &val2);
+ 	if (ret < 0)
+ 		return ret;
+-	return iio_format_value(buf, ret, val, val2);
++	val_arr[0] = val;
++	val_arr[1] = val2;
++	return iio_format_value(buf, ret, val_arr);
+ }
+ 
+ static ssize_t iio_ev_value_store(struct device *dev,
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 0cf5f8e..6a93d57 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -417,12 +417,23 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+ 	enum iio_chan_info_enum info)
+ {
+ 	int unused;
++	int vals[INDIO_MAX_RAW_ELEMENTS];
++	int ret;
+ 
+ 	if (val2 == NULL)
+ 		val2 = &unused;
+ 
+-	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+-						val, val2, info);
++	if (chan->indio_dev->info->read_raw_multi) {
++		ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
++					chan->channel, INDIO_MAX_RAW_ELEMENTS,
++					vals, info);
++		*val = vals[0];
++		*val2 = vals[1];
++	} else
++		ret = chan->indio_dev->info->read_raw(chan->indio_dev,
++					chan->channel, val, val2, info);
++
++	return ret;
+ }
+ 
+ int iio_read_channel_raw(struct iio_channel *chan, int *val)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 75a8a20..ddf9f60 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -284,6 +284,8 @@ static inline s64 iio_get_time_ns(void)
+ #define INDIO_ALL_BUFFER_MODES					\
+ 	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+ 
++#define INDIO_MAX_RAW_ELEMENTS		4
++
+ struct iio_trigger; /* forward declaration */
+ struct iio_dev;
+ 
+@@ -298,6 +300,14 @@ struct iio_dev;
+  *			the channel in question.  Return value will specify the
+  *			type of value returned by the device. val and val2 will
+  *			contain the elements making up the returned value.
++ * @read_raw_multi:	function to return values from the device.
++ *			mask specifies which value. Note 0 means a reading of
++ *			the channel in question.  Return value will specify the
++ *			type of value returned by the device. vals pointer
++ *			contain the elements making up the returned value.
++ *			val_len specifies maximum number of elements
++ *			vals pointer can contain. In contrast to to read_raw
++ *			device can return multiple values not just two.
+  * @write_raw:		function to write a value to the device.
+  *			Parameters are the same as for read_raw.
+  * @write_raw_get_fmt:	callback function to query the expected
+@@ -324,6 +334,12 @@ struct iio_info {
+ 			int *val2,
+ 			long mask);
+ 
++	int (*read_raw_multi)(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int val_len,
++			int *vals,
++			long mask);
++
+ 	int (*write_raw)(struct iio_dev *indio_dev,
+ 			 struct iio_chan_spec const *chan,
+ 			 int val,
+-- 
+1.8.3.2
+
