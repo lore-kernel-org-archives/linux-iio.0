@@ -1,234 +1,219 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:47623 "EHLO mga02.intel.com"
+Received: from ring0.de ([5.45.105.125]:59323 "EHLO smtp.ring0.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751508AbaBWTuf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Feb 2014 14:50:35 -0500
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 1/5] IIO: core: Introduce read_raw_multi
-Date: Sun, 23 Feb 2014 11:50:44 -0800
-Message-Id: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	id S1752430AbaBWWI0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 23 Feb 2014 17:08:26 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv2 3/5] mfd: twl4030-madc: Cleanup driver
+Date: Sun, 23 Feb 2014 23:07:49 +0100
+Message-Id: <1393193271-16717-4-git-send-email-sre@debian.org>
+In-Reply-To: <1393193271-16717-1-git-send-email-sre@debian.org>
+References: <20140223220140.GA1258@earth.universe>
+ <1393193271-16717-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This callback is introduced to overcome some limitations of existing
-read_raw callback. The functionality of both existing read_raw and
-read_raw_multi is similar, both are used to request values from the
-device. The current read_raw callback allows only two return values.
-The new read_raw_multi allows returning multiple values. Instead of
-passing just address of val and val2, it passes length and pointer
-to values. Depending on the type and length of passed buffer, iio
-client drivers can return multiple values.
+Some style fixes in twl4030-madc driver.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Reported-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Sebastian Reichel <sre@debian.org>
 ---
- drivers/iio/iio_core.h           |  2 +-
- drivers/iio/industrialio-core.c  | 51 +++++++++++++++++++++++-----------------
- drivers/iio/industrialio-event.c |  6 +++--
- drivers/iio/inkern.c             | 15 ++++++++++--
- include/linux/iio/iio.h          | 16 +++++++++++++
- 5 files changed, 63 insertions(+), 27 deletions(-)
+ drivers/mfd/twl4030-madc.c | 66 ++++++++++++++++++++--------------------------
+ 1 file changed, 29 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
-index f6db6af..4172f22 100644
---- a/drivers/iio/iio_core.h
-+++ b/drivers/iio/iio_core.h
-@@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
- 			   struct list_head *attr_list);
- void iio_free_chan_devattr_list(struct list_head *attr_list);
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 5e67c75..0bc79a7 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -62,8 +62,8 @@ struct twl4030_madc_data {
+ 	struct mutex lock;	/* mutex protecting this data structure */
+ 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
+ 	bool use_second_irq;
+-	int imr;
+-	int isr;
++	u8 imr;
++	u8 isr;
+ };
  
--ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
-+ssize_t iio_format_value(char *buf, unsigned int type, int *val);
- 
- /* Event interface flags */
- #define IIO_BUSY_BIT_POS 1
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index acc911a..b1225a4 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -373,41 +373,42 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
-  * @buf: The buffer to which the formated value gets written
-  * @type: One of the IIO_VAL_... constants. This decides how the val and val2
-  *        parameters are formatted.
-- * @val: First part of the value, exact meaning depends on the type parameter.
-- * @val2: Second part of the value, exact meaning depends on the type parameter.
-+ * @vals: pointer to the values, exact meaning depends on the type parameter.
-  */
--ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
-+ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
- {
- 	unsigned long long tmp;
- 	bool scale_db = false;
- 
- 	switch (type) {
- 	case IIO_VAL_INT:
--		return sprintf(buf, "%d\n", val);
-+		return sprintf(buf, "%d\n", vals[0]);
- 	case IIO_VAL_INT_PLUS_MICRO_DB:
- 		scale_db = true;
- 	case IIO_VAL_INT_PLUS_MICRO:
--		if (val2 < 0)
--			return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
-+		if (vals[1] < 0)
-+			return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
-+					-vals[1],
- 				scale_db ? " dB" : "");
- 		else
--			return sprintf(buf, "%d.%06u%s\n", val, val2,
-+			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
- 				scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
--		if (val2 < 0)
--			return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
-+		if (vals[1] < 0)
-+			return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
-+					-vals[1]);
- 		else
--			return sprintf(buf, "%d.%09u\n", val, val2);
-+			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL:
--		tmp = div_s64((s64)val * 1000000000LL, val2);
--		val2 = do_div(tmp, 1000000000LL);
--		val = tmp;
--		return sprintf(buf, "%d.%09u\n", val, val2);
-+		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
-+		vals[1] = do_div(tmp, 1000000000LL);
-+		vals[0] = tmp;
-+		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL_LOG2:
--		tmp = (s64)val * 1000000000LL >> val2;
--		val2 = do_div(tmp, 1000000000LL);
--		val = tmp;
--		return sprintf(buf, "%d.%09u\n", val, val2);
-+		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
-+		vals[1] = do_div(tmp, 1000000000LL);
-+		vals[0] = tmp;
-+		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
- 	default:
- 		return 0;
+ static int twl4030_madc_read(struct iio_dev *iio_dev,
+@@ -242,13 +242,13 @@ static int twl4030battery_temperature(int raw_volt)
+ 		REG_BCICTL2);
+ 	if (ret < 0)
+ 		return ret;
++
+ 	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
+ 	/* Getting and calculating the thermistor resistance in ohms */
+ 	res = volt * 1000 / curr;
+ 	/* calculating temperature */
+ 	for (temp = 58; temp >= 0; temp--) {
+ 		int actual = therm_tbl[temp];
+-
+ 		if ((actual - res) >= 0)
+ 			break;
  	}
-@@ -419,14 +420,20 @@ static ssize_t iio_read_channel_info(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int val, val2;
--	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
--					    &val, &val2, this_attr->address);
-+	int vals[INDIO_MAX_RAW_ELEMENTS];
-+	int ret;
-+
-+	if (indio_dev->info->read_raw_multi)
-+		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
-+			    INDIO_MAX_RAW_ELEMENTS, vals, this_attr->address);
-+	else
-+		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-+				    &vals[0], &vals[1], this_attr->address);
- 
- 	if (ret < 0)
- 		return ret;
- 
--	return iio_format_value(buf, ret, val, val2);
-+	return iio_format_value(buf, ret, vals);
+@@ -270,6 +270,7 @@ static int twl4030battery_current(int raw_volt)
+ 	else /* slope of 0.88 mV/mA */
+ 		return (raw_volt * CURR_STEP_SIZE) / CURR_PSR_R2;
  }
- 
- /**
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index c9c1419..0f7f78e 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -272,7 +272,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
++
+ /*
+  * Function to read channel values
+  * @madc - pointer to twl4030_madc_data struct
+@@ -285,17 +286,14 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 				      long channels, int *buf,
+ 				      bool raw)
  {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int val, val2;
-+	int val, val2, val_arr[2];
+-	int count = 0, count_req = 0, i;
+-	u8 reg;
++	int count = 0, i;
+ 
+ 	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
+-		reg = reg_base + 2 * i;
+-		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
++		buf[i] = twl4030_madc_channel_raw_read(madc, reg_base + 2 * i);
+ 		if (buf[i] < 0) {
+-			dev_err(madc->dev,
+-				"Unable to read register 0x%X\n", reg);
+-			count_req++;
+-			continue;
++			dev_err(madc->dev, "Unable to read register 0x%X\n",
++				reg_base + 2 * i);
++			return buf[i];
+ 		}
+ 		if (raw) {
+ 			count++;
+@@ -306,7 +304,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 			buf[i] = twl4030battery_current(buf[i]);
+ 			if (buf[i] < 0) {
+ 				dev_err(madc->dev, "err reading current\n");
+-				count_req++;
++				return buf[i];
+ 			} else {
+ 				count++;
+ 				buf[i] = buf[i] - 750;
+@@ -316,7 +314,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 			buf[i] = twl4030battery_temperature(buf[i]);
+ 			if (buf[i] < 0) {
+ 				dev_err(madc->dev, "err reading temperature\n");
+-				count_req++;
++				return buf[i];
+ 			} else {
+ 				buf[i] -= 3;
+ 				count++;
+@@ -337,8 +335,6 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 				twl4030_divider_ratios[i].numerator);
+ 		}
+ 	}
+-	if (count_req)
+-		dev_err(madc->dev, "%d channel conversion failed\n", count_req);
+ 
+ 	return count;
+ }
+@@ -362,13 +358,13 @@ static int twl4030_madc_enable_irq(struct twl4030_madc_data *madc, u8 id)
+ 			madc->imr);
+ 		return ret;
+ 	}
++
+ 	val &= ~(1 << id);
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, val, madc->imr);
+ 	if (ret) {
+ 		dev_err(madc->dev,
+ 			"unable to write imr register 0x%X\n", madc->imr);
+ 		return ret;
+-
+ 	}
+ 
+ 	return 0;
+@@ -513,21 +509,17 @@ static int twl4030_madc_start_conversion(struct twl4030_madc_data *madc,
+ {
+ 	const struct twl4030_madc_conversion_method *method;
+ 	int ret = 0;
++
++	if (conv_method != TWL4030_MADC_SW1 && conv_method != TWL4030_MADC_SW2)
++		return -ENOTSUPP;
++
+ 	method = &twl4030_conversion_methods[conv_method];
+-	switch (conv_method) {
+-	case TWL4030_MADC_SW1:
+-	case TWL4030_MADC_SW2:
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       TWL4030_MADC_SW_START, method->ctrl);
+-		if (ret) {
+-			dev_err(madc->dev,
+-				"unable to write ctrl register 0x%X\n",
+-				method->ctrl);
+-			return ret;
+-		}
+-		break;
+-	default:
+-		break;
++	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, TWL4030_MADC_SW_START,
++			       method->ctrl);
++	if (ret) {
++		dev_err(madc->dev, "unable to write ctrl register 0x%X\n",
++			method->ctrl);
++		return ret;
+ 	}
+ 
+ 	return 0;
+@@ -625,7 +617,7 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ 		if (ret) {
+ 			dev_err(twl4030_madc->dev,
+ 				"unable to write sel reg 0x%X\n",
+-				method->sel + 1);
++				method->avg);
+ 			goto out;
+ 		}
+ 	}
+@@ -666,10 +658,6 @@ out:
+ }
+ EXPORT_SYMBOL_GPL(twl4030_madc_conversion);
+ 
+-/*
+- * Return channel value
+- * Or < 0 on failure.
+- */
+ int twl4030_get_madc_conversion(int channel_no)
+ {
+ 	struct twl4030_madc_request req;
+@@ -704,6 +692,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
+ 					      int chan, int on)
+ {
  	int ret;
++	int regmask;
+ 	u8 regval;
  
- 	ret = indio_dev->info->read_event_value(indio_dev,
-@@ -281,7 +281,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
- 		&val, &val2);
- 	if (ret < 0)
+ 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE,
+@@ -713,10 +702,13 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
+ 			TWL4030_BCI_BCICTL1);
  		return ret;
--	return iio_format_value(buf, ret, val, val2);
-+	val_arr[0] = val;
-+	val_arr[1] = val2;
-+	return iio_format_value(buf, ret, val_arr);
- }
- 
- static ssize_t iio_ev_value_store(struct device *dev,
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 0cf5f8e..6a93d57 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -417,12 +417,23 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
- 	enum iio_chan_info_enum info)
- {
- 	int unused;
-+	int vals[INDIO_MAX_RAW_ELEMENTS];
-+	int ret;
- 
- 	if (val2 == NULL)
- 		val2 = &unused;
- 
--	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
--						val, val2, info);
-+	if (chan->indio_dev->info->read_raw_multi) {
-+		ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
-+					chan->channel, INDIO_MAX_RAW_ELEMENTS,
-+					vals, info);
-+		*val = vals[0];
-+		*val2 = vals[1];
-+	} else
-+		ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-+					chan->channel, val, val2, info);
+ 	}
 +
-+	return ret;
- }
- 
- int iio_read_channel_raw(struct iio_channel *chan, int *val)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 75a8a20..ddf9f60 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -284,6 +284,8 @@ static inline s64 iio_get_time_ns(void)
- #define INDIO_ALL_BUFFER_MODES					\
- 	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
- 
-+#define INDIO_MAX_RAW_ELEMENTS		4
++	regmask = (chan == 0) ? TWL4030_BCI_TYPEN : TWL4030_BCI_ITHEN;
+ 	if (on)
+-		regval |= chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
++		regval |= regmask;
+ 	else
+-		regval &= chan ? ~TWL4030_BCI_ITHEN : ~TWL4030_BCI_TYPEN;
++		regval &= ~regmask;
 +
- struct iio_trigger; /* forward declaration */
- struct iio_dev;
- 
-@@ -298,6 +300,14 @@ struct iio_dev;
-  *			the channel in question.  Return value will specify the
-  *			type of value returned by the device. val and val2 will
-  *			contain the elements making up the returned value.
-+ * @read_raw_multi:	function to return values from the device.
-+ *			mask specifies which value. Note 0 means a reading of
-+ *			the channel in question.  Return value will specify the
-+ *			type of value returned by the device. vals pointer
-+ *			contain the elements making up the returned value.
-+ *			val_len specifies maximum number of elements
-+ *			vals pointer can contain. In contrast to to read_raw
-+ *			device can return multiple values not just two.
-  * @write_raw:		function to write a value to the device.
-  *			Parameters are the same as for read_raw.
-  * @write_raw_get_fmt:	callback function to query the expected
-@@ -324,6 +334,12 @@ struct iio_info {
- 			int *val2,
- 			long mask);
- 
-+	int (*read_raw_multi)(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int val_len,
-+			int *vals,
-+			long mask);
-+
- 	int (*write_raw)(struct iio_dev *indio_dev,
- 			 struct iio_chan_spec const *chan,
- 			 int val,
+ 	ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE,
+ 			       regval, TWL4030_BCI_BCICTL1);
+ 	if (ret) {
 -- 
-1.8.3.2
+1.8.5.3
 
