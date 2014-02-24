@@ -1,115 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:47193 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753132AbaBZAZQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 19:25:16 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv3 7/7] mfd: twl4030-madc: Move driver to drivers/iio/adc
-Date: Wed, 26 Feb 2014 01:24:30 +0100
-Message-Id: <1393374270-20079-8-git-send-email-sre@debian.org>
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
+Received: from top.free-electrons.com ([176.31.233.9]:54792 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752638AbaBXQsZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Feb 2014 11:48:25 -0500
+Date: Mon, 24 Feb 2014 17:48:17 +0100
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Juergen Beisert <jbe@pengutronix.de>
+Cc: linux-arm-kernel@lists.infradead.org,
+	Dan Carpenter <dan.carpenter@oracle.com>,
+	devel@driverdev.osuosl.org, marex@denx.de,
+	fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+	jic23@cam.ac.uk, linux-input@vger.kernel.org
+Subject: Re: [PATCH] staging/iio/adc/MXS/LRADC: fix touchscreen statemachine
+Message-ID: <20140224164817.GE4436@piout.net>
+References: <1379946998-23041-1-git-send-email-jbe@pengutronix.de>
+ <201402241416.24270.jbe@pengutronix.de>
+ <20140224133316.GI26722@mwanda>
+ <201402241539.53707.jbe@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <201402241539.53707.jbe@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is a driver for an A/D converter, which belongs into
-drivers/iio/adc.
+On 24/02/2014 at 15:39:53 +0100, Juergen Beisert wrote :
+> Releasing the touchscreen lets the internal statemachine left in a wrong state.
+> Due to this the release coordinate will be reported again by accident when the next
+> touchscreen event happens. This change sets up the correct state when waiting
+> for the next touchscreen event.
+>     
+> Signed-off-by: Juergen Beisert <jbe@pengutronix.de>
+> 
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/iio/adc/Kconfig                 | 10 ++++++++++
- drivers/iio/adc/Makefile                |  1 +
- drivers/{mfd => iio/adc}/twl4030-madc.c |  0
- drivers/mfd/Kconfig                     | 10 ----------
- drivers/mfd/Makefile                    |  1 -
- 5 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/{mfd => iio/adc}/twl4030-madc.c (100%)
+Tested-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 2209f28..427f75c 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -183,6 +183,16 @@ config TI_AM335X_ADC
- 	  Say yes here to build support for Texas Instruments ADC
- 	  driver which is also a MFD client.
- 
-+config TWL4030_MADC
-+	tristate "TWL4030 MADC (Monitoring A/D Converter)"
-+	depends on TWL4030_CORE
-+	help
-+	This driver provides support for Triton TWL4030-MADC. The
-+	driver supports both RT and SW conversion methods.
-+
-+	This driver can also be built as a module. If so, the module will be
-+	called twl4030-madc.
-+
- config TWL6030_GPADC
- 	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
- 	depends on TWL4030_CORE
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ba9a10a..9acf2df 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -20,5 +20,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
- obj-$(CONFIG_NAU7802) += nau7802.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-+obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
- obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-similarity index 100%
-rename from drivers/mfd/twl4030-madc.c
-rename to drivers/iio/adc/twl4030-madc.c
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 49bb445..23a8a51 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -935,16 +935,6 @@ config TWL4030_CORE
- 	  high speed USB OTG transceiver, an audio codec (on most
- 	  versions) and many other features.
- 
--config TWL4030_MADC
--	tristate "TI TWL4030 MADC"
--	depends on TWL4030_CORE
--	help
--	This driver provides support for triton TWL4030-MADC. The
--	driver supports both RT and SW conversion methods.
--
--	This driver can be built as a module. If so it will be
--	named twl4030-madc
--
- config TWL4030_POWER
- 	bool "TI TWL4030 power resources"
- 	depends on TWL4030_CORE && ARM
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 5aea5ef..c8eb0bc 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -71,7 +71,6 @@ obj-$(CONFIG_MFD_TPS80031)	+= tps80031.o
- obj-$(CONFIG_MENELAUS)		+= menelaus.o
- 
- obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
--obj-$(CONFIG_TWL4030_MADC)      += twl4030-madc.o
- obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
- obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
- obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index 7fc66a6..514844e 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -757,6 +757,7 @@ static void mxs_lradc_finish_touch_event(struct mxs_lradc *lradc, bool valid)
+>  	}
+>  
+>  	/* if it is released, wait for the next touch via IRQ */
+> +	lradc->cur_plate = LRADC_TOUCH;
+>  	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ, LRADC_CTRL1);
+>  	mxs_lradc_reg_set(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
+>  }
+> 
+> -- 
+> Pengutronix e.K.                              | Juergen Beisert             |
+> Linux Solutions for Science and Industry      | http://www.pengutronix.de/  |
+
 -- 
-1.8.5.3
-
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
