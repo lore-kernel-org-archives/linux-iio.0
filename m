@@ -1,57 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:55254 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752966AbaBYUAL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Feb 2014 15:00:11 -0500
-Date: Tue, 25 Feb 2014 21:00:10 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-cc: linux-iio@vger.kernel.org
-Subject: re: iio:magnetometer:mag3110: Scale factor missing for temperature
-In-Reply-To: <20140224220419.GC29170@elgon.mountain>
-Message-ID: <alpine.DEB.2.01.1402252053550.30927@pmeerw.net>
-References: <20140224220419.GC29170@elgon.mountain>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46671 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753401AbaBYS2y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2014 13:28:54 -0500
+Message-ID: <530CE112.1080903@kernel.org>
+Date: Tue, 25 Feb 2014 18:29:38 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.14 round 4
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The following changes since commit e194fd8a5d8e0a7eeed239a8534460724b62fe2d:
 
-> The patch f9279d3a8cc8: "iio:magnetometer:mag3110: Scale factor
-> missing for temperature" from Oct 1, 2014, leads to the following
->                               ^^^^^^^^^^^
-> [ just the other day people were searching the internet for time
->   travellers from the future ].
+   staging: binder: Fix death notifications (2014-02-21 12:30:54 -0800)
 
-this is indeed weird
+are available in the git repository at:
 
-> 	drivers/iio/magnetometer/mag3110.c:197 mag3110_read_raw()
-> 	info: ignoring unreachable code.
-> 
-> drivers/iio/magnetometer/mag3110.c
->    185          case IIO_CHAN_INFO_SCALE:
->    186                  switch (chan->type) {
->    187                  case IIO_MAGN:
->    188                          *val = 0;
->    189                          *val2 = 1000;
->    190                          return IIO_VAL_INT_PLUS_MICRO;
->    191                  case IIO_TEMP:
->    192                          *val = 1000;
->    193                          return IIO_VAL_INT;
->    194                  default:
->    195                          return -EINVAL;
->    196                  }
->    197                  return IIO_VAL_INT_PLUS_MICRO;
->                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> Was -EINVAL intended here?
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/fixes-for-3.14d
 
-no, this is dead code as the checker indicated
+for you to fetch changes up to 760dbe1dcb6d3dd3ead73dc69b23f206b52273bb:
 
-thanks for reporting, sent fix to linux-iio
+   staging:iio:adc:MXS:LRADC: fix touchscreen statemachine (2014-02-24 21:55:50 +0000)
 
-p.
+----------------------------------------------------------------
+Fourth set of IIO fixes for the 3.14 kernel.
 
--- 
+A single line patch fixing a regression that was introduced in 3.13 in the
+reworking of the mxs touch screen and ADC drivers to be interrupt rather
+than polling driven.  It resulted in a stray double reporting of the release
+coordinate in the touch screen driver.  The bug lay in the adc side
+of the driver which left the statemachine in the wrong state.
 
-Peter Meerwald
-+43-664-2444418 (mobile)
+----------------------------------------------------------------
+Juergen Beisert (1):
+       staging:iio:adc:MXS:LRADC: fix touchscreen statemachine
+
+  drivers/staging/iio/adc/mxs-lradc.c | 1 +
+  1 file changed, 1 insertion(+)
