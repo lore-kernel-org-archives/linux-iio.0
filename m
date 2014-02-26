@@ -1,250 +1,243 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43539 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752100AbaBOK2P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 05:28:15 -0500
-Message-ID: <52FF4160.8010909@kernel.org>
-Date: Sat, 15 Feb 2014 10:28:48 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Fugang Duan <B38611@freescale.com>
-CC: shawn.guo@linaro.org, sachin.kamat@linaro.org, pmeerw@pmeerw.net,
-	lars@metafoo.de, mark.rutland@arm.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] iio:adc:imx: add Freescale Vybrid vf610 adc driver
-References: <1390714773-23066-1-git-send-email-B38611@freescale.com> <1390714773-23066-3-git-send-email-B38611@freescale.com> <52FF3EEA.30606@kernel.org>
-In-Reply-To: <52FF3EEA.30606@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ring0.de ([5.45.105.125]:47072 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753787AbaBZAYv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 25 Feb 2014 19:24:51 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv3 2/7] mfd: twl4030-madc: Add DT support and convert to IIO framework
+Date: Wed, 26 Feb 2014 01:24:25 +0100
+Message-Id: <1393374270-20079-3-git-send-email-sre@debian.org>
+In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
+References: <1393193271-16717-1-git-send-email-sre@debian.org>
+ <1393374270-20079-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/02/14 10:18, Jonathan Cameron wrote:
-> On 26/01/14 05:39, Fugang Duan wrote:
->> Add Freescale Vybrid vf610 adc driver. The driver only support
->> ADC software trigger.
->>
->> VF610 ADC device documentation is available at below reference manual
->> (chapter 37):
->> http://cache.freescale.com/files/32bit/doc/ref_manual/VYBRIDRM.pdf?
->> fpsp=1&WT_TYPE=Reference%20Manuals&WT_VENDOR=FREESCALE&WT_FILE_FORMAT
->> =pdf&WT_ASSET=Documentation
->>
->> CC: Shawn Guo <shawn.guo@linaro.org>
->> CC: Jonathan Cameron <jic23@kernel.org>
->> CC: Mark Rutland <mark.rutland@arm.com>
->> CC: Otavio Salvador <otavio@ossystems.com.br>
->> CC: Peter Meerwald <pmeerw@pmeerw.net>
->> CC: Lars-Peter Clausen <lars@metafoo.de>
->> Signed-off-by: Fugang Duan <B38611@freescale.com>
->
-> I very much like the simplified approach you have taken for this initial
-> merge.  Much easier to start simple and build up to the more complex
-> functionality.
->
-> There was one missing mutex unlock in an error path (noted below). I have
-> fixed that and applied to the togreg branch of iio.git.   This will initially
-> go out as the testing branch for the autobuilders to play with it.
->
-> Also devm_irq requests always make me nervous, but I think this one is fine
-> so have left it alone
->
-> Jonathan
-As an update I also fixed up the build - see below.  One day I'll no send
-out applied messages until after my local build tests have finished!
+This converts twl4030-madc module to use the Industrial IO ADC
+framework and adds device tree support.
 
-Note that it is this sort of thing that has led me to pushing out a testing
-branch as that catches all the weird combinations that I don't.
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ drivers/mfd/twl4030-madc.c | 122 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 115 insertions(+), 7 deletions(-)
 
->> +
->> +static const struct iio_info vf610_adc_iio_info = {
->> +    .driver_module = THIS_MODULE,
->> +    .read_raw = &vf610_read_raw,
->> +    .write_raw = &vf610_write_raw,
->> +    .debugfs_reg_access = &vf610_adc_reg_access,
->> +    .attrs = &vf610_attribute_group,
->> +};
->> +
->> +static const struct of_device_id vf610_adc_match[] = {
->> +    { .compatible = "fsl,vf610-adc", },
->> +    { /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, vf610_adc_dt_ids);
-Your MODULE_DEVICE_TABLE needs to take a second variable that actually exists...
-Also needs to depend in the KCONFIG on OF to avoid build issues on other platforms.
-
-I've added both.
-
->> +
->> +static int vf610_adc_probe(struct platform_device *pdev)
->> +{
->> +    struct vf610_adc *info;
->> +    struct iio_dev *indio_dev;
->> +    struct resource *mem;
->> +    int irq;
->> +    int ret;
->> +
->> +    indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct vf610_adc));
->> +    if (!indio_dev) {
->> +        dev_err(&pdev->dev, "Failed allocating iio device\n");
->> +        return -ENOMEM;
->> +    }
->> +
->> +    info = iio_priv(indio_dev);
->> +    info->dev = &pdev->dev;
->> +
->> +    mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +    info->regs = devm_ioremap_resource(&pdev->dev, mem);
->> +    if (IS_ERR(info->regs))
->> +        return PTR_ERR(info->regs);
->> +
->> +    irq = platform_get_irq(pdev, 0);
->> +    if (irq <= 0) {
->> +        dev_err(&pdev->dev, "no irq resource?\n");
->> +        return -EINVAL;
->> +    }
->> +
-> Hmm. Devm requests for irqs always make me nervous.  I 'think' this one
-> is fine, but it is rather too easy to use something in the handler that
-> is freed via a route other than managed resources...  Still if you are sure
-> then leave it be.
->> +    ret = devm_request_irq(info->dev, irq,
->> +                vf610_adc_isr, 0,
->> +                dev_name(&pdev->dev), info);
->> +    if (ret < 0) {
->> +        dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
->> +        return ret;
->> +    }
->> +
->> +    info->clk = devm_clk_get(&pdev->dev, "adc");
->> +    if (IS_ERR(info->clk)) {
->> +        dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
->> +                        PTR_ERR(info->clk));
->> +        ret = PTR_ERR(info->clk);
->> +        return ret;
->> +    }
->> +
->> +    info->vref = devm_regulator_get(&pdev->dev, "vref");
->> +    if (IS_ERR(info->vref))
->> +        return PTR_ERR(info->vref);
->> +
->> +    ret = regulator_enable(info->vref);
->> +    if (ret)
->> +        return ret;
->> +
->> +    info->vref_uv = regulator_get_voltage(info->vref);
->> +
->> +    platform_set_drvdata(pdev, indio_dev);
->> +
->> +    init_completion(&info->completion);
->> +
->> +    indio_dev->name = dev_name(&pdev->dev);
->> +    indio_dev->dev.parent = &pdev->dev;
->> +    indio_dev->dev.of_node = pdev->dev.of_node;
->> +    indio_dev->info = &vf610_adc_iio_info;
->> +    indio_dev->modes = INDIO_DIRECT_MODE;
->> +    indio_dev->channels = vf610_adc_iio_channels;
->> +    indio_dev->num_channels = ARRAY_SIZE(vf610_adc_iio_channels);
->> +
->> +    ret = clk_prepare_enable(info->clk);
->> +    if (ret) {
->> +        dev_err(&pdev->dev,
->> +            "Could not prepare or enable the clock.\n");
->> +        goto error_adc_clk_enable;
->> +    }
->> +
->> +    vf610_adc_cfg_init(info);
->> +    vf610_adc_hw_init(info);
->> +
->> +    ret = iio_device_register(indio_dev);
->> +    if (ret) {
->> +        dev_err(&pdev->dev, "Couldn't register the device.\n");
->> +        goto error_iio_device_register;
->> +    }
->> +
->> +    return 0;
->> +
->> +
->> +error_iio_device_register:
->> +    clk_disable_unprepare(info->clk);
->> +error_adc_clk_enable:
->> +    regulator_disable(info->vref);
->> +
->> +    return ret;
->> +}
->> +
->> +static int vf610_adc_remove(struct platform_device *pdev)
->> +{
->> +    struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +    struct vf610_adc *info = iio_priv(indio_dev);
->> +
->> +    iio_device_unregister(indio_dev);
->> +    regulator_disable(info->vref);
->> +    clk_disable_unprepare(info->clk);
->> +
->> +    return 0;
->> +}
->> +
->> +#ifdef CONFIG_PM_SLEEP
->> +static int vf610_adc_suspend(struct device *dev)
->> +{
->> +    struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +    struct vf610_adc *info = iio_priv(indio_dev);
->> +    int hc_cfg;
->> +
->> +    /* ADC controller enters to stop mode */
->> +    hc_cfg = readl(info->regs + VF610_REG_ADC_HC0);
->> +    hc_cfg |= VF610_ADC_CONV_DISABLE;
->> +    writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
->> +
->> +    clk_disable_unprepare(info->clk);
->> +    regulator_disable(info->vref);
->> +
->> +    return 0;
->> +}
->> +
->> +static int vf610_adc_resume(struct device *dev)
->> +{
->> +    struct iio_dev *indio_dev = dev_get_drvdata(dev);
->> +    struct vf610_adc *info = iio_priv(indio_dev);
->> +    int ret;
->> +
->> +    ret = regulator_enable(info->vref);
->> +    if (ret)
->> +        return ret;
->> +
->> +    ret = clk_prepare_enable(info->clk);
->> +    if (ret)
->> +        return ret;
->> +
->> +    vf610_adc_hw_init(info);
->> +
->> +    return 0;
->> +}
->> +#endif
->> +
->> +static SIMPLE_DEV_PM_OPS(vf610_adc_pm_ops,
->> +            vf610_adc_suspend,
->> +            vf610_adc_resume);
->> +
->> +static struct platform_driver vf610_adc_driver = {
->> +    .probe          = vf610_adc_probe,
->> +    .remove         = vf610_adc_remove,
->> +    .driver         = {
->> +        .name   = DRIVER_NAME,
->> +        .owner  = THIS_MODULE,
->> +        .of_match_table = vf610_adc_match,
->> +        .pm     = &vf610_adc_pm_ops,
->> +    },
->> +};
->> +
->> +module_platform_driver(vf610_adc_driver);
->> +
->> +MODULE_AUTHOR("Fugang Duan <B38611@freescale.com>");
->> +MODULE_DESCRIPTION("Freescale VF610 ADC driver");
->> +MODULE_LICENSE("GPL v2");
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 5458561..81484ee 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -47,6 +47,8 @@
+ #include <linux/gfp.h>
+ #include <linux/err.h>
+ 
++#include <linux/iio/iio.h>
++
+ /*
+  * struct twl4030_madc_data - a container for madc info
+  * @dev - pointer to device structure for madc
+@@ -59,10 +61,74 @@ struct twl4030_madc_data {
+ 	struct device *dev;
+ 	struct mutex lock;	/* mutex protecting this data structure */
+ 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
++	bool use_second_irq;
+ 	int imr;
+ 	int isr;
+ };
+ 
++static int twl4030_madc_read(struct iio_dev *iio_dev,
++			     const struct iio_chan_spec *chan,
++			     int *val, int *val2, long mask)
++{
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
++	struct twl4030_madc_request req;
++	int channel = chan->channel;
++	int ret;
++
++	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
++
++	req.channels = BIT(channel);
++	req.active = false;
++	req.func_cb = NULL;
++	req.type = TWL4030_MADC_WAIT;
++	req.raw = !(mask == IIO_CHAN_INFO_PROCESSED);
++	req.do_avg = (mask == IIO_CHAN_INFO_AVERAGE_RAW);
++
++	ret = twl4030_madc_conversion(&req);
++	if (ret < 0)
++		return ret;
++
++	*val = req.rbuf[channel];
++
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info twl4030_madc_iio_info = {
++	.read_raw = &twl4030_madc_read,
++	.driver_module = THIS_MODULE,
++};
++
++#define TWL4030_ADC_CHANNEL(_channel, _type, _name, _mask) {	\
++	.type = _type,					\
++	.channel = _channel,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
++			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
++			      _mask,			\
++	.datasheet_name = _name,			\
++	.indexed = 1,					\
++}
++
++static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
++	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0", 0),
++	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1",
++		BIT(IIO_CHAN_INFO_PROCESSED)),
++	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2", 0),
++	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3", 0),
++	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4", 0),
++	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5", 0),
++	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6", 0),
++	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7", 0),
++	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8", 0),
++	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9", 0),
++	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10",
++		BIT(IIO_CHAN_INFO_PROCESSED)),
++	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11", 0),
++	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12", 0),
++	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13", 0),
++	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14", 0),
++	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15", 0),
++};
++
+ static struct twl4030_madc_data *twl4030_madc;
+ 
+ struct twl4030_prescale_divider_ratios {
+@@ -702,28 +768,50 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct device_node *np = pdev->dev.of_node;
+ 	int irq, ret;
+ 	u8 regval;
++	struct iio_dev *iio_dev = NULL;
+ 
+-	if (!pdata) {
++	if (!pdata && !np) {
+ 		dev_err(&pdev->dev, "platform_data not available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+-	if (!madc)
++
++	iio_dev = devm_iio_device_alloc(&pdev->dev,
++					sizeof(struct twl4030_madc_data));
++	if (!iio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
+ 		return -ENOMEM;
++	}
+ 
++	madc = iio_priv(iio_dev);
+ 	madc->dev = &pdev->dev;
+ 
++	iio_dev->name = dev_name(&pdev->dev);
++	iio_dev->dev.parent = &pdev->dev;
++	iio_dev->dev.of_node = pdev->dev.of_node;
++	iio_dev->info = &twl4030_madc_iio_info;
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->channels = twl4030_madc_iio_channels;
++	iio_dev->num_channels = 16;
++
+ 	/*
+ 	 * Phoenix provides 2 interrupt lines. The first one is connected to
+ 	 * the OMAP. The other one can be connected to the other processor such
+ 	 * as modem. Hence two separate ISR and IMR registers.
+ 	 */
+-	madc->imr = (pdata->irq_line == 1) ?
++	if (pdata)
++		madc->use_second_irq = pdata->irq_line != 1;
++	else
++		madc->use_second_irq = of_property_read_bool(np,
++				       "ti,system-uses-second-madc-irq");
++
++	madc->imr = (madc->use_second_irq == 1) ?
+ 	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
+-	madc->isr = (pdata->irq_line == 1) ?
++	madc->isr = (madc->use_second_irq == 1) ?
+ 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
++
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+ 		return ret;
+@@ -768,7 +856,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	platform_set_drvdata(pdev, madc);
++	platform_set_drvdata(pdev, iio_dev);
+ 	mutex_init(&madc->lock);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+@@ -780,7 +868,15 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		goto err_i2c;
+ 	}
+ 	twl4030_madc = madc;
++
++	ret = iio_device_register(iio_dev);
++	if (ret) {
++		dev_dbg(&pdev->dev, "could not register iio device\n");
++		goto err_i2c;
++	}
++
+ 	return 0;
++
+ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+@@ -790,20 +886,32 @@ err_current_generator:
+ 
+ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+-	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
++	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
+ 
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+ 
++	iio_device_unregister(iio_dev);
++
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id twl_madc_of_match[] = {
++	{.compatible = "ti,twl4030-madc", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, twl_madc_of_match);
++#endif
++
+ static struct platform_driver twl4030_madc_driver = {
+ 	.probe = twl4030_madc_probe,
+ 	.remove = twl4030_madc_remove,
+ 	.driver = {
+ 		   .name = "twl4030_madc",
+ 		   .owner = THIS_MODULE,
++		   .of_match_table = of_match_ptr(twl_madc_of_match),
+ 		   },
+ };
+ 
+-- 
+1.8.5.3
 
