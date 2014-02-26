@@ -1,4 +1,8 @@
-Return-Path: <sre@ring0.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([5.45.105.125]:53220 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751225AbaBZUDU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Feb 2014 15:03:20 -0500
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
 	Marek Belisko <marek@goldelico.com>,
@@ -12,87 +16,58 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@debian.org>
-Subject: [RFCv4 1/7] mfd: twl4030-madc: Use managed resources
-Date: Wed, 26 Feb 2014 21:03:04 +0100
-Message-Id: <1393444990-28140-2-git-send-email-sre@debian.org>
-In-Reply-To: <1393444990-28140-1-git-send-email-sre@debian.org>
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv4 0/7] Convert twl4030-madc to IIO API and add DT support
+Date: Wed, 26 Feb 2014 21:03:03 +0100
+Message-Id: <1393444990-28140-1-git-send-email-sre@debian.org>
+In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
 References: <1393374270-20079-1-git-send-email-sre@debian.org>
- <1393444990-28140-1-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Update twl4030-madc driver to use managed resources.
+Hi,
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+This is RFCv4 for converting twl4030-madc to the IIO API and
+adding DT support. The patchset compiles and has been tested
+on my Nokia N900.
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
- }
- 
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
- 
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
+Changes since RFCv3 [0]:
+ * Added Acked-by from Lee Jones (MFD subsystem maintainer)
+   to twl_i2c_read/write_u16 patches
+ * Fixed style issues found by Lee Jones
+   This readded the temp variable Jonathan Cameron wanted to
+   be removed, but makes the code cleaner - especially once
+   the brackets for math for clarity are added.
+ * Tested with converted rx51-battery driver on Nokia N900,
+   which can be found at [1].
+
+[0] https://lkml.org/lkml/2014/2/25/627
+[1] https://lkml.org/lkml/2014/2/25/639
+
+-- Sebastian
+
+Sebastian Reichel (7):
+  mfd: twl4030-madc: Use managed resources
+  mfd: twl4030-madc: Add DT support and convert to IIO framework
+  mfd: twl4030-madc: Cleanup driver
+  mfd: twl-core: Add twl_i2c_read/write_u16
+  mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+  Documentation: DT: Document twl4030-madc binding
+  mfd: twl4030-madc: Move driver to drivers/iio/adc
+
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c            | 281 +++++++++++++--------
+ drivers/mfd/Kconfig                                |  10 -
+ drivers/mfd/Makefile                               |   1 -
+ include/linux/i2c/twl.h                            |  12 +
+ include/linux/i2c/twl4030-madc.h                   |   2 +-
+ 8 files changed, 227 insertions(+), 114 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (77%)
+
 -- 
 1.8.5.3
+
