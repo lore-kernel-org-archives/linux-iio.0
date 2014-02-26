@@ -1,48 +1,80 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 24 Feb 2014 16:05:47 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
+Return-Path: <sre@debian.org>
+Date: Wed, 26 Feb 2014 22:54:52 +0100
+From: Sebastian Reichel <sre@debian.org>
+To: Belisko Marek <marek.belisko@gmail.com>
+Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
 	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [RFCv1 4/4] mfd: twl4030-madc: Move driver to drivers/iio/adc
-Message-ID: <20140224160547.GD15847@lee--X1>
-References: <20140214174040.GB26969@earth.universe>
- <1392403586-30540-1-git-send-email-sre@debian.org>
- <1392403586-30540-4-git-send-email-sre@debian.org>
+	LKML <linux-kernel@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio@vger.kernel.org,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>
+Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
+Message-ID: <20140226215452.GA11468@earth.universe>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+ <1393375569-21751-2-git-send-email-sre@debian.org>
+ <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1392403586-30540-4-git-send-email-sre@debian.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="oyUTqETQ0mS9luUI"
+In-Reply-To: <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> This is a driver for an A/D converter, which belongs into
-> drivers/iio/adc.
-> 
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-> ---
->  drivers/iio/adc/Kconfig        |  10 +
->  drivers/iio/adc/Makefile       |   1 +
->  drivers/iio/adc/twl4030-madc.c | 922 +++++++++++++++++++++++++++++++++++++++++
->  drivers/mfd/Kconfig            |  10 -
->  drivers/mfd/Makefile           |   1 -
->  drivers/mfd/twl4030-madc.c     | 922 -----------------------------------------
->  6 files changed, 933 insertions(+), 933 deletions(-)
->  create mode 100644 drivers/iio/adc/twl4030-madc.c
->  delete mode 100644 drivers/mfd/twl4030-madc.c
 
-For the MFD changes:
-  Acked-by: Lee Jones <lee.jones@linaro.org>
+--oyUTqETQ0mS9luUI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Hi,
+
+On Wed, Feb 26, 2014 at 10:43:40PM +0100, Belisko Marek wrote:
+> [...]
+> > +       int val, err;
+> > +       err = iio_read_channel_average_raw(channel, &val);
+> Where this function comes from? I cannot find it in current linux-next
+> (only iio_read_channel_raw()). Am I missing some patches? Thx.
+
+Ah right. I planned to send a patch adding this function together
+with the rx51-battery patchset, but it seems I forgot to include it.
+
+Sorry for the inconvenience. I will send it out as a separate patch
+now.
+
+> BTW when I convert to iio consumer and use DT some of values work
+> but some of them just report 0 :( (I don't have latest twl4030-madc
+> iio patches).
+
+Can you retry with the twl4030-madc iio patch from today? The
+older patchsets, which do not contain the "tested on real hw"
+note are slightly broken.
+
+-- Sebastian
+
+--oyUTqETQ0mS9luUI
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJTDmKsAAoJENju1/PIO/qauEUP/AwF+4r9Wk3+oFDongD2CCT+
+MPEIn3zhRnksdrOP5X/3pIAjFOFxcmZC3gi4mAkUCZ6G5asEDXwS4LwtdSgZTvuF
+W/zpOyFYPY7W0zVqU0jt2xCnpKzSbYfwGY7vSM4SE/2NHl0KYcPC56mUNuHX6r/K
++7+4usAC7Nt5lFjLfwjkZfU5GsPBN69cOEg63M1eR8aC7pBIKxa0Qk1ww7lLz81m
+rPjWBOK8Adk60BOMZVBYoUD1kb0WT2Ow+CPzeJuxWGXdltrurrwoAU9R8Y47ukoH
+JrNv1hpSitBD5bldKygbwwsZpo+QyEX0LwyR8f2s3Zf6XJP1GYc/gfJAYiebm0UH
+K8YR6tH89IMBf5btTXuZvZdCQbcMJwSSUbZ0HZS0tzn345mtbwQsrztk1yl3b7Pu
+pVipWYXk6CzM9oCyYJeqtDIuJ6J5xcG6Dfmz6rUcL4PttnOeXwwt3IJXEtel+Y69
+rcPiqINWx2RNBfyKfbLzb+hfd/O8QCepA6goZ0FJ2pyXGVbH6+7qyr4FYXaIojU4
+kJOdJziTa9HZsblptH6PIp0Ql+qaEdpctl/VLetkQnlRlL8DXdDojZicd0SD9wW9
+mS1PkGR1iGd/uCoMpV2vKE91rQBl8L0EVWx5ci7ih8ikOV3E7LCWLOBzdik7EO0Y
+zqg+W6U86wqTQZPp+3MK
+=HVjH
+-----END PGP SIGNATURE-----
+
+--oyUTqETQ0mS9luUI--
