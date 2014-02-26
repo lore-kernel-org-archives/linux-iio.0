@@ -1,57 +1,111 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48595 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753419AbaBYUtO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2014 15:49:14 -0500
-Message-ID: <530D01F3.1020209@kernel.org>
-Date: Tue, 25 Feb 2014 20:49:55 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>,
-	Dan Carpenter <dan.carpenter@oracle.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: iio:magnetometer:mag3110: Scale factor missing for temperature
-References: <20140224220419.GC29170@elgon.mountain> <alpine.DEB.2.01.1402252053550.30927@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1402252053550.30927@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sre@ring0.de>
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@debian.org>
+Subject: [RFCv4 7/7] mfd: twl4030-madc: Move driver to drivers/iio/adc
+Date: Wed, 26 Feb 2014 21:03:10 +0100
+Message-Id: <1393444990-28140-8-git-send-email-sre@debian.org>
+In-Reply-To: <1393444990-28140-1-git-send-email-sre@debian.org>
+References: <1393374270-20079-1-git-send-email-sre@debian.org>
+ <1393444990-28140-1-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/02/14 20:00, Peter Meerwald wrote:
->
->> The patch f9279d3a8cc8: "iio:magnetometer:mag3110: Scale factor
->> missing for temperature" from Oct 1, 2014, leads to the following
->>                                ^^^^^^^^^^^
->> [ just the other day people were searching the internet for time
->>    travellers from the future ].
->
-> this is indeed weird
-Quite.  The interesting question is how did the date format get messed up.
->
->> 	drivers/iio/magnetometer/mag3110.c:197 mag3110_read_raw()
->> 	info: ignoring unreachable code.
->>
->> drivers/iio/magnetometer/mag3110.c
->>     185          case IIO_CHAN_INFO_SCALE:
->>     186                  switch (chan->type) {
->>     187                  case IIO_MAGN:
->>     188                          *val = 0;
->>     189                          *val2 = 1000;
->>     190                          return IIO_VAL_INT_PLUS_MICRO;
->>     191                  case IIO_TEMP:
->>     192                          *val = 1000;
->>     193                          return IIO_VAL_INT;
->>     194                  default:
->>     195                          return -EINVAL;
->>     196                  }
->>     197                  return IIO_VAL_INT_PLUS_MICRO;
->>                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->> Was -EINVAL intended here?
->
-> no, this is dead code as the checker indicated
->
-> thanks for reporting, sent fix to linux-iio
->
-> p.
->
+This is a driver for an A/D converter, which belongs into
+drivers/iio/adc.
 
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/adc/Kconfig                 | 10 ++++++++++
+ drivers/iio/adc/Makefile                |  1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c |  0
+ drivers/mfd/Kconfig                     | 10 ----------
+ drivers/mfd/Makefile                    |  1 -
+ 5 files changed, 11 insertions(+), 11 deletions(-)
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (100%)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 2209f28..427f75c 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -183,6 +183,16 @@ config TI_AM335X_ADC
+ 	  Say yes here to build support for Texas Instruments ADC
+ 	  driver which is also a MFD client.
+ 
++config TWL4030_MADC
++	tristate "TWL4030 MADC (Monitoring A/D Converter)"
++	depends on TWL4030_CORE
++	help
++	This driver provides support for Triton TWL4030-MADC. The
++	driver supports both RT and SW conversion methods.
++
++	This driver can also be built as a module. If so, the module will be
++	called twl4030-madc.
++
+ config TWL6030_GPADC
+ 	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
+ 	depends on TWL4030_CORE
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ba9a10a..9acf2df 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,5 +20,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
++obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+ obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+similarity index 100%
+rename from drivers/mfd/twl4030-madc.c
+rename to drivers/iio/adc/twl4030-madc.c
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 49bb445..23a8a51 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -935,16 +935,6 @@ config TWL4030_CORE
+ 	  high speed USB OTG transceiver, an audio codec (on most
+ 	  versions) and many other features.
+ 
+-config TWL4030_MADC
+-	tristate "TI TWL4030 MADC"
+-	depends on TWL4030_CORE
+-	help
+-	This driver provides support for triton TWL4030-MADC. The
+-	driver supports both RT and SW conversion methods.
+-
+-	This driver can be built as a module. If so it will be
+-	named twl4030-madc
+-
+ config TWL4030_POWER
+ 	bool "TI TWL4030 power resources"
+ 	depends on TWL4030_CORE && ARM
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 5aea5ef..c8eb0bc 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -71,7 +71,6 @@ obj-$(CONFIG_MFD_TPS80031)	+= tps80031.o
+ obj-$(CONFIG_MENELAUS)		+= menelaus.o
+ 
+ obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
+-obj-$(CONFIG_TWL4030_MADC)      += twl4030-madc.o
+ obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
+ obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
+ obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
+-- 
+1.8.5.3
