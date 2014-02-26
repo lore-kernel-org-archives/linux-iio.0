@@ -1,80 +1,59 @@
-Return-Path: <sre@debian.org>
-Date: Wed, 26 Feb 2014 22:54:52 +0100
-From: Sebastian Reichel <sre@debian.org>
-To: Belisko Marek <marek.belisko@gmail.com>
-Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>
-Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
-Message-ID: <20140226215452.GA11468@earth.universe>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
- <1393375569-21751-2-git-send-email-sre@debian.org>
- <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
+Return-Path: <Johannes.Thumshirn@men.de>
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron
+	<jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Johannes
+ Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH v3 0/3] drivers/mcb: Bus support for MEN Chameleon Bus
+Date: Wed, 26 Feb 2014 17:29:04 +0100
+Message-ID: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="oyUTqETQ0mS9luUI"
-In-Reply-To: <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
+This patch-set introduces the MEN Chameleon Bus (MCB). MCB is not a "real" bus
+like PCI, but a header section in the beginning of the FPGAs memory. This
+headers are used to describe the IP-Cores inside that FPGA.
 
---oyUTqETQ0mS9luUI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The MCB driver parses this header section and creates devices for the single
+IP-Cores. It also provides an interface for device drivers to access these
+resources.
 
-Hi,
+Currently the bus driver has some limitations, for example IRQ handling or
+memory mapped memory support, which will be addressed once drivers that need
+these features are submitted.
 
-On Wed, Feb 26, 2014 at 10:43:40PM +0100, Belisko Marek wrote:
-> [...]
-> > +       int val, err;
-> > +       err = iio_read_channel_average_raw(channel, &val);
-> Where this function comes from? I cannot find it in current linux-next
-> (only iio_read_channel_raw()). Am I missing some patches? Thx.
+As a first driver using the new bus, men_z188_adc.c, an IIO ADC driver, is
+included in this patch-set.
 
-Ah right. I planned to send a patch adding this function together
-with the rx51-battery patchset, but it seems I forgot to include it.
+Johannes Thumshirn (3):
+  drivers: Introduce MEN Chameleon Bus
+  mcb: Add PCI carrier for MEN Chameleon Bus
+  iio: adc: Add MEN 16z188 ADC driver
 
-Sorry for the inconvenience. I will send it out as a separate patch
-now.
+ MAINTAINERS                     |   6 +
+ drivers/Kconfig                 |   2 +
+ drivers/Makefile                |   1 +
+ drivers/iio/adc/Kconfig         |  10 +
+ drivers/iio/adc/Makefile        |   1 +
+ drivers/iio/adc/men_z188_adc.c  | 171 +++++++++++++++++
+ drivers/mcb/Kconfig             |  29 +++
+ drivers/mcb/Makefile            |   7 +
+ drivers/mcb/mcb-core.c          | 414 ++++++++++++++++++++++++++++++++++++++++
+ drivers/mcb/mcb-internal.h      | 118 ++++++++++++
+ drivers/mcb/mcb-parse.c         | 159 +++++++++++++++
+ drivers/mcb/mcb-pci.c           | 114 +++++++++++
+ include/linux/mcb.h             | 119 ++++++++++++
+ include/linux/mod_devicetable.h |   5 +
+ 14 files changed, 1156 insertions(+)
+ create mode 100644 drivers/iio/adc/men_z188_adc.c
+ create mode 100644 drivers/mcb/Kconfig
+ create mode 100644 drivers/mcb/Makefile
+ create mode 100644 drivers/mcb/mcb-core.c
+ create mode 100644 drivers/mcb/mcb-internal.h
+ create mode 100644 drivers/mcb/mcb-parse.c
+ create mode 100644 drivers/mcb/mcb-pci.c
+ create mode 100644 include/linux/mcb.h
 
-> BTW when I convert to iio consumer and use DT some of values work
-> but some of them just report 0 :( (I don't have latest twl4030-madc
-> iio patches).
-
-Can you retry with the twl4030-madc iio patch from today? The
-older patchsets, which do not contain the "tested on real hw"
-note are slightly broken.
-
--- Sebastian
-
---oyUTqETQ0mS9luUI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJTDmKsAAoJENju1/PIO/qauEUP/AwF+4r9Wk3+oFDongD2CCT+
-MPEIn3zhRnksdrOP5X/3pIAjFOFxcmZC3gi4mAkUCZ6G5asEDXwS4LwtdSgZTvuF
-W/zpOyFYPY7W0zVqU0jt2xCnpKzSbYfwGY7vSM4SE/2NHl0KYcPC56mUNuHX6r/K
-+7+4usAC7Nt5lFjLfwjkZfU5GsPBN69cOEg63M1eR8aC7pBIKxa0Qk1ww7lLz81m
-rPjWBOK8Adk60BOMZVBYoUD1kb0WT2Ow+CPzeJuxWGXdltrurrwoAU9R8Y47ukoH
-JrNv1hpSitBD5bldKygbwwsZpo+QyEX0LwyR8f2s3Zf6XJP1GYc/gfJAYiebm0UH
-K8YR6tH89IMBf5btTXuZvZdCQbcMJwSSUbZ0HZS0tzn345mtbwQsrztk1yl3b7Pu
-pVipWYXk6CzM9oCyYJeqtDIuJ6J5xcG6Dfmz6rUcL4PttnOeXwwt3IJXEtel+Y69
-rcPiqINWx2RNBfyKfbLzb+hfd/O8QCepA6goZ0FJ2pyXGVbH6+7qyr4FYXaIojU4
-kJOdJziTa9HZsblptH6PIp0Ql+qaEdpctl/VLetkQnlRlL8DXdDojZicd0SD9wW9
-mS1PkGR1iGd/uCoMpV2vKE91rQBl8L0EVWx5ci7ih8ikOV3E7LCWLOBzdik7EO0Y
-zqg+W6U86wqTQZPp+3MK
-=HVjH
------END PGP SIGNATURE-----
-
---oyUTqETQ0mS9luUI--
+--
+1.8.5.4
