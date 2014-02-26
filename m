@@ -1,102 +1,136 @@
-Return-Path: <marek.belisko@gmail.com>
+Return-Path: <manuel.stahl@iis.fraunhofer.de>
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org
+Subject: Re: [RFC] IIO: New interfaces for 'interesting' channel types.
+Date: Wed, 26 Feb 2014 21:58:35 +0100
+Cc: mporter@linaro.org,
+ lars@metafoo.de,
+ pmeerw@pmeerw.net,
+ denis.ciocca@st.com,
+ maxime.ripard@free-electrons.com,
+ mranostay@gmail.com
+References: <530D03F4.2080400@kernel.org>
+In-Reply-To: <530D03F4.2080400@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
-	<1393374270-20079-1-git-send-email-sre@debian.org>
-Date: Wed, 26 Feb 2014 12:42:55 +0100
-Message-ID: <CAAfyv35C_a+OA1WAMVYwJquM7YEJy3Fdu+TgkNU9R30xhX6D3w@mail.gmail.com>
-Subject: Re: [RFCv3 0/7] Convert twl4030-madc to IIO API and add DT support
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
-	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="utf-8"
+Message-Id: <201402262158.35883.manuel.stahl@iis.fraunhofer.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Sebastian,
+Hi Jonathan,
 
-On Wed, Feb 26, 2014 at 1:24 AM, Sebastian Reichel <sre@debian.org> wrote:
-> Hi,
->
-> This is RFCv3 for converting twl4030-madc to the IIO API and
-> adding DT support. The patchset compiles and has been tested
-> on my Nokia N900.
->
-> Changes since RFCv2:
->  * Use "--find-renames" for the move from mfd/ to iio/adc/ ;)
->  * Added Acked-by from Lee Jones (MFD subsystem maintainer)
->  * Fixed issue found by Joe Perches
->   - twl4030_madc_request.do_avg should be bool instead of u16
->  * Fixed issues found by Peter Meerwald
->   - some style issues (e.g. /** instead of /*)
->   - typos
->   - usage of u16 read/write
->  * Tested with converted rx51-battery driver on Nokia N900
->
-> TODO:
->  * Remove twl4030-madc-hwmon in favour of iio-hwmon
->    This driver is currently only used by board-omap3beagle.c
->    and board-rx51-peripherals.c. The instanciation in the
->    rx51 boardcode is a bug, since actually only twl4030-madc
->    is needed. Thus board-omap3beagle.c needs to be updated to
->    iio-hwmon and board-rx51-peripherals.c to twl4030-madc.
->    Both tasks are pretty trivial and twl4030-madc-hwmon can
->    be removed afterwards :)
->  * Update twl4030-madc-battery to the IIO API. I guess Marek
->    will do this update in the near future, since he is currently
->    writing DT bindings for the driver.
-Yes I'm working on DT for twl4030-madc-battery. I'll convert it also to IIO
-and post for comments. Thanks for doing that it's really nice work!
->  * I updated twl4030-madc-battery already and will send it
->    in a separate patchset.
->  * Once all of the above steps happened the old API can be
->    removed from the driver, which allows some more cleanups.
->
-> -- Sebastian
->
-> Sebastian Reichel (7):
->   mfd: twl4030-madc: Use managed resources
->   mfd: twl4030-madc: Add DT support and convert to IIO framework
->   mfd: twl4030-madc: Cleanup driver
->   mfd: twl-core: Add twl_i2c_read/write_u16
->   mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
->   Documentation: DT: Document twl4030-madc binding
->   mfd: twl4030-madc: Move driver to drivers/iio/adc
->
->  .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
->  drivers/iio/adc/Kconfig                            |  10 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/{mfd => iio/adc}/twl4030-madc.c            | 278 +++++++++++++--------
->  drivers/mfd/Kconfig                                |  10 -
->  drivers/mfd/Makefile                               |   1 -
->  include/linux/i2c/twl.h                            |  12 +
->  include/linux/i2c/twl4030-madc.h                   |   2 +-
->  8 files changed, 224 insertions(+), 114 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
->  rename drivers/{mfd => iio/adc}/twl4030-madc.c (77%)
->
-> --
-> 1.8.5.3
->
+thanks for the very good presentation.
 
-BR,
 
-marek
+> Firstly, the quaternion interface.  Quaternions require 4 components to
+> be presented together in order for any meaning to be extracted.  Thus it
+> makes no sense to ever present their components separately.  To this end
+> a new interface is proposed in which all 4 components are presented as
+> a space separated list.  Whilst I welcome comments on this, the actual
+> question I am raising here concerns not what is presented, but the way we
+> indicate that this is what is to be expected.
+> 
+> Two obvious options exist as we have two places this type could be
+> 'represented'.  Either we introduce a new channel type - rotquaternion
+> which is defined to be a rotation expressed as a quaternion, or we take
+> the existing channel type rot and apply a modifier (similar to an axis
+> modifier) to indicate that rather than being a rotation about a given
+> axis, we have a rotation represented as a quaternion.  This would be done
+> with a new modifier.  To illustrate the point, lets take a few example
+> sysfs attributes.
+> 
+> Option 1. New channel type
+> 
+> in_rotquaternion1_raw
+> in_rotquaternion1_scale
+> 
+> Option 2. New modifier.
+> 
+> in_rot1_quaternion_raw
+> in_rot1_quaternion_scale
 
--- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
+I prefer option 2 since we still measure a rotation, but an axis makes no sense.
+I'd even propose to additionally have:
 
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
+in_rot1_xyz_raw
+
+to present x y and z in one single reading since a lot of sensor supply a measurement from the same point in time when reading out all values together.
+
+
+
+> Next lets take the ecap driver and it's pulse characteristic measurement
+> interface.  Here we have a single underlying thing (the waveform) about
+> which we wish to measure a number of elements.  Again, we can either do
+> this via new channel types, or via modifiers. Note there is precedence for
+> using index numbers to indicate that multiple measurements are being taken
+> via the same physical wire of different things.
+> 
+> Option 1. New Channel types (I'm making the naming up as a go along - the
+> aim here is generality to other things we might measure and time intervals
+> are more general than 'pulse' or similar types)
+> 
+> in_interval1_high_raw  (time pulse is high)
+> in_interval_scale
+> 
+> in_interval1_low_raw (time pulse is low)
+> 
+> in_interval_risingtorising_raw (period measured rising edge to rising edge)
+> in_interval_fallingtofalling_raw (period measured falling to falling)
+> 
+> 
+> in_interval_rising_raw (rise time of waveform).
+> in_interval_falling_raw (fall time of waveform).
+> 
+> in_voltage_peaktopeak_raw (peak to peak voltage).  We actually have
+> interfaces in place for this sort of stuff.
+> 
+> Option 2 - modifiers for everything. (this is what I suggested in -
+> http://www.spinics.net/lists/linux-omap/msg103204.html
+> 
+> in_waveformX_hightime_raw
+> in_waveformX_lowtime_raw
+> in_waveformX_period_raw
+> in_waveformX_markspace_raw
+> in_waveformX_peaktopeak_raw
+> in_waveformX_risetime_raw
+> in_waveformX_falltime_raw
+> 
+> Personally my thinking has changed since my ecap related email.
+> I think we want to keep the channel types to be strictly what quantity
+> is being measured and rely on shared index numbers to indicate that
+> we are dealing with multiple measurements of a given 'channel'.
+> 
+> Hence I slightly favour option 1.  However the reason I'm sending this
+> RFC is I definitely want more input on this decision from other regular
+> IIO developers (and anyone else!).  I'm particularly interested in
+> cases that people don't think are cleanly covered by the proposed options.
+> I've picked a few people to poke via ccing them, but please do send this
+> on to anyone else you think might contribute to the discussion.
+
+Here I'm with you. Your arguments make perfectly sense for me.
+
+
+> It's going to tie us to a large body of ABI moving forwards.
+> My apologies to Matt and Srinivas for the fact your drivers have gotten
+> caught up in this, but we need to get it right.
+> 
+> Whilst we are talking interface reviews.  Another one I proposed recently
+> was spherical coordinates for position measurements.  The main reason
+> for this is that it gives a unified way of indicating distance from sensor
+> as
+> 
+> in_position_r_raw
+
+Why would this be a position when you actually measure distance? Can you give an example?
+
+> There are also magnetic position sensors that report in full spherical
+> coordinates so we may want the other elements down the line.
+> I'm kind of regretting letting the generic 'proximity' interface in now.
+> Those are measuring something related to distance, but material dependent
+> so I'm not too bothered if we introduced another similar interface.
+> Anyone comments on this would be great as well as I'd like to get the
+> lightning sensor merged sooner rather than later!
+
+Regards,
+Manuel
