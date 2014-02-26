@@ -1,77 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:34979 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750941AbaB1CFm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 27 Feb 2014 21:05:42 -0500
-Date: Fri, 28 Feb 2014 03:05:37 +0100
-From: Sebastian Reichel <sre@debian.org>
-To: Belisko Marek <marek.belisko@gmail.com>
-Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
+Return-Path: <lee.jones@linaro.org>
+Date: Wed, 26 Feb 2014 08:29:22 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>
-Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
-Message-ID: <20140228020536.GB5427@earth.universe>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
- <1393375569-21751-2-git-send-email-sre@debian.org>
- <CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
- <20140226215452.GA11468@earth.universe>
- <CAAfyv340pA2ihUAoFytBgevLtedvtj5Z0aw_=G9Rbx5occtyqw@mail.gmail.com>
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv3 3/7] mfd: twl4030-madc: Cleanup driver
+Message-ID: <20140226082922.GH9195@lee--X1>
+References: <1393193271-16717-1-git-send-email-sre@debian.org>
+ <1393374270-20079-1-git-send-email-sre@debian.org>
+ <1393374270-20079-4-git-send-email-sre@debian.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rS8CxjVDS/+yyDmU"
-In-Reply-To: <CAAfyv340pA2ihUAoFytBgevLtedvtj5Z0aw_=G9Rbx5occtyqw@mail.gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1393374270-20079-4-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
+> Some style fixes in twl4030-madc driver.
+> 
+> Reported-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> ---
+>  drivers/mfd/twl4030-madc.c       | 108 ++++++++++++++++++---------------------
+>  include/linux/i2c/twl4030-madc.h |   2 +-
+>  2 files changed, 51 insertions(+), 59 deletions(-)
+> 
+> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+> index 81484ee..c23025b 100644
+> --- a/drivers/mfd/twl4030-madc.c
+> +++ b/drivers/mfd/twl4030-madc.c
 
---rS8CxjVDS/+yyDmU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+>  /*
+> - * Return battery temperature
+> + * Return battery temperature in degree Celsius
 
-On Thu, Feb 27, 2014 at 10:34:35PM +0100, Belisko Marek wrote:
-> Well I've tried and it's worse :). I got during booting:
-> [    2.218383] ERROR: could not get IIO channel /battery:temp(0)
-> [    2.224639] platform battery.4: Driver twl4030_madc_battery
-> requests probe deferral
-> Not sure if it's just error or warning but temp is always reported as
-> 0 (and also other values in sysfs).
+degrees
 
-This is an error, which basically means, that twl4030-madc has not
-yet been loaded. Do you get proper values when you use the old madc
-API with the patchset applied?
+<snip>
 
--- Sebastian
+> -	int count = 0, count_req = 0, i;
+> -	u8 reg;
+> +	int count = 0, i;
 
---rS8CxjVDS/+yyDmU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Ugly, please declare on separate lines.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+>  	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
+> -		reg = reg_base + 2 * i;
 
-iQIcBAEBCgAGBQJTD+7wAAoJENju1/PIO/qa6JYP/ipg0aUiNmm5wexY07vlTDjk
-diG9GsobHlfN7WfGDVyD2o/ue9qTzHFGTKNNiB3qV4KZn1YPJyWBNnprBZ4Fpv13
-8FE3gzMO2XqKoMg3YwK1nZAfdPS4IXYv8ZaNR2kReZ+87xnRUGdPLrm8Uk9ZMjsh
-/eqTt4xV5yvcVP+cuFsHhM4tlSUxoHzkSdM5erQrZdaU7IqRL/M5ZFq2NRlhh8Fj
-jefZJ89rhghOjEBnV2Z95+pOkOknZA0Hz8Y1O9hEpOJ2QEDMkTtduAyr31GZmeq6
-HyyWcIjhGw4uMZW7mUgpsu3UwdaTUc8DEiYGS+h8YnWkzF9gKGiogDQo6j+TjzFk
-AOow7h8BaIgD+FM+laMXc18TFzcUE4I9noUc8VV4OR+JbntTPb80Ji75a3GlHSXF
-rXhWuaQPr3vlXmWLyNJETyTDoTCCCo45hpyEhjarowsd0nymevuuhY+OLqaNDsR0
-gJp44XAYCkukAryk8ybQDCkVJWmU0HBmkEXl0EXErKr105F93hePvA9M7uhsidaZ
-f4IP1P3qHNPXkuwz4DEiUeSOhzcB92cRGraFg45NubF18UiQTSXn5rj6spauz4m4
-Mntxtd7ApcTtYkIlLOEfD4b5sFzA9PwiYoAFLvly46RIx4uMwCIY3qcuFlEM7pE+
-tacrLHpKBEK6g855Y7uv
-=eysa
------END PGP SIGNATURE-----
+Odd for this to be removed, as you calculate more than once now.
 
---rS8CxjVDS/+yyDmU--
+> -		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
+> +		buf[i] = twl4030_madc_channel_raw_read(madc, reg_base + 2 * i);
+
+Better to bracket the math for clarity.
+
+<snip>
+
+> +			dev_err(madc->dev, "Unable to read register 0x%X\n",
+> +				reg_base + 2 * i);
+
+Here's the other calculation.
+
+> +	regmask = (chan == 0) ? TWL4030_BCI_TYPEN : TWL4030_BCI_ITHEN;
+
+regmask = chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN; 
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
