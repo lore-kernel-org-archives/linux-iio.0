@@ -1,78 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44472 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752400AbaBOLnI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:43:08 -0500
-Message-ID: <52FF52EF.4050209@kernel.org>
-Date: Sat, 15 Feb 2014 11:43:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Matt Porter <mporter@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
+Received: from ring0.de ([5.45.105.125]:47121 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753829AbaBZAZB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 25 Feb 2014 19:25:01 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Rob Herring <robh+dt@kernel.org>,
-	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
-	Thierry Reding <thierry.reding@gmail.com>
-CC: Linux IIO List <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
-	Linux PWM List <linux-pwm@vger.kernel.org>,
-	Linux OMAP List <linux-omap@vger.kernel.org>,
-	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3 6/6] ARM: dts: AM33XX: Add ecap interrupt properties
-References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <1391626901-31684-7-git-send-email-mporter@linaro.org>
-In-Reply-To: <1391626901-31684-7-git-send-email-mporter@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv3 4/7] mfd: twl-core: Add twl_i2c_read/write_u16
+Date: Wed, 26 Feb 2014 01:24:27 +0100
+Message-Id: <1393374270-20079-5-git-send-email-sre@debian.org>
+In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
+References: <1393193271-16717-1-git-send-email-sre@debian.org>
+ <1393374270-20079-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/02/14 19:01, Matt Porter wrote:
-> Add missing interrupt properties to the ecap0, ecap1, and ecap2
-> nodes.
->
-> Signed-off-by: Matt Porter <mporter@linaro.org>
-This one is unconnected from the rest of the series really so should go
-into the relevant arch tree whenever it make sense.
+Add a simple twl_i2c_read/write_u16 wrapper over
+the twl_i2c_read/write, which is similar to the
+twl_i2c_read/write_u8 wrapper.
 
-Jonathan
-> ---
->   arch/arm/boot/dts/am33xx.dtsi | 6 ++++++
->   1 file changed, 6 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
-> index 6d95d3d..b4139ba 100644
-> --- a/arch/arm/boot/dts/am33xx.dtsi
-> +++ b/arch/arm/boot/dts/am33xx.dtsi
-> @@ -582,6 +582,8 @@
->   				compatible = "ti,am33xx-ecap";
->   				#pwm-cells = <3>;
->   				reg = <0x48300100 0x80>;
-> +				interrupts = <31>;
-> +				interrupt-names = "ecap0";
->   				ti,hwmods = "ecap0";
->   				status = "disabled";
->   			};
-> @@ -610,6 +612,8 @@
->   				compatible = "ti,am33xx-ecap";
->   				#pwm-cells = <3>;
->   				reg = <0x48302100 0x80>;
-> +				interrupts = <47>;
-> +				interrupt-names = "ecap1";
->   				ti,hwmods = "ecap1";
->   				status = "disabled";
->   			};
-> @@ -638,6 +642,8 @@
->   				compatible = "ti,am33xx-ecap";
->   				#pwm-cells = <3>;
->   				reg = <0x48304100 0x80>;
-> +				interrupts = <61>;
-> +				interrupt-names = "ecap2";
->   				ti,hwmods = "ecap2";
->   				status = "disabled";
->   			};
->
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ include/linux/i2c/twl.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
+index ade1c06..d2b1670 100644
+--- a/include/linux/i2c/twl.h
++++ b/include/linux/i2c/twl.h
+@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
+ 	return twl_i2c_read(mod_no, val, reg, 1);
+ }
+ 
++static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
++	val = cpu_to_le16(val);
++	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
++}
++
++static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
++	int ret;
++	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
++	*val = le16_to_cpu(*val);
++	return ret;
++}
++
+ int twl_get_type(void);
+ int twl_get_version(void);
+ int twl_get_hfclk_rate(void);
+-- 
+1.8.5.3
 
