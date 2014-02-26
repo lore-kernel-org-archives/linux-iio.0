@@ -1,91 +1,200 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ee0-f47.google.com ([74.125.83.47]:57610 "EHLO
-	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750841AbaBZOPP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2014 09:15:15 -0500
-Date: Wed, 26 Feb 2014 15:15:10 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Matt Porter <mporter@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
-	Rob Herring <robh+dt@kernel.org>,
-	=?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Linux IIO List <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
-	Linux PWM List <linux-pwm@vger.kernel.org>,
-	Linux OMAP List <linux-omap@vger.kernel.org>,
-	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3 5/6] pwm: enable TI PWMSS if the IIO tiecap driver is
- selected
-Message-ID: <20140226141508.GF29779@ulmo.nvidia.com>
-References: <1391626901-31684-1-git-send-email-mporter@linaro.org>
- <1391626901-31684-6-git-send-email-mporter@linaro.org>
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.162]:18200 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752038AbaBZQ3e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2014 11:29:34 -0500
+From: Johannes Thumshirn <johannes.thumshirn@men.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH v3 2/3] mcb: Add PCI carrier for MEN Chameleon Bus
+Date: Wed, 26 Feb 2014 17:29:06 +0100
+Message-ID: <1393432147-31355-3-git-send-email-johannes.thumshirn@men.de>
+In-Reply-To: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nYySOmuH/HDX6pKp"
-In-Reply-To: <1391626901-31684-6-git-send-email-mporter@linaro.org>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Add support for MCB over PCI devices. Both PCI attached on-board Chameleon FPGAs
+as well as CompactPCI based MCB carrier cards are supported with this driver.
 
---nYySOmuH/HDX6pKp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+---
+ drivers/mcb/Kconfig        |  14 ++++++
+ drivers/mcb/Makefile       |   2 +
+ drivers/mcb/mcb-internal.h |   2 +
+ drivers/mcb/mcb-pci.c      | 114 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 132 insertions(+)
+ create mode 100644 drivers/mcb/mcb-pci.c
 
-On Wed, Feb 05, 2014 at 02:01:40PM -0500, Matt Porter wrote:
-> The IIO TI ECAP driver depends on the TI PWMSS management
-> driver in this subsystem. Enable PWMSS when the IIO TI ECAP
-> driver is selected.
->=20
-> Signed-off-by: Matt Porter <mporter@linaro.org>
-> ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 22f2f28..bd3cc65 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -219,7 +219,7 @@ config  PWM_TIEHRPWM
-> =20
->  config  PWM_TIPWMSS
->  	bool
-> -	default y if SOC_AM33XX && (PWM_TIECAP || PWM_TIEHRPWM)
-> +	default y if SOC_AM33XX && (IIO_TIECAP || PWM_TIECAP || PWM_TIEHRPWM)
->  	help
->  	  PWM Subsystem driver support for AM33xx SOC.
+diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
+index 44c82d6..b8f5d46 100644
+--- a/drivers/mcb/Kconfig
++++ b/drivers/mcb/Kconfig
+@@ -13,3 +13,17 @@ menuconfig MCB
+ 	   for these devices.
+ 
+ 	   If build as a module, the module is called mcb.ko
++
++if MCB
++config MCB_PCI
++	   tristate "PCI based MCB carrier"
++	   default m
++	   help
++
++	   This is a MCB carrier on a PCI device. Both PCI attached on-board
++	   FPGAs as well as CompactPCI attached MCB FPGAs are supported with
++	   this driver.
++
++	   If build as a module, the module is called mcb-pci.ko
++
++endif # MCB
+diff --git a/drivers/mcb/Makefile b/drivers/mcb/Makefile
+index 2d9a751..1ae1413 100644
+--- a/drivers/mcb/Makefile
++++ b/drivers/mcb/Makefile
+@@ -3,3 +3,5 @@ obj-$(CONFIG_MCB) += mcb.o
+ 
+ mcb-y += mcb-core.o
+ mcb-y += mcb-parse.o
++
++obj-$(CONFIG_MCB_PCI) += mcb-pci.o
+diff --git a/drivers/mcb/mcb-internal.h b/drivers/mcb/mcb-internal.h
+index db22777..f956ef2 100644
+--- a/drivers/mcb/mcb-internal.h
++++ b/drivers/mcb/mcb-internal.h
+@@ -3,6 +3,8 @@
+ 
+ #include <linux/types.h>
+ 
++#define PCI_VENDOR_ID_MEN		0x1a88
++#define PCI_DEVICE_ID_MEN_CHAMELEON	0x4d45
+ #define CHAMELEON_FILENAME_LEN		12
+ #define CHAMELEONV2_MAGIC		0xabce
+ 
+diff --git a/drivers/mcb/mcb-pci.c b/drivers/mcb/mcb-pci.c
+new file mode 100644
+index 0000000..99c742c
+--- /dev/null
++++ b/drivers/mcb/mcb-pci.c
+@@ -0,0 +1,114 @@
++/*
++ * MEN Chameleon Bus.
++ *
++ * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
++ * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the Free
++ * Software Foundation; version 2 of the License.
++ */
++
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/mcb.h>
++
++#include "mcb-internal.h"
++
++struct priv {
++	struct mcb_bus *bus;
++	void __iomem *base;
++};
++
++static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	struct priv *priv;
++	phys_addr_t mapbase;
++	int ret;
++	int num_cells;
++	unsigned long flags;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(struct priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	ret = pci_enable_device(pdev);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		return -ENODEV;
++	}
++
++	mapbase = pci_resource_start(pdev, 0);
++	if (!mapbase) {
++		dev_err(&pdev->dev, "No PCI resource\n");
++		goto err_start;
++	}
++
++	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
++		goto err_start;
++	}
++
++	priv->base = pci_iomap(pdev, 0, 0);
++	if (!priv->base) {
++		dev_err(&pdev->dev, "Cannot ioremap\n");
++		ret = -ENOMEM;
++		goto err_ioremap;
++	}
++
++	flags = pci_resource_flags(pdev, 0);
++	if (flags & IORESOURCE_IO) {
++		ret = -ENOTSUPP;
++		dev_err(&pdev->dev,
++			"IO mapped PCI devices are not supported\n");
++		goto err_ioremap;
++	}
++
++	pci_set_drvdata(pdev, priv);
++
++	priv->bus = mcb_alloc_bus();
++
++	ret = chameleon_parse_cells(priv->bus, mapbase, priv->base);
++	if (ret < 0)
++		goto err_drvdata;
++	num_cells = ret;
++
++	dev_dbg(&pdev->dev, "Found %d cells\n", num_cells);
++
++	mcb_bus_add_devices(priv->bus);
++
++err_drvdata:
++	pci_iounmap(pdev, priv->base);
++err_ioremap:
++	pci_release_region(pdev, 0);
++err_start:
++	pci_disable_device(pdev);
++	return ret;
++}
++
++static void mcb_pci_remove(struct pci_dev *pdev)
++{
++	struct priv *priv = pci_get_drvdata(pdev);
++
++	mcb_release_bus(priv->bus);
++}
++
++static const struct pci_device_id mcb_pci_tbl[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_MEN, PCI_DEVICE_ID_MEN_CHAMELEON) },
++	{ 0 },
++};
++MODULE_DEVICE_TABLE(pci, mcb_pci_tbl);
++
++static struct pci_driver mcb_pci_driver = {
++	.name = "mcb-pci",
++	.id_table = mcb_pci_tbl,
++	.probe = mcb_pci_probe,
++	.remove = mcb_pci_remove,
++};
++
++module_pci_driver(mcb_pci_driver);
++
++MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("MCB over PCI support");
+-- 
+1.8.5.4
 
-Perhaps this module should move out of drivers/pwm if it's no longer a
-PWM specific module.
-
-Thierry
-
---nYySOmuH/HDX6pKp
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTDfbsAAoJEN0jrNd/PrOhECAP/j2I0zpD7fFA5CK5JNLz4ZdF
-Fxp0JEtEAPHhw/36hcUiillkwbnl3bmPGEsFLjIOmyL22LvMkmiOGsAgkQjcPvcJ
-6cNwu/cn56t4L4k+jQAa0oSCqMIyQTASCUC13b+L/1tGUwBvoXnStarLcBQuWrTX
-fcNs8PCHXqe59+/xL81eIgFMxJuWJ8XvuDWW8jrL9ffg9RH6s5VqZcu5u0WhISlf
-jw+VJurPAZskB553Ve6QFMLAsf5xvfmu4R4Tm7U2vlDxzdYLbEQWCRf87HVipKQr
-3MC3Rm9W2vAFKFFJFwx5oz1WnsCkH7BYt0MyfSn3Tt8WP6TXgS7dZRa85zt42E4P
-4XdUaVTFJ3/ikuFQdVUlD3Hlp4fWZX1TxTBPHF7fiwUxSdkO+PtwYgdmAJvIjEIt
-gFzhX+6de9xBAbj6ei/1VWx9CUPUaKC00GpB9UwuwjYiWAuzuSmc9yIke515Vg8f
-fvtv+b9fgpeU3j5UZ2pXyZKsk2ONZfGQjavEZw99/rM/v+BKXs3PpiGKkOJex+s6
-Cgn0KbhGtvQwKWj55lKLW52G6QHpJlmSE/UCQrcI0sVenrQZt/5nld4JuTKMmKrY
-kSKE9dzozmTLVVHmufj2vojfIWLMXdwl7wGr+mOfxs/wb41Z7gDV1+uZZgpXZ/sT
-Wivk3DjAFknD5cmFYupo
-=gNT3
------END PGP SIGNATURE-----
-
---nYySOmuH/HDX6pKp--
