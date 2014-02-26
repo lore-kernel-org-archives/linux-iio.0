@@ -1,59 +1,247 @@
-Return-Path: <Johannes.Thumshirn@men.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.152]:15616 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752143AbaBZQ3g (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2014 11:29:36 -0500
 From: Johannes Thumshirn <johannes.thumshirn@men.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron
-	<jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Johannes
- Thumshirn <johannes.thumshirn@men.de>
-Subject: [PATCH v3 0/3] drivers/mcb: Bus support for MEN Chameleon Bus
-Date: Wed, 26 Feb 2014 17:29:04 +0100
-Message-ID: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>
+Subject: [PATCH v3 3/3] iio: adc: Add MEN 16z188 ADC driver
+Date: Wed, 26 Feb 2014 17:29:07 +0100
+Message-ID: <1393432147-31355-4-git-send-email-johannes.thumshirn@men.de>
+In-Reply-To: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch-set introduces the MEN Chameleon Bus (MCB). MCB is not a "real" bus
-like PCI, but a header section in the beginning of the FPGAs memory. This
-headers are used to describe the IP-Cores inside that FPGA.
+Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
 
-The MCB driver parses this header section and creates devices for the single
-IP-Cores. It also provides an interface for device drivers to access these
-resources.
+Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+---
 
-Currently the bus driver has some limitations, for example IRQ handling or
-memory mapped memory support, which will be addressed once drivers that need
-these features are submitted.
+Changes to v2:
+* changed devm_iio_register_driver() to iio_register_driver()/iio_unregister_driver()
 
-As a first driver using the new bus, men_z188_adc.c, an IIO ADC driver, is
-included in this patch-set.
-
-Johannes Thumshirn (3):
-  drivers: Introduce MEN Chameleon Bus
-  mcb: Add PCI carrier for MEN Chameleon Bus
-  iio: adc: Add MEN 16z188 ADC driver
-
- MAINTAINERS                     |   6 +
- drivers/Kconfig                 |   2 +
- drivers/Makefile                |   1 +
- drivers/iio/adc/Kconfig         |  10 +
- drivers/iio/adc/Makefile        |   1 +
- drivers/iio/adc/men_z188_adc.c  | 171 +++++++++++++++++
- drivers/mcb/Kconfig             |  29 +++
- drivers/mcb/Makefile            |   7 +
- drivers/mcb/mcb-core.c          | 414 ++++++++++++++++++++++++++++++++++++++++
- drivers/mcb/mcb-internal.h      | 118 ++++++++++++
- drivers/mcb/mcb-parse.c         | 159 +++++++++++++++
- drivers/mcb/mcb-pci.c           | 114 +++++++++++
- include/linux/mcb.h             | 119 ++++++++++++
- include/linux/mod_devicetable.h |   5 +
- 14 files changed, 1156 insertions(+)
+ drivers/iio/adc/Kconfig        |  10 +++
+ drivers/iio/adc/Makefile       |   1 +
+ drivers/iio/adc/men_z188_adc.c | 171 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 182 insertions(+)
  create mode 100644 drivers/iio/adc/men_z188_adc.c
- create mode 100644 drivers/mcb/Kconfig
- create mode 100644 drivers/mcb/Makefile
- create mode 100644 drivers/mcb/mcb-core.c
- create mode 100644 drivers/mcb/mcb-internal.h
- create mode 100644 drivers/mcb/mcb-parse.c
- create mode 100644 drivers/mcb/mcb-pci.c
- create mode 100644 include/linux/mcb.h
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 2209f28..5c63f091 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -155,6 +155,16 @@ config MCP3422
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called mcp3422.
+
++config MEN_Z188_ADC
++	tristate "MEN 16z188 ADC IP Core support"
++	depends on MCB
++	help
++	  Say yes here to enable support for the MEN 16z188 ADC IP-Core on a MCB
++	  carrier.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called men_z188_adc.
++
+ config NAU7802
+ 	tristate "Nuvoton NAU7802 ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ba9a10a..85a4a04 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
++obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
+new file mode 100644
+index 0000000..7036503
+--- /dev/null
++++ b/drivers/iio/adc/men_z188_adc.c
+@@ -0,0 +1,171 @@
++/*
++ * MEN 16z188 Analog to Digial Converter
++ *
++ * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
++ * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the Free
++ * Software Foundation; version 2 of the License.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mcb.h>
++#include <linux/iio/iio.h>
++
++#define Z188_ADC_MAX_CHAN	8
++#define Z188_ADC_GAIN		0x0700000
++#define Z188_MODE_VOLTAGE	BIT(27)
++#define Z188_CFG_AUTO		0x1
++#define Z188_CTRL_REG		0x40
++
++#define ADC_DATA(x) (((x) >> 2) & 0x7ffffc)
++#define ADC_OVR(x) ((x) & 0x1)
++
++struct z188_adc {
++	struct resource *mem;
++	void __iomem *base;
++};
++
++#define Z188_ADC_CHANNEL(idx) {					\
++		.type = IIO_VOLTAGE,				\
++		.indexed = 1,					\
++		.channel = (idx),				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),   \
++}
++
++static const struct iio_chan_spec z188_adc_iio_channels[] = {
++	Z188_ADC_CHANNEL(0),
++	Z188_ADC_CHANNEL(1),
++	Z188_ADC_CHANNEL(2),
++	Z188_ADC_CHANNEL(3),
++	Z188_ADC_CHANNEL(4),
++	Z188_ADC_CHANNEL(5),
++	Z188_ADC_CHANNEL(6),
++	Z188_ADC_CHANNEL(7),
++};
++
++static int z188_iio_read_raw(struct iio_dev *iio_dev,
++			struct iio_chan_spec const *chan,
++			int *val,
++			int *val2,
++			long info)
++{
++	struct z188_adc *adc = iio_priv(iio_dev);
++	int ret;
++	u16 tmp;
++
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		tmp = readw(adc->base + chan->channel * 4);
++
++		if (ADC_OVR(tmp)) {
++			dev_info(&iio_dev->dev,
++				"Oversampling error on ADC channel %d\n",
++				chan->channel);
++			return -EIO;
++		}
++		*val = ADC_DATA(tmp);
++		ret = IIO_VAL_INT;
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static struct iio_info z188_adc_info = {
++	.read_raw = &z188_iio_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static void men_z188_config_channels(void __iomem *addr)
++{
++	int i;
++	u32 cfg;
++	u32 ctl;
++
++	ctl = readl(addr + Z188_CTRL_REG);
++	ctl |= Z188_CFG_AUTO;
++	writel(ctl, addr + Z188_CTRL_REG);
++
++	for (i = 0; i < Z188_ADC_MAX_CHAN; i++) {
++		cfg = readl(addr + i);
++		cfg &= ~Z188_ADC_GAIN;
++		cfg |= Z188_MODE_VOLTAGE;
++		writel(cfg, addr + i);
++	}
++}
++
++static int men_z188_probe(struct mcb_device *dev,
++			const struct mcb_device_id *id)
++{
++	struct z188_adc *adc;
++	struct iio_dev *indio_dev;
++	struct resource *mem;
++
++	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	adc = iio_priv(indio_dev);
++	indio_dev->name = "z188-adc";
++	indio_dev->dev.parent = &dev->dev;
++	indio_dev->info = &z188_adc_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = z188_adc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
++
++	mem = mcb_request_mem(dev, "z188-adc");
++	if (!mem)
++		return -ENOMEM;
++
++	adc->base = ioremap(mem->start, resource_size(mem));
++	if (adc->base == NULL)
++		goto err;
++
++	men_z188_config_channels(adc->base);
++
++	adc->mem = mem;
++	mcb_set_drvdata(dev, indio_dev);
++
++	return iio_device_register(indio_dev);
++
++err:
++	mcb_release_mem(mem);
++	return -ENXIO;
++}
++
++static void men_z188_remove(struct mcb_device *dev)
++{
++	struct iio_dev *indio_dev  = mcb_get_drvdata(dev);
++	struct z188_adc *adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iounmap(adc->base);
++	mcb_release_mem(adc->mem);
++}
++
++static const struct mcb_device_id men_z188_ids[] = {
++	{ .device = 0xbc },
++};
++MODULE_DEVICE_TABLE(mcb, men_z188_ids);
++
++static struct mcb_driver men_z188_driver = {
++	.driver = {
++		.name = "z188-adc",
++		.owner = THIS_MODULE,
++	},
++	.probe = men_z188_probe,
++	.remove = men_z188_remove,
++	.id_table = men_z188_ids,
++};
++module_mcb_driver(men_z188_driver);
++
++MODULE_AUTHOR("Johannes Thumshirn <johannes.thumshirn@men.de>");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("IIO ADC driver for MEN 16z188 ADC Core");
++MODULE_ALIAS("mcb:16z188");
 --
 1.8.5.4
+
