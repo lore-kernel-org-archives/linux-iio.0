@@ -1,188 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44406 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752297AbaBOLjv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Feb 2014 06:39:51 -0500
-Message-ID: <52FF5220.3010702@kernel.org>
-Date: Sat, 15 Feb 2014 11:40:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Matt Porter <mporter@linaro.org>,
-	Grant Likely <grant.likely@secretlab.ca>,
+Received: from ring0.de ([5.45.105.125]:47023 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753725AbaBZAYo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 25 Feb 2014 19:24:44 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Rob Herring <robh+dt@kernel.org>,
-	=?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
-	Thierry Reding <thierry.reding@gmail.com>
-CC: Linux IIO List <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
-	Linux PWM List <linux-pwm@vger.kernel.org>,
-	Linux OMAP List <linux-omap@vger.kernel.org>,
-	Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 4/6] iio: Add ABI docs for pulse capture devices
-References: <1391626901-31684-1-git-send-email-mporter@linaro.org> <1391626901-31684-5-git-send-email-mporter@linaro.org>
-In-Reply-To: <1391626901-31684-5-git-send-email-mporter@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [RFCv3 1/7] mfd: twl4030-madc: Use managed resources
+Date: Wed, 26 Feb 2014 01:24:24 +0100
+Message-Id: <1393374270-20079-2-git-send-email-sre@debian.org>
+In-Reply-To: <1393374270-20079-1-git-send-email-sre@debian.org>
+References: <1393193271-16717-1-git-send-email-sre@debian.org>
+ <1393374270-20079-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/02/14 19:01, Matt Porter wrote:
-> Add standard ABI entries for pulse capture devices. Also add
-> a separate ABI entry for the TI ECAP driver polarity option.
->
-> Signed-off-by: Matt Porter <mporter@linaro.org>
-Lars, I've cc'd you for the various Analog devices dds and frequency devices.
-Ideally we want a consistent interface for devices capturing info about these
-waveforms and devices generating them.  Please CC anyone else who might have
-opinions.  This interface is not obvious, so we need to spend some time getting
-it right.
-> ---
->   Documentation/ABI/testing/sysfs-bus-iio              | 18 ++++++++++++++++++
->   Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap |  9 +++++++++
->   2 files changed, 27 insertions(+)
->   create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 6e02c50..918a201 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -210,6 +210,14 @@ Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Scaled humidity measurement in milli percent.
->
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_raw
-> +KernelVersion:	3.15
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw pulse measurement from channel Y. Units after
-> +		application of scale and offset are nanoseconds.
-> +
-I wonder if we are being a little bit too specific in this interface.  What other things
-might we want to capture about a pulse?  Right now you have it either capturing the
-'high width' or the 'low width'.  Presumably there are devices that will capture
-both via different 'channels'?
+Update twl4030-madc driver to use managed resources.
 
-So lets list what we might capture about a wave - including values computable from
-the base quantities.
-* High time
-* Low time
-* Mark Space Ratio
-* Period (rising edge to rising edge  or falling edge to falling edge).
-(This might be treated as instantaneous frequency - as would be done in
-frequency modulation)
-* Peak to peak Amplitude.
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/mfd/twl4030-madc.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-For imperfect waves
-* Rise time,
-* Fall time,
-
-Funnily enough this is pretty much what an oscilloscope will allow you to automatically
-measure on a square wave...
-
-So next question is base units for the time measurements.
-I'd prefer the base to be seconds rather than nano seconds
-for consistency with the other time measurements already in the ABI.  All it will do is
-change the type for scale factors output in sysfs.  Userspace can trivially convert
-back to nano seconds if that is what it wants.  If we need to futher expand our small
-units, then that is fine.
-
-Next, the question is do we want to cover other waveform types. The dds drivers that
-are most relevant are still in staging, so we can mess around with their interfaces
-without 'too' much pain.  They allow specifying of a waveform 'type' (square, triangle,
-sine so far I think).
-
-So do we want to have an iio type corresponding to a time feature of a waveform then
-use modifiers for the various characteristics. I'll describe this in the sysfs attribute
-names (they translate directly into the buffer channels, but are easier to read!)
-
-
-We do have a few modifiers that lead to different units already so there is precedence
-e.g. IIO_MOD_SUM_SQUARED_X_Y_Z, (often (m/s^2)^2
-for the following (as long as well documented!)
-in_waveformX_type - (Square, triangle etc).
-
-in_waveformX_hightime_raw
-in_waveformX_lowtime_raw
-in_waveformX_period_raw
-in_waveformX_markspace_raw
-in_waveformX_peaktopeak_raw (similar to existing peak abi elements - these are not typically
-                             read from a buffer and hence we have rushed them in as a modifier).
-in_waveformX_risetime_raw
-in_waveformX_falltime_raw
-
-
-Would this work for both this sort of capture device and for synthesis chips?
-
-
-
->   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
-> @@ -220,6 +228,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_offset
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> @@ -251,6 +261,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
->   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulseY_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_pulse_scale
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> @@ -784,6 +796,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
->   What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_en
->   KernelVersion:	2.6.37
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> @@ -799,6 +813,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
->   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_type
->   KernelVersion:	2.6.37
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> @@ -845,6 +861,8 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
->   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
->   What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulseY_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_pulse_index
->   KernelVersion:	2.6.37
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap b/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
-> new file mode 100644
-> index 0000000..a9e4a9f
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-pulse-tiecap
-> @@ -0,0 +1,9 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/pulse_polarityY
-> +What:		/sys/bus/iio/devices/iio:deviceX/pulse_polarity
-> +Date:		January 2014
-> +KernelVersion:	3.15
-> +Contact:	Matt Porter <mporter@linaro.org>
-> +Description:
-> +		Get and set the polarity of the pulse signal to be captured
-> +		for channel Y.  1 indicates a high pulse signal and 0
-> +		indicates a low pulse signal.
->
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 4c583e4..5458561 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
+-	int ret;
++	int irq, ret;
+ 	u8 regval;
+ 
+ 	if (!pdata) {
+ 		dev_err(&pdev->dev, "platform_data not available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
++	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+ 	if (!madc)
+ 		return -ENOMEM;
+ 
+@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+-		goto err_power;
++		return ret;
+ 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
+ 	if (ret < 0)
+ 		goto err_current_generator;
+@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, madc);
+ 	mutex_init(&madc->lock);
+-	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
++
++	irq = platform_get_irq(pdev, 0);
++	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+ 				   twl4030_madc_threaded_irq_handler,
+ 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
+ 	if (ret) {
+@@ -783,9 +785,6 @@ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+ 	twl4030_madc_set_power(madc, 0);
+-err_power:
+-	kfree(madc);
+-
+ 	return ret;
+ }
+ 
+@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
+ 
+-	free_irq(platform_get_irq(pdev, 0), madc);
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+-	kfree(madc);
+ 
+ 	return 0;
+ }
+-- 
+1.8.5.3
 
