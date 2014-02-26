@@ -1,129 +1,180 @@
-Return-Path: <slm@iis.fraunhofer.de>
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-To: jic23@cam.ac.uk
-Cc: Ge Gao <ggao@invensense.com>,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 3/3] iio: imu: inv_mpu6050: Add basic support for mpu9150
-Date: Wed,  5 Feb 2014 11:34:35 +0100
-Message-Id: <1391596475-21986-3-git-send-email-manuel.stahl@iis.fraunhofer.de>
-In-Reply-To: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-References: <1391596475-21986-1-git-send-email-manuel.stahl@iis.fraunhofer.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([5.45.105.125]:47391 "EHLO smtp.ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750728AbaBZAqb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 25 Feb 2014 19:46:31 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv1 1/2] rx51_battery: convert to iio consumer
+Date: Wed, 26 Feb 2014 01:46:08 +0100
+Message-Id: <1393375569-21751-2-git-send-email-sre@debian.org>
+In-Reply-To: <1393375569-21751-1-git-send-email-sre@debian.org>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The magnetometer included in the mpu9150 will be exported to the
-I2C bus at address 0x0C and can be accessed by the IIO driver
-ak8975.
+Update rx51-battery driver to use the new IIO API of
+twl4030-madc and add DT support.
 
-Signed-off-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Signed-off-by: Sebastian Reichel <sre@debian.org>
 ---
- drivers/iio/imu/inv_mpu6050/Kconfig        |  6 ++++--
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 21 ++++++++++++++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
- 3 files changed, 28 insertions(+), 3 deletions(-)
+ drivers/power/rx51_battery.c | 68 +++++++++++++++++++++++++++++---------------
+ 1 file changed, 45 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-index 361b232..9843f9e 100644
---- a/drivers/iio/imu/inv_mpu6050/Kconfig
-+++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-@@ -3,12 +3,14 @@
- #
+diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
+index 1bc5857..f7cb58e 100644
+--- a/drivers/power/rx51_battery.c
++++ b/drivers/power/rx51_battery.c
+@@ -24,34 +24,27 @@
+ #include <linux/power_supply.h>
+ #include <linux/slab.h>
+ #include <linux/i2c/twl4030-madc.h>
+-
+-/* RX51 specific channels */
+-#define TWL4030_MADC_BTEMP_RX51	TWL4030_MADC_ADCIN0
+-#define TWL4030_MADC_BCI_RX51	TWL4030_MADC_ADCIN4
++#include <linux/iio/consumer.h>
++#include <linux/of.h>
  
- config INV_MPU6050_IIO
--	tristate "Invensense MPU6050 devices"
-+	tristate "Invensense MPU6050 and MPU9150 devices"
- 	depends on I2C && SYSFS
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	  This driver supports the Invensense MPU6050 devices.
-+	  This driver supports the Invensense MPU6050 and MPU9150 devices.
- 	  It is a gyroscope/accelerometer combo device.
-+	  The MPU9150 has an additional magnetometer, but this is currently
-+	  only exported as a separate device on I2C address 0x0C.
- 	  This driver can be built as a module. The module will be called
- 	  inv-mpu6050.
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index fda1ee2..a121b5c 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -71,6 +71,12 @@ static const struct inv_mpu6050_hw hw_info[INV_NUM_PARTS] = {
- 		.reg = &reg_set_6050,
- 		.config = &chip_config_6050,
- 	},
-+	{
-+		.num_reg = 118,
-+		.name = "MPU9150",
-+		.reg = &reg_set_6050,
-+		.config = &chip_config_6050,
-+	},
+ struct rx51_device_info {
+ 	struct device *dev;
+ 	struct power_supply bat;
++	struct iio_channel *channel_temp;
++	struct iio_channel *channel_bsi;
++	struct iio_channel *channel_vbat;
  };
  
- int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 d)
-@@ -616,7 +622,12 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+ /*
+  * Read ADCIN channel value, code copied from maemo kernel
+  */
+-static int rx51_battery_read_adc(int channel)
++static int rx51_battery_read_adc(struct iio_channel *channel)
  {
- 	int result;
+-	struct twl4030_madc_request req;
+-
+-	req.channels = channel;
+-	req.do_avg = 1;
+-	req.method = TWL4030_MADC_SW1;
+-	req.func_cb = NULL;
+-	req.type = TWL4030_MADC_WAIT;
+-	req.raw = true;
+-
+-	if (twl4030_madc_conversion(&req) <= 0)
+-		return -ENODATA;
+-
+-	return req.rbuf[ffs(channel) - 1];
++	int val, err;
++	err = iio_read_channel_average_raw(channel, &val);
++	if (err < 0)
++		return err;
++	return val;
+ }
  
--	st->chip_type = INV_MPU6050;
-+	st->chip_type = (unsigned)id->driver_data;
-+	if (st->chip_type >= INV_NUM_PARTS) {
-+		dev_err(&st->client->dev,
-+			"Invalid chip type: %s.\n", id->name);
-+		return -ENODEV;
+ /*
+@@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
+  */
+ static int rx51_battery_read_voltage(struct rx51_device_info *di)
+ {
+-	int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
++	int voltage = rx51_battery_read_adc(di->channel_vbat);
+ 
+-	if (voltage < 0)
++	if (voltage < 0) {
++		dev_err(di->dev, "Could not read ADC: %d\n", voltage);
+ 		return voltage;
 +	}
- 	st->hw  = &hw_info[st->chip_type];
- 	st->reg = hw_info[st->chip_type].reg;
  
-@@ -646,6 +657,11 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
- 	if (result)
- 		return result;
+ 	return 1000 * (10000 * voltage / 1705);
+ }
+@@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+ {
+ 	int min = 0;
+ 	int max = ARRAY_SIZE(rx51_temp_table2) - 1;
+-	int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
++	int raw = rx51_battery_read_adc(di->channel_temp);
++
++	if (raw < 0)
++		dev_err(di->dev, "Could not read ADC: %d\n", raw);
  
-+	/* set to bypass mode */
-+	result = inv_mpu6050_write_reg(st, INV_MPU6050_REG_INT_PIN_CFG,
-+			INV_MPU6050_BIT_BYPASS_EN);
-+	if (result)
-+		return result;
+ 	/* Zero and negative values are undefined */
+ 	if (raw <= 0)
+@@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+  */
+ static int rx51_battery_read_capacity(struct rx51_device_info *di)
+ {
+-	int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
++	int capacity = rx51_battery_read_adc(di->channel_bsi);
+ 
+-	if (capacity < 0)
++	if (capacity < 0) {
++		dev_err(di->dev, "Could not read ADC: %d\n", capacity);
+ 		return capacity;
++	}
+ 
+ 	return 1280 * (1200 * capacity)/(1024 - capacity);
+ }
+@@ -213,12 +213,25 @@ static int rx51_battery_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, di);
+ 
++	di->dev = &pdev->dev;
+ 	di->bat.name = dev_name(&pdev->dev);
+ 	di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
+ 	di->bat.properties = rx51_battery_props;
+ 	di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
+ 	di->bat.get_property = rx51_battery_get_property;
+ 
++	di->channel_temp = iio_channel_get(di->dev, "temp");
++	if (IS_ERR(di->channel_temp))
++		return PTR_ERR(di->channel_temp);
++
++	di->channel_bsi  = iio_channel_get(di->dev, "bsi");
++	if (IS_ERR(di->channel_bsi))
++		return PTR_ERR(di->channel_bsi);
++
++	di->channel_vbat = iio_channel_get(di->dev, "vbat");
++	if (IS_ERR(di->channel_vbat))
++		return PTR_ERR(di->channel_vbat);
++
+ 	ret = power_supply_register(di->dev, &di->bat);
+ 	if (ret)
+ 		return ret;
+@@ -235,12 +248,21 @@ static int rx51_battery_remove(struct platform_device *pdev)
  	return 0;
  }
  
-@@ -719,6 +735,8 @@ static int inv_mpu_probe(struct i2c_client *client,
- 		goto out_remove_trigger;
- 	}
- 
-+	dev_info(&st->client->dev, "IMU %s found\n", id->name);
++#ifdef CONFIG_OF
++static const struct of_device_id n900_battery_of_match[] = {
++	{.compatible = "nokia,n900-battery", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, n900_battery_of_match);
++#endif
 +
- 	return 0;
- 
- out_remove_trigger:
-@@ -765,6 +783,7 @@ static SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
-  */
- static const struct i2c_device_id inv_mpu_id[] = {
- 	{"mpu6050", INV_MPU6050},
-+	{"mpu9150", INV_MPU9150},
- 	{}
+ static struct platform_driver rx51_battery_driver = {
+ 	.probe = rx51_battery_probe,
+ 	.remove = rx51_battery_remove,
+ 	.driver = {
+ 		.name = "rx51-battery",
+ 		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(n900_battery_of_match),
+ 	},
  };
- 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 0ab382b..d91b1e4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -59,6 +59,7 @@ struct inv_mpu6050_reg_map {
- /*device enum */
- enum inv_devices {
- 	INV_MPU6050,
-+	INV_MPU9150,
- 	INV_NUM_PARTS
- };
- 
-@@ -132,6 +133,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_BIT_ACCEL_OUT           0x08
- #define INV_MPU6050_BITS_GYRO_OUT           0x70
- 
-+#define INV_MPU6050_REG_INT_PIN_CFG         0x37
-+#define INV_MPU6050_BIT_BYPASS_EN           0x02
-+
- #define INV_MPU6050_REG_INT_ENABLE          0x38
- #define INV_MPU6050_BIT_DATA_RDY_EN         0x01
- #define INV_MPU6050_BIT_DMP_INT_EN          0x02
+ module_platform_driver(rx51_battery_driver);
 -- 
-1.8.3.2
+1.8.5.3
+
