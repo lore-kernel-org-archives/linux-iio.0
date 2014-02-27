@@ -1,79 +1,36 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Wed, 26 Feb 2014 08:29:22 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [RFCv3 3/7] mfd: twl4030-madc: Cleanup driver
-Message-ID: <20140226082922.GH9195@lee--X1>
-References: <1393193271-16717-1-git-send-email-sre@debian.org>
- <1393374270-20079-1-git-send-email-sre@debian.org>
- <1393374270-20079-4-git-send-email-sre@debian.org>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Wed, 26 Feb 2014 19:35:14 -0800
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Johannes Thumshirn <johannes.thumshirn@men.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iio: adc: Add MEN 16z188 ADC driver
+Message-ID: <20140227033514.GB31199@kroah.com>
+References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+ <1393432147-31355-4-git-send-email-johannes.thumshirn@men.de>
+ <b6961624-add3-480a-8757-c2ff2893622f@email.android.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1393374270-20079-4-git-send-email-sre@debian.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <b6961624-add3-480a-8757-c2ff2893622f@email.android.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> Some style fixes in twl4030-madc driver.
+On Wed, Feb 26, 2014 at 05:20:03PM +0000, Jonathan Cameron wrote:
 > 
-> Reported-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-> ---
->  drivers/mfd/twl4030-madc.c       | 108 ++++++++++++++++++---------------------
->  include/linux/i2c/twl4030-madc.h |   2 +-
->  2 files changed, 51 insertions(+), 59 deletions(-)
 > 
-> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-> index 81484ee..c23025b 100644
-> --- a/drivers/mfd/twl4030-madc.c
-> +++ b/drivers/mfd/twl4030-madc.c
+> On February 26, 2014 4:29:07 PM GMT+00:00, Johannes Thumshirn <johannes.thumshirn@men.de> wrote:
+> >Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
+> >
+> >Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> 
+> The other two patches look sane to me as well.
+> 
+> Anyhow, assuming everyone is happy with those (not yet clear)... Greg do you want to
+>  take this directly or would you prefer if I pick the series up and send on to you via the IIO
+>  tree? I'm happy either way.
 
->  /*
-> - * Return battery temperature
-> + * Return battery temperature in degree Celsius
+I can take it directly, no need for you to queue it up.
 
-degrees
+thanks,
 
-<snip>
-
-> -	int count = 0, count_req = 0, i;
-> -	u8 reg;
-> +	int count = 0, i;
-
-Ugly, please declare on separate lines.
-
->  	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
-> -		reg = reg_base + 2 * i;
-
-Odd for this to be removed, as you calculate more than once now.
-
-> -		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
-> +		buf[i] = twl4030_madc_channel_raw_read(madc, reg_base + 2 * i);
-
-Better to bracket the math for clarity.
-
-<snip>
-
-> +			dev_err(madc->dev, "Unable to read register 0x%X\n",
-> +				reg_base + 2 * i);
-
-Here's the other calculation.
-
-> +	regmask = (chan == 0) ? TWL4030_BCI_TYPEN : TWL4030_BCI_ITHEN;
-
-regmask = chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN; 
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+greg k-h
