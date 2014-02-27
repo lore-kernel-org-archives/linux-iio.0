@@ -1,36 +1,63 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 26 Feb 2014 19:35:14 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Johannes Thumshirn <johannes.thumshirn@men.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: adc: Add MEN 16z188 ADC driver
-Message-ID: <20140227033514.GB31199@kroah.com>
-References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
- <1393432147-31355-4-git-send-email-johannes.thumshirn@men.de>
- <b6961624-add3-480a-8757-c2ff2893622f@email.android.com>
+Return-Path: <lee.jones@linaro.org>
+Date: Thu, 27 Feb 2014 08:23:09 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv4 2/7] mfd: twl4030-madc: Add DT support and convert to IIO
+ framework
+Message-ID: <20140227082309.GT9195@lee--X1>
+References: <1393374270-20079-1-git-send-email-sre@debian.org>
+ <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393444990-28140-3-git-send-email-sre@debian.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <b6961624-add3-480a-8757-c2ff2893622f@email.android.com>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1393444990-28140-3-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 26, 2014 at 05:20:03PM +0000, Jonathan Cameron wrote:
-> 
-> 
-> On February 26, 2014 4:29:07 PM GMT+00:00, Johannes Thumshirn <johannes.thumshirn@men.de> wrote:
-> >Add support for MEN 16z188 ADC IP Core on MCB FPGAs.
-> >
-> >Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> 
-> The other two patches look sane to me as well.
-> 
-> Anyhow, assuming everyone is happy with those (not yet clear)... Greg do you want to
->  take this directly or would you prefer if I pick the series up and send on to you via the IIO
->  tree? I'm happy either way.
+On Wed, 26 Feb 2014, Sebastian Reichel wrote:
 
-I can take it directly, no need for you to queue it up.
+> This converts twl4030-madc module to use the Industrial IO ADC
+> framework and adds device tree support.
+> 
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> ---
+>  drivers/mfd/twl4030-madc.c | 127 +++++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 118 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+> index 5458561..37cb3ad 100644
+> --- a/drivers/mfd/twl4030-madc.c
+> +++ b/drivers/mfd/twl4030-madc.c
 
-thanks,
+<snip>
 
-greg k-h
+> -	if (!pdata) {
+> +	if (!pdata && !np) {
+>  		dev_err(&pdev->dev, "platform_data not available\n");
+
+                                     and Device Tree node ...
+
+<snip>
+
+> +	iio_dev->channels = twl4030_madc_iio_channels;
+> +	iio_dev->num_channels = 16;
+
+ARRAY_SIZE()
+
+<snip>
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
