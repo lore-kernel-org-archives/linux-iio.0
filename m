@@ -1,21 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([143.182.124.37]:36793 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751997AbaBQSIO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Feb 2014 13:08:14 -0500
-Message-ID: <5302501E.3090309@linux.intel.com>
-Date: Mon, 17 Feb 2014 10:08:30 -0800
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <lee.jones@linaro.org>
+Date: Thu, 27 Feb 2014 08:03:49 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv4 3/7] mfd: twl4030-madc: Cleanup driver
+Message-ID: <20140227080349.GR9195@lee--X1>
+References: <1393374270-20079-1-git-send-email-sre@debian.org>
+ <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393444990-28140-4-git-send-email-sre@debian.org>
 MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-Subject: CM3218x Ambient Light Sensor
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1393444990-28140-4-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+> Some style fixes in twl4030-madc driver.
+> 
+> Reported-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> ---
+>  drivers/mfd/twl4030-madc.c       | 106 ++++++++++++++++++---------------------
+>  include/linux/i2c/twl4030-madc.h |   2 +-
+>  2 files changed, 51 insertions(+), 57 deletions(-)
+> 
+> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
 
-Is there any Linux driver for " CM3218x Ambient Light Sensor"?
+Acked-by: Lee Jones <lee.jones@linaro.org>
 
-Thanks,
-Srinivas
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
