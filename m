@@ -1,84 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f46.google.com ([209.85.219.46]:64734 "EHLO
-	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752044AbaB1U72 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 28 Feb 2014 15:59:28 -0500
+Return-Path: <marek.belisko@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAfyv36jJoMxZQ5e43pEC2rzNBHHW9Jt_4dg5O-fS8e+Aim7jA@mail.gmail.com>
+In-Reply-To: <20140228020536.GB5427@earth.universe>
 References: <1393375569-21751-1-git-send-email-sre@debian.org>
 	<1393375569-21751-2-git-send-email-sre@debian.org>
 	<CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
 	<20140226215452.GA11468@earth.universe>
 	<CAAfyv340pA2ihUAoFytBgevLtedvtj5Z0aw_=G9Rbx5occtyqw@mail.gmail.com>
 	<20140228020536.GB5427@earth.universe>
-	<CAAfyv36jJoMxZQ5e43pEC2rzNBHHW9Jt_4dg5O-fS8e+Aim7jA@mail.gmail.com>
-Date: Fri, 28 Feb 2014 21:59:28 +0100
-Message-ID: <CAAfyv345wNTquDcxPRZGU6_9QQkPJvY4YRd=PJo549_-Yif8Ag@mail.gmail.com>
+Date: Fri, 28 Feb 2014 21:32:12 +0100
+Message-ID: <CAAfyv36jJoMxZQ5e43pEC2rzNBHHW9Jt_4dg5O-fS8e+Aim7jA@mail.gmail.com>
 Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
 From: Belisko Marek <marek.belisko@gmail.com>
 To: Sebastian Reichel <sre@debian.org>
-Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
+Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>,
+	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>,
 	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
 	=?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Feb 28, 2014 at 9:32 PM, Belisko Marek <marek.belisko@gmail.com> wrote:
-> Hi Sebastian,
+Hi Sebastian,
+
+On Fri, Feb 28, 2014 at 3:05 AM, Sebastian Reichel <sre@debian.org> wrote:
+> On Thu, Feb 27, 2014 at 10:34:35PM +0100, Belisko Marek wrote:
+>> Well I've tried and it's worse :). I got during booting:
+>> [    2.218383] ERROR: could not get IIO channel /battery:temp(0)
+>> [    2.224639] platform battery.4: Driver twl4030_madc_battery
+>> requests probe deferral
+>> Not sure if it's just error or warning but temp is always reported as
+>> 0 (and also other values in sysfs).
 >
-> On Fri, Feb 28, 2014 at 3:05 AM, Sebastian Reichel <sre@debian.org> wrote:
->> On Thu, Feb 27, 2014 at 10:34:35PM +0100, Belisko Marek wrote:
->>> Well I've tried and it's worse :). I got during booting:
->>> [    2.218383] ERROR: could not get IIO channel /battery:temp(0)
->>> [    2.224639] platform battery.4: Driver twl4030_madc_battery
->>> requests probe deferral
->>> Not sure if it's just error or warning but temp is always reported as
->>> 0 (and also other values in sysfs).
->>
->> This is an error, which basically means, that twl4030-madc has not
->> yet been loaded. Do you get proper values when you use the old madc
->> API with the patchset applied?
-> It works without converting to iio consumer (at least I get some
-> reasonable values).
-> With conversion it fails with above error. I recheck (add printk to
-> iio twl4030-madc) that
-> madc driver is loaded. Could this be that twl4030_madc_battery is
-> loaded earlier then
-> twl4030_madc and than it fails to get iio channels?
-Hmm I wasn't far away from truth in previous email. I think that channel doesn't
-exists because twl4030_madc driver isn't loaded yet and that is the
-reason for deferral probe
-message in log. So it seems after some time it is loaded correctly but
-not working. No ideas.
->>
->> -- Sebastian
+> This is an error, which basically means, that twl4030-madc has not
+> yet been loaded. Do you get proper values when you use the old madc
+> API with the patchset applied?
+It works without converting to iio consumer (at least I get some
+reasonable values).
+With conversion it fails with above error. I recheck (add printk to
+iio twl4030-madc) that
+madc driver is loaded. Could this be that twl4030_madc_battery is
+loaded earlier then
+twl4030_madc and than it fails to get iio channels?
 >
-> BR,
->
-> marek
->
-> --
-> as simple and primitive as possible
-> -------------------------------------------------
-> Marek Belisko - OPEN-NANDRA
-> Freelance Developer
->
-> Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-> Tel: +421 915 052 184
-> skype: marekwhite
-> twitter: #opennandra
-> web: http://open-nandra.com
+> -- Sebastian
 
 BR,
 
