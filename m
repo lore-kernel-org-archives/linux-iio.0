@@ -1,219 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:59323 "EHLO smtp.ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752430AbaBWWI0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Feb 2014 17:08:26 -0500
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-oa0-f46.google.com ([209.85.219.46]:64734 "EHLO
+	mail-oa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752044AbaB1U72 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 28 Feb 2014 15:59:28 -0500
+MIME-Version: 1.0
+In-Reply-To: <CAAfyv36jJoMxZQ5e43pEC2rzNBHHW9Jt_4dg5O-fS8e+Aim7jA@mail.gmail.com>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+	<1393375569-21751-2-git-send-email-sre@debian.org>
+	<CAAfyv37B=xn3AktnUxPDpuey+5S73vW0PJnuUZtorP4rajPKiw@mail.gmail.com>
+	<20140226215452.GA11468@earth.universe>
+	<CAAfyv340pA2ihUAoFytBgevLtedvtj5Z0aw_=G9Rbx5occtyqw@mail.gmail.com>
+	<20140228020536.GB5427@earth.universe>
+	<CAAfyv36jJoMxZQ5e43pEC2rzNBHHW9Jt_4dg5O-fS8e+Aim7jA@mail.gmail.com>
+Date: Fri, 28 Feb 2014 21:59:28 +0100
+Message-ID: <CAAfyv345wNTquDcxPRZGU6_9QQkPJvY4YRd=PJo549_-Yif8Ag@mail.gmail.com>
+Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
+From: Belisko Marek <marek.belisko@gmail.com>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [RFCv2 3/5] mfd: twl4030-madc: Cleanup driver
-Date: Sun, 23 Feb 2014 23:07:49 +0100
-Message-Id: <1393193271-16717-4-git-send-email-sre@debian.org>
-In-Reply-To: <1393193271-16717-1-git-send-email-sre@debian.org>
-References: <20140223220140.GA1258@earth.universe>
- <1393193271-16717-1-git-send-email-sre@debian.org>
+	LKML <linux-kernel@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio@vger.kernel.org,
+	=?UTF-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some style fixes in twl4030-madc driver.
+On Fri, Feb 28, 2014 at 9:32 PM, Belisko Marek <marek.belisko@gmail.com> wrote:
+> Hi Sebastian,
+>
+> On Fri, Feb 28, 2014 at 3:05 AM, Sebastian Reichel <sre@debian.org> wrote:
+>> On Thu, Feb 27, 2014 at 10:34:35PM +0100, Belisko Marek wrote:
+>>> Well I've tried and it's worse :). I got during booting:
+>>> [    2.218383] ERROR: could not get IIO channel /battery:temp(0)
+>>> [    2.224639] platform battery.4: Driver twl4030_madc_battery
+>>> requests probe deferral
+>>> Not sure if it's just error or warning but temp is always reported as
+>>> 0 (and also other values in sysfs).
+>>
+>> This is an error, which basically means, that twl4030-madc has not
+>> yet been loaded. Do you get proper values when you use the old madc
+>> API with the patchset applied?
+> It works without converting to iio consumer (at least I get some
+> reasonable values).
+> With conversion it fails with above error. I recheck (add printk to
+> iio twl4030-madc) that
+> madc driver is loaded. Could this be that twl4030_madc_battery is
+> loaded earlier then
+> twl4030_madc and than it fails to get iio channels?
+Hmm I wasn't far away from truth in previous email. I think that channel doesn't
+exists because twl4030_madc driver isn't loaded yet and that is the
+reason for deferral probe
+message in log. So it seems after some time it is loaded correctly but
+not working. No ideas.
+>>
+>> -- Sebastian
+>
+> BR,
+>
+> marek
+>
+> --
+> as simple and primitive as possible
+> -------------------------------------------------
+> Marek Belisko - OPEN-NANDRA
+> Freelance Developer
+>
+> Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
+> Tel: +421 915 052 184
+> skype: marekwhite
+> twitter: #opennandra
+> web: http://open-nandra.com
 
-Reported-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- drivers/mfd/twl4030-madc.c | 66 ++++++++++++++++++++--------------------------
- 1 file changed, 29 insertions(+), 37 deletions(-)
+BR,
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 5e67c75..0bc79a7 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -62,8 +62,8 @@ struct twl4030_madc_data {
- 	struct mutex lock;	/* mutex protecting this data structure */
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
- 	bool use_second_irq;
--	int imr;
--	int isr;
-+	u8 imr;
-+	u8 isr;
- };
- 
- static int twl4030_madc_read(struct iio_dev *iio_dev,
-@@ -242,13 +242,13 @@ static int twl4030battery_temperature(int raw_volt)
- 		REG_BCICTL2);
- 	if (ret < 0)
- 		return ret;
-+
- 	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
- 	/* Getting and calculating the thermistor resistance in ohms */
- 	res = volt * 1000 / curr;
- 	/* calculating temperature */
- 	for (temp = 58; temp >= 0; temp--) {
- 		int actual = therm_tbl[temp];
--
- 		if ((actual - res) >= 0)
- 			break;
- 	}
-@@ -270,6 +270,7 @@ static int twl4030battery_current(int raw_volt)
- 	else /* slope of 0.88 mV/mA */
- 		return (raw_volt * CURR_STEP_SIZE) / CURR_PSR_R2;
- }
-+
- /*
-  * Function to read channel values
-  * @madc - pointer to twl4030_madc_data struct
-@@ -285,17 +286,14 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 				      long channels, int *buf,
- 				      bool raw)
- {
--	int count = 0, count_req = 0, i;
--	u8 reg;
-+	int count = 0, i;
- 
- 	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
--		reg = reg_base + 2 * i;
--		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
-+		buf[i] = twl4030_madc_channel_raw_read(madc, reg_base + 2 * i);
- 		if (buf[i] < 0) {
--			dev_err(madc->dev,
--				"Unable to read register 0x%X\n", reg);
--			count_req++;
--			continue;
-+			dev_err(madc->dev, "Unable to read register 0x%X\n",
-+				reg_base + 2 * i);
-+			return buf[i];
- 		}
- 		if (raw) {
- 			count++;
-@@ -306,7 +304,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 			buf[i] = twl4030battery_current(buf[i]);
- 			if (buf[i] < 0) {
- 				dev_err(madc->dev, "err reading current\n");
--				count_req++;
-+				return buf[i];
- 			} else {
- 				count++;
- 				buf[i] = buf[i] - 750;
-@@ -316,7 +314,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 			buf[i] = twl4030battery_temperature(buf[i]);
- 			if (buf[i] < 0) {
- 				dev_err(madc->dev, "err reading temperature\n");
--				count_req++;
-+				return buf[i];
- 			} else {
- 				buf[i] -= 3;
- 				count++;
-@@ -337,8 +335,6 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 				twl4030_divider_ratios[i].numerator);
- 		}
- 	}
--	if (count_req)
--		dev_err(madc->dev, "%d channel conversion failed\n", count_req);
- 
- 	return count;
- }
-@@ -362,13 +358,13 @@ static int twl4030_madc_enable_irq(struct twl4030_madc_data *madc, u8 id)
- 			madc->imr);
- 		return ret;
- 	}
-+
- 	val &= ~(1 << id);
- 	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, val, madc->imr);
- 	if (ret) {
- 		dev_err(madc->dev,
- 			"unable to write imr register 0x%X\n", madc->imr);
- 		return ret;
--
- 	}
- 
- 	return 0;
-@@ -513,21 +509,17 @@ static int twl4030_madc_start_conversion(struct twl4030_madc_data *madc,
- {
- 	const struct twl4030_madc_conversion_method *method;
- 	int ret = 0;
-+
-+	if (conv_method != TWL4030_MADC_SW1 && conv_method != TWL4030_MADC_SW2)
-+		return -ENOTSUPP;
-+
- 	method = &twl4030_conversion_methods[conv_method];
--	switch (conv_method) {
--	case TWL4030_MADC_SW1:
--	case TWL4030_MADC_SW2:
--		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
--				       TWL4030_MADC_SW_START, method->ctrl);
--		if (ret) {
--			dev_err(madc->dev,
--				"unable to write ctrl register 0x%X\n",
--				method->ctrl);
--			return ret;
--		}
--		break;
--	default:
--		break;
-+	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, TWL4030_MADC_SW_START,
-+			       method->ctrl);
-+	if (ret) {
-+		dev_err(madc->dev, "unable to write ctrl register 0x%X\n",
-+			method->ctrl);
-+		return ret;
- 	}
- 
- 	return 0;
-@@ -625,7 +617,7 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
- 		if (ret) {
- 			dev_err(twl4030_madc->dev,
- 				"unable to write sel reg 0x%X\n",
--				method->sel + 1);
-+				method->avg);
- 			goto out;
- 		}
- 	}
-@@ -666,10 +658,6 @@ out:
- }
- EXPORT_SYMBOL_GPL(twl4030_madc_conversion);
- 
--/*
-- * Return channel value
-- * Or < 0 on failure.
-- */
- int twl4030_get_madc_conversion(int channel_no)
- {
- 	struct twl4030_madc_request req;
-@@ -704,6 +692,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
- 					      int chan, int on)
- {
- 	int ret;
-+	int regmask;
- 	u8 regval;
- 
- 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE,
-@@ -713,10 +702,13 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
- 			TWL4030_BCI_BCICTL1);
- 		return ret;
- 	}
-+
-+	regmask = (chan == 0) ? TWL4030_BCI_TYPEN : TWL4030_BCI_ITHEN;
- 	if (on)
--		regval |= chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
-+		regval |= regmask;
- 	else
--		regval &= chan ? ~TWL4030_BCI_ITHEN : ~TWL4030_BCI_TYPEN;
-+		regval &= ~regmask;
-+
- 	ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE,
- 			       regval, TWL4030_BCI_BCICTL1);
- 	if (ret) {
+marek
+
 -- 
-1.8.5.3
+as simple and primitive as possible
+-------------------------------------------------
+Marek Belisko - OPEN-NANDRA
+Freelance Developer
 
+Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
+Tel: +421 915 052 184
+skype: marekwhite
+twitter: #opennandra
+web: http://open-nandra.com
