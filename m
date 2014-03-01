@@ -1,31 +1,205 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:39637 "EHLO
-	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752154AbaCMCJd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Mar 2014 22:09:33 -0400
-From: Marek Vasut <marex@denx.de>
-To: Matt Ranostay <mranostay@gmail.com>
-Subject: Re: [PATCH v8 2/2] iio: Add AS3935 lightning sensor support
-Date: Thu, 13 Mar 2014 03:09:32 +0100
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, matt.porter@linaro.org,
-	pantelis.antoniou@gmail.com
-References: <1394628794-7598-1-git-send-email-mranostay@gmail.com> <1394628794-7598-3-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1394628794-7598-3-git-send-email-mranostay@gmail.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201403130309.32474.marex@denx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sre@ring0.de>
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv2 1/2] rx51_battery: convert to iio consumer
+Date: Sat,  1 Mar 2014 21:22:44 +0100
+Message-Id: <1393705366-32420-2-git-send-email-sre@debian.org>
+In-Reply-To: <1393705366-32420-1-git-send-email-sre@debian.org>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+ <1393705366-32420-1-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wednesday, March 12, 2014 at 01:53:14 PM, Matt Ranostay wrote:
-> AS3935 chipset can detect lightning strikes and reports those back as
-> events and the estimated distance to the storm.
-> 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Update rx51-battery driver to use the new IIO API of
+twl4030-madc and add DT support.
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ drivers/power/rx51_battery.c | 90 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 66 insertions(+), 24 deletions(-)
 
-Best regards,
-Marek Vasut
+diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
+index 1bc5857..d5a2acf 100644
+--- a/drivers/power/rx51_battery.c
++++ b/drivers/power/rx51_battery.c
+@@ -24,34 +24,27 @@
+ #include <linux/power_supply.h>
+ #include <linux/slab.h>
+ #include <linux/i2c/twl4030-madc.h>
+-
+-/* RX51 specific channels */
+-#define TWL4030_MADC_BTEMP_RX51	TWL4030_MADC_ADCIN0
+-#define TWL4030_MADC_BCI_RX51	TWL4030_MADC_ADCIN4
++#include <linux/iio/consumer.h>
++#include <linux/of.h>
+ 
+ struct rx51_device_info {
+ 	struct device *dev;
+ 	struct power_supply bat;
++	struct iio_channel *channel_temp;
++	struct iio_channel *channel_bsi;
++	struct iio_channel *channel_vbat;
+ };
+ 
+ /*
+  * Read ADCIN channel value, code copied from maemo kernel
+  */
+-static int rx51_battery_read_adc(int channel)
++static int rx51_battery_read_adc(struct iio_channel *channel)
+ {
+-	struct twl4030_madc_request req;
+-
+-	req.channels = channel;
+-	req.do_avg = 1;
+-	req.method = TWL4030_MADC_SW1;
+-	req.func_cb = NULL;
+-	req.type = TWL4030_MADC_WAIT;
+-	req.raw = true;
+-
+-	if (twl4030_madc_conversion(&req) <= 0)
+-		return -ENODATA;
+-
+-	return req.rbuf[ffs(channel) - 1];
++	int val, err;
++	err = iio_read_channel_average_raw(channel, &val);
++	if (err < 0)
++		return err;
++	return val;
+ }
+ 
+ /*
+@@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
+  */
+ static int rx51_battery_read_voltage(struct rx51_device_info *di)
+ {
+-	int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
++	int voltage = rx51_battery_read_adc(di->channel_vbat);
+ 
+-	if (voltage < 0)
++	if (voltage < 0) {
++		dev_err(di->dev, "Could not read ADC: %d\n", voltage);
+ 		return voltage;
++	}
+ 
+ 	return 1000 * (10000 * voltage / 1705);
+ }
+@@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+ {
+ 	int min = 0;
+ 	int max = ARRAY_SIZE(rx51_temp_table2) - 1;
+-	int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
++	int raw = rx51_battery_read_adc(di->channel_temp);
++
++	if (raw < 0)
++		dev_err(di->dev, "Could not read ADC: %d\n", raw);
+ 
+ 	/* Zero and negative values are undefined */
+ 	if (raw <= 0)
+@@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+  */
+ static int rx51_battery_read_capacity(struct rx51_device_info *di)
+ {
+-	int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
++	int capacity = rx51_battery_read_adc(di->channel_bsi);
+ 
+-	if (capacity < 0)
++	if (capacity < 0) {
++		dev_err(di->dev, "Could not read ADC: %d\n", capacity);
+ 		return capacity;
++	}
+ 
+ 	return 1280 * (1200 * capacity)/(1024 - capacity);
+ }
+@@ -213,17 +213,46 @@ static int rx51_battery_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, di);
+ 
++	di->dev = &pdev->dev;
+ 	di->bat.name = dev_name(&pdev->dev);
+ 	di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
+ 	di->bat.properties = rx51_battery_props;
+ 	di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
+ 	di->bat.get_property = rx51_battery_get_property;
+ 
++	di->channel_temp = iio_channel_get(di->dev, "temp");
++	if (IS_ERR(di->channel_temp)) {
++		ret = PTR_ERR(di->channel_temp);
++		goto error;
++	}
++
++	di->channel_bsi  = iio_channel_get(di->dev, "bsi");
++	if (IS_ERR(di->channel_bsi)) {
++		ret = PTR_ERR(di->channel_bsi);
++		goto error_channel_temp;
++	}
++
++	di->channel_vbat = iio_channel_get(di->dev, "vbat");
++	if (IS_ERR(di->channel_vbat)) {
++		ret = PTR_ERR(di->channel_vbat);
++		goto error_channel_bsi;
++	}
++
+ 	ret = power_supply_register(di->dev, &di->bat);
+ 	if (ret)
+-		return ret;
++		goto error_channel_vbat;
+ 
+ 	return 0;
++
++error_channel_vbat:
++	iio_channel_release(di->channel_vbat);
++error_channel_bsi:
++	iio_channel_release(di->channel_bsi);
++error_channel_temp:
++	iio_channel_release(di->channel_temp);
++error:
++
++	return ret;
+ }
+ 
+ static int rx51_battery_remove(struct platform_device *pdev)
+@@ -232,15 +261,28 @@ static int rx51_battery_remove(struct platform_device *pdev)
+ 
+ 	power_supply_unregister(&di->bat);
+ 
++	iio_channel_release(di->channel_vbat);
++	iio_channel_release(di->channel_bsi);
++	iio_channel_release(di->channel_temp);
++
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id n900_battery_of_match[] = {
++	{.compatible = "nokia,n900-battery", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, n900_battery_of_match);
++#endif
++
+ static struct platform_driver rx51_battery_driver = {
+ 	.probe = rx51_battery_probe,
+ 	.remove = rx51_battery_remove,
+ 	.driver = {
+ 		.name = "rx51-battery",
+ 		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(n900_battery_of_match),
+ 	},
+ };
+ module_platform_driver(rx51_battery_driver);
+-- 
+1.9.0
