@@ -1,184 +1,201 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51848 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52125 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752157AbaCALGH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 06:06:07 -0500
-Message-ID: <5311BF4C.3070003@kernel.org>
-Date: Sat, 01 Mar 2014 11:06:52 +0000
+	with ESMTP id S1752611AbaCALWI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 06:22:08 -0500
+Message-ID: <5311C30D.4070808@kernel.org>
+Date: Sat, 01 Mar 2014 11:22:53 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+To: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+CC: Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] devicetree: Add Xilinx XADC binding documentation
-References: <1392646243-5538-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1392646243-5538-1-git-send-email-lars@metafoo.de>
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	=?ISO-8859-1?Q?Pali_Roh=E1r?= <pali.rohar@gmail.com>
+Subject: Re: [PATCHv1 1/2] rx51_battery: convert to iio consumer
+References: <1393375569-21751-1-git-send-email-sre@debian.org> <1393375569-21751-2-git-send-email-sre@debian.org> <5311C1C8.3090809@kernel.org>
+In-Reply-To: <5311C1C8.3090809@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/02/14 14:10, Lars-Peter Clausen wrote:
-> The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
-> The XADC has a DRP interface for communication. Currently two different
-> frontends for the DRP interface exist. One that is only available on the ZYNQ
-> family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
-> on all series 7 platforms and is a softmacro with a AXI interface. This binding
-> document describes the bindings for both of them since the bindings are very
-> similar.
->
-> Each of them needs:
-> 	* A address range where the registers are mapped
-> 	* An interrupt number for the device interrupt
-> 	* A clock. For the the ZYNQ hardmacro interface this is the modules PCAP
-> 	  clock, for the AXI softmacro it is the AXI bus interface clock.
->
-> Additionally the bindings specify whether an external multiplexer is used and in
-> which mode it is used. The devicetree bindings also describe which external
-> channels are connected and in which configuration.
->
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Pawel Moll <pawel.moll@arm.com>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
-> Cc: Kumar Gala <galak@codeaurora.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-As the change from v1 was trivial and neither have had any response.
-I am taking the view that everyone is happy with this an applying it through
-the IIO tree. It has been 4 weeks since that first patch posting.
+On 01/03/14 11:17, Jonathan Cameron wrote:
+> On 26/02/14 00:46, Sebastian Reichel wrote:
+>> Update rx51-battery driver to use the new IIO API of
+>> twl4030-madc and add DT support.
+>>
+>> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> The error handling needs tidying up.
+> Otherwise this looks fine to me.  Note that you (really me)
+> may get some grief over the DT bindings.  Theoretically we have
+> been planning to rewrite those entirely for some time...
 
-Applied to the togreg branch of iio.git
+It's a longer term point, but it does rather feel like it ought
+to be possible to write a generic battery driver sometime down
+the line where any conversion characteristics would be in the device
+tree.  Definitely a question for the future though!
 
-Thanks,
-> ---
-> Changes since v1:
-> 	* Remove duplicated paragraph in the description
-> ---
->   .../devicetree/bindings/iio/adc/xilinx-xadc.txt    | 113 +++++++++++++++++++++
->   1 file changed, 113 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+>> ---
+>>   drivers/power/rx51_battery.c | 68 +++++++++++++++++++++++++++++---------------
+>>   1 file changed, 45 insertions(+), 23 deletions(-)
+>>
+>> diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
+>> index 1bc5857..f7cb58e 100644
+>> --- a/drivers/power/rx51_battery.c
+>> +++ b/drivers/power/rx51_battery.c
+>> @@ -24,34 +24,27 @@
+>>   #include <linux/power_supply.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/i2c/twl4030-madc.h>
+>> -
+>> -/* RX51 specific channels */
+>> -#define TWL4030_MADC_BTEMP_RX51    TWL4030_MADC_ADCIN0
+>> -#define TWL4030_MADC_BCI_RX51    TWL4030_MADC_ADCIN4
+>> +#include <linux/iio/consumer.h>
+>> +#include <linux/of.h>
+>>
+>>   struct rx51_device_info {
+>>       struct device *dev;
+>>       struct power_supply bat;
+>> +    struct iio_channel *channel_temp;
+>> +    struct iio_channel *channel_bsi;
+>> +    struct iio_channel *channel_vbat;
+>>   };
+>>
+>>   /*
+>>    * Read ADCIN channel value, code copied from maemo kernel
+>>    */
+>> -static int rx51_battery_read_adc(int channel)
+>> +static int rx51_battery_read_adc(struct iio_channel *channel)
+>>   {
+>> -    struct twl4030_madc_request req;
+>> -
+>> -    req.channels = channel;
+>> -    req.do_avg = 1;
+>> -    req.method = TWL4030_MADC_SW1;
+>> -    req.func_cb = NULL;
+>> -    req.type = TWL4030_MADC_WAIT;
+>> -    req.raw = true;
+>> -
+>> -    if (twl4030_madc_conversion(&req) <= 0)
+>> -        return -ENODATA;
+>> -
+>> -    return req.rbuf[ffs(channel) - 1];
+>> +    int val, err;
+>> +    err = iio_read_channel_average_raw(channel, &val);
+>> +    if (err < 0)
+>> +        return err;
+>> +    return val;
+>>   }
+>>
+>>   /*
+>> @@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
+>>    */
+>>   static int rx51_battery_read_voltage(struct rx51_device_info *di)
+>>   {
+>> -    int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
+>> +    int voltage = rx51_battery_read_adc(di->channel_vbat);
+>>
+>> -    if (voltage < 0)
+>> +    if (voltage < 0) {
+>> +        dev_err(di->dev, "Could not read ADC: %d\n", voltage);
+>>           return voltage;
+>> +    }
+>>
+>>       return 1000 * (10000 * voltage / 1705);
+>>   }
+>> @@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+>>   {
+>>       int min = 0;
+>>       int max = ARRAY_SIZE(rx51_temp_table2) - 1;
+>> -    int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
+>> +    int raw = rx51_battery_read_adc(di->channel_temp);
+>> +
+>> +    if (raw < 0)
+>> +        dev_err(di->dev, "Could not read ADC: %d\n", raw);
+>>
+>>       /* Zero and negative values are undefined */
+>>       if (raw <= 0)
+>> @@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+>>    */
+>>   static int rx51_battery_read_capacity(struct rx51_device_info *di)
+>>   {
+>> -    int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
+>> +    int capacity = rx51_battery_read_adc(di->channel_bsi);
+>>
+>> -    if (capacity < 0)
+>> +    if (capacity < 0) {
+>> +        dev_err(di->dev, "Could not read ADC: %d\n", capacity);
+>>           return capacity;
+>> +    }
+>>
+>>       return 1280 * (1200 * capacity)/(1024 - capacity);
+>>   }
+>> @@ -213,12 +213,25 @@ static int rx51_battery_probe(struct platform_device *pdev)
+>>
+>>       platform_set_drvdata(pdev, di);
+>>
+>> +    di->dev = &pdev->dev;
+>>       di->bat.name = dev_name(&pdev->dev);
+>>       di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
+>>       di->bat.properties = rx51_battery_props;
+>>       di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
+>>       di->bat.get_property = rx51_battery_get_property;
+>>
+>> +    di->channel_temp = iio_channel_get(di->dev, "temp");
+>> +    if (IS_ERR(di->channel_temp))
+>> +        return PTR_ERR(di->channel_temp);
+>> +
+>> +    di->channel_bsi  = iio_channel_get(di->dev, "bsi");
+>> +    if (IS_ERR(di->channel_bsi))
+>> +        return PTR_ERR(di->channel_bsi);
+> You need to unwind the iio_channel_get that did succeed if we get here.
+> Otherwise references to the iio driver will still be held despite
+> this driver failing to probe.
 >
-> diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
-> new file mode 100644
-> index 0000000..d9ee909
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
-> @@ -0,0 +1,113 @@
-> +Xilinx XADC device driver
-> +
-> +This binding document describes the bindings for both of them since the
-> +bindings are very similar. The Xilinx XADC is a ADC that can be found in the
-> +series 7 FPGAs from Xilinx. The XADC has a DRP interface for communication.
-> +Currently two different frontends for the DRP interface exist. One that is only
-> +available on the ZYNQ family as a hardmacro in the SoC portion of the ZYNQ. The
-> +other one is available on all series 7 platforms and is a softmacro with a AXI
-> +interface. This binding document describes the bindings for both of them since
-> +the bindings are very similar.
-> +
-> +Required properties:
-> +	- compatible: Should be one of
-> +		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
-> +		  configuration interface to interface to the XADC hardmacro.
-> +		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
-> +		  interface to the XADC hardmacro.
-> +	- reg: Address and length of the register set for the device
-> +	- interrupts: Interrupt for the XADC control interface.
-> +	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
-> +	  when using the AXI-XADC pcore this must be the clock that provides the
-> +	  clock to the AXI bus interface of the core.
-> +
-> +Optional properties:
-> +	- interrupt-parent: phandle to the parent interrupt controller
-> +	- xlnx,external-mux:
-> +		* "none": No external multiplexer is used, this is the default
-> +		  if the property is omitted.
-> +		* "single": External multiplexer mode is used with one
-> +		   multiplexer.
-> +		* "dual": External multiplexer mode is used with two
-> +		  multiplexers for simultaneous sampling.
-> +	- xlnx,external-mux-channel: Configures which pair of pins is used to
-> +	  sample data in external mux mode.
-> +	  Valid values for single external multiplexer mode are:
-> +		0: VP/VN
-> +		1: VAUXP[0]/VAUXN[0]
-> +		2: VAUXP[1]/VAUXN[1]
-> +		...
-> +		16: VAUXP[15]/VAUXN[15]
-> +	  Valid values for dual external multiplexer mode are:
-> +		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
-> +		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
-> +		...
-> +		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
-> +
-> +	  This property needs to be present if the device is configured for
-> +	  external multiplexer mode (either single or dual). If the device is
-> +	  not using external multiplexer mode the property is ignored.
-> +	- xnlx,channels: List of external channels that are connected to the ADC
-> +	  Required properties:
-> +		* #address-cells: Should be 1.
-> +		* #size-cells: Should be 0.
-> +
-> +	  The child nodes of this node represent the external channels which are
-> +	  connected to the ADC. If the property is no present no external
-> +	  channels will be assumed to be connected.
-> +
-> +	  Each child node represents one channel and has the following
-> +	  properties:
-> +		Required properties:
-> +			* reg: Pair of pins the the channel is connected to.
-> +				0: VP/VN
-> +				1: VAUXP[0]/VAUXN[0]
-> +				2: VAUXP[1]/VAUXN[1]
-> +				...
-> +				16: VAUXP[15]/VAUXN[15]
-> +			  Note each channel number should only be used at most
-> +			  once.
-> +		Optional properties:
-> +			* xlnx,bipolar: If set the channel is used in bipolar
-> +			  mode.
-> +
-> +
-> +Examples:
-> +	xadc@f8007100 {
-> +		compatible = "xlnx,zynq-xadc-1.00.a";
-> +		reg = <0xf8007100 0x20>;
-> +		interrupts = <0 7 4>;
-> +		interrupt-parent = <&gic>;
-> +		clocks = <&pcap_clk>;
-> +
-> +		xlnx,channels {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			channel@0 {
-> +				reg = <0>;
-> +			};
-> +			channel@1 {
-> +				reg = <1>;
-> +			};
-> +			channel@8 {
-> +				reg = <8>;
-> +			};
-> +		};
-> +	};
-> +
-> +	xadc@43200000 {
-> +		compatible = "xlnx,axi-xadc-1.00.a";
-> +		reg = <0x43200000 0x1000>;
-> +		interrupts = <0 53 4>;
-> +		interrupt-parent = <&gic>;
-> +		clocks = <&fpga1_clk>;
-> +
-> +		xlnx,channels {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			channel@0 {
-> +				reg = <0>;
-> +				xlnx,bipolar;
-> +			};
-> +		};
-> +	};
+>> +
+>> +    di->channel_vbat = iio_channel_get(di->dev, "vbat");
+>> +    if (IS_ERR(di->channel_vbat))
+>> +        return PTR_ERR(di->channel_vbat);
+>> +
+>>       ret = power_supply_register(di->dev, &di->bat);
+>>       if (ret)
+>>           return ret;
+>> @@ -235,12 +248,21 @@ static int rx51_battery_remove(struct platform_device *pdev)
+>>       return 0;
+>>   }
+>>
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id n900_battery_of_match[] = {
+>> +    {.compatible = "nokia,n900-battery", },
+>> +    { },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, n900_battery_of_match);
+>> +#endif
+>> +
+>>   static struct platform_driver rx51_battery_driver = {
+>>       .probe = rx51_battery_probe,
+>>       .remove = rx51_battery_remove,
+>>       .driver = {
+>>           .name = "rx51-battery",
+>>           .owner = THIS_MODULE,
+>> +        .of_match_table = of_match_ptr(n900_battery_of_match),
+>>       },
+>>   };
+>>   module_platform_driver(rx51_battery_driver);
+>>
 >
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
