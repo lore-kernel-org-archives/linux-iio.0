@@ -1,82 +1,73 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <5327186B.7030500@linux.intel.com>
-Date: Mon, 17 Mar 2014 08:44:43 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
+Return-Path: <sre@debian.org>
+Date: Sat, 1 Mar 2014 18:12:27 +0100
+From: Sebastian Reichel <sre@debian.org>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: ak8975: Don't bail out for irq setup error
-References: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394572557-8102-3-git-send-email-srinivas.pandruvada@linux.intel.com> <53246E3A.7020702@kernel.org>
-In-Reply-To: <53246E3A.7020702@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Cc: Marek Belisko <marek@goldelico.com>, Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv4 0/7] Convert twl4030-madc to IIO API and add DT support
+Message-ID: <20140301171226.GA3337@earth.universe>
+References: <1393374270-20079-1-git-send-email-sre@debian.org>
+ <1393444990-28140-1-git-send-email-sre@debian.org>
+ <5311CA14.6080009@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
+In-Reply-To: <5311CA14.6080009@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/15/2014 08:14 AM, Jonathan Cameron wrote:
-> On 11/03/14 21:15, Srinivas Pandruvada wrote:
->> This driver can very well work via polling, if request_irq failed.
->> The problem is that many times i2c interrupts are shared. This
->> driver is not ready for shared interrupt as it will return IRQ_HANDLED,
->> in every case. Here we will get EBUSY when some other driver registered
->> handler and this driver is grabbing in exclusive mode.
->> So in this case just print error and continue in polling mode.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> I'm not sure this is a good solution as it means that we will get very 
-> different
-> results depending on the probe order of various drivers.  How do other 
-> i2c drivers
-> cope with the fact that there is no way of knowing within the 
-> interrupt routine
-> that the device was the one causing the interrupt?
->
-Agreed. The i2c driver currently don't receive irq flags in the client 
-structure. They
-only get irq number. We do get irq flags from the ACPI in this case or 
-from some
-platform init code. I have another patch to enhance ACPI i2c binding and 
-also enhance
-i2c_client structure.
-In addition this driver can be enhanced to use shared irq.
 
-Thanks,
-Srinivas
+--nFreZHaLTZJo0R7j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+Hi Jonathan,
 
-> A quick grep suggests that the normal trick is to had over to an irq 
-> thread
-> then return IRQ_NONE from that once we know it isn't our irq. Could we 
-> have
-> move the queue wakeup into a a thread (converting to a threaded 
-> interrupt) but
-> before it query the hardware to establish it is actually our interrupt?
->> ---
->>   drivers/iio/magnetometer/ak8975.c | 12 +++++++++---
->>   1 file changed, 9 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/magnetometer/ak8975.c 
->> b/drivers/iio/magnetometer/ak8975.c
->> index fe5e9c8..0f9c407 100644
->> --- a/drivers/iio/magnetometer/ak8975.c
->> +++ b/drivers/iio/magnetometer/ak8975.c
->> @@ -236,9 +236,15 @@ static int ak8975_setup(struct i2c_client *client)
->>       if (data->eoc_gpio > 0 || client->irq) {
->>           ret = ak8975_setup_irq(data);
->>           if (ret < 0) {
->> -            dev_err(&client->dev,
->> -                "Error setting data ready interrupt\n");
->> -            return ret;
->> +            if (ret == -EBUSY) {
->> +                dev_err(&client->dev,
->> +                    "device Intr busy:polling required\n");
->> +                ret = 0;
->> +            } else {
->> +                dev_err(&client->dev,
->> +                    "Error setting data ready interrupt\n");
->> +                return ret;
->> +            }
->>           }
->>       }
->>
->>
->
->
+On Sat, Mar 01, 2014 at 11:52:52AM +0000, Jonathan Cameron wrote:
+> Obviously there are a few outstanding bits and pieces to be
+> addressed. To get this lined up for a merge...
+
+I will send out a new patchset in a few minutes.
+
+> Lee, do you want to take this through mfd or shall I take it through
+> IIO?  I don't mind either way.  It stands pretty separate in IIO so
+> shouldn't cause any merge issues beyond minor fuzz.
+
+I think it makes sense to queue it via IIO once I add the ABI
+documentation for the IIO *_mean_raw sysfs entries. Also I
+think it makes sense to add iio_read_channel_average_raw()
+in this patchset, since its needed to convert users of the
+old madc API to the IIO API.
+
+-- Sebastian
+
+--nFreZHaLTZJo0R7j
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJTEhT6AAoJENju1/PIO/qa1qcP/3LkizLrH6QnSM9aznFkQ6qW
+KZ1eqYXw8umtXxVhljApAUq8QLFCT07yePW7Yhs23eEXBBb/3m/wpDMC54vIaSdS
+rJLgNM4Tm0zmB7nVOMFoTto9dpTQZnyb/UP8zzHX2TkMu922j3rt4u/gAuKZ2eu8
+4Bcrrx/oEg3DhRpHEwxvNVt7+jcDPHacNreXa0fSv5rMVXz7ptyNvCh4XJVP1b6l
+DvniowmwmTTpCA16nnN4xAwiuaKK3XNRyg2ClhR8bWN/iT/C3NFGFyd7hS/iFmJ+
+7kUweGnixuBGdfiKCMlh9LZNJcgA+x97trMbA9cPh2p3DMiuSPLWHYP49Q1jyOlR
+/FF50/kuOF9i/rLR8cbI5j/EM9KqF4lPsvnEVTsdxVR3ryeYJBpA8dURHdHWWfuZ
+ZGI9uSnH4Rul2/7tLKxdVEFmEU0XBKIZTi8cWybpN3nJA42Nvd5D1Ig5U7vy/VEf
+9Kg9RW5jzNFiyTrnGytvh+DSforbvCxYsTo8BuBvCx+LAJn1OFcMjbZpcO6RZa0i
+yTHeAmF++7Z4kIu/SskNGH/yJ9xzjAYOoBL5H13J+6W6I41dYiNTtt0bUNVi7HFW
+8XpYaGd1xYEQE2jWmmCMLHBqnxCL95DU9CVRfHvFtQnUFPeBU6J7It1bByDIHrMb
+Ljuxi2QOIrh8A8gjq8HQ
+=E5Rg
+-----END PGP SIGNATURE-----
+
+--nFreZHaLTZJo0R7j--
