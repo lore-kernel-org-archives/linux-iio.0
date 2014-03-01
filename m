@@ -1,8 +1,4 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40434 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754522AbaCJRZp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:25:45 -0400
+Return-Path: <sre@ring0.de>
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
 	Marek Belisko <marek@goldelico.com>,
@@ -16,87 +12,111 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 1/9] mfd: twl4030-madc: Use managed resources
-Date: Mon, 10 Mar 2014 18:25:21 +0100
-Message-Id: <1394472329-15485-2-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv1 5/9] mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+Date: Sat,  1 Mar 2014 20:32:41 +0100
+Message-Id: <1393702365-26429-6-git-send-email-sre@debian.org>
+In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
+References: <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393702365-26429-1-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Update twl4030-madc driver to use managed resources.
+Simplify reading and writing of 16 bit TWL registers in the
+driver by using twl_i2c_read_u16 and twl_i2c_write_u16.
 
 Signed-off-by: Sebastian Reichel <sre@debian.org>
 Acked-by: Lee Jones <lee.jones@linaro.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/mfd/twl4030-madc.c | 39 ++++++++-------------------------------
+ 1 file changed, 8 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
+index 35514e0..abfc3e6 100644
 --- a/drivers/mfd/twl4030-madc.c
 +++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+@@ -207,25 +207,19 @@ const struct twl4030_madc_conversion_method twl4030_conversion_methods[] = {
+  */
+ static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
  {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
+-	u8 msb, lsb;
++	u16 val;
+ 	int ret;
+ 	/*
+ 	 * For each ADC channel, we have MSB and LSB register pair. MSB address
+ 	 * is always LSB address+1. reg parameter is the address of LSB register
+ 	 */
+-	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &msb, reg + 1);
++	ret = twl_i2c_read_u16(TWL4030_MODULE_MADC, &val, reg);
  	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
+-		dev_err(madc->dev, "unable to read MSB register 0x%X\n",
+-			reg + 1);
+-		return ret;
+-	}
+-	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &lsb, reg);
+-	if (ret) {
+-		dev_err(madc->dev, "unable to read LSB register 0x%X\n", reg);
++		dev_err(madc->dev, "unable to read register 0x%X\n", reg);
+ 		return ret;
+ 	}
+ 
+-	return (int)(((msb << 8) | lsb) >> 6);
++	return (int)(val >> 6);
  }
  
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+ /*
+@@ -574,7 +568,6 @@ static int twl4030_madc_wait_conversion_ready(struct twl4030_madc_data *madc,
+ int twl4030_madc_conversion(struct twl4030_madc_request *req)
  {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
+ 	const struct twl4030_madc_conversion_method *method;
+-	u8 ch_msb, ch_lsb;
+ 	int ret;
  
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
+ 	if (!req || !twl4030_madc)
+@@ -590,37 +583,21 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ 		ret = -EBUSY;
+ 		goto out;
+ 	}
+-	ch_msb = (req->channels >> 8) & 0xff;
+-	ch_lsb = req->channels & 0xff;
+ 	method = &twl4030_conversion_methods[req->method];
+ 	/* Select channels to be converted */
+-	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_msb, method->sel + 1);
++	ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels, method->sel);
+ 	if (ret) {
+ 		dev_err(twl4030_madc->dev,
+-			"unable to write sel register 0x%X\n", method->sel + 1);
+-		goto out;
+-	}
+-	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_lsb, method->sel);
+-	if (ret) {
+-		dev_err(twl4030_madc->dev,
+-			"unable to write sel register 0x%X\n", method->sel + 1);
++			"unable to write sel register 0x%X\n", method->sel);
+ 		goto out;
+ 	}
+ 	/* Select averaging for all channels if do_avg is set */
+ 	if (req->do_avg) {
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       ch_msb, method->avg + 1);
++		ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels,
++				       method->avg);
+ 		if (ret) {
+ 			dev_err(twl4030_madc->dev,
+ 				"unable to write avg register 0x%X\n",
+-				method->avg + 1);
+-			goto out;
+-		}
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       ch_lsb, method->avg);
+-		if (ret) {
+-			dev_err(twl4030_madc->dev,
+-				"unable to write avg reg 0x%X\n",
+ 				method->avg);
+ 			goto out;
+ 		}
 -- 
 1.9.0
-
