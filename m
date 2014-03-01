@@ -1,73 +1,112 @@
-Return-Path: <sre@debian.org>
-Date: Sat, 1 Mar 2014 18:12:27 +0100
+Return-Path: <sre@ring0.de>
 From: Sebastian Reichel <sre@debian.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Marek Belisko <marek@goldelico.com>, Lee Jones <lee.jones@linaro.org>,
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [RFCv4 0/7] Convert twl4030-madc to IIO API and add DT support
-Message-ID: <20140301171226.GA3337@earth.universe>
-References: <1393374270-20079-1-git-send-email-sre@debian.org>
- <1393444990-28140-1-git-send-email-sre@debian.org>
- <5311CA14.6080009@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
-In-Reply-To: <5311CA14.6080009@kernel.org>
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv1 7/9] mfd: twl4030-madc: Move driver to drivers/iio/adc
+Date: Sat,  1 Mar 2014 20:32:43 +0100
+Message-Id: <1393702365-26429-8-git-send-email-sre@debian.org>
+In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
+References: <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393702365-26429-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
+This is a driver for an A/D converter, which belongs into
+drivers/iio/adc.
 
---nFreZHaLTZJo0R7j
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/adc/Kconfig                 | 10 ++++++++++
+ drivers/iio/adc/Makefile                |  1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c |  0
+ drivers/mfd/Kconfig                     | 10 ----------
+ drivers/mfd/Makefile                    |  1 -
+ 5 files changed, 11 insertions(+), 11 deletions(-)
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (100%)
 
-Hi Jonathan,
-
-On Sat, Mar 01, 2014 at 11:52:52AM +0000, Jonathan Cameron wrote:
-> Obviously there are a few outstanding bits and pieces to be
-> addressed. To get this lined up for a merge...
-
-I will send out a new patchset in a few minutes.
-
-> Lee, do you want to take this through mfd or shall I take it through
-> IIO?  I don't mind either way.  It stands pretty separate in IIO so
-> shouldn't cause any merge issues beyond minor fuzz.
-
-I think it makes sense to queue it via IIO once I add the ABI
-documentation for the IIO *_mean_raw sysfs entries. Also I
-think it makes sense to add iio_read_channel_average_raw()
-in this patchset, since its needed to convert users of the
-old madc API to the IIO API.
-
--- Sebastian
-
---nFreZHaLTZJo0R7j
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJTEhT6AAoJENju1/PIO/qa1qcP/3LkizLrH6QnSM9aznFkQ6qW
-KZ1eqYXw8umtXxVhljApAUq8QLFCT07yePW7Yhs23eEXBBb/3m/wpDMC54vIaSdS
-rJLgNM4Tm0zmB7nVOMFoTto9dpTQZnyb/UP8zzHX2TkMu922j3rt4u/gAuKZ2eu8
-4Bcrrx/oEg3DhRpHEwxvNVt7+jcDPHacNreXa0fSv5rMVXz7ptyNvCh4XJVP1b6l
-DvniowmwmTTpCA16nnN4xAwiuaKK3XNRyg2ClhR8bWN/iT/C3NFGFyd7hS/iFmJ+
-7kUweGnixuBGdfiKCMlh9LZNJcgA+x97trMbA9cPh2p3DMiuSPLWHYP49Q1jyOlR
-/FF50/kuOF9i/rLR8cbI5j/EM9KqF4lPsvnEVTsdxVR3ryeYJBpA8dURHdHWWfuZ
-ZGI9uSnH4Rul2/7tLKxdVEFmEU0XBKIZTi8cWybpN3nJA42Nvd5D1Ig5U7vy/VEf
-9Kg9RW5jzNFiyTrnGytvh+DSforbvCxYsTo8BuBvCx+LAJn1OFcMjbZpcO6RZa0i
-yTHeAmF++7Z4kIu/SskNGH/yJ9xzjAYOoBL5H13J+6W6I41dYiNTtt0bUNVi7HFW
-8XpYaGd1xYEQE2jWmmCMLHBqnxCL95DU9CVRfHvFtQnUFPeBU6J7It1bByDIHrMb
-Ljuxi2QOIrh8A8gjq8HQ
-=E5Rg
------END PGP SIGNATURE-----
-
---nFreZHaLTZJo0R7j--
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 2209f28..427f75c 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -183,6 +183,16 @@ config TI_AM335X_ADC
+ 	  Say yes here to build support for Texas Instruments ADC
+ 	  driver which is also a MFD client.
+ 
++config TWL4030_MADC
++	tristate "TWL4030 MADC (Monitoring A/D Converter)"
++	depends on TWL4030_CORE
++	help
++	This driver provides support for Triton TWL4030-MADC. The
++	driver supports both RT and SW conversion methods.
++
++	This driver can also be built as a module. If so, the module will be
++	called twl4030-madc.
++
+ config TWL6030_GPADC
+ 	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
+ 	depends on TWL4030_CORE
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ba9a10a..9acf2df 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,5 +20,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
++obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+ obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+similarity index 100%
+rename from drivers/mfd/twl4030-madc.c
+rename to drivers/iio/adc/twl4030-madc.c
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 49bb445..23a8a51 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -935,16 +935,6 @@ config TWL4030_CORE
+ 	  high speed USB OTG transceiver, an audio codec (on most
+ 	  versions) and many other features.
+ 
+-config TWL4030_MADC
+-	tristate "TI TWL4030 MADC"
+-	depends on TWL4030_CORE
+-	help
+-	This driver provides support for triton TWL4030-MADC. The
+-	driver supports both RT and SW conversion methods.
+-
+-	This driver can be built as a module. If so it will be
+-	named twl4030-madc
+-
+ config TWL4030_POWER
+ 	bool "TI TWL4030 power resources"
+ 	depends on TWL4030_CORE && ARM
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 5aea5ef..c8eb0bc 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -71,7 +71,6 @@ obj-$(CONFIG_MFD_TPS80031)	+= tps80031.o
+ obj-$(CONFIG_MENELAUS)		+= menelaus.o
+ 
+ obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
+-obj-$(CONFIG_TWL4030_MADC)      += twl4030-madc.o
+ obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
+ obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
+ obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
+-- 
+1.9.0
