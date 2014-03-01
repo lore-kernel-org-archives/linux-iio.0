@@ -1,97 +1,67 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/3] iio: imu: inv_mpu6050: Enable default bypass mode
-Date: Tue, 11 Mar 2014 14:04:13 -0700
-Message-Id: <1394571854-6737-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58750 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753285AbaCAWYK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 17:24:10 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] iio:core: Fix bug in length of event info_mask and catch unhandled bits set in masks.
+Date: Sat,  1 Mar 2014 22:24:47 +0000
+Message-Id: <1393712687-8407-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This chip has two modes to control secondary sensor attached to it.
-One is master mode and another is bypass mode. In master mode
-MPU6500 will directly communicates to the secondary sensor device
-attached to it. This can support very few secondary devices in this
-mode.
-But when configured in bypass mode the i2c lines are directly connected
-to host i2c bus controller.
-Since in master mode it can only support few devices and they are not
-implemented in this driver, set the default mode to bypass mode.
+The unhandled bits case was highlighted by smatch:
+  CHECK   drivers/iio/industrialio-core.c
+drivers/iio/industrialio-core.c:719 iio_device_add_info_mask_type() error: buffer overflow 'iio_chan_info_postfix' 17 <= 31
+  CC [M]  drivers/iio/industrialio-core.o
+  CHECK   drivers/iio/industrialio-event.c
+drivers/iio/industrialio-event.c:327 iio_device_add_event() error: buffer overflow 'iio_ev_info_text' 3 <= 3
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+The incorrect limit for the for_each_set_bit loop was noticed whilst fixing
+this other case.  Note that as we only have 3 possible entries a the moment
+and the value was set to 4, the bug would not have any effect currently.
+It will bite fairly soon though, so best fix it now.
+
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 20 +++++++++++++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
- 2 files changed, 23 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-core.c  | 2 ++
+ drivers/iio/industrialio-event.c | 4 +++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 4a76697..6ba565a 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -61,6 +61,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
- 	.int_enable             = INV_MPU6050_REG_INT_ENABLE,
- 	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
- 	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
-+	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
- };
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index ede16aec..e4961b1 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -716,6 +716,8 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+ 	int i, ret, attrcount = 0;
  
- static const struct inv_mpu6050_chip_config chip_config_6050 = {
-@@ -616,6 +617,21 @@ static const struct iio_info mpu_info = {
- 	.validate_trigger = inv_mpu6050_validate_trigger,
- };
+ 	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
++		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
++			return -EINVAL;
+ 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+ 					     chan,
+ 					     &iio_read_channel_info,
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index ea6e06b..dddfb0f 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -321,7 +321,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+ 	char *postfix;
+ 	int ret;
  
-+int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
-+{
-+	int ret;
-+
-+	if (enable)
-+		ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
-+					st->client->irq |
-+						INV_MPU6050_BIT_BYPASS_EN);
-+	else
-+		ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
-+					st->client->irq);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(inv_set_bypass_status);
-+
- /**
-  *  inv_check_and_setup_chip() - check and setup chip.
-  */
-@@ -654,7 +670,9 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
- 	if (result)
- 		return result;
- 
--	return 0;
-+	result = inv_set_bypass_status(st, true);
-+
-+	return result;
- }
- 
- /**
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index f383955..de5aa22 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
- 	u8 int_enable;
- 	u8 pwr_mgmt_1;
- 	u8 pwr_mgmt_2;
-+	u8 int_pin_cfg;
- };
- 
- /*device enum */
-@@ -185,6 +186,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_MIN_FIFO_RATE                         4
- #define INV_MPU6050_ONE_K_HZ                              1000
- 
-+#define INV_MPU6050_REG_INT_PIN_CFG		0x37
-+#define INV_MPU6050_BIT_BYPASS_EN		0x2
-+
- /* scan element definition */
- enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_ACCL_X,
+-	for_each_set_bit(i, mask, sizeof(*mask)) {
++	for_each_set_bit(i, mask, sizeof(*mask)*8) {
++		if (i >= ARRAY_SIZE(iio_ev_info_text))
++			return -EINVAL;
+ 		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+ 				iio_ev_type_text[type], iio_ev_dir_text[dir],
+ 				iio_ev_info_text[i]);
 -- 
-1.7.11.7
+1.9.0
+
