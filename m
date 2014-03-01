@@ -1,354 +1,184 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40559 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754484AbaCJR0J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:26:09 -0400
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51848 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752157AbaCALGH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 06:06:07 -0500
+Message-ID: <5311BF4C.3070003@kernel.org>
+Date: Sat, 01 Mar 2014 11:06:52 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 3/9] mfd: twl4030-madc: Cleanup driver
-Date: Mon, 10 Mar 2014 18:25:23 +0100
-Message-Id: <1394472329-15485-4-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
+	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] devicetree: Add Xilinx XADC binding documentation
+References: <1392646243-5538-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1392646243-5538-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some style fixes in twl4030-madc driver.
+On 17/02/14 14:10, Lars-Peter Clausen wrote:
+> The Xilinx XADC is a ADC that can be found in the series 7 FPGAs from Xilinx.
+> The XADC has a DRP interface for communication. Currently two different
+> frontends for the DRP interface exist. One that is only available on the ZYNQ
+> family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
+> on all series 7 platforms and is a softmacro with a AXI interface. This binding
+> document describes the bindings for both of them since the bindings are very
+> similar.
+>
+> Each of them needs:
+> 	* A address range where the registers are mapped
+> 	* An interrupt number for the device interrupt
+> 	* A clock. For the the ZYNQ hardmacro interface this is the modules PCAP
+> 	  clock, for the AXI softmacro it is the AXI bus interface clock.
+>
+> Additionally the bindings specify whether an external multiplexer is used and in
+> which mode it is used. The devicetree bindings also describe which external
+> channels are connected and in which configuration.
+>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Pawel Moll <pawel.moll@arm.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+> Cc: Kumar Gala <galak@codeaurora.org>
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+As the change from v1 was trivial and neither have had any response.
+I am taking the view that everyone is happy with this an applying it through
+the IIO tree. It has been 4 weeks since that first patch posting.
 
-Reported-by: Jonathan Cameron <jic23@kernel.org>
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
----
- drivers/mfd/twl4030-madc.c       | 127 +++++++++++++++++++--------------------
- include/linux/i2c/twl4030-madc.h |   2 +-
- 2 files changed, 62 insertions(+), 67 deletions(-)
+Applied to the togreg branch of iio.git
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 1c5c4db..890d520 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -49,22 +49,22 @@
- 
- #include <linux/iio/iio.h>
- 
--/*
-+/**
-  * struct twl4030_madc_data - a container for madc info
-- * @dev - pointer to device structure for madc
-- * @lock - mutex protecting this data structure
-- * @requests - Array of request struct corresponding to SW1, SW2 and RT
-- * @use_second_irq - IRQ selection (main or co-processor)
-- * @imr - Interrupt mask register of MADC
-- * @isr - Interrupt status register of MADC
-+ * @dev:		Pointer to device structure for madc
-+ * @lock:		Mutex protecting this data structure
-+ * @requests:		Array of request struct corresponding to SW1, SW2 and RT
-+ * @use_second_irq:	IRQ selection (main or co-processor)
-+ * @imr:		Interrupt mask register of MADC
-+ * @isr:		Interrupt status register of MADC
-  */
- struct twl4030_madc_data {
- 	struct device *dev;
- 	struct mutex lock;	/* mutex protecting this data structure */
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
- 	bool use_second_irq;
--	int imr;
--	int isr;
-+	u8 imr;
-+	u8 isr;
- };
- 
- static int twl4030_madc_read(struct iio_dev *iio_dev,
-@@ -155,17 +155,16 @@ twl4030_divider_ratios[16] = {
- };
- 
- 
--/*
-- * Conversion table from -3 to 55 degree Celcius
-- */
--static int therm_tbl[] = {
--30800,	29500,	28300,	27100,
--26000,	24900,	23900,	22900,	22000,	21100,	20300,	19400,	18700,	17900,
--17200,	16500,	15900,	15300,	14700,	14100,	13600,	13100,	12600,	12100,
--11600,	11200,	10800,	10400,	10000,	9630,	9280,	8950,	8620,	8310,
--8020,	7730,	7460,	7200,	6950,	6710,	6470,	6250,	6040,	5830,
--5640,	5450,	5260,	5090,	4920,	4760,	4600,	4450,	4310,	4170,
--4040,	3910,	3790,	3670,	3550
-+/* Conversion table from -3 to 55 degrees Celcius */
-+static int twl4030_therm_tbl[] = {
-+	30800,	29500,	28300,	27100,
-+	26000,	24900,	23900,	22900,	22000,	21100,	20300,	19400,	18700,
-+	17900,	17200,	16500,	15900,	15300,	14700,	14100,	13600,	13100,
-+	12600,	12100,	11600,	11200,	10800,	10400,	10000,	9630,	9280,
-+	8950,	8620,	8310,	8020,	7730,	7460,	7200,	6950,	6710,
-+	6470,	6250,	6040,	5830,	5640,	5450,	5260,	5090,	4920,
-+	4760,	4600,	4450,	4310,	4170,	4040,	3910,	3790,	3670,
-+	3550
- };
- 
- /*
-@@ -197,11 +196,12 @@ const struct twl4030_madc_conversion_method twl4030_conversion_methods[] = {
- 			      },
- };
- 
--/*
-- * Function to read a particular channel value.
-- * @madc - pointer to struct twl4030_madc_data
-- * @reg - lsb of ADC Channel
-- * If the i2c read fails it returns an error else returns 0.
-+/**
-+ * twl4030_madc_channel_raw_read() - Function to read a particular channel value
-+ * @madc:	pointer to struct twl4030_madc_data
-+ * @reg:	lsb of ADC Channel
-+ *
-+ * Return: 0 on success, an error code otherwise.
-  */
- static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
- {
-@@ -227,7 +227,7 @@ static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
- }
- 
- /*
-- * Return battery temperature
-+ * Return battery temperature in degrees Celsius
-  * Or < 0 on failure.
-  */
- static int twl4030battery_temperature(int raw_volt)
-@@ -236,18 +236,18 @@ static int twl4030battery_temperature(int raw_volt)
- 	int temp, curr, volt, res, ret;
- 
- 	volt = (raw_volt * TEMP_STEP_SIZE) / TEMP_PSR_R;
--	/* Getting and calculating the supply current in micro ampers */
-+	/* Getting and calculating the supply current in micro amperes */
- 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE, &val,
- 		REG_BCICTL2);
- 	if (ret < 0)
- 		return ret;
-+
- 	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
- 	/* Getting and calculating the thermistor resistance in ohms */
- 	res = volt * 1000 / curr;
- 	/* calculating temperature */
- 	for (temp = 58; temp >= 0; temp--) {
--		int actual = therm_tbl[temp];
--
-+		int actual = twl4030_therm_tbl[temp];
- 		if ((actual - res) >= 0)
- 			break;
- 	}
-@@ -269,11 +269,12 @@ static int twl4030battery_current(int raw_volt)
- 	else /* slope of 0.88 mV/mA */
- 		return (raw_volt * CURR_STEP_SIZE) / CURR_PSR_R2;
- }
-+
- /*
-  * Function to read channel values
-  * @madc - pointer to twl4030_madc_data struct
-  * @reg_base - Base address of the first channel
-- * @Channels - 16 bit bitmap. If the bit is set, channel value is read
-+ * @Channels - 16 bit bitmap. If the bit is set, channel's value is read
-  * @buf - The channel values are stored here. if read fails error
-  * @raw - Return raw values without conversion
-  * value is stored
-@@ -284,17 +285,17 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 				      long channels, int *buf,
- 				      bool raw)
- {
--	int count = 0, count_req = 0, i;
-+	int count = 0;
-+	int i;
- 	u8 reg;
- 
- 	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
--		reg = reg_base + 2 * i;
-+		reg = reg_base + (2 * i);
- 		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
- 		if (buf[i] < 0) {
--			dev_err(madc->dev,
--				"Unable to read register 0x%X\n", reg);
--			count_req++;
--			continue;
-+			dev_err(madc->dev, "Unable to read register 0x%X\n",
-+				reg);
-+			return buf[i];
- 		}
- 		if (raw) {
- 			count++;
-@@ -305,7 +306,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 			buf[i] = twl4030battery_current(buf[i]);
- 			if (buf[i] < 0) {
- 				dev_err(madc->dev, "err reading current\n");
--				count_req++;
-+				return buf[i];
- 			} else {
- 				count++;
- 				buf[i] = buf[i] - 750;
-@@ -315,7 +316,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 			buf[i] = twl4030battery_temperature(buf[i]);
- 			if (buf[i] < 0) {
- 				dev_err(madc->dev, "err reading temperature\n");
--				count_req++;
-+				return buf[i];
- 			} else {
- 				buf[i] -= 3;
- 				count++;
-@@ -336,8 +337,6 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
- 				twl4030_divider_ratios[i].numerator);
- 		}
- 	}
--	if (count_req)
--		dev_err(madc->dev, "%d channel conversion failed\n", count_req);
- 
- 	return count;
- }
-@@ -361,13 +360,13 @@ static int twl4030_madc_enable_irq(struct twl4030_madc_data *madc, u8 id)
- 			madc->imr);
- 		return ret;
- 	}
-+
- 	val &= ~(1 << id);
- 	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, val, madc->imr);
- 	if (ret) {
- 		dev_err(madc->dev,
- 			"unable to write imr register 0x%X\n", madc->imr);
- 		return ret;
--
- 	}
- 
- 	return 0;
-@@ -430,7 +429,7 @@ static irqreturn_t twl4030_madc_threaded_irq_handler(int irq, void *_madc)
- 			continue;
- 		ret = twl4030_madc_disable_irq(madc, i);
- 		if (ret < 0)
--			dev_dbg(madc->dev, "Disable interrupt failed%d\n", i);
-+			dev_dbg(madc->dev, "Disable interrupt failed %d\n", i);
- 		madc->requests[i].result_pending = 1;
- 	}
- 	for (i = 0; i < TWL4030_MADC_NUM_METHODS; i++) {
-@@ -512,21 +511,17 @@ static int twl4030_madc_start_conversion(struct twl4030_madc_data *madc,
- {
- 	const struct twl4030_madc_conversion_method *method;
- 	int ret = 0;
-+
-+	if (conv_method != TWL4030_MADC_SW1 && conv_method != TWL4030_MADC_SW2)
-+		return -ENOTSUPP;
-+
- 	method = &twl4030_conversion_methods[conv_method];
--	switch (conv_method) {
--	case TWL4030_MADC_SW1:
--	case TWL4030_MADC_SW2:
--		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
--				       TWL4030_MADC_SW_START, method->ctrl);
--		if (ret) {
--			dev_err(madc->dev,
--				"unable to write ctrl register 0x%X\n",
--				method->ctrl);
--			return ret;
--		}
--		break;
--	default:
--		break;
-+	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, TWL4030_MADC_SW_START,
-+			       method->ctrl);
-+	if (ret) {
-+		dev_err(madc->dev, "unable to write ctrl register 0x%X\n",
-+			method->ctrl);
-+		return ret;
- 	}
- 
- 	return 0;
-@@ -623,8 +618,8 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
- 				       ch_lsb, method->avg);
- 		if (ret) {
- 			dev_err(twl4030_madc->dev,
--				"unable to write sel reg 0x%X\n",
--				method->sel + 1);
-+				"unable to write avg reg 0x%X\n",
-+				method->avg);
- 			goto out;
- 		}
- 	}
-@@ -665,10 +660,6 @@ out:
- }
- EXPORT_SYMBOL_GPL(twl4030_madc_conversion);
- 
--/*
-- * Return channel value
-- * Or < 0 on failure.
-- */
- int twl4030_get_madc_conversion(int channel_no)
- {
- 	struct twl4030_madc_request req;
-@@ -703,6 +694,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
- 					      int chan, int on)
- {
- 	int ret;
-+	int regmask;
- 	u8 regval;
- 
- 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE,
-@@ -712,10 +704,13 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
- 			TWL4030_BCI_BCICTL1);
- 		return ret;
- 	}
-+
-+	regmask = chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
- 	if (on)
--		regval |= chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
-+		regval |= regmask;
- 	else
--		regval &= chan ? ~TWL4030_BCI_ITHEN : ~TWL4030_BCI_TYPEN;
-+		regval &= ~regmask;
-+
- 	ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE,
- 			       regval, TWL4030_BCI_BCICTL1);
- 	if (ret) {
-@@ -730,7 +725,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
- /*
-  * Function that sets MADC software power on bit to enable MADC
-  * @madc - pointer to twl4030_madc_data struct
-- * @on - Enable or disable MADC software powen on bit.
-+ * @on - Enable or disable MADC software power on bit.
-  * returns error if i2c read/write fails else 0
-  */
- static int twl4030_madc_set_power(struct twl4030_madc_data *madc, int on)
-@@ -909,7 +904,7 @@ static struct platform_driver twl4030_madc_driver = {
- 		   .name = "twl4030_madc",
- 		   .owner = THIS_MODULE,
- 		   .of_match_table = of_match_ptr(twl_madc_of_match),
--		   },
-+	},
- };
- 
- module_platform_driver(twl4030_madc_driver);
-diff --git a/include/linux/i2c/twl4030-madc.h b/include/linux/i2c/twl4030-madc.h
-index 01f5951..1c0134d 100644
---- a/include/linux/i2c/twl4030-madc.h
-+++ b/include/linux/i2c/twl4030-madc.h
-@@ -44,7 +44,7 @@ struct twl4030_madc_conversion_method {
- 
- struct twl4030_madc_request {
- 	unsigned long channels;
--	u16 do_avg;
-+	bool do_avg;
- 	u16 method;
- 	u16 type;
- 	bool active;
--- 
-1.9.0
+Thanks,
+> ---
+> Changes since v1:
+> 	* Remove duplicated paragraph in the description
+> ---
+>   .../devicetree/bindings/iio/adc/xilinx-xadc.txt    | 113 +++++++++++++++++++++
+>   1 file changed, 113 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+> new file mode 100644
+> index 0000000..d9ee909
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+> @@ -0,0 +1,113 @@
+> +Xilinx XADC device driver
+> +
+> +This binding document describes the bindings for both of them since the
+> +bindings are very similar. The Xilinx XADC is a ADC that can be found in the
+> +series 7 FPGAs from Xilinx. The XADC has a DRP interface for communication.
+> +Currently two different frontends for the DRP interface exist. One that is only
+> +available on the ZYNQ family as a hardmacro in the SoC portion of the ZYNQ. The
+> +other one is available on all series 7 platforms and is a softmacro with a AXI
+> +interface. This binding document describes the bindings for both of them since
+> +the bindings are very similar.
+> +
+> +Required properties:
+> +	- compatible: Should be one of
+> +		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
+> +		  configuration interface to interface to the XADC hardmacro.
+> +		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
+> +		  interface to the XADC hardmacro.
+> +	- reg: Address and length of the register set for the device
+> +	- interrupts: Interrupt for the XADC control interface.
+> +	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
+> +	  when using the AXI-XADC pcore this must be the clock that provides the
+> +	  clock to the AXI bus interface of the core.
+> +
+> +Optional properties:
+> +	- interrupt-parent: phandle to the parent interrupt controller
+> +	- xlnx,external-mux:
+> +		* "none": No external multiplexer is used, this is the default
+> +		  if the property is omitted.
+> +		* "single": External multiplexer mode is used with one
+> +		   multiplexer.
+> +		* "dual": External multiplexer mode is used with two
+> +		  multiplexers for simultaneous sampling.
+> +	- xlnx,external-mux-channel: Configures which pair of pins is used to
+> +	  sample data in external mux mode.
+> +	  Valid values for single external multiplexer mode are:
+> +		0: VP/VN
+> +		1: VAUXP[0]/VAUXN[0]
+> +		2: VAUXP[1]/VAUXN[1]
+> +		...
+> +		16: VAUXP[15]/VAUXN[15]
+> +	  Valid values for dual external multiplexer mode are:
+> +		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
+> +		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
+> +		...
+> +		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
+> +
+> +	  This property needs to be present if the device is configured for
+> +	  external multiplexer mode (either single or dual). If the device is
+> +	  not using external multiplexer mode the property is ignored.
+> +	- xnlx,channels: List of external channels that are connected to the ADC
+> +	  Required properties:
+> +		* #address-cells: Should be 1.
+> +		* #size-cells: Should be 0.
+> +
+> +	  The child nodes of this node represent the external channels which are
+> +	  connected to the ADC. If the property is no present no external
+> +	  channels will be assumed to be connected.
+> +
+> +	  Each child node represents one channel and has the following
+> +	  properties:
+> +		Required properties:
+> +			* reg: Pair of pins the the channel is connected to.
+> +				0: VP/VN
+> +				1: VAUXP[0]/VAUXN[0]
+> +				2: VAUXP[1]/VAUXN[1]
+> +				...
+> +				16: VAUXP[15]/VAUXN[15]
+> +			  Note each channel number should only be used at most
+> +			  once.
+> +		Optional properties:
+> +			* xlnx,bipolar: If set the channel is used in bipolar
+> +			  mode.
+> +
+> +
+> +Examples:
+> +	xadc@f8007100 {
+> +		compatible = "xlnx,zynq-xadc-1.00.a";
+> +		reg = <0xf8007100 0x20>;
+> +		interrupts = <0 7 4>;
+> +		interrupt-parent = <&gic>;
+> +		clocks = <&pcap_clk>;
+> +
+> +		xlnx,channels {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			channel@0 {
+> +				reg = <0>;
+> +			};
+> +			channel@1 {
+> +				reg = <1>;
+> +			};
+> +			channel@8 {
+> +				reg = <8>;
+> +			};
+> +		};
+> +	};
+> +
+> +	xadc@43200000 {
+> +		compatible = "xlnx,axi-xadc-1.00.a";
+> +		reg = <0x43200000 0x1000>;
+> +		interrupts = <0 53 4>;
+> +		interrupt-parent = <&gic>;
+> +		clocks = <&fpga1_clk>;
+> +
+> +		xlnx,channels {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			channel@0 {
+> +				reg = <0>;
+> +				xlnx,bipolar;
+> +			};
+> +		};
+> +	};
+>
 
