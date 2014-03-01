@@ -1,10 +1,11 @@
 Return-Path: <sre@ring0.de>
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
 	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
@@ -14,192 +15,74 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>,
 	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv2 1/2] rx51_battery: convert to iio consumer
-Date: Sat,  1 Mar 2014 21:22:44 +0100
-Message-Id: <1393705366-32420-2-git-send-email-sre@debian.org>
-In-Reply-To: <1393705366-32420-1-git-send-email-sre@debian.org>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
- <1393705366-32420-1-git-send-email-sre@debian.org>
+Subject: [PATCHv1 0/9] Convert twl4030-madc to IIO API and add DT support
+Date: Sat,  1 Mar 2014 20:32:36 +0100
+Message-Id: <1393702365-26429-1-git-send-email-sre@debian.org>
+In-Reply-To: <1393444990-28140-1-git-send-email-sre@debian.org>
+References: <1393444990-28140-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Update rx51-battery driver to use the new IIO API of
-twl4030-madc and add DT support.
+Hi,
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- drivers/power/rx51_battery.c | 90 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 66 insertions(+), 24 deletions(-)
+This is PATCHv1 for converting twl4030-madc to the IIO API and
+adding DT support. The plan is to remove the private twl4030-madc
+API once all users have been removed or converted to the IIO API.
+The patchset compiles and has been tested on my Nokia N900.
 
-diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
-index 1bc5857..d5a2acf 100644
---- a/drivers/power/rx51_battery.c
-+++ b/drivers/power/rx51_battery.c
-@@ -24,34 +24,27 @@
- #include <linux/power_supply.h>
- #include <linux/slab.h>
- #include <linux/i2c/twl4030-madc.h>
--
--/* RX51 specific channels */
--#define TWL4030_MADC_BTEMP_RX51	TWL4030_MADC_ADCIN0
--#define TWL4030_MADC_BCI_RX51	TWL4030_MADC_ADCIN4
-+#include <linux/iio/consumer.h>
-+#include <linux/of.h>
- 
- struct rx51_device_info {
- 	struct device *dev;
- 	struct power_supply bat;
-+	struct iio_channel *channel_temp;
-+	struct iio_channel *channel_bsi;
-+	struct iio_channel *channel_vbat;
- };
- 
- /*
-  * Read ADCIN channel value, code copied from maemo kernel
-  */
--static int rx51_battery_read_adc(int channel)
-+static int rx51_battery_read_adc(struct iio_channel *channel)
- {
--	struct twl4030_madc_request req;
--
--	req.channels = channel;
--	req.do_avg = 1;
--	req.method = TWL4030_MADC_SW1;
--	req.func_cb = NULL;
--	req.type = TWL4030_MADC_WAIT;
--	req.raw = true;
--
--	if (twl4030_madc_conversion(&req) <= 0)
--		return -ENODATA;
--
--	return req.rbuf[ffs(channel) - 1];
-+	int val, err;
-+	err = iio_read_channel_average_raw(channel, &val);
-+	if (err < 0)
-+		return err;
-+	return val;
- }
- 
- /*
-@@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
-  */
- static int rx51_battery_read_voltage(struct rx51_device_info *di)
- {
--	int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
-+	int voltage = rx51_battery_read_adc(di->channel_vbat);
- 
--	if (voltage < 0)
-+	if (voltage < 0) {
-+		dev_err(di->dev, "Could not read ADC: %d\n", voltage);
- 		return voltage;
-+	}
- 
- 	return 1000 * (10000 * voltage / 1705);
- }
-@@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
- {
- 	int min = 0;
- 	int max = ARRAY_SIZE(rx51_temp_table2) - 1;
--	int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
-+	int raw = rx51_battery_read_adc(di->channel_temp);
-+
-+	if (raw < 0)
-+		dev_err(di->dev, "Could not read ADC: %d\n", raw);
- 
- 	/* Zero and negative values are undefined */
- 	if (raw <= 0)
-@@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
-  */
- static int rx51_battery_read_capacity(struct rx51_device_info *di)
- {
--	int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
-+	int capacity = rx51_battery_read_adc(di->channel_bsi);
- 
--	if (capacity < 0)
-+	if (capacity < 0) {
-+		dev_err(di->dev, "Could not read ADC: %d\n", capacity);
- 		return capacity;
-+	}
- 
- 	return 1280 * (1200 * capacity)/(1024 - capacity);
- }
-@@ -213,17 +213,46 @@ static int rx51_battery_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, di);
- 
-+	di->dev = &pdev->dev;
- 	di->bat.name = dev_name(&pdev->dev);
- 	di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
- 	di->bat.properties = rx51_battery_props;
- 	di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
- 	di->bat.get_property = rx51_battery_get_property;
- 
-+	di->channel_temp = iio_channel_get(di->dev, "temp");
-+	if (IS_ERR(di->channel_temp)) {
-+		ret = PTR_ERR(di->channel_temp);
-+		goto error;
-+	}
-+
-+	di->channel_bsi  = iio_channel_get(di->dev, "bsi");
-+	if (IS_ERR(di->channel_bsi)) {
-+		ret = PTR_ERR(di->channel_bsi);
-+		goto error_channel_temp;
-+	}
-+
-+	di->channel_vbat = iio_channel_get(di->dev, "vbat");
-+	if (IS_ERR(di->channel_vbat)) {
-+		ret = PTR_ERR(di->channel_vbat);
-+		goto error_channel_bsi;
-+	}
-+
- 	ret = power_supply_register(di->dev, &di->bat);
- 	if (ret)
--		return ret;
-+		goto error_channel_vbat;
- 
- 	return 0;
-+
-+error_channel_vbat:
-+	iio_channel_release(di->channel_vbat);
-+error_channel_bsi:
-+	iio_channel_release(di->channel_bsi);
-+error_channel_temp:
-+	iio_channel_release(di->channel_temp);
-+error:
-+
-+	return ret;
- }
- 
- static int rx51_battery_remove(struct platform_device *pdev)
-@@ -232,15 +261,28 @@ static int rx51_battery_remove(struct platform_device *pdev)
- 
- 	power_supply_unregister(&di->bat);
- 
-+	iio_channel_release(di->channel_vbat);
-+	iio_channel_release(di->channel_bsi);
-+	iio_channel_release(di->channel_temp);
-+
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id n900_battery_of_match[] = {
-+	{.compatible = "nokia,n900-battery", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, n900_battery_of_match);
-+#endif
-+
- static struct platform_driver rx51_battery_driver = {
- 	.probe = rx51_battery_probe,
- 	.remove = rx51_battery_remove,
- 	.driver = {
- 		.name = "rx51-battery",
- 		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(n900_battery_of_match),
- 	},
- };
- module_platform_driver(rx51_battery_driver);
+Changes since RFCv4 [0]:
+ * Fixup all stuff found by Lee Jones and Jonathan Cameron
+   in RFCv4.
+   - Fixup kerneldoc comments
+   - Move ARRAY_SIZE() into correct patch. I accidently rebased
+     it into the wrong one.
+   - Use sizeof(*madc) instead of sizeof(struct twl4030_madc_data)
+   - Only call of_property_read_bool() if there is no pdata
+   - I left the brackets in "reg_base + (2 * i)". They have
+     been requested by Lee Jones and I think they make it easier
+     to understand what is going on.
+ * Add a bunch of Acked-By statements from those two
+ * Add new patch, which adds *_mean_raw sysfs ABI documentation
+   as requested by Jonathan Cameron
+ * Add another patch, which provides iio_read_channel_average_raw(),
+   so that drivers using the old API can be converted to the
+   IIO API.
+ * I switched from RFC to PATCH prefix.
+
+TODO:
+ * Wait for feedback from DT binding maintainers
+ * Wait for feedback from Marek Belisko, who is testing the
+   change with twl4030-madc-battery driver on GTA04
+
+[0] https://lkml.org/lkml/2014/2/26/482
+
+-- Sebastian
+
+Sebastian Reichel (9):
+  mfd: twl4030-madc: Use managed resources
+  mfd: twl4030-madc: Add DT support and convert to IIO framework
+  mfd: twl4030-madc: Cleanup driver
+  mfd: twl-core: Add twl_i2c_read/write_u16
+  mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+  Documentation: DT: Document twl4030-madc binding
+  mfd: twl4030-madc: Move driver to drivers/iio/adc
+  iio: documentation: Add ABI documentation for *_mean_raw
+  iio: inkern: add iio_read_channel_average_raw
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   8 +
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c            | 301 +++++++++++++--------
+ drivers/iio/inkern.c                               |  18 ++
+ drivers/mfd/Kconfig                                |  10 -
+ drivers/mfd/Makefile                               |   1 -
+ include/linux/i2c/twl.h                            |  12 +
+ include/linux/i2c/twl4030-madc.h                   |   2 +-
+ include/linux/iio/consumer.h                       |  13 +
+ 11 files changed, 276 insertions(+), 124 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
+
 -- 
 1.9.0
