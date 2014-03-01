@@ -1,58 +1,117 @@
-Return-Path: <GGao@invensense.com>
-From: Ge Gao <GGao@invensense.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: RE: unreliable time function inside IRQ?
-Date: Mon, 31 Mar 2014 21:25:09 +0000
-Message-ID: <E7747D604FBC9F43A71AA431AFF4476225780C4E@IUSEXCH01.invcorp.invensense.com>
-References: <E7747D604FBC9F43A71AA431AFF447622577643E@IUSEXCH01.invcorp.invensense.com>
- <5336A913.1040908@kernel.org>
- <E7747D604FBC9F43A71AA431AFF4476225780BE2@IUSEXCH01.invcorp.invensense.com>
- <5339BCDC.80609@metafoo.de>
-In-Reply-To: <5339BCDC.80609@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52485 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752017AbaCALuW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 06:50:22 -0500
+Message-ID: <5311C9AD.1070902@kernel.org>
+Date: Sat, 01 Mar 2014 11:51:09 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>
+CC: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv4 7/7] mfd: twl4030-madc: Move driver to drivers/iio/adc
+References: <1393374270-20079-1-git-send-email-sre@debian.org> <1393444990-28140-1-git-send-email-sre@debian.org> <1393444990-28140-8-git-send-email-sre@debian.org>
+In-Reply-To: <1393444990-28140-8-git-send-email-sre@debian.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-If there is other IRQ running causing this, the IRQ time would be late. How=
-ever, this is not the case. I can see the time stamp value is smaller than =
-it should be, while I observe from scope that IRQ comes in at a steady rate=
-.
-Thanks.
+On 26/02/14 20:03, Sebastian Reichel wrote:
+> This is a driver for an A/D converter, which belongs into
+> drivers/iio/adc.
+>
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>   drivers/iio/adc/Kconfig                 | 10 ++++++++++
+>   drivers/iio/adc/Makefile                |  1 +
+>   drivers/{mfd => iio/adc}/twl4030-madc.c |  0
+>   drivers/mfd/Kconfig                     | 10 ----------
+>   drivers/mfd/Makefile                    |  1 -
+>   5 files changed, 11 insertions(+), 11 deletions(-)
+>   rename drivers/{mfd => iio/adc}/twl4030-madc.c (100%)
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2209f28..427f75c 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -183,6 +183,16 @@ config TI_AM335X_ADC
+>   	  Say yes here to build support for Texas Instruments ADC
+>   	  driver which is also a MFD client.
+>
+> +config TWL4030_MADC
+> +	tristate "TWL4030 MADC (Monitoring A/D Converter)"
+> +	depends on TWL4030_CORE
+> +	help
+> +	This driver provides support for Triton TWL4030-MADC. The
+> +	driver supports both RT and SW conversion methods.
+> +
+> +	This driver can also be built as a module. If so, the module will be
+> +	called twl4030-madc.
+> +
+>   config TWL6030_GPADC
+>   	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
+>   	depends on TWL4030_CORE
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ba9a10a..9acf2df 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -20,5 +20,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
+>   obj-$(CONFIG_NAU7802) += nau7802.o
+>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+> +obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+> diff --git a/drivers/mfd/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> similarity index 100%
+> rename from drivers/mfd/twl4030-madc.c
+> rename to drivers/iio/adc/twl4030-madc.c
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 49bb445..23a8a51 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -935,16 +935,6 @@ config TWL4030_CORE
+>   	  high speed USB OTG transceiver, an audio codec (on most
+>   	  versions) and many other features.
+>
+> -config TWL4030_MADC
+> -	tristate "TI TWL4030 MADC"
+> -	depends on TWL4030_CORE
+> -	help
+> -	This driver provides support for triton TWL4030-MADC. The
+> -	driver supports both RT and SW conversion methods.
+> -
+> -	This driver can be built as a module. If so it will be
+> -	named twl4030-madc
+> -
+>   config TWL4030_POWER
+>   	bool "TI TWL4030 power resources"
+>   	depends on TWL4030_CORE && ARM
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 5aea5ef..c8eb0bc 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -71,7 +71,6 @@ obj-$(CONFIG_MFD_TPS80031)	+= tps80031.o
+>   obj-$(CONFIG_MENELAUS)		+= menelaus.o
+>
+>   obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
+> -obj-$(CONFIG_TWL4030_MADC)      += twl4030-madc.o
+>   obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
+>   obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
+>   obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
+>
 
-Ge
-
-
------Original Message-----
-From: Lars-Peter Clausen [mailto:lars@metafoo.de]=20
-Sent: Monday, March 31, 2014 12:07 PM
-To: Ge Gao
-Cc: Jonathan Cameron; linux-iio@vger.kernel.org
-Subject: Re: unreliable time function inside IRQ?
-
-On 03/31/2014 07:44 PM, Ge Gao wrote:
-> Dear Jonathan,
-> 	Thanks for answering my question. I am using Panda board(OMAP4430). It i=
-s using a 32K counter clock as the high resolution clock(arch/arm/plat-omap=
-/couter_32k.c). But I also observe the same thing in Nexus 7 first generati=
-on(announced in 2012), which uses Nvidia Tegra 3 platform. I suspect the da=
-ta that represents the time is cached, or it is using some older value in t=
-he interrupt case.
-> It could be the Linux's time function problem. Is that possible? I actual=
-ly tried using Jiffy, which is the built-in software clock. The time betwee=
-n each interrupt also varies big. My HZ setting is 1000. I also tried a lat=
-er version of Linux, which is 3.7 or later. The result is the same.
-> 	The implementation of the time function is very simple. Below is the fun=
-ction from 32K clock counter. It is reading the hardware clock, compute the=
- difference between a static variable and update the time. For a different =
-clock, only the "clocksource_32k.mult", "clocksource_32k.shift", would be d=
-ifferent.
-> 	Thanks.
-
-You have to consider that there will be other things running with IRQs off,=
-=20
-which will cause some jitter for your IRQ handler. This is nothing IIO spec=
-ific.
-
-- Lars
