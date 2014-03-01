@@ -1,8 +1,4 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40571 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754659AbaCJR0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:26:11 -0400
+Return-Path: <sre@ring0.de>
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
 	Marek Belisko <marek@goldelico.com>,
@@ -16,51 +12,87 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 4/9] mfd: twl-core: Add twl_i2c_read/write_u16
-Date: Mon, 10 Mar 2014 18:25:24 +0100
-Message-Id: <1394472329-15485-5-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv1 1/9] mfd: twl4030-madc: Use managed resources
+Date: Sat,  1 Mar 2014 20:32:37 +0100
+Message-Id: <1393702365-26429-2-git-send-email-sre@debian.org>
+In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
+References: <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393702365-26429-1-git-send-email-sre@debian.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add a simple twl_i2c_read/write_u16 wrapper over
-the twl_i2c_read/write, which is similar to the
-twl_i2c_read/write_u8 wrapper.
+Update twl4030-madc driver to use managed resources.
 
 Signed-off-by: Sebastian Reichel <sre@debian.org>
 Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
 ---
- include/linux/i2c/twl.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/mfd/twl4030-madc.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
-index ade1c06..d2b1670 100644
---- a/include/linux/i2c/twl.h
-+++ b/include/linux/i2c/twl.h
-@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
- 	return twl_i2c_read(mod_no, val, reg, 1);
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 4c583e4..5458561 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
+-	int ret;
++	int irq, ret;
+ 	u8 regval;
+ 
+ 	if (!pdata) {
+ 		dev_err(&pdev->dev, "platform_data not available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
++	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+ 	if (!madc)
+ 		return -ENOMEM;
+ 
+@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+-		goto err_power;
++		return ret;
+ 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
+ 	if (ret < 0)
+ 		goto err_current_generator;
+@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, madc);
+ 	mutex_init(&madc->lock);
+-	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
++
++	irq = platform_get_irq(pdev, 0);
++	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+ 				   twl4030_madc_threaded_irq_handler,
+ 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
+ 	if (ret) {
+@@ -783,9 +785,6 @@ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+ 	twl4030_madc_set_power(madc, 0);
+-err_power:
+-	kfree(madc);
+-
+ 	return ret;
  }
  
-+static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
-+	val = cpu_to_le16(val);
-+	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
-+}
-+
-+static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
-+	int ret;
-+	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
-+	*val = le16_to_cpu(*val);
-+	return ret;
-+}
-+
- int twl_get_type(void);
- int twl_get_version(void);
- int twl_get_hfclk_rate(void);
+@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
+ 
+-	free_irq(platform_get_irq(pdev, 0), madc);
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+-	kfree(madc);
+ 
+ 	return 0;
+ }
 -- 
 1.9.0
-
