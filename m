@@ -1,46 +1,55 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Sat, 8 Mar 2014 08:11:26 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Linux IIO List <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.15 - set 3
-Message-ID: <20140308161126.GA24802@kroah.com>
-References: <5318CB62.2020103@kernel.org>
- <20140306193355.GA12474@kroah.com>
- <531B3C25.90609@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <531B3C25.90609@metafoo.de>
+Return-Path: <sre@ring0.de>
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv1 8/9] iio: documentation: Add ABI documentation for *_mean_raw
+Date: Sat,  1 Mar 2014 20:32:44 +0100
+Message-Id: <1393702365-26429-9-git-send-email-sre@debian.org>
+In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
+References: <1393444990-28140-1-git-send-email-sre@debian.org>
+ <1393702365-26429-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Mar 08, 2014 at 04:49:57PM +0100, Lars-Peter Clausen wrote:
-> On 03/06/2014 08:33 PM, Greg Kroah-Hartman wrote:
-> > On Thu, Mar 06, 2014 at 07:24:18PM +0000, Jonathan Cameron wrote:
-> >> The following changes since commit aa256f8d0dd9c2dff872849418d8e09e5d06718f:
-> >>
-> >>    Merge tag 'iio-for-3.15b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2014-02-23 09:08:34 -0800)
-> >>
-> >> are available in the git repository at:
-> >>
-> >>
-> >>    git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.15c
-> >
-> > Pulled and pushed out.
-> >
-> > What's the status of the remaining drivers/staging/iio/ stuff?  Anything
-> > major keeping them from all moving out of staging sometime soon?
-> 
-> I think we are past the point were we can move big chunks of drivers. The 
-> drivers that are in good shape have already been moved. What's left has 
-> issues, some smaller, some bigger. Moving things out of staging is 
-> progressing, but it is progressing one driver at a time.
+Add ABI documentation for in_*_mean_raw files, which are
+already supported and used in the kernel for some time.
 
-Fair enough.  How about the "dummy" drivers?  I don't see them listed in
-the TODO file, is there a description of what needs to be done for those
-that could be done by someone who is new to kernel development to get a
-wider range of developers working on this?
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-thanks,
-
-greg k-h
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6e02c50..58ba333 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -210,6 +210,14 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Scaled humidity measurement in milli percent.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_X_mean_raw
++KernelVersion:	3.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Averaged raw measurement from channel X. The number of values
++		used for averaging is device specific. The converting rules for
++		normal raw values also applies to the averaged raw values.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
+-- 
+1.9.0
