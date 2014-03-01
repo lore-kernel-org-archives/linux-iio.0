@@ -1,50 +1,41 @@
-Return-Path: <keescook@www.outflux.net>
-Date: Thu, 13 Mar 2014 09:46:43 -0700
-From: Kees Cook <keescook@chromium.org>
-To: linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH] iio: force snprintf for PAGE_SIZE bufs
-Message-ID: <20140313164643.GA19171@www.outflux.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58652 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753285AbaCAWH2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 17:07:28 -0500
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Neil Brown <neilb@suse.de>,
+	Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] iio:gyro:itg3200 - drop unreachable return ret. Highlighted by smatch
+Date: Sat,  1 Mar 2014 22:08:03 +0000
+Message-Id: <1393711683-2287-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is a tiny preventative measure to make sure we can't write beyond
-PAGE_SIZE on the buffers being used in sysfs for iio. There is currently
-no way for this to happen, but the change makes this code more robust
-for the future.
+CHECK   drivers/iio/gyro/itg3200_core.c
+drivers/iio/gyro/itg3200_core.c:114 itg3200_read_raw() info: ignoring unreachable code.
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Neil Brown <neilb@suse.de>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/iio/industrialio-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/gyro/itg3200_core.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index acc911a836ca..64bb64f35af8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -340,7 +340,7 @@ ssize_t iio_enum_read(struct iio_dev *indio_dev,
- 	else if (i >= e->num_items)
+diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+index 4d3f3b9..8295e31 100644
+--- a/drivers/iio/gyro/itg3200_core.c
++++ b/drivers/iio/gyro/itg3200_core.c
+@@ -110,8 +110,6 @@ static int itg3200_read_raw(struct iio_dev *indio_dev,
+ 	default:
  		return -EINVAL;
- 
--	return sprintf(buf, "%s\n", e->items[i]);
-+	return snprintf(buf, PAGE_SIZE, "%s\n", e->items[i]);
- }
- EXPORT_SYMBOL_GPL(iio_enum_read);
- 
-@@ -836,7 +836,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
- 				 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	return sprintf(buf, "%s\n", indio_dev->name);
-+	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->name);
+ 	}
+-
+-	return ret;
  }
  
- static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+ static ssize_t itg3200_read_frequency(struct device *dev,
 -- 
-1.7.9.5
+1.9.0
 
-
--- 
-Kees Cook
-Chrome OS Security
