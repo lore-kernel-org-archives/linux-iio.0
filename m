@@ -1,90 +1,75 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 3/3] iio: imu: Enable checking of presence of device
-Date: Tue, 11 Mar 2014 14:04:14 -0700
-Message-Id: <1394571854-6737-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52465 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750869AbaCALtf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 06:49:35 -0500
+Message-ID: <5311C97E.5070307@kernel.org>
+Date: Sat, 01 Mar 2014 11:50:22 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>
+CC: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [RFCv4 6/7] Documentation: DT: Document twl4030-madc binding
+References: <1393374270-20079-1-git-send-email-sre@debian.org> <1393444990-28140-1-git-send-email-sre@debian.org> <1393444990-28140-7-git-send-email-sre@debian.org>
+In-Reply-To: <1393444990-28140-7-git-send-email-sre@debian.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added logic to check presence of MPU6050 before continuing. Currently
-only i2c writes are used in the initialzation path, which don't return
-any error, if some i2c device responds. In this case it continues to
-create iio devices, which don't work.
-This can be reproduced in a PC like platform, where ACPI definition
-of this defines multiple i2c addresses. We need to check for an valid
-i2c address by checking some signature before continuing.
+On 26/02/14 20:03, Sebastian Reichel wrote:
+> Add devicetree binding documentation for twl4030-madc
+> analog digital converter.
+>
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+Looks fine to me, but as ever needs a device tree maintainer ack or
+3 weeks and someone else to take a view on it.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 ++++++++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
- 2 files changed, 18 insertions(+), 1 deletion(-)
+> ---
+>   .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
+>   1 file changed, 24 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+> new file mode 100644
+> index 0000000..6bdd214
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+> @@ -0,0 +1,24 @@
+> +* TWL4030 Monitoring Analog to Digital Converter (MADC)
+> +
+> +The MADC subsystem in the TWL4030 consists of a 10-bit ADC
+> +combined with a 16-input analog multiplexer.
+> +
+> +Required properties:
+> +  - compatible: Should contain "ti,twl4030-madc".
+> +  - interrupts: IRQ line for the MADC submodule.
+> +  - #io-channel-cells: Should be set to <1>.
+> +
+> +Optional properties:
+> +  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
+> +				    should be used, which is intended to be used
+> +				    by Co-Processors (e.g. a modem).
+> +
+> +Example:
+> +
+> +&twl {
+> +	madc {
+> +		compatible = "ti,twl4030-madc";
+> +		interrupts = <3>;
+> +		#io-channel-cells = <1>;
+> +	};
+> +};
+>
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 6ba565a..e062acd 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -62,6 +62,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
- 	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
- 	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
- 	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
-+	.who_am_i		= INV_MPU6050_REG_WHOAMI,
- };
- 
- static const struct inv_mpu6050_chip_config chip_config_6050 = {
-@@ -617,7 +618,7 @@ static const struct iio_info mpu_info = {
- 	.validate_trigger = inv_mpu6050_validate_trigger,
- };
- 
--int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
-+static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
- {
- 	int ret;
- 
-@@ -650,6 +651,18 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
- 	if (result)
- 		return result;
- 	msleep(INV_MPU6050_POWER_UP_TIME);
-+
-+	result = i2c_smbus_read_byte_data(st->client, st->reg->who_am_i);
-+	if (result < 0) {
-+		dev_err(&st->client->dev, "Error reading WhoAmI\n");
-+		return result;
-+	}
-+	if (result != INV_MPU6500_UNIQUE_ID) {
-+		dev_err(&st->client->dev, "Not a valid MPU6500 device %x\n",
-+								result);
-+		return -ENOSYS;
-+	}
-+
- 	/* toggle power state. After reset, the sleep bit could be on
- 		or off depending on the OTP settings. Toggling power would
- 		make it in a definite state as well as making the hardware
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index de5aa22..87649bd 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -55,6 +55,7 @@ struct inv_mpu6050_reg_map {
- 	u8 pwr_mgmt_1;
- 	u8 pwr_mgmt_2;
- 	u8 int_pin_cfg;
-+	u8 who_am_i;
- };
- 
- /*device enum */
-@@ -189,6 +190,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_REG_INT_PIN_CFG		0x37
- #define INV_MPU6050_BIT_BYPASS_EN		0x2
- 
-+#define INV_MPU6050_REG_WHOAMI			0x75
-+#define INV_MPU6500_UNIQUE_ID			0x70
-+
- /* scan element definition */
- enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_ACCL_X,
--- 
-1.7.11.7
