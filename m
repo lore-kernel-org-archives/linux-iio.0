@@ -1,63 +1,118 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn1lp0141.outbound.protection.outlook.com ([207.46.163.141]:19533
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753367AbaCBBgi convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Mar 2014 20:36:38 -0500
-From: "fugang.duan@freescale.com" <fugang.duan@freescale.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: RE: [PATCH] iio:adc:vf610 ensure correct handing of interruption of
- wait for completion
-Date: Sun, 2 Mar 2014 01:36:33 +0000
-Message-ID: <14cec064ee944b29baf52f88cca1cf15@BLUPR03MB373.namprd03.prod.outlook.com>
-References: <1393711367-2210-1-git-send-email-jic23@kernel.org>
-In-Reply-To: <1393711367-2210-1-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <olof@lixom.net>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1393432147-31355-2-git-send-email-johannes.thumshirn@men.de>
+References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+	<1393432147-31355-2-git-send-email-johannes.thumshirn@men.de>
+Date: Mon, 3 Mar 2014 11:21:55 -0800
+Message-ID: <CAOesGMjmdfRWddG+NWBg29mPik_s21fMQerCqUbEWUz8vP3KfQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] drivers: Introduce MEN Chameleon Bus
+From: Olof Johansson <olof@lixom.net>
+To: Johannes Thumshirn <johannes.thumshirn@men.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Jonathan Cameron <jic23@kernel.org>
-Data: Sunday, March 02, 2014 6:03 AM
+On Wed, Feb 26, 2014 at 8:29 AM, Johannes Thumshirn
+<johannes.thumshirn@men.de> wrote:
+> The MCB (MEN Chameleon Bus) is a Bus specific to MEN Mikroelektronik
+> FPGA based devices. It is used to identify MCB based IP-Cores within
+> an FPGA and provide the necessary framework for instantiating drivers
+> for these devices.
+>
+> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+> ---
+>  MAINTAINERS                     |   6 +
+>  drivers/Kconfig                 |   2 +
+>  drivers/Makefile                |   1 +
+>  drivers/mcb/Kconfig             |  15 ++
+>  drivers/mcb/Makefile            |   5 +
+>  drivers/mcb/mcb-core.c          | 414 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/mcb/mcb-internal.h      | 116 +++++++++++
+>  drivers/mcb/mcb-parse.c         | 159 +++++++++++++++
+>  include/linux/mcb.h             | 119 ++++++++++++
+>  include/linux/mod_devicetable.h |   5 +
+>  10 files changed, 842 insertions(+)
+>  create mode 100644 drivers/mcb/Kconfig
+>  create mode 100644 drivers/mcb/Makefile
+>  create mode 100644 drivers/mcb/mcb-core.c
+>  create mode 100644 drivers/mcb/mcb-internal.h
+>  create mode 100644 drivers/mcb/mcb-parse.c
+>  create mode 100644 include/linux/mcb.h
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 85b3dd8..5d35f6c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -5667,6 +5667,12 @@ L:       linux-watchdog@vger.kernel.org
+>  S:     Supported
+>  F:     drivers/watchdog/mena21_wdt.c
+>
+> +MEN CHAMELEON BUS (mcb)
+> +M:     Johannes Thumshirn <johannes.thumshirn@men.de>
+> +S:     Supported
+> +F:     drivers/mcb/
+> +F:     include/linux/mcb.h
+> +
+>  METAG ARCHITECTURE
+>  M:     James Hogan <james.hogan@imgtec.com>
+>  L:     linux-metag@vger.kernel.org
+> diff --git a/drivers/Kconfig b/drivers/Kconfig
+> index b3138fb..df2ac52 100644
+> --- a/drivers/Kconfig
+> +++ b/drivers/Kconfig
+> @@ -170,4 +170,6 @@ source "drivers/phy/Kconfig"
+>
+>  source "drivers/powercap/Kconfig"
+>
+> +source "drivers/mcb/Kconfig"
+> +
+>  endmenu
+> diff --git a/drivers/Makefile b/drivers/Makefile
+> index 8e3b8b0..c5bf50c 100644
+> --- a/drivers/Makefile
+> +++ b/drivers/Makefile
+> @@ -155,3 +155,4 @@ obj-$(CONFIG_IPACK_BUS)             += ipack/
+>  obj-$(CONFIG_NTB)              += ntb/
+>  obj-$(CONFIG_FMC)              += fmc/
+>  obj-$(CONFIG_POWERCAP)         += powercap/
+> +obj-$(CONFIG_MCB)              += mcb/
 
->To: linux-iio@vger.kernel.org
->Cc: Jonathan Cameron; Dan Carpenter; Duan Fugang-B38611
->Subject: [PATCH] iio:adc:vf610 ensure correct handing of interruption of wait
->for completion
->
->Issue highlighted by smatch warning:
->
->CHECK   drivers/iio/adc/vf610_adc.c
->drivers/iio/adc/vf610_adc.c:466 vf610_read_raw() warn: unsigned 'ret' is never
->less than zero.
->
->As wait_for_completion_interruptible_timeout can return -ERESTARTSTSYS, if
->interrupted, ret must be signed.
->
->Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->Cc: Dan Carpenter <dan.carpenter@oracle.com>
->Cc: Fugang Duan <B38611@freescale.com>
->---
-> drivers/iio/adc/vf610_adc.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c index
->37f542e..44799eb5 100644
->--- a/drivers/iio/adc/vf610_adc.c
->+++ b/drivers/iio/adc/vf610_adc.c
->@@ -447,7 +447,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,  {
-> 	struct vf610_adc *info = iio_priv(indio_dev);
-> 	unsigned int hc_cfg;
->-	unsigned long ret;
->+	long ret;
->
-> 	switch (mask) {
-> 	case IIO_CHAN_INFO_RAW:
->--
->1.9.0
->
->
+No single-driver directories like these. This needs to go somewhere else.
 
-Acked-by: Fugang Duan <B38611@freescale.com>
+> diff --git a/drivers/mcb/Kconfig b/drivers/mcb/Kconfig
+> new file mode 100644
+> index 0000000..44c82d6
+> --- /dev/null
+> +++ b/drivers/mcb/Kconfig
+> @@ -0,0 +1,15 @@
+> +#
+> +# MEN Chameleon Bus (MCB) support
+> +#
+> +
+> +menuconfig MCB
+> +          tristate "MCB support"
+> +          default m
+
+Don't default to 'm' for new drivers. Just leave out the default (so
+it will default to 'n').
+
+> +          help
+> +
+> +          The MCB (MEN Chameleon Bus) is a Bus specific to MEN Mikroelektronik
+> +          FPGA based devices. It is used to identify MCB based IP-Cores within
+> +          an FPGA and provide the necessary framework for instantiating drivers
+> +          for these devices.
+> +
+> +          If build as a module, the module is called mcb.ko
+
+
+Not reviewing the rest of the driver, came across the patch due to
+causing build breakage on last night's next ebsa110_defconfig for ARM:
+
+drivers/mcb/mcb-parse.c:105:2: error: implicit declaration of function
+'memcpy_fromio' [-Werror=implicit-function-declaration]
+
+
+-Olof
