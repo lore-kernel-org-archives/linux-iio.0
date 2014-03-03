@@ -1,42 +1,106 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 3/3] ARM: at91: at91sam9260: change at91_adc name
-Date: Wed,  5 Mar 2014 17:57:55 +0100
-Message-Id: <1394038675-15809-4-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-Path: <olof@lixom.net>
+MIME-Version: 1.0
+In-Reply-To: <42A09AAC7DAAF64ABE4E4C1AD5F5E295475D66E7@MEN-EX1.intra.men.de>
+References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
+	<1393432147-31355-2-git-send-email-johannes.thumshirn@men.de>
+	<CAOesGMjmdfRWddG+NWBg29mPik_s21fMQerCqUbEWUz8vP3KfQ@mail.gmail.com>
+	<42A09AAC7DAAF64ABE4E4C1AD5F5E295475D66E7@MEN-EX1.intra.men.de>
+Date: Mon, 3 Mar 2014 12:57:49 -0800
+Message-ID: <CAOesGMgXwONUexeMgK0Dav=guE2rzUaegBre-55JocF-_uh7VA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] drivers: Introduce MEN Chameleon Bus
+From: Olof Johansson <olof@lixom.net>
+To: "Thumshirn, Johannes Tobias" <Johannes.Thumshirn@men.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-We can't use "at91_adc" to refer to the at91_adc driver anymore as
-the name is used to match an id_table.
+On Mon, Mar 3, 2014 at 12:09 PM, Thumshirn, Johannes Tobias
+<Johannes.Thumshirn@men.de> wrote:
+>
+> ________________________________________
+> From: Olof Johansson [olof@lixom.net]
+> Sent: Monday, March 03, 2014 8:21 PM
+> To: Thumshirn, Johannes Tobias
+> Cc: Greg Kroah-Hartman; Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v3 1/3] drivers: Introduce MEN Chameleon Bus
+>
+> On Wed, Feb 26, 2014 at 8:29 AM, Johannes Thumshirn
+> <johannes.thumshirn@men.de> wrote:
+>> The MCB (MEN Chameleon Bus) is a Bus specific to MEN Mikroelektronik
+>> FPGA based devices. It is used to identify MCB based IP-Cores within
+>> an FPGA and provide the necessary framework for instantiating drivers
+>> for these devices.
+>>
+>> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+>> ---
+>>  MAINTAINERS                     |   6 +
+>>  drivers/Kconfig                 |   2 +
+>>  drivers/Makefile                |   1 +
+>>  drivers/mcb/Kconfig             |  15 ++
+>>  drivers/mcb/Makefile            |   5 +
+>>  drivers/mcb/mcb-core.c          | 414 ++++++++++++++++++++++++++++++++++++++++
+>>  drivers/mcb/mcb-internal.h      | 116 +++++++++++
+>>  drivers/mcb/mcb-parse.c         | 159 +++++++++++++++
+>>  include/linux/mcb.h             | 119 ++++++++++++
+>>  include/linux/mod_devicetable.h |   5 +
+>>  10 files changed, 842 insertions(+)
+>>  create mode 100644 drivers/mcb/Kconfig
+>>  create mode 100644 drivers/mcb/Makefile
+>>  create mode 100644 drivers/mcb/mcb-core.c
+>>  create mode 100644 drivers/mcb/mcb-internal.h
+>>  create mode 100644 drivers/mcb/mcb-parse.c
+>>  create mode 100644 include/linux/mcb.h
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 85b3dd8..5d35f6c 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -5667,6 +5667,12 @@ L:       linux-watchdog@vger.kernel.org
+>>  S:     Supported
+>>  F:     drivers/watchdog/mena21_wdt.c
+>>
+>> +MEN CHAMELEON BUS (mcb)
+>> +M:     Johannes Thumshirn <johannes.thumshirn@men.de>
+>> +S:     Supported
+>> +F:     drivers/mcb/
+>> +F:     include/linux/mcb.h
+>> +
+>>  METAG ARCHITECTURE
+>>  M:     James Hogan <james.hogan@imgtec.com>
+>>  L:     linux-metag@vger.kernel.org
+>> diff --git a/drivers/Kconfig b/drivers/Kconfig
+>> index b3138fb..df2ac52 100644
+>> --- a/drivers/Kconfig
+>> +++ b/drivers/Kconfig
+>> @@ -170,4 +170,6 @@ source "drivers/phy/Kconfig"
+>>
+>>  source "drivers/powercap/Kconfig"
+>>
+>> +source "drivers/mcb/Kconfig"
+>> +
+>>  endmenu
+>> diff --git a/drivers/Makefile b/drivers/Makefile
+>> index 8e3b8b0..c5bf50c 100644
+>> --- a/drivers/Makefile
+>> +++ b/drivers/Makefile
+>> @@ -155,3 +155,4 @@ obj-$(CONFIG_IPACK_BUS)             += ipack/
+>>  obj-$(CONFIG_NTB)              += ntb/
+>>  obj-$(CONFIG_FMC)              += fmc/
+>>  obj-$(CONFIG_POWERCAP)         += powercap/
+>> +obj-$(CONFIG_MCB)              += mcb/
+>
+> No single-driver directories like these. This needs to go somewhere else.
+>
+> There are two drivers in this directory, so I guess it's O.K, isn't it?
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- arch/arm/mach-at91/at91sam9260_devices.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Our drivers toplevel is getting pretty crowded, so adding
+vendor-specific device classes there isn't really going to work
+long-term.
 
-diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
-index eda8d1679d40..0a0315920963 100644
---- a/arch/arm/mach-at91/at91sam9260_devices.c
-+++ b/arch/arm/mach-at91/at91sam9260_devices.c
-@@ -1292,7 +1292,7 @@ static struct resource adc_resources[] = {
- };
- 
- static struct platform_device at91_adc_device = {
--	.name		= "at91_adc",
-+	.name		= "at91sam9260-adc",
- 	.id		= -1,
- 	.dev		= {
- 				.platform_data		= &adc_data,
--- 
-1.8.3.2
+Final call is of course with Greg, but I'd prefer to see this under
+drivers/misc or drivers/bus or similar.
+
+
+-Olof
