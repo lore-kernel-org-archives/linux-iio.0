@@ -1,54 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57772 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750829AbaCFTPg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Mar 2014 14:15:36 -0500
-Message-ID: <5318C98C.1070702@kernel.org>
-Date: Thu, 06 Mar 2014 19:16:28 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>
-CC: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
-References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com> <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ring0.de ([5.45.105.125]:38849 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756771AbaCDWGd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 4 Mar 2014 17:06:33 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv2 5/9] mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+Date: Tue,  4 Mar 2014 23:05:47 +0100
+Message-Id: <1393970751-18157-6-git-send-email-sre@debian.org>
+In-Reply-To: <1393970751-18157-1-git-send-email-sre@debian.org>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
+ <1393970751-18157-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/03/14 16:57, Alexandre Belloni wrote:
-> We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
-> used to match an id_table.
->
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-As stated in previous email, I'll take this along with the fix that 'broke'
-this, if I get an Ack from one of the at91 maintainers.
+Simplify reading and writing of 16 bit TWL registers in the
+driver by using twl_i2c_read_u16 and twl_i2c_write_u16.
 
-Thanks,
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/mfd/twl4030-madc.c | 39 ++++++++-------------------------------
+ 1 file changed, 8 insertions(+), 31 deletions(-)
 
-Jonathan
-> ---
->   arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
-> index cb36fa872d30..88554024eb2d 100644
-> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
-> @@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
->   };
->
->   static struct platform_device at91_adc_device = {
-> -	.name		= "at91_adc",
-> +	.name		= "at91sam9g45-adc",
->   	.id		= -1,
->   	.dev		= {
->   				.platform_data	= &adc_data,
->
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index f37da65..d1ca36a 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -205,25 +205,19 @@ const struct twl4030_madc_conversion_method twl4030_conversion_methods[] = {
+  */
+ static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
+ {
+-	u8 msb, lsb;
++	u16 val;
+ 	int ret;
+ 	/*
+ 	 * For each ADC channel, we have MSB and LSB register pair. MSB address
+ 	 * is always LSB address+1. reg parameter is the address of LSB register
+ 	 */
+-	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &msb, reg + 1);
++	ret = twl_i2c_read_u16(TWL4030_MODULE_MADC, &val, reg);
+ 	if (ret) {
+-		dev_err(madc->dev, "unable to read MSB register 0x%X\n",
+-			reg + 1);
+-		return ret;
+-	}
+-	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &lsb, reg);
+-	if (ret) {
+-		dev_err(madc->dev, "unable to read LSB register 0x%X\n", reg);
++		dev_err(madc->dev, "unable to read register 0x%X\n", reg);
+ 		return ret;
+ 	}
+ 
+-	return (int)(((msb << 8) | lsb) >> 6);
++	return (int)(val >> 6);
+ }
+ 
+ /*
+@@ -572,7 +566,6 @@ static int twl4030_madc_wait_conversion_ready(struct twl4030_madc_data *madc,
+ int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ {
+ 	const struct twl4030_madc_conversion_method *method;
+-	u8 ch_msb, ch_lsb;
+ 	int ret;
+ 
+ 	if (!req || !twl4030_madc)
+@@ -588,37 +581,21 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ 		ret = -EBUSY;
+ 		goto out;
+ 	}
+-	ch_msb = (req->channels >> 8) & 0xff;
+-	ch_lsb = req->channels & 0xff;
+ 	method = &twl4030_conversion_methods[req->method];
+ 	/* Select channels to be converted */
+-	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_msb, method->sel + 1);
++	ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels, method->sel);
+ 	if (ret) {
+ 		dev_err(twl4030_madc->dev,
+-			"unable to write sel register 0x%X\n", method->sel + 1);
+-		goto out;
+-	}
+-	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_lsb, method->sel);
+-	if (ret) {
+-		dev_err(twl4030_madc->dev,
+-			"unable to write sel register 0x%X\n", method->sel + 1);
++			"unable to write sel register 0x%X\n", method->sel);
+ 		goto out;
+ 	}
+ 	/* Select averaging for all channels if do_avg is set */
+ 	if (req->do_avg) {
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       ch_msb, method->avg + 1);
++		ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels,
++				       method->avg);
+ 		if (ret) {
+ 			dev_err(twl4030_madc->dev,
+ 				"unable to write avg register 0x%X\n",
+-				method->avg + 1);
+-			goto out;
+-		}
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       ch_lsb, method->avg);
+-		if (ret) {
+-			dev_err(twl4030_madc->dev,
+-				"unable to write avg reg 0x%X\n",
+ 				method->avg);
+ 			goto out;
+ 		}
+-- 
+1.9.0
 
