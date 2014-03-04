@@ -1,70 +1,74 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+Return-Path: <sre@ring0.de>
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
 	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 09/15] ARM: at91: sam9rlek add touchscreen support through at91_adc
-Date: Wed,  5 Mar 2014 18:35:34 +0100
-Message-Id: <1394040940-18246-10-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
+	Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv2 0/9] Convert twl4030-madc to IIO API and add DT support
+Date: Tue,  4 Mar 2014 23:05:42 +0100
+Message-Id: <1393970751-18157-1-git-send-email-sre@debian.org>
+In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
-Enable touchscreen support through at91_adc. This allows to use both a
-touchscreen and the remaining ADC channel at the same time.
+Hi,
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- arch/arm/mach-at91/board-sam9rlek.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+This is PATCHv2 for converting twl4030-madc to the IIO API and
+adding DT support. The plan is to remove the private twl4030-madc
+API once all users have been removed or converted to the IIO API.
+The patchset compiles and has been tested on my Nokia N900.
 
-diff --git a/arch/arm/mach-at91/board-sam9rlek.c b/arch/arm/mach-at91/board-sam9rlek.c
-index 604eecf6cd70..35d420247e25 100644
---- a/arch/arm/mach-at91/board-sam9rlek.c
-+++ b/arch/arm/mach-at91/board-sam9rlek.c
-@@ -18,6 +18,7 @@
- #include <linux/clk.h>
- #include <linux/input.h>
- #include <linux/gpio_keys.h>
-+#include <linux/platform_data/at91_adc.h>
- 
- #include <video/atmel_lcdc.h>
- 
-@@ -239,6 +240,17 @@ static struct at91_tsadcc_data ek_tsadcc_data = {
- 
- 
- /*
-+ * ADC + Touchscreen
-+ */
-+static struct at91_adc_data ek_adc_data = {
-+	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5),
-+	.use_external_triggers = true,
-+	.vref = 3300,
-+	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
-+};
-+
-+
-+/*
-  * GPIO Buttons
-  */
- #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
-@@ -312,6 +324,8 @@ static void __init ek_board_init(void)
- 	at91_add_device_ac97(&ek_ac97_data);
- 	/* Touch Screen Controller */
- 	at91_add_device_tsadcc(&ek_tsadcc_data);
-+	/* Touch Screen Controller + ADC */
-+	at91_add_device_adc(&ek_adc_data);
- 	/* LEDs */
- 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
- 	/* Push Buttons */
+Changes since PATCHv1 [0]:
+ * Fix warning about unused variable
+ * Add IIO_CHAN_INFO_PROCESSED to all channels, since voltage
+   channels also need some postprocessing
+
+TODO:
+ * Wait for feedback from DT binding maintainers
+ * Wait for feedback from Marek Belisko, who is testing the
+   changes with twl4030-madc-battery driver on GTA04
+
+[0] https://lkml.org/lkml/2014/3/1/105
+
+-- Sebastian
+
+Sebastian Reichel (9):
+  mfd: twl4030-madc: Use managed resources
+  mfd: twl4030-madc: Add DT support and convert to IIO framework
+  mfd: twl4030-madc: Cleanup driver
+  mfd: twl-core: Add twl_i2c_read/write_u16
+  mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+  Documentation: DT: Document twl4030-madc binding
+  mfd: twl4030-madc: Move driver to drivers/iio/adc
+  iio: documentation: Add ABI documentation for *_mean_raw
+  iio: inkern: add iio_read_channel_average_raw
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   8 +
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c            | 299 +++++++++++++--------
+ drivers/iio/inkern.c                               |  18 ++
+ drivers/mfd/Kconfig                                |  10 -
+ drivers/mfd/Makefile                               |   1 -
+ include/linux/i2c/twl.h                            |  12 +
+ include/linux/i2c/twl4030-madc.h                   |   2 +-
+ include/linux/iio/consumer.h                       |  13 +
+ 11 files changed, 274 insertions(+), 124 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
+
 -- 
-1.8.3.2
+1.9.0
