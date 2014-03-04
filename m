@@ -1,142 +1,249 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx-relay04-dus.antispameurope.com ([94.100.134.204]:56524 "EHLO
-	mx-relay04-dus.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751788AbaCEKM4 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 5 Mar 2014 05:12:56 -0500
-From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-To: Paul Cercueil <paul.cercueil@analog.com>
-Subject: Re: [RFC] LIBIIO
-Date: Wed, 5 Mar 2014 11:12:51 +0100
-Cc: linux-iio@vger.kernel.org
-References: <53146822.5020602@analog.com>
-In-Reply-To: <53146822.5020602@analog.com>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Message-Id: <201403051112.51519.manuel.stahl@iis.fraunhofer.de>
+Received: from ring0.de ([5.45.105.125]:38737 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756452AbaCDWGP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 4 Mar 2014 17:06:15 -0500
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv2 2/9] mfd: twl4030-madc: Add DT support and convert to IIO framework
+Date: Tue,  4 Mar 2014 23:05:44 +0100
+Message-Id: <1393970751-18157-3-git-send-email-sre@debian.org>
+In-Reply-To: <1393970751-18157-1-git-send-email-sre@debian.org>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
+ <1393970751-18157-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Paul,
+This converts twl4030-madc module to use the Industrial IO ADC
+framework and adds device tree support.
 
-I didn't read all of your text (will do later), but would like to point out that there is alreay a project going on here:
-http://sourceforge.net/projects/iioutils/
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ drivers/mfd/twl4030-madc.c | 126 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 116 insertions(+), 10 deletions(-)
 
-You're very welcome to contribute.
-
-Regards,
-Manuel Stahl
-
-Am Montag, 3. März 2014, 12:31:46 schrieb Paul Cercueil:
-> Hi there,
-> 
-> I would like to present the project I've been working on for the past 
-> two weeks: libiio, a library for interfacing IIO devices.
-> Available here: https://github.com/analogdevicesinc/libiio
-> 
-> As it is still in its infancy, I would like to receive feedback about 
-> the API, what is good, what would you change etc.
-> 
-> The API provides a couple of top-level functions to create a context, 
-> either bound to the local IIO devices through sysfs, to a XML 
-> representation, or to a remote server. This context structure (struct 
-> iio_context) contains a list of devices and the context-specific 
-> low-level operations to interact with them.
-> 
->  From the context structure it is possible to retrieve the structures 
-> representing the devices (struct iio_device). Devices have an ID, a 
-> name, attributes and channels.
-> 
-> Attributes essentially correspond to files in sysfs. For instance, the 
-> attribute "sampling_frequency" of the device with the ID "iio:device0" 
-> matches the file "/sys/bus/iio/devices/iio:device0/sampling_frequency".
-> The API provides functions to read or write attributes.
-> 
-> Channels (struct iio_channel) represent a measure channel of a ADC or a 
-> control channel of an DAC. In the local context, the channels are 
-> deduced from the filenames in sysfs. For example, the file 
-> "out_voltage0_vccout_offset" translates to an output channel with ID 
-> "voltage0", name "vccout" featuring an attribute named "offset".
-> 
-> The following sysfs files, for instance, would create the following tree:
-> 
-> root:/> ls -1 -p /sys/bus/iio/devices/iio:device0
-> buffer/
-> dev
-> ...
-> in_magn_filter_low_pass_3db_frequency
-> in_magn_scale
-> in_magn_x_raw
-> in_magn_y_raw
-> in_magn_z_raw
-> name
-> power/
-> sampling_frequency
-> scan_elements/
-> subsystem
-> trigger/
-> uevent
-> 
-> ---
-> 
-> IIO context has 1 devices:
-> 	iio:device0: adis16488
-> 		11 channels found:
-> 			...
-> 			magn_x:  (input)
-> 			4 channel-specific attributes found:
-> 				attr 0: calibbias
-> 				attr 1: filter_low_pass_3db_frequency
-> 				attr 2: raw
-> 				attr 3: scale
-> 			magn_y:  (input)
-> 			4 channel-specific attributes found:
-> 				attr 0: calibbias
-> 				attr 1: filter_low_pass_3db_frequency
-> 				attr 2: raw
-> 				attr 3: scale
-> 			magn_z:  (input)
-> 			4 channel-specific attributes found:
-> 				attr 0: calibbias
-> 				attr 1: filter_low_pass_3db_frequency
-> 				attr 2: raw
-> 				attr 3: scale
-> 		1 device-specific attributes found:
-> 				attr 0: sampling_frequency
-> 
-> ---
-> 
-> The API provides ways to read and write a stream of values. Either the 
-> raw stream (basically reading/writing the dev node directly), or a 
-> processed stream, corresponding to a single channel, with an optional 
-> conversion step. In this case, the conversion is automatically deduced 
-> from the attributes, notably the "scale" attribute.
-> 
-> One recurring issue when working with IIO devices, is that only one 
-> application can use an IIO device at a time. I intend to address that 
-> issue by developping a network daemon (called iiod, that's original) 
-> that would use the local backend of the libiio library, and stream the 
-> data from/to a device from/to all of its connected clients. The clients 
-> would then just be applications compiled with the libiio library, and 
-> using the network backend of the library (note that switching between 
-> backends is just a matter of creating the iio_context structure with a 
-> different function). Once that works, a specific daemon / libiio backend 
-> couple could be designed using fast SHM mechanism for high-speed 
-> concurrent local access to the devices.
-> 
-> As I may be overseeing certain things or missing others, I would like to 
-> know what is your opinion of the API and the library so far, and if you 
-> would use such a library. The feedback is important to me so that the 
-> project moves in the right direction.
-> 
-> Thanks,
-> 
-> Paul
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 5458561..0479af0 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -47,11 +47,14 @@
+ #include <linux/gfp.h>
+ #include <linux/err.h>
+ 
++#include <linux/iio/iio.h>
++
+ /*
+  * struct twl4030_madc_data - a container for madc info
+  * @dev - pointer to device structure for madc
+  * @lock - mutex protecting this data structure
+  * @requests - Array of request struct corresponding to SW1, SW2 and RT
++ * @use_second_irq - IRQ selection (main or co-processor)
+  * @imr - Interrupt mask register of MADC
+  * @isr - Interrupt status register of MADC
+  */
+@@ -59,10 +62,71 @@ struct twl4030_madc_data {
+ 	struct device *dev;
+ 	struct mutex lock;	/* mutex protecting this data structure */
+ 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
++	bool use_second_irq;
+ 	int imr;
+ 	int isr;
+ };
+ 
++static int twl4030_madc_read(struct iio_dev *iio_dev,
++			     const struct iio_chan_spec *chan,
++			     int *val, int *val2, long mask)
++{
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
++	struct twl4030_madc_request req;
++	int ret;
++
++	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
++
++	req.channels = BIT(chan->channel);
++	req.active = false;
++	req.func_cb = NULL;
++	req.type = TWL4030_MADC_WAIT;
++	req.raw = !(mask == IIO_CHAN_INFO_PROCESSED);
++	req.do_avg = (mask == IIO_CHAN_INFO_AVERAGE_RAW);
++
++	ret = twl4030_madc_conversion(&req);
++	if (ret < 0)
++		return ret;
++
++	*val = req.rbuf[chan->channel];
++
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info twl4030_madc_iio_info = {
++	.read_raw = &twl4030_madc_read,
++	.driver_module = THIS_MODULE,
++};
++
++#define TWL4030_ADC_CHANNEL(_channel, _type, _name) {	\
++	.type = _type,					\
++	.channel = _channel,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
++			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
++			      BIT(IIO_CHAN_INFO_PROCESSED), \
++	.datasheet_name = _name,			\
++	.indexed = 1,					\
++}
++
++static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
++	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0"),
++	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1"),
++	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2"),
++	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3"),
++	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4"),
++	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5"),
++	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6"),
++	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7"),
++	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8"),
++	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9"),
++	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10"),
++	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11"),
++	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12"),
++	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13"),
++	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14"),
++	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15"),
++};
++
+ static struct twl4030_madc_data *twl4030_madc;
+ 
+ struct twl4030_prescale_divider_ratios {
+@@ -702,28 +766,50 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
++	struct device_node *np = pdev->dev.of_node;
+ 	int irq, ret;
+ 	u8 regval;
++	struct iio_dev *iio_dev = NULL;
+ 
+-	if (!pdata) {
+-		dev_err(&pdev->dev, "platform_data not available\n");
++	if (!pdata && !np) {
++		dev_err(&pdev->dev, "neither platform data nor Device Tree node available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+-	if (!madc)
++
++	iio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*madc));
++	if (!iio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
+ 		return -ENOMEM;
++	}
+ 
++	madc = iio_priv(iio_dev);
+ 	madc->dev = &pdev->dev;
++	madc->use_second_irq = false;
++
++	iio_dev->name = dev_name(&pdev->dev);
++	iio_dev->dev.parent = &pdev->dev;
++	iio_dev->dev.of_node = pdev->dev.of_node;
++	iio_dev->info = &twl4030_madc_iio_info;
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->channels = twl4030_madc_iio_channels;
++	iio_dev->num_channels = ARRAY_SIZE(twl4030_madc_iio_channels);
+ 
+ 	/*
+ 	 * Phoenix provides 2 interrupt lines. The first one is connected to
+ 	 * the OMAP. The other one can be connected to the other processor such
+ 	 * as modem. Hence two separate ISR and IMR registers.
+ 	 */
+-	madc->imr = (pdata->irq_line == 1) ?
+-	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
+-	madc->isr = (pdata->irq_line == 1) ?
+-	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
++	if (pdata && pdata->irq_line != 1)
++		madc->use_second_irq = true;
++	else if (!pdata)
++		madc->use_second_irq = of_property_read_bool(np,
++				       "ti,system-uses-second-madc-irq");
++
++	madc->imr = madc->use_second_irq ? TWL4030_MADC_IMR2 :
++					   TWL4030_MADC_IMR1;
++	madc->isr = madc->use_second_irq ? TWL4030_MADC_ISR2 :
++					   TWL4030_MADC_ISR1;
++
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+ 		return ret;
+@@ -768,7 +854,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	platform_set_drvdata(pdev, madc);
++	platform_set_drvdata(pdev, iio_dev);
+ 	mutex_init(&madc->lock);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+@@ -780,7 +866,15 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 		goto err_i2c;
+ 	}
+ 	twl4030_madc = madc;
++
++	ret = iio_device_register(iio_dev);
++	if (ret) {
++		dev_dbg(&pdev->dev, "could not register iio device\n");
++		goto err_i2c;
++	}
++
+ 	return 0;
++
+ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+@@ -790,20 +884,32 @@ err_current_generator:
+ 
+ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+-	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
++	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
++	struct twl4030_madc_data *madc = iio_priv(iio_dev);
+ 
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+ 
++	iio_device_unregister(iio_dev);
++
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id twl_madc_of_match[] = {
++	{.compatible = "ti,twl4030-madc", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, twl_madc_of_match);
++#endif
++
+ static struct platform_driver twl4030_madc_driver = {
+ 	.probe = twl4030_madc_probe,
+ 	.remove = twl4030_madc_remove,
+ 	.driver = {
+ 		   .name = "twl4030_madc",
+ 		   .owner = THIS_MODULE,
++		   .of_match_table = of_match_ptr(twl_madc_of_match),
+ 		   },
+ };
+ 
+-- 
+1.9.0
 
