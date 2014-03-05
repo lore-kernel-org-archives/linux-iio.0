@@ -1,64 +1,42 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 3 Mar 2014 16:00:01 +0800
-From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Sebastian Reichel <sre@debian.org>, Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [RFCv4 0/7] Convert twl4030-madc to IIO API and add DT support
-Message-ID: <20140303080001.GH4674@lee--X1>
-References: <1393374270-20079-1-git-send-email-sre@debian.org>
- <1393444990-28140-1-git-send-email-sre@debian.org>
- <5311CA14.6080009@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5311CA14.6080009@kernel.org>
+Return-Path: <alexandre.belloni@free-electrons.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	Josh Wu <josh.wu@atmel.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 3/3] ARM: at91: at91sam9260: change at91_adc name
+Date: Wed,  5 Mar 2014 17:57:55 +0100
+Message-Id: <1394038675-15809-4-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 01 Mar 2014, Jonathan Cameron wrote:
+We can't use "at91_adc" to refer to the at91_adc driver anymore as
+the name is used to match an id_table.
 
-> On 26/02/14 20:03, Sebastian Reichel wrote:
-> >Hi,
-> >
-> >This is RFCv4 for converting twl4030-madc to the IIO API and
-> >adding DT support. The patchset compiles and has been tested
-> >on my Nokia N900.
-> >
-> >Changes since RFCv3 [0]:
-> >  * Added Acked-by from Lee Jones (MFD subsystem maintainer)
-> >    to twl_i2c_read/write_u16 patches
-> >  * Fixed style issues found by Lee Jones
-> >    This readded the temp variable Jonathan Cameron wanted to
-> >    be removed, but makes the code cleaner - especially once
-> >    the brackets for math for clarity are added.
-> >  * Tested with converted rx51-battery driver on Nokia N900,
-> >    which can be found at [1].
-> >
-> >[0] https://lkml.org/lkml/2014/2/25/627
-> >[1] https://lkml.org/lkml/2014/2/25/639
-> 
-> Hi All,
-> 
-> Obviously there are a few outstanding bits and pieces to be addressed.
-> 
-> To get this lined up for a merge...
-> 
-> Lee, do you want to take this through mfd or shall I take it through
-> IIO?  I don't mind either way.  It stands pretty separate in IIO so
-> shouldn't cause any merge issues beyond minor fuzz.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ arch/arm/mach-at91/at91sam9260_devices.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'm happy to take it through MFD with your Ack.
-
+diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
+index eda8d1679d40..0a0315920963 100644
+--- a/arch/arm/mach-at91/at91sam9260_devices.c
++++ b/arch/arm/mach-at91/at91sam9260_devices.c
+@@ -1292,7 +1292,7 @@ static struct resource adc_resources[] = {
+ };
+ 
+ static struct platform_device at91_adc_device = {
+-	.name		= "at91_adc",
++	.name		= "at91sam9260-adc",
+ 	.id		= -1,
+ 	.dev		= {
+ 				.platform_data		= &adc_data,
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.3.2
