@@ -1,164 +1,165 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60029 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753464AbaCOOsZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:48:25 -0400
-Message-ID: <53246873.705@kernel.org>
-Date: Sat, 15 Mar 2014 14:49:23 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-163.synserver.de ([212.40.185.163]:1031 "EHLO
+	smtp-out-014.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1753090AbaCEObP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Mar 2014 09:31:15 -0500
+Message-ID: <5317354E.9050803@metafoo.de>
+Date: Wed, 05 Mar 2014 15:31:42 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: sr@denx.de
-Subject: Re: [PATCH 4/5] staging:iio:adc:spear_adc use info_mask_shared_by_all
- for samp freq
-References: <1394570219-7672-1-git-send-email-jic23@kernel.org> <1394570219-7672-5-git-send-email-jic23@kernel.org> <5320C40A.6040203@gmx.de>
-In-Reply-To: <5320C40A.6040203@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+CC: Paul Cercueil <paul.cercueil@analog.com>, linux-iio@vger.kernel.org
+Subject: Re: [RFC] LIBIIO
+References: <53146822.5020602@analog.com> <201403051112.51519.manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201403051112.51519.manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/03/14 20:31, Hartmut Knaack wrote:
-> Jonathan Cameron schrieb:
->> Using the core support makes this element available to in kernel users as
->> well as to userspace under exactly the same interface as before.  The
->> intent is to move all sampling frequency control to this approach
->> throughout IIO.
->>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>   drivers/staging/iio/adc/spear_adc.c | 95 ++++++++++++++-----------------------
->>   1 file changed, 36 insertions(+), 59 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
->> index fbe69a7..d8232f1 100644
->> --- a/drivers/staging/iio/adc/spear_adc.c
->> +++ b/drivers/staging/iio/adc/spear_adc.c
->> @@ -185,16 +185,51 @@ static int spear_read_raw(struct iio_dev *indio_dev,
->>   		*val = info->vref_external;
->>   		*val2 = SPEAR_ADC_DATA_BITS;
->>   		return IIO_VAL_FRACTIONAL_LOG2;
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		*val = info->current_clk;
->> +		return IIO_VAL_INT;
->>   	}
->>
->>   	return -EINVAL;
->>   }
->>
->> +static int spear_adc_write_raw(struct iio_dev *indio_dev,
->> +			       struct iio_chan_spec const *chan,
->> +			       int val,
->> +			       int val2,
->> +			       long mask)
->> +{
->> +	struct spear_adc_info *info = iio_priv(indio_dev);
->> +	u32 clk_high, clk_low, count;
->> +	u32 apb_clk = clk_get_rate(info->clk);
->> +	int ret = 0;
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +
->> +	if ((val < SPEAR_ADC_CLK_MIN) ||
->> +		(val > SPEAR_ADC_CLK_MAX) ||
->> +		(val2 != 0)) {
->> +		ret = -EINVAL;
->> +		goto out;
->> +	}
->> +
->> +	count = (apb_clk + val - 1) / val;
->> +	clk_low = count / 2;
->> +	clk_high = count - clk_low;
->> +	info->current_clk = apb_clk / count;
->> +	spear_adc_set_clk(info, val);
->> +
-> What is actually the purpose of clk_low and clk_high? I don't see them used after doing that calculation.
-Good spot.  Looks like this is the result of an earlier reworking.  These get recomputed in the set_clk
-function.
+On 03/05/2014 11:12 AM, Manuel Stahl wrote:
+> Hi Paul,
+>
+> I didn't read all of your text (will do later), but would like to point out that there is alreay a project going on here:
+> http://sourceforge.net/projects/iioutils/
 
-> And is it really 100% safe to avoid checking mask?
-Fair point. No it's not. Oops.  Will fix and repost in a sec.
->> +out:
->> +	mutex_unlock(&indio_dev->mlock);
->> +	return ret;
->> +}
->> +
->>   #define SPEAR_ADC_CHAN(idx) {				\
->>   	.type = IIO_VOLTAGE,				\
->>   	.indexed = 1,					\
->>   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->>   	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
->>   	.channel = idx,					\
->>   }
+Well, the iioutils lib is extremely low level. It is basically just a bunch 
+of fprintfs and fscanfs. The libiio has a more high level abstraction build 
+in. The basic structure of the libiio is the iio_context, it is a (to the 
+user transparent) struct that is used for all operations (E.g. like 
+get_devices()). If an application wants to do something it first allocates a 
+context, there can be multiple contexts per application and each contexts 
+tracks is own state, so there is no globally shared state. Each context has 
+a backed. One backend is the local backend that performs all operations on 
+device the application is running on. But there is also a network backend 
+that connects to a sever running on a different device. This allows to run 
+the same application on local and remote the devices without the application 
+having to have any special code for supporting this.
+
+There is also a IIO daemon that can sit between the application and the IIO 
+sysfs. This daemon allows for multiple applications accessing the same 
+device without trampling over each others feet and also allows to run the 
+application without root rights.
+
+My hopes are that the libiio can eventually replace the iio-utils lib.
+
+- Lars
+
+>
+> You're very welcome to contribute.
+>
+> Regards,
+> Manuel Stahl
+>
+> Am Montag, 3. März 2014, 12:31:46 schrieb Paul Cercueil:
+>> Hi there,
 >>
->> @@ -236,67 +271,9 @@ static int spear_adc_configure(struct spear_adc_info *info)
->>   	return 0;
->>   }
+>> I would like to present the project I've been working on for the past
+>> two weeks: libiio, a library for interfacing IIO devices.
+>> Available here: https://github.com/analogdevicesinc/libiio
 >>
->> -static ssize_t spear_adc_read_frequency(struct device *dev,
->> -					struct device_attribute *attr,
->> -					char *buf)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	struct spear_adc_info *info = iio_priv(indio_dev);
->> -
->> -	return sprintf(buf, "%d\n", info->current_clk);
->> -}
->> -
->> -static ssize_t spear_adc_write_frequency(struct device *dev,
->> -					 struct device_attribute *attr,
->> -					 const char *buf,
->> -					 size_t len)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	struct spear_adc_info *info = iio_priv(indio_dev);
->> -	u32 clk_high, clk_low, count;
->> -	u32 apb_clk = clk_get_rate(info->clk);
->> -	unsigned long lval;
->> -	int ret;
->> -
->> -	ret = kstrtoul(buf, 10, &lval);
->> -	if (ret)
->> -		return ret;
->> -
->> -	mutex_lock(&indio_dev->mlock);
->> -
->> -	if ((lval < SPEAR_ADC_CLK_MIN) || (lval > SPEAR_ADC_CLK_MAX)) {
->> -		ret = -EINVAL;
->> -		goto out;
->> -	}
->> -
->> -	count = (apb_clk + lval - 1) / lval;
->> -	clk_low = count / 2;
->> -	clk_high = count - clk_low;
->> -	info->current_clk = apb_clk / count;
->> -	spear_adc_set_clk(info, lval);
->> -
->> -out:
->> -	mutex_unlock(&indio_dev->mlock);
->> -
->> -	return ret ? ret : len;
->> -}
->> -
->> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->> -			      spear_adc_read_frequency,
->> -			      spear_adc_write_frequency);
->> -
->> -static struct attribute *spear_attributes[] = {
->> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->> -	NULL
->> -};
->> -
->> -static const struct attribute_group spear_attribute_group = {
->> -	.attrs = spear_attributes,
->> -};
->> -
->>   static const struct iio_info spear_adc_iio_info = {
->>   	.read_raw = &spear_read_raw,
->> -	.attrs = &spear_attribute_group,
->> +	.write_raw = &spear_adc_write_raw,
->>   	.driver_module = THIS_MODULE,
->>   };
+>> As it is still in its infancy, I would like to receive feedback about
+>> the API, what is good, what would you change etc.
+>>
+>> The API provides a couple of top-level functions to create a context,
+>> either bound to the local IIO devices through sysfs, to a XML
+>> representation, or to a remote server. This context structure (struct
+>> iio_context) contains a list of devices and the context-specific
+>> low-level operations to interact with them.
+>>
+>>   From the context structure it is possible to retrieve the structures
+>> representing the devices (struct iio_device). Devices have an ID, a
+>> name, attributes and channels.
+>>
+>> Attributes essentially correspond to files in sysfs. For instance, the
+>> attribute "sampling_frequency" of the device with the ID "iio:device0"
+>> matches the file "/sys/bus/iio/devices/iio:device0/sampling_frequency".
+>> The API provides functions to read or write attributes.
+>>
+>> Channels (struct iio_channel) represent a measure channel of a ADC or a
+>> control channel of an DAC. In the local context, the channels are
+>> deduced from the filenames in sysfs. For example, the file
+>> "out_voltage0_vccout_offset" translates to an output channel with ID
+>> "voltage0", name "vccout" featuring an attribute named "offset".
+>>
+>> The following sysfs files, for instance, would create the following tree:
+>>
+>> root:/> ls -1 -p /sys/bus/iio/devices/iio:device0
+>> buffer/
+>> dev
+>> ...
+>> in_magn_filter_low_pass_3db_frequency
+>> in_magn_scale
+>> in_magn_x_raw
+>> in_magn_y_raw
+>> in_magn_z_raw
+>> name
+>> power/
+>> sampling_frequency
+>> scan_elements/
+>> subsystem
+>> trigger/
+>> uevent
+>>
+>> ---
+>>
+>> IIO context has 1 devices:
+>> 	iio:device0: adis16488
+>> 		11 channels found:
+>> 			...
+>> 			magn_x:  (input)
+>> 			4 channel-specific attributes found:
+>> 				attr 0: calibbias
+>> 				attr 1: filter_low_pass_3db_frequency
+>> 				attr 2: raw
+>> 				attr 3: scale
+>> 			magn_y:  (input)
+>> 			4 channel-specific attributes found:
+>> 				attr 0: calibbias
+>> 				attr 1: filter_low_pass_3db_frequency
+>> 				attr 2: raw
+>> 				attr 3: scale
+>> 			magn_z:  (input)
+>> 			4 channel-specific attributes found:
+>> 				attr 0: calibbias
+>> 				attr 1: filter_low_pass_3db_frequency
+>> 				attr 2: raw
+>> 				attr 3: scale
+>> 		1 device-specific attributes found:
+>> 				attr 0: sampling_frequency
+>>
+>> ---
+>>
+>> The API provides ways to read and write a stream of values. Either the
+>> raw stream (basically reading/writing the dev node directly), or a
+>> processed stream, corresponding to a single channel, with an optional
+>> conversion step. In this case, the conversion is automatically deduced
+>> from the attributes, notably the "scale" attribute.
+>>
+>> One recurring issue when working with IIO devices, is that only one
+>> application can use an IIO device at a time. I intend to address that
+>> issue by developping a network daemon (called iiod, that's original)
+>> that would use the local backend of the libiio library, and stream the
+>> data from/to a device from/to all of its connected clients. The clients
+>> would then just be applications compiled with the libiio library, and
+>> using the network backend of the library (note that switching between
+>> backends is just a matter of creating the iio_context structure with a
+>> different function). Once that works, a specific daemon / libiio backend
+>> couple could be designed using fast SHM mechanism for high-speed
+>> concurrent local access to the devices.
+>>
+>> As I may be overseeing certain things or missing others, I would like to
+>> know what is your opinion of the API and the library so far, and if you
+>> would use such a library. The feedback is important to me so that the
+>> project moves in the right direction.
+>>
+>> Thanks,
+>>
+>> Paul
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >>
 >
 > --
