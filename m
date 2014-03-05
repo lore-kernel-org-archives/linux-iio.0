@@ -1,60 +1,106 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f176.google.com ([209.85.214.176]:38124 "EHLO
+	mail-ob0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755791AbaCEVAk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Mar 2014 16:00:40 -0500
+MIME-Version: 1.0
+In-Reply-To: <1393970751-18157-1-git-send-email-sre@debian.org>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
+	<1393970751-18157-1-git-send-email-sre@debian.org>
+Date: Wed, 5 Mar 2014 22:00:38 +0100
+Message-ID: <CAAfyv360c4UTKUgdYJREgnro1fGLLpGhcHUtdr0q5B6guGvLUQ@mail.gmail.com>
+Subject: Re: [PATCHv2 0/9] Convert twl4030-madc to IIO API and add DT support
+From: Belisko Marek <marek.belisko@gmail.com>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 05/15] ARM: at91: sam9m10g45ek: Add touchscreen support through at91_adc
-Date: Wed,  5 Mar 2014 18:35:30 +0100
-Message-Id: <1394040940-18246-6-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
-Enable touchscreen support through at91_adc. This allows to use both a
-touchscreen and the remaining ADC channel at the same time.
+Hi,
 
-Also, lower the clock for the ADC as it allows to have more stable reads and
-this is the speed used by atmel_tsadcc.
+On Tue, Mar 4, 2014 at 11:05 PM, Sebastian Reichel <sre@debian.org> wrote:
+> Hi,
+>
+> This is PATCHv2 for converting twl4030-madc to the IIO API and
+> adding DT support. The plan is to remove the private twl4030-madc
+> API once all users have been removed or converted to the IIO API.
+> The patchset compiles and has been tested on my Nokia N900.
+>
+> Changes since PATCHv1 [0]:
+>  * Fix warning about unused variable
+>  * Add IIO_CHAN_INFO_PROCESSED to all channels, since voltage
+>    channels also need some postprocessing
+>
+> TODO:
+>  * Wait for feedback from DT binding maintainers
+>  * Wait for feedback from Marek Belisko, who is testing the
+>    changes with twl4030-madc-battery driver on GTA04
+Tested on gta04 board. Works as expected with twl4030_madc_battery patches [1]
+on top. So you can add my Tested-by: Marek Belisko <marek@goldelico.com>
+>
+> [0] https://lkml.org/lkml/2014/3/1/105
+>
+> -- Sebastian
+>
+> Sebastian Reichel (9):
+>   mfd: twl4030-madc: Use managed resources
+>   mfd: twl4030-madc: Add DT support and convert to IIO framework
+>   mfd: twl4030-madc: Cleanup driver
+>   mfd: twl-core: Add twl_i2c_read/write_u16
+>   mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+>   Documentation: DT: Document twl4030-madc binding
+>   mfd: twl4030-madc: Move driver to drivers/iio/adc
+>   iio: documentation: Add ABI documentation for *_mean_raw
+>   iio: inkern: add iio_read_channel_average_raw
+>
+>  Documentation/ABI/testing/sysfs-bus-iio            |   8 +
+>  .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
+>  drivers/iio/adc/Kconfig                            |  10 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/{mfd => iio/adc}/twl4030-madc.c            | 299 +++++++++++++--------
+>  drivers/iio/inkern.c                               |  18 ++
+>  drivers/mfd/Kconfig                                |  10 -
+>  drivers/mfd/Makefile                               |   1 -
+>  include/linux/i2c/twl.h                            |  12 +
+>  include/linux/i2c/twl4030-madc.h                   |   2 +-
+>  include/linux/iio/consumer.h                       |  13 +
+>  11 files changed, 274 insertions(+), 124 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+>  rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
+>
+> --
+> 1.9.0
+>
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- arch/arm/mach-at91/at91sam9g45.c        | 2 +-
- arch/arm/mach-at91/board-sam9m10g45ek.c | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+[1]: http://www.spinics.net/lists/kernel/msg1700793.html
 
-diff --git a/arch/arm/mach-at91/at91sam9g45.c b/arch/arm/mach-at91/at91sam9g45.c
-index 2f455ce35268..3c519a7a938f 100644
---- a/arch/arm/mach-at91/at91sam9g45.c
-+++ b/arch/arm/mach-at91/at91sam9g45.c
-@@ -181,7 +181,7 @@ static struct clk vdec_clk = {
- static struct clk adc_op_clk = {
- 	.name		= "adc_op_clk",
- 	.type		= CLK_TYPE_PERIPHERAL,
--	.rate_hz	= 13200000,
-+	.rate_hz	= 300000,
- };
- 
- /* AES/TDES/SHA clock - Only for sam9m11/sam9g56 */
-diff --git a/arch/arm/mach-at91/board-sam9m10g45ek.c b/arch/arm/mach-at91/board-sam9m10g45ek.c
-index ef39078c8ce2..4d775b796ce4 100644
---- a/arch/arm/mach-at91/board-sam9m10g45ek.c
-+++ b/arch/arm/mach-at91/board-sam9m10g45ek.c
-@@ -315,6 +315,7 @@ static struct at91_adc_data ek_adc_data = {
- 	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) | BIT(6) | BIT(7),
- 	.use_external_triggers = true,
- 	.vref = 3300,
-+	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
- };
- 
- /*
+BR,
+
+marek
+
+
 -- 
-1.8.3.2
+as simple and primitive as possible
+-------------------------------------------------
+Marek Belisko - OPEN-NANDRA
+Freelance Developer
+
+Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
+Tel: +421 915 052 184
+skype: marekwhite
+twitter: #opennandra
+web: http://open-nandra.com
