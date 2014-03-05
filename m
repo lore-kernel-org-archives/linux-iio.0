@@ -1,106 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f176.google.com ([209.85.214.176]:38124 "EHLO
-	mail-ob0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755791AbaCEVAk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Mar 2014 16:00:40 -0500
+Received: from ch1ehsobe002.messaging.microsoft.com ([216.32.181.182]:8997
+	"EHLO ch1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751630AbaCETUH convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 5 Mar 2014 14:20:07 -0500
+From: "Getz, Robin" <Robin.Getz@analog.com>
+To: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: "Cercueil, Paul" <Paul.Cercueil@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: [RFC] LIBIIO
+Date: Wed, 5 Mar 2014 19:18:59 +0000
+Message-ID: <FEAE1C531EE4684EBDD22603EC8BE599612BFFCD@NWD2MBX7.ad.analog.com>
+References: <53146822.5020602@analog.com>
+ <201403051112.51519.manuel.stahl@iis.fraunhofer.de>
+ <5317354E.9050803@metafoo.de>
+ <201403051611.05139.manuel.stahl@iis.fraunhofer.de>
+In-Reply-To: <201403051611.05139.manuel.stahl@iis.fraunhofer.de>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-In-Reply-To: <1393970751-18157-1-git-send-email-sre@debian.org>
-References: <1393702365-26429-1-git-send-email-sre@debian.org>
-	<1393970751-18157-1-git-send-email-sre@debian.org>
-Date: Wed, 5 Mar 2014 22:00:38 +0100
-Message-ID: <CAAfyv360c4UTKUgdYJREgnro1fGLLpGhcHUtdr0q5B6guGvLUQ@mail.gmail.com>
-Subject: Re: [PATCHv2 0/9] Convert twl4030-madc to IIO API and add DT support
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Manuel Stahl wrote:
+> Am Mittwoch, 5. März 2014, 15:31:42 schrieb Lars-Peter Clausen:
+> > On 03/05/2014 11:12 AM, Manuel Stahl wrote:
+> > > Hi Paul,
+> > >
+> > > I didn't read all of your text (will do later), but would like to point out that
+> there is alreay a project going on here:
+> > > http://sourceforge.net/projects/iioutils/
+> >
+> > Well, the iioutils lib is extremely low level. It is basically just a
+> > bunch of fprintfs and fscanfs. The libiio has a more high level
+> > abstraction build in. The basic structure of the libiio is the
+> > iio_context, it is a (to the user transparent) struct that is used for
+> > all operations (E.g. like get_devices()). If an application wants to
+> > do something it first allocates a context, there can be multiple
+> > contexts per application and each contexts tracks is own state, so
+> > there is no globally shared state. Each context has a backed. One
+> > backend is the local backend that performs all operations on device
+> > the application is running on. But there is also a network backend
+> > that connects to a sever running on a different device. This allows to
+> > run the same application on local and remote the devices without the
+> application having to have any special code for supporting this.
+> >
+> > There is also a IIO daemon that can sit between the application and
+> > the IIO sysfs. This daemon allows for multiple applications accessing
+> > the same device without trampling over each others feet and also
+> > allows to run the application without root rights.
+> >
+> > My hopes are that the libiio can eventually replace the iio-utils lib.
+> 
+> That's also what I hope for. But we should try to avoid name clashes. The lib in
+> iioutils is also called libiio. So I propose to merge the repositories somehow.
 
-On Tue, Mar 4, 2014 at 11:05 PM, Sebastian Reichel <sre@debian.org> wrote:
-> Hi,
->
-> This is PATCHv2 for converting twl4030-madc to the IIO API and
-> adding DT support. The plan is to remove the private twl4030-madc
-> API once all users have been removed or converted to the IIO API.
-> The patchset compiles and has been tested on my Nokia N900.
->
-> Changes since PATCHv1 [0]:
->  * Fix warning about unused variable
->  * Add IIO_CHAN_INFO_PROCESSED to all channels, since voltage
->    channels also need some postprocessing
->
-> TODO:
->  * Wait for feedback from DT binding maintainers
->  * Wait for feedback from Marek Belisko, who is testing the
->    changes with twl4030-madc-battery driver on GTA04
-Tested on gta04 board. Works as expected with twl4030_madc_battery patches [1]
-on top. So you can add my Tested-by: Marek Belisko <marek@goldelico.com>
->
-> [0] https://lkml.org/lkml/2014/3/1/105
->
-> -- Sebastian
->
-> Sebastian Reichel (9):
->   mfd: twl4030-madc: Use managed resources
->   mfd: twl4030-madc: Add DT support and convert to IIO framework
->   mfd: twl4030-madc: Cleanup driver
->   mfd: twl-core: Add twl_i2c_read/write_u16
->   mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
->   Documentation: DT: Document twl4030-madc binding
->   mfd: twl4030-madc: Move driver to drivers/iio/adc
->   iio: documentation: Add ABI documentation for *_mean_raw
->   iio: inkern: add iio_read_channel_average_raw
->
->  Documentation/ABI/testing/sysfs-bus-iio            |   8 +
->  .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
->  drivers/iio/adc/Kconfig                            |  10 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/{mfd => iio/adc}/twl4030-madc.c            | 299 +++++++++++++--------
->  drivers/iio/inkern.c                               |  18 ++
->  drivers/mfd/Kconfig                                |  10 -
->  drivers/mfd/Makefile                               |   1 -
->  include/linux/i2c/twl.h                            |  12 +
->  include/linux/i2c/twl4030-madc.h                   |   2 +-
->  include/linux/iio/consumer.h                       |  13 +
->  11 files changed, 274 insertions(+), 124 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
->  rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
->
-> --
-> 1.9.0
->
+Changing the name is easy.
 
-[1]: http://www.spinics.net/lists/kernel/msg1700793.html
+Before we can discuss merging things, I think we need to understand the long term license.
+I think that we were thinking that eventually the library would be under a pretty permissive license, which might be more embedded friendly than the GPL.
 
-BR,
+You can debate the top level tools/utils examples that use the library - but I would suspect that lots of folks might want to grab snippets from those (to grok how the library works)??
 
-marek
+-Robin
 
-
--- 
-as simple and primitive as possible
--------------------------------------------------
-Marek Belisko - OPEN-NANDRA
-Freelance Developer
-
-Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-Tel: +421 915 052 184
-skype: marekwhite
-twitter: #opennandra
-web: http://open-nandra.com
