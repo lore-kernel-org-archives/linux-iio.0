@@ -1,106 +1,115 @@
-Return-Path: <olof@lixom.net>
-MIME-Version: 1.0
-In-Reply-To: <42A09AAC7DAAF64ABE4E4C1AD5F5E295475D66E7@MEN-EX1.intra.men.de>
-References: <1393432147-31355-1-git-send-email-johannes.thumshirn@men.de>
-	<1393432147-31355-2-git-send-email-johannes.thumshirn@men.de>
-	<CAOesGMjmdfRWddG+NWBg29mPik_s21fMQerCqUbEWUz8vP3KfQ@mail.gmail.com>
-	<42A09AAC7DAAF64ABE4E4C1AD5F5E295475D66E7@MEN-EX1.intra.men.de>
-Date: Mon, 3 Mar 2014 12:57:49 -0800
-Message-ID: <CAOesGMgXwONUexeMgK0Dav=guE2rzUaegBre-55JocF-_uh7VA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] drivers: Introduce MEN Chameleon Bus
-From: Olof Johansson <olof@lixom.net>
-To: "Thumshirn, Johannes Tobias" <Johannes.Thumshirn@men.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:50514 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755015AbaCEQ6V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Mar 2014 11:58:21 -0500
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	Josh Wu <josh.wu@atmel.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 1/3] iio: adc: at91_adc: Repair broken platform_data support
+Date: Wed,  5 Mar 2014 17:57:53 +0100
+Message-Id: <1394038675-15809-2-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 3, 2014 at 12:09 PM, Thumshirn, Johannes Tobias
-<Johannes.Thumshirn@men.de> wrote:
->
-> ________________________________________
-> From: Olof Johansson [olof@lixom.net]
-> Sent: Monday, March 03, 2014 8:21 PM
-> To: Thumshirn, Johannes Tobias
-> Cc: Greg Kroah-Hartman; Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v3 1/3] drivers: Introduce MEN Chameleon Bus
->
-> On Wed, Feb 26, 2014 at 8:29 AM, Johannes Thumshirn
-> <johannes.thumshirn@men.de> wrote:
->> The MCB (MEN Chameleon Bus) is a Bus specific to MEN Mikroelektronik
->> FPGA based devices. It is used to identify MCB based IP-Cores within
->> an FPGA and provide the necessary framework for instantiating drivers
->> for these devices.
->>
->> Signed-off-by: Johannes Thumshirn <johannes.thumshirn@men.de>
->> ---
->>  MAINTAINERS                     |   6 +
->>  drivers/Kconfig                 |   2 +
->>  drivers/Makefile                |   1 +
->>  drivers/mcb/Kconfig             |  15 ++
->>  drivers/mcb/Makefile            |   5 +
->>  drivers/mcb/mcb-core.c          | 414 ++++++++++++++++++++++++++++++++++++++++
->>  drivers/mcb/mcb-internal.h      | 116 +++++++++++
->>  drivers/mcb/mcb-parse.c         | 159 +++++++++++++++
->>  include/linux/mcb.h             | 119 ++++++++++++
->>  include/linux/mod_devicetable.h |   5 +
->>  10 files changed, 842 insertions(+)
->>  create mode 100644 drivers/mcb/Kconfig
->>  create mode 100644 drivers/mcb/Makefile
->>  create mode 100644 drivers/mcb/mcb-core.c
->>  create mode 100644 drivers/mcb/mcb-internal.h
->>  create mode 100644 drivers/mcb/mcb-parse.c
->>  create mode 100644 include/linux/mcb.h
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 85b3dd8..5d35f6c 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -5667,6 +5667,12 @@ L:       linux-watchdog@vger.kernel.org
->>  S:     Supported
->>  F:     drivers/watchdog/mena21_wdt.c
->>
->> +MEN CHAMELEON BUS (mcb)
->> +M:     Johannes Thumshirn <johannes.thumshirn@men.de>
->> +S:     Supported
->> +F:     drivers/mcb/
->> +F:     include/linux/mcb.h
->> +
->>  METAG ARCHITECTURE
->>  M:     James Hogan <james.hogan@imgtec.com>
->>  L:     linux-metag@vger.kernel.org
->> diff --git a/drivers/Kconfig b/drivers/Kconfig
->> index b3138fb..df2ac52 100644
->> --- a/drivers/Kconfig
->> +++ b/drivers/Kconfig
->> @@ -170,4 +170,6 @@ source "drivers/phy/Kconfig"
->>
->>  source "drivers/powercap/Kconfig"
->>
->> +source "drivers/mcb/Kconfig"
->> +
->>  endmenu
->> diff --git a/drivers/Makefile b/drivers/Makefile
->> index 8e3b8b0..c5bf50c 100644
->> --- a/drivers/Makefile
->> +++ b/drivers/Makefile
->> @@ -155,3 +155,4 @@ obj-$(CONFIG_IPACK_BUS)             += ipack/
->>  obj-$(CONFIG_NTB)              += ntb/
->>  obj-$(CONFIG_FMC)              += fmc/
->>  obj-$(CONFIG_POWERCAP)         += powercap/
->> +obj-$(CONFIG_MCB)              += mcb/
->
-> No single-driver directories like these. This needs to go somewhere else.
->
-> There are two drivers in this directory, so I guess it's O.K, isn't it?
+Trying to use the at91_adc driver while not using device tree is ending up in a
+kernel crash:
 
-Our drivers toplevel is getting pretty crowded, so adding
-vendor-specific device classes there isn't really going to work
-long-term.
+Unable to handle kernel NULL pointer dereference at virtual address 00000004
+[...]
+[<c01f3510>] (at91_adc_probe) from [<c0183828>] (platform_drv_probe+0x18/0x48)
+[<c0183828>] (platform_drv_probe) from [<c01824a4>] (driver_probe_device+0x100/0x218)
+[<c01824a4>] (driver_probe_device) from [<c0182648>] (__driver_attach+0x8c/0x90)
+[<c0182648>] (__driver_attach) from [<c0180de4>] (bus_for_each_dev+0x58/0x88)
+[<c0180de4>] (bus_for_each_dev) from [<c0181c7c>] (bus_add_driver+0xd4/0x1d4)
+[<c0181c7c>] (bus_add_driver) from [<c0182c40>] (driver_register+0x78/0xf4)
+[<c0182c40>] (driver_register) from [<c0008998>] (do_one_initcall+0xe8/0x14c)
+[<c0008998>] (do_one_initcall) from [<c02f0b50>] (kernel_init_freeable+0xec/0x1b4)
+[<c02f0b50>] (kernel_init_freeable) from [<c022acdc>] (kernel_init+0x8/0xe4)
+[<c022acdc>] (kernel_init) from [<c0009670>] (ret_from_fork+0x14/0x24)
 
-Final call is of course with Greg, but I'd prefer to see this under
-drivers/misc or drivers/bus or similar.
+This is because the at91_adc_caps structure is mandatory but is not filled when
+using platform_data. Correct that by using an id_table. It ensues that the
+driver will not match "at91_adc" anymore but it was crashing anyway.
 
+Fixes: c46016665fff (iio: at91: ADC start-up time calculation changed since at91sam9x5)
+Cc: stable@vger.kernel.org # v3.13+
 
--Olof
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/iio/adc/at91_adc.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 5b1aa027c034..bbba014c9939 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -765,14 +765,17 @@ static int at91_adc_probe_pdata(struct at91_adc_state *st,
+ 	if (!pdata)
+ 		return -EINVAL;
+ 
++	st->caps = (struct at91_adc_caps *)
++			platform_get_device_id(pdev)->driver_data;
++
+ 	st->use_external = pdata->use_external_triggers;
+ 	st->vref_mv = pdata->vref;
+ 	st->channels_mask = pdata->channels_used;
+-	st->num_channels = pdata->num_channels;
++	st->num_channels = st->caps->num_channels;
+ 	st->startup_time = pdata->startup_time;
+ 	st->trigger_number = pdata->trigger_number;
+ 	st->trigger_list = pdata->trigger_list;
+-	st->registers = pdata->registers;
++	st->registers = &st->caps->registers;
+ 
+ 	return 0;
+ }
+@@ -1101,7 +1104,6 @@ static int at91_adc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_OF
+ static struct at91_adc_caps at91sam9260_caps = {
+ 	.calc_startup_ticks = calc_startup_ticks_9260,
+ 	.num_channels = 4,
+@@ -1154,11 +1156,27 @@ static const struct of_device_id at91_adc_dt_ids[] = {
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
+-#endif
++
++static const struct platform_device_id at91_adc_ids[] = {
++	{
++		.name = "at91sam9260-adc",
++		.driver_data = (unsigned long)&at91sam9260_caps,
++	}, {
++		.name = "at91sam9g45-adc",
++		.driver_data = (unsigned long)&at91sam9g45_caps,
++	}, {
++		.name = "at91sam9x5-adc",
++		.driver_data = (unsigned long)&at91sam9x5_caps,
++	}, {
++		/* terminator */
++	}
++};
++MODULE_DEVICE_TABLE(platform, at91_adc_ids);
+ 
+ static struct platform_driver at91_adc_driver = {
+ 	.probe = at91_adc_probe,
+ 	.remove = at91_adc_remove,
++	.id_table = at91_adc_ids,
+ 	.driver = {
+ 		   .name = DRIVER_NAME,
+ 		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
+-- 
+1.8.3.2
+
