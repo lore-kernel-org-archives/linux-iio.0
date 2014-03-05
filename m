@@ -1,8 +1,4 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:50505 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752791AbaCEQ6C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Mar 2014 11:58:02 -0500
+Return-Path: <alexandre.belloni@free-electrons.com>
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Nicolas Ferre <nicolas.ferre@atmel.com>
@@ -10,35 +6,37 @@ Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
 	Josh Wu <josh.wu@atmel.com>,
 	Maxime Ripard <maxime.ripard@free-electrons.com>,
 	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 0/3] iio: adc: at91 fixes
-Date: Wed,  5 Mar 2014 17:57:52 +0100
-Message-Id: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
+Date: Wed,  5 Mar 2014 17:57:54 +0100
+Message-Id: <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This series fixes a kernel crash at probe time when using the at91_adc driver
-through platform_data. This crash appeared in 3.13.
+We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
+used to match an id_table.
 
-The first patch fixes the crash. While it is already quite late, I think it
-would be good to get it in 3.14.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The next patches restore support for at91_adc on the at91sam9g45 and at91sam9260
-based boards. It would be great if they could make it in 3.14. But I'm not sure
-it is worth applying them to 3.13.
-
-Alexandre Belloni (3):
-  iio: adc: at91_adc: Repair broken platform_data support
-  ARM: at91: at91sam9g45: change at91_adc name
-  ARM: at91: at91sam9260: change at91_adc name
-
- arch/arm/mach-at91/at91sam9260_devices.c |  2 +-
- arch/arm/mach-at91/at91sam9g45_devices.c |  2 +-
- drivers/iio/adc/at91_adc.c               | 26 ++++++++++++++++++++++----
- 3 files changed, 24 insertions(+), 6 deletions(-)
-
+diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
+index cb36fa872d30..88554024eb2d 100644
+--- a/arch/arm/mach-at91/at91sam9g45_devices.c
++++ b/arch/arm/mach-at91/at91sam9g45_devices.c
+@@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
+ };
+ 
+ static struct platform_device at91_adc_device = {
+-	.name		= "at91_adc",
++	.name		= "at91sam9g45-adc",
+ 	.id		= -1,
+ 	.dev		= {
+ 				.platform_data	= &adc_data,
 -- 
 1.8.3.2
-
