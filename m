@@ -1,50 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:36261 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751565AbaCCSHI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Mar 2014 13:07:08 -0500
+Return-Path: <alexandre.belloni@free-electrons.com>
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
 	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Josh Wu <josh.wu@atmel.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
+	Gregory Clement <gregory.clement@free-electrons.com>,
 	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH] iio: adc: at91_adc: correct default shtim value
-Date: Mon,  3 Mar 2014 19:07:04 +0100
-Message-Id: <1393870024-20704-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH 09/15] ARM: at91: sam9rlek add touchscreen support through at91_adc
+Date: Wed,  5 Mar 2014 18:35:34 +0100
+Message-Id: <1394040940-18246-10-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-When sample_hold_time is zero (this is the case when DT is not used or if
-atmel,adc-sample-hold-time is omitted), then the calculated shtim is large.
-
-Make that 0, which is the default for that register and the ADC will then use a
-sane value of 2/ADCCLK or 1/ADCCLK depending on the version.
+at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
+Enable touchscreen support through at91_adc. This allows to use both a
+touchscreen and the remaining ADC channel at the same time.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- drivers/iio/adc/at91_adc.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/arm/mach-at91/board-sam9rlek.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 5b1aa027c034..0b103f905607 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -1004,8 +1004,11 @@ static int at91_adc_probe(struct platform_device *pdev)
- 	 * the best converted final value between two channels selection
- 	 * The formula thus is : Sample and Hold Time = (shtim + 1) / ADCClock
- 	 */
--	shtim = round_up((st->sample_hold_time * adc_clk_khz /
--			  1000) - 1, 1);
-+	if (st->sample_hold_time > 0)
-+		shtim = round_up((st->sample_hold_time * adc_clk_khz / 1000)
-+				 - 1, 1);
-+	else
-+		shtim = 0;
+diff --git a/arch/arm/mach-at91/board-sam9rlek.c b/arch/arm/mach-at91/board-sam9rlek.c
+index 604eecf6cd70..35d420247e25 100644
+--- a/arch/arm/mach-at91/board-sam9rlek.c
++++ b/arch/arm/mach-at91/board-sam9rlek.c
+@@ -18,6 +18,7 @@
+ #include <linux/clk.h>
+ #include <linux/input.h>
+ #include <linux/gpio_keys.h>
++#include <linux/platform_data/at91_adc.h>
  
- 	reg = AT91_ADC_PRESCAL_(prsc) & st->registers->mr_prescal_mask;
- 	reg |= AT91_ADC_STARTUP_(ticks) & st->registers->mr_startup_mask;
+ #include <video/atmel_lcdc.h>
+ 
+@@ -239,6 +240,17 @@ static struct at91_tsadcc_data ek_tsadcc_data = {
+ 
+ 
+ /*
++ * ADC + Touchscreen
++ */
++static struct at91_adc_data ek_adc_data = {
++	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5),
++	.use_external_triggers = true,
++	.vref = 3300,
++	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
++};
++
++
++/*
+  * GPIO Buttons
+  */
+ #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+@@ -312,6 +324,8 @@ static void __init ek_board_init(void)
+ 	at91_add_device_ac97(&ek_ac97_data);
+ 	/* Touch Screen Controller */
+ 	at91_add_device_tsadcc(&ek_tsadcc_data);
++	/* Touch Screen Controller + ADC */
++	at91_add_device_adc(&ek_adc_data);
+ 	/* LEDs */
+ 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
+ 	/* Push Buttons */
 -- 
 1.8.3.2
-
