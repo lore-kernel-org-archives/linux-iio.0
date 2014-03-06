@@ -1,50 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:49999 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755678AbaCPT0G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Mar 2014 15:26:06 -0400
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Thu, 6 Mar 2014 11:33:55 -0800
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 14/15] Input: atmel_tsadcc: remove driver
-Date: Sun, 16 Mar 2014 12:26:01 -0700
-Message-ID: <5652100.Y5W0uRRy4s@dtor-d630.eng.vmware.com>
-In-Reply-To: <5325ECE3.5090800@kernel.org>
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com> <20140305184611.GA5453@core.coreip.homeip.net> <5325ECE3.5090800@kernel.org>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.15 - set 3
+Message-ID: <20140306193355.GA12474@kroah.com>
+References: <5318CB62.2020103@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5318CB62.2020103@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sunday, March 16, 2014 06:26:43 PM Jonathan Cameron wrote:
-> On 05/03/14 18:46, Dmitry Torokhov wrote:
-> > On Wed, Mar 05, 2014 at 06:35:39PM +0100, Alexandre Belloni wrote:
-> >> The atmel_tsadcc driver is not used anymore, it has been replaced by
-> >> at91_adc so remove it.
-> >> 
-> >> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> > 
-> > Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+On Thu, Mar 06, 2014 at 07:24:18PM +0000, Jonathan Cameron wrote:
+> The following changes since commit aa256f8d0dd9c2dff872849418d8e09e5d06718f:
 > 
-> All the rest of this series looks fine to me.
+>   Merge tag 'iio-for-3.15b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2014-02-23 09:08:34 -0800)
 > 
-> Dmitry, are you happy for me to take this whole series through IIO once
-> the last few bits are pinned down?  If the atmel guys want to take the whole
-> thing through their tree I'm also happy with that.
+> are available in the git repository at:
 > 
-> Not sure what the lowest pain route will be...
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.15c
 
-Jonathan,
+Pulled and pushed out.
 
-I am fine with either one of these 2 options.
+What's the status of the remaining drivers/staging/iio/ stuff?  Anything
+major keeping them from all moving out of staging sometime soon?
 
-Thanks.
+thanks,
 
--- 
-Dmitry
+greg k-h
