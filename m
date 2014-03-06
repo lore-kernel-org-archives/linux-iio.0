@@ -1,126 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40605 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754046AbaCJR0T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:26:19 -0400
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 5/9] mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
-Date: Mon, 10 Mar 2014 18:25:25 +0100
-Message-Id: <1394472329-15485-6-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57816 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752807AbaCFTX0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Mar 2014 14:23:26 -0500
+Message-ID: <5318CB62.2020103@kernel.org>
+Date: Thu, 06 Mar 2014 19:24:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO new drivers, features and cleanups for 3.15 - set 3
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Simplify reading and writing of 16 bit TWL registers in the
-driver by using twl_i2c_read_u16 and twl_i2c_write_u16.
+The following changes since commit aa256f8d0dd9c2dff872849418d8e09e5d06718f:
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
----
- drivers/mfd/twl4030-madc.c | 39 ++++++++-------------------------------
- 1 file changed, 8 insertions(+), 31 deletions(-)
+   Merge tag 'iio-for-3.15b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2014-02-23 09:08:34 -0800)
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 890d520..ccfb10d 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -205,25 +205,19 @@ const struct twl4030_madc_conversion_method twl4030_conversion_methods[] = {
-  */
- static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
- {
--	u8 msb, lsb;
-+	u16 val;
- 	int ret;
- 	/*
- 	 * For each ADC channel, we have MSB and LSB register pair. MSB address
- 	 * is always LSB address+1. reg parameter is the address of LSB register
- 	 */
--	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &msb, reg + 1);
-+	ret = twl_i2c_read_u16(TWL4030_MODULE_MADC, &val, reg);
- 	if (ret) {
--		dev_err(madc->dev, "unable to read MSB register 0x%X\n",
--			reg + 1);
--		return ret;
--	}
--	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &lsb, reg);
--	if (ret) {
--		dev_err(madc->dev, "unable to read LSB register 0x%X\n", reg);
-+		dev_err(madc->dev, "unable to read register 0x%X\n", reg);
- 		return ret;
- 	}
- 
--	return (int)(((msb << 8) | lsb) >> 6);
-+	return (int)(val >> 6);
- }
- 
- /*
-@@ -572,7 +566,6 @@ static int twl4030_madc_wait_conversion_ready(struct twl4030_madc_data *madc,
- int twl4030_madc_conversion(struct twl4030_madc_request *req)
- {
- 	const struct twl4030_madc_conversion_method *method;
--	u8 ch_msb, ch_lsb;
- 	int ret;
- 
- 	if (!req || !twl4030_madc)
-@@ -588,37 +581,21 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
- 		ret = -EBUSY;
- 		goto out;
- 	}
--	ch_msb = (req->channels >> 8) & 0xff;
--	ch_lsb = req->channels & 0xff;
- 	method = &twl4030_conversion_methods[req->method];
- 	/* Select channels to be converted */
--	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_msb, method->sel + 1);
-+	ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels, method->sel);
- 	if (ret) {
- 		dev_err(twl4030_madc->dev,
--			"unable to write sel register 0x%X\n", method->sel + 1);
--		goto out;
--	}
--	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, ch_lsb, method->sel);
--	if (ret) {
--		dev_err(twl4030_madc->dev,
--			"unable to write sel register 0x%X\n", method->sel + 1);
-+			"unable to write sel register 0x%X\n", method->sel);
- 		goto out;
- 	}
- 	/* Select averaging for all channels if do_avg is set */
- 	if (req->do_avg) {
--		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
--				       ch_msb, method->avg + 1);
-+		ret = twl_i2c_write_u16(TWL4030_MODULE_MADC, req->channels,
-+				       method->avg);
- 		if (ret) {
- 			dev_err(twl4030_madc->dev,
- 				"unable to write avg register 0x%X\n",
--				method->avg + 1);
--			goto out;
--		}
--		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
--				       ch_lsb, method->avg);
--		if (ret) {
--			dev_err(twl4030_madc->dev,
--				"unable to write avg reg 0x%X\n",
- 				method->avg);
- 			goto out;
- 		}
--- 
-1.9.0
+are available in the git repository at:
 
+
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.15c
+
+for you to fetch changes up to db8fa7311d1ce642134c53e175ca0ae35e021344:
+
+   iio:adc:vf610 ensure correct handing of interruption of wait for completion (2014-03-02 21:45:28 +0000)
+
+----------------------------------------------------------------
+Third IIO new drivers and cleanups series for 3.15.
+
+New driver
+* Xilinx XADC driver -  This has been ready for a while but was awaiting
+   a device tree ack (or as it turns out 3+ weeks).
+
+Cleanup
+* Drop some unreachable code from mag3110 highlighted by smatch.
+
+Fix
+* vf610 - introduced this cycle - put a possible negative error code
+   into an unsigned long. Another smatch find - this one promoted by
+   guilt that Dan was busy fixing all our messups.
+
+----------------------------------------------------------------
+Jonathan Cameron (1):
+       iio:adc:vf610 ensure correct handing of interruption of wait for completion
+
+Lars-Peter Clausen (2):
+       devicetree: Add Xilinx XADC binding documentation
+       iio:adc: Add Xilinx XADC driver
+
+Peter Meerwald (1):
+       iio:magnetometer:mag3110: Fix unreachable code
+
+  .../devicetree/bindings/iio/adc/xilinx-xadc.txt    |  113 ++
+  drivers/iio/adc/Kconfig                            |   13 +
+  drivers/iio/adc/Makefile                           |    2 +
+  drivers/iio/adc/vf610_adc.c                        |    2 +-
+  drivers/iio/adc/xilinx-xadc-core.c                 | 1333 ++++++++++++++++++++
+  drivers/iio/adc/xilinx-xadc-events.c               |  254 ++++
+  drivers/iio/adc/xilinx-xadc.h                      |  209 +++
+  drivers/iio/magnetometer/mag3110.c                 |    1 -
+  8 files changed, 1925 insertions(+), 2 deletions(-)
+  create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+  create mode 100644 drivers/iio/adc/xilinx-xadc-core.c
+  create mode 100644 drivers/iio/adc/xilinx-xadc-events.c
+  create mode 100644 drivers/iio/adc/xilinx-xadc.h
