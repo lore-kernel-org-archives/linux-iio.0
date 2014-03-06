@@ -1,52 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:58321 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S933435AbaCQN5b (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 09:57:31 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Rodolfo Giometti <giometti@linux.it>
-Subject: [PATCH v2 15/15] ARM: at91/dt: at91-cosino_mega2560 remove useless tsadcc node
-Date: Mon, 17 Mar 2014 14:57:08 +0100
-Message-Id: <1395064628-644-16-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:30558 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750919AbaCFJdZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Mar 2014 04:33:25 -0500
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Beomho Seo <beomho.seo@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL pointer
+ dereference
+Date: Thu, 06 Mar 2014 10:33:10 +0100
+Message-id: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The tsadcc node is useless as it doesn't refer to anything and the touchscreen
-is handled by the adc0 node.
+During probe the driver allocates dummy I2C devices (i2c_new_dummy())
+but they aren't unregistered during driver remove or probe failure.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Rodolfo Giometti <giometti@linux.it>
+Additionally driver does not check the return value of i2c_new_dummy().
+In case of error (i2c_new_device(): memory allocation failure or I2C
+address cannot be used) this function returns NULL which is later
+dereferenced by i2c_smbus_{read,write}_data() functions.
+
+Fix issues by properly checking for i2c_new_dummy() return value and
+unregistering I2C devices on driver remove or probe failure.
+
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 ---
- arch/arm/boot/dts/at91-cosino_mega2560.dts | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/iio/light/cm36651.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/arm/boot/dts/at91-cosino_mega2560.dts b/arch/arm/boot/dts/at91-cosino_mega2560.dts
-index f9415dd11f17..cce621239b72 100644
---- a/arch/arm/boot/dts/at91-cosino_mega2560.dts
-+++ b/arch/arm/boot/dts/at91-cosino_mega2560.dts
-@@ -33,11 +33,6 @@
- 				status = "okay";
- 			};
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index a45e07492db3..e7e9a597159f 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
+ 	cm36651->ps_client = i2c_new_dummy(client->adapter,
+ 						     CM36651_I2C_ADDR_PS);
+ 	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
++	if (!cm36651->ps_client || !cm36651->ara_client) {
++		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
++		ret = -ENODEV;
++		goto error_i2c_unregister;
++	}
+ 	mutex_init(&cm36651->lock);
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->channels = cm36651_channels;
+@@ -687,6 +692,11 @@ error_free_irq:
+ 	free_irq(client->irq, indio_dev);
+ error_disable_reg:
+ 	regulator_disable(cm36651->vled_reg);
++error_i2c_unregister:
++	if (cm36651->ps_client)
++		i2c_unregister_device(cm36651->ps_client);
++	if (cm36651->ara_client)
++		i2c_unregister_device(cm36651->ara_client);
+ 	return ret;
+ }
  
--
--			tsadcc: tsadcc@f804c000 {
--				status = "okay";
--			};
--
- 			rtc@fffffeb0 {
- 				status = "okay";
- 			};
+@@ -698,6 +708,8 @@ static int cm36651_remove(struct i2c_client *client)
+ 	iio_device_unregister(indio_dev);
+ 	regulator_disable(cm36651->vled_reg);
+ 	free_irq(client->irq, indio_dev);
++	i2c_unregister_device(cm36651->ps_client);
++	i2c_unregister_device(cm36651->ara_client);
+ 
+ 	return 0;
+ }
 -- 
-1.8.3.2
+1.7.9.5
 
