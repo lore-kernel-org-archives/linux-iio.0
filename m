@@ -1,74 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39274 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755198AbaCPRsb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Mar 2014 13:48:31 -0400
-Message-ID: <5325E42A.5000401@kernel.org>
-Date: Sun, 16 Mar 2014 17:49:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 02/15] ARM: at91: sam9260: remove unused platform_data
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com> <1394040940-18246-3-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1394040940-18246-3-git-send-email-alexandre.belloni@free-electrons.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ring0.de ([5.45.105.125]:40571 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754659AbaCJR0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Mar 2014 13:26:11 -0400
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv3 4/9] mfd: twl-core: Add twl_i2c_read/write_u16
+Date: Mon, 10 Mar 2014 18:25:24 +0100
+Message-Id: <1394472329-15485-5-git-send-email-sre@debian.org>
+In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
+References: <1394472329-15485-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/03/14 17:35, Alexandre Belloni wrote:
-> num_channels and registers are not used anymore since they are defined inside
-> the at91_adc driver and assigned by matching the id_table.
->
-> Also, remove the mach/at91_adc.h include that is not necessary anymore.
->
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Add a simple twl_i2c_read/write_u16 wrapper over
+the twl_i2c_read/write, which is similar to the
+twl_i2c_read/write_u8 wrapper.
+
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->   arch/arm/mach-at91/at91sam9260_devices.c | 10 ----------
->   1 file changed, 10 deletions(-)
->
-> diff --git a/arch/arm/mach-at91/at91sam9260_devices.c b/arch/arm/mach-at91/at91sam9260_devices.c
-> index 0a0315920963..a299c50512f0 100644
-> --- a/arch/arm/mach-at91/at91sam9260_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9260_devices.c
-> @@ -24,7 +24,6 @@
->   #include <mach/at91sam9260_matrix.h>
->   #include <mach/at91_matrix.h>
->   #include <mach/at91sam9_smc.h>
-> -#include <mach/at91_adc.h>
->
->   #include "board.h"
->   #include "generic.h"
-> @@ -1321,13 +1320,6 @@ static struct at91_adc_trigger at91_adc_triggers[] = {
->   	},
->   };
->
-> -static struct at91_adc_reg_desc at91_adc_register_g20 = {
-> -	.channel_base = AT91_ADC_CHR(0),
-> -	.drdy_mask = AT91_ADC_DRDY,
-> -	.status_register = AT91_ADC_SR,
-> -	.trigger_register = AT91_ADC_MR,
-> -};
-> -
->   void __init at91_add_device_adc(struct at91_adc_data *data)
->   {
->   	if (!data)
-> @@ -1345,9 +1337,7 @@ void __init at91_add_device_adc(struct at91_adc_data *data)
->   	if (data->use_external_triggers)
->   		at91_set_A_periph(AT91_PIN_PA22, 0);
->
-> -	data->num_channels = 4;
->   	data->startup_time = 10;
-> -	data->registers = &at91_adc_register_g20;
->   	data->trigger_number = 4;
->   	data->trigger_list = at91_adc_triggers;
->
->
+Tested-by: Marek Belisko <marek@goldelico.com>
+---
+ include/linux/i2c/twl.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
+index ade1c06..d2b1670 100644
+--- a/include/linux/i2c/twl.h
++++ b/include/linux/i2c/twl.h
+@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
+ 	return twl_i2c_read(mod_no, val, reg, 1);
+ }
+ 
++static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
++	val = cpu_to_le16(val);
++	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
++}
++
++static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
++	int ret;
++	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
++	*val = le16_to_cpu(*val);
++	return ret;
++}
++
+ int twl_get_type(void);
+ int twl_get_version(void);
+ int twl_get_hfclk_rate(void);
+-- 
+1.9.0
 
