@@ -1,4 +1,8 @@
-Return-Path: <sre@ring0.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([5.45.105.125]:40618 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753863AbaCJR0V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Mar 2014 13:26:21 -0400
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
 	Marek Belisko <marek@goldelico.com>,
@@ -12,77 +16,55 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv1 0/9] Convert twl4030-madc to IIO API and add DT support
-Date: Sat,  1 Mar 2014 20:32:36 +0100
-Message-Id: <1393702365-26429-1-git-send-email-sre@debian.org>
-In-Reply-To: <1393444990-28140-1-git-send-email-sre@debian.org>
-References: <1393444990-28140-1-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv3 6/9] Documentation: DT: Document twl4030-madc binding
+Date: Mon, 10 Mar 2014 18:25:26 +0100
+Message-Id: <1394472329-15485-7-git-send-email-sre@debian.org>
+In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
+References: <1394472329-15485-1-git-send-email-sre@debian.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Add devicetree binding documentation for twl4030-madc
+analog digital converter.
 
-This is PATCHv1 for converting twl4030-madc to the IIO API and
-adding DT support. The plan is to remove the private twl4030-madc
-API once all users have been removed or converted to the IIO API.
-The patchset compiles and has been tested on my Nokia N900.
-
-Changes since RFCv4 [0]:
- * Fixup all stuff found by Lee Jones and Jonathan Cameron
-   in RFCv4.
-   - Fixup kerneldoc comments
-   - Move ARRAY_SIZE() into correct patch. I accidently rebased
-     it into the wrong one.
-   - Use sizeof(*madc) instead of sizeof(struct twl4030_madc_data)
-   - Only call of_property_read_bool() if there is no pdata
-   - I left the brackets in "reg_base + (2 * i)". They have
-     been requested by Lee Jones and I think they make it easier
-     to understand what is going on.
- * Add a bunch of Acked-By statements from those two
- * Add new patch, which adds *_mean_raw sysfs ABI documentation
-   as requested by Jonathan Cameron
- * Add another patch, which provides iio_read_channel_average_raw(),
-   so that drivers using the old API can be converted to the
-   IIO API.
- * I switched from RFC to PATCH prefix.
-
-TODO:
- * Wait for feedback from DT binding maintainers
- * Wait for feedback from Marek Belisko, who is testing the
-   change with twl4030-madc-battery driver on GTA04
-
-[0] https://lkml.org/lkml/2014/2/26/482
-
--- Sebastian
-
-Sebastian Reichel (9):
-  mfd: twl4030-madc: Use managed resources
-  mfd: twl4030-madc: Add DT support and convert to IIO framework
-  mfd: twl4030-madc: Cleanup driver
-  mfd: twl-core: Add twl_i2c_read/write_u16
-  mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
-  Documentation: DT: Document twl4030-madc binding
-  mfd: twl4030-madc: Move driver to drivers/iio/adc
-  iio: documentation: Add ABI documentation for *_mean_raw
-  iio: inkern: add iio_read_channel_average_raw
-
- Documentation/ABI/testing/sysfs-bus-iio            |   8 +
- .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/{mfd => iio/adc}/twl4030-madc.c            | 301 +++++++++++++--------
- drivers/iio/inkern.c                               |  18 ++
- drivers/mfd/Kconfig                                |  10 -
- drivers/mfd/Makefile                               |   1 -
- include/linux/i2c/twl.h                            |  12 +
- include/linux/i2c/twl4030-madc.h                   |   2 +-
- include/linux/iio/consumer.h                       |  13 +
- 11 files changed, 276 insertions(+), 124 deletions(-)
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+---
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
- rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+new file mode 100644
+index 0000000..6bdd214
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+@@ -0,0 +1,24 @@
++* TWL4030 Monitoring Analog to Digital Converter (MADC)
++
++The MADC subsystem in the TWL4030 consists of a 10-bit ADC
++combined with a 16-input analog multiplexer.
++
++Required properties:
++  - compatible: Should contain "ti,twl4030-madc".
++  - interrupts: IRQ line for the MADC submodule.
++  - #io-channel-cells: Should be set to <1>.
++
++Optional properties:
++  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
++				    should be used, which is intended to be used
++				    by Co-Processors (e.g. a modem).
++
++Example:
++
++&twl {
++	madc {
++		compatible = "ti,twl4030-madc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
++};
 -- 
 1.9.0
+
