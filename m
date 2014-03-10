@@ -1,699 +1,354 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f172.google.com ([209.85.213.172]:37739 "EHLO
-	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752999AbaCKDBW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Mar 2014 23:01:22 -0400
-MIME-Version: 1.0
-In-Reply-To: <5318C6AC.9070107@kernel.org>
-References: <1392179475-2611-1-git-send-email-mranostay@gmail.com>
-	<1392179475-2611-3-git-send-email-mranostay@gmail.com>
-	<5318C6AC.9070107@kernel.org>
-Date: Mon, 10 Mar 2014 20:01:22 -0700
-Message-ID: <CAKzfze_hez-sCbQL2YH0jTDrMxGkea3Wjb6YtxLzWdV482a1fQ@mail.gmail.com>
-Subject: Re: [PATCH v7 2/2] iio: Add AS3935 lightning sensor support
-From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Matt Porter <matt.porter@linaro.org>,
-	Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from ring0.de ([5.45.105.125]:40559 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754484AbaCJR0J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Mar 2014 13:26:09 -0400
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv3 3/9] mfd: twl4030-madc: Cleanup driver
+Date: Mon, 10 Mar 2014 18:25:23 +0100
+Message-Id: <1394472329-15485-4-git-send-email-sre@debian.org>
+In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
+References: <1394472329-15485-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Mar 6, 2014 at 11:04 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 12/02/14 04:31, Matt Ranostay wrote:
->>
->> AS3935 chipset can detect lightning strikes and reports those back as
->> events and the estimated distance to the storm.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
->
-> Given the resounding lack of support for my spherical coordinates
-> suggestion, assuming nothing changes, I'll take this as a proximity driver.
->
-> However, some outstanding bits and pieces and I'm not keen on a custom
-> driver attribute for the boost gain if we can manage something more general.
->
-Ok comments below :)
+Some style fixes in twl4030-madc driver.
 
->> ---
->>   .../ABI/testing/sysfs-bus-iio-proximity-as3935     |  18 +
->>   drivers/iio/Kconfig                                |   1 +
->>   drivers/iio/Makefile                               |   1 +
->>   drivers/iio/proximity/Kconfig                      |  19 +
->>   drivers/iio/proximity/Makefile                     |   6 +
->>   drivers/iio/proximity/as3935.c                     | 446
->> +++++++++++++++++++++
->>   6 files changed, 491 insertions(+)
->>   create mode 100644
->> Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
->>   create mode 100644 drivers/iio/proximity/Kconfig
->>   create mode 100644 drivers/iio/proximity/Makefile
->>   create mode 100644 drivers/iio/proximity/as3935.c
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
->> b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
->> new file mode 100644
->> index 0000000..fc92bce
->> --- /dev/null
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
->> @@ -0,0 +1,18 @@
->> +What           /sys/bus/iio/devices/iio:deviceX/in_proximity_raw
->> +Date:          January 2014
->> +KernelVersion: 3.15
->> +Contact:       Matt Ranostay <mranostay@gmail.com>
->> +Description:
->> +               Get the current distance in meters of storm (1km steps)
->> +               1000       = storm overhead
->> +               1000-40000 = distance in meters
->> +               63000      = out of range
->
-> If these are 'real' units then it should be in_proximity_input
-> (IIO_INFO_PROCESSED).  The overhead one is a litle interesting.  I'd be
-> tempted to just define
-> it as meters and neglect to mention that it is meaningless any nearer.
-> Also we proximity is a standard type so we the help should be in the main
-> file and not device specific.  I wonder if for out of range it should return
-> an error as it means it really doesn't have any answer rather than anything
-> else...
->
+Reported-by: Jonathan Cameron <jic23@kernel.org>
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Tested-by: Marek Belisko <marek@goldelico.com>
+---
+ drivers/mfd/twl4030-madc.c       | 127 +++++++++++++++++++--------------------
+ include/linux/i2c/twl4030-madc.h |   2 +-
+ 2 files changed, 62 insertions(+), 67 deletions(-)
 
-Yeah the 63000 seems weird to me even. Would -EINVAL be a correct
-error code to return for that state?
-As for overhead the sensor can only do 1km intervals...
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 1c5c4db..890d520 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -49,22 +49,22 @@
+ 
+ #include <linux/iio/iio.h>
+ 
+-/*
++/**
+  * struct twl4030_madc_data - a container for madc info
+- * @dev - pointer to device structure for madc
+- * @lock - mutex protecting this data structure
+- * @requests - Array of request struct corresponding to SW1, SW2 and RT
+- * @use_second_irq - IRQ selection (main or co-processor)
+- * @imr - Interrupt mask register of MADC
+- * @isr - Interrupt status register of MADC
++ * @dev:		Pointer to device structure for madc
++ * @lock:		Mutex protecting this data structure
++ * @requests:		Array of request struct corresponding to SW1, SW2 and RT
++ * @use_second_irq:	IRQ selection (main or co-processor)
++ * @imr:		Interrupt mask register of MADC
++ * @isr:		Interrupt status register of MADC
+  */
+ struct twl4030_madc_data {
+ 	struct device *dev;
+ 	struct mutex lock;	/* mutex protecting this data structure */
+ 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
+ 	bool use_second_irq;
+-	int imr;
+-	int isr;
++	u8 imr;
++	u8 isr;
+ };
+ 
+ static int twl4030_madc_read(struct iio_dev *iio_dev,
+@@ -155,17 +155,16 @@ twl4030_divider_ratios[16] = {
+ };
+ 
+ 
+-/*
+- * Conversion table from -3 to 55 degree Celcius
+- */
+-static int therm_tbl[] = {
+-30800,	29500,	28300,	27100,
+-26000,	24900,	23900,	22900,	22000,	21100,	20300,	19400,	18700,	17900,
+-17200,	16500,	15900,	15300,	14700,	14100,	13600,	13100,	12600,	12100,
+-11600,	11200,	10800,	10400,	10000,	9630,	9280,	8950,	8620,	8310,
+-8020,	7730,	7460,	7200,	6950,	6710,	6470,	6250,	6040,	5830,
+-5640,	5450,	5260,	5090,	4920,	4760,	4600,	4450,	4310,	4170,
+-4040,	3910,	3790,	3670,	3550
++/* Conversion table from -3 to 55 degrees Celcius */
++static int twl4030_therm_tbl[] = {
++	30800,	29500,	28300,	27100,
++	26000,	24900,	23900,	22900,	22000,	21100,	20300,	19400,	18700,
++	17900,	17200,	16500,	15900,	15300,	14700,	14100,	13600,	13100,
++	12600,	12100,	11600,	11200,	10800,	10400,	10000,	9630,	9280,
++	8950,	8620,	8310,	8020,	7730,	7460,	7200,	6950,	6710,
++	6470,	6250,	6040,	5830,	5640,	5450,	5260,	5090,	4920,
++	4760,	4600,	4450,	4310,	4170,	4040,	3910,	3790,	3670,
++	3550
+ };
+ 
+ /*
+@@ -197,11 +196,12 @@ const struct twl4030_madc_conversion_method twl4030_conversion_methods[] = {
+ 			      },
+ };
+ 
+-/*
+- * Function to read a particular channel value.
+- * @madc - pointer to struct twl4030_madc_data
+- * @reg - lsb of ADC Channel
+- * If the i2c read fails it returns an error else returns 0.
++/**
++ * twl4030_madc_channel_raw_read() - Function to read a particular channel value
++ * @madc:	pointer to struct twl4030_madc_data
++ * @reg:	lsb of ADC Channel
++ *
++ * Return: 0 on success, an error code otherwise.
+  */
+ static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
+ {
+@@ -227,7 +227,7 @@ static int twl4030_madc_channel_raw_read(struct twl4030_madc_data *madc, u8 reg)
+ }
+ 
+ /*
+- * Return battery temperature
++ * Return battery temperature in degrees Celsius
+  * Or < 0 on failure.
+  */
+ static int twl4030battery_temperature(int raw_volt)
+@@ -236,18 +236,18 @@ static int twl4030battery_temperature(int raw_volt)
+ 	int temp, curr, volt, res, ret;
+ 
+ 	volt = (raw_volt * TEMP_STEP_SIZE) / TEMP_PSR_R;
+-	/* Getting and calculating the supply current in micro ampers */
++	/* Getting and calculating the supply current in micro amperes */
+ 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE, &val,
+ 		REG_BCICTL2);
+ 	if (ret < 0)
+ 		return ret;
++
+ 	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
+ 	/* Getting and calculating the thermistor resistance in ohms */
+ 	res = volt * 1000 / curr;
+ 	/* calculating temperature */
+ 	for (temp = 58; temp >= 0; temp--) {
+-		int actual = therm_tbl[temp];
+-
++		int actual = twl4030_therm_tbl[temp];
+ 		if ((actual - res) >= 0)
+ 			break;
+ 	}
+@@ -269,11 +269,12 @@ static int twl4030battery_current(int raw_volt)
+ 	else /* slope of 0.88 mV/mA */
+ 		return (raw_volt * CURR_STEP_SIZE) / CURR_PSR_R2;
+ }
++
+ /*
+  * Function to read channel values
+  * @madc - pointer to twl4030_madc_data struct
+  * @reg_base - Base address of the first channel
+- * @Channels - 16 bit bitmap. If the bit is set, channel value is read
++ * @Channels - 16 bit bitmap. If the bit is set, channel's value is read
+  * @buf - The channel values are stored here. if read fails error
+  * @raw - Return raw values without conversion
+  * value is stored
+@@ -284,17 +285,17 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 				      long channels, int *buf,
+ 				      bool raw)
+ {
+-	int count = 0, count_req = 0, i;
++	int count = 0;
++	int i;
+ 	u8 reg;
+ 
+ 	for_each_set_bit(i, &channels, TWL4030_MADC_MAX_CHANNELS) {
+-		reg = reg_base + 2 * i;
++		reg = reg_base + (2 * i);
+ 		buf[i] = twl4030_madc_channel_raw_read(madc, reg);
+ 		if (buf[i] < 0) {
+-			dev_err(madc->dev,
+-				"Unable to read register 0x%X\n", reg);
+-			count_req++;
+-			continue;
++			dev_err(madc->dev, "Unable to read register 0x%X\n",
++				reg);
++			return buf[i];
+ 		}
+ 		if (raw) {
+ 			count++;
+@@ -305,7 +306,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 			buf[i] = twl4030battery_current(buf[i]);
+ 			if (buf[i] < 0) {
+ 				dev_err(madc->dev, "err reading current\n");
+-				count_req++;
++				return buf[i];
+ 			} else {
+ 				count++;
+ 				buf[i] = buf[i] - 750;
+@@ -315,7 +316,7 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 			buf[i] = twl4030battery_temperature(buf[i]);
+ 			if (buf[i] < 0) {
+ 				dev_err(madc->dev, "err reading temperature\n");
+-				count_req++;
++				return buf[i];
+ 			} else {
+ 				buf[i] -= 3;
+ 				count++;
+@@ -336,8 +337,6 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ 				twl4030_divider_ratios[i].numerator);
+ 		}
+ 	}
+-	if (count_req)
+-		dev_err(madc->dev, "%d channel conversion failed\n", count_req);
+ 
+ 	return count;
+ }
+@@ -361,13 +360,13 @@ static int twl4030_madc_enable_irq(struct twl4030_madc_data *madc, u8 id)
+ 			madc->imr);
+ 		return ret;
+ 	}
++
+ 	val &= ~(1 << id);
+ 	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, val, madc->imr);
+ 	if (ret) {
+ 		dev_err(madc->dev,
+ 			"unable to write imr register 0x%X\n", madc->imr);
+ 		return ret;
+-
+ 	}
+ 
+ 	return 0;
+@@ -430,7 +429,7 @@ static irqreturn_t twl4030_madc_threaded_irq_handler(int irq, void *_madc)
+ 			continue;
+ 		ret = twl4030_madc_disable_irq(madc, i);
+ 		if (ret < 0)
+-			dev_dbg(madc->dev, "Disable interrupt failed%d\n", i);
++			dev_dbg(madc->dev, "Disable interrupt failed %d\n", i);
+ 		madc->requests[i].result_pending = 1;
+ 	}
+ 	for (i = 0; i < TWL4030_MADC_NUM_METHODS; i++) {
+@@ -512,21 +511,17 @@ static int twl4030_madc_start_conversion(struct twl4030_madc_data *madc,
+ {
+ 	const struct twl4030_madc_conversion_method *method;
+ 	int ret = 0;
++
++	if (conv_method != TWL4030_MADC_SW1 && conv_method != TWL4030_MADC_SW2)
++		return -ENOTSUPP;
++
+ 	method = &twl4030_conversion_methods[conv_method];
+-	switch (conv_method) {
+-	case TWL4030_MADC_SW1:
+-	case TWL4030_MADC_SW2:
+-		ret = twl_i2c_write_u8(TWL4030_MODULE_MADC,
+-				       TWL4030_MADC_SW_START, method->ctrl);
+-		if (ret) {
+-			dev_err(madc->dev,
+-				"unable to write ctrl register 0x%X\n",
+-				method->ctrl);
+-			return ret;
+-		}
+-		break;
+-	default:
+-		break;
++	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, TWL4030_MADC_SW_START,
++			       method->ctrl);
++	if (ret) {
++		dev_err(madc->dev, "unable to write ctrl register 0x%X\n",
++			method->ctrl);
++		return ret;
+ 	}
+ 
+ 	return 0;
+@@ -623,8 +618,8 @@ int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ 				       ch_lsb, method->avg);
+ 		if (ret) {
+ 			dev_err(twl4030_madc->dev,
+-				"unable to write sel reg 0x%X\n",
+-				method->sel + 1);
++				"unable to write avg reg 0x%X\n",
++				method->avg);
+ 			goto out;
+ 		}
+ 	}
+@@ -665,10 +660,6 @@ out:
+ }
+ EXPORT_SYMBOL_GPL(twl4030_madc_conversion);
+ 
+-/*
+- * Return channel value
+- * Or < 0 on failure.
+- */
+ int twl4030_get_madc_conversion(int channel_no)
+ {
+ 	struct twl4030_madc_request req;
+@@ -703,6 +694,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
+ 					      int chan, int on)
+ {
+ 	int ret;
++	int regmask;
+ 	u8 regval;
+ 
+ 	ret = twl_i2c_read_u8(TWL_MODULE_MAIN_CHARGE,
+@@ -712,10 +704,13 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
+ 			TWL4030_BCI_BCICTL1);
+ 		return ret;
+ 	}
++
++	regmask = chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
+ 	if (on)
+-		regval |= chan ? TWL4030_BCI_ITHEN : TWL4030_BCI_TYPEN;
++		regval |= regmask;
+ 	else
+-		regval &= chan ? ~TWL4030_BCI_ITHEN : ~TWL4030_BCI_TYPEN;
++		regval &= ~regmask;
++
+ 	ret = twl_i2c_write_u8(TWL_MODULE_MAIN_CHARGE,
+ 			       regval, TWL4030_BCI_BCICTL1);
+ 	if (ret) {
+@@ -730,7 +725,7 @@ static int twl4030_madc_set_current_generator(struct twl4030_madc_data *madc,
+ /*
+  * Function that sets MADC software power on bit to enable MADC
+  * @madc - pointer to twl4030_madc_data struct
+- * @on - Enable or disable MADC software powen on bit.
++ * @on - Enable or disable MADC software power on bit.
+  * returns error if i2c read/write fails else 0
+  */
+ static int twl4030_madc_set_power(struct twl4030_madc_data *madc, int on)
+@@ -909,7 +904,7 @@ static struct platform_driver twl4030_madc_driver = {
+ 		   .name = "twl4030_madc",
+ 		   .owner = THIS_MODULE,
+ 		   .of_match_table = of_match_ptr(twl_madc_of_match),
+-		   },
++	},
+ };
+ 
+ module_platform_driver(twl4030_madc_driver);
+diff --git a/include/linux/i2c/twl4030-madc.h b/include/linux/i2c/twl4030-madc.h
+index 01f5951..1c0134d 100644
+--- a/include/linux/i2c/twl4030-madc.h
++++ b/include/linux/i2c/twl4030-madc.h
+@@ -44,7 +44,7 @@ struct twl4030_madc_conversion_method {
+ 
+ struct twl4030_madc_request {
+ 	unsigned long channels;
+-	u16 do_avg;
++	bool do_avg;
+ 	u16 method;
+ 	u16 type;
+ 	bool active;
+-- 
+1.9.0
 
-Would a better plan just to have...
-
-    Description:
-                  Get the current distance in meters of storm (1km steps)
-                  1000-40000 = distance in meters
-
-
-
->> +
->> +What           /sys/bus/iio/devices/iio:deviceX/gain_boost
->> +Date:          January 2014
->> +KernelVersion: 3.15
->> +Contact:       Matt Ranostay <mranostay@gmail.com>
->> +Description:
->> +               Show or set the gain boost of the amp, from 0-31 range.
->> +               18 = indoors (default)
->> +               14 = outdoors
->> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->> index 5dd0e12..743485e 100644
->> --- a/drivers/iio/Kconfig
->> +++ b/drivers/iio/Kconfig
->> @@ -74,6 +74,7 @@ if IIO_TRIGGER
->>      source "drivers/iio/trigger/Kconfig"
->>   endif #IIO_TRIGGER
->>   source "drivers/iio/pressure/Kconfig"
->> +source "drivers/iio/proximity/Kconfig"
->>   source "drivers/iio/temperature/Kconfig"
->>
->>   endif # IIO
->> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->> index 887d390..698afc2 100644
->> --- a/drivers/iio/Makefile
->> +++ b/drivers/iio/Makefile
->> @@ -24,5 +24,6 @@ obj-y += light/
->>   obj-y += magnetometer/
->>   obj-y += orientation/
->>   obj-y += pressure/
->> +obj-y += proximity/
->>   obj-y += temperature/
->>   obj-y += trigger/
->> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
->> new file mode 100644
->> index 0000000..0c8cdf5
->> --- /dev/null
->> +++ b/drivers/iio/proximity/Kconfig
->> @@ -0,0 +1,19 @@
->> +#
->> +# Proximity sensors
->> +#
->> +
->> +menu "Lightning sensors"
->> +
->> +config AS3935
->> +       tristate "AS3935 Franklin lightning sensor"
->> +       select IIO_BUFFER
->> +       select IIO_TRIGGERED_BUFFER
->> +       depends on SPI
->> +       help
->> +         Say Y here to build SPI interface support for the Austrian
->> +         Microsystems AS3935 lightning detection sensor.
->> +
->> +         To compile this driver as a module, choose M here: the
->> +         module will be called as3935
->> +
->> +endmenu
->> diff --git a/drivers/iio/proximity/Makefile
->> b/drivers/iio/proximity/Makefile
->> new file mode 100644
->> index 0000000..743adee
->> --- /dev/null
->> +++ b/drivers/iio/proximity/Makefile
->> @@ -0,0 +1,6 @@
->> +#
->> +# Makefile for IIO proximity sensors
->> +#
->> +
->> +# When adding new entries keep the list in alphabetical order
->> +obj-$(CONFIG_AS3935)           += as3935.o
->> diff --git a/drivers/iio/proximity/as3935.c
->> b/drivers/iio/proximity/as3935.c
->> new file mode 100644
->> index 0000000..75ef034
->> --- /dev/null
->> +++ b/drivers/iio/proximity/as3935.c
->> @@ -0,0 +1,446 @@
->> +/*
->> + * as3935.c - Support for AS3935 Franklin lightning sensor
->> + *
->> + * Copyright (C) 2014 Matt Ranostay <mranostay@gmail.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + *
->
-> No blank line here.
->
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/init.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/delay.h>
->> +#include <linux/workqueue.h>
->> +#include <linux/mutex.h>
->> +#include <linux/err.h>
->> +#include <linux/irq.h>
->> +#include <linux/gpio.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#include <linux/pm_runtime.h>
->
-> This isn't doing runtime pm so is this the right header?
->
->
->> +#include <linux/of_gpio.h>
->> +
->> +
->> +#define AS3935_AFE_GAIN                0x00
->> +#define AS3935_AFE_MASK                0x3F
->> +#define AS3935_AFE_GAIN_MAX    0x1F
->> +#define AS3935_AFE_PWR_BIT     BIT(0)
->> +
->> +#define AS3935_INT             0x03
->> +#define AS3935_INT_MASK                0x07
->> +#define AS3935_EVENT_INT       BIT(3)
->> +#define AS3935_NOISE_INT       BIT(1)
->> +
->> +#define AS3935_DATA            0x07
->> +#define AS3935_DATA_MASK       0x3F
->> +
->> +#define AS3935_TUNE_CAP                0x08
->> +#define AS3935_CALIBRATE       0x3D
->> +
->> +#define AS3935_WRITE_DATA      BIT(15)
->> +#define AS3935_READ_DATA       BIT(14)
->> +#define AS3935_ADDRESS(x)      ((x) << 8)
->> +
->> +#define MAX_PF_CAP             120
->> +#define TUNE_CAP_DIV           8
->> +
->> +struct as3935_state {
->> +       struct spi_device *spi;
->> +       struct iio_trigger *trig;
->> +       struct mutex lock;
->> +       struct delayed_work work;
->> +
->
-> The point of the ____cacheline_aligned is to ensure that when allocated
-> the buffer does not share a cacheline with anything else.  It does this
-> by fixing teh starting location.   Nothing is done about the end location.
-> Hence this *must* be the last element in the structure.   Care is taken
-> in the iio_dev allocation to ensure that the start of the private structure
-> is appropriately aligned and there is nothing after it.
->
-> i.e. tune_cap must be above the next line.
->
-
-Thanks... didn't know this.
-
->> +       u8 buf[2] ____cacheline_aligned;
->> +       u32 tune_cap;
->> +};
->> +
->> +static const struct iio_chan_spec as3935_channels[] = {
->> +       {
->> +               .type           = IIO_PROXIMITY,
->> +               .info_mask_separate =
->> +                       BIT(IIO_CHAN_INFO_RAW),
->> +               .scan_index     = 0,
->> +               .scan_type = {
->> +                       .sign           = 'u',
->> +                       .realbits       = 6,
->> +                       .storagebits    = 8,
->> +               },
->> +       },
->> +       IIO_CHAN_SOFT_TIMESTAMP(1),
->> +};
->> +
->> +static int as3935_read(struct as3935_state *st, unsigned int reg, int
->> *val)
->> +{
->> +       u8 cmd;
->> +       int ret;
->> +
->> +       cmd = (AS3935_READ_DATA | AS3935_ADDRESS(reg)) >> 8;
->> +       ret = spi_w8r8(st->spi, cmd);
->> +       if (ret < 0)
->> +               return ret;
->> +       *val = ret;
->> +
->> +       return 0;
->> +};
->> +
->> +static int as3935_write(struct as3935_state *st,
->> +                               unsigned int reg,
->> +                               unsigned int val)
->> +{
->
-> I wouldn't bother with the local pointer copy. Slightly
-> obscures what is giong on to save a few character.
->
->> +       u8 *buf = st->buf;
->> +
->> +       buf[0] = (AS3935_WRITE_DATA | AS3935_ADDRESS(reg)) >> 8;
->> +       buf[1] = val;
->> +
->> +       return spi_write(st->spi, (u8 *) buf, 2);
->
-> Why the typecast? It's already a u8 *
->
->> +};
->> +
->> +static ssize_t as3935_gain_boost_show(struct device *dev,
->> +                               struct device_attribute *attr,
->> +                               char *buf)
->> +{
->> +       struct as3935_state *st = iio_priv(dev_to_iio_dev(dev));
->> +       int val, ret;
->> +
->> +       ret = as3935_read(st, AS3935_AFE_GAIN, &val);
->> +       if (ret)
->> +               return ret;
->> +       val = (val & AS3935_AFE_MASK) >> 1;
->> +
->> +       return sprintf(buf, "%d\n", val);
->> +};
->> +
->> +static ssize_t as3935_gain_boost_store(struct device *dev,
->> +                                       struct device_attribute *attr,
->> +                                       const char *buf, size_t len)
->> +{
->> +       struct as3935_state *st = iio_priv(dev_to_iio_dev(dev));
->> +       unsigned long val;
->> +       int ret;
->> +
->> +       ret = kstrtoul((const char *) buf, 10, &val);
->> +       if (ret)
->> +               return -EINVAL;
->> +
->> +       if (val > AS3935_AFE_GAIN_MAX)
->> +               return -EINVAL;
->> +
->> +       as3935_write(st, AS3935_AFE_GAIN, val << 1);
->> +
->> +       return len;
->> +};
->> +
->> +static IIO_DEVICE_ATTR(gain_boost, S_IRUGO | S_IWUSR,
->> +       as3935_gain_boost_show, as3935_gain_boost_store, 0);
->> +
->> +
->> +static struct attribute *as3935_attributes[] = {
->> +       &iio_dev_attr_gain_boost.dev_attr.attr,
->
->
-> So what is this really?  Could it be considered a calibration scale?
-> Or a straight _scale?  Is it effecting the measurement, or
-> the sensitivity to make a measurement?  If the second then
-> we probably want a more general naming.
->
-> Perhaps
-> in_detectionsensitivy or similar (that's a quick random suggestion
-> - I'd prefer something better thought out ;)
->
->
->> +       NULL,
->> +};
->> +
->> +static struct attribute_group as3935_attribute_group = {
->> +       .attrs = as3935_attributes,
->> +};
->> +
->> +static int as3935_read_raw(struct iio_dev *indio_dev,
->> +                          struct iio_chan_spec const *chan,
->> +                          int *val,
->> +                          int *val2,
->> +                          long m)
->> +{
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +       int ret;
->> +
->> +       if (m != IIO_CHAN_INFO_RAW)
->> +               return -EINVAL;
->> +
->> +       *val2 = 0;
->> +       ret = as3935_read(st, AS3935_DATA, val);
->> +       if (ret)
->> +               return ret;
->> +       *val *= 1000;
->> +
->> +       return IIO_VAL_INT;
->> +}
->> +
->> +static const struct iio_info as3935_info = {
->> +       .driver_module = THIS_MODULE,
->> +       .attrs = &as3935_attribute_group,
->> +       .read_raw = &as3935_read_raw,
->> +};
->> +
->> +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops =
->> {
->> +       .postenable = &iio_triggered_buffer_postenable,
->> +       .predisable = &iio_triggered_buffer_predisable,
->> +};
->
-> These are the defaults - don't provide any and you'll get the same thing
-> (see industrialio-triggered-buffer.c)
->
-
-Ok cruft will be removed in next series
-
->> +
->> +static irqreturn_t as3935_trigger_handler(int irq, void *private)
->> +{
->> +       struct iio_poll_func *pf = private;
->> +       struct iio_dev *indio_dev = pf->indio_dev;
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +       int val, ret;
->> +
->> +       ret = as3935_read(st, AS3935_DATA, &val);
->> +       if (ret)
->> +               goto err_read;
->> +       val &= AS3935_DATA_MASK;
->> +       val *= 1000;
->> +
->> +       iio_push_to_buffers_with_timestamp(indio_dev, &val,
->> pf->timestamp);
->> +err_read:
->> +       iio_trigger_notify_done(indio_dev->trig);
->> +
->> +       return IRQ_HANDLED;
->> +};
->> +
->> +static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
->> +       .owner = THIS_MODULE,
->> +};
->> +
->> +static void as3935_event_work(struct work_struct *work)
->> +{
->> +       struct as3935_state *st;
->> +       int val;
->> +
->> +       st = container_of(work, struct as3935_state, work.work);
->> +
->> +       as3935_read(st, AS3935_INT, &val);
->> +       val &= AS3935_INT_MASK;
->> +
->> +       switch (val) {
->> +       case AS3935_EVENT_INT:
->> +               iio_trigger_poll(st->trig, iio_get_time_ns());
->> +               break;
->> +       case AS3935_NOISE_INT:
->
-> This could be provided as an event perhaps?  Not sure, but splurging in
-> the log is probably going to be missed.
->
->
->> +               dev_warn(&st->spi->dev, "noise level is too high");
->> +               break;
->> +       }
->> +};
->> +
->> +static irqreturn_t as3935_interrupt_handler(int irq, void *private)
->> +{
->> +       struct iio_dev *indio_dev = private;
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +
->
-> /*
->  * Delay..
->
->> +       /* Delay work for >2 milliseconds after an interrupt to allow
->> +        * estimated distance to recalculated.
->> +        */
->> +
->> +       schedule_delayed_work(&st->work, msecs_to_jiffies(3));
->> +
->> +       return IRQ_HANDLED;
->> +}
->> +
->> +static void calibrate_as3935(struct as3935_state *st)
->> +{
->> +       mutex_lock(&st->lock);
->> +
->> +       /* mask disturber interrupt bit */
->> +       as3935_write(st, AS3935_INT, 1<<5);
->> +
->> +       as3935_write(st, AS3935_CALIBRATE, 0x96);
->
-> 1 << 5 as it's a binary operator.
->
->> +       as3935_write(st, AS3935_TUNE_CAP, 1<<5 | (st->tune_cap /
->> TUNE_CAP_DIV));
->> +
->> +       mdelay(2);
->> +       as3935_write(st, AS3935_TUNE_CAP, (st->tune_cap / TUNE_CAP_DIV));
->> +
->> +       mutex_unlock(&st->lock);
->> +}
->> +
->> +#ifdef CONFIG_PM_SLEEP
->> +static int as3935_suspend(struct spi_device *spi, pm_message_t msg)
->> +{
->> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +       int val, ret;
->> +
->> +       mutex_lock(&st->lock);
->> +       ret = as3935_read(st, AS3935_AFE_GAIN, &val);
->> +       if (ret)
->> +               goto err_suspend;
->> +       val |= AS3935_AFE_PWR_BIT;
->> +
->> +       ret = as3935_write(st, AS3935_AFE_GAIN, val);
->> +
->> +err_suspend:
->> +       mutex_unlock(&st->lock);
->> +
->> +       return ret;
->> +}
->> +
->> +static int as3935_resume(struct spi_device *spi)
->> +{
->> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +       int val, ret;
->> +
->> +       mutex_lock(&st->lock);
->> +       ret = as3935_read(st, AS3935_AFE_GAIN, &val);
->> +       if (ret)
->> +               goto err_resume;
->> +       val &= ~AS3935_AFE_PWR_BIT;
->> +       ret = as3935_write(st, AS3935_AFE_GAIN, val);
->> +
->> +err_resume:
->> +       mutex_unlock(&st->lock);
->> +
->> +       return ret;
->> +}
->> +#else
->> +#define as3935_suspend NULL
->> +#define as3935_resume  NULL
->> +#endif
->> +
->> +static int as3935_probe(struct spi_device *spi)
->> +{
->> +       struct iio_dev *indio_dev;
->> +       struct iio_trigger *trig;
->> +       struct as3935_state *st;
->> +       struct device_node *np = spi->dev.of_node;
->> +       int ret;
->> +
->
-> ... is specified?
->
->> +       /* Be sure lightning event interrupt */
->> +       if (!spi->irq) {
->> +               dev_err(&spi->dev, "unable to get event interrupt\n");
->> +               return -EINVAL;
->> +       }
->> +
->> +       indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(st));
->> +       if (!indio_dev)
->> +               return -ENOMEM;
->> +
->> +       st = iio_priv(indio_dev);
->> +       st->spi = spi;
->> +       st->tune_cap = 0;
->> +
->> +       spi_set_drvdata(spi, indio_dev);
->> +       mutex_init(&st->lock);
->> +       INIT_DELAYED_WORK(&st->work, as3935_event_work);
->> +
->> +       ret = of_property_read_u32(np,
->> +                       "ams,tuning-capacitor-pf", &st->tune_cap);
->> +       if (ret) {
->> +               st->tune_cap = 0;
->> +               dev_warn(&spi->dev,
->> +                       "no tuning-capacitor-pf set, defaulting to %d",
->> +                       st->tune_cap);
->> +       }
->> +
->> +       if (st->tune_cap > MAX_PF_CAP) {
->> +               dev_err(&spi->dev,
->> +                       "wrong tuning-capacitor-pf setting of %d\n",
->> +                       st->tune_cap);
->> +               return -EINVAL;
->> +       }
->> +
->> +       indio_dev->dev.parent = &spi->dev;
->> +       indio_dev->name = spi_get_device_id(spi)->name;
->> +       indio_dev->channels = as3935_channels;
->> +       indio_dev->num_channels = ARRAY_SIZE(as3935_channels);
->> +       indio_dev->modes = INDIO_DIRECT_MODE;
->> +       indio_dev->info = &as3935_info;
->> +
->> +       trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
->> +                                     indio_dev->name, indio_dev->id);
->> +
->> +       if (!trig)
->> +               return -ENOMEM;
->> +
->> +       st->trig = trig;
->> +       trig->dev.parent = indio_dev->dev.parent;
->> +       iio_trigger_set_drvdata(trig, indio_dev);
->> +       trig->ops = &iio_interrupt_trigger_ops;
->> +
->> +       ret = iio_trigger_register(trig);
->> +       if (ret) {
->> +               dev_err(&spi->dev, "failed to register trigger\n");
->> +               return ret;
->> +       }
->> +
->> +       ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> +                                       &as3935_trigger_handler,
->> +                                       &iio_triggered_buffer_setup_ops);
->> +
->> +       if (ret) {
->> +               dev_err(&spi->dev, "cannot setup iio trigger\n");
->
-> This will unroll the triggered_buffer_setup that has errored out.
-> Hence you will unregister a buffer that was never registered.
-> This should have it's own label to goto that only unregisters the
-> trigger.
->
->
->> +               goto unregister_trigger;
->> +       }
->> +
->> +       calibrate_as3935(st);
->> +
->> +       ret = devm_request_irq(&spi->dev, spi->irq,
->> +                               &as3935_interrupt_handler,
->> +                               IRQF_TRIGGER_RISING,
->> +                               dev_name(&spi->dev),
->> +                               indio_dev);
->> +
->> +       if (ret) {
->> +               dev_err(&spi->dev, "unable to request irq\n");
->> +               goto unregister_trigger;
->> +       }
->> +
->> +       ret = iio_device_register(indio_dev);
->> +       if (ret < 0) {
->> +               dev_err(&spi->dev, "unable to register device\n");
->> +               goto unregister_trigger;
->> +       }
->> +       return 0;
->> +
->> +unregister_trigger:
->
-> These should be in the opposite order to conform to standard
-> error unrolling (undo things in reverse order.
->
-
-Oops... I knew that..
-
->
->> +       iio_trigger_unregister(st->trig);
->> +       iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +       return ret;
->> +};
->> +
->> +static int as3935_remove(struct spi_device *spi)
->> +{
->> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> +       struct as3935_state *st = iio_priv(indio_dev);
->> +
->> +       iio_device_unregister(indio_dev);
->> +       iio_triggered_buffer_cleanup(indio_dev);
->> +       iio_trigger_unregister(st->trig);
->> +
->> +       return 0;
->> +};
->> +
->> +static const struct spi_device_id as3935_id[] = {
->> +       {"as3935", 0},
->> +       {},
->> +};
->> +MODULE_DEVICE_TABLE(spi, as3935_id);
->> +
->> +static struct spi_driver as3935_driver = {
->> +       .driver = {
->> +               .name   = "as3935",
->> +               .owner  = THIS_MODULE,
->> +       },
->> +       .probe          = as3935_probe,
->> +       .remove         = as3935_remove,
->> +       .id_table       = as3935_id,
->> +       .suspend        = as3935_suspend,
->> +       .resume         = as3935_resume,
->> +};
->> +module_spi_driver(as3935_driver);
->> +
->> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
->> +MODULE_DESCRIPTION("AS3935 lightning sensor");
->> +MODULE_LICENSE("GPL");
->> +MODULE_ALIAS("spi:as3935");
->>
->
