@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40516 "EHLO ring0.de"
+Received: from ring0.de ([5.45.105.125]:40386 "EHLO ring0.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753337AbaCJRZz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:25:55 -0400
+	id S1754522AbaCJRZj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Mar 2014 13:25:39 -0400
 From: Sebastian Reichel <sre@debian.org>
 To: Sebastian Reichel <sre@ring0.de>,
 	Marek Belisko <marek@goldelico.com>,
@@ -18,236 +18,57 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	Grant Likely <grant.likely@linaro.org>,
 	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 2/9] mfd: twl4030-madc: Add DT support and convert to IIO framework
-Date: Mon, 10 Mar 2014 18:25:22 +0100
-Message-Id: <1394472329-15485-3-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
+Subject: [PATCHv3 0/9] Convert twl4030-madc to IIO API and add DT support
+Date: Mon, 10 Mar 2014 18:25:20 +0100
+Message-Id: <1394472329-15485-1-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This converts twl4030-madc module to use the Industrial IO ADC
-framework and adds device tree support.
+Hi,
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
----
- drivers/mfd/twl4030-madc.c | 127 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 116 insertions(+), 11 deletions(-)
+This is PATCHv3 for converting twl4030-madc to the IIO API and
+adding DT support. The plan is to remove the private twl4030-madc
+API once all users have been removed or converted to the IIO API.
+The patchset compiles and has been tested on my Nokia N900.
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 5458561..1c5c4db 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -47,11 +47,14 @@
- #include <linux/gfp.h>
- #include <linux/err.h>
- 
-+#include <linux/iio/iio.h>
-+
- /*
-  * struct twl4030_madc_data - a container for madc info
-  * @dev - pointer to device structure for madc
-  * @lock - mutex protecting this data structure
-  * @requests - Array of request struct corresponding to SW1, SW2 and RT
-+ * @use_second_irq - IRQ selection (main or co-processor)
-  * @imr - Interrupt mask register of MADC
-  * @isr - Interrupt status register of MADC
-  */
-@@ -59,10 +62,71 @@ struct twl4030_madc_data {
- 	struct device *dev;
- 	struct mutex lock;	/* mutex protecting this data structure */
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
-+	bool use_second_irq;
- 	int imr;
- 	int isr;
- };
- 
-+static int twl4030_madc_read(struct iio_dev *iio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
-+	struct twl4030_madc_request req;
-+	int ret;
-+
-+	req.method = madc->use_second_irq ? TWL4030_MADC_SW2 : TWL4030_MADC_SW1;
-+
-+	req.channels = BIT(chan->channel);
-+	req.active = false;
-+	req.func_cb = NULL;
-+	req.type = TWL4030_MADC_WAIT;
-+	req.raw = !(mask == IIO_CHAN_INFO_PROCESSED);
-+	req.do_avg = (mask == IIO_CHAN_INFO_AVERAGE_RAW);
-+
-+	ret = twl4030_madc_conversion(&req);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = req.rbuf[chan->channel];
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static const struct iio_info twl4030_madc_iio_info = {
-+	.read_raw = &twl4030_madc_read,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define TWL4030_ADC_CHANNEL(_channel, _type, _name) {	\
-+	.type = _type,					\
-+	.channel = _channel,				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
-+			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
-+			      BIT(IIO_CHAN_INFO_PROCESSED), \
-+	.datasheet_name = _name,			\
-+	.indexed = 1,					\
-+}
-+
-+static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
-+	TWL4030_ADC_CHANNEL(0, IIO_VOLTAGE, "ADCIN0"),
-+	TWL4030_ADC_CHANNEL(1, IIO_TEMP, "ADCIN1"),
-+	TWL4030_ADC_CHANNEL(2, IIO_VOLTAGE, "ADCIN2"),
-+	TWL4030_ADC_CHANNEL(3, IIO_VOLTAGE, "ADCIN3"),
-+	TWL4030_ADC_CHANNEL(4, IIO_VOLTAGE, "ADCIN4"),
-+	TWL4030_ADC_CHANNEL(5, IIO_VOLTAGE, "ADCIN5"),
-+	TWL4030_ADC_CHANNEL(6, IIO_VOLTAGE, "ADCIN6"),
-+	TWL4030_ADC_CHANNEL(7, IIO_VOLTAGE, "ADCIN7"),
-+	TWL4030_ADC_CHANNEL(8, IIO_VOLTAGE, "ADCIN8"),
-+	TWL4030_ADC_CHANNEL(9, IIO_VOLTAGE, "ADCIN9"),
-+	TWL4030_ADC_CHANNEL(10, IIO_CURRENT, "ADCIN10"),
-+	TWL4030_ADC_CHANNEL(11, IIO_VOLTAGE, "ADCIN11"),
-+	TWL4030_ADC_CHANNEL(12, IIO_VOLTAGE, "ADCIN12"),
-+	TWL4030_ADC_CHANNEL(13, IIO_VOLTAGE, "ADCIN13"),
-+	TWL4030_ADC_CHANNEL(14, IIO_VOLTAGE, "ADCIN14"),
-+	TWL4030_ADC_CHANNEL(15, IIO_VOLTAGE, "ADCIN15"),
-+};
-+
- static struct twl4030_madc_data *twl4030_madc;
- 
- struct twl4030_prescale_divider_ratios {
-@@ -702,28 +766,49 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
-+	struct device_node *np = pdev->dev.of_node;
- 	int irq, ret;
- 	u8 regval;
-+	struct iio_dev *iio_dev = NULL;
- 
--	if (!pdata) {
--		dev_err(&pdev->dev, "platform_data not available\n");
-+	if (!pdata && !np) {
-+		dev_err(&pdev->dev, "neither platform data nor Device Tree node available\n");
- 		return -EINVAL;
- 	}
--	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
--	if (!madc)
-+
-+	iio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*madc));
-+	if (!iio_dev) {
-+		dev_err(&pdev->dev, "failed allocating iio device\n");
- 		return -ENOMEM;
-+	}
- 
-+	madc = iio_priv(iio_dev);
- 	madc->dev = &pdev->dev;
- 
-+	iio_dev->name = dev_name(&pdev->dev);
-+	iio_dev->dev.parent = &pdev->dev;
-+	iio_dev->dev.of_node = pdev->dev.of_node;
-+	iio_dev->info = &twl4030_madc_iio_info;
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+	iio_dev->channels = twl4030_madc_iio_channels;
-+	iio_dev->num_channels = ARRAY_SIZE(twl4030_madc_iio_channels);
-+
- 	/*
- 	 * Phoenix provides 2 interrupt lines. The first one is connected to
- 	 * the OMAP. The other one can be connected to the other processor such
- 	 * as modem. Hence two separate ISR and IMR registers.
- 	 */
--	madc->imr = (pdata->irq_line == 1) ?
--	    TWL4030_MADC_IMR1 : TWL4030_MADC_IMR2;
--	madc->isr = (pdata->irq_line == 1) ?
--	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
-+	if (pdata)
-+		madc->use_second_irq = (pdata->irq_line != 1);
-+	else
-+		madc->use_second_irq = of_property_read_bool(np,
-+				       "ti,system-uses-second-madc-irq");
-+
-+	madc->imr = madc->use_second_irq ? TWL4030_MADC_IMR2 :
-+					   TWL4030_MADC_IMR1;
-+	madc->isr = madc->use_second_irq ? TWL4030_MADC_ISR2 :
-+					   TWL4030_MADC_ISR1;
-+
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
- 		return ret;
-@@ -768,7 +853,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	platform_set_drvdata(pdev, madc);
-+	platform_set_drvdata(pdev, iio_dev);
- 	mutex_init(&madc->lock);
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -776,11 +861,19 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
--		dev_dbg(&pdev->dev, "could not request irq\n");
-+		dev_err(&pdev->dev, "could not request irq\n");
- 		goto err_i2c;
- 	}
- 	twl4030_madc = madc;
-+
-+	ret = iio_device_register(iio_dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not register iio device\n");
-+		goto err_i2c;
-+	}
-+
- 	return 0;
-+
- err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
-@@ -790,20 +883,32 @@ err_current_generator:
- 
- static int twl4030_madc_remove(struct platform_device *pdev)
- {
--	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
-+	struct iio_dev *iio_dev = platform_get_drvdata(pdev);
-+	struct twl4030_madc_data *madc = iio_priv(iio_dev);
- 
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
- 
-+	iio_device_unregister(iio_dev);
-+
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id twl_madc_of_match[] = {
-+	{ .compatible = "ti,twl4030-madc", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, twl_madc_of_match);
-+#endif
-+
- static struct platform_driver twl4030_madc_driver = {
- 	.probe = twl4030_madc_probe,
- 	.remove = twl4030_madc_remove,
- 	.driver = {
- 		   .name = "twl4030_madc",
- 		   .owner = THIS_MODULE,
-+		   .of_match_table = of_match_ptr(twl_madc_of_match),
- 		   },
- };
- 
+Changes since PATCHv2 [0]:
+ * Added Tested-by: Marek Belisko to all patches, which modify
+   code used by twl4030-madc-battery driver
+ * Update madc->use_second_irq as suggested by Lee Jones
+ * Use dev_err instead of dev_dbg for error messages in probe function
+ * Add a space between "{" and ".compatible"
+ * Decrease indention of closing "}" in twl4030_madc_driver.driver
+
+[0] https://lkml.org/lkml/2014/3/4/815
+
+-- Sebastian
+
+Sebastian Reichel (9):
+  mfd: twl4030-madc: Use managed resources
+  mfd: twl4030-madc: Add DT support and convert to IIO framework
+  mfd: twl4030-madc: Cleanup driver
+  mfd: twl-core: Add twl_i2c_read/write_u16
+  mfd: twl4030-madc: Use twl_i2c_read/write_u16 for 16 bit registers
+  Documentation: DT: Document twl4030-madc binding
+  mfd: twl4030-madc: Move driver to drivers/iio/adc
+  iio: documentation: Add ABI documentation for *_mean_raw
+  iio: inkern: add iio_read_channel_average_raw
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   8 +
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   |  24 ++
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/{mfd => iio/adc}/twl4030-madc.c            | 302 +++++++++++++--------
+ drivers/iio/inkern.c                               |  18 ++
+ drivers/mfd/Kconfig                                |  10 -
+ drivers/mfd/Makefile                               |   1 -
+ include/linux/i2c/twl.h                            |  12 +
+ include/linux/i2c/twl4030-madc.h                   |   2 +-
+ include/linux/iio/consumer.h                       |  13 +
+ 11 files changed, 275 insertions(+), 126 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+ rename drivers/{mfd => iio/adc}/twl4030-madc.c (75%)
+
 -- 
 1.9.0
 
