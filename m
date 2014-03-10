@@ -1,62 +1,102 @@
-Return-Path: <Nicolas.FERRE@atmel.com>
-Message-ID: <531DBD71.8040905@atmel.com>
-Date: Mon, 10 Mar 2014 14:26:09 +0100
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe
- Plagniol-Villard <plagnioj@jcrosoft.com>, Josh Wu <josh.wu@atmel.com>, Maxime
- Ripard <maxime.ripard@free-electrons.com>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
-References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com> <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com> <5318C98C.1070702@kernel.org>
-In-Reply-To: <5318C98C.1070702@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ring0.de ([5.45.105.125]:40434 "EHLO ring0.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754522AbaCJRZp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Mar 2014 13:25:45 -0400
+From: Sebastian Reichel <sre@debian.org>
+To: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
+Subject: [PATCHv3 1/9] mfd: twl4030-madc: Use managed resources
+Date: Mon, 10 Mar 2014 18:25:21 +0100
+Message-Id: <1394472329-15485-2-git-send-email-sre@debian.org>
+In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
+References: <1394472329-15485-1-git-send-email-sre@debian.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/03/2014 20:16, Jonathan Cameron :
-> On 05/03/14 16:57, Alexandre Belloni wrote:
->> We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
->> used to match an id_table.
->>
->> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> As stated in previous email, I'll take this along with the fix that 'broke'
-> this, if I get an Ack from one of the at91 maintainers.
+Update twl4030-madc driver to use managed resources.
 
-Jonathan,
+Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Tested-by: Marek Belisko <marek@goldelico.com>
+---
+ drivers/mfd/twl4030-madc.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-It is maybe more clear if I answer here:
-- so, yes, you can take the 3 patches yourself (if you do not mind)
-- you have, for the whole series::
-
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-
-Thanks for your help with this issue.
-
-Bye,
-
->> ---
->>   arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
->> index cb36fa872d30..88554024eb2d 100644
->> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
->> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
->> @@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
->>   };
->>
->>   static struct platform_device at91_adc_device = {
->> -	.name		= "at91_adc",
->> +	.name		= "at91sam9g45-adc",
->>   	.id		= -1,
->>   	.dev		= {
->>   				.platform_data	= &adc_data,
->>
-> 
-> 
-
-
+diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
+index 4c583e4..5458561 100644
+--- a/drivers/mfd/twl4030-madc.c
++++ b/drivers/mfd/twl4030-madc.c
+@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+ 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
+-	int ret;
++	int irq, ret;
+ 	u8 regval;
+ 
+ 	if (!pdata) {
+ 		dev_err(&pdev->dev, "platform_data not available\n");
+ 		return -EINVAL;
+ 	}
+-	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
++	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
+ 	if (!madc)
+ 		return -ENOMEM;
+ 
+@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
+ 	ret = twl4030_madc_set_power(madc, 1);
+ 	if (ret < 0)
+-		goto err_power;
++		return ret;
+ 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
+ 	if (ret < 0)
+ 		goto err_current_generator;
+@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, madc);
+ 	mutex_init(&madc->lock);
+-	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
++
++	irq = platform_get_irq(pdev, 0);
++	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+ 				   twl4030_madc_threaded_irq_handler,
+ 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
+ 	if (ret) {
+@@ -783,9 +785,6 @@ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
+ 	twl4030_madc_set_power(madc, 0);
+-err_power:
+-	kfree(madc);
+-
+ 	return ret;
+ }
+ 
+@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
+ 
+-	free_irq(platform_get_irq(pdev, 0), madc);
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ 	twl4030_madc_set_power(madc, 0);
+-	kfree(madc);
+ 
+ 	return 0;
+ }
 -- 
-Nicolas Ferre
+1.9.0
+
