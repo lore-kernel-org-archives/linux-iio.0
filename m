@@ -1,122 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:6365 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755177AbaCKVNb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 11 Mar 2014 17:13:31 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 1/3] iio: ak8975 : Add AK8963 compatibility mode support
-Date: Tue, 11 Mar 2014 14:15:55 -0700
-Message-Id: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Nicolas.FERRE@atmel.com>
+Message-ID: <531DBD71.8040905@atmel.com>
+Date: Mon, 10 Mar 2014 14:26:09 +0100
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe
+ Plagniol-Villard <plagnioj@jcrosoft.com>, Josh Wu <josh.wu@atmel.com>, Maxime
+ Ripard <maxime.ripard@free-electrons.com>, Ludovic Desroches
+	<ludovic.desroches@atmel.com>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
+References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com> <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com> <5318C98C.1070702@kernel.org>
+In-Reply-To: <5318C98C.1070702@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+List-ID: <linux-iio@vger.kernel.org>
 
-AK8963 and AK8975 use same register definitions, except the range
-of X,Y,Z values. Added support of 8963 based on i2c_device_id.
-Unfortunately there is no way to detect the type via registers,
-both device registers return 0x48 as id of chipset.
+On 06/03/2014 20:16, Jonathan Cameron :
+> On 05/03/14 16:57, Alexandre Belloni wrote:
+>> We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
+>> used to match an id_table.
+>>
+>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> As stated in previous email, I'll take this along with the fix that 'broke'
+> this, if I get an Ack from one of the at91 maintainers.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/magnetometer/Kconfig  |  3 ++-
- drivers/iio/magnetometer/ak8975.c | 40 +++++++++++++++++++++++++++++++++++----
- 2 files changed, 38 insertions(+), 5 deletions(-)
+Jonathan,
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index d86d226..05a364c54 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -11,7 +11,8 @@ config AK8975
- 	depends on GPIOLIB
- 	help
- 	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
--	  Magnetometer.
-+	  Magnetometer. This driver can also support AK8963, if i2c
-+	  device name is identified as ak8963.
- 
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ak8975.
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 0542354..a55c94f 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -85,7 +85,15 @@
- #define AK8975_MAX_CONVERSION_TIMEOUT	500
- #define AK8975_CONVERSION_DONE_POLL_TIME 10
- #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
--#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
-+#define RAW_TO_GAUSS_8975(asa) ((((asa) + 128) * 3000) / 256)
-+#define RAW_TO_GAUSS_8963(asa) ((((asa) + 128) * 6000) / 256)
-+
-+/* Compatible Asahi Kasei Compass parts */
-+enum asahi_compass_chipset {
-+	AK8975,
-+	AK8963,
-+	AK_INVALID,
-+};
- 
- /*
-  * Per-instance context data for the device.
-@@ -101,6 +109,7 @@ struct ak8975_data {
- 	int			eoc_irq;
- 	wait_queue_head_t	data_ready_queue;
- 	unsigned long		flags;
-+	int			chipset;
- };
- 
- static const int ak8975_index_to_reg[] = {
-@@ -272,9 +281,21 @@ static int ak8975_setup(struct i2c_client *client)
-  * Since ASA doesn't change, we cache the resultant scale factor into the
-  * device context in ak8975_setup().
-  */
--	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
--	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
--	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
-+	if (data->chipset == AK8963) {
-+		/*
-+		 * H range is +-8190 and magnetometer range is +-4912.
-+		 * So HuT using the above explanation for 8975,
-+		 * 4912/8190 = ~ 6/10.
-+		 * So the Hadj should use 6/10 instead of 3/10.
-+		 */
-+		data->raw_to_gauss[0] = RAW_TO_GAUSS_8963(data->asa[0]);
-+		data->raw_to_gauss[1] = RAW_TO_GAUSS_8963(data->asa[1]);
-+		data->raw_to_gauss[2] = RAW_TO_GAUSS_8963(data->asa[2]);
-+	} else {
-+		data->raw_to_gauss[0] = RAW_TO_GAUSS_8975(data->asa[0]);
-+		data->raw_to_gauss[1] = RAW_TO_GAUSS_8975(data->asa[1]);
-+		data->raw_to_gauss[2] = RAW_TO_GAUSS_8975(data->asa[2]);
-+	}
- 
- 	return 0;
- }
-@@ -499,6 +520,16 @@ static int ak8975_probe(struct i2c_client *client,
- 	data->eoc_gpio = eoc_gpio;
- 	data->eoc_irq = 0;
- 
-+	if (id) {
-+		data->chipset = (int)(id->driver_data);
-+		if (data->chipset == AK8963)
-+			dev_dbg(&client->dev,
-+				"AK8975 driver is running in AK8963 mode\n");
-+		else
-+			dev_dbg(&client->dev,
-+				"AK8975 driver is running in normal mode\n");
-+	}
-+
- 	/* Perform some basic start-of-day setup of the device. */
- 	err = ak8975_setup(client);
- 	if (err < 0) {
-@@ -552,6 +583,7 @@ static int ak8975_remove(struct i2c_client *client)
- 
- static const struct i2c_device_id ak8975_id[] = {
- 	{"ak8975", 0},
-+	{"ak8963", AK8963},
- 	{}
- };
- 
+It is maybe more clear if I answer here:
+- so, yes, you can take the 3 patches yourself (if you do not mind)
+- you have, for the whole series::
+
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+Thanks for your help with this issue.
+
+Bye,
+
+>> ---
+>>   arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
+>> index cb36fa872d30..88554024eb2d 100644
+>> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
+>> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
+>> @@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
+>>   };
+>>
+>>   static struct platform_device at91_adc_device = {
+>> -	.name		= "at91_adc",
+>> +	.name		= "at91sam9g45-adc",
+>>   	.id		= -1,
+>>   	.dev		= {
+>>   				.platform_data	= &adc_data,
+>>
+> 
+> 
+
+
 -- 
-1.7.11.7
-
+Nicolas Ferre
