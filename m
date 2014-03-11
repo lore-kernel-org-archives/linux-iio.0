@@ -1,79 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:36981 "EHLO ring0.de"
+Received: from mga02.intel.com ([134.134.136.20]:6365 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753157AbaCJLQE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 07:16:04 -0400
-Date: Mon, 10 Mar 2014 12:15:56 +0100
-From: Sebastian Reichel <sre@debian.org>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv2 0/9] Convert twl4030-madc to IIO API and add DT support
-Message-ID: <20140310111556.GA14667@earth.universe>
-References: <1393702365-26429-1-git-send-email-sre@debian.org>
- <1393970751-18157-1-git-send-email-sre@debian.org>
- <20140310104356.GL14976@lee--X1>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="C7zPtVaVf+AK4Oqc"
-In-Reply-To: <20140310104356.GL14976@lee--X1>
+	id S1755177AbaCKVNb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Mar 2014 17:13:31 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/3] iio: ak8975 : Add AK8963 compatibility mode support
+Date: Tue, 11 Mar 2014 14:15:55 -0700
+Message-Id: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+AK8963 and AK8975 use same register definitions, except the range
+of X,Y,Z values. Added support of 8963 based on i2c_device_id.
+Unfortunately there is no way to detect the type via registers,
+both device registers return 0x48 as id of chipset.
 
---C7zPtVaVf+AK4Oqc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/magnetometer/Kconfig  |  3 ++-
+ drivers/iio/magnetometer/ak8975.c | 40 +++++++++++++++++++++++++++++++++++----
+ 2 files changed, 38 insertions(+), 5 deletions(-)
 
-On Mon, Mar 10, 2014 at 10:43:56AM +0000, Lee Jones wrote:
-> > TODO:
-> >  * Wait for feedback from DT binding maintainers
-> >  * Wait for feedback from Marek Belisko, who is testing the
-> >    changes with twl4030-madc-battery driver on GTA04
->=20
-> This patch-set has stalled.
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index d86d226..05a364c54 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -11,7 +11,8 @@ config AK8975
+ 	depends on GPIOLIB
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
+-	  Magnetometer.
++	  Magnetometer. This driver can also support AK8963, if i2c
++	  device name is identified as ak8963.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ak8975.
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 0542354..a55c94f 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -85,7 +85,15 @@
+ #define AK8975_MAX_CONVERSION_TIMEOUT	500
+ #define AK8975_CONVERSION_DONE_POLL_TIME 10
+ #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
+-#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
++#define RAW_TO_GAUSS_8975(asa) ((((asa) + 128) * 3000) / 256)
++#define RAW_TO_GAUSS_8963(asa) ((((asa) + 128) * 6000) / 256)
++
++/* Compatible Asahi Kasei Compass parts */
++enum asahi_compass_chipset {
++	AK8975,
++	AK8963,
++	AK_INVALID,
++};
+ 
+ /*
+  * Per-instance context data for the device.
+@@ -101,6 +109,7 @@ struct ak8975_data {
+ 	int			eoc_irq;
+ 	wait_queue_head_t	data_ready_queue;
+ 	unsigned long		flags;
++	int			chipset;
+ };
+ 
+ static const int ak8975_index_to_reg[] = {
+@@ -272,9 +281,21 @@ static int ak8975_setup(struct i2c_client *client)
+  * Since ASA doesn't change, we cache the resultant scale factor into the
+  * device context in ak8975_setup().
+  */
+-	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
+-	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
+-	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
++	if (data->chipset == AK8963) {
++		/*
++		 * H range is +-8190 and magnetometer range is +-4912.
++		 * So HuT using the above explanation for 8975,
++		 * 4912/8190 = ~ 6/10.
++		 * So the Hadj should use 6/10 instead of 3/10.
++		 */
++		data->raw_to_gauss[0] = RAW_TO_GAUSS_8963(data->asa[0]);
++		data->raw_to_gauss[1] = RAW_TO_GAUSS_8963(data->asa[1]);
++		data->raw_to_gauss[2] = RAW_TO_GAUSS_8963(data->asa[2]);
++	} else {
++		data->raw_to_gauss[0] = RAW_TO_GAUSS_8975(data->asa[0]);
++		data->raw_to_gauss[1] = RAW_TO_GAUSS_8975(data->asa[1]);
++		data->raw_to_gauss[2] = RAW_TO_GAUSS_8975(data->asa[2]);
++	}
+ 
+ 	return 0;
+ }
+@@ -499,6 +520,16 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_gpio = eoc_gpio;
+ 	data->eoc_irq = 0;
+ 
++	if (id) {
++		data->chipset = (int)(id->driver_data);
++		if (data->chipset == AK8963)
++			dev_dbg(&client->dev,
++				"AK8975 driver is running in AK8963 mode\n");
++		else
++			dev_dbg(&client->dev,
++				"AK8975 driver is running in normal mode\n");
++	}
++
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+@@ -552,6 +583,7 @@ static int ak8975_remove(struct i2c_client *client)
+ 
+ static const struct i2c_device_id ak8975_id[] = {
+ 	{"ak8975", 0},
++	{"ak8963", AK8963},
+ 	{}
+ };
+ 
+-- 
+1.7.11.7
 
-Right. I waited a few days for more feedback.
-
-> Can you send a fresh patch-set (not linked to the old ones, as the
-> thread is getting very complicated again) complete with all the Acks
-> you have received?
-
-Sure. I will send it later.
-
--- Sebastian
-
---C7zPtVaVf+AK4Oqc
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJTHZ7sAAoJENju1/PIO/qarngP+QFMKaDGSsi2vFIFZ49/BFLk
-VE9GXXGXgOot81lPqa2wJ97AmOgf5c4QWYGLsM0U+mufoWPGW3vZVKJm7HqNL18s
-jUKy4tY6C5upZWnanrB25InTS59emNF+8ggWtS6fgyf4Mea4CyOj4k4wvJeLSJFk
-n0thpL6PZMBn0bU3HNEVfLp7QHfA4lHQfl3Oh4W/L23UrH6Mlk2EaPBnaLVqCMOf
-QbaIxwQYeTWBItEhxPfA5YNcCRhWDr7QlxMcQ35CLuwVXxYX6cgATq5YBEs30u3O
-ZEhwo3MmVdHfv1XCrPsKfqO3bmnTJb7ouRuV9F4MzgeiCwF41cHzmxSTTyQGMMTR
-kNzkVX00yIo+Gy5RLhvxV7KZ7PUIVRn128pkM969IeDO+4SMLJvmkcWKaU/MQSyG
-ZiEdLUny9Do7EkYqXRQEzxgREloHR/RGu23WTtUR8xfcnQtzKBnexrlehCnK25Ls
-rE4D/iuc6KDOtl0mNV7xHPIEqY3Pw6LF1Kouf7YaKamPgYsRXge/WU7i+8HJmsHZ
-17BxNp0NXESlXc7hIZAyoLg01GaoHZmJQFii2ft3RCu47joNOUp7Hh6tAxCNdM+S
-lr0sf8duIdGxkOuL2gE+sogvvsUNoduAF3WRERW4h1/YPHG5t8e3Kz5Ve5QVMWWc
-snl1faS5QCb9Xf9MCApK
-=BX1t
------END PGP SIGNATURE-----
-
---C7zPtVaVf+AK4Oqc--
