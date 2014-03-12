@@ -1,51 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:33053 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753224AbaCLK5s (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Mar 2014 06:57:48 -0400
-Date: Wed, 12 Mar 2014 11:57:46 +0100
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: at91_adc: Repair broken platform_data
- support
-Message-ID: <20140312105746.GK13905@piout.net>
-References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1394038675-15809-2-git-send-email-alexandre.belloni@free-electrons.com>
- <5318C950.7060900@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5318C950.7060900@kernel.org>
+Received: from mail-pb0-f49.google.com ([209.85.160.49]:55969 "EHLO
+	mail-pb0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751060AbaCLMww (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Mar 2014 08:52:52 -0400
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: matt.porter@linaro.org, pantelis.antoniou@gmail.com,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v8 0/2] AS3935 lightning sensor support
+Date: Wed, 12 Mar 2014 05:53:12 -0700
+Message-Id: <1394628794-7598-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+This series adds support for the AMS AS3935 lightning sensor that allows
+reporting back estimated storm distance and strike events.
 
-On 06/03/2014 at 19:15:28 +0000, Jonathan Cameron wrote :
-> It's late in the cycle so I'll send this on to Greg KH with a note
-> to say either send it to Linus if he is happy doing so - or send
-> it early in 3.15, then it'll get picked up for stable.
-> 
-> I'll give it a day or so to see if I the at91 maintainers are happy
-> with the other two parts as it is probably cleaner if all 3 go together.
-> 
-> Applied to the fixes-togreg branch of iio.git
-> 
+Changes from v7
 
-I don't recall seeing you sending that to Greg. Could you do that, along
-with the two other patches that got acked by Nicolas ?
+* Added IIO_CHAN_INFO_PROCESSED to report back meter converted
+* Storm out-of-range is reported as -EINVAL instead of mystery value 63000
+* Fixed error unwinding order in as3935_probe()
+* Renamed value gain_boot attribute to sensor_sensitivity
 
-Anyway, if it is too late, we'll push for stable.
+Changes from v6
 
-Thanks !
+* Revised binding documents to not use the term "interrupts mapping"
+* Renamed tune-cap property to a more clear tuning-capacitor-pf
+
+Changes from v5
+
+* SPI write cache-aligned issues fixed
+* Fixed mutex_unlock's being missed
+* Reports distance in meters instead of kilometers (1km steps)
+* tune_cap is now in picofarads and not a register value
+
+Matt Ranostay (2):
+  iio:as3935: Add DT binding docs for AS3935 driver
+  iio: Add AS3935 lightning sensor support
+
+ .../ABI/testing/sysfs-bus-iio-proximity-as3935     |  16 +
+ .../devicetree/bindings/iio/proximity/as3935.txt   |  28 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/proximity/Kconfig                      |  19 +
+ drivers/iio/proximity/Makefile                     |   6 +
+ drivers/iio/proximity/as3935.c                     | 456 +++++++++++++++++++++
+ 8 files changed, 528 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/as3935.txt
+ create mode 100644 drivers/iio/proximity/Kconfig
+ create mode 100644 drivers/iio/proximity/Makefile
+ create mode 100644 drivers/iio/proximity/as3935.c
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.8.3.2
+
