@@ -1,59 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60082 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751866AbaCOOyO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:54:14 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: sr@denx.de, knaack.h@gmx.de, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH V2 0/4]  iio: Minor cleanups to spear ADC driver followed by staging graduation.
-Date: Sat, 15 Mar 2014 14:55:04 +0000
-Message-Id: <1394895308-19154-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <beomho.seo@samsung.com>
+Message-id: <531FB0F4.9010400@samsung.com>
+Date: Wed, 12 Mar 2014 09:57:24 +0900
+From: Beomho Seo <beomho.seo@samsung.com>
+MIME-version: 1.0
+To: linux-iio@vger.kernel.org, Kevin Tsai <ktsai@capellamicro.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Myungjoo Ham <myungjoo.ham@samsung.com>,
+ Jaehoon Chung <jh80.chung@samsung.com>, wingt@capellamicro.com,
+ josephh@capellamicro.com
+Subject: [PATCH] iio: cm32181: Fix read integration time function
+Content-type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Changes since V1. Fixed the issues Harmuk Knaack pointed out in patch 4
-by dropping the unused variables and ensure mask was as it should be.
+In read integration time function, assign 0 to val.
+Because, prevent return inaccurate value when call read integration time.
 
-Previous description:
-This driver has been reasonably clean since it was first merged within the
-staging tree.  If it had been submitted after the IIO core was outside of
-staging we might have taken it as is. I did a final review and the first 4
-patches of this series rework various minor aspects of the driver.
+Cc: Kevin Tsai <ktsai@capellamicro.com>
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+ drivers/iio/light/cm32181.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-Whilst it is a slow driver, the device tree matches at the lowest level seemed
-a little unwise so the largest rework is concerned with centralising that
-logic using a classic ops structure of function pointers.  The other large
-change was to move to using the info_mask_shared_by_all approach to handle
-sampling frequency.  This is something I am slowly propogating across the
-whole tree, but might as well be done whilst we are looking at this driver.
-
-I don't have hardware and whilst I think these are all changes that are
-possible to easily verify by eye, a tested by would be most welcome!
-
-Note this is the first driver I'm suggesting moving out of staging following
-Greg's entirely reasonable question of 'What's wrong with the stuff that is
-left?'  Any help with this sort of final cleanup and move would be most
-welcome.
-
-Jonathan
-
-Jonathan Cameron (4):
-  staging:iio:adc:spear adc - prefix defines to avoid namespace clashes.
-  staging:iio:adc:spear_adc drop initialization of unused scan_type
-  staging:iio:adc:spear_adc use info_mask_shared_by_all for samp freq
-  iio:adc:spear_adc move out of staging
-
- drivers/iio/adc/Kconfig             |   8 +
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/spear_adc.c         | 405 +++++++++++++++++++++++++++++++++
- drivers/staging/iio/adc/Kconfig     |   8 -
- drivers/staging/iio/adc/Makefile    |   1 -
- drivers/staging/iio/adc/spear_adc.c | 432 ------------------------------------
- 6 files changed, 414 insertions(+), 441 deletions(-)
- create mode 100644 drivers/iio/adc/spear_adc.c
- delete mode 100644 drivers/staging/iio/adc/spear_adc.c
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index 47a6dba..d976e6c 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -221,6 +221,7 @@ static int cm32181_read_raw(struct iio_dev *indio_dev,
+ 		*val = cm32181->calibscale;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
+ 		ret = cm32181_read_als_it(cm32181, val2);
+ 		return ret;
+ 	}
+-- 
+1.7.9.5
 
 -- 
-1.9.0
-
+Best Regards,
