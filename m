@@ -1,140 +1,41 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <532031FC.6010401@metafoo.de>
-Date: Wed, 12 Mar 2014 11:07:56 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <sr@denx.de>
+Message-ID: <532003CB.1000803@denx.de>
+Date: Wed, 12 Mar 2014 07:50:51 +0100
+From: Stefan Roese <sr@denx.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: ak8975 : Add AK8963 compatibility mode support
-References: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/5] iio: Minor cleanups to spear ADC driver followed
+ by staging graduation.
+References: <1394570219-7672-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1394570219-7672-1-git-send-email-jic23@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/11/2014 10:15 PM, Srinivas Pandruvada wrote:
-> AK8963 and AK8975 use same register definitions, except the range
-> of X,Y,Z values. Added support of 8963 based on i2c_device_id.
-> Unfortunately there is no way to detect the type via registers,
-> both device registers return 0x48 as id of chipset.
+On 11.03.2014 21:36, Jonathan Cameron wrote:
+> This driver has been reasonably clean since it was first merged within the
+> staging tree.  If it had been submitted after the IIO core was outside of
+> staging we might have taken it as is. I did a final review and the first 4
+> patches of this series rework various minor aspects of the driver.
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-
-Hi,
-
-a few small comments.
-
-> ---
->   drivers/iio/magnetometer/Kconfig  |  3 ++-
->   drivers/iio/magnetometer/ak8975.c | 40 +++++++++++++++++++++++++++++++++++----
->   2 files changed, 38 insertions(+), 5 deletions(-)
+> Whilst it is a slow driver, the device tree matches at the lowest level seemed
+> a little unwise so the largest rework is concerned with centralising that
+> logic using a classic ops structure of function pointers.  The other large
+> change was to move to using the info_mask_shared_by_all approach to handle
+> sampling frequency.  This is something I am slowly propogating across the
+> whole tree, but might as well be done whilst we are looking at this driver.
 >
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index d86d226..05a364c54 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -11,7 +11,8 @@ config AK8975
->   	depends on GPIOLIB
->   	help
->   	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
-> -	  Magnetometer.
-> +	  Magnetometer. This driver can also support AK8963, if i2c
-> +	  device name is identified as ak8963.
+> I don't have hardware and whilst I think these are all changes that are
+> possible to easily verify by eye, a tested by would be most welcome!
 >
->   	  To compile this driver as a module, choose M here: the module
->   	  will be called ak8975.
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 0542354..a55c94f 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -85,7 +85,15 @@
->   #define AK8975_MAX_CONVERSION_TIMEOUT	500
->   #define AK8975_CONVERSION_DONE_POLL_TIME 10
->   #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
-> -#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
-> +#define RAW_TO_GAUSS_8975(asa) ((((asa) + 128) * 3000) / 256)
-> +#define RAW_TO_GAUSS_8963(asa) ((((asa) + 128) * 6000) / 256)
-> +
-> +/* Compatible Asahi Kasei Compass parts */
-> +enum asahi_compass_chipset {
-> +	AK8975,
-> +	AK8963,
-> +	AK_INVALID,
+> Note this is the first driver I'm suggesting moving out of staging following
+> Greg's entirely reasonable question of 'What's wrong with the stuff that is
+> left?'  Any help with this sort of final cleanup and move would be most
+> welcome.
 
-Not sure if you need AK_INVALID, it is never used.
+Jonathan, thanks for working on this. Really appreciated. I don't have a 
+spear600 board at hand right now. But all your changes seem reasonable. So:
 
-> +};
->
->   /*
->    * Per-instance context data for the device.
-> @@ -101,6 +109,7 @@ struct ak8975_data {
->   	int			eoc_irq;
->   	wait_queue_head_t	data_ready_queue;
->   	unsigned long		flags;
-> +	int			chipset;
+Ackey-by: Stefan Roese <sr@denx.de>
 
-enum asahi_compass_chipset ...
-
->   };
->
->   static const int ak8975_index_to_reg[] = {
-> @@ -272,9 +281,21 @@ static int ak8975_setup(struct i2c_client *client)
->    * Since ASA doesn't change, we cache the resultant scale factor into the
->    * device context in ak8975_setup().
->    */
-> -	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
-> -	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
-> -	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
-> +	if (data->chipset == AK8963) {
-> +		/*
-> +		 * H range is +-8190 and magnetometer range is +-4912.
-> +		 * So HuT using the above explanation for 8975,
-> +		 * 4912/8190 = ~ 6/10.
-> +		 * So the Hadj should use 6/10 instead of 3/10.
-> +		 */
-> +		data->raw_to_gauss[0] = RAW_TO_GAUSS_8963(data->asa[0]);
-> +		data->raw_to_gauss[1] = RAW_TO_GAUSS_8963(data->asa[1]);
-> +		data->raw_to_gauss[2] = RAW_TO_GAUSS_8963(data->asa[2]);
-> +	} else {
-> +		data->raw_to_gauss[0] = RAW_TO_GAUSS_8975(data->asa[0]);
-> +		data->raw_to_gauss[1] = RAW_TO_GAUSS_8975(data->asa[1]);
-> +		data->raw_to_gauss[2] = RAW_TO_GAUSS_8975(data->asa[2]);
-> +	}
->
->   	return 0;
->   }
-> @@ -499,6 +520,16 @@ static int ak8975_probe(struct i2c_client *client,
->   	data->eoc_gpio = eoc_gpio;
->   	data->eoc_irq = 0;
->
-> +	if (id) {
-
-id will never be NULL.
-
-> +		data->chipset = (int)(id->driver_data);
-> +		if (data->chipset == AK8963)
-> +			dev_dbg(&client->dev,
-> +				"AK8975 driver is running in AK8963 mode\n");
-> +		else
-> +			dev_dbg(&client->dev,
-> +				"AK8975 driver is running in normal mode\n");
-
-How about printing just id->name, this way you do not have to add a new else 
-branch when a new part is supported.
-
-> +	}
-> +
->   	/* Perform some basic start-of-day setup of the device. */
->   	err = ak8975_setup(client);
->   	if (err < 0) {
-> @@ -552,6 +583,7 @@ static int ak8975_remove(struct i2c_client *client)
->
->   static const struct i2c_device_id ak8975_id[] = {
->   	{"ak8975", 0},
-
-Should change the 0 to AK8975
-
-> +	{"ak8963", AK8963},
->   	{}
->   };
->
->
+Thanks,
+Stefan
