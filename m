@@ -1,40 +1,64 @@
-Return-Path: <beomho.seo@samsung.com>
-Message-id: <531FB0F4.9010400@samsung.com>
-Date: Wed, 12 Mar 2014 09:57:24 +0900
-From: Beomho Seo <beomho.seo@samsung.com>
-MIME-version: 1.0
-To: linux-iio@vger.kernel.org, Kevin Tsai <ktsai@capellamicro.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Myungjoo Ham <myungjoo.ham@samsung.com>,
- Jaehoon Chung <jh80.chung@samsung.com>, wingt@capellamicro.com,
- josephh@capellamicro.com
-Subject: [PATCH] iio: cm32181: Fix read integration time function
-Content-type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46089 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754088AbaCMPpL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Mar 2014 11:45:11 -0400
+In-Reply-To: <5320C79B.4000109@gmx.de>
+References: <1394570219-7672-1-git-send-email-jic23@kernel.org> <1394570219-7672-6-git-send-email-jic23@kernel.org> <5320C79B.4000109@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 5/5] iio:adc:spear_adc move out of staging
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Thu, 13 Mar 2014 15:45:03 +0000
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: sr@denx.de
+Message-ID: <ed852795-5e47-4fd7-adba-2547a767c3d4@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In read integration time function, assign 0 to val.
-Because, prevent return inaccurate value when call read integration time.
 
-Cc: Kevin Tsai <ktsai@capellamicro.com>
-Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
----
- drivers/iio/light/cm32181.c |    1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 47a6dba..d976e6c 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -221,6 +221,7 @@ static int cm32181_read_raw(struct iio_dev *indio_dev,
- 		*val = cm32181->calibscale;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_INT_TIME:
-+		*val = 0;
- 		ret = cm32181_read_als_it(cm32181, val2);
- 		return ret;
- 	}
+On March 12, 2014 8:46:19 PM GMT+00:00, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>Jonathan Cameron schrieb:
+>> This simple driver is ready to move out of staging.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> ---
+>>  drivers/iio/adc/Kconfig             |   8 +
+>>  drivers/iio/adc/Makefile            |   1 +
+>>  drivers/iio/adc/spear_adc.c         | 429
+>++++++++++++++++++++++++++++++++++++
+>>  drivers/staging/iio/adc/Kconfig     |   8 -
+>>  drivers/staging/iio/adc/Makefile    |   1 -
+>>  drivers/staging/iio/adc/spear_adc.c | 429
+>------------------------------------
+>>  6 files changed, 438 insertions(+), 438 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 5553206..2e3e1b0 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -164,6 +164,14 @@ config NAU7802
+>>  	  To compile this driver as a module, choose M here: the
+>>  	  module will be called nau7802.
+>>  
+>> +config SPEAR_ADC
+>> +	tristate "ST SPEAr ADC"
+>> +	depends on PLAT_SPEAR || COMPILE_TEST
+>Are you sure to keep COMPILE_TEST in?
+Yes. Allows those without a spear specific config to build test. Prevents a lot of bugs sneaking in for more obscure platforms.
+
+We do this for any drivers that don't require any other support from the platform.
+>> +	depends on HAS_IOMEM
+>> +	help
+>> +	  Say yes here to build support for the integrated ADC inside the
+>> +	  ST SPEAr SoC. Provides direct access via sysfs.
+>> +
+>>  config TI_ADC081C
+>>  	tristate "Texas Instruments ADC081C021/027"
+>>  	depends on I2C
+>>
+
 -- 
-1.7.9.5
-
--- 
-Best Regards,
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
