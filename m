@@ -1,70 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ring0.de ([5.45.105.125]:40618 "EHLO ring0.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753863AbaCJR0V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Mar 2014 13:26:21 -0400
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv3 6/9] Documentation: DT: Document twl4030-madc binding
-Date: Mon, 10 Mar 2014 18:25:26 +0100
-Message-Id: <1394472329-15485-7-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-1-git-send-email-sre@debian.org>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60011 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754209AbaCOOor (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:44:47 -0400
+Message-ID: <53246799.8080600@kernel.org>
+Date: Sat, 15 Mar 2014 14:45:45 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: force snprintf for PAGE_SIZE bufs
+References: <20140313164643.GA19171@www.outflux.net>
+In-Reply-To: <20140313164643.GA19171@www.outflux.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add devicetree binding documentation for twl4030-madc
-analog digital converter.
+On 13/03/14 16:46, Kees Cook wrote:
+> This is a tiny preventative measure to make sure we can't write beyond
+> PAGE_SIZE on the buffers being used in sysfs for iio. There is currently
+> no way for this to happen, but the change makes this code more robust
+> for the future.
+>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+A sensible enough change I guess.
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+Applied to the togreg branch of iio.git
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
-new file mode 100644
-index 0000000..6bdd214
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
-@@ -0,0 +1,24 @@
-+* TWL4030 Monitoring Analog to Digital Converter (MADC)
-+
-+The MADC subsystem in the TWL4030 consists of a 10-bit ADC
-+combined with a 16-input analog multiplexer.
-+
-+Required properties:
-+  - compatible: Should contain "ti,twl4030-madc".
-+  - interrupts: IRQ line for the MADC submodule.
-+  - #io-channel-cells: Should be set to <1>.
-+
-+Optional properties:
-+  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
-+				    should be used, which is intended to be used
-+				    by Co-Processors (e.g. a modem).
-+
-+Example:
-+
-+&twl {
-+	madc {
-+		compatible = "ti,twl4030-madc";
-+		interrupts = <3>;
-+		#io-channel-cells = <1>;
-+	};
-+};
--- 
-1.9.0
+Jonathan
+> ---
+>   drivers/iio/industrialio-core.c |    4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index acc911a836ca..64bb64f35af8 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -340,7 +340,7 @@ ssize_t iio_enum_read(struct iio_dev *indio_dev,
+>   	else if (i >= e->num_items)
+>   		return -EINVAL;
+>
+> -	return sprintf(buf, "%s\n", e->items[i]);
+> +	return snprintf(buf, PAGE_SIZE, "%s\n", e->items[i]);
+>   }
+>   EXPORT_SYMBOL_GPL(iio_enum_read);
+>
+> @@ -836,7 +836,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
+>   				 char *buf)
+>   {
+>   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	return sprintf(buf, "%s\n", indio_dev->name);
+> +	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->name);
+>   }
+>
+>   static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+>
 
