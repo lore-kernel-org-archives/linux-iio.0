@@ -1,85 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60696 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60719 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755262AbaCOQXn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 12:23:43 -0400
-Message-ID: <53247EC9.6090505@kernel.org>
-Date: Sat, 15 Mar 2014 16:24:41 +0000
+	with ESMTP id S1756152AbaCOQ0u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 12:26:50 -0400
+Message-ID: <53247F85.9020301@kernel.org>
+Date: Sat, 15 Mar 2014 16:27:49 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-CC: Beomho Seo <beomho.seo@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL pointer
- dereference
-References: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
-In-Reply-To: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
+To: linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] iio:core: Fix bug in length of event info_mask and catch
+ unhandled bits set in masks.
+References: <1393712687-8407-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1393712687-8407-1-git-send-email-jic23@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/03/14 09:33, Krzysztof Kozlowski wrote:
-> During probe the driver allocates dummy I2C devices (i2c_new_dummy())
-> but they aren't unregistered during driver remove or probe failure.
+On 01/03/14 22:24, Jonathan Cameron wrote:
+> The unhandled bits case was highlighted by smatch:
+>    CHECK   drivers/iio/industrialio-core.c
+> drivers/iio/industrialio-core.c:719 iio_device_add_info_mask_type() error: buffer overflow 'iio_chan_info_postfix' 17 <= 31
+>    CC [M]  drivers/iio/industrialio-core.o
+>    CHECK   drivers/iio/industrialio-event.c
+> drivers/iio/industrialio-event.c:327 iio_device_add_event() error: buffer overflow 'iio_ev_info_text' 3 <= 3
 >
-> Additionally driver does not check the return value of i2c_new_dummy().
-> In case of error (i2c_new_device(): memory allocation failure or I2C
-> address cannot be used) this function returns NULL which is later
-> dereferenced by i2c_smbus_{read,write}_data() functions.
+> The incorrect limit for the for_each_set_bit loop was noticed whilst fixing
+> this other case.  Note that as we only have 3 possible entries a the moment
+> and the value was set to 4, the bug would not have any effect currently.
+> It will bite fairly soon though, so best fix it now.
 >
-> Fix issues by properly checking for i2c_new_dummy() return value and
-> unregistering I2C devices on driver remove or probe failure.
->
-> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Good catch, but the error path needs more care.
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Executive descision time :) Applied to the togreg branch of iio.git
+as clearly no one cares.
 > ---
->   drivers/iio/light/cm36651.c |   12 ++++++++++++
->   1 file changed, 12 insertions(+)
+>   drivers/iio/industrialio-core.c  | 2 ++
+>   drivers/iio/industrialio-event.c | 4 +++-
+>   2 files changed, 5 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-> index a45e07492db3..e7e9a597159f 100644
-> --- a/drivers/iio/light/cm36651.c
-> +++ b/drivers/iio/light/cm36651.c
-> @@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
->   	cm36651->ps_client = i2c_new_dummy(client->adapter,
->   						     CM36651_I2C_ADDR_PS);
->   	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
-> +	if (!cm36651->ps_client || !cm36651->ara_client) {
-> +		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
-> +		ret = -ENODEV;
-> +		goto error_i2c_unregister;
-> +	}
-The two failures need to be handled independently as we only want to unregister
-those that succeeded.  i2c_new_dummy will not return an error and leave a device
-registered.  This is particularly true given the first thing that i2c_unregister_device
-does is to derefence the client pointer.  That will cause a segfault if you do it
-for NULL as here.
-
->   	mutex_init(&cm36651->lock);
->   	indio_dev->dev.parent = &client->dev;
->   	indio_dev->channels = cm36651_channels;
-> @@ -687,6 +692,11 @@ error_free_irq:
->   	free_irq(client->irq, indio_dev);
->   error_disable_reg:
->   	regulator_disable(cm36651->vled_reg);
-> +error_i2c_unregister:
-> +	if (cm36651->ps_client)
-> +		i2c_unregister_device(cm36651->ps_client);
-> +	if (cm36651->ara_client)
-> +		i2c_unregister_device(cm36651->ara_client);
->   	return ret;
->   }
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index ede16aec..e4961b1 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -716,6 +716,8 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+>   	int i, ret, attrcount = 0;
 >
-> @@ -698,6 +708,8 @@ static int cm36651_remove(struct i2c_client *client)
->   	iio_device_unregister(indio_dev);
->   	regulator_disable(cm36651->vled_reg);
->   	free_irq(client->irq, indio_dev);
-> +	i2c_unregister_device(cm36651->ps_client);
-> +	i2c_unregister_device(cm36651->ara_client);
-Good catch.
+>   	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
+> +		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
+> +			return -EINVAL;
+>   		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+>   					     chan,
+>   					     &iio_read_channel_info,
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index ea6e06b..dddfb0f 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -321,7 +321,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+>   	char *postfix;
+>   	int ret;
 >
->   	return 0;
->   }
+> -	for_each_set_bit(i, mask, sizeof(*mask)) {
+> +	for_each_set_bit(i, mask, sizeof(*mask)*8) {
+> +		if (i >= ARRAY_SIZE(iio_ev_info_text))
+> +			return -EINVAL;
+>   		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+>   				iio_ev_type_text[type], iio_ev_dir_text[dir],
+>   				iio_ev_info_text[i]);
 >
 
