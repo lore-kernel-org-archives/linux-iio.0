@@ -1,58 +1,169 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60011 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60029 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754209AbaCOOor (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:44:47 -0400
-Message-ID: <53246799.8080600@kernel.org>
-Date: Sat, 15 Mar 2014 14:45:45 +0000
+	with ESMTP id S1753464AbaCOOsZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:48:25 -0400
+Message-ID: <53246873.705@kernel.org>
+Date: Sat, 15 Mar 2014 14:49:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: force snprintf for PAGE_SIZE bufs
-References: <20140313164643.GA19171@www.outflux.net>
-In-Reply-To: <20140313164643.GA19171@www.outflux.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: sr@denx.de
+Subject: Re: [PATCH 4/5] staging:iio:adc:spear_adc use info_mask_shared_by_all
+ for samp freq
+References: <1394570219-7672-1-git-send-email-jic23@kernel.org> <1394570219-7672-5-git-send-email-jic23@kernel.org> <5320C40A.6040203@gmx.de>
+In-Reply-To: <5320C40A.6040203@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/03/14 16:46, Kees Cook wrote:
-> This is a tiny preventative measure to make sure we can't write beyond
-> PAGE_SIZE on the buffers being used in sysfs for iio. There is currently
-> no way for this to happen, but the change makes this code more robust
-> for the future.
->
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-A sensible enough change I guess.
+On 12/03/14 20:31, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> Using the core support makes this element available to in kernel users as
+>> well as to userspace under exactly the same interface as before.  The
+>> intent is to move all sampling frequency control to this approach
+>> throughout IIO.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> ---
+>>   drivers/staging/iio/adc/spear_adc.c | 95 ++++++++++++++-----------------------
+>>   1 file changed, 36 insertions(+), 59 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
+>> index fbe69a7..d8232f1 100644
+>> --- a/drivers/staging/iio/adc/spear_adc.c
+>> +++ b/drivers/staging/iio/adc/spear_adc.c
+>> @@ -185,16 +185,51 @@ static int spear_read_raw(struct iio_dev *indio_dev,
+>>   		*val = info->vref_external;
+>>   		*val2 = SPEAR_ADC_DATA_BITS;
+>>   		return IIO_VAL_FRACTIONAL_LOG2;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = info->current_clk;
+>> +		return IIO_VAL_INT;
+>>   	}
+>>
+>>   	return -EINVAL;
+>>   }
+>>
+>> +static int spear_adc_write_raw(struct iio_dev *indio_dev,
+>> +			       struct iio_chan_spec const *chan,
+>> +			       int val,
+>> +			       int val2,
+>> +			       long mask)
+>> +{
+>> +	struct spear_adc_info *info = iio_priv(indio_dev);
+>> +	u32 clk_high, clk_low, count;
+>> +	u32 apb_clk = clk_get_rate(info->clk);
+>> +	int ret = 0;
+>> +
+>> +	mutex_lock(&indio_dev->mlock);
+>> +
+>> +	if ((val < SPEAR_ADC_CLK_MIN) ||
+>> +		(val > SPEAR_ADC_CLK_MAX) ||
+>> +		(val2 != 0)) {
+>> +		ret = -EINVAL;
+>> +		goto out;
+>> +	}
+>> +
+>> +	count = (apb_clk + val - 1) / val;
+>> +	clk_low = count / 2;
+>> +	clk_high = count - clk_low;
+>> +	info->current_clk = apb_clk / count;
+>> +	spear_adc_set_clk(info, val);
+>> +
+> What is actually the purpose of clk_low and clk_high? I don't see them used after doing that calculation.
+Good spot.  Looks like this is the result of an earlier reworking.  These get recomputed in the set_clk
+function.
 
-Applied to the togreg branch of iio.git
-
-Jonathan
-> ---
->   drivers/iio/industrialio-core.c |    4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> And is it really 100% safe to avoid checking mask?
+Fair point. No it's not. Oops.  Will fix and repost in a sec.
+>> +out:
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +	return ret;
+>> +}
+>> +
+>>   #define SPEAR_ADC_CHAN(idx) {				\
+>>   	.type = IIO_VOLTAGE,				\
+>>   	.indexed = 1,					\
+>>   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>>   	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
+>>   	.channel = idx,					\
+>>   }
+>>
+>> @@ -236,67 +271,9 @@ static int spear_adc_configure(struct spear_adc_info *info)
+>>   	return 0;
+>>   }
+>>
+>> -static ssize_t spear_adc_read_frequency(struct device *dev,
+>> -					struct device_attribute *attr,
+>> -					char *buf)
+>> -{
+>> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> -	struct spear_adc_info *info = iio_priv(indio_dev);
+>> -
+>> -	return sprintf(buf, "%d\n", info->current_clk);
+>> -}
+>> -
+>> -static ssize_t spear_adc_write_frequency(struct device *dev,
+>> -					 struct device_attribute *attr,
+>> -					 const char *buf,
+>> -					 size_t len)
+>> -{
+>> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> -	struct spear_adc_info *info = iio_priv(indio_dev);
+>> -	u32 clk_high, clk_low, count;
+>> -	u32 apb_clk = clk_get_rate(info->clk);
+>> -	unsigned long lval;
+>> -	int ret;
+>> -
+>> -	ret = kstrtoul(buf, 10, &lval);
+>> -	if (ret)
+>> -		return ret;
+>> -
+>> -	mutex_lock(&indio_dev->mlock);
+>> -
+>> -	if ((lval < SPEAR_ADC_CLK_MIN) || (lval > SPEAR_ADC_CLK_MAX)) {
+>> -		ret = -EINVAL;
+>> -		goto out;
+>> -	}
+>> -
+>> -	count = (apb_clk + lval - 1) / lval;
+>> -	clk_low = count / 2;
+>> -	clk_high = count - clk_low;
+>> -	info->current_clk = apb_clk / count;
+>> -	spear_adc_set_clk(info, lval);
+>> -
+>> -out:
+>> -	mutex_unlock(&indio_dev->mlock);
+>> -
+>> -	return ret ? ret : len;
+>> -}
+>> -
+>> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+>> -			      spear_adc_read_frequency,
+>> -			      spear_adc_write_frequency);
+>> -
+>> -static struct attribute *spear_attributes[] = {
+>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>> -	NULL
+>> -};
+>> -
+>> -static const struct attribute_group spear_attribute_group = {
+>> -	.attrs = spear_attributes,
+>> -};
+>> -
+>>   static const struct iio_info spear_adc_iio_info = {
+>>   	.read_raw = &spear_read_raw,
+>> -	.attrs = &spear_attribute_group,
+>> +	.write_raw = &spear_adc_write_raw,
+>>   	.driver_module = THIS_MODULE,
+>>   };
+>>
 >
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index acc911a836ca..64bb64f35af8 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -340,7 +340,7 @@ ssize_t iio_enum_read(struct iio_dev *indio_dev,
->   	else if (i >= e->num_items)
->   		return -EINVAL;
->
-> -	return sprintf(buf, "%s\n", e->items[i]);
-> +	return snprintf(buf, PAGE_SIZE, "%s\n", e->items[i]);
->   }
->   EXPORT_SYMBOL_GPL(iio_enum_read);
->
-> @@ -836,7 +836,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
->   				 char *buf)
->   {
->   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	return sprintf(buf, "%s\n", indio_dev->name);
-> +	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->name);
->   }
->
->   static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
