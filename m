@@ -1,42 +1,59 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 11 Mar 2014 06:56:22 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv3 2/9] mfd: twl4030-madc: Add DT support and convert to
- IIO framework
-Message-ID: <20140311065622.GF2839@lee--X1>
-References: <1394472329-15485-1-git-send-email-sre@debian.org>
- <1394472329-15485-3-git-send-email-sre@debian.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1394472329-15485-3-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60082 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751866AbaCOOyO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 10:54:14 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: sr@denx.de, knaack.h@gmx.de, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH V2 0/4]  iio: Minor cleanups to spear ADC driver followed by staging graduation.
+Date: Sat, 15 Mar 2014 14:55:04 +0000
+Message-Id: <1394895308-19154-1-git-send-email-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> This converts twl4030-madc module to use the Industrial IO ADC
-> framework and adds device tree support.
-> 
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-> Tested-by: Marek Belisko <marek@goldelico.com>
-> ---
->  drivers/mfd/twl4030-madc.c | 127 +++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 116 insertions(+), 11 deletions(-)
+Changes since V1. Fixed the issues Harmuk Knaack pointed out in patch 4
+by dropping the unused variables and ensure mask was as it should be.
 
-It looks as if my previous review comments have been addressed.
-  Acked-by: Lee Jones <lee.jones@linaro.org>
+Previous description:
+This driver has been reasonably clean since it was first merged within the
+staging tree.  If it had been submitted after the IIO core was outside of
+staging we might have taken it as is. I did a final review and the first 4
+patches of this series rework various minor aspects of the driver.
+
+Whilst it is a slow driver, the device tree matches at the lowest level seemed
+a little unwise so the largest rework is concerned with centralising that
+logic using a classic ops structure of function pointers.  The other large
+change was to move to using the info_mask_shared_by_all approach to handle
+sampling frequency.  This is something I am slowly propogating across the
+whole tree, but might as well be done whilst we are looking at this driver.
+
+I don't have hardware and whilst I think these are all changes that are
+possible to easily verify by eye, a tested by would be most welcome!
+
+Note this is the first driver I'm suggesting moving out of staging following
+Greg's entirely reasonable question of 'What's wrong with the stuff that is
+left?'  Any help with this sort of final cleanup and move would be most
+welcome.
+
+Jonathan
+
+Jonathan Cameron (4):
+  staging:iio:adc:spear adc - prefix defines to avoid namespace clashes.
+  staging:iio:adc:spear_adc drop initialization of unused scan_type
+  staging:iio:adc:spear_adc use info_mask_shared_by_all for samp freq
+  iio:adc:spear_adc move out of staging
+
+ drivers/iio/adc/Kconfig             |   8 +
+ drivers/iio/adc/Makefile            |   1 +
+ drivers/iio/adc/spear_adc.c         | 405 +++++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/Kconfig     |   8 -
+ drivers/staging/iio/adc/Makefile    |   1 -
+ drivers/staging/iio/adc/spear_adc.c | 432 ------------------------------------
+ 6 files changed, 414 insertions(+), 441 deletions(-)
+ create mode 100644 drivers/iio/adc/spear_adc.c
+ delete mode 100644 drivers/staging/iio/adc/spear_adc.c
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.9.0
+
