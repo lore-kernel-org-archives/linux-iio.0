@@ -1,108 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60331 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60345 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754929AbaCOP30 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 11:29:26 -0400
-Message-ID: <53247210.3070307@kernel.org>
-Date: Sat, 15 Mar 2014 15:30:24 +0000
+	with ESMTP id S1754688AbaCOPcO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 11:32:14 -0400
+Message-ID: <532472B8.4090802@kernel.org>
+Date: Sat, 15 Mar 2014 15:33:12 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Reichel <sre@debian.org>,
-	Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>
-CC: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	Josh Wu <josh.wu@atmel.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Ludovic Desroches <ludovic.desroches@atmel.com>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv2 9/9] iio: inkern: add iio_read_channel_average_raw
-References: <1393702365-26429-1-git-send-email-sre@debian.org> <1393970751-18157-1-git-send-email-sre@debian.org> <1393970751-18157-10-git-send-email-sre@debian.org>
-In-Reply-To: <1393970751-18157-10-git-send-email-sre@debian.org>
+Subject: Re: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
+References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com> <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com> <5318C98C.1070702@kernel.org> <531DBD71.8040905@atmel.com>
+In-Reply-To: <531DBD71.8040905@atmel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/03/14 22:05, Sebastian Reichel wrote:
-> Add iio_read_channel_average_raw to support reading
-> averaged raw values in consumer drivers.
+On 10/03/14 13:26, Nicolas Ferre wrote:
+> On 06/03/2014 20:16, Jonathan Cameron :
+>> On 05/03/14 16:57, Alexandre Belloni wrote:
+>>> We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
+>>> used to match an id_table.
+>>>
+>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+>> As stated in previous email, I'll take this along with the fix that 'broke'
+>> this, if I get an Ack from one of the at91 maintainers.
 >
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Jonathan,
+>
+> It is maybe more clear if I answer here:
+> - so, yes, you can take the 3 patches yourself (if you do not mind)
+> - you have, for the whole series::
+>
+> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Applied to the fixes-togreg branch of iio.git
 
-Sometimes these wrappers seem a little bit silly. There
-might be a case for automating them somewhat via some
-macros, but for now this is fine.
-
-Docs should in theory probably be with the implementation,
-but that's wrong throughout consumer.h so this isn't the time
-to change it!
+Timing wise, these will now hit immediately after the merge window closes.
 
 Jonathan
-> ---
->   drivers/iio/inkern.c         | 18 ++++++++++++++++++
->   include/linux/iio/consumer.h | 13 +++++++++++++
->   2 files changed, 31 insertions(+)
 >
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 0cf5f8e..adeba5a 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -443,6 +443,24 @@ err_unlock:
->   }
->   EXPORT_SYMBOL_GPL(iio_read_channel_raw);
+> Thanks for your help with this issue.
 >
-> +int iio_read_channel_average_raw(struct iio_channel *chan, int *val)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_AVERAGE_RAW);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
-> +
->   static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
->   	int raw, int *processed, unsigned int scale)
->   {
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 2752b1f..651f9a0 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -123,6 +123,19 @@ int iio_read_channel_raw(struct iio_channel *chan,
->   			 int *val);
+> Bye,
 >
-Ah, my bad habits propogate onwards.  The docs should be with the implementation.
-Oh well, at somepoint I'll clean all remaining cases of this up.
->   /**
-> + * iio_read_channel_average_raw() - read from a given channel
-> + * @chan:		The channel being queried.
-> + * @val:		Value read back.
-> + *
-> + * Note raw reads from iio channels are in adc counts and hence
-> + * scale will need to be applied if standard units required.
-> + *
-> + * In opposit to the normal iio_read_channel_raw this function
-> + * returns the average of multiple reads.
-> + */
-> +int iio_read_channel_average_raw(struct iio_channel *chan, int *val);
-> +
-> +/**
->    * iio_read_channel_processed() - read processed value from a given channel
->    * @chan:		The channel being queried.
->    * @val:		Value read back.
+>>> ---
+>>>    arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
+>>> index cb36fa872d30..88554024eb2d 100644
+>>> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
+>>> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
+>>> @@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
+>>>    };
+>>>
+>>>    static struct platform_device at91_adc_device = {
+>>> -	.name		= "at91_adc",
+>>> +	.name		= "at91sam9g45-adc",
+>>>    	.id		= -1,
+>>>    	.dev		= {
+>>>    				.platform_data	= &adc_data,
+>>>
+>>
+>>
+>
 >
 
