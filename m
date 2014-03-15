@@ -1,101 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60443 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60467 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755978AbaCOPl1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 11:41:27 -0400
-Message-ID: <532474E1.1090904@kernel.org>
-Date: Sat, 15 Mar 2014 15:42:25 +0000
+	with ESMTP id S1755521AbaCOPqt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 11:46:49 -0400
+Message-ID: <53247623.2060808@kernel.org>
+Date: Sat, 15 Mar 2014 15:47:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sebastian Reichel <sre@debian.org>,
-	Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>
-CC: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv3 9/9] iio: inkern: add iio_read_channel_average_raw
-References: <1394472329-15485-1-git-send-email-sre@debian.org> <1394472329-15485-10-git-send-email-sre@debian.org>
-In-Reply-To: <1394472329-15485-10-git-send-email-sre@debian.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging:iio: Move ad799x driver out of staging
+References: <1394447484-29334-1-git-send-email-lars@metafoo.de> <1394447484-29334-2-git-send-email-lars@metafoo.de> <531E3BE5.3090603@gmx.de>
+In-Reply-To: <531E3BE5.3090603@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/03/14 17:25, Sebastian Reichel wrote:
-> Add iio_read_channel_average_raw to support reading
-> averaged raw values in consumer drivers.
+On 10/03/14 22:25, Hartmut Knaack wrote:
+> Lars-Peter Clausen schrieb:
+>> The driver is now at a reasonable quality level. Move it out of staging.
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>>   drivers/iio/adc/Kconfig                                     | 11 +++++++++++
+>>   drivers/iio/adc/Makefile                                    |  1 +
+>>   drivers/{staging/iio/adc/ad799x_core.c => iio/adc/ad799x.c} |  0
+>>   drivers/staging/iio/adc/Kconfig                             | 11 -----------
+>>   drivers/staging/iio/adc/Makefile                            |  3 ---
+>>   5 files changed, 12 insertions(+), 14 deletions(-)
+>>   rename drivers/{staging/iio/adc/ad799x_core.c => iio/adc/ad799x.c} (100%)
+>>
+>>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
 >
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-As this one also stands fine on it's own and isn't actually used
-by the rest of the patch set - applied to the togreg branch of iio.git
-This will get pushed out initially as 'testing' for the autobuilders
-to play.
-
-Jonathan
-> ---
->   drivers/iio/inkern.c         | 18 ++++++++++++++++++
->   include/linux/iio/consumer.h | 13 +++++++++++++
->   2 files changed, 31 insertions(+)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 0cf5f8e..adeba5a 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -443,6 +443,24 @@ err_unlock:
->   }
->   EXPORT_SYMBOL_GPL(iio_read_channel_raw);
->
-> +int iio_read_channel_average_raw(struct iio_channel *chan, int *val)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = iio_channel_read(chan, val, NULL, IIO_CHAN_INFO_AVERAGE_RAW);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
-> +
->   static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
->   	int raw, int *processed, unsigned int scale)
->   {
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 2752b1f..651f9a0 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -123,6 +123,19 @@ int iio_read_channel_raw(struct iio_channel *chan,
->   			 int *val);
->
->   /**
-> + * iio_read_channel_average_raw() - read from a given channel
-> + * @chan:		The channel being queried.
-> + * @val:		Value read back.
-> + *
-> + * Note raw reads from iio channels are in adc counts and hence
-> + * scale will need to be applied if standard units required.
-> + *
-> + * In opposit to the normal iio_read_channel_raw this function
-> + * returns the average of multiple reads.
-> + */
-> +int iio_read_channel_average_raw(struct iio_channel *chan, int *val);
-> +
-> +/**
->    * iio_read_channel_processed() - read processed value from a given channel
->    * @chan:		The channel being queried.
->    * @val:		Value read back.
->
-
+Applied to the togreg branch of iio.git
+As ever it'll go out first as testing for autobuilders to play football with
+it.
