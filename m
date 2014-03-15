@@ -1,101 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60588 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60696 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754318AbaCOQDV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 12:03:21 -0400
-Message-ID: <53247A04.8050203@kernel.org>
-Date: Sat, 15 Mar 2014 16:04:20 +0000
+	with ESMTP id S1755262AbaCOQXn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Mar 2014 12:23:43 -0400
+Message-ID: <53247EC9.6090505@kernel.org>
+Date: Sat, 15 Mar 2014 16:24:41 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: imu: Enable checking of presence of device
-References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394571854-6737-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1394571854-6737-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+CC: Beomho Seo <beomho.seo@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL pointer
+ dereference
+References: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
+In-Reply-To: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/03/14 21:04, Srinivas Pandruvada wrote:
-> Added logic to check presence of MPU6050 before continuing. Currently
-> only i2c writes are used in the initialzation path, which don't return
-> any error, if some i2c device responds. In this case it continues to
-> create iio devices, which don't work.
-> This can be reproduced in a PC like platform, where ACPI definition
-> of this defines multiple i2c addresses.
-Yuk.
-> We need to check for an valid
-> i2c address by checking some signature before continuing.
+On 06/03/14 09:33, Krzysztof Kozlowski wrote:
+> During probe the driver allocates dummy I2C devices (i2c_new_dummy())
+> but they aren't unregistered during driver remove or probe failure.
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-This patch looks fine.  The test is a sensible, simple, debugging test
-even without the ACPI fun..
+> Additionally driver does not check the return value of i2c_new_dummy().
+> In case of error (i2c_new_device(): memory allocation failure or I2C
+> address cannot be used) this function returns NULL which is later
+> dereferenced by i2c_smbus_{read,write}_data() functions.
+>
+> Fix issues by properly checking for i2c_new_dummy() return value and
+> unregistering I2C devices on driver remove or probe failure.
+>
+> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Good catch, but the error path needs more care.
 > ---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 ++++++++++++++-
->   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
->   2 files changed, 18 insertions(+), 1 deletion(-)
+>   drivers/iio/light/cm36651.c |   12 ++++++++++++
+>   1 file changed, 12 insertions(+)
 >
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 6ba565a..e062acd 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -62,6 +62,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
->   	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
->   	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
->   	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
-> +	.who_am_i		= INV_MPU6050_REG_WHOAMI,
->   };
->
->   static const struct inv_mpu6050_chip_config chip_config_6050 = {
-> @@ -617,7 +618,7 @@ static const struct iio_info mpu_info = {
->   	.validate_trigger = inv_mpu6050_validate_trigger,
->   };
->
-> -int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
-> +static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
->   {
->   	int ret;
->
-> @@ -650,6 +651,18 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
->   	if (result)
->   		return result;
->   	msleep(INV_MPU6050_POWER_UP_TIME);
-> +
-> +	result = i2c_smbus_read_byte_data(st->client, st->reg->who_am_i);
-> +	if (result < 0) {
-> +		dev_err(&st->client->dev, "Error reading WhoAmI\n");
-> +		return result;
+> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+> index a45e07492db3..e7e9a597159f 100644
+> --- a/drivers/iio/light/cm36651.c
+> +++ b/drivers/iio/light/cm36651.c
+> @@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
+>   	cm36651->ps_client = i2c_new_dummy(client->adapter,
+>   						     CM36651_I2C_ADDR_PS);
+>   	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
+> +	if (!cm36651->ps_client || !cm36651->ara_client) {
+> +		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
+> +		ret = -ENODEV;
+> +		goto error_i2c_unregister;
 > +	}
-> +	if (result != INV_MPU6500_UNIQUE_ID) {
-> +		dev_err(&st->client->dev, "Not a valid MPU6500 device %x\n",
-> +								result);
-> +		return -ENOSYS;
-> +	}
-> +
->   	/* toggle power state. After reset, the sleep bit could be on
->   		or off depending on the OTP settings. Toggling power would
->   		make it in a definite state as well as making the hardware
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index de5aa22..87649bd 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -55,6 +55,7 @@ struct inv_mpu6050_reg_map {
->   	u8 pwr_mgmt_1;
->   	u8 pwr_mgmt_2;
->   	u8 int_pin_cfg;
-> +	u8 who_am_i;
->   };
+The two failures need to be handled independently as we only want to unregister
+those that succeeded.  i2c_new_dummy will not return an error and leave a device
+registered.  This is particularly true given the first thing that i2c_unregister_device
+does is to derefence the client pointer.  That will cause a segfault if you do it
+for NULL as here.
+
+>   	mutex_init(&cm36651->lock);
+>   	indio_dev->dev.parent = &client->dev;
+>   	indio_dev->channels = cm36651_channels;
+> @@ -687,6 +692,11 @@ error_free_irq:
+>   	free_irq(client->irq, indio_dev);
+>   error_disable_reg:
+>   	regulator_disable(cm36651->vled_reg);
+> +error_i2c_unregister:
+> +	if (cm36651->ps_client)
+> +		i2c_unregister_device(cm36651->ps_client);
+> +	if (cm36651->ara_client)
+> +		i2c_unregister_device(cm36651->ara_client);
+>   	return ret;
+>   }
 >
->   /*device enum */
-> @@ -189,6 +190,9 @@ struct inv_mpu6050_state {
->   #define INV_MPU6050_REG_INT_PIN_CFG		0x37
->   #define INV_MPU6050_BIT_BYPASS_EN		0x2
+> @@ -698,6 +708,8 @@ static int cm36651_remove(struct i2c_client *client)
+>   	iio_device_unregister(indio_dev);
+>   	regulator_disable(cm36651->vled_reg);
+>   	free_irq(client->irq, indio_dev);
+> +	i2c_unregister_device(cm36651->ps_client);
+> +	i2c_unregister_device(cm36651->ara_client);
+Good catch.
 >
-> +#define INV_MPU6050_REG_WHOAMI			0x75
-> +#define INV_MPU6500_UNIQUE_ID			0x70
-> +
->   /* scan element definition */
->   enum inv_mpu6050_scan {
->   	INV_MPU6050_SCAN_ACCL_X,
+>   	return 0;
+>   }
 >
 
