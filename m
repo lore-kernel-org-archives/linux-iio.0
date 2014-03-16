@@ -1,60 +1,50 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-Date: Sun, 16 Mar 2014 20:16:39 +0100
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pd0-f174.google.com ([209.85.192.174]:49999 "EHLO
+	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755678AbaCPT0G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Mar 2014 15:26:06 -0400
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>,
 	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	Maxime Ripard <maxime.ripard@free-electrons.com>,
 	Gregory Clement <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH 04/15] iio: adc: at91_adc: Add support for touchscreens
- without TSMR
-Message-ID: <20140316191639.GJ3106@piout.net>
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1394040940-18246-5-git-send-email-alexandre.belloni@free-electrons.com>
- <5325EA96.9000907@kernel.org>
+Subject: Re: [PATCH 14/15] Input: atmel_tsadcc: remove driver
+Date: Sun, 16 Mar 2014 12:26:01 -0700
+Message-ID: <5652100.Y5W0uRRy4s@dtor-d630.eng.vmware.com>
+In-Reply-To: <5325ECE3.5090800@kernel.org>
+References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com> <20140305184611.GA5453@core.coreip.homeip.net> <5325ECE3.5090800@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5325EA96.9000907@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 16/03/2014 at 18:16:54 +0000, Jonathan Cameron wrote :
-> On 05/03/14 17:35, Alexandre Belloni wrote:
-> >Old ADCs, as present on the sam9rl and the sam9g45 don't have a TSMR register
-> >and the touchscreen support should be handled differently.
-> >
-> >Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> One comment inline about handling of devices where the platform data doesn't
-> include the touchscreen type.  I'd expect zero to be the current default
-> rather than NONE...
-> >diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-> >index fcf73879dbfe..7819fc787731 100644
-> >--- a/include/linux/platform_data/at91_adc.h
-> >+++ b/include/linux/platform_data/at91_adc.h
-> >@@ -7,6 +7,12 @@
-> >  #ifndef _AT91_ADC_H_
-> >  #define _AT91_ADC_H_
-> >
-> >+enum atmel_adc_ts_type {
-> This means that the default for existing touch screens (where the platform
-> data won't include setting this value) will be none.  Is that correct?
-> >+	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
-> >+	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
-> >+	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
-> >+};
-> >+
+On Sunday, March 16, 2014 06:26:43 PM Jonathan Cameron wrote:
+> On 05/03/14 18:46, Dmitry Torokhov wrote:
+> > On Wed, Mar 05, 2014 at 06:35:39PM +0100, Alexandre Belloni wrote:
+> >> The atmel_tsadcc driver is not used anymore, it has been replaced by
+> >> at91_adc so remove it.
+> >> 
+> >> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> > 
+> > Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> 
+> All the rest of this series looks fine to me.
+> 
+> Dmitry, are you happy for me to take this whole series through IIO once
+> the last few bits are pinned down?  If the atmel guys want to take the whole
+> thing through their tree I'm also happy with that.
+> 
+> Not sure what the lowest pain route will be...
 
-This is actually just a snippet that I moved from at91_adc.c to
-at91_adc.h. I followed the current behavior.  Until now, using the
-touchscreen was only supported through device tree and touchscreen
-handling was not activated unless the atmel,adc-ts-wires property is
-present.  I guess this is the sane way to go because when you use the
-touchscreen, you lose the triggers.
+Jonathan,
 
+I am fine with either one of these 2 options.
+
+Thanks.
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+Dmitry
