@@ -16,96 +16,47 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv4 7/7] mfd: twl4030-madc: Move driver to drivers/iio/adc
-Date: Sun, 16 Mar 2014 02:43:31 +0100
-Message-Id: <1394934211-21605-8-git-send-email-sre@debian.org>
+Subject: [PATCHv4 4/7] mfd: twl-core: Add twl_i2c_read/write_u16
+Date: Sun, 16 Mar 2014 02:43:28 +0100
+Message-Id: <1394934211-21605-5-git-send-email-sre@debian.org>
 In-Reply-To: <1394934211-21605-1-git-send-email-sre@debian.org>
 References: <1394934211-21605-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This is a driver for an A/D converter, which belongs into
-drivers/iio/adc.
+Add a simple twl_i2c_read/write_u16 wrapper over
+the twl_i2c_read/write, which is similar to the
+twl_i2c_read/write_u8 wrapper.
 
 Signed-off-by: Sebastian Reichel <sre@debian.org>
 Acked-by: Lee Jones <lee.jones@linaro.org>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
+Tested-by: Marek Belisko <marek@goldelico.com>
 ---
- drivers/iio/adc/Kconfig                 | 10 ++++++++++
- drivers/iio/adc/Makefile                |  1 +
- drivers/{mfd => iio/adc}/twl4030-madc.c |  0
- drivers/mfd/Kconfig                     | 10 ----------
- drivers/mfd/Makefile                    |  1 -
- 5 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/{mfd => iio/adc}/twl4030-madc.c (100%)
+ include/linux/i2c/twl.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 2209f28..427f75c 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -183,6 +183,16 @@ config TI_AM335X_ADC
- 	  Say yes here to build support for Texas Instruments ADC
- 	  driver which is also a MFD client.
+diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
+index ade1c06..d2b1670 100644
+--- a/include/linux/i2c/twl.h
++++ b/include/linux/i2c/twl.h
+@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
+ 	return twl_i2c_read(mod_no, val, reg, 1);
+ }
  
-+config TWL4030_MADC
-+	tristate "TWL4030 MADC (Monitoring A/D Converter)"
-+	depends on TWL4030_CORE
-+	help
-+	This driver provides support for Triton TWL4030-MADC. The
-+	driver supports both RT and SW conversion methods.
++static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
++	val = cpu_to_le16(val);
++	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
++}
 +
-+	This driver can also be built as a module. If so, the module will be
-+	called twl4030-madc.
++static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
++	int ret;
++	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
++	*val = le16_to_cpu(*val);
++	return ret;
++}
 +
- config TWL6030_GPADC
- 	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
- 	depends on TWL4030_CORE
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ba9a10a..9acf2df 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -20,5 +20,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
- obj-$(CONFIG_NAU7802) += nau7802.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-+obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
- obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-similarity index 100%
-rename from drivers/mfd/twl4030-madc.c
-rename to drivers/iio/adc/twl4030-madc.c
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 49bb445..23a8a51 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -935,16 +935,6 @@ config TWL4030_CORE
- 	  high speed USB OTG transceiver, an audio codec (on most
- 	  versions) and many other features.
- 
--config TWL4030_MADC
--	tristate "TI TWL4030 MADC"
--	depends on TWL4030_CORE
--	help
--	This driver provides support for triton TWL4030-MADC. The
--	driver supports both RT and SW conversion methods.
--
--	This driver can be built as a module. If so it will be
--	named twl4030-madc
--
- config TWL4030_POWER
- 	bool "TI TWL4030 power resources"
- 	depends on TWL4030_CORE && ARM
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 5aea5ef..c8eb0bc 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -71,7 +71,6 @@ obj-$(CONFIG_MFD_TPS80031)	+= tps80031.o
- obj-$(CONFIG_MENELAUS)		+= menelaus.o
- 
- obj-$(CONFIG_TWL4030_CORE)	+= twl-core.o twl4030-irq.o twl6030-irq.o
--obj-$(CONFIG_TWL4030_MADC)      += twl4030-madc.o
- obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
- obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
- obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
+ int twl_get_type(void);
+ int twl_get_version(void);
+ int twl_get_hfclk_rate(void);
 -- 
 1.9.0
