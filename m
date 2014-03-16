@@ -1,31 +1,64 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Thu, 6 Mar 2014 11:33:55 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:54652 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754261AbaCPT3O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Mar 2014 15:29:14 -0400
+Date: Sun, 16 Mar 2014 20:29:02 +0100
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.15 - set 3
-Message-ID: <20140306193355.GA12474@kroah.com>
-References: <5318CB62.2020103@kernel.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Gregory Clement <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH 00/15] iio: adc: at91 cleanups and atmel_tsadcc removal
+Message-ID: <20140316192901.GK3106@piout.net>
+References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <5325EDAF.4060003@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5318CB62.2020103@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5325EDAF.4060003@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Mar 06, 2014 at 07:24:18PM +0000, Jonathan Cameron wrote:
-> The following changes since commit aa256f8d0dd9c2dff872849418d8e09e5d06718f:
+Hi,
+
+On 16/03/2014 at 18:30:07 +0000, Jonathan Cameron wrote :
+> On 05/03/14 17:35, Alexandre Belloni wrote:
+> >This patch set is a followup of my previous series: iio: adc: at91 fixes
+> >
+> >I'm sorry it is so long, I made sure this is bissectable.
+> It's a nice series, don't apologise for doing things right!
 > 
->   Merge tag 'iio-for-3.15b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2014-02-23 09:08:34 -0800)
+> Clearly there are a few outstanding snippets from the reviews so far, but we
+> are getting to the point where we need to agree on a path for this.  I'm
+> happy to take the whole series through the IIO tree if Dmitry and the at91
+> maintainers are happy with that.  If it is considered two invasive form the
+> atmel side then I'm perfectly happy with someone to take it through the relevant
+> platform tree instead.
 > 
-> are available in the git repository at:
+> I'm obviously not going to pick it up at all until it has a complete set
+> of at91 maintainer acks though!
 > 
+
+Thank you for your review.
+
+I already have a v2 ready addressing the received comments. I was mostly
+waiting on your feedback and you seem happy with it. I'll send an update
+on monday with the collected acks.
+
+I'll let the at91 maintainer ack it and decide on the path.
+
+> Realistically it's missed the coming merge window anyway, so we have a fair
+> bit of time.
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.15c
 
-Pulled and pushed out.
+That's why I've separated that series from the other fixes, this was not
+as urgent.
 
-What's the status of the remaining drivers/staging/iio/ stuff?  Anything
-major keeping them from all moving out of staging sometime soon?
-
-thanks,
-
-greg k-h
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
