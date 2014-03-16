@@ -1,91 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:58238 "EHLO
+Received: from top.free-electrons.com ([176.31.233.9]:54700 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932692AbaCQN5U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 09:57:20 -0400
+	with ESMTP id S1750973AbaCPUAh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Mar 2014 16:00:37 -0400
+Date: Sun, 16 Mar 2014 21:00:24 +0100
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
 	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH v2 00/15] iio: adc: at91 cleanups and atmel_tsadcc removal
-Date: Mon, 17 Mar 2014 14:56:53 +0100
-Message-Id: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+	Gregory Clement <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH 05/15] ARM: at91: sam9m10g45ek: Add touchscreen support
+ through at91_adc
+Message-ID: <20140316200024.GL3106@piout.net>
+References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1394040940-18246-6-git-send-email-alexandre.belloni@free-electrons.com>
+ <5325EB01.5060700@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5325EB01.5060700@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set is a followup of my previous series: iio: adc: at91 fixes
+On 16/03/2014 at 18:18:41 +0000, Jonathan Cameron wrote :
+> On 05/03/14 17:35, Alexandre Belloni wrote:
+> >at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
+> >Enable touchscreen support through at91_adc. This allows to use both a
+> >touchscreen and the remaining ADC channel at the same time.
+> >
+> >Also, lower the clock for the ADC as it allows to have more stable reads and
+> >this is the speed used by atmel_tsadcc.
+> Are there any side effects on the adc read if that functionality was previously
+> being used?  I doubt it matters, but probably wants to be mentioned here if there
+> is.
 
-1-3) The first 3 patches are cleaning up the patform_data used for at91_adc.
+Hum, it lowers the throughput rate but I really doubt anyone is trying
+to achieve 440000 samples per second under linux ;) At that frequency,
+we are still able to achieve 12958 samples per second so I guess this is
+fine as from my experience, the CPU can't really keep up when reading
+500 samples per seconds. I will include that in the commit log.
 
-4-5) Then touchscreen support for older ADCs is added, this allows to use that
-     for the sam9m10g45ek.
-
-6) Following those modifications, the mach/at91_adc.h is not used anywhere but
-   in the at91_adc driver so it is remove and its content (register definitions)
-   placed directly in the driver.
-
-7-9) at91sam9rl support is added to at91_adc and is used for the at91sam9rl
-     based boards.
-
-10-11) Prepare the atmel_tsadcc removal by switching sam9rl and sam9g45 to use
-       only at91_adc instead of atmel_tsadcc.
-
-12-15) atmel_tsadcc removal
-
-
-Changes in v2:
- - reworked the IRQ handlers in patch 4 as suggested by Dmitry and Thomas
- - ts_bufferedmeasure is now a bool
- - the multiline comment is now correctly formatted
- - improved commit log for patch 5
-
-Alexandre Belloni (15):
-  ARM: at91: sam9g45: remove unused platform_data
-  ARM: at91: sam9260: remove unused platform_data
-  iio: adc: at91: cleanup platform_data
-  iio: adc: at91_adc: Add support for touchscreens without TSMR
-  ARM: at91: sam9m10g45ek: Add touchscreen support through at91_adc
-  iio: adc: at91: remove unused include from include/mach
-  iio: adc: at91: add sam9rl support
-  ARM: at91: sam9rl: add at91_adc to support adc and touchscreen
-  ARM: at91: sam9rlek add touchscreen support through at91_adc
-  ARM: at91: sam9g45: switch from atmel_tsadcc to at91_adc
-  ARM: at91: sam9rl: switch from atmel_tsadcc to at91_adc
-  ARM: at91: remove atmel_tsadcc platform_data
-  ARM: at91: remove atmel_tsadcc from sama5_defconfig
-  Input: atmel_tsadcc: remove driver
-  ARM: at91/dt: at91-cosino_mega2560 remove useless tsadcc node
-
- MAINTAINERS                                |   6 -
- arch/arm/boot/dts/at91-cosino_mega2560.dts |   5 -
- arch/arm/configs/at91sam9g45_defconfig     |   3 +-
- arch/arm/configs/at91sam9rl_defconfig      |   3 +-
- arch/arm/configs/sama5_defconfig           |   1 -
- arch/arm/mach-at91/at91sam9260_devices.c   |  10 -
- arch/arm/mach-at91/at91sam9g45.c           |   2 +-
- arch/arm/mach-at91/at91sam9g45_devices.c   |  63 +----
- arch/arm/mach-at91/at91sam9rl.c            |   7 +
- arch/arm/mach-at91/at91sam9rl_devices.c    |  83 +++++--
- arch/arm/mach-at91/board-sam9m10g45ek.c    |  16 +-
- arch/arm/mach-at91/board-sam9rlek.c        |  16 +-
- arch/arm/mach-at91/board.h                 |   3 -
- arch/arm/mach-at91/include/mach/at91_adc.h | 107 ---------
- drivers/iio/adc/at91_adc.c                 | 340 +++++++++++++++++++++++----
- drivers/input/touchscreen/Kconfig          |  12 -
- drivers/input/touchscreen/Makefile         |   1 -
- drivers/input/touchscreen/atmel_tsadcc.c   | 358 -----------------------------
- include/linux/platform_data/at91_adc.h     |  27 +--
- include/linux/platform_data/atmel.h        |   7 -
- 20 files changed, 382 insertions(+), 688 deletions(-)
- delete mode 100644 arch/arm/mach-at91/include/mach/at91_adc.h
- delete mode 100644 drivers/input/touchscreen/atmel_tsadcc.c
+> >Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> >---
+> >  arch/arm/mach-at91/at91sam9g45.c        | 2 +-
+> >  arch/arm/mach-at91/board-sam9m10g45ek.c | 1 +
+> >  2 files changed, 2 insertions(+), 1 deletion(-)
+> >
+> >diff --git a/arch/arm/mach-at91/at91sam9g45.c b/arch/arm/mach-at91/at91sam9g45.c
+> >index 2f455ce35268..3c519a7a938f 100644
+> >--- a/arch/arm/mach-at91/at91sam9g45.c
+> >+++ b/arch/arm/mach-at91/at91sam9g45.c
+> >@@ -181,7 +181,7 @@ static struct clk vdec_clk = {
+> >  static struct clk adc_op_clk = {
+> >  	.name		= "adc_op_clk",
+> >  	.type		= CLK_TYPE_PERIPHERAL,
+> >-	.rate_hz	= 13200000,
+> >+	.rate_hz	= 300000,
+> >  };
+> >
+> >  /* AES/TDES/SHA clock - Only for sam9m11/sam9g56 */
+> >diff --git a/arch/arm/mach-at91/board-sam9m10g45ek.c b/arch/arm/mach-at91/board-sam9m10g45ek.c
+> >index ef39078c8ce2..4d775b796ce4 100644
+> >--- a/arch/arm/mach-at91/board-sam9m10g45ek.c
+> >+++ b/arch/arm/mach-at91/board-sam9m10g45ek.c
+> >@@ -315,6 +315,7 @@ static struct at91_adc_data ek_adc_data = {
+> >  	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) | BIT(6) | BIT(7),
+> >  	.use_external_triggers = true,
+> >  	.vref = 3300,
+> >+	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
+> >  };
+> >
+> >  /*
+> >
+> 
 
 -- 
-1.8.3.2
-
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
