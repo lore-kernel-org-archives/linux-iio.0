@@ -16,47 +16,52 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv4 4/7] mfd: twl-core: Add twl_i2c_read/write_u16
-Date: Sun, 16 Mar 2014 02:43:28 +0100
-Message-Id: <1394934211-21605-5-git-send-email-sre@debian.org>
+Subject: [PATCHv4 6/7] Documentation: DT: Document twl4030-madc binding
+Date: Sun, 16 Mar 2014 02:43:30 +0100
+Message-Id: <1394934211-21605-7-git-send-email-sre@debian.org>
 In-Reply-To: <1394934211-21605-1-git-send-email-sre@debian.org>
 References: <1394934211-21605-1-git-send-email-sre@debian.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add a simple twl_i2c_read/write_u16 wrapper over
-the twl_i2c_read/write, which is similar to the
-twl_i2c_read/write_u8 wrapper.
+Add devicetree binding documentation for twl4030-madc
+analog digital converter.
 
 Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
 Acked-by: Jonathan Cameron <jic23@kernel.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
 ---
- include/linux/i2c/twl.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../devicetree/bindings/iio/adc/twl4030-madc.txt   | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
 
-diff --git a/include/linux/i2c/twl.h b/include/linux/i2c/twl.h
-index ade1c06..d2b1670 100644
---- a/include/linux/i2c/twl.h
-+++ b/include/linux/i2c/twl.h
-@@ -195,6 +195,18 @@ static inline int twl_i2c_read_u8(u8 mod_no, u8 *val, u8 reg) {
- 	return twl_i2c_read(mod_no, val, reg, 1);
- }
- 
-+static inline int twl_i2c_write_u16(u8 mod_no, u16 val, u8 reg) {
-+	val = cpu_to_le16(val);
-+	return twl_i2c_write(mod_no, (u8*) &val, reg, 2);
-+}
+diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+new file mode 100644
+index 0000000..6bdd214
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+@@ -0,0 +1,24 @@
++* TWL4030 Monitoring Analog to Digital Converter (MADC)
 +
-+static inline int twl_i2c_read_u16(u8 mod_no, u16 *val, u8 reg) {
-+	int ret;
-+	ret = twl_i2c_read(mod_no, (u8*) val, reg, 2);
-+	*val = le16_to_cpu(*val);
-+	return ret;
-+}
++The MADC subsystem in the TWL4030 consists of a 10-bit ADC
++combined with a 16-input analog multiplexer.
 +
- int twl_get_type(void);
- int twl_get_version(void);
- int twl_get_hfclk_rate(void);
++Required properties:
++  - compatible: Should contain "ti,twl4030-madc".
++  - interrupts: IRQ line for the MADC submodule.
++  - #io-channel-cells: Should be set to <1>.
++
++Optional properties:
++  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
++				    should be used, which is intended to be used
++				    by Co-Processors (e.g. a modem).
++
++Example:
++
++&twl {
++	madc {
++		compatible = "ti,twl4030-madc";
++		interrupts = <3>;
++		#io-channel-cells = <1>;
++	};
++};
 -- 
 1.9.0
