@@ -1,41 +1,67 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 18 Mar 2014 07:59:40 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>, Marek Belisko <marek@goldelico.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:58258 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932692AbaCQN5X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 09:57:23 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv4 1/7] mfd: twl4030-madc: Use managed resources
-Message-ID: <20140318075940.GA25324@lee--X1>
-References: <1394934211-21605-1-git-send-email-sre@debian.org>
- <1394934211-21605-2-git-send-email-sre@debian.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1394934211-21605-2-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Gregory Clement <gregory.clement@free-electrons.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v2 05/15] ARM: at91: sam9m10g45ek: Add touchscreen support through at91_adc
+Date: Mon, 17 Mar 2014 14:56:58 +0100
+Message-Id: <1395064628-644-6-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Update twl4030-madc driver to use managed resources.
-> 
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> Tested-by: Marek Belisko <marek@goldelico.com>
-> ---
->  drivers/mfd/twl4030-madc.c | 15 ++++++---------
->  1 file changed, 6 insertions(+), 9 deletions(-)
+at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
+Enable touchscreen support through at91_adc. This allows to use both a
+touchscreen and the remaining ADC channel at the same time.
 
-Applied, thanks.
+Also, lower the clock for the ADC as it allows to have more stable reads and
+this is the speed used by atmel_tsadcc.
+It lowers the maximum throughput rate from 440000 samples per second to 12958
+samples per second. It shouldn't be an issue as the CPU is not able to keep up
+reading samples at that frequency.
 
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ arch/arm/mach-at91/at91sam9g45.c        | 2 +-
+ arch/arm/mach-at91/board-sam9m10g45ek.c | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-at91/at91sam9g45.c b/arch/arm/mach-at91/at91sam9g45.c
+index 2f455ce35268..3c519a7a938f 100644
+--- a/arch/arm/mach-at91/at91sam9g45.c
++++ b/arch/arm/mach-at91/at91sam9g45.c
+@@ -181,7 +181,7 @@ static struct clk vdec_clk = {
+ static struct clk adc_op_clk = {
+ 	.name		= "adc_op_clk",
+ 	.type		= CLK_TYPE_PERIPHERAL,
+-	.rate_hz	= 13200000,
++	.rate_hz	= 300000,
+ };
+ 
+ /* AES/TDES/SHA clock - Only for sam9m11/sam9g56 */
+diff --git a/arch/arm/mach-at91/board-sam9m10g45ek.c b/arch/arm/mach-at91/board-sam9m10g45ek.c
+index ef39078c8ce2..4d775b796ce4 100644
+--- a/arch/arm/mach-at91/board-sam9m10g45ek.c
++++ b/arch/arm/mach-at91/board-sam9m10g45ek.c
+@@ -315,6 +315,7 @@ static struct at91_adc_data ek_adc_data = {
+ 	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) | BIT(6) | BIT(7),
+ 	.use_external_triggers = true,
+ 	.vref = 3300,
++	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
+ };
+ 
+ /*
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.3.2
+
