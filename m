@@ -1,98 +1,91 @@
-Return-Path: <sre@ring0.de>
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv1 1/9] mfd: twl4030-madc: Use managed resources
-Date: Sat,  1 Mar 2014 20:32:37 +0100
-Message-Id: <1393702365-26429-2-git-send-email-sre@debian.org>
-In-Reply-To: <1393702365-26429-1-git-send-email-sre@debian.org>
-References: <1393444990-28140-1-git-send-email-sre@debian.org>
- <1393702365-26429-1-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:58238 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932692AbaCQN5U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 09:57:20 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Gregory Clement <gregory.clement@free-electrons.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v2 00/15] iio: adc: at91 cleanups and atmel_tsadcc removal
+Date: Mon, 17 Mar 2014 14:56:53 +0100
+Message-Id: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Update twl4030-madc driver to use managed resources.
+This patch set is a followup of my previous series: iio: adc: at91 fixes
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+1-3) The first 3 patches are cleaning up the patform_data used for at91_adc.
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
- }
- 
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
- 
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
+4-5) Then touchscreen support for older ADCs is added, this allows to use that
+     for the sam9m10g45ek.
+
+6) Following those modifications, the mach/at91_adc.h is not used anywhere but
+   in the at91_adc driver so it is remove and its content (register definitions)
+   placed directly in the driver.
+
+7-9) at91sam9rl support is added to at91_adc and is used for the at91sam9rl
+     based boards.
+
+10-11) Prepare the atmel_tsadcc removal by switching sam9rl and sam9g45 to use
+       only at91_adc instead of atmel_tsadcc.
+
+12-15) atmel_tsadcc removal
+
+
+Changes in v2:
+ - reworked the IRQ handlers in patch 4 as suggested by Dmitry and Thomas
+ - ts_bufferedmeasure is now a bool
+ - the multiline comment is now correctly formatted
+ - improved commit log for patch 5
+
+Alexandre Belloni (15):
+  ARM: at91: sam9g45: remove unused platform_data
+  ARM: at91: sam9260: remove unused platform_data
+  iio: adc: at91: cleanup platform_data
+  iio: adc: at91_adc: Add support for touchscreens without TSMR
+  ARM: at91: sam9m10g45ek: Add touchscreen support through at91_adc
+  iio: adc: at91: remove unused include from include/mach
+  iio: adc: at91: add sam9rl support
+  ARM: at91: sam9rl: add at91_adc to support adc and touchscreen
+  ARM: at91: sam9rlek add touchscreen support through at91_adc
+  ARM: at91: sam9g45: switch from atmel_tsadcc to at91_adc
+  ARM: at91: sam9rl: switch from atmel_tsadcc to at91_adc
+  ARM: at91: remove atmel_tsadcc platform_data
+  ARM: at91: remove atmel_tsadcc from sama5_defconfig
+  Input: atmel_tsadcc: remove driver
+  ARM: at91/dt: at91-cosino_mega2560 remove useless tsadcc node
+
+ MAINTAINERS                                |   6 -
+ arch/arm/boot/dts/at91-cosino_mega2560.dts |   5 -
+ arch/arm/configs/at91sam9g45_defconfig     |   3 +-
+ arch/arm/configs/at91sam9rl_defconfig      |   3 +-
+ arch/arm/configs/sama5_defconfig           |   1 -
+ arch/arm/mach-at91/at91sam9260_devices.c   |  10 -
+ arch/arm/mach-at91/at91sam9g45.c           |   2 +-
+ arch/arm/mach-at91/at91sam9g45_devices.c   |  63 +----
+ arch/arm/mach-at91/at91sam9rl.c            |   7 +
+ arch/arm/mach-at91/at91sam9rl_devices.c    |  83 +++++--
+ arch/arm/mach-at91/board-sam9m10g45ek.c    |  16 +-
+ arch/arm/mach-at91/board-sam9rlek.c        |  16 +-
+ arch/arm/mach-at91/board.h                 |   3 -
+ arch/arm/mach-at91/include/mach/at91_adc.h | 107 ---------
+ drivers/iio/adc/at91_adc.c                 | 340 +++++++++++++++++++++++----
+ drivers/input/touchscreen/Kconfig          |  12 -
+ drivers/input/touchscreen/Makefile         |   1 -
+ drivers/input/touchscreen/atmel_tsadcc.c   | 358 -----------------------------
+ include/linux/platform_data/at91_adc.h     |  27 +--
+ include/linux/platform_data/atmel.h        |   7 -
+ 20 files changed, 382 insertions(+), 688 deletions(-)
+ delete mode 100644 arch/arm/mach-at91/include/mach/at91_adc.h
+ delete mode 100644 drivers/input/touchscreen/atmel_tsadcc.c
+
 -- 
-1.9.0
+1.8.3.2
+
