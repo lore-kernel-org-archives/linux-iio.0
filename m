@@ -1,145 +1,112 @@
-Return-Path: <alecaberg@google.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47155 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750716AbaCQTXL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 15:23:11 -0400
+Message-ID: <53274BDA.9070804@kernel.org>
+Date: Mon, 17 Mar 2014 19:24:10 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <77ce5285-713f-4f2e-97b0-702c93404d82@email.android.com>
-References: <1395255044-20173-1-git-send-email-alecaberg@chromium.org> <77ce5285-713f-4f2e-97b0-702c93404d82@email.android.com>
-From: Alec Berg <alecaberg@google.com>
-Date: Wed, 19 Mar 2014 14:33:48 -0700
-Message-ID: <CAGgO2Lgka8-S70ydrNRErwUPYNmTXvpNk-k6ApFNpqjGRVjH4Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: querying buffer scan_mask should return 0/1
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Alec Berg <alecaberg@chromium.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net
-Content-Type: multipart/alternative; boundary=089e0149ce3cae108304f4fc69ce
-List-ID: <linux-iio@vger.kernel.org>
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Beomho Seo <beomho.seo@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL pointer
+ dereference
+References: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com> <53247EC9.6090505@kernel.org> <1395043273.3950.3.camel@AMDC1943>
+In-Reply-To: <1395043273.3950.3.camel@AMDC1943>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---089e0149ce3cae108304f4fc69ce
-Content-Type: text/plain; charset=UTF-8
-
-I'm using x86, not sure what other architectures, if any, that it affects.
-
-Thanks.
-
-
-On Wed, Mar 19, 2014 at 1:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-
+On 17/03/14 08:01, Krzysztof Kozlowski wrote:
+> Hi,
 >
+> On Sat, 2014-03-15 at 16:24 +0000, Jonathan Cameron wrote:
+>> On 06/03/14 09:33, Krzysztof Kozlowski wrote:
+>>> During probe the driver allocates dummy I2C devices (i2c_new_dummy())
+>>> but they aren't unregistered during driver remove or probe failure.
+>>>
+>>> Additionally driver does not check the return value of i2c_new_dummy().
+>>> In case of error (i2c_new_device(): memory allocation failure or I2C
+>>> address cannot be used) this function returns NULL which is later
+>>> dereferenced by i2c_smbus_{read,write}_data() functions.
+>>>
+>>> Fix issues by properly checking for i2c_new_dummy() return value and
+>>> unregistering I2C devices on driver remove or probe failure.
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+>> Good catch, but the error path needs more care.
+>>> ---
+>>>    drivers/iio/light/cm36651.c |   12 ++++++++++++
+>>>    1 file changed, 12 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+>>> index a45e07492db3..e7e9a597159f 100644
+>>> --- a/drivers/iio/light/cm36651.c
+>>> +++ b/drivers/iio/light/cm36651.c
+>>> @@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
+>>>    	cm36651->ps_client = i2c_new_dummy(client->adapter,
+>>>    						     CM36651_I2C_ADDR_PS);
+>>>    	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
+>>> +	if (!cm36651->ps_client || !cm36651->ara_client) {
+>>> +		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
+>>> +		ret = -ENODEV;
+>>> +		goto error_i2c_unregister;
+>>> +	}
+>> The two failures need to be handled independently as we only want to unregister
+>> those that succeeded.  i2c_new_dummy will not return an error and leave a device
+>> registered.  This is particularly true given the first thing that i2c_unregister_device
+>> does is to derefence the client pointer.  That will cause a segfault if you do it
+>> for NULL as here.
+>>
 >
-> On March 19, 2014 6:50:44 PM GMT+00:00, Alec Berg <alecaberg@chromium.org>
-> wrote:
-> >Ensure that querying the IIO buffer scan_mask returns a value of
-> >0 or 1. Currently querying the scan mask has the value returned
-> >by test_bit(), which returns either true or false. For some
-> >architectures test_bit() may return -1 for true, which will appear
-> >to return an error when returning from iio_scan_mask_query().
-> I'm curious now.  Which architectures?  Change is fine BTW. Will pick when
-> I get a few mins...
-> >
-> >Additionally, it's important for the sysfs interface to consistently
-> >return the same thing when querying the scan_mask.
-> >
-> >Signed-off-by: Alec Berg <alecaberg@chromium.org>
-> >---
-> > drivers/iio/industrialio-buffer.c | 6 ++++--
-> > 1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> >diff --git a/drivers/iio/industrialio-buffer.c
-> >b/drivers/iio/industrialio-buffer.c
-> >index c67d83b..fe25042 100644
-> >--- a/drivers/iio/industrialio-buffer.c
-> >+++ b/drivers/iio/industrialio-buffer.c
-> >@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
-> >       int ret;
-> >       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >
-> >-      ret = test_bit(to_iio_dev_attr(attr)->address,
-> >+      /* Ensure ret is 0 or 1. */
-> >+      ret = !!test_bit(to_iio_dev_attr(attr)->address,
-> >                      indio_dev->buffer->scan_mask);
-> >
-> >       return sprintf(buf, "%d\n", ret);
-> >@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
-> >       if (!buffer->scan_mask)
-> >               return 0;
-> >
-> >-      return test_bit(bit, buffer->scan_mask);
-> >+      /* Ensure return value is 0 or 1. */
-> >+      return !!test_bit(bit, buffer->scan_mask);
-> > };
-> > EXPORT_SYMBOL_GPL(iio_scan_mask_query);
-> >
+> Where the segfault would occur? If i2c_new_dummy fails then
+> i2c_unregister_device() will be called only on NON-null values:
+> 	+error_i2c_unregister:
+> 	+	if (cm36651->ps_client)
+> 	+		i2c_unregister_device(cm36651->ps_client);
+> 	+	if (cm36651->ara_client)
+> 	+		i2c_unregister_device(cm36651->ara_client);
+>
+> If probe() succeeds (both i2c_new_dummy return proper pointer) then
+> remove() will unregister two i2c devices.
+>
+Oops, I missed that.  Still, the form of this is unusual so please
+change it to the more conventional option of a goto per error rather
+than grouping them.  That will also allow you to drop the null checks
+below leading to a more obviously correct error path.
+>
+>>>    	mutex_init(&cm36651->lock);
+>>>    	indio_dev->dev.parent = &client->dev;
+>>>    	indio_dev->channels = cm36651_channels;
+>>> @@ -687,6 +692,11 @@ error_free_irq:
+>>>    	free_irq(client->irq, indio_dev);
+>>>    error_disable_reg:
+>>>    	regulator_disable(cm36651->vled_reg);
+>>> +error_i2c_unregister:
+>>> +	if (cm36651->ps_client)
+>>> +		i2c_unregister_device(cm36651->ps_client);
+>>> +	if (cm36651->ara_client)
+>>> +		i2c_unregister_device(cm36651->ara_client);
+>>>    	return ret;
+>>>    }
+>>>
+>>> @@ -698,6 +708,8 @@ static int cm36651_remove(struct i2c_client *client)
+>>>    	iio_device_unregister(indio_dev);
+>>>    	regulator_disable(cm36651->vled_reg);
+>>>    	free_irq(client->irq, indio_dev);
+>>> +	i2c_unregister_device(cm36651->ps_client);
+>>> +	i2c_unregister_device(cm36651->ara_client);
+>> Good catch.
+>>>
+>>>    	return 0;
+>>>    }
+>>>
 >
 > --
-> Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
---089e0149ce3cae108304f4fc69ce
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">I&#39;m using x86, not sure what other architectures, if a=
-ny, that it affects.<div><br></div><div>Thanks.</div></div><div class=3D"gm=
-ail_extra"><br><br><div class=3D"gmail_quote">On Wed, Mar 19, 2014 at 1:31 =
-PM, Jonathan Cameron <span dir=3D"ltr">&lt;<a href=3D"mailto:jic23@kernel.o=
-rg" target=3D"_blank">jic23@kernel.org</a>&gt;</span> wrote:<br>
-
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex"><div class=3D""><br>
-<br>
-On March 19, 2014 6:50:44 PM GMT+00:00, Alec Berg &lt;<a href=3D"mailto:ale=
-caberg@chromium.org">alecaberg@chromium.org</a>&gt; wrote:<br>
-&gt;Ensure that querying the IIO buffer scan_mask returns a value of<br>
-&gt;0 or 1. Currently querying the scan mask has the value returned<br>
-&gt;by test_bit(), which returns either true or false. For some<br>
-&gt;architectures test_bit() may return -1 for true, which will appear<br>
-&gt;to return an error when returning from iio_scan_mask_query().<br>
-</div>I&#39;m curious now. =C2=A0Which architectures? =C2=A0Change is fine =
-BTW. Will pick when I get a few mins...<br>
-<div><div class=3D"h5">&gt;<br>
-&gt;Additionally, it&#39;s important for the sysfs interface to consistentl=
-y<br>
-&gt;return the same thing when querying the scan_mask.<br>
-&gt;<br>
-&gt;Signed-off-by: Alec Berg &lt;<a href=3D"mailto:alecaberg@chromium.org">=
-alecaberg@chromium.org</a>&gt;<br>
-&gt;---<br>
-&gt; drivers/iio/industrialio-buffer.c | 6 ++++--<br>
-&gt; 1 file changed, 4 insertions(+), 2 deletions(-)<br>
-&gt;<br>
-&gt;diff --git a/drivers/iio/industrialio-buffer.c<br>
-&gt;b/drivers/iio/industrialio-buffer.c<br>
-&gt;index c67d83b..fe25042 100644<br>
-&gt;--- a/drivers/iio/industrialio-buffer.c<br>
-&gt;+++ b/drivers/iio/industrialio-buffer.c<br>
-&gt;@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,=
-<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 int ret;<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 struct iio_dev *indio_dev =3D dev_to_iio_dev(dev)=
-;<br>
-&gt;<br>
-&gt;- =C2=A0 =C2=A0 =C2=A0ret =3D test_bit(to_iio_dev_attr(attr)-&gt;addres=
-s,<br>
-&gt;+ =C2=A0 =C2=A0 =C2=A0/* Ensure ret is 0 or 1. */<br>
-&gt;+ =C2=A0 =C2=A0 =C2=A0ret =3D !!test_bit(to_iio_dev_attr(attr)-&gt;addr=
-ess,<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0indio_dev-&gt;buffer-&gt;scan_mask);<br>
-&gt;<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 return sprintf(buf, &quot;%d\n&quot;, ret);<br>
-&gt;@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,<=
-br>
-&gt; =C2=A0 =C2=A0 =C2=A0 if (!buffer-&gt;scan_mask)<br>
-&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return 0;<br>
-&gt;<br>
-&gt;- =C2=A0 =C2=A0 =C2=A0return test_bit(bit, buffer-&gt;scan_mask);<br>
-&gt;+ =C2=A0 =C2=A0 =C2=A0/* Ensure return value is 0 or 1. */<br>
-&gt;+ =C2=A0 =C2=A0 =C2=A0return !!test_bit(bit, buffer-&gt;scan_mask);<br>
-&gt; };<br>
-&gt; EXPORT_SYMBOL_GPL(iio_scan_mask_query);<br>
-&gt;<br>
-<br>
---<br>
-</div></div>Sent from my Android phone with K-9 Mail. Please excuse my brev=
-ity.<br>
-</blockquote></div><br></div>
-
---089e0149ce3cae108304f4fc69ce--
