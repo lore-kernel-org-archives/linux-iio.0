@@ -1,99 +1,102 @@
-Return-Path: <sre@ring0.de>
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv4 1/7] mfd: twl4030-madc: Use managed resources
-Date: Sun, 16 Mar 2014 02:43:25 +0100
-Message-Id: <1394934211-21605-2-git-send-email-sre@debian.org>
-In-Reply-To: <1394934211-21605-1-git-send-email-sre@debian.org>
-References: <1394934211-21605-1-git-send-email-sre@debian.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:24186 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751258AbaCQIBR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 04:01:17 -0400
+Message-id: <1395043273.3950.3.camel@AMDC1943>
+Subject: Re: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL
+ pointer dereference
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Beomho Seo <beomho.seo@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Date: Mon, 17 Mar 2014 09:01:13 +0100
+In-reply-to: <53247EC9.6090505@kernel.org>
+References: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
+ <53247EC9.6090505@kernel.org>
+Content-type: text/plain; charset=UTF-8
+MIME-version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Update twl4030-madc driver to use managed resources.
+Hi,
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Tested-by: Marek Belisko <marek@goldelico.com>
----
- drivers/mfd/twl4030-madc.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+On Sat, 2014-03-15 at 16:24 +0000, Jonathan Cameron wrote:
+> On 06/03/14 09:33, Krzysztof Kozlowski wrote:
+> > During probe the driver allocates dummy I2C devices (i2c_new_dummy())
+> > but they aren't unregistered during driver remove or probe failure.
+> >
+> > Additionally driver does not check the return value of i2c_new_dummy().
+> > In case of error (i2c_new_device(): memory allocation failure or I2C
+> > address cannot be used) this function returns NULL which is later
+> > dereferenced by i2c_smbus_{read,write}_data() functions.
+> >
+> > Fix issues by properly checking for i2c_new_dummy() return value and
+> > unregistering I2C devices on driver remove or probe failure.
+> >
+> > Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+> Good catch, but the error path needs more care.
+> > ---
+> >   drivers/iio/light/cm36651.c |   12 ++++++++++++
+> >   1 file changed, 12 insertions(+)
+> >
+> > diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+> > index a45e07492db3..e7e9a597159f 100644
+> > --- a/drivers/iio/light/cm36651.c
+> > +++ b/drivers/iio/light/cm36651.c
+> > @@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
+> >   	cm36651->ps_client = i2c_new_dummy(client->adapter,
+> >   						     CM36651_I2C_ADDR_PS);
+> >   	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
+> > +	if (!cm36651->ps_client || !cm36651->ara_client) {
+> > +		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
+> > +		ret = -ENODEV;
+> > +		goto error_i2c_unregister;
+> > +	}
+> The two failures need to be handled independently as we only want to unregister
+> those that succeeded.  i2c_new_dummy will not return an error and leave a device
+> registered.  This is particularly true given the first thing that i2c_unregister_device
+> does is to derefence the client pointer.  That will cause a segfault if you do it
+> for NULL as here.
+> 
 
-diff --git a/drivers/mfd/twl4030-madc.c b/drivers/mfd/twl4030-madc.c
-index 4c583e4..5458561 100644
---- a/drivers/mfd/twl4030-madc.c
-+++ b/drivers/mfd/twl4030-madc.c
-@@ -702,14 +702,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc;
- 	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
--	int ret;
-+	int irq, ret;
- 	u8 regval;
- 
- 	if (!pdata) {
- 		dev_err(&pdev->dev, "platform_data not available\n");
- 		return -EINVAL;
- 	}
--	madc = kzalloc(sizeof(*madc), GFP_KERNEL);
-+	madc = devm_kzalloc(&pdev->dev, sizeof(*madc), GFP_KERNEL);
- 	if (!madc)
- 		return -ENOMEM;
- 
-@@ -726,7 +726,7 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	    TWL4030_MADC_ISR1 : TWL4030_MADC_ISR2;
- 	ret = twl4030_madc_set_power(madc, 1);
- 	if (ret < 0)
--		goto err_power;
-+		return ret;
- 	ret = twl4030_madc_set_current_generator(madc, 0, 1);
- 	if (ret < 0)
- 		goto err_current_generator;
-@@ -770,7 +770,9 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, madc);
- 	mutex_init(&madc->lock);
--	ret = request_threaded_irq(platform_get_irq(pdev, 0), NULL,
-+
-+	irq = platform_get_irq(pdev, 0);
-+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
- 				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
- 	if (ret) {
-@@ -783,9 +785,6 @@ err_i2c:
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- err_current_generator:
- 	twl4030_madc_set_power(madc, 0);
--err_power:
--	kfree(madc);
--
- 	return ret;
- }
- 
-@@ -793,10 +792,8 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- {
- 	struct twl4030_madc_data *madc = platform_get_drvdata(pdev);
- 
--	free_irq(platform_get_irq(pdev, 0), madc);
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
--	kfree(madc);
- 
- 	return 0;
- }
--- 
-1.9.0
+Where the segfault would occur? If i2c_new_dummy fails then
+i2c_unregister_device() will be called only on NON-null values:
+	+error_i2c_unregister:
+	+	if (cm36651->ps_client)
+	+		i2c_unregister_device(cm36651->ps_client);
+	+	if (cm36651->ara_client)
+	+		i2c_unregister_device(cm36651->ara_client);
+
+If probe() succeeds (both i2c_new_dummy return proper pointer) then
+remove() will unregister two i2c devices.
+
+
+> >   	mutex_init(&cm36651->lock);
+> >   	indio_dev->dev.parent = &client->dev;
+> >   	indio_dev->channels = cm36651_channels;
+> > @@ -687,6 +692,11 @@ error_free_irq:
+> >   	free_irq(client->irq, indio_dev);
+> >   error_disable_reg:
+> >   	regulator_disable(cm36651->vled_reg);
+> > +error_i2c_unregister:
+> > +	if (cm36651->ps_client)
+> > +		i2c_unregister_device(cm36651->ps_client);
+> > +	if (cm36651->ara_client)
+> > +		i2c_unregister_device(cm36651->ara_client);
+> >   	return ret;
+> >   }
+> >
+> > @@ -698,6 +708,8 @@ static int cm36651_remove(struct i2c_client *client)
+> >   	iio_device_unregister(indio_dev);
+> >   	regulator_disable(cm36651->vled_reg);
+> >   	free_irq(client->irq, indio_dev);
+> > +	i2c_unregister_device(cm36651->ps_client);
+> > +	i2c_unregister_device(cm36651->ara_client);
+> Good catch.
+> >
+> >   	return 0;
+> >   }
+> >
+
