@@ -1,123 +1,139 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53423 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750769AbaCVMlF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:41:05 -0400
-Message-ID: <532D8520.5010902@kernel.org>
-Date: Sat, 22 Mar 2014 12:42:08 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <53271775.7050209@linux.intel.com>
+Date: Mon, 17 Mar 2014 08:40:37 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [Patch v1 1/2] iio: ak8975 : Add AK8963 compatibility mode support
-References: <1395248167-16991-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1395248167-16991-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org,
+ Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Enable default bypass mode
+References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394571854-6737-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5324795B.50509@kernel.org>
+In-Reply-To: <5324795B.50509@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/03/14 16:56, Srinivas Pandruvada wrote:
-> AK8963 and AK8975 use same register definitions, except the range
-> of X,Y,Z values. Added support of 8963 based on i2c_device_id.
-> Unfortunately there is no way to detect the type via registers,
-> both device registers return 0x48 as id of chipset.
+On 03/15/2014 09:01 AM, Jonathan Cameron wrote:
+> On 11/03/14 21:04, Srinivas Pandruvada wrote:
+>> This chip has two modes to control secondary sensor attached to it.
+>> One is master mode and another is bypass mode. In master mode
+>> MPU6500 will directly communicates to the secondary sensor device
+>> attached to it. This can support very few secondary devices in this
+>> mode.
+>> But when configured in bypass mode the i2c lines are directly connected
+>> to host i2c bus controller.
+>> Since in master mode it can only support few devices and they are not
+>> implemented in this driver, set the default mode to bypass mode.
+>>
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> This has been proposed before by Manuel Stahl,
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git
+> Please read the thread from
+>
+> http://www.spinics.net/lists/linux-iio/msg11985.html
+>
+> In short, the best way we have come up with for handling this cleanly
+> (avoiding issues with the device in between going into sleep etc) was
+> to implement an i2c bus multiplexer with 1 input and 1 output as part of
+> the driver.
+>
+> Manuel, any progress on your patches?
+>
+
+I think the mux is the right solution for using master mode of MPU60X0.
+But I feel that when this driver is initialized then we should disable 
+the master mode at init
+as currently it doesn't have any implementation for slave devices as 
+Invensense typically do for Android devices.
+Once a client want to use multiplexer then it can be turned on.
+Invensense engineer (author of this driver) recommends not to use master 
+mode.
+
+So my patch disables at init. I am calling this function from init. I 
+can remove export of symbol.
+
+What do you think about this?
 
 Thanks,
+Srinivas
 
-> ---
->   drivers/iio/magnetometer/Kconfig  |  3 ++-
->   drivers/iio/magnetometer/ak8975.c | 34 +++++++++++++++++++++++++++++-----
->   2 files changed, 31 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index d86d226..05a364c54 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -11,7 +11,8 @@ config AK8975
->   	depends on GPIOLIB
->   	help
->   	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
-> -	  Magnetometer.
-> +	  Magnetometer. This driver can also support AK8963, if i2c
-> +	  device name is identified as ak8963.
->
->   	  To compile this driver as a module, choose M here: the module
->   	  will be called ak8975.
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 0542354..aa7682d 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -85,7 +85,14 @@
->   #define AK8975_MAX_CONVERSION_TIMEOUT	500
->   #define AK8975_CONVERSION_DONE_POLL_TIME 10
->   #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
-> -#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
-> +#define RAW_TO_GAUSS_8975(asa) ((((asa) + 128) * 3000) / 256)
-> +#define RAW_TO_GAUSS_8963(asa) ((((asa) + 128) * 6000) / 256)
-> +
-> +/* Compatible Asahi Kasei Compass parts */
-> +enum asahi_compass_chipset {
-> +	AK8975,
-> +	AK8963,
-> +};
->
->   /*
->    * Per-instance context data for the device.
-> @@ -101,6 +108,7 @@ struct ak8975_data {
->   	int			eoc_irq;
->   	wait_queue_head_t	data_ready_queue;
->   	unsigned long		flags;
-> +	enum asahi_compass_chipset chipset;
->   };
->
->   static const int ak8975_index_to_reg[] = {
-> @@ -272,9 +280,21 @@ static int ak8975_setup(struct i2c_client *client)
->    * Since ASA doesn't change, we cache the resultant scale factor into the
->    * device context in ak8975_setup().
->    */
-> -	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
-> -	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
-> -	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
-> +	if (data->chipset == AK8963) {
-> +		/*
-> +		 * H range is +-8190 and magnetometer range is +-4912.
-> +		 * So HuT using the above explanation for 8975,
-> +		 * 4912/8190 = ~ 6/10.
-> +		 * So the Hadj should use 6/10 instead of 3/10.
-> +		 */
-> +		data->raw_to_gauss[0] = RAW_TO_GAUSS_8963(data->asa[0]);
-> +		data->raw_to_gauss[1] = RAW_TO_GAUSS_8963(data->asa[1]);
-> +		data->raw_to_gauss[2] = RAW_TO_GAUSS_8963(data->asa[2]);
-> +	} else {
-> +		data->raw_to_gauss[0] = RAW_TO_GAUSS_8975(data->asa[0]);
-> +		data->raw_to_gauss[1] = RAW_TO_GAUSS_8975(data->asa[1]);
-> +		data->raw_to_gauss[2] = RAW_TO_GAUSS_8975(data->asa[2]);
-> +	}
->
->   	return 0;
->   }
-> @@ -499,6 +519,9 @@ static int ak8975_probe(struct i2c_client *client,
->   	data->eoc_gpio = eoc_gpio;
->   	data->eoc_irq = 0;
->
-> +	data->chipset = (enum asahi_compass_chipset)(id->driver_data);
-> +	dev_dbg(&client->dev, "Asahi compass chip %s\n", id->name);
-> +
->   	/* Perform some basic start-of-day setup of the device. */
->   	err = ak8975_setup(client);
->   	if (err < 0) {
-> @@ -551,7 +574,8 @@ static int ak8975_remove(struct i2c_client *client)
->   }
->
->   static const struct i2c_device_id ak8975_id[] = {
-> -	{"ak8975", 0},
-> +	{"ak8975", AK8975},
-> +	{"ak8963", AK8963},
->   	{}
->   };
->
->
 
+> Jonathan
+>> ---
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 20 +++++++++++++++++++-
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
+>>   2 files changed, 23 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
+>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> index 4a76697..6ba565a 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> @@ -61,6 +61,7 @@ static const struct inv_mpu6050_reg_map 
+>> reg_set_6050 = {
+>>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
+>>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
+>>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
+>> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
+>>   };
+>>
+>>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>> @@ -616,6 +617,21 @@ static const struct iio_info mpu_info = {
+>>       .validate_trigger = inv_mpu6050_validate_trigger,
+>>   };
+>>
+>> +int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
+>> +{
+>> +    int ret;
+>> +
+>> +    if (enable)
+>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>> +                    st->client->irq |
+>> +                        INV_MPU6050_BIT_BYPASS_EN);
+>> +    else
+>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>> +                    st->client->irq);
+>> +    return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(inv_set_bypass_status);
+>> +
+>>   /**
+>>    *  inv_check_and_setup_chip() - check and setup chip.
+>>    */
+>> @@ -654,7 +670,9 @@ static int inv_check_and_setup_chip(struct 
+>> inv_mpu6050_state *st,
+>>       if (result)
+>>           return result;
+>>
+>> -    return 0;
+>> +    result = inv_set_bypass_status(st, true);
+>> +
+>> +    return result;
+>>   }
+>>
+>>   /**
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
+>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> index f383955..de5aa22 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
+>>       u8 int_enable;
+>>       u8 pwr_mgmt_1;
+>>       u8 pwr_mgmt_2;
+>> +    u8 int_pin_cfg;
+>>   };
+>>
+>>   /*device enum */
+>> @@ -185,6 +186,9 @@ struct inv_mpu6050_state {
+>>   #define INV_MPU6050_MIN_FIFO_RATE                         4
+>>   #define INV_MPU6050_ONE_K_HZ                              1000
+>>
+>> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
+>> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
+>> +
+>>   /* scan element definition */
+>>   enum inv_mpu6050_scan {
+>>       INV_MPU6050_SCAN_ACCL_X,
+>>
+>
+>
