@@ -1,161 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46397 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46405 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751417AbaCQRR3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 13:17:29 -0400
-In-Reply-To: <53271775.7050209@linux.intel.com>
-References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394571854-6737-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5324795B.50509@kernel.org> <53271775.7050209@linux.intel.com>
+	with ESMTP id S1755366AbaCQRTO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 13:19:14 -0400
+In-Reply-To: <5327186B.7030500@linux.intel.com>
+References: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394572557-8102-3-git-send-email-srinivas.pandruvada@linux.intel.com> <53246E3A.7020702@kernel.org> <5327186B.7030500@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Enable default bypass mode
+Subject: Re: [PATCH 3/3] iio: ak8975: Don't bail out for irq setup error
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 17 Mar 2014 17:17:17 +0000
+Date: Mon, 17 Mar 2014 17:18:54 +0000
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Message-ID: <63fdb179-de50-4b16-80a8-17b0b66abc34@email.android.com>
+CC: linux-iio@vger.kernel.org
+Message-ID: <c7ca8a3a-7feb-417c-8abe-c610a2ca04e8@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On March 17, 2014 3:40:37 PM GMT+00:00, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->On 03/15/2014 09:01 AM, Jonathan Cameron wrote:
->> On 11/03/14 21:04, Srinivas Pandruvada wrote:
->>> This chip has two modes to control secondary sensor attached to it.
->>> One is master mode and another is bypass mode. In master mode
->>> MPU6500 will directly communicates to the secondary sensor device
->>> attached to it. This can support very few secondary devices in this
->>> mode.
->>> But when configured in bypass mode the i2c lines are directly
->connected
->>> to host i2c bus controller.
->>> Since in master mode it can only support few devices and they are
->not
->>> implemented in this driver, set the default mode to bypass mode.
+On March 17, 2014 3:44:43 PM GMT+00:00, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+>On 03/15/2014 08:14 AM, Jonathan Cameron wrote:
+>> On 11/03/14 21:15, Srinivas Pandruvada wrote:
+>>> This driver can very well work via polling, if request_irq failed.
+>>> The problem is that many times i2c interrupts are shared. This
+>>> driver is not ready for shared interrupt as it will return
+>IRQ_HANDLED,
+>>> in every case. Here we will get EBUSY when some other driver
+>registered
+>>> handler and this driver is grabbing in exclusive mode.
+>>> So in this case just print error and continue in polling mode.
 >>>
 >>> Signed-off-by: Srinivas Pandruvada
 ><srinivas.pandruvada@linux.intel.com>
->> This has been proposed before by Manuel Stahl,
+>> I'm not sure this is a good solution as it means that we will get
+>very 
+>> different
+>> results depending on the probe order of various drivers.  How do
+>other 
+>> i2c drivers
+>> cope with the fact that there is no way of knowing within the 
+>> interrupt routine
+>> that the device was the one causing the interrupt?
 >>
->> Please read the thread from
->>
->> http://www.spinics.net/lists/linux-iio/msg11985.html
->>
->> In short, the best way we have come up with for handling this cleanly
->> (avoiding issues with the device in between going into sleep etc) was
->> to implement an i2c bus multiplexer with 1 input and 1 output as part
->of
->> the driver.
->>
->> Manuel, any progress on your patches?
->>
->
->I think the mux is the right solution for using master mode of MPU60X0.
->But I feel that when this driver is initialized then we should disable 
->the master mode at init
->as currently it doesn't have any implementation for slave devices as 
->Invensense typically do for Android devices.
-Agreed that disabling effectively unused master mode makes sense.
->Once a client want to use multiplexer then it can be turned on.
-Yes turn on bypass as needed... Or is it a case of one control for master or bypass?  If
- so then seems like bypass will do nothing unless the MUX is enabled so makes sense
- to init in bypass mode.
->Invensense engineer (author of this driver) recommends not to use
->master 
->mode.
->
->So my patch disables at init. I am calling this function from init. I 
->can remove export of symbol.
-
->
->What do you think about this?
-All sounds sensible to me.
+>Agreed. The i2c driver currently don't receive irq flags in the client 
+>structure. They
+>only get irq number. We do get irq flags from the ACPI in this case or 
+>from some
+>platform init code. I have another patch to enhance ACPI i2c binding
+>and 
+>also enhance
+>i2c_client structure.
+>In addition this driver can be enhanced to use shared irq.
+Let's hold this patch and do it properly once support is in place... 
 >
 >Thanks,
 >Srinivas
 >
 >
->> Jonathan
+>> A quick grep suggests that the normal trick is to had over to an irq 
+>> thread
+>> then return IRQ_NONE from that once we know it isn't our irq. Could
+>we 
+>> have
+>> move the queue wakeup into a a thread (converting to a threaded 
+>> interrupt) but
+>> before it query the hardware to establish it is actually our
+>interrupt?
 >>> ---
->>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 20
->+++++++++++++++++++-
->>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
->>>   2 files changed, 23 insertions(+), 1 deletion(-)
+>>>   drivers/iio/magnetometer/ak8975.c | 12 +++++++++---
+>>>   1 file changed, 9 insertions(+), 3 deletions(-)
 >>>
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
->>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> index 4a76697..6ba565a 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>> @@ -61,6 +61,7 @@ static const struct inv_mpu6050_reg_map 
->>> reg_set_6050 = {
->>>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
->>>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
->>>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
->>> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
->>>   };
+>>> diff --git a/drivers/iio/magnetometer/ak8975.c 
+>>> b/drivers/iio/magnetometer/ak8975.c
+>>> index fe5e9c8..0f9c407 100644
+>>> --- a/drivers/iio/magnetometer/ak8975.c
+>>> +++ b/drivers/iio/magnetometer/ak8975.c
+>>> @@ -236,9 +236,15 @@ static int ak8975_setup(struct i2c_client
+>*client)
+>>>       if (data->eoc_gpio > 0 || client->irq) {
+>>>           ret = ak8975_setup_irq(data);
+>>>           if (ret < 0) {
+>>> -            dev_err(&client->dev,
+>>> -                "Error setting data ready interrupt\n");
+>>> -            return ret;
+>>> +            if (ret == -EBUSY) {
+>>> +                dev_err(&client->dev,
+>>> +                    "device Intr busy:polling required\n");
+>>> +                ret = 0;
+>>> +            } else {
+>>> +                dev_err(&client->dev,
+>>> +                    "Error setting data ready interrupt\n");
+>>> +                return ret;
+>>> +            }
+>>>           }
+>>>       }
 >>>
->>>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
->>> @@ -616,6 +617,21 @@ static const struct iio_info mpu_info = {
->>>       .validate_trigger = inv_mpu6050_validate_trigger,
->>>   };
->>>
->>> +int inv_set_bypass_status(struct inv_mpu6050_state *st, bool
->enable)
->>> +{
->>> +    int ret;
->>> +
->>> +    if (enable)
->>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
->>> +                    st->client->irq |
->>> +                        INV_MPU6050_BIT_BYPASS_EN);
->>> +    else
->>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
->>> +                    st->client->irq);
->>> +    return ret;
->>> +}
->>> +EXPORT_SYMBOL_GPL(inv_set_bypass_status);
->>> +
->>>   /**
->>>    *  inv_check_and_setup_chip() - check and setup chip.
->>>    */
->>> @@ -654,7 +670,9 @@ static int inv_check_and_setup_chip(struct 
->>> inv_mpu6050_state *st,
->>>       if (result)
->>>           return result;
->>>
->>> -    return 0;
->>> +    result = inv_set_bypass_status(st, true);
->>> +
->>> +    return result;
->>>   }
->>>
->>>   /**
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
->>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> index f383955..de5aa22 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->>> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
->>>       u8 int_enable;
->>>       u8 pwr_mgmt_1;
->>>       u8 pwr_mgmt_2;
->>> +    u8 int_pin_cfg;
->>>   };
->>>
->>>   /*device enum */
->>> @@ -185,6 +186,9 @@ struct inv_mpu6050_state {
->>>   #define INV_MPU6050_MIN_FIFO_RATE                         4
->>>   #define INV_MPU6050_ONE_K_HZ                              1000
->>>
->>> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
->>> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
->>> +
->>>   /* scan element definition */
->>>   enum inv_mpu6050_scan {
->>>       INV_MPU6050_SCAN_ACCL_X,
 >>>
 >>
 >>
