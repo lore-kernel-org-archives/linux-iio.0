@@ -1,41 +1,47 @@
-Return-Path: <giometti@enneenne.com>
-Date: Mon, 17 Mar 2014 15:00:56 +0100
-From: Rodolfo Giometti <giometti@enneenne.com>
-Sender: giometti@enneenne.com
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>
-Message-ID: <20140317140056.GX21643@enneenne.com>
-References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1395064628-644-16-git-send-email-alexandre.belloni@free-electrons.com>
+Return-Path: <manuel.stahl@iis.fraunhofer.de>
+Message-ID: <5326A29B.6020307@iis.fraunhofer.de>
+Date: Mon, 17 Mar 2014 08:22:03 +0100
+From: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1395064628-644-16-git-send-email-alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2 15/15] ARM: at91/dt: at91-cosino_mega2560 remove
- useless tsadcc node
+To: Jonathan Cameron <jic23@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Enable default bypass mode
+References: <1394571854-6737-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394571854-6737-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5324795B.50509@kernel.org>
+In-Reply-To: <5324795B.50509@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Mar 17, 2014 at 02:57:08PM +0100, Alexandre Belloni wrote:
-> The tsadcc node is useless as it doesn't refer to anything and the touchscreen
-> is handled by the adc0 node.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> Cc: Rodolfo Giometti <giometti@linux.it>
+Am 15.03.2014 17:01, schrieb Jonathan Cameron:
+> On 11/03/14 21:04, Srinivas Pandruvada wrote:
+>> This chip has two modes to control secondary sensor attached to it.
+>> One is master mode and another is bypass mode. In master mode
+>> MPU6500 will directly communicates to the secondary sensor device
+>> attached to it. This can support very few secondary devices in this
+>> mode.
+>> But when configured in bypass mode the i2c lines are directly connected
+>> to host i2c bus controller.
+>> Since in master mode it can only support few devices and they are not
+>> implemented in this driver, set the default mode to bypass mode.
+>>
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> This has been proposed before by Manuel Stahl,
+>
+> Please read the thread from
+>
+> http://www.spinics.net/lists/linux-iio/msg11985.html
+>
+> In short, the best way we have come up with for handling this cleanly
+> (avoiding issues with the device in between going into sleep etc) was
+> to implement an i2c bus multiplexer with 1 input and 1 output as part of
+> the driver.
+>
+> Manuel, any progress on your patches?
 
-Acked.
-
-Rodolfo
+No, I was waiting for the outcome of this discussion. Probably I will 
+not be available for the next three weeks, so if someone else wants to 
+start off coding, feel free to do so.
 
 -- 
-
-GNU/Linux Solutions                  e-mail: giometti@enneenne.com
-Linux Device Driver                          giometti@linux.it
-Embedded Systems                     phone:  +39 349 2432127
-UNIX programming                     skype:  rodolfo.giometti
-Freelance ICT Italia - Consulente ICT Italia - www.consulenti-ict.it
+Regards,
+Manuel Stahl
