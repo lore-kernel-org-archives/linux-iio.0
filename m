@@ -1,68 +1,41 @@
-Return-Path: <sre@ring0.de>
-From: Sebastian Reichel <sre@debian.org>
-To: Sebastian Reichel <sre@ring0.de>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Marek Belisko <marek@goldelico.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	=?UTF-8?q?Pali=20Roh=C3=A1r?= <pali.rohar@gmail.com>,
-	Sebastian Reichel <sre@debian.org>
-Subject: [PATCHv2 2/2] Documentation: DT: Document rx51-battery binding
-Date: Sat,  1 Mar 2014 21:22:45 +0100
-Message-Id: <1393705366-32420-3-git-send-email-sre@debian.org>
-In-Reply-To: <1393705366-32420-1-git-send-email-sre@debian.org>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
- <1393705366-32420-1-git-send-email-sre@debian.org>
+Return-Path: <giometti@enneenne.com>
+Date: Mon, 17 Mar 2014 15:00:56 +0100
+From: Rodolfo Giometti <giometti@enneenne.com>
+Sender: giometti@enneenne.com
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Gregory Clement <gregory.clement@free-electrons.com>
+Message-ID: <20140317140056.GX21643@enneenne.com>
+References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1395064628-644-16-git-send-email-alexandre.belloni@free-electrons.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1395064628-644-16-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v2 15/15] ARM: at91/dt: at91-cosino_mega2560 remove
+ useless tsadcc node
 List-ID: <linux-iio@vger.kernel.org>
 
-Add devicetree binding documentation for rx51-battery,
-which is a simple A/D converter consumer.
+On Mon, Mar 17, 2014 at 02:57:08PM +0100, Alexandre Belloni wrote:
+> The tsadcc node is useless as it doesn't refer to anything and the touchscreen
+> is handled by the adc0 node.
+> 
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> Cc: Rodolfo Giometti <giometti@linux.it>
 
-Signed-off-by: Sebastian Reichel <sre@debian.org>
----
- .../devicetree/bindings/power/rx51-battery.txt     | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/rx51-battery.txt
+Acked.
 
-diff --git a/Documentation/devicetree/bindings/power/rx51-battery.txt b/Documentation/devicetree/bindings/power/rx51-battery.txt
-new file mode 100644
-index 0000000..9043845
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/rx51-battery.txt
-@@ -0,0 +1,25 @@
-+Binding for Nokia N900 battery
-+
-+The Nokia N900 battery status can be read via the TWL4030's A/D converter.
-+
-+Required properties:
-+- compatible: Should contain one of the following:
-+ * "nokia,n900-battery"
-+- io-channels: Should contain IIO channel specifiers
-+               for each element in io-channel-names.
-+- io-channel-names: Should contain the following values:
-+ * "temp" - The ADC channel for temperature reading
-+ * "bsi"  - The ADC channel for battery size identification
-+ * "vbat" - The ADC channel to measure the battery voltage
-+
-+Example from Nokia N900:
-+
-+battery: n900-battery {
-+	compatible = "nokia,n900-battery";
-+	io-channels = <&twl4030_madc 0>,
-+		      <&twl4030_madc 4>,
-+		      <&twl4030_madc 12>;
-+	io-channel-names = "temp",
-+			   "bsi",
-+			   "vbat";
-+};
+Rodolfo
+
 -- 
-1.9.0
+
+GNU/Linux Solutions                  e-mail: giometti@enneenne.com
+Linux Device Driver                          giometti@linux.it
+Embedded Systems                     phone:  +39 349 2432127
+UNIX programming                     skype:  rodolfo.giometti
+Freelance ICT Italia - Consulente ICT Italia - www.consulenti-ict.it
