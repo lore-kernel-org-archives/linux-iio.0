@@ -1,110 +1,80 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <53344647.2000405@linux.intel.com>
-Date: Thu, 27 Mar 2014 08:39:51 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-To: Jean Delvare <jdelvare@suse.de>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org,
- linux-i2c@vger.kernel.org, ktsai@capellamicro.com
-Subject: Re: [RFC Patch v0 1/3] i2c-smbus: Add poll interface for smbus alert
-References: <1395880932-19124-1-git-send-email-srinivas.pandruvada@linux.intel.com> <20140327084456.26527b4d@endymion.delvare>
-In-Reply-To: <20140327084456.26527b4d@endymion.delvare>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Return-Path: <k.kozlowski@samsung.com>
+Message-id: <1395130095.13308.0.camel@AMDC1943>
+Subject: Re: [PATCH] iio: cm36651: Fix i2c client leak and possible NULL
+ pointer dereference
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Beomho Seo <beomho.seo@samsung.com>, Lars-Peter Clausen <lars@metafoo.de>
+Date: Tue, 18 Mar 2014 09:08:15 +0100
+In-reply-to: <53274BDA.9070804@kernel.org>
+References: <1394098390-11213-1-git-send-email-k.kozlowski@samsung.com>
+ <53247EC9.6090505@kernel.org> <1395043273.3950.3.camel@AMDC1943>
+ <53274BDA.9070804@kernel.org>
+Content-type: text/plain; charset=UTF-8
+MIME-version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/27/2014 12:44 AM, Jean Delvare wrote:
-> On Wed, 26 Mar 2014 17:42:10 -0700, Srinivas Pandruvada wrote:
->> The current i2c smbus alert module depends on smbus alert mechanism
->> supported by underlying bus drivers. By specifications, these alerts
->> can be polled if there is no hardware support.
->> Currently multiple drivers who needs smbus alerts are creating
->> a new i2c dummy device with address 0x0C (ARA register), by luck
->> they don't co-exist. Otherwise i2c device creation will fail.
->> Added a poll interface, so that all these driver can call a common
->> interface to poll. Even if they polli, all drivers bound to an
->> adapater will be notified by their alert callback if ARA register
->> read is successful.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->> ---
->>   drivers/i2c/i2c-smbus.c   | 23 +++++++++++++++++++++++
->>   include/linux/i2c-smbus.h |  3 +++
->>   2 files changed, 26 insertions(+)
->>
->> diff --git a/drivers/i2c/i2c-smbus.c b/drivers/i2c/i2c-smbus.c
->> index fc99f0d..e274f20 100644
->> --- a/drivers/i2c/i2c-smbus.c
->> +++ b/drivers/i2c/i2c-smbus.c
->> @@ -72,6 +72,29 @@ static int smbus_do_alert(struct device *dev, void *addrp)
->>   	return -EBUSY;
->>   }
->>   
->> +int i2c_smbus_ara_poll(const struct i2c_client *client)
->> +{
->> +	union i2c_smbus_data data;
->> +	int status;
->> +	struct alert_data alert_data;
->> +
->> +	status = i2c_smbus_xfer(client->adapter, 0x0C, 0,
->> +				I2C_SMBUS_READ, 0,
->> +				I2C_SMBUS_BYTE, &data);
->> +	if (status < 0)
->> +		return status;
->> +
->> +	alert_data.flag = data.byte & 1;
->> +	alert_data.addr = data.byte >> 1;
->> +
->> +	/* Notify driver for the device which issued the alert */
->> +	device_for_each_child(&client->adapter->dev, &alert_data,
->> +				smbus_do_alert);
->> +
->> +	return data.byte;
->> +}
-> This is essentially duplicating code from smbus_alert(), but in a
-> hackish way, as the ARA is never properly reserved. Your bus driver
-> should really register the ARA with i2c_setup_smbus_alert().
->
-> I see that the code may not properly deal with the polled case
-> everywhere but it should be pretty trivial to deal with. For example,
-> check for alert->irq > 0 before re-enabling the irq in smbus_alert(). I
-> don't immediately see any other change needed.
->
-> If SMBus alert polling is done from the i2c device driver, we'll have
-> to find a standard way for i2c device drivers to retrieve the ara
-> client associated with an i2c_adapter. However I still need to be
-> convinced that this makes any sense at all. Ultimately the alert will
-> call the i2c device drivers's alert() callback. If the i2c device
-> driver needs to do that, there's no need to go through ARA, it might as
-> well just call the callback by itself.
->
-> So can you please explain what problem exactly you are trying to solve?
-The current i2c clients and proposed patches are creating dummy devices.
-You can't create two devices with same address. So they can't coexist.
-Also 0x0c is a valid i2c address, so we can't create a new i2c device.
-We have products there are devices on i2C on 0x0c. So don't you think
-after calling
-i2c_setup_smbus_alert()
-the other device can really be setup by calling  i2c_new_device(). This 
-function
-does a busy_check for same addresses.
+On Mon, 2014-03-17 at 19:24 +0000, Jonathan Cameron wrote:
+> On 17/03/14 08:01, Krzysztof Kozlowski wrote:
+> > Hi,
+> >
+> > On Sat, 2014-03-15 at 16:24 +0000, Jonathan Cameron wrote:
+> >> On 06/03/14 09:33, Krzysztof Kozlowski wrote:
+> >>> During probe the driver allocates dummy I2C devices (i2c_new_dummy())
+> >>> but they aren't unregistered during driver remove or probe failure.
+> >>>
+> >>> Additionally driver does not check the return value of i2c_new_dummy().
+> >>> In case of error (i2c_new_device(): memory allocation failure or I2C
+> >>> address cannot be used) this function returns NULL which is later
+> >>> dereferenced by i2c_smbus_{read,write}_data() functions.
+> >>>
+> >>> Fix issues by properly checking for i2c_new_dummy() return value and
+> >>> unregistering I2C devices on driver remove or probe failure.
+> >>>
+> >>> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+> >> Good catch, but the error path needs more care.
+> >>> ---
+> >>>    drivers/iio/light/cm36651.c |   12 ++++++++++++
+> >>>    1 file changed, 12 insertions(+)
+> >>>
+> >>> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+> >>> index a45e07492db3..e7e9a597159f 100644
+> >>> --- a/drivers/iio/light/cm36651.c
+> >>> +++ b/drivers/iio/light/cm36651.c
+> >>> @@ -653,6 +653,11 @@ static int cm36651_probe(struct i2c_client *client,
+> >>>    	cm36651->ps_client = i2c_new_dummy(client->adapter,
+> >>>    						     CM36651_I2C_ADDR_PS);
+> >>>    	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
+> >>> +	if (!cm36651->ps_client || !cm36651->ara_client) {
+> >>> +		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
+> >>> +		ret = -ENODEV;
+> >>> +		goto error_i2c_unregister;
+> >>> +	}
+> >> The two failures need to be handled independently as we only want to unregister
+> >> those that succeeded.  i2c_new_dummy will not return an error and leave a device
+> >> registered.  This is particularly true given the first thing that i2c_unregister_device
+> >> does is to derefence the client pointer.  That will cause a segfault if you do it
+> >> for NULL as here.
+> >>
+> >
+> > Where the segfault would occur? If i2c_new_dummy fails then
+> > i2c_unregister_device() will be called only on NON-null values:
+> > 	+error_i2c_unregister:
+> > 	+	if (cm36651->ps_client)
+> > 	+		i2c_unregister_device(cm36651->ps_client);
+> > 	+	if (cm36651->ara_client)
+> > 	+		i2c_unregister_device(cm36651->ara_client);
+> >
+> > If probe() succeeds (both i2c_new_dummy return proper pointer) then
+> > remove() will unregister two i2c devices.
+> >
+> Oops, I missed that.  Still, the form of this is unusual so please
+> change it to the more conventional option of a goto per error rather
+> than grouping them.  That will also allow you to drop the null checks
+> below leading to a more obviously correct error path.
 
-The idea is if some i2c client triggers ARA read,  it doesn't destroy the
-real receiver of the the smb alert and call respective alert() callbacks,
->> +EXPORT_SYMBOL_GPL(i2c_smbus_ara_poll);
->> +
->>   /*
->>    * The alert IRQ handler needs to hand work off to a task which can issue
->>    * SMBus calls, because those sleeping calls can't be made in IRQ context.
->> diff --git a/include/linux/i2c-smbus.h b/include/linux/i2c-smbus.h
->> index 8f1b086..f70755d 100644
->> --- a/include/linux/i2c-smbus.h
->> +++ b/include/linux/i2c-smbus.h
->> @@ -48,4 +48,7 @@ struct i2c_client *i2c_setup_smbus_alert(struct i2c_adapter *adapter,
->>   					 struct i2c_smbus_alert_setup *setup);
->>   int i2c_handle_smbus_alert(struct i2c_client *ara);
->>   
->> +/* Interface to poll smbus alert */
->> +int i2c_smbus_ara_poll(const struct i2c_client *client);
->> +
->>   #endif /* _LINUX_I2C_SMBUS_H */
->
+Sure, I'll send a fixed version.
+
+Best regards,
+Krzysztof
