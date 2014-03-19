@@ -1,109 +1,145 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46405 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755366AbaCQRTO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Mar 2014 13:19:14 -0400
-In-Reply-To: <5327186B.7030500@linux.intel.com>
-References: <1394572557-8102-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1394572557-8102-3-git-send-email-srinivas.pandruvada@linux.intel.com> <53246E3A.7020702@kernel.org> <5327186B.7030500@linux.intel.com>
+Return-Path: <alecaberg@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 3/3] iio: ak8975: Don't bail out for irq setup error
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 17 Mar 2014 17:18:54 +0000
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Message-ID: <c7ca8a3a-7feb-417c-8abe-c610a2ca04e8@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <77ce5285-713f-4f2e-97b0-702c93404d82@email.android.com>
+References: <1395255044-20173-1-git-send-email-alecaberg@chromium.org> <77ce5285-713f-4f2e-97b0-702c93404d82@email.android.com>
+From: Alec Berg <alecaberg@google.com>
+Date: Wed, 19 Mar 2014 14:33:48 -0700
+Message-ID: <CAGgO2Lgka8-S70ydrNRErwUPYNmTXvpNk-k6ApFNpqjGRVjH4Q@mail.gmail.com>
+Subject: Re: [PATCH] iio: querying buffer scan_mask should return 0/1
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Alec Berg <alecaberg@chromium.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net
+Content-Type: multipart/alternative; boundary=089e0149ce3cae108304f4fc69ce
+List-ID: <linux-iio@vger.kernel.org>
+
+--089e0149ce3cae108304f4fc69ce
+Content-Type: text/plain; charset=UTF-8
+
+I'm using x86, not sure what other architectures, if any, that it affects.
+
+Thanks.
 
 
+On Wed, Mar 19, 2014 at 1:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 
-On March 17, 2014 3:44:43 PM GMT+00:00, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->On 03/15/2014 08:14 AM, Jonathan Cameron wrote:
->> On 11/03/14 21:15, Srinivas Pandruvada wrote:
->>> This driver can very well work via polling, if request_irq failed.
->>> The problem is that many times i2c interrupts are shared. This
->>> driver is not ready for shared interrupt as it will return
->IRQ_HANDLED,
->>> in every case. Here we will get EBUSY when some other driver
->registered
->>> handler and this driver is grabbing in exclusive mode.
->>> So in this case just print error and continue in polling mode.
->>>
->>> Signed-off-by: Srinivas Pandruvada
-><srinivas.pandruvada@linux.intel.com>
->> I'm not sure this is a good solution as it means that we will get
->very 
->> different
->> results depending on the probe order of various drivers.  How do
->other 
->> i2c drivers
->> cope with the fact that there is no way of knowing within the 
->> interrupt routine
->> that the device was the one causing the interrupt?
->>
->Agreed. The i2c driver currently don't receive irq flags in the client 
->structure. They
->only get irq number. We do get irq flags from the ACPI in this case or 
->from some
->platform init code. I have another patch to enhance ACPI i2c binding
->and 
->also enhance
->i2c_client structure.
->In addition this driver can be enhanced to use shared irq.
-Let's hold this patch and do it properly once support is in place... 
->
->Thanks,
->Srinivas
 >
 >
->> A quick grep suggests that the normal trick is to had over to an irq 
->> thread
->> then return IRQ_NONE from that once we know it isn't our irq. Could
->we 
->> have
->> move the queue wakeup into a a thread (converting to a threaded 
->> interrupt) but
->> before it query the hardware to establish it is actually our
->interrupt?
->>> ---
->>>   drivers/iio/magnetometer/ak8975.c | 12 +++++++++---
->>>   1 file changed, 9 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iio/magnetometer/ak8975.c 
->>> b/drivers/iio/magnetometer/ak8975.c
->>> index fe5e9c8..0f9c407 100644
->>> --- a/drivers/iio/magnetometer/ak8975.c
->>> +++ b/drivers/iio/magnetometer/ak8975.c
->>> @@ -236,9 +236,15 @@ static int ak8975_setup(struct i2c_client
->*client)
->>>       if (data->eoc_gpio > 0 || client->irq) {
->>>           ret = ak8975_setup_irq(data);
->>>           if (ret < 0) {
->>> -            dev_err(&client->dev,
->>> -                "Error setting data ready interrupt\n");
->>> -            return ret;
->>> +            if (ret == -EBUSY) {
->>> +                dev_err(&client->dev,
->>> +                    "device Intr busy:polling required\n");
->>> +                ret = 0;
->>> +            } else {
->>> +                dev_err(&client->dev,
->>> +                    "Error setting data ready interrupt\n");
->>> +                return ret;
->>> +            }
->>>           }
->>>       }
->>>
->>>
->>
->>
+> On March 19, 2014 6:50:44 PM GMT+00:00, Alec Berg <alecaberg@chromium.org>
+> wrote:
+> >Ensure that querying the IIO buffer scan_mask returns a value of
+> >0 or 1. Currently querying the scan mask has the value returned
+> >by test_bit(), which returns either true or false. For some
+> >architectures test_bit() may return -1 for true, which will appear
+> >to return an error when returning from iio_scan_mask_query().
+> I'm curious now.  Which architectures?  Change is fine BTW. Will pick when
+> I get a few mins...
+> >
+> >Additionally, it's important for the sysfs interface to consistently
+> >return the same thing when querying the scan_mask.
+> >
+> >Signed-off-by: Alec Berg <alecaberg@chromium.org>
+> >---
+> > drivers/iio/industrialio-buffer.c | 6 ++++--
+> > 1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> >diff --git a/drivers/iio/industrialio-buffer.c
+> >b/drivers/iio/industrialio-buffer.c
+> >index c67d83b..fe25042 100644
+> >--- a/drivers/iio/industrialio-buffer.c
+> >+++ b/drivers/iio/industrialio-buffer.c
+> >@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
+> >       int ret;
+> >       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >
+> >-      ret = test_bit(to_iio_dev_attr(attr)->address,
+> >+      /* Ensure ret is 0 or 1. */
+> >+      ret = !!test_bit(to_iio_dev_attr(attr)->address,
+> >                      indio_dev->buffer->scan_mask);
+> >
+> >       return sprintf(buf, "%d\n", ret);
+> >@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
+> >       if (!buffer->scan_mask)
+> >               return 0;
+> >
+> >-      return test_bit(bit, buffer->scan_mask);
+> >+      /* Ensure return value is 0 or 1. */
+> >+      return !!test_bit(bit, buffer->scan_mask);
+> > };
+> > EXPORT_SYMBOL_GPL(iio_scan_mask_query);
+> >
 >
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+>
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+--089e0149ce3cae108304f4fc69ce
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">I&#39;m using x86, not sure what other architectures, if a=
+ny, that it affects.<div><br></div><div>Thanks.</div></div><div class=3D"gm=
+ail_extra"><br><br><div class=3D"gmail_quote">On Wed, Mar 19, 2014 at 1:31 =
+PM, Jonathan Cameron <span dir=3D"ltr">&lt;<a href=3D"mailto:jic23@kernel.o=
+rg" target=3D"_blank">jic23@kernel.org</a>&gt;</span> wrote:<br>
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex"><div class=3D""><br>
+<br>
+On March 19, 2014 6:50:44 PM GMT+00:00, Alec Berg &lt;<a href=3D"mailto:ale=
+caberg@chromium.org">alecaberg@chromium.org</a>&gt; wrote:<br>
+&gt;Ensure that querying the IIO buffer scan_mask returns a value of<br>
+&gt;0 or 1. Currently querying the scan mask has the value returned<br>
+&gt;by test_bit(), which returns either true or false. For some<br>
+&gt;architectures test_bit() may return -1 for true, which will appear<br>
+&gt;to return an error when returning from iio_scan_mask_query().<br>
+</div>I&#39;m curious now. =C2=A0Which architectures? =C2=A0Change is fine =
+BTW. Will pick when I get a few mins...<br>
+<div><div class=3D"h5">&gt;<br>
+&gt;Additionally, it&#39;s important for the sysfs interface to consistentl=
+y<br>
+&gt;return the same thing when querying the scan_mask.<br>
+&gt;<br>
+&gt;Signed-off-by: Alec Berg &lt;<a href=3D"mailto:alecaberg@chromium.org">=
+alecaberg@chromium.org</a>&gt;<br>
+&gt;---<br>
+&gt; drivers/iio/industrialio-buffer.c | 6 ++++--<br>
+&gt; 1 file changed, 4 insertions(+), 2 deletions(-)<br>
+&gt;<br>
+&gt;diff --git a/drivers/iio/industrialio-buffer.c<br>
+&gt;b/drivers/iio/industrialio-buffer.c<br>
+&gt;index c67d83b..fe25042 100644<br>
+&gt;--- a/drivers/iio/industrialio-buffer.c<br>
+&gt;+++ b/drivers/iio/industrialio-buffer.c<br>
+&gt;@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,=
+<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 int ret;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 struct iio_dev *indio_dev =3D dev_to_iio_dev(dev)=
+;<br>
+&gt;<br>
+&gt;- =C2=A0 =C2=A0 =C2=A0ret =3D test_bit(to_iio_dev_attr(attr)-&gt;addres=
+s,<br>
+&gt;+ =C2=A0 =C2=A0 =C2=A0/* Ensure ret is 0 or 1. */<br>
+&gt;+ =C2=A0 =C2=A0 =C2=A0ret =3D !!test_bit(to_iio_dev_attr(attr)-&gt;addr=
+ess,<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0indio_dev-&gt;buffer-&gt;scan_mask);<br>
+&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 return sprintf(buf, &quot;%d\n&quot;, ret);<br>
+&gt;@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,<=
+br>
+&gt; =C2=A0 =C2=A0 =C2=A0 if (!buffer-&gt;scan_mask)<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return 0;<br>
+&gt;<br>
+&gt;- =C2=A0 =C2=A0 =C2=A0return test_bit(bit, buffer-&gt;scan_mask);<br>
+&gt;+ =C2=A0 =C2=A0 =C2=A0/* Ensure return value is 0 or 1. */<br>
+&gt;+ =C2=A0 =C2=A0 =C2=A0return !!test_bit(bit, buffer-&gt;scan_mask);<br>
+&gt; };<br>
+&gt; EXPORT_SYMBOL_GPL(iio_scan_mask_query);<br>
+&gt;<br>
+<br>
+--<br>
+</div></div>Sent from my Android phone with K-9 Mail. Please excuse my brev=
+ity.<br>
+</blockquote></div><br></div>
+
+--089e0149ce3cae108304f4fc69ce--
