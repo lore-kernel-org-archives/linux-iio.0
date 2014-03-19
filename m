@@ -1,100 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:35968 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:15624 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934038AbaCSQyQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S934049AbaCSQyQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Wed, 19 Mar 2014 12:54:16 -0400
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [Patch v1 2/4] iio: imu: inv_mpu6050: Enable default bypass mode
-Date: Wed, 19 Mar 2014 09:56:41 -0700
-Message-Id: <1395248203-17027-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v1 3/4] iio: imu: Enable checking of presence of device
+Date: Wed, 19 Mar 2014 09:56:42 -0700
+Message-Id: <1395248203-17027-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This chip has two modes to control secondary sensor attached to it.
-One is master mode and another is bypass mode. In master mode
-MPU6500 will directly communicates to the secondary sensor device
-attached to it. This can support very few secondary devices in this
-mode.
-But when configured in bypass mode the i2c lines are directly connected
-to host i2c bus controller.
-Since in master mode it can only support few devices and they are not
-implemented in this driver, set the default mode to bypass mode.
-When some multiplexer is implemented to use MPU6050 master mode,
-this mode can be enabled when requested.
+Added logic to check presence of MPU6050 before continuing. Currently
+only i2c writes are used in the initialzation path, which don't return
+any error, if some i2c device responds. In this case it continues to
+create iio devices, which don't work.
+This can be reproduced in a PC like platform, where ACPI definition
+of this defines multiple i2c addresses. We need to check for an valid
+i2c address by checking some id before continuing.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 ++++++++++++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 27 +++++++++++++++++++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  5 +++++
+ 2 files changed, 32 insertions(+)
 
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 52d688b..744eba4 100644
+index 744eba4..200163d 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -53,6 +53,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
- 	.int_enable             = INV_MPU6050_REG_INT_ENABLE,
+@@ -54,6 +54,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
  	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
  	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
-+	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
+ 	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
++	.who_am_i		= INV_MPU6050_REG_WHOAMI,
  };
  
  static const struct inv_mpu6050_chip_config chip_config_6050 = {
-@@ -608,6 +609,20 @@ static const struct iio_info mpu_info = {
- 	.validate_trigger = inv_mpu6050_validate_trigger,
+@@ -74,6 +75,12 @@ static const struct inv_mpu6050_hw hw_info[INV_NUM_PARTS] = {
+ 	},
  };
  
-+static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
-+{
-+	int ret;
++static const u16 inv_mpu_unique_ids[] = {
++	INV_MPU60X0_UNIQUE_ID,
++	INV_MPU6500_UNIQUE_ID,
++	0x0000,
++};
 +
-+	if (enable)
-+		ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
-+					st->client->irq |
-+						INV_MPU6050_BIT_BYPASS_EN);
-+	else
-+		ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
-+					st->client->irq);
-+	return ret;
-+}
-+
- /**
-  *  inv_check_and_setup_chip() - check and setup chip.
-  */
-@@ -646,7 +661,9 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+ int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 d)
+ {
+ 	return i2c_smbus_write_i2c_block_data(st->client, reg, 1, &d);
+@@ -630,6 +637,8 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+ 		const struct i2c_device_id *id)
+ {
+ 	int result;
++	bool matched = false;
++	int i = 0;
+ 
+ 	st->chip_type = INV_MPU6050;
+ 	st->hw  = &hw_info[st->chip_type];
+@@ -641,6 +650,24 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
  	if (result)
  		return result;
- 
--	return 0;
-+	result = inv_set_bypass_status(st, true);
+ 	msleep(INV_MPU6050_POWER_UP_TIME);
 +
-+	return result;
- }
- 
- /**
++	result = i2c_smbus_read_byte_data(st->client, st->reg->who_am_i);
++	if (result < 0) {
++		dev_err(&st->client->dev, "Error reading WhoAmI\n");
++		return result;
++	}
++
++	while (inv_mpu_unique_ids[i] != 0x0000) {
++		if (inv_mpu_unique_ids[i++] == result)
++			matched = true;
++	}
++
++	if (!matched) {
++		dev_err(&st->client->dev, "Not a valid MPU6XXX device %x\n",
++								result);
++		return -ENOSYS;
++	}
++
+ 	/* toggle power state. After reset, the sleep bit could be on
+ 		or off depending on the OTP settings. Toggling power would
+ 		make it in a definite state as well as making the hardware
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 4ddfd03..591ac2e 100644
+index 591ac2e..41196c5 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
- 	u8 int_enable;
+@@ -55,6 +55,7 @@ struct inv_mpu6050_reg_map {
  	u8 pwr_mgmt_1;
  	u8 pwr_mgmt_2;
-+	u8 int_pin_cfg;
+ 	u8 int_pin_cfg;
++	u8 who_am_i;
  };
  
  /*device enum */
-@@ -186,6 +187,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_MIN_FIFO_RATE                         4
- #define INV_MPU6050_ONE_K_HZ                              1000
+@@ -190,6 +191,10 @@ struct inv_mpu6050_state {
+ #define INV_MPU6050_REG_INT_PIN_CFG		0x37
+ #define INV_MPU6050_BIT_BYPASS_EN		0x2
  
-+#define INV_MPU6050_REG_INT_PIN_CFG		0x37
-+#define INV_MPU6050_BIT_BYPASS_EN		0x2
++#define INV_MPU6050_REG_WHOAMI			0x75
++#define INV_MPU6500_UNIQUE_ID			0x70
++#define INV_MPU60X0_UNIQUE_ID			0x68
 +
  /* scan element definition */
  enum inv_mpu6050_scan {
