@@ -1,66 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34293 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753818AbaCSUbr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Mar 2014 16:31:47 -0400
-In-Reply-To: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
-References: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: querying buffer scan_mask should return 0/1
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 19 Mar 2014 20:31:40 +0000
-To: Alec Berg <alecaberg@chromium.org>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org,
-	Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net
-Message-ID: <77ce5285-713f-4f2e-97b0-702c93404d82@email.android.com>
+Received: from mga09.intel.com ([134.134.136.24]:35968 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934046AbaCSQyQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 19 Mar 2014 12:54:16 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v1 1/4] iio: imu: inv_mpu6050: Add compatibity with MPU6500
+Date: Wed, 19 Mar 2014 09:56:40 -0700
+Message-Id: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Adding MPU6500 in target list for this driver.
 
+Description:
+Source
+Document: MPU-6500 Register Map and Descriptions Revision 2.1
+Section 3: Register Map
 
-On March 19, 2014 6:50:44 PM GMT+00:00, Alec Berg <alecaberg@chromium.org> wrote:
->Ensure that querying the IIO buffer scan_mask returns a value of
->0 or 1. Currently querying the scan mask has the value returned
->by test_bit(), which returns either true or false. For some
->architectures test_bit() may return -1 for true, which will appear
->to return an error when returning from iio_scan_mask_query().
-I'm curious now.  Which architectures?  Change is fine BTW. Will pick when I get a few mins...
->
->Additionally, it's important for the sysfs interface to consistently
->return the same thing when querying the scan_mask.
->
->Signed-off-by: Alec Berg <alecaberg@chromium.org>
->---
-> drivers/iio/industrialio-buffer.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/iio/industrialio-buffer.c
->b/drivers/iio/industrialio-buffer.c
->index c67d83b..fe25042 100644
->--- a/drivers/iio/industrialio-buffer.c
->+++ b/drivers/iio/industrialio-buffer.c
->@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
-> 	int ret;
-> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> 
->-	ret = test_bit(to_iio_dev_attr(attr)->address,
->+	/* Ensure ret is 0 or 1. */
->+	ret = !!test_bit(to_iio_dev_attr(attr)->address,
-> 		       indio_dev->buffer->scan_mask);
-> 
-> 	return sprintf(buf, "%d\n", ret);
->@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
-> 	if (!buffer->scan_mask)
-> 		return 0;
-> 
->-	return test_bit(bit, buffer->scan_mask);
->+	/* Ensure return value is 0 or 1. */
->+	return !!test_bit(bit, buffer->scan_mask);
-> };
-> EXPORT_SYMBOL_GPL(iio_scan_mask_query);
-> 
+This section describes difference in terms device programmability
+bewteen MPU6050 and MPU6500.
+These are different registers, which differs between MPU6050 and
+MPU6500.
 
+Addr	Name
+---------------------
+1E 	LP_ACCEL_ODR
+6C	PWR_MGMT_2
+77	XA_OFFSET_H
+78	XA_OFFSET_L
+7A	YA_OFFSET_H
+7B	YA_OFFSET_L
+7D	ZA_OFFSET_H
+7E	ZA_OFFSET_L
+
+But the current MPU6050 driver doesn't use registers which are different
+except PWR_MGMT_2. The difference is support of "LP_WAKE_CTRL" at bit6-7
+in MPU6050 mode. In MPU6500 they are not defined.
+In current mpu6050 driver, only values used for this register are for
+standby mode for gyro and accelerometer.
+In both case frequency of wakeups is set to default and not using
+bit 6-7.
+
+So this driver van as well support MPU6500. In addition MPU6500 can
+run MPU6050 mode by changing device trim settings.
+
+So changing config comments to allow MPU6500 to use this driver.
+When ths driver is enhanced to support more functions, i2c driver
+data INV_MPU6500 or "WHO_AM_I" register can be used to add additional
+functionality.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/Kconfig        | 2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 1 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 1 +
+ 3 files changed, 4 insertions(+)
+
+diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+index 361b232..2d0608b 100644
+--- a/drivers/iio/imu/inv_mpu6050/Kconfig
++++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+@@ -9,6 +9,8 @@ config INV_MPU6050_IIO
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  This driver supports the Invensense MPU6050 devices.
++	  This driver can also support MPU6500 in MPU6050 compatibility mode
++	  and also in MPU6500 mode with some limitations.
+ 	  It is a gyroscope/accelerometer combo device.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index df7f1e1..52d688b 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -765,6 +765,7 @@ static SIMPLE_DEV_PM_OPS(inv_mpu_pmops, inv_mpu_suspend, inv_mpu_resume);
+  */
+ static const struct i2c_device_id inv_mpu_id[] = {
+ 	{"mpu6050", INV_MPU6050},
++	{"mpu6500", INV_MPU6500},
+ 	{}
+ };
+ 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index f383955..4ddfd03 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -59,6 +59,7 @@ struct inv_mpu6050_reg_map {
+ /*device enum */
+ enum inv_devices {
+ 	INV_MPU6050,
++	INV_MPU6500,
+ 	INV_NUM_PARTS
+ };
+ 
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.11.7
+
