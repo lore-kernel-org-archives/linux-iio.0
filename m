@@ -1,125 +1,116 @@
-Return-Path: <Nicolas.FERRE@atmel.com>
-Message-ID: <53296F2B.3010406@atmel.com>
-Date: Wed, 19 Mar 2014 11:19:23 +0100
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Alexandre Belloni
-	<alexandre.belloni@free-electrons.com>, Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>, ARM Maintainers <arm@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-input@vger.kernel.org>, Gregory Clement
-	<gregory.clement@free-electrons.com>, Maxime Ripard
-	<maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard
-	<plagnioj@jcrosoft.com>, <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 00/15] iio: adc: at91 cleanups and atmel_tsadcc removal
-References: <1394040940-18246-1-git-send-email-alexandre.belloni@free-electrons.com> <5325EDAF.4060003@kernel.org>
-In-Reply-To: <5325EDAF.4060003@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:28733 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757376AbaCSQxw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 19 Mar 2014 12:53:52 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v1 1/2] iio: ak8975 : Add AK8963 compatibility mode support
+Date: Wed, 19 Mar 2014 09:56:06 -0700
+Message-Id: <1395248167-16991-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 16/03/2014 19:30, Jonathan Cameron :
-> On 05/03/14 17:35, Alexandre Belloni wrote:
->> This patch set is a followup of my previous series: iio: adc: at91 fixes
->>
->> I'm sorry it is so long, I made sure this is bissectable.
-> It's a nice series, don't apologise for doing things right!
-> 
-> Clearly there are a few outstanding snippets from the reviews so far, but we
-> are getting to the point where we need to agree on a path for this.  I'm
-> happy to take the whole series through the IIO tree if Dmitry and the at91
-> maintainers are happy with that.  If it is considered two invasive form the
-> atmel side then I'm perfectly happy with someone to take it through the relevant
-> platform tree instead.
+AK8963 and AK8975 use same register definitions, except the range
+of X,Y,Z values. Added support of 8963 based on i2c_device_id.
+Unfortunately there is no way to detect the type via registers,
+both device registers return 0x48 as id of chipset.
 
-Jonathan, Dmitry,
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/magnetometer/Kconfig  |  3 ++-
+ drivers/iio/magnetometer/ak8975.c | 34 +++++++++++++++++++++++++++++-----
+ 2 files changed, 31 insertions(+), 6 deletions(-)
 
-Considering the amount of AT91 files touched by this series, I would
-like to take everything through Atmel's git tree and later on arm-soc.
-
-
-> I'm obviously not going to pick it up at all until it has a complete set
-> of at91 maintainer acks though!
-> 
-> Realistically it's missed the coming merge window anyway, so we have a fair
-> bit of time.
-
-Yes, I will review Alexandre's v2 series.
-
-Thanks a lot for your review and for having thought about the path that
-these patches would take.
-
-Bye,
-
-
-> Jonathan
->>
->> 1-3) The first 3 patches are cleaning up the patform_data used for at91_adc.
->>
->> 4-5) Then touchscreen support for older ADCs is added, this allows to use that
->>       for the sam9m10g45ek.
->>
->> 6) Following those modifications, the mach/at91_adc.h is not used anywhere but
->>     in the at91_adc driver so it is remove and its content (register definitions)
->>     placed directly in the driver.
->>
->> 7-9) at91sam9rl support is added to at91_adc and is used for the at91sam9rl
->>       based boards.
->>
->> 10-11) Prepare the atmel_tsadcc removal by switching sam9rl and sam9g45 to use
->>         only at91_adc instead of atmel_tsadcc.
->>
->> 12-15) atmel_tsadcc removal
->>
->>
->> Alexandre Belloni (15):
->>    ARM: at91: sam9g45: remove unused platform_data
->>    ARM: at91: sam9260: remove unused platform_data
->>    iio: adc: at91: cleanup platform_data
->>    iio: adc: at91_adc: Add support for touchscreens without TSMR
->>    ARM: at91: sam9m10g45ek: Add touchscreen support through at91_adc
->>    iio: adc: at91: remove unused include from include/mach
->>    iio: adc: at91: add sam9rl support
->>    ARM: at91: sam9rl: add at91_adc to support adc and touchscreen
->>    ARM: at91: sam9rlek add touchscreen support through at91_adc
->>    ARM: at91: sam9g45: switch from atmel_tsadcc to at91_adc
->>    ARM: at91: sam9rl: switch from atmel_tsadcc to at91_adc
->>    ARM: at91: remove atmel_tsadcc platform_data
->>    ARM: at91: remove atmel_tsadcc from sama5_defconfig
->>    Input: atmel_tsadcc: remove driver
->>    ARM: at91/dt: at91-cosino_mega2560 remove useless tsadcc node
->>
->>   MAINTAINERS                                |   6 -
->>   arch/arm/boot/dts/at91-cosino_mega2560.dts |   5 -
->>   arch/arm/configs/at91sam9g45_defconfig     |   3 +-
->>   arch/arm/configs/at91sam9rl_defconfig      |   3 +-
->>   arch/arm/configs/sama5_defconfig           |   1 -
->>   arch/arm/mach-at91/at91sam9260_devices.c   |  10 -
->>   arch/arm/mach-at91/at91sam9g45.c           |   2 +-
->>   arch/arm/mach-at91/at91sam9g45_devices.c   |  63 +----
->>   arch/arm/mach-at91/at91sam9rl.c            |   7 +
->>   arch/arm/mach-at91/at91sam9rl_devices.c    |  83 +++++--
->>   arch/arm/mach-at91/board-sam9m10g45ek.c    |  16 +-
->>   arch/arm/mach-at91/board-sam9rlek.c        |  16 +-
->>   arch/arm/mach-at91/board.h                 |   3 -
->>   arch/arm/mach-at91/include/mach/at91_adc.h | 107 ---------
->>   drivers/iio/adc/at91_adc.c                 | 339 +++++++++++++++++++++++----
->>   drivers/input/touchscreen/Kconfig          |  12 -
->>   drivers/input/touchscreen/Makefile         |   1 -
->>   drivers/input/touchscreen/atmel_tsadcc.c   | 358 -----------------------------
->>   include/linux/platform_data/at91_adc.h     |  27 +--
->>   include/linux/platform_data/atmel.h        |   7 -
->>   20 files changed, 380 insertions(+), 689 deletions(-)
->>   delete mode 100644 arch/arm/mach-at91/include/mach/at91_adc.h
->>   delete mode 100644 drivers/input/touchscreen/atmel_tsadcc.c
->>
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
-
-
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index d86d226..05a364c54 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -11,7 +11,8 @@ config AK8975
+ 	depends on GPIOLIB
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
+-	  Magnetometer.
++	  Magnetometer. This driver can also support AK8963, if i2c
++	  device name is identified as ak8963.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ak8975.
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 0542354..aa7682d 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -85,7 +85,14 @@
+ #define AK8975_MAX_CONVERSION_TIMEOUT	500
+ #define AK8975_CONVERSION_DONE_POLL_TIME 10
+ #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
+-#define RAW_TO_GAUSS(asa) ((((asa) + 128) * 3000) / 256)
++#define RAW_TO_GAUSS_8975(asa) ((((asa) + 128) * 3000) / 256)
++#define RAW_TO_GAUSS_8963(asa) ((((asa) + 128) * 6000) / 256)
++
++/* Compatible Asahi Kasei Compass parts */
++enum asahi_compass_chipset {
++	AK8975,
++	AK8963,
++};
+ 
+ /*
+  * Per-instance context data for the device.
+@@ -101,6 +108,7 @@ struct ak8975_data {
+ 	int			eoc_irq;
+ 	wait_queue_head_t	data_ready_queue;
+ 	unsigned long		flags;
++	enum asahi_compass_chipset chipset;
+ };
+ 
+ static const int ak8975_index_to_reg[] = {
+@@ -272,9 +280,21 @@ static int ak8975_setup(struct i2c_client *client)
+  * Since ASA doesn't change, we cache the resultant scale factor into the
+  * device context in ak8975_setup().
+  */
+-	data->raw_to_gauss[0] = RAW_TO_GAUSS(data->asa[0]);
+-	data->raw_to_gauss[1] = RAW_TO_GAUSS(data->asa[1]);
+-	data->raw_to_gauss[2] = RAW_TO_GAUSS(data->asa[2]);
++	if (data->chipset == AK8963) {
++		/*
++		 * H range is +-8190 and magnetometer range is +-4912.
++		 * So HuT using the above explanation for 8975,
++		 * 4912/8190 = ~ 6/10.
++		 * So the Hadj should use 6/10 instead of 3/10.
++		 */
++		data->raw_to_gauss[0] = RAW_TO_GAUSS_8963(data->asa[0]);
++		data->raw_to_gauss[1] = RAW_TO_GAUSS_8963(data->asa[1]);
++		data->raw_to_gauss[2] = RAW_TO_GAUSS_8963(data->asa[2]);
++	} else {
++		data->raw_to_gauss[0] = RAW_TO_GAUSS_8975(data->asa[0]);
++		data->raw_to_gauss[1] = RAW_TO_GAUSS_8975(data->asa[1]);
++		data->raw_to_gauss[2] = RAW_TO_GAUSS_8975(data->asa[2]);
++	}
+ 
+ 	return 0;
+ }
+@@ -499,6 +519,9 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_gpio = eoc_gpio;
+ 	data->eoc_irq = 0;
+ 
++	data->chipset = (enum asahi_compass_chipset)(id->driver_data);
++	dev_dbg(&client->dev, "Asahi compass chip %s\n", id->name);
++
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+@@ -551,7 +574,8 @@ static int ak8975_remove(struct i2c_client *client)
+ }
+ 
+ static const struct i2c_device_id ak8975_id[] = {
+-	{"ak8975", 0},
++	{"ak8975", AK8975},
++	{"ak8963", AK8963},
+ 	{}
+ };
+ 
 -- 
-Nicolas Ferre
+1.7.11.7
+
