@@ -1,69 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53413 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53271 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751213AbaCVMiM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:38:12 -0400
-Message-ID: <532D8474.8020601@kernel.org>
-Date: Sat, 22 Mar 2014 12:39:16 +0000
+	with ESMTP id S1750738AbaCVMT7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:19:59 -0400
+Message-ID: <532D8030.40607@kernel.org>
+Date: Sat, 22 Mar 2014 12:21:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v2 12/15] ARM: at91: remove atmel_tsadcc platform_data
-References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com> <1395064628-644-13-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1395064628-644-13-git-send-email-alexandre.belloni@free-electrons.com>
+To: Alec Berg <alecaberg@chromium.org>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org,
+	Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net
+Subject: Re: [PATCH] iio: querying buffer scan_mask should return 0/1
+References: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
+In-Reply-To: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/03/14 13:57, Alexandre Belloni wrote:
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-See below.
-> ---
->   arch/arm/mach-at91/board.h          | 3 ---
->   include/linux/platform_data/atmel.h | 7 -------
->   2 files changed, 10 deletions(-)
+On 19/03/14 18:50, Alec Berg wrote:
+> Ensure that querying the IIO buffer scan_mask returns a value of
+> 0 or 1. Currently querying the scan mask has the value returned
+> by test_bit(), which returns either true or false. For some
+> architectures test_bit() may return -1 for true, which will appear
+> to return an error when returning from iio_scan_mask_query().
 >
-> diff --git a/arch/arm/mach-at91/board.h b/arch/arm/mach-at91/board.h
-> index 6c08b341167d..4e773b55bc2d 100644
-> --- a/arch/arm/mach-at91/board.h
-> +++ b/arch/arm/mach-at91/board.h
-> @@ -118,9 +118,6 @@ struct isi_platform_data;
->   extern void __init at91_add_device_isi(struct isi_platform_data *data,
->   		bool use_pck_as_mck);
+> Additionally, it's important for the sysfs interface to consistently
+> return the same thing when querying the scan_mask.
 >
-> - /* Touchscreen Controller */
-> -extern void __init at91_add_device_tsadcc(struct at91_tsadcc_data *data);
-> -
->   /* CAN */
->   extern void __init at91_add_device_can(struct at91_can_data *data);
->
-> diff --git a/include/linux/platform_data/atmel.h b/include/linux/platform_data/atmel.h
-> index cea9f70133c5..4b452c6a2f7b 100644
-> --- a/include/linux/platform_data/atmel.h
-> +++ b/include/linux/platform_data/atmel.h
-> @@ -86,13 +86,6 @@ struct atmel_uart_data {
->   	struct serial_rs485	rs485;		/* rs485 settings */
->   };
->
-> - /* Touchscreen Controller */
-> -struct at91_tsadcc_data {
-> -	unsigned int    adc_clock;
-> -	u8		pendet_debounce;
-> -	u8		ts_sample_hold_time;
-> -};
-> -
-I believe this is still in use in the driver you don't remove until patch 14.
+> Signed-off-by: Alec Berg <alecaberg@chromium.org>
+Applied to the fixes-togreg branch of iio.git and
+marked for stable.
 
-Probably best to reorder the patches...
->   /* CAN */
->   struct at91_can_data {
->   	void (*transceiver_switch)(int on);
+This will probably now go in shortly after rc1.
+
+Thanks,
+
+Jonathan
+> ---
+>   drivers/iio/industrialio-buffer.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index c67d83b..fe25042 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
+>   	int ret;
+>   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>
+> -	ret = test_bit(to_iio_dev_attr(attr)->address,
+> +	/* Ensure ret is 0 or 1. */
+> +	ret = !!test_bit(to_iio_dev_attr(attr)->address,
+>   		       indio_dev->buffer->scan_mask);
+>
+>   	return sprintf(buf, "%d\n", ret);
+> @@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
+>   	if (!buffer->scan_mask)
+>   		return 0;
+>
+> -	return test_bit(bit, buffer->scan_mask);
+> +	/* Ensure return value is 0 or 1. */
+> +	return !!test_bit(bit, buffer->scan_mask);
+>   };
+>   EXPORT_SYMBOL_GPL(iio_scan_mask_query);
+>
 >
 
