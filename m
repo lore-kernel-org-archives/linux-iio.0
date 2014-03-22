@@ -1,173 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53393 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53454 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751030AbaCVMeV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:34:21 -0400
-Message-ID: <532D838D.9050603@kernel.org>
-Date: Sat, 22 Mar 2014 12:35:25 +0000
+	with ESMTP id S1750738AbaCVMpM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:45:12 -0400
+Message-ID: <532D8619.2060409@kernel.org>
+Date: Sat, 22 Mar 2014 12:46:17 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Gregory Clement <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v2 08/15] ARM: at91: sam9rl: add at91_adc to support adc
- and touchscreen
-References: <1395064628-644-1-git-send-email-alexandre.belloni@free-electrons.com> <1395064628-644-9-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1395064628-644-9-git-send-email-alexandre.belloni@free-electrons.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [Patch v1 2/2] iio: ak8975: Added ACPI enumeration
+References: <1395248167-16991-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248167-16991-2-git-send-email-srinivas.pandruvada@linux.intel.com> <532D8571.4040004@kernel.org>
+In-Reply-To: <532D8571.4040004@kernel.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/03/14 13:57, Alexandre Belloni wrote:
-> The ADC clock needs to be defined to enable the at91_adc driver. It is defined
-> to the same speed that is used for atmel_tsadcc.
+On 22/03/14 12:43, Jonathan Cameron wrote:
+> On 19/03/14 16:56, Srinivas Pandruvada wrote:
+>> Added capability so that this device can be enumerated via ACPI.
+>>
+> This is simple enough that I'm going to rely on my limited knowledge of ACPI and
+> take it as is.
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Applied to the togreg branch of iio.git
+Note there was a bit of fuzz in here.  All looks fine, but might be worth
+you taking a quick look at the merge.
 >
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Looks good to me, but out of my area of expertise so I won't ack it.
-> ---
->   arch/arm/mach-at91/at91sam9rl.c         |  7 +++
->   arch/arm/mach-at91/at91sam9rl_devices.c | 85 +++++++++++++++++++++++++++++++++
->   2 files changed, 92 insertions(+)
+> Thanks,
 >
-> diff --git a/arch/arm/mach-at91/at91sam9rl.c b/arch/arm/mach-at91/at91sam9rl.c
-> index 3651517abedf..753ba4893836 100644
-> --- a/arch/arm/mach-at91/at91sam9rl.c
-> +++ b/arch/arm/mach-at91/at91sam9rl.c
-> @@ -151,6 +151,11 @@ static struct clk ac97_clk = {
->   	.pmc_mask	= 1 << AT91SAM9RL_ID_AC97C,
->   	.type		= CLK_TYPE_PERIPHERAL,
->   };
-> +static struct clk adc_op_clk = {
-> +	.name		= "adc_op_clk",
-> +	.type		= CLK_TYPE_PERIPHERAL,
-> +	.rate_hz	= 1000000,
-> +};
+> Jonathan
+>> ---
+>>   drivers/iio/magnetometer/ak8975.c | 40 ++++++++++++++++++++++++++++++++++++---
+>>   1 file changed, 37 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+>> index aa7682d..09ea5c4 100644
+>> --- a/drivers/iio/magnetometer/ak8975.c
+>> +++ b/drivers/iio/magnetometer/ak8975.c
+>> @@ -31,6 +31,7 @@
+>>   #include <linux/bitops.h>
+>>   #include <linux/gpio.h>
+>>   #include <linux/of_gpio.h>
+>> +#include <linux/acpi.h>
+>>
+>>   #include <linux/iio/iio.h>
+>>   #include <linux/iio/sysfs.h>
+>> @@ -475,6 +476,27 @@ static const struct iio_info ak8975_info = {
+>>       .driver_module = THIS_MODULE,
+>>   };
+>>
+>> +static const struct acpi_device_id ak_acpi_match[] = {
+>> +    {"AK8975", AK8975},
+>> +    {"AK8963", AK8963},
+>> +    {"INVN6500", AK8963},
+>> +    { },
+>> +};
+>> +MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
+>> +
+>> +static char *ak8975_match_acpi_device(struct device *dev,
+>> +                enum asahi_compass_chipset *chipset)
+>> +{
+>> +    const struct acpi_device_id *id;
+>> +
+>> +    id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>> +    if (!id)
+>> +        return NULL;
+>> +    *chipset = (int)id->driver_data;
+>> +
+>> +    return (char *)dev_name(dev);
+>> +}
+>> +
+>>   static int ak8975_probe(struct i2c_client *client,
+>>               const struct i2c_device_id *id)
+>>   {
+>> @@ -482,6 +504,7 @@ static int ak8975_probe(struct i2c_client *client,
+>>       struct iio_dev *indio_dev;
+>>       int eoc_gpio;
+>>       int err;
+>> +    char *name = NULL;
+>>
+>>       /* Grab and set up the supplied GPIO. */
+>>       if (client->dev.platform_data)
+>> @@ -519,8 +542,18 @@ static int ak8975_probe(struct i2c_client *client,
+>>       data->eoc_gpio = eoc_gpio;
+>>       data->eoc_irq = 0;
+>>
+>> -    data->chipset = (enum asahi_compass_chipset)(id->driver_data);
+>> -    dev_dbg(&client->dev, "Asahi compass chip %s\n", id->name);
+>> +    /* id will be NULL when enumerated via ACPI */
+>> +    if (id) {
+>> +        data->chipset =
+>> +            (enum asahi_compass_chipset)(id->driver_data);
+>> +        name = (char *) id->name;
+>> +    } else if (ACPI_HANDLE(&client->dev))
+>> +        name = ak8975_match_acpi_device(&client->dev, &data->chipset);
+>> +    else {
+>> +        err = -ENOSYS;
+>> +        goto exit_free_iio;
+>> +    }
+>> +    dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+>>
+>>       /* Perform some basic start-of-day setup of the device. */
+>>       err = ak8975_setup(client);
+>> @@ -537,7 +570,7 @@ static int ak8975_probe(struct i2c_client *client,
+>>       indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+>>       indio_dev->info = &ak8975_info;
+>>       indio_dev->modes = INDIO_DIRECT_MODE;
+>> -
+>> +    indio_dev->name = name;
+>>       err = iio_device_register(indio_dev);
+>>       if (err < 0)
+>>           goto exit_free_iio;
+>> @@ -592,6 +625,7 @@ static struct i2c_driver ak8975_driver = {
+>>       .driver = {
+>>           .name    = "ak8975",
+>>           .of_match_table = ak8975_of_match,
+>> +        .acpi_match_table = ACPI_PTR(ak_acpi_match),
+>>       },
+>>       .probe        = ak8975_probe,
+>>       .remove        = ak8975_remove,
+>>
 >
->   static struct clk *periph_clocks[] __initdata = {
->   	&pioA_clk,
-> @@ -176,6 +181,7 @@ static struct clk *periph_clocks[] __initdata = {
->   	&udphs_clk,
->   	&lcdc_clk,
->   	&ac97_clk,
-> +	&adc_op_clk,
->   	// irq0
->   };
->
-> @@ -196,6 +202,7 @@ static struct clk_lookup periph_clocks_lookups[] = {
->   	CLKDEV_CON_ID("pioB", &pioB_clk),
->   	CLKDEV_CON_ID("pioC", &pioC_clk),
->   	CLKDEV_CON_ID("pioD", &pioD_clk),
-> +	CLKDEV_CON_ID("adc_clk", &tsc_clk),
->   };
->
->   static struct clk_lookup usart_clocks_lookups[] = {
-> diff --git a/arch/arm/mach-at91/at91sam9rl_devices.c b/arch/arm/mach-at91/at91sam9rl_devices.c
-> index a698bdab2cce..b836dada942c 100644
-> --- a/arch/arm/mach-at91/at91sam9rl_devices.c
-> +++ b/arch/arm/mach-at91/at91sam9rl_devices.c
-> @@ -22,6 +22,7 @@
->   #include <mach/at91_matrix.h>
->   #include <mach/at91sam9_smc.h>
->   #include <linux/platform_data/dma-atmel.h>
-> +#include <linux/platform_data/at91_adc.h>
->
->   #include "board.h"
->   #include "generic.h"
-> @@ -656,6 +657,90 @@ void __init at91_add_device_tsadcc(struct at91_tsadcc_data *data)
->   void __init at91_add_device_tsadcc(struct at91_tsadcc_data *data) {}
->   #endif
->
-> +/* --------------------------------------------------------------------
-> + *  ADC and Touchscreen
-> + * -------------------------------------------------------------------- */
-> +
-> +#if IS_ENABLED(CONFIG_AT91_ADC)
-> +static struct at91_adc_data adc_data;
-> +
-> +static struct resource adc_resources[] = {
-> +	[0] = {
-> +		.start	= AT91SAM9RL_BASE_TSC,
-> +		.end	= AT91SAM9RL_BASE_TSC + SZ_16K - 1,
-> +		.flags	= IORESOURCE_MEM,
-> +	},
-> +	[1] = {
-> +		.start	= NR_IRQS_LEGACY + AT91SAM9RL_ID_TSC,
-> +		.end	= NR_IRQS_LEGACY + AT91SAM9RL_ID_TSC,
-> +		.flags	= IORESOURCE_IRQ,
-> +	}
-> +};
-> +
-> +static struct platform_device at91_adc_device = {
-> +	.name           = "at91sam9rl-adc",
-> +	.id             = -1,
-> +	.dev            = {
-> +		.platform_data  = &adc_data,
-> +	},
-> +	.resource       = adc_resources,
-> +	.num_resources  = ARRAY_SIZE(adc_resources),
-> +};
-> +
-> +static struct at91_adc_trigger at91_adc_triggers[] = {
-> +	[0] = {
-> +		.name = "external-rising",
-> +		.value = 1,
-> +		.is_external = true,
-> +	},
-> +	[1] = {
-> +		.name = "external-falling",
-> +		.value = 2,
-> +		.is_external = true,
-> +	},
-> +	[2] = {
-> +		.name = "external-any",
-> +		.value = 3,
-> +		.is_external = true,
-> +	},
-> +	[3] = {
-> +		.name = "continuous",
-> +		.value = 6,
-> +		.is_external = false,
-> +	},
-> +};
-> +
-> +void __init at91_add_device_adc(struct at91_adc_data *data)
-> +{
-> +	if (!data)
-> +		return;
-> +
-> +	if (test_bit(0, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PA17, 0);
-> +	if (test_bit(1, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PA18, 0);
-> +	if (test_bit(2, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PA19, 0);
-> +	if (test_bit(3, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PA20, 0);
-> +	if (test_bit(4, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PD6, 0);
-> +	if (test_bit(5, &data->channels_used))
-> +		at91_set_A_periph(AT91_PIN_PD7, 0);
-> +
-> +	if (data->use_external_triggers)
-> +		at91_set_A_periph(AT91_PIN_PB15, 0);
-> +
-> +	data->startup_time = 40;
-> +	data->trigger_number = 4;
-> +	data->trigger_list = at91_adc_triggers;
-> +
-> +	adc_data = *data;
-> +	platform_device_register(&at91_adc_device);
-> +}
-> +#else
-> +void __init at91_add_device_adc(struct at91_adc_data *data) {}
-> +#endif
->
->   /* --------------------------------------------------------------------
->    *  RTC
->
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
