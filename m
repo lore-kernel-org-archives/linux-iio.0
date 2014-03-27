@@ -1,68 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53271 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750738AbaCVMT7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Mar 2014 08:19:59 -0400
-Message-ID: <532D8030.40607@kernel.org>
-Date: Sat, 22 Mar 2014 12:21:04 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Alec Berg <alecaberg@chromium.org>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org,
-	Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net
-Subject: Re: [PATCH] iio: querying buffer scan_mask should return 0/1
-References: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
-In-Reply-To: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mga09.intel.com ([134.134.136.24]:31700 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755748AbaC0Ajk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Mar 2014 20:39:40 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org, khali@linux-fr.org
+Cc: linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	ktsai@capellamicro.com,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [RFC Patch v0 2/3] i2c-smbus: Allow building with I2C_HELPER_AUTO support
+Date: Wed, 26 Mar 2014 17:42:11 -0700
+Message-Id: <1395880932-19124-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1395880932-19124-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1395880932-19124-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/03/14 18:50, Alec Berg wrote:
-> Ensure that querying the IIO buffer scan_mask returns a value of
-> 0 or 1. Currently querying the scan mask has the value returned
-> by test_bit(), which returns either true or false. For some
-> architectures test_bit() may return -1 for true, which will appear
-> to return an error when returning from iio_scan_mask_query().
->
-> Additionally, it's important for the sysfs interface to consistently
-> return the same thing when querying the scan_mask.
->
-> Signed-off-by: Alec Berg <alecaberg@chromium.org>
-Applied to the fixes-togreg branch of iio.git and
-marked for stable.
+Currentlty the config is conditional on !I2C_HELPER_AUTO.
+I don't know their dependency, but without this we can't build.
 
-This will probably now go in shortly after rc1.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/i2c/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-> ---
->   drivers/iio/industrialio-buffer.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index c67d83b..fe25042 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
->   	int ret;
->   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->
-> -	ret = test_bit(to_iio_dev_attr(attr)->address,
-> +	/* Ensure ret is 0 or 1. */
-> +	ret = !!test_bit(to_iio_dev_attr(attr)->address,
->   		       indio_dev->buffer->scan_mask);
->
->   	return sprintf(buf, "%d\n", ret);
-> @@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
->   	if (!buffer->scan_mask)
->   		return 0;
->
-> -	return test_bit(bit, buffer->scan_mask);
-> +	/* Ensure return value is 0 or 1. */
-> +	return !!test_bit(bit, buffer->scan_mask);
->   };
->   EXPORT_SYMBOL_GPL(iio_scan_mask_query);
->
->
+diff --git a/drivers/i2c/Kconfig b/drivers/i2c/Kconfig
+index 7b7ea32..212ed73 100644
+--- a/drivers/i2c/Kconfig
++++ b/drivers/i2c/Kconfig
+@@ -74,7 +74,7 @@ config I2C_HELPER_AUTO
+ 	  In doubt, say Y.
+ 
+ config I2C_SMBUS
+-	tristate "SMBus-specific protocols" if !I2C_HELPER_AUTO
++	tristate "SMBus-specific protocols"
+ 	help
+ 	  Say Y here if you want support for SMBus extensions to the I2C
+ 	  specification. At the moment, the only supported extension is
+-- 
+1.8.3.2
 
