@@ -1,122 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47594 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47637 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751289AbaC2Kvf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 06:51:35 -0400
-Message-ID: <5336A5FC.4020507@kernel.org>
-Date: Sat, 29 Mar 2014 10:52:44 +0000
+	with ESMTP id S1751375AbaC2K6Z (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 06:58:25 -0400
+Message-ID: <5336A796.502@kernel.org>
+Date: Sat, 29 Mar 2014 10:59:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [Patch v1 3/4] iio: imu: Enable checking of presence of device
-References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1395248203-17027-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: Re: [Patch v1 4/4] iio: imu: inv_mpu6050: ACPI enumeration
+References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1395248203-17027-4-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/03/14 16:56, Srinivas Pandruvada wrote:
-> Added logic to check presence of MPU6050 before continuing. Currently
-> only i2c writes are used in the initialzation path, which don't return
-> any error, if some i2c device responds. In this case it continues to
-> create iio devices, which don't work.
-> This can be reproduced in a PC like platform, where ACPI definition
-> of this defines multiple i2c addresses.
-That's hideous.  oh well - guess we need to cope with it.
-> We need to check for an valid
-> i2c address by checking some id before continuing.
+> Added changes so that the module can be enumerated via ACPI.
+> Also if there is no platform data available, it will use a default
+> orientation data.
 >
 > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-This looks fine, but won't apply without patch 2.  If you want to
-reorder the series to push patch 2 towards the end, then I can take
-this whilst that more complex issue is being sorted out.
+This one looks fine as well, but again I can't take it now because of
+patch 2 interfering with it.
+
+Thanks,
+
+Jonathan
 > ---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 27 +++++++++++++++++++++++++++
->   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  5 +++++
->   2 files changed, 32 insertions(+)
+>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 31 ++++++++++++++++++++++++++++--
+>   1 file changed, 29 insertions(+), 2 deletions(-)
 >
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 744eba4..200163d 100644
+> index 200163d..2b3f24d 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -54,6 +54,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
->   	.pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
->   	.pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
->   	.int_pin_cfg		= INV_MPU6050_REG_INT_PIN_CFG,
-> +	.who_am_i		= INV_MPU6050_REG_WHOAMI,
->   };
+> @@ -24,8 +24,16 @@
+>   #include <linux/kfifo.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/iio/iio.h>
+> +#include <linux/acpi.h>
+>   #include "inv_mpu_iio.h"
 >
->   static const struct inv_mpu6050_chip_config chip_config_6050 = {
-> @@ -74,6 +75,12 @@ static const struct inv_mpu6050_hw hw_info[INV_NUM_PARTS] = {
->   	},
->   };
->
-> +static const u16 inv_mpu_unique_ids[] = {
-> +	INV_MPU60X0_UNIQUE_ID,
-> +	INV_MPU6500_UNIQUE_ID,
-> +	0x0000,
+> +/* Define some default platform data, if not supplied */
+> +static struct inv_mpu6050_platform_data inv_def_platform_data = {
+> +	.orientation = {-1,  0,  0,
+> +			0,  1,  0,
+> +			0,  0, -1 }
 > +};
 > +
->   int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 d)
->   {
->   	return i2c_smbus_write_i2c_block_data(st->client, reg, 1, &d);
-> @@ -630,6 +637,8 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
->   		const struct i2c_device_id *id)
->   {
+>   /*
+>    * this is the gyro scale translated from dynamic range plus/minus
+>    * {250, 500, 1000, 2000} to rad/s
+> @@ -706,6 +714,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+>   	struct inv_mpu6050_state *st;
+>   	struct iio_dev *indio_dev;
 >   	int result;
-> +	bool matched = false;
-> +	int i = 0;
+> +	char *name;
 >
->   	st->chip_type = INV_MPU6050;
->   	st->hw  = &hw_info[st->chip_type];
-> @@ -641,6 +650,24 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
->   	if (result)
->   		return result;
->   	msleep(INV_MPU6050_POWER_UP_TIME);
-> +
-> +	result = i2c_smbus_read_byte_data(st->client, st->reg->who_am_i);
-> +	if (result < 0) {
-> +		dev_err(&st->client->dev, "Error reading WhoAmI\n");
-> +		return result;
-> +	}
-> +
-> +	while (inv_mpu_unique_ids[i] != 0x0000) {
-> +		if (inv_mpu_unique_ids[i++] == result)
-> +			matched = true;
-> +	}
-> +
-> +	if (!matched) {
-> +		dev_err(&st->client->dev, "Not a valid MPU6XXX device %x\n",
-> +								result);
-> +		return -ENOSYS;
-> +	}
-> +
->   	/* toggle power state. After reset, the sleep bit could be on
->   		or off depending on the OTP settings. Toggling power would
->   		make it in a definite state as well as making the hardware
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index 591ac2e..41196c5 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -55,6 +55,7 @@ struct inv_mpu6050_reg_map {
->   	u8 pwr_mgmt_1;
->   	u8 pwr_mgmt_2;
->   	u8 int_pin_cfg;
-> +	u8 who_am_i;
->   };
+>   	if (!i2c_check_functionality(client->adapter,
+>   		I2C_FUNC_SMBUS_I2C_BLOCK))
+> @@ -717,7 +726,10 @@ static int inv_mpu_probe(struct i2c_client *client,
 >
->   /*device enum */
-> @@ -190,6 +191,10 @@ struct inv_mpu6050_state {
->   #define INV_MPU6050_REG_INT_PIN_CFG		0x37
->   #define INV_MPU6050_BIT_BYPASS_EN		0x2
+>   	st = iio_priv(indio_dev);
+>   	st->client = client;
+> -	st->plat_data = *(struct inv_mpu6050_platform_data
+> +	if (!dev_get_platdata(&client->dev))
+> +		st->plat_data = inv_def_platform_data;
+> +	else
+> +		st->plat_data = *(struct inv_mpu6050_platform_data
+>   				*)dev_get_platdata(&client->dev);
+>   	/* power is turned on inside check chip type*/
+>   	result = inv_check_and_setup_chip(st, id);
+> @@ -733,7 +745,14 @@ static int inv_mpu_probe(struct i2c_client *client,
 >
-> +#define INV_MPU6050_REG_WHOAMI			0x75
-> +#define INV_MPU6500_UNIQUE_ID			0x70
-> +#define INV_MPU60X0_UNIQUE_ID			0x68
+>   	i2c_set_clientdata(client, indio_dev);
+>   	indio_dev->dev.parent = &client->dev;
+> -	indio_dev->name = id->name;
 > +
->   /* scan element definition */
->   enum inv_mpu6050_scan {
->   	INV_MPU6050_SCAN_ACCL_X,
+> +	/* id will be NULL when enumerated via ACPI */
+> +	if (id)
+> +		name = (char *)id->name;
+> +	else
+> +		name = (char *)dev_name(&client->dev);
+> +
+> +	indio_dev->name = name;
+>   	indio_dev->channels = inv_mpu_channels;
+>   	indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
+>
+> @@ -815,12 +834,20 @@ static const struct i2c_device_id inv_mpu_id[] = {
+>
+>   MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+>
+> +static const struct acpi_device_id inv_acpi_match[] = {
+> +	{"INVN6050", INV_MPU6050},
+> +	{"INVN6500", INV_MPU6500},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+> +
+>   static struct i2c_driver inv_mpu_driver = {
+>   	.probe		=	inv_mpu_probe,
+>   	.remove		=	inv_mpu_remove,
+>   	.id_table	=	inv_mpu_id,
+>   	.driver = {
+>   		.owner	=	THIS_MODULE,
+> +		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+>   		.name	=	"inv-mpu6050",
+>   		.pm     =       INV_MPU6050_PMOPS,
+>   	},
 >
 
