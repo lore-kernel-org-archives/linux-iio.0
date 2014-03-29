@@ -1,259 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47754 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47712 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751375AbaC2LOT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 07:14:19 -0400
-Message-ID: <5336AB4F.4020703@kernel.org>
-Date: Sat, 29 Mar 2014 11:15:27 +0000
+	with ESMTP id S1751375AbaC2LIi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 07:08:38 -0400
+Message-ID: <5336A9F9.4080504@kernel.org>
+Date: Sat, 29 Mar 2014 11:09:45 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 1/5] IIO: core: Introduce read_raw_multi
-References: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+CC: Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	=?ISO-8859-1?Q?Pali_Roh=E1r?= <pali.rohar@gmail.com>
+Subject: Re: [PATCHv2 1/2] rx51_battery: convert to iio consumer
+References: <1393375569-21751-1-git-send-email-sre@debian.org> <1393705366-32420-1-git-send-email-sre@debian.org> <1393705366-32420-2-git-send-email-sre@debian.org>
+In-Reply-To: <1393705366-32420-2-git-send-email-sre@debian.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/02/14 19:50, Srinivas Pandruvada wrote:
-> This callback is introduced to overcome some limitations of existing
-> read_raw callback. The functionality of both existing read_raw and
-> read_raw_multi is similar, both are used to request values from the
-> device. The current read_raw callback allows only two return values.
-> The new read_raw_multi allows returning multiple values. Instead of
-> passing just address of val and val2, it passes length and pointer
-> to values. Depending on the type and length of passed buffer, iio
-> client drivers can return multiple values.
+On 01/03/14 20:22, Sebastian Reichel wrote:
+> Update rx51-battery driver to use the new IIO API of
+> twl4030-madc and add DT support.
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Hi Srinivas.
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+This looks fine to me.  I'd love to see a more generic solution, but
+we can work on that another time.
 
-Whilst it wasn't the most in depth of discussions, I think the outcome
-of the 'how to handle quaternion sysfs naming' element of the
-thread.
-[RFC] IIO: New interfaces for 'interesting' channel types.
-
-was that we should do them as a modifier instead of a new channel type.
-e.g.
-
-in_rot_quaternion_raw
-etc.
-
-Could you convert this driver over and repost?
-
-If you disagree, then feel free to contribute to that discussion and
-we'll continue from there.
-
-Sorry this took so long to sort out, I was hoping for a few more inputs
-but there we are...
-
-Jonathan
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
->   drivers/iio/iio_core.h           |  2 +-
->   drivers/iio/industrialio-core.c  | 51 +++++++++++++++++++++++-----------------
->   drivers/iio/industrialio-event.c |  6 +++--
->   drivers/iio/inkern.c             | 15 ++++++++++--
->   include/linux/iio/iio.h          | 16 +++++++++++++
->   5 files changed, 63 insertions(+), 27 deletions(-)
+>   drivers/power/rx51_battery.c | 90 ++++++++++++++++++++++++++++++++------------
+>   1 file changed, 66 insertions(+), 24 deletions(-)
 >
-> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
-> index f6db6af..4172f22 100644
-> --- a/drivers/iio/iio_core.h
-> +++ b/drivers/iio/iio_core.h
-> @@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
->   			   struct list_head *attr_list);
->   void iio_free_chan_devattr_list(struct list_head *attr_list);
+> diff --git a/drivers/power/rx51_battery.c b/drivers/power/rx51_battery.c
+> index 1bc5857..d5a2acf 100644
+> --- a/drivers/power/rx51_battery.c
+> +++ b/drivers/power/rx51_battery.c
+> @@ -24,34 +24,27 @@
+>   #include <linux/power_supply.h>
+>   #include <linux/slab.h>
+>   #include <linux/i2c/twl4030-madc.h>
+> -
+> -/* RX51 specific channels */
+> -#define TWL4030_MADC_BTEMP_RX51	TWL4030_MADC_ADCIN0
+> -#define TWL4030_MADC_BCI_RX51	TWL4030_MADC_ADCIN4
+> +#include <linux/iio/consumer.h>
+> +#include <linux/of.h>
 >
-> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
-> +ssize_t iio_format_value(char *buf, unsigned int type, int *val);
+>   struct rx51_device_info {
+>   	struct device *dev;
+>   	struct power_supply bat;
+> +	struct iio_channel *channel_temp;
+> +	struct iio_channel *channel_bsi;
+> +	struct iio_channel *channel_vbat;
+>   };
 >
->   /* Event interface flags */
->   #define IIO_BUSY_BIT_POS 1
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index acc911a..b1225a4 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -373,41 +373,42 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
->    * @buf: The buffer to which the formated value gets written
->    * @type: One of the IIO_VAL_... constants. This decides how the val and val2
->    *        parameters are formatted.
-> - * @val: First part of the value, exact meaning depends on the type parameter.
-> - * @val2: Second part of the value, exact meaning depends on the type parameter.
-> + * @vals: pointer to the values, exact meaning depends on the type parameter.
+>   /*
+>    * Read ADCIN channel value, code copied from maemo kernel
 >    */
-> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
-> +ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
+> -static int rx51_battery_read_adc(int channel)
+> +static int rx51_battery_read_adc(struct iio_channel *channel)
 >   {
->   	unsigned long long tmp;
->   	bool scale_db = false;
+> -	struct twl4030_madc_request req;
+> -
+> -	req.channels = channel;
+> -	req.do_avg = 1;
+> -	req.method = TWL4030_MADC_SW1;
+> -	req.func_cb = NULL;
+> -	req.type = TWL4030_MADC_WAIT;
+> -	req.raw = true;
+> -
+> -	if (twl4030_madc_conversion(&req) <= 0)
+> -		return -ENODATA;
+> -
+> -	return req.rbuf[ffs(channel) - 1];
+> +	int val, err;
+> +	err = iio_read_channel_average_raw(channel, &val);
+> +	if (err < 0)
+> +		return err;
+> +	return val;
+>   }
 >
->   	switch (type) {
->   	case IIO_VAL_INT:
-> -		return sprintf(buf, "%d\n", val);
-> +		return sprintf(buf, "%d\n", vals[0]);
->   	case IIO_VAL_INT_PLUS_MICRO_DB:
->   		scale_db = true;
->   	case IIO_VAL_INT_PLUS_MICRO:
-> -		if (val2 < 0)
-> -			return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
-> +		if (vals[1] < 0)
-> +			return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
-> +					-vals[1],
->   				scale_db ? " dB" : "");
->   		else
-> -			return sprintf(buf, "%d.%06u%s\n", val, val2,
-> +			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
->   				scale_db ? " dB" : "");
->   	case IIO_VAL_INT_PLUS_NANO:
-> -		if (val2 < 0)
-> -			return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
-> +		if (vals[1] < 0)
-> +			return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
-> +					-vals[1]);
->   		else
-> -			return sprintf(buf, "%d.%09u\n", val, val2);
-> +			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->   	case IIO_VAL_FRACTIONAL:
-> -		tmp = div_s64((s64)val * 1000000000LL, val2);
-> -		val2 = do_div(tmp, 1000000000LL);
-> -		val = tmp;
-> -		return sprintf(buf, "%d.%09u\n", val, val2);
-> +		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
-> +		vals[1] = do_div(tmp, 1000000000LL);
-> +		vals[0] = tmp;
-> +		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->   	case IIO_VAL_FRACTIONAL_LOG2:
-> -		tmp = (s64)val * 1000000000LL >> val2;
-> -		val2 = do_div(tmp, 1000000000LL);
-> -		val = tmp;
-> -		return sprintf(buf, "%d.%09u\n", val, val2);
-> +		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
-> +		vals[1] = do_div(tmp, 1000000000LL);
-> +		vals[0] = tmp;
-> +		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->   	default:
->   		return 0;
->   	}
-> @@ -419,14 +420,20 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>   /*
+> @@ -60,10 +53,12 @@ static int rx51_battery_read_adc(int channel)
+>    */
+>   static int rx51_battery_read_voltage(struct rx51_device_info *di)
 >   {
->   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->   	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	int val, val2;
-> -	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-> -					    &val, &val2, this_attr->address);
-> +	int vals[INDIO_MAX_RAW_ELEMENTS];
-> +	int ret;
+> -	int voltage = rx51_battery_read_adc(TWL4030_MADC_VBAT);
+> +	int voltage = rx51_battery_read_adc(di->channel_vbat);
+>
+> -	if (voltage < 0)
+> +	if (voltage < 0) {
+> +		dev_err(di->dev, "Could not read ADC: %d\n", voltage);
+>   		return voltage;
+> +	}
+>
+>   	return 1000 * (10000 * voltage / 1705);
+>   }
+> @@ -112,7 +107,10 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+>   {
+>   	int min = 0;
+>   	int max = ARRAY_SIZE(rx51_temp_table2) - 1;
+> -	int raw = rx51_battery_read_adc(TWL4030_MADC_BTEMP_RX51);
+> +	int raw = rx51_battery_read_adc(di->channel_temp);
 > +
-> +	if (indio_dev->info->read_raw_multi)
-> +		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
-> +			    INDIO_MAX_RAW_ELEMENTS, vals, this_attr->address);
-> +	else
-> +		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
-> +				    &vals[0], &vals[1], this_attr->address);
+> +	if (raw < 0)
+> +		dev_err(di->dev, "Could not read ADC: %d\n", raw);
 >
->   	if (ret < 0)
->   		return ret;
->
-> -	return iio_format_value(buf, ret, val, val2);
-> +	return iio_format_value(buf, ret, vals);
->   }
->
->   /**
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index c9c1419..0f7f78e 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -272,7 +272,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+>   	/* Zero and negative values are undefined */
+>   	if (raw <= 0)
+> @@ -146,10 +144,12 @@ static int rx51_battery_read_temperature(struct rx51_device_info *di)
+>    */
+>   static int rx51_battery_read_capacity(struct rx51_device_info *di)
 >   {
->   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->   	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	int val, val2;
-> +	int val, val2, val_arr[2];
->   	int ret;
+> -	int capacity = rx51_battery_read_adc(TWL4030_MADC_BCI_RX51);
+> +	int capacity = rx51_battery_read_adc(di->channel_bsi);
 >
->   	ret = indio_dev->info->read_event_value(indio_dev,
-> @@ -281,7 +281,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
->   		&val, &val2);
->   	if (ret < 0)
->   		return ret;
-> -	return iio_format_value(buf, ret, val, val2);
-> +	val_arr[0] = val;
-> +	val_arr[1] = val2;
-> +	return iio_format_value(buf, ret, val_arr);
+> -	if (capacity < 0)
+> +	if (capacity < 0) {
+> +		dev_err(di->dev, "Could not read ADC: %d\n", capacity);
+>   		return capacity;
+> +	}
+>
+>   	return 1280 * (1200 * capacity)/(1024 - capacity);
 >   }
+> @@ -213,17 +213,46 @@ static int rx51_battery_probe(struct platform_device *pdev)
 >
->   static ssize_t iio_ev_value_store(struct device *dev,
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 0cf5f8e..6a93d57 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -417,12 +417,23 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
->   	enum iio_chan_info_enum info)
->   {
->   	int unused;
-> +	int vals[INDIO_MAX_RAW_ELEMENTS];
-> +	int ret;
+>   	platform_set_drvdata(pdev, di);
 >
->   	if (val2 == NULL)
->   		val2 = &unused;
+> +	di->dev = &pdev->dev;
+>   	di->bat.name = dev_name(&pdev->dev);
+>   	di->bat.type = POWER_SUPPLY_TYPE_BATTERY;
+>   	di->bat.properties = rx51_battery_props;
+>   	di->bat.num_properties = ARRAY_SIZE(rx51_battery_props);
+>   	di->bat.get_property = rx51_battery_get_property;
 >
-> -	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
-> -						val, val2, info);
-> +	if (chan->indio_dev->info->read_raw_multi) {
-> +		ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
-> +					chan->channel, INDIO_MAX_RAW_ELEMENTS,
-> +					vals, info);
-> +		*val = vals[0];
-> +		*val2 = vals[1];
-> +	} else
-> +		ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> +					chan->channel, val, val2, info);
+> +	di->channel_temp = iio_channel_get(di->dev, "temp");
+> +	if (IS_ERR(di->channel_temp)) {
+> +		ret = PTR_ERR(di->channel_temp);
+> +		goto error;
+> +	}
+> +
+> +	di->channel_bsi  = iio_channel_get(di->dev, "bsi");
+> +	if (IS_ERR(di->channel_bsi)) {
+> +		ret = PTR_ERR(di->channel_bsi);
+> +		goto error_channel_temp;
+> +	}
+> +
+> +	di->channel_vbat = iio_channel_get(di->dev, "vbat");
+> +	if (IS_ERR(di->channel_vbat)) {
+> +		ret = PTR_ERR(di->channel_vbat);
+> +		goto error_channel_bsi;
+> +	}
+> +
+>   	ret = power_supply_register(di->dev, &di->bat);
+>   	if (ret)
+> -		return ret;
+> +		goto error_channel_vbat;
+>
+>   	return 0;
+> +
+> +error_channel_vbat:
+> +	iio_channel_release(di->channel_vbat);
+> +error_channel_bsi:
+> +	iio_channel_release(di->channel_bsi);
+> +error_channel_temp:
+> +	iio_channel_release(di->channel_temp);
+> +error:
 > +
 > +	return ret;
 >   }
 >
->   int iio_read_channel_raw(struct iio_channel *chan, int *val)
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 75a8a20..ddf9f60 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -284,6 +284,8 @@ static inline s64 iio_get_time_ns(void)
->   #define INDIO_ALL_BUFFER_MODES					\
->   	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+>   static int rx51_battery_remove(struct platform_device *pdev)
+> @@ -232,15 +261,28 @@ static int rx51_battery_remove(struct platform_device *pdev)
 >
-> +#define INDIO_MAX_RAW_ELEMENTS		4
+>   	power_supply_unregister(&di->bat);
+>
+> +	iio_channel_release(di->channel_vbat);
+> +	iio_channel_release(di->channel_bsi);
+> +	iio_channel_release(di->channel_temp);
 > +
->   struct iio_trigger; /* forward declaration */
->   struct iio_dev;
+>   	return 0;
+>   }
 >
-> @@ -298,6 +300,14 @@ struct iio_dev;
->    *			the channel in question.  Return value will specify the
->    *			type of value returned by the device. val and val2 will
->    *			contain the elements making up the returned value.
-> + * @read_raw_multi:	function to return values from the device.
-> + *			mask specifies which value. Note 0 means a reading of
-> + *			the channel in question.  Return value will specify the
-> + *			type of value returned by the device. vals pointer
-> + *			contain the elements making up the returned value.
-> + *			val_len specifies maximum number of elements
-> + *			vals pointer can contain. In contrast to to read_raw
-> + *			device can return multiple values not just two.
->    * @write_raw:		function to write a value to the device.
->    *			Parameters are the same as for read_raw.
->    * @write_raw_get_fmt:	callback function to query the expected
-> @@ -324,6 +334,12 @@ struct iio_info {
->   			int *val2,
->   			long mask);
->
-> +	int (*read_raw_multi)(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int val_len,
-> +			int *vals,
-> +			long mask);
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id n900_battery_of_match[] = {
+> +	{.compatible = "nokia,n900-battery", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, n900_battery_of_match);
+> +#endif
 > +
->   	int (*write_raw)(struct iio_dev *indio_dev,
->   			 struct iio_chan_spec const *chan,
->   			 int val,
+>   static struct platform_driver rx51_battery_driver = {
+>   	.probe = rx51_battery_probe,
+>   	.remove = rx51_battery_remove,
+>   	.driver = {
+>   		.name = "rx51-battery",
+>   		.owner = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(n900_battery_of_match),
+>   	},
+>   };
+>   module_platform_driver(rx51_battery_driver);
 >
 
