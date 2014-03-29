@@ -1,70 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47678 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47734 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751375AbaC2LEq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 07:04:46 -0400
-Message-ID: <5336A913.1040908@kernel.org>
-Date: Sat, 29 Mar 2014 11:05:55 +0000
+	with ESMTP id S1751375AbaC2LJt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 29 Mar 2014 07:09:49 -0400
+Message-ID: <5336AA42.8020606@kernel.org>
+Date: Sat, 29 Mar 2014 11:10:58 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Ge Gao <GGao@invensense.com>, Lars-Peter Clausen <lars@metafoo.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: unreliable time function inside IRQ?
-References: <E7747D604FBC9F43A71AA431AFF447622577643E@IUSEXCH01.invcorp.invensense.com>
-In-Reply-To: <E7747D604FBC9F43A71AA431AFF447622577643E@IUSEXCH01.invcorp.invensense.com>
+To: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>
+CC: Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	=?ISO-8859-1?Q?Pali_Roh=E1r?= <pali.rohar@gmail.com>
+Subject: Re: [PATCHv2 2/2] Documentation: DT: Document rx51-battery binding
+References: <1393375569-21751-1-git-send-email-sre@debian.org> <1393705366-32420-1-git-send-email-sre@debian.org> <1393705366-32420-3-git-send-email-sre@debian.org>
+In-Reply-To: <1393705366-32420-3-git-send-email-sre@debian.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/03/14 21:56, Ge Gao wrote:
-> Dear all, Had to bring this question again to see whether anyone see
-> the same problem. IIO fetches the timestamp inside IRQ using
-> iio_get_time_ns(), which in turn call ktime_get_real_ts(&ts).
-> However, I notice that the clock taken during interrupt is not always
-> reliable. Sometimes the clock does not update. It is updated after
-> one or more interrupts. It is very easy to reproduce. First find a
-> hardware generating fixed interval of interrupts and using IIO driver
-> to run it. Print out the timestamp. You could find that the timestamp
-> distance is not always correct. For example, if you run a 5 Hz
-> interrupt, most of time you will interrupt timestamp interval is
-> around 200ms. However, sometimes, you could see interval sequence
-> like ...200, 192, 208, 200, 200, 182, 218, 200....... I searched
-> online and only found one result, which is exactly the same as I
-> observed. Below is the link:
-> http://stackoverflow.com/questions/17080516/unable-unreliable-to-use-clock-gettime-in-hard-irq-context
+On 01/03/14 20:22, Sebastian Reichel wrote:
+> Add devicetree binding documentation for rx51-battery,
+> which is a simple A/D converter consumer.
 >
->
-But no one answer the question.
-> 	Is there anyone see the same problem? Thanks.
-Hi Ge,
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-I'm afraid I don't know the cause of this.
-It's also entirely possible that other interrupts are occurring that
-are delaying the processing of some of your interrupts.
-The slightly interesting bit is that you seem to be getting interrupts
-apparently early sometimes.  I would have expected a longer delay then
-a shorter one if it was something else interfering.
-
-It might be related to the implementation of the high resolution
-timers on your platform.  Perhaps they are being updated by a high
-precision, low frequency source.  Mind you, in that case I think
-you'd expect to see only one value being out rather than the single
-early value you appear to be seeing here.  For some reason it seems
-that occasionally you are handling interrupts earlier than the
-majority of the time... Odd!
-
-
-What is the platform you are seeing this on?
+Clearly this set has some rather large dependencies, but its good to go
+once those are in place.
 
 Jonathan
+> ---
+>   .../devicetree/bindings/power/rx51-battery.txt     | 25 ++++++++++++++++++++++
+>   1 file changed, 25 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/power/rx51-battery.txt
 >
-> Best Regards,
->
-> Ge GAO
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/power/rx51-battery.txt b/Documentation/devicetree/bindings/power/rx51-battery.txt
+> new file mode 100644
+> index 0000000..9043845
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/power/rx51-battery.txt
+> @@ -0,0 +1,25 @@
+> +Binding for Nokia N900 battery
+> +
+> +The Nokia N900 battery status can be read via the TWL4030's A/D converter.
+> +
+> +Required properties:
+> +- compatible: Should contain one of the following:
+> + * "nokia,n900-battery"
+> +- io-channels: Should contain IIO channel specifiers
+> +               for each element in io-channel-names.
+> +- io-channel-names: Should contain the following values:
+> + * "temp" - The ADC channel for temperature reading
+> + * "bsi"  - The ADC channel for battery size identification
+> + * "vbat" - The ADC channel to measure the battery voltage
+> +
+> +Example from Nokia N900:
+> +
+> +battery: n900-battery {
+> +	compatible = "nokia,n900-battery";
+> +	io-channels = <&twl4030_madc 0>,
+> +		      <&twl4030_madc 4>,
+> +		      <&twl4030_madc 12>;
+> +	io-channel-names = "temp",
+> +			   "bsi",
+> +			   "vbat";
+> +};
 >
 
