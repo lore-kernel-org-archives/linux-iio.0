@@ -1,59 +1,246 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f73.google.com ([209.85.219.73]:35961 "EHLO
-	mail-oa0-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750943AbaCSS5a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Mar 2014 14:57:30 -0400
-Received: by mail-oa0-f73.google.com with SMTP id n16so1749025oag.4
-        for <linux-iio@vger.kernel.org>; Wed, 19 Mar 2014 11:57:30 -0700 (PDT)
-From: Alec Berg <alecaberg@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Vincent Palatin <vpalatin@chromium.org>, olof@lixom.net,
-	Alec Berg <alecaberg@chromium.org>
-Subject: [PATCH] iio: querying buffer scan_mask should return 0/1
-Date: Wed, 19 Mar 2014 11:50:44 -0700
-Message-Id: <1395255044-20173-1-git-send-email-alecaberg@chromium.org>
+Received: from countercultured.net ([209.51.175.25]:39776 "HELO
+	countercultured.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751117AbaCaEEq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 31 Mar 2014 00:04:46 -0400
+Message-ID: <5338E95F.50204@countercultured.net>
+Date: Mon, 31 Mar 2014 00:04:47 -0400
+From: Rob Mosher <nyt@countercultured.net>
+MIME-Version: 1.0
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	robertcnelson@gmail.com, Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, balbi@ti.com,
+	Lee Jones <lee.jones@linaro.org>
+Subject: Re: ti_am33x_adc sampling bugs
+References: <53379DF2.7050004@rznt.com> <5337B3F4.30500@countercultured.net> <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
+In-Reply-To: <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Ensure that querying the IIO buffer scan_mask returns a value of
-0 or 1. Currently querying the scan mask has the value returned
-by test_bit(), which returns either true or false. For some
-architectures test_bit() may return -1 for true, which will appear
-to return an error when returning from iio_scan_mask_query().
+(sorry for the duplicate, got bounces due to HTML encoding)
 
-Additionally, it's important for the sysfs interface to consistently
-return the same thing when querying the scan_mask.
+The specified patch is already included.  The system was running the 
+latest kernel from Robert Nelson's repo.  Any suggestions?  I'll try 
+removing some of the patches to see if it fixes this behavior.  I have a 
+feeling I know which one is doing it.
 
-Signed-off-by: Alec Berg <alecaberg@chromium.org>
----
- drivers/iio/industrialio-buffer.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Thanks.
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index c67d83b..fe25042 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -165,7 +165,8 @@ static ssize_t iio_scan_el_show(struct device *dev,
- 	int ret;
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 
--	ret = test_bit(to_iio_dev_attr(attr)->address,
-+	/* Ensure ret is 0 or 1. */
-+	ret = !!test_bit(to_iio_dev_attr(attr)->address,
- 		       indio_dev->buffer->scan_mask);
- 
- 	return sprintf(buf, "%d\n", ret);
-@@ -866,7 +867,8 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
- 	if (!buffer->scan_mask)
- 		return 0;
- 
--	return test_bit(bit, buffer->scan_mask);
-+	/* Ensure return value is 0 or 1. */
-+	return !!test_bit(bit, buffer->scan_mask);
- };
- EXPORT_SYMBOL_GPL(iio_scan_mask_query);
- 
--- 
-1.9.0.279.gdc9e3eb
+output from running patch.sh with source pulled from 
+https://github.com/beagleboard/kernel/tree/3.8
+
+/home/bbuild/comp/kernel/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch: 
+applied
+
+Just in case, I built and installed the kernel and the same behavior 
+persisted.
+
+root@rbone:/# uname -a
+Linux rbone 3.8.13-00737-g7dfad77 #1 SMP Sun Mar 30 22:11:44 EDT 2014 
+armv7l GNU/Linux
+
+gpio30 is connected to AIN4 using a voltage divider
+
+root@rbone:/# cd /sys/class/gpio/
+root@rbone:/sys/class/gpio# echo 30 > export
+root@rbone:/sys/class/gpio# echo BB-ADC > /sys/devices/bone_capemgr.9/slots
+root@rbone:/sys/class/gpio# cd /sys/devices/ocp.3/helper.11/
+root@rbone:/sys/devices/ocp.3/helper.11# echo out > 
+/sys/class/gpio/gpio30/direction
+
+root@rbone:/sys/devices/ocp.3/helper.11# echo 1 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+1460
+
+root@rbone:/sys/devices/ocp.3/helper.11# echo 0 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+
+root@rbone:/sys/devices/ocp.3/helper.11# grep . AIN[0-3] AIN[5-7]
+AIN0:1550
+AIN1:1213
+AIN2:1485
+AIN3:795
+AIN5:513
+AIN6:744
+AIN7:1698
+
+root@rbone:/sys/devices/ocp.3/helper.11# echo 1 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+1460
+
+On 3/30/2014 9:16 AM, Zubair Lutfullah wrote:
+> https://github.com/beagleboard/kernel/blob/3.8/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch
+> IIRC, this patch fixes this issue
+>
+> Can you compile the kernel from the sources and check?
+> https://github.com/beagleboard/kernel/tree/3.8
+>
+> Regards
+> ZubairLK
+>
+> On Sun, Mar 30, 2014 at 7:04 AM, Rob Mosher <nyt@countercultured.net 
+> <mailto:nyt@countercultured.net>> wrote:
+>
+>     Just a note, the same behavior persists with BB-ADC dtb and
+>     reading from in_voltage4_raw
+>
+>
+>     On 3/30/2014 12:30 AM, Rob Mosher wrote:
+>
+>         Hello fine developers,
+>
+>         It seems I've stumbled upon a problem while developing a full
+>         featured Ruby gem for the Beaglebone.
+>
+>         It seems a patch included in the beaglebone kernel causes some
+>         issues while reading analog inputs.  Apparently the samples
+>         get backlogged by the number of adc pins in use.  I'm not sure
+>         which patch exactly as there are a number that affect adc
+>         buffering and I'm not currently setup for kernel building,
+>         however the below output should detail the problem.
+>
+>         Using the official Debian image.
+>         Linux rbone 3.8.13-bone43 #1 SMP Wed Mar 26 14:21:39 UTC 2014
+>         armv7l GNU/Linux
+>
+>         Distributor ID: Debian
+>         Description:    Debian GNU/Linux 7.4 (wheezy)
+>         Release:        7.4
+>         Codename:       wheezy
+>
+>         root@rbone:~# echo cape-bone-iio >
+>         /sys/devices/bone_capemgr.9/slots
+>
+>         This is the normal and expected behavior.
+>
+>         1.8v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         1.8v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         So far working as intended....  Now reading from the other pins.
+>
+>         root@rbone:/sys/devices/ocp.3/helper.12# grep . AIN[0-3] AIN[5-7]
+>         AIN0:1563
+>         AIN1:1221
+>         AIN2:1487
+>         AIN3:789
+>         AIN5:514
+>         AIN6:743
+>         AIN7:1698
+>
+>         Now applying 1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         Now applying 0v to AIN4
+>
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>
+>
+>         And another example, showing relation to the number of pins in
+>         use.
+>
+>         1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# grep . AIN[0-3]
+>         AIN0:1697
+>         AIN1:1298
+>         AIN2:1524
+>         AIN3:816
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         -- 
+>         Rob Mosher
+>         Senior Network and Software Engineer
+>         Hurricane Electric / AS6939
+>
+>
+>
+>
+>
 
