@@ -1,1039 +1,514 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56525 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750882AbaC3TlD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 30 Mar 2014 15:41:03 -0400
-Message-ID: <53387391.1000803@kernel.org>
-Date: Sun, 30 Mar 2014 20:42:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <nyt@countercultured.net>
+Message-ID: <5338E767.2020107@countercultured.net>
+Date: Sun, 30 Mar 2014 23:56:23 -0400
+From: Rob Mosher <nyt@countercultured.net>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: sr@denx.de
-Subject: Re: [PATCH 4/4] iio:adc:spear_adc move out of staging
-References: <1394895308-19154-1-git-send-email-jic23@kernel.org> <1394895308-19154-5-git-send-email-jic23@kernel.org> <5324EF60.6040003@gmx.de>
-In-Reply-To: <5324EF60.6040003@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Zubair Lutfullah <zubair.lutfullah@gmail.com>
+CC: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ robertcnelson@gmail.com, Samuel Ortiz <sameo@linux.intel.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org, balbi@ti.com,
+ Lee Jones <lee.jones@linaro.org>
+Subject: Re: ti_am33x_adc sampling bugs
+References: <53379DF2.7050004@rznt.com> <5337B3F4.30500@countercultured.net> <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
+In-Reply-To: <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
+Content-Type: multipart/alternative;
+ boundary="------------060902080204030809050302"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 16/03/14 00:25, Hartmut Knaack wrote:
-> Jonathan Cameron schrieb:
->> This simple driver is ready to move out of staging.
->>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> Acked-by: Stefan Roese <sr@denx.de>
-Stefan, there are some 'what is going on?' questions in here you might
-want to answer!
->> ---
->>   drivers/iio/adc/Kconfig             |   8 +
->>   drivers/iio/adc/Makefile            |   1 +
->>   drivers/iio/adc/spear_adc.c         | 405 ++++++++++++++++++++++++++++++++++++
->>   drivers/staging/iio/adc/Kconfig     |   8 -
->>   drivers/staging/iio/adc/Makefile    |   1 -
->>   drivers/staging/iio/adc/spear_adc.c | 405 ------------------------------------
->>   6 files changed, 414 insertions(+), 414 deletions(-)
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 5553206..2e3e1b0 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -164,6 +164,14 @@ config NAU7802
->>   	  To compile this driver as a module, choose M here: the
-s>>   	  module will be called nau7802.
->>
->> +config SPEAR_ADC
->> +	tristate "ST SPEAr ADC"
->> +	depends on PLAT_SPEAR || COMPILE_TEST
->> +	depends on HAS_IOMEM
->> +	help
->> +	  Say yes here to build support for the integrated ADC inside the
->> +	  ST SPEAr SoC. Provides direct access via sysfs.
->> +
->>   config TI_ADC081C
->>   	tristate "Texas Instruments ADC081C021/027"
->>   	depends on I2C
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index 89f1216..8378fb2 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -18,6 +18,7 @@ obj-$(CONFIG_MAX1363) += max1363.o
->>   obj-$(CONFIG_MCP320X) += mcp320x.o
->>   obj-$(CONFIG_MCP3422) += mcp3422.o
->>   obj-$(CONFIG_NAU7802) += nau7802.o
->> +obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
->>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
->> diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
->> new file mode 100644
->> index 0000000..18a0a40
->> --- /dev/null
->> +++ b/drivers/iio/adc/spear_adc.c
->> @@ -0,0 +1,405 @@
->> +/*
->> + * ST SPEAr ADC driver
->> + *
->> + * Copyright 2012 Stefan Roese <sr@denx.de>
-> I found a datasheet at http://www.st.com/st-web-ui/static/active/en/resource/technical/document/reference_manual/DM00034813.pdf
+This is a multi-part message in MIME format.
+--------------060902080204030809050302
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-THis is one of a number I think.. Not sure which parts will work out of the box
-with this driver though...  Stefan?  What was it written against?
-> ADC is covered on pages 594ff.
->> + *
->> + * Licensed under the GPL-2.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/device.h>
->> +#include <linux/kernel.h>
->> +#include <linux/slab.h>
->> +#include <linux/io.h>
->> +#include <linux/clk.h>
->> +#include <linux/err.h>
->> +#include <linux/completion.h>
->> +#include <linux/of.h>
->> +#include <linux/of_address.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +/* SPEAR registers definitions */
->> +#define SPEAR600_ADC_SCAN_RATE_LO(x)	((x) & 0xFFFF)
->> +#define SPEAR600_ADC_SCAN_RATE_HI(x)	(((x) >> 0x10) & 0xFFFF)
->> +#define SPEAR_ADC_CLK_LOW(x)		(((x) & 0xf) << 0)
->> +#define SPEAR_ADC_CLK_HIGH(x)		(((x) & 0xf) << 4)
->> +
->> +/* Bit definitions for SPEAR_ADC_STATUS */
->> +#define SPEAR_ADC_STATUS_START_CONVERSION	(1 << 0)
->> +#define SPEAR_ADC_STATUS_CHANNEL_NUM(x)		((x) << 1)
->> +#define SPEAR_ADC_STATUS_ADC_ENABLE		(1 << 4)
->> +#define SPEAR_ADC_STATUS_AVG_SAMPLE(x)		((x) << 5)
->> +#define SPEAR_ADC_STATUS_VREF_INTERNAL		(1 << 9)
->> +
->> +#define SPEAR_ADC_DATA_MASK		0x03ff
->> +#define SPEAR_ADC_DATA_BITS		10
->> +
->> +#define SPEAR_ADC_MOD_NAME "spear-adc"
->> +
->> +#define SPEAR_ADC_CHANNEL_NUM		8
->> +
->> +#define SPEAR_ADC_CLK_MIN			2500000
->> +#define SPEAR_ADC_CLK_MAX			20000000
-> Datasheet page 599: "The max frequency of CLK_ADC is 14 MHz as the minimum is 3 MHz"
-Err... Stefan?
-We might be looking at a part that comes with a range of options...
+The specified patch is already included.  The system was running the 
+latest kernel from Robert Nelson's repo.  Any suggestions?  I'll try 
+removing some of the patches to see if it fixes this behavior.  I have a 
+feeling I know which one is doing it.
 
-Also, we have it current written as a sampling frequency attribute.  Having
-dug a little at this I suspect it isn't, but really is refering to the
-raw clk (and multiple clocks are clearly required per sample)
+Thanks.
 
+output from running patch.sh with source pulled from 
+https://github.com/beagleboard/kernel/tree/3.8
 
->> +
->> +struct adc_regs_spear3xx {
->> +	u32 status;
->> +	u32 average;
->> +	u32 scan_rate;
->> +	u32 clk;	/* Not avail for 1340 & 1310 */
->> +	u32 ch_ctrl[SPEAR_ADC_CHANNEL_NUM];
->> +	u32 ch_data[SPEAR_ADC_CHANNEL_NUM];
->> +};
->> +
->> +struct chan_data {
->> +	u32 lsb;
->> +	u32 msb;
->> +};
->> +
->> +struct adc_regs_spear6xx {
->> +	u32 status;
->> +	u32 pad[2];
->> +	u32 clk;
->> +	u32 ch_ctrl[SPEAR_ADC_CHANNEL_NUM];
->> +	struct chan_data ch_data[SPEAR_ADC_CHANNEL_NUM];
->> +	u32 scan_rate_lo;
->> +	u32 scan_rate_hi;
->> +	struct chan_data average;
->> +};
->> +
->> +struct spear_adc_info {
->> +	struct device_node *np;
->> +	struct adc_regs_spear3xx __iomem *adc_base_spear3xx;
->> +	struct adc_regs_spear6xx __iomem *adc_base_spear6xx;
->> +	struct clk *clk;
->> +	struct completion completion;
->> +	u32 current_clk;
->> +	u32 sampling_freq;
->> +	u32 avg_samples;
->> +	u32 vref_external;
->> +	u32 value;
->> +};
->> +
-> I would prefer to see some comments like in other drivers, to get an idea what units are assumed (especially for vref_external).
-Hmm.  Snag here is I have no idea what the units are :)
-I'd be tempted to leave this as Stefan, if you have time could you add some
-docs for this?  Whilst nice and something we might ask for in a new driver,
-I don't think it is a reason to hold up a move from staging.
+/home/bbuild/comp/kernel/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch: 
+applied
 
-> Also, I would rename it to the scheme, that the majority of the drivers seem to use: struct spear_adc_state (and the instances *st instead of *info).
+Just in case, I built and installed the kernel and the same behavior 
+persisted.
 
-Hmm. Normally I don't mind naming changes from the conventions that have
-come about, as long as they aren't confusing...  However you make a good point
-in this particular case as the name chosen clashes with the uses of _info
-within IIO.  Hence next series will include a renaming patch.
+root@rbone:/# uname -a
+Linux rbone 3.8.13-00737-g7dfad77 #1 SMP Sun Mar 30 22:11:44 EDT 2014 
+armv7l GNU/Linux
 
->> +/*
->> + * Functions to access some SPEAr ADC register. Abstracted into
->> + * static inline functions, because of different register offsets
->> + * on different SoC variants (SPEAr300 vs SPEAr600 etc).
->> + */
->> +static void spear_adc_set_status(struct spear_adc_info *info, u32 val)
->> +{
->> +	__raw_writel(val, &info->adc_base_spear6xx->status);
->> +}
-> Datasheet page 597 says: "It can be written only if both values ADC_STATUS_REG [8] and ADC_STATUS_REG [0] are ‘0’."
-So we need conversion_ready and enable to be 0.  hmm.
-> This can be a problem, since bit 0 gets set by spear_read_raw().
+gpio30 is connected to AIN4 using a voltage divider
 
-I have to say that I find the datasheet for the spear 300 extremely confusing
-on this point.
+root@rbone:/# cd /sys/class/gpio/
+root@rbone:/sys/class/gpio# echo 30 > export
+root@rbone:/sys/class/gpio# echo BB-ADC > /sys/devices/bone_capemgr.9/slots
+root@rbone:/sys/class/gpio# cd /sys/devices/ocp.3/helper.11/
+root@rbone:/sys/devices/ocp.3/helper.11# echo out > 
+/sys/class/gpio/gpio30/direction
 
-We have stated:
+root@rbone:/sys/devices/ocp.3/helper.11# echo 1 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+1460
 
-The ADC_STATUS_REG is a RW register reporting the ADC status. This register can be
-written to only if both bit[8], CONVERSION READY, and bit[0], ENABLE, of the same
-register are set to ‘b0.
+root@rbone:/sys/devices/ocp.3/helper.11# echo 0 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
 
-Which is fine. However conversion ready once set is not documented as clearing
-unless a new conversion is started (that is the enable bit is set).
-Hence once you've have started one reading you can not necessarily ever
-write to this register.  Hence something is clearly 'interesting'
-in the datasheet.
+root@rbone:/sys/devices/ocp.3/helper.11# grep . AIN[0-3] AIN[5-7]
+AIN0:1550
+AIN1:1213
+AIN2:1485
+AIN3:795
+AIN5:513
+AIN6:744
+AIN7:1698
 
-Stefan, when can you actually write these?
+root@rbone:/sys/devices/ocp.3/helper.11# echo 1 > 
+/sys/class/gpio/gpio30/value
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+0
+root@rbone:/sys/devices/ocp.3/helper.11# cat AIN4
+1460
 
-My assumption is that you can do it whenever a conversion is not in flight.
-As far as I can tell that is fine everywhere here.  In the read_raw the
-bit is set, but then the conversion ready indicates that it is done.
-I'm really not clear what resets the conversion enable.  There is a reference
-that states that if the power down bit is set then the enable is kept
-high after a read is finished. So at a quick read, that seems to imply
-you can't ever write to the register which is nuts...
-
->> +
->> +static void spear_adc_set_clk(struct spear_adc_info *info, u32 val)
->> +{
->> +	u32 clk_high, clk_low, count;
->> +	u32 apb_clk = clk_get_rate(info->clk);
->> +
->> +	count = (apb_clk + val - 1) / val;
->> +	clk_low = count / 2;
->> +	clk_high = count - clk_low;
->> +	info->current_clk = apb_clk / count;
->> +
-> I've got some doubts about this calculation. The datasheet say on page 599: "...the [adc-]frequency is the APB clock frequency divided by the sum of these values[clk_low and clk_high].". So I would represent it as following:
+On 3/30/2014 9:16 AM, Zubair Lutfullah wrote:
+> https://github.com/beagleboard/kernel/blob/3.8/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch
+> IIRC, this patch fixes this issue
 >
-> val = apb_clk / (clk_low + clk_high) = apb_clk / count
+> Can you compile the kernel from the sources and check?
+> https://github.com/beagleboard/kernel/tree/3.8
 >
-> So, first thing we want is count, so multiply by count and divide by val:
+> Regards
+> ZubairLK
 >
-> count = apb_clk / val
+> On Sun, Mar 30, 2014 at 7:04 AM, Rob Mosher <nyt@countercultured.net 
+> <mailto:nyt@countercultured.net>> wrote:
 >
-> The rest seems fine, but it should be kept in mind, that clk_low and clk_high are just 4 bit size, each. So, using u8 would be sufficient (also for count), and clk_low and clk_high should be checked to not exceed a value of 0xF (or count for 0x1F). Thus, changing the function type to int would also help to return an error code.
->> +	__raw_writel(SPEAR_ADC_CLK_LOW(clk_low) | SPEAR_ADC_CLK_HIGH(clk_high),
->> +		     &info->adc_base_spear6xx->clk);
->> +}
->> +
->> +static void spear_adc_set_ctrl(struct spear_adc_info *info, int n,
->> +			       u32 val)
->> +{
->> +	__raw_writel(val, &info->adc_base_spear6xx->ch_ctrl[n]);
->> +}
->> +
-> Datasheet page 599 says: "It is possible to write these registers only if ENABLE is ‘0’."
-> Although spear_adc_configure() takes care of that under the current circumstances, it might cause some troubles in case someone makes use of this function any time later. So either check for it here, or leave a comment.
-
-Perhaps a comment makes sense.  Lets wait and see if we can work out
-what is actually going on with this register given the unclear docs.
-
->> +static u32 spear_adc_get_average(struct spear_adc_info *info)
->> +{
->> +	if (of_device_is_compatible(info->np, "st,spear600-adc")) {
->> +		return __raw_readl(&info->adc_base_spear6xx->average.msb) &
->> +			SPEAR_ADC_DATA_MASK;
-> Datasheet page 601 says: "The AVERAGE_REG_MSB register has latched the word of the conversion ant it can be read only if both values CONVERSION READY and ENABLE are ‘1’."
-> Page 595 says: "At the end of conversion, the CONVERSION READY bit in ADC_STATUS_REG is set and an interrupt signal is generated."
-> So, since this function is only called during interrupt-handling, it is fine. But maybe also add a comment.
->> +	} else {
->> +		return __raw_readl(&info->adc_base_spear3xx->average) &
->> +			SPEAR_ADC_DATA_MASK;
->> +	}
->> +}
->> +
->> +static void spear_adc_set_scanrate(struct spear_adc_info *info, u32 rate)
->> +{
->> +	if (of_device_is_compatible(info->np, "st,spear600-adc")) {
->> +		__raw_writel(SPEAR600_ADC_SCAN_RATE_LO(rate),
->> +			     &info->adc_base_spear6xx->scan_rate_lo);
->> +		__raw_writel(SPEAR600_ADC_SCAN_RATE_HI(rate),
->> +			     &info->adc_base_spear6xx->scan_rate_hi);
->> +	} else {
->> +		__raw_writel(rate, &info->adc_base_spear3xx->scan_rate);
->> +	}
->> +}
-> Datasheet page 600/601: "This register can be written only if both values ADC_STATUS_REG [8] and ADC_STATUS_REG [0] are ‘0’." Same as above, a comment would be good.
-
-Again, I'd assume you can't write this whilst a conversion is in flight rhater
-than as is implied by the above statement where I think it is saying you can't
-do it if a conversion has started or one has finished (thus effectively never).
-
->> +
->> +static int spear_read_raw(struct iio_dev *indio_dev,
->> +			  struct iio_chan_spec const *chan,
->> +			  int *val,
->> +			  int *val2,
->> +			  long mask)
->> +{
->> +	struct spear_adc_info *info = iio_priv(indio_dev);
->> +	u32 status;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		mutex_lock(&indio_dev->mlock);
->> +
->> +		status = SPEAR_ADC_STATUS_CHANNEL_NUM(chan->channel) |
->> +			SPEAR_ADC_STATUS_AVG_SAMPLE(info->avg_samples) |
->> +			SPEAR_ADC_STATUS_START_CONVERSION |
->> +			SPEAR_ADC_STATUS_ADC_ENABLE;
->> +		if (info->vref_external == 0)
->> +			status |= SPEAR_ADC_STATUS_VREF_INTERNAL;
->> +
->> +		spear_adc_set_status(info, status);
->> +		wait_for_completion(&info->completion); /* set by ISR */
->> +		*val = info->value;
->> +
->> +		mutex_unlock(&indio_dev->mlock);
->> +
->> +		return IIO_VAL_INT;
->> +
->> +	case IIO_CHAN_INFO_SCALE:
->> +		*val = info->vref_external;
-> What if internal reference is selected?
-Interesting question.... Stefan?
-> In my opinion, this driver should also be converted to use regulator framework (the boards will certainly contain some regulator, anyway).
-The conversion to the regulator framework would require all existing boards
-to be converted.  Whilst nice, it's probably a job for another day and shouldn't
-be a requirement for this to move out of staging.
-
-
->> +		*val2 = SPEAR_ADC_DATA_BITS;
->> +		return IIO_VAL_FRACTIONAL_LOG2;
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		*val = info->current_clk;
->> +		return IIO_VAL_INT;
->> +	}
->> +
->> +	return -EINVAL;
-> Catch invalid masks with default: section?
-Could do, but really doesn't matter...
->> +}
->> +
->> +static int spear_adc_write_raw(struct iio_dev *indio_dev,
->> +			       struct iio_chan_spec const *chan,
->> +			       int val,
->> +			       int val2,
->> +			       long mask)
->> +{
->> +	struct spear_adc_info *info = iio_priv(indio_dev);
->> +	u32 count;
->> +	u32 apb_clk = clk_get_rate(info->clk);
->> +	int ret = 0;
->> +
->> +	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
->> +		return -EINVAL;
->> +
-> IMHO using switch(mask) like in the read_raw functions would be more beautiful (though at the cost of a deeper indent level), yet this also does the job.
-This actually makes things messier in this case because of the locking.
-It's much cleaner like this...
->> +	mutex_lock(&indio_dev->mlock);
->> +
->> +	if ((val < SPEAR_ADC_CLK_MIN) ||
->> +		(val > SPEAR_ADC_CLK_MAX) ||
-> As mentioned above, I don't know if these values are accurate, or if it would even make more sense to just check that clk_low and clk_high fit into 4 bits, each.
-Not a clue. Stefan?
->> +		(val2 != 0)) {
->> +		ret = -EINVAL;
->> +		goto out;
->> +	}
->> +
->> +	count = (apb_clk + val - 1) / val;
->> +	info->current_clk = apb_clk / count;
->> +	spear_adc_set_clk(info, val);
-> As mentioned in the previous patch, get rid of count and apb_clk here.
-Done
->> +
->> +out:
->> +	mutex_unlock(&indio_dev->mlock);
->> +	return ret;
->> +}
->> +
->> +#define SPEAR_ADC_CHAN(idx) {				\
->> +	.type = IIO_VOLTAGE,				\
->> +	.indexed = 1,					\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
->> +	.channel = idx,					\
->> +}
->> +
->> +static const struct iio_chan_spec spear_adc_iio_channels[] = {
->> +	SPEAR_ADC_CHAN(0),
->> +	SPEAR_ADC_CHAN(1),
->> +	SPEAR_ADC_CHAN(2),
->> +	SPEAR_ADC_CHAN(3),
->> +	SPEAR_ADC_CHAN(4),
->> +	SPEAR_ADC_CHAN(5),
->> +	SPEAR_ADC_CHAN(6),
->> +	SPEAR_ADC_CHAN(7),
->> +};
->> +
->> +static irqreturn_t spear_adc_isr(int irq, void *dev_id)
->> +{
->> +	struct spear_adc_info *info = (struct spear_adc_info *)dev_id;
->> +
->> +	/* Read value to clear IRQ */
->> +	info->value = spear_adc_get_average(info);
->> +	complete(&info->completion);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->> +static int spear_adc_configure(struct spear_adc_info *info)
->> +{
->> +	int i;
-> u8 i; would also do the job.
-General practice is not to do this for iteration variables
-as the compiler will resize them as appropriate anyway so there
-is no need to care ;)
->> +
->> +	/* Reset ADC core */
->> +	spear_adc_set_status(info, 0);
->> +	__raw_writel(0, &info->adc_base_spear6xx->clk);
->> +	for (i = 0; i < 8; i++)
-> i < ARRAY_SIZE or i < ADC_CHANNEL_NUM to prevent buffer overflows.
->> +		spear_adc_set_ctrl(info, i, 0);
->> +	spear_adc_set_scanrate(info, 0);
->> +
->> +	spear_adc_set_clk(info, info->sampling_freq);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct iio_info spear_adc_iio_info = {
->> +	.read_raw = &spear_read_raw,
->> +	.write_raw = &spear_adc_write_raw,
-> Better use the same prefix for those functions (also rename one of them, above).
-
-Good point. Bit odd otherwise.  Will add a patch for this as the spear_adc
-prefix is the dominant one in this driver.
-
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->> +static int spear_adc_probe(struct platform_device *pdev)
->> +{
->> +	struct device_node *np = pdev->dev.of_node;
->> +	struct device *dev = &pdev->dev;
->> +	struct spear_adc_info *info;
->> +	struct iio_dev *iodev = NULL;
-> Not really wrong, but nobody does that these days anymore. And we normally call it indio_dev
-Hmm. That did sort of end up as the convention over time. I'll add a patch for
-this.
->> +	int ret = -ENODEV;
->> +	int irq;
->> +
->> +	iodev = devm_iio_device_alloc(dev, sizeof(struct spear_adc_info));
->> +	if (!iodev) {
->> +		dev_err(dev, "failed allocating iio device\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	info = iio_priv(iodev);
->> +	info->np = np;
->> +
->> +	/*
->> +	 * SPEAr600 has a different register layout than other SPEAr SoC's
->> +	 * (e.g. SPEAr3xx). Let's provide two register base addresses
->> +	 * to support multi-arch kernels.
->> +	 */
->> +	info->adc_base_spear6xx = of_iomap(np, 0);
->> +	if (!info->adc_base_spear6xx) {
->> +		dev_err(dev, "failed mapping memory\n");
->> +		return -ENOMEM;
->> +	}
->> +	info->adc_base_spear3xx =
->> +		(struct adc_regs_spear3xx __iomem *)info->adc_base_spear6xx;
->> +
->> +	info->clk = clk_get(dev, NULL);
->> +	if (IS_ERR(info->clk)) {
->> +		dev_err(dev, "failed getting clock\n");
->> +		goto errout1;
->> +	}
->> +
->> +	ret = clk_prepare_enable(info->clk);
->> +	if (ret) {
->> +		dev_err(dev, "failed enabling clock\n");
->> +		goto errout2;
->> +	}
->> +
->> +	irq = platform_get_irq(pdev, 0);
->> +	if (irq <= 0) {
->> +		dev_err(dev, "failed getting interrupt resource\n");
->> +		ret = -EINVAL;
->> +		goto errout3;
->> +	}
->> +
->> +	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
->> +			info);
->> +	if (ret < 0) {
->> +		dev_err(dev, "failed requesting interrupt\n");
->> +		goto errout3;
->> +	}
->> +
->> +	if (of_property_read_u32(np, "sampling-frequency",
->> +				 &info->sampling_freq)) {
->> +		dev_err(dev, "sampling-frequency missing in DT\n");
->> +		ret = -EINVAL;
->> +		goto errout3;
->> +	}
->> +
->> +	/*
->> +	 * Optional avg_samples defaults to 0, resulting in single data
->> +	 * conversion
->> +	 */
->> +	of_property_read_u32(np, "average-samples", &info->avg_samples);
->> +
->> +	/*
->> +	 * Optional vref_external defaults to 0, resulting in internal vref
->> +	 * selection
->> +	 */
->> +	of_property_read_u32(np, "vref-external", &info->vref_external);
->> +
->> +	spear_adc_configure(info);
->> +
->> +	platform_set_drvdata(pdev, iodev);
->> +
->> +	init_completion(&info->completion);
->> +
->> +	iodev->name = SPEAR_ADC_MOD_NAME;
->> +	iodev->dev.parent = dev;
->> +	iodev->info = &spear_adc_iio_info;
->> +	iodev->modes = INDIO_DIRECT_MODE;
->> +	iodev->channels = spear_adc_iio_channels;
->> +	iodev->num_channels = ARRAY_SIZE(spear_adc_iio_channels);
->> +
->> +	ret = iio_device_register(iodev);
->> +	if (ret)
->> +		goto errout3;
->> +
->> +	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
->> +
->> +	return 0;
->> +
->> +errout3:
->> +	clk_disable_unprepare(info->clk);
->> +errout2:
->> +	clk_put(info->clk);
->> +errout1:
->> +	iounmap(info->adc_base_spear6xx);
->> +	return ret;
-> These labels could have more appropriate names.
-This is one of several common conventions.  Could be better
-named, but not worth the patch to do it in my view.
->> +}
->> +
->> +static int spear_adc_remove(struct platform_device *pdev)
->> +{
->> +	struct iio_dev *iodev = platform_get_drvdata(pdev);
->> +	struct spear_adc_info *info = iio_priv(iodev);
->> +
->> +	iio_device_unregister(iodev);
->> +	clk_disable_unprepare(info->clk);
->> +	clk_put(info->clk);
->> +	iounmap(info->adc_base_spear6xx);
->> +
->> +	return 0;
->> +}
->> +
->> +#ifdef CONFIG_OF
->> +static const struct of_device_id spear_adc_dt_ids[] = {
->> +	{ .compatible = "st,spear600-adc", },
->> +	{ /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, spear_adc_dt_ids);
->> +#endif
->> +
->> +static struct platform_driver spear_adc_driver = {
->> +	.probe		= spear_adc_probe,
->> +	.remove		= spear_adc_remove,
->> +	.driver		= {
->> +		.name	= SPEAR_ADC_MOD_NAME,
->> +		.owner	= THIS_MODULE,
->> +		.of_match_table = of_match_ptr(spear_adc_dt_ids),
-> What if CONFIG_OF is disabled?
-That's what of_match_ptr is taking care of.
-#define of_match_ptr(_ptr)	NULL
-People presumably got bored of surrounding this single line case
-with ifdefs ;)
->> +	},
->> +};
->> +
->> +module_platform_driver(spear_adc_driver);
->> +
->> +MODULE_AUTHOR("Stefan Roese <sr@denx.de>");
->> +MODULE_DESCRIPTION("SPEAr ADC driver");
->> +MODULE_LICENSE("GPL");
->> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
->> index 3633298..a37d001 100644
->> --- a/drivers/staging/iio/adc/Kconfig
->> +++ b/drivers/staging/iio/adc/Kconfig
->> @@ -126,12 +126,4 @@ config MXS_LRADC
->>   	  To compile this driver as a module, choose M here: the
->>   	  module will be called mxs-lradc.
->>
->> -config SPEAR_ADC
->> -	tristate "ST SPEAr ADC"
->> -	depends on PLAT_SPEAR || COMPILE_TEST
->> -	depends on HAS_IOMEM
->> -	help
->> -	  Say yes here to build support for the integrated ADC inside the
->> -	  ST SPEAr SoC. Provides direct access via sysfs.
->> -
->>   endmenu
->> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
->> index 3e9fb14..b5915c1 100644
->> --- a/drivers/staging/iio/adc/Makefile
->> +++ b/drivers/staging/iio/adc/Makefile
->> @@ -19,4 +19,3 @@ obj-$(CONFIG_AD7192) += ad7192.o
->>   obj-$(CONFIG_AD7280) += ad7280a.o
->>   obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
->>   obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
->> -obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
->> diff --git a/drivers/staging/iio/adc/spear_adc.c b/drivers/staging/iio/adc/spear_adc.c
->> deleted file mode 100644
->> index 18a0a40..0000000
->> --- a/drivers/staging/iio/adc/spear_adc.c
->> +++ /dev/null
->> @@ -1,405 +0,0 @@
->> -/*
->> - * ST SPEAr ADC driver
->> - *
->> - * Copyright 2012 Stefan Roese <sr@denx.de>
->> - *
->> - * Licensed under the GPL-2.
->> - */
->> -
->> -#include <linux/module.h>
->> -#include <linux/platform_device.h>
->> -#include <linux/interrupt.h>
->> -#include <linux/device.h>
->> -#include <linux/kernel.h>
->> -#include <linux/slab.h>
->> -#include <linux/io.h>
->> -#include <linux/clk.h>
->> -#include <linux/err.h>
->> -#include <linux/completion.h>
->> -#include <linux/of.h>
->> -#include <linux/of_address.h>
->> -
->> -#include <linux/iio/iio.h>
->> -#include <linux/iio/sysfs.h>
->> -
->> -/* SPEAR registers definitions */
->> -#define SPEAR600_ADC_SCAN_RATE_LO(x)	((x) & 0xFFFF)
->> -#define SPEAR600_ADC_SCAN_RATE_HI(x)	(((x) >> 0x10) & 0xFFFF)
->> -#define SPEAR_ADC_CLK_LOW(x)		(((x) & 0xf) << 0)
->> -#define SPEAR_ADC_CLK_HIGH(x)		(((x) & 0xf) << 4)
->> -
->> -/* Bit definitions for SPEAR_ADC_STATUS */
->> -#define SPEAR_ADC_STATUS_START_CONVERSION	(1 << 0)
->> -#define SPEAR_ADC_STATUS_CHANNEL_NUM(x)		((x) << 1)
->> -#define SPEAR_ADC_STATUS_ADC_ENABLE		(1 << 4)
->> -#define SPEAR_ADC_STATUS_AVG_SAMPLE(x)		((x) << 5)
->> -#define SPEAR_ADC_STATUS_VREF_INTERNAL		(1 << 9)
->> -
->> -#define SPEAR_ADC_DATA_MASK		0x03ff
->> -#define SPEAR_ADC_DATA_BITS		10
->> -
->> -#define SPEAR_ADC_MOD_NAME "spear-adc"
->> -
->> -#define SPEAR_ADC_CHANNEL_NUM		8
->> -
->> -#define SPEAR_ADC_CLK_MIN			2500000
->> -#define SPEAR_ADC_CLK_MAX			20000000
->> -
->> -struct adc_regs_spear3xx {
->> -	u32 status;
->> -	u32 average;
->> -	u32 scan_rate;
->> -	u32 clk;	/* Not avail for 1340 & 1310 */
->> -	u32 ch_ctrl[SPEAR_ADC_CHANNEL_NUM];
->> -	u32 ch_data[SPEAR_ADC_CHANNEL_NUM];
->> -};
->> -
->> -struct chan_data {
->> -	u32 lsb;
->> -	u32 msb;
->> -};
->> -
->> -struct adc_regs_spear6xx {
->> -	u32 status;
->> -	u32 pad[2];
->> -	u32 clk;
->> -	u32 ch_ctrl[SPEAR_ADC_CHANNEL_NUM];
->> -	struct chan_data ch_data[SPEAR_ADC_CHANNEL_NUM];
->> -	u32 scan_rate_lo;
->> -	u32 scan_rate_hi;
->> -	struct chan_data average;
->> -};
->> -
->> -struct spear_adc_info {
->> -	struct device_node *np;
->> -	struct adc_regs_spear3xx __iomem *adc_base_spear3xx;
->> -	struct adc_regs_spear6xx __iomem *adc_base_spear6xx;
->> -	struct clk *clk;
->> -	struct completion completion;
->> -	u32 current_clk;
->> -	u32 sampling_freq;
->> -	u32 avg_samples;
->> -	u32 vref_external;
->> -	u32 value;
->> -};
->> -
->> -/*
->> - * Functions to access some SPEAr ADC register. Abstracted into
->> - * static inline functions, because of different register offsets
->> - * on different SoC variants (SPEAr300 vs SPEAr600 etc).
->> - */
->> -static void spear_adc_set_status(struct spear_adc_info *info, u32 val)
->> -{
->> -	__raw_writel(val, &info->adc_base_spear6xx->status);
->> -}
->> -
->> -static void spear_adc_set_clk(struct spear_adc_info *info, u32 val)
->> -{
->> -	u32 clk_high, clk_low, count;
->> -	u32 apb_clk = clk_get_rate(info->clk);
->> -
->> -	count = (apb_clk + val - 1) / val;
->> -	clk_low = count / 2;
->> -	clk_high = count - clk_low;
->> -	info->current_clk = apb_clk / count;
->> -
->> -	__raw_writel(SPEAR_ADC_CLK_LOW(clk_low) | SPEAR_ADC_CLK_HIGH(clk_high),
->> -		     &info->adc_base_spear6xx->clk);
->> -}
->> -
->> -static void spear_adc_set_ctrl(struct spear_adc_info *info, int n,
->> -			       u32 val)
->> -{
->> -	__raw_writel(val, &info->adc_base_spear6xx->ch_ctrl[n]);
->> -}
->> -
->> -static u32 spear_adc_get_average(struct spear_adc_info *info)
->> -{
->> -	if (of_device_is_compatible(info->np, "st,spear600-adc")) {
->> -		return __raw_readl(&info->adc_base_spear6xx->average.msb) &
->> -			SPEAR_ADC_DATA_MASK;
->> -	} else {
->> -		return __raw_readl(&info->adc_base_spear3xx->average) &
->> -			SPEAR_ADC_DATA_MASK;
->> -	}
->> -}
->> -
->> -static void spear_adc_set_scanrate(struct spear_adc_info *info, u32 rate)
->> -{
->> -	if (of_device_is_compatible(info->np, "st,spear600-adc")) {
->> -		__raw_writel(SPEAR600_ADC_SCAN_RATE_LO(rate),
->> -			     &info->adc_base_spear6xx->scan_rate_lo);
->> -		__raw_writel(SPEAR600_ADC_SCAN_RATE_HI(rate),
->> -			     &info->adc_base_spear6xx->scan_rate_hi);
->> -	} else {
->> -		__raw_writel(rate, &info->adc_base_spear3xx->scan_rate);
->> -	}
->> -}
->> -
->> -static int spear_read_raw(struct iio_dev *indio_dev,
->> -			  struct iio_chan_spec const *chan,
->> -			  int *val,
->> -			  int *val2,
->> -			  long mask)
->> -{
->> -	struct spear_adc_info *info = iio_priv(indio_dev);
->> -	u32 status;
->> -
->> -	switch (mask) {
->> -	case IIO_CHAN_INFO_RAW:
->> -		mutex_lock(&indio_dev->mlock);
->> -
->> -		status = SPEAR_ADC_STATUS_CHANNEL_NUM(chan->channel) |
->> -			SPEAR_ADC_STATUS_AVG_SAMPLE(info->avg_samples) |
->> -			SPEAR_ADC_STATUS_START_CONVERSION |
->> -			SPEAR_ADC_STATUS_ADC_ENABLE;
->> -		if (info->vref_external == 0)
->> -			status |= SPEAR_ADC_STATUS_VREF_INTERNAL;
->> -
->> -		spear_adc_set_status(info, status);
->> -		wait_for_completion(&info->completion); /* set by ISR */
->> -		*val = info->value;
->> -
->> -		mutex_unlock(&indio_dev->mlock);
->> -
->> -		return IIO_VAL_INT;
->> -
->> -	case IIO_CHAN_INFO_SCALE:
->> -		*val = info->vref_external;
->> -		*val2 = SPEAR_ADC_DATA_BITS;
->> -		return IIO_VAL_FRACTIONAL_LOG2;
->> -	case IIO_CHAN_INFO_SAMP_FREQ:
->> -		*val = info->current_clk;
->> -		return IIO_VAL_INT;
->> -	}
->> -
->> -	return -EINVAL;
->> -}
->> -
->> -static int spear_adc_write_raw(struct iio_dev *indio_dev,
->> -			       struct iio_chan_spec const *chan,
->> -			       int val,
->> -			       int val2,
->> -			       long mask)
->> -{
->> -	struct spear_adc_info *info = iio_priv(indio_dev);
->> -	u32 count;
->> -	u32 apb_clk = clk_get_rate(info->clk);
->> -	int ret = 0;
->> -
->> -	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
->> -		return -EINVAL;
->> -
->> -	mutex_lock(&indio_dev->mlock);
->> -
->> -	if ((val < SPEAR_ADC_CLK_MIN) ||
->> -		(val > SPEAR_ADC_CLK_MAX) ||
->> -		(val2 != 0)) {
->> -		ret = -EINVAL;
->> -		goto out;
->> -	}
->> -
->> -	count = (apb_clk + val - 1) / val;
->> -	info->current_clk = apb_clk / count;
->> -	spear_adc_set_clk(info, val);
->> -
->> -out:
->> -	mutex_unlock(&indio_dev->mlock);
->> -	return ret;
->> -}
->> -
->> -#define SPEAR_ADC_CHAN(idx) {				\
->> -	.type = IIO_VOLTAGE,				\
->> -	.indexed = 1,					\
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> -	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
->> -	.channel = idx,					\
->> -}
->> -
->> -static const struct iio_chan_spec spear_adc_iio_channels[] = {
->> -	SPEAR_ADC_CHAN(0),
->> -	SPEAR_ADC_CHAN(1),
->> -	SPEAR_ADC_CHAN(2),
->> -	SPEAR_ADC_CHAN(3),
->> -	SPEAR_ADC_CHAN(4),
->> -	SPEAR_ADC_CHAN(5),
->> -	SPEAR_ADC_CHAN(6),
->> -	SPEAR_ADC_CHAN(7),
->> -};
->> -
->> -static irqreturn_t spear_adc_isr(int irq, void *dev_id)
->> -{
->> -	struct spear_adc_info *info = (struct spear_adc_info *)dev_id;
->> -
->> -	/* Read value to clear IRQ */
->> -	info->value = spear_adc_get_average(info);
->> -	complete(&info->completion);
->> -
->> -	return IRQ_HANDLED;
->> -}
->> -
->> -static int spear_adc_configure(struct spear_adc_info *info)
->> -{
->> -	int i;
->> -
->> -	/* Reset ADC core */
->> -	spear_adc_set_status(info, 0);
->> -	__raw_writel(0, &info->adc_base_spear6xx->clk);
->> -	for (i = 0; i < 8; i++)
->> -		spear_adc_set_ctrl(info, i, 0);
->> -	spear_adc_set_scanrate(info, 0);
->> -
->> -	spear_adc_set_clk(info, info->sampling_freq);
->> -
->> -	return 0;
->> -}
->> -
->> -static const struct iio_info spear_adc_iio_info = {
->> -	.read_raw = &spear_read_raw,
->> -	.write_raw = &spear_adc_write_raw,
->> -	.driver_module = THIS_MODULE,
->> -};
->> -
->> -static int spear_adc_probe(struct platform_device *pdev)
->> -{
->> -	struct device_node *np = pdev->dev.of_node;
->> -	struct device *dev = &pdev->dev;
->> -	struct spear_adc_info *info;
->> -	struct iio_dev *iodev = NULL;
->> -	int ret = -ENODEV;
->> -	int irq;
->> -
->> -	iodev = devm_iio_device_alloc(dev, sizeof(struct spear_adc_info));
->> -	if (!iodev) {
->> -		dev_err(dev, "failed allocating iio device\n");
->> -		return -ENOMEM;
->> -	}
->> -
->> -	info = iio_priv(iodev);
->> -	info->np = np;
->> -
->> -	/*
->> -	 * SPEAr600 has a different register layout than other SPEAr SoC's
->> -	 * (e.g. SPEAr3xx). Let's provide two register base addresses
->> -	 * to support multi-arch kernels.
->> -	 */
->> -	info->adc_base_spear6xx = of_iomap(np, 0);
->> -	if (!info->adc_base_spear6xx) {
->> -		dev_err(dev, "failed mapping memory\n");
->> -		return -ENOMEM;
->> -	}
->> -	info->adc_base_spear3xx =
->> -		(struct adc_regs_spear3xx __iomem *)info->adc_base_spear6xx;
->> -
->> -	info->clk = clk_get(dev, NULL);
->> -	if (IS_ERR(info->clk)) {
->> -		dev_err(dev, "failed getting clock\n");
->> -		goto errout1;
->> -	}
->> -
->> -	ret = clk_prepare_enable(info->clk);
->> -	if (ret) {
->> -		dev_err(dev, "failed enabling clock\n");
->> -		goto errout2;
->> -	}
->> -
->> -	irq = platform_get_irq(pdev, 0);
->> -	if (irq <= 0) {
->> -		dev_err(dev, "failed getting interrupt resource\n");
->> -		ret = -EINVAL;
->> -		goto errout3;
->> -	}
->> -
->> -	ret = devm_request_irq(dev, irq, spear_adc_isr, 0, SPEAR_ADC_MOD_NAME,
->> -			info);
->> -	if (ret < 0) {
->> -		dev_err(dev, "failed requesting interrupt\n");
->> -		goto errout3;
->> -	}
->> -
->> -	if (of_property_read_u32(np, "sampling-frequency",
->> -				 &info->sampling_freq)) {
->> -		dev_err(dev, "sampling-frequency missing in DT\n");
->> -		ret = -EINVAL;
->> -		goto errout3;
->> -	}
->> -
->> -	/*
->> -	 * Optional avg_samples defaults to 0, resulting in single data
->> -	 * conversion
->> -	 */
->> -	of_property_read_u32(np, "average-samples", &info->avg_samples);
->> -
->> -	/*
->> -	 * Optional vref_external defaults to 0, resulting in internal vref
->> -	 * selection
->> -	 */
->> -	of_property_read_u32(np, "vref-external", &info->vref_external);
->> -
->> -	spear_adc_configure(info);
->> -
->> -	platform_set_drvdata(pdev, iodev);
->> -
->> -	init_completion(&info->completion);
->> -
->> -	iodev->name = SPEAR_ADC_MOD_NAME;
->> -	iodev->dev.parent = dev;
->> -	iodev->info = &spear_adc_iio_info;
->> -	iodev->modes = INDIO_DIRECT_MODE;
->> -	iodev->channels = spear_adc_iio_channels;
->> -	iodev->num_channels = ARRAY_SIZE(spear_adc_iio_channels);
->> -
->> -	ret = iio_device_register(iodev);
->> -	if (ret)
->> -		goto errout3;
->> -
->> -	dev_info(dev, "SPEAR ADC driver loaded, IRQ %d\n", irq);
->> -
->> -	return 0;
->> -
->> -errout3:
->> -	clk_disable_unprepare(info->clk);
->> -errout2:
->> -	clk_put(info->clk);
->> -errout1:
->> -	iounmap(info->adc_base_spear6xx);
->> -	return ret;
->> -}
->> -
->> -static int spear_adc_remove(struct platform_device *pdev)
->> -{
->> -	struct iio_dev *iodev = platform_get_drvdata(pdev);
->> -	struct spear_adc_info *info = iio_priv(iodev);
->> -
->> -	iio_device_unregister(iodev);
->> -	clk_disable_unprepare(info->clk);
->> -	clk_put(info->clk);
->> -	iounmap(info->adc_base_spear6xx);
->> -
->> -	return 0;
->> -}
->> -
->> -#ifdef CONFIG_OF
->> -static const struct of_device_id spear_adc_dt_ids[] = {
->> -	{ .compatible = "st,spear600-adc", },
->> -	{ /* sentinel */ }
->> -};
->> -MODULE_DEVICE_TABLE(of, spear_adc_dt_ids);
->> -#endif
->> -
->> -static struct platform_driver spear_adc_driver = {
->> -	.probe		= spear_adc_probe,
->> -	.remove		= spear_adc_remove,
->> -	.driver		= {
->> -		.name	= SPEAR_ADC_MOD_NAME,
->> -		.owner	= THIS_MODULE,
->> -		.of_match_table = of_match_ptr(spear_adc_dt_ids),
->> -	},
->> -};
->> -
->> -module_platform_driver(spear_adc_driver);
->> -
->> -MODULE_AUTHOR("Stefan Roese <sr@denx.de>");
->> -MODULE_DESCRIPTION("SPEAr ADC driver");
->> -MODULE_LICENSE("GPL");
+>     Just a note, the same behavior persists with BB-ADC dtb and
+>     reading from in_voltage4_raw
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+>     On 3/30/2014 12:30 AM, Rob Mosher wrote:
+>
+>         Hello fine developers,
+>
+>         It seems I've stumbled upon a problem while developing a full
+>         featured Ruby gem for the Beaglebone.
+>
+>         It seems a patch included in the beaglebone kernel causes some
+>         issues while reading analog inputs.  Apparently the samples
+>         get backlogged by the number of adc pins in use.  I'm not sure
+>         which patch exactly as there are a number that affect adc
+>         buffering and I'm not currently setup for kernel building,
+>         however the below output should detail the problem.
+>
+>         Using the official Debian image.
+>         Linux rbone 3.8.13-bone43 #1 SMP Wed Mar 26 14:21:39 UTC 2014
+>         armv7l GNU/Linux
+>
+>         Distributor ID: Debian
+>         Description:    Debian GNU/Linux 7.4 (wheezy)
+>         Release:        7.4
+>         Codename:       wheezy
+>
+>         root@rbone:~# echo cape-bone-iio >
+>         /sys/devices/bone_capemgr.9/slots
+>
+>         This is the normal and expected behavior.
+>
+>         1.8v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         1.8v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v applied to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         So far working as intended....  Now reading from the other pins.
+>
+>         root@rbone:/sys/devices/ocp.3/helper.12# grep . AIN[0-3] AIN[5-7]
+>         AIN0:1563
+>         AIN1:1221
+>         AIN2:1487
+>         AIN3:789
+>         AIN5:514
+>         AIN6:743
+>         AIN7:1698
+>
+>         Now applying 1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         Now applying 0v to AIN4
+>
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>
+>
+>         And another example, showing relation to the number of pins in
+>         use.
+>
+>         1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# grep . AIN[0-3]
+>         AIN0:1697
+>         AIN1:1298
+>         AIN2:1524
+>         AIN3:816
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         0v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1460
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>
+>         1.8v to AIN4
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         0
+>         root@rbone:/sys/devices/ocp.3/helper.12# cat AIN4
+>         1798
+>
+>         -- 
+>         Rob Mosher
+>         Senior Network and Software Engineer
+>         Hurricane Electric / AS6939
+>
+>
+>
+>
 >
 
+
+--------------060902080204030809050302
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    The specified patch is already included.&nbsp; The system was running the
+    latest kernel from Robert Nelson's repo.&nbsp; Any suggestions?&nbsp; I'll try
+    removing some of the patches to see if it fixes this behavior.&nbsp; I
+    have a feeling I know which one is doing it.<br>
+    <br>
+    Thanks.<br>
+    <br>
+    output from running patch.sh with source pulled from <a
+      moz-do-not-send="true"
+      href="https://github.com/beagleboard/kernel/tree/3.8">https://github.com/beagleboard/kernel/tree/3.8</a><br>
+    <br>
+    /home/bbuild/comp/kernel/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch:
+    applied<br>
+    <br>
+    Just in case, I built and installed the kernel and the same behavior
+    persisted.<br>
+    <br>
+    root@rbone:/# uname -a<br>
+    Linux rbone 3.8.13-00737-g7dfad77 #1 SMP Sun Mar 30 22:11:44 EDT
+    2014 armv7l GNU/Linux<br>
+    <br>
+    gpio30 is connected to AIN4 using a voltage divider<br>
+    <br>
+    root@rbone:/# cd /sys/class/gpio/<br>
+    root@rbone:/sys/class/gpio# echo 30 &gt; export<br>
+    root@rbone:/sys/class/gpio# echo BB-ADC &gt;
+    /sys/devices/bone_capemgr.9/slots<br>
+    root@rbone:/sys/class/gpio# cd /sys/devices/ocp.3/helper.11/<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> echo out &gt;
+    /sys/class/gpio/gpio30/direction<br>
+    <br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> echo 1 &gt;
+    /sys/class/gpio/gpio30/value<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    1460<br>
+    <br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> echo 0 &gt;
+    /sys/class/gpio/gpio30/value<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> grep . AIN[0-3] AIN[5-7]<br>
+    AIN0:1550<br>
+    AIN1:1213<br>
+    AIN2:1485<br>
+    AIN3:795<br>
+    AIN5:513<br>
+    AIN6:744<br>
+    AIN7:1698<br>
+    <br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> echo 1 &gt;
+    /sys/class/gpio/gpio30/value<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    0<br>
+    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.11#">root@rbone:/sys/devices/ocp.3/helper.11#</a> cat AIN4<br>
+    1460<br>
+    <br>
+    <div class="moz-cite-prefix">On 3/30/2014 9:16 AM, Zubair Lutfullah
+      wrote:<br>
+    </div>
+    <blockquote
+cite="mid:CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com"
+      type="cite">
+      <div dir="ltr">
+        <div><a moz-do-not-send="true"
+href="https://github.com/beagleboard/kernel/blob/3.8/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch">https://github.com/beagleboard/kernel/blob/3.8/patches/adc/0017-IIO-ADC-ti_adc-Fix-1st-sample-read.patch</a><br>
+        </div>
+        IIRC, this patch fixes this issue<br>
+        <br>
+        <div class="gmail_extra">Can you compile the kernel from the
+          sources and check?<br>
+          <a moz-do-not-send="true"
+            href="https://github.com/beagleboard/kernel/tree/3.8">https://github.com/beagleboard/kernel/tree/3.8</a><br>
+          <br>
+          Regards<br>
+        </div>
+        <div class="gmail_extra">ZubairLK<br>
+        </div>
+        <div class="gmail_extra"><br>
+          <div class="gmail_quote">On Sun, Mar 30, 2014 at 7:04 AM, Rob
+            Mosher <span dir="ltr">&lt;<a moz-do-not-send="true"
+                href="mailto:nyt@countercultured.net" target="_blank">nyt@countercultured.net</a>&gt;</span>
+            wrote:<br>
+            <blockquote class="gmail_quote" style="margin:0px 0px 0px
+              0.8ex;border-left:1px solid
+              rgb(204,204,204);padding-left:1ex">Just a note, the same
+              behavior persists with BB-ADC dtb and reading from
+              in_voltage4_raw
+              <div class="">
+                <div class="h5"><br>
+                  <br>
+                  On 3/30/2014 12:30 AM, Rob Mosher wrote:<br>
+                  <blockquote class="gmail_quote" style="margin:0px 0px
+                    0px 0.8ex;border-left:1px solid
+                    rgb(204,204,204);padding-left:1ex">
+                    Hello fine developers,<br>
+                    <br>
+                    It seems I've stumbled upon a problem while
+                    developing a full featured Ruby gem for the
+                    Beaglebone.<br>
+                    <br>
+                    It seems a patch included in the beaglebone kernel
+                    causes some issues while reading analog inputs.
+                    &nbsp;Apparently the samples get backlogged by the number
+                    of adc pins in use. &nbsp;I'm not sure which patch
+                    exactly as there are a number that affect adc
+                    buffering and I'm not currently setup for kernel
+                    building, however the below output should detail the
+                    problem.<br>
+                    <br>
+                    Using the official Debian image.<br>
+                    Linux rbone 3.8.13-bone43 #1 SMP Wed Mar 26 14:21:39
+                    UTC 2014 armv7l GNU/Linux<br>
+                    <br>
+                    Distributor ID: Debian<br>
+                    Description: &nbsp; &nbsp;Debian GNU/Linux 7.4 (wheezy)<br>
+                    Release: &nbsp; &nbsp; &nbsp; &nbsp;7.4<br>
+                    Codename: &nbsp; &nbsp; &nbsp; wheezy<br>
+                    <br>
+                    root@rbone:~# echo cape-bone-iio &gt;
+                    /sys/devices/bone_capemgr.9/slots<br>
+                    <br>
+                    This is the normal and expected behavior.<br>
+                    <br>
+                    1.8v applied to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <br>
+                    0v applied to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <br>
+                    1.8v applied to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <br>
+                    0v applied to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <br>
+                    So far working as intended.... &nbsp;Now reading from the
+                    other pins.<br>
+                    <br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> grep .
+                    AIN[0-3] AIN[5-7]<br>
+                    AIN0:1563<br>
+                    AIN1:1221<br>
+                    AIN2:1487<br>
+                    AIN3:789<br>
+                    AIN5:514<br>
+                    AIN6:743<br>
+                    AIN7:1698<br>
+                    <br>
+                    Now applying 1.8v to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <br>
+                    Now applying 0v to AIN4<br>
+                    <br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <br>
+                    <br>
+                    <br>
+                    And another example, showing relation to the number
+                    of pins in use.<br>
+                    <br>
+                    1.8v to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> grep .
+                    AIN[0-3]<br>
+                    AIN0:1697<br>
+                    AIN1:1298<br>
+                    AIN2:1524<br>
+                    AIN3:816<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <br>
+                    0v to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1460<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <br>
+                    1.8v to AIN4<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    0<br>
+                    <a class="moz-txt-link-abbreviated" href="mailto:root@rbone:/sys/devices/ocp.3/helper.12#">root@rbone:/sys/devices/ocp.3/helper.12#</a> cat AIN4<br>
+                    1798<br>
+                    <br>
+                    -- <br>
+                    Rob Mosher<br>
+                    Senior Network and Software Engineer<br>
+                    Hurricane Electric / AS6939<br>
+                    <br>
+                    <br>
+                    <br>
+                  </blockquote>
+                  <br>
+                </div>
+              </div>
+            </blockquote>
+          </div>
+          <br>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+  </body>
+</html>
+
+--------------060902080204030809050302--
