@@ -1,52 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:55839 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756288AbaDIAxN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 8 Apr 2014 20:53:13 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [Patch v3 4/6] IIO: core: Add quaternion modifier
-Date: Tue,  8 Apr 2014 17:56:26 -0700
-Message-Id: <1397004988-31550-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397004988-31550-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1397004988-31550-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-we0-f174.google.com ([74.125.82.174]:62912 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751032AbaDAFmH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Apr 2014 01:42:07 -0400
+Date: Tue, 1 Apr 2014 06:42:00 +0100
+From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Mosher <nyt@countercultured.net>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	robertcnelson@gmail.com, Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: Re: ti_am33x_adc sampling bugs
+Message-ID: <20140401054158.GA3261@gmail.com>
+References: <53379DF2.7050004@rznt.com>
+ <5337B3F4.30500@countercultured.net>
+ <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
+ <5338E95F.50204@countercultured.net>
+ <533924B1.5030406@countercultured.net>
+ <d8950cff-fd37-46bb-b438-d42f15851602@email.android.com>
+ <53399C3A.9040007@countercultured.net>
+ <ab74c908-a1d0-417c-836b-8d4b093a942b@email.android.com>
+ <5339D810.2030400@countercultured.net>
+ <c21be082-4ad8-46e2-a5f3-ad29b4239d94@email.android.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <c21be082-4ad8-46e2-a5f3-ad29b4239d94@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added quaternion in the list of supported modifiers.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/types.h       | 1 +
- 2 files changed, 2 insertions(+)
+Sorry for taking this long to reply.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 3bd565c..1d907eb 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -84,6 +84,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_QUATERNION] = "quaternion",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index a13c224..4fdab2e 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -53,6 +53,7 @@ enum iio_modifier {
- 	IIO_MOD_LIGHT_RED,
- 	IIO_MOD_LIGHT_GREEN,
- 	IIO_MOD_LIGHT_BLUE,
-+	IIO_MOD_QUATERNION,
- };
- 
- enum iio_event_type {
--- 
-1.7.11.7
+The confusion here is due to vendor/mainline trees for the kernel.
 
+This discussion should have been carried out on 
+https://github.com/beagleboard/kernel/issues
+instead of the kernel mailing lists.
+
+Sorry Jonathan.
+
+The IIO-map-interface patch is in the vendor tree for the Beaglebone.
+
+And it is not intended to be mainlined. Just like the other TI wiki stuff.
+
+But it used to make life a little easier before the IIO sysfs entries were fixed
+for the am335x ADC.
+
+The patch was kept as it is because of the ton of guides/wikis out there for the
+Beaglebone asking for AIN0/AIN7 pins.
+
+And iirc capemgr (another out of tree module which is being mainlined) used it.
+Which made it necessary to keep this.
+
+As far as patch 19 (Add continuous sampling) is concerned, I didn't observe it 
+causing these bugs. But it is good that you have pointed them out.
+Thank-you.
+
+Could you please go through the patch and suggest a fix as well?
+
+Seems like a FIFO isn't cleared somewhere..
+
+Hope this clears the confusion.
+
+Again, this discussion should have been carried out 
+https://github.com/beagleboard/kernel/issues
+
+Not the kernel mailing list.
+
+Regards
+ZubairLK
+
+> 
