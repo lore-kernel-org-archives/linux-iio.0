@@ -1,71 +1,143 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns1.siteground282.com ([184.154.233.8]:37163 "EHLO
-	serv01.siteground282.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752999AbaDDNlk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Apr 2014 09:41:40 -0400
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Date: Fri, 04 Apr 2014 08:41:32 -0500
-From: gmane@reliableembeddedsystems.com
-To: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Rob Mosher <nyt@countercultured.net>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	<robertcnelson@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Felipe Balbi <balbi@ti.com>, <linux-iio@vger.kernel.org>,
-	<linux-input@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: Re: =?UTF-8?Q?ti=5Fam=33=33x=5Fadc=20sampling=20bugs?=
-In-Reply-To: <20140401054158.GA3261@gmail.com>
-References: <53379DF2.7050004@rznt.com> <5337B3F4.30500@countercultured.net>
- <CAExKytzRv4CT9zTor=-fc5Mfv+xG9uTjQP=LWosVnhEHsa9Y0A@mail.gmail.com>
- <5338E95F.50204@countercultured.net> <533924B1.5030406@countercultured.net>
- <d8950cff-fd37-46bb-b438-d42f15851602@email.android.com>
- <53399C3A.9040007@countercultured.net>
- <ab74c908-a1d0-417c-836b-8d4b093a942b@email.android.com>
- <5339D810.2030400@countercultured.net>
- <c21be082-4ad8-46e2-a5f3-ad29b4239d94@email.android.com>
- <20140401054158.GA3261@gmail.com>
-Message-ID: <4a1e407f0574ce0fc1f26e1d536f75b2@reliableembeddedsystems.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v2 2/3] IIO: core: Modify scan element type
+Date: Fri,  4 Apr 2014 14:30:40 -0700
+Message-Id: <1396647041-22551-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1396647041-22551-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1396647041-22551-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+The current scan element type uses the following format:
+  [be|le]:[s|u]bits/storagebits[>>shift].
+To specify multiple elements in this type, added a repeat value.
+So new format is:
+  [be|le]:([s|u]bits/storagebits){repeat}[>>shift].
+Here repeat is specifying how may times, real/storage bits are repeating.
 
-On 2014-04-01 00:42, Zubair Lutfullah : wrote:
-> Sorry for taking this long to reply.
-> 
-> The confusion here is due to vendor/mainline trees for the kernel.
-> 
-> This discussion should have been carried out on
-> https://github.com/beagleboard/kernel/issues
-> instead of the kernel mailing lists.
+When repeat is value is 0 or 1, then repeat value is not used in the format,
+and it will be same as existing format.
 
-Sorry for jumping in here.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
+ include/linux/iio/iio.h           |  9 +++++++++
+ 2 files changed, 44 insertions(+), 6 deletions(-)
 
-I use a more recent kernel 3.13.x and currently try to move to 3.14.x.
-The sampling seems to work, but I would like to use the generic_buffer
-test [1].
-
-The kernel used here [1] is a 3.13.6 stable plus those patches [2] 
-(from
-Rob Nelson)
-
-Can someone please tell me what's the status with beagle bone black and
-iio (and maybe whom to talk to about it).
-
-Regards,
-
-Robert
-
-[1] http://thread.gmane.org/gmane.linux.kernel.iio/11631
-[2]
-https://github.com/RobertBerger/meta-mainline/blob/dora-training-v3.13.x/beagle-bone-black-ml/recipes-kernel/linux/linux-yocto-custom/beagle-bone-black-ml-user-patches.scc
-
-
-...do it-do it right-do it right now- Bobby Riggs
-
-My public pgp key is available,at:
-http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
-
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index c67d83b..598eacd 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
+ 		type = IIO_BE;
+ #endif
+ 	}
+-	return sprintf(buf, "%s:%c%d/%d>>%u\n",
++	if (this_attr->c->scan_type.repeat > 1)
++		return sprintf(buf, "%s:(%c%d/%d){%d}>>%u\n",
++		       iio_endian_prefix[type],
++		       this_attr->c->scan_type.sign,
++		       this_attr->c->scan_type.realbits,
++		       this_attr->c->scan_type.storagebits,
++		       this_attr->c->scan_type.repeat,
++		       this_attr->c->scan_type.shift);
++		else
++			return sprintf(buf, "%s:%c%d/%d>>%u\n",
+ 		       iio_endian_prefix[type],
+ 		       this_attr->c->scan_type.sign,
+ 		       this_attr->c->scan_type.realbits,
+@@ -475,14 +484,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+ 	for_each_set_bit(i, mask,
+ 			 indio_dev->masklength) {
+ 		ch = iio_find_channel_from_si(indio_dev, i);
+-		length = ch->scan_type.storagebits / 8;
++		if (ch->scan_type.repeat > 1)
++			length = ch->scan_type.storagebits / 8 *
++				ch->scan_type.repeat;
++		else
++			length = ch->scan_type.storagebits / 8;
+ 		bytes = ALIGN(bytes, length);
+ 		bytes += length;
+ 	}
+ 	if (timestamp) {
+ 		ch = iio_find_channel_from_si(indio_dev,
+ 					      indio_dev->scan_index_timestamp);
+-		length = ch->scan_type.storagebits / 8;
++		if (ch->scan_type.repeat > 1)
++			length = ch->scan_type.storagebits / 8 *
++				ch->scan_type.repeat;
++		else
++			length = ch->scan_type.storagebits / 8;
+ 		bytes = ALIGN(bytes, length);
+ 		bytes += length;
+ 	}
+@@ -961,7 +978,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 					       indio_dev->masklength,
+ 					       in_ind + 1);
+ 			ch = iio_find_channel_from_si(indio_dev, in_ind);
+-			length = ch->scan_type.storagebits/8;
++			if (ch->scan_type.repeat > 1)
++				length = ch->scan_type.storagebits / 8 *
++					ch->scan_type.repeat;
++			else
++				length = ch->scan_type.storagebits / 8;
+ 			/* Make sure we are aligned */
+ 			in_loc += length;
+ 			if (in_loc % length)
+@@ -973,7 +994,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 			goto error_clear_mux_table;
+ 		}
+ 		ch = iio_find_channel_from_si(indio_dev, in_ind);
+-		length = ch->scan_type.storagebits/8;
++		if (ch->scan_type.repeat > 1)
++			length = ch->scan_type.storagebits / 8 *
++				ch->scan_type.repeat;
++		else
++			length = ch->scan_type.storagebits / 8;
+ 		if (out_loc % length)
+ 			out_loc += length - out_loc % length;
+ 		if (in_loc % length)
+@@ -994,7 +1019,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 		}
+ 		ch = iio_find_channel_from_si(indio_dev,
+ 			indio_dev->scan_index_timestamp);
+-		length = ch->scan_type.storagebits/8;
++		if (ch->scan_type.repeat > 1)
++			length = ch->scan_type.storagebits / 8 *
++				ch->scan_type.repeat;
++		else
++			length = ch->scan_type.storagebits / 8;
+ 		if (out_loc % length)
+ 			out_loc += length - out_loc % length;
+ 		if (in_loc % length)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 75a8a20..9f1483b 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -177,6 +177,14 @@ struct iio_event_spec {
+  *			shift:		Shift right by this before masking out
+  *					realbits.
+  *			endianness:	little or big endian
++ *			repeat:		No. of times real/storage bits repeats.
++ *					By default, when repeat is set to 0
++ *					repeat value is treated as 1. When
++ *					repeat value is 0 or 1, then there is
++ *					no change in existing scan element
++ *					type, in sysfs. When set to more than
++ *					1, then the type element in sysfs will
++ *					show repeat value.
+  * @info_mask_separate: What information is to be exported that is specific to
+  *			this channel.
+  * @info_mask_shared_by_type: What information is to be exported that is shared
+@@ -219,6 +227,7 @@ struct iio_chan_spec {
+ 		u8	realbits;
+ 		u8	storagebits;
+ 		u8	shift;
++		u8	repeat;
+ 		enum iio_endian endianness;
+ 	} scan_type;
+ 	long			info_mask_separate;
+-- 
+1.9.1
