@@ -1,30 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:64541 "EHLO mout.gmx.net"
+Received: from mga02.intel.com ([134.134.136.20]:4360 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754143AbaDFKLS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 6 Apr 2014 06:11:18 -0400
-Message-ID: <53412843.3020901@gmx.de>
-Date: Sun, 06 Apr 2014 12:11:15 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: sr@denx.de
-Subject: Re: [PATCH 5/6] staging:iio:adc:spear rename iodev -> indio_dev to
- fit with current convention
-References: <1396716315-2465-1-git-send-email-jic23@kernel.org> <1396716315-2465-6-git-send-email-jic23@kernel.org>
-In-Reply-To: <1396716315-2465-6-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
+	id S1752267AbaDDV1O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 4 Apr 2014 17:27:14 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v2 1/3] IIO: core: Add quaternion modifier
+Date: Fri,  4 Apr 2014 14:30:39 -0700
+Message-Id: <1396647041-22551-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> How we ended up with indio_dev is a mystery, but we have so in the interests
-> of consistency, move this driver over to that convention.
->
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/staging/iio/adc/spear_adc.c | 30 +++++++++++++++---------------
->  1 file changed, 15 insertions(+), 15 deletions(-)
->
+Added quaternion in the list of supported modifiers.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index acc911a..27bb9ca 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -84,6 +84,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_QUATERNION] = "quaternion",
+ };
+ 
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 084d882..e495720 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -53,6 +53,7 @@ enum iio_modifier {
+ 	IIO_MOD_LIGHT_RED,
+ 	IIO_MOD_LIGHT_GREEN,
+ 	IIO_MOD_LIGHT_BLUE,
++	IIO_MOD_QUATERNION,
+ };
+ 
+ enum iio_event_type {
+-- 
+1.9.1
 
