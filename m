@@ -1,292 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39721 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753468AbaDEKGI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Apr 2014 06:06:08 -0400
-Message-ID: <533FD5D8.30201@kernel.org>
-Date: Sat, 05 Apr 2014 11:07:20 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.17.22]:58315 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752958AbaDEPRp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 5 Apr 2014 11:17:45 -0400
+Message-ID: <53401E90.4080603@gmx.de>
+Date: Sat, 05 Apr 2014 17:17:36 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 1/5] IIO: core: Introduce read_raw_multi
-References: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com> <5336AB4F.4020703@kernel.org> <533F263D.4090009@linux.intel.com>
-In-Reply-To: <533F263D.4090009@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Jonathan Cameron <jic23@kernel.org>, Stefan Roese <sr@denx.de>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/4] iio:adc:spear_adc move out of staging
+References: <1394895308-19154-1-git-send-email-jic23@kernel.org> <1394895308-19154-5-git-send-email-jic23@kernel.org> <5324EF60.6040003@gmx.de> <53387391.1000803@kernel.org> <5339159E.6000701@denx.de> <533FDF45.3010005@kernel.org>
+In-Reply-To: <533FDF45.3010005@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/04/14 22:38, Srinivas Pandruvada wrote:
-> On 03/29/2014 04:15 AM, Jonathan Cameron wrote:
->> On 23/02/14 19:50, Srinivas Pandruvada wrote:
->>> This callback is introduced to overcome some limitations of existing
->>> read_raw callback. The functionality of both existing read_raw and
->>> read_raw_multi is similar, both are used to request values from the
->>> device. The current read_raw callback allows only two return values.
->>> The new read_raw_multi allows returning multiple values. Instead of
->>> passing just address of val and val2, it passes length and pointer
->>> to values. Depending on the type and length of passed buffer, iio
->>> client drivers can return multiple values.
->>>
->>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->> Hi Srinivas.
+Jonathan Cameron schrieb:
+> On 31/03/14 08:13, Stefan Roese wrote:
+>> On 30.03.2014 21:42, Jonathan Cameron wrote:
+>>> On 16/03/14 00:25, Hartmut Knaack wrote:
+>>>> Jonathan Cameron schrieb:
+>>>>> This simple driver is ready to move out of staging.
+>>>>>
+>>>>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>>>>> Acked-by: Stefan Roese <sr@denx.de>
+>>> Stefan, there are some 'what is going on?' questions in here you might
+>>> want to answer!
+>> I'll give it a try.
 >>
->> Whilst it wasn't the most in depth of discussions, I think the outcome
->> of the 'how to handle quaternion sysfs naming' element of the
->> thread.
->> [RFC] IIO: New interfaces for 'interesting' channel types.
+>>>>> ---
+>>>>>   drivers/iio/adc/Kconfig             |   8 +
+>>>>>   drivers/iio/adc/Makefile            |   1 +
+>>>>>   drivers/iio/adc/spear_adc.c         | 405
+>>>>> ++++++++++++++++++++++++++++++++++++
+>>>>>   drivers/staging/iio/adc/Kconfig     |   8 -
+>>>>>   drivers/staging/iio/adc/Makefile    |   1 -
+>>>>>   drivers/staging/iio/adc/spear_adc.c | 405
+>>>>> ------------------------------------
+>>>>>   6 files changed, 414 insertions(+), 414 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>>>> index 5553206..2e3e1b0 100644
+>>>>> --- a/drivers/iio/adc/Kconfig
+>>>>> +++ b/drivers/iio/adc/Kconfig
+>>>>> @@ -164,6 +164,14 @@ config NAU7802
+>>>>>         To compile this driver as a module, choose M here: the
+>>> s>>         module will be called nau7802.
+>>>>> +config SPEAR_ADC
+>>>>> +    tristate "ST SPEAr ADC"
+>>>>> +    depends on PLAT_SPEAR || COMPILE_TEST
+>>>>> +    depends on HAS_IOMEM
+>>>>> +    help
+>>>>> +      Say yes here to build support for the integrated ADC inside the
+>>>>> +      ST SPEAr SoC. Provides direct access via sysfs.
+>>>>> +
+>>>>>   config TI_ADC081C
+>>>>>       tristate "Texas Instruments ADC081C021/027"
+>>>>>       depends on I2C
+>>>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>>>> index 89f1216..8378fb2 100644
+>>>>> --- a/drivers/iio/adc/Makefile
+>>>>> +++ b/drivers/iio/adc/Makefile
+>>>>> @@ -18,6 +18,7 @@ obj-$(CONFIG_MAX1363) += max1363.o
+>>>>>   obj-$(CONFIG_MCP320X) += mcp320x.o
+>>>>>   obj-$(CONFIG_MCP3422) += mcp3422.o
+>>>>>   obj-$(CONFIG_NAU7802) += nau7802.o
+>>>>> +obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
+>>>>>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>>>>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>>>>>   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+>>>>> diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
+>>>>> new file mode 100644
+>>>>> index 0000000..18a0a40
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/adc/spear_adc.c
+>>>>> @@ -0,0 +1,405 @@
+>>>>> +/*
+>>>>> + * ST SPEAr ADC driver
+>>>>> + *
+>>>>> + * Copyright 2012 Stefan Roese <sr@denx.de>
+>>>> I found a datasheet at
+>>>> http://www.st.com/st-web-ui/static/active/en/resource/technical/document/reference_manual/DM00034813.pdf
+>>>>
+>>> THis is one of a number I think.. Not sure which parts will work out of
+>>> the box
+>>> with this driver though...  Stefan?  What was it written against?
+>> I wrote and tested this driver for the SPEAr600 in 2011/2012. The manual mentioned above didn't exist at that time. I used one called "UM510_rev3.0.pdf" from Feb 2011. If interested I can send you the manual I used at that time.
 >>
->> was that we should do them as a modifier instead of a new channel type.
->> e.g.
+>> I don't have access to the SPEAr600 hardware anymore. I'm afraid but I can't be of much help here.
 >>
->> in_rot_quaternion_raw
->> etc.
->>
->> Could you convert this driver over and repost?
->>
->> If you disagree, then feel free to contribute to that discussion and
->> we'll continue from there.
->>
->> Sorry this took so long to sort out, I was hoping for a few more inputs
->> but there we are...
->>
-> Hi Jonathan,
+> I'm tempted to say that, given it worked for stefan back then, we do what
+> non functional clean ups make sense and push the driver out of staging whilst
+> avoiding the issues highlighted by the 'interesting' datasheets.
 >
-> I have resubmitted with the modifier for quaternion dropping this patch.
-> I only allow buffered mode as without this patch representing in raw mode
-> all four component is not possible. Current applications only is using buffer mode.
-> So I can wait for core support something similar to this patch.
+> Either that, or if someone else wants to take on getting clarifications from
+> ST on how it actually works, that is fine by me.
 >
-> Thanks,
-> Srinivas
-Hi Srinivas,
+> J
+I would agree to fix the issues which obviously violate the datasheet (get rid of SPEAR_ADC_CLK_MIN/MAX, rework calculation of count in spear_adc_set_clk and check boundaries of clk_low and clk_high, make spear_read_raw aware of the currently selected reference voltage), and just place comments about required set/cleared bits on top of those functions, where the datasheet is confusing (spear_adc_set_status, spear_adc_set_ctrl, spear_adc_get_average, spear_adc_set_scanrate).
+Now, that I looked over it again, I would also propose to move the content of spear_adc_set_clk back into spear_write_raw, where it seems to have been located originally, and get rid of it afterwards (it doesn't do anything fancy, anyway). Sorry for bringing that up so late.
+Btw: during the last weeks, I did some review of about 75% of the stable adc drivers and piled up about 50 cleanup-patches so far, that I would send out soon. I also plan to do the same on the staging adc drivers afterwards. So, if you can be patient, I might do already a lot of cleanup, that you don't like to waste your time on ;-)
+Thanks,
 
-I'm a bit lost on this.  I was quite happy with this patch and can't immediately
-see why the change to using a modifier requires dropping it?
-
-It just makes for slightly different handling in the read_raw_multi call inside
-the driver itself...
-
-or am I missing something...
-
-Jonathan
->
->
->
->
->> Jonathan
->>> ---
->>>   drivers/iio/iio_core.h           |  2 +-
->>>   drivers/iio/industrialio-core.c  | 51 +++++++++++++++++++++++-----------------
->>>   drivers/iio/industrialio-event.c |  6 +++--
->>>   drivers/iio/inkern.c             | 15 ++++++++++--
->>>   include/linux/iio/iio.h          | 16 +++++++++++++
->>>   5 files changed, 63 insertions(+), 27 deletions(-)
->>>
->>> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
->>> index f6db6af..4172f22 100644
->>> --- a/drivers/iio/iio_core.h
->>> +++ b/drivers/iio/iio_core.h
->>> @@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
->>>                  struct list_head *attr_list);
->>>   void iio_free_chan_devattr_list(struct list_head *attr_list);
->>>
->>> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
->>> +ssize_t iio_format_value(char *buf, unsigned int type, int *val);
->>>
->>>   /* Event interface flags */
->>>   #define IIO_BUSY_BIT_POS 1
->>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->>> index acc911a..b1225a4 100644
->>> --- a/drivers/iio/industrialio-core.c
->>> +++ b/drivers/iio/industrialio-core.c
->>> @@ -373,41 +373,42 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
->>>    * @buf: The buffer to which the formated value gets written
->>>    * @type: One of the IIO_VAL_... constants. This decides how the val and val2
->>>    *        parameters are formatted.
->>> - * @val: First part of the value, exact meaning depends on the type parameter.
->>> - * @val2: Second part of the value, exact meaning depends on the type parameter.
->>> + * @vals: pointer to the values, exact meaning depends on the type parameter.
->>>    */
->>> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
->>> +ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
->>>   {
->>>       unsigned long long tmp;
->>>       bool scale_db = false;
->>>
->>>       switch (type) {
->>>       case IIO_VAL_INT:
->>> -        return sprintf(buf, "%d\n", val);
->>> +        return sprintf(buf, "%d\n", vals[0]);
->>>       case IIO_VAL_INT_PLUS_MICRO_DB:
->>>           scale_db = true;
->>>       case IIO_VAL_INT_PLUS_MICRO:
->>> -        if (val2 < 0)
->>> -            return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
->>> +        if (vals[1] < 0)
->>> +            return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
->>> +                    -vals[1],
->>>                   scale_db ? " dB" : "");
->>>           else
->>> -            return sprintf(buf, "%d.%06u%s\n", val, val2,
->>> +            return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
->>>                   scale_db ? " dB" : "");
->>>       case IIO_VAL_INT_PLUS_NANO:
->>> -        if (val2 < 0)
->>> -            return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
->>> +        if (vals[1] < 0)
->>> +            return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
->>> +                    -vals[1]);
->>>           else
->>> -            return sprintf(buf, "%d.%09u\n", val, val2);
->>> +            return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->>>       case IIO_VAL_FRACTIONAL:
->>> -        tmp = div_s64((s64)val * 1000000000LL, val2);
->>> -        val2 = do_div(tmp, 1000000000LL);
->>> -        val = tmp;
->>> -        return sprintf(buf, "%d.%09u\n", val, val2);
->>> +        tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
->>> +        vals[1] = do_div(tmp, 1000000000LL);
->>> +        vals[0] = tmp;
->>> +        return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->>>       case IIO_VAL_FRACTIONAL_LOG2:
->>> -        tmp = (s64)val * 1000000000LL >> val2;
->>> -        val2 = do_div(tmp, 1000000000LL);
->>> -        val = tmp;
->>> -        return sprintf(buf, "%d.%09u\n", val, val2);
->>> +        tmp = (s64)vals[0] * 1000000000LL >> vals[1];
->>> +        vals[1] = do_div(tmp, 1000000000LL);
->>> +        vals[0] = tmp;
->>> +        return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
->>>       default:
->>>           return 0;
->>>       }
->>> @@ -419,14 +420,20 @@ static ssize_t iio_read_channel_info(struct device *dev,
->>>   {
->>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>> -    int val, val2;
->>> -    int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
->>> -                        &val, &val2, this_attr->address);
->>> +    int vals[INDIO_MAX_RAW_ELEMENTS];
->>> +    int ret;
->>> +
->>> +    if (indio_dev->info->read_raw_multi)
->>> +        ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
->>> +                INDIO_MAX_RAW_ELEMENTS, vals, this_attr->address);
->>> +    else
->>> +        ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
->>> +                    &vals[0], &vals[1], this_attr->address);
->>>
->>>       if (ret < 0)
->>>           return ret;
->>>
->>> -    return iio_format_value(buf, ret, val, val2);
->>> +    return iio_format_value(buf, ret, vals);
->>>   }
->>>
->>>   /**
->>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
->>> index c9c1419..0f7f78e 100644
->>> --- a/drivers/iio/industrialio-event.c
->>> +++ b/drivers/iio/industrialio-event.c
->>> @@ -272,7 +272,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
->>>   {
->>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>> -    int val, val2;
->>> +    int val, val2, val_arr[2];
->>>       int ret;
->>>
->>>       ret = indio_dev->info->read_event_value(indio_dev,
->>> @@ -281,7 +281,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
->>>           &val, &val2);
->>>       if (ret < 0)
->>>           return ret;
->>> -    return iio_format_value(buf, ret, val, val2);
->>> +    val_arr[0] = val;
->>> +    val_arr[1] = val2;
->>> +    return iio_format_value(buf, ret, val_arr);
->>>   }
->>>
->>>   static ssize_t iio_ev_value_store(struct device *dev,
->>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>> index 0cf5f8e..6a93d57 100644
->>> --- a/drivers/iio/inkern.c
->>> +++ b/drivers/iio/inkern.c
->>> @@ -417,12 +417,23 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
->>>       enum iio_chan_info_enum info)
->>>   {
->>>       int unused;
->>> +    int vals[INDIO_MAX_RAW_ELEMENTS];
->>> +    int ret;
->>>
->>>       if (val2 == NULL)
->>>           val2 = &unused;
->>>
->>> -    return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
->>> -                        val, val2, info);
->>> +    if (chan->indio_dev->info->read_raw_multi) {
->>> +        ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
->>> +                    chan->channel, INDIO_MAX_RAW_ELEMENTS,
->>> +                    vals, info);
->>> +        *val = vals[0];
->>> +        *val2 = vals[1];
->>> +    } else
->>> +        ret = chan->indio_dev->info->read_raw(chan->indio_dev,
->>> +                    chan->channel, val, val2, info);
->>> +
->>> +    return ret;
->>>   }
->>>
->>>   int iio_read_channel_raw(struct iio_channel *chan, int *val)
->>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>> index 75a8a20..ddf9f60 100644
->>> --- a/include/linux/iio/iio.h
->>> +++ b/include/linux/iio/iio.h
->>> @@ -284,6 +284,8 @@ static inline s64 iio_get_time_ns(void)
->>>   #define INDIO_ALL_BUFFER_MODES                    \
->>>       (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
->>>
->>> +#define INDIO_MAX_RAW_ELEMENTS        4
->>> +
->>>   struct iio_trigger; /* forward declaration */
->>>   struct iio_dev;
->>>
->>> @@ -298,6 +300,14 @@ struct iio_dev;
->>>    *            the channel in question.  Return value will specify the
->>>    *            type of value returned by the device. val and val2 will
->>>    *            contain the elements making up the returned value.
->>> + * @read_raw_multi:    function to return values from the device.
->>> + *            mask specifies which value. Note 0 means a reading of
->>> + *            the channel in question.  Return value will specify the
->>> + *            type of value returned by the device. vals pointer
->>> + *            contain the elements making up the returned value.
->>> + *            val_len specifies maximum number of elements
->>> + *            vals pointer can contain. In contrast to to read_raw
->>> + *            device can return multiple values not just two.
->>>    * @write_raw:        function to write a value to the device.
->>>    *            Parameters are the same as for read_raw.
->>>    * @write_raw_get_fmt:    callback function to query the expected
->>> @@ -324,6 +334,12 @@ struct iio_info {
->>>               int *val2,
->>>               long mask);
->>>
->>> +    int (*read_raw_multi)(struct iio_dev *indio_dev,
->>> +            struct iio_chan_spec const *chan,
->>> +            int val_len,
->>> +            int *vals,
->>> +            long mask);
->>> +
->>>       int (*write_raw)(struct iio_dev *indio_dev,
->>>                struct iio_chan_spec const *chan,
->>>                int val,
->>>
->>
->>
->
+Hartmut
+>> Thanks,
+>> Stefan
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
