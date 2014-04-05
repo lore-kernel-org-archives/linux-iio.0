@@ -1,159 +1,292 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39791 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39721 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752202AbaDEKOj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Apr 2014 06:14:39 -0400
-Message-ID: <533FD7DA.1090403@kernel.org>
-Date: Sat, 05 Apr 2014 11:15:54 +0100
+	with ESMTP id S1753468AbaDEKGI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 5 Apr 2014 06:06:08 -0400
+Message-ID: <533FD5D8.30201@kernel.org>
+Date: Sat, 05 Apr 2014 11:07:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [Patch v2 2/3] IIO: core: Modify scan element type
-References: <1396647041-22551-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1396647041-22551-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1396647041-22551-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH v1 1/5] IIO: core: Introduce read_raw_multi
+References: <1393185048-4004-1-git-send-email-srinivas.pandruvada@linux.intel.com> <5336AB4F.4020703@kernel.org> <533F263D.4090009@linux.intel.com>
+In-Reply-To: <533F263D.4090009@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/04/14 22:30, Srinivas Pandruvada wrote:
-> The current scan element type uses the following format:
->    [be|le]:[s|u]bits/storagebits[>>shift].
-> To specify multiple elements in this type, added a repeat value.
-> So new format is:
->    [be|le]:([s|u]bits/storagebits){repeat}[>>shift].
-Hi Srinivas.  I'd missed the addition of the brackets in this string previously.
-I'm not keen on this purely because it will complicate any userspace handling
-code. It may be a little simplistic but how about
-[be|le]:[s|u]bits/storagebits{x[repeat]}[>>shift]
-I thought about moving it to the end, but it might be slightly unclear that
-we are repeating the data before or after the shift (and whether the shift
-inherently reduces the length of the data - which it doesn't, but that
-might not stop people getting confused ;)
-> Here repeat is specifying how may times, real/storage bits are repeating.
+On 04/04/14 22:38, Srinivas Pandruvada wrote:
+> On 03/29/2014 04:15 AM, Jonathan Cameron wrote:
+>> On 23/02/14 19:50, Srinivas Pandruvada wrote:
+>>> This callback is introduced to overcome some limitations of existing
+>>> read_raw callback. The functionality of both existing read_raw and
+>>> read_raw_multi is similar, both are used to request values from the
+>>> device. The current read_raw callback allows only two return values.
+>>> The new read_raw_multi allows returning multiple values. Instead of
+>>> passing just address of val and val2, it passes length and pointer
+>>> to values. Depending on the type and length of passed buffer, iio
+>>> client drivers can return multiple values.
+>>>
+>>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>> Hi Srinivas.
+>>
+>> Whilst it wasn't the most in depth of discussions, I think the outcome
+>> of the 'how to handle quaternion sysfs naming' element of the
+>> thread.
+>> [RFC] IIO: New interfaces for 'interesting' channel types.
+>>
+>> was that we should do them as a modifier instead of a new channel type.
+>> e.g.
+>>
+>> in_rot_quaternion_raw
+>> etc.
+>>
+>> Could you convert this driver over and repost?
+>>
+>> If you disagree, then feel free to contribute to that discussion and
+>> we'll continue from there.
+>>
+>> Sorry this took so long to sort out, I was hoping for a few more inputs
+>> but there we are...
+>>
+> Hi Jonathan,
 >
-> When repeat is value is 0 or 1, then repeat value is not used in the format,
-> and it will be same as existing format.
+> I have resubmitted with the modifier for quaternion dropping this patch.
+> I only allow buffered mode as without this patch representing in raw mode
+> all four component is not possible. Current applications only is using buffer mode.
+> So I can wait for core support something similar to this patch.
 >
-Other than the brackets vs x suggestion this looks fine to me.
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->   drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
->   include/linux/iio/iio.h           |  9 +++++++++
->   2 files changed, 44 insertions(+), 6 deletions(-)
+> Thanks,
+> Srinivas
+Hi Srinivas,
+
+I'm a bit lost on this.  I was quite happy with this patch and can't immediately
+see why the change to using a modifier requires dropping it?
+
+It just makes for slightly different handling in the read_raw_multi call inside
+the driver itself...
+
+or am I missing something...
+
+Jonathan
 >
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index c67d83b..598eacd 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
->   		type = IIO_BE;
->   #endif
->   	}
-> -	return sprintf(buf, "%s:%c%d/%d>>%u\n",
-> +	if (this_attr->c->scan_type.repeat > 1)
-> +		return sprintf(buf, "%s:(%c%d/%d){%d}>>%u\n",
-> +		       iio_endian_prefix[type],
-> +		       this_attr->c->scan_type.sign,
-> +		       this_attr->c->scan_type.realbits,
-> +		       this_attr->c->scan_type.storagebits,
-> +		       this_attr->c->scan_type.repeat,
-> +		       this_attr->c->scan_type.shift);
-> +		else
-> +			return sprintf(buf, "%s:%c%d/%d>>%u\n",
->   		       iio_endian_prefix[type],
->   		       this_attr->c->scan_type.sign,
->   		       this_attr->c->scan_type.realbits,
-> @@ -475,14 +484,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
->   	for_each_set_bit(i, mask,
->   			 indio_dev->masklength) {
->   		ch = iio_find_channel_from_si(indio_dev, i);
-> -		length = ch->scan_type.storagebits / 8;
-> +		if (ch->scan_type.repeat > 1)
-> +			length = ch->scan_type.storagebits / 8 *
-> +				ch->scan_type.repeat;
-> +		else
-> +			length = ch->scan_type.storagebits / 8;
->   		bytes = ALIGN(bytes, length);
->   		bytes += length;
->   	}
->   	if (timestamp) {
->   		ch = iio_find_channel_from_si(indio_dev,
->   					      indio_dev->scan_index_timestamp);
-> -		length = ch->scan_type.storagebits / 8;
-> +		if (ch->scan_type.repeat > 1)
-> +			length = ch->scan_type.storagebits / 8 *
-> +				ch->scan_type.repeat;
-> +		else
-> +			length = ch->scan_type.storagebits / 8;
->   		bytes = ALIGN(bytes, length);
->   		bytes += length;
->   	}
-> @@ -961,7 +978,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   					       indio_dev->masklength,
->   					       in_ind + 1);
->   			ch = iio_find_channel_from_si(indio_dev, in_ind);
-> -			length = ch->scan_type.storagebits/8;
-> +			if (ch->scan_type.repeat > 1)
-> +				length = ch->scan_type.storagebits / 8 *
-> +					ch->scan_type.repeat;
-> +			else
-> +				length = ch->scan_type.storagebits / 8;
->   			/* Make sure we are aligned */
->   			in_loc += length;
->   			if (in_loc % length)
-> @@ -973,7 +994,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   			goto error_clear_mux_table;
->   		}
->   		ch = iio_find_channel_from_si(indio_dev, in_ind);
-> -		length = ch->scan_type.storagebits/8;
-> +		if (ch->scan_type.repeat > 1)
-> +			length = ch->scan_type.storagebits / 8 *
-> +				ch->scan_type.repeat;
-> +		else
-> +			length = ch->scan_type.storagebits / 8;
->   		if (out_loc % length)
->   			out_loc += length - out_loc % length;
->   		if (in_loc % length)
-> @@ -994,7 +1019,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   		}
->   		ch = iio_find_channel_from_si(indio_dev,
->   			indio_dev->scan_index_timestamp);
-> -		length = ch->scan_type.storagebits/8;
-> +		if (ch->scan_type.repeat > 1)
-> +			length = ch->scan_type.storagebits / 8 *
-> +				ch->scan_type.repeat;
-> +		else
-> +			length = ch->scan_type.storagebits / 8;
->   		if (out_loc % length)
->   			out_loc += length - out_loc % length;
->   		if (in_loc % length)
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 75a8a20..9f1483b 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -177,6 +177,14 @@ struct iio_event_spec {
->    *			shift:		Shift right by this before masking out
->    *					realbits.
->    *			endianness:	little or big endian
-> + *			repeat:		No. of times real/storage bits repeats.
-> + *					By default, when repeat is set to 0
-> + *					repeat value is treated as 1. When
-> + *					repeat value is 0 or 1, then there is
-> + *					no change in existing scan element
-> + *					type, in sysfs. When set to more than
-> + *					1, then the type element in sysfs will
-> + *					show repeat value.
->    * @info_mask_separate: What information is to be exported that is specific to
->    *			this channel.
->    * @info_mask_shared_by_type: What information is to be exported that is shared
-> @@ -219,6 +227,7 @@ struct iio_chan_spec {
->   		u8	realbits;
->   		u8	storagebits;
->   		u8	shift;
-> +		u8	repeat;
->   		enum iio_endian endianness;
->   	} scan_type;
->   	long			info_mask_separate;
 >
+>
+>
+>> Jonathan
+>>> ---
+>>>   drivers/iio/iio_core.h           |  2 +-
+>>>   drivers/iio/industrialio-core.c  | 51 +++++++++++++++++++++++-----------------
+>>>   drivers/iio/industrialio-event.c |  6 +++--
+>>>   drivers/iio/inkern.c             | 15 ++++++++++--
+>>>   include/linux/iio/iio.h          | 16 +++++++++++++
+>>>   5 files changed, 63 insertions(+), 27 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+>>> index f6db6af..4172f22 100644
+>>> --- a/drivers/iio/iio_core.h
+>>> +++ b/drivers/iio/iio_core.h
+>>> @@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
+>>>                  struct list_head *attr_list);
+>>>   void iio_free_chan_devattr_list(struct list_head *attr_list);
+>>>
+>>> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
+>>> +ssize_t iio_format_value(char *buf, unsigned int type, int *val);
+>>>
+>>>   /* Event interface flags */
+>>>   #define IIO_BUSY_BIT_POS 1
+>>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>>> index acc911a..b1225a4 100644
+>>> --- a/drivers/iio/industrialio-core.c
+>>> +++ b/drivers/iio/industrialio-core.c
+>>> @@ -373,41 +373,42 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
+>>>    * @buf: The buffer to which the formated value gets written
+>>>    * @type: One of the IIO_VAL_... constants. This decides how the val and val2
+>>>    *        parameters are formatted.
+>>> - * @val: First part of the value, exact meaning depends on the type parameter.
+>>> - * @val2: Second part of the value, exact meaning depends on the type parameter.
+>>> + * @vals: pointer to the values, exact meaning depends on the type parameter.
+>>>    */
+>>> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
+>>> +ssize_t iio_format_value(char *buf, unsigned int type, int *vals)
+>>>   {
+>>>       unsigned long long tmp;
+>>>       bool scale_db = false;
+>>>
+>>>       switch (type) {
+>>>       case IIO_VAL_INT:
+>>> -        return sprintf(buf, "%d\n", val);
+>>> +        return sprintf(buf, "%d\n", vals[0]);
+>>>       case IIO_VAL_INT_PLUS_MICRO_DB:
+>>>           scale_db = true;
+>>>       case IIO_VAL_INT_PLUS_MICRO:
+>>> -        if (val2 < 0)
+>>> -            return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
+>>> +        if (vals[1] < 0)
+>>> +            return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
+>>> +                    -vals[1],
+>>>                   scale_db ? " dB" : "");
+>>>           else
+>>> -            return sprintf(buf, "%d.%06u%s\n", val, val2,
+>>> +            return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+>>>                   scale_db ? " dB" : "");
+>>>       case IIO_VAL_INT_PLUS_NANO:
+>>> -        if (val2 < 0)
+>>> -            return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
+>>> +        if (vals[1] < 0)
+>>> +            return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
+>>> +                    -vals[1]);
+>>>           else
+>>> -            return sprintf(buf, "%d.%09u\n", val, val2);
+>>> +            return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>>>       case IIO_VAL_FRACTIONAL:
+>>> -        tmp = div_s64((s64)val * 1000000000LL, val2);
+>>> -        val2 = do_div(tmp, 1000000000LL);
+>>> -        val = tmp;
+>>> -        return sprintf(buf, "%d.%09u\n", val, val2);
+>>> +        tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+>>> +        vals[1] = do_div(tmp, 1000000000LL);
+>>> +        vals[0] = tmp;
+>>> +        return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>>>       case IIO_VAL_FRACTIONAL_LOG2:
+>>> -        tmp = (s64)val * 1000000000LL >> val2;
+>>> -        val2 = do_div(tmp, 1000000000LL);
+>>> -        val = tmp;
+>>> -        return sprintf(buf, "%d.%09u\n", val, val2);
+>>> +        tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+>>> +        vals[1] = do_div(tmp, 1000000000LL);
+>>> +        vals[0] = tmp;
+>>> +        return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>>>       default:
+>>>           return 0;
+>>>       }
+>>> @@ -419,14 +420,20 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>>>   {
+>>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>>> -    int val, val2;
+>>> -    int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+>>> -                        &val, &val2, this_attr->address);
+>>> +    int vals[INDIO_MAX_RAW_ELEMENTS];
+>>> +    int ret;
+>>> +
+>>> +    if (indio_dev->info->read_raw_multi)
+>>> +        ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
+>>> +                INDIO_MAX_RAW_ELEMENTS, vals, this_attr->address);
+>>> +    else
+>>> +        ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+>>> +                    &vals[0], &vals[1], this_attr->address);
+>>>
+>>>       if (ret < 0)
+>>>           return ret;
+>>>
+>>> -    return iio_format_value(buf, ret, val, val2);
+>>> +    return iio_format_value(buf, ret, vals);
+>>>   }
+>>>
+>>>   /**
+>>> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+>>> index c9c1419..0f7f78e 100644
+>>> --- a/drivers/iio/industrialio-event.c
+>>> +++ b/drivers/iio/industrialio-event.c
+>>> @@ -272,7 +272,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+>>>   {
+>>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>>> -    int val, val2;
+>>> +    int val, val2, val_arr[2];
+>>>       int ret;
+>>>
+>>>       ret = indio_dev->info->read_event_value(indio_dev,
+>>> @@ -281,7 +281,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
+>>>           &val, &val2);
+>>>       if (ret < 0)
+>>>           return ret;
+>>> -    return iio_format_value(buf, ret, val, val2);
+>>> +    val_arr[0] = val;
+>>> +    val_arr[1] = val2;
+>>> +    return iio_format_value(buf, ret, val_arr);
+>>>   }
+>>>
+>>>   static ssize_t iio_ev_value_store(struct device *dev,
+>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+>>> index 0cf5f8e..6a93d57 100644
+>>> --- a/drivers/iio/inkern.c
+>>> +++ b/drivers/iio/inkern.c
+>>> @@ -417,12 +417,23 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+>>>       enum iio_chan_info_enum info)
+>>>   {
+>>>       int unused;
+>>> +    int vals[INDIO_MAX_RAW_ELEMENTS];
+>>> +    int ret;
+>>>
+>>>       if (val2 == NULL)
+>>>           val2 = &unused;
+>>>
+>>> -    return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+>>> -                        val, val2, info);
+>>> +    if (chan->indio_dev->info->read_raw_multi) {
+>>> +        ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
+>>> +                    chan->channel, INDIO_MAX_RAW_ELEMENTS,
+>>> +                    vals, info);
+>>> +        *val = vals[0];
+>>> +        *val2 = vals[1];
+>>> +    } else
+>>> +        ret = chan->indio_dev->info->read_raw(chan->indio_dev,
+>>> +                    chan->channel, val, val2, info);
+>>> +
+>>> +    return ret;
+>>>   }
+>>>
+>>>   int iio_read_channel_raw(struct iio_channel *chan, int *val)
+>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>>> index 75a8a20..ddf9f60 100644
+>>> --- a/include/linux/iio/iio.h
+>>> +++ b/include/linux/iio/iio.h
+>>> @@ -284,6 +284,8 @@ static inline s64 iio_get_time_ns(void)
+>>>   #define INDIO_ALL_BUFFER_MODES                    \
+>>>       (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+>>>
+>>> +#define INDIO_MAX_RAW_ELEMENTS        4
+>>> +
+>>>   struct iio_trigger; /* forward declaration */
+>>>   struct iio_dev;
+>>>
+>>> @@ -298,6 +300,14 @@ struct iio_dev;
+>>>    *            the channel in question.  Return value will specify the
+>>>    *            type of value returned by the device. val and val2 will
+>>>    *            contain the elements making up the returned value.
+>>> + * @read_raw_multi:    function to return values from the device.
+>>> + *            mask specifies which value. Note 0 means a reading of
+>>> + *            the channel in question.  Return value will specify the
+>>> + *            type of value returned by the device. vals pointer
+>>> + *            contain the elements making up the returned value.
+>>> + *            val_len specifies maximum number of elements
+>>> + *            vals pointer can contain. In contrast to to read_raw
+>>> + *            device can return multiple values not just two.
+>>>    * @write_raw:        function to write a value to the device.
+>>>    *            Parameters are the same as for read_raw.
+>>>    * @write_raw_get_fmt:    callback function to query the expected
+>>> @@ -324,6 +334,12 @@ struct iio_info {
+>>>               int *val2,
+>>>               long mask);
+>>>
+>>> +    int (*read_raw_multi)(struct iio_dev *indio_dev,
+>>> +            struct iio_chan_spec const *chan,
+>>> +            int val_len,
+>>> +            int *vals,
+>>> +            long mask);
+>>> +
+>>>       int (*write_raw)(struct iio_dev *indio_dev,
+>>>                struct iio_chan_spec const *chan,
+>>>                int val,
+>>>
+>>
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
