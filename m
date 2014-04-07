@@ -1,88 +1,37 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <535B87F1.2030005@kernel.org>
-Date: Sat, 26 Apr 2014 11:18:25 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55623 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754572AbaDGRyq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Apr 2014 13:54:46 -0400
+Message-ID: <5342E6B1.6010100@kernel.org>
+Date: Mon, 07 Apr 2014 18:56:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Atilla Filiz <atilla.filiz@essensium.com>, jic23@cam.ac.uk
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Fixed segfault in Invensens MPU driver
-References: <XH2U0J49.1398421120.2347610.filiza@localhost>
-In-Reply-To: <XH2U0J49.1398421120.2347610.filiza@localhost>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: sr@denx.de
+Subject: Re: [PATCH 1/6] staging:iio:adc:spear adc - prefix defines to avoid
+ namespace clashes.
+References: <1396716315-2465-1-git-send-email-jic23@kernel.org> <1396716315-2465-2-git-send-email-jic23@kernel.org> <53412831.1080406@gmx.de>
+In-Reply-To: <53412831.1080406@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 25/04/14 11:18, Atilla Filiz wrote:
->
-> Hello
->
-> I found the Invensense MPU6050 driver is not Device-Tree compatible, so I
-> fixed it. I willl appreciate if you CC your comments to myself.
->
-> Regards
-> Atilla
-Hi Atilla,
-
-Please send patches 'bare'.  If you want to add comments then they
-go below the --- as then git am will ignore them.  If the comments are more
-involved (or apply to a set of patches) then add a cover letter.  That way
-you save me (or whoever else) 30 seconds of editing the patch before applying
-it!
->
->  From 69995b31f67727e3b9605c494beaeeefd1aa1cd4 Mon Sep 17 00:00:00 2001
-> From: Atilla Filiz <atilla.filiz@essensium.com>
-> Date: Fri, 11 Apr 2014 16:51:23 +0200
-> Subject: [PATCH] Fixed segfault in Invensens MPU driver
-Please match the naming convention used in the area of the kernel to which
-the patch is being applied.
->
-> The driver used to segfault when the kernel boots
-> vith device tree
->
-> Signed-off-by: Atilla Filiz <atilla.filiz@essensium.com>
-Applied with some edits to the patch description to the fixes-togreg branch of
-iio.git.  I'll send this on to Greg fairly shortly.  I've also marked it for
-stable so that we get this fix out to slightly older kernels.
-
-Good find, thanks.
-
-Jonathan
-> ---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 37ca05b..3c2ef2e 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -660,6 +660,7 @@ static int inv_mpu_probe(struct i2c_client *client,
->   {
->   	struct inv_mpu6050_state *st;
->   	struct iio_dev *indio_dev;
-> +	struct inv_mpu6050_platform_data *pdata;
->   	int result;
->
->   	if (!i2c_check_functionality(client->adapter,
-> @@ -675,8 +676,10 @@ static int inv_mpu_probe(struct i2c_client *client,
->   	}
->   	st = iio_priv(indio_dev);
->   	st->client = client;
-> -	st->plat_data = *(struct inv_mpu6050_platform_data
-> -				*)dev_get_platdata(&client->dev);
-> +	pdata = (struct inv_mpu6050_platform_data
-> +			*)dev_get_platdata(&client->dev);
-> +	if (pdata)
-> +		st->plat_data = *pdata;
->   	/* power is turned on inside check chip type*/
->   	result = inv_check_and_setup_chip(st, id);
->   	if (result)
-> --
-> 1.8.1.2
->
->
+On 06/04/14 11:10, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> Acked-by: Stefan Roese <sr@denx.de>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Thanks, applied to the togreg branch of iio.git - initially
+pushed out as testing for the autobuilders to play.
+>> ---
+>>   drivers/staging/iio/adc/spear_adc.c | 73 ++++++++++++++++++-------------------
+>>   1 file changed, 36 insertions(+), 37 deletions(-)
+>>
 >
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
+
