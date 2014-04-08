@@ -1,87 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:28122 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751866AbaDYKQl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 06:16:41 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Received: from cantor2.suse.de ([195.135.220.15]:60621 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756369AbaDHMyZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 8 Apr 2014 08:54:25 -0400
+Date: Tue, 8 Apr 2014 14:54:21 +0200
+From: Jean Delvare <jdelvare@suse.de>
 To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org
-Subject: [PATCH 3/5] iio: exynos_adc: reduce timeout and use
- wait_for_completion_timeout
-Date: Fri, 25 Apr 2014 15:44:45 +0530
-Message-id: <1398420888-5506-4-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
-References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kukjin Kim <kgene.kim@samsung.com>
+Subject: [PATCH] iio: adc: Fix exynos_adc dependencies
+Message-ID: <20140408145421.530243bf@endymion.delvare>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
-waiting for 1000 msecs is wasteful (incase of h/w failure).
+EXYNOS_ADC shouldn't only depend on OF. It is useless on architectures
+other than Exynos so it should depend on ARCH_EXYNOS (which implies
+OF.)
 
-Hence, reduce the time out to 100msecs and use
-wait_for_completion_timeout() instead of
-wait_for_completion_interruptible_timeout()
-
-Also, handle the return values in exynos_raw_read() call.
-
-Change-Id: Icb8cade162094b2777c9f3c77120635deef5947c
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Kukjin Kim <kgene.kim@samsung.com>
 ---
-This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
+ drivers/iio/adc/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+--- linux-3.15-rc0.orig/drivers/iio/adc/Kconfig	2014-04-07 10:23:04.475166797 +0200
++++ linux-3.15-rc0/drivers/iio/adc/Kconfig	2014-04-08 14:49:16.205616632 +0200
+@@ -107,7 +107,7 @@ config AT91_ADC
+ 
+ config EXYNOS_ADC
+ 	bool "Exynos ADC driver support"
+-	depends on OF
++	depends on ARCH_EXYNOS
+ 	help
+ 	  Core support for the ADC block found in the Samsung EXYNOS series
+ 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index a2b8b1a..4d2467a 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -82,7 +82,7 @@ enum adc_version {
- #define ADC_CON_EN_START	(1u << 0)
- #define ADC_DATX_MASK		0xFFF
- 
--#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
-+#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
- 
- struct exynos_adc {
- 	void __iomem		*regs;
-@@ -121,6 +121,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 	struct exynos_adc *info = iio_priv(indio_dev);
- 	unsigned long timeout;
- 	u32 con1, con2;
-+	int ret;
- 
- 	if (mask != IIO_CHAN_INFO_RAW)
- 		return -EINVAL;
-@@ -145,16 +146,19 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 				ADC_V1_CON(info->regs));
- 	}
- 
--	timeout = wait_for_completion_interruptible_timeout
-+	timeout = wait_for_completion_timeout
- 			(&info->completion, EXYNOS_ADC_TIMEOUT);
--	*val = info->value;
-+	if (timeout == 0) {
-+		ret = -ETIMEDOUT;
-+	} else {
-+		*val = info->value;
-+		*val2 = 0;
-+		ret = IIO_VAL_INT;
-+	}
- 
- 	mutex_unlock(&indio_dev->mlock);
- 
--	if (timeout == 0)
--		return -ETIMEDOUT;
--
--	return IIO_VAL_INT;
-+	return ret;
- }
- 
- static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+
 -- 
-1.7.9.5
-
+Jean Delvare
+SUSE L3 Support
