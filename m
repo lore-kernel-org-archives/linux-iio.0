@@ -1,62 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f179.google.com ([209.85.220.179]:52321 "EHLO
-	mail-vc0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751293AbaDYQ2O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 12:28:14 -0400
-Received: by mail-vc0-f179.google.com with SMTP id ij19so5153861vcb.10
-        for <linux-iio@vger.kernel.org>; Fri, 25 Apr 2014 09:28:13 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1398420888-5506-4-git-send-email-ch.naveen@samsung.com>
-References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
-	<1398420888-5506-4-git-send-email-ch.naveen@samsung.com>
-Date: Fri, 25 Apr 2014 09:28:13 -0700
-Message-ID: <CAD=FV=Uds1i0dsuhFKXbNY6+kVRsFe0D0EQ3FATJnwjPGD3k0Q@mail.gmail.com>
-Subject: Re: [PATCH 3/5] iio: exynos_adc: reduce timeout and use wait_for_completion_timeout
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-ie0-f178.google.com ([209.85.223.178]:62871 "EHLO
+	mail-ie0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933251AbaDJC1F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Apr 2014 22:27:05 -0400
+Received: by mail-ie0-f178.google.com with SMTP id lx4so3212017iec.23
+        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2014 19:27:04 -0700 (PDT)
+From: Michael Welling <mwelling@ieee.org>
+To: linux-iio@vger.kernel.org, jic23@kernel.org,
+	gregkh@linuxfoundation.org
+Cc: Michael Welling <mwelling@ieee.org>
+Subject: [PATCH 0/3] Staging: iio: tsl2583 checkpatch fixes
+Date: Wed,  9 Apr 2014 21:26:42 -0500
+Message-Id: <1397096805-25168-1-git-send-email-mwelling@ieee.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Naveen,
+Updated patch series with appropriate subject and sign off.
+Replaces '[PATCH 0/3] tsl2583 checkpatch fixes' patch series.
 
-On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
-<ch.naveen@samsung.com> wrote:
-> ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
-> waiting for 1000 msecs is wasteful (incase of h/w failure).
->
-> Hence, reduce the time out to 100msecs and use
-> wait_for_completion_timeout() instead of
-> wait_for_completion_interruptible_timeout()
->
-> Also, handle the return values in exynos_raw_read() call.
+Michael Welling (3):
+  Removes unwanted space before semicolon
+  Remove quoted string split across lines warnings
+  Switch from msleep to usleep range per timers-howto.txt
 
-You probably didn't need to mention this--it's just a natural part of
-changing from wait_for_completion_interruptible_timeout() to
-wait_for_completion_timeout().
+ drivers/staging/iio/light/tsl2583.c |   38 ++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
->
-> Change-Id: Icb8cade162094b2777c9f3c77120635deef5947c
+-- 
+1.7.9.5
 
-Please don't send upstream with Change-Id.  Have you considered patman
-<http://git.denx.de/?p=u-boot.git;a=blob;f=tools/patman/README;hb=refs/heads/master>?
-
-> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-> ---
-> This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
->
->  drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
-
-Other than problems above, this looks fine to me.  If you fix them,
-feel free to add my Reviewed-by tag.
-
--Doug
