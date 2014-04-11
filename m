@@ -1,56 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44422 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752800AbaDLR0t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Apr 2014 13:26:49 -0400
-Message-ID: <534977A7.3090100@kernel.org>
-Date: Sat, 12 Apr 2014 18:28:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ig0-f172.google.com ([209.85.213.172]:48252 "EHLO
+	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752575AbaDKWtX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Apr 2014 18:49:23 -0400
 MIME-Version: 1.0
-To: Joel Porquet <joel@porquet.org>, gregkh@linuxfoundation.org,
-	jg1.han@samsung.com
-CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: fix coding style
-References: <1397066985-2504-1-git-send-email-joel@porquet.org>
-In-Reply-To: <1397066985-2504-1-git-send-email-joel@porquet.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <5347BE67.1080209@samsung.com>
+References: <1397181640-18513-1-git-send-email-cw00.choi@samsung.com>
+	<5347BE67.1080209@samsung.com>
+Date: Sat, 12 Apr 2014 07:49:22 +0900
+Message-ID: <CAGTfZH1t9QEZk5qaDRnGkeMatwtTXFq5SGgR27-4nXhdzKU-Ng@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: exynos_adc: Control special clock of ADC to
+ support Exynos3250 ADC
+From: =?UTF-8?B?7LWc7LCs7Jqw?= <cwchoi00@gmail.com>
+To: Sylwester Nawrocki <s.nawrocki@samsung.com>
+Cc: Chanwoo Choi <cw00.choi@samsung.com>,
+	devicetree <devicetree@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	ch.naveen@samsung.com, jic23@kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/04/14 19:09, Joel Porquet wrote:
-> As suggested by checkpatch.pl, use dev_info() instead of
-> printk(KERN_INFO ...) to print message.
->
-> Signed-off-by: Joel Porquet <joel@porquet.org>
-> ---
-> Only tested by compilation.
->   drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> index 48a6afa..38ecb4b 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> @@ -33,7 +33,8 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
->   	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
->   	if (trig_info->frequency == 0)
->   		return -EINVAL;
-> -	printk(KERN_INFO "trigger frequency is %d\n", trig_info->frequency);
-> +	dev_info(&trig_info->rtc->dev, "trigger frequency is %d\n",
-> +			trig_info->frequency);
-The principle is good, but why make the error message us the underlying rtc device?
-Going to lead to a rather unhelpful error message.
+Hi Sylwester,
 
-Perhaps the iio_trigger structures device element would make more sense?
-Might not be terribly informative, but will at least come from the right
-subsystem.
-
-Also, I think we will be dropping this driver entirely at some point.
-It was a dodgy hack that perhaps made sense at the time, but now a high
-resolution timer is going to give better results.
->   	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
->   }
+On Fri, Apr 11, 2014 at 7:05 PM, Sylwester Nawrocki
+<s.nawrocki@samsung.com> wrote:
+> Hi Chanwoo,
 >
+> On 11/04/14 04:00, Chanwoo Choi wrote:
+>> This patch control special clock for ADC in Exynos series's FSYS block.
+>> If special clock of ADC is registerd on clock list of common clk framework,
+>> Exynos ADC drvier have to control this clock.
+>>
+>> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
+>> - 'adc' clock: bus clock for ADC
+>>
+>> Exynos3250 has additional 'sclk_tsadc' clock as following:
+>> - 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
+>>
+>> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
+>> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
+>> clock in FSYS_BLK.
 >
+> I think a new compatible should be added for the ADC device for Exynos3250
+> and the required clocks should be handled properly, based on compatible
+> value. This could be handled, e.g. through some flags in driver's data
+> selected based on the compatible property value.
 
+OK, I'll consider new patch using new compatible string according to
+your comment.
+
+>
+> And the new clocks should be documented in Documentation/devicetree/bindings
+> /arm/samsung/exynos-adc.txt.
+
+OK, I'll modify it. Thanks,
+
+Best Regards,
+Chanwoo Choi
