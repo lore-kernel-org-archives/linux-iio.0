@@ -1,36 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f171.google.com ([209.85.213.171]:54120 "EHLO
-	mail-ig0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933251AbaDJCbC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Apr 2014 22:31:02 -0400
-Received: by mail-ig0-f171.google.com with SMTP id c1so7241283igq.4
-        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2014 19:31:01 -0700 (PDT)
-Date: Wed, 9 Apr 2014 21:30:59 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 1/3] Removes unwanted space before semicolon
-Message-ID: <20140410023058.GA25297@deathray>
-References: <1397086129-12112-1-git-send-email-mwelling@ieee.org>
- <1397086129-12112-2-git-send-email-mwelling@ieee.org>
- <20140410014758.GB11347@kroah.com>
+Received: from mga02.intel.com ([134.134.136.20]:40886 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750838AbaDKXUm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 11 Apr 2014 19:20:42 -0400
+Message-ID: <53487997.3070906@linux.intel.com>
+Date: Fri, 11 Apr 2014 16:24:07 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140410014758.GB11347@kroah.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [Patch v1 2/4] iio: imu: inv_mpu6050: Enable default bypass mode
+References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5336A540.7060309@kernel.org>
+In-Reply-To: <5336A540.7060309@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 09, 2014 at 06:47:58PM -0700, Greg KH wrote:
-> On Wed, Apr 09, 2014 at 06:28:47PM -0500, Michael Welling wrote:
-> > ---
-> >  drivers/staging/iio/light/tsl2583.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> The subject: needs to be better (put Staging: iio:) in the beginning.
-> 
+On 03/29/2014 03:49 AM, Jonathan Cameron wrote:
+> On 19/03/14 16:56, Srinivas Pandruvada wrote:
+>> This chip has two modes to control secondary sensor attached to it.
+>> One is master mode and another is bypass mode. In master mode
+>> MPU6500 will directly communicates to the secondary sensor device
+>> attached to it. This can support very few secondary devices in this
+>> mode.
+>> But when configured in bypass mode the i2c lines are directly connected
+>> to host i2c bus controller.
+>> Since in master mode it can only support few devices and they are not
+>> implemented in this driver, set the default mode to bypass mode.
+>> When some multiplexer is implemented to use MPU6050 master mode,
+>> this mode can be enabled when requested.
+>>
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> To my understanding this still doesn't deal with the fact that devices
+> on the slave bus are not connected if this driver is not loaded or has
+> gone to sleep.  Hence this needs as previously discussed to be done as
+> a single input, single output i2c mux.  That way the kernel 'knows'
+> there is something inbetween that needs to be in the correct state.
+>
 
-Sorry, updated patch series send.
+I am looking at a way to implement multiplexing 1:1 as suggested in 
+email chains.
+The problem I have:
+My two slave devices (MPU6XXX and AK8963 enumerated via ACPI. So they 
+i2clients are already tied to the I2C adapter.
+We don't have a board setup file in PC like platform.
+I have implemented in mux in MPU6XXX driver. But AK8963 driver is not 
+aware about mux adapter, it will not call my mux select function. So I 
+feel that we need to have a board setup file, to correctly create i2C 
+clients attaching to correct adapter for using this design.
+Is this correct?
 
-> Also, you forgot a signed-off-by line all of these.
-> 
-> greg k-h
+Thanks,
+Srinivas
+
+
+
+
+> Jonathan
+>> ---
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 ++++++++++++++++++-
+>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
+>>   2 files changed, 22 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
+>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> index 52d688b..744eba4 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> @@ -53,6 +53,7 @@ static const struct inv_mpu6050_reg_map 
+>> reg_set_6050 = {
+>>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
+>>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
+>>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
+>> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
+>>   };
+>>
+>>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>> @@ -608,6 +609,20 @@ static const struct iio_info mpu_info = {
+>>       .validate_trigger = inv_mpu6050_validate_trigger,
+>>   };
+>>
+>> +static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool 
+>> enable)
+>> +{
+>> +    int ret;
+>> +
+>> +    if (enable)
+>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>> +                    st->client->irq |
+>> +                        INV_MPU6050_BIT_BYPASS_EN);
+>> +    else
+>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>> +                    st->client->irq);
+>> +    return ret;
+>> +}
+>> +
+>>   /**
+>>    *  inv_check_and_setup_chip() - check and setup chip.
+>>    */
+>> @@ -646,7 +661,9 @@ static int inv_check_and_setup_chip(struct 
+>> inv_mpu6050_state *st,
+>>       if (result)
+>>           return result;
+>>
+>> -    return 0;
+>> +    result = inv_set_bypass_status(st, true);
+>> +
+>> +    return result;
+>>   }
+>>
+>>   /**
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
+>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> index 4ddfd03..591ac2e 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
+>>       u8 int_enable;
+>>       u8 pwr_mgmt_1;
+>>       u8 pwr_mgmt_2;
+>> +    u8 int_pin_cfg;
+>>   };
+>>
+>>   /*device enum */
+>> @@ -186,6 +187,9 @@ struct inv_mpu6050_state {
+>>   #define INV_MPU6050_MIN_FIFO_RATE                         4
+>>   #define INV_MPU6050_ONE_K_HZ                              1000
+>>
+>> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
+>> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
+>> +
+>>   /* scan element definition */
+>>   enum inv_mpu6050_scan {
+>>       INV_MPU6050_SCAN_ACCL_X,
+>>
+>
+>
+
