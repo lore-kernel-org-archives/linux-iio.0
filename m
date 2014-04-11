@@ -1,111 +1,130 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44450 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754886AbaDLRaR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Apr 2014 13:30:17 -0400
-Message-ID: <53497878.9040208@kernel.org>
-Date: Sat, 12 Apr 2014 18:31:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Michael Welling <mwelling@ieee.org>, linux-iio@vger.kernel.org,
-	gregkh@linuxfoundation.org
-Subject: Re: [PATCH 2/3] Staging: iio: Remove quoted string split across lines
- warnings
-References: <1397096805-25168-1-git-send-email-mwelling@ieee.org> <1397096805-25168-3-git-send-email-mwelling@ieee.org>
-In-Reply-To: <1397096805-25168-3-git-send-email-mwelling@ieee.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <b.zolnierkie@samsung.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+To: Chanwoo Choi <cw00.choi@samsung.com>
+Cc: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com,
+ linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH] iio: adc: exynos_adc: Control special clock of ADC to
+ support Exynos3250 ADC
+Date: Fri, 11 Apr 2014 11:41:41 +0200
+Message-id: <18632148.yOYlTYattA@amdc1032>
+In-reply-to: <1397181640-18513-1-git-send-email-cw00.choi@samsung.com>
+References: <1397181640-18513-1-git-send-email-cw00.choi@samsung.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/04/14 03:26, Michael Welling wrote:
-> Signed-off-by: Michael Welling <mwelling@ieee.org>
-Applied to the togreg branch of iio.git - initially pushed out as testing.
 
-Thanks,
+Hi,
+
+On Friday, April 11, 2014 11:00:40 AM Chanwoo Choi wrote:
+> This patch control special clock for ADC in Exynos series's FSYS block.
+
+s/control/controls/
+
+> If special clock of ADC is registerd on clock list of common clk framework,
+> Exynos ADC drvier have to control this clock.
+
+s/drvier/driver/
+
+> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
+> - 'adc' clock: bus clock for ADC
+> 
+> Exynos3250 has additional 'sclk_tsadc' clock as following:
+> - 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
+> 
+> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
+> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
+> clock in FSYS_BLK.
+> 
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Kukjin Kim <kgene.kim@samsung.com>
+> Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Cc: linux-iio@vger.kernel.org
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
 > ---
->   drivers/staging/iio/light/tsl2583.c |   34 ++++++++++++++++++----------------
->   1 file changed, 18 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index 77c7f65..f015fb4 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -165,8 +165,9 @@ taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
->   		/* select register to write */
->   		ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | reg));
->   		if (ret < 0) {
-> -			dev_err(&client->dev, "taos_i2c_read failed to write"
-> -				" register %x\n", reg);
-> +			dev_err(&client->dev,
-> +				"taos_i2c_read failed to write register %x\n",
-> +				reg);
->   			return ret;
->   		}
->   		/* read the data */
-> @@ -231,8 +232,9 @@ static int taos_get_lux(struct iio_dev *indio_dev)
->   		int reg = TSL258X_CMD_REG | (TSL258X_ALS_CHAN0LO + i);
->   		ret = taos_i2c_read(chip->client, reg, &buf[i], 1);
->   		if (ret < 0) {
-> -			dev_err(&chip->client->dev, "taos_get_lux failed to read"
-> -				" register %x\n", reg);
-> +			dev_err(&chip->client->dev,
-> +				"taos_get_lux failed to read register %x\n",
-> +				reg);
->   			goto out_unlock;
->   		}
->   	}
-> @@ -809,9 +811,7 @@ static int taos_probe(struct i2c_client *clientp,
->
->   	if (!i2c_check_functionality(clientp->adapter,
->   		I2C_FUNC_SMBUS_BYTE_DATA)) {
-> -		dev_err(&clientp->dev,
-> -			"taos_probe() - i2c smbus byte data "
-> -			"functions unsupported\n");
-> +		dev_err(&clientp->dev, "taos_probe() - i2c smbus byte data func unsupported\n");
->   		return -EOPNOTSUPP;
->   	}
->
-> @@ -830,30 +830,32 @@ static int taos_probe(struct i2c_client *clientp,
->   		ret = i2c_smbus_write_byte(clientp,
->   				(TSL258X_CMD_REG | (TSL258X_CNTRL + i)));
->   		if (ret < 0) {
-> -			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
-> -				"reg failed in taos_probe(), err = %d\n", ret);
-> +			dev_err(&clientp->dev,
-> +				"i2c_smbus_write_byte to cmd reg failed in taos_probe(), err = %d\n",
-> +				ret);
->   			return ret;
->   		}
->   		ret = i2c_smbus_read_byte(clientp);
->   		if (ret < 0) {
-> -			dev_err(&clientp->dev, "i2c_smbus_read_byte from "
-> -				"reg failed in taos_probe(), err = %d\n", ret);
-> -
-> +			dev_err(&clientp->dev,
-> +				"i2c_smbus_read_byte from reg failed in taos_probe(), err = %d\n",
-> +				ret);
->   			return ret;
->   		}
->   		buf[i] = ret;
->   	}
->
->   	if (!taos_tsl258x_device(buf)) {
-> -		dev_info(&clientp->dev, "i2c device found but does not match "
-> -			"expected id in taos_probe()\n");
-> +		dev_info(&clientp->dev,
-> +			"i2c device found but does not match expected id in taos_probe()\n");
->   		return -EINVAL;
->   	}
->
->   	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
->   	if (ret < 0) {
-> -		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
-> -			"failed in taos_probe(), err = %d\n", ret);
-> +		dev_err(&clientp->dev,
-> +			"i2c_smbus_write_byte() to cmd reg failed in taos_probe(), err = %d\n",
-> +			ret);
->   		return ret;
->   	}
->
->
+>  drivers/iio/adc/exynos_adc.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index d25b262..4cd1975 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -88,6 +88,7 @@ struct exynos_adc {
+>  	void __iomem		*regs;
+>  	void __iomem		*enable_reg;
+>  	struct clk		*clk;
+> +	struct clk		*sclk;
+>  	unsigned int		irq;
+>  	struct regulator	*vdd;
+>  
+> @@ -308,6 +309,13 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  		goto err_irq;
+>  	}
+>  
+> +	info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
+> +	if (IS_ERR(info->sclk)) {
+> +		dev_warn(&pdev->dev, "failed getting sclk clock, err = %ld\n",
+> +							PTR_ERR(info->sclk));
+> +		info->sclk = NULL;
+> +	}
+> +
+>  	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+>  	if (IS_ERR(info->vdd)) {
+>  		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+> @@ -341,6 +349,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  		goto err_iio_dev;
+>  
+>  	clk_prepare_enable(info->clk);
+> +	clk_prepare_enable(info->sclk);
+>  
+>  	exynos_adc_hw_init(info);
+>  
+> @@ -357,6 +366,7 @@ err_of_populate:
+>  				exynos_adc_remove_devices);
+>  	regulator_disable(info->vdd);
+>  	clk_disable_unprepare(info->clk);
+> +	clk_disable_unprepare(info->sclk);
 
+Please disable clocks in the reverse of order in which they were enabled.
+
+>  err_iio_dev:
+>  	iio_device_unregister(indio_dev);
+>  err_irq:
+> @@ -373,6 +383,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+>  				exynos_adc_remove_devices);
+>  	regulator_disable(info->vdd);
+>  	clk_disable_unprepare(info->clk);
+> +	clk_disable_unprepare(info->sclk);
+
+ditto
+
+>  	writel(0, info->enable_reg);
+>  	iio_device_unregister(indio_dev);
+>  	free_irq(info->irq, info);
+> @@ -398,6 +409,7 @@ static int exynos_adc_suspend(struct device *dev)
+>  	}
+>  
+>  	clk_disable_unprepare(info->clk);
+> +	clk_disable_unprepare(info->sclk);
+
+ditto
+
+>  	writel(0, info->enable_reg);
+>  	regulator_disable(info->vdd);
+>  
+> @@ -416,6 +428,7 @@ static int exynos_adc_resume(struct device *dev)
+>  
+>  	writel(1, info->enable_reg);
+>  	clk_prepare_enable(info->clk);
+> +	clk_prepare_enable(info->sclk);
+>  
+>  	exynos_adc_hw_init(info);
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
