@@ -1,40 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f177.google.com ([209.85.223.177]:58585 "EHLO
-	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934543AbaDJC1G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Apr 2014 22:27:06 -0400
-Received: by mail-ie0-f177.google.com with SMTP id rl12so3331606iec.22
-        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2014 19:27:06 -0700 (PDT)
-From: Michael Welling <mwelling@ieee.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: Michael Welling <mwelling@ieee.org>
-Subject: [PATCH 1/3] Staging: iio: Removes unwanted space before semicolon
-Date: Wed,  9 Apr 2014 21:26:43 -0500
-Message-Id: <1397096805-25168-2-git-send-email-mwelling@ieee.org>
-In-Reply-To: <1397096805-25168-1-git-send-email-mwelling@ieee.org>
-References: <1397096805-25168-1-git-send-email-mwelling@ieee.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44266 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751299AbaDLQzv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Apr 2014 12:55:51 -0400
+Message-ID: <53497066.9000200@kernel.org>
+Date: Sat, 12 Apr 2014 17:57:10 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Patch v3 6/6] iio: Added ABI description for quaternion
+References: <1397004988-31550-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397004988-31550-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397004988-31550-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Michael Welling <mwelling@ieee.org>
----
- drivers/staging/iio/light/tsl2583.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 0a60def..77c7f65 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -211,7 +211,7 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
- 		/* device is not enabled */
- 		dev_err(&chip->client->dev, "taos_get_lux device is not enabled\n");
--		ret = -EBUSY ;
-+		ret = -EBUSY;
- 		goto out_unlock;
- 	}
- 
--- 
-1.7.9.5
+On 09/04/14 01:56, Srinivas Pandruvada wrote:
+> Added documentation for reading quaternion components for 3D rotations.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Your quaternion description doesn't really include all the nuances of
+quaternions, but will do the job without confusing anyone ;)
+(no particularly reason that we have to get a unit quaternion for example)
+> ---
+>   Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+>   1 file changed, 9 insertions(+)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 6e02c50..d1cad9a 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -891,3 +891,12 @@ Contact:	linux-iio@vger.kernel.org
+>   Description:
+>   		This attribute is used to get/set the integration time in
+>   		seconds.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_rot_quaternion_raw
+> +KernelVersion:	3.15
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw value of quaternion components using a format
+> +		x y z w. Here x, y, and z component represents the axis about
+> +		which a rotation will occur and w component represents the
+> +		amount of rotation.
+>
 
