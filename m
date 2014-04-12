@@ -1,116 +1,147 @@
-Return-Path: <cwchoi00@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44136 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750833AbaDLQ0o (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Apr 2014 12:26:44 -0400
+Message-ID: <53496992.7070808@kernel.org>
+Date: Sat, 12 Apr 2014 17:28:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <5347CA51.8020003@samsung.com>
-References: <1397181640-18513-1-git-send-email-cw00.choi@samsung.com>
-	<18632148.yOYlTYattA@amdc1032>
-	<5347CA51.8020003@samsung.com>
-Date: Sat, 12 Apr 2014 07:52:37 +0900
-Message-ID: <CAGTfZH3Qnh_F8cHy+y9onvsuUxR+-F+3S=PgzGvsxdn0U1eGkw@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: exynos_adc: Control special clock of ADC to
- support Exynos3250 ADC
-From: =?UTF-8?B?7LWc7LCs7Jqw?= <cwchoi00@gmail.com>
-To: Tomasz Figa <t.figa@samsung.com>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>, Kyungmin Park <kyungmin.park@samsung.com>,
-	Kukjin Kim <kgene.kim@samsung.com>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, ch.naveen@samsung.com,
-	jic23@kernel.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [Patch v1 2/4] iio: imu: inv_mpu6050: Enable default bypass mode
+References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5336A540.7060309@kernel.org> <53487997.3070906@linux.intel.com>
+In-Reply-To: <53487997.3070906@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Tomasz,
+On 12/04/14 00:24, Srinivas Pandruvada wrote:
+> On 03/29/2014 03:49 AM, Jonathan Cameron wrote:
+>> On 19/03/14 16:56, Srinivas Pandruvada wrote:
+>>> This chip has two modes to control secondary sensor attached to it.
+>>> One is master mode and another is bypass mode. In master mode
+>>> MPU6500 will directly communicates to the secondary sensor device
+>>> attached to it. This can support very few secondary devices in this
+>>> mode.
+>>> But when configured in bypass mode the i2c lines are directly connected
+>>> to host i2c bus controller.
+>>> Since in master mode it can only support few devices and they are not
+>>> implemented in this driver, set the default mode to bypass mode.
+>>> When some multiplexer is implemented to use MPU6050 master mode,
+>>> this mode can be enabled when requested.
+>>>
+>>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>> To my understanding this still doesn't deal with the fact that devices
+>> on the slave bus are not connected if this driver is not loaded or has
+>> gone to sleep.  Hence this needs as previously discussed to be done as
+>> a single input, single output i2c mux.  That way the kernel 'knows'
+>> there is something inbetween that needs to be in the correct state.
+>>
+>
+> I am looking at a way to implement multiplexing 1:1 as suggested in email chains.
+> The problem I have:
+> My two slave devices (MPU6XXX and AK8963 enumerated via ACPI. So they i2clients are already tied to the I2C adapter.
+So the ACPI has no description of the fact that the ak8963 is connected through the
+MPU device.  That's irritating.
 
-On Fri, Apr 11, 2014 at 7:56 PM, Tomasz Figa <t.figa@samsung.com> wrote:
-> Hi,
+> We don't have a board setup file in PC like platform.
+> I have implemented in mux in MPU6XXX driver. But AK8963 driver is not
+> aware about mux adapter, it will not call my mux select function. So
+> I feel that we need to have a board setup file, to correctly create
+> i2C clients attaching to correct adapter for using this design. Is
+> this correct?
+It ought to be possible to do it from ACPI enumeration but
+only if there is some representation of the topology from ACPI.
+Otherwise we will need to represent this weirdness somewhere...
+
+>
+> Thanks,
+> Srinivas
 >
 >
-> On 11.04.2014 11:41, Bartlomiej Zolnierkiewicz wrote:
->>
->>
->> Hi,
->>
->> On Friday, April 11, 2014 11:00:40 AM Chanwoo Choi wrote:
->>>
->>> This patch control special clock for ADC in Exynos series's FSYS block.
->>
->>
->> s/control/controls/
->>
->>> If special clock of ADC is registerd on clock list of common clk
->>> framework,
->>> Exynos ADC drvier have to control this clock.
->>
->>
->> s/drvier/driver/
->>
->>> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
->>> - 'adc' clock: bus clock for ADC
->>>
->>> Exynos3250 has additional 'sclk_tsadc' clock as following:
->>> - 'sclk_tsadc' clock: special clock for ADC which provide clock to
->>> internal ADC
->>>
->>> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc'
->>> clock
->>> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included
->>> 'sclk_tsadc'
->>> clock in FSYS_BLK.
->>>
->>> Cc: Jonathan Cameron <jic23@kernel.org>
->>> Cc: Kukjin Kim <kgene.kim@samsung.com>
->>> Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
->>> Cc: linux-iio@vger.kernel.org
->>> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->>> Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+>
+>
+>> Jonathan
 >>> ---
->>>   drivers/iio/adc/exynos_adc.c | 13 +++++++++++++
->>>   1 file changed, 13 insertions(+)
->
->
-> This change alters DT bindings for Exynos ADC, so documentation must be
-> modified appropriately.
-
-OK, I'll add DT modification patch on next posting.
-
->
->
+>>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 ++++++++++++++++++-
+>>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
+>>>   2 files changed, 22 insertions(+), 1 deletion(-)
 >>>
->>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->>> index d25b262..4cd1975 100644
->>> --- a/drivers/iio/adc/exynos_adc.c
->>> +++ b/drivers/iio/adc/exynos_adc.c
->>> @@ -88,6 +88,7 @@ struct exynos_adc {
->>>         void __iomem            *regs;
->>>         void __iomem            *enable_reg;
->>>         struct clk              *clk;
->>> +       struct clk              *sclk;
->>>         unsigned int            irq;
->>>         struct regulator        *vdd;
+>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> index 52d688b..744eba4 100644
+>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> @@ -53,6 +53,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
+>>>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
+>>>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
+>>>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
+>>> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
+>>>   };
 >>>
->>> @@ -308,6 +309,13 @@ static int exynos_adc_probe(struct platform_device
->>> *pdev)
->>>                 goto err_irq;
->>>         }
+>>>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>>> @@ -608,6 +609,20 @@ static const struct iio_info mpu_info = {
+>>>       .validate_trigger = inv_mpu6050_validate_trigger,
+>>>   };
 >>>
->>> +       info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
->>> +       if (IS_ERR(info->sclk)) {
->>> +               dev_warn(&pdev->dev, "failed getting sclk clock, err =
->>> %ld\n",
+>>> +static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool enable)
+>>> +{
+>>> +    int ret;
 >>> +
->>> PTR_ERR(info->sclk));
->>> +               info->sclk = NULL;
->>> +       }
+>>> +    if (enable)
+>>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>>> +                    st->client->irq |
+>>> +                        INV_MPU6050_BIT_BYPASS_EN);
+>>> +    else
+>>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>>> +                    st->client->irq);
+>>> +    return ret;
+>>> +}
 >>> +
+>>>   /**
+>>>    *  inv_check_and_setup_chip() - check and setup chip.
+>>>    */
+>>> @@ -646,7 +661,9 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st,
+>>>       if (result)
+>>>           return result;
+>>>
+>>> -    return 0;
+>>> +    result = inv_set_bypass_status(st, true);
+>>> +
+>>> +    return result;
+>>>   }
+>>>
+>>>   /**
+>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>> index 4ddfd03..591ac2e 100644
+>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
+>>>       u8 int_enable;
+>>>       u8 pwr_mgmt_1;
+>>>       u8 pwr_mgmt_2;
+>>> +    u8 int_pin_cfg;
+>>>   };
+>>>
+>>>   /*device enum */
+>>> @@ -186,6 +187,9 @@ struct inv_mpu6050_state {
+>>>   #define INV_MPU6050_MIN_FIFO_RATE                         4
+>>>   #define INV_MPU6050_ONE_K_HZ                              1000
+>>>
+>>> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
+>>> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
+>>> +
+>>>   /* scan element definition */
+>>>   enum inv_mpu6050_scan {
+>>>       INV_MPU6050_SCAN_ACCL_X,
+>>>
+>>
+>>
 >
->
-> Is there any reason why we should have a warning on SoCs which don't have
-> this clock? I think this clock should be acquired only for affected SoCs.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-You are right.
-
-As Sylwester comment on previous reply, I'll consider to use new compatible name
-to handle clock in only proper SoC according to compatible name.
-
-Best Regards,
-Chanwoo Choi
