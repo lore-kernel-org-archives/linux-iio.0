@@ -1,72 +1,210 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:39034 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754444AbaDOK2V (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Apr 2014 06:28:21 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv3 09/15] ARM: at91: sam9rlek add touchscreen support through at91_adc
-Date: Tue, 15 Apr 2014 12:28:04 +0200
-Message-Id: <1397557690-5650-10-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <cw00.choi@samsung.com>
+From: Chanwoo Choi <cw00.choi@samsung.com>
+To: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+ ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org,
+ t.figa@samsung.com, linux-iio@vger.kernel.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>
+Subject: [PATCHv2 1/2] iio: adc: exynos_adc: Control special clock of ADC to
+ support Exynos3250 ADC
+Date: Mon, 14 Apr 2014 18:07:05 +0900
+Message-id: <1397466426-13870-2-git-send-email-cw00.choi@samsung.com>
+In-reply-to: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com>
+References: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-at91_adc now supports reading a touchscreen for ADCs without a TSMR register.
-Enable touchscreen support through at91_adc. This allows to use both a
-touchscreen and the remaining ADC channel at the same time.
+This patch control special clock for ADC in Exynos series's FSYS block.
+If special clock of ADC is registerd on clock list of common clk framework,
+Exynos ADC drvier have to control this clock.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
+- 'adc' clock: bus clock for ADC
+
+Exynos3250 has additional 'sclk_tsadc' clock as following:
+- 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
+
+Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
+in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
+clock in FSYS_BLK.
+
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Kukjin Kim <kgene.kim@samsung.com>
+Cc: Naveen Krishna Chatradhi
+Cc: linux-iio@vger.kernel.org
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
 ---
- arch/arm/mach-at91/board-sam9rlek.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/iio/adc/exynos_adc.c | 54 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 41 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/mach-at91/board-sam9rlek.c b/arch/arm/mach-at91/board-sam9rlek.c
-index 604eecf6cd70..35d420247e25 100644
---- a/arch/arm/mach-at91/board-sam9rlek.c
-+++ b/arch/arm/mach-at91/board-sam9rlek.c
-@@ -18,6 +18,7 @@
- #include <linux/clk.h>
- #include <linux/input.h>
- #include <linux/gpio_keys.h>
-+#include <linux/platform_data/at91_adc.h>
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index d25b262..3c99243 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -40,8 +40,9 @@
+ #include <linux/iio/driver.h>
  
- #include <video/atmel_lcdc.h>
+ enum adc_version {
+-	ADC_V1,
+-	ADC_V2
++	ADC_V1 = 0x1,
++	ADC_V2 = 0x2,
++	ADC_V3 = (ADC_V1 | ADC_V2),
+ };
  
-@@ -239,6 +240,17 @@ static struct at91_tsadcc_data ek_tsadcc_data = {
+ /* EXYNOS4412/5250 ADC_V1 registers definitions */
+@@ -88,6 +89,7 @@ struct exynos_adc {
+ 	void __iomem		*regs;
+ 	void __iomem		*enable_reg;
+ 	struct clk		*clk;
++	struct clk		*sclk;
+ 	unsigned int		irq;
+ 	struct regulator	*vdd;
  
+@@ -100,6 +102,7 @@ struct exynos_adc {
+ static const struct of_device_id exynos_adc_match[] = {
+ 	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
+ 	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
++	{ .compatible = "samsung,exynos-adc-v3", .data = (void *)ADC_V3 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, exynos_adc_match);
+@@ -128,7 +131,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&indio_dev->mlock);
  
- /*
-+ * ADC + Touchscreen
-+ */
-+static struct at91_adc_data ek_adc_data = {
-+	.channels_used = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5),
-+	.use_external_triggers = true,
-+	.vref = 3300,
-+	.touchscreen_type = ATMEL_ADC_TOUCHSCREEN_4WIRE,
-+};
+ 	/* Select the channel to be used and Trigger conversion */
+-	if (info->version == ADC_V2) {
++	if (info->version & ADC_V2) {
+ 		con2 = readl(ADC_V2_CON2(info->regs));
+ 		con2 &= ~ADC_V2_CON2_ACH_MASK;
+ 		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
+@@ -165,7 +168,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+ 	info->value = readl(ADC_V1_DATX(info->regs)) &
+ 						ADC_DATX_MASK;
+ 	/* clear irq */
+-	if (info->version == ADC_V2)
++	if (info->version & ADC_V2)
+ 		writel(1, ADC_V2_INT_ST(info->regs));
+ 	else
+ 		writel(1, ADC_V1_INTCLR(info->regs));
+@@ -226,11 +229,25 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+ 	return 0;
+ }
+ 
++static void exynos_adc_enable_clock(struct exynos_adc *info, bool enable)
++{
++	if (enable) {
++		clk_prepare_enable(info->clk);
++		if (info->version == ADC_V3)
++			clk_prepare_enable(info->sclk);
 +
++	} else {
++		if (info->version == ADC_V3)
++			clk_disable_unprepare(info->sclk);
++		clk_disable_unprepare(info->clk);
++	}
++}
 +
-+/*
-  * GPIO Buttons
-  */
- #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
-@@ -312,6 +324,8 @@ static void __init ek_board_init(void)
- 	at91_add_device_ac97(&ek_ac97_data);
- 	/* Touch Screen Controller */
- 	at91_add_device_tsadcc(&ek_tsadcc_data);
-+	/* Touch Screen Controller + ADC */
-+	at91_add_device_adc(&ek_adc_data);
- 	/* LEDs */
- 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
- 	/* Push Buttons */
+ static void exynos_adc_hw_init(struct exynos_adc *info)
+ {
+ 	u32 con1, con2;
+ 
+-	if (info->version == ADC_V2) {
++	if (info->version & ADC_V2) {
+ 		con1 = ADC_V2_CON1_SOFT_RESET;
+ 		writel(con1, ADC_V2_CON1(info->regs));
+ 
+@@ -300,6 +317,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 
+ 	writel(1, info->enable_reg);
+ 
++	info->version = exynos_adc_get_version(pdev);
++
+ 	info->clk = devm_clk_get(&pdev->dev, "adc");
+ 	if (IS_ERR(info->clk)) {
+ 		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+@@ -308,6 +327,17 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 		goto err_irq;
+ 	}
+ 
++	if (info->version == ADC_V3) {
++		info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
++		if (IS_ERR(info->sclk)) {
++			dev_warn(&pdev->dev,
++				"failed getting sclk clock, err = %ld\n",
++				PTR_ERR(info->sclk));
++			ret = PTR_ERR(info->sclk);
++			goto err_irq;
++		}
++	}
++
+ 	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+ 	if (IS_ERR(info->vdd)) {
+ 		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+@@ -316,8 +346,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 		goto err_irq;
+ 	}
+ 
+-	info->version = exynos_adc_get_version(pdev);
+-
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	indio_dev->name = dev_name(&pdev->dev);
+@@ -340,7 +368,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_iio_dev;
+ 
+-	clk_prepare_enable(info->clk);
++	exynos_adc_enable_clock(info, true);
+ 
+ 	exynos_adc_hw_init(info);
+ 
+@@ -356,7 +384,7 @@ err_of_populate:
+ 	device_for_each_child(&pdev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+-	clk_disable_unprepare(info->clk);
++	exynos_adc_enable_clock(info, false);
+ err_iio_dev:
+ 	iio_device_unregister(indio_dev);
+ err_irq:
+@@ -372,7 +400,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	device_for_each_child(&pdev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+-	clk_disable_unprepare(info->clk);
++	exynos_adc_enable_clock(info, false);
+ 	writel(0, info->enable_reg);
+ 	iio_device_unregister(indio_dev);
+ 	free_irq(info->irq, info);
+@@ -387,7 +415,7 @@ static int exynos_adc_suspend(struct device *dev)
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 	u32 con;
+ 
+-	if (info->version == ADC_V2) {
++	if (info->version & ADC_V2) {
+ 		con = readl(ADC_V2_CON1(info->regs));
+ 		con &= ~ADC_CON_EN_START;
+ 		writel(con, ADC_V2_CON1(info->regs));
+@@ -397,7 +425,7 @@ static int exynos_adc_suspend(struct device *dev)
+ 		writel(con, ADC_V1_CON(info->regs));
+ 	}
+ 
+-	clk_disable_unprepare(info->clk);
++	exynos_adc_enable_clock(info, false);
+ 	writel(0, info->enable_reg);
+ 	regulator_disable(info->vdd);
+ 
+@@ -415,7 +443,7 @@ static int exynos_adc_resume(struct device *dev)
+ 		return ret;
+ 
+ 	writel(1, info->enable_reg);
+-	clk_prepare_enable(info->clk);
++	exynos_adc_enable_clock(info, true);
+ 
+ 	exynos_adc_hw_init(info);
+ 
 -- 
-1.8.3.2
-
+1.8.0
