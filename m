@@ -1,141 +1,267 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:40886 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750838AbaDKXUm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 11 Apr 2014 19:20:42 -0400
-Message-ID: <53487997.3070906@linux.intel.com>
-Date: Fri, 11 Apr 2014 16:24:07 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Tue, 15 Apr 2014 00:19:06 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+cc: jic23@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Patch v5 2/6] IIO: core: Introduce read_raw_multi
+In-Reply-To: <1397513467-21397-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Message-ID: <alpine.DEB.2.01.1404150017080.11665@pmeerw.net>
+References: <1397513467-21397-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397513467-21397-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org,
-	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
-	Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [Patch v1 2/4] iio: imu: inv_mpu6050: Enable default bypass mode
-References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5336A540.7060309@kernel.org>
-In-Reply-To: <5336A540.7060309@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-On 03/29/2014 03:49 AM, Jonathan Cameron wrote:
-> On 19/03/14 16:56, Srinivas Pandruvada wrote:
->> This chip has two modes to control secondary sensor attached to it.
->> One is master mode and another is bypass mode. In master mode
->> MPU6500 will directly communicates to the secondary sensor device
->> attached to it. This can support very few secondary devices in this
->> mode.
->> But when configured in bypass mode the i2c lines are directly connected
->> to host i2c bus controller.
->> Since in master mode it can only support few devices and they are not
->> implemented in this driver, set the default mode to bypass mode.
->> When some multiplexer is implemented to use MPU6050 master mode,
->> this mode can be enabled when requested.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> To my understanding this still doesn't deal with the fact that devices
-> on the slave bus are not connected if this driver is not loaded or has
-> gone to sleep.  Hence this needs as previously discussed to be done as
-> a single input, single output i2c mux.  That way the kernel 'knows'
-> there is something inbetween that needs to be in the correct state.
->
-
-I am looking at a way to implement multiplexing 1:1 as suggested in 
-email chains.
-The problem I have:
-My two slave devices (MPU6XXX and AK8963 enumerated via ACPI. So they 
-i2clients are already tied to the I2C adapter.
-We don't have a board setup file in PC like platform.
-I have implemented in mux in MPU6XXX driver. But AK8963 driver is not 
-aware about mux adapter, it will not call my mux select function. So I 
-feel that we need to have a board setup file, to correctly create i2C 
-clients attaching to correct adapter for using this design.
-Is this correct?
-
-Thanks,
-Srinivas
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
 
+> This callback is introduced to overcome some limitations of existing
+> read_raw callback. The functionality of both existing read_raw and
+> read_raw_multi is similar, both are used to request values from the
+> device. The current read_raw callback allows only two return values.
+> The new read_raw_multi allows returning multiple values. Instead of
+> passing just address of val and val2, it passes length and pointer
+> to values. Depending on the type and length of passed buffer, iio
+> client drivers can return multiple values.
 
+> ---
+>  drivers/iio/iio_core.h           |  2 +-
+>  drivers/iio/industrialio-core.c  | 65 ++++++++++++++++++++++++++--------------
+>  drivers/iio/industrialio-event.c |  6 ++--
+>  drivers/iio/inkern.c             | 16 ++++++++--
+>  include/linux/iio/iio.h          | 17 +++++++++++
+>  include/linux/iio/types.h        |  1 +
+>  6 files changed, 80 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index f6db6af..30327ad 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -35,7 +35,7 @@ int __iio_add_chan_devattr(const char *postfix,
+>  			   struct list_head *attr_list);
+>  void iio_free_chan_devattr_list(struct list_head *attr_list);
+>  
+> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2);
+> +ssize_t iio_format_value(char *buf, unsigned int type, int size, int *val);
 
-> Jonathan
->> ---
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 ++++++++++++++++++-
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
->>   2 files changed, 22 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
->> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> index 52d688b..744eba4 100644
->> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> @@ -53,6 +53,7 @@ static const struct inv_mpu6050_reg_map 
->> reg_set_6050 = {
->>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
->>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
->>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
->> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
->>   };
->>
->>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
->> @@ -608,6 +609,20 @@ static const struct iio_info mpu_info = {
->>       .validate_trigger = inv_mpu6050_validate_trigger,
->>   };
->>
->> +static int inv_set_bypass_status(struct inv_mpu6050_state *st, bool 
->> enable)
->> +{
->> +    int ret;
->> +
->> +    if (enable)
->> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
->> +                    st->client->irq |
->> +                        INV_MPU6050_BIT_BYPASS_EN);
->> +    else
->> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
->> +                    st->client->irq);
->> +    return ret;
->> +}
->> +
->>   /**
->>    *  inv_check_and_setup_chip() - check and setup chip.
->>    */
->> @@ -646,7 +661,9 @@ static int inv_check_and_setup_chip(struct 
->> inv_mpu6050_state *st,
->>       if (result)
->>           return result;
->>
->> -    return 0;
->> +    result = inv_set_bypass_status(st, true);
->> +
->> +    return result;
->>   }
->>
->>   /**
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
->> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->> index 4ddfd03..591ac2e 100644
->> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
->> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
->>       u8 int_enable;
->>       u8 pwr_mgmt_1;
->>       u8 pwr_mgmt_2;
->> +    u8 int_pin_cfg;
->>   };
->>
->>   /*device enum */
->> @@ -186,6 +187,9 @@ struct inv_mpu6050_state {
->>   #define INV_MPU6050_MIN_FIFO_RATE                         4
->>   #define INV_MPU6050_ONE_K_HZ                              1000
->>
->> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
->> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
->> +
->>   /* scan element definition */
->>   enum inv_mpu6050_scan {
->>       INV_MPU6050_SCAN_ACCL_X,
->>
->
->
+last parameter of prototype should be *vals to match the naming of the 
+implementation
+  
+>  /* Event interface flags */
+>  #define IIO_BUSY_BIT_POS 1
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index ede16aec..e22a984 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -373,41 +373,53 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
+>   * @buf: The buffer to which the formated value gets written
+>   * @type: One of the IIO_VAL_... constants. This decides how the val and val2
+>   *        parameters are formatted.
+> - * @val: First part of the value, exact meaning depends on the type parameter.
+> - * @val2: Second part of the value, exact meaning depends on the type parameter.
+> + * @vals: pointer to the values, exact meaning depends on the type parameter.
+>   */
+> -ssize_t iio_format_value(char *buf, unsigned int type, int val, int val2)
+> +ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>  {
+>  	unsigned long long tmp;
+>  	bool scale_db = false;
+>  
+>  	switch (type) {
+>  	case IIO_VAL_INT:
+> -		return sprintf(buf, "%d\n", val);
+> +		return sprintf(buf, "%d\n", vals[0]);
+>  	case IIO_VAL_INT_PLUS_MICRO_DB:
+>  		scale_db = true;
+>  	case IIO_VAL_INT_PLUS_MICRO:
+> -		if (val2 < 0)
+> -			return sprintf(buf, "-%ld.%06u%s\n", abs(val), -val2,
+> +		if (vals[1] < 0)
+> +			return sprintf(buf, "-%ld.%06u%s\n", abs(vals[0]),
+> +					-vals[1],
+>  				scale_db ? " dB" : "");
+>  		else
+> -			return sprintf(buf, "%d.%06u%s\n", val, val2,
+> +			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+>  				scale_db ? " dB" : "");
+>  	case IIO_VAL_INT_PLUS_NANO:
+> -		if (val2 < 0)
+> -			return sprintf(buf, "-%ld.%09u\n", abs(val), -val2);
+> +		if (vals[1] < 0)
+> +			return sprintf(buf, "-%ld.%09u\n", abs(vals[0]),
+> +					-vals[1]);
+>  		else
+> -			return sprintf(buf, "%d.%09u\n", val, val2);
+> +			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>  	case IIO_VAL_FRACTIONAL:
+> -		tmp = div_s64((s64)val * 1000000000LL, val2);
+> -		val2 = do_div(tmp, 1000000000LL);
+> -		val = tmp;
+> -		return sprintf(buf, "%d.%09u\n", val, val2);
+> +		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> +		vals[1] = do_div(tmp, 1000000000LL);
+> +		vals[0] = tmp;
+> +		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>  	case IIO_VAL_FRACTIONAL_LOG2:
+> -		tmp = (s64)val * 1000000000LL >> val2;
+> -		val2 = do_div(tmp, 1000000000LL);
+> -		val = tmp;
+> -		return sprintf(buf, "%d.%09u\n", val, val2);
+> +		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+> +		vals[1] = do_div(tmp, 1000000000LL);
+> +		vals[0] = tmp;
+> +		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+> +	case IIO_VAL_INT_MULTIPLE:
+> +	{
+> +		int i;
+> +		int len = 0;
+> +
+> +		for (i = 0; i < size; ++i)
+> +			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
+> +								vals[i]);
+> +		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
+> +		return len;
+> +	}
+>  	default:
+>  		return 0;
+>  	}
+> @@ -419,14 +431,23 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> -	int val, val2;
+> -	int ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+> -					    &val, &val2, this_attr->address);
+> +	int vals[INDIO_MAX_RAW_ELEMENTS];
+> +	int ret;
+> +	int val_len = 2;
+> +
+> +	if (indio_dev->info->read_raw_multi)
+> +		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
+> +							INDIO_MAX_RAW_ELEMENTS,
+> +							vals, &val_len,
+> +							this_attr->address);
+> +	else
+> +		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+> +				    &vals[0], &vals[1], this_attr->address);
+>  
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	return iio_format_value(buf, ret, val, val2);
+> +	return iio_format_value(buf, ret, val_len, vals);
+>  }
+>  
+>  /**
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index ea6e06b..1b4f31b 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -270,7 +270,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> -	int val, val2;
+> +	int val, val2, val_arr[2];
+>  	int ret;
+>  
+>  	ret = indio_dev->info->read_event_value(indio_dev,
+> @@ -279,7 +279,9 @@ static ssize_t iio_ev_value_show(struct device *dev,
+>  		&val, &val2);
+>  	if (ret < 0)
+>  		return ret;
+> -	return iio_format_value(buf, ret, val, val2);
+> +	val_arr[0] = val;
+> +	val_arr[1] = val2;
+> +	return iio_format_value(buf, ret, 2, val_arr);
+>  }
+>  
+>  static ssize_t iio_ev_value_store(struct device *dev,
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 0cf5f8e..75e5386 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -417,12 +417,24 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+>  	enum iio_chan_info_enum info)
+>  {
+>  	int unused;
+> +	int vals[INDIO_MAX_RAW_ELEMENTS];
+> +	int ret;
+> +	int val_len = 2;
+>  
+>  	if (val2 == NULL)
+>  		val2 = &unused;
+>  
+> -	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+> -						val, val2, info);
+> +	if (chan->indio_dev->info->read_raw_multi) {
+> +		ret = chan->indio_dev->info->read_raw_multi(chan->indio_dev,
+> +					chan->channel, INDIO_MAX_RAW_ELEMENTS,
+> +					vals, &val_len, info);
+> +		*val = vals[0];
+> +		*val2 = vals[1];
+> +	} else
+> +		ret = chan->indio_dev->info->read_raw(chan->indio_dev,
+> +					chan->channel, val, val2, info);
+> +
+> +	return ret;
+>  }
+>  
+>  int iio_read_channel_raw(struct iio_channel *chan, int *val)
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 5f2d00e..5629c92 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -288,6 +288,8 @@ static inline s64 iio_get_time_ns(void)
+>  #define INDIO_ALL_BUFFER_MODES					\
+>  	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+>  
+> +#define INDIO_MAX_RAW_ELEMENTS		4
+> +
+>  struct iio_trigger; /* forward declaration */
+>  struct iio_dev;
+>  
+> @@ -302,6 +304,14 @@ struct iio_dev;
+>   *			the channel in question.  Return value will specify the
+>   *			type of value returned by the device. val and val2 will
+>   *			contain the elements making up the returned value.
+> + * @read_raw_multi:	function to return values from the device.
+> + *			mask specifies which value. Note 0 means a reading of
+> + *			the channel in question.  Return value will specify the
+> + *			type of value returned by the device. vals pointer
+> + *			contain the elements making up the returned value.
+> + *			max_len specifies maximum number of elements
+> + *			vals pointer can contain. val_len is used to return
+> + *			length of valid elements in vals.
+>   * @write_raw:		function to write a value to the device.
+>   *			Parameters are the same as for read_raw.
+>   * @write_raw_get_fmt:	callback function to query the expected
+> @@ -328,6 +338,13 @@ struct iio_info {
+>  			int *val2,
+>  			long mask);
+>  
+> +	int (*read_raw_multi)(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int max_len,
+> +			int *vals,
+> +			int *val_len,
+> +			long mask);
+> +
+>  	int (*write_raw)(struct iio_dev *indio_dev,
+>  			 struct iio_chan_spec const *chan,
+>  			 int val,
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 084d882..a13c224 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -79,6 +79,7 @@ enum iio_event_direction {
+>  #define IIO_VAL_INT_PLUS_MICRO 2
+>  #define IIO_VAL_INT_PLUS_NANO 3
+>  #define IIO_VAL_INT_PLUS_MICRO_DB 4
+> +#define IIO_VAL_INT_MULTIPLE 5
+>  #define IIO_VAL_FRACTIONAL 10
+>  #define IIO_VAL_FRACTIONAL_LOG2 11
+>  
+> 
 
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
