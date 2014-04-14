@@ -1,180 +1,432 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f170.google.com ([209.85.214.170]:37071 "EHLO
-	mail-ob0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751461AbaDPDsS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Apr 2014 23:48:18 -0400
-Received: by mail-ob0-f170.google.com with SMTP id uz6so11890715obc.1
-        for <linux-iio@vger.kernel.org>; Tue, 15 Apr 2014 20:48:17 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1397466426-13870-2-git-send-email-cw00.choi@samsung.com>
-References: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com>
-	<1397466426-13870-2-git-send-email-cw00.choi@samsung.com>
-Date: Wed, 16 Apr 2014 09:18:17 +0530
-Message-ID: <CAK9yfHzdPu67JKrww-VFjFvKni7S_y_hvLKKUdeQe-_pxjoBAQ@mail.gmail.com>
-Subject: Re: [PATCHv2 1/2] iio: adc: exynos_adc: Control special clock of ADC
- to support Exynos3250 ADC
-From: Sachin Kamat <sachin.kamat@linaro.org>
-To: Chanwoo Choi <cw00.choi@samsung.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	naveen krishna <ch.naveen@samsung.com>,
-	Kukjin Kim <kgene.kim@samsung.com>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, rdunlap@infradead.org,
-	Tomasz Figa <t.figa@samsung.com>, linux-iio@vger.kernel.org,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-doc@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mga09.intel.com ([134.134.136.24]:23746 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755680AbaDNWHs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Apr 2014 18:07:48 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v5 5/6] iio: hid-sensors: Added device rotation support
+Date: Mon, 14 Apr 2014 15:11:06 -0700
+Message-Id: <1397513467-21397-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397513467-21397-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1397513467-21397-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Chanwoo,
+Added usage id processing for device rotation. This uses IIO
+interfaces for triggered buffer to present data to user
+mode.This uses HID sensor framework for registering callback
+events from the sensor hub.
+Data is exported to user space in the form of quaternion rotation
+format.
 
-On 14 April 2014 14:37, Chanwoo Choi <cw00.choi@samsung.com> wrote:
-> This patch control special clock for ADC in Exynos series's FSYS block.
-> If special clock of ADC is registerd on clock list of common clk framework,
-> Exynos ADC drvier have to control this clock.
->
-> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
-> - 'adc' clock: bus clock for ADC
->
-> Exynos3250 has additional 'sclk_tsadc' clock as following:
-> - 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
->
-> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
-> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
-> clock in FSYS_BLK.
->
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Kukjin Kim <kgene.kim@samsung.com>
-> Cc: Naveen Krishna Chatradhi
-> Cc: linux-iio@vger.kernel.org
-> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  drivers/iio/adc/exynos_adc.c | 54 +++++++++++++++++++++++++++++++++-----------
->  1 file changed, 41 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index d25b262..3c99243 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -40,8 +40,9 @@
->  #include <linux/iio/driver.h>
->
->  enum adc_version {
-> -       ADC_V1,
-> -       ADC_V2
-> +       ADC_V1 = 0x1,
-> +       ADC_V2 = 0x2,
-> +       ADC_V3 = (ADC_V1 | ADC_V2),
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/orientation/Kconfig               |  12 +
+ drivers/iio/orientation/Makefile              |   1 +
+ drivers/iio/orientation/hid-sensor-rotation.c | 348 ++++++++++++++++++++++++++
+ include/linux/hid-sensor-ids.h                |   1 +
+ 4 files changed, 362 insertions(+)
+ create mode 100644 drivers/iio/orientation/hid-sensor-rotation.c
 
-Can't this be simply 0x3? Or is this not really a h/w version?
-
->  };
->
->  /* EXYNOS4412/5250 ADC_V1 registers definitions */
-> @@ -88,6 +89,7 @@ struct exynos_adc {
->         void __iomem            *regs;
->         void __iomem            *enable_reg;
->         struct clk              *clk;
-> +       struct clk              *sclk;
->         unsigned int            irq;
->         struct regulator        *vdd;
->
-> @@ -100,6 +102,7 @@ struct exynos_adc {
->  static const struct of_device_id exynos_adc_match[] = {
->         { .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
->         { .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
-> +       { .compatible = "samsung,exynos-adc-v3", .data = (void *)ADC_V3 },
->         {},
->  };
->  MODULE_DEVICE_TABLE(of, exynos_adc_match);
-> @@ -128,7 +131,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->         mutex_lock(&indio_dev->mlock);
->
->         /* Select the channel to be used and Trigger conversion */
-> -       if (info->version == ADC_V2) {
-> +       if (info->version & ADC_V2) {
-
-So, now this would be applicable for ADC_V3 too, right?
-
-
->                 con2 = readl(ADC_V2_CON2(info->regs));
->                 con2 &= ~ADC_V2_CON2_ACH_MASK;
->                 con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
-> @@ -165,7 +168,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->         info->value = readl(ADC_V1_DATX(info->regs)) &
->                                                 ADC_DATX_MASK;
->         /* clear irq */
-> -       if (info->version == ADC_V2)
-> +       if (info->version & ADC_V2)
->                 writel(1, ADC_V2_INT_ST(info->regs));
->         else
->                 writel(1, ADC_V1_INTCLR(info->regs));
-> @@ -226,11 +229,25 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
->         return 0;
->  }
->
-> +static void exynos_adc_enable_clock(struct exynos_adc *info, bool enable)
-> +{
-> +       if (enable) {
-> +               clk_prepare_enable(info->clk);
-
-This could fail. Is it OK without any checks?
-
-> +               if (info->version == ADC_V3)
-> +                       clk_prepare_enable(info->sclk);
-
-ditto.
-
-> +
-> +       } else {
-> +               if (info->version == ADC_V3)
-> +                       clk_disable_unprepare(info->sclk);
-> +               clk_disable_unprepare(info->clk);
-> +       }
-> +}
-> +
->  static void exynos_adc_hw_init(struct exynos_adc *info)
->  {
->         u32 con1, con2;
->
-> -       if (info->version == ADC_V2) {
-> +       if (info->version & ADC_V2) {
->                 con1 = ADC_V2_CON1_SOFT_RESET;
->                 writel(con1, ADC_V2_CON1(info->regs));
->
-> @@ -300,6 +317,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
->
->         writel(1, info->enable_reg);
->
-> +       info->version = exynos_adc_get_version(pdev);
-> +
->         info->clk = devm_clk_get(&pdev->dev, "adc");
->         if (IS_ERR(info->clk)) {
->                 dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
-> @@ -308,6 +327,17 @@ static int exynos_adc_probe(struct platform_device *pdev)
->                 goto err_irq;
->         }
->
-> +       if (info->version == ADC_V3) {
-> +               info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
-> +               if (IS_ERR(info->sclk)) {
-> +                       dev_warn(&pdev->dev,
-> +                               "failed getting sclk clock, err = %ld\n",
-> +                               PTR_ERR(info->sclk));
-> +                       ret = PTR_ERR(info->sclk);
-
-nit: you could move this line above dev_warn and use 'ret' in the print
-statement.
-
-
+diff --git a/drivers/iio/orientation/Kconfig b/drivers/iio/orientation/Kconfig
+index 58c62c8..e3aa1e5 100644
+--- a/drivers/iio/orientation/Kconfig
++++ b/drivers/iio/orientation/Kconfig
+@@ -16,4 +16,16 @@ config HID_SENSOR_INCLINOMETER_3D
+ 	  Say yes here to build support for the HID SENSOR
+ 	  Inclinometer 3D.
+ 
++config HID_SENSOR_DEVICE_ROTATION
++	depends on HID_SENSOR_HUB
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select HID_SENSOR_IIO_COMMON
++	select HID_SENSOR_IIO_TRIGGER
++	tristate "HID Device Rotation"
++	help
++	  Say yes here to build support for the HID SENSOR
++	  device rotation. The output of a device rotation sensor
++	  is presented using quaternion format.
++
+ endmenu
+diff --git a/drivers/iio/orientation/Makefile b/drivers/iio/orientation/Makefile
+index 2c97572..4734dab 100644
+--- a/drivers/iio/orientation/Makefile
++++ b/drivers/iio/orientation/Makefile
+@@ -4,3 +4,4 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_HID_SENSOR_INCLINOMETER_3D) += hid-sensor-incl-3d.o
++obj-$(CONFIG_HID_SENSOR_DEVICE_ROTATION) += hid-sensor-rotation.o
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+new file mode 100644
+index 0000000..51387bb
+--- /dev/null
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -0,0 +1,348 @@
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2014, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ */
++
++#include <linux/device.h>
++#include <linux/platform_device.h>
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/slab.h>
++#include <linux/hid-sensor-hub.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include "../common/hid-sensors/hid-sensor-trigger.h"
++
++struct dev_rot_state {
++	struct hid_sensor_hub_callbacks callbacks;
++	struct hid_sensor_common common_attributes;
++	struct hid_sensor_hub_attribute_info quaternion;
++	u32 sampled_vals[4];
++};
++
++/* Channel definitions */
++static const struct iio_chan_spec dev_rot_channels[] = {
++	{
++		.type = IIO_ROT,
++		.modified = 1,
++		.channel2 = IIO_MOD_QUATERNION,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++					BIT(IIO_CHAN_INFO_HYSTERESIS)
++	}
++};
++
++/* Adjust channel real bits based on report descriptor */
++static void dev_rot_adjust_channel_bit_mask(struct iio_chan_spec *chan,
++						int size)
++{
++	chan->scan_type.sign = 's';
++	/* Real storage bits will change based on the report desc. */
++	chan->scan_type.realbits = size * 8;
++	/* Maximum size of a sample to capture is u32 */
++	chan->scan_type.storagebits = sizeof(u32) * 8;
++	chan->scan_type.repeat = 4;
++}
++
++/* Channel read_raw handler */
++static int dev_rot_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int size, int *vals, int *val_len,
++				long mask)
++{
++	struct dev_rot_state *rot_state = iio_priv(indio_dev);
++	int ret_type;
++	int i;
++
++	vals[0] = 0;
++	vals[1] = 0;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (size >= 4) {
++			for (i = 0; i < 4; ++i)
++				vals[i] = rot_state->sampled_vals[i];
++			ret_type = IIO_VAL_INT_MULTIPLE;
++			*val_len =  4;
++		} else
++			ret_type = -EINVAL;
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret_type = hid_sensor_read_samp_freq_value(
++			&rot_state->common_attributes, &vals[0], &vals[1]);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret_type = hid_sensor_read_raw_hyst_value(
++			&rot_state->common_attributes, &vals[0], &vals[1]);
++		break;
++	default:
++		ret_type = -EINVAL;
++		break;
++	}
++
++	return ret_type;
++}
++
++/* Channel write_raw handler */
++static int dev_rot_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val,
++			       int val2,
++			       long mask)
++{
++	struct dev_rot_state *rot_state = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = hid_sensor_write_samp_freq_value(
++				&rot_state->common_attributes, val, val2);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret = hid_sensor_write_raw_hyst_value(
++				&rot_state->common_attributes, val, val2);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info dev_rot_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw_multi = &dev_rot_read_raw,
++	.write_raw = &dev_rot_write_raw,
++};
++
++/* Function to push data to buffer */
++static void hid_sensor_push_data(struct iio_dev *indio_dev, u8 *data, int len)
++{
++	dev_dbg(&indio_dev->dev, "hid_sensor_push_data >>\n");
++	iio_push_to_buffers(indio_dev, (u8 *)data);
++	dev_dbg(&indio_dev->dev, "hid_sensor_push_data <<\n");
++
++}
++
++/* Callback handler to send event after all samples are received and captured */
++static int dev_rot_proc_event(struct hid_sensor_hub_device *hsdev,
++				unsigned usage_id,
++				void *priv)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(priv);
++	struct dev_rot_state *rot_state = iio_priv(indio_dev);
++
++	dev_dbg(&indio_dev->dev, "dev_rot_proc_event [%d]\n",
++				rot_state->common_attributes.data_ready);
++
++	if (rot_state->common_attributes.data_ready)
++		hid_sensor_push_data(indio_dev,
++				(u8 *)rot_state->sampled_vals,
++				sizeof(rot_state->sampled_vals));
++
++	return 0;
++}
++
++/* Capture samples in local storage */
++static int dev_rot_capture_sample(struct hid_sensor_hub_device *hsdev,
++				unsigned usage_id,
++				size_t raw_len, char *raw_data,
++				void *priv)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(priv);
++	struct dev_rot_state *rot_state = iio_priv(indio_dev);
++
++	if (usage_id == HID_USAGE_SENSOR_ORIENT_QUATERNION) {
++		memcpy(rot_state->sampled_vals, raw_data,
++					sizeof(rot_state->sampled_vals));
++		dev_dbg(&indio_dev->dev, "Recd Quat len:%zu::%zu\n", raw_len,
++					sizeof(rot_state->sampled_vals));
++	}
++
++	return 0;
++}
++
++/* Parse report which is specific to an usage id*/
++static int dev_rot_parse_report(struct platform_device *pdev,
++				struct hid_sensor_hub_device *hsdev,
++				struct iio_chan_spec *channels,
++				unsigned usage_id,
++				struct dev_rot_state *st)
++{
++	int ret;
++
++	ret = sensor_hub_input_get_attribute_info(hsdev,
++				HID_INPUT_REPORT,
++				usage_id,
++				HID_USAGE_SENSOR_ORIENT_QUATERNION,
++				&st->quaternion);
++	if (ret)
++		return ret;
++
++	dev_rot_adjust_channel_bit_mask(&channels[0],
++		st->quaternion.size / 4);
++
++	dev_dbg(&pdev->dev, "dev_rot %x:%x\n", st->quaternion.index,
++		st->quaternion.report_id);
++
++	dev_dbg(&pdev->dev, "dev_rot: attrib size %d\n",
++				st->quaternion.size);
++
++	/* Set Sensitivity field ids, when there is no individual modifier */
++	if (st->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_DATA_ORIENTATION,
++			&st->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->common_attributes.sensitivity.index,
++			st->common_attributes.sensitivity.report_id);
++	}
++
++	return 0;
++}
++
++/* Function to initialize the processing for usage id */
++static int hid_dev_rot_probe(struct platform_device *pdev)
++{
++	int ret;
++	static char *name = "dev_rotation";
++	struct iio_dev *indio_dev;
++	struct dev_rot_state *rot_state;
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct iio_chan_spec *channels;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev,
++					  sizeof(struct dev_rot_state));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	rot_state = iio_priv(indio_dev);
++	rot_state->common_attributes.hsdev = hsdev;
++	rot_state->common_attributes.pdev = pdev;
++
++	ret = hid_sensor_parse_common_attributes(hsdev,
++				HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++				&rot_state->common_attributes);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup common attributes\n");
++		return ret;
++	}
++
++	channels = devm_kmemdup(&pdev->dev, dev_rot_channels,
++					sizeof(dev_rot_channels), GFP_KERNEL);
++	if (!channels) {
++		dev_err(&pdev->dev, "failed to duplicate channels\n");
++		return -ENOMEM;
++	}
++
++	ret = dev_rot_parse_report(pdev, hsdev, channels,
++			HID_USAGE_SENSOR_DEVICE_ORIENTATION, rot_state);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup attributes\n");
++		return ret;
++	}
++
++	indio_dev->channels = channels;
++	indio_dev->num_channels = ARRAY_SIZE(dev_rot_channels);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->info = &dev_rot_info;
++	indio_dev->name = name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++		NULL, NULL);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
++		return ret;
++	}
++	rot_state->common_attributes.data_ready = false;
++	ret = hid_sensor_setup_trigger(indio_dev, name,
++					&rot_state->common_attributes);
++	if (ret) {
++		dev_err(&pdev->dev, "trigger setup failed\n");
++		goto error_unreg_buffer_funcs;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "device register failed\n");
++		goto error_remove_trigger;
++	}
++
++	rot_state->callbacks.send_event = dev_rot_proc_event;
++	rot_state->callbacks.capture_sample = dev_rot_capture_sample;
++	rot_state->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev,
++					HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++					&rot_state->callbacks);
++	if (ret) {
++		dev_err(&pdev->dev, "callback reg failed\n");
++		goto error_iio_unreg;
++	}
++
++	return 0;
++
++error_iio_unreg:
++	iio_device_unregister(indio_dev);
++error_remove_trigger:
++	hid_sensor_remove_trigger(&rot_state->common_attributes);
++error_unreg_buffer_funcs:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
++}
++
++/* Function to deinitialize the processing for usage id */
++static int hid_dev_rot_remove(struct platform_device *pdev)
++{
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct dev_rot_state *rot_state = iio_priv(indio_dev);
++
++	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_DEVICE_ORIENTATION);
++	iio_device_unregister(indio_dev);
++	hid_sensor_remove_trigger(&rot_state->common_attributes);
++	iio_triggered_buffer_cleanup(indio_dev);
++
++	return 0;
++}
++
++static struct platform_device_id hid_dev_rot_ids[] = {
++	{
++		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
++		.name = "HID-SENSOR-20008a",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
++
++static struct platform_driver hid_dev_rot_platform_driver = {
++	.id_table = hid_dev_rot_ids,
++	.driver = {
++		.name	= KBUILD_MODNAME,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= hid_dev_rot_probe,
++	.remove		= hid_dev_rot_remove,
++};
++module_platform_driver(hid_dev_rot_platform_driver);
++
++MODULE_DESCRIPTION("HID Sensor Device Rotation");
++MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 14ead9e..109f0e6 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -76,6 +76,7 @@
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Y				0x200480
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
+ 
++#define HID_USAGE_SENSOR_DEVICE_ORIENTATION			0x20008A
+ #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
+ #define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
 -- 
-With warm regards,
-Sachin
+1.7.11.7
+
