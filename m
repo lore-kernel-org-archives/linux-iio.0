@@ -1,20 +1,25 @@
-Return-Path: <joel@porquet.org>
-From: =?ISO-8859-1?Q?Jo=EBl?= Porquet <joel@porquet.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, jg1.han@samsung.com, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp2.digiweb.ie ([83.147.160.14]:45727 "EHLO smtp.digiweb.ie"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1754643AbaDNKKQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Apr 2014 06:10:16 -0400
+Message-ID: <1397468403.2320.10.camel@dan-Latitude-E5440>
 Subject: Re: [PATCH] staging: iio: fix coding style
-Date: Mon, 14 Apr 2014 15:59:32 +0200
-Message-ID: <9773833.iVsvHLKPbr@joel-zenbook>
+From: Dan O'Donovan <dan@emutex.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Joel Porquet <joel@porquet.org>, gregkh@linuxfoundation.org,
+	jg1.han@samsung.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Date: Mon, 14 Apr 2014 10:40:03 +0100
 In-Reply-To: <534977A7.3090100@kernel.org>
-References: <1397066985-2504-1-git-send-email-joel@porquet.org> <534977A7.3090100@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-List-ID: <linux-iio@vger.kernel.org>
+References: <1397066985-2504-1-git-send-email-joel@porquet.org>
+	 <534977A7.3090100@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-
-On Saturday, April 12, 2014 06:28:07 PM Jonathan Cameron wrote:
-> 
+On Sat, 2014-04-12 at 18:28 +0100, Jonathan Cameron wrote:
 > On 09/04/14 19:09, Joel Porquet wrote:
 > > As suggested by checkpatch.pl, use dev_info() instead of
 > > printk(KERN_INFO ...) to print message.
@@ -47,13 +52,18 @@ On Saturday, April 12, 2014 06:28:07 PM Jonathan Cameron wrote:
 > It was a dodgy hack that perhaps made sense at the time, but now a high
 > resolution timer is going to give better results.
 
-OK, thanks for the feedback!
-
-Does that still make sense that I resubmit another patch (using iio_trigger-dev instead)?
-Or should I just drop this patch altogether since you seem to say that patching this driver is not really worth it anyway?
+I've been using this patch from Denis Ciocca which implements a hr-timer
+trigger, and it has worked well for me:
+http://comments.gmane.org/gmane.linux.kernel.iio/9698
+It would be great to see this added to the kernel.
 
 > >   	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
 > >   }
 > >
 > >
 > 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
