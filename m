@@ -1,26 +1,83 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 22 Apr 2014 21:33:33 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.15 round 1
-Message-ID: <20140423043333.GA7115@kroah.com>
-References: <53497E3C.20304@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53497E3C.20304@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:7328 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750771AbaDNEYE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Apr 2014 00:24:04 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v4 1/6] devres: introduce API "devm_kmemdup
+Date: Sun, 13 Apr 2014 21:27:22 -0700
+Message-Id: <1397449647-31708-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 12, 2014 at 06:56:12PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 084b6e7765b9554699afa23a50e702a3d0ae4b24:
-> 
->    staging/cxt1e1/linux.c: Correct arbitrary memory write in c4_ioctl() (2014-03-04 16:20:01 -0800)
-> 
-> are available in the git repository at:
-> 
->    git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.15a
+Introduce devm_kmemdup, which uses resource managed kmalloc.
+There are several request from maintainers to add this instead
+of using kmemdup.
 
-Pulled and pushed out, sorry I missed this first time, but I'll push
-this to Linus soon.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ Documentation/driver-model/devres.txt |  1 +
+ drivers/base/devres.c                 | 21 +++++++++++++++++++++
+ include/linux/device.h                |  2 ++
+ 3 files changed, 24 insertions(+)
 
-greg k-h
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 4f7897e..4999518 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -236,6 +236,7 @@ certainly invest a bit more effort into libata core layer).
+ MEM
+   devm_kzalloc()
+   devm_kfree()
++  devm_kmemdup()
+ 
+ IIO
+   devm_iio_device_alloc()
+diff --git a/drivers/base/devres.c b/drivers/base/devres.c
+index db4e264..d0914cb 100644
+--- a/drivers/base/devres.c
++++ b/drivers/base/devres.c
+@@ -831,3 +831,24 @@ void devm_kfree(struct device *dev, void *p)
+ 	WARN_ON(rc);
+ }
+ EXPORT_SYMBOL_GPL(devm_kfree);
++
++/**
++ * devm_kmemdup - Resource-managed kmemdup
++ * @dev: Device this memory belongs to
++ * @src: Memory region to duplicate
++ * @len: Memory region length
++ * @gfp: GFP mask to use
++ *
++ * Duplicate region of a memory using resource managed kmalloc
++ */
++void *devm_kmemdup(struct device *dev, const void *src, size_t len, gfp_t gfp)
++{
++	void *p;
++
++	p = devm_kmalloc(dev, len, gfp);
++	if (p)
++		memcpy(p, src, len);
++
++	return p;
++}
++EXPORT_SYMBOL_GPL(devm_kmemdup);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 233bbbe..0b3117a 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -629,6 +629,8 @@ static inline void *devm_kcalloc(struct device *dev,
+ }
+ extern void devm_kfree(struct device *dev, void *p);
+ extern char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp);
++extern void *devm_kmemdup(struct device *dev, const void *src, size_t len,
++				gfp_t gfp);
+ 
+ void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+ void __iomem *devm_request_and_ioremap(struct device *dev,
+-- 
+1.9.1
+
