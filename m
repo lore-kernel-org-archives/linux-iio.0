@@ -1,255 +1,166 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f181.google.com ([74.125.82.181]:55243 "EHLO
-	mail-we0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755188AbaDMTJ3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Apr 2014 15:09:29 -0400
-Received: by mail-we0-f181.google.com with SMTP id q58so7366592wes.12
-        for <linux-iio@vger.kernel.org>; Sun, 13 Apr 2014 12:09:27 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 2/6] iio: st_sensors: move regulator retrieveal to core
-Date: Sun, 13 Apr 2014 21:08:59 +0200
-Message-Id: <1397416143-4396-3-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <534B461A.8040408@linux.intel.com>
+Date: Sun, 13 Apr 2014 19:21:14 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org,
+ Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+ Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [Patch v1 2/4] iio: imu: inv_mpu6050: Enable default bypass mode
+References: <1395248203-17027-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1395248203-17027-2-git-send-email-srinivas.pandruvada@linux.intel.com> <5336A540.7060309@kernel.org> <53487997.3070906@linux.intel.com> <53496992.7070808@kernel.org>
+In-Reply-To: <53496992.7070808@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Currently the pressure sensor has code to retrieve and enable two
-regulators for Vdd and Vdd IO, but actually these voltage inputs
-are found on all of these ST sensors, so move the regulator
-handling to the core and make sure all the ST sensors call these
-functions on probe() and remove() to enable/disable power.
 
-Here also mover over to obtaining the regulator from the *parent*
-device of the IIO device, as the IIO device is created on-the-fly
-in this very subsystem it very unlikely evert have any regulators
-attached to it whatsoever. It is much more likely that the parent
-is a platform device, possibly instantiated from a device tree,
-which in turn have Vdd and Vdd IO supplied assigned to it.
+On 04/12/2014 09:28 AM, Jonathan Cameron wrote:
+> On 12/04/14 00:24, Srinivas Pandruvada wrote:
+>> On 03/29/2014 03:49 AM, Jonathan Cameron wrote:
+>>> On 19/03/14 16:56, Srinivas Pandruvada wrote:
+>>>> This chip has two modes to control secondary sensor attached to it.
+>>>> One is master mode and another is bypass mode. In master mode
+>>>> MPU6500 will directly communicates to the secondary sensor device
+>>>> attached to it. This can support very few secondary devices in this
+>>>> mode.
+>>>> But when configured in bypass mode the i2c lines are directly 
+>>>> connected
+>>>> to host i2c bus controller.
+>>>> Since in master mode it can only support few devices and they are not
+>>>> implemented in this driver, set the default mode to bypass mode.
+>>>> When some multiplexer is implemented to use MPU6050 master mode,
+>>>> this mode can be enabled when requested.
+>>>>
+>>>> Signed-off-by: Srinivas Pandruvada 
+>>>> <srinivas.pandruvada@linux.intel.com>
+>>> To my understanding this still doesn't deal with the fact that devices
+>>> on the slave bus are not connected if this driver is not loaded or has
+>>> gone to sleep.  Hence this needs as previously discussed to be done as
+>>> a single input, single output i2c mux.  That way the kernel 'knows'
+>>> there is something inbetween that needs to be in the correct state.
+>>>
+>>
+>> I am looking at a way to implement multiplexing 1:1 as suggested in 
+>> email chains.
+>> The problem I have:
+>> My two slave devices (MPU6XXX and AK8963 enumerated via ACPI. So they 
+>> i2clients are already tied to the I2C adapter.
+> So the ACPI has no description of the fact that the ak8963 is 
+> connected through the
+> MPU device.  That's irritating.
+>
+>> We don't have a board setup file in PC like platform.
+>> I have implemented in mux in MPU6XXX driver. But AK8963 driver is not
+>> aware about mux adapter, it will not call my mux select function. So
+>> I feel that we need to have a board setup file, to correctly create
+>> i2C clients attaching to correct adapter for using this design. Is
+>> this correct?
+> It ought to be possible to do it from ACPI enumeration but
+> only if there is some representation of the topology from ACPI.
+> Otherwise we will need to represent this weirdness somewhere...
+>
+The ACPI definition currently defined for non-bypass mode for Win8 
+driver in popular Asus T100 tablet.
+I will hold onto my MPU6XXX patches for sometimes, till I find a way to 
+introduce this weirdness somewhere in T100 specific platform driver.
 
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Denis CIOCCA <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/accel/st_accel_core.c               |  4 +++
- drivers/iio/common/st_sensors/st_sensors_core.c | 37 +++++++++++++++++++++++
- drivers/iio/gyro/st_gyro_core.c                 |  4 +++
- drivers/iio/magnetometer/st_magn_core.c         |  4 +++
- drivers/iio/pressure/st_pressure_core.c         | 39 ++-----------------------
- include/linux/iio/common/st_sensors.h           |  4 +++
- 6 files changed, 55 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 4e06fcf5b891..a2abf7c2ce3b 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -459,6 +459,8 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &accel_info;
- 
-+	st_sensors_power_enable(indio_dev);
-+
- 	err = st_sensors_check_device_support(indio_dev,
- 				ARRAY_SIZE(st_accel_sensors), st_accel_sensors);
- 	if (err < 0)
-@@ -515,6 +517,8 @@ void st_accel_common_remove(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
- 
-+	st_sensors_power_disable(indio_dev);
-+
- 	iio_device_unregister(indio_dev);
- 	if (adata->get_irq_data_ready(indio_dev) > 0)
- 		st_sensors_deallocate_trigger(indio_dev);
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 7ba1ef270213..e8b932fed70e 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -13,6 +13,7 @@
- #include <linux/slab.h>
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
-+#include <linux/regulator/consumer.h>
- #include <asm/unaligned.h>
- 
- #include <linux/iio/common/st_sensors.h>
-@@ -198,6 +199,42 @@ int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
- }
- EXPORT_SYMBOL(st_sensors_set_axis_enable);
- 
-+void st_sensors_power_enable(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *pdata = iio_priv(indio_dev);
-+	int err;
-+
-+	/* Regulators not mandatory, but if requested we should enable them. */
-+	pdata->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
-+	if (!IS_ERR(pdata->vdd)) {
-+		err = regulator_enable(pdata->vdd);
-+		if (err != 0)
-+			dev_warn(&indio_dev->dev,
-+				 "Failed to enable specified Vdd supply\n");
-+	}
-+
-+	pdata->vdd_io = devm_regulator_get_optional(indio_dev->dev.parent, "vddio");
-+	if (!IS_ERR(pdata->vdd_io)) {
-+		err = regulator_enable(pdata->vdd_io);
-+		if (err != 0)
-+			dev_warn(&indio_dev->dev,
-+				 "Failed to enable specified Vdd_IO supply\n");
-+	}
-+}
-+EXPORT_SYMBOL(st_sensors_power_enable);
-+
-+void st_sensors_power_disable(struct iio_dev *indio_dev)
-+{
-+	struct st_sensor_data *pdata = iio_priv(indio_dev);
-+
-+	if (!IS_ERR(pdata->vdd))
-+		regulator_disable(pdata->vdd);
-+
-+	if (!IS_ERR(pdata->vdd_io))
-+		regulator_disable(pdata->vdd_io);
-+}
-+EXPORT_SYMBOL(st_sensors_power_disable);
-+
- static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
- 				       struct st_sensors_platform_data *pdata)
- {
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index bc71f4d1e2ce..ed74a9069989 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -311,6 +311,8 @@ int st_gyro_common_probe(struct iio_dev *indio_dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &gyro_info;
- 
-+	st_sensors_power_enable(indio_dev);
-+
- 	err = st_sensors_check_device_support(indio_dev,
- 				ARRAY_SIZE(st_gyro_sensors), st_gyro_sensors);
- 	if (err < 0)
-@@ -363,6 +365,8 @@ void st_gyro_common_remove(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *gdata = iio_priv(indio_dev);
- 
-+	st_sensors_power_disable(indio_dev);
-+
- 	iio_device_unregister(indio_dev);
- 	if (gdata->get_irq_data_ready(indio_dev) > 0)
- 		st_sensors_deallocate_trigger(indio_dev);
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 8e33a7682d33..240a21dd0c61 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -355,6 +355,8 @@ int st_magn_common_probe(struct iio_dev *indio_dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &magn_info;
- 
-+	st_sensors_power_enable(indio_dev);
-+
- 	err = st_sensors_check_device_support(indio_dev,
- 				ARRAY_SIZE(st_magn_sensors), st_magn_sensors);
- 	if (err < 0)
-@@ -406,6 +408,8 @@ void st_magn_common_remove(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 
-+	st_sensors_power_disable(indio_dev);
-+
- 	iio_device_unregister(indio_dev);
- 	if (mdata->get_irq_data_ready(indio_dev) > 0)
- 		st_sensors_deallocate_trigger(indio_dev);
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 013becbe8f47..cd7e01f3a93b 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -23,7 +23,6 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/buffer.h>
--#include <linux/regulator/consumer.h>
- #include <asm/unaligned.h>
- 
- #include <linux/iio/common/st_sensors.h>
-@@ -387,40 +386,6 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
- #define ST_PRESS_TRIGGER_OPS NULL
- #endif
- 
--static void st_press_power_enable(struct iio_dev *indio_dev)
--{
--	struct st_sensor_data *pdata = iio_priv(indio_dev);
--	int err;
--
--	/* Regulators not mandatory, but if requested we should enable them. */
--	pdata->vdd = devm_regulator_get_optional(&indio_dev->dev, "vdd");
--	if (!IS_ERR(pdata->vdd)) {
--		err = regulator_enable(pdata->vdd);
--		if (err != 0)
--			dev_warn(&indio_dev->dev,
--				 "Failed to enable specified Vdd supply\n");
--	}
--
--	pdata->vdd_io = devm_regulator_get_optional(&indio_dev->dev, "vddio");
--	if (!IS_ERR(pdata->vdd_io)) {
--		err = regulator_enable(pdata->vdd_io);
--		if (err != 0)
--			dev_warn(&indio_dev->dev,
--				 "Failed to enable specified Vdd_IO supply\n");
--	}
--}
--
--static void st_press_power_disable(struct iio_dev *indio_dev)
--{
--	struct st_sensor_data *pdata = iio_priv(indio_dev);
--
--	if (!IS_ERR(pdata->vdd))
--		regulator_disable(pdata->vdd);
--
--	if (!IS_ERR(pdata->vdd_io))
--		regulator_disable(pdata->vdd_io);
--}
--
- int st_press_common_probe(struct iio_dev *indio_dev,
- 				struct st_sensors_platform_data *plat_data)
- {
-@@ -431,7 +396,7 @@ int st_press_common_probe(struct iio_dev *indio_dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &press_info;
- 
--	st_press_power_enable(indio_dev);
-+	st_sensors_power_enable(indio_dev);
- 
- 	err = st_sensors_check_device_support(indio_dev,
- 					      ARRAY_SIZE(st_press_sensors),
-@@ -493,7 +458,7 @@ void st_press_common_remove(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *pdata = iio_priv(indio_dev);
- 
--	st_press_power_disable(indio_dev);
-+	st_sensors_power_disable(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
- 	if (pdata->get_irq_data_ready(indio_dev) > 0)
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 3c005eb3a0a4..96f51f0e0096 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -269,6 +269,10 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
- 
- int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable);
- 
-+void st_sensors_power_enable(struct iio_dev *indio_dev);
-+
-+void st_sensors_power_disable(struct iio_dev *indio_dev);
-+
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
- 
- int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
--- 
-1.9.0
-
+Thanks,
+Srinivas
+>>
+>> Thanks,
+>> Srinivas
+>>
+>>
+>>
+>>
+>>> Jonathan
+>>>> ---
+>>>>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 ++++++++++++++++++-
+>>>>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++++
+>>>>   2 files changed, 22 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c 
+>>>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> index 52d688b..744eba4 100644
+>>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>>> @@ -53,6 +53,7 @@ static const struct inv_mpu6050_reg_map 
+>>>> reg_set_6050 = {
+>>>>       .int_enable             = INV_MPU6050_REG_INT_ENABLE,
+>>>>       .pwr_mgmt_1             = INV_MPU6050_REG_PWR_MGMT_1,
+>>>>       .pwr_mgmt_2             = INV_MPU6050_REG_PWR_MGMT_2,
+>>>> +    .int_pin_cfg        = INV_MPU6050_REG_INT_PIN_CFG,
+>>>>   };
+>>>>
+>>>>   static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>>>> @@ -608,6 +609,20 @@ static const struct iio_info mpu_info = {
+>>>>       .validate_trigger = inv_mpu6050_validate_trigger,
+>>>>   };
+>>>>
+>>>> +static int inv_set_bypass_status(struct inv_mpu6050_state *st, 
+>>>> bool enable)
+>>>> +{
+>>>> +    int ret;
+>>>> +
+>>>> +    if (enable)
+>>>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>>>> +                    st->client->irq |
+>>>> +                        INV_MPU6050_BIT_BYPASS_EN);
+>>>> +    else
+>>>> +        ret = inv_mpu6050_write_reg(st, st->reg->int_pin_cfg,
+>>>> +                    st->client->irq);
+>>>> +    return ret;
+>>>> +}
+>>>> +
+>>>>   /**
+>>>>    *  inv_check_and_setup_chip() - check and setup chip.
+>>>>    */
+>>>> @@ -646,7 +661,9 @@ static int inv_check_and_setup_chip(struct 
+>>>> inv_mpu6050_state *st,
+>>>>       if (result)
+>>>>           return result;
+>>>>
+>>>> -    return 0;
+>>>> +    result = inv_set_bypass_status(st, true);
+>>>> +
+>>>> +    return result;
+>>>>   }
+>>>>
+>>>>   /**
+>>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h 
+>>>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>>> index 4ddfd03..591ac2e 100644
+>>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+>>>> @@ -54,6 +54,7 @@ struct inv_mpu6050_reg_map {
+>>>>       u8 int_enable;
+>>>>       u8 pwr_mgmt_1;
+>>>>       u8 pwr_mgmt_2;
+>>>> +    u8 int_pin_cfg;
+>>>>   };
+>>>>
+>>>>   /*device enum */
+>>>> @@ -186,6 +187,9 @@ struct inv_mpu6050_state {
+>>>>   #define INV_MPU6050_MIN_FIFO_RATE 4
+>>>>   #define INV_MPU6050_ONE_K_HZ 1000
+>>>>
+>>>> +#define INV_MPU6050_REG_INT_PIN_CFG        0x37
+>>>> +#define INV_MPU6050_BIT_BYPASS_EN        0x2
+>>>> +
+>>>>   /* scan element definition */
+>>>>   enum inv_mpu6050_scan {
+>>>>       INV_MPU6050_SCAN_ACCL_X,
+>>>>
+>>>
+>>>
+>>
+>> -- 
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at http://vger.kernel.org/majordomo-info.html
+>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
