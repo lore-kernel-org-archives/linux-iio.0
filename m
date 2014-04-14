@@ -1,72 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:55980 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:18500 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754506AbaDRXTo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Apr 2014 19:19:44 -0400
+	id S1751356AbaDNEYH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Apr 2014 00:24:07 -0400
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 02/16] iio: hid-sensors: Add api to get poll value
-Date: Fri, 18 Apr 2014 16:22:22 -0700
-Message-Id: <1397863356-2470-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v4 6/6] iio: Added ABI description for quaternion
+Date: Sun, 13 Apr 2014 21:27:27 -0700
+Message-Id: <1397449647-31708-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397449647-31708-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1397449647-31708-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added interface to get poll value in milli-seconds. This value is
-changed by changing sampling frequency. This API allows clients
-to wait for atleast some poll milli seconds before reading a new sample.
+Added documentation for reading quaternion components for 3D rotations.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- .../iio/common/hid-sensors/hid-sensor-attributes.c   | 20 ++++++++++++++++++++
- include/linux/hid-sensor-hub.h                       |  2 ++
- 2 files changed, 22 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index 451a95b..4a533b8 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -147,6 +147,26 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
- 	return value;
- }
- 
-+s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
-+{
-+	s32 value = 0;
-+	int ret;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6e02c50..d2c59f9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -784,6 +784,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -799,6 +800,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_type
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -845,6 +847,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_index
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -891,3 +894,12 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to get/set the integration time in
+ 		seconds.
 +
-+	ret = sensor_hub_get_feature(st->hsdev,
-+		st->poll.report_id,
-+		st->poll.index, &value);
-+
-+	if (ret < 0 || value < 0) {
-+		return -EINVAL;
-+	} else {
-+		if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-+			value = value * 1000;
-+	}
-+
-+	return value;
-+}
-+EXPORT_SYMBOL(hid_sensor_read_poll_value);
-+
- int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
- 				int *val1, int *val2)
- {
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-index 89626b2..88d8d63 100644
---- a/include/linux/hid-sensor-hub.h
-+++ b/include/linux/hid-sensor-hub.h
-@@ -227,4 +227,6 @@ int hid_sensor_format_scale(u32 usage_id,
- 			    struct hid_sensor_hub_attribute_info *attr_info,
- 			    int *val0, int *val1);
- 
-+s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
-+
- #endif
++What:		/sys/bus/iio/devices/iio:deviceX/in_rot_quaternion_raw
++KernelVersion:	3.15
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw value of quaternion components using a format
++		x y z w. Here x, y, and z component represents the axis about
++		which a rotation will occur and w component represents the
++		amount of rotation.
 -- 
-1.7.11.7
+1.9.1
 
