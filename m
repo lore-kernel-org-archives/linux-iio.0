@@ -1,57 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44492 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751830AbaDLRiV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Apr 2014 13:38:21 -0400
-Message-ID: <53497A5B.5010709@kernel.org>
-Date: Sat, 12 Apr 2014 18:39:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Michael Welling <mwelling@ieee.org>, linux-iio@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jon.Brenner@ams.com
-Subject: Re: [PATCH 3/3] Staging: iio: Switch from msleep to usleep range
- per timers-howto.txt
-References: <1397096805-25168-1-git-send-email-mwelling@ieee.org> <1397096805-25168-4-git-send-email-mwelling@ieee.org>
-In-Reply-To: <1397096805-25168-4-git-send-email-mwelling@ieee.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mga09.intel.com ([134.134.136.24]:3329 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755461AbaDNWHs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Apr 2014 18:07:48 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v5 6/6] iio: Added ABI description for quaternion
+Date: Mon, 14 Apr 2014 15:11:07 -0700
+Message-Id: <1397513467-21397-7-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397513467-21397-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1397513467-21397-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/14 03:26, Michael Welling wrote:
-> Signed-off-by: Michael Welling <mwelling@ieee.org>
-Hmm. I wonder if this is a little too tight on the range, but
-given it is in a function that is likely to be called infrequently
-it doesn't really matter.  Note this is where we find out whether
-the datasheet is actually accurate is saying 3 msecs is long enough
-by whether anyone screams :)
+Added documentation for reading quaternion components for 3D rotations.
 
-Also cc'd Jon as if anyone screams about this they are likely to do it
-at him.  As a general rule, do cc the original author unless you know
-there email bounces (and if so mention it in the cover letter as someone
-might know where to get hold of them).
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Applied to the togreg branch of iio.git - initially pushed out as testing.
-
-Thanks,
-
-Jonathan
-> ---
->   drivers/staging/iio/light/tsl2583.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index f015fb4..fa96498 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -451,7 +451,7 @@ static int taos_chip_on(struct iio_dev *indio_dev)
->   		}
->   	}
->
-> -	msleep(3);
-> +	usleep_range(3000, 3500);
->   	/* NOW enable the ADC
->   	 * initialize the desired mode of operation */
->   	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
->
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6e02c50..d2c59f9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -784,6 +784,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -799,6 +800,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_type
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -845,6 +847,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_index
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -891,3 +894,12 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to get/set the integration time in
+ 		seconds.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_rot_quaternion_raw
++KernelVersion:	3.15
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw value of quaternion components using a format
++		x y z w. Here x, y, and z component represents the axis about
++		which a rotation will occur and w component represents the
++		amount of rotation.
+-- 
+1.7.11.7
 
