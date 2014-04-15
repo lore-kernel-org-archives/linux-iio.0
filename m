@@ -1,192 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:46499 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752303AbaDZTgR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 26 Apr 2014 15:36:17 -0400
-Message-ID: <535C0AB0.7030509@linux.intel.com>
-Date: Sat, 26 Apr 2014 12:36:16 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [Patch v6 3/6] IIO: core: Modify scan element type
-References: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397586073-31507-4-git-send-email-srinivas.pandruvada@linux.intel.com> <535AA353.8010107@kernel.org>
-In-Reply-To: <535AA353.8010107@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from top.free-electrons.com ([176.31.233.9]:39022 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754443AbaDOK2P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Apr 2014 06:28:15 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv3 01/15] ARM: at91: sam9g45: remove unused platform_data
+Date: Tue, 15 Apr 2014 12:27:56 +0200
+Message-Id: <1397557690-5650-2-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+num_channels and registers are not used anymore since they are defined inside
+the at91_adc driver and assigned by matching the id_table.
 
-On 04/25/2014 11:02 AM, Jonathan Cameron wrote:
-> On 15/04/14 19:21, Srinivas Pandruvada wrote:
->> The current scan element type uses the following format:
->>    [be|le]:[s|u]bits/storagebits[>>shift].
->> To specify multiple elements in this type, added a repeat value.
->> So new format is:
->>    [be|le]:[s|u]bits/storagebits{X[repeat]}[>>shift].
->> Here X is specifying how may times, real/storage bits are repeating.
->>
->> When X is value is 0 or 1, then repeat value is not used in the format,
->> and it will be same as existing format.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Hi Srinivas,
->
-> I'm afraid I've been rather useless in my reviewing of earlier 
-> versions of this.
-> What I originally meant to suggest was that we'd have descriptions 
-> along the lines
-> of
-> u12/16{X4}>>2 (or u12/16X4>>2 without the brackets) rather than 
-> u12/16{4repeat}>>2
-I don't mind using u12/16X4>>2, will submit series again.
+Also, remove the mach/at91_adc.h include that is not necessary anymore.
 
-Thanks,
-Srinivas
->
-> Now obviously you've gone a long way with this approach so I guess 
-> perhaps people
-> actually like the word repeat in there?
->
-> Sorry again that I didn't pick up on this in any of the last 4 
-> versions you have posted.
-> Sometimes the eye sees what it expects to rather than what is there!
->
-> I don't particularly mind the version using the word 'repeat' if 
-> others like, it simply
-> isn't what I thought we had here!
->
-> (the rest of this series are fine now btw)
->
-> J
->> ---
->>   drivers/iio/industrialio-buffer.c | 41 
->> +++++++++++++++++++++++++++++++++------
->>   include/linux/iio/iio.h           |  7 +++++++
->>   2 files changed, 42 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c 
->> b/drivers/iio/industrialio-buffer.c
->> index e108f2a..aa90c68 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device 
->> *dev,
->>           type = IIO_BE;
->>   #endif
->>       }
->> -    return sprintf(buf, "%s:%c%d/%d>>%u\n",
->> +    if (this_attr->c->scan_type.repeat > 1)
->> +        return sprintf(buf, "%s:%c%d/%d{%d[repeat]}>>%u\n",
->> +               iio_endian_prefix[type],
->> +               this_attr->c->scan_type.sign,
->> +               this_attr->c->scan_type.realbits,
->> +               this_attr->c->scan_type.storagebits,
->> +               this_attr->c->scan_type.repeat,
->> +               this_attr->c->scan_type.shift);
->> +        else
->> +            return sprintf(buf, "%s:%c%d/%d>>%u\n",
->>                  iio_endian_prefix[type],
->>                  this_attr->c->scan_type.sign,
->>                  this_attr->c->scan_type.realbits,
->> @@ -474,14 +483,22 @@ static int iio_compute_scan_bytes(struct 
->> iio_dev *indio_dev,
->>       for_each_set_bit(i, mask,
->>                indio_dev->masklength) {
->>           ch = iio_find_channel_from_si(indio_dev, i);
->> -        length = ch->scan_type.storagebits / 8;
->> +        if (ch->scan_type.repeat > 1)
->> +            length = ch->scan_type.storagebits / 8 *
->> +                ch->scan_type.repeat;
->> +        else
->> +            length = ch->scan_type.storagebits / 8;
->>           bytes = ALIGN(bytes, length);
->>           bytes += length;
->>       }
->>       if (timestamp) {
->>           ch = iio_find_channel_from_si(indio_dev,
->>                             indio_dev->scan_index_timestamp);
->> -        length = ch->scan_type.storagebits / 8;
->> +        if (ch->scan_type.repeat > 1)
->> +            length = ch->scan_type.storagebits / 8 *
->> +                ch->scan_type.repeat;
->> +        else
->> +            length = ch->scan_type.storagebits / 8;
->>           bytes = ALIGN(bytes, length);
->>           bytes += length;
->>       }
->> @@ -957,7 +974,11 @@ static int iio_buffer_update_demux(struct 
->> iio_dev *indio_dev,
->>                              indio_dev->masklength,
->>                              in_ind + 1);
->>               ch = iio_find_channel_from_si(indio_dev, in_ind);
->> -            length = ch->scan_type.storagebits/8;
->> +            if (ch->scan_type.repeat > 1)
->> +                length = ch->scan_type.storagebits / 8 *
->> +                    ch->scan_type.repeat;
->> +            else
->> +                length = ch->scan_type.storagebits / 8;
->>               /* Make sure we are aligned */
->>               in_loc += length;
->>               if (in_loc % length)
->> @@ -969,7 +990,11 @@ static int iio_buffer_update_demux(struct 
->> iio_dev *indio_dev,
->>               goto error_clear_mux_table;
->>           }
->>           ch = iio_find_channel_from_si(indio_dev, in_ind);
->> -        length = ch->scan_type.storagebits/8;
->> +        if (ch->scan_type.repeat > 1)
->> +            length = ch->scan_type.storagebits / 8 *
->> +                ch->scan_type.repeat;
->> +        else
->> +            length = ch->scan_type.storagebits / 8;
->>           if (out_loc % length)
->>               out_loc += length - out_loc % length;
->>           if (in_loc % length)
->> @@ -990,7 +1015,11 @@ static int iio_buffer_update_demux(struct 
->> iio_dev *indio_dev,
->>           }
->>           ch = iio_find_channel_from_si(indio_dev,
->>               indio_dev->scan_index_timestamp);
->> -        length = ch->scan_type.storagebits/8;
->> +        if (ch->scan_type.repeat > 1)
->> +            length = ch->scan_type.storagebits / 8 *
->> +                ch->scan_type.repeat;
->> +        else
->> +            length = ch->scan_type.storagebits / 8;
->>           if (out_loc % length)
->>               out_loc += length - out_loc % length;
->>           if (in_loc % length)
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index 5629c92..ccde917 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -177,6 +177,12 @@ struct iio_event_spec {
->>    *            shift:        Shift right by this before masking out
->>    *                    realbits.
->>    *            endianness:    little or big endian
->> + *            repeat:        Number of times real/storage bits
->> + *                    repeats. When the repeat element is
->> + *                    more than 1, then the type element in
->> + *                    sysfs will show a repeat value.
->> + *                    Otherwise, the number of repetitions is
->> + *                    omitted.
->>    * @info_mask_separate: What information is to be exported that is 
->> specific to
->>    *            this channel.
->>    * @info_mask_shared_by_type: What information is to be exported 
->> that is shared
->> @@ -219,6 +225,7 @@ struct iio_chan_spec {
->>           u8    realbits;
->>           u8    storagebits;
->>           u8    shift;
->> +        u8    repeat;
->>           enum iio_endian endianness;
->>       } scan_type;
->>       long            info_mask_separate;
->>
->
->
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+ arch/arm/mach-at91/at91sam9g45_devices.c | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
+index dab362c06487..d186f474b83c 100644
+--- a/arch/arm/mach-at91/at91sam9g45_devices.c
++++ b/arch/arm/mach-at91/at91sam9g45_devices.c
+@@ -25,7 +25,6 @@
+ #include <linux/fb.h>
+ #include <video/atmel_lcdc.h>
+ 
+-#include <mach/at91_adc.h>
+ #include <mach/at91sam9g45.h>
+ #include <mach/at91sam9g45_matrix.h>
+ #include <mach/at91_matrix.h>
+@@ -1236,13 +1235,6 @@ static struct at91_adc_trigger at91_adc_triggers[] = {
+ 	},
+ };
+ 
+-static struct at91_adc_reg_desc at91_adc_register_g45 = {
+-	.channel_base = AT91_ADC_CHR(0),
+-	.drdy_mask = AT91_ADC_DRDY,
+-	.status_register = AT91_ADC_SR,
+-	.trigger_register = 0x08,
+-};
+-
+ void __init at91_add_device_adc(struct at91_adc_data *data)
+ {
+ 	if (!data)
+@@ -1268,9 +1260,7 @@ void __init at91_add_device_adc(struct at91_adc_data *data)
+ 	if (data->use_external_triggers)
+ 		at91_set_A_periph(AT91_PIN_PD28, 0);
+ 
+-	data->num_channels = 8;
+ 	data->startup_time = 40;
+-	data->registers = &at91_adc_register_g45;
+ 	data->trigger_number = 4;
+ 	data->trigger_list = at91_adc_triggers;
+ 
+-- 
+1.8.3.2
 
