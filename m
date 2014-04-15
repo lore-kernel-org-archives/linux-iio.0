@@ -1,252 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39826 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753011AbaDPHAw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Apr 2014 03:00:52 -0400
-In-Reply-To: <534DD943.8050707@samsung.com>
-References: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com> <1397466426-13870-2-git-send-email-cw00.choi@samsung.com> <534DD943.8050707@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCHv2 1/2] iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 16 Apr 2014 08:00:42 +0100
-To: Chanwoo Choi <cw00.choi@samsung.com>
-CC: ch.naveen@samsung.com, kgene.kim@samsung.com, robh+dt@kernel.org,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, t.figa@samsung.com,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Message-ID: <01dbc4c9-3e34-4e76-b3d8-6f126b9761a7@email.android.com>
+Received: from mga02.intel.com ([134.134.136.20]:59594 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753984AbaDOSRx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Apr 2014 14:17:53 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [Patch v6 1/6] devres: introduce API "devm_kmemdup
+Date: Tue, 15 Apr 2014 11:21:08 -0700
+Message-Id: <1397586073-31507-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Introduce devm_kmemdup, which uses resource managed kmalloc.
+There are several request from maintainers to add this instead
+of using kmemdup.
 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ Documentation/driver-model/devres.txt |  1 +
+ drivers/base/devres.c                 | 21 +++++++++++++++++++++
+ include/linux/device.h                |  2 ++
+ 3 files changed, 24 insertions(+)
 
-On April 16, 2014 2:13:39 AM GMT+01:00, Chanwoo Choi <cw00.choi@samsung.com> wrote:
->Hi Jonathan,
->
->Any comment of this patchset?
->
->Best Regards,
->Chanwoo Choi
-Hi Chanwoo
-
-Not got to it yet I'm afraid. May be sometime next week before I do.
-
-Jonathan
->
->On 04/14/2014 06:07 PM, Chanwoo Choi wrote:
->> This patch control special clock for ADC in Exynos series's FSYS
->block.
->> If special clock of ADC is registerd on clock list of common clk
->framework,
->> Exynos ADC drvier have to control this clock.
->> 
->> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
->> - 'adc' clock: bus clock for ADC
->> 
->> Exynos3250 has additional 'sclk_tsadc' clock as following:
->> - 'sclk_tsadc' clock: special clock for ADC which provide clock to
->internal ADC
->> 
->> Exynos 4210/4212/4412 and Exynos5250/5420 has not included
->'sclk_tsadc' clock
->> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included
->'sclk_tsadc'
->> clock in FSYS_BLK.
->> 
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: Kukjin Kim <kgene.kim@samsung.com>
->> Cc: Naveen Krishna Chatradhi
->> Cc: linux-iio@vger.kernel.org
->> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->> ---
->>  drivers/iio/adc/exynos_adc.c | 54
->+++++++++++++++++++++++++++++++++-----------
->>  1 file changed, 41 insertions(+), 13 deletions(-)
->> 
->> diff --git a/drivers/iio/adc/exynos_adc.c
->b/drivers/iio/adc/exynos_adc.c
->> index d25b262..3c99243 100644
->> --- a/drivers/iio/adc/exynos_adc.c
->> +++ b/drivers/iio/adc/exynos_adc.c
->> @@ -40,8 +40,9 @@
->>  #include <linux/iio/driver.h>
->>  
->>  enum adc_version {
->> -	ADC_V1,
->> -	ADC_V2
->> +	ADC_V1 = 0x1,
->> +	ADC_V2 = 0x2,
->> +	ADC_V3 = (ADC_V1 | ADC_V2),
->>  };
->>  
->>  /* EXYNOS4412/5250 ADC_V1 registers definitions */
->> @@ -88,6 +89,7 @@ struct exynos_adc {
->>  	void __iomem		*regs;
->>  	void __iomem		*enable_reg;
->>  	struct clk		*clk;
->> +	struct clk		*sclk;
->>  	unsigned int		irq;
->>  	struct regulator	*vdd;
->>  
->> @@ -100,6 +102,7 @@ struct exynos_adc {
->>  static const struct of_device_id exynos_adc_match[] = {
->>  	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
->>  	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
->> +	{ .compatible = "samsung,exynos-adc-v3", .data = (void *)ADC_V3 },
->>  	{},
->>  };
->>  MODULE_DEVICE_TABLE(of, exynos_adc_match);
->> @@ -128,7 +131,7 @@ static int exynos_read_raw(struct iio_dev
->*indio_dev,
->>  	mutex_lock(&indio_dev->mlock);
->>  
->>  	/* Select the channel to be used and Trigger conversion */
->> -	if (info->version == ADC_V2) {
->> +	if (info->version & ADC_V2) {
->>  		con2 = readl(ADC_V2_CON2(info->regs));
->>  		con2 &= ~ADC_V2_CON2_ACH_MASK;
->>  		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
->> @@ -165,7 +168,7 @@ static irqreturn_t exynos_adc_isr(int irq, void
->*dev_id)
->>  	info->value = readl(ADC_V1_DATX(info->regs)) &
->>  						ADC_DATX_MASK;
->>  	/* clear irq */
->> -	if (info->version == ADC_V2)
->> +	if (info->version & ADC_V2)
->>  		writel(1, ADC_V2_INT_ST(info->regs));
->>  	else
->>  		writel(1, ADC_V1_INTCLR(info->regs));
->> @@ -226,11 +229,25 @@ static int exynos_adc_remove_devices(struct
->device *dev, void *c)
->>  	return 0;
->>  }
->>  
->> +static void exynos_adc_enable_clock(struct exynos_adc *info, bool
->enable)
->> +{
->> +	if (enable) {
->> +		clk_prepare_enable(info->clk);
->> +		if (info->version == ADC_V3)
->> +			clk_prepare_enable(info->sclk);
->> +
->> +	} else {
->> +		if (info->version == ADC_V3)
->> +			clk_disable_unprepare(info->sclk);
->> +		clk_disable_unprepare(info->clk);
->> +	}
->> +}
->> +
->>  static void exynos_adc_hw_init(struct exynos_adc *info)
->>  {
->>  	u32 con1, con2;
->>  
->> -	if (info->version == ADC_V2) {
->> +	if (info->version & ADC_V2) {
->>  		con1 = ADC_V2_CON1_SOFT_RESET;
->>  		writel(con1, ADC_V2_CON1(info->regs));
->>  
->> @@ -300,6 +317,8 @@ static int exynos_adc_probe(struct
->platform_device *pdev)
->>  
->>  	writel(1, info->enable_reg);
->>  
->> +	info->version = exynos_adc_get_version(pdev);
->> +
->>  	info->clk = devm_clk_get(&pdev->dev, "adc");
->>  	if (IS_ERR(info->clk)) {
->>  		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
->> @@ -308,6 +327,17 @@ static int exynos_adc_probe(struct
->platform_device *pdev)
->>  		goto err_irq;
->>  	}
->>  
->> +	if (info->version == ADC_V3) {
->> +		info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
->> +		if (IS_ERR(info->sclk)) {
->> +			dev_warn(&pdev->dev,
->> +				"failed getting sclk clock, err = %ld\n",
->> +				PTR_ERR(info->sclk));
->> +			ret = PTR_ERR(info->sclk);
->> +			goto err_irq;
->> +		}
->> +	}
->> +
->>  	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
->>  	if (IS_ERR(info->vdd)) {
->>  		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
->> @@ -316,8 +346,6 @@ static int exynos_adc_probe(struct
->platform_device *pdev)
->>  		goto err_irq;
->>  	}
->>  
->> -	info->version = exynos_adc_get_version(pdev);
->> -
->>  	platform_set_drvdata(pdev, indio_dev);
->>  
->>  	indio_dev->name = dev_name(&pdev->dev);
->> @@ -340,7 +368,7 @@ static int exynos_adc_probe(struct
->platform_device *pdev)
->>  	if (ret)
->>  		goto err_iio_dev;
->>  
->> -	clk_prepare_enable(info->clk);
->> +	exynos_adc_enable_clock(info, true);
->>  
->>  	exynos_adc_hw_init(info);
->>  
->> @@ -356,7 +384,7 @@ err_of_populate:
->>  	device_for_each_child(&pdev->dev, NULL,
->>  				exynos_adc_remove_devices);
->>  	regulator_disable(info->vdd);
->> -	clk_disable_unprepare(info->clk);
->> +	exynos_adc_enable_clock(info, false);
->>  err_iio_dev:
->>  	iio_device_unregister(indio_dev);
->>  err_irq:
->> @@ -372,7 +400,7 @@ static int exynos_adc_remove(struct
->platform_device *pdev)
->>  	device_for_each_child(&pdev->dev, NULL,
->>  				exynos_adc_remove_devices);
->>  	regulator_disable(info->vdd);
->> -	clk_disable_unprepare(info->clk);
->> +	exynos_adc_enable_clock(info, false);
->>  	writel(0, info->enable_reg);
->>  	iio_device_unregister(indio_dev);
->>  	free_irq(info->irq, info);
->> @@ -387,7 +415,7 @@ static int exynos_adc_suspend(struct device *dev)
->>  	struct exynos_adc *info = iio_priv(indio_dev);
->>  	u32 con;
->>  
->> -	if (info->version == ADC_V2) {
->> +	if (info->version & ADC_V2) {
->>  		con = readl(ADC_V2_CON1(info->regs));
->>  		con &= ~ADC_CON_EN_START;
->>  		writel(con, ADC_V2_CON1(info->regs));
->> @@ -397,7 +425,7 @@ static int exynos_adc_suspend(struct device *dev)
->>  		writel(con, ADC_V1_CON(info->regs));
->>  	}
->>  
->> -	clk_disable_unprepare(info->clk);
->> +	exynos_adc_enable_clock(info, false);
->>  	writel(0, info->enable_reg);
->>  	regulator_disable(info->vdd);
->>  
->> @@ -415,7 +443,7 @@ static int exynos_adc_resume(struct device *dev)
->>  		return ret;
->>  
->>  	writel(1, info->enable_reg);
->> -	clk_prepare_enable(info->clk);
->> +	exynos_adc_enable_clock(info, true);
->>  
->>  	exynos_adc_hw_init(info);
->>  
->> 
-
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 4f7897e..4999518 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -236,6 +236,7 @@ certainly invest a bit more effort into libata core layer).
+ MEM
+   devm_kzalloc()
+   devm_kfree()
++  devm_kmemdup()
+ 
+ IIO
+   devm_iio_device_alloc()
+diff --git a/drivers/base/devres.c b/drivers/base/devres.c
+index db4e264..d0914cb 100644
+--- a/drivers/base/devres.c
++++ b/drivers/base/devres.c
+@@ -831,3 +831,24 @@ void devm_kfree(struct device *dev, void *p)
+ 	WARN_ON(rc);
+ }
+ EXPORT_SYMBOL_GPL(devm_kfree);
++
++/**
++ * devm_kmemdup - Resource-managed kmemdup
++ * @dev: Device this memory belongs to
++ * @src: Memory region to duplicate
++ * @len: Memory region length
++ * @gfp: GFP mask to use
++ *
++ * Duplicate region of a memory using resource managed kmalloc
++ */
++void *devm_kmemdup(struct device *dev, const void *src, size_t len, gfp_t gfp)
++{
++	void *p;
++
++	p = devm_kmalloc(dev, len, gfp);
++	if (p)
++		memcpy(p, src, len);
++
++	return p;
++}
++EXPORT_SYMBOL_GPL(devm_kmemdup);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 233bbbe..4a37849 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -629,6 +629,8 @@ static inline void *devm_kcalloc(struct device *dev,
+ }
+ extern void devm_kfree(struct device *dev, void *p);
+ extern char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp);
++extern void *devm_kmemdup(struct device *dev, const void *src, size_t len,
++			  gfp_t gfp);
+ 
+ void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+ void __iomem *devm_request_and_ioremap(struct device *dev,
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.11.7
+
