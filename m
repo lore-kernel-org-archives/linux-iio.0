@@ -1,29 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:40101 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933736AbaDJBpR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Apr 2014 21:45:17 -0400
-Date: Wed, 9 Apr 2014 18:47:58 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Michael Welling <mwelling@ieee.org>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 1/3] Removes unwanted space before semicolon
-Message-ID: <20140410014758.GB11347@kroah.com>
-References: <1397086129-12112-1-git-send-email-mwelling@ieee.org>
- <1397086129-12112-2-git-send-email-mwelling@ieee.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1397086129-12112-2-git-send-email-mwelling@ieee.org>
+Received: from top.free-electrons.com ([176.31.233.9]:39075 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754533AbaDOK2X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Apr 2014 06:28:23 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv3 12/15] ARM: at91: remove atmel_tsadcc from sama5_defconfig
+Date: Tue, 15 Apr 2014 12:28:07 +0200
+Message-Id: <1397557690-5650-13-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 09, 2014 at 06:28:47PM -0500, Michael Welling wrote:
-> ---
->  drivers/staging/iio/light/tsl2583.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+atmel_tsadcc has been removed, stop selecting it.
 
-The subject: needs to be better (put Staging: iio:) in the beginning.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ arch/arm/configs/sama5_defconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-Also, you forgot a signed-off-by line all of these.
+diff --git a/arch/arm/configs/sama5_defconfig b/arch/arm/configs/sama5_defconfig
+index dc3881e07630..869fa18ebeb2 100644
+--- a/arch/arm/configs/sama5_defconfig
++++ b/arch/arm/configs/sama5_defconfig
+@@ -122,7 +122,6 @@ CONFIG_KEYBOARD_GPIO=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ATMEL_MXT=y
+-CONFIG_TOUCHSCREEN_ATMEL_TSADCC=y
+ # CONFIG_SERIO is not set
+ CONFIG_LEGACY_PTY_COUNT=4
+ CONFIG_SERIAL_ATMEL=y
+-- 
+1.8.3.2
 
-greg k-h
