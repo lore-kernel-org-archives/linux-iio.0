@@ -1,210 +1,168 @@
-Return-Path: <cw00.choi@samsung.com>
-From: Chanwoo Choi <cw00.choi@samsung.com>
-To: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
- ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org,
- t.figa@samsung.com, linux-iio@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCHv2 1/2] iio: adc: exynos_adc: Control special clock of ADC to
- support Exynos3250 ADC
-Date: Mon, 14 Apr 2014 18:07:05 +0900
-Message-id: <1397466426-13870-2-git-send-email-cw00.choi@samsung.com>
-In-reply-to: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com>
-References: <1397466426-13870-1-git-send-email-cw00.choi@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:39038 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754493AbaDOK2U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Apr 2014 06:28:20 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv3 08/15] ARM: at91: sam9rl: add at91_adc to support adc and touchscreen
+Date: Tue, 15 Apr 2014 12:28:03 +0200
+Message-Id: <1397557690-5650-9-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1397557690-5650-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch control special clock for ADC in Exynos series's FSYS block.
-If special clock of ADC is registerd on clock list of common clk framework,
-Exynos ADC drvier have to control this clock.
+The ADC clock needs to be defined to enable the at91_adc driver. It is defined
+to the same speed that is used for atmel_tsadcc.
 
-Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
-- 'adc' clock: bus clock for ADC
-
-Exynos3250 has additional 'sclk_tsadc' clock as following:
-- 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
-
-Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
-in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
-clock in FSYS_BLK.
-
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Kukjin Kim <kgene.kim@samsung.com>
-Cc: Naveen Krishna Chatradhi
-Cc: linux-iio@vger.kernel.org
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- drivers/iio/adc/exynos_adc.c | 54 +++++++++++++++++++++++++++++++++-----------
- 1 file changed, 41 insertions(+), 13 deletions(-)
+ arch/arm/mach-at91/at91sam9rl.c         |  7 +++
+ arch/arm/mach-at91/at91sam9rl_devices.c | 85 +++++++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+)
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index d25b262..3c99243 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -40,8 +40,9 @@
- #include <linux/iio/driver.h>
+diff --git a/arch/arm/mach-at91/at91sam9rl.c b/arch/arm/mach-at91/at91sam9rl.c
+index 57f12d86c0e6..a79960f57e6a 100644
+--- a/arch/arm/mach-at91/at91sam9rl.c
++++ b/arch/arm/mach-at91/at91sam9rl.c
+@@ -153,6 +153,11 @@ static struct clk ac97_clk = {
+ 	.pmc_mask	= 1 << AT91SAM9RL_ID_AC97C,
+ 	.type		= CLK_TYPE_PERIPHERAL,
+ };
++static struct clk adc_op_clk = {
++	.name		= "adc_op_clk",
++	.type		= CLK_TYPE_PERIPHERAL,
++	.rate_hz	= 1000000,
++};
  
- enum adc_version {
--	ADC_V1,
--	ADC_V2
-+	ADC_V1 = 0x1,
-+	ADC_V2 = 0x2,
-+	ADC_V3 = (ADC_V1 | ADC_V2),
+ static struct clk *periph_clocks[] __initdata = {
+ 	&pioA_clk,
+@@ -178,6 +183,7 @@ static struct clk *periph_clocks[] __initdata = {
+ 	&udphs_clk,
+ 	&lcdc_clk,
+ 	&ac97_clk,
++	&adc_op_clk,
+ 	// irq0
  };
  
- /* EXYNOS4412/5250 ADC_V1 registers definitions */
-@@ -88,6 +89,7 @@ struct exynos_adc {
- 	void __iomem		*regs;
- 	void __iomem		*enable_reg;
- 	struct clk		*clk;
-+	struct clk		*sclk;
- 	unsigned int		irq;
- 	struct regulator	*vdd;
- 
-@@ -100,6 +102,7 @@ struct exynos_adc {
- static const struct of_device_id exynos_adc_match[] = {
- 	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
- 	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
-+	{ .compatible = "samsung,exynos-adc-v3", .data = (void *)ADC_V3 },
- 	{},
+@@ -216,6 +222,7 @@ static struct clk_lookup periph_clocks_lookups[] = {
+ 	CLKDEV_CON_DEV_ID(NULL, "fffff600.gpio", &pioB_clk),
+ 	CLKDEV_CON_DEV_ID(NULL, "fffff800.gpio", &pioC_clk),
+ 	CLKDEV_CON_DEV_ID(NULL, "fffffa00.gpio", &pioD_clk),
++	CLKDEV_CON_ID("adc_clk", &tsc_clk),
  };
- MODULE_DEVICE_TABLE(of, exynos_adc_match);
-@@ -128,7 +131,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
  
- 	/* Select the channel to be used and Trigger conversion */
--	if (info->version == ADC_V2) {
-+	if (info->version & ADC_V2) {
- 		con2 = readl(ADC_V2_CON2(info->regs));
- 		con2 &= ~ADC_V2_CON2_ACH_MASK;
- 		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
-@@ -165,7 +168,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
- 	info->value = readl(ADC_V1_DATX(info->regs)) &
- 						ADC_DATX_MASK;
- 	/* clear irq */
--	if (info->version == ADC_V2)
-+	if (info->version & ADC_V2)
- 		writel(1, ADC_V2_INT_ST(info->regs));
- 	else
- 		writel(1, ADC_V1_INTCLR(info->regs));
-@@ -226,11 +229,25 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
- 	return 0;
- }
+ static struct clk_lookup usart_clocks_lookups[] = {
+diff --git a/arch/arm/mach-at91/at91sam9rl_devices.c b/arch/arm/mach-at91/at91sam9rl_devices.c
+index 428fc412aaf1..5731633bca33 100644
+--- a/arch/arm/mach-at91/at91sam9rl_devices.c
++++ b/arch/arm/mach-at91/at91sam9rl_devices.c
+@@ -23,6 +23,7 @@
+ #include <mach/at91sam9_smc.h>
+ #include <mach/hardware.h>
+ #include <linux/platform_data/dma-atmel.h>
++#include <linux/platform_data/at91_adc.h>
  
-+static void exynos_adc_enable_clock(struct exynos_adc *info, bool enable)
+ #include "board.h"
+ #include "generic.h"
+@@ -657,6 +658,90 @@ void __init at91_add_device_tsadcc(struct at91_tsadcc_data *data)
+ void __init at91_add_device_tsadcc(struct at91_tsadcc_data *data) {}
+ #endif
+ 
++/* --------------------------------------------------------------------
++ *  ADC and Touchscreen
++ * -------------------------------------------------------------------- */
++
++#if IS_ENABLED(CONFIG_AT91_ADC)
++static struct at91_adc_data adc_data;
++
++static struct resource adc_resources[] = {
++	[0] = {
++		.start	= AT91SAM9RL_BASE_TSC,
++		.end	= AT91SAM9RL_BASE_TSC + SZ_16K - 1,
++		.flags	= IORESOURCE_MEM,
++	},
++	[1] = {
++		.start	= NR_IRQS_LEGACY + AT91SAM9RL_ID_TSC,
++		.end	= NR_IRQS_LEGACY + AT91SAM9RL_ID_TSC,
++		.flags	= IORESOURCE_IRQ,
++	}
++};
++
++static struct platform_device at91_adc_device = {
++	.name           = "at91sam9rl-adc",
++	.id             = -1,
++	.dev            = {
++		.platform_data  = &adc_data,
++	},
++	.resource       = adc_resources,
++	.num_resources  = ARRAY_SIZE(adc_resources),
++};
++
++static struct at91_adc_trigger at91_adc_triggers[] = {
++	[0] = {
++		.name = "external-rising",
++		.value = 1,
++		.is_external = true,
++	},
++	[1] = {
++		.name = "external-falling",
++		.value = 2,
++		.is_external = true,
++	},
++	[2] = {
++		.name = "external-any",
++		.value = 3,
++		.is_external = true,
++	},
++	[3] = {
++		.name = "continuous",
++		.value = 6,
++		.is_external = false,
++	},
++};
++
++void __init at91_add_device_adc(struct at91_adc_data *data)
 +{
-+	if (enable) {
-+		clk_prepare_enable(info->clk);
-+		if (info->version == ADC_V3)
-+			clk_prepare_enable(info->sclk);
++	if (!data)
++		return;
 +
-+	} else {
-+		if (info->version == ADC_V3)
-+			clk_disable_unprepare(info->sclk);
-+		clk_disable_unprepare(info->clk);
-+	}
++	if (test_bit(0, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PA17, 0);
++	if (test_bit(1, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PA18, 0);
++	if (test_bit(2, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PA19, 0);
++	if (test_bit(3, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PA20, 0);
++	if (test_bit(4, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PD6, 0);
++	if (test_bit(5, &data->channels_used))
++		at91_set_A_periph(AT91_PIN_PD7, 0);
++
++	if (data->use_external_triggers)
++		at91_set_A_periph(AT91_PIN_PB15, 0);
++
++	data->startup_time = 40;
++	data->trigger_number = 4;
++	data->trigger_list = at91_adc_triggers;
++
++	adc_data = *data;
++	platform_device_register(&at91_adc_device);
 +}
-+
- static void exynos_adc_hw_init(struct exynos_adc *info)
- {
- 	u32 con1, con2;
++#else
++void __init at91_add_device_adc(struct at91_adc_data *data) {}
++#endif
  
--	if (info->version == ADC_V2) {
-+	if (info->version & ADC_V2) {
- 		con1 = ADC_V2_CON1_SOFT_RESET;
- 		writel(con1, ADC_V2_CON1(info->regs));
- 
-@@ -300,6 +317,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 
- 	writel(1, info->enable_reg);
- 
-+	info->version = exynos_adc_get_version(pdev);
-+
- 	info->clk = devm_clk_get(&pdev->dev, "adc");
- 	if (IS_ERR(info->clk)) {
- 		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
-@@ -308,6 +327,17 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 		goto err_irq;
- 	}
- 
-+	if (info->version == ADC_V3) {
-+		info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
-+		if (IS_ERR(info->sclk)) {
-+			dev_warn(&pdev->dev,
-+				"failed getting sclk clock, err = %ld\n",
-+				PTR_ERR(info->sclk));
-+			ret = PTR_ERR(info->sclk);
-+			goto err_irq;
-+		}
-+	}
-+
- 	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
- 	if (IS_ERR(info->vdd)) {
- 		dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
-@@ -316,8 +346,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 		goto err_irq;
- 	}
- 
--	info->version = exynos_adc_get_version(pdev);
--
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	indio_dev->name = dev_name(&pdev->dev);
-@@ -340,7 +368,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_iio_dev;
- 
--	clk_prepare_enable(info->clk);
-+	exynos_adc_enable_clock(info, true);
- 
- 	exynos_adc_hw_init(info);
- 
-@@ -356,7 +384,7 @@ err_of_populate:
- 	device_for_each_child(&pdev->dev, NULL,
- 				exynos_adc_remove_devices);
- 	regulator_disable(info->vdd);
--	clk_disable_unprepare(info->clk);
-+	exynos_adc_enable_clock(info, false);
- err_iio_dev:
- 	iio_device_unregister(indio_dev);
- err_irq:
-@@ -372,7 +400,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
- 	device_for_each_child(&pdev->dev, NULL,
- 				exynos_adc_remove_devices);
- 	regulator_disable(info->vdd);
--	clk_disable_unprepare(info->clk);
-+	exynos_adc_enable_clock(info, false);
- 	writel(0, info->enable_reg);
- 	iio_device_unregister(indio_dev);
- 	free_irq(info->irq, info);
-@@ -387,7 +415,7 @@ static int exynos_adc_suspend(struct device *dev)
- 	struct exynos_adc *info = iio_priv(indio_dev);
- 	u32 con;
- 
--	if (info->version == ADC_V2) {
-+	if (info->version & ADC_V2) {
- 		con = readl(ADC_V2_CON1(info->regs));
- 		con &= ~ADC_CON_EN_START;
- 		writel(con, ADC_V2_CON1(info->regs));
-@@ -397,7 +425,7 @@ static int exynos_adc_suspend(struct device *dev)
- 		writel(con, ADC_V1_CON(info->regs));
- 	}
- 
--	clk_disable_unprepare(info->clk);
-+	exynos_adc_enable_clock(info, false);
- 	writel(0, info->enable_reg);
- 	regulator_disable(info->vdd);
- 
-@@ -415,7 +443,7 @@ static int exynos_adc_resume(struct device *dev)
- 		return ret;
- 
- 	writel(1, info->enable_reg);
--	clk_prepare_enable(info->clk);
-+	exynos_adc_enable_clock(info, true);
- 
- 	exynos_adc_hw_init(info);
- 
+ /* --------------------------------------------------------------------
+  *  RTC
 -- 
-1.8.0
+1.8.3.2
+
