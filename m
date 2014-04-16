@@ -1,85 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:59594 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753984AbaDOSRx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 15 Apr 2014 14:17:53 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [Patch v6 1/6] devres: introduce API "devm_kmemdup
-Date: Tue, 15 Apr 2014 11:21:08 -0700
-Message-Id: <1397586073-31507-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:49510 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755288AbaDPLti (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Apr 2014 07:49:38 -0400
+Message-id: <534E6E4E.4020807@samsung.com>
+Date: Wed, 16 Apr 2014 13:49:34 +0200
+From: Tomasz Figa <t.figa@samsung.com>
+MIME-version: 1.0
+To: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	ch.naveen@samsung.com, kgene.kim@samsung.com
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, sachin.kamat@linaro.org,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCHv3 2/2] iio: devicetree: Add DT binding documentation for
+ Exynos3250 ADC
+References: <1397643118-6934-1-git-send-email-cw00.choi@samsung.com>
+ <1397643118-6934-3-git-send-email-cw00.choi@samsung.com>
+In-reply-to: <1397643118-6934-3-git-send-email-cw00.choi@samsung.com>
+Content-type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Introduce devm_kmemdup, which uses resource managed kmalloc.
-There are several request from maintainers to add this instead
-of using kmemdup.
+Hi Chanwoo,
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- Documentation/driver-model/devres.txt |  1 +
- drivers/base/devres.c                 | 21 +++++++++++++++++++++
- include/linux/device.h                |  2 ++
- 3 files changed, 24 insertions(+)
+On 16.04.2014 12:11, Chanwoo Choi wrote:
+> This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
+> special clock ('sclk_tsadc') for ADC which provide clock to internal ADC.
+>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Pawel Moll <pawel.moll@arm.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+> Cc: Kumar Gala <galak@codeaurora.org>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Kukjin Kim <kgene.kim@samsung.com>
+> Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Cc: Tomasz Figa <t.figa@samsung.com>
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>   .../devicetree/bindings/arm/samsung/exynos-adc.txt   | 20 ++++++++++++++++++++
+>   1 file changed, 20 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index 5d49f2b..7532ec3 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -14,6 +14,8 @@ Required properties:
+>   				for exynos4412/5250 controllers.
+>   			Must be "samsung,exynos-adc-v2" for
+>   				future controllers.
+> +			Must be "samsung,exynos-adc-v3" for
+> +				for exynos3250 controllers.
 
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index 4f7897e..4999518 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -236,6 +236,7 @@ certainly invest a bit more effort into libata core layer).
- MEM
-   devm_kzalloc()
-   devm_kfree()
-+  devm_kmemdup()
- 
- IIO
-   devm_iio_device_alloc()
-diff --git a/drivers/base/devres.c b/drivers/base/devres.c
-index db4e264..d0914cb 100644
---- a/drivers/base/devres.c
-+++ b/drivers/base/devres.c
-@@ -831,3 +831,24 @@ void devm_kfree(struct device *dev, void *p)
- 	WARN_ON(rc);
- }
- EXPORT_SYMBOL_GPL(devm_kfree);
-+
-+/**
-+ * devm_kmemdup - Resource-managed kmemdup
-+ * @dev: Device this memory belongs to
-+ * @src: Memory region to duplicate
-+ * @len: Memory region length
-+ * @gfp: GFP mask to use
-+ *
-+ * Duplicate region of a memory using resource managed kmalloc
-+ */
-+void *devm_kmemdup(struct device *dev, const void *src, size_t len, gfp_t gfp)
-+{
-+	void *p;
-+
-+	p = devm_kmalloc(dev, len, gfp);
-+	if (p)
-+		memcpy(p, src, len);
-+
-+	return p;
-+}
-+EXPORT_SYMBOL_GPL(devm_kmemdup);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 233bbbe..4a37849 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -629,6 +629,8 @@ static inline void *devm_kcalloc(struct device *dev,
- }
- extern void devm_kfree(struct device *dev, void *p);
- extern char *devm_kstrdup(struct device *dev, const char *s, gfp_t gfp);
-+extern void *devm_kmemdup(struct device *dev, const void *src, size_t len,
-+			  gfp_t gfp);
- 
- void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
- void __iomem *devm_request_and_ioremap(struct device *dev,
--- 
-1.7.11.7
+I don't think adc-v3 is correct here. It looks like a normal V2 with 
+additional special clock input. Possibly "samsung,exynos3250-adc-v2" or 
+"samsung,exynos-adc-v2-sclk" would be better choices.
 
+>   - reg:			Contains ADC register address range (base address and
+>   			length) and the address of the phy enable register.
+>   - interrupts: 		Contains the interrupt information for the timer. The
+> @@ -21,7 +23,11 @@ Required properties:
+>   			the Samsung device uses.
+>   - #io-channel-cells = <1>; As ADC has multiple outputs
+>   - clocks		From common clock binding: handle to adc clock.
+> +			From common clock binding: handle to sclk_tsadc clock
+> +			if using Exynos3250.
+>   - clock-names		From common clock binding: Shall be "adc".
+> +			From common clock binding: Shall be "sclk_tsadc"
+> +			if using Exynos3250.
+>   - vdd-supply		VDD input supply.
+>
+>   Note: child nodes can be added for auto probing from device tree.
+> @@ -41,6 +47,20 @@ adc: adc@12D10000 {
+>   	vdd-supply = <&buck5_reg>;
+>   };
+>
+> +If Exynos3250 uses ADC,
+
+Please keep proper formatting:
+
+Example: Node for ADC of Exynos3250 with additional special clock
+
+Best regards,
+Tomasz
