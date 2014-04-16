@@ -1,147 +1,231 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:53416 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757114AbaD1XsJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 28 Apr 2014 19:48:09 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 3/6] IIO: core: Modify scan element type
-Date: Mon, 28 Apr 2014 16:51:44 -0700
-Message-Id: <1398729107-16748-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:36739 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755373AbaDPKlJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Apr 2014 06:41:09 -0400
+Message-id: <534E5E41.4090400@samsung.com>
+Date: Wed, 16 Apr 2014 12:41:05 +0200
+From: Tomasz Figa <t.figa@samsung.com>
+MIME-version: 1.0
+To: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	ch.naveen@samsung.com, kgene.kim@samsung.com
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, sachin.kamat@linaro.org,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCHv3 1/2] iio: adc: exynos_adc: Control special clock of ADC
+ to support Exynos3250 ADC
+References: <1397643118-6934-1-git-send-email-cw00.choi@samsung.com>
+ <1397643118-6934-2-git-send-email-cw00.choi@samsung.com>
+In-reply-to: <1397643118-6934-2-git-send-email-cw00.choi@samsung.com>
+Content-type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The current scan element type uses the following format:
-  [be|le]:[s|u]bits/storagebits[>>shift].
-To specify multiple elements in this type, added a repeat value.
-So new format is:
-  [be|le]:[s|u]bits/storagebitsXr[>>shift].
-Here r is specifying how may times, real/storage bits are repeating.
+Hi Chanwoo,
 
-When X is value is 0 or 1, then repeat value is not used in the format,
-and it will be same as existing format.
+On 16.04.2014 12:11, Chanwoo Choi wrote:
+> This patch control special clock for ADC in Exynos series's FSYS block.
+> If special clock of ADC is registerd on clock list of common clk framework,
+> Exynos ADC drvier have to control this clock.
+>
+> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
+> - 'adc' clock: bus clock for ADC
+>
+> Exynos3250 has additional 'sclk_tsadc' clock as following:
+> - 'sclk_tsadc' clock: special clock for ADC which provide clock to internal ADC
+>
+> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_tsadc' clock
+> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_tsadc'
+> clock in FSYS_BLK.
+>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Kukjin Kim <kgene.kim@samsung.com>
+> Cc: Naveen Krishna Chatradhi
+> Cc: linux-iio@vger.kernel.org
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>   drivers/iio/adc/exynos_adc.c | 86 +++++++++++++++++++++++++++++++++++++-------
+>   1 file changed, 73 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index d25b262..486771e 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -40,8 +40,9 @@
+>   #include <linux/iio/driver.h>
+>
+>   enum adc_version {
+> -	ADC_V1,
+> -	ADC_V2
+> +	ADC_V1 = 0x1,
+> +	ADC_V2 = 0x2,
+> +	ADC_V3 = (ADC_V1 | ADC_V2),
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
- include/linux/iio/iio.h           |  7 +++++++
- 2 files changed, 42 insertions(+), 6 deletions(-)
+I don't think Exynos3250 has really a V3 of the ADC block. It looks like 
+a V2, just with different integration details. This approach is 
+confusing and will create problems if real V3 shows up.
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index e472cff..36b1ae9 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
- 		type = IIO_BE;
- #endif
- 	}
--	return sprintf(buf, "%s:%c%d/%d>>%u\n",
-+	if (this_attr->c->scan_type.repeat > 1)
-+		return sprintf(buf, "%s:%c%d/%dX%d>>%u\n",
-+		       iio_endian_prefix[type],
-+		       this_attr->c->scan_type.sign,
-+		       this_attr->c->scan_type.realbits,
-+		       this_attr->c->scan_type.storagebits,
-+		       this_attr->c->scan_type.repeat,
-+		       this_attr->c->scan_type.shift);
-+		else
-+			return sprintf(buf, "%s:%c%d/%d>>%u\n",
- 		       iio_endian_prefix[type],
- 		       this_attr->c->scan_type.sign,
- 		       this_attr->c->scan_type.realbits,
-@@ -475,14 +484,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
- 	for_each_set_bit(i, mask,
- 			 indio_dev->masklength) {
- 		ch = iio_find_channel_from_si(indio_dev, i);
--		length = ch->scan_type.storagebits / 8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		bytes = ALIGN(bytes, length);
- 		bytes += length;
- 	}
- 	if (timestamp) {
- 		ch = iio_find_channel_from_si(indio_dev,
- 					      indio_dev->scan_index_timestamp);
--		length = ch->scan_type.storagebits / 8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		bytes = ALIGN(bytes, length);
- 		bytes += length;
- 	}
-@@ -959,7 +976,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 					       indio_dev->masklength,
- 					       in_ind + 1);
- 			ch = iio_find_channel_from_si(indio_dev, in_ind);
--			length = ch->scan_type.storagebits/8;
-+			if (ch->scan_type.repeat > 1)
-+				length = ch->scan_type.storagebits / 8 *
-+					ch->scan_type.repeat;
-+			else
-+				length = ch->scan_type.storagebits / 8;
- 			/* Make sure we are aligned */
- 			in_loc += length;
- 			if (in_loc % length)
-@@ -971,7 +992,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 			goto error_clear_mux_table;
- 		}
- 		ch = iio_find_channel_from_si(indio_dev, in_ind);
--		length = ch->scan_type.storagebits/8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		if (out_loc % length)
- 			out_loc += length - out_loc % length;
- 		if (in_loc % length)
-@@ -992,7 +1017,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 		}
- 		ch = iio_find_channel_from_si(indio_dev,
- 			indio_dev->scan_index_timestamp);
--		length = ch->scan_type.storagebits/8;
-+		if (ch->scan_type.repeat > 1)
-+			length = ch->scan_type.storagebits / 8 *
-+				ch->scan_type.repeat;
-+		else
-+			length = ch->scan_type.storagebits / 8;
- 		if (out_loc % length)
- 			out_loc += length - out_loc % length;
- 		if (in_loc % length)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 5629c92..ccde917 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -177,6 +177,12 @@ struct iio_event_spec {
-  *			shift:		Shift right by this before masking out
-  *					realbits.
-  *			endianness:	little or big endian
-+ *			repeat:		Number of times real/storage bits
-+ *					repeats. When the repeat element is
-+ *					more than 1, then the type element in
-+ *					sysfs will show a repeat value.
-+ *					Otherwise, the number of repetitions is
-+ *					omitted.
-  * @info_mask_separate: What information is to be exported that is specific to
-  *			this channel.
-  * @info_mask_shared_by_type: What information is to be exported that is shared
-@@ -219,6 +225,7 @@ struct iio_chan_spec {
- 		u8	realbits;
- 		u8	storagebits;
- 		u8	shift;
-+		u8	repeat;
- 		enum iio_endian endianness;
- 	} scan_type;
- 	long			info_mask_separate;
--- 
-1.7.11.7
+In general, using a version enum and a lot of ifs for particular 
+versions in the code is rather a bad practice, especially when multiple 
+versions happen to require the same quirks.
 
+Instead, a variant struct should be introduced with bitfields for 
+particular quirks and/or register offsets and/or function pointers. Let 
+me show example solutions inline with your changes below.
+
+>   };
+>
+>   /* EXYNOS4412/5250 ADC_V1 registers definitions */
+> @@ -85,9 +86,11 @@ enum adc_version {
+>   #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
+>
+>   struct exynos_adc {
+> +	struct device		*dev;
+>   	void __iomem		*regs;
+>   	void __iomem		*enable_reg;
+>   	struct clk		*clk;
+> +	struct clk		*sclk;
+>   	unsigned int		irq;
+>   	struct regulator	*vdd;
+>
+> @@ -100,6 +103,7 @@ struct exynos_adc {
+>   static const struct of_device_id exynos_adc_match[] = {
+>   	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
+>   	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
+> +	{ .compatible = "samsung,exynos-adc-v3", .data = (void *)ADC_V3 },
+>   	{},
+>   };
+>   MODULE_DEVICE_TABLE(of, exynos_adc_match);
+> @@ -128,7 +132,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>   	mutex_lock(&indio_dev->mlock);
+>
+>   	/* Select the channel to be used and Trigger conversion */
+> -	if (info->version == ADC_V2) {
+> +	if (info->version >= ADC_V2) {
+>   		con2 = readl(ADC_V2_CON2(info->regs));
+>   		con2 &= ~ADC_V2_CON2_ACH_MASK;
+>   		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
+
+This function should be split into exynos_adc_v1_read_raw() and 
+exynos_adc_v2_read_raw(). Then a function pointer for int 
+(*read_raw)(...) should be added to the variant struct I mentioned 
+above. Then the generic part of existing exynos_read_raw() would just 
+call variant->read_raw().
+
+> @@ -165,7 +169,7 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>   	info->value = readl(ADC_V1_DATX(info->regs)) &
+>   						ADC_DATX_MASK;
+>   	/* clear irq */
+> -	if (info->version == ADC_V2)
+> +	if (info->version >= ADC_V2)
+>   		writel(1, ADC_V2_INT_ST(info->regs));
+>   	else
+>   		writel(1, ADC_V1_INTCLR(info->regs));
+
+void (*clear_irq)().
+
+> @@ -226,11 +230,43 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+>   	return 0;
+>   }
+>
+> +static int exynos_adc_enable_clock(struct exynos_adc *info, bool enable)
+> +{
+> +	int ret;
+> +
+> +	if (enable) {
+> +		ret = clk_prepare_enable(info->clk);
+> +		if (ret) {
+> +			dev_err(info->dev, "failed to enable adc clock\n");
+> +			return ret;
+> +		}
+> +		if (info->version == ADC_V3) {
+
+Here, a bitfield bool needs_sclk:1; in the variant struct would be 
+sufficient.
+
+> +			ret = clk_prepare_enable(info->sclk);
+> +			if (ret) {
+> +				dev_err(info->dev,
+> +					"failed to enable sclk_tsadc clock\n");
+> +				goto err;
+> +			}
+> +		}
+> +
+> +	} else {
+> +		if (info->version == ADC_V3)
+> +			clk_disable_unprepare(info->sclk);
+> +		clk_disable_unprepare(info->clk);
+> +	}
+> +
+> +	return 0;
+> +err:
+> +	clk_disable_unprepare(info->clk);
+> +
+> +	return ret;
+> +}
+
+Ugh. Please split this into exynos_adc_enable_clock() and 
+exynos_adc_disable_clock().
+
+> +
+>   static void exynos_adc_hw_init(struct exynos_adc *info)
+>   {
+>   	u32 con1, con2;
+>
+> -	if (info->version == ADC_V2) {
+> +	if (info->version >= ADC_V2) {
+>   		con1 = ADC_V2_CON1_SOFT_RESET;
+>   		writel(con1, ADC_V2_CON1(info->regs));
+>
+
+This function should be completely split into v1_hw_init() and 
+v2_hw_init() and the code calling currently exynos_adc_hw_init() could 
+call variant->hw_init() directly.
+
+> @@ -287,6 +323,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>   	}
+>
+>   	info->irq = irq;
+> +	info->dev = &pdev->dev;
+>
+>   	init_completion(&info->completion);
+>
+> @@ -300,6 +337,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>
+>   	writel(1, info->enable_reg);
+>
+> +	info->version = exynos_adc_get_version(pdev);
+> +
+
+Instead of getting version, here a pointer to variant struct could be 
+retrieved.
+
+>   	info->clk = devm_clk_get(&pdev->dev, "adc");
+>   	if (IS_ERR(info->clk)) {
+>   		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+> @@ -308,6 +347,16 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>   		goto err_irq;
+>   	}
+>
+> +	if (info->version == ADC_V3) {
+
+if (info->variant->needs_sclk) {
+
+> +		info->sclk = devm_clk_get(&pdev->dev, "sclk_tsadc");
+> +		if (IS_ERR(info->sclk)) {
+> +			ret = PTR_ERR(info->sclk);
+> +			dev_warn(&pdev->dev,
+> +				"failed getting sclk clock, err = %d\n", ret);
+> +			goto err_irq;
+> +		}
+> +	}
+> +
+
+etc., etc.
+
+Best regards,
+Tomasz
