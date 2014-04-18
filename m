@@ -1,72 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:33681 "EHLO mga09.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:55980 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754582AbaDRXTq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1754506AbaDRXTq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Fri, 18 Apr 2014 19:19:46 -0400
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 03/16] iio: hid-sensors: Accelerometer 3D: adjust scale and offset
-Date: Fri, 18 Apr 2014 16:22:23 -0700
-Message-Id: <1397863356-2470-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 15/16] iio: hid-sensors: Inclinometer 3D: Raw read support
+Date: Fri, 18 Apr 2014 16:22:35 -0700
+Message-Id: <1397863356-2470-15-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Using units and unit exponent to calculate scale which is compliant
-to IIO ABI.
+Added support for raw reading of channel. If the sensor is powered
+off, it will turn on for reading value.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iio/orientation/hid-sensor-incl-3d.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 3dcdbad..ca50a91 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -42,6 +42,10 @@ struct accel_3d_state {
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info accel[ACCEL_3D_CHANNEL_MAX];
- 	u32 accel_val[ACCEL_3D_CHANNEL_MAX];
-+	int scale_pre_decml;
-+	int scale_post_decml;
-+	int scale_precision;
-+	int value_offset;
- };
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+index bf11678..2478f6c 100644
+--- a/drivers/iio/orientation/hid-sensor-incl-3d.c
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -22,6 +22,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/slab.h>
++#include <linux/delay.h>
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -110,11 +111,20 @@ static int incl_3d_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 poll_value;
  
- static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
-@@ -123,12 +127,12 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
++		poll_value = hid_sensor_read_poll_value(
++					&incl_state->common_attributes);
++		if (poll_value < 0)
++			return -EINVAL;
++
++		hid_sensor_power_state(&incl_state->common_attributes, true);
++		msleep_interruptible(poll_value * 2);
++
+ 		report_id =
+ 			incl_state->incl[chan->scan_index].report_id;
+ 		address = incl_3d_addresses[chan->scan_index];
+@@ -124,8 +134,11 @@ static int incl_3d_read_raw(struct iio_dev *indio_dev,
+ 				HID_USAGE_SENSOR_INCLINOMETER_3D, address,
+ 				report_id);
+ 		else {
++			hid_sensor_power_state(&incl_state->common_attributes,
++						false);
+ 			return -EINVAL;
+ 		}
++		hid_sensor_power_state(&incl_state->common_attributes, false);
  		ret_type = IIO_VAL_INT;
  		break;
  	case IIO_CHAN_INFO_SCALE:
--		*val = accel_state->accel[CHANNEL_SCAN_INDEX_X].units;
--		ret_type = IIO_VAL_INT;
-+		*val = accel_state->scale_pre_decml;
-+		*val2 = accel_state->scale_post_decml;
-+		ret_type = accel_state->scale_precision;
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
--		*val = hid_sensor_convert_exponent(
--			accel_state->accel[CHANNEL_SCAN_INDEX_X].unit_expo);
-+		*val = accel_state->value_offset;
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -262,6 +266,11 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- 			st->accel[1].index, st->accel[1].report_id,
- 			st->accel[2].index, st->accel[2].report_id);
- 
-+	st->scale_precision = hid_sensor_format_scale(
-+				HID_USAGE_SENSOR_ACCEL_3D,
-+				&st->accel[CHANNEL_SCAN_INDEX_X],
-+				&st->scale_pre_decml, &st->scale_post_decml);
-+
- 	/* Set Sensitivity field ids, when there is no individual modifier */
- 	if (st->common_attributes.sensitivity.index < 0) {
- 		sensor_hub_input_get_attribute_info(hsdev,
 -- 
 1.7.11.7
 
