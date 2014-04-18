@@ -1,169 +1,169 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f182.google.com ([74.125.82.182]:56377 "EHLO
-	mail-we0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755240AbaDMTJt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Apr 2014 15:09:49 -0400
-Received: by mail-we0-f182.google.com with SMTP id p61so7389616wes.27
-        for <linux-iio@vger.kernel.org>; Sun, 13 Apr 2014 12:09:47 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 6/6] ARM: ux500: add misc sensors to the device trees
-Date: Sun, 13 Apr 2014 21:09:03 +0200
-Message-Id: <1397416143-4396-7-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 01/16] iio: hid-sensors: Convert units and exponent
+Date: Fri, 18 Apr 2014 16:22:21 -0700
+Message-Id: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds the STMicroelectonics MEMS sensor devices to the Ux500
-family device trees:
+HID sensor hub specify a default unit and alternative units. This
+along with unit exponent can be used adjust scale. This change
+change HID sensor data units to IIO defined units for each
+sensor type. So in this way user space can use a simply use:
+"(data + offset) * scale" to get final result.
 
-- Accelerometer
-- Magnetometer
-- Gyroscope
-- Pressure (barometer)
-
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Denis CIOCCA <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- arch/arm/boot/dts/ste-href.dtsi        | 30 +++++++++++++++++++++++++++
- arch/arm/boot/dts/ste-hrefv60plus.dtsi | 15 ++++++++++++--
- arch/arm/boot/dts/ste-snowball.dts     | 38 +++++++++++++++++++++++++++++++---
- 3 files changed, 78 insertions(+), 5 deletions(-)
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 114 +++++++++++++++++++++
+ include/linux/hid-sensor-hub.h                     |   4 +
+ 2 files changed, 118 insertions(+)
 
-diff --git a/arch/arm/boot/dts/ste-href.dtsi b/arch/arm/boot/dts/ste-href.dtsi
-index 6cb9b68e2188..fe64c472931c 100644
---- a/arch/arm/boot/dts/ste-href.dtsi
-+++ b/arch/arm/boot/dts/ste-href.dtsi
-@@ -103,6 +103,36 @@
- 				compatible = "rohm,bh1780gli";
- 				reg = <0x29>;
- 			};
-+			lsm303dlh@18 {
-+				/* Accelerometer */
-+				compatible = "st,lsm303dlh-accel";
-+				st,drdy-int-pin = <1>;
-+				reg = <0x18>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
-+			lsm303dlm@1e {
-+				/* Magnetometer */
-+				compatible = "st,lsm303dlm-magn";
-+				reg = <0x1e>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
-+			l3g4200d@68 {
-+				/* Gyroscope */
-+				compatible = "st,l3g4200d-gyro";
-+				st,drdy-int-pin = <2>;
-+				reg = <0x68>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
-+			lsp001wm@5c {
-+				/* Barometer/pressure sensor */
-+				compatible = "st,lps001wp-press";
-+				reg = <0x5c>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
- 		};
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 75b5473..451a95b 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -26,6 +26,40 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
  
- 		i2c@80110000 {
-diff --git a/arch/arm/boot/dts/ste-hrefv60plus.dtsi b/arch/arm/boot/dts/ste-hrefv60plus.dtsi
-index c2341061b943..e912d422b99e 100644
---- a/arch/arm/boot/dts/ste-hrefv60plus.dtsi
-+++ b/arch/arm/boot/dts/ste-hrefv60plus.dtsi
-@@ -35,8 +35,6 @@
- 			 */
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&ipgpio_hrefv60_mode>,
--				  <&accel_hrefv60_mode>,
--				  <&magneto_hrefv60_mode>,
- 				  <&etm_hrefv60_mode>,
- 				  <&nahj_hrefv60_mode>,
- 				  <&nfc_hrefv60_mode>,
-@@ -238,5 +236,18 @@
- 				};
- 			};
- 		};
++struct {
++	u32 usage_id;
++	int unit; /* 0 for default others from HID sensor spec */
++	int scale_val0; /* scale, whole number */
++	int scale_val1; /* scale, fraction in micros */
++} unit_conversion[] = {
++	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
++	{HID_USAGE_SENSOR_ACCEL_3D,
++		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
++	{HID_USAGE_SENSOR_ACCEL_3D,
++		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
 +
-+		i2c@80128000 {
-+			lsm303dlh@18 {
-+				/* Pins for the accelerometer */
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&accel_hrefv60_mode>;
-+			};
-+			lsm303dlm@1e {
-+				/* Pins for the magnetometer */
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&magneto_hrefv60_mode>;
-+			};
-+		};
- 	};
- };
-diff --git a/arch/arm/boot/dts/ste-snowball.dts b/arch/arm/boot/dts/ste-snowball.dts
-index a2f632d0be2a..cc1abc063b4b 100644
---- a/arch/arm/boot/dts/ste-snowball.dts
-+++ b/arch/arm/boot/dts/ste-snowball.dts
-@@ -241,6 +241,40 @@
- 			pinctrl-names = "default","sleep";
- 			pinctrl-0 = <&i2c2_default_mode>;
- 			pinctrl-1 = <&i2c2_sleep_mode>;
-+			lsm303dlh@18 {
-+				/* Accelerometer */
-+				compatible = "st,lsm303dlh-accel";
-+				st,drdy-int-pin = <1>;
-+				reg = <0x18>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&accel_snowball_mode>;
-+			};
-+			lsm303dlm@1e {
-+				/* Magnetometer */
-+				compatible = "st,lsm303dlm-magn";
-+				reg = <0x1e>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&magneto_snowball_mode>;
-+			};
-+			l3g4200d@68 {
-+				/* Gyroscope */
-+				compatible = "st,l3g4200d-gyro";
-+				st,drdy-int-pin = <2>;
-+				reg = <0x68>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
-+			lsp001wm@5c {
-+				/* Barometer/pressure sensor */
-+				compatible = "st,lps001wp-press";
-+				reg = <0x5c>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+			};
- 		};
++	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
++	{HID_USAGE_SENSOR_GYRO_3D,
++		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
++	{HID_USAGE_SENSOR_GYRO_3D,
++		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
++
++	{HID_USAGE_SENSOR_COMPASS_3D, 0, 1000, 0},
++	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
++
++	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 17453, 0},
++	{HID_USAGE_SENSOR_INCLINOMETER_3D,
++		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
++	{HID_USAGE_SENSOR_INCLINOMETER_3D,
++		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
++
++	{HID_USAGE_SENSOR_ALS, 0, 1, 0},
++	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
++
++	{HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
++	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 1, 0},
++};
++
+ static int pow_10(unsigned power)
+ {
+ 	int i;
+@@ -209,6 +243,86 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ }
+ EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
  
- 		i2c@80110000 {
-@@ -361,9 +395,7 @@
- 			 * can be moved over to being controlled by respective device.
- 			 */
- 			pinctrl-names = "default";
--			pinctrl-0 = <&accel_snowball_mode>,
--				  <&magneto_snowball_mode>,
--				  <&gbf_snowball_mode>,
-+			pinctrl-0 = <&gbf_snowball_mode>,
- 				  <&wlan_snowball_mode>;
++/*
++ * This fuction applies the unit exponent to the scale.
++ * For example:
++ * 9.806650 ->exp:2-> val0[980]val1[6650]
++ * 9.000806 ->exp:2-> val0[900]val1[806]
++ * 0.174535 ->exp:2-> val0[17]val1[4535]
++ * 1.001745 ->exp:0-> val0[1]val1[1745]
++ * 1.001745 ->exp:2-> val0[100]val1[1745]
++ * 1.001745 ->exp:4-> val0[10017]val1[45]
++ * 9.806650 ->exp:-2-> val0[0]val1[98066]
++ */
++static void adjust_exponent_micro(int *val0, int *val1, int scale0,
++				  int scale1, int exp)
++{
++	int i;
++	int x;
++	int res;
++	int rem;
++
++	if (exp > 0) {
++		*val0 = scale0 * pow_10(exp);
++		res = 0;
++		if (exp > 6) {
++			*val1 = 0;
++			return;
++		}
++		for (i = 0; i < exp; ++i) {
++			x = scale1 / pow_10(5 - i);
++			res += (pow_10(exp - 1 - i) * x);
++			scale1 = scale1 % pow_10(5 - i);
++		}
++		*val0 += res;
++			*val1 = scale1 * pow_10(exp);
++	} else if (exp < 0) {
++		exp = abs(exp);
++		if (exp > 6) {
++			*val0 = *val1 = 0;
++			return;
++		}
++		*val0 = scale0 / pow_10(exp);
++		rem = scale0 % pow_10(exp);
++		res = 0;
++		for (i = 0; i < (6 - exp); ++i) {
++			x = scale1 / pow_10(5 - i);
++			res += (pow_10(5 - exp - i) * x);
++			scale1 = scale1 % pow_10(5 - i);
++		}
++		*val1 = rem * pow_10(6 - exp) + res;
++	} else {
++		*val0 = scale0;
++		*val1 = scale1;
++	}
++}
++
++int hid_sensor_format_scale(u32 usage_id,
++			struct hid_sensor_hub_attribute_info *attr_info,
++			int *val0, int *val1)
++{
++	int i;
++	int exp;
++
++	*val0 = 1;
++	*val1 = 0;
++
++	for (i = 0; ARRAY_SIZE(unit_conversion); ++i) {
++		if (unit_conversion[i].usage_id == usage_id &&
++			unit_conversion[i].unit == attr_info->units) {
++			exp  = hid_sensor_convert_exponent(
++						attr_info->unit_expo);
++			adjust_exponent_micro(val0, val1,
++					unit_conversion[i].scale_val0,
++					unit_conversion[i].scale_val1, exp);
++			break;
++		}
++	}
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++EXPORT_SYMBOL(hid_sensor_format_scale);
++
+ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					struct hid_sensor_common *st)
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index b70cfd7..89626b2 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -223,4 +223,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
+ 				u32 report_id, int field_index, u32 usage_id);
  
- 			ethernet {
++int hid_sensor_format_scale(u32 usage_id,
++			    struct hid_sensor_hub_attribute_info *attr_info,
++			    int *val0, int *val1);
++
+ #endif
 -- 
-1.9.0
-
+1.7.11.7
