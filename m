@@ -1,49 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:33347 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756369AbaDHNY4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 8 Apr 2014 09:24:56 -0400
-Date: Tue, 8 Apr 2014 15:24:51 +0200
-From: Jean Delvare <jdelvare@suse.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Kukjin Kim <kgene.kim@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2] iio: adc: Fix exynos_adc dependencies
-Message-ID: <20140408152451.6dc2b230@endymion.delvare>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:55021 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755364AbaDTPyH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Apr 2014 11:54:07 -0400
+Date: Sun, 20 Apr 2014 17:54:05 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2 3/9] mfd: twl4030-madc: Cleanup driver
+Message-ID: <20140420155405.GC16649@amd.pavel.ucw.cz>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
+ <1393970751-18157-1-git-send-email-sre@debian.org>
+ <1393970751-18157-4-git-send-email-sre@debian.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1393970751-18157-4-git-send-email-sre@debian.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-EXYNOS_ADC shouldn't only depend on OF. It is useless on architectures
-other than Exynos so it should depend on ARCH_EXYNOS (which implies
-OF.)
+Hi!
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Kukjin Kim <kgene.kim@samsung.com>
----
-Changes since v1:
- * Alternatively depend on COMPILE_TEST as requested by Lars-Peter
-   Clausen. Thanks for the review!
+> Some style fixes in twl4030-madc driver.
+> 
+> Reported-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
 
- drivers/iio/adc/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Pavel Machek <pavel@ucw.cz>
 
---- linux-3.15-rc0.orig/drivers/iio/adc/Kconfig	2014-04-08 14:54:37.418421834 +0200
-+++ linux-3.15-rc0/drivers/iio/adc/Kconfig	2014-04-08 15:20:42.735670677 +0200
-@@ -107,7 +107,7 @@ config AT91_ADC
- 
- config EXYNOS_ADC
- 	bool "Exynos ADC driver support"
--	depends on OF
-+	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
- 	help
- 	  Core support for the ADC block found in the Samsung EXYNOS series
- 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
 
+> @@ -665,10 +660,6 @@ out:
+>  }
+>  EXPORT_SYMBOL_GPL(twl4030_madc_conversion);
+>  
+> -/*
+> - * Return channel value
+> - * Or < 0 on failure.
+> - */
+>  int twl4030_get_madc_conversion(int channel_no)
+>  {
+>  	struct twl4030_madc_request req;
+
+Maybe I'd put the comment on one line, but it seems useful...?
 
 -- 
-Jean Delvare
-SUSE L3 Support
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
