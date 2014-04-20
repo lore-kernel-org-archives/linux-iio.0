@@ -1,74 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:33681 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754585AbaDRXTr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 18 Apr 2014 19:19:47 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 16/16] iio: hid-sensors: Pressure: Raw read support
-Date: Fri, 18 Apr 2014 16:22:36 -0700
-Message-Id: <1397863356-2470-16-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:50321 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755361AbaDTMIY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Apr 2014 08:08:24 -0400
+Date: Sun, 20 Apr 2014 14:08:23 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Sebastian Reichel <sre@debian.org>,
+	Sebastian Reichel <sre@ring0.de>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>
+Subject: Re: [PATCHv2 1/2] rx51_battery: convert to iio consumer
+Message-ID: <20140420120823.GB12135@amd.pavel.ucw.cz>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+ <1393705366-32420-1-git-send-email-sre@debian.org>
+ <1393705366-32420-2-git-send-email-sre@debian.org>
+ <5336A9F9.4080504@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5336A9F9.4080504@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added support for raw reading of channel. If the sensor is powered
-off, it will turn on for reading value.
+On Sat 2014-03-29 11:09:45, Jonathan Cameron wrote:
+> On 01/03/14 20:22, Sebastian Reichel wrote:
+> >Update rx51-battery driver to use the new IIO API of
+> >twl4030-madc and add DT support.
+> >
+> >Signed-off-by: Sebastian Reichel <sre@debian.org>
+> This looks fine to me.  I'd love to see a more generic solution, but
+> we can work on that another time.
+> 
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/pressure/hid-sensor-press.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+Reviewed-by: Pavel Machek <pavel@ucw.cz>
 
-diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-index 39df50c..1cd190c 100644
---- a/drivers/iio/pressure/hid-sensor-press.c
-+++ b/drivers/iio/pressure/hid-sensor-press.c
-@@ -21,6 +21,7 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/slab.h>
-+#include <linux/delay.h>
- #include <linux/hid-sensor-hub.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -79,6 +80,7 @@ static int press_read_raw(struct iio_dev *indio_dev,
- 	u32 address;
- 	int ret;
- 	int ret_type;
-+	s32 poll_value;
- 
- 	*val = 0;
- 	*val2 = 0;
-@@ -94,12 +96,23 @@ static int press_read_raw(struct iio_dev *indio_dev,
- 			report_id = -1;
- 			break;
- 		}
--		if (report_id >= 0)
-+		if (report_id >= 0) {
-+			poll_value = hid_sensor_read_poll_value(
-+					&press_state->common_attributes);
-+			if (poll_value < 0)
-+				return -EINVAL;
-+			hid_sensor_power_state(&press_state->common_attributes,
-+						true);
-+
-+			msleep_interruptible(poll_value * 2);
-+
- 			*val = sensor_hub_input_attr_get_raw_value(
- 				press_state->common_attributes.hsdev,
- 				HID_USAGE_SENSOR_PRESSURE, address,
- 				report_id);
--		else {
-+			hid_sensor_power_state(&press_state->common_attributes,
-+						false);
-+		} else {
- 			*val = 0;
- 			return -EINVAL;
- 		}
+I don't see this patch in 3.15-rc nor -next. What is needed to push
+this patch?
+
+
 -- 
-1.7.11.7
-
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
