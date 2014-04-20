@@ -1,25 +1,44 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Sat, 26 Apr 2014 08:14:26 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.16 - set 1
-Message-ID: <20140426151426.GB10738@kroah.com>
-References: <535BC7A9.4030802@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:54968 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755405AbaDTPvt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Apr 2014 11:51:49 -0400
+Date: Sun, 20 Apr 2014 17:51:47 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Sebastian Reichel <sre@ring0.de>,
+	Marek Belisko <marek@goldelico.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2 1/9] mfd: twl4030-madc: Use managed resources
+Message-ID: <20140420155147.GA16649@amd.pavel.ucw.cz>
+References: <1393702365-26429-1-git-send-email-sre@debian.org>
+ <1393970751-18157-1-git-send-email-sre@debian.org>
+ <1393970751-18157-2-git-send-email-sre@debian.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <535BC7A9.4030802@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1393970751-18157-2-git-send-email-sre@debian.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 26, 2014 at 03:50:17PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 24e7d7990179e5ed38e90d78d12c25fa201c618a:
+On Tue 2014-03-04 23:05:43, Sebastian Reichel wrote:
+> Update twl4030-madc driver to use managed resources.
 > 
->    staging: cxt1e1: Removed assignments from if statements. (2014-03-13 17:44:45 -0700)
-> 
-> are available in the git repository at:
-> 
->    git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.16a
+> Signed-off-by: Sebastian Reichel <sre@debian.org>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
 
-Pulled and pushed out, thanks.
+Reviewed-by: Pavel Machek <pavel@ucw.cz>
 
-greg k-h
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
