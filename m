@@ -1,97 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:22627 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755868AbaDVVuG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Apr 2014 17:50:06 -0400
-Message-ID: <5356E406.40507@atmel.com>
-Date: Tue, 22 Apr 2014 23:49:58 +0200
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Return-Path: <rdunlap@infradead.org>
+Message-ID: <5356E217.3090105@infradead.org>
+Date: Tue, 22 Apr 2014 14:41:43 -0700
+From: Randy Dunlap <rdunlap@infradead.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	<linux-iio@vger.kernel.org>,
-	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-CC: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
-	Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] ARM: at91: at91sam9g45: change at91_adc name
-References: <1394038675-15809-1-git-send-email-alexandre.belloni@free-electrons.com> <1394038675-15809-3-git-send-email-alexandre.belloni@free-electrons.com> <5318C98C.1070702@kernel.org> <531DBD71.8040905@atmel.com> <532472B8.4090802@kernel.org>
-In-Reply-To: <532472B8.4090802@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Masanari Iida <standby24x7@gmail.com>, jic23@kernel.org,
+ linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+CC: gregkh@linuxfoundation.org
+Subject: Re: [PATCH] staging: iio: Fix typo in iio
+References: <1398165818-25904-1-git-send-email-standby24x7@gmail.com>
+In-Reply-To: <1398165818-25904-1-git-send-email-standby24x7@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15/03/2014 16:33, Jonathan Cameron :
-> On 10/03/14 13:26, Nicolas Ferre wrote:
->> On 06/03/2014 20:16, Jonathan Cameron :
->>> On 05/03/14 16:57, Alexandre Belloni wrote:
->>>> We can't use "at91_adc" to refer to the at91_adc driver anymore as the name is
->>>> used to match an id_table.
->>>>
->>>> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->>> As stated in previous email, I'll take this along with the fix that 'broke'
->>> this, if I get an Ack from one of the at91 maintainers.
->>
->> Jonathan,
->>
->> It is maybe more clear if I answer here:
->> - so, yes, you can take the 3 patches yourself (if you do not mind)
->> - you have, for the whole series::
->>
->> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Applied to the fixes-togreg branch of iio.git
+On 04/22/14 04:23, Masanari Iida wrote:
+> Correct spelling typo in comment within staging/iio
 > 
-> Timing wise, these will now hit immediately after the merge window closes.
+> Signed-off-by: Masanari Iida <standby24x7@gmail.com>
 
-Greg, Jonathan,
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-I saw the IIO pull request a week ago ([PULL] IIO fixes for 3.15 round
-1) but I do not see it in Linus' tree for the moment:
-http://article.gmane.org/gmane.linux.kernel.iio/11764
+Thanks.
 
-(sorry, I can't reply to the pull-request itself as I am not subscriber
-to iio mailing-list)
-
-As the series contains a fix for a kernel Oops and that is was already
-delayed at the end of 3.14 cycle, will it be possible to include it
-pretty soon in 3.15 cycle?
-
-Thanks for your help, bye.
-
-> Jonathan
->>
->> Thanks for your help with this issue.
->>
->> Bye,
->>
->>>> ---
->>>>    arch/arm/mach-at91/at91sam9g45_devices.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/arch/arm/mach-at91/at91sam9g45_devices.c b/arch/arm/mach-at91/at91sam9g45_devices.c
->>>> index cb36fa872d30..88554024eb2d 100644
->>>> --- a/arch/arm/mach-at91/at91sam9g45_devices.c
->>>> +++ b/arch/arm/mach-at91/at91sam9g45_devices.c
->>>> @@ -1203,7 +1203,7 @@ static struct resource adc_resources[] = {
->>>>    };
->>>>
->>>>    static struct platform_device at91_adc_device = {
->>>> -	.name		= "at91_adc",
->>>> +	.name		= "at91sam9g45-adc",
->>>>    	.id		= -1,
->>>>    	.dev		= {
->>>>    				.platform_data	= &adc_data,
->>>>
->>>
->>>
->>
->>
+> ---
+>  drivers/staging/iio/adc/ad7606.h    | 4 ++--
+>  drivers/staging/iio/adc/ad7816.c    | 2 +-
+>  drivers/staging/iio/adc/ad799x.h    | 2 +-
+>  drivers/staging/iio/addac/adt7316.c | 4 ++--
+>  drivers/staging/iio/cdc/ad7152.c    | 2 +-
+>  drivers/staging/iio/cdc/ad7746.c    | 2 +-
+>  6 files changed, 8 insertions(+), 8 deletions(-)
 > 
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index 93c7299..ec89d05 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -14,7 +14,7 @@
+>   */
+>  
+>  /**
+> - * struct ad7606_platform_data - platform/board specifc information
+> + * struct ad7606_platform_data - platform/board specific information
+>   * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
+>   * @default_range:	default range +/-{5000, 10000} mVolt
+>   * @gpio_convst:	number of gpio connected to the CONVST pin
+> @@ -41,7 +41,7 @@ struct ad7606_platform_data {
+>  };
+>  
+>  /**
+> - * struct ad7606_chip_info - chip specifc information
+> + * struct ad7606_chip_info - chip specific information
+>   * @name:		identification string for chip
+>   * @int_vref_mv:	the internal reference voltage
+>   * @channels:		channel specification
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 2369cf2..158d770 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -40,7 +40,7 @@
+>  
+>  
+>  /*
+> - * struct ad7816_chip_info - chip specifc information
+> + * struct ad7816_chip_info - chip specific information
+>   */
+>  
+>  struct ad7816_chip_info {
+> diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+> index fc8c852..70ddfa2 100644
+> --- a/drivers/staging/iio/adc/ad799x.h
+> +++ b/drivers/staging/iio/adc/ad799x.h
+> @@ -76,7 +76,7 @@ enum {
+>  struct ad799x_state;
+>  
+>  /**
+> - * struct ad799x_chip_info - chip specifc information
+> + * struct ad799x_chip_info - chip specific information
+>   * @channel:		channel specification
+>   * @num_channels:	number of channels
+>   * @monitor_mode:	whether the chip supports monitor interrupts
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 9f0ebb3..5f1770e 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -172,7 +172,7 @@
+>  #define ID_ADT75XX		0x10
+>  
+>  /*
+> - * struct adt7316_chip_info - chip specifc information
+> + * struct adt7316_chip_info - chip specific information
+>   */
+>  
+>  struct adt7316_chip_info {
+> @@ -208,7 +208,7 @@ struct adt7316_chip_info {
+>  	(ADT7316_TEMP_INT_MASK)
+>  
+>  /*
+> - * struct adt7316_chip_info - chip specifc information
+> + * struct adt7316_chip_info - chip specific information
+>   */
+>  
+>  struct adt7316_limit_regs {
+> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+> index f2c309d..87110d9 100644
+> --- a/drivers/staging/iio/cdc/ad7152.c
+> +++ b/drivers/staging/iio/cdc/ad7152.c
+> @@ -78,7 +78,7 @@ enum {
+>  };
+>  
+>  /*
+> - * struct ad7152_chip_info - chip specifc information
+> + * struct ad7152_chip_info - chip specific information
+>   */
+>  
+>  struct ad7152_chip_info {
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> index cbb1588..e6e9eaa 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -91,7 +91,7 @@
+>  #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
+>  
+>  /*
+> - * struct ad7746_chip_info - chip specifc information
+> + * struct ad7746_chip_info - chip specific information
+>   */
+>  
+>  struct ad7746_chip_info {
 > 
 
 
 -- 
-Nicolas Ferre
+~Randy
