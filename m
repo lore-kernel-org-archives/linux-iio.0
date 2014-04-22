@@ -1,62 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f201.google.com ([209.85.220.201]:52266 "EHLO
-	mail-vc0-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753096AbaDVAEG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Apr 2014 20:04:06 -0400
-Received: by mail-vc0-f201.google.com with SMTP id ik5so239841vcb.4
-        for <linux-iio@vger.kernel.org>; Mon, 21 Apr 2014 17:04:04 -0700 (PDT)
-From: Doug Anderson <dianders@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Cc: Milo.Kim@ti.com, Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Doug Anderson <dianders@chromium.org>, lee.jones@linaro.org,
-	gregkh@linuxfoundation.org, Russ.Dill@ti.com,
-	alexandre.belloni@free-electrons.com, oleksandr.kozaruk@ti.com,
-	B38611@freescale.com, johannes.thumshirn@men.de, sre@debian.org,
-	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: Nothing in ADC should be a bool CONFIG
-Date: Mon, 21 Apr 2014 17:03:51 -0700
-Message-Id: <1398125031-5826-1-git-send-email-dianders@chromium.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <standby24x7@gmail.com>
+From: Masanari Iida <standby24x7@gmail.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Cc: gregkh@linuxfoundation.org,
+	rdunlap@infradead.org,
+	Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] staging: iio: Fix typo in iio
+Date: Tue, 22 Apr 2014 20:23:38 +0900
+Message-Id: <1398165818-25904-1-git-send-email-standby24x7@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The whole IIO subsystem can be moved to a module.  If you make it a
-module then stuff marked as "Y" in the adc directory simply won't be
-linked in properly.
+Correct spelling typo in comment within staging/iio
 
-The two configs that were wrong were EXYNOS_ADC and LP8788_ADC.  I
-know for a fact that EXYNOS_ADC will work as a module (though it
-appears to crash when you unload it--that needs to be addressed
-separately).  I assume LP8788_ADC will also be fine..
-
-Signed-off-by: Doug Anderson <dianders@chromium.org>
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
 ---
- drivers/iio/adc/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7606.h    | 4 ++--
+ drivers/staging/iio/adc/ad7816.c    | 2 +-
+ drivers/staging/iio/adc/ad799x.h    | 2 +-
+ drivers/staging/iio/addac/adt7316.c | 4 ++--
+ drivers/staging/iio/cdc/ad7152.c    | 2 +-
+ drivers/staging/iio/cdc/ad7746.c    | 2 +-
+ 6 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index d86196c..24c28e3 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -106,7 +106,7 @@ config AT91_ADC
- 	  Say yes here to build support for Atmel AT91 ADC.
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 93c7299..ec89d05 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -14,7 +14,7 @@
+  */
  
- config EXYNOS_ADC
--	bool "Exynos ADC driver support"
-+	tristate "Exynos ADC driver support"
- 	depends on OF
- 	help
- 	  Core support for the ADC block found in the Samsung EXYNOS series
-@@ -114,7 +114,7 @@ config EXYNOS_ADC
- 	  this resource.
+ /**
+- * struct ad7606_platform_data - platform/board specifc information
++ * struct ad7606_platform_data - platform/board specific information
+  * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
+  * @default_range:	default range +/-{5000, 10000} mVolt
+  * @gpio_convst:	number of gpio connected to the CONVST pin
+@@ -41,7 +41,7 @@ struct ad7606_platform_data {
+ };
  
- config LP8788_ADC
--	bool "LP8788 ADC driver"
-+	tristate "LP8788 ADC driver"
- 	depends on MFD_LP8788
- 	help
- 	  Say yes here to build support for TI LP8788 ADC.
+ /**
+- * struct ad7606_chip_info - chip specifc information
++ * struct ad7606_chip_info - chip specific information
+  * @name:		identification string for chip
+  * @int_vref_mv:	the internal reference voltage
+  * @channels:		channel specification
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 2369cf2..158d770 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -40,7 +40,7 @@
+ 
+ 
+ /*
+- * struct ad7816_chip_info - chip specifc information
++ * struct ad7816_chip_info - chip specific information
+  */
+ 
+ struct ad7816_chip_info {
+diff --git a/drivers/staging/iio/adc/ad799x.h b/drivers/staging/iio/adc/ad799x.h
+index fc8c852..70ddfa2 100644
+--- a/drivers/staging/iio/adc/ad799x.h
++++ b/drivers/staging/iio/adc/ad799x.h
+@@ -76,7 +76,7 @@ enum {
+ struct ad799x_state;
+ 
+ /**
+- * struct ad799x_chip_info - chip specifc information
++ * struct ad799x_chip_info - chip specific information
+  * @channel:		channel specification
+  * @num_channels:	number of channels
+  * @monitor_mode:	whether the chip supports monitor interrupts
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 9f0ebb3..5f1770e 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -172,7 +172,7 @@
+ #define ID_ADT75XX		0x10
+ 
+ /*
+- * struct adt7316_chip_info - chip specifc information
++ * struct adt7316_chip_info - chip specific information
+  */
+ 
+ struct adt7316_chip_info {
+@@ -208,7 +208,7 @@ struct adt7316_chip_info {
+ 	(ADT7316_TEMP_INT_MASK)
+ 
+ /*
+- * struct adt7316_chip_info - chip specifc information
++ * struct adt7316_chip_info - chip specific information
+  */
+ 
+ struct adt7316_limit_regs {
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index f2c309d..87110d9 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -78,7 +78,7 @@ enum {
+ };
+ 
+ /*
+- * struct ad7152_chip_info - chip specifc information
++ * struct ad7152_chip_info - chip specific information
+  */
+ 
+ struct ad7152_chip_info {
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index cbb1588..e6e9eaa 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -91,7 +91,7 @@
+ #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
+ 
+ /*
+- * struct ad7746_chip_info - chip specifc information
++ * struct ad7746_chip_info - chip specific information
+  */
+ 
+ struct ad7746_chip_info {
 -- 
-1.9.1.423.g4596e3a
-
+2.0.0.rc0.26.g779792a
