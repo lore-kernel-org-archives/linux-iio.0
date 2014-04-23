@@ -1,79 +1,194 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35589 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35614 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754717AbaDWUxM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Apr 2014 16:53:12 -0400
-Message-ID: <5358288C.6030205@kernel.org>
-Date: Wed, 23 Apr 2014 21:54:36 +0100
+	with ESMTP id S932598AbaDWU4T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Apr 2014 16:56:19 -0400
+Message-ID: <53582945.7020300@kernel.org>
+Date: Wed, 23 Apr 2014 21:57:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Doug Anderson <dianders@chromium.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: Milo.Kim@ti.com, Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	lee.jones@linaro.org, gregkh@linuxfoundation.org, Russ.Dill@ti.com,
-	alexandre.belloni@free-electrons.com, oleksandr.kozaruk@ti.com,
-	B38611@freescale.com, johannes.thumshirn@men.de, sre@debian.org,
-	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: Nothing in ADC should be a bool CONFIG
-References: <1398125031-5826-1-git-send-email-dianders@chromium.org>
-In-Reply-To: <1398125031-5826-1-git-send-email-dianders@chromium.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 01/16] iio: hid-sensors: Convert units and exponent
+References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/04/14 01:03, Doug Anderson wrote:
-> The whole IIO subsystem can be moved to a module.  If you make it a
-> module then stuff marked as "Y" in the adc directory simply won't be
-> linked in properly.
+On 19/04/14 00:22, Srinivas Pandruvada wrote:
+> HID sensor hub specify a default unit and alternative units. This
+> along with unit exponent can be used adjust scale. This change
+> change HID sensor data units to IIO defined units for each
+> sensor type. So in this way user space can use a simply use:
+> "(data + offset) * scale" to get final result.
 >
-> The two configs that were wrong were EXYNOS_ADC and LP8788_ADC.  I
-> know for a fact that EXYNOS_ADC will work as a module (though it
-> appears to crash when you unload it--that needs to be addressed
-> separately).
-I'd really like to see this pinned down before taking this patch.
-I can see you argument that the current approach is clearly wrong,
-but swapping one issue for another is not an approach I'd particularly
-like to take...
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-I can't immediately spot the cause of the crash, but there are certainly
-some interesting order issues in this driver.  Not enabling the vdd
-regulator until after the userspace interfaces are exposed (by the
-iio_device_register call) is interesting for a start.
+Hi Srinivas,
 
-The remove doesn't run in the reverse of the probe order (see clocks
-vs regulators for example.)
+What 'grief' is this abi change likely to cause us?
 
-Gah, my reviewing for one clearly missed some things in this driver.
+I know I effectively asked you to fix this, but I'd like to get
+a handle on just how many people are likely to shout.
 
-> I assume LP8788_ADC will also be fine..
->
-> Signed-off-by: Doug Anderson <dianders@chromium.org>
+The original code is a gross breaking of the published ABI so
+it probably is reasonable to change it...
+
+I'm too tired to review this properly right now so only the most
+superficial comments in line.
 > ---
->   drivers/iio/adc/Kconfig | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   .../iio/common/hid-sensors/hid-sensor-attributes.c | 114 +++++++++++++++++++++
+>   include/linux/hid-sensor-hub.h                     |   4 +
+>   2 files changed, 118 insertions(+)
 >
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index d86196c..24c28e3 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -106,7 +106,7 @@ config AT91_ADC
->   	  Say yes here to build support for Atmel AT91 ADC.
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index 75b5473..451a95b 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -26,6 +26,40 @@
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
 >
->   config EXYNOS_ADC
-> -	bool "Exynos ADC driver support"
-> +	tristate "Exynos ADC driver support"
->   	depends on OF
->   	help
->   	  Core support for the ADC block found in the Samsung EXYNOS series
-> @@ -114,7 +114,7 @@ config EXYNOS_ADC
->   	  this resource.
+> +struct {
+> +	u32 usage_id;
+> +	int unit; /* 0 for default others from HID sensor spec */
+> +	int scale_val0; /* scale, whole number */
+> +	int scale_val1; /* scale, fraction in micros */
+> +} unit_conversion[] = {
+> +	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
+> +	{HID_USAGE_SENSOR_ACCEL_3D,
+> +		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
+> +	{HID_USAGE_SENSOR_ACCEL_3D,
+> +		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
+> +
+> +	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
+> +	{HID_USAGE_SENSOR_GYRO_3D,
+> +		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
+> +	{HID_USAGE_SENSOR_GYRO_3D,
+> +		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
+> +
+> +	{HID_USAGE_SENSOR_COMPASS_3D, 0, 1000, 0},
+> +	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+> +
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 17453, 0},
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> +		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+> +
+> +	{HID_USAGE_SENSOR_ALS, 0, 1, 0},
+> +	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
+> +
+> +	{HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
+> +	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 1, 0},
+> +};
+> +
+>   static int pow_10(unsigned power)
+>   {
+>   	int i;
+> @@ -209,6 +243,86 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+>   }
+>   EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
 >
->   config LP8788_ADC
-> -	bool "LP8788 ADC driver"
-> +	tristate "LP8788 ADC driver"
->   	depends on MFD_LP8788
->   	help
->   	  Say yes here to build support for TI LP8788 ADC.
+> +/*
+> + * This fuction applies the unit exponent to the scale.
+function.
+
+Good examples btw.
+> + * For example:
+> + * 9.806650 ->exp:2-> val0[980]val1[6650]
+> + * 9.000806 ->exp:2-> val0[900]val1[806]
+> + * 0.174535 ->exp:2-> val0[17]val1[4535]
+> + * 1.001745 ->exp:0-> val0[1]val1[1745]
+> + * 1.001745 ->exp:2-> val0[100]val1[1745]
+> + * 1.001745 ->exp:4-> val0[10017]val1[45]
+> + * 9.806650 ->exp:-2-> val0[0]val1[98066]
+> + */
+> +static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+> +				  int scale1, int exp)
+> +{
+> +	int i;
+> +	int x;
+> +	int res;
+> +	int rem;
+> +
+> +	if (exp > 0) {
+> +		*val0 = scale0 * pow_10(exp);
+> +		res = 0;
+> +		if (exp > 6) {
+> +			*val1 = 0;
+> +			return;
+> +		}
+> +		for (i = 0; i < exp; ++i) {
+> +			x = scale1 / pow_10(5 - i);
+> +			res += (pow_10(exp - 1 - i) * x);
+> +			scale1 = scale1 % pow_10(5 - i);
+> +		}
+> +		*val0 += res;
+> +			*val1 = scale1 * pow_10(exp);
+> +	} else if (exp < 0) {
+> +		exp = abs(exp);
+> +		if (exp > 6) {
+> +			*val0 = *val1 = 0;
+> +			return;
+> +		}
+> +		*val0 = scale0 / pow_10(exp);
+> +		rem = scale0 % pow_10(exp);
+> +		res = 0;
+> +		for (i = 0; i < (6 - exp); ++i) {
+> +			x = scale1 / pow_10(5 - i);
+> +			res += (pow_10(5 - exp - i) * x);
+> +			scale1 = scale1 % pow_10(5 - i);
+> +		}
+> +		*val1 = rem * pow_10(6 - exp) + res;
+> +	} else {
+> +		*val0 = scale0;
+> +		*val1 = scale1;
+> +	}
+> +}
+> +
+> +int hid_sensor_format_scale(u32 usage_id,
+> +			struct hid_sensor_hub_attribute_info *attr_info,
+> +			int *val0, int *val1)
+> +{
+> +	int i;
+> +	int exp;
+> +
+> +	*val0 = 1;
+> +	*val1 = 0;
+> +
+> +	for (i = 0; ARRAY_SIZE(unit_conversion); ++i) {
+> +		if (unit_conversion[i].usage_id == usage_id &&
+> +			unit_conversion[i].unit == attr_info->units) {
+> +			exp  = hid_sensor_convert_exponent(
+> +						attr_info->unit_expo);
+> +			adjust_exponent_micro(val0, val1,
+> +					unit_conversion[i].scale_val0,
+> +					unit_conversion[i].scale_val1, exp);
+> +			break;
+> +		}
+> +	}
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
+> +EXPORT_SYMBOL(hid_sensor_format_scale);
+> +
+>   int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+>   					u32 usage_id,
+>   					struct hid_sensor_common *st)
+> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+> index b70cfd7..89626b2 100644
+> --- a/include/linux/hid-sensor-hub.h
+> +++ b/include/linux/hid-sensor-hub.h
+> @@ -223,4 +223,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+>   int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
+>   				u32 report_id, int field_index, u32 usage_id);
+>
+> +int hid_sensor_format_scale(u32 usage_id,
+> +			    struct hid_sensor_hub_attribute_info *attr_info,
+> +			    int *val0, int *val1);
+> +
+>   #endif
 >
 
