@@ -1,372 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35712 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758115AbaDWVRm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Apr 2014 17:17:42 -0400
-Message-ID: <53582E4C.3060800@kernel.org>
-Date: Wed, 23 Apr 2014 22:19:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 5/6] iio: st_sensors: add devicetree probing support
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org> <1397416143-4396-6-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1397416143-4396-6-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mailout1.samsung.com ([203.254.224.24]:28099 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752636AbaDYKQi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 06:16:38 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, Naveen Krishna Ch <ch.naveen@samsung.com>
+Subject: [PATCH 1/5] iio: exynos_adc: use indio_dev->dev structure to handle
+ child nodes
+Date: Fri, 25 Apr 2014 15:44:43 +0530
+Message-id: <1398420888-5506-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/04/14 20:09, Linus Walleij wrote:
-> The I2C devices that make up the STMicroelectronics MEMS sensors
-> may be sneakily enabled by cleverly giving the device node the same
-> name as a string match from the platform device ID table. However
-> the right method is to use the compatible string.
->
-> On detection, the ST sensors use the ID string to probe and
-> instatiate the right sensor driver, so pass the kernel-internal ID
-> string in the .data field of the OF match table, and set the I2C
-> client name to this name when a compatible match is used.
->
-> This avoids having misc Linux-specific strings floating around in
-> the device tree.
-I can't make up my mind whether I like this or not.
-Having said that it fixes an ABI compatibility issue that I couldn't
-see a way around so nicely done.
+From: Naveen Krishna Ch <ch.naveen@samsung.com>
 
-(note I'll leave this set be for now given the device tree element
-and that it hasn't been 3 weeks yet)
->
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Denis CIOCCA <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->   drivers/iio/accel/st_accel.h                   | 47 ++++++++++++++++++++++++++
->   drivers/iio/accel/st_accel_i2c.c               |  2 ++
->   drivers/iio/common/st_sensors/st_sensors_i2c.c | 29 ++++++++++++++++
->   drivers/iio/gyro/st_gyro.h                     | 35 +++++++++++++++++++
->   drivers/iio/gyro/st_gyro_i2c.c                 |  2 ++
->   drivers/iio/magnetometer/st_magn.h             | 19 +++++++++++
->   drivers/iio/magnetometer/st_magn_i2c.c         |  2 ++
->   drivers/iio/pressure/st_pressure.h             | 19 +++++++++++
->   drivers/iio/pressure/st_pressure_i2c.c         |  2 ++
->   include/linux/iio/common/st_sensors_i2c.h      | 11 ++++++
->   10 files changed, 168 insertions(+)
->
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index c3877630b2e4..42e1069c869f 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -25,6 +25,53 @@
->   #define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
->   #define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
->
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id st_accel_of_match[] = {
-> +	{
-> +		.compatible = "st,lsm303dlh-accel",
-> +		.data = LSM303DLH_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm303dlhc-accel",
-> +		.data = LSM303DLHC_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lis3dh-accel",
-> +		.data = LIS3DH_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330d-accel",
-> +		.data = LSM330D_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330dl-accel",
-> +		.data = LSM330DL_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330dlc-accel",
-> +		.data = LSM330DLC_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lis331dlh-accel",
-> +		.data = LIS331DLH_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm303dl-accel",
-> +		.data = LSM303DL_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm303dlm-accel",
-> +		.data = LSM303DLM_ACCEL_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330-accel",
-> +		.data = LSM330_ACCEL_DEV_NAME,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, st_accel_of_match);
-> +#endif
-> +
->   /**
->   * struct st_sensors_platform_data - default accel platform data
->   * @drdy_int_pin: default accel DRDY is available on INT1 pin.
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index d7bedbdfc81d..05f7e14ce14f 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -31,6 +31,7 @@ static int st_accel_i2c_probe(struct i2c_client *client,
->
->   	adata = iio_priv(indio_dev);
->   	adata->dev = &client->dev;
-> +	st_sensors_of_i2c_probe(client, st_accel_of_match);
->
->   	st_sensors_i2c_configure(indio_dev, client, adata);
->
-> @@ -67,6 +68,7 @@ static struct i2c_driver st_accel_driver = {
->   	.driver = {
->   		.owner = THIS_MODULE,
->   		.name = "st-accel-i2c",
-> +		.of_match_table = of_match_ptr(st_accel_of_match),
->   	},
->   	.probe = st_accel_i2c_probe,
->   	.remove = st_accel_i2c_remove,
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> index 38af9440c103..12246e9529ef 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-> @@ -12,6 +12,7 @@
->   #include <linux/module.h>
->   #include <linux/slab.h>
->   #include <linux/iio/iio.h>
-> +#include <linux/of_device.h>
->
->   #include <linux/iio/common/st_sensors_i2c.h>
->
-> @@ -76,6 +77,34 @@ void st_sensors_i2c_configure(struct iio_dev *indio_dev,
->   }
->   EXPORT_SYMBOL(st_sensors_i2c_configure);
->
-> +#ifdef CONFIG_OF
-> +/**
-> + * st_sensors_of_i2c_probe() - device tree probe for ST I2C sensors
-> + * @client: the I2C client device for the sensor
-> + * @match: the OF match table for the device, containing compatible strings
-> + *	but also a .data field with the corresponding internal kernel name
-> + *	used by this sensor.
-> + *
-> + * In effect this function matches a compatible string to an internal kernel
-> + * name for a certain sensor device, so that the rest of the autodetection can
-> + * rely on that name from this point on. I2C client devices will be renamed
-> + * to match the internal kernel convention.
-> + */
-> +void st_sensors_of_i2c_probe(struct i2c_client *client,
-> +			     const struct of_device_id *match)
-> +{
-> +	const struct of_device_id *of_id;
-> +
-> +	of_id = of_match_device(match, &client->dev);
-> +	if (!of_id)
-> +		return;
-> +
-> +	/* The name from the OF match takes precedence if present */
-> +	strncpy(client->name, of_id->data, sizeof(client->name));
-> +	client->name[sizeof(client->name) - 1] = '\0';
-> +}
-> +#endif
-> +
->   MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
->   MODULE_DESCRIPTION("STMicroelectronics ST-sensors i2c driver");
->   MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-> index c197360c450b..f27ccd02d82a 100644
-> --- a/drivers/iio/gyro/st_gyro.h
-> +++ b/drivers/iio/gyro/st_gyro.h
-> @@ -22,6 +22,41 @@
->   #define L3G4IS_GYRO_DEV_NAME		"l3g4is_ui"
->   #define LSM330_GYRO_DEV_NAME		"lsm330_gyro"
->
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id st_gyro_of_match[] = {
-> +	{
-> +		.compatible = "st,l3g4200d-gyro",
-> +		.data = L3G4200D_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330d-gyro",
-> +		.data = LSM330D_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330dl-gyro",
-> +		.data = LSM330DL_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330dlc-gyro",
-> +		.data = LSM330DLC_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,l3gd20-gyro",
-> +		.data = L3GD20_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,l3g4is-gyro",
-> +		.data = L3G4IS_GYRO_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm330-gyro",
-> +		.data = LSM330_GYRO_DEV_NAME,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, st_gyro_of_match);
-> +#endif
-> +
->   /**
->    * struct st_sensors_platform_data - gyro platform data
->    * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
-> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-> index 23c12f361b05..889f5dfa4a1a 100644
-> --- a/drivers/iio/gyro/st_gyro_i2c.c
-> +++ b/drivers/iio/gyro/st_gyro_i2c.c
-> @@ -31,6 +31,7 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
->
->   	gdata = iio_priv(indio_dev);
->   	gdata->dev = &client->dev;
-> +	st_sensors_of_i2c_probe(client, st_gyro_of_match);
->
->   	st_sensors_i2c_configure(indio_dev, client, gdata);
->
-> @@ -65,6 +66,7 @@ static struct i2c_driver st_gyro_driver = {
->   	.driver = {
->   		.owner = THIS_MODULE,
->   		.name = "st-gyro-i2c",
-> +		.of_match_table = of_match_ptr(st_gyro_of_match),
->   	},
->   	.probe = st_gyro_i2c_probe,
->   	.remove = st_gyro_i2c_remove,
-> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-> index 694e33e0fb72..557f5f232a6e 100644
-> --- a/drivers/iio/magnetometer/st_magn.h
-> +++ b/drivers/iio/magnetometer/st_magn.h
-> @@ -18,6 +18,25 @@
->   #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
->   #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
->
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id st_magn_of_match[] = {
-> +	{
-> +		.compatible = "st,lsm303dlhc-magn",
-> +		.data = LSM303DLHC_MAGN_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lsm303dlm-magn",
-> +		.data = LSM303DLM_MAGN_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lis3mdl-magn",
-> +		.data = LIS3MDL_MAGN_DEV_NAME,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, st_magn_of_match);
-> +#endif
-> +
->   int st_magn_common_probe(struct iio_dev *indio_dev,
->   					struct st_sensors_platform_data *pdata);
->   void st_magn_common_remove(struct iio_dev *indio_dev);
-> diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-> index 892e0feeb5c1..88a525ed7926 100644
-> --- a/drivers/iio/magnetometer/st_magn_i2c.c
-> +++ b/drivers/iio/magnetometer/st_magn_i2c.c
-> @@ -31,6 +31,7 @@ static int st_magn_i2c_probe(struct i2c_client *client,
->
->   	mdata = iio_priv(indio_dev);
->   	mdata->dev = &client->dev;
-> +	st_sensors_of_i2c_probe(client, st_magn_of_match);
->
->   	st_sensors_i2c_configure(indio_dev, client, mdata);
->
-> @@ -61,6 +62,7 @@ static struct i2c_driver st_magn_driver = {
->   	.driver = {
->   		.owner = THIS_MODULE,
->   		.name = "st-magn-i2c",
-> +		.of_match_table = of_match_ptr(st_magn_of_match),
->   	},
->   	.probe = st_magn_i2c_probe,
->   	.remove = st_magn_i2c_remove,
-> diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
-> index 242943c0c4e4..01648734e571 100644
-> --- a/drivers/iio/pressure/st_pressure.h
-> +++ b/drivers/iio/pressure/st_pressure.h
-> @@ -18,6 +18,25 @@
->   #define LPS25H_PRESS_DEV_NAME		"lps25h"
->   #define LPS331AP_PRESS_DEV_NAME		"lps331ap"
->
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id st_press_of_match[] = {
-> +	{
-> +		.compatible = "st,lps001wp-press",
-> +		.data = LPS001WP_PRESS_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lps25h-press",
-> +		.data = LPS25H_PRESS_DEV_NAME,
-> +	},
-> +	{
-> +		.compatible = "st,lps331ap-press",
-> +		.data = LPS331AP_PRESS_DEV_NAME,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, st_press_of_match);
-> +#endif
-> +
->   /**
->    * struct st_sensors_platform_data - default press platform data
->    * @drdy_int_pin: default press DRDY is available on INT1 pin.
-> diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-> index 3cd73e39b840..0de0c71a29be 100644
-> --- a/drivers/iio/pressure/st_pressure_i2c.c
-> +++ b/drivers/iio/pressure/st_pressure_i2c.c
-> @@ -31,6 +31,7 @@ static int st_press_i2c_probe(struct i2c_client *client,
->
->   	pdata = iio_priv(indio_dev);
->   	pdata->dev = &client->dev;
-> +	st_sensors_of_i2c_probe(client, st_press_of_match);
->
->   	st_sensors_i2c_configure(indio_dev, client, pdata);
->
-> @@ -60,6 +61,7 @@ static struct i2c_driver st_press_driver = {
->   	.driver = {
->   		.owner = THIS_MODULE,
->   		.name = "st-press-i2c",
-> +		.of_match_table = of_match_ptr(st_press_of_match),
->   	},
->   	.probe = st_press_i2c_probe,
->   	.remove = st_press_i2c_remove,
-> diff --git a/include/linux/iio/common/st_sensors_i2c.h b/include/linux/iio/common/st_sensors_i2c.h
-> index 67d845385ae2..1796af093368 100644
-> --- a/include/linux/iio/common/st_sensors_i2c.h
-> +++ b/include/linux/iio/common/st_sensors_i2c.h
-> @@ -13,8 +13,19 @@
->
->   #include <linux/i2c.h>
->   #include <linux/iio/common/st_sensors.h>
-> +#include <linux/of.h>
->
->   void st_sensors_i2c_configure(struct iio_dev *indio_dev,
->   		struct i2c_client *client, struct st_sensor_data *sdata);
->
-> +#ifdef CONFIG_OF
-> +void st_sensors_of_i2c_probe(struct i2c_client *client,
-> +			     const struct of_device_id *match);
-> +#else
-> +static inline void st_sensors_of_i2c_probe(struct i2c_client *client,
-> +					   const struct of_device_id *match)
-> +{
-> +}
-> +#endif
-> +
->   #endif /* ST_SENSORS_I2C_H */
->
+Using pdev->dev with device_for_each_child() would iterate over all
+of the children of the platform device and delete them.
+Thus, causing crashes during module unload.
+
+We should be using the indio_dev->dev structure for
+registering/unregistering child nodes.
+
+Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
+---
+This change was tested on top of 
+   https://lkml.org/lkml/2014/4/21/481 from Doug.
+
+ drivers/iio/adc/exynos_adc.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index d25b262..affa93f 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -344,7 +344,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 
+ 	exynos_adc_hw_init(info);
+ 
+-	ret = of_platform_populate(np, exynos_adc_match, NULL, &pdev->dev);
++	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed adding child nodes\n");
+ 		goto err_of_populate;
+@@ -353,7 +353,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_of_populate:
+-	device_for_each_child(&pdev->dev, NULL,
++	device_for_each_child(&indio_dev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+ 	clk_disable_unprepare(info->clk);
+@@ -369,7 +369,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 
+-	device_for_each_child(&pdev->dev, NULL,
++	device_for_each_child(&indio_dev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+ 	clk_disable_unprepare(info->clk);
+-- 
+1.7.9.5
 
