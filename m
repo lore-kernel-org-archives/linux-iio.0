@@ -1,108 +1,155 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:51849 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752888AbaDYKQn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 06:16:43 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org
-Subject: [PATCH 4/5] iio: exynos_adc: do a soft reset in case of timeout
-Date: Fri, 25 Apr 2014 15:44:46 +0530
-Message-id: <1398420888-5506-5-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail-vc0-f178.google.com ([209.85.220.178]:44174 "EHLO
+	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752359AbaDYQGw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 12:06:52 -0400
+Received: by mail-vc0-f178.google.com with SMTP id hu19so4926482vcb.23
+        for <linux-iio@vger.kernel.org>; Fri, 25 Apr 2014 09:06:51 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1398420888-5506-3-git-send-email-ch.naveen@samsung.com>
 References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+	<1398420888-5506-3-git-send-email-ch.naveen@samsung.com>
+Date: Fri, 25 Apr 2014 09:06:51 -0700
+Message-ID: <CAD=FV=UOBcC92xxvtuQuzD-1zxT-hgGWJWajOUjeagHVBHYENw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] iio: exynos_adc: rearrange clock and regulator
+ enable/disable calls
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Do a soft reset software if a timeout happens.
-This is applicable only for ADC_V2.
+Naveen,
 
-Change-Id: I939eaa06254e0b246dd636df9470f2eb392c2be1
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
----
-This change is a part of the patch reviewed at https://lkml.org/lkml/2013/11/5/92
+On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> From: Naveen Krishna Ch <ch.naveen@samsung.com>
+>
+> This patch maintains the following order in
+> probe(), remove(), resume() and suspend() calls
+>
+> regulator enable, clk prepare enable
+> ...
+> clk disable unprepare, regulator disable
+>
+> While at it,
+> 1. enable the regulator before the iio_device_register()
+> 2. handle the return values for enable/disable calls
+>
+> Change-Id: I764d9d60f72caa7ea6b0609db49a74115574f081
+> Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
+> ---
+> This change fixes the comments given by Jonathan regarding the
+> order of clock and regulator enable/disable calls.
+> https://lkml.org/lkml/2014/4/23/644
+>
+>  drivers/iio/adc/exynos_adc.c |   34 ++++++++++++++++++++--------------
+>  1 file changed, 20 insertions(+), 14 deletions(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index affa93f..a2b8b1a 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -316,6 +316,14 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>                 goto err_irq;
+>         }
+>
+> +       ret = regulator_enable(info->vdd);
+> +       if (ret)
+> +               goto err_irq;
+> +
+> +       ret = clk_prepare_enable(info->clk);
+> +       if (ret)
+> +               goto err_disable_reg;
+> +
+>         info->version = exynos_adc_get_version(pdev);
+>
+>         platform_set_drvdata(pdev, indio_dev);
+> @@ -334,13 +342,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>
+>         ret = iio_device_register(indio_dev);
+>         if (ret)
+> -               goto err_irq;
+> -
+> -       ret = regulator_enable(info->vdd);
+> -       if (ret)
+> -               goto err_iio_dev;
+> -
+> -       clk_prepare_enable(info->clk);
+> +               goto err_disable_clk;
+>
+>         exynos_adc_hw_init(info);
+>
+> @@ -355,10 +357,11 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  err_of_populate:
+>         device_for_each_child(&indio_dev->dev, NULL,
+>                                 exynos_adc_remove_devices);
+> -       regulator_disable(info->vdd);
+> -       clk_disable_unprepare(info->clk);
+> -err_iio_dev:
+>         iio_device_unregister(indio_dev);
+> +err_disable_clk:
+> +       clk_disable_unprepare(info->clk);
+> +err_disable_reg:
+> +       regulator_disable(info->vdd);
+>  err_irq:
+>         free_irq(info->irq, info);
+>         return ret;
+> @@ -371,9 +374,10 @@ static int exynos_adc_remove(struct platform_device *pdev)
+>
+>         device_for_each_child(&indio_dev->dev, NULL,
+>                                 exynos_adc_remove_devices);
+> -       regulator_disable(info->vdd);
+>         clk_disable_unprepare(info->clk);
+> +       regulator_disable(info->vdd);
+>         writel(0, info->enable_reg);
+> +
 
- drivers/iio/adc/exynos_adc.c |   50 ++++++++++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 24 deletions(-)
+This function still looks wrong.  The order of things should generally
+match the error case of probe, which is the reverse of how things are
+initted.
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 4d2467a..805c9f6 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -112,6 +112,30 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
- 	return (unsigned int)match->data;
- }
- 
-+static void exynos_adc_hw_init(struct exynos_adc *info)
-+{
-+	u32 con1, con2;
-+
-+	if (info->version == ADC_V2) {
-+		con1 = ADC_V2_CON1_SOFT_RESET;
-+		writel(con1, ADC_V2_CON1(info->regs));
-+
-+		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
-+			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
-+		writel(con2, ADC_V2_CON2(info->regs));
-+
-+		/* Enable interrupts */
-+		writel(1, ADC_V2_INT_EN(info->regs));
-+	} else {
-+		/* set default prescaler values and Enable prescaler */
-+		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-+
-+		/* Enable 12-bit ADC resolution */
-+		con1 |= ADC_V1_CON_RES;
-+		writel(con1, ADC_V1_CON(info->regs));
-+	}
-+}
-+
- static int exynos_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
- 				int *val,
-@@ -149,6 +173,8 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 	timeout = wait_for_completion_timeout
- 			(&info->completion, EXYNOS_ADC_TIMEOUT);
- 	if (timeout == 0) {
-+		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
-+		exynos_adc_hw_init(info);
- 		ret = -ETIMEDOUT;
- 	} else {
- 		*val = info->value;
-@@ -230,30 +256,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
- 	return 0;
- }
- 
--static void exynos_adc_hw_init(struct exynos_adc *info)
--{
--	u32 con1, con2;
--
--	if (info->version == ADC_V2) {
--		con1 = ADC_V2_CON1_SOFT_RESET;
--		writel(con1, ADC_V2_CON1(info->regs));
--
--		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
--			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
--		writel(con2, ADC_V2_CON2(info->regs));
--
--		/* Enable interrupts */
--		writel(1, ADC_V2_INT_EN(info->regs));
--	} else {
--		/* set default prescaler values and Enable prescaler */
--		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
--
--		/* Enable 12-bit ADC resolution */
--		con1 |= ADC_V1_CON_RES;
--		writel(con1, ADC_V1_CON(info->regs));
--	}
--}
--
- static int exynos_adc_probe(struct platform_device *pdev)
- {
- 	struct exynos_adc *info = NULL;
--- 
-1.7.9.5
+Specifically you shouldn't be doing "iio_device_unregister(indio_dev);" last.
 
+Technically it's also a very good idea to free the irq much earlier.
+...and in probe you should request it later.
+
+The request_irq should probably be right before the register function
+in probe and the free_irq should be right after unregister in remove.
+
+
+>         iio_device_unregister(indio_dev);
+>         free_irq(info->irq, info);
+>
+> @@ -398,8 +402,8 @@ static int exynos_adc_suspend(struct device *dev)
+>         }
+>
+>         clk_disable_unprepare(info->clk);
+> -       writel(0, info->enable_reg);
+>         regulator_disable(info->vdd);
+> +       writel(0, info->enable_reg);
+
+This change looks wrong to me.  I'd believe that the rule should
+always be that the regulator is enabled early and disabled late.
+
+
+>         return 0;
+>  }
+> @@ -410,12 +414,14 @@ static int exynos_adc_resume(struct device *dev)
+>         struct exynos_adc *info = iio_priv(indio_dev);
+>         int ret;
+>
+> +       writel(1, info->enable_reg);
+>         ret = regulator_enable(info->vdd);
+>         if (ret)
+>                 return ret;
+
+Same here.  Should enable the regulator first, I think.
