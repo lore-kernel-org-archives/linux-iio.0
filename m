@@ -1,64 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59369 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752334AbaD3Us0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 16:48:26 -0400
-Message-ID: <536161F5.7090508@kernel.org>
-Date: Wed, 30 Apr 2014 21:49:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ve0-f171.google.com ([209.85.128.171]:33815 "EHLO
+	mail-ve0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752676AbaDYPqd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 11:46:33 -0400
+Received: by mail-ve0-f171.google.com with SMTP id jy13so4914173veb.16
+        for <linux-iio@vger.kernel.org>; Fri, 25 Apr 2014 08:46:31 -0700 (PDT)
 MIME-Version: 1.0
+In-Reply-To: <1398420888-5506-2-git-send-email-ch.naveen@samsung.com>
+References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+	<1398420888-5506-2-git-send-email-ch.naveen@samsung.com>
+Date: Fri, 25 Apr 2014 08:46:31 -0700
+Message-ID: <CAD=FV=V28_iDiNWeX6bXLzMW5kWygJz-YAExJkETJKgTDicHQg@mail.gmail.com>
+Subject: Re: [PATCH 1/5] iio: exynos_adc: use indio_dev->dev structure to
+ handle child nodes
+From: Doug Anderson <dianders@chromium.org>
 To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org, t.figa@samsung.com
-Subject: Re: [PATCH 5/5 v3] iio: exynos_adc: do a reinit_completion before
- the conversion
-References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com> <1398850015-17761-6-git-send-email-ch.naveen@samsung.com>
-In-Reply-To: <1398850015-17761-6-git-send-email-ch.naveen@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/04/14 10:26, Naveen Krishna Chatradhi wrote:
-> Add reinit_completion() before the wait_for_completion_timeout in
-> raw_read() call.
+Naveen,
+
+Thanks for sending this.  Given that Jonathan Cameron was involved in
+the previous discussion, it probably would have been wise to include
+him on the CC list.
+
+On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> From: Naveen Krishna Ch <ch.naveen@samsung.com>
 >
-> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-> Reviewed-by: Doug Anderson <dianders@chromium.org>
-Applied to the togreg branch of iio.git
-I wasn't sure if this one was technically a fix, but as it isn't
-marked clearly as such it can go in during the next merge window.
-I won't have pushed this out to a non rebasing branch until tomorrow
-so if this fixes an observed issue then let me know and it might move
-to the fixes-togreg branch.
-
-Thanks,
-
-Jonathan
+> Using pdev->dev with device_for_each_child() would iterate over all
+> of the children of the platform device and delete them.
+> Thus, causing crashes during module unload.
+>
+> We should be using the indio_dev->dev structure for
+> registering/unregistering child nodes.
+>
+> Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
 > ---
-> Changes since v2:
-> None
-> Changes since v1:
-> None
-> v0:
-> This change is a part of the patch reviewed at https://lkml.org/lkml/2013/11/5/92
+> This change was tested on top of
+>    https://lkml.org/lkml/2014/4/21/481 from Doug.
 >
->   drivers/iio/adc/exynos_adc.c |    1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index eddc58e..010578f 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -151,6 +151,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->   		return -EINVAL;
->
->   	mutex_lock(&indio_dev->mlock);
-> +	reinit_completion(&info->completion);
->
->   	/* Select the channel to be used and Trigger conversion */
->   	if (info->version == ADC_V2) {
->
+>  drivers/iio/adc/exynos_adc.c |    6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
+Reported-by: Doug Anderson <dianders@chromium.org>
+Reviewed-by: Doug Anderson <dianders@chromium.org>
+Tested-by: Doug Anderson <dianders@chromium.org>
