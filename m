@@ -1,52 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:47166 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757119AbaD1XsK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 28 Apr 2014 19:48:10 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 4/6] IIO: core: Add quaternion modifier
-Date: Mon, 28 Apr 2014 16:51:45 -0700
-Message-Id: <1398729107-16748-5-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <atilla.filiz@essensium.com>
+To: jic23@cam.ac.uk
+Subject: [PATCH] Fixed segfault in Invensens MPU driver
+Message-ID: <XH2U0J49.1398421120.2347610.filiza@localhost>
+From: "Atilla Filiz" <atilla.filiz@essensium.com>
+Errors-To: "Atilla Filiz" <atilla.filiz@essensium.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Sender: www-data <www-data@INTERNAL>
+Date: Fri, 25 Apr 2014 12:18:40 +0200
+List-ID: <linux-iio@vger.kernel.org>
 
-Added quaternion in the list of supported modifiers.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hello
+
+I found the Invensense MPU6050 driver is not Device-Tree compatible, so I
+fixed it. I willl appreciate if you CC your comments to myself.
+
+Regards
+Atilla
+
+>From 69995b31f67727e3b9605c494beaeeefd1aa1cd4 Mon Sep 17 00:00:00 2001
+From: Atilla Filiz <atilla.filiz@essensium.com>
+Date: Fri, 11 Apr 2014 16:51:23 +0200
+Subject: [PATCH] Fixed segfault in Invensens MPU driver
+
+The driver used to segfault when the kernel boots
+vith device tree
+
+Signed-off-by: Atilla Filiz <atilla.filiz@essensium.com>
 ---
- drivers/iio/industrialio-core.c | 1 +
- include/linux/iio/types.h       | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index e22a984..dcc1849 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -84,6 +84,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_QUATERNION] = "quaternion",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index a13c224..4fdab2e 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -53,6 +53,7 @@ enum iio_modifier {
- 	IIO_MOD_LIGHT_RED,
- 	IIO_MOD_LIGHT_GREEN,
- 	IIO_MOD_LIGHT_BLUE,
-+	IIO_MOD_QUATERNION,
- };
- 
- enum iio_event_type {
--- 
-1.7.11.7
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 37ca05b..3c2ef2e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -660,6 +660,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ {
+ 	struct inv_mpu6050_state *st;
+ 	struct iio_dev *indio_dev;
++	struct inv_mpu6050_platform_data *pdata;
+ 	int result;
 
+ 	if (!i2c_check_functionality(client->adapter,
+@@ -675,8 +676,10 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 	}
+ 	st = iio_priv(indio_dev);
+ 	st->client = client;
+-	st->plat_data = *(struct inv_mpu6050_platform_data
+-				*)dev_get_platdata(&client->dev);
++	pdata = (struct inv_mpu6050_platform_data
++			*)dev_get_platdata(&client->dev);
++	if (pdata)
++		st->plat_data = *pdata;
+ 	/* power is turned on inside check chip type*/
+ 	result = inv_check_and_setup_chip(st, id);
+ 	if (result)
+--
+1.8.1.2
