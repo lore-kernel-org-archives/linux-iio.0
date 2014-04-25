@@ -1,82 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:30498 "EHLO
-	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1945914AbaD3VGY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 17:06:24 -0400
-Date: Thu, 1 May 2014 00:05:29 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Aida Mynzhasova <ai.c.c0der@gmail.com>,
-	Masanari Iida <standby24x7@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [patch v2] [patch] staging: iio: ad799x: remove some unneeded
- IS_ERR() checks
-Message-ID: <20140430210529.GA6008@mwanda>
+Received: from mail-vc0-f178.google.com ([209.85.220.178]:38267 "EHLO
+	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752796AbaDYQcY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 12:32:24 -0400
+Received: by mail-vc0-f178.google.com with SMTP id hu19so4965782vcb.23
+        for <linux-iio@vger.kernel.org>; Fri, 25 Apr 2014 09:32:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53615EED.8040600@gmx.de>
+In-Reply-To: <1398420888-5506-6-git-send-email-ch.naveen@samsung.com>
+References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
+	<1398420888-5506-6-git-send-email-ch.naveen@samsung.com>
+Date: Fri, 25 Apr 2014 09:32:23 -0700
+Message-ID: <CAD=FV=Uv7NdY8vw0atu1Szyz5-VoFbqeM6rc2Jk_LBBzBxGkuw@mail.gmail.com>
+Subject: Re: [PATCH 5/5] iio: exynos_adc: do a reinit_completion before the conversion
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-My static checker is upset that we check IS_ERR(t->reg) when we know it
-is not an ERR_PTR.
+Naveen
 
-Checking for IS_ERR() twice is often a sign of confusion and buggy code.
-In this case, if the call to "ret = regulator_enable(st->vref);" fails,
-then we call "regulator_disable(st->vref);" and that's a mistake because
-"st->vref" is not enabled.
+On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> Add reinit_completion() before the wait_for_completion_timeout in
+> raw_read() call.
+>
+> Change-Id: I70fa00841bc49eba838a5bd6779015844297dfdb
 
-I fixed these problems and Hartmut Knaack pointed out a couple unneeded
-IS_ERR() checks in ad799x_remove() so I have removed those as well.
+Again, remove Change-Id (in the previous patch, too).
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: remove the unneeded checks in ad799x_remove() as well.  Updated the
-    commit message to say that it's actually a small bug fix.
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> ---
+>  drivers/iio/adc/exynos_adc.c |    1 +
+>  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 16a8b14..39b4cb4 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -717,7 +717,7 @@ static int ad799x_probe(struct i2c_client *client,
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		&ad799x_trigger_handler, NULL);
- 	if (ret)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 
- 	if (client->irq > 0) {
- 		ret = devm_request_threaded_irq(&client->dev,
-@@ -739,11 +739,10 @@ static int ad799x_probe(struct i2c_client *client,
- 
- error_cleanup_ring:
- 	iio_triggered_buffer_cleanup(indio_dev);
-+error_disable_vref:
-+	regulator_disable(st->vref);
- error_disable_reg:
--	if (!IS_ERR(st->vref))
--		regulator_disable(st->vref);
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 
- 	return ret;
- }
-@@ -756,10 +755,8 @@ static int ad799x_remove(struct i2c_client *client)
- 	iio_device_unregister(indio_dev);
- 
- 	iio_triggered_buffer_cleanup(indio_dev);
--	if (!IS_ERR(st->vref))
--		regulator_disable(st->vref);
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->vref);
-+	regulator_disable(st->reg);
- 	kfree(st->rx_buf);
- 
- 	return 0;
+Seems reasonable.
+
+Reviewed-by: Doug Anderson <dianders@chromium.org>
