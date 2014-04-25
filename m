@@ -1,85 +1,169 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:20345 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752188AbaDZLjp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 07:39:45 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org, jic23@kernel.org
-Subject: [PATCH 3/5 v2] iio: exynos_adc: reduce timeout and use
- wait_for_completion_timeout
-Date: Sat, 26 Apr 2014 17:07:54 +0530
-Message-id: <1398512276-4105-4-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
-References: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54442 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751291AbaDZIwp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 04:52:45 -0400
+Message-ID: <535AA353.8010107@kernel.org>
+Date: Fri, 25 Apr 2014 19:02:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [Patch v6 3/6] IIO: core: Modify scan element type
+References: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397586073-31507-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397586073-31507-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
-waiting for 1000 msecs is wasteful (incase of h/w failure).
+On 15/04/14 19:21, Srinivas Pandruvada wrote:
+> The current scan element type uses the following format:
+>    [be|le]:[s|u]bits/storagebits[>>shift].
+> To specify multiple elements in this type, added a repeat value.
+> So new format is:
+>    [be|le]:[s|u]bits/storagebits{X[repeat]}[>>shift].
+> Here X is specifying how may times, real/storage bits are repeating.
+>
+> When X is value is 0 or 1, then repeat value is not used in the format,
+> and it will be same as existing format.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hi Srinivas,
 
-Hence, reduce the time out to 100msecs and use
-wait_for_completion_timeout() instead of
-wait_for_completion_interruptible_timeout()
+I'm afraid I've been rather useless in my reviewing of earlier versions of this.
+What I originally meant to suggest was that we'd have descriptions along the lines
+of
+u12/16{X4}>>2 (or u12/16X4>>2 without the brackets) rather than u12/16{4repeat}>>2
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Reviewed-by: Doug Anderson <dianders@chromium.org>
----
-This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
+Now obviously you've gone a long way with this approach so I guess perhaps people
+actually like the word repeat in there?
 
- drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+Sorry again that I didn't pick up on this in any of the last 4 versions you have posted.
+Sometimes the eye sees what it expects to rather than what is there!
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index a2b8b1a..4d2467a 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -82,7 +82,7 @@ enum adc_version {
- #define ADC_CON_EN_START	(1u << 0)
- #define ADC_DATX_MASK		0xFFF
- 
--#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
-+#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
- 
- struct exynos_adc {
- 	void __iomem		*regs;
-@@ -121,6 +121,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 	struct exynos_adc *info = iio_priv(indio_dev);
- 	unsigned long timeout;
- 	u32 con1, con2;
-+	int ret;
- 
- 	if (mask != IIO_CHAN_INFO_RAW)
- 		return -EINVAL;
-@@ -145,16 +146,19 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 				ADC_V1_CON(info->regs));
- 	}
- 
--	timeout = wait_for_completion_interruptible_timeout
-+	timeout = wait_for_completion_timeout
- 			(&info->completion, EXYNOS_ADC_TIMEOUT);
--	*val = info->value;
-+	if (timeout == 0) {
-+		ret = -ETIMEDOUT;
-+	} else {
-+		*val = info->value;
-+		*val2 = 0;
-+		ret = IIO_VAL_INT;
-+	}
- 
- 	mutex_unlock(&indio_dev->mlock);
- 
--	if (timeout == 0)
--		return -ETIMEDOUT;
--
--	return IIO_VAL_INT;
-+	return ret;
- }
- 
- static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
--- 
-1.7.9.5
+I don't particularly mind the version using the word 'repeat' if others like, it simply
+isn't what I thought we had here!
+
+(the rest of this series are fine now btw)
+
+J
+> ---
+>   drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
+>   include/linux/iio/iio.h           |  7 +++++++
+>   2 files changed, 42 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index e108f2a..aa90c68 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
+>   		type = IIO_BE;
+>   #endif
+>   	}
+> -	return sprintf(buf, "%s:%c%d/%d>>%u\n",
+> +	if (this_attr->c->scan_type.repeat > 1)
+> +		return sprintf(buf, "%s:%c%d/%d{%d[repeat]}>>%u\n",
+> +		       iio_endian_prefix[type],
+> +		       this_attr->c->scan_type.sign,
+> +		       this_attr->c->scan_type.realbits,
+> +		       this_attr->c->scan_type.storagebits,
+> +		       this_attr->c->scan_type.repeat,
+> +		       this_attr->c->scan_type.shift);
+> +		else
+> +			return sprintf(buf, "%s:%c%d/%d>>%u\n",
+>   		       iio_endian_prefix[type],
+>   		       this_attr->c->scan_type.sign,
+>   		       this_attr->c->scan_type.realbits,
+> @@ -474,14 +483,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+>   	for_each_set_bit(i, mask,
+>   			 indio_dev->masklength) {
+>   		ch = iio_find_channel_from_si(indio_dev, i);
+> -		length = ch->scan_type.storagebits / 8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		bytes = ALIGN(bytes, length);
+>   		bytes += length;
+>   	}
+>   	if (timestamp) {
+>   		ch = iio_find_channel_from_si(indio_dev,
+>   					      indio_dev->scan_index_timestamp);
+> -		length = ch->scan_type.storagebits / 8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		bytes = ALIGN(bytes, length);
+>   		bytes += length;
+>   	}
+> @@ -957,7 +974,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   					       indio_dev->masklength,
+>   					       in_ind + 1);
+>   			ch = iio_find_channel_from_si(indio_dev, in_ind);
+> -			length = ch->scan_type.storagebits/8;
+> +			if (ch->scan_type.repeat > 1)
+> +				length = ch->scan_type.storagebits / 8 *
+> +					ch->scan_type.repeat;
+> +			else
+> +				length = ch->scan_type.storagebits / 8;
+>   			/* Make sure we are aligned */
+>   			in_loc += length;
+>   			if (in_loc % length)
+> @@ -969,7 +990,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   			goto error_clear_mux_table;
+>   		}
+>   		ch = iio_find_channel_from_si(indio_dev, in_ind);
+> -		length = ch->scan_type.storagebits/8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		if (out_loc % length)
+>   			out_loc += length - out_loc % length;
+>   		if (in_loc % length)
+> @@ -990,7 +1015,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   		}
+>   		ch = iio_find_channel_from_si(indio_dev,
+>   			indio_dev->scan_index_timestamp);
+> -		length = ch->scan_type.storagebits/8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		if (out_loc % length)
+>   			out_loc += length - out_loc % length;
+>   		if (in_loc % length)
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 5629c92..ccde917 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -177,6 +177,12 @@ struct iio_event_spec {
+>    *			shift:		Shift right by this before masking out
+>    *					realbits.
+>    *			endianness:	little or big endian
+> + *			repeat:		Number of times real/storage bits
+> + *					repeats. When the repeat element is
+> + *					more than 1, then the type element in
+> + *					sysfs will show a repeat value.
+> + *					Otherwise, the number of repetitions is
+> + *					omitted.
+>    * @info_mask_separate: What information is to be exported that is specific to
+>    *			this channel.
+>    * @info_mask_shared_by_type: What information is to be exported that is shared
+> @@ -219,6 +225,7 @@ struct iio_chan_spec {
+>   		u8	realbits;
+>   		u8	storagebits;
+>   		u8	shift;
+> +		u8	repeat;
+>   		enum iio_endian endianness;
+>   	} scan_type;
+>   	long			info_mask_separate;
+>
 
