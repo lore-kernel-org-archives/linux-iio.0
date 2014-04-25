@@ -1,91 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve0-f177.google.com ([209.85.128.177]:52473 "EHLO
-	mail-ve0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751762AbaDXUXH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Apr 2014 16:23:07 -0400
-Received: by mail-ve0-f177.google.com with SMTP id sa20so3548848veb.36
-        for <linux-iio@vger.kernel.org>; Thu, 24 Apr 2014 13:23:06 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <5358951A.3080507@kernel.org>
-References: <1398125031-5826-1-git-send-email-dianders@chromium.org>
-	<5358288C.6030205@kernel.org>
-	<CAD=FV=Ws7R0+nJagXswnqowxFvrxh6vTmKM_jwz8mnGbKr_aSg@mail.gmail.com>
-	<5358951A.3080507@kernel.org>
-Date: Thu, 24 Apr 2014 13:23:06 -0700
-Message-ID: <CAD=FV=V-ARDpRUqPqPp=aSie+1T+ADDk-cO_iNic=JXXvk3u9A@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: Nothing in ADC should be a bool CONFIG
-From: Doug Anderson <dianders@chromium.org>
+Received: from mail-pb0-f46.google.com ([209.85.160.46]:46097 "EHLO
+	mail-pb0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751176AbaDYCww (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 24 Apr 2014 22:52:52 -0400
+Date: Fri, 25 Apr 2014 10:52:29 +0800
+From: Jimmy Li <coder.liss@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Milo.Kim@ti.com,
-	Lee Jones <lee.jones@linaro.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Russ.Dill@ti.com, alexandre.belloni@free-electrons.com,
-	oleksandr.kozaruk@ti.com, B38611@freescale.com,
-	johannes.thumshirn@men.de, sre@debian.org,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH]staging:iio:ad2s1200 fix missing parenthesis in a for
+ statment.
+Message-ID: <20140425025229.GA12200@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan / Naveen,
+Signed-off-by: Jimmy Li <coder.liss@gmail.com>
+---
+ drivers/staging/iio/resolver/ad2s1200.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Wed, Apr 23, 2014 at 9:37 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 23/04/14 22:54, Doug Anderson wrote:
->>
->> Jonathan,
->>
->> On Wed, Apr 23, 2014 at 1:54 PM, Jonathan Cameron <jic23@kernel.org>
->> wrote:
->>>
->>> On 22/04/14 01:03, Doug Anderson wrote:
->>>>
->>>>
->>>> The whole IIO subsystem can be moved to a module.  If you make it a
->>>> module then stuff marked as "Y" in the adc directory simply won't be
->>>> linked in properly.
->>>>
->>>> The two configs that were wrong were EXYNOS_ADC and LP8788_ADC.  I
->>>> know for a fact that EXYNOS_ADC will work as a module (though it
->>>> appears to crash when you unload it--that needs to be addressed
->>>> separately).
->>>
->>>
->>> I'd really like to see this pinned down before taking this patch.
->>> I can see you argument that the current approach is clearly wrong,
->>> but swapping one issue for another is not an approach I'd particularly
->>> like to take...
->>>
->>> I can't immediately spot the cause of the crash, but there are certainly
->>> some interesting order issues in this driver.  Not enabling the vdd
->>> regulator until after the userspace interfaces are exposed (by the
->>> iio_device_register call) is interesting for a start.
->>>
->>> The remove doesn't run in the reverse of the probe order (see clocks
->>> vs regulators for example.)
->>>
->>> Gah, my reviewing for one clearly missed some things in this driver.
->>
->>
->> OK, fair enough.  I took a quick look and couldn't spot anything
->> either.  I've requested that Samsung dig into these problems.  If they
->> are unable to I will take a crack at it as time permits.  ;)
->>
-> Cool and good luck (either way ;)
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index e2b4820..017d2f8 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -107,7 +107,7 @@ static int ad2s1200_probe(struct spi_device *spi)
+ 	int pn, ret = 0;
+ 	unsigned short *pins = spi->dev.platform_data;
+ 
+-	for (pn = 0; pn < AD2S1200_PN; pn++)
++	for (pn = 0; pn < AD2S1200_PN; pn++) {
+ 		ret = devm_gpio_request_one(&spi->dev, pins[pn], GPIOF_DIR_OUT,
+ 					    DRV_NAME);
+ 		if (ret) {
+@@ -115,6 +115,7 @@ static int ad2s1200_probe(struct spi_device *spi)
+ 							pins[pn]);
+ 			return ret;
+ 		}
++	}
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+-- 
+1.7.9.5
 
-Ah ha!  Naveen pointed out that it was the "device_for_each_child"
-that was the source of the crash.  ...and here's the problem...  I
-think this is what we want:
-
--       ret = of_platform_populate(np, exynos_adc_match, NULL, &pdev->dev);
-+       ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
-
--       device_for_each_child(&pdev->dev, NULL,
-+       device_for_each_child(&indio_dev->dev, NULL,
-
-Naveen has been volunteered to send the patch up.  ;)  Naveen:
-hopefully you can address Jonathan's other concerns as well.  ;)
-
--Doug
