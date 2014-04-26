@@ -1,55 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54799 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751680AbaDZKDT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 06:03:19 -0400
-Message-ID: <535B84BE.8020005@kernel.org>
-Date: Sat, 26 Apr 2014 11:04:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Jimmy Li <coder.liss@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>
-CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH]staging:iio:ad2s1200 fix missing parenthesis in a for
- statment.
-References: <20140425025229.GA12200@gmail.com>
-In-Reply-To: <20140425025229.GA12200@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <ch.naveen@samsung.com>
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ dianders@chromium.org, gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+ lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org, jic23@kernel.org
+Subject: [PATCH 0/5 v2] iio: exynos_adc: fix minor nits in the driver
+Date: Sat, 26 Apr 2014 17:07:51 +0530
+Message-id: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/04/14 03:52, Jimmy Li wrote:
-> Signed-off-by: Jimmy Li <coder.liss@gmail.com>
+This patchset fixes the 
+1. bug causing a crash during module removal for exynos_adc.ko.
+-> The bug was seen by Doug, while trying to compile the whole IIO subsystem
+   as module @ https://lkml.org/lkml/2014/4/21/481 from Doug.
 
-Applied to the fixes-togreg branch of iio.git
+2. rearrange the clock and regulator enable/disable calls during
+   probe, remove, suspend and resume calls
+-> Comments give by Jonathan @ https://lkml.org/lkml/2014/4/23/644
 
-Thanks,
-> ---
->   drivers/staging/iio/resolver/ad2s1200.c |    3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> index e2b4820..017d2f8 100644
-> --- a/drivers/staging/iio/resolver/ad2s1200.c
-> +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> @@ -107,7 +107,7 @@ static int ad2s1200_probe(struct spi_device *spi)
->   	int pn, ret = 0;
->   	unsigned short *pins = spi->dev.platform_data;
->
-> -	for (pn = 0; pn < AD2S1200_PN; pn++)
-> +	for (pn = 0; pn < AD2S1200_PN; pn++) {
->   		ret = devm_gpio_request_one(&spi->dev, pins[pn], GPIOF_DIR_OUT,
->   					    DRV_NAME);
->   		if (ret) {
-> @@ -115,6 +115,7 @@ static int ad2s1200_probe(struct spi_device *spi)
->   							pins[pn]);
->   			return ret;
->   		}
-> +	}
->   	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->   	if (!indio_dev)
->   		return -ENOMEM;
->
+3. reduces the timeout and uses wait_for_completion_timeout instead of the
+   interruptible varient.
+-> This change was under review @ https://lkml.org/lkml/2013/11/5/92
+   Final comments were given by Tomasz, to split and submit.
 
+Naveen Krishna Ch (2):
+  iio: exynos_adc: use indio_dev->dev structure to handle child nodes
+  iio: exynos_adc: rearrange clk and regulator enable/disable calls
+
+Naveen Krishna Chatradhi (3):
+  iio: exynos_adc: reduce timeout and use wait_for_completion_timeout
+  iio: exynos_adc: do a soft reset in case of timeout
+  iio: exynos_adc: do a reinit_completion before the conversion
+
+ drivers/iio/adc/exynos_adc.c |  138 +++++++++++++++++++++++-------------------
+ 1 file changed, 75 insertions(+), 63 deletions(-)
+
+-- 
+1.7.9.5
