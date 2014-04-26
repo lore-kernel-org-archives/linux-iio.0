@@ -1,42 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f177.google.com ([209.85.192.177]:44798 "EHLO
-	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754906AbaD2Fzw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Apr 2014 01:55:52 -0400
-Date: Tue, 29 Apr 2014 13:55:44 +0800
-From: Jimmy Li <coder.liss@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jingoo Han <jg1.han@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Monam Agarwal <monamagarwal123@gmail.com>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging:iio:ad2s1210 fix a leak when device removed
-Message-ID: <20140429055544.GA23599@gmail.com>
+Received: from mga03.intel.com ([143.182.124.21]:46499 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752303AbaDZTgR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 26 Apr 2014 15:36:17 -0400
+Message-ID: <535C0AB0.7030509@linux.intel.com>
+Date: Sat, 26 Apr 2014 12:36:16 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [Patch v6 3/6] IIO: core: Modify scan element type
+References: <1397586073-31507-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397586073-31507-4-git-send-email-srinivas.pandruvada@linux.intel.com> <535AA353.8010107@kernel.org>
+In-Reply-To: <535AA353.8010107@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Jimmy Li <coder.liss@gmail.com>
----
- drivers/staging/iio/resolver/ad2s1210.c |    1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 7fbaba4..3d6e123 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -716,6 +716,7 @@ static int ad2s1210_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 	ad2s1210_free_gpios(iio_priv(indio_dev));
-+	devm_iio_device_free(&spi->dev, indio_dev);
- 
- 	return 0;
- }
--- 
-1.7.9.5
+On 04/25/2014 11:02 AM, Jonathan Cameron wrote:
+> On 15/04/14 19:21, Srinivas Pandruvada wrote:
+>> The current scan element type uses the following format:
+>>    [be|le]:[s|u]bits/storagebits[>>shift].
+>> To specify multiple elements in this type, added a repeat value.
+>> So new format is:
+>>    [be|le]:[s|u]bits/storagebits{X[repeat]}[>>shift].
+>> Here X is specifying how may times, real/storage bits are repeating.
+>>
+>> When X is value is 0 or 1, then repeat value is not used in the format,
+>> and it will be same as existing format.
+>>
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Hi Srinivas,
+>
+> I'm afraid I've been rather useless in my reviewing of earlier 
+> versions of this.
+> What I originally meant to suggest was that we'd have descriptions 
+> along the lines
+> of
+> u12/16{X4}>>2 (or u12/16X4>>2 without the brackets) rather than 
+> u12/16{4repeat}>>2
+I don't mind using u12/16X4>>2, will submit series again.
+
+Thanks,
+Srinivas
+>
+> Now obviously you've gone a long way with this approach so I guess 
+> perhaps people
+> actually like the word repeat in there?
+>
+> Sorry again that I didn't pick up on this in any of the last 4 
+> versions you have posted.
+> Sometimes the eye sees what it expects to rather than what is there!
+>
+> I don't particularly mind the version using the word 'repeat' if 
+> others like, it simply
+> isn't what I thought we had here!
+>
+> (the rest of this series are fine now btw)
+>
+> J
+>> ---
+>>   drivers/iio/industrialio-buffer.c | 41 
+>> +++++++++++++++++++++++++++++++++------
+>>   include/linux/iio/iio.h           |  7 +++++++
+>>   2 files changed, 42 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-buffer.c 
+>> b/drivers/iio/industrialio-buffer.c
+>> index e108f2a..aa90c68 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device 
+>> *dev,
+>>           type = IIO_BE;
+>>   #endif
+>>       }
+>> -    return sprintf(buf, "%s:%c%d/%d>>%u\n",
+>> +    if (this_attr->c->scan_type.repeat > 1)
+>> +        return sprintf(buf, "%s:%c%d/%d{%d[repeat]}>>%u\n",
+>> +               iio_endian_prefix[type],
+>> +               this_attr->c->scan_type.sign,
+>> +               this_attr->c->scan_type.realbits,
+>> +               this_attr->c->scan_type.storagebits,
+>> +               this_attr->c->scan_type.repeat,
+>> +               this_attr->c->scan_type.shift);
+>> +        else
+>> +            return sprintf(buf, "%s:%c%d/%d>>%u\n",
+>>                  iio_endian_prefix[type],
+>>                  this_attr->c->scan_type.sign,
+>>                  this_attr->c->scan_type.realbits,
+>> @@ -474,14 +483,22 @@ static int iio_compute_scan_bytes(struct 
+>> iio_dev *indio_dev,
+>>       for_each_set_bit(i, mask,
+>>                indio_dev->masklength) {
+>>           ch = iio_find_channel_from_si(indio_dev, i);
+>> -        length = ch->scan_type.storagebits / 8;
+>> +        if (ch->scan_type.repeat > 1)
+>> +            length = ch->scan_type.storagebits / 8 *
+>> +                ch->scan_type.repeat;
+>> +        else
+>> +            length = ch->scan_type.storagebits / 8;
+>>           bytes = ALIGN(bytes, length);
+>>           bytes += length;
+>>       }
+>>       if (timestamp) {
+>>           ch = iio_find_channel_from_si(indio_dev,
+>>                             indio_dev->scan_index_timestamp);
+>> -        length = ch->scan_type.storagebits / 8;
+>> +        if (ch->scan_type.repeat > 1)
+>> +            length = ch->scan_type.storagebits / 8 *
+>> +                ch->scan_type.repeat;
+>> +        else
+>> +            length = ch->scan_type.storagebits / 8;
+>>           bytes = ALIGN(bytes, length);
+>>           bytes += length;
+>>       }
+>> @@ -957,7 +974,11 @@ static int iio_buffer_update_demux(struct 
+>> iio_dev *indio_dev,
+>>                              indio_dev->masklength,
+>>                              in_ind + 1);
+>>               ch = iio_find_channel_from_si(indio_dev, in_ind);
+>> -            length = ch->scan_type.storagebits/8;
+>> +            if (ch->scan_type.repeat > 1)
+>> +                length = ch->scan_type.storagebits / 8 *
+>> +                    ch->scan_type.repeat;
+>> +            else
+>> +                length = ch->scan_type.storagebits / 8;
+>>               /* Make sure we are aligned */
+>>               in_loc += length;
+>>               if (in_loc % length)
+>> @@ -969,7 +990,11 @@ static int iio_buffer_update_demux(struct 
+>> iio_dev *indio_dev,
+>>               goto error_clear_mux_table;
+>>           }
+>>           ch = iio_find_channel_from_si(indio_dev, in_ind);
+>> -        length = ch->scan_type.storagebits/8;
+>> +        if (ch->scan_type.repeat > 1)
+>> +            length = ch->scan_type.storagebits / 8 *
+>> +                ch->scan_type.repeat;
+>> +        else
+>> +            length = ch->scan_type.storagebits / 8;
+>>           if (out_loc % length)
+>>               out_loc += length - out_loc % length;
+>>           if (in_loc % length)
+>> @@ -990,7 +1015,11 @@ static int iio_buffer_update_demux(struct 
+>> iio_dev *indio_dev,
+>>           }
+>>           ch = iio_find_channel_from_si(indio_dev,
+>>               indio_dev->scan_index_timestamp);
+>> -        length = ch->scan_type.storagebits/8;
+>> +        if (ch->scan_type.repeat > 1)
+>> +            length = ch->scan_type.storagebits / 8 *
+>> +                ch->scan_type.repeat;
+>> +        else
+>> +            length = ch->scan_type.storagebits / 8;
+>>           if (out_loc % length)
+>>               out_loc += length - out_loc % length;
+>>           if (in_loc % length)
+>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>> index 5629c92..ccde917 100644
+>> --- a/include/linux/iio/iio.h
+>> +++ b/include/linux/iio/iio.h
+>> @@ -177,6 +177,12 @@ struct iio_event_spec {
+>>    *            shift:        Shift right by this before masking out
+>>    *                    realbits.
+>>    *            endianness:    little or big endian
+>> + *            repeat:        Number of times real/storage bits
+>> + *                    repeats. When the repeat element is
+>> + *                    more than 1, then the type element in
+>> + *                    sysfs will show a repeat value.
+>> + *                    Otherwise, the number of repetitions is
+>> + *                    omitted.
+>>    * @info_mask_separate: What information is to be exported that is 
+>> specific to
+>>    *            this channel.
+>>    * @info_mask_shared_by_type: What information is to be exported 
+>> that is shared
+>> @@ -219,6 +225,7 @@ struct iio_chan_spec {
+>>           u8    realbits;
+>>           u8    storagebits;
+>>           u8    shift;
+>> +        u8    repeat;
+>>           enum iio_endian endianness;
+>>       } scan_type;
+>>       long            info_mask_separate;
+>>
+>
+>
 
