@@ -1,44 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:54968 "EHLO
-	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755405AbaDTPvt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Apr 2014 11:51:49 -0400
-Date: Sun, 20 Apr 2014 17:51:47 +0200
-From: Pavel Machek <pavel@ucw.cz>
-To: Sebastian Reichel <sre@debian.org>
-Cc: Sebastian Reichel <sre@ring0.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv2 1/9] mfd: twl4030-madc: Use managed resources
-Message-ID: <20140420155147.GA16649@amd.pavel.ucw.cz>
-References: <1393702365-26429-1-git-send-email-sre@debian.org>
- <1393970751-18157-1-git-send-email-sre@debian.org>
- <1393970751-18157-2-git-send-email-sre@debian.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1393970751-18157-2-git-send-email-sre@debian.org>
+Received: from mailout4.samsung.com ([203.254.224.34]:22873 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752230AbaDZLjt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 07:39:49 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, jic23@kernel.org
+Subject: [PATCH 5/5 v2] iio: exynos_adc: do a reinit_completion before the
+ conversion
+Date: Sat, 26 Apr 2014 17:07:56 +0530
+Message-id: <1398512276-4105-6-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
+References: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue 2014-03-04 23:05:43, Sebastian Reichel wrote:
-> Update twl4030-madc driver to use managed resources.
-> 
-> Signed-off-by: Sebastian Reichel <sre@debian.org>
-> Acked-by: Lee Jones <lee.jones@linaro.org>
+Add reinit_completion() before the wait_for_completion_timeout in
+raw_read() call.
 
-Reviewed-by: Pavel Machek <pavel@ucw.cz>
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Reviewed-by: Doug Anderson <dianders@chromium.org>
+---
+ drivers/iio/adc/exynos_adc.c |    1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 805c9f6..32290e6 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -151,6 +151,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&indio_dev->mlock);
++	reinit_completion(&info->completion);
+ 
+ 	/* Select the channel to be used and Trigger conversion */
+ 	if (info->version == ADC_V2) {
 -- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+1.7.9.5
+
