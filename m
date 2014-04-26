@@ -1,61 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56249 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751222AbaDZPAK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 11:00:10 -0400
-Message-ID: <535BCA52.4000905@kernel.org>
-Date: Sat, 26 Apr 2014 16:01:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Linux IIO List <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for 3.15 round 2
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mailout1.samsung.com ([203.254.224.24]:20345 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752188AbaDZLjp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 07:39:45 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, jic23@kernel.org
+Subject: [PATCH 3/5 v2] iio: exynos_adc: reduce timeout and use
+ wait_for_completion_timeout
+Date: Sat, 26 Apr 2014 17:07:54 +0530
+Message-id: <1398512276-4105-4-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
+References: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 8b425aa193439a2b60a988a9230f1de753e36902:
+ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
+waiting for 1000 msecs is wasteful (incase of h/w failure).
 
-   Merge tag 'iio-fixes-for-3.15a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2014-04-22 21:29:20 -0700)
+Hence, reduce the time out to 100msecs and use
+wait_for_completion_timeout() instead of
+wait_for_completion_interruptible_timeout()
 
-are available in the git repository at:
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Reviewed-by: Doug Anderson <dianders@chromium.org>
+---
+This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
 
+ drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.15b
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index a2b8b1a..4d2467a 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -82,7 +82,7 @@ enum adc_version {
+ #define ADC_CON_EN_START	(1u << 0)
+ #define ADC_DATX_MASK		0xFFF
+ 
+-#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
++#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+ 
+ struct exynos_adc {
+ 	void __iomem		*regs;
+@@ -121,6 +121,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 	unsigned long timeout;
+ 	u32 con1, con2;
++	int ret;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+ 		return -EINVAL;
+@@ -145,16 +146,19 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 				ADC_V1_CON(info->regs));
+ 	}
+ 
+-	timeout = wait_for_completion_interruptible_timeout
++	timeout = wait_for_completion_timeout
+ 			(&info->completion, EXYNOS_ADC_TIMEOUT);
+-	*val = info->value;
++	if (timeout == 0) {
++		ret = -ETIMEDOUT;
++	} else {
++		*val = info->value;
++		*val2 = 0;
++		ret = IIO_VAL_INT;
++	}
+ 
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+-	if (timeout == 0)
+-		return -ETIMEDOUT;
+-
+-	return IIO_VAL_INT;
++	return ret;
+ }
+ 
+ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+-- 
+1.7.9.5
 
-for you to fetch changes up to bbc28134e915d2e2e8cac0254d1d056db0ae3247:
-
-   iio: adc: Nothing in ADC should be a bool CONFIG (2014-04-26 11:22:16 +0100)
-
-----------------------------------------------------------------
-Second set of fixes for IIO in the 3.15 cycle.
-
-* ad2s1200 - Fix some missing parenthesis in a for statement that could have
-   led to an error being missed when getting gpios.
-* Fix a null derefference issue in the mpu6050 when platform data is not
-   provided (or is provided via the device tree for example).
-* exynos_adc bug on remove due to child devices having been added to the
-   parent of the IIO device rather than the IIO device itself.  This caused an
-   issue with the IIO device removing itself in it's remove function.
-* Make all ADC drivers buildable as modules to avoid dependency issues if
-   the IIO core is itself built as a module.  The exynos adc bug became
-   apparently whilst this fix was being tested.
-
-----------------------------------------------------------------
-Atilla Filiz (1):
-       iio:imu:mpu6050: Fixed segfault in Invensens MPU driver due to null dereference
-
-Doug Anderson (1):
-       iio: adc: Nothing in ADC should be a bool CONFIG
-
-Jimmy Li (1):
-       staging:iio:ad2s1200 fix missing parenthesis in a for statment.
-
-Naveen Krishna Ch (1):
-       iio: exynos_adc: use indio_dev->dev structure to handle child nodes
-
-  drivers/iio/adc/Kconfig                    | 4 ++--
-  drivers/iio/adc/exynos_adc.c               | 6 +++---
-  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 7 +++++--
-  drivers/staging/iio/resolver/ad2s1200.c    | 3 ++-
-  4 files changed, 12 insertions(+), 8 deletions(-)
