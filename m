@@ -1,62 +1,105 @@
-Return-Path: <coder.liss@gmail.com>
-Date: Tue, 29 Apr 2014 14:29:50 +0800
-From: Jimmy Li <coder.liss@gmail.com>
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Jonathan Cameron' <jic23@kernel.org>,
-	'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
-	'Lars-Peter Clausen' <lars@metafoo.de>,
-	'Sachin Kamat' <sachin.kamat@linaro.org>,
-	'Monam Agarwal' <monamagarwal123@gmail.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging:iio:ad2s1210 fix a leak when device removed
-Message-ID: <20140429062950.GA24666@gmail.com>
-References: <20140429055544.GA23599@gmail.com>
- <001401cf6371$3e98cf90$bbca6eb0$%han@samsung.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55153 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750756AbaDZKzU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 06:55:20 -0400
+Message-ID: <535B90EF.9070707@kernel.org>
+Date: Sat, 26 Apr 2014 11:56:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <001401cf6371$3e98cf90$bbca6eb0$%han@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
+CC: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 3/6] iio: st_sensors: get platform data from device tree
+References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org> <1397416143-4396-4-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1397416143-4396-4-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Apr 29, 2014 at 03:07:04PM +0900, Jingoo Han wrote:
-> On Tuesday, April 29, 2014 2:56 PM, Jimmy Li wrote:
-> > 
-> > Signed-off-by: Jimmy Li <coder.liss@gmail.com>
-> > ---
-> >  drivers/staging/iio/resolver/ad2s1210.c |    1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-> > index 7fbaba4..3d6e123 100644
-> > --- a/drivers/staging/iio/resolver/ad2s1210.c
-> > +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> > @@ -716,6 +716,7 @@ static int ad2s1210_remove(struct spi_device *spi)
-> > 
-> >  	iio_device_unregister(indio_dev);
-> >  	ad2s1210_free_gpios(iio_priv(indio_dev));
-> > +	devm_iio_device_free(&spi->dev, indio_dev);
-> 
-> NAK.
-> 
-> In ad2s1210_probe(),devm_iio_device_alloc() was already used.
-> So, when ad2s1210_remove() is called, iio_device_free() will
-> be called automatically. So, the leak never happens.
-> 
-> If you want to know about devm_* functions, please refer 
-> to the following.
-> 
->   Documentation/driver-model/devres.txt
+On 13/04/14 20:09, Linus Walleij wrote:
+> Currently the STMicroelectronics sensors only support one single
+> platform data item: configuration of the DRDY (data ready) pin
+> for a particular design. Augment the core to prioritize and take
+> this information from the device tree if the parent device has an
+> assigned device node, else fall back to passed in platform data
+> (usually the default data).
+>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Denis CIOCCA <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+This one adds binding elements so needs to sit for another week I think...
+If you are respinning patch 5 then I'll probably wait for a repost before
+taking another look at the remaining 4 patches.
 
-Thank you for your reply,
+Thanks,
 
-I understand it now, just ignore this patch.
+Jonathan
+> ---
+>   drivers/iio/common/st_sensors/st_sensors_core.c | 35 ++++++++++++++++++++++++-
+>   1 file changed, 34 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index e8b932fed70e..1cdcef94e6a2 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -14,8 +14,8 @@
+>   #include <linux/delay.h>
+>   #include <linux/iio/iio.h>
+>   #include <linux/regulator/consumer.h>
+> +#include <linux/of.h>
+>   #include <asm/unaligned.h>
+> -
+>   #include <linux/iio/common/st_sensors.h>
+>
+>
+> @@ -265,14 +265,47 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+>   	return 0;
+>   }
+>
+> +#ifdef CONFIG_OF
+> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+> +		struct st_sensors_platform_data *defdata)
+> +{
+> +	struct st_sensors_platform_data *pdata;
+> +	struct device_node *np = dev->of_node;
+> +	u32 val;
+> +
+> +	if (!np)
+> +		return NULL;
+> +
+> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+> +	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
+> +		pdata->drdy_int_pin = (u8) val;
+> +	else
+> +		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
+> +
+> +	return pdata;
+> +}
+> +#else
+> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+> +		struct st_sensors_platform_data *defdata)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>   int st_sensors_init_sensor(struct iio_dev *indio_dev,
+>   					struct st_sensors_platform_data *pdata)
+>   {
+>   	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +	struct st_sensors_platform_data *of_pdata;
+>   	int err = 0;
+>
+>   	mutex_init(&sdata->tb.buf_lock);
+>
+> +	/* If OF/DT pdata exists, it will take precedence of anything else */
+> +	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
+> +	if (of_pdata)
+> +		pdata = of_pdata;
+> +
+>   	if (pdata)
+>   		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
+>
+>
 
-> 
-> Best regards,
-> Jingoo Han
-> > 
-> >  	return 0;
-> >  }
-> > --
-> > 1.7.9.5
-> 
