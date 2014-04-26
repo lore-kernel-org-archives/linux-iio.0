@@ -1,40 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55161 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54799 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752062AbaDZK4R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 06:56:17 -0400
-Message-ID: <535B912B.8000005@kernel.org>
-Date: Sat, 26 Apr 2014 11:57:47 +0100
+	with ESMTP id S1751680AbaDZKDT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 06:03:19 -0400
+Message-ID: <535B84BE.8020005@kernel.org>
+Date: Sat, 26 Apr 2014 11:04:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 5/6] iio: st_sensors: add devicetree probing support
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>	<1397416143-4396-6-git-send-email-linus.walleij@linaro.org>	<53582E4C.3060800@kernel.org> <CACRpkdbmS39HL4Z8CSbtPtkWYqZn6hNCMdwzk+1fepKkSUAO1A@mail.gmail.com>
-In-Reply-To: <CACRpkdbmS39HL4Z8CSbtPtkWYqZn6hNCMdwzk+1fepKkSUAO1A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Jimmy Li <coder.liss@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>
+CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH]staging:iio:ad2s1200 fix missing parenthesis in a for
+ statment.
+References: <20140425025229.GA12200@gmail.com>
+In-Reply-To: <20140425025229.GA12200@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/14 09:33, Linus Walleij wrote:
-> On Wed, Apr 23, 2014 at 11:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
->> I can't make up my mind whether I like this or not.
->> Having said that it fixes an ABI compatibility issue that I couldn't
->> see a way around so nicely done.
->
-> Lots of redundant strings is device trees second name.
->
->> (note I'll leave this set be for now given the device tree element
->> and that it hasn't been 3 weeks yet)
->
-> I'll respin the patch anyway, the OF compatible table should
-> be in the core file rather than the .h file. I try to keep it in common
-> code so I2C and SPI alike be able to use the same table
-> atleast.
+On 25/04/14 03:52, Jimmy Li wrote:
+> Signed-off-by: Jimmy Li <coder.liss@gmail.com>
 
-Cool, I'll wait on that then (and the remaining week of the 3 weeks to tick
-by).
+Applied to the fixes-togreg branch of iio.git
+
+Thanks,
+> ---
+>   drivers/staging/iio/resolver/ad2s1200.c |    3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+> index e2b4820..017d2f8 100644
+> --- a/drivers/staging/iio/resolver/ad2s1200.c
+> +++ b/drivers/staging/iio/resolver/ad2s1200.c
+> @@ -107,7 +107,7 @@ static int ad2s1200_probe(struct spi_device *spi)
+>   	int pn, ret = 0;
+>   	unsigned short *pins = spi->dev.platform_data;
+>
+> -	for (pn = 0; pn < AD2S1200_PN; pn++)
+> +	for (pn = 0; pn < AD2S1200_PN; pn++) {
+>   		ret = devm_gpio_request_one(&spi->dev, pins[pn], GPIOF_DIR_OUT,
+>   					    DRV_NAME);
+>   		if (ret) {
+> @@ -115,6 +115,7 @@ static int ad2s1200_probe(struct spi_device *spi)
+>   							pins[pn]);
+>   			return ret;
+>   		}
+> +	}
+>   	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>   	if (!indio_dev)
+>   		return -ENOMEM;
+>
 
