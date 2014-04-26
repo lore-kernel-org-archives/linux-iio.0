@@ -1,79 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55700 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56249 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751588AbaDZMwS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 08:52:18 -0400
-Message-ID: <535BAC5B.2090707@kernel.org>
-Date: Sat, 26 Apr 2014 13:53:47 +0100
+	with ESMTP id S1751222AbaDZPAK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 11:00:10 -0400
+Message-ID: <535BCA52.4000905@kernel.org>
+Date: Sat, 26 Apr 2014 16:01:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org
-Subject: Re: [PATCH 1/5 v2] iio: exynos_adc: use indio_dev->dev structure
- to handle child nodes
-References: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com> <1398512276-4105-2-git-send-email-ch.naveen@samsung.com>
-In-Reply-To: <1398512276-4105-2-git-send-email-ch.naveen@samsung.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Linux IIO List <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.15 round 2
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/04/14 12:37, Naveen Krishna Chatradhi wrote:
-> From: Naveen Krishna Ch <ch.naveen@samsung.com>
->
-> Using pdev->dev with device_for_each_child() would iterate over all
-> of the children of the platform device and delete them.
-> Thus, causing crashes during module unload.
->
-> We should be using the indio_dev->dev structure for
-> registering/unregistering child nodes.
->
-> Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
-> Reported-by: Doug Anderson <dianders@chromium.org>
-> Reviewed-by: Doug Anderson <dianders@chromium.org>
-> Tested-by: Doug Anderson <dianders@chromium.org>
-> ---
-Oops, I applied this one earlier (from v1) but didn't send the email...
-Never mind as there were no changes.
-> This change was tested on top of
->     https://lkml.org/lkml/2014/4/21/481 from Doug.
->
->   drivers/iio/adc/exynos_adc.c |    6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index d25b262..affa93f 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -344,7 +344,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
->
->   	exynos_adc_hw_init(info);
->
-> -	ret = of_platform_populate(np, exynos_adc_match, NULL, &pdev->dev);
-> +	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
->   	if (ret < 0) {
->   		dev_err(&pdev->dev, "failed adding child nodes\n");
->   		goto err_of_populate;
-> @@ -353,7 +353,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
->   	return 0;
->
->   err_of_populate:
-> -	device_for_each_child(&pdev->dev, NULL,
-> +	device_for_each_child(&indio_dev->dev, NULL,
->   				exynos_adc_remove_devices);
->   	regulator_disable(info->vdd);
->   	clk_disable_unprepare(info->clk);
-> @@ -369,7 +369,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
->   	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->   	struct exynos_adc *info = iio_priv(indio_dev);
->
-> -	device_for_each_child(&pdev->dev, NULL,
-> +	device_for_each_child(&indio_dev->dev, NULL,
->   				exynos_adc_remove_devices);
->   	regulator_disable(info->vdd);
->   	clk_disable_unprepare(info->clk);
->
+The following changes since commit 8b425aa193439a2b60a988a9230f1de753e36902:
 
+   Merge tag 'iio-fixes-for-3.15a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2014-04-22 21:29:20 -0700)
+
+are available in the git repository at:
+
+
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.15b
+
+for you to fetch changes up to bbc28134e915d2e2e8cac0254d1d056db0ae3247:
+
+   iio: adc: Nothing in ADC should be a bool CONFIG (2014-04-26 11:22:16 +0100)
+
+----------------------------------------------------------------
+Second set of fixes for IIO in the 3.15 cycle.
+
+* ad2s1200 - Fix some missing parenthesis in a for statement that could have
+   led to an error being missed when getting gpios.
+* Fix a null derefference issue in the mpu6050 when platform data is not
+   provided (or is provided via the device tree for example).
+* exynos_adc bug on remove due to child devices having been added to the
+   parent of the IIO device rather than the IIO device itself.  This caused an
+   issue with the IIO device removing itself in it's remove function.
+* Make all ADC drivers buildable as modules to avoid dependency issues if
+   the IIO core is itself built as a module.  The exynos adc bug became
+   apparently whilst this fix was being tested.
+
+----------------------------------------------------------------
+Atilla Filiz (1):
+       iio:imu:mpu6050: Fixed segfault in Invensens MPU driver due to null dereference
+
+Doug Anderson (1):
+       iio: adc: Nothing in ADC should be a bool CONFIG
+
+Jimmy Li (1):
+       staging:iio:ad2s1200 fix missing parenthesis in a for statment.
+
+Naveen Krishna Ch (1):
+       iio: exynos_adc: use indio_dev->dev structure to handle child nodes
+
+  drivers/iio/adc/Kconfig                    | 4 ++--
+  drivers/iio/adc/exynos_adc.c               | 6 +++---
+  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 7 +++++--
+  drivers/staging/iio/resolver/ad2s1200.c    | 3 ++-
+  4 files changed, 12 insertions(+), 8 deletions(-)
