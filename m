@@ -1,68 +1,196 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:47166 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757106AbaD1XsL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 28 Apr 2014 19:48:11 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 6/6] iio: Added ABI description for quaternion
-Date: Mon, 28 Apr 2014 16:51:47 -0700
-Message-Id: <1398729107-16748-7-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-ve0-f177.google.com ([209.85.128.177]:35694 "EHLO
+	mail-ve0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751727AbaD1WSh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Apr 2014 18:18:37 -0400
+Received: by mail-ve0-f177.google.com with SMTP id sa20so8781586veb.22
+        for <linux-iio@vger.kernel.org>; Mon, 28 Apr 2014 15:18:36 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1398512276-4105-3-git-send-email-ch.naveen@samsung.com>
+References: <1398512276-4105-1-git-send-email-ch.naveen@samsung.com>
+	<1398512276-4105-3-git-send-email-ch.naveen@samsung.com>
+Date: Mon, 28 Apr 2014 15:18:36 -0700
+Message-ID: <CAD=FV=USUfOHfKR6MibwWpM5mBpYEOFkbYRA8ZMqd-s1v=3MTA@mail.gmail.com>
+Subject: Re: [PATCH 2/5 v2] iio: exynos_adc: rearrange clk and regulator
+ enable/disable calls
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"cpgs ." <cpgs@samsung.com>,
+	Grant Grundler <grundler@chromium.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added documentation for reading quaternion components for 3D rotations.
+Naveen,
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+On Sat, Apr 26, 2014 at 4:37 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> From: Naveen Krishna Ch <ch.naveen@samsung.com>
+>
+> This patch maintains the following order in
+> probe(), remove(), resume() and suspend() calls
+>
+> regulator enable, clk prepare enable
+> ...
+> clk disable unprepare, regulator disable
+>
+> While at it,
+> 1. enable the regulator before the iio_device_register()
+> 2. handle the return values for enable/disable calls
+>
+> Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
+> ---
+> Changes since v1:
+> corrected the register/unregister and enabling/disbaling sequences
+>
+>  drivers/iio/adc/exynos_adc.c |   63 +++++++++++++++++++++++-------------------
+>  1 file changed, 34 insertions(+), 29 deletions(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index affa93f..0df8916 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -290,32 +290,30 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>
+>         init_completion(&info->completion);
+>
+> -       ret = request_irq(info->irq, exynos_adc_isr,
+> -                                       0, dev_name(&pdev->dev), info);
+> -       if (ret < 0) {
+> -               dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+> -                                                       info->irq);
+> -               return ret;
+> -       }
+> -
+> -       writel(1, info->enable_reg);
+> -
+>         info->clk = devm_clk_get(&pdev->dev, "adc");
+>         if (IS_ERR(info->clk)) {
+>                 dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+>                                                         PTR_ERR(info->clk));
+> -               ret = PTR_ERR(info->clk);
+> -               goto err_irq;
+> +               return PTR_ERR(info->clk);
+>         }
+>
+>         info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+>         if (IS_ERR(info->vdd)) {
+>                 dev_err(&pdev->dev, "failed getting regulator, err = %ld\n",
+>                                                         PTR_ERR(info->vdd));
+> -               ret = PTR_ERR(info->vdd);
+> -               goto err_irq;
+> +               return PTR_ERR(info->vdd);
+>         }
+>
+> +       ret = regulator_enable(info->vdd);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret = clk_prepare_enable(info->clk);
+> +       if (ret)
+> +               goto err_disable_reg;
+> +
+> +       writel(1, info->enable_reg);
+> +
+>         info->version = exynos_adc_get_version(pdev);
+>
+>         platform_set_drvdata(pdev, indio_dev);
+> @@ -332,16 +330,18 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>         else
+>                 indio_dev->num_channels = MAX_ADC_V2_CHANNELS;
+>
+> +       ret = request_irq(info->irq, exynos_adc_isr,
+> +                                       0, dev_name(&pdev->dev), info);
+> +       if (ret < 0) {
+> +               dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+> +                                                       info->irq);
+> +               goto err_disable_clk;
+> +       }
+> +
+>         ret = iio_device_register(indio_dev);
+>         if (ret)
+>                 goto err_irq;
+>
+> -       ret = regulator_enable(info->vdd);
+> -       if (ret)
+> -               goto err_iio_dev;
+> -
+> -       clk_prepare_enable(info->clk);
+> -
+>         exynos_adc_hw_init(info);
+>
+>         ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
+> @@ -355,12 +355,14 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  err_of_populate:
+>         device_for_each_child(&indio_dev->dev, NULL,
+>                                 exynos_adc_remove_devices);
+> -       regulator_disable(info->vdd);
+> -       clk_disable_unprepare(info->clk);
+> -err_iio_dev:
+>         iio_device_unregister(indio_dev);
+>  err_irq:
+>         free_irq(info->irq, info);
+> +err_disable_clk:
+> +       writel(0, info->enable_reg);
+> +       clk_disable_unprepare(info->clk);
+> +err_disable_reg:
+> +       regulator_disable(info->vdd);
+>         return ret;
+>  }
+>
+> @@ -371,11 +373,12 @@ static int exynos_adc_remove(struct platform_device *pdev)
+>
+>         device_for_each_child(&indio_dev->dev, NULL,
+>                                 exynos_adc_remove_devices);
+> -       regulator_disable(info->vdd);
+> -       clk_disable_unprepare(info->clk);
+> -       writel(0, info->enable_reg);
+>         iio_device_unregister(indio_dev);
+>         free_irq(info->irq, info);
+> +       writel(0, info->enable_reg);
+> +       clk_disable_unprepare(info->clk);
+> +       regulator_disable(info->vdd);
+> +
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 6e02c50..d2c59f9 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -784,6 +784,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
- What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
- What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
- What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_en
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -799,6 +800,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
- What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
- What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_type
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -845,6 +847,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
- What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
- What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_index
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -891,3 +894,12 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute is used to get/set the integration time in
- 		seconds.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_quaternion_raw
-+KernelVersion:	3.15
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value of quaternion components using a format
-+		x y z w. Here x, y, and z component represents the axis about
-+		which a rotation will occur and w component represents the
-+		amount of rotation.
--- 
-1.7.11.7
+nit: one too many blank lines here
 
+>         return 0;
+>  }
+> @@ -397,8 +400,8 @@ static int exynos_adc_suspend(struct device *dev)
+>                 writel(con, ADC_V1_CON(info->regs));
+>         }
+>
+> -       clk_disable_unprepare(info->clk);
+>         writel(0, info->enable_reg);
+> +       clk_disable_unprepare(info->clk);
+>         regulator_disable(info->vdd);
+>
+>         return 0;
+> @@ -414,9 +417,11 @@ static int exynos_adc_resume(struct device *dev)
+>         if (ret)
+>                 return ret;
+>
+> -       writel(1, info->enable_reg);
+> -       clk_prepare_enable(info->clk);
+> +       ret = clk_prepare_enable(info->clk);
+> +       if (ret)
+> +               return ret;
+>
+> +       writel(1, info->enable_reg);
+>         exynos_adc_hw_init(info);
+>
+>         return 0;
+> --
+> 1.7.9.5
+>
+
+Other than nit, looks good to me.
+
+Reviewed-by: Doug Anderson <dianders@chromium.org>
