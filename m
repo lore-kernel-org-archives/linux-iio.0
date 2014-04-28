@@ -1,44 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:60621 "EHLO mx2.suse.de"
+Received: from mga09.intel.com ([134.134.136.24]:47166 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756369AbaDHMyZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 8 Apr 2014 08:54:25 -0400
-Date: Tue, 8 Apr 2014 14:54:21 +0200
-From: Jean Delvare <jdelvare@suse.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Kukjin Kim <kgene.kim@samsung.com>
-Subject: [PATCH] iio: adc: Fix exynos_adc dependencies
-Message-ID: <20140408145421.530243bf@endymion.delvare>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+	id S1757106AbaD1XsL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Apr 2014 19:48:11 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 6/6] iio: Added ABI description for quaternion
+Date: Mon, 28 Apr 2014 16:51:47 -0700
+Message-Id: <1398729107-16748-7-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-EXYNOS_ADC shouldn't only depend on OF. It is useless on architectures
-other than Exynos so it should depend on ARCH_EXYNOS (which implies
-OF.)
+Added documentation for reading quaternion components for 3D rotations.
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Kukjin Kim <kgene.kim@samsung.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/adc/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- linux-3.15-rc0.orig/drivers/iio/adc/Kconfig	2014-04-07 10:23:04.475166797 +0200
-+++ linux-3.15-rc0/drivers/iio/adc/Kconfig	2014-04-08 14:49:16.205616632 +0200
-@@ -107,7 +107,7 @@ config AT91_ADC
- 
- config EXYNOS_ADC
- 	bool "Exynos ADC driver support"
--	depends on OF
-+	depends on ARCH_EXYNOS
- 	help
- 	  Core support for the ADC block found in the Samsung EXYNOS series
- 	  of SoCs for drivers such as the touchscreen and hwmon to use to share
-
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6e02c50..d2c59f9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -784,6 +784,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_en
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -799,6 +800,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_type
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -845,6 +847,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressure_index
++What:		/sys/.../iio:deviceX/scan_elements/in_rot_quaternion_index
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -891,3 +894,12 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to get/set the integration time in
+ 		seconds.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_rot_quaternion_raw
++KernelVersion:	3.15
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw value of quaternion components using a format
++		x y z w. Here x, y, and z component represents the axis about
++		which a rotation will occur and w component represents the
++		amount of rotation.
 -- 
-Jean Delvare
-SUSE L3 Support
+1.7.11.7
+
