@@ -1,107 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f182.google.com ([209.85.223.182]:54439 "EHLO
-	mail-ie0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932820AbaDIX3Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Apr 2014 19:29:16 -0400
-Received: by mail-ie0-f182.google.com with SMTP id y20so3182042ier.41
-        for <linux-iio@vger.kernel.org>; Wed, 09 Apr 2014 16:29:16 -0700 (PDT)
-From: Michael Welling <mwelling@ieee.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: Michael Welling <mwelling@ieee.org>
-Subject: [PATCH 2/3] Remove quoted string split across lines warnings
-Date: Wed,  9 Apr 2014 18:28:48 -0500
-Message-Id: <1397086129-12112-3-git-send-email-mwelling@ieee.org>
-In-Reply-To: <1397086129-12112-1-git-send-email-mwelling@ieee.org>
-References: <1397086129-12112-1-git-send-email-mwelling@ieee.org>
+Received: from mga09.intel.com ([134.134.136.24]:47166 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757119AbaD1XsK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Apr 2014 19:48:10 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 4/6] IIO: core: Add quaternion modifier
+Date: Mon, 28 Apr 2014 16:51:45 -0700
+Message-Id: <1398729107-16748-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
----
- drivers/staging/iio/light/tsl2583.c |   34 ++++++++++++++++++----------------
- 1 file changed, 18 insertions(+), 16 deletions(-)
+Added quaternion in the list of supported modifiers.
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 77c7f65..f015fb4 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -165,8 +165,9 @@ taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
- 		/* select register to write */
- 		ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | reg));
- 		if (ret < 0) {
--			dev_err(&client->dev, "taos_i2c_read failed to write"
--				" register %x\n", reg);
-+			dev_err(&client->dev,
-+				"taos_i2c_read failed to write register %x\n",
-+				reg);
- 			return ret;
- 		}
- 		/* read the data */
-@@ -231,8 +232,9 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 		int reg = TSL258X_CMD_REG | (TSL258X_ALS_CHAN0LO + i);
- 		ret = taos_i2c_read(chip->client, reg, &buf[i], 1);
- 		if (ret < 0) {
--			dev_err(&chip->client->dev, "taos_get_lux failed to read"
--				" register %x\n", reg);
-+			dev_err(&chip->client->dev,
-+				"taos_get_lux failed to read register %x\n",
-+				reg);
- 			goto out_unlock;
- 		}
- 	}
-@@ -809,9 +811,7 @@ static int taos_probe(struct i2c_client *clientp,
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e22a984..dcc1849 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -84,6 +84,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_QUATERNION] = "quaternion",
+ };
  
- 	if (!i2c_check_functionality(clientp->adapter,
- 		I2C_FUNC_SMBUS_BYTE_DATA)) {
--		dev_err(&clientp->dev,
--			"taos_probe() - i2c smbus byte data "
--			"functions unsupported\n");
-+		dev_err(&clientp->dev, "taos_probe() - i2c smbus byte data func unsupported\n");
- 		return -EOPNOTSUPP;
- 	}
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index a13c224..4fdab2e 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -53,6 +53,7 @@ enum iio_modifier {
+ 	IIO_MOD_LIGHT_RED,
+ 	IIO_MOD_LIGHT_GREEN,
+ 	IIO_MOD_LIGHT_BLUE,
++	IIO_MOD_QUATERNION,
+ };
  
-@@ -830,30 +830,32 @@ static int taos_probe(struct i2c_client *clientp,
- 		ret = i2c_smbus_write_byte(clientp,
- 				(TSL258X_CMD_REG | (TSL258X_CNTRL + i)));
- 		if (ret < 0) {
--			dev_err(&clientp->dev, "i2c_smbus_write_bytes() to cmd "
--				"reg failed in taos_probe(), err = %d\n", ret);
-+			dev_err(&clientp->dev,
-+				"i2c_smbus_write_byte to cmd reg failed in taos_probe(), err = %d\n",
-+				ret);
- 			return ret;
- 		}
- 		ret = i2c_smbus_read_byte(clientp);
- 		if (ret < 0) {
--			dev_err(&clientp->dev, "i2c_smbus_read_byte from "
--				"reg failed in taos_probe(), err = %d\n", ret);
--
-+			dev_err(&clientp->dev,
-+				"i2c_smbus_read_byte from reg failed in taos_probe(), err = %d\n",
-+				ret);
- 			return ret;
- 		}
- 		buf[i] = ret;
- 	}
- 
- 	if (!taos_tsl258x_device(buf)) {
--		dev_info(&clientp->dev, "i2c device found but does not match "
--			"expected id in taos_probe()\n");
-+		dev_info(&clientp->dev,
-+			"i2c device found but does not match expected id in taos_probe()\n");
- 		return -EINVAL;
- 	}
- 
- 	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
- 	if (ret < 0) {
--		dev_err(&clientp->dev, "i2c_smbus_write_byte() to cmd reg "
--			"failed in taos_probe(), err = %d\n", ret);
-+		dev_err(&clientp->dev,
-+			"i2c_smbus_write_byte() to cmd reg failed in taos_probe(), err = %d\n",
-+			ret);
- 		return ret;
- 	}
- 
+ enum iio_event_type {
 -- 
-1.7.9.5
+1.7.11.7
 
