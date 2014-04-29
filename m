@@ -1,89 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oa0-f42.google.com ([209.85.219.42]:59637 "EHLO
-	mail-oa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751552AbaDZNvW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 09:51:22 -0400
-MIME-Version: 1.0
-In-Reply-To: <535BAC3A.1010202@kernel.org>
-References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
- <1398420888-5506-2-git-send-email-ch.naveen@samsung.com> <CAD=FV=V28_iDiNWeX6bXLzMW5kWygJz-YAExJkETJKgTDicHQg@mail.gmail.com>
- <535BAC3A.1010202@kernel.org>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Sat, 26 Apr 2014 19:21:01 +0530
-Message-ID: <CAHfPSqBoAGgzjBsoCOWtcV_JtW3DH=iPpM2UKfcnDkq-w9Tw4Q@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iio: exynos_adc: use indio_dev->dev structure to
- handle child nodes
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Doug Anderson <dianders@chromium.org>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jg1.han@samsung.com>
+From: Jingoo Han <jg1.han@samsung.com>
+To: 'Jimmy Li' <coder.liss@gmail.com>
+Cc: 'Jonathan Cameron' <jic23@kernel.org>,
+ 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
+ 'Lars-Peter Clausen' <lars@metafoo.de>,
+ 'Sachin Kamat' <sachin.kamat@linaro.org>,
+ 'Monam Agarwal' <monamagarwal123@gmail.com>, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+ 'Jingoo Han' <jg1.han@samsung.com>
+References: <20140429055544.GA23599@gmail.com>
+In-reply-to: <20140429055544.GA23599@gmail.com>
+Subject: Re: [PATCH] staging:iio:ad2s1210 fix a leak when device removed
+Date: Tue, 29 Apr 2014 15:07:04 +0900
+Message-id: <001401cf6371$3e98cf90$bbca6eb0$%han@samsung.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Jonathan,
+On Tuesday, April 29, 2014 2:56 PM, Jimmy Li wrote:
+> 
+> Signed-off-by: Jimmy Li <coder.liss@gmail.com>
+> ---
+>  drivers/staging/iio/resolver/ad2s1210.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+> index 7fbaba4..3d6e123 100644
+> --- a/drivers/staging/iio/resolver/ad2s1210.c
+> +++ b/drivers/staging/iio/resolver/ad2s1210.c
+> @@ -716,6 +716,7 @@ static int ad2s1210_remove(struct spi_device *spi)
+> 
+>  	iio_device_unregister(indio_dev);
+>  	ad2s1210_free_gpios(iio_priv(indio_dev));
+> +	devm_iio_device_free(&spi->dev, indio_dev);
 
-On 26 April 2014 18:23, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/04/14 16:46, Doug Anderson wrote:
->>
->> Naveen,
->>
->> Thanks for sending this.  Given that Jonathan Cameron was involved in
->> the previous discussion, it probably would have been wise to include
->> him on the CC list.
->
-> In my case, don't worry too much as I have linux-iio coming into exactly
-> the same place in my inbox. Doug is correct that it is generally a good
-> idea unless someone has asked you not to.
-Sure, will make it a habit.
->
->>
->> On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
->> <ch.naveen@samsung.com> wrote:
->>>
->>> From: Naveen Krishna Ch <ch.naveen@samsung.com>
->>>
->>> Using pdev->dev with device_for_each_child() would iterate over all
->>> of the children of the platform device and delete them.
->>> Thus, causing crashes during module unload.
->>>
->>> We should be using the indio_dev->dev structure for
->>> registering/unregistering child nodes.
->>>
->>> Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
->>> ---
->>> This change was tested on top of
->>>     https://lkml.org/lkml/2014/4/21/481 from Doug.
->>>
->>>   drivers/iio/adc/exynos_adc.c |    6 +++---
->>>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->>
->> Reported-by: Doug Anderson <dianders@chromium.org>
->> Reviewed-by: Doug Anderson <dianders@chromium.org>
->> Tested-by: Doug Anderson <dianders@chromium.org>
->
-> Applied to the fixes-togreg branch of iio.git
-I've submitted the v2.
-Kindly, review the other 4 patches in this series.
-Thanks
->
-> Thanks.
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+NAK.
 
+In ad2s1210_probe(),devm_iio_device_alloc() was already used.
+So, when ad2s1210_remove() is called, iio_device_free() will
+be called automatically. So, the leak never happens.
 
+If you want to know about devm_* functions, please refer 
+to the following.
 
--- 
-Shine bright,
-(: Nav :)
+  Documentation/driver-model/devres.txt
+
+Best regards,
+Jingoo Han
+> 
+>  	return 0;
+>  }
+> --
+> 1.7.9.5
