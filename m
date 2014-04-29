@@ -1,213 +1,151 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <535C0A2D.60207@linux.intel.com>
-Date: Sat, 26 Apr 2014 12:34:05 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51725 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753107AbaD2VGy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 29 Apr 2014 17:06:54 -0400
+Message-ID: <536014C9.60700@kernel.org>
+Date: Tue, 29 Apr 2014 22:08:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 01/16] iio: hid-sensors: Convert units and exponent
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <535AA9C9.10002@kernel.org>
-In-Reply-To: <535AA9C9.10002@kernel.org>
+Subject: Re: [PATCH 3/6] IIO: core: Modify scan element type
+References: <1398729107-16748-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1398729107-16748-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1398729107-16748-4-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-On 04/25/2014 11:30 AM, Jonathan Cameron wrote:
-> On 19/04/14 00:22, Srinivas Pandruvada wrote:
->> HID sensor hub specify a default unit and alternative units. This
->> along with unit exponent can be used adjust scale. This change
->> change HID sensor data units to IIO defined units for each
->> sensor type. So in this way user space can use a simply use:
->> "(data + offset) * scale" to get final result.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> see inline.
->> ---
->>   .../iio/common/hid-sensors/hid-sensor-attributes.c | 114 
->> +++++++++++++++++++++
->>   include/linux/hid-sensor-hub.h                     |   4 +
->>   2 files changed, 118 insertions(+)
->>
->> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c 
->> b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> index 75b5473..451a95b 100644
->> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> @@ -26,6 +26,40 @@
->>   #include <linux/iio/iio.h>
->>   #include <linux/iio/sysfs.h>
->>
->> +struct {
->> +    u32 usage_id;
->> +    int unit; /* 0 for default others from HID sensor spec */
->> +    int scale_val0; /* scale, whole number */
->> +    int scale_val1; /* scale, fraction in micros */
->> +} unit_conversion[] = {
->> +    {HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
->> +    {HID_USAGE_SENSOR_ACCEL_3D,
->> +        HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
->> +    {HID_USAGE_SENSOR_ACCEL_3D,
->> +        HID_USAGE_SENSOR_UNITS_G, 9, 806650},
->> +
->> +    {HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
->> +    {HID_USAGE_SENSOR_GYRO_3D,
->> +        HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
->> +    {HID_USAGE_SENSOR_GYRO_3D,
->> +        HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
->> +
->> +    {HID_USAGE_SENSOR_COMPASS_3D, 0, 1000, 0},
->> +    {HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
->> +
->> +    {HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 17453, 0},
->> +    {HID_USAGE_SENSOR_INCLINOMETER_3D,
->> +        HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
->> +    {HID_USAGE_SENSOR_INCLINOMETER_3D,
->> +        HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
->> +
->> +    {HID_USAGE_SENSOR_ALS, 0, 1, 0},
->> +    {HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
->> +
->> +    {HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
->> +    {HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 1, 0},
->> +};
->> +
->>   static int pow_10(unsigned power)
->>   {
->>       int i;
->> @@ -209,6 +243,86 @@ int hid_sensor_write_raw_hyst_value(struct 
->> hid_sensor_common *st,
->>   }
->>   EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
->>
->> +/*
->> + * This fuction applies the unit exponent to the scale.
->> + * For example:
-> Function
->> + * 9.806650 ->exp:2-> val0[980]val1[6650]
->> + * 9.000806 ->exp:2-> val0[900]val1[806]
->> + * 0.174535 ->exp:2-> val0[17]val1[4535]
->> + * 1.001745 ->exp:0-> val0[1]val1[1745]
->> + * 1.001745 ->exp:2-> val0[100]val1[1745]
->> + * 1.001745 ->exp:4-> val0[10017]val1[45]
->> + * 9.806650 ->exp:-2-> val0[0]val1[98066]
-> It took me a while to get what you meant here, perhaps for the 
-> examples it
-> is worth showing the actual value directly as well. Maybe.
-> 9.806650 exp:2->980.6650 -> val0[980]val1[665000] (note the above is I 
-> think
-> incorrect due to lack of trailing zeros on val1.
->> + */
->> +static void adjust_exponent_micro(int *val0, int *val1, int scale0,
->> +                  int scale1, int exp)
->> +{
->> +    int i;
->> +    int x;
->> +    int res;
->> +    int rem;
->> +
->> +    if (exp > 0) {
->> +        *val0 = scale0 * pow_10(exp);
->> +        res = 0;
->> +        if (exp > 6) {
->> +            *val1 = 0;
->> +            return;
->> +        }
-> so if example 1 above..
-> val0 = 900 as desired.
-> i  = 0;
-> sca1e1 = 806650
-> x = 806650/100000 = 8;
-> res = 80;
-> scale1 = 06650
-> i = 1
-> x = 06650/10000 = 0;
-> res = 80;
->  so 980. Good.
->> +        for (i = 0; i < exp; ++i) {
->> +            x = scale1 / pow_10(5 - i);
->> +            res += (pow_10(exp - 1 - i) * x);
->> +            scale1 = scale1 % pow_10(5 - i);
->> +        }
->> +        *val0 += res;
->> +            *val1 = scale1 * pow_10(exp);
-> val1 = 665000 which is correct with the trailing zeros in val2.
-> So your code is good but examples need those zeros!
-Impressive, Absolutely great review. I will correct comments in the next 
-version.
+On 29/04/14 00:51, Srinivas Pandruvada wrote:
+> The current scan element type uses the following format:
+>    [be|le]:[s|u]bits/storagebits[>>shift].
+> To specify multiple elements in this type, added a repeat value.
+> So new format is:
+>    [be|le]:[s|u]bits/storagebitsXr[>>shift].
+> Here r is specifying how may times, real/storage bits are repeating.
+>
+> When X is value is 0 or 1, then repeat value is not used in the format,
+> and it will be same as existing format.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the togreg branch of iio.git
 
 Thanks,
-Srinivas
+> ---
+>   drivers/iio/industrialio-buffer.c | 41 +++++++++++++++++++++++++++++++++------
+>   include/linux/iio/iio.h           |  7 +++++++
+>   2 files changed, 42 insertions(+), 6 deletions(-)
 >
->> +    } else if (exp < 0) {
->> +        exp = abs(exp);
->> +        if (exp > 6) {
->> +            *val0 = *val1 = 0;
->> +            return;
->> +        }
->> +        *val0 = scale0 / pow_10(exp);
->> +        rem = scale0 % pow_10(exp);
->> +        res = 0;
->> +        for (i = 0; i < (6 - exp); ++i) {
->> +            x = scale1 / pow_10(5 - i);
->> +            res += (pow_10(5 - exp - i) * x);
->> +            scale1 = scale1 % pow_10(5 - i);
->> +        }
->> +        *val1 = rem * pow_10(6 - exp) + res;
->> +    } else {
->> +        *val0 = scale0;
->> +        *val1 = scale1;
->> +    }
->> +}
->> +
->> +int hid_sensor_format_scale(u32 usage_id,
->> +            struct hid_sensor_hub_attribute_info *attr_info,
->> +            int *val0, int *val1)
->> +{
->> +    int i;
->> +    int exp;
->> +
->> +    *val0 = 1;
->> +    *val1 = 0;
->> +
->> +    for (i = 0; ARRAY_SIZE(unit_conversion); ++i) {
->> +        if (unit_conversion[i].usage_id == usage_id &&
->> +            unit_conversion[i].unit == attr_info->units) {
->> +            exp  = hid_sensor_convert_exponent(
->> +                        attr_info->unit_expo);
->> +            adjust_exponent_micro(val0, val1,
->> +                    unit_conversion[i].scale_val0,
->> +                    unit_conversion[i].scale_val1, exp);
->> +            break;
->> +        }
->> +    }
->> +
->> +    return IIO_VAL_INT_PLUS_MICRO;
->> +}
->> +EXPORT_SYMBOL(hid_sensor_format_scale);
->> +
->>   int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device 
->> *hsdev,
->>                       u32 usage_id,
->>                       struct hid_sensor_common *st)
->> diff --git a/include/linux/hid-sensor-hub.h 
->> b/include/linux/hid-sensor-hub.h
->> index b70cfd7..89626b2 100644
->> --- a/include/linux/hid-sensor-hub.h
->> +++ b/include/linux/hid-sensor-hub.h
->> @@ -223,4 +223,8 @@ int hid_sensor_read_samp_freq_value(struct 
->> hid_sensor_common *st,
->>   int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
->>                   u32 report_id, int field_index, u32 usage_id);
->>
->> +int hid_sensor_format_scale(u32 usage_id,
->> +                struct hid_sensor_hub_attribute_info *attr_info,
->> +                int *val0, int *val1);
->> +
->>   #endif
->>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index e472cff..36b1ae9 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -150,7 +150,16 @@ static ssize_t iio_show_fixed_type(struct device *dev,
+>   		type = IIO_BE;
+>   #endif
+>   	}
+> -	return sprintf(buf, "%s:%c%d/%d>>%u\n",
+> +	if (this_attr->c->scan_type.repeat > 1)
+> +		return sprintf(buf, "%s:%c%d/%dX%d>>%u\n",
+> +		       iio_endian_prefix[type],
+> +		       this_attr->c->scan_type.sign,
+> +		       this_attr->c->scan_type.realbits,
+> +		       this_attr->c->scan_type.storagebits,
+> +		       this_attr->c->scan_type.repeat,
+> +		       this_attr->c->scan_type.shift);
+> +		else
+> +			return sprintf(buf, "%s:%c%d/%d>>%u\n",
+>   		       iio_endian_prefix[type],
+>   		       this_attr->c->scan_type.sign,
+>   		       this_attr->c->scan_type.realbits,
+> @@ -475,14 +484,22 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+>   	for_each_set_bit(i, mask,
+>   			 indio_dev->masklength) {
+>   		ch = iio_find_channel_from_si(indio_dev, i);
+> -		length = ch->scan_type.storagebits / 8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		bytes = ALIGN(bytes, length);
+>   		bytes += length;
+>   	}
+>   	if (timestamp) {
+>   		ch = iio_find_channel_from_si(indio_dev,
+>   					      indio_dev->scan_index_timestamp);
+> -		length = ch->scan_type.storagebits / 8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		bytes = ALIGN(bytes, length);
+>   		bytes += length;
+>   	}
+> @@ -959,7 +976,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   					       indio_dev->masklength,
+>   					       in_ind + 1);
+>   			ch = iio_find_channel_from_si(indio_dev, in_ind);
+> -			length = ch->scan_type.storagebits/8;
+> +			if (ch->scan_type.repeat > 1)
+> +				length = ch->scan_type.storagebits / 8 *
+> +					ch->scan_type.repeat;
+> +			else
+> +				length = ch->scan_type.storagebits / 8;
+>   			/* Make sure we are aligned */
+>   			in_loc += length;
+>   			if (in_loc % length)
+> @@ -971,7 +992,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   			goto error_clear_mux_table;
+>   		}
+>   		ch = iio_find_channel_from_si(indio_dev, in_ind);
+> -		length = ch->scan_type.storagebits/8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		if (out_loc % length)
+>   			out_loc += length - out_loc % length;
+>   		if (in_loc % length)
+> @@ -992,7 +1017,11 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+>   		}
+>   		ch = iio_find_channel_from_si(indio_dev,
+>   			indio_dev->scan_index_timestamp);
+> -		length = ch->scan_type.storagebits/8;
+> +		if (ch->scan_type.repeat > 1)
+> +			length = ch->scan_type.storagebits / 8 *
+> +				ch->scan_type.repeat;
+> +		else
+> +			length = ch->scan_type.storagebits / 8;
+>   		if (out_loc % length)
+>   			out_loc += length - out_loc % length;
+>   		if (in_loc % length)
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 5629c92..ccde917 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -177,6 +177,12 @@ struct iio_event_spec {
+>    *			shift:		Shift right by this before masking out
+>    *					realbits.
+>    *			endianness:	little or big endian
+> + *			repeat:		Number of times real/storage bits
+> + *					repeats. When the repeat element is
+> + *					more than 1, then the type element in
+> + *					sysfs will show a repeat value.
+> + *					Otherwise, the number of repetitions is
+> + *					omitted.
+>    * @info_mask_separate: What information is to be exported that is specific to
+>    *			this channel.
+>    * @info_mask_shared_by_type: What information is to be exported that is shared
+> @@ -219,6 +225,7 @@ struct iio_chan_spec {
+>   		u8	realbits;
+>   		u8	storagebits;
+>   		u8	shift;
+> +		u8	repeat;
+>   		enum iio_endian endianness;
+>   	} scan_type;
+>   	long			info_mask_separate;
 >
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+
