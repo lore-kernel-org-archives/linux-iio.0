@@ -1,90 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:34590 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755339AbaDPKL6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Apr 2014 06:11:58 -0400
-From: Chanwoo Choi <cw00.choi@samsung.com>
-To: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, t.figa@samsung.com, sachin.kamat@linaro.org,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCHv3 2/2] iio: devicetree: Add DT binding documentation for
- Exynos3250 ADC
-Date: Wed, 16 Apr 2014 19:11:58 +0900
-Message-id: <1397643118-6934-3-git-send-email-cw00.choi@samsung.com>
-In-reply-to: <1397643118-6934-1-git-send-email-cw00.choi@samsung.com>
-References: <1397643118-6934-1-git-send-email-cw00.choi@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59333 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759042AbaD3UnQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 16:43:16 -0400
+Message-ID: <536160C0.6040004@kernel.org>
+Date: Wed, 30 Apr 2014 21:44:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, t.figa@samsung.com
+Subject: Re: [PATCH 3/5 v3] iio: exynos_adc: reduce timeout and use wait_for_completion_timeout
+References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com> <1398850015-17761-4-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1398850015-17761-4-git-send-email-ch.naveen@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
-special clock ('sclk_tsadc') for ADC which provide clock to internal ADC.
+On 30/04/14 10:26, Naveen Krishna Chatradhi wrote:
+> ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
+> waiting for 1000 msecs is wasteful (incase of h/w failure).
+>
+> Hence, reduce the time out to 100msecs and use
+> wait_for_completion_timeout() instead of
+> wait_for_completion_interruptible_timeout()
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Reviewed-by: Doug Anderson <dianders@chromium.org>
+Applied to the togreg branch of iio.git
 
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Pawel Moll <pawel.moll@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
-Cc: Kumar Gala <galak@codeaurora.org>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Kukjin Kim <kgene.kim@samsung.com>
-Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: Tomasz Figa <t.figa@samsung.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- .../devicetree/bindings/arm/samsung/exynos-adc.txt   | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-index 5d49f2b..7532ec3 100644
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-@@ -14,6 +14,8 @@ Required properties:
- 				for exynos4412/5250 controllers.
- 			Must be "samsung,exynos-adc-v2" for
- 				future controllers.
-+			Must be "samsung,exynos-adc-v3" for
-+				for exynos3250 controllers.
- - reg:			Contains ADC register address range (base address and
- 			length) and the address of the phy enable register.
- - interrupts: 		Contains the interrupt information for the timer. The
-@@ -21,7 +23,11 @@ Required properties:
- 			the Samsung device uses.
- - #io-channel-cells = <1>; As ADC has multiple outputs
- - clocks		From common clock binding: handle to adc clock.
-+			From common clock binding: handle to sclk_tsadc clock
-+			if using Exynos3250.
- - clock-names		From common clock binding: Shall be "adc".
-+			From common clock binding: Shall be "sclk_tsadc"
-+			if using Exynos3250.
- - vdd-supply		VDD input supply.
- 
- Note: child nodes can be added for auto probing from device tree.
-@@ -41,6 +47,20 @@ adc: adc@12D10000 {
- 	vdd-supply = <&buck5_reg>;
- };
- 
-+If Exynos3250 uses ADC,
-+adc: adc@126C0000 {
-+	compatible = "samsung,exynos-adc-v3";
-+	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+	interrupts = <0 137 0>;
-+	#io-channel-cells = <1>;
-+	io-channel-ranges;
-+
-+	clock-names = "adc", "sclk_tsadc";
-+	clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
-+
-+	vdd-supply = <&buck5_reg>;
-+};
-+
- 
- Example: Adding child nodes in dts file
- 
--- 
-1.8.0
+Thanks
+> ---
+> Changes since v2:
+> None
+> Changes since v1:
+> None
+> v0:
+> This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
+>
+>   drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
+>   1 file changed, 11 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index ff98c5d..939aaf7 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -82,7 +82,7 @@ enum adc_version {
+>   #define ADC_CON_EN_START	(1u << 0)
+>   #define ADC_DATX_MASK		0xFFF
+>
+> -#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
+> +#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+>
+>   struct exynos_adc {
+>   	void __iomem		*regs;
+> @@ -121,6 +121,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>   	struct exynos_adc *info = iio_priv(indio_dev);
+>   	unsigned long timeout;
+>   	u32 con1, con2;
+> +	int ret;
+>
+>   	if (mask != IIO_CHAN_INFO_RAW)
+>   		return -EINVAL;
+> @@ -145,16 +146,19 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>   				ADC_V1_CON(info->regs));
+>   	}
+>
+> -	timeout = wait_for_completion_interruptible_timeout
+> +	timeout = wait_for_completion_timeout
+>   			(&info->completion, EXYNOS_ADC_TIMEOUT);
+> -	*val = info->value;
+> +	if (timeout == 0) {
+> +		ret = -ETIMEDOUT;
+> +	} else {
+> +		*val = info->value;
+> +		*val2 = 0;
+> +		ret = IIO_VAL_INT;
+> +	}
+>
+>   	mutex_unlock(&indio_dev->mlock);
+>
+> -	if (timeout == 0)
+> -		return -ETIMEDOUT;
+> -
+> -	return IIO_VAL_INT;
+> +	return ret;
+>   }
+>
+>   static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>
 
