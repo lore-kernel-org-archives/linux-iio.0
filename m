@@ -1,47 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f178.google.com ([209.85.220.178]:38267 "EHLO
-	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752796AbaDYQcY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Apr 2014 12:32:24 -0400
-Received: by mail-vc0-f178.google.com with SMTP id hu19so4965782vcb.23
-        for <linux-iio@vger.kernel.org>; Fri, 25 Apr 2014 09:32:23 -0700 (PDT)
+Received: from mail.linuxfoundation.org ([140.211.169.12]:50446 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422664AbaD3VTx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 17:19:53 -0400
+Date: Wed, 30 Apr 2014 14:20:49 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 3.15 round 2
+Message-ID: <20140430212049.GA17170@kroah.com>
+References: <535BCA52.4000905@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1398420888-5506-6-git-send-email-ch.naveen@samsung.com>
-References: <1398420888-5506-1-git-send-email-ch.naveen@samsung.com>
-	<1398420888-5506-6-git-send-email-ch.naveen@samsung.com>
-Date: Fri, 25 Apr 2014 09:32:23 -0700
-Message-ID: <CAD=FV=Uv7NdY8vw0atu1Szyz5-VoFbqeM6rc2Jk_LBBzBxGkuw@mail.gmail.com>
-Subject: Re: [PATCH 5/5] iio: exynos_adc: do a reinit_completion before the conversion
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"cpgs ." <cpgs@samsung.com>, Grant Grundler <grundler@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <535BCA52.4000905@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Naveen
+On Sat, Apr 26, 2014 at 04:01:38PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 8b425aa193439a2b60a988a9230f1de753e36902:
+> 
+>    Merge tag 'iio-fixes-for-3.15a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2014-04-22 21:29:20 -0700)
+> 
+> are available in the git repository at:
+> 
+> 
+>    git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.15b
 
-On Fri, Apr 25, 2014 at 3:14 AM, Naveen Krishna Chatradhi
-<ch.naveen@samsung.com> wrote:
-> Add reinit_completion() before the wait_for_completion_timeout in
-> raw_read() call.
->
-> Change-Id: I70fa00841bc49eba838a5bd6779015844297dfdb
+Pulled and pushed out.
 
-Again, remove Change-Id (in the previous patch, too).
+thanks,
 
-> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-> ---
->  drivers/iio/adc/exynos_adc.c |    1 +
->  1 file changed, 1 insertion(+)
-
-Seems reasonable.
-
-Reviewed-by: Doug Anderson <dianders@chromium.org>
+greg k-h
