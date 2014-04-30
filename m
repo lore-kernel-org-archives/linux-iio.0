@@ -1,105 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55153 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59357 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750756AbaDZKzU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 26 Apr 2014 06:55:20 -0400
-Message-ID: <535B90EF.9070707@kernel.org>
-Date: Sat, 26 Apr 2014 11:56:47 +0100
+	with ESMTP id S1753424AbaD3UqF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 16:46:05 -0400
+Message-ID: <53616168.7010007@kernel.org>
+Date: Wed, 30 Apr 2014 21:47:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 3/6] iio: st_sensors: get platform data from device tree
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org> <1397416143-4396-4-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1397416143-4396-4-git-send-email-linus.walleij@linaro.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, t.figa@samsung.com
+Subject: Re: [PATCH 4/5 v3] iio: exynos_adc: do a soft reset in case of timeout
+References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com> <1398850015-17761-5-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1398850015-17761-5-git-send-email-ch.naveen@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/04/14 20:09, Linus Walleij wrote:
-> Currently the STMicroelectronics sensors only support one single
-> platform data item: configuration of the DRDY (data ready) pin
-> for a particular design. Augment the core to prioritize and take
-> this information from the device tree if the parent device has an
-> assigned device node, else fall back to passed in platform data
-> (usually the default data).
+On 30/04/14 10:26, Naveen Krishna Chatradhi wrote:
+> Do a soft reset software if a timeout happens.
+> This is applicable only for ADC_V2.
 >
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Denis CIOCCA <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-This one adds binding elements so needs to sit for another week I think...
-If you are respinning patch 5 then I'll probably wait for a repost before
-taking another look at the remaining 4 patches.
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Reviewed-by: Doug Anderson <dianders@chromium.org>
+Applied to the togreg branch of iio.git
 
 Thanks,
-
-Jonathan
 > ---
->   drivers/iio/common/st_sensors/st_sensors_core.c | 35 ++++++++++++++++++++++++-
->   1 file changed, 34 insertions(+), 1 deletion(-)
+> Changes since v2:
+> None
+> Changes since v1:
+> None
+> v0:
+> This change is a part of the patch reviewed at https://lkml.org/lkml/2013/11/5/92
 >
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index e8b932fed70e..1cdcef94e6a2 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -14,8 +14,8 @@
->   #include <linux/delay.h>
->   #include <linux/iio/iio.h>
->   #include <linux/regulator/consumer.h>
-> +#include <linux/of.h>
->   #include <asm/unaligned.h>
-> -
->   #include <linux/iio/common/st_sensors.h>
+>   drivers/iio/adc/exynos_adc.c |   50 ++++++++++++++++++++++--------------------
+>   1 file changed, 26 insertions(+), 24 deletions(-)
 >
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 939aaf7..eddc58e 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -112,6 +112,30 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
+>   	return (unsigned int)match->data;
+>   }
 >
-> @@ -265,14 +265,47 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+> +static void exynos_adc_hw_init(struct exynos_adc *info)
+> +{
+> +	u32 con1, con2;
+> +
+> +	if (info->version == ADC_V2) {
+> +		con1 = ADC_V2_CON1_SOFT_RESET;
+> +		writel(con1, ADC_V2_CON1(info->regs));
+> +
+> +		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+> +			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+> +		writel(con2, ADC_V2_CON2(info->regs));
+> +
+> +		/* Enable interrupts */
+> +		writel(1, ADC_V2_INT_EN(info->regs));
+> +	} else {
+> +		/* set default prescaler values and Enable prescaler */
+> +		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> +
+> +		/* Enable 12-bit ADC resolution */
+> +		con1 |= ADC_V1_CON_RES;
+> +		writel(con1, ADC_V1_CON(info->regs));
+> +	}
+> +}
+> +
+>   static int exynos_read_raw(struct iio_dev *indio_dev,
+>   				struct iio_chan_spec const *chan,
+>   				int *val,
+> @@ -149,6 +173,8 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>   	timeout = wait_for_completion_timeout
+>   			(&info->completion, EXYNOS_ADC_TIMEOUT);
+>   	if (timeout == 0) {
+> +		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
+> +		exynos_adc_hw_init(info);
+>   		ret = -ETIMEDOUT;
+>   	} else {
+>   		*val = info->value;
+> @@ -230,30 +256,6 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
 >   	return 0;
 >   }
 >
-> +#ifdef CONFIG_OF
-> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-> +		struct st_sensors_platform_data *defdata)
-> +{
-> +	struct st_sensors_platform_data *pdata;
-> +	struct device_node *np = dev->of_node;
-> +	u32 val;
-> +
-> +	if (!np)
-> +		return NULL;
-> +
-> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> +	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
-> +		pdata->drdy_int_pin = (u8) val;
-> +	else
-> +		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
-> +
-> +	return pdata;
-> +}
-> +#else
-> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-> +		struct st_sensors_platform_data *defdata)
-> +{
-> +	return NULL;
-> +}
-> +#endif
-> +
->   int st_sensors_init_sensor(struct iio_dev *indio_dev,
->   					struct st_sensors_platform_data *pdata)
+> -static void exynos_adc_hw_init(struct exynos_adc *info)
+> -{
+> -	u32 con1, con2;
+> -
+> -	if (info->version == ADC_V2) {
+> -		con1 = ADC_V2_CON1_SOFT_RESET;
+> -		writel(con1, ADC_V2_CON1(info->regs));
+> -
+> -		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
+> -			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
+> -		writel(con2, ADC_V2_CON2(info->regs));
+> -
+> -		/* Enable interrupts */
+> -		writel(1, ADC_V2_INT_EN(info->regs));
+> -	} else {
+> -		/* set default prescaler values and Enable prescaler */
+> -		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> -
+> -		/* Enable 12-bit ADC resolution */
+> -		con1 |= ADC_V1_CON_RES;
+> -		writel(con1, ADC_V1_CON(info->regs));
+> -	}
+> -}
+> -
+>   static int exynos_adc_probe(struct platform_device *pdev)
 >   {
->   	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +	struct st_sensors_platform_data *of_pdata;
->   	int err = 0;
->
->   	mutex_init(&sdata->tb.buf_lock);
->
-> +	/* If OF/DT pdata exists, it will take precedence of anything else */
-> +	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
-> +	if (of_pdata)
-> +		pdata = of_pdata;
-> +
->   	if (pdata)
->   		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
->
+>   	struct exynos_adc *info = NULL;
 >
 
