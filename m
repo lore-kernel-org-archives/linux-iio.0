@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59333 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59369 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759042AbaD3UnQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 16:43:16 -0400
-Message-ID: <536160C0.6040004@kernel.org>
-Date: Wed, 30 Apr 2014 21:44:48 +0100
+	with ESMTP id S1752334AbaD3Us0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 16:48:26 -0400
+Message-ID: <536161F5.7090508@kernel.org>
+Date: Wed, 30 Apr 2014 21:49:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
@@ -13,83 +13,52 @@ CC: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
 	dianders@chromium.org, gregkh@linuxfoundation.org,
 	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
 	grundler@chromium.org, t.figa@samsung.com
-Subject: Re: [PATCH 3/5 v3] iio: exynos_adc: reduce timeout and use wait_for_completion_timeout
-References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com> <1398850015-17761-4-git-send-email-ch.naveen@samsung.com>
-In-Reply-To: <1398850015-17761-4-git-send-email-ch.naveen@samsung.com>
+Subject: Re: [PATCH 5/5 v3] iio: exynos_adc: do a reinit_completion before
+ the conversion
+References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com> <1398850015-17761-6-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1398850015-17761-6-git-send-email-ch.naveen@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 30/04/14 10:26, Naveen Krishna Chatradhi wrote:
-> ADC module on Exynos5 SoCs runs at 600KSPS. At this conversion rate,
-> waiting for 1000 msecs is wasteful (incase of h/w failure).
->
-> Hence, reduce the time out to 100msecs and use
-> wait_for_completion_timeout() instead of
-> wait_for_completion_interruptible_timeout()
+> Add reinit_completion() before the wait_for_completion_timeout in
+> raw_read() call.
 >
 > Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
 > Reviewed-by: Doug Anderson <dianders@chromium.org>
 Applied to the togreg branch of iio.git
+I wasn't sure if this one was technically a fix, but as it isn't
+marked clearly as such it can go in during the next merge window.
+I won't have pushed this out to a non rebasing branch until tomorrow
+so if this fixes an observed issue then let me know and it might move
+to the fixes-togreg branch.
 
-Thanks
+Thanks,
+
+Jonathan
 > ---
 > Changes since v2:
 > None
 > Changes since v1:
 > None
 > v0:
-> This change is a part of the patch reviewd at https://lkml.org/lkml/2013/11/5/92
+> This change is a part of the patch reviewed at https://lkml.org/lkml/2013/11/5/92
 >
->   drivers/iio/adc/exynos_adc.c |   18 +++++++++++-------
->   1 file changed, 11 insertions(+), 7 deletions(-)
+>   drivers/iio/adc/exynos_adc.c |    1 +
+>   1 file changed, 1 insertion(+)
 >
 > diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index ff98c5d..939aaf7 100644
+> index eddc58e..010578f 100644
 > --- a/drivers/iio/adc/exynos_adc.c
 > +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -82,7 +82,7 @@ enum adc_version {
->   #define ADC_CON_EN_START	(1u << 0)
->   #define ADC_DATX_MASK		0xFFF
->
-> -#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(1000))
-> +#define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
->
->   struct exynos_adc {
->   	void __iomem		*regs;
-> @@ -121,6 +121,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->   	struct exynos_adc *info = iio_priv(indio_dev);
->   	unsigned long timeout;
->   	u32 con1, con2;
-> +	int ret;
->
->   	if (mask != IIO_CHAN_INFO_RAW)
+> @@ -151,6 +151,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
 >   		return -EINVAL;
-> @@ -145,16 +146,19 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->   				ADC_V1_CON(info->regs));
->   	}
 >
-> -	timeout = wait_for_completion_interruptible_timeout
-> +	timeout = wait_for_completion_timeout
->   			(&info->completion, EXYNOS_ADC_TIMEOUT);
-> -	*val = info->value;
-> +	if (timeout == 0) {
-> +		ret = -ETIMEDOUT;
-> +	} else {
-> +		*val = info->value;
-> +		*val2 = 0;
-> +		ret = IIO_VAL_INT;
-> +	}
+>   	mutex_lock(&indio_dev->mlock);
+> +	reinit_completion(&info->completion);
 >
->   	mutex_unlock(&indio_dev->mlock);
->
-> -	if (timeout == 0)
-> -		return -ETIMEDOUT;
-> -
-> -	return IIO_VAL_INT;
-> +	return ret;
->   }
->
->   static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>   	/* Select the channel to be used and Trigger conversion */
+>   	if (info->version == ADC_V2) {
 >
 
