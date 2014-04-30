@@ -1,43 +1,80 @@
-Return-Path: <standby24x7@gmail.com>
-From: Masanari Iida <standby24x7@gmail.com>
-To: devel@driverdev.osuosl.org,
-	jic23@kernel.org,
-	gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org
-Cc: Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] staging: iio: Fix format string mismatch in ad7280a.c
-Date: Tue, 29 Apr 2014 01:00:02 +0900
-Message-Id: <1398700802-31361-1-git-send-email-standby24x7@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout4.samsung.com ([203.254.224.34]:51874 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751983AbaD3J2s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Apr 2014 05:28:48 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de, cpgs@samsung.com,
+	grundler@chromium.org, t.figa@samsung.com,
+	Naveen Krishna Ch <ch.naveen@samsung.com>
+Subject: [PATCH 1/5 v3] iio: exynos_adc: use indio_dev->dev structure to handle
+ child nodes
+Date: Wed, 30 Apr 2014 14:56:51 +0530
+Message-id: <1398850015-17761-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com>
+References: <1398850015-17761-1-git-send-email-ch.naveen@samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fix two format string mismatch in ad7280a.c
+From: Naveen Krishna Ch <ch.naveen@samsung.com>
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+Using pdev->dev with device_for_each_child() would iterate over all
+of the children of the platform device and delete them.
+Thus, causing crashes during module unload.
+
+We should be using the indio_dev->dev structure for
+registering/unregistering child nodes.
+
+Signed-off-by: Naveen Krishna Ch <ch.naveen@samsung.com>
+Reported-by: Doug Anderson <dianders@chromium.org>
+Reviewed-by: Doug Anderson <dianders@chromium.org>
+Tested-by: Doug Anderson <dianders@chromium.org>
 ---
- drivers/staging/iio/adc/ad7280a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes since v2:
+None
+Changes since v1:
+Adding Doug's tags
+v0:
+This change was tested on top of 
+   https://lkml.org/lkml/2014/4/21/481 from Doug.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index 1ac11f6..d215edf 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -443,7 +443,7 @@ static ssize_t ad7280_show_balance_timer(struct device *dev,
+ drivers/iio/adc/exynos_adc.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index d25b262..affa93f 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -344,7 +344,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
  
- 	msecs = (ret >> 3) * 71500;
+ 	exynos_adc_hw_init(info);
  
--	return sprintf(buf, "%d\n", msecs);
-+	return sprintf(buf, "%u\n", msecs);
- }
+-	ret = of_platform_populate(np, exynos_adc_match, NULL, &pdev->dev);
++	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed adding child nodes\n");
+ 		goto err_of_populate;
+@@ -353,7 +353,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	return 0;
  
- static ssize_t ad7280_store_balance_timer(struct device *dev,
-@@ -619,7 +619,7 @@ static ssize_t ad7280_read_channel_config(struct device *dev,
- 		return -EINVAL;
- 	}
+ err_of_populate:
+-	device_for_each_child(&pdev->dev, NULL,
++	device_for_each_child(&indio_dev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+ 	clk_disable_unprepare(info->clk);
+@@ -369,7 +369,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct exynos_adc *info = iio_priv(indio_dev);
  
--	return sprintf(buf, "%d\n", val);
-+	return sprintf(buf, "%u\n", val);
- }
- 
- static ssize_t ad7280_write_channel_config(struct device *dev,
+-	device_for_each_child(&pdev->dev, NULL,
++	device_for_each_child(&indio_dev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	regulator_disable(info->vdd);
+ 	clk_disable_unprepare(info->clk);
 -- 
-2.0.0.rc1
+1.7.9.5
+
