@@ -3,47 +3,41 @@ From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 1/3] iio: Add TEMP_AMBIENT and TEMP_OBJECT channel modifiers
-Date: Fri,  2 May 2014 17:57:04 +0200
-Message-Id: <1399046226-6673-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net>
-References: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 2/4] iio: Add ABI documentation for illuminance
+Date: Fri,  2 May 2014 17:54:47 +0200
+Message-Id: <1399046089-6616-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1399046089-6616-1-git-send-email-pmeerw@pmeerw.net>
+References: <1399046089-6616-1-git-send-email-pmeerw@pmeerw.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-useful for contactless temperature sensors to distinguish
-between the ambient temperature and the temperature of the object
+has been in use for a long time, but never documented;
+state that this measurement should be in lux (drivers may feel
+different about this)
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/iio/industrialio-core.c | 2 ++
- include/linux/iio/types.h       | 2 ++
- 2 files changed, 4 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index de8b1c2..4b1f375 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -85,6 +85,8 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
- 	[IIO_MOD_QUATERNION] = "quaternion",
-+	[IIO_MOD_TEMP_AMBIENT] = "ambient",
-+	[IIO_MOD_TEMP_OBJECT] = "object",
- };
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 9669c1f..a9757dc 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -895,6 +895,15 @@ Description:
+ 		on-chip EEPROM. After power-up or chip reset the device will
+ 		automatically load the saved configuration.
  
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 4fdab2e..d480631 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -54,6 +54,8 @@ enum iio_modifier {
- 	IIO_MOD_LIGHT_GREEN,
- 	IIO_MOD_LIGHT_BLUE,
- 	IIO_MOD_QUATERNION,
-+	IIO_MOD_TEMP_AMBIENT,
-+	IIO_MOD_TEMP_OBJECT,
- };
- 
- enum iio_event_type {
++What:		/sys/.../iio:deviceX/in_illuminanceY_input
++What:		/sys/.../iio:deviceX/in_illuminanceY_raw
++What:		/sys/.../iio:deviceX/in_illuminanceY_mean_raw
++KernelVersion:	3.4
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Illuminance measurement, units after application of scale
++		and offset are lux.
++
+ What:		/sys/.../iio:deviceX/in_intensityY_raw
+ What:		/sys/.../iio:deviceX/in_intensityY_ir_raw
+ What:		/sys/.../iio:deviceX/in_intensityY_both_raw
 -- 
 1.9.1
