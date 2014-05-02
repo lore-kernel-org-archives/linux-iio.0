@@ -1,34 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:51185 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752943AbaEBP5J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 2 May 2014 11:57:09 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
+Received: from mail-we0-f170.google.com ([74.125.82.170]:39101 "EHLO
+	mail-we0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752207AbaEBSp4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 May 2014 14:45:56 -0400
+Received: by mail-we0-f170.google.com with SMTP id w61so4986651wes.15
+        for <linux-iio@vger.kernel.org>; Fri, 02 May 2014 11:45:55 -0700 (PDT)
+MIME-Version: 1.0
+Date: Fri, 2 May 2014 20:45:55 +0200
+Message-ID: <CAFKr4p-3k7DfXoLGkKkqptm+0FCZgJcSXR3zFGmP5xUpPU3s8Q@mail.gmail.com>
+Subject: How to sample continuously in IIO, but without a trigger per scan set?
+From: Leon Woestenberg <sidebranch.linux@gmail.com>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org
-Subject: [PATCH 0/3] iio: mlx90614, take 2
-Date: Fri,  2 May 2014 17:57:03 +0200
-Message-Id: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-adding ABI documentation for object and ambient
+Hello all,
 
-Peter Meerwald (3):
-  iio: Add TEMP_AMBIENT and TEMP_OBJECT channel modifiers
-  iio: Add ABI documentation for object and ambient modifiers
-  iio: Add Melexis mlx90614 contact-less infrared temperature sensor
-    driver
+my first endeavours with IIO began with the requirement to sample a
+4-channel SPI ADC at 10 kHz rate with accurate periodicy, lowest
+jitter and lowest CPU usage.
 
- Documentation/ABI/testing/sysfs-bus-iio |   7 +-
- drivers/iio/industrialio-core.c         |   2 +
- drivers/iio/temperature/Kconfig         |  10 +++
- drivers/iio/temperature/Makefile        |   1 +
- drivers/iio/temperature/mlx90614.c      | 150 ++++++++++++++++++++++++++++++++
- include/linux/iio/types.h               |   2 +
- 6 files changed, 170 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iio/temperature/mlx90614.c
+I first adapted the SPI master to use the hardware DMA capability for
+cyclic transfers from the SPI controller. This fulfills the above
+requirements, any other approach would introduce too much jitter,
+pause in sample trains, or too much CPU overhead.
 
--- 
-1.9.1
+Then I started working on the IIO driver to use the above. Then I got stuck.
 
+After a trigger, I would like to capture for a large period of time,
+with a fixed sampling frequency, not via a software scheduled trigger
+per scan. I.e. any trigger (if at all) should start a continuous
+capture.
+
+How can I do this in IIO?
+
+I only see calls of a single scan (4 channels, 16-bits per channel) to
+my trigger handler; this induces too much overhead.
+
+
+Regards,
+
+Leon.
