@@ -1,55 +1,63 @@
-Return-Path: <pmeerw@pmeerw.net>
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org
-Subject: [PATCH] iio: mma8452 driver
-Date: Fri,  2 May 2014 10:51:34 +0200
-Message-Id: <1399020695-29822-1-git-send-email-pmeerw@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
-
-Hi,
-
-I'm resending the Freescale Freescale MMA8452 accelerometer
-driver, comments here:
-http://permalink.gmane.org/gmane.linux.kernel.iio/10899
-
-I only fixed the use of ARRAY_SIZE()
-
-remaining items/comments are
-
-(1) new reads cannot be explicitly triggered
-
-in case a new measurement can or has to be triggered, there IS
-some wait time (which can be rather long)
-
-in case where we simply wait for the next measurement, there MAY BE
-some wait time
-
-so in both cases there can be wait time
-
-I think the current approach it closer to the behaviour where
-measurements are triggered explicitly
-
-there is no concept of rate limit or measurement cache in IIO and
-no guarantee how long a measurement will take (besides that it should
-somehow be linked to sampling frequency)
-
-(2) make sampling frequency an attribute of a dataready trigger?
-
-the sampling frequency also affects read_raw() interaction, so I'd rather
-keep it as it is
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43039 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751015AbaEBJpN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 May 2014 05:45:13 -0400
+In-Reply-To: <1399017693-29608-1-git-send-email-pmeerw@pmeerw.net>
+References: <1399017693-29608-1-git-send-email-pmeerw@pmeerw.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 1/2] iio: Add TEMP_AMBIENT and TEMP_OBJECT channel modifiers
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Fri, 02 May 2014 10:45:09 +0100
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Message-ID: <3233f0b6-aa1a-4395-9ce1-19968e6fc024@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-thanks, p.
 
-Peter Meerwald (1):
-  iio: Add Freescale MMA8452Q 3-axis accelerometer driver
+On May 2, 2014 9:01:32 AM GMT+01:00, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+>useful for contactless temperature sensors to distinguish
+>between the ambient temperature and the temperature of the object
+>
+>Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+ABI docs?
 
- drivers/iio/accel/Kconfig   |  12 ++
- drivers/iio/accel/Makefile  |   1 +
- drivers/iio/accel/mma8452.c | 439 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 452 insertions(+)
- create mode 100644 drivers/iio/accel/mma8452.c
+Otherwise fine
+>---
+> drivers/iio/industrialio-core.c | 2 ++
+> include/linux/iio/types.h       | 2 ++
+> 2 files changed, 4 insertions(+)
+>
+>diff --git a/drivers/iio/industrialio-core.c
+>b/drivers/iio/industrialio-core.c
+>index de8b1c2..4b1f375 100644
+>--- a/drivers/iio/industrialio-core.c
+>+++ b/drivers/iio/industrialio-core.c
+>@@ -85,6 +85,8 @@ static const char * const iio_modifier_names[] = {
+> 	[IIO_MOD_LIGHT_GREEN] = "green",
+> 	[IIO_MOD_LIGHT_BLUE] = "blue",
+> 	[IIO_MOD_QUATERNION] = "quaternion",
+>+	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+>+	[IIO_MOD_TEMP_OBJECT] = "object",
+> };
+> 
+> /* relies on pairs of these shared then separate */
+>diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+>index 4fdab2e..d480631 100644
+>--- a/include/linux/iio/types.h
+>+++ b/include/linux/iio/types.h
+>@@ -54,6 +54,8 @@ enum iio_modifier {
+> 	IIO_MOD_LIGHT_GREEN,
+> 	IIO_MOD_LIGHT_BLUE,
+> 	IIO_MOD_QUATERNION,
+>+	IIO_MOD_TEMP_AMBIENT,
+>+	IIO_MOD_TEMP_OBJECT,
+> };
+> 
+> enum iio_event_type {
 
 -- 
-1.9.1
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
