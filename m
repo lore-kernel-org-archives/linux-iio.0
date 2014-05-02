@@ -1,108 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:62827 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751735AbaEIM5s (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 May 2014 08:57:48 -0400
-Message-ID: <536CD0C9.4040603@atmel.com>
-Date: Fri, 9 May 2014 14:57:45 +0200
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-MIME-Version: 1.0
-To: Arnd Bergmann <arnd@arndb.de>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-CC: Josh Wu <josh.wu@atmel.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] iio:adc: at91 requires the input subsystem
-References: <1399560433-1402630-1-git-send-email-arnd@arndb.de> <1399560990-1402858-13-git-send-email-arnd@arndb.de> <536CA78C.5070603@atmel.com> <4163305.otOGv8yVK1@wuerfel>
-In-Reply-To: <4163305.otOGv8yVK1@wuerfel>
-Content-Type: text/plain; charset="ISO-8859-1"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+Subject: [PATCH] iio: mma8452 driver
+Date: Fri,  2 May 2014 10:51:34 +0200
+Message-Id: <1399020695-29822-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/05/2014 13:43, Arnd Bergmann :
-> On Friday 09 May 2014 12:01:48 Nicolas Ferre wrote:
->> On 08/05/2014 16:56, Arnd Bergmann :
->>> Building the at91 adc driver with CONFIG_INPUT disabled results in this
->>> build error:
->>>
->>> ERROR: "input_event" [drivers/iio/adc/at91_adc.ko] undefined!
->>> ERROR: "input_unregister_device" [drivers/iio/adc/at91_adc.ko] undefined!
->>> ERROR: "input_free_device" [drivers/iio/adc/at91_adc.ko] undefined!
->>> ERROR: "input_register_device" [drivers/iio/adc/at91_adc.ko] undefined!
->>> ERROR: "input_set_abs_params" [drivers/iio/adc/at91_adc.ko] undefined!
->>> ERROR: "input_allocate_device" [drivers/iio/adc/at91_adc.ko] undefined!
->>>
->>> To make sure we can build random configurations, this turns on CONFIG_INPUT
->>> whenever CONFIG_AT91_ADC is enabled.
->>
->> Isn't it a "select" instead of "depends" that is required then?
-> 
-> It seems I fixed the patch at some point but didn't update the message.
-> 
-> In general, we should not mix 'depends on' and 'select' for the same symbol,
-> since that causes extra confusion.
-> 
-> In case of CONFIG_INPUT, almost all the users do 'depends on INPUT', with
-> a few exceptions that seem to be done in error.
+Hi,
 
-Ok, that makes sense.
+I'm resending the Freescale Freescale MMA8452 accelerometer
+driver, comments here:
+http://permalink.gmane.org/gmane.linux.kernel.iio/10899
+
+I only fixed the use of ARRAY_SIZE()
+
+remaining items/comments are
+
+(1) new reads cannot be explicitly triggered
+
+in case a new measurement can or has to be triggered, there IS
+some wait time (which can be rather long)
+
+in case where we simply wait for the next measurement, there MAY BE
+some wait time
+
+so in both cases there can be wait time
+
+I think the current approach it closer to the behaviour where
+measurements are triggered explicitly
+
+there is no concept of rate limit or measurement cache in IIO and
+no guarantee how long a measurement will take (besides that it should
+somehow be linked to sampling frequency)
+
+(2) make sampling frequency an attribute of a dataready trigger?
+
+the sampling frequency also affects read_raw() interaction, so I'd rather
+keep it as it is
 
 
-> Updated patch below.
+thanks, p.
 
-Thanks Arnd.
+Peter Meerwald (1):
+  iio: Add Freescale MMA8452Q 3-axis accelerometer driver
 
-> 	Arnd
-> 
-> 8<----
-> 
->>>From 4679d63b24a681d9c6afcfdde266bae0f940e90b Mon Sep 17 00:00:00 2001
-> From: Arnd Bergmann <arnd@arndb.de>
-> Date: Wed, 9 Apr 2014 17:18:10 +0200
-> Subject: [PATCH] [SUBMITTED] iio:adc: at91 requires the input subsystem
-> 
-> Building the at91 adc driver with CONFIG_INPUT disabled results in this
-> build error:
-> 
-> ERROR: "input_event" [drivers/iio/adc/at91_adc.ko] undefined!
-> ERROR: "input_unregister_device" [drivers/iio/adc/at91_adc.ko] undefined!
-> ERROR: "input_free_device" [drivers/iio/adc/at91_adc.ko] undefined!
-> ERROR: "input_register_device" [drivers/iio/adc/at91_adc.ko] undefined!
-> ERROR: "input_set_abs_params" [drivers/iio/adc/at91_adc.ko] undefined!
-> ERROR: "input_allocate_device" [drivers/iio/adc/at91_adc.ko] undefined!
-> 
-> To make sure we can build random configurations, this adds a Kconfig
-> dependency on CONFIG_INPUT, as we do for other similar drivers.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: linux-iio@vger.kernel.org
-> Cc: Josh Wu <josh.wu@atmel.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
-
-
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-
-Bye,
-
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 90f596d..a80d236 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -110,6 +110,7 @@ config AD799X
->  config AT91_ADC
->  	tristate "Atmel AT91 ADC"
->  	depends on ARCH_AT91
-> +	depends on INPUT
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	select SYSFS
-> 
-> 
-> 
-
+ drivers/iio/accel/Kconfig   |  12 ++
+ drivers/iio/accel/Makefile  |   1 +
+ drivers/iio/accel/mma8452.c | 439 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 452 insertions(+)
+ create mode 100644 drivers/iio/accel/mma8452.c
 
 -- 
-Nicolas Ferre
+1.9.1
