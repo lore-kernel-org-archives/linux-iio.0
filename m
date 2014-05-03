@@ -1,47 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51228 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51399 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750849AbaECKZz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:25:55 -0400
-Message-ID: <5364C490.20805@kernel.org>
-Date: Sat, 03 May 2014 11:27:28 +0100
+	with ESMTP id S1750990AbaECKzf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:55:35 -0400
 From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio:magnetometer:mag3110: Fix initialization of ctrl_reg1
-References: <1399018187-29742-1-git-send-email-pmeerw@pmeerw.net> <1399018187-29742-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399018187-29742-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio: Add ABI documentation for proximity
+Date: Sat,  3 May 2014 11:57:03 +0100
+Message-Id: <1399114623-14921-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/14 09:09, Peter Meerwald wrote:
-> DR bits need to be shifted; since MAG3110_CTRL_DR_DEFAULT is
-> zero, the change has no effect
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Gah, my careful colour coding of patches went astray on these two so I
-lost them.  Thanks for the reminder.
+From: Peter Meerwald <pmeerw@pmeerw.net>
 
-Applied to the togreg branch of iio.git
+has been in use for a long time, but never documented
+proximity is unit-less, except otherwise stated, see e.g.
+the as3935 driver where it is meter
 
-J
-> ---
->   drivers/iio/magnetometer/mag3110.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-> index 8b77782..1b2df75 100644
-> --- a/drivers/iio/magnetometer/mag3110.c
-> +++ b/drivers/iio/magnetometer/mag3110.c
-> @@ -338,7 +338,7 @@ static int mag3110_probe(struct i2c_client *client,
->   	indio_dev->num_channels = ARRAY_SIZE(mag3110_channels);
->   	indio_dev->available_scan_masks = mag3110_scan_masks;
->
-> -	data->ctrl_reg1 = MAG3110_CTRL_DR_DEFAULT;
-> +	data->ctrl_reg1 = MAG3110_CTRL_DR_DEFAULT << MAG3110_CTRL_DR_SHIFT;
->   	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG1,
->   		data->ctrl_reg1);
->   	if (ret < 0)
->
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index a9757dc..738b56f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -895,6 +895,19 @@ Description:
+ 		on-chip EEPROM. After power-up or chip reset the device will
+ 		automatically load the saved configuration.
+ 
++What:		/sys/.../iio:deviceX/in_proximity_raw
++What:		/sys/.../iio:deviceX/in_proximity_input
++What:		/sys/.../iio:deviceX/in_proximityY_raw
++KernelVersion:	3.4
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Proximity measurement indicating that some
++		object is near the sensor, usually be observing
++		reflectivity of infrared or ultrasound emitted.
++		Often these sensors are unit less and as such conversion
++		to SI units is not possible.  Where it is, the units should
++		be meters.
++
+ What:		/sys/.../iio:deviceX/in_illuminanceY_input
+ What:		/sys/.../iio:deviceX/in_illuminanceY_raw
+ What:		/sys/.../iio:deviceX/in_illuminanceY_mean_raw
+-- 
+1.9.2
 
