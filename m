@@ -1,58 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51313 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54108 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750990AbaECKjo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:39:44 -0400
-Message-ID: <5364C7CE.7030705@kernel.org>
-Date: Sat, 03 May 2014 11:41:18 +0100
+	with ESMTP id S1750972AbaECTie (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 15:38:34 -0400
+Message-ID: <53654618.3090109@kernel.org>
+Date: Sat, 03 May 2014 20:40:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio: Add intensity including ir and both modifiers
- to ABI documentation ex-post
-References: <1399046089-6616-1-git-send-email-pmeerw@pmeerw.net> <1399046089-6616-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399046089-6616-2-git-send-email-pmeerw@pmeerw.net>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 13/16] iio: hid-sensors: Proximity: Raw read support
+References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397863356-2470-13-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397863356-2470-13-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/14 16:54, Peter Meerwald wrote:
-> intensity has been in use for a long time but never documented
-> it is beneficial to document what this is supposed to be
+On 19/04/14 00:22, Srinivas Pandruvada wrote:
+> Added support for raw reading of channel. If the sensor is powered
+> off, it will turn on for reading value.
 >
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Oops. I think added intensity in the first place though might have been in the
-tsl2563 driver rather than my tsl2561 driver from prehistory of IIO.
-
-Thanks for your work on filling in the gaps!
-
-Applied to the togreg branch of iio.git
-
-J
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied.
 > ---
->   Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
->   1 file changed, 10 insertions(+)
+>   drivers/iio/light/hid-sensor-prox.c | 18 ++++++++++++++++--
+>   1 file changed, 16 insertions(+), 2 deletions(-)
 >
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index ca3d3b7..9669c1f 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -895,6 +895,16 @@ Description:
->   		on-chip EEPROM. After power-up or chip reset the device will
->   		automatically load the saved configuration.
+> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+> index 07e98ec8..d203ef4 100644
+> --- a/drivers/iio/light/hid-sensor-prox.c
+> +++ b/drivers/iio/light/hid-sensor-prox.c
+> @@ -21,6 +21,7 @@
+>   #include <linux/interrupt.h>
+>   #include <linux/irq.h>
+>   #include <linux/slab.h>
+> +#include <linux/delay.h>
+>   #include <linux/hid-sensor-hub.h>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+> @@ -75,6 +76,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+>   	u32 address;
+>   	int ret;
+>   	int ret_type;
+> +	s32 poll_value;
 >
-> +What:		/sys/.../iio:deviceX/in_intensityY_raw
-> +What:		/sys/.../iio:deviceX/in_intensityY_ir_raw
-> +What:		/sys/.../iio:deviceX/in_intensityY_both_raw
-> +KernelVersion:	3.4
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Unit-less light intensity. Modifiers both and ir indicate
-> +		that measurements contains visible and infrared light
-> +		components or just infrared light, respectively.
+>   	*val = 0;
+>   	*val2 = 0;
+> @@ -90,12 +92,24 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+>   			report_id = -1;
+>   			break;
+>   		}
+> -		if (report_id >= 0)
+> +		if (report_id >= 0) {
+> +			poll_value = hid_sensor_read_poll_value(
+> +					&prox_state->common_attributes);
+> +			if (poll_value < 0)
+> +				return -EINVAL;
 > +
->   What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
->   What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
->   What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
+> +			hid_sensor_power_state(&prox_state->common_attributes,
+> +						true);
+> +
+> +			msleep_interruptible(poll_value * 2);
+> +
+>   			*val = sensor_hub_input_attr_get_raw_value(
+>   				prox_state->common_attributes.hsdev,
+>   				HID_USAGE_SENSOR_PROX, address,
+>   				report_id);
+> -		else {
+> +			hid_sensor_power_state(&prox_state->common_attributes,
+> +						false);
+> +		} else {
+>   			*val = 0;
+>   			return -EINVAL;
+>   		}
 >
 
