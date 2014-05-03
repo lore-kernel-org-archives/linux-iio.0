@@ -1,50 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:59175 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753056AbaEBWlB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 May 2014 18:41:01 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 2/2] iio: fix possible buffer overflow
-Date: Sat,  3 May 2014 00:40:50 +0200
-Message-Id: <1399070450-23391-2-git-send-email-alexandre.belloni@free-electrons.com>
-In-Reply-To: <1399070450-23391-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51134 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751005AbaECKKR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:10:17 -0400
+Message-ID: <5364C0E6.4020401@kernel.org>
+Date: Sat, 03 May 2014 11:11:50 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: fix possible buffer overflow
 References: <1399070450-23391-1-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1399070450-23391-1-git-send-email-alexandre.belloni@free-electrons.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Found using smatch:
-drivers/iio/industrialio-event.c:327 iio_device_add_event() error: buffer
-overflow 'iio_ev_info_text' 3 <= 7
+On 02/05/14 23:40, Alexandre Belloni wrote:
+> Found using smatch:
+> drivers/iio/industrialio-core.c:719 iio_device_add_info_mask_type() error:
+> buffer overflow 'iio_chan_info_postfix' 17 <= 63
+>
+> It was probably never hit because the info_mask_* members are filled by using
+> the BIT() macro with values from the iio_chan_info_enum enum that also serve as
+> the index of the iio_chan_info_postfix array.
+>
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+See
+ef4b4856593fc3d9d169bededdaf7acf62f83a52
+iio:core: Fix bug in length of event info_mask and catch unhandled bits set in masks.
 
-It was probably never hit because the mask_* members of the event_spec struct
-are filled by using the BIT() macro with values from the iio_event_info enum
-that also serve as the index of the iio_ev_info_text array.
+Which fixes the same issue in a slightly different way.
 
-Also, for_each_set_bit takes a number of bits as the size, not a number of
-bytes.
+Pretty recent patch though and this was there for ages before that.
+Better to have two fixes than none.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/iio/industrialio-event.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index ea6e06b9c7d4..804e90676159 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -321,7 +321,8 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
- 	char *postfix;
- 	int ret;
- 
--	for_each_set_bit(i, mask, sizeof(*mask)) {
-+	for_each_set_bit(i, mask,
-+			 min(sizeof(*mask)*8, ARRAY_SIZE(iio_ev_info_text))) {
- 		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
- 				iio_ev_type_text[type], iio_ev_dir_text[dir],
- 				iio_ev_info_text[i]);
--- 
-1.9.1
+J
+> ---
+>   drivers/iio/industrialio-core.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index ede16aec20fb..5e7a67e53879 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -715,7 +715,8 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+>   {
+>   	int i, ret, attrcount = 0;
+>
+> -	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
+> +	for_each_set_bit(i, infomask, min(sizeof(infomask)*8,
+> +					  ARRAY_SIZE(iio_chan_info_postfix))) {
+>   		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+>   					     chan,
+>   					     &iio_read_channel_info,
+>
 
