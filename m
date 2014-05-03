@@ -1,80 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51299 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51274 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751012AbaECKhW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:37:22 -0400
-Message-ID: <5364C73E.5000309@kernel.org>
-Date: Sat, 03 May 2014 11:38:54 +0100
+	with ESMTP id S1751012AbaECKcx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:32:53 -0400
+Message-ID: <5364C633.6060800@kernel.org>
+Date: Sat, 03 May 2014 11:34:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: Add Melexis mlx90614 contact-less infrared temperature
+Subject: Re: [PATCH v2] iio: Add Freescale MPL115A2 pressure / temperature
  sensor driver
-References: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net> <1399046226-6673-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399046226-6673-4-git-send-email-pmeerw@pmeerw.net>
+References: <1399046294-6731-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1399046294-6731-1-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/14 16:57, Peter Meerwald wrote:
-> I2C-controlled sensor measures ambient and object temperatuer
+On 02/05/14 16:58, Peter Meerwald wrote:
+> I2C-controlled sensor with 10-bit pressure and temperature measurement
 >
-> see
-> http://www.melexis.com/Infrared-Thermometer-Sensors/Infrared-Thermometer-Sensors/MLX90614-615.aspx
+> datasheet: http://cache.freescale.com/files/sensors/doc/data_sheet/MPL3115A2.pdf
+>
+> v2:
+> * use devm_iio_device_register()
 >
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Another nice short excelent driver.
+Nice driver.
 
-Applied to the togreg branch of iio.git initially pushed out as testing
-for the autobuilders to play.
+Applied to the togreg branch of iio.git
 
-J
+Thanks,
+
+Jonathan
 > ---
->   drivers/iio/temperature/Kconfig    |  10 +++
->   drivers/iio/temperature/Makefile   |   1 +
->   drivers/iio/temperature/mlx90614.c | 150 +++++++++++++++++++++++++++++++++++++
->   3 files changed, 161 insertions(+)
->   create mode 100644 drivers/iio/temperature/mlx90614.c
+>   drivers/iio/pressure/Kconfig  |  10 ++
+>   drivers/iio/pressure/Makefile |   1 +
+>   drivers/iio/pressure/mpl115.c | 211 ++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 222 insertions(+)
+>   create mode 100644 drivers/iio/pressure/mpl115.c
 >
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index 372f8fb..21feaa4 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -3,6 +3,16 @@
->   #
->   menu "Temperature sensors"
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index d88ff17..ffac8ac 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -19,6 +19,16 @@ config HID_SENSOR_PRESS
+>             To compile this driver as a module, choose M here: the module
+>             will be called hid-sensor-press.
 >
-> +config MLX90614
-> +	tristate "MLX90614 contact-less infrared sensor"
+> +config MPL115
+> +	tristate "Freescale MPL115A2 pressure sensor driver"
 > +	depends on I2C
 > +	help
-> +	  If you say yes here you get support for the Melexis
-> +	  MLX90614 contact-less infrared sensor connected with I2C.
+> +	  Say yes here to build support for the Freescale MPL115A2
+> +	  pressure sensor connected via I2C.
 > +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called mlx90614.
+> +          To compile this driver as a module, choose M here: the module
+> +          will be called mpl115.
 > +
->   config TMP006
->   	tristate "TMP006 infrared thermopile sensor"
+>   config MPL3115
+>   	tristate "Freescale MPL3115A2 pressure sensor driver"
 >   	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 24d7b60..40710a8 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -2,4 +2,5 @@
->   # Makefile for industrial I/O temperature drivers
->   #
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index 4a57bf6..c53d250 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -4,6 +4,7 @@
 >
-> +obj-$(CONFIG_MLX90614) += mlx90614.o
->   obj-$(CONFIG_TMP006) += tmp006.o
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+>   # When adding new entries keep the list in alphabetical order
+>   obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+> +obj-$(CONFIG_MPL115) += mpl115.o
+>   obj-$(CONFIG_MPL3115) += mpl3115.o
+>   obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+>   st_pressure-y := st_pressure_core.o
+> diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
 > new file mode 100644
-> index 0000000..c8b6ac8
+> index 0000000..f5ecd6e
 > --- /dev/null
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -0,0 +1,150 @@
+> +++ b/drivers/iio/pressure/mpl115.c
+> @@ -0,0 +1,211 @@
 > +/*
-> + * mlx90614.c - Support for Melexis MLX90614 contactless IR temperature sensor
+> + * mpl115.c - Support for Freescale MPL115A2 pressure/temperature sensor
 > + *
 > + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
 > + *
@@ -82,97 +87,150 @@ J
 > + * the GNU General Public License.  See the file COPYING in the main
 > + * directory of this archive for more details.
 > + *
-> + * Driver for the Melexis MLX90614 I2C 16-bit IR thermopile sensor
+> + * (7-bit I2C slave address 0x60)
 > + *
-> + * (7-bit I2C slave address 0x5a, 100KHz bus speed only!)
+> + * TODO: shutdown pin
 > + *
-> + * TODO: sleep mode, configuration EEPROM
 > + */
 > +
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
 > +#include <linux/module.h>
-> +
+> +#include <linux/i2c.h>
 > +#include <linux/iio/iio.h>
+> +#include <linux/delay.h>
 > +
-> +#define MLX90614_OP_RAM 0x00
+> +#define MPL115_PADC 0x00 /* pressure ADC output value, MSB first, 10 bit */
+> +#define MPL115_TADC 0x02 /* temperature ADC output value, MSB first, 10 bit */
+> +#define MPL115_A0 0x04 /* 12 bit integer, 3 bit fraction */
+> +#define MPL115_B1 0x06 /* 2 bit integer, 13 bit fraction */
+> +#define MPL115_B2 0x08 /* 1 bit integer, 14 bit fraction */
+> +#define MPL115_C12 0x0a /* 0 bit integer, 13 bit fraction */
+> +#define MPL115_CONVERT 0x12 /* convert temperature and pressure */
 > +
-> +/* RAM offsets with 16-bit data, MSB first */
-> +#define MLX90614_TA 0x06 /* ambient temperature */
-> +#define MLX90614_TOBJ1 0x07 /* object temperature */
-> +
-> +struct mlx90614_data {
+> +struct mpl115_data {
 > +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	s16 a0;
+> +	s16 b1, b2;
+> +	s16 c12;
 > +};
 > +
-> +static int mlx90614_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
+> +static int mpl115_request(struct mpl115_data *data)
 > +{
-> +	struct mlx90614_data *data = iio_priv(indio_dev);
-> +	s32 ret;
+> +	int ret = i2c_smbus_write_byte_data(data->client, MPL115_CONVERT, 0);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW: /* 0.02K / LSB */
-> +		switch (channel->channel2) {
-> +		case IIO_MOD_TEMP_AMBIENT:
-> +			ret = i2c_smbus_read_word_data(data->client,
-> +			    MLX90614_OP_RAM | MLX90614_TA);
-> +			if (ret < 0)
-> +				return ret;
-> +			break;
-> +		case IIO_MOD_TEMP_OBJECT:
-> +			ret = i2c_smbus_read_word_data(data->client,
-> +			    MLX90614_OP_RAM | MLX90614_TOBJ1);
-> +			if (ret < 0)
-> +				return ret;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = 13657;
-> +		*val2 = 500000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 20;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
+> +	usleep_range(3000, 4000);
+> +
+> +	return 0;
 > +}
 > +
-> +static const struct iio_chan_spec mlx90614_channels[] = {
+> +static int mpl115_comp_pressure(struct mpl115_data *data, int *val, int *val2)
+> +{
+> +	int ret;
+> +	u16 padc, tadc;
+> +	int a1, y1, pcomp;
+> +	unsigned kpa;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = mpl115_request(data);
+> +	if (ret < 0)
+> +		goto done;
+> +
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_PADC);
+> +	if (ret < 0)
+> +		goto done;
+> +	padc = ret >> 6;
+> +
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+> +	if (ret < 0)
+> +		goto done;
+> +	tadc = ret >> 6;
+> +
+> +	/* see Freescale AN3785 */
+> +	a1 = data->b1 + ((data->c12 * tadc) >> 11);
+> +	y1 = (data->a0 << 10) + a1 * padc;
+> +
+> +	/* compensated pressure with 4 fractional bits */
+> +	pcomp = (y1 + ((data->b2 * (int) tadc) >> 1)) >> 9;
+> +
+> +	kpa = pcomp * (115 - 50) / 1023 + (50 << 4);
+> +	*val = kpa >> 4;
+> +	*val2 = (kpa & 15) * (1000000 >> 4);
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int mpl115_read_temp(struct mpl115_data *data)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = mpl115_request(data);
+> +	if (ret < 0)
+> +		goto done;
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_TADC);
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int mpl115_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct mpl115_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = mpl115_comp_pressure(data, val, val2);
+> +		if (ret < 0)
+> +			return ret;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_RAW:
+> +		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
+> +		ret = mpl115_read_temp(data);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret >> 6;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = 605;
+> +		*val2 = 750000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = -186;
+> +		*val2 = 915888;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_chan_spec mpl115_channels[] = {
 > +	{
-> +		.type = IIO_TEMP,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_TEMP_AMBIENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> +		    BIT(IIO_CHAN_INFO_SCALE),
+> +		.type = IIO_PRESSURE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
 > +	},
 > +	{
 > +		.type = IIO_TEMP,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_TEMP_OBJECT,
 > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> +		    BIT(IIO_CHAN_INFO_SCALE),
+> +			BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_SCALE),
 > +	},
 > +};
 > +
-> +static const struct iio_info mlx90614_info = {
-> +	.read_raw = mlx90614_read_raw,
+> +static const struct iio_info mpl115_info = {
+> +	.read_raw = &mpl115_read_raw,
 > +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int mlx90614_probe(struct i2c_client *client,
+> +static int mpl115_probe(struct i2c_client *client,
 > +			 const struct i2c_device_id *id)
 > +{
+> +	struct mpl115_data *data;
 > +	struct iio_dev *indio_dev;
-> +	struct mlx90614_data *data;
+> +	int ret;
 > +
 > +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
 > +		return -ENODEV;
@@ -182,46 +240,54 @@ J
 > +		return -ENOMEM;
 > +
 > +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
 > +	data->client = client;
+> +	mutex_init(&data->lock);
 > +
-> +	indio_dev->dev.parent = &client->dev;
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->info = &mpl115_info;
 > +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &mlx90614_info;
+> +	indio_dev->channels = mpl115_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mpl115_channels);
 > +
-> +	indio_dev->channels = mlx90614_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mlx90614_channels);
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_A0);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->a0 = ret;
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_B1);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->b1 = ret;
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_B2);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->b2 = ret;
+> +	ret = i2c_smbus_read_word_swapped(data->client, MPL115_C12);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->c12 = ret;
 > +
-> +	return iio_device_register(indio_dev);
+> +	return devm_iio_device_register(&client->dev, indio_dev);
 > +}
 > +
-> +static int mlx90614_remove(struct i2c_client *client)
-> +{
-> +	iio_device_unregister(i2c_get_clientdata(client));
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id mlx90614_id[] = {
-> +	{ "mlx90614", 0 },
+> +static const struct i2c_device_id mpl115_id[] = {
+> +	{ "mpl115", 0 },
 > +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(i2c, mlx90614_id);
+> +MODULE_DEVICE_TABLE(i2c, mpl115_id);
 > +
-> +static struct i2c_driver mlx90614_driver = {
+> +static struct i2c_driver mpl115_driver = {
 > +	.driver = {
-> +		.name	= "mlx90614",
-> +		.owner	= THIS_MODULE,
+> +		.name	= "mpl115",
 > +	},
-> +	.probe = mlx90614_probe,
-> +	.remove = mlx90614_remove,
-> +	.id_table = mlx90614_id,
+> +	.probe = mpl115_probe,
+> +	.id_table = mpl115_id,
 > +};
-> +module_i2c_driver(mlx90614_driver);
+> +module_i2c_driver(mpl115_driver);
 > +
 > +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("Melexis MLX90614 contactless IR temperature sensor driver");
+> +MODULE_DESCRIPTION("Freescale MPL115 pressure/temperature driver");
 > +MODULE_LICENSE("GPL");
 >
 
