@@ -1,182 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32861 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51439 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751184AbaEXKaU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:30:20 -0400
-Message-ID: <53807524.70409@kernel.org>
-Date: Sat, 24 May 2014 11:32:04 +0100
+	with ESMTP id S1751012AbaECLBv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 07:01:51 -0400
+Message-ID: <5364CCFC.3080505@kernel.org>
+Date: Sat, 03 May 2014 12:03:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-input <linux-input@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH] HID: hid-sensor-hub: Fix lockdep warning for dynamic
- callback locks.
-References: <CA+BWVUS0QYG54W3ws5s3g6iM=SXQHxBxJcKnjCxcEfZRAqp_Dg@mail.gmail.com> <CA+BWVUSm2FQ+U9sHu-Gj5FFpo1kQfjKmxw8PpripExaDXGwUjg@mail.gmail.com>
-In-Reply-To: <CA+BWVUSm2FQ+U9sHu-Gj5FFpo1kQfjKmxw8PpripExaDXGwUjg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, dan.carpenter@oracle.com
+Subject: Re: [PATCH] iio: ak8975: Fix issue with the name
+References: <1398786274-24868-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1398786274-24868-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/05/14 02:49, Reyad Attiyat wrote:
-> Here is a sample of the kernel lockdep warning I got after turingon
-> dynamic debugging:
-> https://bugzilla.kernel.org/show_bug.cgi?id=73321#c3
+On 29/04/14 16:44, Srinivas Pandruvada wrote:
+> Fixing issue caused by clash of two patches, one adding a name with
+> the acpi enumeration patch.
 >
+> 54ab3e24 Beomho Seo          2014-04-02 @572  	indio_dev->name = id->name;
+> d913971e Srinivas Pandruvada 2014-03-19  574  	indio_dev->name = name;
 >
+> The name added by commit 54ab3e24 is not required as this is already
+> added by taking care of case where id is NULL.
 >
-> On Tue, May 13, 2014 at 8:03 PM, Reyad Attiyat <reyad.attiyat@gmail.com> wrote:
->> Changes all dyn_callback_lock spinlocks to spinlocks that disable
->> interrupts. The dynamic callback lock (dyn_callback_lock) must not be
->> interrupted when locked as it is used in an interrupt handler
->> function, sensor_hub_raw_event.
-Looks sane to me, but no sign off and Jiri not cc'd.
-Would like an ack from Srinivas as well ideally.
+> Datailed warning 0-DAY kernel build testing backend:
+> vers/iio/magnetometer/ak8975.c:572 ak8975_probe() error: we previously assumed 'id' could be null (see line 546)
+>
+> git remote add iio git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+> git remote update iio
+> git checkout d913971ecaf31d7d5a6836224b669e1972469445
+> vim +/id +572 drivers/iio/magnetometer/ak8975.c
+>
+> 94a6d5cf drivers/iio/magnetometer/ak8975.c         Jacek Anaszewski    2013-05-07  540
+> 94a6d5cf drivers/iio/magnetometer/ak8975.c         Jacek Anaszewski    2013-05-07  541  	data->client = client;
+> 94a6d5cf drivers/iio/magnetometer/ak8975.c         Jacek Anaszewski    2013-05-07  542  	data->eoc_gpio = eoc_gpio;
+> 94a6d5cf drivers/iio/magnetometer/ak8975.c         Jacek Anaszewski    2013-05-07  543  	data->eoc_irq = 0;
+> 94a6d5cf drivers/iio/magnetometer/ak8975.c         Jacek Anaszewski    2013-05-07  544
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  545  	/* id will be NULL when enumerated via ACPI */
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19 @546  	if (id) {
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  547  		data->chipset =
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  548  			(enum asahi_compass_chipset)(id->driver_data);
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  549  		name = (char *) id->name;
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  550  	} else if (ACPI_HANDLE(&client->dev))
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  551  		name = ak8975_match_acpi_device(&client->dev, &data->chipset);
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  552  	else {
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  553  		err = -ENOSYS;
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  554  		goto exit_free_iio;
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  555  	}
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  556  	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+> 6027c077 drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  557
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  558  	/* Perform some basic start-of-day setup of the device. */
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  559  	err = ak8975_setup(client);
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  560  	if (err < 0) {
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  561  		dev_err(&client->dev, "AK8975 initialization fails\n");
+> ad31d250 drivers/staging/iio/magnetometer/ak8975.c Stephen Warren      2011-09-21  562  		goto exit_free_iio;
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  563  	}
+> 3285aae1 drivers/staging/iio/magnetometer/ak8975.c Andrew Chew         2010-09-08  564
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  565  	data->client = client;
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  566  	mutex_init(&data->lock);
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  567  	data->eoc_gpio = eoc_gpio;
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  568  	indio_dev->dev.parent = &client->dev;
+> 694e1b5f drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-08-12  569  	indio_dev->channels = ak8975_channels;
+> 694e1b5f drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-08-12  570  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  571  	indio_dev->info = &ak8975_info;
+> 54ab3e24 drivers/iio/magnetometer/ak8975.c         Beomho Seo          2014-04-02 @572  	indio_dev->name = id->name;
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  573  	indio_dev->modes = INDIO_DIRECT_MODE;
+> d913971e drivers/iio/magnetometer/ak8975.c         Srinivas Pandruvada 2014-03-19  574  	indio_dev->name = name;
+> 338473c8 drivers/staging/iio/magnetometer/ak8975.c Jonathan Cameron    2011-06-27  575  	err = iio_device_register(indio_dev);
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the togreg branch of iio.git
+I amended the commit message to simply give a reported by credit rather than the
+whole message above.
 
-Acked-by: Jonathan Cameron <jic23@kernel.org>
->> ---
->>   drivers/hid/hid-sensor-hub.c | 31 ++++++++++++++++++-------------
->>   1 file changed, 18 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
->> index af8244b..1e1644c 100644
->> --- a/drivers/hid/hid-sensor-hub.c
->> +++ b/drivers/hid/hid-sensor-hub.c
->> @@ -133,10 +133,11 @@ static struct hid_sensor_hub_callbacks
->> *sensor_hub_get_callback(
->>    struct hid_sensor_hub_device **hsdev,
->>    void **priv)
->>   {
->> + unsigned long flags;
->>    struct hid_sensor_hub_callbacks_list *callback;
->>    struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
->>
->> - spin_lock(&pdata->dyn_callback_lock);
->> + spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->>    list_for_each_entry(callback, &pdata->dyn_callback_list, list)
->>    if (callback->usage_id == usage_id &&
->>    (collection_index >=
->> @@ -145,10 +146,10 @@ static struct hid_sensor_hub_callbacks
->> *sensor_hub_get_callback(
->>    callback->hsdev->end_collection_index)) {
->>    *priv = callback->priv;
->>    *hsdev = callback->hsdev;
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>    return callback->usage_callback;
->>    }
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>
->>    return NULL;
->>   }
->> @@ -157,19 +158,20 @@ int sensor_hub_register_callback(struct
->> hid_sensor_hub_device *hsdev,
->>    u32 usage_id,
->>    struct hid_sensor_hub_callbacks *usage_callback)
->>   {
->> + unsigned long flags;
->>    struct hid_sensor_hub_callbacks_list *callback;
->>    struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
->>
->> - spin_lock(&pdata->dyn_callback_lock);
->> + spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->>    list_for_each_entry(callback, &pdata->dyn_callback_list, list)
->>    if (callback->usage_id == usage_id &&
->>    callback->hsdev == hsdev) {
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>    return -EINVAL;
->>    }
->>    callback = kzalloc(sizeof(*callback), GFP_ATOMIC);
->>    if (!callback) {
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>    return -ENOMEM;
->>    }
->>    callback->hsdev = hsdev;
->> @@ -177,7 +179,7 @@ int sensor_hub_register_callback(struct
->> hid_sensor_hub_device *hsdev,
->>    callback->usage_id = usage_id;
->>    callback->priv = NULL;
->>    list_add_tail(&callback->list, &pdata->dyn_callback_list);
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>
->>    return 0;
->>   }
->> @@ -186,10 +188,11 @@ EXPORT_SYMBOL_GPL(sensor_hub_register_callback);
->>   int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
->>    u32 usage_id)
->>   {
->> + unsigned long flags;
->>    struct hid_sensor_hub_callbacks_list *callback;
->>    struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
->>
->> - spin_lock(&pdata->dyn_callback_lock);
->> + spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->>    list_for_each_entry(callback, &pdata->dyn_callback_list, list)
->>    if (callback->usage_id == usage_id &&
->>    callback->hsdev == hsdev) {
->> @@ -197,7 +200,7 @@ int sensor_hub_remove_callback(struct
->> hid_sensor_hub_device *hsdev,
->>    kfree(callback);
->>    break;
->>    }
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>
->>    return 0;
->>   }
->> @@ -376,34 +379,36 @@ EXPORT_SYMBOL_GPL(sensor_hub_input_get_attribute_info);
->>   #ifdef CONFIG_PM
->>   static int sensor_hub_suspend(struct hid_device *hdev, pm_message_t message)
->>   {
->> + unsigned long flags;
->>    struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
->>    struct hid_sensor_hub_callbacks_list *callback;
->>
->>    hid_dbg(hdev, " sensor_hub_suspend\n");
->> - spin_lock(&pdata->dyn_callback_lock);
->> + spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->>    list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
->>    if (callback->usage_callback->suspend)
->>    callback->usage_callback->suspend(
->>    callback->hsdev, callback->priv);
->>    }
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>
->>    return 0;
->>   }
->>
->>   static int sensor_hub_resume(struct hid_device *hdev)
->>   {
->> + unsigned long flags;
->>    struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
->>    struct hid_sensor_hub_callbacks_list *callback;
->>
->>    hid_dbg(hdev, " sensor_hub_resume\n");
->> - spin_lock(&pdata->dyn_callback_lock);
->> + spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->>    list_for_each_entry(callback, &pdata->dyn_callback_list, list) {
->>    if (callback->usage_callback->resume)
->>    callback->usage_callback->resume(
->>    callback->hsdev, callback->priv);
->>    }
->> - spin_unlock(&pdata->dyn_callback_lock);
->> + spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->>
->>    return 0;
->>   }
->> --
->> 1.9.0
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+
+> ---
+>   drivers/iio/magnetometer/ak8975.c | 1 -
+>   1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index f5c1d41..09ea5c4 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -569,7 +569,6 @@ static int ak8975_probe(struct i2c_client *client,
+>   	indio_dev->channels = ak8975_channels;
+>   	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+>   	indio_dev->info = &ak8975_info;
+> -	indio_dev->name = id->name;
+>   	indio_dev->modes = INDIO_DIRECT_MODE;
+>   	indio_dev->name = name;
+>   	err = iio_device_register(indio_dev);
 >
 
