@@ -1,75 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54054 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54056 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750972AbaECTdP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 15:33:15 -0400
-Message-ID: <536544D8.8010408@kernel.org>
-Date: Sat, 03 May 2014 20:34:48 +0100
+	with ESMTP id S1753197AbaECTeE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 15:34:04 -0400
+Message-ID: <5365450A.1060000@kernel.org>
+Date: Sat, 03 May 2014 20:35:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 02/16] iio: hid-sensors: Add api to get poll value
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397863356-2470-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397863356-2470-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH 03/16] iio: hid-sensors: Accelerometer 3D: adjust scale
+ and offset
+References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397863356-2470-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1397863356-2470-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/04/14 00:22, Srinivas Pandruvada wrote:
-> Added interface to get poll value in milli-seconds. This value is
-> changed by changing sampling frequency. This API allows clients
-> to wait for atleast some poll milli seconds before reading a new sample.
+> Using units and unit exponent to calculate scale which is compliant
+> to IIO ABI.
 >
 > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-applied to the togreg branch of iio.git
-
+Applied to the togreg branch of iio.git
+Note I'll push this out as testing as normal, to allow the autobuilders to
+play.
 > ---
->   .../iio/common/hid-sensors/hid-sensor-attributes.c   | 20 ++++++++++++++++++++
->   include/linux/hid-sensor-hub.h                       |  2 ++
->   2 files changed, 22 insertions(+)
+>   drivers/iio/accel/hid-sensor-accel-3d.c | 17 +++++++++++++----
+>   1 file changed, 13 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 451a95b..4a533b8 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -147,6 +147,26 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
->   	return value;
->   }
+> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+> index 3dcdbad..ca50a91 100644
+> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
+> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+> @@ -42,6 +42,10 @@ struct accel_3d_state {
+>   	struct hid_sensor_common common_attributes;
+>   	struct hid_sensor_hub_attribute_info accel[ACCEL_3D_CHANNEL_MAX];
+>   	u32 accel_val[ACCEL_3D_CHANNEL_MAX];
+> +	int scale_pre_decml;
+> +	int scale_post_decml;
+> +	int scale_precision;
+> +	int value_offset;
+>   };
 >
-> +s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
-> +{
-> +	s32 value = 0;
-> +	int ret;
-> +
-> +	ret = sensor_hub_get_feature(st->hsdev,
-> +		st->poll.report_id,
-> +		st->poll.index, &value);
-> +
-> +	if (ret < 0 || value < 0) {
-> +		return -EINVAL;
-> +	} else {
-> +		if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
-> +			value = value * 1000;
-> +	}
-> +
-> +	return value;
-> +}
-> +EXPORT_SYMBOL(hid_sensor_read_poll_value);
-> +
->   int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
->   				int *val1, int *val2)
->   {
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index 89626b2..88d8d63 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -227,4 +227,6 @@ int hid_sensor_format_scale(u32 usage_id,
->   			    struct hid_sensor_hub_attribute_info *attr_info,
->   			    int *val0, int *val1);
+>   static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
+> @@ -123,12 +127,12 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+>   		ret_type = IIO_VAL_INT;
+>   		break;
+>   	case IIO_CHAN_INFO_SCALE:
+> -		*val = accel_state->accel[CHANNEL_SCAN_INDEX_X].units;
+> -		ret_type = IIO_VAL_INT;
+> +		*val = accel_state->scale_pre_decml;
+> +		*val2 = accel_state->scale_post_decml;
+> +		ret_type = accel_state->scale_precision;
+>   		break;
+>   	case IIO_CHAN_INFO_OFFSET:
+> -		*val = hid_sensor_convert_exponent(
+> -			accel_state->accel[CHANNEL_SCAN_INDEX_X].unit_expo);
+> +		*val = accel_state->value_offset;
+>   		ret_type = IIO_VAL_INT;
+>   		break;
+>   	case IIO_CHAN_INFO_SAMP_FREQ:
+> @@ -262,6 +266,11 @@ static int accel_3d_parse_report(struct platform_device *pdev,
+>   			st->accel[1].index, st->accel[1].report_id,
+>   			st->accel[2].index, st->accel[2].report_id);
 >
-> +s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+> +	st->scale_precision = hid_sensor_format_scale(
+> +				HID_USAGE_SENSOR_ACCEL_3D,
+> +				&st->accel[CHANNEL_SCAN_INDEX_X],
+> +				&st->scale_pre_decml, &st->scale_post_decml);
 > +
->   #endif
+>   	/* Set Sensitivity field ids, when there is no individual modifier */
+>   	if (st->common_attributes.sensitivity.index < 0) {
+>   		sensor_hub_input_get_attribute_info(hsdev,
 >
 
