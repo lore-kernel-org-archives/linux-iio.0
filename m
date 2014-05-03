@@ -1,54 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51301 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751012AbaECKh0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:37:26 -0400
-Message-ID: <5364C745.5000504@kernel.org>
-Date: Sat, 03 May 2014 11:39:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:60366 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750855AbaECQBH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 12:01:07 -0400
+Date: Sat, 3 May 2014 18:01:02 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: fix possible buffer overflow
+Message-ID: <20140503160101.GA4707@piout.net>
+References: <1399070450-23391-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <5364C0E6.4020401@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: Add ABI documentation for object and ambient
- modifiers
-References: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net> <1399046226-6673-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399046226-6673-3-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5364C0E6.4020401@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/14 16:57, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git
+On 03/05/2014 at 11:11:50 +0100, Jonathan Cameron wrote :
+> On 02/05/14 23:40, Alexandre Belloni wrote:
+> >Found using smatch:
+> >drivers/iio/industrialio-core.c:719 iio_device_add_info_mask_type() error:
+> >buffer overflow 'iio_chan_info_postfix' 17 <= 63
+> >
+> >It was probably never hit because the info_mask_* members are filled by using
+> >the BIT() macro with values from the iio_chan_info_enum enum that also serve as
+> >the index of the iio_chan_info_postfix array.
+> >
+> >Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> See
+> ef4b4856593fc3d9d169bededdaf7acf62f83a52
+> iio:core: Fix bug in length of event info_mask and catch unhandled bits set in masks.
+> 
+> Which fixes the same issue in a slightly different way.
+> 
+> Pretty recent patch though and this was there for ages before that.
+> Better to have two fixes than none.
+> 
 
-Thanks,
+Yeah, I missed your patch and it didn't hit Linus' tree yet. Sorry about
+the noise, next time I'll try to remember to check your tree.
 
-> ---
->   Documentation/ABI/testing/sysfs-bus-iio | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 6b74691..ca3d3b7 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -114,14 +114,17 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_temp_raw
->   What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_raw
->   What:		/sys/bus/iio/devices/iio:deviceX/in_temp_x_raw
->   What:		/sys/bus/iio/devices/iio:deviceX/in_temp_y_raw
-> -What:		/sys/bus/iio/devices/iio:deviceX/in_temp_z_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_temp_ambient_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_temp_object_raw
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
->   		Raw (unscaled no bias removal etc.) temperature measurement.
->   		If an axis is specified it generally means that the temperature
->   		sensor is associated with one part of a compound device (e.g.
-> -		a gyroscope axis). Units after application of scale and offset
-> +		a gyroscope axis). The ambient and object modifiers distinguish
-> +		between ambient (reference) and distant temperature for contact-
-> +		less measurements. Units after application of scale and offset
->   		are milli degrees Celsius.
->
->   What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_input
->
-
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
