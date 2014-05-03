@@ -1,101 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51170 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51234 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750960AbaECKPc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:15:32 -0400
-Message-ID: <5364C220.5010007@kernel.org>
-Date: Sat, 03 May 2014 11:17:04 +0100
+	with ESMTP id S1750990AbaECK06 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:26:58 -0400
+Message-ID: <5364C4D0.4040902@kernel.org>
+Date: Sat, 03 May 2014 11:28:32 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Dan Carpenter <dan.carpenter@oracle.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Aida Mynzhasova <ai.c.c0der@gmail.com>,
-	Masanari Iida <standby24x7@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch v2] [patch] staging: iio: ad799x: remove some unneeded
- IS_ERR() checks
-References: <20140430210529.GA6008@mwanda> <536170B9.8030708@gmx.de>
-In-Reply-To: <536170B9.8030708@gmx.de>
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio:magnetometer:mag3110: Enable user offset calibration
+References: <1399018187-29742-1-git-send-email-pmeerw@pmeerw.net> <1399018187-29742-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1399018187-29742-3-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/04/14 22:52, Hartmut Knaack wrote:
-> Dan Carpenter schrieb:
->> My static checker is upset that we check IS_ERR(t->reg) when we know it
->> is not an ERR_PTR.
->>
->> Checking for IS_ERR() twice is often a sign of confusion and buggy code.
->> In this case, if the call to "ret = regulator_enable(st->vref);" fails,
->> then we call "regulator_disable(st->vref);" and that's a mistake because
->> "st->vref" is not enabled.
->>
->> I fixed these problems and Hartmut Knaack pointed out a couple unneeded
->> IS_ERR() checks in ad799x_remove() so I have removed those as well.
->>
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-Thanks to both of you for this.
+On 02/05/14 09:09, Peter Meerwald wrote:
+> add IIO_CHAN_INFO_CALIBBIAS
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git
 
-Applied to the togreg branch of iio.git as the cleanup that caused
-this was most likely part of a series that is only in staging-next at
-the moment.
+Thanks,
 
 Jonathan
 
->> ---
->> v2: remove the unneeded checks in ad799x_remove() as well.  Updated the
->>      commit message to say that it's actually a small bug fix.
->>
->> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
->> index 16a8b14..39b4cb4 100644
->> --- a/drivers/iio/adc/ad799x.c
->> +++ b/drivers/iio/adc/ad799x.c
->> @@ -717,7 +717,7 @@ static int ad799x_probe(struct i2c_client *client,
->>   	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->>   		&ad799x_trigger_handler, NULL);
->>   	if (ret)
->> -		goto error_disable_reg;
->> +		goto error_disable_vref;
->>
->>   	if (client->irq > 0) {
->>   		ret = devm_request_threaded_irq(&client->dev,
->> @@ -739,11 +739,10 @@ static int ad799x_probe(struct i2c_client *client,
->>
->>   error_cleanup_ring:
->>   	iio_triggered_buffer_cleanup(indio_dev);
->> +error_disable_vref:
->> +	regulator_disable(st->vref);
->>   error_disable_reg:
->> -	if (!IS_ERR(st->vref))
->> -		regulator_disable(st->vref);
->> -	if (!IS_ERR(st->reg))
->> -		regulator_disable(st->reg);
->> +	regulator_disable(st->reg);
->>
->>   	return ret;
->>   }
->> @@ -756,10 +755,8 @@ static int ad799x_remove(struct i2c_client *client)
->>   	iio_device_unregister(indio_dev);
->>
->>   	iio_triggered_buffer_cleanup(indio_dev);
->> -	if (!IS_ERR(st->vref))
->> -		regulator_disable(st->vref);
->> -	if (!IS_ERR(st->reg))
->> -		regulator_disable(st->reg);
->> +	regulator_disable(st->vref);
->> +	regulator_disable(st->reg);
->>   	kfree(st->rx_buf);
->>
->>   	return 0;
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> ---
+>   drivers/iio/magnetometer/mag3110.c | 17 +++++++++++++++--
+>   1 file changed, 15 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+> index 1b2df75..e3106b4 100644
+> --- a/drivers/iio/magnetometer/mag3110.c
+> +++ b/drivers/iio/magnetometer/mag3110.c
+> @@ -199,6 +199,13 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
+>   		*val = mag3110_samp_freq[i][0];
+>   		*val2 = mag3110_samp_freq[i][1];
+>   		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		ret = i2c_smbus_read_word_swapped(data->client,
+> +			MAG3110_OFF_X +	2 * chan->scan_index);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = sign_extend32(ret >> 1, 14);
+> +		return IIO_VAL_INT;
+>   	}
+>   	return -EINVAL;
+>   }
+> @@ -223,6 +230,11 @@ static int mag3110_write_raw(struct iio_dev *indio_dev,
+>   		data->ctrl_reg1 |= rate << MAG3110_CTRL_DR_SHIFT;
+>   		return i2c_smbus_write_byte_data(data->client,
+>   			MAG3110_CTRL_REG1, data->ctrl_reg1);
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (val < -10000 || val > 10000)
+> +			return -EINVAL;
+> +		return i2c_smbus_write_word_swapped(data->client,
+> +			MAG3110_OFF_X + 2 * chan->scan_index, val << 1);
+>   	default:
+>   		return -EINVAL;
+>   	}
+> @@ -260,7 +272,8 @@ done:
+>   	.type = IIO_MAGN, \
+>   	.modified = 1, \
+>   	.channel2 = IIO_MOD_##axis, \
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +		BIT(IIO_CHAN_INFO_CALIBBIAS), \
+>   	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+>   		BIT(IIO_CHAN_INFO_SCALE), \
+>   	.scan_index = idx, \
+> @@ -345,7 +358,7 @@ static int mag3110_probe(struct i2c_client *client,
+>   		return ret;
+>
+>   	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG2,
+> -		MAG3110_CTRL_AUTO_MRST_EN | MAG3110_CTRL_RAW);
+> +		MAG3110_CTRL_AUTO_MRST_EN);
+>   	if (ret < 0)
+>   		return ret;
+>
 >
 
