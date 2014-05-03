@@ -1,53 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51399 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51404 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750990AbaECKzf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:55:35 -0400
+	with ESMTP id S1751012AbaECK5D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:57:03 -0400
+Message-ID: <5364CBDC.9060702@kernel.org>
+Date: Sat, 03 May 2014 11:58:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: Add ABI documentation for proximity
-Date: Sat,  3 May 2014 11:57:03 +0100
-Message-Id: <1399114623-14921-1-git-send-email-jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+CC: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH 4/4] iio: Fix spelling of illuminance in gp2ap020a00f
+ driver
+References: <1399046089-6616-1-git-send-email-pmeerw@pmeerw.net> <1399046089-6616-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1399046089-6616-5-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Peter Meerwald <pmeerw@pmeerw.net>
+On 02/05/14 16:54, Peter Meerwald wrote:
+> Cc: Jacek Anaszewski <j.anaszewski@samsung.com>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git
 
-has been in use for a long time, but never documented
-proximity is unit-less, except otherwise stated, see e.g.
-the as3935 driver where it is meter
+Thanks,
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a9757dc..738b56f 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -895,6 +895,19 @@ Description:
- 		on-chip EEPROM. After power-up or chip reset the device will
- 		automatically load the saved configuration.
- 
-+What:		/sys/.../iio:deviceX/in_proximity_raw
-+What:		/sys/.../iio:deviceX/in_proximity_input
-+What:		/sys/.../iio:deviceX/in_proximityY_raw
-+KernelVersion:	3.4
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Proximity measurement indicating that some
-+		object is near the sensor, usually be observing
-+		reflectivity of infrared or ultrasound emitted.
-+		Often these sensors are unit less and as such conversion
-+		to SI units is not possible.  Where it is, the units should
-+		be meters.
-+
- What:		/sys/.../iio:deviceX/in_illuminanceY_input
- What:		/sys/.../iio:deviceX/in_illuminanceY_raw
- What:		/sys/.../iio:deviceX/in_illuminanceY_mean_raw
--- 
-1.9.2
+J
+> ---
+>   drivers/iio/light/gp2ap020a00f.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+> index 5ea4a03..04bdb85 100644
+> --- a/drivers/iio/light/gp2ap020a00f.c
+> +++ b/drivers/iio/light/gp2ap020a00f.c
+> @@ -5,13 +5,13 @@
+>    * IIO features supported by the driver:
+>    *
+>    * Read-only raw channels:
+> - *   - illiminance_clear [lux]
+> - *   - illiminance_ir
+> + *   - illuminance_clear [lux]
+> + *   - illuminance_ir
+>    *   - proximity
+>    *
+>    * Triggered buffer:
+> - *   - illiminance_clear
+> - *   - illiminance_ir
+> + *   - illuminance_clear
+> + *   - illuminance_ir
+>    *   - proximity
+>    *
+>    * Events:
+>
 
