@@ -1,105 +1,524 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54087 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51489 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750972AbaECThW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 15:37:22 -0400
-Message-ID: <536545D0.9070005@kernel.org>
-Date: Sat, 03 May 2014 20:38:56 +0100
+	with ESMTP id S1751005AbaECLMO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 07:12:14 -0400
+Message-ID: <5364CF6A.1030507@kernel.org>
+Date: Sat, 03 May 2014 12:13:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 10/16] iio: hid-sensors: Accelerometer 3D: Raw read support
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397863356-2470-10-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1397863356-2470-10-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Add Freescale MMA8452Q 3-axis accelerometer driver
+References: <1399020695-29822-1-git-send-email-pmeerw@pmeerw.net> <1399020695-29822-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1399020695-29822-2-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/04/14 00:22, Srinivas Pandruvada wrote:
-> Added support for raw reading of channel. If the sensor is powered
-> off, it will turn on for reading value.
+On 02/05/14 09:51, Peter Meerwald wrote:
+> 3-axis accelerometer sensor (2/4/8 g) with 12-bit resolution
+> and I2C interface
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> many extra features are unsupported (freefall detection, orientation
+> change, autosleep)
+>
+> datasheet is here:
+> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA8452Q.pdf
+>
+> v2: (thanks to Jonathan Cameron)
+> * use ARRAY_SIZE()
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Fair enough on your responses in the cover letter.
 Applied to the togreg branch of iio.git
 
 Thanks,
+
+Jonathan
 > ---
->   drivers/iio/accel/hid-sensor-accel-3d.c | 21 ++++++++++++++++++---
->   1 file changed, 18 insertions(+), 3 deletions(-)
+>   drivers/iio/accel/Kconfig   |  12 ++
+>   drivers/iio/accel/Makefile  |   1 +
+>   drivers/iio/accel/mma8452.c | 439 ++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 452 insertions(+)
+>   create mode 100644 drivers/iio/accel/mma8452.c
 >
-> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-> index cf61c87..69abf91 100644
-> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
-> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-> @@ -22,6 +22,7 @@
->   #include <linux/interrupt.h>
->   #include <linux/irq.h>
->   #include <linux/slab.h>
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index e23e5085..1e120fa 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -65,4 +65,16 @@ config KXSD9
+>   	  Say yes here to build support for the Kionix KXSD9 accelerometer.
+>   	  Currently this only supports the device via an SPI interface.
+>
+> +config MMA8452
+> +	tristate "Freescale MMA8452Q Accelerometer Driver"
+> +	depends on I2C
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  Say yes here to build support for the Freescale MMA8452Q 3-axis
+> +	  accelerometer.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called mma8452.
+> +
+>   endmenu
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index c48d15f..dc0e379 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -6,6 +6,7 @@
+>   obj-$(CONFIG_BMA180) += bma180.o
+>   obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>   obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> +obj-$(CONFIG_MMA8452)	+= mma8452.o
+>
+>   obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
+>   st_accel-y := st_accel_core.o
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> new file mode 100644
+> index 0000000..17aeea1
+> --- /dev/null
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -0,0 +1,439 @@
+> +/*
+> + * mma8452.c - Support for Freescale MMA8452Q 3-axis 12-bit accelerometer
+> + *
+> + * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+> + *
+> + * TODO: interrupt, thresholding, orientation / freefall events, autosleep
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/triggered_buffer.h>
 > +#include <linux/delay.h>
->   #include <linux/hid-sensor-hub.h>
->   #include <linux/iio/iio.h>
->   #include <linux/iio/sysfs.h>
-> @@ -60,6 +61,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->   		.type = IIO_ACCEL,
->   		.modified = 1,
->   		.channel2 = IIO_MOD_X,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->   		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->   		BIT(IIO_CHAN_INFO_SCALE) |
->   		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> @@ -69,6 +71,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->   		.type = IIO_ACCEL,
->   		.modified = 1,
->   		.channel2 = IIO_MOD_Y,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->   		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->   		BIT(IIO_CHAN_INFO_SCALE) |
->   		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> @@ -78,6 +81,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->   		.type = IIO_ACCEL,
->   		.modified = 1,
->   		.channel2 = IIO_MOD_Z,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->   		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->   		BIT(IIO_CHAN_INFO_SCALE) |
->   		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> @@ -108,22 +112,33 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
->   	u32 address;
->   	int ret;
->   	int ret_type;
-> +	s32 poll_value;
->
->   	*val = 0;
->   	*val2 = 0;
->   	switch (mask) {
->   	case 0:
-> +		poll_value = hid_sensor_read_poll_value(
-> +					&accel_state->common_attributes);
-> +		if (poll_value < 0)
+> +
+> +#define MMA8452_STATUS 0x00
+> +#define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
+> +#define MMA8452_OUT_Y 0x03
+> +#define MMA8452_OUT_Z 0x05
+> +#define MMA8452_WHO_AM_I 0x0d
+> +#define MMA8452_DATA_CFG 0x0e
+> +#define MMA8452_OFF_X 0x2f
+> +#define MMA8452_OFF_Y 0x30
+> +#define MMA8452_OFF_Z 0x31
+> +#define MMA8452_CTRL_REG1 0x2a
+> +#define MMA8452_CTRL_REG2 0x2b
+> +
+> +#define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+> +
+> +#define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
+> +#define MMA8452_CTRL_DR_SHIFT 3
+> +#define MMA8452_CTRL_DR_DEFAULT 0x4 /* 50 Hz sample frequency */
+> +#define MMA8452_CTRL_ACTIVE BIT(0)
+> +
+> +#define MMA8452_DATA_CFG_FS_MASK (BIT(1) | BIT(0))
+> +#define MMA8452_DATA_CFG_FS_2G 0
+> +#define MMA8452_DATA_CFG_FS_4G 1
+> +#define MMA8452_DATA_CFG_FS_8G 2
+> +
+> +#define MMA8452_DEVICE_ID 0x2a
+> +
+> +struct mma8452_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	u8 ctrl_reg1;
+> +	u8 data_cfg;
+> +};
+> +
+> +static int mma8452_drdy(struct mma8452_data *data)
+> +{
+> +	int tries = 150;
+> +
+> +	while (tries-- > 0) {
+> +		int ret = i2c_smbus_read_byte_data(data->client,
+> +			MMA8452_STATUS);
+> +		if (ret < 0)
+> +			return ret;
+> +		if ((ret & MMA8452_STATUS_DRDY) == MMA8452_STATUS_DRDY)
+> +			return 0;
+> +		msleep(20);
+> +	}
+> +
+> +	dev_err(&data->client->dev, "data not ready\n");
+> +	return -EIO;
+> +}
+> +
+> +static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
+> +{
+> +	int ret = mma8452_drdy(data);
+> +	if (ret < 0)
+> +		return ret;
+> +	return i2c_smbus_read_i2c_block_data(data->client,
+> +		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
+> +}
+> +
+> +static ssize_t mma8452_show_int_plus_micros(char *buf,
+> +	const int (*vals)[2], int n)
+> +{
+> +	size_t len = 0;
+> +
+> +	while (n-- > 0)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len,
+> +			"%d.%06d ", vals[n][0], vals[n][1]);
+> +
+> +	/* replace trailing space by newline */
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
+> +					int val, int val2)
+> +{
+> +	while (n-- > 0)
+> +		if (val == vals[n][0] && val2 == vals[n][1])
+> +			return n;
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const int mma8452_samp_freq[8][2] = {
+> +	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
+> +	{6, 250000}, {1, 560000}
+> +};
+> +
+> +static const int mma8452_scales[3][2] = {
+> +	{0, 977}, {0, 1953}, {0, 3906}
+> +};
+> +
+> +static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	return mma8452_show_int_plus_micros(buf, mma8452_samp_freq,
+> +		ARRAY_SIZE(mma8452_samp_freq));
+> +}
+> +
+> +static ssize_t mma8452_show_scale_avail(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	return mma8452_show_int_plus_micros(buf, mma8452_scales,
+> +		ARRAY_SIZE(mma8452_scales));
+> +}
+> +
+> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
+> +static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
+> +	mma8452_show_scale_avail, NULL, 0);
+> +
+> +static int mma8452_get_samp_freq_index(struct mma8452_data *data,
+> +	int val, int val2)
+> +{
+> +	return mma8452_get_int_plus_micros_index(mma8452_samp_freq,
+> +		ARRAY_SIZE(mma8452_samp_freq), val, val2);
+> +}
+> +
+> +static int mma8452_get_scale_index(struct mma8452_data *data,
+> +	int val, int val2)
+> +{
+> +	return mma8452_get_int_plus_micros_index(mma8452_scales,
+> +		ARRAY_SIZE(mma8452_scales), val, val2);
+> +}
+> +
+> +static int mma8452_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	__be16 buffer[3];
+> +	int i, ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+> +
+> +		mutex_lock(&data->lock);
+> +		ret = mma8452_read(data, buffer);
+> +		mutex_unlock(&data->lock);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = sign_extend32(
+> +			be16_to_cpu(buffer[chan->scan_index]) >> 4, 11);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		i = data->data_cfg & MMA8452_DATA_CFG_FS_MASK;
+> +		*val = mma8452_scales[i][0];
+> +		*val2 = mma8452_scales[i][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+> +			MMA8452_CTRL_DR_SHIFT;
+> +		*val = mma8452_samp_freq[i][0];
+> +		*val2 = mma8452_samp_freq[i][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		ret = i2c_smbus_read_byte_data(data->client, MMA8452_OFF_X +
+> +			chan->scan_index);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = sign_extend32(ret, 7);
+> +		return IIO_VAL_INT;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int mma8452_standby(struct mma8452_data *data)
+> +{
+> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
+> +		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
+> +}
+> +
+> +static int mma8452_active(struct mma8452_data *data)
+> +{
+> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
+> +		data->ctrl_reg1);
+> +}
+> +
+> +static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	/* config can only be changed when in standby */
+> +	ret = mma8452_standby(data);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, reg, val);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	ret = mma8452_active(data);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	ret = 0;
+> +fail:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int mma8452_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	if (iio_buffer_enabled(indio_dev))
+> +		return -EBUSY;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		i = mma8452_get_samp_freq_index(data, val, val2);
+> +		if (i < 0)
 > +			return -EINVAL;
 > +
-> +		hid_sensor_power_state(&accel_state->common_attributes, true);
-> +		msleep_interruptible(poll_value * 2);
->   		report_id = accel_state->accel[chan->scan_index].report_id;
->   		address = accel_3d_addresses[chan->scan_index];
->   		if (report_id >= 0)
->   			*val = sensor_hub_input_attr_get_raw_value(
-> -				accel_state->common_attributes.hsdev,
-> -				HID_USAGE_SENSOR_ACCEL_3D, address,
-> -				report_id);
-> +					accel_state->common_attributes.hsdev,
-> +					HID_USAGE_SENSOR_ACCEL_3D, address,
-> +					report_id);
->   		else {
->   			*val = 0;
-> +			hid_sensor_power_state(&accel_state->common_attributes,
-> +						 false);
->   			return -EINVAL;
->   		}
-> +		hid_sensor_power_state(&accel_state->common_attributes, false);
->   		ret_type = IIO_VAL_INT;
->   		break;
->   	case IIO_CHAN_INFO_SCALE:
+> +		data->ctrl_reg1 &= ~MMA8452_CTRL_DR_MASK;
+> +		data->ctrl_reg1 |= i << MMA8452_CTRL_DR_SHIFT;
+> +		return mma8452_change_config(data, MMA8452_CTRL_REG1,
+> +			data->ctrl_reg1);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		i = mma8452_get_scale_index(data, val, val2);
+> +		if (i < 0)
+> +			return -EINVAL;
+> +		data->data_cfg &= ~MMA8452_DATA_CFG_FS_MASK;
+> +		data->data_cfg |= i;
+> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
+> +			data->data_cfg);
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (val < -128 || val > 127)
+> +			return -EINVAL;
+> +		return mma8452_change_config(data, MMA8452_OFF_X +
+> +			chan->scan_index, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	u8 buffer[16]; /* 3 16-bit channels + padding + ts */
+> +	int ret;
+> +
+> +	ret = mma8452_read(data, (__be16 *) buffer);
+> +	if (ret < 0)
+> +		goto done;
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> +		iio_get_time_ns());
+> +
+> +done:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +#define MMA8452_CHANNEL(axis, idx) { \
+> +	.type = IIO_ACCEL, \
+> +	.modified = 1, \
+> +	.channel2 = IIO_MOD_##axis, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +		BIT(IIO_CHAN_INFO_CALIBBIAS), \
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+> +		BIT(IIO_CHAN_INFO_SCALE), \
+> +	.scan_index = idx, \
+> +	.scan_type = { \
+> +		.sign = 's', \
+> +		.realbits = 12, \
+> +		.storagebits = 16, \
+> +		.shift = 4, \
+> +		.endianness = IIO_BE, \
+> +	}, \
+> +}
+> +
+> +static const struct iio_chan_spec mma8452_channels[] = {
+> +	MMA8452_CHANNEL(X, 0),
+> +	MMA8452_CHANNEL(Y, 1),
+> +	MMA8452_CHANNEL(Z, 2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+> +};
+> +
+> +static struct attribute *mma8452_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group mma8452_group = {
+> +	.attrs = mma8452_attributes,
+> +};
+> +
+> +static const struct iio_info mma8452_info = {
+> +	.attrs = &mma8452_group,
+> +	.read_raw = &mma8452_read_raw,
+> +	.write_raw = &mma8452_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+> +
+> +static int mma8452_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct mma8452_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != MMA8452_DEVICE_ID)
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->info = &mma8452_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = mma8452_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
+> +	indio_dev->available_scan_masks = mma8452_scan_masks;
+> +
+> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> +		data->ctrl_reg1);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->data_cfg = MMA8452_DATA_CFG_FS_2G;
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_DATA_CFG,
+> +		data->data_cfg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +		mma8452_trigger_handler, NULL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto buffer_cleanup;
+> +	return 0;
+> +
+> +buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int mma8452_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	mma8452_standby(iio_priv(indio_dev));
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int mma8452_suspend(struct device *dev)
+> +{
+> +	return mma8452_standby(iio_priv(i2c_get_clientdata(
+> +		to_i2c_client(dev))));
+> +}
+> +
+> +static int mma8452_resume(struct device *dev)
+> +{
+> +	return mma8452_active(iio_priv(i2c_get_clientdata(
+> +		to_i2c_client(dev))));
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
+> +#define MMA8452_PM_OPS (&mma8452_pm_ops)
+> +#else
+> +#define MMA8452_PM_OPS NULL
+> +#endif
+> +
+> +static const struct i2c_device_id mma8452_id[] = {
+> +	{ "mma8452", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, mma8452_id);
+> +
+> +static struct i2c_driver mma8452_driver = {
+> +	.driver = {
+> +		.name	= "mma8452",
+> +		.pm	= MMA8452_PM_OPS,
+> +	},
+> +	.probe = mma8452_probe,
+> +	.remove = mma8452_remove,
+> +	.id_table = mma8452_id,
+> +};
+> +module_i2c_driver(mma8452_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("Freescale MMA8452 accelerometer driver");
+> +MODULE_LICENSE("GPL");
 >
 
