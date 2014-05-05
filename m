@@ -1,47 +1,51 @@
-Return-Path: <reyad.attiyat@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36152 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755764AbaEEJ7e (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 May 2014 05:59:34 -0400
+Message-ID: <53676162.8090903@kernel.org>
+Date: Mon, 05 May 2014 11:01:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-Date: Tue, 13 May 2014 21:14:06 -0500
-Message-ID: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com>
-Subject: HID Sensor support for True/Magnetic North usage attributes
-To: jic23@kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: hid-sensors: Fix unit conversion
+References: <1399251720-8158-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1399251720-8158-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dear IIO/HID maintainers,
+On 05/05/14 02:02, Srinivas Pandruvada wrote:
+> When no units are specified the default units are milli-gauss. So
+> need to divide by 1000 to get iio default of Gauss.
+> Similarly the default units conversion from degrees to radians.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Seeing as I hadn't pushed the patch this is fixing out to the togreg branch
+of kernel.org yet, I've applied this as a fixup patch to
+4500173cd9abbf3dc8f48a5caca783cd4debe288 iio: hid-sensors: Convert units and exponent
 
-I have a device, Surface Pro, that has the hid-sensor-hub and many
-sensors attached. With the help of Srinivas I was able to get them all
-working except for the magnometer. It uses the hid-magn-3d driver as
-it should but it does not contain an axis (X, Y, Z) usage attributes.
-Instead it only has a True North usage attribute. I see two solutions
-to this problem and was inquiring which one would work best?
+> ---
+>   drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index 29185a0..3729646 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -44,10 +44,10 @@ struct {
+>   	{HID_USAGE_SENSOR_GYRO_3D,
+>   		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
+>
+> -	{HID_USAGE_SENSOR_COMPASS_3D, 0, 1000, 0},
+> +	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+>   	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+>
+> -	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 17453, 0},
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+>   	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>   		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
+>   	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>
 
-1) Modify the hid-magn-3d driver to handle True North attribute. I
-realize there might not be many devices that have this so not sure if
-appropriate. I think this could be done; by passing a variable amount
-of IIO Channels when setting up the hid-magn-3d driver, depending on
-how many axis and/or if it find True/Magnetic North usage attribute.
-
-2) Create a whole new driver that handles True/Magnetic North. This
-would not work on my device as it is set to Compass 3D Usage
-Attribute. This could be resolved by adding another quirk for the
-Surface to ensure it used the new driver.
-
-For both options I think we'd need a new IIO_MOD_NORTH for the
-iio_chan_spec, as the current ones don't really apply. I like the
-first solution as it could allow for handling of devices with only one
-or two axis present. I do realize if the hid-mangn-3d driver was
-changed it's name would not make sense anymore and the pattern I'm
-notcing is a driver for each HID Usage.
-
-Here's a link to the hid report description with some labels for my device:
-Bug 73321 Comment 7
-https://bugzilla.kernel.org/show_bug.cgi?id=73321#c7
-
-I'd be willing to work on this. Just wanted to know what would work best
-
-Thank You,
-Reyad Attiyat
