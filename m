@@ -1,66 +1,68 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Erik.Habbinga@schneider-electric.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio:adc:max1363 incorrect resolutions for max11604, max11605, max11610 and max11611.
-Date: Sat, 24 May 2014 13:04:01 +0100
-Message-Id: <1400933041-7007-1-git-send-email-jic23@kernel.org>
+Return-Path: <archana.patni@linux.intel.com>
+From: Archana Patni <archana.patni@linux.intel.com>
+To: jic23@kernel.org
+Cc: jkosina@suse.cz,
+	linux-iio@vger.kernel.org,
+	srinivas.pandruvada@intel.com,
+	Archana Patni <archana.patni@linux.intel.com>,
+	Archana Patni <archana.patni@intel.com>,
+	Subramony Sesha <subramony.sesha@intel.com>
+Subject: [PATCH] iio: hid-sensors: Set default unit of measure for report interval
+Date: Thu,  8 May 2014 09:36:09 -0400
+Message-Id: <1399556169-10922-1-git-send-email-archana.patni@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Reported-by: Erik Habbinga <Erik.Habbinga@schneider-electric.com>
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/adc/max1363.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+For PROP_REPORT_INTERVAL, the spec does not mandate the presence
+of the report interval unit in the feature report and expects the
+default unit of measure to be used as milliseconds.
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 9cf3229..1b3b74b 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -1252,8 +1252,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 		.num_modes = ARRAY_SIZE(max1238_mode_list),
- 		.default_mode = s0to11,
- 		.info = &max1238_info,
--		.channels = max1238_channels,
--		.num_channels = ARRAY_SIZE(max1238_channels),
-+		.channels = max1038_channels,
-+		.num_channels = ARRAY_SIZE(max1038_channels),
- 	},
- 	[max11605] = {
- 		.bits = 8,
-@@ -1262,8 +1262,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 		.num_modes = ARRAY_SIZE(max1238_mode_list),
- 		.default_mode = s0to11,
- 		.info = &max1238_info,
--		.channels = max1238_channels,
--		.num_channels = ARRAY_SIZE(max1238_channels),
-+		.channels = max1038_channels,
-+		.num_channels = ARRAY_SIZE(max1038_channels),
- 	},
- 	[max11606] = {
- 		.bits = 10,
-@@ -1312,8 +1312,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 		.num_modes = ARRAY_SIZE(max1238_mode_list),
- 		.default_mode = s0to11,
- 		.info = &max1238_info,
--		.channels = max1238_channels,
--		.num_channels = ARRAY_SIZE(max1238_channels),
-+		.channels = max1138_channels,
-+		.num_channels = ARRAY_SIZE(max1138_channels),
- 	},
- 	[max11611] = {
- 		.bits = 10,
-@@ -1322,8 +1322,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
- 		.num_modes = ARRAY_SIZE(max1238_mode_list),
- 		.default_mode = s0to11,
- 		.info = &max1238_info,
--		.channels = max1238_channels,
--		.num_channels = ARRAY_SIZE(max1238_channels),
-+		.channels = max1138_channels,
-+		.num_channels = ARRAY_SIZE(max1138_channels),
- 	},
- 	[max11612] = {
- 		.bits = 12,
+Currently, when the unit is not present, it gets set as zero leading
+to issues in sampling frequency.
+
+This patch sets the unit of measure to the default unit if it
+is not defined by firmware.
+
+Signed-off-by: Archana Patni <archana.patni@intel.com>
+Signed-off-by: Subramony Sesha <subramony.sesha@intel.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+---
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |   17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 75b5473..55047af 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -209,15 +209,28 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ }
+ EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
+ 
+-int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
++int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					struct hid_sensor_common *st)
+ {
+-
+ 	sensor_hub_input_get_attribute_info(hsdev,
+ 					HID_FEATURE_REPORT, usage_id,
+ 					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
+ 					&st->poll);
++	/* Default unit of measure is milliseconds */
++	if (st->poll.units == 0)
++		st->poll.units = HID_USAGE_SENSOR_UNITS_MILLISECOND;
++	return 0;
++
++}
++
++int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
++					u32 usage_id,
++					struct hid_sensor_common *st)
++{
++
++
++	hid_sensor_get_reporting_interval(hsdev, usage_id, st);
+ 
+ 	sensor_hub_input_get_attribute_info(hsdev,
+ 					HID_FEATURE_REPORT, usage_id,
 -- 
-1.9.3
+1.7.9.5
