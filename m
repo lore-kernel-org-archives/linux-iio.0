@@ -1,39 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:36778 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751185AbaEZIhK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 26 May 2014 04:37:10 -0400
-Date: Mon, 26 May 2014 10:37:07 +0200 (CEST)
-From: Jiri Kosina <jkosina@suse.cz>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-input <linux-input@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH] HID: Debug: Add labels for HID Sensor Usages
-In-Reply-To: <53807397.9080807@kernel.org>
-Message-ID: <alpine.LNX.2.00.1405261036180.12047@pobox.suse.cz>
-References: <CA+BWVUTOHr-sktWtpGL7-1wTdz2suDWFjcyX=fFU+JHjs5+TTQ@mail.gmail.com> <53807397.9080807@kernel.org>
+Return-Path: <alexandre.belloni@free-electrons.com>
+Date: Thu, 8 May 2014 19:22:43 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, Josh Wu <josh.wu@atmel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 2/2] iio:adc: at91 requires the input subsystem
+Message-ID: <20140508172243.GC6095@piout.net>
+References: <1399560433-1402630-1-git-send-email-arnd@arndb.de>
+ <1399560990-1402858-1-git-send-email-arnd@arndb.de>
+ <1399560990-1402858-13-git-send-email-arnd@arndb.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1399560990-1402858-13-git-send-email-arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 24 May 2014, Jonathan Cameron wrote:
+Hi,
 
-> This looks reasonable to me, but I haven't checked every entry.  Also 
-> Reyad, you need to sign off on the patch if you expect anyone to pick it 
-> up.
+On 08/05/2014 at 16:56:24 +0200, Arnd Bergmann wrote :
+> Building the at91 adc driver with CONFIG_INPUT disabled results in this
+> build error:
 > 
-> Jiri, this is one for you. (note Jiri should probably have been cc'd in the
-> first place as the HID maintainer - unless he specifically asked not to be).
+> ERROR: "input_event" [drivers/iio/adc/at91_adc.ko] undefined!
+> ERROR: "input_unregister_device" [drivers/iio/adc/at91_adc.ko] undefined!
+> ERROR: "input_free_device" [drivers/iio/adc/at91_adc.ko] undefined!
+> ERROR: "input_register_device" [drivers/iio/adc/at91_adc.ko] undefined!
+> ERROR: "input_set_abs_params" [drivers/iio/adc/at91_adc.ko] undefined!
+> ERROR: "input_allocate_device" [drivers/iio/adc/at91_adc.ko] undefined!
+> 
+> To make sure we can build random configurations, this turns on CONFIG_INPUT
+> whenever CONFIG_AT91_ADC is enabled.
+> 
 
-I definitely want (and need) to be CCed on such patches, thanks for 
-letting me know, Jonathan.
+I'm wondering wether we should make part of the driver compile only if
+CONFIG_INPUT is defined. Maybe some user will want to use the ADC and
+not have any input on their board.
 
-Reyad, please add you signoff as Jonathan said, and resend the patch 
-properly to me.
+What do you think ?
 
 -- 
-Jiri Kosina
-SUSE Labs
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
