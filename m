@@ -1,48 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:53622 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754145AbaEHO5H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 May 2014 10:57:07 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH 1/2] iio: always select ANON_INODES
-Date: Thu,  8 May 2014 16:56:23 +0200
-Message-Id: <1399560990-1402858-12-git-send-email-arnd@arndb.de>
-In-Reply-To: <1399560990-1402858-1-git-send-email-arnd@arndb.de>
-References: <1399560433-1402630-1-git-send-email-arnd@arndb.de>
- <1399560990-1402858-1-git-send-email-arnd@arndb.de>
+Received: from smtp1-g21.free.fr ([212.27.42.1]:42465 "EHLO smtp1-g21.free.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751776AbaEHQ2S (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 8 May 2014 12:28:18 -0400
+Received: from localhost.localdomain (unknown [88.161.33.221])
+	by smtp1-g21.free.fr (Postfix) with ESMTP id BE456940190
+	for <linux-iio@vger.kernel.org>; Thu,  8 May 2014 18:27:19 +0200 (CEST)
+Message-ID: <536BB0A0.4030707@yahoo.fr>
+Date: Thu, 08 May 2014 18:28:16 +0200
+From: trem <tremyfr@yahoo.fr>
+MIME-Version: 1.0
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Without ANON_INODES, we get this build error:
-
-drivers/built-in.o: In function `iio_event_getfd':
-:(.text+0x14bf18): undefined reference to `anon_inode_getfd'
-
-All other users explicitly select this symbol, so we should
-do the same thing here.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
----
- drivers/iio/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 743485e..345395e 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -4,6 +4,7 @@
- 
- menuconfig IIO
- 	tristate "Industrial I/O support"
-+	select ANON_INODES
- 	help
- 	  The industrial I/O subsystem provides a unified framework for
- 	  drivers for many different types of embedded sensors using a
--- 
-1.8.3.2
-
+subscribe linux-iio
