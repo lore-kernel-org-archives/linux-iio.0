@@ -1,58 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51303 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751012AbaECKha (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 06:37:30 -0400
-Message-ID: <5364C748.6010601@kernel.org>
-Date: Sat, 03 May 2014 11:39:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:10888 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753864AbaEIQz6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 9 May 2014 12:55:58 -0400
+Message-ID: <536D089C.9040307@linux.intel.com>
+Date: Fri, 09 May 2014 09:55:56 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: Add TEMP_AMBIENT and TEMP_OBJECT channel modifiers
-References: <1399046226-6673-1-git-send-email-pmeerw@pmeerw.net> <1399046226-6673-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1399046226-6673-2-git-send-email-pmeerw@pmeerw.net>
+To: Dan Carpenter <dan.carpenter@oracle.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio: hid-sensors: typo leads to potential forever loop
+References: <20140509115617.GC32027@mwanda>
+In-Reply-To: <20140509115617.GC32027@mwanda>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/14 16:57, Peter Meerwald wrote:
-> useful for contactless temperature sensors to distinguish
-> between the ambient temperature and the temperature of the object
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git
+OOPs. Good catch.
 
-Thanks
-> ---
->   drivers/iio/industrialio-core.c | 2 ++
->   include/linux/iio/types.h       | 2 ++
->   2 files changed, 4 insertions(+)
+Thanks,
+Srinivas
+
+On 05/09/2014 04:56 AM, Dan Carpenter wrote:
+> The "i < " was missing in this condition.
 >
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index de8b1c2..4b1f375 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -85,6 +85,8 @@ static const char * const iio_modifier_names[] = {
->   	[IIO_MOD_LIGHT_GREEN] = "green",
->   	[IIO_MOD_LIGHT_BLUE] = "blue",
->   	[IIO_MOD_QUATERNION] = "quaternion",
-> +	[IIO_MOD_TEMP_AMBIENT] = "ambient",
-> +	[IIO_MOD_TEMP_OBJECT] = "object",
->   };
+> Fixes: 5d02edfc3957 ('iio: hid-sensors: Convert units and exponent')
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 >
->   /* relies on pairs of these shared then separate */
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 4fdab2e..d480631 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -54,6 +54,8 @@ enum iio_modifier {
->   	IIO_MOD_LIGHT_GREEN,
->   	IIO_MOD_LIGHT_BLUE,
->   	IIO_MOD_QUATERNION,
-> +	IIO_MOD_TEMP_AMBIENT,
-> +	IIO_MOD_TEMP_OBJECT,
->   };
->
->   enum iio_event_type {
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index 3729646..3052eb1 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -327,7 +327,7 @@ int hid_sensor_format_scale(u32 usage_id,
+>   	*val0 = 1;
+>   	*val1 = 0;
+>   
+> -	for (i = 0; ARRAY_SIZE(unit_conversion); ++i) {
+> +	for (i = 0; i < ARRAY_SIZE(unit_conversion); ++i) {
+>   		if (unit_conversion[i].usage_id == usage_id &&
+>   			unit_conversion[i].unit == attr_info->units) {
+>   			exp  = hid_sensor_convert_exponent(
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
