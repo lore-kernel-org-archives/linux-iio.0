@@ -1,49 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:10888 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753864AbaEIQz6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 9 May 2014 12:55:58 -0400
-Message-ID: <536D089C.9040307@linux.intel.com>
-Date: Fri, 09 May 2014 09:55:56 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 00/22] Random ARM randconfig fixes in drivers
+Date: Fri, 9 May 2014 13:48:49 +0200
+Cc: linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org,
+ bhelgaas@google.com,
+ dwmw2@infradead.org,
+ dmitry.torokhov@gmail.com,
+ balbi@ti.com,
+ gregkh@linuxfoundation.org,
+ plagnioj@jcrosoft.com,
+ jic23@kernel.org,
+ josh.wu@atmel.com,
+ kishon@ti.com,
+ linus.walleij@linaro.org,
+ broonie@kernel.org,
+ mturquette@linaro.org,
+ nicolas.ferre@atmel.com,
+ ohad@wizery.com,
+ linux@arm.linux.org.uk,
+ tony@atomide.com,
+ vinod.koul@intel.com,
+ wim@iguana.be,
+ wsa@the-dreams.de,
+ dmaengine@vger.kernel.org,
+ linux-i2c@vger.kernel.org,
+ linux-ide@vger.kernel.org,
+ linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org,
+ linux-mtd@lists.infradead.org,
+ linux-pci@vger.kernel.org,
+ linux-samsung-soc@vger.kernel.org,
+ linux-sh@vger.kernel.org,
+ linux-watchdog@vger.kernel.org,
+ netdev@vger.kernel.org
+References: <1399560433-1402630-1-git-send-email-arnd@arndb.de> <20140508164157.GA22224@roeck-us.net>
+In-Reply-To: <20140508164157.GA22224@roeck-us.net>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: hid-sensors: typo leads to potential forever loop
-References: <20140509115617.GC32027@mwanda>
-In-Reply-To: <20140509115617.GC32027@mwanda>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Message-Id: <201405091348.49713.arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-OOPs. Good catch.
+On Thursday 08 May 2014, Guenter Roeck wrote:
+> On Thu, May 08, 2014 at 04:46:51PM +0200, Arnd Bergmann wrote:
+> > These are a bunch of fixes I had to do to get all randconfig
+> > configurations on ARM working. Most of these are really old
+> > bugs, but there are also some new ones. I don't think any of
+> > them require a backport to linux-stable.
+> > 
+> > I have checked that they are all still required on yesterday's
+> > linux-next kernel. Please apply on the appropriate trees unless
+> > there are objections.
+> > 
+> Is this series of patches also going to fix arm:allmodconfig ?
 
-Thanks,
-Srinivas
+Possibly, I haven't checked in a while. I'm unfortunately sitting on
+about 200 other patches in the same branch, which together fix all
+build errors in any configuration I encountered.
 
-On 05/09/2014 04:56 AM, Dan Carpenter wrote:
-> The "i < " was missing in this condition.
->
-> Fixes: 5d02edfc3957 ('iio: hid-sensors: Convert units and exponent')
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 3729646..3052eb1 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -327,7 +327,7 @@ int hid_sensor_format_scale(u32 usage_id,
->   	*val0 = 1;
->   	*val1 = 0;
->   
-> -	for (i = 0; ARRAY_SIZE(unit_conversion); ++i) {
-> +	for (i = 0; i < ARRAY_SIZE(unit_conversion); ++i) {
->   		if (unit_conversion[i].usage_id == usage_id &&
->   			unit_conversion[i].unit == attr_info->units) {
->   			exp  = hid_sensor_convert_exponent(
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+I should really do some allmodconfig/allnoconfig/allyesconfig
+builds without my series again, and prioritize sending out the
+ones required for that.
 
+	Arnd
