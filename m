@@ -1,68 +1,60 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <53764EDE.8090008@linux.intel.com>
-Date: Fri, 16 May 2014 10:46:06 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f170.google.com ([209.85.212.170]:58401 "EHLO
+	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751798AbaENAyS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 13 May 2014 20:54:18 -0400
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>
-CC: jic23@kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: HID Sensor support for True/Magnetic North usage attributes
-References: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com>
-In-Reply-To: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Tue, 13 May 2014 19:53:57 -0500
+Message-ID: <CA+BWVUQEa-X7D=d1eh4do=GQSjJ-TT4pLj-5eKpBp9wnVgQsRg@mail.gmail.com>
+Subject: [PATCH] HID: hid-sensor-hub: Add and set report quirk for Microsoft
+ Surface Pro 2
+To: linux-kernel@vger.kernel.org,
+	linux-input <linux-input@vger.kernel.org>, derya.kiran@yahoo.de,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/13/2014 07:14 PM, Reyad Attiyat wrote:
-> Dear IIO/HID maintainers,
->
-> I have a device, Surface Pro, that has the hid-sensor-hub and many
-> sensors attached. With the help of Srinivas I was able to get them all
-> working except for the magnometer. It uses the hid-magn-3d driver as
-> it should but it does not contain an axis (X, Y, Z) usage attributes.
-> Instead it only has a True North usage attribute. I see two solutions
-> to this problem and was inquiring which one would work best?
->
-> 1) Modify the hid-magn-3d driver to handle True North attribute. I
-> realize there might not be many devices that have this so not sure if
-> appropriate. I think this could be done; by passing a variable amount
-> of IIO Channels when setting up the hid-magn-3d driver, depending on
-> how many axis and/or if it find True/Magnetic North usage attribute.
-I prefer this approach. The spec doesn't say whether magnetic flux for 
-x,y or z are mandatory.
-Ultimately they are used to calculate the true north. So if the hub is 
-trying to expose true north,
-we should add this attribute.
+---
+ drivers/hid/hid-ids.h        | 3 +++
+ drivers/hid/hid-sensor-hub.c | 8 ++++++++
+ 2 files changed, 11 insertions(+)
 
-"Heading True North SV – Indicates compass true north heading is not 
-compensated.
-                     Default unit of measure is degrees; can be 
-overridden using
-                    explicit Unit and/or Unit Exponent."
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 34bb220..18e2099 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -633,6 +633,9 @@
+ #define USB_DEVICE_ID_MS_PRESENTER_8K_USB 0x0713
+ #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_3K 0x0730
+ #define USB_DEVICE_ID_MS_COMFORT_MOUSE_4500 0x076c
++#define USB_DEVICE_ID_MS_SURFACE_PRO_2   0x0799
++#define USB_DEVICE_ID_MS_TOUCH_COVER_2   0x07a7
++#define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
 
-Thanks,
-Srinivas
-> 2) Create a whole new driver that handles True/Magnetic North. This
-> would not work on my device as it is set to Compass 3D Usage
-> Attribute. This could be resolved by adding another quirk for the
-> Surface to ensure it used the new driver.
->
-> For both options I think we'd need a new IIO_MOD_NORTH for the
-> iio_chan_spec, as the current ones don't really apply. I like the
-> first solution as it could allow for handling of devices with only one
-> or two axis present. I do realize if the hid-mangn-3d driver was
-> changed it's name would not make sense anymore and the pattern I'm
-> notcing is a driver for each HID Usage.
->
-> Here's a link to the hid report description with some labels for my device:
-> Bug 73321 Comment 7
-> https://bugzilla.kernel.org/show_bug.cgi?id=73321#c7
->
-> I'd be willing to work on this. Just wanted to know what would work best
->
-> Thank You,
-> Reyad Attiyat
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+ #define USB_VENDOR_ID_MOJO 0x8282
+ #define USB_DEVICE_ID_RETRO_ADAPTER 0x3201
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index be14b56..f6dc7ea 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -710,6 +710,14 @@ static const struct hid_device_id sensor_hub_devices[] = {
+  .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+  { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+USB_VENDOR_ID_TEXAS_INSTRUMENTS,
+  USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA),
++ { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
++ USB_DEVICE_ID_MS_SURFACE_PRO_2),
++ .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
++ { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
++ USB_DEVICE_ID_MS_TOUCH_COVER_2),
++ .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
++ { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
++ USB_DEVICE_ID_MS_TYPE_COVER_2),
+  .driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+  { HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, HID_ANY_ID,
+      HID_ANY_ID) },
+-- 
+1.9.0
