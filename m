@@ -1,81 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45091 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753591AbaEJKoH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 May 2014 06:44:07 -0400
-Message-ID: <536E0359.1060206@kernel.org>
-Date: Sat, 10 May 2014 11:45:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <53764EDE.8090008@linux.intel.com>
+Date: Fri, 16 May 2014 10:46:06 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Archana Patni <archana.patni@linux.intel.com>
-CC: jkosina@suse.cz, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@intel.com,
-	Archana Patni <archana.patni@intel.com>,
-	Subramony Sesha <subramony.sesha@intel.com>
-Subject: Re: [PATCH] iio: hid-sensors: Set default unit of measure for report
- interval
-References: <1399556169-10922-1-git-send-email-archana.patni@linux.intel.com>
-In-Reply-To: <1399556169-10922-1-git-send-email-archana.patni@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: jic23@kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: HID Sensor support for True/Magnetic North usage attributes
+References: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com>
+In-Reply-To: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/05/14 14:36, Archana Patni wrote:
-> For PROP_REPORT_INTERVAL, the spec does not mandate the presence
-> of the report interval unit in the feature report and expects the
-> default unit of measure to be used as milliseconds.
+On 05/13/2014 07:14 PM, Reyad Attiyat wrote:
+> Dear IIO/HID maintainers,
 >
-> Currently, when the unit is not present, it gets set as zero leading
-> to issues in sampling frequency.
+> I have a device, Surface Pro, that has the hid-sensor-hub and many
+> sensors attached. With the help of Srinivas I was able to get them all
+> working except for the magnometer. It uses the hid-magn-3d driver as
+> it should but it does not contain an axis (X, Y, Z) usage attributes.
+> Instead it only has a True North usage attribute. I see two solutions
+> to this problem and was inquiring which one would work best?
 >
-> This patch sets the unit of measure to the default unit if it
-> is not defined by firmware.
->
-> Signed-off-by: Archana Patni <archana.patni@intel.com>
-> Signed-off-by: Subramony Sesha <subramony.sesha@intel.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Applied to the togreg branch of iio.git
+> 1) Modify the hid-magn-3d driver to handle True North attribute. I
+> realize there might not be many devices that have this so not sure if
+> appropriate. I think this could be done; by passing a variable amount
+> of IIO Channels when setting up the hid-magn-3d driver, depending on
+> how many axis and/or if it find True/Magnetic North usage attribute.
+I prefer this approach. The spec doesn't say whether magnetic flux for 
+x,y or z are mandatory.
+Ultimately they are used to calculate the true north. So if the hub is 
+trying to expose true north,
+we should add this attribute.
+
+"Heading True North SV – Indicates compass true north heading is not 
+compensated.
+                     Default unit of measure is degrees; can be 
+overridden using
+                    explicit Unit and/or Unit Exponent."
 
 Thanks,
-
-> ---
->   .../iio/common/hid-sensors/hid-sensor-attributes.c |   17 +++++++++++++++--
->   1 file changed, 15 insertions(+), 2 deletions(-)
+Srinivas
+> 2) Create a whole new driver that handles True/Magnetic North. This
+> would not work on my device as it is set to Compass 3D Usage
+> Attribute. This could be resolved by adding another quirk for the
+> Surface to ensure it used the new driver.
 >
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 75b5473..55047af 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -209,15 +209,28 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
->   }
->   EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
+> For both options I think we'd need a new IIO_MOD_NORTH for the
+> iio_chan_spec, as the current ones don't really apply. I like the
+> first solution as it could allow for handling of devices with only one
+> or two axis present. I do realize if the hid-mangn-3d driver was
+> changed it's name would not make sense anymore and the pattern I'm
+> notcing is a driver for each HID Usage.
 >
-> -int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-> +int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
->   					u32 usage_id,
->   					struct hid_sensor_common *st)
->   {
-> -
->   	sensor_hub_input_get_attribute_info(hsdev,
->   					HID_FEATURE_REPORT, usage_id,
->   					HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
->   					&st->poll);
-> +	/* Default unit of measure is milliseconds */
-> +	if (st->poll.units == 0)
-> +		st->poll.units = HID_USAGE_SENSOR_UNITS_MILLISECOND;
-> +	return 0;
-> +
-> +}
-> +
-> +int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
-> +					u32 usage_id,
-> +					struct hid_sensor_common *st)
-> +{
-> +
-> +
-> +	hid_sensor_get_reporting_interval(hsdev, usage_id, st);
+> Here's a link to the hid report description with some labels for my device:
+> Bug 73321 Comment 7
+> https://bugzilla.kernel.org/show_bug.cgi?id=73321#c7
 >
->   	sensor_hub_input_get_attribute_info(hsdev,
->   					HID_FEATURE_REPORT, usage_id,
+> I'd be willing to work on this. Just wanted to know what would work best
 >
-
+> Thank You,
+> Reyad Attiyat
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
