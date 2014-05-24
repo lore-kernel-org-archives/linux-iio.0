@@ -1,40 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-043.synserver.de ([212.40.185.43]:1058 "EHLO
-	smtp-out-017.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752067AbaEZU1w (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 May 2014 16:27:52 -0400
-Message-ID: <5383A3BF.1060506@metafoo.de>
-Date: Mon, 26 May 2014 22:27:43 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Philippe Reynes <tremyfr@yahoo.fr>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	armadeus-forum@lists.sourceforge.net, jic23@kernel.org,
-	knaack.h@gmx.de
-Subject: Re: [PATCH v2] iio: add support of the max1027
-References: <1400621236-20423-1-git-send-email-tremyfr@yahoo.fr>
-In-Reply-To: <1400621236-20423-1-git-send-email-tremyfr@yahoo.fr>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from gagarine.paulk.fr ([109.190.93.129]:55202 "EHLO
+	gagarine.paulk.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751231AbaEXMSt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 08:18:49 -0400
+Message-ID: <1400933398.2079.16.camel@aldrin>
+Subject: [PATCH] twl4030-madc: Request processed values in
+ twl4030_get_madc_conversion
+From: Paul Kocialkowski <contact@paulk.fr>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Date: Sat, 24 May 2014 14:09:58 +0200
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/20/2014 11:27 PM, Philippe Reynes wrote:
-> This driver add partial support of the
-> maxim 1027/1029/1031. Differential mode is not
-> supported.
->
-> It was tested on armadeus apf27 board.
->
-> Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
-> ---
->   .../devicetree/bindings/iio/adc/max1027-adc.txt    |   21 +
->   drivers/staging/iio/adc/Kconfig                    |    9 +
->   drivers/staging/iio/adc/Makefile                   |    1 +
->   drivers/staging/iio/adc/max1027.c                  |  553 ++++++++++++++++++++
+Not setting the raw parameter in the request causes it to be randomly
+initialized to a value that might be different from zero or zero. This leads to
+values that are randomly either raw or processed, making it very difficult to
+make reliable use of the values.
 
-New drivers should go into drivers/iio/
+Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
+---
+ drivers/iio/adc/twl4030-madc.c |    1 +
+ 1 file changed, 1 insertion(+)
 
->   4 files changed, 584 insertions(+), 0 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
->   create mode 100644 drivers/staging/iio/adc/max1027.c
-[...]
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 7de1c4c..eb86786 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -645,6 +645,7 @@ int twl4030_get_madc_conversion(int channel_no)
+ 	req.channels = (1 << channel_no);
+ 	req.method = TWL4030_MADC_SW2;
+ 	req.active = 0;
++	req.raw = 0;
+ 	req.func_cb = NULL;
+ 	ret = twl4030_madc_conversion(&req);
+ 	if (ret < 0)
+-- 
+1.7.9.5
+
+
