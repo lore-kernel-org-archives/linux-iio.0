@@ -1,90 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32915 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32962 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750976AbaEXKhX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:37:23 -0400
-Message-ID: <538076CA.6050809@kernel.org>
-Date: Sat, 24 May 2014 11:39:06 +0100
+	with ESMTP id S1750821AbaEXKoX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:44:23 -0400
+Message-ID: <5380786F.9090402@kernel.org>
+Date: Sat, 24 May 2014 11:46:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: HID Sensor support for True/Magnetic North usage attributes
-References: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com> <53764EDE.8090008@linux.intel.com>
-In-Reply-To: <53764EDE.8090008@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Archana Patni <archana.patni@linux.intel.com>
+CC: jkosina@suse.cz, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@intel.com,
+	Archana Patni <archana.patni@intel.com>,
+	Subramony Sesha <subramony.sesha@intel.com>
+Subject: Re: [PATCH] iio: hid-sensors: Get feature report from sensor hub
+ after changing power state
+References: <1400498363-18456-1-git-send-email-archana.patni@linux.intel.com>
+In-Reply-To: <1400498363-18456-1-git-send-email-archana.patni@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/05/14 18:46, Srinivas Pandruvada wrote:
-> On 05/13/2014 07:14 PM, Reyad Attiyat wrote:
->> Dear IIO/HID maintainers,
->>
->> I have a device, Surface Pro, that has the hid-sensor-hub and many
->> sensors attached. With the help of Srinivas I was able to get them all
->> working except for the magnometer. It uses the hid-magn-3d driver as
->> it should but it does not contain an axis (X, Y, Z) usage attributes.
->> Instead it only has a True North usage attribute. I see two solutions
->> to this problem and was inquiring which one would work best?
->>
->> 1) Modify the hid-magn-3d driver to handle True North attribute. I
->> realize there might not be many devices that have this so not sure if
->> appropriate. I think this could be done; by passing a variable amount
->> of IIO Channels when setting up the hid-magn-3d driver, depending on
->> how many axis and/or if it find True/Magnetic North usage attribute.
-> I prefer this approach. The spec doesn't say whether magnetic flux for x,y or z are mandatory.
-> Ultimately they are used to calculate the true north. So if the hub is trying to expose true north,
-> we should add this attribute.
+On 19/05/14 12:19, Archana Patni wrote:
+> Some sensor hubs require a get feature report call to be issued soon after
+> changing the power state of the sensor. Without this, the sensor remains in
+> the current state. This patch adds a call soon after the power state.
 >
-> "Heading True North SV – Indicates compass true north heading is not compensated.
->                      Default unit of measure is degrees; can be overridden using
->                     explicit Unit and/or Unit Exponent."
+> This is retained as a generic call across all sensor hubs since the behavior
+> has been noticed on more than one implementation.
 >
-Agreed. Don't worry too much about the driver naming.  Plenty of convention
-says that it has no real meaning other than labelling one part supported by
-the driver.
+> Signed-off-by: Archana Patni <archana.patni@intel.com>
+> Signed-off-by: Subramony Sesha <subramony.sesha@intel.com>
+> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+As this isn't a regression (never worked) I've applied it to the
+togreg branch of iio.git.
 
-> Thanks,
-> Srinivas
->> 2) Create a whole new driver that handles True/Magnetic North. This
->> would not work on my device as it is set to Compass 3D Usage
->> Attribute. This could be resolved by adding another quirk for the
->> Surface to ensure it used the new driver.
-No to this one as we'll end up with lots of similar cases and far too many
-similar drivers.
->>
->> For both options I think we'd need a new IIO_MOD_NORTH for the
->> iio_chan_spec, as the current ones don't really apply. I like the
->> first solution as it could allow for handling of devices with only one
->> or two axis present. I do realize if the hid-mangn-3d driver was
->> changed it's name would not make sense anymore and the pattern I'm
->> notcing is a driver for each HID Usage.
-If you are introducing a north attribute, allow for both true and magnetic
-norths (only introduce the one you are using).
+Thanks,
 
-IIO_MOD_NORTH_TRUE
-IIO_MOD_NORTH_MAGNETIC perhaps?
-I see the spec also mentions compensated variants of these...   If you do
-include these I think
-IIO_MOD_NORTH_TRUE_TILT_COMPENSATED or similar would be needed to make it
-clear what was going on.
->>
->> Here's a link to the hid report description with some labels for my device:
->> Bug 73321 Comment 7
->> https://bugzilla.kernel.org/show_bug.cgi?id=73321#c7
->>
->> I'd be willing to work on this. Just wanted to know what would work best
->>
-Cool. I'd suggest perhaps doing the documentation first for the new ABI elements
-then we can hammer that out in parallel with work on the driver.
-(it's usually the harder part!)
->> Thank You,
->> Reyad Attiyat
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+Jonathan
+> ---
+>   .../iio/common/hid-sensors/hid-sensor-trigger.c    |    3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> index dbefbda..f26f52d 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> @@ -73,6 +73,9 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>   					(s32)report_val);
+>   	}
+>
+> +	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+> +					st->power_state.index,
+> +					&state_val);
+>   	return 0;
+>   }
+>
 >
 
