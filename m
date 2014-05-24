@@ -1,92 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54143 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32833 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750972AbaECTnc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 3 May 2014 15:43:32 -0400
-Message-ID: <53654741.10808@kernel.org>
-Date: Sat, 03 May 2014 20:45:05 +0100
+	with ESMTP id S1750821AbaEXKZX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:25:23 -0400
+Message-ID: <538073FB.30903@kernel.org>
+Date: Sat, 24 May 2014 11:27:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 16/16] iio: hid-sensors: Pressure: Raw read support
-References: <1397863356-2470-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1397863356-2470-16-git-send-email-srinivas.pandruvada@linux.intel.com> <53582A95.30805@kernel.org>
-In-Reply-To: <53582A95.30805@kernel.org>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Jiri Kosina <jkosina@suse.cz>
+Subject: Re: [PATCH] HID: hid-sensor-hub: Add Microsoft Surface Pro 2 HID
+ ID and set report quirk
+References: <1400031685-28090-1-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1400031685-28090-1-git-send-email-reyad.attiyat@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/04/14 22:03, Jonathan Cameron wrote:
-> On 19/04/14 00:22, Srinivas Pandruvada wrote:
->> Added support for raw reading of channel. If the sensor is powered
->> off, it will turn on for reading value.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Hi Srinivas.
->
-> Looks like a good patch set.  Probably should have been 'formally'
-> broken in two to separate the ABI related fixes and the new stuff.
->
-> I'll let this sit for a while to garner opinions on the ABI change.
-Seems no one cares so lets put it in.
+On 14/05/14 02:41, Reyad Attiyat wrote:
+Again, this has no sign off and is not cc'd to Jiri.
 
-All applied to the togreg branch of iio.git pushed out initially as testing.
+Note these don't need my Ack as far as I'm concerned.
 
 Jonathan
->> ---
->>   drivers/iio/pressure/hid-sensor-press.c | 17 +++++++++++++++--
->>   1 file changed, 15 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
->> index 39df50c..1cd190c 100644
->> --- a/drivers/iio/pressure/hid-sensor-press.c
->> +++ b/drivers/iio/pressure/hid-sensor-press.c
->> @@ -21,6 +21,7 @@
->>   #include <linux/interrupt.h>
->>   #include <linux/irq.h>
->>   #include <linux/slab.h>
->> +#include <linux/delay.h>
->>   #include <linux/hid-sensor-hub.h>
->>   #include <linux/iio/iio.h>
->>   #include <linux/iio/sysfs.h>
->> @@ -79,6 +80,7 @@ static int press_read_raw(struct iio_dev *indio_dev,
->>       u32 address;
->>       int ret;
->>       int ret_type;
->> +    s32 poll_value;
->>
->>       *val = 0;
->>       *val2 = 0;
->> @@ -94,12 +96,23 @@ static int press_read_raw(struct iio_dev *indio_dev,
->>               report_id = -1;
->>               break;
->>           }
->> -        if (report_id >= 0)
->> +        if (report_id >= 0) {
->> +            poll_value = hid_sensor_read_poll_value(
->> +                    &press_state->common_attributes);
->> +            if (poll_value < 0)
->> +                return -EINVAL;
->> +            hid_sensor_power_state(&press_state->common_attributes,
->> +                        true);
->> +
->> +            msleep_interruptible(poll_value * 2);
->> +
->>               *val = sensor_hub_input_attr_get_raw_value(
->>                   press_state->common_attributes.hsdev,
->>                   HID_USAGE_SENSOR_PRESSURE, address,
->>                   report_id);
->> -        else {
->> +            hid_sensor_power_state(&press_state->common_attributes,
->> +                        false);
->> +        } else {
->>               *val = 0;
->>               return -EINVAL;
->>           }
->>
+> ---
+>   drivers/hid/hid-ids.h        | 3 +++
+>   drivers/hid/hid-sensor-hub.c | 9 +++++++++
+>   2 files changed, 12 insertions(+)
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+> index 34bb220..18e2099 100644
+> --- a/drivers/hid/hid-ids.h
+> +++ b/drivers/hid/hid-ids.h
+> @@ -633,6 +633,9 @@
+>   #define USB_DEVICE_ID_MS_PRESENTER_8K_USB	0x0713
+>   #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_3K	0x0730
+>   #define USB_DEVICE_ID_MS_COMFORT_MOUSE_4500	0x076c
+> +#define USB_DEVICE_ID_MS_SURFACE_PRO_2   0x0799
+> +#define USB_DEVICE_ID_MS_TOUCH_COVER_2   0x07a7
+> +#define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
+>
+>   #define USB_VENDOR_ID_MOJO		0x8282
+>   #define USB_DEVICE_ID_RETRO_ADAPTER	0x3201
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+> index be14b56..eefaaf6 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -711,6 +711,15 @@ static const struct hid_device_id sensor_hub_devices[] = {
+>   	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_TEXAS_INSTRUMENTS,
+>   			USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA),
+>   			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+> +			USB_DEVICE_ID_MS_SURFACE_PRO_2),
+> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+> +			USB_DEVICE_ID_MS_TOUCH_COVER_2),
+> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+> +			USB_DEVICE_ID_MS_TYPE_COVER_2),
+> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>   	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, HID_ANY_ID,
+>   		     HID_ANY_ID) },
+>   	{ }
+>
 
