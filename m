@@ -1,62 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60461 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32951 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752071AbaE1AYy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 May 2014 20:24:54 -0400
-In-Reply-To: <5384D84B.6000904@yahoo.fr>
-References: <1400621236-20423-1-git-send-email-tremyfr@yahoo.fr> <5383A3BF.1060506@metafoo.de> <5384D84B.6000904@yahoo.fr>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v2] iio: add support of the max1027
+	with ESMTP id S1750821AbaEXKlz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:41:55 -0400
+Message-ID: <538077DC.7010700@kernel.org>
+Date: Sat, 24 May 2014 11:43:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 28 May 2014 02:24:47 +0200
-To: trem <tremyfr@yahoo.fr>, Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	armadeus-forum@lists.sourceforge.net, knaack.h@gmx.de
-Message-ID: <70f677a6-7561-4038-9ac3-fa2f17087c10@email.android.com>
+MIME-Version: 1.0
+To: =?UTF-8?B?VG9yYWxmIEbDtnJzdGVy?= <toralf.foerster@gmx.de>,
+	linux-iio@vger.kernel.org
+Subject: Re: format string mismtach
+References: <537A2702.8090803@gmx.de>
+In-Reply-To: <537A2702.8090803@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On May 27, 2014 8:24:11 PM CEST, trem <tremyfr@yahoo.fr> wrote:
->Hi,
+On 19/05/14 16:45, Toralf Förster wrote:
+> Hello,
 >
+> cppcheck reported :
 >
->On 26/05/14 22:27, Lars-Peter Clausen wrote:
->> On 05/20/2014 11:27 PM, Philippe Reynes wrote:
->>> This driver add partial support of the
->>> maxim 1027/1029/1031. Differential mode is not
->>> supported.
->>>
->>> It was tested on armadeus apf27 board.
->>>
->>> Signed-off-by: Philippe Reynes<tremyfr@yahoo.fr>
->>> ---
->>>    .../devicetree/bindings/iio/adc/max1027-adc.txt    |   21 +
->>>    drivers/staging/iio/adc/Kconfig                    |    9 +
->>>    drivers/staging/iio/adc/Makefile                   |    1 +
->>>    drivers/staging/iio/adc/max1027.c                  |  553
->++++++++++++++++++++
->>
->> New drivers should go into drivers/iio/
+> [drivers/staging/iio/Documentation/iio_utils.h:321]: (warning) %u in format string (no. 1) requires 'unsigned int *' but the argument type is 'int *'.
+> [drivers/staging/iio/Documentation/iio_utils.h:353]: (warning) %u in format string (no. 1) requires 'unsigned int *' but the argument type is 'int *'.
 >
->I'll be pleased to add this driver in drivers/iio/
->Everybody agrees ??
-I do. 
-
-Jonathan
->  
->>>    4 files changed, 584 insertions(+), 0 deletions(-)
->>>    create mode 100644
->Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
->>>    create mode 100644 drivers/staging/iio/adc/max1027.c
->> [...]
->>
+> trivial patches IMO - are they already queued up ?
 >
->Regards,
->Philippe
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+Nope.  Feel free to submit such a patch. If not I'll get around to
+it eventually!
