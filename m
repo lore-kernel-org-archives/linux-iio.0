@@ -1,124 +1,353 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:63486 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751348AbaEHOr5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 May 2014 10:47:57 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-	bhelgaas@google.com, dwmw2@infradead.org,
-	dmitry.torokhov@gmail.com, balbi@ti.com,
-	gregkh@linuxfoundation.org, plagnioj@jcrosoft.com,
-	jic23@kernel.org, josh.wu@atmel.com, kishon@ti.com,
-	linus.walleij@linaro.org, broonie@kernel.org,
-	mturquette@linaro.org, nicolas.ferre@atmel.com, ohad@wizery.com,
-	linux@arm.linux.org.uk, tony@atomide.com, vinod.koul@intel.com,
-	wim@iguana.be, wsa@the-dreams.de, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-mtd@lists.infradead.org, linux-pci@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 00/22] Random ARM randconfig fixes in drivers
-Date: Thu,  8 May 2014 16:46:51 +0200
-Message-Id: <1399560433-1402630-1-git-send-email-arnd@arndb.de>
+Received: from mout.gmx.net ([212.227.17.22]:57447 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751285AbaEXXBd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 24 May 2014 19:01:33 -0400
+Message-ID: <538124C9.3080306@gmx.de>
+Date: Sun, 25 May 2014 01:01:29 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+CC: Stefan Nilsson <stefan.nilsson@unixphere.com>
+Subject: Re: [PATCH] iio: Add t5403 barometric pressure sensor driver
+References: <jic23@kernel.org> <1400961385-4842-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1400961385-4842-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-These are a bunch of fixes I had to do to get all randconfig
-configurations on ARM working. Most of these are really old
-bugs, but there are also some new ones. I don't think any of
-them require a backport to linux-stable.
+Peter Meerwald schrieb:
+> 16-bit pressure and temperature sensor
+>
+> the chip can do I2C and SPI, only the I2C interface is supported
+> by the driver at the moment
+>
+> datasheet: http://www.epcos.com/inf/57/ds/T5400.pdf
+> application note: http://www.epcos.com/blob/993154/download/1/t5403-applicationnote.pdf
+>
+> an out-of-tree driver targetting the input subsystem is at
+> https://github.com/unixphere/t5400, it was rejected here:
+> http://comments.gmane.org/gmane.linux.kernel.input/28107
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Stefan Nilsson <stefan.nilsson@unixphere.com>
+> ---
+>  drivers/iio/pressure/Kconfig  |  10 ++
+>  drivers/iio/pressure/Makefile |   1 +
+>  drivers/iio/pressure/t5403.c  | 268 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 279 insertions(+)
+>  create mode 100644 drivers/iio/pressure/t5403.c
+>
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index ffac8ac..15afbc9 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -70,4 +70,14 @@ config IIO_ST_PRESS_SPI
+>  	depends on IIO_ST_PRESS
+>  	depends on IIO_ST_SENSORS_SPI
+>  
+> +config T5403
+> +	tristate "EPCOS T5403 digital barometric pressure sensor driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the EPCOS T5403 pressure sensor
+> +	  connected via I2C.
+> +
+> +          To compile this driver as a module, choose M here: the module
+> +          will be called t5403.
+> +
+>  endmenu
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index c53d250..90a37e8 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -9,6 +9,7 @@ obj-$(CONFIG_MPL3115) += mpl3115.o
+>  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+>  st_pressure-y := st_pressure_core.o
+>  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+> +obj-$(CONFIG_T5403) += t5403.o
+>  
+>  obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
+>  obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
+> diff --git a/drivers/iio/pressure/t5403.c b/drivers/iio/pressure/t5403.c
+> new file mode 100644
+> index 0000000..cb01d6d
+> --- /dev/null
+> +++ b/drivers/iio/pressure/t5403.c
+> @@ -0,0 +1,268 @@
+> +/*
+> + * t5403.c - Support for EPCOS T5403 pressure/temperature sensor
+> + *
+> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * (7-bit I2C slave address 0x77)
+> + *
+> + * TODO: end-of-conversion irq
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/delay.h>
+> +
+> +#define T5403_DATA 0xf5 /* data, LSB first, 16 bit */
+> +#define T5403_CALIB_DATA 0x8e /* 10 calibration coeff., LSB first, 16 bit */
+> +#define T5403_SLAVE_ADDR 0x88 /* I2C slave address, 0x77 */
+> +#define T5403_COMMAND 0xf1
+> +
+> +/* command bits */
+> +#define T5403_MODE_SHIFT 3 /* conversion time: 2, 8, 16, 66 ms */
+> +#define T5403_PT BIT(1) /* 0 .. pressure, 1 .. temperature measurement */
+> +#define T5403_SCO BIT(0) /* start conversion */
+> +
+> +#define T5403_MODE_LOW 0
+> +#define T5403_MODE_STANDARD 1
+> +#define T5403_MODE_HIGH 1
+^That needs to be 2.
+> +#define T5403_MODE_ULTRA_HIGH 3
+> +
+> +#define T5403_I2C_MASK (~BIT(7))
+> +#define T5403_I2C_ADDR 0x77
+> +
+> +static const int t5403_pressure_conv_ms[] = {2, 8, 16, 66};
+> +
+> +struct t5403_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	int mode;
+> +	__le16 c[10];
+> +};
+> +
+> +#define T5403_C_U16(i) le16_to_cpu(data->c[(i) - 1])
+> +#define T5403_C(i) sign_extend32(T5403_C_U16(i), 15)
+> +
+> +static int t5403_read(struct t5403_data *data, bool pressure)
+> +{
+> +	int wait_time = 3;  /* wakeup time in ms */
+> +
+> +	int ret = i2c_smbus_write_byte_data(data->client, T5403_COMMAND,
+> +		(pressure ? (data->mode << T5403_MODE_SHIFT) : T5403_PT) |
+> +		T5403_SCO);
+This is a bit confusing. Although not causing any harm, I would keep sending data->mode unchanged at all time and just set/clear the pt bits as needed.
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	wait_time += pressure ? t5403_pressure_conv_ms[data->mode] : 2;
+> +
+> +	msleep(wait_time);
+> +
+> +	return i2c_smbus_read_word_data(data->client, T5403_DATA);
+> +}
+> +
+> +static int t5403_comp_pressure(struct t5403_data *data, int *val, int *val2)
+> +{
+> +	int ret;
+> +	s16 t_r;
+> +	u16 p_r;
+> +	s32 S, O, X;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	ret = t5403_read(data, false);
+> +	if (ret < 0)
+> +		goto done;
+> +	t_r = ret;
+> +
+> +	ret = t5403_read(data, true);
+> +	if (ret < 0)
+> +		goto done;
+> +	p_r = ret;
+> +
+> +	/* see EPCOS application note */
+What about simplifying those equations, they look to me like this:
+S = (c9 * t_r^3)/2^46 + (c5 * t_r^2)/2^34 + (c4 * t_r)/2^17 + c3
+O = (c9 * t_r^3)/2^31 + (c8 * t_r^2)/2^19 + (c7 * t_r)/2^3 + c_6 * 2^14
+That should barely fit into s64.
+> +	S = T5403_C_U16(3) + (s32) T5403_C_U16(4) * t_r / 0x20000 +
+> +		T5403_C(5) * t_r / 0x8000 * t_r / 0x80000 +
+> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x8000 * t_r / 0x10000;
+> +
+> +	O = T5403_C(6) * 0x4000 + T5403_C(7) * t_r / 8 +
+> +		T5403_C(8) * t_r / 0x8000 * t_r / 16 +
+> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x10000 * t_r;
+> +
+> +	X = (S * p_r + O) / 0x4000;
+> +
+> +	X += ((X - 75000) * (X - 75000) / 0x10000 - 9537) *
+> +	    T5403_C(10) / 0x10000;
+> +
+> +	*val = X / 1000;
+> +	*val2 = (X % 1000) * 1000;
+> +
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int t5403_comp_temp(struct t5403_data *data, int *val)
+> +{
+> +	int ret;
+> +	s16 t_r;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = t5403_read(data, false);
+> +	if (ret < 0)
+> +		goto done;
+> +	t_r = ret;
+> +
+> +	/* see EPCOS application note */
+> +	*val = ((s32) T5403_C_U16(1) * t_r / 0x100 +
+> +		(s32) T5403_C_U16(2) * 0x40) * 1000 / 0x10000;
+> +
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int t5403_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  int *val, int *val2, long mask)
+> +{
+> +	struct t5403_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		switch (chan->type) {
+> +		case IIO_PRESSURE:
+> +			ret = t5403_comp_pressure(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_TEMP:
+> +			ret = t5403_comp_temp(data, val);
+> +			if (ret < 0)
+> +				return ret;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +	    }
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = t5403_pressure_conv_ms[data->mode] * 1000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int t5403_write_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int val, int val2, long mask)
+> +{
+> +	struct t5403_data *data = iio_priv(indio_dev);
+> +	int i;
+> +
+Check for the right mask (IIO_CHAN_INFO_INT_TIME).
+> +	for (i = 0; i < ARRAY_SIZE(t5403_pressure_conv_ms); i++)
+> +		if (val == 0 && val2 == t5403_pressure_conv_ms[i] * 1000) {
+> +			mutex_lock(&data->lock);
+> +			data->mode = i;
+> +			mutex_unlock(&data->lock);
+> +			return 0;
+> +		}
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_chan_spec t5403_channels[] = {
+> +	{
+> +		.type = IIO_PRESSURE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +		    BIT(IIO_CHAN_INFO_INT_TIME),
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	},
+> +};
+> +
+> +static IIO_CONST_ATTR_INT_TIME_AVAIL("0.002 0.008 0.016 0.066");
+> +
+> +static struct attribute *t5403_attributes[] = {
+> +	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group t5403_attribute_group = {
+> +	.attrs = t5403_attributes,
+> +};
+> +
+> +static const struct iio_info t5403_info = {
+> +	.read_raw = &t5403_read_raw,
+> +	.write_raw = &t5403_write_raw,
+> +	.attrs = &t5403_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int t5403_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct t5403_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+> +	    I2C_FUNC_SMBUS_I2C_BLOCK))
+> +		return -ENODEV;
+> +
+> +	ret = i2c_smbus_read_byte_data(client, T5403_SLAVE_ADDR);
+> +	if (ret < 0)
+> +		return ret;
+> +	if ((ret & T5403_I2C_MASK) != T5403_I2C_ADDR)
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->info = &t5403_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = t5403_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(t5403_channels);
+> +
+> +	data->mode = T5403_MODE_STANDARD;
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(data->client, T5403_CALIB_DATA,
+> +	    sizeof(data->c), (u8 *) data->c);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id t5403_id[] = {
+> +	{ "t5403", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, t5403_id);
+> +
+> +static struct i2c_driver t5403_driver = {
+> +	.driver = {
+> +		.name	= "t5403",
+> +	},
+> +	.probe = t5403_probe,
+> +	.id_table = t5403_id,
+> +};
+> +module_i2c_driver(t5403_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("EPCOS T5403 pressure/temperature sensor driver");
+> +MODULE_LICENSE("GPL");
 
-I have checked that they are all still required on yesterday's
-linux-next kernel. Please apply on the appropriate trees unless
-there are objections.
-
-Patch numbers are per subsystem, which I thought is less confusing
-than numbering them 1-22 when they are all totall independent.
-
-Arnd Bergmann (22):
-  mdio_bus: fix devm_mdiobus_alloc_size export
-  phy: kona2: use 'select GENERIC_PHY' in Kconfig
-  phy: exynos: fix SATA phy license typo
-  dmaengine: omap: hide filter_fn for built-in drivers
-  dmaengine: sa11x0: remove broken #ifdef
-  mtd/onenand: fix build warning for dma type
-  mtd: orion-nand: fix build error with ARMv4
-  clk/versatile: export symbols for impd1
-  bus/omap_l3: avoid sync initcall for modules
-  bus/arm-cci: add dependency on OF && CPU_V7
-  watchdog: iop_wdt only builds for mach-iop13xx
-  mpilib: use 'static inline' for mpi-inline.h
-  ata: pata_at91 only works on sam9
-  i2c/nuc900: fix ancient build error
-  iio: always select ANON_INODES
-  iio:adc: at91 requires the input subsystem
-  pci: rcar host needs OF
-  input: fix ps2/serio module dependency
-  input: atmel-wm97xx: only build for AVR32
-  misc: atmel_pwm: only build for supported platforms
-  remoteproc: da8xx: don't select CMA on no-MMU
-  regulator: arizona-ldo1: add missing #include
-
- drivers/ata/Kconfig               | 2 +-
- drivers/bus/Kconfig               | 2 +-
- drivers/bus/omap_l3_noc.c         | 4 ++++
- drivers/bus/omap_l3_smx.c         | 4 ++++
- drivers/clk/versatile/clk-icst.c  | 1 +
- drivers/clk/versatile/clk-impd1.c | 2 ++
- drivers/dma/sa11x0-dma.c          | 4 ----
- drivers/i2c/busses/i2c-nuc900.c   | 2 +-
- drivers/iio/Kconfig               | 1 +
- drivers/iio/adc/Kconfig           | 1 +
- drivers/input/keyboard/Kconfig    | 2 +-
- drivers/input/mouse/Kconfig       | 2 +-
- drivers/input/touchscreen/Kconfig | 2 +-
- drivers/misc/Kconfig              | 3 ++-
- drivers/mtd/nand/orion_nand.c     | 5 +++++
- drivers/mtd/onenand/samsung.c     | 8 ++++----
- drivers/net/phy/mdio_bus.c        | 2 +-
- drivers/pci/host/Kconfig          | 2 +-
- drivers/phy/Kconfig               | 2 +-
- drivers/phy/phy-exynos5250-sata.c | 2 +-
- drivers/regulator/arizona-ldo1.c  | 1 +
- drivers/remoteproc/Kconfig        | 2 +-
- drivers/watchdog/Kconfig          | 2 +-
- include/linux/omap-dma.h          | 2 +-
- lib/mpi/mpi-inline.h              | 2 +-
- lib/mpi/mpi-internal.h            | 8 --------
- 26 files changed, 39 insertions(+), 31 deletions(-)
-
--- 
-1.8.3.2
-
-Cc: bhelgaas@google.com
-Cc: dwmw2@infradead.org
-Cc: dmitry.torokhov@gmail.com
-Cc: balbi@ti.com
-Cc: gregkh@linuxfoundation.org
-Cc: plagnioj@jcrosoft.com
-Cc: jic23@kernel.org
-Cc: josh.wu@atmel.com
-Cc: kishon@ti.com
-Cc: linus.walleij@linaro.org
-Cc: broonie@kernel.org
-Cc: mturquette@linaro.org
-Cc: nicolas.ferre@atmel.com
-Cc: ohad@wizery.com
-Cc: linux@arm.linux.org.uk
-Cc: tony@atomide.com
-Cc: vinod.koul@intel.com
-Cc: wim@iguana.be
-Cc: wsa@the-dreams.de
-Cc: dmaengine@vger.kernel.org
-Cc: linux-i2c@vger.kernel.org
-Cc: linux-ide@vger.kernel.org
-Cc: linux-iio@vger.kernel.org
-Cc: linux-input@vger.kernel.org
-Cc: linux-mtd@lists.infradead.org
-Cc: linux-pci@vger.kernel.org
-Cc: linux-samsung-soc@vger.kernel.org
-Cc: linux-sh@vger.kernel.org
-Cc: linux-watchdog@vger.kernel.org
-Cc: netdev@vger.kernel.org
