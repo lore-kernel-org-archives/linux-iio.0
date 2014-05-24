@@ -1,125 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32818 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32915 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750976AbaEXKXn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:23:43 -0400
-Message-ID: <53807397.9080807@kernel.org>
-Date: Sat, 24 May 2014 11:25:27 +0100
+	with ESMTP id S1750976AbaEXKhX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 May 2014 06:37:23 -0400
+Message-ID: <538076CA.6050809@kernel.org>
+Date: Sat, 24 May 2014 11:39:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-input <linux-input@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH] HID: Debug: Add labels for HID Sensor Usages
-References: <CA+BWVUTOHr-sktWtpGL7-1wTdz2suDWFjcyX=fFU+JHjs5+TTQ@mail.gmail.com>
-In-Reply-To: <CA+BWVUTOHr-sktWtpGL7-1wTdz2suDWFjcyX=fFU+JHjs5+TTQ@mail.gmail.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: HID Sensor support for True/Magnetic North usage attributes
+References: <CA+BWVUShz2_Xd8EBWE+igjYk6Bc+K=LbjCr6EH7hNhvVodka6A@mail.gmail.com> <53764EDE.8090008@linux.intel.com>
+In-Reply-To: <53764EDE.8090008@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/05/14 01:54, Reyad Attiyat wrote:
-> ---
-This looks reasonable to me, but I haven't checked every entry.  Also Reyad, you
-need to sign off on the patch if you expect anyone to pick it up.
-
-Jiri, this is one for you. (note Jiri should probably have been cc'd in the
-first place as the HID maintainer - unless he specifically asked not to be).
-
-Jonathan
->   drivers/hid/hid-debug.c | 79 +++++++++++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 79 insertions(+)
+On 16/05/14 18:46, Srinivas Pandruvada wrote:
+> On 05/13/2014 07:14 PM, Reyad Attiyat wrote:
+>> Dear IIO/HID maintainers,
+>>
+>> I have a device, Surface Pro, that has the hid-sensor-hub and many
+>> sensors attached. With the help of Srinivas I was able to get them all
+>> working except for the magnometer. It uses the hid-magn-3d driver as
+>> it should but it does not contain an axis (X, Y, Z) usage attributes.
+>> Instead it only has a True North usage attribute. I see two solutions
+>> to this problem and was inquiring which one would work best?
+>>
+>> 1) Modify the hid-magn-3d driver to handle True North attribute. I
+>> realize there might not be many devices that have this so not sure if
+>> appropriate. I think this could be done; by passing a variable amount
+>> of IIO Channels when setting up the hid-magn-3d driver, depending on
+>> how many axis and/or if it find True/Magnetic North usage attribute.
+> I prefer this approach. The spec doesn't say whether magnetic flux for x,y or z are mandatory.
+> Ultimately they are used to calculate the true north. So if the hub is trying to expose true north,
+> we should add this attribute.
 >
-> diff --git a/drivers/hid/hid-debug.c b/drivers/hid/hid-debug.c
-> index 53b771d..25cc71c 100644
-> --- a/drivers/hid/hid-debug.c
-> +++ b/drivers/hid/hid-debug.c
-> @@ -272,6 +272,85 @@ static const struct hid_usage_entry hid_usage_table[] = {
->       {0, 0xAA, "Shared_Parameter_Blocks"},
->       {0, 0xAB, "Create_New_Effect_Report"},
->       {0, 0xAC, "RAM_Pool_Available"},
-> +  {  0x20, 0, "Sensor" },
-> +    { 0x20, 0x01, "Sensor" },
-> +    { 0x20, 0x10, "Biometric" },
-> +      { 0x20, 0x11, "BiometricHumanPresence" },
-> +      { 0x20, 0x12, "BiometricHumanProximity" },
-> +      { 0x20, 0x13, "BiometricHumanTouch" },
-> +    { 0x20, 0x20, "Electrical" },
-> +      { 0x20, 0x21, "ElectricalCapacitance" },
-> +      { 0x20, 0x22, "ElectricalCurrent" },
-> +      { 0x20, 0x23, "ElectricalPower" },
-> +      { 0x20, 0x24, "ElectricalInductance" },
-> +      { 0x20, 0x25, "ElectricalResistance" },
-> +      { 0x20, 0x26, "ElectricalVoltage" },
-> +      { 0x20, 0x27, "ElectricalPoteniometer" },
-> +      { 0x20, 0x28, "ElectricalFrequency" },
-> +      { 0x20, 0x29, "ElectricalPeriod" },
-> +    { 0x20, 0x30, "Environmental" },
-> +      { 0x20, 0x31, "EnvironmentalAtmosphericPressure" },
-> +      { 0x20, 0x32, "EnvironmentalHumidity" },
-> +      { 0x20, 0x33, "EnvironmentalTemperature" },
-> +      { 0x20, 0x34, "EnvironmentalWindDirection" },
-> +      { 0x20, 0x35, "EnvironmentalWindSpeed" },
-> +    { 0x20, 0x40, "Light" },
-> +      { 0x20, 0x41, "LightAmbientLight" },
-> +      { 0x20, 0x42, "LightConsumerInfrared" },
-> +    { 0x20, 0x50, "Location" },
-> +      { 0x20, 0x51, "LocationBroadcast" },
-> +      { 0x20, 0x52, "LocationDeadReckoning" },
-> +      { 0x20, 0x53, "LocationGPS" },
-> +      { 0x20, 0x54, "LocationLookup" },
-> +      { 0x20, 0x55, "LocationOther" },
-> +      { 0x20, 0x56, "LocationStatic" },
-> +      { 0x20, 0x57, "LocationTriangulation" },
-> +    { 0x20, 0x60, "Mechanical" },
-> +      { 0x20, 0x61, "MechanicalBooleanSwitch" },
-> +      { 0x20, 0x62, "MechanicalBooleanSwitchArray" },
-> +      { 0x20, 0x63, "MechanicalMultivalueSwitch" },
-> +      { 0x20, 0x64, "MechanicalForce" },
-> +      { 0x20, 0x65, "MechanicalPressure" },
-> +      { 0x20, 0x66, "MechanicalStrain" },
-> +      { 0x20, 0x67, "MechanicalWeight" },
-> +      { 0x20, 0x68, "MechanicalHapticVibrator" },
-> +      { 0x20, 0x69, "MechanicalHallEffectSwitch" },
-> +    { 0x20, 0x70, "Motion" },
-> +      { 0x20, 0x71, "MotionAccelerometer1D" },
-> +      { 0x20, 0x72, "MotionAccelerometer2D" },
-> +      { 0x20, 0x73, "MotionAccelerometer3D" },
-> +      { 0x20, 0x74, "MotionGyrometer1D" },
-> +      { 0x20, 0x75, "MotionGyrometer2D" },
-> +      { 0x20, 0x76, "MotionGyrometer3D" },
-> +      { 0x20, 0x77, "MotionMotionDetector" },
-> +      { 0x20, 0x78, "MotionSpeedometer" },
-> +      { 0x20, 0x79, "MotionAccelerometer" },
-> +      { 0x20, 0x7A, "MotionGyrometer" },
-> +    { 0x20, 0x80, "Orientation" },
-> +      { 0x20, 0x81, "OrientationCompass1D" },
-> +      { 0x20, 0x82, "OrientationCompass2D" },
-> +      { 0x20, 0x83, "OrientationCompass3D" },
-> +      { 0x20, 0x84, "OrientationInclinometer1D" },
-> +      { 0x20, 0x85, "OrientationInclinometer2D" },
-> +      { 0x20, 0x86, "OrientationInclinometer3D" },
-> +      { 0x20, 0x87, "OrientationDistance1D" },
-> +      { 0x20, 0x88, "OrientationDistance2D" },
-> +      { 0x20, 0x89, "OrientationDistance3D" },
-> +      { 0x20, 0x8A, "OrientationDeviceOrientation" },
-> +      { 0x20, 0x8B, "OrientationCompass" },
-> +      { 0x20, 0x8C, "OrientationInclinometer" },
-> +      { 0x20, 0x8D, "OrientationDistance" },
-> +    { 0x20, 0x90, "Scanner" },
-> +      { 0x20, 0x91, "ScannerBarcode" },
-> +      { 0x20, 0x91, "ScannerRFID" },
-> +      { 0x20, 0x91, "ScannerNFC" },
-> +    { 0x20, 0xA0, "Time" },
-> +      { 0x20, 0xA1, "TimeAlarmTimer" },
-> +      { 0x20, 0xA2, "TimeRealTimeClock" },
-> +    { 0x20, 0xE0, "Other" },
-> +      { 0x20, 0xE1, "OtherCustom" },
-> +      { 0x20, 0xE2, "OtherGeneric" },
-> +      { 0x20, 0xE3, "OtherGenericEnumerator" },
->     { 0x84, 0, "Power Device" },
->       { 0x84, 0x02, "PresentStatus" },
->       { 0x84, 0x03, "ChangeStatus" },
+> "Heading True North SV – Indicates compass true north heading is not compensated.
+>                      Default unit of measure is degrees; can be overridden using
+>                     explicit Unit and/or Unit Exponent."
+>
+Agreed. Don't worry too much about the driver naming.  Plenty of convention
+says that it has no real meaning other than labelling one part supported by
+the driver.
+
+> Thanks,
+> Srinivas
+>> 2) Create a whole new driver that handles True/Magnetic North. This
+>> would not work on my device as it is set to Compass 3D Usage
+>> Attribute. This could be resolved by adding another quirk for the
+>> Surface to ensure it used the new driver.
+No to this one as we'll end up with lots of similar cases and far too many
+similar drivers.
+>>
+>> For both options I think we'd need a new IIO_MOD_NORTH for the
+>> iio_chan_spec, as the current ones don't really apply. I like the
+>> first solution as it could allow for handling of devices with only one
+>> or two axis present. I do realize if the hid-mangn-3d driver was
+>> changed it's name would not make sense anymore and the pattern I'm
+>> notcing is a driver for each HID Usage.
+If you are introducing a north attribute, allow for both true and magnetic
+norths (only introduce the one you are using).
+
+IIO_MOD_NORTH_TRUE
+IIO_MOD_NORTH_MAGNETIC perhaps?
+I see the spec also mentions compensated variants of these...   If you do
+include these I think
+IIO_MOD_NORTH_TRUE_TILT_COMPENSATED or similar would be needed to make it
+clear what was going on.
+>>
+>> Here's a link to the hid report description with some labels for my device:
+>> Bug 73321 Comment 7
+>> https://bugzilla.kernel.org/show_bug.cgi?id=73321#c7
+>>
+>> I'd be willing to work on this. Just wanted to know what would work best
+>>
+Cool. I'd suggest perhaps doing the documentation first for the new ABI elements
+then we can hammer that out in parallel with work on the driver.
+(it's usually the harder part!)
+>> Thank You,
+>> Reyad Attiyat
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
 >
 
