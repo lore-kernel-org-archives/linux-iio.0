@@ -1,52 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-032.synserver.de ([212.40.185.32]:1236 "EHLO
-	smtp-out-016.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753705AbaEHRb7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 May 2014 13:31:59 -0400
-Message-ID: <536BBF78.7080100@metafoo.de>
-Date: Thu, 08 May 2014 19:31:36 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.kernel.org ([198.145.19.201]:54957 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751342AbaEYLGH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 25 May 2014 07:06:07 -0400
+Message-ID: <5381CF03.4010005@kernel.org>
+Date: Sun, 25 May 2014 12:07:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-CC: Arnd Bergmann <arnd@arndb.de>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Josh Wu <josh.wu@atmel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 2/2] iio:adc: at91 requires the input subsystem
-References: <1399560433-1402630-1-git-send-email-arnd@arndb.de> <1399560990-1402858-1-git-send-email-arnd@arndb.de> <1399560990-1402858-13-git-send-email-arnd@arndb.de> <20140508172243.GC6095@piout.net>
-In-Reply-To: <20140508172243.GC6095@piout.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: Erik.Habbinga@schneider-electric.com
+Subject: Re: [PATCH] iio:adc:max1363 incorrect resolutions for max11604, max11605,
+ max11610 and max11611.
+References: <1400933041-7007-1-git-send-email-jic23@kernel.org> <53810894.2000806@gmx.de>
+In-Reply-To: <53810894.2000806@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/08/2014 07:22 PM, Alexandre Belloni wrote:
-> Hi,
->
-> On 08/05/2014 at 16:56:24 +0200, Arnd Bergmann wrote :
->> Building the at91 adc driver with CONFIG_INPUT disabled results in this
->> build error:
+On 24/05/14 22:01, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> Reported-by: Erik Habbinga <Erik.Habbinga@schneider-electric.com>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+
+Thanks,
+
+Given the late stage in the cycle and the relatively minor nature of this
+bug I've applied it to the togreg tree for the next merge window.
+
+Jonathan
+>> ---
+>>   drivers/iio/adc/max1363.c | 16 ++++++++--------
+>>   1 file changed, 8 insertions(+), 8 deletions(-)
 >>
->> ERROR: "input_event" [drivers/iio/adc/at91_adc.ko] undefined!
->> ERROR: "input_unregister_device" [drivers/iio/adc/at91_adc.ko] undefined!
->> ERROR: "input_free_device" [drivers/iio/adc/at91_adc.ko] undefined!
->> ERROR: "input_register_device" [drivers/iio/adc/at91_adc.ko] undefined!
->> ERROR: "input_set_abs_params" [drivers/iio/adc/at91_adc.ko] undefined!
->> ERROR: "input_allocate_device" [drivers/iio/adc/at91_adc.ko] undefined!
->>
->> To make sure we can build random configurations, this turns on CONFIG_INPUT
->> whenever CONFIG_AT91_ADC is enabled.
->>
->
-> I'm wondering wether we should make part of the driver compile only if
-> CONFIG_INPUT is defined. Maybe some user will want to use the ADC and
-> not have any input on their board.
->
-> What do you think ?
+>> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+>> index 9cf3229..1b3b74b 100644
+>> --- a/drivers/iio/adc/max1363.c
+>> +++ b/drivers/iio/adc/max1363.c
+>> @@ -1252,8 +1252,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>>   		.default_mode = s0to11,
+>>   		.info = &max1238_info,
+>> -		.channels = max1238_channels,
+>> -		.num_channels = ARRAY_SIZE(max1238_channels),
+>> +		.channels = max1038_channels,
+>> +		.num_channels = ARRAY_SIZE(max1038_channels),
+>>   	},
+>>   	[max11605] = {
+>>   		.bits = 8,
+>> @@ -1262,8 +1262,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>>   		.default_mode = s0to11,
+>>   		.info = &max1238_info,
+>> -		.channels = max1238_channels,
+>> -		.num_channels = ARRAY_SIZE(max1238_channels),
+>> +		.channels = max1038_channels,
+>> +		.num_channels = ARRAY_SIZE(max1038_channels),
+>>   	},
+>>   	[max11606] = {
+>>   		.bits = 10,
+>> @@ -1312,8 +1312,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>>   		.default_mode = s0to11,
+>>   		.info = &max1238_info,
+>> -		.channels = max1238_channels,
+>> -		.num_channels = ARRAY_SIZE(max1238_channels),
+>> +		.channels = max1138_channels,
+>> +		.num_channels = ARRAY_SIZE(max1138_channels),
+>>   	},
+>>   	[max11611] = {
+>>   		.bits = 10,
+>> @@ -1322,8 +1322,8 @@ static const struct max1363_chip_info max1363_chip_info_tbl[] = {
+>>   		.num_modes = ARRAY_SIZE(max1238_mode_list),
+>>   		.default_mode = s0to11,
+>>   		.info = &max1238_info,
+>> -		.channels = max1238_channels,
+>> -		.num_channels = ARRAY_SIZE(max1238_channels),
+>> +		.channels = max1138_channels,
+>> +		.num_channels = ARRAY_SIZE(max1138_channels),
+>>   	},
+>>   	[max11612] = {
+>>   		.bits = 12,
 >
 
-This typically just leads to more build errors. E.g. if INPUT is defined as 
-a module, but AT91_ADC is build in. I think it is very rare to see a 
-configuration without INPUT set, other then a randconfig.
-
-- Lars
