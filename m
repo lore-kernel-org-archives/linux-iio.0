@@ -1,45 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f180.google.com ([209.85.192.180]:60044 "EHLO
-	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754196AbaEHQmJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 May 2014 12:42:09 -0400
-Date: Thu, 8 May 2014 09:41:57 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	bhelgaas@google.com, dwmw2@infradead.org,
-	dmitry.torokhov@gmail.com, balbi@ti.com,
-	gregkh@linuxfoundation.org, plagnioj@jcrosoft.com,
-	jic23@kernel.org, josh.wu@atmel.com, kishon@ti.com,
-	linus.walleij@linaro.org, broonie@kernel.org,
-	mturquette@linaro.org, nicolas.ferre@atmel.com, ohad@wizery.com,
-	linux@arm.linux.org.uk, tony@atomide.com, vinod.koul@intel.com,
-	wim@iguana.be, wsa@the-dreams.de, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-mtd@lists.infradead.org, linux-pci@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 00/22] Random ARM randconfig fixes in drivers
-Message-ID: <20140508164157.GA22224@roeck-us.net>
-References: <1399560433-1402630-1-git-send-email-arnd@arndb.de>
+Received: from cantor2.suse.de ([195.135.220.15]:36778 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751185AbaEZIhK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 26 May 2014 04:37:10 -0400
+Date: Mon, 26 May 2014 10:37:07 +0200 (CEST)
+From: Jiri Kosina <jkosina@suse.cz>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-input <linux-input@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH] HID: Debug: Add labels for HID Sensor Usages
+In-Reply-To: <53807397.9080807@kernel.org>
+Message-ID: <alpine.LNX.2.00.1405261036180.12047@pobox.suse.cz>
+References: <CA+BWVUTOHr-sktWtpGL7-1wTdz2suDWFjcyX=fFU+JHjs5+TTQ@mail.gmail.com> <53807397.9080807@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1399560433-1402630-1-git-send-email-arnd@arndb.de>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, May 08, 2014 at 04:46:51PM +0200, Arnd Bergmann wrote:
-> These are a bunch of fixes I had to do to get all randconfig
-> configurations on ARM working. Most of these are really old
-> bugs, but there are also some new ones. I don't think any of
-> them require a backport to linux-stable.
-> 
-> I have checked that they are all still required on yesterday's
-> linux-next kernel. Please apply on the appropriate trees unless
-> there are objections.
-> 
-Is this series of patches also going to fix arm:allmodconfig ?
+On Sat, 24 May 2014, Jonathan Cameron wrote:
 
-Thanks,
-Guenter
+> This looks reasonable to me, but I haven't checked every entry.  Also 
+> Reyad, you need to sign off on the patch if you expect anyone to pick it 
+> up.
+> 
+> Jiri, this is one for you. (note Jiri should probably have been cc'd in the
+> first place as the HID maintainer - unless he specifically asked not to be).
+
+I definitely want (and need) to be CCed on such patches, thanks for 
+letting me know, Jonathan.
+
+Reyad, please add you signoff as Jonathan said, and resend the patch 
+properly to me.
+
+-- 
+Jiri Kosina
+SUSE Labs
