@@ -1,45 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:59171 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752109AbaEBWk7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 May 2014 18:40:59 -0400
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 1/2] iio: fix possible buffer overflow
-Date: Sat,  3 May 2014 00:40:49 +0200
-Message-Id: <1399070450-23391-1-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60461 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752071AbaE1AYy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 May 2014 20:24:54 -0400
+In-Reply-To: <5384D84B.6000904@yahoo.fr>
+References: <1400621236-20423-1-git-send-email-tremyfr@yahoo.fr> <5383A3BF.1060506@metafoo.de> <5384D84B.6000904@yahoo.fr>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v2] iio: add support of the max1027
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 28 May 2014 02:24:47 +0200
+To: trem <tremyfr@yahoo.fr>, Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	armadeus-forum@lists.sourceforge.net, knaack.h@gmx.de
+Message-ID: <70f677a6-7561-4038-9ac3-fa2f17087c10@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Found using smatch:
-drivers/iio/industrialio-core.c:719 iio_device_add_info_mask_type() error:
-buffer overflow 'iio_chan_info_postfix' 17 <= 63
 
-It was probably never hit because the info_mask_* members are filled by using
-the BIT() macro with values from the iio_chan_info_enum enum that also serve as
-the index of the iio_chan_info_postfix array.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/iio/industrialio-core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On May 27, 2014 8:24:11 PM CEST, trem <tremyfr@yahoo.fr> wrote:
+>Hi,
+>
+>
+>On 26/05/14 22:27, Lars-Peter Clausen wrote:
+>> On 05/20/2014 11:27 PM, Philippe Reynes wrote:
+>>> This driver add partial support of the
+>>> maxim 1027/1029/1031. Differential mode is not
+>>> supported.
+>>>
+>>> It was tested on armadeus apf27 board.
+>>>
+>>> Signed-off-by: Philippe Reynes<tremyfr@yahoo.fr>
+>>> ---
+>>>    .../devicetree/bindings/iio/adc/max1027-adc.txt    |   21 +
+>>>    drivers/staging/iio/adc/Kconfig                    |    9 +
+>>>    drivers/staging/iio/adc/Makefile                   |    1 +
+>>>    drivers/staging/iio/adc/max1027.c                  |  553
+>++++++++++++++++++++
+>>
+>> New drivers should go into drivers/iio/
+>
+>I'll be pleased to add this driver in drivers/iio/
+>Everybody agrees ??
+I do. 
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index ede16aec20fb..5e7a67e53879 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -715,7 +715,8 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
- {
- 	int i, ret, attrcount = 0;
- 
--	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
-+	for_each_set_bit(i, infomask, min(sizeof(infomask)*8,
-+					  ARRAY_SIZE(iio_chan_info_postfix))) {
- 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
- 					     chan,
- 					     &iio_read_channel_info,
+Jonathan
+>  
+>>>    4 files changed, 584 insertions(+), 0 deletions(-)
+>>>    create mode 100644
+>Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>>>    create mode 100644 drivers/staging/iio/adc/max1027.c
+>> [...]
+>>
+>
+>Regards,
+>Philippe
+
 -- 
-1.9.1
-
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
