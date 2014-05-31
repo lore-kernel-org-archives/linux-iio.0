@@ -1,51 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp3-g21.free.fr ([212.27.42.3]:20183 "EHLO smtp3-g21.free.fr"
+Received: from mail.kernel.org ([198.145.19.201]:45925 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753264AbaE0SYM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 27 May 2014 14:24:12 -0400
-Message-ID: <5384D84B.6000904@yahoo.fr>
-Date: Tue, 27 May 2014 20:24:11 +0200
-From: trem <tremyfr@yahoo.fr>
+	id S1752917AbaEaKMq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 31 May 2014 06:12:46 -0400
+Message-ID: <5389AB89.9080305@kernel.org>
+Date: Sat, 31 May 2014 11:14:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	armadeus-forum@lists.sourceforge.net, jic23@kernel.org,
-	knaack.h@gmx.de
-Subject: Re: [PATCH v2] iio: add support of the max1027
-References: <1400621236-20423-1-git-send-email-tremyfr@yahoo.fr> <5383A3BF.1060506@metafoo.de>
-In-Reply-To: <5383A3BF.1060506@metafoo.de>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
+	jkosina@suse.cz
+Subject: Re: [PATCH 2/3] IIO: Add iio_chan modifier for True/Magnetic North
+ HID usages
+References: <1401311175-12784-1-git-send-email-reyad.attiyat@gmail.com> <1401311175-12784-3-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1401311175-12784-3-git-send-email-reyad.attiyat@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-
-
-On 26/05/14 22:27, Lars-Peter Clausen wrote:
-> On 05/20/2014 11:27 PM, Philippe Reynes wrote:
->> This driver add partial support of the
->> maxim 1027/1029/1031. Differential mode is not
->> supported.
->>
->> It was tested on armadeus apf27 board.
->>
->> Signed-off-by: Philippe Reynes<tremyfr@yahoo.fr>
->> ---
->>    .../devicetree/bindings/iio/adc/max1027-adc.txt    |   21 +
->>    drivers/staging/iio/adc/Kconfig                    |    9 +
->>    drivers/staging/iio/adc/Makefile                   |    1 +
->>    drivers/staging/iio/adc/max1027.c                  |  553 ++++++++++++++++++++
+On 28/05/14 22:06, Reyad Attiyat wrote:
+> Updated iio_chan_info_enum for compass north sensor usages,
+> including magnetic/true north and tilt compensation.
 >
-> New drivers should go into drivers/iio/
+> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+> ---
+>   drivers/iio/industrialio-core.c | 4 ++++
+>   include/linux/iio/types.h       | 4 ++++
+>   2 files changed, 8 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index ede16aec..41bd377 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -84,6 +84,10 @@ static const char * const iio_modifier_names[] = {
+>   	[IIO_MOD_LIGHT_RED] = "red",
+>   	[IIO_MOD_LIGHT_GREEN] = "green",
+>   	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_MAGN_NORTH] = "north",
+> +	[IIO_MOD_MAGN_NORTH_TRUE] = "north_true",
+> +	[IIO_MOD_MAGN_NORTH_TILT_COMP] = "north_tilt_comp",
+> +	[IIO_MOD_MAGN_NORTH_TRUE_TILT_COMP] = "north_true_tilt_comp",
+>   };
+I think we need the naming to explicitly mention north_magnetic instead
+of just north.  Whilst it is obvious what north means when you have north
+true alongside it, it won't be so obvious if one just has the north attribute
+to see in a particular driver - if anything I'd have the true as the one
+that was simply called north (as it might not be coming from a magnetometer
+thought obviously that's the most common source)   I'd also rather the enum entries
+were
+IIO_MOD_NORTH_MAGN
+IIO_MOD_NORTH_TRUE
+IIO_MOD_NORTH_MAGN_TILT_COMP
+IIO_MOD_NORTH_TRUE_TILT_COMP
 
-I'll be pleased to add this driver in drivers/iio/
-Everybody agrees ??
-  
->>    4 files changed, 584 insertions(+), 0 deletions(-)
->>    create mode 100644 Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
->>    create mode 100644 drivers/staging/iio/adc/max1027.c
-> [...]
+It is definitely feasible that they will not come from magnetometers -
+a differential bearing is common on GPS units.
+
+>
+>   /* relies on pairs of these shared then separate */
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 084d882..f1e8be6 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -53,6 +53,10 @@ enum iio_modifier {
+>   	IIO_MOD_LIGHT_RED,
+>   	IIO_MOD_LIGHT_GREEN,
+>   	IIO_MOD_LIGHT_BLUE,
+> +	IIO_MOD_MAGN_NORTH,
+> +	IIO_MOD_MAGN_NORTH_TRUE,
+> +	IIO_MOD_MAGN_NORTH_TILT_COMP,
+> +	IIO_MOD_MAGN_NORTH_TRUE_TILT_COMP
+>   };
+>
+>   enum iio_event_type {
 >
 
-Regards,
-Philippe
