@@ -1,61 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:5184 "EHLO mga09.intel.com"
+Received: from mail.kernel.org ([198.145.19.201]:45968 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751695AbaE1VU7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 28 May 2014 17:20:59 -0400
-Message-ID: <53865438.2030901@linux.intel.com>
-Date: Wed, 28 May 2014 14:25:12 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+	id S1753785AbaEaKPP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 31 May 2014 06:15:15 -0400
+Message-ID: <5389AC1E.9000608@kernel.org>
+Date: Sat, 31 May 2014 11:17:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	jic23@kernel.org, linux-input <linux-input@vger.kernel.org>,
-	Jiri Kosina <jkosina@suse.cz>
-Subject: Re: [PATCH 3/3] IO: hid-sensor-magn-3d: Add in support for True/Magnetic
- North HID usages
-References: <1401311175-12784-1-git-send-email-reyad.attiyat@gmail.com> <1401311175-12784-4-git-send-email-reyad.attiyat@gmail.com> <CA+BWVUQEsprV1jEzD9D0hidR0jvYeSRVGT=ESzstR4apa+nV1A@mail.gmail.com>
-In-Reply-To: <CA+BWVUQEsprV1jEzD9D0hidR0jvYeSRVGT=ESzstR4apa+nV1A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] IIO: Support for True/Magnetic north
+References: <538076CA.6050809@kernel.org> <1401160821-5006-1-git-send-email-reyad.attiyat@gmail.com> <5384B099.2070808@linux.intel.com>
+In-Reply-To: <5384B099.2070808@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/28/2014 02:15 PM, Reyad Attiyat wrote:
->> +static void sensor_hub_fill_attr_info(
->> +               struct hid_sensor_hub_attribute_info *info,
->> +               s32 index, s32 report_id, struct hid_field *field)
->> +{
->> +       info->index = index;
->> +       info->report_id = report_id;
->> +       info->units = field->unit;
->> +       info->unit_expo = field->unit_exponent;
->> +       info->size = (field->report_size * field->report_count)/8;
->> +       info->logical_minimum = field->logical_minimum;
->> +       info->logical_maximum = field->logical_maximum;
->>   }
-> I copied this function from hid/hid-sensor-hub.c as it is marked
-> static in that file. I use it to fill attributes as I find them.
-> Should I create an another patch to make it non-static?
-
-I didn't check your implementation. But 
-sensor_hub_input_get_attribute_info()
-function is not enough? We are already using to get other attributes for 
-x, y and Z.
-
-Thanks,
-Srinivas
-
-
->> +       list_for_each_entry(report, &report_enum->report_list, list) {
->> +               for (i = 0; i < report->maxfield; ++i) {
->> +                       field = report->field[i];
->> +
->> +                       for (j = 0; j < field->maxusage; j++) {
->> +                               usage = &(field->usage[j]);
->> +
-> This is how I mange to find all possible hid reports in the parse
-> reports function. I noticed that in the other function that was used,
-> sensor_hub_input_get_attribute_info(),  it only uses field->usage[0].
-> Is there a reason for this and should I change my current
-> implementation?
+On 27/05/14 16:34, Srinivas Pandruvada wrote:
+> Hi Reyad,
+>
+> On 05/26/2014 08:20 PM, Reyad Attiyat wrote:
+>> Hey Jonathan and Srinivas,
+>>
+>> I have added in the needed magn_north iio sysfs attributes to the documentation.
+>> I hope I did everything correct.
+>> I noticed that the line length was very long as compensated is a  fairly long word.
+>> I'm thinking I could shorten some of the sysfs paths or shorten the name.
+>>
+>> For updating the hid-sensor-magn-3d do you have any tips on this? I'm thinking I'll need a
+>> dynamic iio_chan array that is passed to iio_register function. It would need to
+>> be dynamic in the sense it would only add channels if it found x, y, z, or one of
+>> the north attributes. I'll start working on this soon.
+>
+> I think you mean dynamic " iio_chan_spec magn_3d_channels[]". Currently this is a
+> constant. So we can change this to add only channel, which are available.
+>
+> Also your other changes must be submitted as series of patches, including the drivers using them.
+I specifically requested that Reyad get the proposal out asap so that we could discuss it
+'before' the patch series using it.  Obviously it won't get merged until there is
+a driver using this interface, but often the interface discussion takes longer
+than the review of the code so best to get it going asap!
+>
+> Thanks,
+> Srinivas
+>
+>> Thank You,
+>> Reyad Attiyat
+>>
+>>
+>>
+>> Reyad Attiyat (1):
+>>    IIO: Added iio magn_north ABI documentation
+>>
+>>   Documentation/ABI/testing/sysfs-bus-iio | 76 +++++++++++++++++++++++++++++++++
+>>   1 file changed, 76 insertions(+)
+>>
 >
 
