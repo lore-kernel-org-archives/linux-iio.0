@@ -1,46 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:38552 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753859AbaEaXKw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 May 2014 19:10:52 -0400
-Received: by mail-wg0-f45.google.com with SMTP id m15so3463013wgh.28
-        for <linux-iio@vger.kernel.org>; Sat, 31 May 2014 16:10:51 -0700 (PDT)
+Received: from mail-ob0-f171.google.com ([209.85.214.171]:45609 "EHLO
+	mail-ob0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756261AbaFALvz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Jun 2014 07:51:55 -0400
+Received: by mail-ob0-f171.google.com with SMTP id wn1so3512696obc.30
+        for <linux-iio@vger.kernel.org>; Sun, 01 Jun 2014 04:51:54 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <538AEF16.5070904@metafoo.de>
+References: <1401577904-4764-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+	<538AEF16.5070904@metafoo.de>
+Date: Sun, 1 Jun 2014 13:51:54 +0200
+Message-ID: <CAFo99gaTK__WX4oTr_jF6PZuTOsX8qbR9kRJbgamZPO4iGz53w@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ad_sigma_delta.c: Cleaning up uninitialized variables
 From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Linus Walleij <linus.walleij@linaro.org>,
 	Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: ad_sigma_delta.c:  Cleaning up uninitialized variables
-Date: Sun,  1 Jun 2014 01:11:44 +0200
-Message-Id: <1401577904-4764-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There is a risk that the variable will be used without being initialized.
+Hi
 
-This was largely found by using a static code analysis program called cppcheck.
+Believe it reacted to the code below.
 
-Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
----
- drivers/iio/adc/ad_sigma_delta.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If raw_sample = 0 is the correct starting value, I am not sure. But
+leaving it uninitialized, I think is the worst choice.
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index 9a4e0e3..d58fad9 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -248,7 +248,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
- 	const struct iio_chan_spec *chan, int *val)
- {
- 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
--	unsigned int sample, raw_sample;
-+	unsigned int sample, raw_sample = 0;
- 	int ret = 0;
- 
- 	if (iio_buffer_enabled(indio_dev))
--- 
-1.7.10.4
 
+    if (ret < 0)
+        goto out;
+
+    ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
+        DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
+        &raw_sample);
+....
+out:
+....
+    sample = raw_sample >> chan->scan_type.shift;
+
+
+Best regards
+Rickard Strandqvist
+
+
+2014-06-01 11:15 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+> On 06/01/2014 01:11 AM, Rickard Strandqvist wrote:
+>>
+>> There is a risk that the variable will be used without being initialized.
+>>
+>> This was largely found by using a static code analysis program called
+>> cppcheck.
+>
+>
+> This looks like a false positive. And if it was not a false positive the
+> correct fix certainly is not to initialize the variable to some random value
+> to silence the warning.
+>
+> - Lars
+>
