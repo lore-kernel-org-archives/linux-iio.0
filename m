@@ -1,16 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f171.google.com ([209.85.214.171]:45609 "EHLO
-	mail-ob0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756261AbaFALvz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Jun 2014 07:51:55 -0400
-Received: by mail-ob0-f171.google.com with SMTP id wn1so3512696obc.30
-        for <linux-iio@vger.kernel.org>; Sun, 01 Jun 2014 04:51:54 -0700 (PDT)
+Received: from mail-oa0-f50.google.com ([209.85.219.50]:54920 "EHLO
+	mail-oa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756935AbaFAMKP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Jun 2014 08:10:15 -0400
+Received: by mail-oa0-f50.google.com with SMTP id i7so3576182oag.37
+        for <linux-iio@vger.kernel.org>; Sun, 01 Jun 2014 05:10:14 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <538AEF16.5070904@metafoo.de>
+In-Reply-To: <538B167E.9030902@metafoo.de>
 References: <1401577904-4764-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
 	<538AEF16.5070904@metafoo.de>
-Date: Sun, 1 Jun 2014 13:51:54 +0200
-Message-ID: <CAFo99gaTK__WX4oTr_jF6PZuTOsX8qbR9kRJbgamZPO4iGz53w@mail.gmail.com>
+	<CAFo99gaTK__WX4oTr_jF6PZuTOsX8qbR9kRJbgamZPO4iGz53w@mail.gmail.com>
+	<538B167E.9030902@metafoo.de>
+Date: Sun, 1 Jun 2014 14:10:14 +0200
+Message-ID: <CAFo99gbqVjTXXaDQRqQHLK5+4OLXL1oup_M4dN=cup+JTTzSXA@mail.gmail.com>
 Subject: Re: [PATCH] iio: adc: ad_sigma_delta.c: Cleaning up uninitialized variables
 From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -23,42 +25,76 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi
-
-Believe it reacted to the code below.
-
-If raw_sample = 0 is the correct starting value, I am not sure. But
-leaving it uninitialized, I think is the worst choice.
-
-
-    if (ret < 0)
-        goto out;
-
-    ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
-        DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
-        &raw_sample);
-....
-out:
-....
-    sample = raw_sample >> chan->scan_type.shift;
+Aaa, that is true!  Sorry my mistake :(
 
 
 Best regards
 Rickard Strandqvist
 
 
-2014-06-01 11:15 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
-> On 06/01/2014 01:11 AM, Rickard Strandqvist wrote:
+2014-06-01 14:03 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+> On 06/01/2014 01:51 PM, Rickard Strandqvist wrote:
 >>
->> There is a risk that the variable will be used without being initialized.
+>> Hi
 >>
->> This was largely found by using a static code analysis program called
->> cppcheck.
+>> Believe it reacted to the code below.
+>>
+>> If raw_sample = 0 is the correct starting value, I am not sure. But
+>> leaving it uninitialized, I think is the worst choice.
+>>
+>>
+>>      if (ret < 0)
+>>          goto out;
+>>
+>>      ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
+>>          DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift,
+>> 8),
+>>          &raw_sample);
+>> ....
+>> out:
+>> ....
 >
 >
-> This looks like a false positive. And if it was not a false positive the
-> correct fix certainly is not to initialize the variable to some random value
-> to silence the warning.
+> you skipped the:
 >
-> - Lars
+>     if (ret)
+>         return ret;
+>
+> that is here.
+>
+>
+>>      sample = raw_sample >> chan->scan_type.shift;
+>>
+>
+> The code is a bit confusing and it is understandable that a static checker
+> might generate a false positive. The fix though is not to silence the false
+> positive as this will hide actual problems if they should come up by future
+> modifications of the code.
+>
+>
+>>
+>> Best regards
+>> Rickard Strandqvist
+>>
+>>
+>> 2014-06-01 11:15 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+>>>
+>>> On 06/01/2014 01:11 AM, Rickard Strandqvist wrote:
+>>>>
+>>>>
+>>>> There is a risk that the variable will be used without being
+>>>> initialized.
+>>>>
+>>>> This was largely found by using a static code analysis program called
+>>>> cppcheck.
+>>>
+>>>
+>>>
+>>> This looks like a false positive. And if it was not a false positive the
+>>> correct fix certainly is not to initialize the variable to some random
+>>> value
+>>> to silence the warning.
+>>>
+>>> - Lars
+>>>
 >
