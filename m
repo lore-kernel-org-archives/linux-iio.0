@@ -1,234 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:41329 "EHLO mga02.intel.com"
+Received: from mail1.ams.com ([212.166.112.31]:42982 "EHLO mail1.ams.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752682AbaFBPus (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 2 Jun 2014 11:50:48 -0400
-Message-ID: <538C9E51.2000806@linux.intel.com>
-Date: Mon, 02 Jun 2014 08:54:57 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+	id S1753844AbaFBQSc convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jun 2014 12:18:32 -0400
+From: Jon Brenner <Jon.Brenner@ams.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Mario Schuknecht <mario.schuknecht@dresearch-fe.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 2 Jun 2014 18:08:44 +0200
+Subject: RE: [PATCH] staging: iio: tsl2x7x_core: fix proximity threshold
+Message-ID: <9A1AC870E7D6284DB056414587DDA8F701BF67BB@SUX2182.office.amsiag.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Reyad Attiyat <reyad.attiyat@gmail.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, jkosina@suse.cz
-Subject: Re: [PATCH 1/3] IIO: Add iio magn_north ABI documentation
-References: <1401311175-12784-1-git-send-email-reyad.attiyat@gmail.com> <1401311175-12784-2-git-send-email-reyad.attiyat@gmail.com> <53876477.7000503@kernel.org>
-In-Reply-To: <53876477.7000503@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/29/2014 09:46 AM, Jonathan Cameron wrote:
-> On 28/05/14 22:06, Reyad Attiyat wrote:
->> Update documentation for HID compass true/magnetic north sensor.
->>
->> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
->> ---
->>   Documentation/ABI/testing/sysfs-bus-iio | 76 
->> +++++++++++++++++++++++++++++++++
->>   1 file changed, 76 insertions(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio 
->> b/Documentation/ABI/testing/sysfs-bus-iio
->> index 6e02c50..0341b2f 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -165,6 +165,10 @@ Description:
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_z_raw
-> Hmm. The question to my mind is whether people would expect a simple 
-> north to give
-> them which direction north is?
-> Also is it actually relevant whether they find north from a 
-> magnetometer or some other method?
-> I wonder if we want to make these some sort of north referenced rotation?
-> in_rot_from_true_north_raw
-> in_rot_from_magnetic_north_raw
+Hello Jonathan,
+Looks fine  (these changes should have already been in there as they reflect exactly what I have in my most recent source) - but I'll figure that out later.
+ 
+
+-----Original Message-----
+From: Jonathan Cameron [mailto:jic23@kernel.org] 
+Sent: Saturday, May 31, 2014 5:25 AM
+To: Mario Schuknecht; linux-iio@vger.kernel.org; Jon Brenner
+Subject: Re: [PATCH] staging: iio: tsl2x7x_core: fix proximity treshold
+
+On 27/05/14 07:19, Mario Schuknecht wrote:
+> Consider high byte of proximity min and max treshold in function 
+> 'tsl2x7x_chip_on'. So far, the high byte was not set.
 >
-> Technically it is possible to get some direction information from some 
-> GPS receivers or to
-> to maintain a knowledge of its location with good gyroscopes.
+> Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
+Looks right to me.
+
+Jon, it's your driver so do you have a few mins to check this?  Given timing this won't go in until the merge window has closed now anyway so you have a few weeks.  Looks like stable material though so I'll mark it as such when I apply it.
+
+
+> ---
+>   drivers/staging/iio/light/tsl2x7x_core.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
 >
-> Ultimately userspace doesn't care about it.  When we were using the 
-> axial magnetic functions we
-> were measuring the field magnitude in that direction. As I understand 
-> it here it is just an angle?
-Yes, they are angles. Default units are degrees, which we should convert 
-to radians as a standard unit for IIO.
-Thanks,
-Srinivas
+> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c 
+> b/drivers/staging/iio/light/tsl2x7x_core.c
+> index 9e0f2a9..ab338e3 100644
+> --- a/drivers/staging/iio/light/tsl2x7x_core.c
+> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
+> @@ -667,9 +667,13 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
+>   	chip->tsl2x7x_config[TSL2X7X_PRX_COUNT] =
+>   			chip->tsl2x7x_settings.prox_pulse_count;
+>   	chip->tsl2x7x_config[TSL2X7X_PRX_MINTHRESHLO] =
+> -	chip->tsl2x7x_settings.prox_thres_low;
+> +			(chip->tsl2x7x_settings.prox_thres_low) & 0xFF;
+> +	chip->tsl2x7x_config[TSL2X7X_PRX_MINTHRESHHI] =
+> +			(chip->tsl2x7x_settings.prox_thres_low >> 8) & 0xFF;
+>   	chip->tsl2x7x_config[TSL2X7X_PRX_MAXTHRESHLO] =
+> -			chip->tsl2x7x_settings.prox_thres_high;
+> +			(chip->tsl2x7x_settings.prox_thres_high) & 0xFF;
+> +	chip->tsl2x7x_config[TSL2X7X_PRX_MAXTHRESHHI] =
+> +			(chip->tsl2x7x_settings.prox_thres_high >> 8) & 0xFF;
 >
-> J
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_raw
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_true_raw
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_tilt_comp_raw
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_true_tilt_comp_raw
->>   KernelVersion:    2.6.35
->>   Contact:    linux-iio@vger.kernel.org
->>   Description:
->> @@ -249,6 +253,10 @@ What: 
->> /sys/bus/iio/devices/iio:deviceX/in_magn_scale
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
->>   What:        /sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_scale
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_true_scale
->> +What: /sys/bus/iio/devices/iio:deviceX/in_magn_north_tilt_comp_scale
->> +What: 
->> /sys/bus/iio/devices/iio:deviceX/in_magn_north_true_tilt_comp_scale
->>   What: /sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
->>   What: /sys/bus/iio/devices/iio:deviceX/in_pressure_scale
->>   KernelVersion:    2.6.35
->> @@ -436,6 +444,14 @@ What: 
->> /sys/.../iio:deviceX/events/in_magn_y_thresh_rising_en
->>   What: /sys/.../iio:deviceX/events/in_magn_y_thresh_falling_en
->>   What: /sys/.../iio:deviceX/events/in_magn_z_thresh_rising_en
->>   What: /sys/.../iio:deviceX/events/in_magn_z_thresh_falling_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_thresh_rising_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_thresh_falling_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_true_thresh_rising_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_true_thresh_falling_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_tilt_comp_thresh_rising_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_tilt_comp_thresh_falling_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_true_tilt_comp_thresh_rising_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_true_tilt_comp_thresh_falling_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_supply_thresh_rising_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_supply_thresh_falling_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_thresh_rising_en
->> @@ -481,6 +497,14 @@ What: 
->> /sys/.../iio:deviceX/events/in_magn_y_roc_rising_en
->>   What: /sys/.../iio:deviceX/events/in_magn_y_roc_falling_en
->>   What: /sys/.../iio:deviceX/events/in_magn_z_roc_rising_en
->>   What: /sys/.../iio:deviceX/events/in_magn_z_roc_falling_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_roc_rising_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_roc_falling_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_true_roc_rising_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_true_roc_falling_en
->> +What: /sys/.../iio:deviceX/events/in_magn_north_tilt_comp_roc_rising_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_tilt_comp_roc_falling_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_true_tilt_comp_roc_rising_en
->> +What: 
->> /sys/.../iio:deviceX/events/in_magn_north_true_tilt_comp_roc_falling_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_supply_roc_rising_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_supply_roc_falling_en
->>   What: /sys/.../iio:deviceX/events/in_voltageY_roc_rising_en
->> @@ -527,6 +551,14 @@ What: 
->> /sys/.../events/in_magn_y_raw_thresh_rising_value
->>   What: /sys/.../events/in_magn_y_raw_thresh_falling_value
->>   What:        /sys/.../events/in_magn_z_raw_thresh_rising_value
->>   What: /sys/.../events/in_magn_z_raw_thresh_falling_value
->> +What: /sys/.../events/in_magn_north_raw_thresh_rising_value
->> +What: /sys/.../events/in_magn_north_raw_thresh_falling_value
->> +What: /sys/.../events/in_magn_north_true_raw_thresh_rising_value
->> +What: /sys/.../events/in_magn_north_true_raw_thresh_falling_value
->> +What: /sys/.../events/in_magn_north_tilt_comp_raw_thresh_rising_value
->> +What: /sys/.../events/in_magn_north_tilt_comp_raw_thresh_falling_value
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_raw_thresh_rising_value
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_raw_thresh_falling_value
->>   What: /sys/.../events/in_voltageY_supply_raw_thresh_rising_value
->>   What: /sys/.../events/in_voltageY_supply_raw_thresh_falling_value
->>   What: /sys/.../events/in_voltageY_raw_thresh_rising_value
->> @@ -577,6 +609,18 @@ What: 
->> /sys/.../events/in_magn_y_thresh_either_hysteresis
->>   What: /sys/.../events/in_magn_z_thresh_rising_hysteresis
->>   What: /sys/.../events/in_magn_z_thresh_falling_hysteresis
->>   What: /sys/.../events/in_magn_z_thresh_either_hysteresis
->> +What: /sys/.../events/in_magn_north_thresh_rising_hysteresis
->> +What: /sys/.../events/in_magn_north_thresh_falling_hysteresis
->> +What: /sys/.../events/in_magn_north_thresh_either_hysteresis
->> +What: /sys/.../events/in_magn_north_true_thresh_rising_hysteresis
->> +What: /sys/.../events/in_magn_north_true_thresh_falling_hysteresis
->> +What: /sys/.../events/in_magn_north_true_thresh_either_hysteresis
->> +What: /sys/.../events/in_magn_north_tilt_comp_thresh_rising_hysteresis
->> +What: /sys/.../events/in_magn_north_tilt_comp_thresh_falling_hysteresis
->> +What: /sys/.../events/in_magn_north_tilt_comp_thresh_either_hysteresis
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_thresh_rising_hysteresis
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_thresh_falling_hysteresis
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_thresh_either_hysteresis
->>   What: /sys/.../events/in_voltageY_thresh_rising_hysteresis
->>   What: /sys/.../events/in_voltageY_thresh_falling_hysteresis
->>   What: /sys/.../events/in_voltageY_thresh_either_hysteresis
->> @@ -624,6 +668,14 @@ What: 
->> /sys/.../events/in_magn_y_raw_roc_rising_value
->>   What:        /sys/.../events/in_magn_y_raw_roc_falling_value
->>   What:        /sys/.../events/in_magn_z_raw_roc_rising_value
->>   What:        /sys/.../events/in_magn_z_raw_roc_falling_value
->> +What:        /sys/.../events/in_magn_north_raw_roc_rising_value
->> +What: /sys/.../events/in_magn_north_raw_roc_falling_value
->> +What: /sys/.../events/in_magn_north_true_raw_roc_rising_value
->> +What: /sys/.../events/in_magn_north_true_raw_roc_falling_value
->> +What: /sys/.../events/in_magn_north_tilt_comp_raw_roc_rising_value
->> +What: /sys/.../events/in_magn_north_tilt_comp_raw_roc_falling_value
->> +What: /sys/.../events/in_magn_north_true_tilt_comp_raw_roc_rising_value
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_raw_roc_falling_value
->>   What: /sys/.../events/in_voltageY_supply_raw_roc_rising_value
->>   What: /sys/.../events/in_voltageY_supply_raw_roc_falling_value
->>   What:        /sys/.../events/in_voltageY_raw_roc_rising_value
->> @@ -679,6 +731,22 @@ What: 
->> /sys/.../events/in_magn_z_thresh_rising_period
->>   What:        /sys/.../events/in_magn_z_thresh_falling_period
->>   What:        /sys/.../events/in_magn_z_roc_rising_period
->>   What:        /sys/.../events/in_magn_z_roc_falling_period
->> +What:        /sys/.../events/in_magn_north_thresh_rising_period
->> +What: /sys/.../events/in_magn_north_thresh_falling_period
->> +What:        /sys/.../events/in_magn_north_roc_rising_period
->> +What:        /sys/.../events/in_magn_north_roc_falling_period
->> +What: /sys/.../events/in_magn_north_true_thresh_rising_period
->> +What: /sys/.../events/in_magn_north_true_thresh_falling_period
->> +What: /sys/.../events/in_magn_north_true_roc_rising_period
->> +What: /sys/.../events/in_magn_north_true_roc_falling_period
->> +What: /sys/.../events/in_magn_north_tilt_comp_thresh_rising_period
->> +What: /sys/.../events/in_magn_north_tilt_comp_thresh_falling_period
->> +What: /sys/.../events/in_magn_north_tilt_comp_roc_rising_period
->> +What: /sys/.../events/in_magn_north_tilt_comp_roc_falling_period
->> +What: /sys/.../events/in_magn_north_true_tilt_comp_thresh_rising_period
->> +What: 
->> /sys/.../events/in_magn_north_true_tilt_comp_thresh_falling_period
->> +What: /sys/.../events/in_magn_north_true_tilt_comp_roc_rising_period
->> +What: /sys/.../events/in_magn_north_true_tilt_comp_roc_falling_period
->>   What: /sys/.../events/in_voltageY_supply_thresh_rising_period
->>   What: /sys/.../events/in_voltageY_supply_thresh_falling_period
->>   What: /sys/.../events/in_voltageY_supply_roc_rising_period
->> @@ -776,6 +844,10 @@ What: 
->> /sys/.../iio:deviceX/scan_elements/in_anglvel_z_en
->>   What:        /sys/.../iio:deviceX/scan_elements/in_magn_x_en
->>   What:        /sys/.../iio:deviceX/scan_elements/in_magn_y_en
->>   What:        /sys/.../iio:deviceX/scan_elements/in_magn_z_en
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_en
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_true_en
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_tilt_comp_en
->> +What: 
->> /sys/.../iio:deviceX/scan_elements/in_magn_north_true_tilt_comp_en
->>   What: /sys/.../iio:deviceX/scan_elements/in_timestamp_en
->>   What: /sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
->>   What:        /sys/.../iio:deviceX/scan_elements/in_voltageY_en
->> @@ -840,6 +912,10 @@ What: 
->> /sys/.../iio:deviceX/scan_elements/in_anglvel_z_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_magn_x_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_magn_y_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_magn_z_index
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_index
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_true_index
->> +What: /sys/.../iio:deviceX/scan_elements/in_magn_north_tilt_comp_index
->> +What: 
->> /sys/.../iio:deviceX/scan_elements/in_magn_north_true_tilt_comp_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_incli_x_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_incli_y_index
->>   What: /sys/.../iio:deviceX/scan_elements/in_timestamp_index
->>
->
+>   	/* and make sure we're not already on */
+>   	if (chip->tsl2x7x_chip_status == TSL2X7X_CHIP_WORKING) {
 >
 
