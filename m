@@ -1,78 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:60013 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:60905 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750767AbaFBRsu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 2 Jun 2014 13:48:50 -0400
-Message-ID: <538CB96D.2060201@kernel.org>
-Date: Mon, 02 Jun 2014 18:50:37 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	id S1751370AbaFBSKv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 2 Jun 2014 14:10:51 -0400
+Date: Mon, 2 Jun 2014 20:10:40 +0200
+From: Sebastian Reichel <sre@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Paul Kocialkowski <contact@paulk.fr>, linux-iio@vger.kernel.org,
+	j-keerthy@ti.com
+Subject: Re: [PATCH] twl4030-madc: Request processed values in
+ twl4030_get_madc_conversion
+Message-ID: <20140602181039.GA2185@earth.universe>
+References: <1400933398.2079.16.camel@aldrin>
+ <538CBBA6.30203@kernel.org>
 MIME-Version: 1.0
-To: Jon Brenner <Jon.Brenner@ams.com>,
-	Mario Schuknecht <mario.schuknecht@dresearch-fe.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: tsl2x7x_core: fix proximity threshold
-References: <9A1AC870E7D6284DB056414587DDA8F701BF67BB@SUX2182.office.amsiag.com>
-In-Reply-To: <9A1AC870E7D6284DB056414587DDA8F701BF67BB@SUX2182.office.amsiag.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
+In-Reply-To: <538CBBA6.30203@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/06/14 17:08, Jon Brenner wrote:
-> Hello Jonathan,
-> Looks fine  (these changes should have already been in there as they reflect exactly what I have in my most recent source) - but I'll figure that out later.
-Cool - formal acks or even better reviewed-by tags
-always welcome.  Anyhow I've applied it now so too late
-for this one ;)
 
+--pf9I7BMVVzbSWLtt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->
->
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: Saturday, May 31, 2014 5:25 AM
-> To: Mario Schuknecht; linux-iio@vger.kernel.org; Jon Brenner
-> Subject: Re: [PATCH] staging: iio: tsl2x7x_core: fix proximity treshold
->
-> On 27/05/14 07:19, Mario Schuknecht wrote:
->> Consider high byte of proximity min and max treshold in function
->> 'tsl2x7x_chip_on'. So far, the high byte was not set.
->>
->> Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
-> Looks right to me.
->
-> Jon, it's your driver so do you have a few mins to check this?  Given timing this won't go in until the merge window has closed now anyway so you have a few weeks.  Looks like stable material though so I'll mark it as such when I apply it.
->
->
->> ---
->>    drivers/staging/iio/light/tsl2x7x_core.c | 8 ++++++--
->>    1 file changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c
->> b/drivers/staging/iio/light/tsl2x7x_core.c
->> index 9e0f2a9..ab338e3 100644
->> --- a/drivers/staging/iio/light/tsl2x7x_core.c
->> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
->> @@ -667,9 +667,13 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
->>    	chip->tsl2x7x_config[TSL2X7X_PRX_COUNT] =
->>    			chip->tsl2x7x_settings.prox_pulse_count;
->>    	chip->tsl2x7x_config[TSL2X7X_PRX_MINTHRESHLO] =
->> -	chip->tsl2x7x_settings.prox_thres_low;
->> +			(chip->tsl2x7x_settings.prox_thres_low) & 0xFF;
->> +	chip->tsl2x7x_config[TSL2X7X_PRX_MINTHRESHHI] =
->> +			(chip->tsl2x7x_settings.prox_thres_low >> 8) & 0xFF;
->>    	chip->tsl2x7x_config[TSL2X7X_PRX_MAXTHRESHLO] =
->> -			chip->tsl2x7x_settings.prox_thres_high;
->> +			(chip->tsl2x7x_settings.prox_thres_high) & 0xFF;
->> +	chip->tsl2x7x_config[TSL2X7X_PRX_MAXTHRESHHI] =
->> +			(chip->tsl2x7x_settings.prox_thres_high >> 8) & 0xFF;
->>
->>    	/* and make sure we're not already on */
->>    	if (chip->tsl2x7x_chip_status == TSL2X7X_CHIP_WORKING) {
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Hi,
 
+On Mon, Jun 02, 2014 at 07:00:06PM +0100, Jonathan Cameron wrote:
+> On 24/05/14 13:09, Paul Kocialkowski wrote:
+> >Not setting the raw parameter in the request causes it to be randomly
+> >initialized to a value that might be different from zero or zero. This leads to
+> >values that are randomly either raw or processed, making it very difficult to
+> >make reliable use of the values.
+> >
+> >Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
+>
+> This one seems obvious enough to me that I've applied it to the fixes-togreg
+> branch. Note you should cc the author or if the log makes it clear someone
+> else has been working with the driver recently, then cc them.
+> In this case Sebastian.
+
+The commit message looks a bit odd "[...] different from zero or
+zero". In case this is still relevant:
+
+Acked-By: Sebastian Reichel <sre@kernel.org>
+
+> [...]
+
+-- Sebastian
+
+--pf9I7BMVVzbSWLtt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJTjL4fAAoJENju1/PIO/qaJoAP/iA6I0+H2KSkSMxHr79ha5DU
+LAcx6PXTidvSbeA2Q0QkNDsRRCa+FOSIAfDev+a/pie5DVIzjCGcZg3oK9xBteZM
+B+CrmPVmHWIAVWzoztOSuhqTO/z1szd/r8LenCk2DzvEdpc2LBvRD/f4+gj1WHac
+WS/9i2XdQ47UgweNgRMi7s9zcG+YNjy1YRwxrh3XzWZoe2Ay2mT8m84Wx3g8GfXZ
+xLpsbs/DO41+B5A/5YJw9BIXkCON7i6nYODh1OzqbL6aYM9wp8qFUUYQwXVtQ43l
+F4j8ihXVVWaXdz10GqyLjkqrHVHEmGgIpR7j8beqzuC1rwywXkxQykW7FoWR3gTo
+y3NrQKkBgsmYHqennY0XV9SFzhfnVfBHNtaib9SBuXbw5Du0sCE6fxaNDCYea00W
+1a/ZwP+zn9m5a8n/D0ALWXdmt93ZGN/39yu1P0K1omp930zNMloImiKlXubSDNYu
+pKcTK3qImOtzg9KFU+LMs95aUL5Ge0vdUfWhF+3UFr5f/trFVFAUXYAMe3uGIVfB
+GdBXvqhPYdhV2SYCxa7wJE8LX+m3jQ/Hsn1aNNlUw4mYJMBINXT80cpZ3G4JRppG
+BCQFn11YTKseW4Wp2VOYafynhrM3KHfuvjsYbKhgCGTNZvo2HFJfvxMFxnO3TS9o
+xTc77zM5SNfXKD9nHeju
+=zoRy
+-----END PGP SIGNATURE-----
+
+--pf9I7BMVVzbSWLtt--
