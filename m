@@ -1,41 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47794 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750909AbaFLEy1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Jun 2014 00:54:27 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 04/12] iio:adc:ad799x: Save some lines in ad7997_8_update_scan_mode() exit handling
-Date: Thu, 12 Jun 2014 06:54:08 +0200
-Message-Id: <1402548856-3564-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <nasa4836@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <538CAEBD.5040501@gmail.com>
+References: <538CAEBD.5040501@gmail.com>
+From: Jianyu Zhan <nasa4836@gmail.com>
+Date: Tue, 3 Jun 2014 01:21:16 +0800
+Message-ID: <CAHz2CGV+=eX+y6UmjbGoYzAEKwNVEHq494AWOqdKxj9JyO6OsA@mail.gmail.com>
+Subject: Re: [PATCH] fix some coding style problem in drivers/staging/iio/frequency/ad9832.c
+To: Federico Di Pierro <nierro92@gmail.com>
+Cc: jic23@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jg1.han@samsung.com,
+	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/adc/ad799x.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Tue, Jun 3, 2014 at 1:05 AM, Federico Di Pierro <nierro92@gmail.com> wrote:
+> Hi!
+> This is my latest task of the eudyptula challenge.
+> Just a very small patch! It fixes 3 little coding style problems.
+> I'm using linux-next.
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 34d93a5..878400c 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -193,10 +193,8 @@ static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
- 		return i2c_smbus_write_word_swapped(st->client, AD7998_CONF_REG,
- 			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
- 	default:
--		break;
-+		return 0;
- 	}
--
--	return 0;
- }
- 
- static int ad799x_scan_direct(struct ad799x_state *st, unsigned ch)
--- 
-1.9.1
+Hi, Federico,
 
+It's awesome you taking part in eudyptula challenge program. That is a
+good start
+to kernel hacking.
+
+But also please honour the community rule - the inline patch is preferred than
+in attachment form . Please have a look at Documentation/SubmittingPatches  file
+in kernel source directory first before submitting patches.
+
+Thanks,
+Jianyu Zhan
