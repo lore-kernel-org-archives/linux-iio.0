@@ -1,78 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1063 "EHLO
-	smtp-out-136.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757149AbaFAMDR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 1 Jun 2014 08:03:17 -0400
-Message-ID: <538B167E.9030902@metafoo.de>
-Date: Sun, 01 Jun 2014 14:03:10 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:37538 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752636AbaFBREl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jun 2014 13:04:41 -0400
+Message-ID: <538CAEBD.5040501@gmail.com>
+Date: Mon, 02 Jun 2014 19:05:01 +0200
+From: Federico Di Pierro <nierro92@gmail.com>
 MIME-Version: 1.0
-To: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: ad_sigma_delta.c: Cleaning up uninitialized
- variables
-References: <1401577904-4764-1-git-send-email-rickard_strandqvist@spectrumdigital.se> <538AEF16.5070904@metafoo.de> <CAFo99gaTK__WX4oTr_jF6PZuTOsX8qbR9kRJbgamZPO4iGz53w@mail.gmail.com>
-In-Reply-To: <CAFo99gaTK__WX4oTr_jF6PZuTOsX8qbR9kRJbgamZPO4iGz53w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: jic23@kernel.org, jic23@kernel.org, gregkh@linuxfoundation.org,
+	jg1.han@samsung.com, sachin.kamat@linaro.org
+CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] fix some coding style problem in drivers/staging/iio/frequency/ad9832.c
+Content-Type: multipart/mixed;
+ boundary="------------020707000505080700040902"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/01/2014 01:51 PM, Rickard Strandqvist wrote:
-> Hi
->
-> Believe it reacted to the code below.
->
-> If raw_sample = 0 is the correct starting value, I am not sure. But
-> leaving it uninitialized, I think is the worst choice.
->
->
->      if (ret < 0)
->          goto out;
->
->      ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
->          DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
->          &raw_sample);
-> ....
-> out:
-> ....
+This is a multi-part message in MIME format.
+--------------020707000505080700040902
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 
-you skipped the:
+Hi!
+This is my latest task of the eudyptula challenge.
+Just a very small patch! It fixes 3 little coding style problems.
+I'm using linux-next.
 
-     if (ret)
-         return ret;
+--------------020707000505080700040902
+Content-Type: text/plain; charset=UTF-8;
+ name="patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="patch"
 
-that is here.
+--- linux/drivers/staging/iio/frequency/ad9832.c.orig	2014-06-02 17:26:12.929978122 +0200
++++ linux/drivers/staging/iio/frequency/ad9832.c	2014-06-02 17:28:10.389970947 +0200
+@@ -57,7 +57,7 @@ static int ad9832_write_frequency(struct
+ }
+ 
+ static int ad9832_write_phase(struct ad9832_state *st,
+-				  unsigned long addr, unsigned long phase)
++			      unsigned long addr, unsigned long phase)
+ {
+ 	if (phase > (1 << AD9832_PHASE_BITS))
+ 		return -EINVAL;
+@@ -73,7 +73,7 @@ static int ad9832_write_phase(struct ad9
+ }
+ 
+ static ssize_t ad9832_write(struct device *dev,
+-		struct device_attribute *attr,
++			    struct device_attribute *attr,
+ 		const char *buf,
+ 		size_t len)
+ {
+@@ -109,11 +109,11 @@ static ssize_t ad9832_write(struct devic
+ 		ret = spi_sync(st->spi, &st->msg);
+ 		break;
+ 	case AD9832_FREQ_SYM:
+-		if (val == 1)
++		if (val == 1) {
+ 			st->ctrl_fp |= AD9832_FREQ;
+-		else if (val == 0)
++		} else if (val == 0) {
+ 			st->ctrl_fp &= ~AD9832_FREQ;
+-		else {
++		} else {
+ 			ret = -EINVAL;
+ 			break;
+ 		}
 
->      sample = raw_sample >> chan->scan_type.shift;
->
 
-The code is a bit confusing and it is understandable that a static checker 
-might generate a false positive. The fix though is not to silence the false 
-positive as this will hide actual problems if they should come up by future 
-modifications of the code.
-
->
-> Best regards
-> Rickard Strandqvist
->
->
-> 2014-06-01 11:15 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
->> On 06/01/2014 01:11 AM, Rickard Strandqvist wrote:
->>>
->>> There is a risk that the variable will be used without being initialized.
->>>
->>> This was largely found by using a static code analysis program called
->>> cppcheck.
->>
->>
->> This looks like a false positive. And if it was not a false positive the
->> correct fix certainly is not to initialize the variable to some random value
->> to silence the warning.
->>
->> - Lars
->>
-
+Signed-off-by: Federico Di Pierro <nierro92@gmail.org>
+--------------020707000505080700040902--
