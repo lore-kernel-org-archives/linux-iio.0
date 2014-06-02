@@ -1,105 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-156.synserver.de ([212.40.185.156]:1157 "EHLO
-	smtp-out-156.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932327AbaFDIFr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jun 2014 04:05:47 -0400
-Message-ID: <538ED354.6040808@metafoo.de>
-Date: Wed, 04 Jun 2014 10:05:40 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-ob0-f177.google.com ([209.85.214.177]:55383 "EHLO
+	mail-ob0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752784AbaFBMHc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jun 2014 08:07:32 -0400
+Received: by mail-ob0-f177.google.com with SMTP id wp4so4274473obc.22
+        for <linux-iio@vger.kernel.org>; Mon, 02 Jun 2014 05:07:32 -0700 (PDT)
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, knaack.h@gmx.de
-Subject: Re: [PATCH 12/15] iio:adc:ad799x: Write default config on probe and
- reset alert status on probe
-References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net> <1401835335-29969-13-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1401835335-29969-13-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <535B912B.8000005@kernel.org>
+References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
+	<1397416143-4396-6-git-send-email-linus.walleij@linaro.org>
+	<53582E4C.3060800@kernel.org>
+	<CACRpkdbmS39HL4Z8CSbtPtkWYqZn6hNCMdwzk+1fepKkSUAO1A@mail.gmail.com>
+	<535B912B.8000005@kernel.org>
+Date: Mon, 2 Jun 2014 14:07:31 +0200
+Message-ID: <CACRpkdaNBNHQs58U1bm61NNi6wNjYb8-sFvbQ670Mve9xynMUg@mail.gmail.com>
+Subject: Re: [PATCH 5/6] iio: st_sensors: add devicetree probing support
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/2014 12:42 AM, Peter Meerwald wrote:
-> writing ALERT_EN and BUSY_ALERT to the chip config register clears
-> pending alerts, BUSY_ALERT is cleared when reading back the register
+On Sat, Apr 26, 2014 at 12:57 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 24/04/14 09:33, Linus Walleij wrote:
+>>
+>> On Wed, Apr 23, 2014 at 11:19 PM, Jonathan Cameron <jic23@kernel.org>
+>> wrote:
+>>
+>>> I can't make up my mind whether I like this or not.
+>>> Having said that it fixes an ABI compatibility issue that I couldn't
+>>> see a way around so nicely done.
+>>
+>>
+>> Lots of redundant strings is device trees second name.
+>>
+>>> (note I'll leave this set be for now given the device tree element
+>>> and that it hasn't been 3 weeks yet)
+>>
+>>
+>> I'll respin the patch anyway, the OF compatible table should
+>> be in the core file rather than the .h file. I try to keep it in common
+>> code so I2C and SPI alike be able to use the same table
+>> atleast.
 >
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>
+> Cool, I'll wait on that then (and the remaining week of the 3 weeks to tick
+> by).
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Hm I couldn't figure out any better way to do this when things
+come around.
 
-> ---
->   drivers/iio/adc/ad799x.c | 19 +++++++++++++------
->   1 file changed, 13 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> index 0219970..f8e029d 100644
-> --- a/drivers/iio/adc/ad799x.c
-> +++ b/drivers/iio/adc/ad799x.c
-> @@ -595,7 +595,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
->   				AD799X_CHANNEL_WITH_EVENTS(1, 12),
->   				IIO_CHAN_SOFT_TIMESTAMP(3),
->   			},
-> -			.default_config = AD7998_ALERT_EN,
-> +			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
->   			.info = &ad7993_4_7_8_irq_info,
->   		},
->   	},
-> @@ -619,7 +619,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
->   				AD799X_CHANNEL_WITH_EVENTS(3, 10),
->   				IIO_CHAN_SOFT_TIMESTAMP(4),
->   			},
-> -			.default_config = AD7998_ALERT_EN,
-> +			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
->   			.info = &ad7993_4_7_8_irq_info,
->   		},
->   	},
-> @@ -643,7 +643,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
->   				AD799X_CHANNEL_WITH_EVENTS(3, 12),
->   				IIO_CHAN_SOFT_TIMESTAMP(4),
->   			},
-> -			.default_config = AD7998_ALERT_EN,
-> +			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
->   			.info = &ad7993_4_7_8_irq_info,
->   		},
->   	},
-> @@ -675,7 +675,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
->   				AD799X_CHANNEL(7, 10),
->   				IIO_CHAN_SOFT_TIMESTAMP(8),
->   			},
-> -			.default_config = AD7998_ALERT_EN,
-> +			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
->   			.info = &ad7993_4_7_8_irq_info,
->   		},
->   	},
-> @@ -707,7 +707,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
->   				AD799X_CHANNEL(7, 12),
->   				IIO_CHAN_SOFT_TIMESTAMP(8),
->   			},
-> -			.default_config = AD7998_ALERT_EN,
-> +			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
->   			.info = &ad7993_4_7_8_irq_info,
->   		},
->   	},
-> @@ -733,7 +733,6 @@ static int ad799x_probe(struct i2c_client *client,
->   	st->id = id->driver_data;
->   	st->chip_config = (client->irq > 0 && chip_info->irq_config.info) ?
->   		&chip_info->irq_config : &chip_info->noirq_config;
-> -	st->config = st->chip_config->default_config;
->
->   	/* TODO: Add pdata options for filtering and bit delay */
->
-> @@ -762,6 +761,14 @@ static int ad799x_probe(struct i2c_client *client,
->   	indio_dev->channels = st->chip_config->channel;
->   	indio_dev->num_channels = chip_info->num_channels;
->
-> +	ret = ad799x_write_config(st, st->chip_config->default_config);
-> +	if (ret < 0)
-> +		goto error_disable_reg;
-> +	ret = ad799x_read_config(st);
-> +	if (ret < 0)
-> +		goto error_disable_reg;
-> +	st->config = ret;
-> +
->   	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->   		&ad799x_trigger_handler, NULL);
->   	if (ret)
->
+Feel free to merge this patch whenever you feel it's ready, I
+guess after the merge window now.
 
+Yours,
+Linus Walleij
