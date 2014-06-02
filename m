@@ -1,20 +1,455 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5395A1E5.5050400@metafoo.de>
-Date: Mon, 09 Jun 2014 14:00:37 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:59421 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752058AbaFBRg4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 2 Jun 2014 13:36:56 -0400
+Message-ID: <538CB6A0.60007@kernel.org>
+Date: Mon, 02 Jun 2014 18:38:40 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 05/12] iio:adc:ad7298: Use BIT() and GENMASK() macros
-References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net> <1402155772-1373-6-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402155772-1373-6-git-send-email-pmeerw@pmeerw.net>
+To: Marek Vasut <marex@denx.de>, linux-iio@vger.kernel.org
+CC: Martin Liska <marxin.liska@gmail.com>,
+	Zhang Rui <rui.zhang@intel.com>
+Subject: Re: [PATCH v6] iio: acpi: Add ACPI0008 ALS driver
+References: <1401634473-9241-1-git-send-email-marex@denx.de>
+In-Reply-To: <1401634473-9241-1-git-send-email-marex@denx.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/07/2014 05:42 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+On 01/06/14 15:54, Marek Vasut wrote:
+> From: Martin Liska <marxin.liska@gmail.com>
+>
+> Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
+> This driver currently supports only the ALI property, yet is ready to
+> be easily extended to handle ALC, ALT, ALP ones as well.
+>
+> Signed-off-by: Martin Liska <marxin.liska@gmail.com>
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> ---
+>   drivers/iio/light/Kconfig    |  10 ++
+>   drivers/iio/light/Makefile   |   1 +
+>   drivers/iio/light/acpi-als.c | 315 +++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 326 insertions(+)
+>   create mode 100644 drivers/iio/light/acpi-als.c
+>
+> V2: Fix the channel mask, so it's really reading RAW data.
+> V3: Put scan timestamp into the buffer only when enabled,
+>       Set the light sensor ID to 0 instead of 1
+> V4: Select IIO_TRIGGERED_BUFFER as we need it here
+> V5: Use irq_work to trigger the buffer
+>       Use module_acpi_driver()
+> V6: Align with 3.15-rc7
+>      Use iio_push_to_buffers_with_timestamp()
+>      Use iio_trigger_set_drvdata()
+>      Use .info_mask_separate
+>      Use devm_iio_device_alloc()
+>      Stuff the event buffer into struct acpi_als so we don't alloc mem twice
+>      Compute the evt_buffer size automatically based on acpi_als_channels[]
+>      Implement .validate_device() and .validate_trigger()
+>      Tested on MacBook Air (Mid 2013) and Acer IconiaTab W510
+>
+Looking good but the trigger handling is 'interesting' (given it doesn't
+do anything).  Hence you need to revisit that.  A couple of other bits
+inline.
 
+Jonathan
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index c89740d..d367c83 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -5,6 +5,16 @@
+>
+>   menu "Light sensors"
+>
+> +config ACPI_ALS
+> +	tristate "ACPI Ambient Light Sensor"
+> +	depends on ACPI
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	 Support for the ACPI0008 Ambient Light Sensor.
+> +
+> +	 This driver can also be built as a module.  If so, the module
+> +	 will be called acpi-als.
+> +
+>   config ADJD_S311
+>   	tristate "ADJD-S311-CR999 digital color sensor"
+>   	select IIO_BUFFER
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 3eb36e5..3074394 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -3,6 +3,7 @@
+>   #
+>
+>   # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
+>   obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+>   obj-$(CONFIG_APDS9300)		+= apds9300.o
+>   obj-$(CONFIG_CM32181)		+= cm32181.o
+> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+> new file mode 100644
+> index 0000000..f4ab108
+> --- /dev/null
+> +++ b/drivers/iio/light/acpi-als.c
+> @@ -0,0 +1,315 @@
+> +/*
+> + * ACPI Ambient Light Sensor Driver
+> + *
+> + * Based on ALS driver:
+> + * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
+> + *
+> + * Rework for IIO subsystem:
+> + * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
+> + *
+> + * Final cleanup and debugging:
+> + * Copyright (C) 2013-2014 Marek Vasut <marex@denx.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+> + * more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program. If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/acpi.h>
+> +#include <linux/err.h>
+> +#include <linux/mutex.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#define ACPI_ALS_CLASS			"als"
+> +#define ACPI_ALS_DEVICE_NAME		"acpi-als"
+> +#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
+> +
+> +ACPI_MODULE_NAME("acpi-als");
+> +
+> +/*
+> + * So far, there's only one channel in here, but the specification for
+> + * ACPI0008 says there can be more to what the block can report. Like
+> + * chromaticity and such. We are ready for incoming additions!
+> + */
+> +static const struct iio_chan_spec acpi_als_channels[] = {
+> +	{
+> +		.type		= IIO_LIGHT,
+Don't bother filling the zero values as these are the defaults
+anyway.
+> +		.indexed	= 0,
+> +		.channel	= 0,
+> +		.scan_index	= 0,
+> +		.scan_type	= {
+> +			.sign 		= 'u',
+> +			.realbits	= 10,
+> +			.storagebits	= 16,
+> +		},
+> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
+> +	},
+> +};
+> +
+> +/*
+> + * The event buffer contains timestamp and all the data from
+> + * the ACPI0008 block. There are multiple, but so far we only
+> + * support _ALI (illuminance). Once someone adds new channels
+> + * to acpi_als_channels[], the evt_buffer below will grow
+> + * automatically.
+> + */
+> +#define EVT_NR_SOURCES		ARRAY_SIZE(acpi_als_channels)
+> +#define EVT_BUFFER_SIZE		\
+> +	(sizeof(int64_t) + (EVT_NR_SOURCES * sizeof(uint16_t)))
+> +
+> +struct acpi_als {
+> +	struct acpi_device	*device;
+> +	struct iio_trigger	*trig;
+> +	struct mutex		lock;
+> +
+> +	uint16_t		evt_buffer[EVT_BUFFER_SIZE];
+> +};
+> +
+> +/*
+> + * All types of properties the ACPI0008 block can report. The ALI, ALC, ALT
+> + * and ALP can all be handled by als_read_value() below, while the ALR is
+> + * special.
+> + *
+> + * The _ALR property returns tables that can be used to fine-tune the values
+> + * reported by the other props based on the particular hardware type and it's
+> + * location (it contains tables for "rainy", "bright inhouse lighting" etc.).
+> + *
+> + * So far, we support only ALI (illuminance).
+> + */
+> +#define ACPI_ALS_ILLUMINANCE	"_ALI"
+> +#define ACPI_ALS_CHROMATICITY	"_ALC"
+> +#define ACPI_ALS_COLOR_TEMP	"_ALT"
+> +#define ACPI_ALS_POLLING	"_ALP"
+> +#define ACPI_ALS_TABLES		"_ALR"
+> +
+> +static int32_t als_read_value(struct acpi_als *als, char *prop)
+> +{
+> +	unsigned long long illuminance;
+> +	acpi_status status;
+This does rather look like a wrapper for the wrappers sake.
+Is there any significant reason to have this wrapper at all
+rather than calling the acpi_evaluate_integer directly at
+the call sites?
+> +
+> +	status = acpi_evaluate_integer(als->device->handle,
+> +				prop, NULL, &illuminance);
+> +
+> +	if (ACPI_FAILURE(status)) {
+> +		ACPI_EXCEPTION((AE_INFO, status,
+> +				"Error reading ALS illuminance"));
+> +		/* Something went wrong, it's pitch black outside! */
+> +		illuminance = 0;
+Can we not do better than this as an error value to pass back?
+> +	}
+> +
+> +	return illuminance;
+> +}
+> +
+So this is the acpi equivalent of an interrupt (I think!)
+We could probably blugeon this into our normal form (dataready type
+trigger - but maybe it doesn't make sense here. If you want
+to see how I would do that, see the sysfs-trigger in iio/triggers).
+It is perfectly acceptable to have iio devices that don't have a trigger
+but fill the buffer directly.  The disadvantage of that approach is that
+it we are then stuck with that interface and can never add a trigger.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Still who is going to want synchronized data from multiple sensors
+where some of them are available only via acpi?  Seems unlikely
+to my mind.
+> +static void acpi_als_notify(struct acpi_device *device, u32 event)
+> +{
+> +	struct iio_dev *iio = acpi_driver_data(device);
+> +	struct acpi_als *als = iio_priv(iio);
+> +	uint16_t *buffer = als->evt_buffer;
+> +	int64_t time_ns = iio_get_time_ns();
+> +
+> +	mutex_lock(&als->lock);
+> +
+> +	memset(buffer, 0, EVT_BUFFER_SIZE);
+> +
+> +	switch (event) {
+> +	case ACPI_ALS_NOTIFY_ILLUMINANCE:
+> +		*buffer++ = als_read_value(als, ACPI_ALS_ILLUMINANCE);
+> +		break;
+> +	default:
+> +		/* Unhandled event */
+> +		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
+> +			event);
+> +		return;
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(iio, (uint8_t *)als->evt_buffer,
+> +					   time_ns);
+> +
+> +	mutex_unlock(&als->lock);
+> +}
+> +
+> +static int acpi_als_read_raw(struct iio_dev *iio,
+> +			struct iio_chan_spec const *chan, int *val,
+> +			int *val2, long mask)
+> +{
+> +	struct acpi_als *als = iio_priv(iio);
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	/* we support only illumination (_ALI) so far. */
+> +	if (chan->type != IIO_LIGHT)
+> +		return -EINVAL;
+> +
+  > +	*val = als_read_value(als, ACPI_ALS_ILLUMINANCE);
+A blank line here would be good for readability (slightly!).
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int acpi_als_validate_trigger(struct iio_dev *iio,
+> +				     struct iio_trigger *trig)
+> +{
+> +	if (iio->dev.parent != trig->dev.parent)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info acpi_als_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= acpi_als_read_raw,
+> +	.validate_trigger	= acpi_als_validate_trigger,
+> +};
+> +
+> +static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *iio = pf->indio_dev;
+> +	struct acpi_als *als = iio_priv(iio);
+> +
+umm. So this does nothing?  I'm a little confused.
+This iio_trigger_notify_done just resets the mask to allow the
+interrupt to fire again..
+> +	iio_trigger_notify_done(als->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int acpi_als_validate_device(struct iio_trigger *trig,
+> +				    struct iio_dev *iio)
+> +{
+> +	if (iio->dev.parent != trig->dev.parent)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops acpi_als_trigger_ops = {
+> +	.owner			= THIS_MODULE,
+> +	.validate_device	= acpi_als_validate_device,
+> +};
+> +
+> +static int acpi_als_trigger_init(struct iio_dev *iio)
+> +{
+> +	struct acpi_als *als = iio_priv(iio);
+> +	struct device *dev = &iio->dev;
+> +	struct iio_trigger *trig;
+> +	int ret;
+> +
+> +	trig = devm_iio_trigger_alloc(dev, "%s-dev%i", iio->name, iio->id);
+> +	if (!trig)
+> +		return -ENOMEM;
+> +
+> +	trig->dev.parent = dev->parent;
+> +	trig->ops = &acpi_als_trigger_ops;
+> +	iio_trigger_set_drvdata(trig, iio);
+> +
+> +	ret = iio_trigger_register(trig);
+> +	if (ret) {
 
-Thanks.
+No need to free, it's a devm allocation so it will get cleaned up
+anyway as the failure to probe propagates out from this error.
+Also, not using the devm_iio_trigger_free version will lead to a double
+free an probably a kernel oops.
+> +		iio_trigger_free(trig);
+> +		return ret;
+> +	}
+> +
+> +	als->trig = trig;
+> +
+> +	return 0;
+> +}
+> +
+> +static void acpi_als_trigger_remove(struct iio_dev *iio)
+> +{
+> +	struct acpi_als *als = iio_priv(iio);
+> +	iio_trigger_unregister(als->trig);
+> +}
+> +
+> +static int acpi_als_add(struct acpi_device *device)
+> +{
+> +	struct acpi_als *als;
+> +	struct iio_dev *iio;
+
+If it doesn't matter to you, I'd prefer using the naming that
+has become pretty much a standard. struct iio_dev *indio_dev;
+Just makes it ever so slightly easier to check for common
+patterns in the code.
+
+> +	int ret;
+> +
+> +	iio = devm_iio_device_alloc(&device->dev, sizeof(*als));
+> +	if (!iio)
+> +		return -ENOMEM;
+> +
+> +	als = iio_priv(iio);
+> +
+> +	device->driver_data = iio;
+Currious that there doesn't seem to be an opaque wrapper for setting
+driver_data in acpi.  Ah well.
+
+> +	als->device = device;
+> +	mutex_init(&als->lock);
+> +
+> +	iio->name = ACPI_ALS_DEVICE_NAME;
+> +	iio->dev.parent = &device->dev;
+> +	iio->info = &acpi_als_info;
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->channels = acpi_als_channels;
+> +	iio->num_channels = ARRAY_SIZE(acpi_als_channels);
+> +
+> +	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
+> +					&acpi_als_trigger_handler, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+I think I'd marginally prefer if the allocation of the trigger was
+done outside this function as it would then give us nice symmetric
+trigger_init and trigger_remove.  Actually rename the init as
+acpi_als_trigger_init_and_register to make the content obvious.
+
+> +	ret = acpi_als_trigger_init(iio);
+> +	if (ret)
+> +		goto err_trig;
+> +
+> +	ret = iio_device_register(iio);
+> +	if (ret < 0)
+> +		goto err_dev;
+> +
+> +	return 0;
+> +
+> +err_dev:
+> +	acpi_als_trigger_remove(iio);
+> +err_trig:
+> +	iio_triggered_buffer_cleanup(iio);
+> +	return ret;
+> +}
+> +
+> +static int acpi_als_remove(struct acpi_device *device)
+> +{
+> +	struct iio_dev *iio = acpi_driver_data(device);
+> +
+> +	iio_device_unregister(iio);
+> +	iio_triggered_buffer_cleanup(iio);
+> +	acpi_als_trigger_remove(iio);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct acpi_device_id acpi_als_device_ids[] = {
+> +	{"ACPI0008", 0},
+> +	{"", 0},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
+> +
+> +static struct acpi_driver acpi_als_driver = {
+> +	.name	= "acpi_als",
+> +	.class	= ACPI_ALS_CLASS,
+> +	.ids	= acpi_als_device_ids,
+> +	.ops = {
+> +		.add	= acpi_als_add,
+> +		.remove	= acpi_als_remove,
+> +		.notify	= acpi_als_notify,
+> +	},
+> +};
+> +
+> +module_acpi_driver(acpi_als_driver);
+> +
+> +MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
+> +MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
+> +MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
+> +MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
+> +MODULE_LICENSE("GPL");
+>
+
