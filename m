@@ -1,75 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:37538 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752636AbaFBREl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jun 2014 13:04:41 -0400
-Message-ID: <538CAEBD.5040501@gmail.com>
-Date: Mon, 02 Jun 2014 19:05:01 +0200
-From: Federico Di Pierro <nierro92@gmail.com>
-MIME-Version: 1.0
-To: jic23@kernel.org, jic23@kernel.org, gregkh@linuxfoundation.org,
-	jg1.han@samsung.com, sachin.kamat@linaro.org
-CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] fix some coding style problem in drivers/staging/iio/frequency/ad9832.c
-Content-Type: multipart/mixed;
- boundary="------------020707000505080700040902"
+Received: from ns.pmeerw.net ([87.118.82.44]:58635 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933843AbaFCWm3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 3 Jun 2014 18:42:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, knaack.h@gmx.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 14/15] iio:adc:ad799x: Return more meaningful event enabled state
+Date: Wed,  4 Jun 2014 00:42:14 +0200
+Message-Id: <1401835335-29969-15-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
+References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------020707000505080700040902
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+only report an event as enabled if it actually is enabled
 
-Hi!
-This is my latest task of the eudyptula challenge.
-Just a very small patch! It fixes 3 little coding style problems.
-I'm using linux-next.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/ad799x.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---------------020707000505080700040902
-Content-Type: text/plain; charset=UTF-8;
- name="patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="patch"
-
---- linux/drivers/staging/iio/frequency/ad9832.c.orig	2014-06-02 17:26:12.929978122 +0200
-+++ linux/drivers/staging/iio/frequency/ad9832.c	2014-06-02 17:28:10.389970947 +0200
-@@ -57,7 +57,7 @@ static int ad9832_write_frequency(struct
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 5c9445e..b8191f1 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -364,7 +364,15 @@ static int ad799x_read_event_config(struct iio_dev *indio_dev,
+ 				    enum iio_event_type type,
+ 				    enum iio_event_direction dir)
+ {
+-	return 1;
++	struct ad799x_state *st = iio_priv(indio_dev);
++
++	if (!(st->config & AD7998_ALERT_EN))
++		return 0;
++
++	if ((st->config >> AD799X_CHANNEL_SHIFT) & BIT(chan->scan_index))
++		return 1;
++
++	return 0;
  }
  
- static int ad9832_write_phase(struct ad9832_state *st,
--				  unsigned long addr, unsigned long phase)
-+			      unsigned long addr, unsigned long phase)
- {
- 	if (phase > (1 << AD9832_PHASE_BITS))
- 		return -EINVAL;
-@@ -73,7 +73,7 @@ static int ad9832_write_phase(struct ad9
- }
- 
- static ssize_t ad9832_write(struct device *dev,
--		struct device_attribute *attr,
-+			    struct device_attribute *attr,
- 		const char *buf,
- 		size_t len)
- {
-@@ -109,11 +109,11 @@ static ssize_t ad9832_write(struct devic
- 		ret = spi_sync(st->spi, &st->msg);
- 		break;
- 	case AD9832_FREQ_SYM:
--		if (val == 1)
-+		if (val == 1) {
- 			st->ctrl_fp |= AD9832_FREQ;
--		else if (val == 0)
-+		} else if (val == 0) {
- 			st->ctrl_fp &= ~AD9832_FREQ;
--		else {
-+		} else {
- 			ret = -EINVAL;
- 			break;
- 		}
+ static unsigned int ad799x_threshold_reg(const struct iio_chan_spec *chan,
+-- 
+1.9.1
 
-
-Signed-off-by: Federico Di Pierro <nierro92@gmail.org>
---------------020707000505080700040902--
