@@ -1,102 +1,38 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <5390A412.8070401@linux.intel.com>
-Date: Thu, 05 Jun 2014 10:08:34 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <reyad.attiyat@gmail.com>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH] iio: Fix endianness issue in ak8975_read_axis()
-References: <1401958410-21183-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1401958410-21183-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <53876477.7000503@kernel.org>
+References: <1401311175-12784-1-git-send-email-reyad.attiyat@gmail.com>
+ <1401311175-12784-2-git-send-email-reyad.attiyat@gmail.com> <53876477.7000503@kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Mon, 2 Jun 2014 20:22:30 -0500
+Message-ID: <CA+BWVURibjHeD5GquCsEd+ca+ee6Q5yGgM_ewPX-+LLSh4dkyw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] IIO: Add iio magn_north ABI documentation
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jiri Kosina <jkosina@suse.cz>, linux-input <linux-input@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Content-Type: multipart/alternative; boundary=f46d043c81e6af345e04fae459cc
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/05/2014 01:53 AM, Peter Meerwald wrote:
-> i2c_smbus_read_word_data() does host endian conversion already,
-> no need for le16_to_cpu()
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> ---
->   drivers/iio/magnetometer/ak8975.c | 9 +--------
->   1 file changed, 1 insertion(+), 8 deletions(-)
->
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 09ea5c4..ea08313 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -373,8 +373,6 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->   {
->   	struct ak8975_data *data = iio_priv(indio_dev);
->   	struct i2c_client *client = data->client;
-> -	u16 meas_reg;
-> -	s16 raw;
->   	int ret;
->
->   	mutex_lock(&data->lock);
-> @@ -422,16 +420,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
->   		dev_err(&client->dev, "Read axis data fails\n");
->   		goto exit;
->   	}
-> -	meas_reg = ret;
->
->   	mutex_unlock(&data->lock);
->
-> -	/* Endian conversion of the measured values. */
-> -	raw = (s16) (le16_to_cpu(meas_reg));
-> -
->   	/* Clamp to valid range. */
-> -	raw = clamp_t(s16, raw, -4096, 4095);
-> -	*val = raw;
-> +	*val = clamp_t(s16, ret, -4096, 4095);
->   	return IIO_VAL_INT;
->
->   exit:
->
-I did some experiments on little-endian platforms,  so your change
-won't hurt on x86.
+--f46d043c81e6af345e04fae459cc
+Content-Type: text/plain; charset=UTF-8
 
-Read as word data -> Reg 3 (LB) and Reg 4(HB)
-[ 1529.699617] Word read reg->3:ffc8
+Hey Jonathan,
 
-Read as byte separately LB and HB
-[ 1529.711619] Byte read reg->3:c8 reg->4:ff
+I can update this patch so that it reads in_rot_from_true/magnetic_north. I
+missed this message before and already submitted a patch with some of your
+changes about naming. Sorry about that. I can resend them with this change
+if everything else is ok.
 
-x86 platform is le, so no change in output by call to le16_to_cpu
+Reyad Attiyat
 
-[ 1529.711634] Raw value final ffffffc8
+--f46d043c81e6af345e04fae459cc
+Content-Type: text/html; charset=UTF-8
 
+<div dir="ltr"><p>Hey Jonathan,</p><p dir="ltr">I can update this patch so that it reads
+in_rot_from_true/magnetic_north. I missed this message before and already submitted a patch with some of your changes about naming. Sorry about that. I can resend them with this change if everything else is ok.<br></p><p>
 
+Reyad Attiyat<br></p>
+</div>
 
-Don't we need to convert for big-endian platforms?
-
-When I trace the path for i2c, I don't see any host order
-conversion.
-
-Path:
-i2c_smbus_read_word_data->i2c_smbus_xfer->i2c_smbus_xfer_emulated
-
-i2c_smbus_xfer_emulated
-{
-
-(for designware) bus
-
-// Send command part
-adap->algo->master_xfer->i2c_dw_xfer_msg ->
-
-// Rx data
-via i2c_dw_read, don't see any host order conversion
-\
-{
-order word according to SMBUS specification, low byte on the bus first
-	case I2C_SMBUS_WORD_DATA:
-		case I2C_SMBUS_PROC_CALL:
-			data->word = msgbuf1[0] | (msgbuf1[1] << 8);
-			break;
-}
-	But there is no host order conversion?
-
-}
-
-
-Thanks,
-Srinivas
+--f46d043c81e6af345e04fae459cc--
