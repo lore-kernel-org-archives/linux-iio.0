@@ -1,101 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:36819 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:58637 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750709AbaFDIfg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 4 Jun 2014 04:35:36 -0400
-Date: Wed, 4 Jun 2014 10:35:35 +0200 (CEST)
+	id S933860AbaFCWm2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 3 Jun 2014 18:42:28 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: linux-iio@vger.kernel.org, knaack.h@gmx.de
-Subject: Re: [PATCH 15/15] iio:adc:ad799x: Allow to write event config
-In-Reply-To: <538ED0DB.906@metafoo.de>
-Message-ID: <alpine.DEB.2.01.1406041013310.12546@pmeerw.net>
-References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net> <1401835335-29969-16-git-send-email-pmeerw@pmeerw.net> <538ED0DB.906@metafoo.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, knaack.h@gmx.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 12/15] iio:adc:ad799x: Write default config on probe and reset alert status on probe
+Date: Wed,  4 Jun 2014 00:42:12 +0200
+Message-Id: <1401835335-29969-13-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
+References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Lars-Peter,
+writing ALERT_EN and BUSY_ALERT to the chip config register clears
+pending alerts, BUSY_ALERT is cleared when reading back the register
 
-thank you for reviewing this series! reply below
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/ad799x.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-> > previously, events were always reported as enabled, but actually only
-> > implicitly enabled when updating the buffer scan mode
-> > 
-> > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> > ---
-> >   drivers/iio/adc/ad799x.c | 34 ++++++++++++++++++++++++++++++++++
-> >   1 file changed, 34 insertions(+)
-> > 
-> > diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> > index b8191f1..f8bfbcb 100644
-> > --- a/drivers/iio/adc/ad799x.c
-> > +++ b/drivers/iio/adc/ad799x.c
-> > @@ -375,6 +375,39 @@ static int ad799x_read_event_config(struct iio_dev
-> > *indio_dev,
-> >   	return 0;
-> >   }
-> > 
-> > +static int ad799x_write_event_config(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir,
-> > +				     int state)
-> > +{
-> > +	struct ad799x_state *st = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	mutex_lock(&indio_dev->mlock);
-> > +	if (iio_buffer_enabled(indio_dev)) {
-> > +		ret = -EBUSY;
-> > +		goto done;
-> > +	}
-> > +
-> > +	if (state)
-> > +		st->config |= BIT(chan->scan_index) << AD799X_CHANNEL_SHIFT;
-> > +	else
-> > +		st->config &= ~(BIT(chan->scan_index) <<
-> > AD799X_CHANNEL_SHIFT);
-> > +
-> > +	if (st->config >> AD799X_CHANNEL_SHIFT)
-> > +		st->config |= AD7998_ALERT_EN;
-> > +	else
-> > +		st->config &= ~AD7998_ALERT_EN;
-> > +
-> > +	ret = ad799x_write_config(st, st->config);
-> 
-> If I understand this correctly the enabled channels will be overwritten again
-> as soon as the scan mode is updated. I think that is a bit unexpected. I'm not
-> quite sure how to implement being able to independently enable a channel for
-> sampling and for event monitoring in a proper way though.
-
-yes, this is a problem; I have no good solution
-at least the enabled events show their correct status now :)
-
-one could turn on the union set of event and scan mode channels and ignore
-events or measurement when not in the event or or scan mode set, resp.
-
-sysfs-bus-iio documentation says 
-"So if you want to be sure you have set what you think you have, check the 
-contents of these attributes after everything is configured. Drivers 
-may have to buffer any parameters so that they are consistent 
-when a given event type is enabled at a future point (and not 
-those for whatever event was previously enabled)."
-
-so there already is a warning :)
-
-
-another question:
-is an event supposed to occur on crossing the threshold or whenever and 
-as long as the ADC value exceeds the threshold?
-
-the ad7997 does the later, the documentation is not very clear what is 
-to be expected
-
-p.
-
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 0219970..f8e029d 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -595,7 +595,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				AD799X_CHANNEL_WITH_EVENTS(1, 12),
+ 				IIO_CHAN_SOFT_TIMESTAMP(3),
+ 			},
+-			.default_config = AD7998_ALERT_EN,
++			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
+ 			.info = &ad7993_4_7_8_irq_info,
+ 		},
+ 	},
+@@ -619,7 +619,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				AD799X_CHANNEL_WITH_EVENTS(3, 10),
+ 				IIO_CHAN_SOFT_TIMESTAMP(4),
+ 			},
+-			.default_config = AD7998_ALERT_EN,
++			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
+ 			.info = &ad7993_4_7_8_irq_info,
+ 		},
+ 	},
+@@ -643,7 +643,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				AD799X_CHANNEL_WITH_EVENTS(3, 12),
+ 				IIO_CHAN_SOFT_TIMESTAMP(4),
+ 			},
+-			.default_config = AD7998_ALERT_EN,
++			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
+ 			.info = &ad7993_4_7_8_irq_info,
+ 		},
+ 	},
+@@ -675,7 +675,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				AD799X_CHANNEL(7, 10),
+ 				IIO_CHAN_SOFT_TIMESTAMP(8),
+ 			},
+-			.default_config = AD7998_ALERT_EN,
++			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
+ 			.info = &ad7993_4_7_8_irq_info,
+ 		},
+ 	},
+@@ -707,7 +707,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 				AD799X_CHANNEL(7, 12),
+ 				IIO_CHAN_SOFT_TIMESTAMP(8),
+ 			},
+-			.default_config = AD7998_ALERT_EN,
++			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
+ 			.info = &ad7993_4_7_8_irq_info,
+ 		},
+ 	},
+@@ -733,7 +733,6 @@ static int ad799x_probe(struct i2c_client *client,
+ 	st->id = id->driver_data;
+ 	st->chip_config = (client->irq > 0 && chip_info->irq_config.info) ?
+ 		&chip_info->irq_config : &chip_info->noirq_config;
+-	st->config = st->chip_config->default_config;
+ 
+ 	/* TODO: Add pdata options for filtering and bit delay */
+ 
+@@ -762,6 +761,14 @@ static int ad799x_probe(struct i2c_client *client,
+ 	indio_dev->channels = st->chip_config->channel;
+ 	indio_dev->num_channels = chip_info->num_channels;
+ 
++	ret = ad799x_write_config(st, st->chip_config->default_config);
++	if (ret < 0)
++		goto error_disable_reg;
++	ret = ad799x_read_config(st);
++	if (ret < 0)
++		goto error_disable_reg;
++	st->config = ret;
++
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 		&ad799x_trigger_handler, NULL);
+ 	if (ret)
 -- 
+1.9.1
 
-Peter Meerwald
-+43-664-2444418 (mobile)
