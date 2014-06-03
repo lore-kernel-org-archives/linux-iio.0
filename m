@@ -1,60 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f177.google.com ([209.85.214.177]:55383 "EHLO
-	mail-ob0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752784AbaFBMHc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jun 2014 08:07:32 -0400
-Received: by mail-ob0-f177.google.com with SMTP id wp4so4274473obc.22
-        for <linux-iio@vger.kernel.org>; Mon, 02 Jun 2014 05:07:32 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <535B912B.8000005@kernel.org>
-References: <1397416143-4396-1-git-send-email-linus.walleij@linaro.org>
-	<1397416143-4396-6-git-send-email-linus.walleij@linaro.org>
-	<53582E4C.3060800@kernel.org>
-	<CACRpkdbmS39HL4Z8CSbtPtkWYqZn6hNCMdwzk+1fepKkSUAO1A@mail.gmail.com>
-	<535B912B.8000005@kernel.org>
-Date: Mon, 2 Jun 2014 14:07:31 +0200
-Message-ID: <CACRpkdaNBNHQs58U1bm61NNi6wNjYb8-sFvbQ670Mve9xynMUg@mail.gmail.com>
-Subject: Re: [PATCH 5/6] iio: st_sensors: add devicetree probing support
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from ns.pmeerw.net ([87.118.82.44]:58639 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932485AbaFCWm3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 3 Jun 2014 18:42:29 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, knaack.h@gmx.de,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 13/15] iio:adc:ad799x: Rename ad7997_8_update_scan_mode() to ad799x_update_scan_mode()
+Date: Wed,  4 Jun 2014 00:42:13 +0200
+Message-Id: <1401835335-29969-14-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
+References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 26, 2014 at 12:57 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 24/04/14 09:33, Linus Walleij wrote:
->>
->> On Wed, Apr 23, 2014 at 11:19 PM, Jonathan Cameron <jic23@kernel.org>
->> wrote:
->>
->>> I can't make up my mind whether I like this or not.
->>> Having said that it fixes an ABI compatibility issue that I couldn't
->>> see a way around so nicely done.
->>
->>
->> Lots of redundant strings is device trees second name.
->>
->>> (note I'll leave this set be for now given the device tree element
->>> and that it hasn't been 3 weeks yet)
->>
->>
->> I'll respin the patch anyway, the OF compatible table should
->> be in the core file rather than the .h file. I try to keep it in common
->> code so I2C and SPI alike be able to use the same table
->> atleast.
->
->
-> Cool, I'll wait on that then (and the remaining week of the 3 weeks to tick
-> by).
+function is used by all chips with ALERT pin
 
-Hm I couldn't figure out any better way to do this when things
-come around.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/ad799x.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Feel free to merge this patch whenever you feel it's ready, I
-guess after the merge window now.
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index f8e029d..5c9445e 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -208,7 +208,7 @@ out:
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
++static int ad799x_update_scan_mode(struct iio_dev *indio_dev,
+ 	const unsigned long *scan_mask)
+ {
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+@@ -221,10 +221,14 @@ static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
+ 	st->transfer_size = bitmap_weight(scan_mask, indio_dev->masklength) * 2;
+ 
+ 	switch (st->id) {
++	case ad7992:
++	case ad7993:
++	case ad7994:
+ 	case ad7997:
+ 	case ad7998:
+-		return i2c_smbus_write_word_swapped(st->client, AD7998_CONF_REG,
+-			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
++		st->config &= ~(GENMASK(7, 0) << AD799X_CHANNEL_SHIFT);
++		st->config |= (*scan_mask << AD799X_CHANNEL_SHIFT);
++		return ad799x_write_config(st, st->config);
+ 	default:
+ 		return 0;
+ 	}
+@@ -483,7 +487,7 @@ static const struct iio_info ad7991_info = {
+ static const struct iio_info ad7993_4_7_8_noirq_info = {
+ 	.read_raw = &ad799x_read_raw,
+ 	.driver_module = THIS_MODULE,
+-	.update_scan_mode = ad7997_8_update_scan_mode,
++	.update_scan_mode = ad799x_update_scan_mode,
+ };
+ 
+ static const struct iio_info ad7993_4_7_8_irq_info = {
+@@ -493,7 +497,7 @@ static const struct iio_info ad7993_4_7_8_irq_info = {
+ 	.read_event_value = &ad799x_read_event_value,
+ 	.write_event_value = &ad799x_write_event_value,
+ 	.driver_module = THIS_MODULE,
+-	.update_scan_mode = ad7997_8_update_scan_mode,
++	.update_scan_mode = ad799x_update_scan_mode,
+ };
+ 
+ static const struct iio_event_spec ad799x_events[] = {
+-- 
+1.9.1
 
-Yours,
-Linus Walleij
