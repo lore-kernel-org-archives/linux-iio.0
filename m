@@ -1,421 +1,274 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:59263 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753810AbaFIRlM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 9 Jun 2014 13:41:12 -0400
-Message-ID: <5395F224.209@kernel.org>
-Date: Mon, 09 Jun 2014 18:43:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, jkosina@suse.cz
-Subject: Re: [PATCHv2 3/3] IIO: hid-sensor-magn-3d: Add in support for True/Magnetic
- North HID usages
-References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com> <1401750890-31854-4-git-send-email-reyad.attiyat@gmail.com> <538E092F.9040004@linux.intel.com>
-In-Reply-To: <538E092F.9040004@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mwelling79@gmail.com>
+Sender: Michael Welling <mwelling79@gmail.com>
+From: Michael Welling <mwelling@ieee.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Michael Welling <mwelling@ieee.org>
+Subject: [PATCH] iio: dac: mcp4902/mcp4912/mcp4922 dac driver
+Date: Wed,  4 Jun 2014 02:21:19 -0500
+Message-Id: <1401866479-8085-1-git-send-email-mwelling@ieee.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/06/14 18:43, Srinivas Pandruvada wrote:
-> On 06/02/2014 04:14 PM, Reyad Attiyat wrote:
->> Updated magn_3d_channel enum for all possible north channels
->>
->> Added functions to setup iio_chan_spec array depending on which hid usage reports are found
->>
->> Renamed magn_val to iio_val to differentiate the index being used
->>
->> Updated magn_3d_state struct to hold pointer array (magn_val_addr[]) which points to iio_val[]
->>
->> Updated magn_3d_parse_report to scan for all compass usages and create iio channels for each
->>
->> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
->> ---
->>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 271 +++++++++++++++++---------
->>   1 file changed, 177 insertions(+), 94 deletions(-)
->>
->> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> index 6d162b7..32f4d90 100644
->> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> @@ -34,63 +34,54 @@ enum magn_3d_channel {
->>       CHANNEL_SCAN_INDEX_X,
->>       CHANNEL_SCAN_INDEX_Y,
->>       CHANNEL_SCAN_INDEX_Z,
->> +    CHANNEL_SCAN_INDEX_NORTH_MAGN,
->> +    CHANNEL_SCAN_INDEX_NORTH_TRUE,
->> +    CHANNEL_SCAN_INDEX_NORTH_TILT_COMP,
->> +    CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP,
->>       MAGN_3D_CHANNEL_MAX,
->>   };
->>
->> +#define IIO_CHANNEL_MAX MAGN_3D_CHANNEL_MAX
->> +
->>   struct magn_3d_state {
->>       struct hid_sensor_hub_callbacks callbacks;
->>       struct hid_sensor_common common_attributes;
->>       struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
->> -    u32 magn_val[MAGN_3D_CHANNEL_MAX];
->> -};
->> +    u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
->>
->> -static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
->> -    HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
->> -    HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
->> -    HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
->> +    u32 iio_val[IIO_CHANNEL_MAX];
->> +    int num_iio_channels;
->>   };
->>
->> -/* Channel definitions */
->> -static const struct iio_chan_spec magn_3d_channels[] = {
->> -    {
->> -        .type = IIO_MAGN,
->> -        .modified = 1,
->> -        .channel2 = IIO_MOD_X,
->> -        .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->> -        BIT(IIO_CHAN_INFO_SCALE) |
->> -        BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->> -        BIT(IIO_CHAN_INFO_HYSTERESIS),
->> -        .scan_index = CHANNEL_SCAN_INDEX_X,
->> -    }, {
->> -        .type = IIO_MAGN,
->> -        .modified = 1,
->> -        .channel2 = IIO_MOD_Y,
->> -        .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->> -        BIT(IIO_CHAN_INFO_SCALE) |
->> -        BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->> -        BIT(IIO_CHAN_INFO_HYSTERESIS),
->> -        .scan_index = CHANNEL_SCAN_INDEX_Y,
->> -    }, {
->> -        .type = IIO_MAGN,
->> -        .modified = 1,
->> -        .channel2 = IIO_MOD_Z,
->> -        .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->> -        BIT(IIO_CHAN_INFO_SCALE) |
->> -        BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->> -        BIT(IIO_CHAN_INFO_HYSTERESIS),
->> -        .scan_index = CHANNEL_SCAN_INDEX_Z,
->
-> May be we should have a field in const struct iio_chan_spec, so that we
-> can dynamically enable disable channels. In this way we can statically define channels, but can be enabled/disabled dynamically.
-But then it's not const to you have to take a per instance copy.
-Once you are doing that you might as well just pull out into the copy
-those channels that are actually present, at which point the field
-doesn't have any purpose.
->
->
->> +/* Find index into magn_3d_state magn[] and magn_val_addr[] from HID Usage  */
->> +static int magn_3d_usage_id_to_chan_index(unsigned usage_id){
->> +    int offset = -1;
->> +
->> +    switch (usage_id) {
->> +    case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
->> +        offset = CHANNEL_SCAN_INDEX_X;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
->> +        offset = CHANNEL_SCAN_INDEX_Y;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
->> +        offset = CHANNEL_SCAN_INDEX_Z;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
->> +        offset = CHANNEL_SCAN_INDEX_NORTH_TILT_COMP;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
->> +        offset = CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
->> +        offset = CHANNEL_SCAN_INDEX_NORTH_MAGN;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
->> +        offset = CHANNEL_SCAN_INDEX_NORTH_TRUE;
->> +        break;
->>       }
->> -};
->>
->> -/* Adjust channel real bits based on report descriptor */
->> -static void magn_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
->> -                        int channel, int size)
->> -{
->> -    channels[channel].scan_type.sign = 's';
->> -    /* Real storage bits will change based on the report desc. */
->> -    channels[channel].scan_type.realbits = size * 8;
->> -    /* Maximum size of a sample to capture is u32 */
->> -    channels[channel].scan_type.storagebits = sizeof(u32) * 8;
->> +    return offset;
->>   }
->>
->>   /* Channel read_raw handler */
->> @@ -101,21 +92,31 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
->>   {
->>       struct magn_3d_state *magn_state = iio_priv(indio_dev);
->>       int report_id = -1;
->> -    u32 address;
->> +    unsigned usage_id;
->> +    int chan_index = -1;
->>       int ret;
->>       int ret_type;
->>
->> +    dev_dbg(&indio_dev->dev, "magn_3d_read_raw\n");
->> +
->>       *val = 0;
->>       *val2 = 0;
->>       switch (mask) {
->>       case 0:
->> +        /* We store the HID usage ID of the iio channel
->> +         * in its address field
->> +         */
->> +        usage_id = chan->address;
->> +        chan_index = magn_3d_usage_id_to_chan_index(usage_id);
->> +        if(chan_index < 0)
->> +            return -EINVAL;
->> +
->>           report_id =
->> -            magn_state->magn[chan->scan_index].report_id;
->> -        address = magn_3d_addresses[chan->scan_index];
->> +            magn_state->magn[chan_index].report_id;
->>           if (report_id >= 0)
->>               *val = sensor_hub_input_attr_get_raw_value(
->>                   magn_state->common_attributes.hsdev,
->> -                HID_USAGE_SENSOR_COMPASS_3D, address,
->> +                HID_USAGE_SENSOR_COMPASS_3D, usage_id,
->>                   report_id);
->>           else {
->>               *val = 0;
->> @@ -202,12 +203,13 @@ static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
->>                   magn_state->common_attributes.data_ready);
->>       if (magn_state->common_attributes.data_ready)
->>           hid_sensor_push_data(indio_dev,
->> -                magn_state->magn_val,
->> -                sizeof(magn_state->magn_val));
->> +                &(magn_state->iio_val),
->> +                sizeof(magn_state->iio_val));
->>
->>       return 0;
->>   }
->>
->> +
->>   /* Capture samples in local storage */
->>   static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
->>                   unsigned usage_id,
->> @@ -217,63 +219,143 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
->>       struct iio_dev *indio_dev = platform_get_drvdata(priv);
->>       struct magn_3d_state *magn_state = iio_priv(indio_dev);
->>       int offset;
->> +    u32 *magn_val;
->>       int ret = -EINVAL;
->>
->> -    switch (usage_id) {
->> +    offset = magn_3d_usage_id_to_chan_index(usage_id);
->> +    if(offset < 0)
->> +        return ret;
->> +
->> +    magn_val = magn_state->magn_val_addr[offset];
->> +    if(!magn_val)
->> +        return ret;
->> +
->> +    *(magn_val) =  *(u32 *)raw_data;
->> +
->> +    return 0;
->> +}
->> +
->> +/* Setup the iio_chan_spec for HID Usage ID */
->> +static int magn_3d_setup_new_iio_chan(struct hid_sensor_hub_device *hsdev,
->> +                unsigned usage_id,
->> +                unsigned attr_usage_id,
->> +                struct iio_chan_spec *iio_chans,
->> +                struct magn_3d_state *st)
->> +{
->> +    int ret = -1;
->> +    int iio_index;
->> +    int magn_index;
->> +    struct iio_chan_spec *channel;
->> +
->> +    /* Setup magn_3d_state for new channel */
->> +    magn_index = magn_3d_usage_id_to_chan_index(attr_usage_id);
->> +    if(magn_index < 0 || magn_index >= MAGN_3D_CHANNEL_MAX){
->> +        return -1;
->> +    }
->> +
->> +    /* Check if usage attribute exists in the sensor hub device */
->> +    ret = sensor_hub_input_get_attribute_info(hsdev,
->> +        HID_INPUT_REPORT,
->> +        usage_id,
->> +        attr_usage_id,
->> +        &(st->magn[magn_index]));
->> +    if(ret != 0){
->> +        /* Usage not found. Nothing to setup.*/
->> +        return 0;
->> +    }
->> +
->> +    iio_index = st->num_iio_channels;
->> +    if(iio_index < 0 || iio_index >= IIO_CHANNEL_MAX){
->> +        return -2;
->> +    }
->> +
->> +    /* Check if this usage hasn't been setup */
->> +    if(st->magn_val_addr[magn_index] != NULL){
->> +        return -3;
->> +    }
->> +    st->magn_val_addr[magn_index] = &(st->iio_val[iio_index]);
->> +
->> +    /* Setup IIO Channel spec */
->> +    channel = &(iio_chans[iio_index]);
->> +
->> +    channel->type = IIO_MAGN;
->> +    channel->address = attr_usage_id;
->> +    channel->modified = 1;
->> +
->> +    switch (attr_usage_id){
->> +    case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
->> +        channel->channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
->> +        channel->channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
->> +        channel->channel2 = IIO_MOD_NORTH_MAGN;
->> +        break;
->> +    case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
->> +        channel->channel2 = IIO_MOD_NORTH_TRUE;
->> +        break;
->>       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
->> +        channel->channel2 = IIO_MOD_X;
->> +        break;
->>       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
->> +        channel->channel2 = IIO_MOD_Y;
->> +        break;
->>       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
->> -        offset = usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
->> -        magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
->> -                        *(u32 *)raw_data;
->> -        ret = 0;
->> -    break;
->> -    default:
->> +        channel->channel2 = IIO_MOD_Z;
->>           break;
->> +    default:
->> +        return -4;
->>       }
->>
->> +    channel->info_mask_shared_by_type =
->> +        BIT(IIO_CHAN_INFO_OFFSET) |
->> +        BIT(IIO_CHAN_INFO_SCALE) |
->> +        BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->> +        BIT(IIO_CHAN_INFO_HYSTERESIS);
->> +
->> +    channel->scan_type.sign = 's';
->> +    /* Real storage bits will change based on the report desc. */
->> +    channel->scan_type.realbits = st->magn[magn_index].size * 8;
->> +    /* Maximum size of a sample to capture is u32 */
->> +    channel->scan_type.storagebits = sizeof(u32) * 8;
->> +
->> +    (st->num_iio_channels)++;
->> +    ret = 0;
->> +
->>       return ret;
->>   }
->>
->> -/* Parse report which is specific to an usage id*/
->> +/* Read the HID reports and setup IIO Channels */
->>   static int magn_3d_parse_report(struct platform_device *pdev,
->>                   struct hid_sensor_hub_device *hsdev,
->> -                struct iio_chan_spec *channels,
->> +                struct iio_chan_spec *iio_chans,
->>                   unsigned usage_id,
->>                   struct magn_3d_state *st)
->>   {
->> -    int ret;
->> +    int ret = 0;
->>       int i;
->>
->> -    for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
->> -        ret = sensor_hub_input_get_attribute_info(hsdev,
->> -                HID_INPUT_REPORT,
->> -                usage_id,
->> -                HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS + i,
->> -                &st->magn[CHANNEL_SCAN_INDEX_X + i]);
->> -        if (ret < 0)
->> -            break;
->> -        magn_3d_adjust_channel_bit_mask(channels,
->> -                CHANNEL_SCAN_INDEX_X + i,
->> -                st->magn[CHANNEL_SCAN_INDEX_X + i].size);
->> -    }
->> -    dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
->> -            st->magn[0].index,
->> -            st->magn[0].report_id,
->> -            st->magn[1].index, st->magn[1].report_id,
->> -            st->magn[2].index, st->magn[2].report_id);
->> -
->> -    /* Set Sensitivity field ids, when there is no individual modifier */
->> -    if (st->common_attributes.sensitivity.index < 0) {
->> -        sensor_hub_input_get_attribute_info(hsdev,
->> -            HID_FEATURE_REPORT, usage_id,
->> -            HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
->> -            HID_USAGE_SENSOR_DATA_ORIENTATION,
->> -            &st->common_attributes.sensitivity);
->> -        dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
->> -            st->common_attributes.sensitivity.index,
->> -            st->common_attributes.sensitivity.report_id);
->> -    }
->> +    dev_dbg(&pdev->dev, "magn_3d_parse_reports Usage ID: %x\n", usage_id);
->> +    for(i = HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
->> +        i <= HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS && ret == 0;
->> +        i++)
->> +            ret = magn_3d_setup_new_iio_chan(hsdev,
->> +                    usage_id,
->> +                    i,
->> +                    iio_chans,
->> +                    st);
->> +
->> +    dev_dbg(&pdev->dev, "magn_3d_parse_reports Found %d\n magnetic axis. Returned: %d", st->num_iio_channels, ret);
->> +    for(i = HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH;
->> +        i <= HID_USAGE_SENSOR_ORIENT_TRUE_NORTH && ret == 0;
->> +        i++)
->> +            ret = magn_3d_setup_new_iio_chan(hsdev,
->> +                    usage_id,
->> +                    i,
->> +                    iio_chans,
->> +                    st);
->> +    dev_dbg(&pdev->dev, "magn_3d_parse_reports Found %d\n magnetic channels. Returned: %d", st->num_iio_channels, ret);
->>
-> I think we need to present angle in radians. Are you basing change present in linux-next? This will automatically do in this function.
-Yes, angles need to be in radians.
->
->>       return ret;
->>   }
->> @@ -307,10 +389,11 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
->>           return ret;
->>       }
->>
->> -    channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
->> -               GFP_KERNEL);
->> +    channels = kcalloc(MAGN_3D_CHANNEL_MAX,
->> +            sizeof(struct iio_chan_spec),
->> +            GFP_KERNEL);
->
-> I don't see kfree. Try devm_kcalloc?
->
->>       if (!channels) {
->> -        dev_err(&pdev->dev, "failed to duplicate channels\n");
->> +        dev_err(&pdev->dev, "failed to allocate memory for iio channel\n");
->>           return -ENOMEM;
->>       }
->>
->> @@ -322,7 +405,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
->>       }
->>
->>       indio_dev->channels = channels;
->> -    indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
->> +    indio_dev->num_channels = magn_state->num_iio_channels;
->>       indio_dev->dev.parent = &pdev->dev;
->>       indio_dev->info = &magn_3d_info;
->>       indio_dev->name = name;
->>
-> Thanks,
-> Srinivas
->
+This patch provides an iio device driver for the Microchip
+MCP49x2 series DACs.
 
+Signed-off-by: Michael Welling <mwelling@ieee.org>
+---
+ drivers/iio/dac/Kconfig   |   10 +++
+ drivers/iio/dac/Makefile  |    1 +
+ drivers/iio/dac/mcp49x2.c |  215 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 226 insertions(+)
+ create mode 100644 drivers/iio/dac/mcp49x2.c
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index f378ca8..032d678 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -163,4 +163,14 @@ config MCP4725
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called mcp4725.
+ 
++config MCP49X2
++	tristate "MCP4902, MCP4912, MCP4922 DAC driver"
++	depends on SPI
++	---help---
++	  Say yes here to build the driver for the Microchip MCP49x2
++	  series DAC devices.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mcp49x2.
++
+ endmenu
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index bb84ad6..2fdfc2e 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -18,3 +18,4 @@ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_AD7303) += ad7303.o
+ obj-$(CONFIG_MAX517) += max517.o
+ obj-$(CONFIG_MCP4725) += mcp4725.o
++obj-$(CONFIG_MCP49X2) += mcp49x2.o
+diff --git a/drivers/iio/dac/mcp49x2.c b/drivers/iio/dac/mcp49x2.c
+new file mode 100644
+index 0000000..0375046
+--- /dev/null
++++ b/drivers/iio/dac/mcp49x2.c
+@@ -0,0 +1,215 @@
++/*
++ * mcp49x2.c
++ *
++ * Driver for Microchip Digital to Analog Converters.
++ * Supports MCP4902, MCP4912, and MCP4922.
++ *
++ * Copyright (c) 2014 EMAC Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/spi/spi.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/regulator/consumer.h>
++
++#define	MCP49X2_RES_MASK(x)		((1 << (x)) - 1)
++
++enum mcp49x2_supported_device_ids {
++	ID_MCP4902,
++	ID_MCP4912,
++	ID_MCP4922,
++};
++
++struct mcp49x2_state {
++	struct spi_device *spi;
++	unsigned int value[2];
++	unsigned int power_mode[2];
++	unsigned int vref_mv;
++	struct regulator *vref_reg;
++};
++
++#define MCP49X2_CHAN(chan, bits) {			\
++	.type = IIO_VOLTAGE,				\
++	.output = 1,					\
++	.indexed = 1,					\
++	.channel = chan,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.address = chan,				\
++	.scan_type = IIO_ST('u', bits, 16, 12-(bits)),	\
++	.ext_info = NULL,				\
++}
++
++static int mcp49x2_spi_write(struct spi_device *spi, u8 addr, u32 val)
++{
++	u8 mosi[2];
++
++	mosi[1] = val & 0xff;
++	mosi[0] = (addr == 0) ? 0x00 : 0x80;
++	mosi[0] |= 0x30 | ((val >> 8) & 0x0f);
++
++	return spi_write(spi, mosi, 2);
++}
++
++static int mcp49x2_read_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan,
++		int *val,
++		int *val2,
++		long mask)
++{
++	struct mcp49x2_state *state = iio_priv(indio_dev);
++
++	if (chan->address >= 2)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*val = state->value[chan->address];
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = state->vref_mv;
++		*val2 = chan->scan_type.realbits;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mcp49x2_write_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan,
++		int val,
++		int val2,
++		long mask)
++{
++	struct mcp49x2_state *state = iio_priv(indio_dev);
++
++	if (chan->address >= 2)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		val &= MCP49X2_RES_MASK(chan->scan_type.realbits);
++		val <<= chan->scan_type.shift;
++		state->value[chan->address] = val;
++		return mcp49x2_spi_write(state->spi, chan->address, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_chan_spec mcp49x2_channels[3][2] = {
++	[ID_MCP4902] = { MCP49X2_CHAN(0, 8),	MCP49X2_CHAN(1, 8) },
++	[ID_MCP4912] = { MCP49X2_CHAN(0, 10),	MCP49X2_CHAN(1, 10) },
++	[ID_MCP4922] = { MCP49X2_CHAN(0, 12),	MCP49X2_CHAN(1, 12) },
++};
++
++static const struct iio_info mcp49x2_info = {
++	.read_raw = &mcp49x2_read_raw,
++	.write_raw = &mcp49x2_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int mcp49x2_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct mcp49x2_state *state;
++	const struct spi_device_id *id;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*state));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	state = iio_priv(indio_dev);
++	state->spi = spi;
++
++	state->vref_reg = devm_regulator_get(spi->dev, "vref");
++	if (!IS_ERR(state->vref_reg)) {
++		ret = regulator_enable(state->vref_reg);
++		if (ret) {
++			dev_err(dev, "Failed to enable vref regulator: %d\n",
++				ret);
++			goto error_free;
++		}
++
++		ret = regulator_get_voltage(state->vref_reg);
++		if (ret < 0)
++			goto error_disable_reg;
++
++		state->vref_mv = ret / 1000;
++	} else {
++		dev_info(dev, "Vref regulator not specified assuming 2.5V\n");
++		state->vref_mv = 2500;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++	id = spi_get_device_id(spi);
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &mcp49x2_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mcp49x2_channels[id->driver_data];
++	indio_dev->num_channels = 2;
++	indio_dev->name = id->name;
++
++	ret = iio_device_register(indio_dev);
++
++	if (ret) {
++		dev_err(dev, "Failed to register iio device: %d\n",
++			ret);
++		goto error_disable_reg;
++	}
++
++	return 0;
++
++error_disable_reg:
++	if (!IS_ERR(state->vref_reg))
++		regulator_disable(state->vref_reg);
++error_free:
++	iio_device_free(indio_dev);
++
++	return ret;
++}
++
++static int mcp49x2_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++
++	iio_device_free(indio_dev);
++	return 0;
++}
++
++static const struct spi_device_id mcp49x2_id[] = {
++	{"mcp4902", ID_MCP4902},
++	{"mcp4912", ID_MCP4912},
++	{"mcp4922", ID_MCP4922},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, mcp49x2_id);
++
++static struct spi_driver mcp49x2_driver = {
++	.driver = {
++		   .name = "mcp49x2",
++		   .owner = THIS_MODULE,
++		   },
++	.probe = mcp49x2_probe,
++	.remove = mcp49x2_remove,
++	.id_table = mcp49x2_id,
++};
++module_spi_driver(mcp49x2_driver);
++
++MODULE_AUTHOR("Michael Welling <mwelling@ieee.org>");
++MODULE_DESCRIPTION("Microchip MCP4902, MCP4912, MCP4922 DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.9.5
