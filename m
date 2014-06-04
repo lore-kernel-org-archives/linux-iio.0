@@ -1,316 +1,99 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 4 Jun 2014 11:45:40 +0200 (CEST)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:36819 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750709AbaFDIfg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 4 Jun 2014 04:35:36 -0400
+Date: Wed, 4 Jun 2014 10:35:35 +0200 (CEST)
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Michael Welling <mwelling@ieee.org>
-cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: mcp4902/mcp4912/mcp4922 dac driver
-In-Reply-To: <1401866479-8085-1-git-send-email-mwelling@ieee.org>
-Message-ID: <alpine.DEB.2.01.1406041128570.12546@pmeerw.net>
-References: <1401866479-8085-1-git-send-email-mwelling@ieee.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+cc: linux-iio@vger.kernel.org, knaack.h@gmx.de
+Subject: Re: [PATCH 15/15] iio:adc:ad799x: Allow to write event config
+In-Reply-To: <538ED0DB.906@metafoo.de>
+Message-ID: <alpine.DEB.2.01.1406041013310.12546@pmeerw.net>
+References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net> <1401835335-29969-16-git-send-email-pmeerw@pmeerw.net> <538ED0DB.906@metafoo.de>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Hello Lars-Peter,
 
-> This patch provides an iio device driver for the Microchip
-> MCP49x2 series DACs.
+thank you for reviewing this series! reply below
 
-comments inline
- 
-> Signed-off-by: Michael Welling <mwelling@ieee.org>
-> ---
->  drivers/iio/dac/Kconfig   |   10 +++
->  drivers/iio/dac/Makefile  |    1 +
->  drivers/iio/dac/mcp49x2.c |  215 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 226 insertions(+)
->  create mode 100644 drivers/iio/dac/mcp49x2.c
+> > previously, events were always reported as enabled, but actually only
+> > implicitly enabled when updating the buffer scan mode
+> > 
+> > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> > ---
+> >   drivers/iio/adc/ad799x.c | 34 ++++++++++++++++++++++++++++++++++
+> >   1 file changed, 34 insertions(+)
+> > 
+> > diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> > index b8191f1..f8bfbcb 100644
+> > --- a/drivers/iio/adc/ad799x.c
+> > +++ b/drivers/iio/adc/ad799x.c
+> > @@ -375,6 +375,39 @@ static int ad799x_read_event_config(struct iio_dev
+> > *indio_dev,
+> >   	return 0;
+> >   }
+> > 
+> > +static int ad799x_write_event_config(struct iio_dev *indio_dev,
+> > +				     const struct iio_chan_spec *chan,
+> > +				     enum iio_event_type type,
+> > +				     enum iio_event_direction dir,
+> > +				     int state)
+> > +{
+> > +	struct ad799x_state *st = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	mutex_lock(&indio_dev->mlock);
+> > +	if (iio_buffer_enabled(indio_dev)) {
+> > +		ret = -EBUSY;
+> > +		goto done;
+> > +	}
+> > +
+> > +	if (state)
+> > +		st->config |= BIT(chan->scan_index) << AD799X_CHANNEL_SHIFT;
+> > +	else
+> > +		st->config &= ~(BIT(chan->scan_index) <<
+> > AD799X_CHANNEL_SHIFT);
+> > +
+> > +	if (st->config >> AD799X_CHANNEL_SHIFT)
+> > +		st->config |= AD7998_ALERT_EN;
+> > +	else
+> > +		st->config &= ~AD7998_ALERT_EN;
+> > +
+> > +	ret = ad799x_write_config(st, st->config);
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index f378ca8..032d678 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -163,4 +163,14 @@ config MCP4725
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mcp4725.
->  
-> +config MCP49X2
-> +	tristate "MCP4902, MCP4912, MCP4922 DAC driver"
-> +	depends on SPI
-> +	---help---
-> +	  Say yes here to build the driver for the Microchip MCP49x2
-> +	  series DAC devices.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called mcp49x2.
-> +
->  endmenu
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index bb84ad6..2fdfc2e 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -18,3 +18,4 @@ obj-$(CONFIG_AD5686) += ad5686.o
->  obj-$(CONFIG_AD7303) += ad7303.o
->  obj-$(CONFIG_MAX517) += max517.o
->  obj-$(CONFIG_MCP4725) += mcp4725.o
-> +obj-$(CONFIG_MCP49X2) += mcp49x2.o
-> diff --git a/drivers/iio/dac/mcp49x2.c b/drivers/iio/dac/mcp49x2.c
-> new file mode 100644
-> index 0000000..0375046
-> --- /dev/null
-> +++ b/drivers/iio/dac/mcp49x2.c
-> @@ -0,0 +1,215 @@
-> +/*
-> + * mcp49x2.c
-> + *
-> + * Driver for Microchip Digital to Analog Converters.
-> + * Supports MCP4902, MCP4912, and MCP4922.
-> + *
-> + * Copyright (c) 2014 EMAC Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +#define	MCP49X2_RES_MASK(x)		((1 << (x)) - 1)
+> If I understand this correctly the enabled channels will be overwritten again
+> as soon as the scan mode is updated. I think that is a bit unexpected. I'm not
+> quite sure how to implement being able to independently enable a channel for
+> sampling and for event monitoring in a proper way though.
 
-use GENMASK() in linux/bitops.h
+yes, this is a problem; I have no good solution
+at least the enabled events show their correct status now :)
 
-> +
-> +enum mcp49x2_supported_device_ids {
-> +	ID_MCP4902,
-> +	ID_MCP4912,
-> +	ID_MCP4922,
-> +};
-> +
-> +struct mcp49x2_state {
-> +	struct spi_device *spi;
-> +	unsigned int value[2];
-> +	unsigned int power_mode[2];
-> +	unsigned int vref_mv;
-> +	struct regulator *vref_reg;
-> +};
-> +
-> +#define MCP49X2_CHAN(chan, bits) {			\
-> +	.type = IIO_VOLTAGE,				\
-> +	.output = 1,					\
-> +	.indexed = 1,					\
-> +	.channel = chan,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.address = chan,				\
+one could turn on the union set of event and scan mode channels and ignore
+events or measurement when not in the event or or scan mode set, resp.
 
-could use .channel instead of .address
+sysfs-bus-iio documentation says 
+"So if you want to be sure you have set what you think you have, check the 
+contents of these attributes after everything is configured. Drivers 
+may have to buffer any parameters so that they are consistent 
+when a given event type is enabled at a future point (and not 
+those for whatever event was previously enabled)."
 
-> +	.scan_type = IIO_ST('u', bits, 16, 12-(bits)),	\
+so there already is a warning :)
 
-consistently put macro arguments in () or don't
 
-> +	.ext_info = NULL,				\
+another question:
+is an event supposed to occur on crossing the threshold or whenever and 
+as long as the ADC value exceeds the threshold?
 
-no need to set ext_info
+the ad7997 does the later, the documentation is not very clear what is 
+to be expected
 
-> +}
-> +
-> +static int mcp49x2_spi_write(struct spi_device *spi, u8 addr, u32 val)
-> +{
-> +	u8 mosi[2];
-> +
-> +	mosi[1] = val & 0xff;
-> +	mosi[0] = (addr == 0) ? 0x00 : 0x80;
-> +	mosi[0] |= 0x30 | ((val >> 8) & 0x0f);
-> +
-> +	return spi_write(spi, mosi, 2);
-
-SPI buffers need to be cacheline aligned?
-
-> +}
-> +
-> +static int mcp49x2_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int *val,
-> +		int *val2,
-> +		long mask)
-> +{
-> +	struct mcp49x2_state *state = iio_priv(indio_dev);
-> +
-> +	if (chan->address >= 2)
-> +		return -EINVAL;
-
-no need to check the address; you are relying on chan being valid anyway
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*val = state->value[chan->address];
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = state->vref_mv;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int mcp49x2_write_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int val,
-> +		int val2,
-> +		long mask)
-> +{
-> +	struct mcp49x2_state *state = iio_priv(indio_dev);
-> +
-> +	if (chan->address >= 2)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-
-maybe check the range of val and report EINVAL if out of range?
-this silently makes val fit, no matter what
-
-> +		val &= MCP49X2_RES_MASK(chan->scan_type.realbits);
-> +		val <<= chan->scan_type.shift;
-> +		state->value[chan->address] = val;
-> +		return mcp49x2_spi_write(state->spi, chan->address, val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec mcp49x2_channels[3][2] = {
-> +	[ID_MCP4902] = { MCP49X2_CHAN(0, 8),	MCP49X2_CHAN(1, 8) },
-> +	[ID_MCP4912] = { MCP49X2_CHAN(0, 10),	MCP49X2_CHAN(1, 10) },
-> +	[ID_MCP4922] = { MCP49X2_CHAN(0, 12),	MCP49X2_CHAN(1, 12) },
-> +};
-> +
-> +static const struct iio_info mcp49x2_info = {
-> +	.read_raw = &mcp49x2_read_raw,
-> +	.write_raw = &mcp49x2_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int mcp49x2_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct mcp49x2_state *state;
-> +	const struct spi_device_id *id;
-> +	int ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(*state));
-
-devm_iio_device_alloc()
-
-> +	if (indio_dev == NULL)
-> +		return -ENOMEM;
-> +
-> +	state = iio_priv(indio_dev);
-> +	state->spi = spi;
-> +
-> +	state->vref_reg = devm_regulator_get(spi->dev, "vref");
-> +	if (!IS_ERR(state->vref_reg)) {
-> +		ret = regulator_enable(state->vref_reg);
-> +		if (ret) {
-> +			dev_err(dev, "Failed to enable vref regulator: %d\n",
-> +				ret);
-> +			goto error_free;
-> +		}
-> +
-> +		ret = regulator_get_voltage(state->vref_reg);
-> +		if (ret < 0)
-> +			goto error_disable_reg;
-> +
-> +		state->vref_mv = ret / 1000;
-> +	} else {
-> +		dev_info(dev, "Vref regulator not specified assuming 2.5V\n");
-> +		state->vref_mv = 2500;
-> +	}
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	id = spi_get_device_id(spi);
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->info = &mcp49x2_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mcp49x2_channels[id->driver_data];
-> +	indio_dev->num_channels = 2;
-
-maybe use a constant for the number of channels here and also
-when declaring mcp49x2_channels[3][2]
-
-> +	indio_dev->name = id->name;
-> +
-> +	ret = iio_device_register(indio_dev);
-
-use devm_iio_device_register()
-drop newline
-> +
-> +	if (ret) {
-> +		dev_err(dev, "Failed to register iio device: %d\n",
-> +			ret);
-> +		goto error_disable_reg;
-> +	}
-> +
-> +	return 0;
-> +
-> +error_disable_reg:
-> +	if (!IS_ERR(state->vref_reg))
-> +		regulator_disable(state->vref_reg);
-> +error_free:
-> +	iio_device_free(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mcp49x2_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +
-
-iio_device_unregister()?
-but should go away with devm_ stuff
-
-> +	iio_device_free(indio_dev);
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id mcp49x2_id[] = {
-> +	{"mcp4902", ID_MCP4902},
-> +	{"mcp4912", ID_MCP4912},
-> +	{"mcp4922", ID_MCP4922},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, mcp49x2_id);
-> +
-> +static struct spi_driver mcp49x2_driver = {
-> +	.driver = {
-> +		   .name = "mcp49x2",
-> +		   .owner = THIS_MODULE,
-> +		   },
-> +	.probe = mcp49x2_probe,
-> +	.remove = mcp49x2_remove,
-> +	.id_table = mcp49x2_id,
-> +};
-> +module_spi_driver(mcp49x2_driver);
-> +
-> +MODULE_AUTHOR("Michael Welling <mwelling@ieee.org>");
-> +MODULE_DESCRIPTION("Microchip MCP4902, MCP4912, MCP4922 DAC");
-> +MODULE_LICENSE("GPL v2");
-> 
+p.
 
 -- 
 
