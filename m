@@ -1,523 +1,794 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp6-g21.free.fr ([212.27.42.6]:52582 "EHLO smtp6-g21.free.fr"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755273AbaFPJ3B (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 16 Jun 2014 05:29:01 -0400
-From: Denis Carikli <denis@eukrea.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Denis Carikli <denis@eukrea.com>
-Subject: [PATCH v3 1/6] mfd: fsl imx25 Touchscreen ADC driver
-Date: Mon, 16 Jun 2014 11:28:48 +0200
-Message-Id: <1402910933-20534-1-git-send-email-denis@eukrea.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2] iio: accel: kxcjk1013 3-axis accelerometer driver
+Date: Thu,  5 Jun 2014 12:31:51 -0700
+Message-Id: <1401996711-23963-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1401996711-23963-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1401996711-23963-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Markus Pargmann <mpa@pengutronix.de>
+This patch adds IIO driver for KXCJK 1013 triaxis accelerometer sensor.
+The specifications for this driver is downloaded from:
+http://www.kionix.com/sites/default/files/KXCJK-1013%20Specifications%20Rev%202.pdf
 
-This is the core driver for imx25 touchscreen/adc driver. The module
-has one shared ADC and two different conversion queues which use the
-ADC. The two queues are identical. Both can be used for general purpose
-ADC but one is meant to be used for touchscreens.
-
-This driver is the core which manages the central components and
-registers of the TSC/ADC unit. It manages the IRQs and forwards them to
-the correct components.
-
-Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-Signed-off-by: Denis Carikli <denis@eukrea.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
-Changelog v2->v3:
-- None
----
- .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |   46 ++++
- drivers/mfd/Kconfig                                |    9 +
- drivers/mfd/Makefile                               |    2 +
- drivers/mfd/fsl-imx25-tsadc.c                      |  232 ++++++++++++++++++++
- include/linux/mfd/imx25-tsadc.h                    |  138 ++++++++++++
- 5 files changed, 427 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
- create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
- create mode 100644 include/linux/mfd/imx25-tsadc.h
+ drivers/iio/accel/Kconfig      |  12 +
+ drivers/iio/accel/Makefile     |   1 +
+ drivers/iio/accel/kxcjk-1013.c | 729 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 742 insertions(+)
+ create mode 100644 drivers/iio/accel/kxcjk-1013.c
 
-diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
-new file mode 100644
-index 0000000..a857af0e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
-@@ -0,0 +1,46 @@
-+Freescale mx25 ADC/TSC multifunction device
-+
-+This device combines two general purpose conversion queues one used for general
-+ADC and the other used for touchscreens.
-+
-+Required properties:
-+ - compatible: Should be "fsl,imx25-tsadc".
-+ - reg: Memory range of the device.
-+ - interrupts: Interrupt for this device as described in
-+   interrupts/interrupts.txt
-+ - clocks: An 'ipg' clock defined as described in clocks/clock.txt
-+ - interrupt-controller: This device is an interrupt controller. It controls
-+   the interrupts of both conversion queues.
-+ - #interrupt-cells: Should be '<1>'.
-+ - #address-cells: Should be '<1>'.
-+ - #size-cells: Should be '<1>'.
-+ - ranges
-+
-+This device includes two conversion queues which can be added as subnodes.
-+The first queue is for the touchscreen, the second for general purpose ADC.
-+
-+Example:
-+	tscadc: tscadc@50030000 {
-+		compatible = "fsl,imx25-tsadc";
-+		reg = <0x50030000 0xc>;
-+		interrupts = <46>;
-+		clocks = <&clks 119>;
-+		clock-names = "ipg";
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		tsc: tcq@50030400 {
-+			compatible = "fsl,imx25-tcq";
-+			reg = <0x50030400 0x60>;
-+			...
-+		};
-+
-+		adc: gcq@50030800 {
-+			compatible = "fsl,imx25-gcq";
-+			reg = <0x50030800 0x60>;
-+			...
-+		};
-+	};
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index ee8204c..73f4e66 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -183,6 +183,15 @@ config MFD_DA9063
- 	  Additional drivers must be enabled in order to use the functionality
- 	  of the device.
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 1e120fa..12addf2 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -77,4 +77,16 @@ config MMA8452
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called mma8452.
  
-+config MFD_MX25_TSADC
-+	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
-+	depends on ARCH_MXC
-+	select REGMAP_MMIO
++config KXCJK1013
++	tristate "Kionix 3-Axis Accelerometer Driver"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
 +	help
-+	  Enable support for the integrated Touchscreen and ADC unit of the
-+	  i.MX25 processors. They consist of a conversion queue for general
-+	  purpose ADC and a queue for Touchscreens.
++	  Say Y here if you want to build a driver for the Kionix KXCJK-1013
++	  triaxial acceleration sensor.
 +
- config MFD_MC13XXX
- 	tristate
- 	depends on (SPI_MASTER || I2C)
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 8afedba..7ff1013 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -78,6 +78,8 @@ obj-$(CONFIG_TWL4030_POWER)    += twl4030-power.o
- obj-$(CONFIG_MFD_TWL4030_AUDIO)	+= twl4030-audio.o
- obj-$(CONFIG_TWL6040_CORE)	+= twl6040.o
++	  To compile this driver as a module, choose M here: the module will
++	  be called kxcjk-1013.
++
+ endmenu
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index dc0e379..6578ca1 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -5,6 +5,7 @@
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_BMA180) += bma180.o
+ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
++obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+ obj-$(CONFIG_MMA8452)	+= mma8452.o
  
-+obj-$(CONFIG_MFD_MX25_TSADC)	+= fsl-imx25-tsadc.o
-+
- obj-$(CONFIG_MFD_MC13XXX)	+= mc13xxx-core.o
- obj-$(CONFIG_MFD_MC13XXX_SPI)	+= mc13xxx-spi.o
- obj-$(CONFIG_MFD_MC13XXX_I2C)	+= mc13xxx-i2c.o
-diff --git a/drivers/mfd/fsl-imx25-tsadc.c b/drivers/mfd/fsl-imx25-tsadc.c
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
 new file mode 100644
-index 0000000..10332c2
+index 0000000..6c28e50
 --- /dev/null
-+++ b/drivers/mfd/fsl-imx25-tsadc.c
-@@ -0,0 +1,232 @@
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -0,0 +1,729 @@
 +/*
-+ * Copyright 2014 Markus Pargmann, Pengutronix <mpa@pengutronix.de>
++ * KXCJK-1013 3-axis accelerometer driver
++ * Copyright (c) 2014, Intel Corporation.
 + *
-+ * The code contained herein is licensed under the GNU General Public
-+ * License. You may obtain a copy of the GNU General Public License
-+ * Version 2 or later at the following locations:
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
 + *
-+ * http://www.opensource.org/licenses/gpl-license.html
-+ * http://www.gnu.org/copyleft/gpl.html
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
 + */
 +
-+#include <linux/clk.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/irqdesc.h>
-+#include <linux/irqdomain.h>
-+#include <linux/irqchip/chained_irq.h>
-+#include <linux/mfd/imx25-tsadc.h>
 +#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/delay.h>
 +#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
++#include <linux/bitops.h>
++#include <linux/slab.h>
++#include <linux/string.h>
++#include <linux/acpi.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
 +
-+struct mx25_tsadc_priv {
-+	struct regmap *regs;
-+	struct irq_domain *domain;
-+	struct clk *clk;
++#define KXCJK1013_DRV_NAME "kxcjk1013"
++#define KXCJK1013_IRQ_NAME "kxcjk1013_event"
++
++#define KXCJK1013_REG_XOUT_L		0x06
++/*
++ * From low byte X axis register, all the other addresses of Y and Z can be
++ * obtained by just applying axis offset. The following axis defines are just
++ * provide clarity, but not used.
++ */
++#define KXCJK1013_REG_XOUT_H		0x07
++#define KXCJK1013_REG_YOUT_L		0x08
++#define KXCJK1013_REG_YOUT_H		0x09
++#define KXCJK1013_REG_ZOUT_L		0x0A
++#define KXCJK1013_REG_ZOUT_H		0x0B
++
++#define KXCJK1013_REG_DCST_RESP		0x0C
++#define KXCJK1013_REG_WHO_AM_I		0x0F
++#define KXCJK1013_REG_INT_SRC1		0x16
++#define KXCJK1013_REG_INT_SRC2		0x17
++#define KXCJK1013_REG_STATUS_REG	0x18
++#define KXCJK1013_REG_INT_REL		0x1A
++#define KXCJK1013_REG_CTRL1		0x1B
++#define KXCJK1013_REG_CTRL2		0x1D
++#define KXCJK1013_REG_INT_CTRL1		0x1E
++#define KXCJK1013_REG_INT_CTRL2		0x1F
++#define KXCJK1013_REG_DATA_CTRL		0x21
++#define KXCJK1013_REG_WAKE_TIMER	0x29
++#define KXCJK1013_REG_SELF_TEST		0x3A
++#define KXCJK1013_REG_WAKE_THRES	0x6A
++
++#define KXCJK1013_REG_CTRL1_BIT_PC1	BIT(7)
++#define KXCJK1013_REG_CTRL1_BIT_RES	BIT(6)
++#define KXCJK1013_REG_CTRL1_BIT_DRDY	BIT(5)
++#define KXCJK1013_REG_CTRL1_BIT_GSEL1	BIT(4)
++#define KXCJK1013_REG_CTRL1_BIT_GSEL0	BIT(3)
++#define KXCJK1013_REG_CTRL1_BIT_WUFE	BIT(1)
++#define KXCJK1013_REG_INT_REG1_BIT_IEA	BIT(4)
++#define KXCJK1013_REG_INT_REG1_BIT_IEN	BIT(5)
++
++#define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
++#define KXCJK1013_MAX_STARTUP_TIME_US	100000
++
++struct kxcjk1013_data {
++	struct i2c_client *client;
++	struct iio_trigger *trig;
++	bool	trig_mode;
++	struct mutex mutex;
++	s16 buffer[3];
++	atomic_t power_state;
++	int gpio_irq;
++	u8 odr_bits;
 +};
 +
-+static struct regmap_config mx25_tsadc = {
-+	.fast_io = true,
-+	.max_register = 0x8,
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = 4,
++enum kxcjk1013_axis {
++	AXIS_X,
++	AXIS_Y,
++	AXIS_Z,
 +};
 +
-+struct regmap *mx25_tsadc_get_regmap(struct device *dev)
-+{
-+	struct platform_device *pdev;
-+	struct mx25_tsadc_priv *priv;
-+
-+	if (!dev)
-+		return NULL;
-+
-+	pdev = container_of(dev, struct platform_device, dev);
-+	priv = platform_get_drvdata(pdev);
-+	if (IS_ERR_OR_NULL(priv->regs))
-+		return NULL;
-+
-+	return priv->regs;
-+}
-+EXPORT_SYMBOL(mx25_tsadc_get_regmap);
-+
-+struct clk *mx25_tsadc_get_ipg(struct device *dev)
-+{
-+	struct platform_device *pdev;
-+	struct mx25_tsadc_priv *priv;
-+
-+	if (!dev)
-+		return NULL;
-+
-+	pdev = container_of(dev, struct platform_device, dev);
-+	priv = platform_get_drvdata(pdev);
-+	if (IS_ERR_OR_NULL(priv->clk))
-+		return NULL;
-+
-+	return priv->clk;
-+}
-+EXPORT_SYMBOL(mx25_tsadc_get_ipg);
-+
-+static void mx25_tsadc_irq_handler(u32 irq, struct irq_desc *desc)
-+{
-+	struct mx25_tsadc_priv *priv = irq_desc_get_handler_data(desc);
-+	struct irq_chip *chip = irq_get_chip(irq);
-+	u32 status;
-+
-+	chained_irq_enter(chip, desc);
-+
-+	regmap_read(priv->regs, MX25_TSC_TGSR, &status);
-+
-+	if (status & MX25_TGSR_GCQ_INT)
-+		generic_handle_irq(irq_find_mapping(priv->domain, 1));
-+
-+	if (status & MX25_TGSR_TCQ_INT)
-+		generic_handle_irq(irq_find_mapping(priv->domain, 0));
-+
-+	chained_irq_exit(chip, desc);
-+}
-+
-+static void mx25_tsadc_nop(struct irq_data *d)
-+{
-+}
-+
-+static int mx25_tsadc_set_wake_nop(struct irq_data *d, unsigned int state)
-+{
-+	return 0;
-+}
-+
-+static struct irq_chip mx25_tsadc_irq_chip = {
-+	.name = "mx25-tsadc",
-+	.irq_ack = mx25_tsadc_nop,
-+	.irq_mask = mx25_tsadc_nop,
-+	.irq_unmask = mx25_tsadc_nop,
-+	.irq_set_wake = mx25_tsadc_set_wake_nop,
++enum kxcjk1013_mode {
++	STANDBY,
++	OPERATION,
 +};
 +
-+static int mx25_tsadc_domain_map(struct irq_domain *d, unsigned int irq,
-+			     irq_hw_number_t hwirq)
++static const struct {
++	int val;
++	int val2;
++	int odr_bits;
++} samp_freq_table[] = { {0, 781, 0x08}, {1, 563, 0x09},
++			{3, 125, 0x0A}, {6, 25, 0x0B}, {12, 5, 0},
++			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
++			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
++			{1600, 0, 0x07} };
++
++/* Refer to section 4 of the specification */
++static const struct {
++	int odr_bits;
++	int usec;
++} odr_start_up_times[] = { {0x08, 100000}, {0x09, 100000},
++			{0x0A, 100000}, {0x0B, 100000}, { 0, 80000},
++			{0x01, 41000}, {0x02, 21000}, {0x03, 11000},
++			{0x04, 6400}, {0x05, 3900}, {0x06, 2700},
++			{0x07, 2100} };
++
++static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
++			      enum kxcjk1013_mode mode)
 +{
-+	struct mx25_tsadc_priv *priv = d->host_data;
-+
-+	irq_set_chip_data(irq, priv);
-+	irq_set_chip_and_handler(irq, &mx25_tsadc_irq_chip,
-+				 handle_level_irq);
-+
-+
-+	set_irq_flags(irq, IRQF_VALID);
-+
-+	return 0;
-+}
-+
-+static struct irq_domain_ops mx25_tsadc_domain_ops = {
-+	.map = mx25_tsadc_domain_map,
-+	.xlate = irq_domain_xlate_onecell,
-+};
-+
-+static int mx25_tsadc_setup_irq(struct platform_device *pdev,
-+		struct mx25_tsadc_priv *priv)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	int irq;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(dev, "Failed to get irq\n");
-+		return irq;
-+	}
-+
-+	priv->domain = irq_domain_add_simple(np, 2, 0, &mx25_tsadc_domain_ops,
-+			priv);
-+	if (!priv->domain) {
-+		dev_err(dev, "Failed to add irq domain\n");
-+		return -ENOMEM;
-+	}
-+
-+	irq_set_chained_handler(irq, mx25_tsadc_irq_handler);
-+	irq_set_handler_data(irq, priv);
-+
-+	return 0;
-+}
-+
-+static int mx25_tsadc_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct mx25_tsadc_priv *priv;
-+	struct resource *iores;
 +	int ret;
-+	void __iomem *iomem;
 +
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	iomem = devm_ioremap_resource(dev, iores);
-+	if (IS_ERR(iomem)) {
-+		dev_err(dev, "Failed to remap iomem\n");
-+		return PTR_ERR(iomem);
-+	}
-+
-+	priv->regs = regmap_init_mmio(dev, iomem, &mx25_tsadc);
-+	if (IS_ERR(priv->regs)) {
-+		dev_err(dev, "Failed to initialize regmap\n");
-+		return PTR_ERR(priv->regs);
-+	}
-+
-+	priv->clk = devm_clk_get(dev, "ipg");
-+	if (IS_ERR(priv->clk)) {
-+		dev_err(dev, "Failed to get ipg clock\n");
-+		return PTR_ERR(priv->clk);
-+	}
-+
-+	/* Enable clock and reset the component */
-+	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_CLK_EN,
-+			MX25_TGCR_CLK_EN);
-+	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_TSC_RST,
-+			MX25_TGCR_TSC_RST);
-+
-+	/* Setup powersaving mode, but enable internal reference voltage */
-+	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_POWERMODE_MASK,
-+			MX25_TGCR_POWERMODE_SAVE);
-+	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_INTREFEN,
-+			MX25_TGCR_INTREFEN);
-+
-+	ret = mx25_tsadc_setup_irq(pdev, priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to setup irqs\n");
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
 +		return ret;
 +	}
 +
-+	platform_set_drvdata(pdev, priv);
++	if (mode == STANDBY)
++		ret &= ~KXCJK1013_REG_CTRL1_BIT_PC1;
++	else
++		ret |= KXCJK1013_REG_CTRL1_BIT_PC1;
 +
-+	of_platform_populate(np, NULL, NULL, dev);
-+
-+	dev_info(dev, "i.MX25 Touchscreen and ADC core driver loaded\n");
++	ret = i2c_smbus_write_byte_data(data->client,
++					KXCJK1013_REG_CTRL1, ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
++		return ret;
++	}
 +
 +	return 0;
 +}
 +
-+static const struct of_device_id mx25_tsadc_ids[] = {
-+	{ .compatible = "fsl,imx25-tsadc", },
-+	{ /* Sentinel */ }
++static int kxcjk1013_chip_setup_polarity(struct kxcjk1013_data *data,
++					  bool active_high)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
++		return ret;
++	}
++
++	if (active_high)
++		ret |= KXCJK1013_REG_INT_REG1_BIT_IEA;
++	else
++		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEA;
++
++	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
++					ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_int_rel\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_WHO_AM_I);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading who_am_i\n");
++		return ret;
++	}
++
++	dev_dbg(&data->client->dev, "KXCJK1013 Chip Id %x\n", ret);
++
++	ret = kxcjk1013_set_mode(data, STANDBY);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
++		return ret;
++	}
++
++	/* Setting range to 4G */
++	ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
++	ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
++
++	/* Set 12 bit mode */
++	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					KXCJK1013_REG_CTRL1, ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_ctrl\n");
++		return ret;
++	}
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_DATA_CTRL);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_data_ctrl\n");
++		return ret;
++	}
++
++	data->odr_bits = ret;
++
++	/* Active high interrupt */
++	return kxcjk1013_chip_setup_polarity(data, true);
++}
++
++static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
++					  bool status)
++{
++	int ret;
++
++	ret = kxcjk1013_set_mode(data, STANDBY);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
++		return ret;
++	}
++
++	if (status)
++		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
++	else
++		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
++
++	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
++					ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
++		return ret;
++	}
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
++		return ret;
++	}
++
++	if (status)
++		ret |= KXCJK1013_REG_CTRL1_BIT_DRDY;
++	else
++		ret &= ~KXCJK1013_REG_CTRL1_BIT_DRDY;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					KXCJK1013_REG_CTRL1, ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int kxcjk1013_convert_freq_to_bit(int val, int val2)
++{
++	int i;
++
++	for (i = 0; ARRAY_SIZE(samp_freq_table); ++i) {
++		if (samp_freq_table[i].val == val &&
++			samp_freq_table[i].val2 == val2) {
++			return samp_freq_table[i].odr_bits;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
++{
++	int ret;
++	int odr_bits;
++
++	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2 / 1000);
++	if (odr_bits < 0)
++		return odr_bits;
++
++	ret = kxcjk1013_set_mode(data, STANDBY);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_DATA_CTRL,
++					odr_bits);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing data_ctrl\n");
++		return ret;
++	}
++
++	data->odr_bits = odr_bits;
++
++	return 0;
++}
++
++static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
++		if (samp_freq_table[i].odr_bits == data->odr_bits) {
++			*val = samp_freq_table[i].val;
++			*val2 = samp_freq_table[i].val2 * 1000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
++{
++	u8 reg = KXCJK1013_REG_XOUT_L + axis * 2;
++	int ret;
++
++	ret = i2c_smbus_read_word_data(data->client, reg);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to read accel_%c registers\n", 'x' + axis);
++		return ret;
++	}
++
++	return ret;
++}
++
++static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(odr_start_up_times); ++i) {
++		if (odr_start_up_times[i].odr_bits == data->odr_bits)
++			return odr_start_up_times[i].usec;
++
++	}
++
++	return KXCJK1013_MAX_STARTUP_TIME_US;
++}
++
++static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan, int *val, int *val2,
++		long mask)
++{
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&data->mutex);
++		if (iio_buffer_enabled(indio_dev))
++			ret = -EBUSY;
++		else {
++			int sleep_val;
++
++			ret = kxcjk1013_set_mode(data, OPERATION);
++			if (ret < 0)
++				return ret;
++			atomic_inc(&data->power_state);
++			sleep_val = kxcjk1013_get_startup_times(data);
++			if (sleep_val < 20000)
++				usleep_range(sleep_val, 20000);
++			else
++				msleep_interruptible(sleep_val/1000);
++			ret = kxcjk1013_get_acc_reg(data, chan->scan_index);
++			if (atomic_dec_and_test(&data->power_state))
++				kxcjk1013_set_mode(data, STANDBY);
++		}
++		mutex_unlock(&data->mutex);
++
++		if (ret < 0)
++			return ret;
++
++		*val = sign_extend32(ret >> 4, 11);
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = 19163; /* range +-4g (4/2047*9.806650) */
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		mutex_lock(&data->mutex);
++		ret = kxcjk1013_get_odr(data, val, val2);
++		mutex_unlock(&data->mutex);
++		return ret;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		mutex_lock(&data->mutex);
++		ret = kxcjk1013_set_odr(data, val, val2);
++		mutex_unlock(&data->mutex);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
++		"0.781 1.563 3.125 6.25 12.5 25 50 100 200 400 800 1600");
++
++static struct attribute *kxcjk1013_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
 +};
 +
-+static struct platform_driver mx25_tsadc_driver = {
-+	.driver		= {
-+		.name	= "mx25-tsadc",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = mx25_tsadc_ids,
++static const struct attribute_group kxcjk1013_attrs_group = {
++	.attrs = kxcjk1013_attributes,
++};
++
++#define KXCJK1013_CHANNEL(_axis) {					\
++	.type = IIO_ACCEL,						\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##_axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
++	.scan_index = AXIS_##_axis,					\
++	.scan_type = {							\
++		.sign = 's',						\
++		.realbits = 12,						\
++		.storagebits = 16,					\
++		.shift = 4,						\
++		.endianness = IIO_LE,					\
++	},								\
++}
++
++static const struct iio_chan_spec kxcjk1013_channels[] = {
++	KXCJK1013_CHANNEL(X),
++	KXCJK1013_CHANNEL(Y),
++	KXCJK1013_CHANNEL(Z),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
++
++static const struct iio_info kxcjk1013_info = {
++	.attrs			= &kxcjk1013_attrs_group,
++	.read_raw		= kxcjk1013_read_raw,
++	.write_raw		= kxcjk1013_write_raw,
++	.driver_module		= THIS_MODULE,
++};
++
++static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++	int64_t time_ns = iio_get_time_ns();
++	int bit, ret, i = 0;
++
++	mutex_lock(&data->mutex);
++
++	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++			 indio_dev->masklength) {
++		ret = kxcjk1013_get_acc_reg(data, bit);
++		if (ret < 0) {
++			kxcjk1013_chip_ack_intr(data);
++			mutex_unlock(&data->mutex);
++			goto err;
++		}
++		data->buffer[i++] = ret;
++	}
++
++	kxcjk1013_chip_ack_intr(data);
++
++	mutex_unlock(&data->mutex);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer, time_ns);
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
++		bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++
++	if (state) {
++		kxcjk1013_chip_setup_interrupt(data, true);
++		kxcjk1013_set_mode(data, OPERATION);
++		atomic_inc(&data->power_state);
++	} else {
++		if (!atomic_dec_and_test(&data->power_state))
++			return 0;
++		kxcjk1013_chip_setup_interrupt(data, false);
++		kxcjk1013_set_mode(data, STANDBY);
++	}
++
++	return 0;
++}
++
++static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
++	.set_trigger_state = kxcjk1013_data_rdy_trigger_set_state,
++	.owner = THIS_MODULE,
++};
++
++static int kxcjk1013_acpi_gpio_probe(struct i2c_client *client,
++				struct kxcjk1013_data *data)
++{
++	const struct acpi_device_id *id;
++	struct device *dev;
++	struct gpio_desc *gpio;
++	int ret;
++
++	if (!client)
++		return -EINVAL;
++
++	dev = &client->dev;
++	if (!ACPI_HANDLE(dev))
++		return -ENODEV;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return -ENODEV;
++
++	/* data ready gpio interrupt pin */
++	gpio = devm_gpiod_get_index(dev, "kxcjk1013_int", 0);
++	if (IS_ERR(gpio)) {
++		dev_err(dev, "acpi gpio get index failed\n");
++		return PTR_ERR(gpio);
++	}
++
++	ret = gpiod_direction_input(gpio);
++	if (ret)
++		return ret;
++
++	ret = gpiod_to_irq(gpio);
++	if (ret < 0)
++		return ret;
++
++	data->gpio_irq = ret;
++
++	/* Update client irq if it is invalid */
++	if (client->irq < 0)
++		client->irq = data->gpio_irq;
++
++	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio),
++							data->gpio_irq);
++
++	return 0;
++}
++
++static int kxcjk1013_probe(struct i2c_client *client,
++		const struct i2c_device_id *id)
++{
++	struct kxcjk1013_data *data;
++	struct iio_dev *indio_dev;
++	struct iio_trigger *trig = NULL;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	ret = kxcjk1013_chip_init(data);
++	if (ret < 0)
++		return ret;
++
++	mutex_init(&data->mutex);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = kxcjk1013_channels;
++	indio_dev->num_channels = ARRAY_SIZE(kxcjk1013_channels);
++	indio_dev->name = KXCJK1013_DRV_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &kxcjk1013_info;
++
++	kxcjk1013_acpi_gpio_probe(client, data);
++
++	if (client->irq < 0) {
++		kxcjk1013_chip_setup_interrupt(data, false);
++		goto skip_setup_trigger;
++	}
++
++	trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
++	if (!trig)
++		return -ENOMEM;
++
++	data->trig_mode = true;
++
++	ret = devm_request_irq(&client->dev, client->irq,
++			iio_trigger_generic_data_rdy_poll,
++			IRQF_TRIGGER_RISING, KXCJK1013_IRQ_NAME, trig);
++	if (ret) {
++		dev_err(&client->dev, "unable to request IRQ\n");
++		goto err_trigger_free;
++	}
++
++	trig->dev.parent = &client->dev;
++	trig->ops = &kxcjk1013_trigger_ops;
++	iio_trigger_set_drvdata(trig, indio_dev);
++	data->trig = trig;
++	indio_dev->trig = trig;
++
++	ret = iio_trigger_register(trig);
++	if (ret)
++		goto err_trigger_free;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++			kxcjk1013_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		goto err_trigger_unregister;
++	}
++
++skip_setup_trigger:
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "unable to register iio device\n");
++		if (data->trig_mode)
++			goto err_buffer_cleanup;
++		else
++			return ret;
++	}
++
++	return 0;
++
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++err_trigger_unregister:
++	iio_trigger_unregister(trig);
++err_trigger_free:
++	iio_trigger_free(trig);
++
++	return ret;
++}
++
++static int kxcjk1013_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++
++	if (data->trig_mode) {
++		iio_triggered_buffer_cleanup(indio_dev);
++		iio_trigger_unregister(data->trig);
++		iio_trigger_free(data->trig);
++	}
++
++	mutex_lock(&data->mutex);
++	kxcjk1013_set_mode(data, STANDBY);
++	mutex_unlock(&data->mutex);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int kxcjk1013_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&data->mutex);
++	kxcjk1013_set_mode(data, STANDBY);
++	mutex_unlock(&data->mutex);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(kxcjk1013_pm_ops, kxcjk1013_suspend, NULL);
++#define KXCJK1013_PM_OPS (&kxcjk1013_pm_ops)
++#else
++#define KXCJK1013_PM_OPS NULL
++#endif
++
++static const struct acpi_device_id kx_acpi_match[] = {
++	{"KXCJ1013", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
++
++static const struct i2c_device_id kxcjk1013_id[] = {
++	{"kxcjk1013", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, kxcjk1013_id);
++
++static struct i2c_driver kxcjk1013_driver = {
++	.driver = {
++		.name	= KXCJK1013_DRV_NAME,
++		.acpi_match_table = ACPI_PTR(kx_acpi_match),
++		.pm	= KXCJK1013_PM_OPS,
 +	},
-+	.probe		= mx25_tsadc_probe,
++	.probe		= kxcjk1013_probe,
++	.remove		= kxcjk1013_remove,
++	.id_table	= kxcjk1013_id,
 +};
-+module_platform_driver(mx25_tsadc_driver);
++module_i2c_driver(kxcjk1013_driver);
 +
-+MODULE_DESCRIPTION("MFD for ADC/TSC for Freescale mx25");
-+MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
++MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
 +MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:mx25-tsadc");
-diff --git a/include/linux/mfd/imx25-tsadc.h b/include/linux/mfd/imx25-tsadc.h
-new file mode 100644
-index 0000000..6fba341
---- /dev/null
-+++ b/include/linux/mfd/imx25-tsadc.h
-@@ -0,0 +1,138 @@
-+#ifndef _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_
-+#define _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_
-+
-+struct regmap;
-+struct device;
-+struct clk;
-+
-+struct regmap *mx25_tsadc_get_regmap(struct device *dev);
-+struct clk *mx25_tsadc_get_ipg(struct device *dev);
-+
-+#define MX25_TSC_TGCR 0x00
-+#define MX25_TSC_TGSR 0x04
-+#define MX25_TSC_TICR 0x08
-+
-+/* The same register layout for TC and GC queue */
-+#define MX25_ADCQ_FIFO 0x00
-+#define MX25_ADCQ_CR 0x04
-+#define MX25_ADCQ_SR 0x08
-+#define MX25_ADCQ_MR 0x0c
-+#define MX25_ADCQ_ITEM_7_0 0x20
-+#define MX25_ADCQ_ITEM_15_8 0x24
-+#define MX25_ADCQ_CFG(n) (0x40 + ((n) * 0x4))
-+
-+/* Register values */
-+/* Queue Config register */
-+#define MX25_ADCQ_MR_MASK 0xffffffff
-+
-+/* TGCR */
-+#define MX25_TGCR_PDBTIME(x) ((x) << 25)
-+#define MX25_TGCR_PDBTIME_MASK MX25_TGCR_PDBTIME(0x7f)
-+#define MX25_TGCR_PDBEN (1 << 24)
-+#define MX25_TGCR_PDEN (1 << 23)
-+#define MX25_TGCR_ADCCLKCFG(x) ((x) << 16)
-+#define MX25_TGCR_GET_ADCCLK(x) (((x) >> 16) & 0x1f)
-+#define MX25_TGCR_INTREFEN (1 << 10)
-+#define MX25_TGCR_POWERMODE_MASK (3 << 8)
-+#define MX25_TGCR_POWERMODE_SAVE (1 << 8)
-+#define MX25_TGCR_POWERMODE_ON (2 << 8)
-+#define MX25_TGCR_STLC (1 << 5)
-+#define MX25_TGCR_SLPC (1 << 4)
-+#define MX25_TGCR_FUNC_RST (1 << 2)
-+#define MX25_TGCR_TSC_RST (1 << 1)
-+#define MX25_TGCR_CLK_EN (1 << 0)
-+
-+/* TGSR */
-+#define MX25_TGSR_SLP_INT (1 << 2)
-+#define MX25_TGSR_GCQ_INT (1 << 1)
-+#define MX25_TGSR_TCQ_INT (1 << 0)
-+
-+/* ADCQ_ITEM_* */
-+#define _MX25_ADCQ_ITEM(item, x) ((x) << ((item) * 4))
-+#define MX25_ADCQ_ITEM(item, x) ((item) >= 8 ? \
-+		_MX25_ADCQ_ITEM((item) - 8, (x)) : _MX25_ADCQ_ITEM((item), (x)))
-+
-+/* ADCQ_FIFO (TCQFIFO and GCQFIFO) */
-+#define MX25_ADCQ_FIFO_DATA(x) (((x) >> 4) & 0xfff)
-+#define MX25_ADCQ_FIFO_ID(x) ((x) & 0xf)
-+
-+/* ADCQ_CR (TCQR and GCQR) */
-+#define MX25_ADCQ_CR_PDCFG_LEVEL (1 << 19)
-+#define MX25_ADCQ_CR_PDMSK (1 << 18)
-+#define MX25_ADCQ_CR_FRST (1 << 17)
-+#define MX25_ADCQ_CR_QRST (1 << 16)
-+#define MX25_ADCQ_CR_RWAIT_MASK (0xf << 12)
-+#define MX25_ADCQ_CR_RWAIT(x) ((x) << 12)
-+#define MX25_ADCQ_CR_WMRK_MASK (0xf << 8)
-+#define MX25_ADCQ_CR_WMRK(x) ((x) << 8)
-+#define MX25_ADCQ_CR_LITEMID_MASK (0xf << 4)
-+#define MX25_ADCQ_CR_LITEMID(x) ((x) << 4)
-+#define MX25_ADCQ_CR_RPT (1 << 3)
-+#define MX25_ADCQ_CR_FQS (1 << 2)
-+#define MX25_ADCQ_CR_QSM_MASK 0x3
-+#define MX25_ADCQ_CR_QSM_PD 0x1
-+#define MX25_ADCQ_CR_QSM_FQS 0x2
-+#define MX25_ADCQ_CR_QSM_FQS_PD 0x3
-+
-+/* ADCQ_SR (TCQSR and GCQSR) */
-+#define MX25_ADCQ_SR_FDRY (1 << 15)
-+#define MX25_ADCQ_SR_FULL (1 << 14)
-+#define MX25_ADCQ_SR_EMPT (1 << 13)
-+#define MX25_ADCQ_SR_FDN(x) (((x) >> 8) & 0x1f)
-+#define MX25_ADCQ_SR_FRR (1 << 6)
-+#define MX25_ADCQ_SR_FUR (1 << 5)
-+#define MX25_ADCQ_SR_FOR (1 << 4)
-+#define MX25_ADCQ_SR_EOQ (1 << 1)
-+#define MX25_ADCQ_SR_PD (1 << 0)
-+
-+/* ADCQ_MR (TCQMR and GCQMR) */
-+#define MX25_ADCQ_MR_FDRY_DMA (1 << 31)
-+#define MX25_ADCQ_MR_FER_DMA (1 << 22)
-+#define MX25_ADCQ_MR_FUR_DMA (1 << 21)
-+#define MX25_ADCQ_MR_FOR_DMA (1 << 20)
-+#define MX25_ADCQ_MR_EOQ_DMA (1 << 17)
-+#define MX25_ADCQ_MR_PD_DMA (1 << 16)
-+#define MX25_ADCQ_MR_FDRY_IRQ (1 << 15)
-+#define MX25_ADCQ_MR_FER_IRQ (1 << 6)
-+#define MX25_ADCQ_MR_FUR_IRQ (1 << 5)
-+#define MX25_ADCQ_MR_FOR_IRQ (1 << 4)
-+#define MX25_ADCQ_MR_EOQ_IRQ (1 << 1)
-+#define MX25_ADCQ_MR_PD_IRQ (1 << 0)
-+
-+/* ADCQ_CFG (TICR, TCC0-7,GCC0-7) */
-+#define MX25_ADCQ_CFG_SETTLING_TIME(x) ((x) << 24)
-+#define MX25_ADCQ_CFG_IGS (1 << 20)
-+#define MX25_ADCQ_CFG_NOS_MASK (0xf << 16)
-+#define MX25_ADCQ_CFG_NOS(x) (((x) - 1) << 16)
-+#define MX25_ADCQ_CFG_WIPER (1 << 15)
-+#define MX25_ADCQ_CFG_YNLR (1 << 14)
-+#define MX25_ADCQ_CFG_YPLL_HIGH 0
-+#define MX25_ADCQ_CFG_YPLL_OFF (1 << 12)
-+#define MX25_ADCQ_CFG_YPLL_LOW (3 << 12)
-+#define MX25_ADCQ_CFG_XNUR_HIGH 0
-+#define MX25_ADCQ_CFG_XNUR_OFF (1 << 10)
-+#define MX25_ADCQ_CFG_XNUR_LOW (3 << 10)
-+#define MX25_ADCQ_CFG_XPUL_OFF (1 << 9)
-+#define MX25_ADCQ_CFG_XPUL_HIGH 0
-+#define MX25_ADCQ_CFG_REFP_YP 0
-+#define MX25_ADCQ_CFG_REFP_XP (1 << 7)
-+#define MX25_ADCQ_CFG_REFP_EXT (2 << 7)
-+#define MX25_ADCQ_CFG_REFP_INT (3 << 7)
-+#define MX25_ADCQ_CFG_REFP_MASK (3 << 7)
-+#define MX25_ADCQ_CFG_IN_XP 0
-+#define MX25_ADCQ_CFG_IN_YP (1 << 4)
-+#define MX25_ADCQ_CFG_IN_XN (2 << 4)
-+#define MX25_ADCQ_CFG_IN_YN (3 << 4)
-+#define MX25_ADCQ_CFG_IN_WIPER (4 << 4)
-+#define MX25_ADCQ_CFG_IN_AUX0 (5 << 4)
-+#define MX25_ADCQ_CFG_IN_AUX1 (6 << 4)
-+#define MX25_ADCQ_CFG_IN_AUX2 (7 << 4)
-+#define MX25_ADCQ_CFG_REFN_XN 0
-+#define MX25_ADCQ_CFG_REFN_YN (1 << 2)
-+#define MX25_ADCQ_CFG_REFN_NGND (2 << 2)
-+#define MX25_ADCQ_CFG_REFN_NGND2 (3 << 2)
-+#define MX25_ADCQ_CFG_REFN_MASK (3 << 2)
-+#define MX25_ADCQ_CFG_PENIACK (1 << 1)
-+
-+
-+#endif  /* _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_ */
++MODULE_DESCRIPTION("KXCJK1013 accelerometer driver");
 -- 
-1.7.9.5
-
+1.7.11.7
