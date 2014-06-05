@@ -1,52 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:43256 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752954AbaFGPbr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 11:31:47 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, jic23@kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 01/13] iio:adc:ad799x: Fix reading and writing of event values, apply shift
-Date: Sat,  7 Jun 2014 17:31:25 +0200
-Message-Id: <1402155097-435-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402155097-435-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402155097-435-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mout.kundenserver.de ([212.227.126.131]:49153 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751530AbaFEUsk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jun 2014 16:48:40 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+	Henk de Groot <pe1dnn@amsat.org>,
+	Jarod Wilson <jarod@wilsonet.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Larry Finger <Larry.Finger@lwfinger.net>,
+	Luca Risolia <luca.risolia@studio.unibo.it>,
+	Mauro Carvalho Chehab <m.chehab@samsung.com>,
+	Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-usb@vger.kernel.org
+Subject: [PATCH 0/5] randconfig build fixes for staging
+Date: Thu,  5 Jun 2014 22:48:10 +0200
+Message-Id: <1402001295-1980118-1-git-send-email-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-last two bits of ADC and limit values are zero and should not be reported
-(ad7993, ad7997); compare with read_raw()
+Hi Greg,
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/adc/ad799x.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Here are a couple of simple fixes from my backlog of ARM
+randconfig bugs. Nothing urgent, they can probably all go
+into next for 3.17 after the merge window, but see for
+yourself.
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 39b4cb4..099b830 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -429,7 +429,8 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&indio_dev->mlock);
- 	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir, info),
--		val);
-+		(val & RES_MASK(chan->scan_type.realbits))
-+			<< chan->scan_type.shift);
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret;
-@@ -452,7 +453,8 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
- 	mutex_unlock(&indio_dev->mlock);
- 	if (ret < 0)
- 		return ret;
--	*val = valin;
-+	*val = (valin >> chan->scan_type.shift) &
-+		RES_MASK(chan->scan_type.realbits);
- 
- 	return IIO_VAL_INT;
- }
+	Arnd
+
+Arnd Bergmann (5):
+  staging: lirc: remove sa1100 support
+  staging/iio: IIO_SIMPLE_DUMMY_BUFFER neds IIO_BUFFER
+  staging: sn9c102 depends on USB
+  staging: wlags49_h2: avoid PROFILE_ALL_BRANCHES warnings
+  staging: rtl8712, rtl8712: avoid lots of build warnings
+
+ drivers/staging/iio/Kconfig                    |   9 +-
+ drivers/staging/media/lirc/lirc_sir.c          | 301 +------------------------
+ drivers/staging/media/sn9c102/Kconfig          |   2 +-
+ drivers/staging/rtl8192u/ieee80211/ieee80211.h |  10 +-
+ drivers/staging/rtl8712/ieee80211.h            |   4 +-
+ drivers/staging/wlags49_h2/wl_internal.h       |   4 +-
+ 6 files changed, 17 insertions(+), 313 deletions(-)
+
 -- 
-1.9.1
+1.8.3.2
 
+Cc: Florian Schilhabel <florian.c.schilhabel@googlemail.com>
+Cc: Henk de Groot <pe1dnn@amsat.org>
+Cc: Jarod Wilson <jarod@wilsonet.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Luca Risolia <luca.risolia@studio.unibo.it>
+Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>
+Cc: Tuomas Tynkkynen <tuomas.tynkkynen@iki.fi>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
