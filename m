@@ -1,47 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:58635 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933843AbaFCWm1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 3 Jun 2014 18:42:27 -0400
+Return-Path: <pmeerw@pmeerw.net>
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, knaack.h@gmx.de,
+Cc: jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 10/15] iio:adc:ad799x: Check event value range on write
-Date: Wed,  4 Jun 2014 00:42:10 +0200
-Message-Id: <1401835335-29969-11-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
-References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: Fix endianness issue in ak8975_read_axis()
+Date: Thu,  5 Jun 2014 10:53:30 +0200
+Message-Id: <1401958410-21183-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-event values are 10 or 12 bit max., and need to be left-shifted
-on ad7993, ad7997
+i2c_smbus_read_word_data() does host endian conversion already,
+no need for le16_to_cpu()
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/iio/adc/ad799x.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/magnetometer/ak8975.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 0d8e950..dbc7c2b 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -368,9 +368,13 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 09ea5c4..ea08313 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -373,8 +373,6 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ {
+ 	struct ak8975_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	u16 meas_reg;
+-	s16 raw;
  	int ret;
- 	struct ad799x_state *st = iio_priv(indio_dev);
  
-+	if (val > GENMASK(chan->scan_type.realbits - 1, 0))
-+		return -EINVAL;
-+
- 	mutex_lock(&indio_dev->mlock);
- 	ret = i2c_smbus_write_word_swapped(st->client,
--		ad799x_threshold_reg(chan, dir, info), val);
-+		ad799x_threshold_reg(chan, dir, info),
-+		val << chan->scan_type.shift);
- 	mutex_unlock(&indio_dev->mlock);
+ 	mutex_lock(&data->lock);
+@@ -422,16 +420,11 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
+ 		dev_err(&client->dev, "Read axis data fails\n");
+ 		goto exit;
+ 	}
+-	meas_reg = ret;
  
- 	return ret;
+ 	mutex_unlock(&data->lock);
+ 
+-	/* Endian conversion of the measured values. */
+-	raw = (s16) (le16_to_cpu(meas_reg));
+-
+ 	/* Clamp to valid range. */
+-	raw = clamp_t(s16, raw, -4096, 4095);
+-	*val = raw;
++	*val = clamp_t(s16, ret, -4096, 4095);
+ 	return IIO_VAL_INT;
+ 
+ exit:
 -- 
 1.9.1
-
