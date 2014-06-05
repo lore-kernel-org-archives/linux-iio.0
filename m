@@ -1,44 +1,296 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f170.google.com ([209.85.214.170]:55209 "EHLO
-	mail-ob0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751588AbaFFPMm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jun 2014 11:12:42 -0400
-Received: by mail-ob0-f170.google.com with SMTP id nu7so1037065obb.29
-        for <linux-iio@vger.kernel.org>; Fri, 06 Jun 2014 08:12:41 -0700 (PDT)
+Received: from ns.pmeerw.net ([87.118.82.44]:32878 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751159AbaFEGQB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 5 Jun 2014 02:16:01 -0400
+Date: Thu, 5 Jun 2014 08:15:57 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Michael Welling <mwelling@ieee.org>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: mcp4902/mcp4912/mcp4922 dac driver
+In-Reply-To: <1401944595-6042-1-git-send-email-mwelling@ieee.org>
+Message-ID: <alpine.DEB.2.01.1406050812220.20498@pmeerw.net>
+References: <alpine.DEB.2.01.1406041128570.12546@pmeerw.net> <1401944595-6042-1-git-send-email-mwelling@ieee.org>
 MIME-Version: 1.0
-In-Reply-To: <5391D279.5060909@metafoo.de>
-References: <1402065052-32161-1-git-send-email-josselin.costanzi@mobile-devices.fr>
- <5391D279.5060909@metafoo.de>
-From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Date: Fri, 6 Jun 2014 17:12:21 +0200
-Message-ID: <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com>
-Subject: Re: [PATCH] iio: make blocking read wait for data
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2014-06-06 16:38 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
->
-> On 06/06/2014 04:30 PM, Josselin Costanzi wrote:
->>
->> Currently the IIO buffer blocking read only wait until at least one
->> data element is available.
->
-> But that is how it is supposed to work. With this patch for example you won't be able to read the last data from the buffer after the buffer has been disabled.
 
-I don't understand the usecase this patch breaks... If the buffer is
-disabled then we return what was read alreay.
+> This patch provides an iio device driver for the Microchip
+> MCP49x2 series DACs.
 
+comments inline
+ 
+> Signed-off-by: Michael Welling <mwelling@ieee.org>
+> ---
+>  drivers/iio/dac/Kconfig   |   10 +++
+>  drivers/iio/dac/Makefile  |    1 +
+>  drivers/iio/dac/mcp49x2.c |  213 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 224 insertions(+)
+>  create mode 100644 drivers/iio/dac/mcp49x2.c
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index f378ca8..032d678 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -163,4 +163,14 @@ config MCP4725
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called mcp4725.
+>  
+> +config MCP49X2
+> +	tristate "MCP4902, MCP4912, MCP4922 DAC driver"
+> +	depends on SPI
+> +	---help---
+> +	  Say yes here to build the driver for the Microchip MCP49x2
+> +	  series DAC devices.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called mcp49x2.
+> +
+>  endmenu
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index bb84ad6..2fdfc2e 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -18,3 +18,4 @@ obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+> +obj-$(CONFIG_MCP49X2) += mcp49x2.o
+> diff --git a/drivers/iio/dac/mcp49x2.c b/drivers/iio/dac/mcp49x2.c
+> new file mode 100644
+> index 0000000..f90a83a
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcp49x2.c
+> @@ -0,0 +1,213 @@
+> +/*
+> + * mcp49x2.c
+> + *
+> + * Driver for Microchip Digital to Analog Converters.
+> + * Supports MCP4902, MCP4912, and MCP4922.
+> + *
+> + * Copyright (c) 2014 EMAC Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/bitops.h>
+> +
+> +#define	MCP49X2_RES_MASK(x)	GENMASK(x, 0)
 
-> Or if for example n is not aligned to the sample size you'll also continue to loop forever.
+MCP49X2_RES_MASK() could go away
+it should be GENMASK(x-1, 0)
 
-If n isn't aligned to the sample size, wouldn't iio_read_first_n_kfifo
-still return data multiple of samples size? In that case we would copy
-complete elements until we try to do a short read which would fail at
-n < kfifo_esize(&kf->kf) (in iio_read_first_n_kfifo).
+> +#define MCP49X2_NUM_CHANNELS	2
+> +
+> +enum mcp49x2_supported_device_ids {
+> +	ID_MCP4902,
+> +	ID_MCP4912,
+> +	ID_MCP4922,
+> +};
+> +
+> +struct mcp49x2_state {
+> +	struct spi_device *spi;
+> +	unsigned int value[MCP49X2_NUM_CHANNELS];
+> +	unsigned int power_mode[MCP49X2_NUM_CHANNELS];
+> +	unsigned int vref_mv;
+> +	struct regulator *vref_reg;
+> +};
+> +
+> +#define MCP49X2_CHAN(chan, bits) {			\
+> +	.type = IIO_VOLTAGE,				\
+> +	.output = 1,					\
+> +	.indexed = 1,					\
+> +	.channel = chan,				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.scan_type = IIO_ST('u', bits, 16, 12-bits),	\
+> +}
+> +
+> +static int mcp49x2_spi_write(struct spi_device *spi, u8 addr, u32 val)
+> +{
+> +	u8 mosi[2] ____cacheline_aligned;
+> +
+> +	mosi[1] = val & 0xff;
+> +	mosi[0] = (addr == 0) ? 0x00: 0x80;
+> +	mosi[0] |= 0x30 | ((val >> 8) & 0x0f);
+> +
+> +	return spi_write(spi, mosi, 2);
+> +}
+> +
+> +static int mcp49x2_read_raw(struct iio_dev *indio_dev,
+> +		struct iio_chan_spec const *chan,
+> +		int *val,
+> +		int *val2,
+> +		long mask)
+> +{
+> +	struct mcp49x2_state *state = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = state->value[chan->address];
+
+address is gone, use chan->channel
+
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = state->vref_mv;
+> +		*val2 = chan->scan_type.realbits;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int mcp49x2_write_raw(struct iio_dev *indio_dev,
+> +		struct iio_chan_spec const *chan,
+> +		int val,
+> +		int val2,
+> +		long mask)
+> +{
+> +	struct mcp49x2_state *state = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val > MCP49X2_RES_MASK(chan->scan_type.realbits))
+> +			return -EINVAL;
+> +		val <<= chan->scan_type.shift;
+> +		state->value[chan->address] = val;
+
+use chan->channel
+
+> +		return mcp49x2_spi_write(state->spi, chan->address, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_chan_spec mcp49x2_channels[3][MCP49X2_NUM_CHANNELS] = {
+> +	[ID_MCP4902] = { MCP49X2_CHAN(0, 8),	MCP49X2_CHAN(1, 8) },
+> +	[ID_MCP4912] = { MCP49X2_CHAN(0, 10),	MCP49X2_CHAN(1, 10) },
+> +	[ID_MCP4922] = { MCP49X2_CHAN(0, 12),	MCP49X2_CHAN(1, 12) },
+> +};
+> +
+> +static const struct iio_info mcp49x2_info = {
+> +	.read_raw = &mcp49x2_read_raw,
+> +	.write_raw = &mcp49x2_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int mcp49x2_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct mcp49x2_state *state;
+> +	const struct spi_device_id *id;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	state = iio_priv(indio_dev);
+> +	state->spi = spi;
+> +	state->vref_reg = devm_regulator_get(&spi->dev, "vref");
+> +	if (!IS_ERR(state->vref_reg)) {
+> +		ret = regulator_enable(state->vref_reg);
+> +		if (ret) {
+> +			dev_err(&spi->dev, "Failed to enable vref regulator: %d\n",
+> +				ret);
+> +			return ret;
+> +		}
+> +
+> +		ret = regulator_get_voltage(state->vref_reg);
+> +		if (ret < 0) {
+> +			dev_err(&spi->dev, "Failed to read vref regulator: %d\n",
+> +				ret);
+> +			goto error_disable_reg;
+> +		}
+> +		state->vref_mv = ret / 1000;
+> +	} else {
+> +		dev_info(&spi->dev, "Vref regulator not specified assuming 2.5V\n");
+> +		state->vref_mv = 2500;
+> +	}
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +	id = spi_get_device_id(spi);
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->info = &mcp49x2_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = mcp49x2_channels[id->driver_data];
+> +	indio_dev->num_channels = MCP49X2_NUM_CHANNELS;
+> +	indio_dev->name = id->name;
+> +
+> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to register iio device: %d\n",
+> +				ret);
+> +		goto error_disable_reg;
+> +	}
+> +
+> +	return 0;
+> +
+> +error_disable_reg:
+> +	if (!IS_ERR(state->vref_reg))
+> +		regulator_disable(state->vref_reg);
+> +
+> +	return ret;
+> +}
+> +
+> +static int mcp49x2_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct mcp49x2_state *state;
+> +
+> +	state = iio_priv(indio_dev);
+> +
+> +	if (!IS_ERR(state->vref_reg))
+> +		regulator_disable(state->vref_reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id mcp49x2_id[] = {
+> +	{"mcp4902", ID_MCP4902},
+> +	{"mcp4912", ID_MCP4912},
+> +	{"mcp4922", ID_MCP4922},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, mcp49x2_id);
+> +
+> +static struct spi_driver mcp49x2_driver = {
+> +	.driver = {
+> +		   .name = "mcp49x2",
+> +		   .owner = THIS_MODULE,
+> +		   },
+> +	.probe = mcp49x2_probe,
+> +	.remove = mcp49x2_remove,
+> +	.id_table = mcp49x2_id,
+> +};
+> +module_spi_driver(mcp49x2_driver);
+> +
+> +MODULE_AUTHOR("Michael Welling <mwelling@ieee.org>");
+> +MODULE_DESCRIPTION("Microchip MCP4902, MCP4912, MCP4922 DAC");
+> +MODULE_LICENSE("GPL v2");
+> 
 
 -- 
-Josselin Costanzi
-  Embedded Linux System Engineer
+
+Peter Meerwald
++43-664-2444418 (mobile)
