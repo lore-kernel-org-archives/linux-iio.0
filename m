@@ -1,202 +1,65 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <5391E0CF.3000800@linux.intel.com>
-Date: Fri, 06 Jun 2014 08:39:59 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-004.synserver.de ([212.40.185.4]:1064 "EHLO
+	smtp-out-004.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751939AbaFFPkL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jun 2014 11:40:11 -0400
+Message-ID: <5391E0D7.8050309@metafoo.de>
+Date: Fri, 06 Jun 2014 17:40:07 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: AK09911 : 3 axis compass support
-References: <1401996824-24032-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1401996824-24032-2-git-send-email-srinivas.pandruvada@linux.intel.com> <53918706.4040006@metafoo.de>
-In-Reply-To: <53918706.4040006@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+CC: linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: make blocking read wait for data
+References: <1402065052-32161-1-git-send-email-josselin.costanzi@mobile-devices.fr> <5391D279.5060909@metafoo.de> <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com>
+In-Reply-To: <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2014 02:16 AM, Lars-Peter Clausen wrote:
-> On 06/05/2014 09:33 PM, Srinivas Pandruvada wrote:
-> [...]
+On 06/06/2014 05:12 PM, Josselin Costanzi wrote:
+> 2014-06-06 16:38 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+>>
+>> On 06/06/2014 04:30 PM, Josselin Costanzi wrote:
+>>>
+>>> Currently the IIO buffer blocking read only wait until at least one
+>>> data element is available.
+>>
+>> But that is how it is supposed to work. With this patch for example you won't be able to read the last data from the buffer after the buffer has been disabled.
 >
->> +
->> +#define AK09911_RAW_TO_GAUSS(asa)    ((((asa) + 128) * 6000) / 256)
->
-> Instead of doing the conversion in kernel, how about specifing offset
-> and scale attributes?
+> I don't understand the usecase this patch breaks... If the buffer is
+> disabled then we return what was read alreay.
 >
 
-This value is going to be returned via scale attribute. The "asa" is not 
-the measured axis value but sensitivity adjustment value. Spec
-defines a formula using "asa", which needs to be multiplied with the 
-measures flux value to get the real flux.
+If there is less data in the buffer than the amount of requested data you'll 
+keep looping forever.
 
+>
+>> Or if for example n is not aligned to the sample size you'll also continue to loop forever.
+>
+> If n isn't aligned to the sample size, wouldn't iio_read_first_n_kfifo
+> still return data multiple of samples size? In that case we would copy
+> complete elements until we try to do a short read which would fail at
+> n < kfifo_esize(&kf->kf) (in iio_read_first_n_kfifo).
+>
 
-Thanks,
-Srinivas
+The read_first_n() callback will make sure that it only returns full 
+samples, which means if n is smaller than the sample size it will return 0.
 
->> +
-> '...]
->> +static int ak09911_verify_chip_id(struct i2c_client *client)
->> +{
->> +    u8 wia_val[2];
->> +    int ret;
->> +
->> +    ret = i2c_smbus_read_i2c_block_data(client, AK09911_REG_WIA1,
->> +                        2, wia_val);
->> +    if (ret < 0) {
->> +        dev_err(&client->dev, "Error reading WIA\n");
->> +        return ret;
->> +    }
->> +
->> +    dev_dbg(&client->dev, "WIA %02x %02x\n", wia_val[0], wia_val[1]);
->> +
->> +    if (wia_val[0] != AK09911_WIA1_VALUE ||
->> +                    wia_val[1] != AK09911_WIA2_VALUE) {
->
-> strange alignment here
->
->> +        dev_err(&client->dev, "Device ak09911 not found\n");
->> +        return -ENODEV;
->> +    }
->> +
->> +    return 0;
->> +}
->> +
-> [...]
->> +static int ak09911_read_axis(struct iio_dev *indio_dev, int index,
->> int *val)
->> +{
->> +    struct ak09911_data *data = iio_priv(indio_dev);
->> +    struct i2c_client *client = data->client;
->> +    int ret;
->> +
->> +    mutex_lock(&data->lock);
->> +
->> +    ret = ak09911_set_mode(client, AK09911_MODE_SNG_MEASURE);
->> +    if (ret < 0)
->> +        goto fn_exit;
->> +
->> +    ret = wait_conversion_complete_polled(data);
->> +    if (ret < 0)
->> +        goto fn_exit;
->> +
->> +    /* Read data */
->> +    ret = i2c_smbus_read_word_data(client, ak09911_index_to_reg[index]);
->> +    if (ret < 0) {
->> +        dev_err(&client->dev, "Read axis data fails\n");
->> +        goto fn_exit;
->> +    }
->> +
->> +    mutex_unlock(&data->lock);
->> +
->> +    /* Clamp to valid range. */
->> +    *val  = clamp_t(s16, ret, -8192, 8191);
->
-> how about usign sign_extend32 here?
->
->
-> extra space between val and =
->
->> +
->> +    return IIO_VAL_INT;
->> +
->> +fn_exit:
->> +    mutex_unlock(&data->lock);
->> +
->> +    return ret;
->> +}
->> +
->> +static int ak09911_read_raw(struct iio_dev *indio_dev,
->> +               struct iio_chan_spec const *chan,
->> +               int *val, int *val2,
->> +               long mask)
->> +{
->> +    struct ak09911_data *data = iio_priv(indio_dev);
->> +
->> +    switch (mask) {
->> +    case IIO_CHAN_INFO_RAW:
->> +        return ak09911_read_axis(indio_dev, chan->address, val);
->> +    case IIO_CHAN_INFO_SCALE:
->> +        *val = 0;
->> +        *val2 = data->raw_to_gauss[chan->address];
->> +        return IIO_VAL_INT_PLUS_MICRO;
->> +    }
->> +
->> +    return -EINVAL;
->> +}
->> +
->> +#define AK09911_CHANNEL(axis, index)                    \
->> +    {                                \
->> +        .type = IIO_MAGN,                    \
->> +        .modified = 1,                        \
->> +        .channel2 = IIO_MOD_##axis,                \
->> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |        \
->> +                 BIT(IIO_CHAN_INFO_SCALE),            \
->> +        .address = index,                    \
->> +    }
->> +
->> +static const struct iio_chan_spec ak09911_channels[] = {
->> +    AK09911_CHANNEL(X, 0), AK09911_CHANNEL(Y, 1), AK09911_CHANNEL(Z, 2),
->> +};
->> +
->> +static const struct iio_info ak09911_info = {
->> +    .read_raw = &ak09911_read_raw,
->> +    .driver_module = THIS_MODULE,
->> +};
->> +
->> +static const struct acpi_device_id ak_acpi_match[] = {
->> +    {"AK009911", 0},
->> +    { },
->> +};
->> +MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
->> +
->> +static int ak09911_probe(struct i2c_client *client,
->> +            const struct i2c_device_id *id)
->> +{
->> +    struct iio_dev *indio_dev;
->> +    struct ak09911_data *data;
->> +    char *name;
->> +    int ret;
->> +
->> +    ret = ak09911_verify_chip_id(client);
->> +    if (ret) {
->> +        dev_err(&client->dev, "AK00911 not detected\n");
->> +        return -ENODEV;
->> +    }
->> +
->> +    indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +    if (indio_dev == NULL)
->> +        return -ENOMEM;
->> +
->> +    data = iio_priv(indio_dev);
->> +    i2c_set_clientdata(client, indio_dev);
->> +
->> +    data->client = client;
->> +    mutex_init(&data->lock);
->> +
->> +    ret = ak09911_get_asa(client);
->> +    if (ret)
->> +        return ret;
->> +
->> +    if (id)
->> +        name = (char *) id->name;
->> +    else if (ACPI_HANDLE(&client->dev))
->> +        name = (char *)dev_name(&client->dev);
->
-> Don't cast the const of the string away. Rather make your name const char *
->
->> +    else
->> +        return -ENODEV;
->> +
->> +    dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
->> +
->> +    indio_dev->dev.parent = &client->dev;
->> +    indio_dev->channels = ak09911_channels;
->> +    indio_dev->num_channels = ARRAY_SIZE(ak09911_channels);
->> +    indio_dev->info = &ak09911_info;
->> +    indio_dev->name = id->name;
->> +    indio_dev->modes = INDIO_DIRECT_MODE;
->> +    indio_dev->name = name;
->> +
->> +    return devm_iio_device_register(&client->dev, indio_dev);
->> +}
-> [...]
->
->
+Now in your patch you have
+	do {
+		ret = read_first_n(..., n, ...);
+		n -= ret;
+	} while (n > 0);
+
+So if n is not a multiple of the sample size you'll end up with n being 
+smaller than the size of one sample but larger than 0 and at that point 
+read_first_n() will always return 0 and n will stay at its current value. 
+This means the exit condition of the while loop will never be met and you 
+keep on looping forever.
+
+Maybe start with which problem you are trying to address with this patch and 
+then we can work forward from there to a solution. The current form of the 
+patch changes the semantics of read() in a way they shouldn't be changed, so 
+this is not only about the implementation bugs.
+
+- Lars
