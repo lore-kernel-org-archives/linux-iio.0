@@ -1,76 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:43405 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:43410 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752987AbaFGPnC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 11:43:02 -0400
+	id S1752994AbaFGPnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:03 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 05/12] iio:adc:ad7298: Use BIT() and GENMASK() macros
-Date: Sat,  7 Jun 2014 17:42:45 +0200
-Message-Id: <1402155772-1373-6-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 07/12] staging:iio: Update iio_event_monitor program
+Date: Sat,  7 Jun 2014 17:42:47 +0200
+Message-Id: <1402155772-1373-8-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+add types recently added
+
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/iio/adc/ad7298.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ drivers/staging/iio/Documentation/iio_event_monitor.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
-index 2a3b65c..4a8c0a2 100644
---- a/drivers/iio/adc/ad7298.c
-+++ b/drivers/iio/adc/ad7298.c
-@@ -16,6 +16,7 @@
- #include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/interrupt.h>
-+#include <linux/bitops.h>
+diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+index 3a9b000..cb35a97 100644
+--- a/drivers/staging/iio/Documentation/iio_event_monitor.c
++++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+@@ -46,6 +46,9 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_TIMESTAMP] = "timestamp",
+ 	[IIO_CAPACITANCE] = "capacitance",
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
++	[IIO_CCT] = "cct",
++	[IIO_PRESSURE] = "pressure",
++	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ };
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -25,23 +26,19 @@
- 
- #include <linux/platform_data/ad7298.h>
- 
--#define AD7298_WRITE	(1 << 15) /* write to the control register */
--#define AD7298_REPEAT	(1 << 14) /* repeated conversion enable */
--#define AD7298_CH(x)	(1 << (13 - (x))) /* channel select */
--#define AD7298_TSENSE	(1 << 5) /* temperature conversion enable */
--#define AD7298_EXTREF	(1 << 2) /* external reference enable */
--#define AD7298_TAVG	(1 << 1) /* temperature sensor averaging enable */
--#define AD7298_PDD	(1 << 0) /* partial power down enable */
-+#define AD7298_WRITE	BIT(15) /* write to the control register */
-+#define AD7298_REPEAT	BIT(14) /* repeated conversion enable */
-+#define AD7298_CH(x)	BIT(13 - (x)) /* channel select */
-+#define AD7298_TSENSE	BIT(5) /* temperature conversion enable */
-+#define AD7298_EXTREF	BIT(2) /* external reference enable */
-+#define AD7298_TAVG	BIT(1) /* temperature sensor averaging enable */
-+#define AD7298_PDD	BIT(0) /* partial power down enable */
- 
- #define AD7298_MAX_CHAN		8
--#define AD7298_BITS		12
--#define AD7298_STORAGE_BITS	16
- #define AD7298_INTREF_mV	2500
- 
- #define AD7298_CH_TEMP		9
- 
--#define RES_MASK(bits)	((1 << (bits)) - 1)
--
- struct ad7298_state {
- 	struct spi_device		*spi;
- 	struct regulator		*reg;
-@@ -257,7 +254,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 
- 		if (chan->address != AD7298_CH_TEMP)
--			*val = ret & RES_MASK(AD7298_BITS);
-+			*val = ret & GENMASK(chan->scan_type.realbits - 1, 0);
- 
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
+ static const char * const iio_ev_type_text[] = {
+@@ -70,6 +73,8 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_IR] = "ir",
+ 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
+ 	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
++	[IIO_MOD_LIGHT_BOTH] = "both",
++	[IIO_MOD_LIGHT_IR] = "ir",
+ 	[IIO_MOD_LIGHT_CLEAR] = "clear",
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+@@ -100,6 +105,9 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_TIMESTAMP:
+ 	case IIO_CAPACITANCE:
+ 	case IIO_ALTVOLTAGE:
++	case IIO_CCT:
++	case IIO_PRESSURE:
++	case IIO_HUMIDITYRELATIVE:
+ 		break;
+ 	default:
+ 		return false;
+@@ -114,6 +122,8 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_IR:
+ 	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+ 	case IIO_MOD_SUM_SQUARED_X_Y_Z:
++	case IIO_MOD_LIGHT_BOTH:
++	case IIO_MOD_LIGHT_IR:
+ 	case IIO_MOD_LIGHT_CLEAR:
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
 -- 
 1.9.1
 
