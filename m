@@ -1,68 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from ns.pmeerw.net ([87.118.82.44]:43410 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752994AbaFGPnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 11:43:03 -0400
+	id S1753051AbaFGPnE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:04 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 07/12] staging:iio: Update iio_event_monitor program
-Date: Sat,  7 Jun 2014 17:42:47 +0200
-Message-Id: <1402155772-1373-8-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 11/12] staging:iio-trig-periodic-rtc: Cleanup
+Date: Sat,  7 Jun 2014 17:42:51 +0200
+Message-Id: <1402155772-1373-12-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-add types recently added
+Fix extra space in module description
+Silence output about trigger frequency when trigger gets enabled/disabled
+Add dash to make trigger name look nicer (periodicrtc0 -> periodic-rtc0)
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/Documentation/iio_event_monitor.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 3a9b000..cb35a97 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -46,6 +46,9 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_TIMESTAMP] = "timestamp",
- 	[IIO_CAPACITANCE] = "capacitance",
- 	[IIO_ALTVOLTAGE] = "altvoltage",
-+	[IIO_CCT] = "cct",
-+	[IIO_PRESSURE] = "pressure",
-+	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
- };
+diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+index 38ecb4b..7283e50 100644
+--- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
++++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+@@ -33,7 +33,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
+ 	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+ 	if (trig_info->frequency == 0)
+ 		return -EINVAL;
+-	dev_info(&trig_info->rtc->dev, "trigger frequency is %d\n",
++	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
+ 			trig_info->frequency);
+ 	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
+ }
+@@ -113,7 +113,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
+ 	for (i = 0;; i++) {
+ 		if (pdata[i] == NULL)
+ 			break;
+-		trig = iio_trigger_alloc("periodic%s", pdata[i]);
++		trig = iio_trigger_alloc("periodic-%s", pdata[i]);
+ 		if (!trig) {
+ 			ret = -ENOMEM;
+ 			goto error_free_completed_registrations;
+@@ -128,8 +128,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
+ 		iio_trigger_set_drvdata(trig, trig_info);
+ 		trig->ops = &iio_prtc_trigger_ops;
+ 		/* RTC access */
+-		trig_info->rtc
+-			= rtc_class_open(pdata[i]);
++		trig_info->rtc = rtc_class_open(pdata[i]);
+ 		if (trig_info->rtc == NULL) {
+ 			ret = -EINVAL;
+ 			goto error_free_trig_info;
+@@ -199,5 +198,5 @@ static struct platform_driver iio_trig_periodic_rtc_driver = {
+ module_platform_driver(iio_trig_periodic_rtc_driver);
  
- static const char * const iio_ev_type_text[] = {
-@@ -70,6 +73,8 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_IR] = "ir",
- 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
- 	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
-+	[IIO_MOD_LIGHT_BOTH] = "both",
-+	[IIO_MOD_LIGHT_IR] = "ir",
- 	[IIO_MOD_LIGHT_CLEAR] = "clear",
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
-@@ -100,6 +105,9 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_TIMESTAMP:
- 	case IIO_CAPACITANCE:
- 	case IIO_ALTVOLTAGE:
-+	case IIO_CCT:
-+	case IIO_PRESSURE:
-+	case IIO_HUMIDITYRELATIVE:
- 		break;
- 	default:
- 		return false;
-@@ -114,6 +122,8 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_LIGHT_IR:
- 	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
- 	case IIO_MOD_SUM_SQUARED_X_Y_Z:
-+	case IIO_MOD_LIGHT_BOTH:
-+	case IIO_MOD_LIGHT_IR:
- 	case IIO_MOD_LIGHT_CLEAR:
- 	case IIO_MOD_LIGHT_RED:
- 	case IIO_MOD_LIGHT_GREEN:
+ MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+-MODULE_DESCRIPTION("Periodic realtime clock  trigger for the iio subsystem");
++MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
+ MODULE_LICENSE("GPL v2");
 -- 
 1.9.1
 
