@@ -1,54 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-156.synserver.de ([212.40.185.156]:1119 "EHLO
-	smtp-out-156.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754812AbaFDIBu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jun 2014 04:01:50 -0400
-Message-ID: <538ED26D.1090106@metafoo.de>
-Date: Wed, 04 Jun 2014 10:01:49 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, knaack.h@gmx.de
-Subject: Re: [PATCH 07/15] iio:adc:ad799x: Only expose event interface when
- IRQ is available
-References: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net> <1401835335-29969-8-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1401835335-29969-8-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:43402 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752935AbaFGPnB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:01 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 03/12] iio:adc:ad7887: Use BIT() and GENMASK() macros
+Date: Sat,  7 Jun 2014 17:42:43 +0200
+Message-Id: <1402155772-1373-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/2014 12:42 AM, Peter Meerwald wrote:
-> an IRQ is necessary to handle the ALERT condition; without
-> IRQ, the IIO event interface serves no purpose
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/ad7887.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-Makes sense. We should probably at some point investigate if it is possible 
-to implement something to ignore certain channel attributes when the channel 
-is created, rather than having to have two almost identical declarations of 
-the channel arrays.
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index 749a6ca..2fd012e 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -15,6 +15,7 @@
+ #include <linux/err.h>
+ #include <linux/module.h>
+ #include <linux/interrupt.h>
++#include <linux/bitops.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -25,14 +26,14 @@
+ 
+ #include <linux/platform_data/ad7887.h>
+ 
+-#define AD7887_REF_DIS		(1 << 5) /* on-chip reference disable */
+-#define AD7887_DUAL		(1 << 4) /* dual-channel mode */
+-#define AD7887_CH_AIN1		(1 << 3) /* convert on channel 1, DUAL=1 */
+-#define AD7887_CH_AIN0		(0 << 3) /* convert on channel 0, DUAL=0,1 */
+-#define AD7887_PM_MODE1		(0)	 /* CS based shutdown */
+-#define AD7887_PM_MODE2		(1)	 /* full on */
+-#define AD7887_PM_MODE3		(2)	 /* auto shutdown after conversion */
+-#define AD7887_PM_MODE4		(3)	 /* standby mode */
++#define AD7887_REF_DIS		BIT(5)	/* on-chip reference disable */
++#define AD7887_DUAL		BIT(4)	/* dual-channel mode */
++#define AD7887_CH_AIN1		BIT(3)	/* convert on channel 1, DUAL=1 */
++#define AD7887_CH_AIN0		0	/* convert on channel 0, DUAL=0,1 */
++#define AD7887_PM_MODE1		0	/* CS based shutdown */
++#define AD7887_PM_MODE2		1	/* full on */
++#define AD7887_PM_MODE3		2	/* auto shutdown after conversion */
++#define AD7887_PM_MODE4		3	/* standby mode */
+ 
+ enum ad7887_channels {
+ 	AD7887_CH0,
+@@ -40,8 +41,6 @@ enum ad7887_channels {
+ 	AD7887_CH1,
+ };
+ 
+-#define RES_MASK(bits)	((1 << (bits)) - 1)
+-
+ /**
+  * struct ad7887_chip_info - chip specifc information
+  * @int_vref_mv:	the internal reference voltage
+@@ -167,7 +166,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = ret >> chan->scan_type.shift;
+-		*val &= RES_MASK(chan->scan_type.realbits);
++		*val &= GENMASK(chan->scan_type.realbits - 1, 0);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (st->reg) {
+-- 
+1.9.1
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-[...]
-> @@ -612,8 +702,9 @@ static int ad799x_probe(struct i2c_client *client,
->   	i2c_set_clientdata(client, indio_dev);
->
->   	st->id = id->driver_data;
-> -	st->chip_info = &ad799x_chip_info_tbl[st->id];
-> -	st->config = st->chip_info->default_config;
-> +	st->chip_config = (client->irq > 0 && chip_info->irq_config.info) ?
-> +		&chip_info->irq_config : &chip_info->noirq_config;
-
-Nitpick: should be
-
-	if (...)
-		st->chip_config = ...;
-	else
-		st->chip_config = ...;
-
-> +	st->config = st->chip_config->default_config;
->
->   	/* TODO: Add pdata options for filtering and bit delay */
->
-[...]
