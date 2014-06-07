@@ -1,51 +1,59 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 18 Jun 2014 10:47:17 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Kristina =?utf-8?Q?Mart=C5=A1enko?= <kristina.martsenko@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: IIO drivers left in drivers/staging/
-Message-ID: <20140618174717.GC11977@kroah.com>
-References: <20140611013007.GA32756@kroah.com>
- <f0db211a-bf69-4a3e-beda-2101af74ae25@email.android.com>
- <53998D43.9020209@gmail.com>
- <53A1895A.4090209@gmail.com>
- <alpine.DEB.2.01.1406181445290.28014@pmeerw.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.01.1406181445290.28014@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:43400 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752940AbaFGPnB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:01 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 02/12] iio:adc:ad5504: Use BIT() and GENMASK() macros
+Date: Sat,  7 Jun 2014 17:42:42 +0200
+Message-Id: <1402155772-1373-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 18, 2014 at 02:56:52PM +0200, Peter Meerwald wrote:
-> Hello Kristina,
-> 
-> > > Okay so right now I'm getting the following things I could work on:
-> > > 
-> > > 1) prefixes on define constants for lpc32xx_ADC (then trying to move it
-> > > out of staging and seeing what other issues people find?)
-> > > 2) resolver/CDC ABI documentation cleanup
-> > > 3) dummy driver fake event interrupt hack
-> > > 4) Lars may have more ideas?
-> > > 
-> > > The plan is for me to start working on this stuff full time next week,
-> > > so if you think of anything more, please let me know!
-> > 
-> > Haven't heard back from you about this. Have you found anything else
-> > that needs to be done with staging IIO drivers before they can be moved out?
-> 
-> IIO is a bit problematic since testing usually requires possessing the 
-> sensor chip
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/dac/ad5504.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-Any specific chips / devices we should look into buying for these
-drivers to help make it easier to do development?
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index 1e64493..c917dd2 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -15,17 +15,16 @@
+ #include <linux/sysfs.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/module.h>
++#include <linux/bitops.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+ #include <linux/iio/dac/ad5504.h>
+ 
+-#define AD5505_BITS			12
+-#define AD5504_RES_MASK			((1 << (AD5505_BITS)) - 1)
+-
+-#define AD5504_CMD_READ			(1 << 15)
+-#define AD5504_CMD_WRITE		(0 << 15)
++#define AD5504_RES_MASK			GENMASK(11, 0)
++#define AD5504_CMD_READ			BIT(15)
++#define AD5504_CMD_WRITE		0
+ #define AD5504_ADDR(addr)		((addr) << 12)
+ 
+ /* Registers */
+@@ -42,7 +41,7 @@
+ 
+ /**
+  * struct ad5446_state - driver instance specific data
+- * @us:			spi_device
++ * @spi:			spi_device
+  * @reg:		supply regulator
+  * @vref_mv:		actual reference voltage used
+  * @pwr_down_mask	power down mask
+-- 
+1.9.1
 
-> regarding staging/iio/magnetometer/hmc5843:
-> the driver has one specific DEVICE_ATTR left (meas_conf), otherwise clean 
-> I think; so we could (a) document it as special ABI or (b) drop it
-
-Which is it?  It should be easy to delete a driver :)
-
-thanks,
-
-greg k-h
