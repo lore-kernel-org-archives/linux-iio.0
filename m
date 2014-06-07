@@ -1,67 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:43410 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([87.118.82.44]:43408 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753051AbaFGPnE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 11:43:04 -0400
+	id S1753025AbaFGPnC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:02 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 11/12] staging:iio-trig-periodic-rtc: Cleanup
-Date: Sat,  7 Jun 2014 17:42:51 +0200
-Message-Id: <1402155772-1373-12-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 06/12] iio: Move documentation of iio-trig-sysfs to ABI
+Date: Sat,  7 Jun 2014 17:42:46 +0200
+Message-Id: <1402155772-1373-7-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix extra space in module description
-Silence output about trigger frequency when trigger gets enabled/disabled
-Add dash to make trigger name look nicer (periodicrtc0 -> periodic-rtc0)
+iio-trig-sysfs has left staging with commit e64e7d5c
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio                      | 12 ++++++++++++
+ .../staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs    | 11 -----------
+ 2 files changed, 12 insertions(+), 11 deletions(-)
+ delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index 38ecb4b..7283e50 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -33,7 +33,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
- 	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
- 	if (trig_info->frequency == 0)
- 		return -EINVAL;
--	dev_info(&trig_info->rtc->dev, "trigger frequency is %d\n",
-+	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
- 			trig_info->frequency);
- 	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
- }
-@@ -113,7 +113,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
- 	for (i = 0;; i++) {
- 		if (pdata[i] == NULL)
- 			break;
--		trig = iio_trigger_alloc("periodic%s", pdata[i]);
-+		trig = iio_trigger_alloc("periodic-%s", pdata[i]);
- 		if (!trig) {
- 			ret = -ENOMEM;
- 			goto error_free_completed_registrations;
-@@ -128,8 +128,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
- 		iio_trigger_set_drvdata(trig, trig_info);
- 		trig->ops = &iio_prtc_trigger_ops;
- 		/* RTC access */
--		trig_info->rtc
--			= rtc_class_open(pdata[i]);
-+		trig_info->rtc = rtc_class_open(pdata[i]);
- 		if (trig_info->rtc == NULL) {
- 			ret = -EINVAL;
- 			goto error_free_trig_info;
-@@ -199,5 +198,5 @@ static struct platform_driver iio_trig_periodic_rtc_driver = {
- module_platform_driver(iio_trig_periodic_rtc_driver);
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index ed202b3..5e86ee9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -19,6 +19,18 @@ Description:
+ 		generalize well and hence are not documented in this file.
+ 		X is the IIO index of the trigger.
  
- MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
--MODULE_DESCRIPTION("Periodic realtime clock  trigger for the iio subsystem");
-+MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
- MODULE_LICENSE("GPL v2");
++What:		/sys/bus/iio/devices/triggerX/trigger_now
++KernelVersion:	2.6.38
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This file is provided by the iio-trig-sysfs stand-alone trigger
++		driver. Writing this file with any value triggers an event
++		driven driver, associated with this trigger, to capture data
++		into an in kernel buffer. This approach can be valuable during
++		automated testing or in situations, where other trigger methods
++		are not applicable. For example no RTC or spare GPIOs.
++		X is the IIO index of the trigger.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/buffer
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs b/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+deleted file mode 100644
+index 5235e6c..0000000
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
++++ /dev/null
+@@ -1,11 +0,0 @@
+-What:		/sys/bus/iio/devices/triggerX/trigger_now
+-KernelVersion:	2.6.38
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This file is provided by the iio-trig-sysfs stand-alone trigger
+-		driver. Writing this file with any value triggers an event
+-		driven driver, associated with this trigger, to capture data
+-		into an in kernel buffer. This approach can be valuable during
+-		automated testing or in situations, where other trigger methods
+-		are not applicable. For example no RTC or spare GPIOs.
+-		X is the IIO index of the trigger.
 -- 
 1.9.1
 
