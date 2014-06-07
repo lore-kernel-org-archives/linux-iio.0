@@ -1,57 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f49.google.com ([209.85.215.49]:55666 "EHLO
-	mail-la0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750730AbaFKMJN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 08:09:13 -0400
-MIME-Version: 1.0
-In-Reply-To: <bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-Date: Wed, 11 Jun 2014 14:09:11 +0200
-Message-ID: <CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
-Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	support.opensource@diasemi.com,
-	Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+Subject: [PATCH 00/12] misc IIO cleanup
+Date: Sat,  7 Jun 2014 17:42:40 +0200
+Message-Id: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Jun 11, 2014 at 1:11 PM, Adam Thomson
-<Adam.Thomson.Opensource@diasemi.com> wrote:
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -36,6 +36,7 @@ dallas        Maxim Integrated Products (formerly Dallas Semiconductor)
->  davicom        DAVICOM Semiconductor, Inc.
->  denx   Denx Software Engineering
->  digi   Digi International Inc.
-> +dlg    Dialog Semiconductor Ltd.
+patches 1 to 5 aim to use the BIT() and GENMASK() macros in various AD ADC 
+drivers; this gets rid of the RES_MASK() macro #defined in each driver
 
-"diasemi" has been proposed before
-https://groups.google.com/forum/#!msg/linux.kernel/htUxLpV_Ng0/ClJVAxgK4e4J
+patch 6 move documentation of /sys/bus/iio/devices/triggerX/trigger_now to
+Documentation/ABI/testing/sysfs-bus-iio as iio-trig-sysfs has left staging
+with commit e64e7d5c
 
-"dialog", "diasemi", and "dlg" all seem to be already in use...
+patches 7 to 10 are cleanup and bugfixse to iio/staging
 
-Gr{oetje,eeting}s,
+patch 11 is cleanup to iio-trig-periodic-rtc (which is important and I think
+should leave staging soon -- what is left to do?)
 
-                        Geert
+patch 12 allows to set the frequency of the periodic rtc to 0, thereby temporarily
+disabling the trigger
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Peter Meerwald (12):
+  iio:adc:ad5791: Use BIT() and GENMASK() macros
+  iio:adc:ad5504: Use BIT() and GENMASK() macros
+  iio:adc:ad7887: Use BIT() and GENMASK() macros
+  iio:adc:ad7476: Use GENMASK() macro
+  iio:adc:ad7298: Use BIT() and GENMASK() macros
+  iio: Move documentation of iio-trig-sysfs to ABI
+  staging:iio: Update iio_event_monitor program
+  staging:iio: Fix iio_utils.h function prototypes
+  staging:iio: Fix mention of INDIO_RING_TRIGGERED to
+    INDIO_BUFFER_TRIGGERED
+  staging:iio: Fix error handling in generic_buffer example
+  staging:iio-trig-periodic-rtc: Cleanup
+  staging:iio-trig-periodic-rtc: Allow to reset frequency to 0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ Documentation/ABI/testing/sysfs-bus-iio            | 12 +++++++++
+ drivers/iio/adc/ad7298.c                           | 21 +++++++---------
+ drivers/iio/adc/ad7476.c                           |  5 ++--
+ drivers/iio/adc/ad7887.c                           | 21 ++++++++--------
+ drivers/iio/dac/ad5504.c                           | 11 ++++----
+ drivers/iio/dac/ad5791.c                           | 29 +++++++++++-----------
+ drivers/staging/iio/Documentation/generic_buffer.c |  9 ++++---
+ .../staging/iio/Documentation/iio_event_monitor.c  | 10 ++++++++
+ drivers/staging/iio/Documentation/iio_utils.h      |  6 ++---
+ .../iio/Documentation/sysfs-bus-iio-trigger-sysfs  | 11 --------
+ drivers/staging/iio/Documentation/trigger.txt      |  2 +-
+ .../staging/iio/trigger/iio-trig-periodic-rtc.c    | 28 +++++++++++++++------
+ 12 files changed, 92 insertions(+), 73 deletions(-)
+ delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+
+-- 
+1.9.1
