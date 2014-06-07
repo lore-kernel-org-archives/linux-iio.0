@@ -1,65 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-004.synserver.de ([212.40.185.4]:1064 "EHLO
-	smtp-out-004.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751939AbaFFPkL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jun 2014 11:40:11 -0400
-Message-ID: <5391E0D7.8050309@metafoo.de>
-Date: Fri, 06 Jun 2014 17:40:07 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.kernel.org ([198.145.19.201]:54976 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751755AbaFGKQX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 06:16:23 -0400
+Message-ID: <5392E6E4.40408@kernel.org>
+Date: Sat, 07 Jun 2014 11:18:12 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-CC: linux-iio <linux-iio@vger.kernel.org>
+To: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Subject: Re: [PATCH] iio: make blocking read wait for data
-References: <1402065052-32161-1-git-send-email-josselin.costanzi@mobile-devices.fr> <5391D279.5060909@metafoo.de> <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com>
-In-Reply-To: <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com>
+References: <1402065052-32161-1-git-send-email-josselin.costanzi@mobile-devices.fr> <5391D279.5060909@metafoo.de> <CAJA4uhc+RdEmOgyK8f3VHTqgCdAbVtdko1EW8z3BDvFq8Y4Rzw@mail.gmail.com> <5391E0D7.8050309@metafoo.de> <CAJA4uhfOGPZ_sZ1BC_OOPOOmy9YsGF8XpKjW9bE-8BSTkEdzoA@mail.gmail.com>
+In-Reply-To: <CAJA4uhfOGPZ_sZ1BC_OOPOOmy9YsGF8XpKjW9bE-8BSTkEdzoA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/06/2014 05:12 PM, Josselin Costanzi wrote:
-> 2014-06-06 16:38 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
->>
->> On 06/06/2014 04:30 PM, Josselin Costanzi wrote:
+On 06/06/14 18:15, Josselin Costanzi wrote:
+> 2014-06-06 17:40 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+>
+>> On 06/06/2014 05:12 PM, Josselin Costanzi wrote:
 >>>
->>> Currently the IIO buffer blocking read only wait until at least one
->>> data element is available.
+>>> 2014-06-06 16:38 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+>>>>
+>>>> On 06/06/2014 04:30 PM, Josselin Costanzi wrote:
+>>>>>
+>>>>> Currently the IIO buffer blocking read only wait until at least one
+>>>>> data element is available.
+>>>>
+>>>> But that is how it is supposed to work. With this patch for example you
+>>>> won't be able to read the last data from the buffer after the buffer has
+>>>> been disabled.
+>>>
+>>> I don't understand the usecase this patch breaks... If the buffer is
+>>> disabled then we return what was read alreay.
 >>
->> But that is how it is supposed to work. With this patch for example you won't be able to read the last data from the buffer after the buffer has been disabled.
+>> If there is less data in the buffer than the amount of requested data you'll
+>> keep looping forever.
 >
-> I don't understand the usecase this patch breaks... If the buffer is
-> disabled then we return what was read alreay.
+> We are working with an accelerometer and the only trigger is periodic so we
+> didn't think of that since we are sure we end up with enough data.
+> Is there a way to know when if the trigger is done generating events and no
+> more data is expected?
+It should be done when the sysfs write to turn the buffer off is complete.
+Otherwise, no - there is is general no way to know when some triggers will
+fire.
 >
-
-If there is less data in the buffer than the amount of requested data you'll 
-keep looping forever.
+> Even with the patch as is, we can use a signal to interrupt the read so it's
+> possible for the userspace to set a timeout (this works with our userspace,
+> on a SIGINT we correctly get the data acquired so far).
+We could, but see below...
+>
+>
+>>>> Or if for example n is not aligned to the sample size you'll also
+>>>> continue to loop forever.
+>>>
+>>> If n isn't aligned to the sample size, wouldn't iio_read_first_n_kfifo
+>>> still return data multiple of samples size? In that case we would copy
+>>> complete elements until we try to do a short read which would fail at
+>>> n < kfifo_esize(&kf->kf) (in iio_read_first_n_kfifo).
+>>
+>> The read_first_n() callback will make sure that it only returns full
+>> samples, which means if n is smaller than the sample size it will return 0.
+>
+> In fact it won't return 0 but -EINVAL then read returns the size of
+> the data already
+> copied (this also works with our userspace program)
+>
+>
+>> Maybe start with which problem you are trying to address with this patch and
+>> then we can work forward from there to a solution. The current form of the
+>> patch changes the semantics of read() in a way they shouldn't be changed, so
+>> this is not only about the implementation bugs.
+>
+> Our use case is we continuously get data from an accelerometer. The sample
+> frequency is relatively low (< 1KHz) so the userland ends up making one syscall
+> per sample when we would prefer to process the data by batches to reduce the cpu
+> load.
+> We would like to have the blocking read() semantics where we wait for the data
+> until the buffer is full unless there is an exceptional condition as
+> it's usually done for
+> ttys and sockets.
+Be careful with your examples.  This simply isn't true for sockets. Try sending
+a large amount of date over a tcp connection using blocking reads. You frequently
+get less data than requested as it tends to return when individual packets come
+in.  Note the man page for read makes it absolutely clear that partial data may
+be returned and if so the userspace program is responsible for reading again
+until it gets what it wants.
 
 >
->> Or if for example n is not aligned to the sample size you'll also continue to loop forever.
->
-> If n isn't aligned to the sample size, wouldn't iio_read_first_n_kfifo
-> still return data multiple of samples size? In that case we would copy
-> complete elements until we try to do a short read which would fail at
-> n < kfifo_esize(&kf->kf) (in iio_read_first_n_kfifo).
->
+> I think the patch doesn't break anything except for the case where the
+> trigger generates
+> a finite and unknown number of data samples and the userspace requests
+> more than this
+> amount of samples.
+A very common situation...
+> But in this scenario, without the patch, a blocking read does the same
+> as a poll followed
+> by a non blocking read which is the standard way to get a variable
+> amount of data.
+Sorry, but we simply aren't going to change the semantics of this as this
+is a major userspace ABI change.  What we have at the moment conforms
+entirely to what is permitted by the semantics of read.
 
-The read_first_n() callback will make sure that it only returns full 
-samples, which means if n is smaller than the sample size it will return 0.
+Now having said that, we have had a number of discussions of how to support
+watershed type events on the buffer over the years.  I think the current
+consensus would be to use one of the more obscure POLL types to indicate
+that there was more than a specified amount of data in a buffer ready
+to be read.  The most recent thread was related specifically to hardware
+buffers, but as I point out later in the discussion any interface should
+work equally well with software buffers.
 
-Now in your patch you have
-	do {
-		ret = read_first_n(..., n, ...);
-		n -= ret;
-	} while (n > 0);
+http://marc.info/?l=linux-iio&m=139939531422385&w=2
 
-So if n is not a multiple of the sample size you'll end up with n being 
-smaller than the size of one sample but larger than 0 and at that point 
-read_first_n() will always return 0 and n will stay at its current value. 
-This means the exit condition of the while loop will never be met and you 
-keep on looping forever.
+If/when this gets implemented the semantics (which will need a man page
+of their own given the 'unusual' use of POLL_PRI) will be
 
-Maybe start with which problem you are trying to address with this patch and 
-then we can work forward from there to a solution. The current form of the 
-patch changes the semantics of read() in a way they shouldn't be changed, so 
-this is not only about the implementation bugs.
+poll (POLLIN,  POLLRDNORM) - wait for some data.
+read non blocking - read anything that is there.
+read blocking - read what is there or wait until something is then read that.
+poll (POLLPRI, POLLRDBAND) - wait for a sysfs defined watershed level of data
+be available.
 
-- Lars
+Now to actually do this requires some additional functions for the buffers
+interface, and an implementation within the kfifo buffer + any others
+people are using.  As it stands, kfifo has the ability to query how
+many elements are unused which gets us at least close to what we want...
+I've cc'd Srinivas as he may have made some progress on an interface
+for this.
+
+Long ago we actually had this sort of functionality in sw_ring but no
+one ever seemed to use it and the interface was hideous.
+
+J
