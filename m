@@ -1,26 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-136.synserver.de ([212.40.185.136]:1088 "EHLO
-	smtp-out-136.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754864AbaFIMAQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jun 2014 08:00:16 -0400
-Message-ID: <5395A1CD.9030700@metafoo.de>
-Date: Mon, 09 Jun 2014 14:00:13 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 04/12] iio:adc:ad7476: Use GENMASK() macro
-References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net> <1402155772-1373-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402155772-1373-5-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from ns.pmeerw.net ([87.118.82.44]:43404 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753030AbaFGPnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:03 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 08/12] staging:iio: Fix iio_utils.h function prototypes
+Date: Sat,  7 Jun 2014 17:42:48 +0200
+Message-Id: <1402155772-1373-9-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/07/2014 05:42 PM, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/Documentation/iio_utils.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks.
+diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+index a9cfc06..0973a09 100644
+--- a/drivers/staging/iio/Documentation/iio_utils.h
++++ b/drivers/staging/iio/Documentation/iio_utils.h
+@@ -633,7 +633,7 @@ error_free:
+ 
+ int read_sysfs_float(char *filename, char *basedir, float *val)
+ {
+-	float ret = 0;
++	int ret = 0;
+ 	FILE  *sysfsfp;
+ 	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
+ 	if (temp == NULL) {
+@@ -653,9 +653,9 @@ error_free:
+ 	return ret;
+ }
+ 
+-read_sysfs_string(const char *filename, const char *basedir, char *str)
++int read_sysfs_string(const char *filename, const char *basedir, char *str)
+ {
+-	float ret = 0;
++	int ret = 0;
+ 	FILE  *sysfsfp;
+ 	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
+ 	if (temp == NULL) {
+-- 
+1.9.1
 
