@@ -1,88 +1,375 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:11604 "EHLO mga03.intel.com"
+Received: from ns.pmeerw.net ([87.118.82.44]:43273 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751574AbaFUQ0F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 21 Jun 2014 12:26:05 -0400
-Message-ID: <53A5B218.9040600@linux.intel.com>
-Date: Sat, 21 Jun 2014 09:26:00 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-To: Bastien Nocera <hadess@hadess.net>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: Re: User-space API for accelerometer(s)?
-References: <1403100542.30918.29.camel@nuvo>		 <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>		 <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>	 <53A57414.8000104@kernel.org> <1403354266.3385.7.camel@nuvo>
-In-Reply-To: <1403354266.3385.7.camel@nuvo>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	id S1753050AbaFGPbt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:31:49 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, jic23@kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 06/13] iio:adc:ad799x: Only expose event interface when IRQ is available
+Date: Sat,  7 Jun 2014 17:31:30 +0200
+Message-Id: <1402155097-435-7-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402155097-435-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402155097-435-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+an IRQ is necessary to handle the ALERT condition; without
+IRQ, the IIO event interface serves no purpose
 
-On 06/21/2014 05:37 AM, Bastien Nocera wrote:
-> On Sat, 2014-06-21 at 13:01 +0100, Jonathan Cameron wrote:
->> On 19/06/14 12:20, Bastien Nocera wrote:
->>> On Wed, 2014-06-18 at 16:45 -0700, Srinivas Pandruvada wrote:
->>>> On 06/18/2014 04:31 PM, Reyad Attiyat wrote:
->>>>> Hello Bastien Nocera,
->>>>>
->>>>> I'm not the best person to answer your questions but I will try and
->>>>> help. The best people to talk to would be Jonathan Cameron, the IIO
->>>>> maintainer, and Srinivas Pandruvada, the author of the hid-sensor-hub
->>>>> device drivers. I have CC'ed them for you to hopefully get a better
->>>>> response than what I can offer.
->>>>>
->>>>> Your device uses the same sensor hub, over usb, as my device does. I
->>>>> have a Microsoft Surface and it also uses many of the sensors found on
->>>>> the Lenovo Yoga.
->>>>>
->>>>>> So, my question regarding the IIO user-space API is:
->>>>>> is it possible to make the IIO accelerometer send out a kevent when the
->>>>>> orientation changes in a major way (using triggers?) or does user-space
->>>>>> need to poll the device instead?
->>>> You can check a program called generic_buffer.c in
->>>> "drivers/staging/iio/Documentation". I have used this as a reference to
->>>> port to Android.
->>>> You don't need to poll, you can also check
->>>> "https://github.com/pfps/yoga-laptop/sensors " developed by Peter F.
->>>> Patel-Schneider.
->>> I've read this code, and in fact, I mentioned it in my original mail. I
->>> fail to see how this code isn't polling. It's also much more complicated
->>> than doing the same thing for a evdev accelerometer.
->>>
->> Just to throw it in there.  There is an out of tree bridge driver from
->> IIO to input.  It's only out of tree because I haven't had a chance to
->> tidy it up (anyone else is welcome to take this on if they like!)
->> Google for iio_input.c to find it.
-> Found it, thanks :)
->
-> http://thread.gmane.org/gmane.linux.kernel.iio/4464/
->
-> (By the way, "iio_input", not "iio_snoop")
->
->> The intent of that was to allow general accelerometer drivers and similar
->> in IIO to work in conjunction with iio-input to provide input style interfaces.
->> This came about after previous debates on where the 'right' place for
->> accelerometers was in the kernel. I believe that at least in principle,
->> Dmitry was happy with this concept.
-> Cool. The only question left would be whether this could throw a kevent
-> when the orientation changes in a major way. This is a firmware feature
-> in the WeTab/Pegatron machine, and is useful because it avoids the need
-> to have the accelerometer constantly opened when not needed (saving
-> battery by avoiding wakeups).
-That will happen with sensor hubs, You can set the hysteresis to not to get
-awakened unless the change is significant.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad799x.c | 265 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 179 insertions(+), 86 deletions(-)
 
-Thanks,
-Srinivas
-
-> Would it be worth adding such a feature inside the iio-input driver? I
-> would have preferred it if the hardware sent those events, but I'd be
-> happy just the same if the driver did it. The backing IIO device is
-> always opened and processing data, it seems, whether or not the backing
-> input device is opened in user-space or not.
->
-> Cheers
->
->
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index cc558e6..e880d17 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -101,22 +101,32 @@ enum {
+ };
+ 
+ /**
+- * struct ad799x_chip_info - chip specific information
++ * struct ad799x_chip_config - chip specific information
+  * @channel:		channel specification
+- * @num_channels:	number of channels
+  * @default_config:	device default configuration
+  * @info:		pointer to iio_info struct
+  */
+-struct ad799x_chip_info {
++struct ad799x_chip_config {
+ 	struct iio_chan_spec		channel[9];
+-	int				num_channels;
+ 	u16				default_config;
+ 	const struct iio_info		*info;
+ };
+ 
++/**
++ * struct ad799x_chip_info - chip specific information
++ * @num_channels:	number of channels
++ * @noirq_config:	device configuration w/o IRQ
++ * @irq_config:		device configuration w/IRQ
++ */
++struct ad799x_chip_info {
++	int				num_channels;
++	const struct ad799x_chip_config	noirq_config;
++	const struct ad799x_chip_config	irq_config;
++};
++
+ struct ad799x_state {
+ 	struct i2c_client		*client;
+-	const struct ad799x_chip_info	*chip_info;
++	const struct ad799x_chip_config	*chip_config;
+ 	struct regulator		*reg;
+ 	struct regulator		*vref;
+ 	unsigned			id;
+@@ -444,7 +454,13 @@ static const struct iio_info ad7991_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+-static const struct iio_info ad7993_4_7_8_info = {
++static const struct iio_info ad7993_4_7_8_noirq_info = {
++	.read_raw = &ad799x_read_raw,
++	.driver_module = THIS_MODULE,
++	.update_scan_mode = ad7997_8_update_scan_mode,
++};
++
++static const struct iio_info ad7993_4_7_8_irq_info = {
+ 	.read_raw = &ad799x_read_raw,
+ 	.event_attrs = &ad799x_event_attrs_group,
+ 	.read_event_config = &ad799x_read_event_config,
+@@ -499,103 +515,175 @@ static const struct iio_event_spec ad799x_events[] = {
+ 
+ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	[ad7991] = {
+-		.channel = {
+-			AD799X_CHANNEL(0, 12),
+-			AD799X_CHANNEL(1, 12),
+-			AD799X_CHANNEL(2, 12),
+-			AD799X_CHANNEL(3, 12),
+-			IIO_CHAN_SOFT_TIMESTAMP(4),
+-		},
+ 		.num_channels = 5,
+-		.info = &ad7991_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 12),
++				AD799X_CHANNEL(1, 12),
++				AD799X_CHANNEL(2, 12),
++				AD799X_CHANNEL(3, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.info = &ad7991_info,
++		},
+ 	},
+ 	[ad7995] = {
+-		.channel = {
+-			AD799X_CHANNEL(0, 10),
+-			AD799X_CHANNEL(1, 10),
+-			AD799X_CHANNEL(2, 10),
+-			AD799X_CHANNEL(3, 10),
+-			IIO_CHAN_SOFT_TIMESTAMP(4),
+-		},
+ 		.num_channels = 5,
+-		.info = &ad7991_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 10),
++				AD799X_CHANNEL(1, 10),
++				AD799X_CHANNEL(2, 10),
++				AD799X_CHANNEL(3, 10),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.info = &ad7991_info,
++		},
+ 	},
+ 	[ad7999] = {
+-		.channel = {
+-			AD799X_CHANNEL(0, 8),
+-			AD799X_CHANNEL(1, 8),
+-			AD799X_CHANNEL(2, 8),
+-			AD799X_CHANNEL(3, 8),
+-			IIO_CHAN_SOFT_TIMESTAMP(4),
+-		},
+ 		.num_channels = 5,
+-		.info = &ad7991_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 8),
++				AD799X_CHANNEL(1, 8),
++				AD799X_CHANNEL(2, 8),
++				AD799X_CHANNEL(3, 8),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.info = &ad7991_info,
++		},
+ 	},
+ 	[ad7992] = {
+-		.channel = {
+-			AD799X_CHANNEL_WITH_EVENTS(0, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(1, 12),
+-			IIO_CHAN_SOFT_TIMESTAMP(3),
+-		},
+ 		.num_channels = 3,
+-		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7993_4_7_8_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 12),
++				AD799X_CHANNEL(1, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(3),
++			},
++			.info = &ad7993_4_7_8_noirq_info,
++		},
++		.irq_config = {
++			.channel = {
++				AD799X_CHANNEL_WITH_EVENTS(0, 12),
++				AD799X_CHANNEL_WITH_EVENTS(1, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(3),
++			},
++			.default_config = AD7998_ALERT_EN,
++			.info = &ad7993_4_7_8_irq_info,
++		},
+ 	},
+ 	[ad7993] = {
+-		.channel = {
+-			AD799X_CHANNEL_WITH_EVENTS(0, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(1, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(2, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(3, 10),
+-			IIO_CHAN_SOFT_TIMESTAMP(4),
+-		},
+ 		.num_channels = 5,
+-		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7993_4_7_8_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 10),
++				AD799X_CHANNEL(1, 10),
++				AD799X_CHANNEL(2, 10),
++				AD799X_CHANNEL(3, 10),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.info = &ad7993_4_7_8_noirq_info,
++		},
++		.irq_config = {
++			.channel = {
++				AD799X_CHANNEL_WITH_EVENTS(0, 10),
++				AD799X_CHANNEL_WITH_EVENTS(1, 10),
++				AD799X_CHANNEL_WITH_EVENTS(2, 10),
++				AD799X_CHANNEL_WITH_EVENTS(3, 10),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.default_config = AD7998_ALERT_EN,
++			.info = &ad7993_4_7_8_irq_info,
++		},
+ 	},
+ 	[ad7994] = {
+-		.channel = {
+-			AD799X_CHANNEL_WITH_EVENTS(0, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(1, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(2, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(3, 12),
+-			IIO_CHAN_SOFT_TIMESTAMP(4),
+-		},
+ 		.num_channels = 5,
+-		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7993_4_7_8_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 12),
++				AD799X_CHANNEL(1, 12),
++				AD799X_CHANNEL(2, 12),
++				AD799X_CHANNEL(3, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.info = &ad7993_4_7_8_noirq_info,
++		},
++		.irq_config = {
++			.channel = {
++				AD799X_CHANNEL_WITH_EVENTS(0, 12),
++				AD799X_CHANNEL_WITH_EVENTS(1, 12),
++				AD799X_CHANNEL_WITH_EVENTS(2, 12),
++				AD799X_CHANNEL_WITH_EVENTS(3, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(4),
++			},
++			.default_config = AD7998_ALERT_EN,
++			.info = &ad7993_4_7_8_irq_info,
++		},
+ 	},
+ 	[ad7997] = {
+-		.channel = {
+-			AD799X_CHANNEL_WITH_EVENTS(0, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(1, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(2, 10),
+-			AD799X_CHANNEL_WITH_EVENTS(3, 10),
+-			AD799X_CHANNEL(4, 10),
+-			AD799X_CHANNEL(5, 10),
+-			AD799X_CHANNEL(6, 10),
+-			AD799X_CHANNEL(7, 10),
+-			IIO_CHAN_SOFT_TIMESTAMP(8),
+-		},
+ 		.num_channels = 9,
+-		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7993_4_7_8_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 10),
++				AD799X_CHANNEL(1, 10),
++				AD799X_CHANNEL(2, 10),
++				AD799X_CHANNEL(3, 10),
++				AD799X_CHANNEL(4, 10),
++				AD799X_CHANNEL(5, 10),
++				AD799X_CHANNEL(6, 10),
++				AD799X_CHANNEL(7, 10),
++				IIO_CHAN_SOFT_TIMESTAMP(8),
++			},
++			.info = &ad7993_4_7_8_noirq_info,
++		},
++		.irq_config = {
++			.channel = {
++				AD799X_CHANNEL_WITH_EVENTS(0, 10),
++				AD799X_CHANNEL_WITH_EVENTS(1, 10),
++				AD799X_CHANNEL_WITH_EVENTS(2, 10),
++				AD799X_CHANNEL_WITH_EVENTS(3, 10),
++				AD799X_CHANNEL(4, 10),
++				AD799X_CHANNEL(5, 10),
++				AD799X_CHANNEL(6, 10),
++				AD799X_CHANNEL(7, 10),
++				IIO_CHAN_SOFT_TIMESTAMP(8),
++			},
++			.default_config = AD7998_ALERT_EN,
++			.info = &ad7993_4_7_8_irq_info,
++		},
+ 	},
+ 	[ad7998] = {
+-		.channel = {
+-			AD799X_CHANNEL_WITH_EVENTS(0, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(1, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(2, 12),
+-			AD799X_CHANNEL_WITH_EVENTS(3, 12),
+-			AD799X_CHANNEL(4, 12),
+-			AD799X_CHANNEL(5, 12),
+-			AD799X_CHANNEL(6, 12),
+-			AD799X_CHANNEL(7, 12),
+-			IIO_CHAN_SOFT_TIMESTAMP(8),
+-		},
+ 		.num_channels = 9,
+-		.default_config = AD7998_ALERT_EN,
+-		.info = &ad7993_4_7_8_info,
++		.noirq_config = {
++			.channel = {
++				AD799X_CHANNEL(0, 12),
++				AD799X_CHANNEL(1, 12),
++				AD799X_CHANNEL(2, 12),
++				AD799X_CHANNEL(3, 12),
++				AD799X_CHANNEL(4, 12),
++				AD799X_CHANNEL(5, 12),
++				AD799X_CHANNEL(6, 12),
++				AD799X_CHANNEL(7, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(8),
++			},
++			.info = &ad7993_4_7_8_noirq_info,
++		},
++		.irq_config = {
++			.channel = {
++				AD799X_CHANNEL_WITH_EVENTS(0, 12),
++				AD799X_CHANNEL_WITH_EVENTS(1, 12),
++				AD799X_CHANNEL_WITH_EVENTS(2, 12),
++				AD799X_CHANNEL_WITH_EVENTS(3, 12),
++				AD799X_CHANNEL(4, 12),
++				AD799X_CHANNEL(5, 12),
++				AD799X_CHANNEL(6, 12),
++				AD799X_CHANNEL(7, 12),
++				IIO_CHAN_SOFT_TIMESTAMP(8),
++			},
++			.default_config = AD7998_ALERT_EN,
++			.info = &ad7993_4_7_8_irq_info,
++		},
+ 	},
+ };
+ 
+@@ -605,6 +693,8 @@ static int ad799x_probe(struct i2c_client *client,
+ 	int ret;
+ 	struct ad799x_state *st;
+ 	struct iio_dev *indio_dev;
++	const struct ad799x_chip_info *chip_info =
++		&ad799x_chip_info_tbl[id->driver_data];
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+@@ -615,8 +705,11 @@ static int ad799x_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+ 	st->id = id->driver_data;
+-	st->chip_info = &ad799x_chip_info_tbl[st->id];
+-	st->config = st->chip_info->default_config;
++	if (client->irq > 0 && chip_info->irq_config.info)
++		st->chip_config = &chip_info->irq_config;
++	else
++		st->chip_config = &chip_info->noirq_config;
++	st->config = st->chip_config->default_config;
+ 
+ 	/* TODO: Add pdata options for filtering and bit delay */
+ 
+@@ -639,11 +732,11 @@ static int ad799x_probe(struct i2c_client *client,
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = id->name;
+-	indio_dev->info = st->chip_info->info;
++	indio_dev->info = st->chip_config->info;
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = st->chip_info->channel;
+-	indio_dev->num_channels = st->chip_info->num_channels;
++	indio_dev->channels = st->chip_config->channel;
++	indio_dev->num_channels = chip_info->num_channels;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 		&ad799x_trigger_handler, NULL);
+-- 
+1.9.1
 
