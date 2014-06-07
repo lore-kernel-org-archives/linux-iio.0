@@ -1,65 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:36735 "EHLO mail.kernel.org"
+Received: from ns.pmeerw.net ([87.118.82.44]:43405 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754476AbaFIUDJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 9 Jun 2014 16:03:09 -0400
-Message-ID: <5396136C.2040801@kernel.org>
-Date: Mon, 09 Jun 2014 21:05:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/12] misc IIO cleanup
-References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
+	id S1752935AbaFGPnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 7 Jun 2014 11:43:03 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 09/12] staging:iio: Fix mention of INDIO_RING_TRIGGERED to INDIO_BUFFER_TRIGGERED
+Date: Sat,  7 Jun 2014 17:42:49 +0200
+Message-Id: <1402155772-1373-10-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/06/14 16:42, Peter Meerwald wrote:
-> patches 1 to 5 aim to use the BIT() and GENMASK() macros in various AD ADC
-> drivers; this gets rid of the RES_MASK() macro #defined in each driver
->
-> patch 6 move documentation of /sys/bus/iio/devices/triggerX/trigger_now to
-> Documentation/ABI/testing/sysfs-bus-iio as iio-trig-sysfs has left staging
-> with commit e64e7d5c
->
-> patches 7 to 10 are cleanup and bugfixse to iio/staging
->
-> patch 11 is cleanup to iio-trig-periodic-rtc (which is important and I think
-> should leave staging soon -- what is left to do?)
->
-> patch 12 allows to set the frequency of the periodic rtc to 0, thereby temporarily
-> disabling the trigger
->
-All but 6 and 11 look good to me.
-> Peter Meerwald (12):
->    iio:adc:ad5791: Use BIT() and GENMASK() macros
->    iio:adc:ad5504: Use BIT() and GENMASK() macros
->    iio:adc:ad7887: Use BIT() and GENMASK() macros
->    iio:adc:ad7476: Use GENMASK() macro
->    iio:adc:ad7298: Use BIT() and GENMASK() macros
->    iio: Move documentation of iio-trig-sysfs to ABI
->    staging:iio: Update iio_event_monitor program
->    staging:iio: Fix iio_utils.h function prototypes
->    staging:iio: Fix mention of INDIO_RING_TRIGGERED to
->      INDIO_BUFFER_TRIGGERED
->    staging:iio: Fix error handling in generic_buffer example
->    staging:iio-trig-periodic-rtc: Cleanup
->    staging:iio-trig-periodic-rtc: Allow to reset frequency to 0
->
->   Documentation/ABI/testing/sysfs-bus-iio            | 12 +++++++++
->   drivers/iio/adc/ad7298.c                           | 21 +++++++---------
->   drivers/iio/adc/ad7476.c                           |  5 ++--
->   drivers/iio/adc/ad7887.c                           | 21 ++++++++--------
->   drivers/iio/dac/ad5504.c                           | 11 ++++----
->   drivers/iio/dac/ad5791.c                           | 29 +++++++++++-----------
->   drivers/staging/iio/Documentation/generic_buffer.c |  9 ++++---
->   .../staging/iio/Documentation/iio_event_monitor.c  | 10 ++++++++
->   drivers/staging/iio/Documentation/iio_utils.h      |  6 ++---
->   .../iio/Documentation/sysfs-bus-iio-trigger-sysfs  | 11 --------
->   drivers/staging/iio/Documentation/trigger.txt      |  2 +-
->   .../staging/iio/trigger/iio-trig-periodic-rtc.c    | 28 +++++++++++++++------
->   12 files changed, 92 insertions(+), 73 deletions(-)
->   delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
->
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/Documentation/trigger.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/Documentation/trigger.txt b/drivers/staging/iio/Documentation/trigger.txt
+index 64e2e08..7c0e505 100644
+--- a/drivers/staging/iio/Documentation/trigger.txt
++++ b/drivers/staging/iio/Documentation/trigger.txt
+@@ -31,5 +31,5 @@ consumers.
+ Trigger Consumers
+ 
+ Currently triggers are only used for the filling of software
+-buffers and as such any device supporting INDIO_RING_TRIGGERED has the
++buffers and as such any device supporting INDIO_BUFFER_TRIGGERED has the
+ consumer interface automatically created.
+-- 
+1.9.1
 
