@@ -1,73 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:36510 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751036AbaFIUBA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 9 Jun 2014 16:01:00 -0400
-Message-ID: <539612EB.2080000@kernel.org>
-Date: Mon, 09 Jun 2014 21:02:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.cosmopool.net ([178.63.74.76]:34538 "EHLO
+	mail.cosmopool.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932067AbaFHXCQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jun 2014 19:02:16 -0400
+Received: from localhost (localhost [127.0.0.1])
+	by mail.cosmopool.net (Postfix) with ESMTP id 30FCF6D8252
+	for <linux-iio@vger.kernel.org>; Mon,  9 Jun 2014 00:53:59 +0200 (CEST)
+Received: from mail.cosmopool.net ([127.0.0.1])
+	by localhost (mail.cosmopool.net [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8d7mHKFEqpeK for <linux-iio@vger.kernel.org>;
+	Mon,  9 Jun 2014 00:53:58 +0200 (CEST)
+Received: from stardust.g4.wien.funkfeuer.at (46.57.15.238.wireless.dyn.drei.com [46.57.15.238])
+	by mail.cosmopool.net (Postfix) with ESMTPSA id 4F65E6D8005
+	for <linux-iio@vger.kernel.org>; Mon,  9 Jun 2014 00:53:58 +0200 (CEST)
+Received: from lambda (helo=stardust.g4.wien.funkfeuer.at)
+	by stardust.g4.wien.funkfeuer.at with local-esmtp (Exim 4.80)
+	(envelope-from <harald@ccbib.org>)
+	id 1WtlyB-00012Z-I6
+	for linux-iio@vger.kernel.org; Mon, 09 Jun 2014 00:53:43 +0200
+From: Harald Geyer <harald@ccbib.org>
+To: linux-iio@vger.kernel.org
+Subject: iio: dht11 HW issues
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 11/12] staging:iio-trig-periodic-rtc: Cleanup
-References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net> <1402155772-1373-12-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402155772-1373-12-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 09 Jun 2014 00:53:43 +0200
+Message-Id: <E1WtlyB-00012Z-I6@stardust.g4.wien.funkfeuer.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/06/14 16:42, Peter Meerwald wrote:
-> Fix extra space in module description
-> Silence output about trigger frequency when trigger gets enabled/disabled
-> Add dash to make trigger name look nicer (periodicrtc0 -> periodic-rtc0)
-All good bar the last one.  That's an ABI change unfortunately.
-Whilst I agree the - would have been nice we are stuck with it for now.
-(of course I'm aiming to drop this driver fairly soon anyway which I
-guess is a rather larger ABI change, but lets be tidy until then!)
+Hi,
 
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> ---
->   drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 9 ++++-----
->   1 file changed, 4 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> index 38ecb4b..7283e50 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-> @@ -33,7 +33,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
->   	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
->   	if (trig_info->frequency == 0)
->   		return -EINVAL;
-> -	dev_info(&trig_info->rtc->dev, "trigger frequency is %d\n",
-> +	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
->   			trig_info->frequency);
->   	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
->   }
-> @@ -113,7 +113,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
->   	for (i = 0;; i++) {
->   		if (pdata[i] == NULL)
->   			break;
-> -		trig = iio_trigger_alloc("periodic%s", pdata[i]);
-> +		trig = iio_trigger_alloc("periodic-%s", pdata[i]);
->   		if (!trig) {
->   			ret = -ENOMEM;
->   			goto error_free_completed_registrations;
-> @@ -128,8 +128,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
->   		iio_trigger_set_drvdata(trig, trig_info);
->   		trig->ops = &iio_prtc_trigger_ops;
->   		/* RTC access */
-> -		trig_info->rtc
-> -			= rtc_class_open(pdata[i]);
-> +		trig_info->rtc = rtc_class_open(pdata[i]);
->   		if (trig_info->rtc == NULL) {
->   			ret = -EINVAL;
->   			goto error_free_trig_info;
-> @@ -199,5 +198,5 @@ static struct platform_driver iio_trig_periodic_rtc_driver = {
->   module_platform_driver(iio_trig_periodic_rtc_driver);
->
->   MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
-> -MODULE_DESCRIPTION("Periodic realtime clock  trigger for the iio subsystem");
-> +MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
->   MODULE_LICENSE("GPL v2");
->
+a few month ago I submitted a driver vor DHT11 and DHT22 humidity
+sensors.
 
+Alas at least DHT22 seems to have hardware issues: After a few days
+of operation (reading the sensor once per minute) the sensor seems
+to stop responding entirely and the only way to fix this is to power
+cycle the sensor. 
+
+I have tried 3.3 V and 5 V supply and have observed this on at least
+two pieces of hardware, so I'm pretty confident the issue is real.
+The obvious solution is to use an additional gpio line to control
+power for the sensor. Now I'm torn whether to handle this in kernel
+space or user space: Since software using the sysfs ABI doesn't even
+know (and shouldn't need to know) that the humidity values come from
+a DHT22, this clearly should be handled be the kernel driver.
+
+OTOH there probably is an infinite number of algorithms (and HW
+configurations) people might want to use to control power and coming
+up with an ABI that allows implementing any of them, will be a
+challange. Any guidance is appreciated.
+
+TIA,
+Harald
