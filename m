@@ -1,75 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:60905 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:59658 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751370AbaFBSKv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 2 Jun 2014 14:10:51 -0400
-Date: Mon, 2 Jun 2014 20:10:40 +0200
-From: Sebastian Reichel <sre@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Paul Kocialkowski <contact@paulk.fr>, linux-iio@vger.kernel.org,
-	j-keerthy@ti.com
-Subject: Re: [PATCH] twl4030-madc: Request processed values in
- twl4030_get_madc_conversion
-Message-ID: <20140602181039.GA2185@earth.universe>
-References: <1400933398.2079.16.camel@aldrin>
- <538CBBA6.30203@kernel.org>
+	id S1754014AbaFIRtm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Jun 2014 13:49:42 -0400
+Message-ID: <5395F424.4070407@kernel.org>
+Date: Mon, 09 Jun 2014 18:51:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
-In-Reply-To: <538CBBA6.30203@kernel.org>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
+	jkosina@suse.cz
+Subject: Re: [PATCHv2 2/3] IIO: Add iio_chan modifier for True/Magnetic North
+ HID usages
+References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com> <1401750890-31854-3-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1401750890-31854-3-git-send-email-reyad.attiyat@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
---pf9I7BMVVzbSWLtt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi,
-
-On Mon, Jun 02, 2014 at 07:00:06PM +0100, Jonathan Cameron wrote:
-> On 24/05/14 13:09, Paul Kocialkowski wrote:
-> >Not setting the raw parameter in the request causes it to be randomly
-> >initialized to a value that might be different from zero or zero. This leads to
-> >values that are randomly either raw or processed, making it very difficult to
-> >make reliable use of the values.
-> >
-> >Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
+On 03/06/14 00:14, Reyad Attiyat wrote:
+> Updated iio modifier enum for compass north usages,
+> including magnetic/true north with tilt compensation.
 >
-> This one seems obvious enough to me that I've applied it to the fixes-togreg
-> branch. Note you should cc the author or if the log makes it clear someone
-> else has been working with the driver recently, then cc them.
-> In this case Sebastian.
+> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+This looks fine.
+> ---
+>   drivers/iio/industrialio-core.c | 4 ++++
+>   include/linux/iio/types.h       | 4 ++++
+>   2 files changed, 8 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index ede16aec..2f523b5 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -84,6 +84,10 @@ static const char * const iio_modifier_names[] = {
+>   	[IIO_MOD_LIGHT_RED] = "red",
+>   	[IIO_MOD_LIGHT_GREEN] = "green",
+>   	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_NORTH_MAGN] = "north_magnetic",
+> +	[IIO_MOD_NORTH_TRUE] = "north_true",
+> +	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "north_magnetic_tilt_comp",
+> +	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "north_true_tilt_comp",
+>   };
+>
+>   /* relies on pairs of these shared then separate */
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 084d882..5bf8847 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -53,6 +53,10 @@ enum iio_modifier {
+>   	IIO_MOD_LIGHT_RED,
+>   	IIO_MOD_LIGHT_GREEN,
+>   	IIO_MOD_LIGHT_BLUE,
+> +	IIO_MOD_NORTH_MAGN,
+> +	IIO_MOD_NORTH_TRUE,
+> +	IIO_MOD_NORTH_MAGN_TILT_COMP,
+> +	IIO_MOD_NORTH_TRUE_TILT_COMP
+>   };
+>
+>   enum iio_event_type {
+>
 
-The commit message looks a bit odd "[...] different from zero or
-zero". In case this is still relevant:
-
-Acked-By: Sebastian Reichel <sre@kernel.org>
-
-> [...]
-
--- Sebastian
-
---pf9I7BMVVzbSWLtt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJTjL4fAAoJENju1/PIO/qaJoAP/iA6I0+H2KSkSMxHr79ha5DU
-LAcx6PXTidvSbeA2Q0QkNDsRRCa+FOSIAfDev+a/pie5DVIzjCGcZg3oK9xBteZM
-B+CrmPVmHWIAVWzoztOSuhqTO/z1szd/r8LenCk2DzvEdpc2LBvRD/f4+gj1WHac
-WS/9i2XdQ47UgweNgRMi7s9zcG+YNjy1YRwxrh3XzWZoe2Ay2mT8m84Wx3g8GfXZ
-xLpsbs/DO41+B5A/5YJw9BIXkCON7i6nYODh1OzqbL6aYM9wp8qFUUYQwXVtQ43l
-F4j8ihXVVWaXdz10GqyLjkqrHVHEmGgIpR7j8beqzuC1rwywXkxQykW7FoWR3gTo
-y3NrQKkBgsmYHqennY0XV9SFzhfnVfBHNtaib9SBuXbw5Du0sCE6fxaNDCYea00W
-1a/ZwP+zn9m5a8n/D0ALWXdmt93ZGN/39yu1P0K1omp930zNMloImiKlXubSDNYu
-pKcTK3qImOtzg9KFU+LMs95aUL5Ge0vdUfWhF+3UFr5f/trFVFAUXYAMe3uGIVfB
-GdBXvqhPYdhV2SYCxa7wJE8LX+m3jQ/Hsn1aNNlUw4mYJMBINXT80cpZ3G4JRppG
-BCQFn11YTKseW4Wp2VOYafynhrM3KHfuvjsYbKhgCGTNZvo2HFJfvxMFxnO3TS9o
-xTc77zM5SNfXKD9nHeju
-=zoRy
------END PGP SIGNATURE-----
-
---pf9I7BMVVzbSWLtt--
