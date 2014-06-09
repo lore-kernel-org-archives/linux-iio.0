@@ -1,862 +1,791 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:33322 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753155AbaFGS7q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 14:59:46 -0400
-Message-ID: <5393618F.10400@kernel.org>
-Date: Sat, 07 Jun 2014 20:01:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <21cnbao@gmail.com>
+From: Barry Song <21cnbao@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	workgroup.linux@csr.com,
+	Guoying Zhang <Guoying.Zhang@csr.com>,
+	Barry Song <Baohua.Song@csr.com>
+Subject: =?UTF-8?q?=5BPATCH=5D=20iio=3A=20adc=3A=20add=20CSR=20SiRFSoC=20internal=20ADC=20driver?=
+Date: Mon,  9 Jun 2014 17:54:25 +0800
+Message-Id: <1402307665-3007-1-git-send-email-21cnbao@gmail.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1] iio: accel: kxcjk1013 3-axis accelerometer driver
-References: <1401902764-4567-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1401902764-4567-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/06/14 18:26, Srinivas Pandruvada wrote:
-> This patch adds IIO driver for KXCJK 1013 triaxis accelerometer sensor.
-> The specifications for this driver is downloaded from:
-> http://www.kionix.com/sites/default/files/KXCJK-1013%20Specifications%20Rev%202.pdf
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Mostly looks fine to me, though I have a few queries inline to do with various state
-changes when the buffer / dataready trigger is running.
-Also you probably want to provide the callback to prevent the buffer
-associating with other triggers seeing as I don't think it will ever
-work...  (almost always the case with data ready interrupts).
+From: Guoying Zhang <Guoying.Zhang@csr.com>
 
-Nothing stops us running additional devices off the dataready trigger though
-which is why we bother to have triggers for these devices.
+SiRFSoC internal ADC provides touchscreen single or dual touch
+channels, and provides several auxiliary channels to measure
+temperature, battery and so on.
 
-I'd also slightly prefer some switching round of logic to make the flow
-more standard. It's a matter of personal preference really so if you feel
-strongly against it then push back!
-> ---
-Change list?
+Signed-off-by: Guoying Zhang <Guoying.Zhang@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/iio/adc/Kconfig       |   9 +
+ drivers/iio/adc/Makefile      |   1 +
+ drivers/iio/adc/sirfsoc_adc.c | 722 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 732 insertions(+)
+ create mode 100644 drivers/iio/adc/sirfsoc_adc.c
 
->   drivers/iio/accel/Kconfig      |  12 +
->   drivers/iio/accel/Makefile     |   1 +
->   drivers/iio/accel/kxcjk-1013.c | 729 +++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 742 insertions(+)
->   create mode 100644 drivers/iio/accel/kxcjk-1013.c
->
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 1e120fa..12addf2 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -77,4 +77,16 @@ config MMA8452
->   	  To compile this driver as a module, choose M here: the module
->   	  will be called mma8452.
->
-> +config KXCJK1013
-> +	tristate "Kionix 3-Axis Accelerometer Driver"
-> +	depends on I2C
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	  Say Y here if you want to build a driver for the Kionix KXCJK-1013
-> +	  triaxial acceleration sensor.
-> +
-> +	  To compile this driver as a module, choose M here: the module will
-> +	  be called kxcjk-1013.
-> +
->   endmenu
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index dc0e379..6578ca1 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -5,6 +5,7 @@
->   # When adding new entries keep the list in alphabetical order
->   obj-$(CONFIG_BMA180) += bma180.o
->   obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
-> +obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->   obj-$(CONFIG_KXSD9)	+= kxsd9.o
->   obj-$(CONFIG_MMA8452)	+= mma8452.o
->
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> new file mode 100644
-> index 0000000..bbc3a57
-> --- /dev/null
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -0,0 +1,729 @@
-> +/*
-> + * KXCJK-1013 3-axis accelerometer driver
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/delay.h>
-> +#include <linux/of.h>
-> +#include <linux/bitops.h>
-> +#include <linux/slab.h>
-> +#include <linux/string.h>
-> +#include <linux/acpi.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +#define KXCJK1013_DRV_NAME "kxcjk1013"
-> +#define KXCJK1013_IRQ_NAME "kxcjk1013_event"
-> +
-> +#define KXCJK1013_REG_XOUT_L		0x06
-> +/*
-> + * From low byte X axis register, all the other addresses of Y and Z can be
-> + * obtained by just applying axis offset. The following axis defines are just
-> + * provide clarity, but not used.
-> + */
-> +#define KXCJK1013_REG_XOUT_H		0x07
-> +#define KXCJK1013_REG_YOUT_L		0x08
-> +#define KXCJK1013_REG_YOUT_H		0x09
-> +#define KXCJK1013_REG_ZOUT_L		0x0A
-> +#define KXCJK1013_REG_ZOUT_H		0x0B
-> +
-> +#define KXCJK1013_REG_DCST_RESP		0x0C
-> +#define KXCJK1013_REG_WHO_AM_I		0x0F
-> +#define KXCJK1013_REG_INT_SRC1		0x16
-> +#define KXCJK1013_REG_INT_SRC2		0x17
-> +#define KXCJK1013_REG_STATUS_REG	0x18
-> +#define KXCJK1013_REG_INT_REL		0x1A
-> +#define KXCJK1013_REG_CTRL1		0x1B
-> +#define KXCJK1013_REG_CTRL2		0x1D
-> +#define KXCJK1013_REG_INT_CTRL1		0x1E
-> +#define KXCJK1013_REG_INT_CTRL2		0x1F
-> +#define KXCJK1013_REG_DATA_CTRL		0x21
-> +#define KXCJK1013_REG_WAKE_TIMER	0x29
-> +#define KXCJK1013_REG_SELF_TEST		0x3A
-> +#define KXCJK1013_REG_WAKE_THRES	0x6A
-> +
-> +#define KXCJK1013_REG_CTRL1_BIT_PC1	BIT(7)
-> +#define KXCJK1013_REG_CTRL1_BIT_RES	BIT(6)
-> +#define KXCJK1013_REG_CTRL1_BIT_DRDY	BIT(5)
-> +#define KXCJK1013_REG_CTRL1_BIT_GSEL1	BIT(4)
-> +#define KXCJK1013_REG_CTRL1_BIT_GSEL0	BIT(3)
-> +#define KXCJK1013_REG_CTRL1_BIT_WUFE	BIT(1)
-> +#define KXCJK1013_REG_INT_REG1_BIT_IEA	BIT(4)
-> +#define KXCJK1013_REG_INT_REG1_BIT_IEN	BIT(5)
-> +
-> +#define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
-> +#define KXCJK1013_MAX_STARTUP_TIME_US	100000
-> +
-> +struct kxcjk1013_data {
-> +	struct i2c_client *client;
-> +	struct iio_trigger *trig;
-> +	bool	trig_mode;
-Odd spacing?
-> +	struct mutex mutex;
-> +	s16 buffer[3];
-> +	atomic_t power_state;
-> +	int gpio_irq;
-> +	u8 odr_bits;
-> +};
-> +
-> +enum kxcjk1013_axis {
-> +	AXIS_X,
-> +	AXIS_Y,
-> +	AXIS_Z,
-> +};
-> +
-> +enum kxcjk1013_mode {
-> +	STANDBY,
-> +	OPERATION,
-> +};
-> +
-> +static const struct {
-> +	int val;
-> +	int val2;
-> +	int odr_bits;
-> +} samp_freq_table[] = { {0, 781, 0x08}, {1, 563, 0x09},
-> +			{3, 125, 0x0A}, {6, 25, 0x0B}, {12, 5, 0},
-> +			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
-> +			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
-> +			{1600, 0, 0x07} };
-> +
-> +/* Refer to section 4 of the specification */
-> +static const struct {
-> +	int odr_bits;
-> +	int usec;
-> +} odr_start_up_times[] = { {0x08, 100000}, {0x09, 100000},
-> +			{0x0A, 100000}, {0x0B, 100000}, { 0, 80000},
-> +			{0x01, 41000}, {0x02, 21000}, {0x03, 11000},
-> +			{0x04, 6400}, {0x05, 3900}, {0x06, 2700},
-> +			{0x07, 2100} };
-> +
-> +static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
-> +			      enum kxcjk1013_mode mode)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	if (mode == STANDBY)
-> +		ret &= ~KXCJK1013_REG_CTRL1_BIT_PC1;
-> +	else
-> +		ret |= KXCJK1013_REG_CTRL1_BIT_PC1;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					KXCJK1013_REG_CTRL1, ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int kxcjk1013_chip_setup_polarity(struct kxcjk1013_data *data,
-> +					  bool active_high)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	if (active_high)
-> +		ret |= KXCJK1013_REG_INT_REG1_BIT_IEA;
-> +	else
-> +		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEA;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
-> +					ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-This is a wrapper that adds little. I'd get rid of it - particularly
-as you never handle any errors it might return anyway! I can see
-why you don't handle the errors (nothing much you can do if they
-occur) but this function gives a somewhat false sense of security :)
-> +static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_int_rel\n");
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_WHO_AM_I);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading who_am_i\n");
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(&data->client->dev, "KXCJK1013 Chip Id %x\n", ret);
-> +
-> +	ret = kxcjk1013_set_mode(data, STANDBY);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Setting range to 4G */
-> +	ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
-> +	ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
-> +
-> +	/* Set 12 bit mode */
-> +	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					KXCJK1013_REG_CTRL1, ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_DATA_CTRL);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_data_ctrl\n");
-> +		return ret;
-> +	}
-> +
-> +	data->odr_bits = ret;
-> +
-> +	/* Active high interrupt */
-I suppose starting with this is fine, but it should be ultimately coming
-from some form of platform data...
-> +	return kxcjk1013_chip_setup_polarity(data, true);
-> +}
-> +
-> +static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
-> +					  bool status)
-> +{
-> +	int ret;
-> +
-> +	ret = kxcjk1013_set_mode(data, STANDBY);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	if (status)
-> +		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
-> +	else
-> +		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
-> +					ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	if (status)
-> +		ret |= KXCJK1013_REG_CTRL1_BIT_DRDY;
-> +	else
-> +		ret &= ~KXCJK1013_REG_CTRL1_BIT_DRDY;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					KXCJK1013_REG_CTRL1, ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int kxcjk1013_convert_freq_to_bit(int val, int val2)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; ARRAY_SIZE(samp_freq_table); ++i) {
-> +		if (samp_freq_table[i].val == val &&
-> +			samp_freq_table[i].val2 == val2) {
-> +			return samp_freq_table[i].odr_bits;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
-> +{
-> +	int ret;
-> +	int odr_bits;
-> +
-> +	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2 / 1000);
-> +	if (odr_bits < 0)
-> +		return odr_bits;
-> +
-I don't immediately see anything stopping the sampling frequency from
-being changed in buffered mode.  If we are in that mode, I think the
-next bit of code will stall the data stream and it is never restarted?
-It's late on a Saturday though after a nice dinner so I might be missing
-the obvious!
-> +	ret = kxcjk1013_set_mode(data, STANDBY);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_DATA_CTRL,
-> +					odr_bits);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing data_ctrl\n");
-> +		return ret;
-> +	}
-> +
-> +	data->odr_bits = odr_bits;
-> +
-> +	return 0;
-> +}
-> +
-> +static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
-> +		if (samp_freq_table[i].odr_bits == data->odr_bits) {
-> +			*val = samp_freq_table[i].val;
-> +			*val2 = samp_freq_table[i].val2 * 1000;
-Silly question of the day, why not just store val2 * 1000 in samp_freq_table?
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-This next one is a wrapper we could do without to my mind.  Doesn't
-add anything significant.
-> +static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
-> +{
-> +	u8 reg = KXCJK1013_REG_XOUT_L + axis * 2;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_word_data(data->client, reg);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"failed to read accel_%c registers\n", 'x' + axis);
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(odr_start_up_times); ++i) {
-> +		if (odr_start_up_times[i].odr_bits == data->odr_bits)
-> +			return odr_start_up_times[i].usec;
-> +
-> +	}
-> +
-> +	return KXCJK1013_MAX_STARTUP_TIME_US;
-> +}
-> +
-> +static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan, int *val, int *val2,
-> +		long mask)
-> +{
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->mutex);
-> +		if (iio_buffer_enabled(indio_dev))
-> +			ret = -EBUSY;
-> +		else {
-> +			int sleep_val;
-> +
-> +			ret = kxcjk1013_set_mode(data, OPERATION);
-> +			if (ret < 0)
-> +				return ret;
-> +			atomic_inc(&data->power_state);
-> +			sleep_val = kxcjk1013_get_startup_times(data);
-> +			if (sleep_val < 20000)
-> +				usleep_range(sleep_val, 20000);
-> +			else
-> +				msleep_interruptible(sleep_val/1000);
-> +			ret = kxcjk1013_get_acc_reg(data, chan->scan_index);
-> +			if (atomic_dec_and_test(&data->power_state))
-> +				kxcjk1013_set_mode(data, STANDBY);
-> +		}
-> +		mutex_unlock(&data->mutex);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = sign_extend32(le16_to_cpu(ret >> 4), 11);
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = 19163; /* range +-4g (4/2047*9.806650) */
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		mutex_lock(&data->mutex);
-> +		ret = kxcjk1013_get_odr(data, val, val2);
-> +		mutex_unlock(&data->mutex);
-> +		return ret;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan, int val, int val2, long mask)
-> +{
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		mutex_lock(&data->mutex);
-> +		ret = kxcjk1013_set_odr(data, val, val2);
-> +		mutex_unlock(&data->mutex);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-> +		"0.781 1.563 3.125 6.25 12.5 25 50 100 200 400 800 1600");
-> +
-> +static struct attribute *kxcjk1013_attributes[] = {
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group kxcjk1013_attrs_group = {
-> +	.attrs = kxcjk1013_attributes,
-> +};
-> +
-> +#define KXCJK1013_CHANNEL(_axis) {					\
-> +	.type = IIO_ACCEL,						\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_##_axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
-> +	.scan_index = AXIS_##_axis,					\
-> +	.scan_type = {							\
-> +		.sign = 's',						\
-> +		.realbits = 12,						\
-> +		.storagebits = 16,					\
-> +		.shift = 4,						\
-> +		.endianness = IIO_LE,					\
-> +	},								\
-> +}
-> +
-> +static const struct iio_chan_spec kxcjk1013_channels[] = {
-> +	KXCJK1013_CHANNEL(X),
-> +	KXCJK1013_CHANNEL(Y),
-> +	KXCJK1013_CHANNEL(Z),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +};
-> +
-> +static const struct iio_info kxcjk1013_info = {
-> +	.attrs			= &kxcjk1013_attrs_group,
-> +	.read_raw		= kxcjk1013_read_raw,
-> +	.write_raw		= kxcjk1013_write_raw,
-> +	.driver_module		= THIS_MODULE,
-> +};
-> +
-> +static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int64_t time_ns = iio_get_time_ns();
-you could use the  iio_pollfunc_store_time top half interrupt handler
-to push this a little closer to the actual interrupt (don't bother if
-you would prefer not).
-(curriously whilst checking what that does I've just noticed we still
-had a time arguement to the iio_trigger_poll functions despite the fact
-the do nothing with it any more. Oops. One to clear out :)
-> +	int bit, ret, i = 0;
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-> +			 indio_dev->masklength) {
-> +		ret = kxcjk1013_get_acc_reg(data, bit);
-> +		if (ret < 0) {
-> +			kxcjk1013_chip_ack_intr(data);
-> +			mutex_unlock(&data->mutex);
-> +			goto err;
-> +		}
-> +		data->buffer[i++] = ret;
-> +	}
-> +
-> +	kxcjk1013_chip_ack_intr(data);
-> +
-> +	mutex_unlock(&data->mutex);
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer, time_ns);
-> +err:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> +		bool state)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +
-> +	if (state) {
-> +		kxcjk1013_chip_setup_interrupt(data, true);
-> +		kxcjk1013_set_mode(data, OPERATION);
-> +		atomic_inc(&data->power_state);
-> +	} else {
-> +		if (!atomic_dec_and_test(&data->power_state))
-> +			return 0;
-> +		kxcjk1013_chip_setup_interrupt(data, false);
-> +		kxcjk1013_set_mode(data, STANDBY);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
-> +	.set_trigger_state = kxcjk1013_data_rdy_trigger_set_state,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int kxcjk1013_acpi_gpio_probe(struct i2c_client *client,
-> +				struct kxcjk1013_data *data)
-> +{
-> +	const struct acpi_device_id *id;
-> +	struct device *dev;
-> +	struct gpio_desc *gpio;
-> +	int ret;
-> +
-> +	if (!client)
-> +		return -EINVAL;
-> +
-> +	dev = &client->dev;
-> +	if (!ACPI_HANDLE(dev))
-> +		return -ENODEV;
-> +
-Silly question, but does acpi not allow non gpio irqs?
-I can't see anything in this driver that requires it to be a gpio?
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!id)
-> +		return -ENODEV;
-> +
-> +	/* data ready gpio interrupt pin */
-> +	gpio = devm_gpiod_get_index(dev, "kxcjk1013_int", 0);
-> +	if (IS_ERR(gpio)) {
-> +		dev_err(dev, "acpi gpio get index failed\n");
-> +		return PTR_ERR(gpio);
-> +	}
-> +
-> +	ret = gpiod_direction_input(gpio);
-I'm happy to accept that this is necessary but its uggly that we need to
-set the direction here.
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = gpiod_to_irq(gpio);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->gpio_irq = ret;
-> +
-> +	/* Update client irq if it is invalid */
-> +	if (client->irq < 0)
-> +		client->irq = data->gpio_irq;
-As commented below, why not check this first and not bother with the rest
-if client->irq >= 0
-Also isn't an irq of 0 always defined as bad these days? (I think this
-finally got unwound on ARM a while back).
-> +
-> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio),
-> +							data->gpio_irq);
-> +
-> +	return 0;
-> +}
-> +
-> +static int kxcjk1013_probe(struct i2c_client *client,
-> +		const struct i2c_device_id *id)
-> +{
-> +	struct kxcjk1013_data *data;
-> +	struct iio_dev *indio_dev;
-> +	struct iio_trigger *trig = NULL;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	ret = kxcjk1013_chip_init(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	mutex_init(&data->mutex);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->channels = kxcjk1013_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(kxcjk1013_channels);
-> +	indio_dev->name = KXCJK1013_DRV_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &kxcjk1013_info;
-> +
-> +	kxcjk1013_acpi_gpio_probe(client, data);
-No error handling for this?  Perhaps checking before this if the
-irq is already defined rather than going through all the acpi calls
-then ignoring it if already present.
-
-> +
-> +	if (client->irq < 0) {
-> +		kxcjk1013_chip_setup_interrupt(data, false);
-> +		goto skip_setup_trigger;
-Personally I'd prefer the logic reversed and avoid the goto.
-It'll add a level of indentation, but I think it'd still be a smigeon easier
-to follow.
-> +	}
-> +
-> +	trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
-> +	if (!trig)
-> +		return -ENOMEM;
-> +
-> +	data->trig_mode = true;
-> +
-> +	ret = devm_request_irq(&client->dev, client->irq,
-> +			iio_trigger_generic_data_rdy_poll,
-> +			IRQF_TRIGGER_RISING, KXCJK1013_IRQ_NAME, trig);
-> +	if (ret) {
-> +		dev_err(&client->dev, "unable to request IRQ\n");
-> +		goto err_trigger_free;
-> +	}
-> +
-> +	trig->dev.parent = &client->dev;
-> +	trig->ops = &kxcjk1013_trigger_ops;
-> +	iio_trigger_set_drvdata(trig, indio_dev);
-> +	data->trig = trig;
-> +	indio_dev->trig = trig;
-> +
-> +	ret = iio_trigger_register(trig);
-> +	if (ret)
-> +		goto err_trigger_free;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +			kxcjk1013_trigger_handler, NULL);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-> +		goto err_trigger_unregister;
-> +	}
-> +
-> +skip_setup_trigger:
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		if (data->trig_mode)
-> +			goto err_buffer_cleanup;
-> +		else
-> +			return ret;
-This a slightly convoluted bit of flow. I'd be tempted to just have
-all the trigger removal protected by if (data->trig_mode).
-It'll give more code and a fair bit of repition but straight forward
-flow.  Usual arguement that I'd like every driver to look the same
-as it makes my life easier ;)
-> +	}
-> +
-> +	return 0;
-> +
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +err_trigger_unregister:
-> +	iio_trigger_unregister(trig);
-> +err_trigger_free:
-> +	iio_trigger_free(trig);
-> +
-> +	return ret;
-> +}
-> +
-> +static int kxcjk1013_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +
-> +	if (data->trig_mode) {
-> +		iio_triggered_buffer_cleanup(indio_dev);
-> +		iio_trigger_unregister(data->trig);
-> +		iio_trigger_free(data->trig);
-> +	}
-> +
-> +	mutex_lock(&data->mutex);
-> +	kxcjk1013_set_mode(data, STANDBY);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int kxcjk1013_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&data->mutex);
-> +	kxcjk1013_set_mode(data, STANDBY);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return 0;
-> +}
-Is this absense of a resume putting the state back as it was going
-to cause any unexpected behaviour?  My first thought is that
-you might have a buffer associated with the trigger that seems to be
-enabled, but will never receive any data after a suspend / resume cycle.
-
-> +
-
-> +static SIMPLE_DEV_PM_OPS(kxcjk1013_pm_ops, kxcjk1013_suspend, NULL);
-> +#define KXCJK1013_PM_OPS (&kxcjk1013_pm_ops)
-> +#else
-> +#define KXCJK1013_PM_OPS NULL
-> +#endif
-> +
-> +static const struct acpi_device_id kx_acpi_match[] = {
-> +	{"KXCJ1013", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
-> +
-> +static const struct i2c_device_id kxcjk1013_id[] = {
-> +	{"kxcjk1013", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, kxcjk1013_id);
-> +
-> +static struct i2c_driver kxcjk1013_driver = {
-> +	.driver = {
-> +		.name	= KXCJK1013_DRV_NAME,
-> +		.acpi_match_table = ACPI_PTR(kx_acpi_match),
-> +		.pm	= KXCJK1013_PM_OPS,
-> +	},
-> +	.probe		= kxcjk1013_probe,
-> +	.remove		= kxcjk1013_remove,
-> +	.id_table	= kxcjk1013_id,
-> +};
-> +module_i2c_driver(kxcjk1013_driver);
-> +
-> +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("KXCJK1013 accelerometer driver");
->
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a80d236..8ea6e4b 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -187,6 +187,15 @@ config NAU7802
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called nau7802.
+ 
++config SIRFSOC_ADC
++        tristate "SiRFSoC ADC"
++	depends on ARCH_SIRF
++	help
++	  If you say yes here you get support for CSR SiRFSoC internal ADC.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called sirfsoc_adc.
++
+ config TI_ADC081C
+ 	tristate "Texas Instruments ADC081C021/027"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 9d60f2d..2912e58 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
++obj-$(CONFIG_SIRFSOC_ADC) += sirfsoc_adc.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+ obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+diff --git a/drivers/iio/adc/sirfsoc_adc.c b/drivers/iio/adc/sirfsoc_adc.c
+new file mode 100644
+index 0000000..568ae1c
+--- /dev/null
++++ b/drivers/iio/adc/sirfsoc_adc.c
+@@ -0,0 +1,722 @@
++/*
++* ADC Driver for CSR SiRFprimaII/AtlasVI
++*
++* Copyright (c) 2014 Cambridge Silicon Radio Limited, a CSR plc group company.
++*
++* Licensed under GPLv2.
++*/
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/clk.h>
++#include <linux/io.h>
++#include <linux/interrupt.h>
++#include <linux/of.h>
++#include <linux/pm.h>
++#include <linux/platform_device.h>
++#include <linux/of_platform.h>
++#include <linux/reset.h>
++#include <linux/rtc/sirfsoc_rtciobrg.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
++
++#define DRIVER_NAME "sirfsoc_adc"
++
++#define PWR_WAKEEN_TSC_SHIFT	23
++#define PWR_WAKEEN_TS_SHIFT	5
++#define SIRFSOC_PWRC_TRIGGER_EN	0x8
++#define SIRFSOC_PWRC_BASE	0x3000
++
++#define DATA_SHIFT_BITS		14
++
++#define ADC_CONTROL1		0x00
++#define ADC_CONTROL2		0x04
++#define ADC_INTR		0x08
++#define ADC_COORD		0x0C
++#define ADC_PRESSURE		0x10
++#define ADC_AUX1		0x14
++#define ADC_AUX2		0x18
++#define ADC_AUX3		0x1C
++#define ADC_AUX4		0x20
++#define ADC_AUX5		0x24
++#define ADC_AUX6		0x28
++#define ADC_CB			0x2C /* Read Back calibration register */
++#define ADC_COORD2		0x30
++#define ADC_COORD3		0x34
++#define ADC_COORD4		0x38
++#define ADC_CONTROL3		0x3C
++
++/* CTRL1 defines */
++#define ADC_RESET_QUANT_EN	BIT(24)
++#define ADC_RST_B		BIT(23)
++#define ADC_RESOLUTION_12	BIT(22)
++#define ADC_RBAT_DISABLE	(0x0 << 21)
++#define ADC_RBAT_ENABLE		(0x1 << 21)
++#define ADC_EXTCM_MASK		(0x3 << 19)
++#define ADC_EXTCM(x)		(((x) & 0x3) << 19)
++#define ADC_SGAIN_MASK		(0x7 << 16)
++#define ADC_SGAIN(x)		(((x) & 0x7) << 16)
++#define ADC_POLL		BIT(15)
++#define ADC_SEL_MASK		(0xF << 11)
++#define ADC_SEL(x)		 (((x) & 0xF) << 11)
++#define ADC_FREQ_6K		(0x0 << 8)
++#define ADC_FREQ_13K		(0x1 << 8)
++#define ADC_DEL_SET_MASK	(0xF << 4)
++#define ADC_DEL_SET(x)		(((x) & 0xF) << 4)
++#define ADC_TP_TIME_MASK	(0x7)
++#define ADC_TP_TIME(x)		(((x) & 0x7) << 0)
++
++/* CTRL2 defines */
++#define ADC_PRP_MASK		(3 << 14)
++/* Pen detector off, digitizer off */
++#define ADC_PRP_MODE0		(0 << 14)
++/* Pen detector on, digitizer off, digitizer wakes up on pen detect */
++#define ADC_PRP_MODE1		BIT(14)
++/* Pen detector on, digitizer off, no wake up on pen detect */
++#define ADC_PRP_MODE2		(2 << 14)
++/* Pen detector on, digitizer on */
++#define ADC_PRP_MODE3		(3 << 14)
++#define ADC_RTOUCH_MASK		(0x3 << 12)
++#define ADC_RTOUCH(x)		(((x) & 0x3) << 12)
++#define ADC_DEL_AUTO_MASK	(0xF << 8)
++#define ADC_DEL_AUTO(x)		(((x) & 0xF) << 8)
++#define ADC_DEL_PRE(x)		(((x) & 0xF) << 4)
++#define ADC_DEL_DIS(x)		(((x) & 0xF) << 0)
++
++/* INTR register defines */
++#define PEN_INTR_EN		BIT(5)
++#define DATA_INTR_EN		BIT(4)
++#define PEN_INTR		BIT(1)
++#define DATA_INTR		BIT(0)
++
++/* DATA register defines */
++#define PEN_DOWN		BIT(31)
++#define DATA_YVALID		BIT(30)
++#define DATA_XVALID		BIT(29)
++#define DATA_Z2VALID		BIT(30)
++#define DATA_Z1VALID		BIT(29)
++#define DATA_AUXVALID		BIT(30)
++#define DATA_CB_VALID		BIT(30)
++#define DATA_Y2VALID		BIT(30)
++#define DATA_X2VALID		BIT(29)
++#define DATA_6VALID		BIT(30)
++#define DATA_5VALID		BIT(29)
++#define DATA_8VALID		BIT(30)
++#define DATA_7VALID		BIT(29)
++
++#define ADC_DATA_MASK(x)	(0x3FFF << (x))
++#define DATA_XMASK		ADC_DATA_MASK(0)
++#define DATA_YMASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
++#define DATA_Z1MASK		ADC_DATA_MASK(0)
++#define DATA_Z2MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
++#define DATA_AUXMASK		ADC_DATA_MASK(0)
++#define DATA_CBMASK		ADC_DATA_MASK(0)
++#define DATA_X2MASK		ADC_DATA_MASK(0)
++#define DATA_Y2MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
++#define DATA_5MASK		ADC_DATA_MASK(0)
++#define DATA_6MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
++#define DATA_7MASK		ADC_DATA_MASK(0)
++#define DATA_8MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
++
++#define ADC_IDEAL_RELA_RESULT	11597
++#define ADC_IDEAL_ABSO_RESULT	9446
++
++#define ADC_MORE_CTL1		(of_machine_is_compatible("sirf,atlas6") ?\
++					(ADC_RESET_QUANT_EN | ADC_RST_B) : (0))
++
++/* Select AD samples to read (SEL bits in ADC_CONTROL1 register) */
++#define SIRFSOC_ADC_AUX1_SEL	0x04
++#define SIRFSOC_ADC_AUX4_SEL	0x07
++#define SIRFSOC_ADC_AUX5_SEL	0x08
++#define SIRFSOC_ADC_AUX6_SEL	0x09
++#define SIRFSOC_ADC_TS_SEL	0x0A    /* xy sample */
++#define SIRFSOC_ADC_TS_SEL_DUAL	0x0F    /* samples for dual touch */
++#define SIRFSOC_ADC_TS_SAMPLE_SIZE	4
++#define SIRFSOC_ADC_CTL1(sel)    (ADC_POLL | ADC_SEL(sel) | ADC_DEL_SET(6) \
++		| ADC_FREQ_6K | ADC_TP_TIME(0) | ADC_SGAIN(0) \
++		| ADC_EXTCM(0) | ADC_RBAT_DISABLE | ADC_MORE_CTL1)
++
++#define SIRFSOC_ADC_CHANNEL(_index) {			\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = _index,				\
++	.address = _index,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++}
++
++/* high priority queue with the bigger value */
++enum sirfsoc_adc_service_t {
++	SIRFSOC_ADC_SERVICE_AUX = 0,
++	SIRFSOC_ADC_SERVICE_TS_PARADOX,
++	SIRFSOC_ADC_SERVICE_MAX,
++};
++
++enum sirfsoc_adc_req_status_t {
++	SIRFSOC_ADC_REQ_NONE = 0,
++	SIRFSOC_ADC_REQ_ACTIVE,
++	SIRFSOC_ADC_REQ_BUSY,
++	SIRFSOC_ADC_REQ_MAX,
++};
++
++enum sirfsoc_adc_iio_channel {
++	CHANNEL_COORD,
++	CHANNEL_COORD_DUAL,
++	CHANNEL_AUX1,
++	CHANNEL_AUX4,
++	CHANNEL_AUX5,
++	CHANNEL_AUX6,
++};
++
++struct sirfsoc_adc_data {
++	u16 x;
++	u16 y;
++	u16 z1;
++	u16 z2;
++	u16 aux;
++	u8 datavalid;
++};
++
++struct sirfsoc_adc_request {
++	enum sirfsoc_adc_service_t type;
++	struct sirfsoc_adc_data adc_data;
++	u16 mode;
++	u16 aux;
++	u16 reference;
++	u8 delay_bits;
++	u32 s_gain_bits;
++	enum sirfsoc_adc_req_status_t req_status;
++};
++
++struct sirfsoc_adc {
++	struct clk	*clk;
++	void __iomem	*base;
++	struct sirfsoc_adc_request req;
++	struct completion	done;
++	struct mutex	adc_lock;
++};
++
++static int sirfsoc_adc_send_request(struct sirfsoc_adc_request *req)
++{
++	struct sirfsoc_adc *adc = container_of(req, struct sirfsoc_adc, req);
++	int control1, control2, intr;
++	int data, reg_offset;
++	int ret = 0;
++
++	mutex_lock(&adc->adc_lock);
++
++	intr = readl(adc->base + ADC_INTR);
++	control1 = readl(adc->base + ADC_CONTROL1);
++	control2 = readl(adc->base + ADC_CONTROL2);
++	writel(intr | DATA_INTR_EN | DATA_INTR, (adc->base + ADC_INTR));
++
++	writel(ADC_PRP_MODE3 | req->reference,
++		adc->base + ADC_CONTROL2);
++
++	writel(ADC_POLL | ADC_MORE_CTL1 | req->mode |
++		req->aux | req->delay_bits | ADC_RESOLUTION_12,
++			adc->base + ADC_CONTROL1);
++
++	if (!wait_for_completion_timeout(&adc->done,
++		msecs_to_jiffies(50))) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	switch (req->mode) {
++	case ADC_SEL(3):
++		data = readl(adc->base + ADC_PRESSURE);
++		if ((data & DATA_Z1VALID) && (data & DATA_Z2VALID)) {
++			req->adc_data.z1 = data & DATA_Z1MASK;
++			req->adc_data.z2 =
++			(data & DATA_Z2MASK) >> DATA_SHIFT_BITS;
++			req->adc_data.datavalid = 1;
++		}
++		break;
++	case ADC_SEL(4):
++	case ADC_SEL(5):
++	case ADC_SEL(6):
++	case ADC_SEL(7):
++	case ADC_SEL(8):
++	case ADC_SEL(9):
++		reg_offset = 0x14 + ((req->mode >> 11) - 0x04) * 4;
++		data = readl(adc->base + reg_offset);
++		if ((data & DATA_AUXVALID)) {
++			req->adc_data.aux = data & DATA_AUXMASK;
++			req->adc_data.datavalid = 1;
++		}
++		break;
++	case ADC_SEL(11):
++	case ADC_SEL(12):
++	case ADC_SEL(13):
++		reg_offset = ADC_CB;
++		data = readl(adc->base + reg_offset);
++		if ((data & DATA_AUXVALID)) {
++			req->adc_data.aux = data & DATA_AUXMASK;
++			req->adc_data.datavalid = 1;
++		}
++		break;
++	default:
++		break;
++	}
++
++out:
++	writel(intr, adc->base + ADC_INTR);
++	writel(control1, adc->base + ADC_CONTROL1);
++	writel(control2, adc->base + ADC_CONTROL2);
++	mutex_unlock(&adc->adc_lock);
++	return ret;
++}
++
++/*struct store params to calibrate*/
++struct sirfsoc_adc_cali_data {
++	u32 digital_offset;
++	u32 digital_again;
++	u32 digital_ideal;
++	bool is_calibration;
++};
++
++static u32 sirfsoc_adc_offset_cali(struct sirfsoc_adc_request *req)
++{
++	u32 i, digital_offset = 0, count = 0, sum = 0;
++	/* To set the reigsters in order to get the ADC offset */
++	req->mode = ADC_SEL(11);
++	req->aux = ADC_CB;
++	req->s_gain_bits = ADC_SGAIN(7);
++	req->delay_bits = ADC_DEL_SET(4);
++	req->req_status = SIRFSOC_ADC_REQ_NONE;
++
++	for (i = 0; i < 10; i++) {
++		if (unlikely(sirfsoc_adc_send_request(req)))
++			break;
++		digital_offset = req->adc_data.aux;
++		/* Maybe the value is wrong, so remove it use experience */
++		if (digital_offset < 230 && digital_offset > 130) {
++			sum += digital_offset;
++			count++;
++		}
++	}
++	if (!sum || !count)
++		digital_offset = 170;
++	else
++		digital_offset = sum / count;
++
++	return digital_offset;
++}
++
++
++/* Gain Calibration calibrates the ADC gain error */
++static u32 sirfsoc_adc_gain_cali(struct sirfsoc_adc_request *req)
++{
++	u32 i, digital_gain = 0, count = 0, sum = 0;
++	/* To set the reigsters in order to get the ADC gain */
++	req->mode = ADC_SEL(12);
++	req->aux = ADC_CB;
++	req->s_gain_bits = ADC_SGAIN(0);
++	req->delay_bits = ADC_DEL_SET(4);
++	req->req_status = SIRFSOC_ADC_REQ_NONE;
++
++	for (i = 0; i < 10; i++) {
++		if (unlikely(sirfsoc_adc_send_request(req)))
++			break;
++		digital_gain = req->adc_data.aux;
++		/* Maybe the value is wrong, so remove it use experience */
++		if (digital_gain < 6500 && digital_gain > 5500) {
++			sum += digital_gain;
++			count++;
++		}
++	}
++	if (!sum || !count)
++		digital_gain = 5555;
++	else
++		digital_gain = sum / count;
++
++	return digital_gain;
++}
++
++/* absolute gain calibration */
++static int sirfsoc_adc_adc_cali(struct sirfsoc_adc_request *req,
++				struct sirfsoc_adc_cali_data *cali_data)
++{
++	cali_data->digital_offset = sirfsoc_adc_offset_cali(req);
++	if (!(cali_data->digital_offset))
++		return -EINVAL;
++	cali_data->digital_again = sirfsoc_adc_gain_cali(req);
++	if (!(cali_data->digital_again))
++		return -EINVAL;
++	/*
++	 * see Equation 3.2 of SiRFprimaII™ Internal ADC and Touch
++	 * User Guide
++	 */
++	cali_data->digital_ideal = (16384 * 1200) / (14 * 333);
++	return 0;
++}
++
++
++/* get voltage after ADC conversion */
++static u32 sirfsoc_adc_get_adc_volt(struct sirfsoc_adc *adc,
++				struct sirfsoc_adc_cali_data *cali_data)
++{
++	u32 digital_out, digital_convert, volt;
++	struct sirfsoc_adc_request *req = &adc->req;
++	if (!(cali_data->is_calibration)) {
++		if (sirfsoc_adc_adc_cali(req, cali_data))
++			return 0;
++		cali_data->is_calibration = true;
++	}
++	req->s_gain_bits = ADC_SGAIN(0);
++	req->delay_bits = ADC_DEL_SET(4);
++
++	sirfsoc_adc_send_request(req);
++	if (req->adc_data.aux) {
++		digital_out = req->adc_data.aux;
++		/*
++		 * see Equation 3.3 of SiRFprimaII™ Internal ADC and Touch
++		 */
++		digital_convert = ((digital_out - 2 * cali_data->digital_offset
++			* 11645 / 140000) * cali_data->digital_ideal)
++			/ (cali_data->digital_again -
++			2 * cali_data->digital_offset
++			* 11645 / 140000);
++		volt = (1200 * digital_convert) / cali_data->digital_ideal;
++		volt = volt * 2;
++
++	} else {
++		return 0;
++	}
++
++	return volt;
++}
++
++/* get touchscreen coordinates for single touch */
++static int sirfsoc_adc_single_ts_sample(struct sirfsoc_adc *adc, int *sample)
++{
++	int adc_intr;
++
++	adc_intr = readl(adc->base + ADC_INTR);
++	if (adc_intr & PEN_INTR)
++		writel(PEN_INTR | PEN_INTR_EN | DATA_INTR_EN,
++			adc->base + ADC_INTR);
++
++	/* check pen status */
++	if (!(readl(adc->base + ADC_COORD) & PEN_DOWN))
++		return -EINVAL;
++
++	writel(SIRFSOC_ADC_CTL1(SIRFSOC_ADC_TS_SEL),
++		adc->base + ADC_CONTROL1);
++
++	if (!wait_for_completion_timeout(&adc->done,
++		msecs_to_jiffies(50))) {
++		return -EBUSY;
++	}
++
++	*sample = readl(adc->base + ADC_COORD);
++	return 0;
++}
++
++static const u32 sirfsoc_adc_ts_reg[SIRFSOC_ADC_TS_SAMPLE_SIZE] = {
++	ADC_COORD, ADC_COORD2, ADC_COORD3, ADC_COORD4
++};
++
++/* get touchscreen coordinates for dual touch */
++static int sirfsoc_adc_dual_ts_sample(struct sirfsoc_adc *adc, int *samples)
++{
++	int adc_intr;
++	int i;
++
++	adc_intr = readl(adc->base + ADC_INTR);
++	if (adc_intr & PEN_INTR)
++		writel(PEN_INTR | PEN_INTR_EN | DATA_INTR_EN,
++			adc->base + ADC_INTR);
++
++	/* check pen status */
++	if (!(readl(adc->base + ADC_COORD) & PEN_DOWN))
++		return -EINVAL;
++
++	writel(SIRFSOC_ADC_CTL1(SIRFSOC_ADC_TS_SEL_DUAL),
++		adc->base + ADC_CONTROL1);
++
++	if (!wait_for_completion_timeout(&adc->done,
++		msecs_to_jiffies(50))) {
++		return -EBUSY;
++	}
++
++	for (i = 0; i < SIRFSOC_ADC_TS_SAMPLE_SIZE; i++)
++		samples[i] = readl(adc->base + sirfsoc_adc_ts_reg[i]);
++
++	return 0;
++}
++
++static int sirfsoc_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val,
++				int *val2,
++				long mask)
++{
++	struct sirfsoc_adc *adc = iio_priv(indio_dev);
++	struct sirfsoc_adc_cali_data cali_data;
++	int ret = 0;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->channel) {
++		case CHANNEL_COORD:
++			ret = sirfsoc_adc_single_ts_sample(adc, val);
++			break;
++		case CHANNEL_COORD_DUAL:
++			ret = sirfsoc_adc_dual_ts_sample(adc, val);
++			break;
++		case CHANNEL_AUX1:
++			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX1_SEL);
++			adc->req.aux = ADC_AUX1;
++			*val = sirfsoc_adc_get_adc_volt(adc,
++						&cali_data);
++			break;
++		case CHANNEL_AUX4:
++			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX4_SEL);
++			adc->req.aux = ADC_AUX4;
++			*val = sirfsoc_adc_get_adc_volt(adc,
++						&cali_data);
++			break;
++		case CHANNEL_AUX5:
++			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX5_SEL);
++			adc->req.aux = ADC_AUX5;
++			*val = sirfsoc_adc_get_adc_volt(adc,
++						&cali_data);
++			break;
++		case CHANNEL_AUX6:
++			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX6_SEL);
++			adc->req.aux = ADC_AUX6;
++			*val = sirfsoc_adc_get_adc_volt(adc,
++						&cali_data);
++			break;
++		}
++
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++	return 0;
++}
++
++static irqreturn_t sirfsoc_adc_data_irq(int irq, void *handle)
++{
++	struct iio_dev *indio_dev = handle;
++	struct sirfsoc_adc *adc = iio_priv(indio_dev);
++	int val;
++
++	val = readl(adc->base + ADC_INTR);
++
++	if (val & DATA_INTR) {
++		writel(PEN_INTR_EN | DATA_INTR | DATA_INTR_EN,
++			adc->base + ADC_INTR);
++		complete(&adc->done);
++	}
++
++	return IRQ_HANDLED;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int sirfsoc_adc_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct sirfsoc_adc *adc = iio_priv(indio_dev);
++
++	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(
++		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN)
++		& ~(1 << PWR_WAKEEN_TSC_SHIFT),
++		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
++
++	clk_disable_unprepare(adc->clk);
++	return 0;
++}
++
++static int sirfsoc_adc_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct sirfsoc_adc *adc = iio_priv(indio_dev);
++	int ret;
++	int val;
++
++	clk_prepare_enable(adc->clk);
++
++	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(
++		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN)
++		| (1 << PWR_WAKEEN_TS_SHIFT),
++		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
++
++	ret = device_reset(dev);
++	if (ret) {
++		dev_err(dev, "Failed to reset\n");
++		return ret;
++	}
++
++	writel(ADC_PRP_MODE3 | ADC_RTOUCH(1) | ADC_DEL_PRE(2) |
++		ADC_DEL_DIS(5),  adc->base + ADC_CONTROL2);
++
++	val = readl(adc->base + ADC_INTR);
++
++	/* Clear interrupts and enable PEN interrupt */
++	writel(val | PEN_INTR | DATA_INTR | PEN_INTR_EN |
++		DATA_INTR_EN,  adc->base + ADC_INTR);
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops sirfsoc_adc_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(sirfsoc_adc_suspend, sirfsoc_adc_resume)
++};
++
++static const struct of_device_id sirfsoc_adc_of_match[] = {
++	{ .compatible = "sirf,prima2-adc",},
++	{}
++};
++
++static struct iio_chan_spec const sirfsoc_adc_iio_channels[] = {
++	SIRFSOC_ADC_CHANNEL(CHANNEL_COORD),
++	SIRFSOC_ADC_CHANNEL(CHANNEL_COORD_DUAL),
++	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX1),
++	/* AtlasVI has no AUX2 and AUX3 */
++	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX4),
++	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX5),
++	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX6),
++};
++
++static const struct iio_info sirfsoc_adc_info = {
++	.read_raw = &sirfsoc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int sirfsoc_adc_probe(struct platform_device *pdev)
++{
++	struct resource	*mem_res;
++	struct sirfsoc_adc *adc;
++	struct iio_dev *indio_dev;
++	int irq;
++	int ret = 0;
++
++	indio_dev = iio_device_alloc(sizeof(struct sirfsoc_adc));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	indio_dev->info = &sirfsoc_adc_info;
++	indio_dev->channels = sirfsoc_adc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(sirfsoc_adc_iio_channels);
++	indio_dev->name = "sirfsoc adc";
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	adc = iio_priv(indio_dev);
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	adc->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(adc->clk)) {
++		dev_err(&pdev->dev, "get adc clk err\n");
++		ret = -ENOMEM;
++		goto err;
++	}
++	clk_prepare_enable(adc->clk);
++
++	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!mem_res) {
++		dev_err(&pdev->dev, "Unalbe to get io resource\n");
++		ret = -ENODEV;
++		goto err;
++	}
++
++	adc->base = devm_request_and_ioremap(&pdev->dev, mem_res);
++	if (adc->base == NULL) {
++		dev_err(&pdev->dev, "IO remap failed!\n");
++		ret = -ENOMEM;
++		goto err;
++	}
++
++	init_completion(&adc->done);
++	mutex_init(&adc->adc_lock);
++
++	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(SIRFSOC_PWRC_BASE +
++		SIRFSOC_PWRC_TRIGGER_EN) | (1 << PWR_WAKEEN_TS_SHIFT),
++		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
++
++	ret = device_reset(&pdev->dev);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to reset\n");
++		goto err;
++	}
++
++	writel(ADC_PRP_MODE3 | ADC_RTOUCH(1) | ADC_DEL_PRE(2) |
++		ADC_DEL_DIS(5),  adc->base + ADC_CONTROL2);
++
++	/* Clear interrupts and enable PEN INTR */
++	writel(readl(adc->base + ADC_INTR) | PEN_INTR | DATA_INTR |
++		PEN_INTR_EN | DATA_INTR_EN,  adc->base + ADC_INTR);
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "Failed to get IRQ!\n");
++		ret = -ENOMEM;
++		goto err;
++	}
++
++	ret = devm_request_irq(&pdev->dev, irq, sirfsoc_adc_data_irq,
++		0, DRIVER_NAME, indio_dev);
++
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to register irq handler\n");
++		ret = -ENODEV;
++		goto err;
++	}
++
++	ret = of_platform_populate(pdev->dev.of_node, sirfsoc_adc_of_match,
++		NULL, &pdev->dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to add child nodes\n");
++		goto err;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to register adc iio dev\n");
++		goto err;
++	}
++
++	return 0;
++
++err:
++	iio_device_free(indio_dev);
++	return ret;
++}
++
++static int sirfsoc_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct sirfsoc_adc *adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	clk_disable_unprepare(adc->clk);
++	iio_device_free(indio_dev);
++
++	return 0;
++}
++
++static struct platform_driver sirfsoc_adc_driver = {
++	.driver = {
++		.name	= DRIVER_NAME,
++		.of_match_table = sirfsoc_adc_of_match,
++		.pm	= &sirfsoc_adc_pm_ops,
++	},
++	.probe		= sirfsoc_adc_probe,
++	.remove		= sirfsoc_adc_remove,
++};
++
++module_platform_driver(sirfsoc_adc_driver);
++
++MODULE_AUTHOR("Guoying Zhang <Guoying.Zhang@csr.com>");
++MODULE_DESCRIPTION("SiRF SoC On-chip ADC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.3
