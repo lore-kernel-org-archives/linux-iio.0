@@ -1,44 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta3.messagelabs.com ([195.245.230.162]:6110 "EHLO
-	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755742AbaFKQ4u (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 12:56:50 -0400
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"Ian Campbell" <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Support Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH 4/8] iio: Add support for DA9150 GPADC
-Date: Wed, 11 Jun 2014 16:56:44 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337A56F5455@SW-EX-MBX01.diasemi.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
- <3c1a7551c7deaeccdca731fa95f4349c57e04249.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
- <ba29cc7f-7586-430c-8947-763510e04212@email.android.com>
-In-Reply-To: <ba29cc7f-7586-430c-8947-763510e04212@email.android.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail.kernel.org ([198.145.19.201]:59439 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752235AbaFIRpd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Jun 2014 13:45:33 -0400
+Message-ID: <5395F32C.10100@kernel.org>
+Date: Mon, 09 Jun 2014 18:47:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-input <linux-input@vger.kernel.org>,
+	Jiri Kosina <jkosina@suse.cz>
+Subject: Re: [PATCHv2 3/3] IIO: hid-sensor-magn-3d: Add in support for True/Magnetic
+ North HID usages
+References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com> <1401750890-31854-4-git-send-email-reyad.attiyat@gmail.com> <538E092F.9040004@linux.intel.com> <CA+BWVUTxnS_C+EXm1SuShywk998+E5KfTdtTrS6_a0+k+4U4ig@mail.gmail.com> <538F3E6A.4080905@linux.intel.com>
+In-Reply-To: <538F3E6A.4080905@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gSnVuZSAxMSwgMjAxNCAxNzozNSwgSm9uYXRob24gQ2FtZXJvbiB3cm90ZToNCg0KPiBIaSBB
-ZGFtLiBTaWxseSBxdWVzdGlvbiBidXQgd2hhdCBhcmUgdGhlIF8gY2hhbm5lbHM/DQo+IA0KPiBJ
-IGhhdmUgcHV0IGluIGEgcGVyaGFwcyBvcHRpbWlzdGljIGRhdGEgc2hlZXQgcmVxdWVzdCB2aWEg
-dGhlIHdlYnNpdGUsIHRocm93aW5nIGluDQo+IHlvdXIgbmFtZS4gSG9wZSB5b3UgZG9uJ3QgbWlu
-ZCENCj4gDQo+IEpvbmF0aGFuDQoNCkhpIEpvbmF0aG9uLiBTb21lIG9mIHRoZSBfY2hhbm5lbHMg
-YXJlIGEgZGlmZmVyZW50IHJlcHJlc2VudGF0aW9uIG9mIHRoZSByZWFkaW5nDQooZS5nLiBkaWZm
-ZXJlbnQgc2NhbGUgLSBvbmUgd291bGQgYmUgMC02ViByYW5nZSwgYW5kIG9uZSB3b3VsZCBiZSAw
-LTIxViBmb3INCmV4YW1wbGUpLiBPdGhlcnMgcHJvdmlkZSBpZGVudGljYWwgcmVhZGluZ3MgdG8g
-dGhlIG5vbiBfY2hhbm5lbCBidXQgaGF2ZSBsZWZ0DQp0aG9zZSBpbiB0byBrZWVwIHRoZSBjaGFu
-bmVsIG51bWJlcmluZyBzYW5lIGFuZCBlYXN5IHRvIHJlZmVyZW5jZS4NCg0KTm8gcHJvYmxlbSBy
-ZWdhcmRpbmcgdGhlIHJlcXVlc3QuDQo=
+On 04/06/14 16:42, Srinivas Pandruvada wrote:
+> On 06/04/2014 08:23 AM, Reyad Attiyat wrote:
+>> Hey Srinivas,
+>>
+>> On Tue, Jun 3, 2014 at 12:43 PM, Srinivas Pandruvada
+>> <srinivas.pandruvada@linux.intel.com> wrote:
+>>
+>>>
+>>> May be we should have a field in const struct iio_chan_spec, so that we
+>>> can dynamically enable disable channels. In this way we can statically
+>>> define channels, but can be enabled/disabled dynamically.
+>>>
+>> Would this require changing iio subsystem to create sysfs entries only
+>> when enabled? Would we need to add functions to disable and enable
+>> later on?
+>
+> This is just a thought. You don't have to change it. I am sure Jonathan will have some opinion this.
+Replied to earlier message.  If there is some common code we can factor out into
+the core then I'm happy to do so, but I don't see an advantage in using
+a field, rather than just tailoring the copy in the first place. e.g.
+
+1) Pass whatever is needed to figure out how many channels are present.
+2) Allocate space for that many channels.
+3) Copy said channels from predefined versions, perhaps amending as necessary.
+
+This is a reasonably common pattern in complex parts or those with hugely
+variable numbers of channels...
+>
+>>>
+>>> I think we need to present angle in radians. Are you basing change present
+>>> in linux-next? This will automatically do in this function.
+>>>
+>> I'll look into this. What function should I use to make the iio chanel
+>> to report radians?
+> I think it will work if the existing sequence is maintained
+>   st->scale_precision = hid_sensor_format_scale(
+>                                  HID_USAGE_SENSOR_COMPASS_3D,
+>                                  &st->magn[CHANNEL_SCAN_INDEX_X],
+>                                  &st->scale_pre_decml, &st->scale_post_decml);
+>
+> So as long as you call this function, the scale value to user space will
+> be returned correctly.
+>
+>>>
+>>>
+>>> I don't see kfree. Try devm_kcalloc?
+>>>
+>> I changed kmemdup to kcalloc so there is still a kfree in the exsiting
+>> code. I can change this to devm_kcalloc but only if we don't go with
+>> static channels that are enabled as found.
+>>
+> Since you are changing this part, devm_ calls are preferred, I think.
+As long as it doesn't add complexity or possibility of race conditions,
+devm calls are usually a good idea.
+>
+> Thanks,
+> Srinivas
+>
+>
+>> Thanks,
+>> Reyad Attiyat
+>>
+>
+
