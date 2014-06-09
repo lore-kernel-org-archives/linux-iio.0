@@ -1,33 +1,20 @@
-Return-Path: <nasa4836@gmail.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5395A1E5.5050400@metafoo.de>
+Date: Mon, 09 Jun 2014 14:00:37 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <538CAEBD.5040501@gmail.com>
-References: <538CAEBD.5040501@gmail.com>
-From: Jianyu Zhan <nasa4836@gmail.com>
-Date: Tue, 3 Jun 2014 01:21:16 +0800
-Message-ID: <CAHz2CGV+=eX+y6UmjbGoYzAEKwNVEHq494AWOqdKxj9JyO6OsA@mail.gmail.com>
-Subject: Re: [PATCH] fix some coding style problem in drivers/staging/iio/frequency/ad9832.c
-To: Federico Di Pierro <nierro92@gmail.com>
-Cc: jic23@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jg1.han@samsung.com,
-	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH 05/12] iio:adc:ad7298: Use BIT() and GENMASK() macros
+References: <1402155772-1373-1-git-send-email-pmeerw@pmeerw.net> <1402155772-1373-6-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402155772-1373-6-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jun 3, 2014 at 1:05 AM, Federico Di Pierro <nierro92@gmail.com> wrote:
-> Hi!
-> This is my latest task of the eudyptula challenge.
-> Just a very small patch! It fixes 3 little coding style problems.
-> I'm using linux-next.
+On 06/07/2014 05:42 PM, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 
-Hi, Federico,
 
-It's awesome you taking part in eudyptula challenge program. That is a
-good start
-to kernel hacking.
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
-But also please honour the community rule - the inline patch is preferred than
-in attachment form . Please have a look at Documentation/SubmittingPatches  file
-in kernel source directory first before submitting patches.
-
-Thanks,
-Jianyu Zhan
+Thanks.
