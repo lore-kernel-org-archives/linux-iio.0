@@ -1,374 +1,194 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47798 "EHLO pmeerw.net"
+Received: from mail.kernel.org ([198.145.19.201]:59598 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751275AbaFLEy3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Jun 2014 00:54:29 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 06/12] iio:adc:ad799x: Only expose event interface when IRQ is available
-Date: Thu, 12 Jun 2014 06:54:10 +0200
-Message-Id: <1402548856-3564-7-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
+	id S1751379AbaFIRtD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 9 Jun 2014 13:49:03 -0400
+Message-ID: <5395F3FB.6020204@kernel.org>
+Date: Mon, 09 Jun 2014 18:50:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
+	jkosina@suse.cz
+Subject: Re: [PATCHv2 1/3] IIO: Documentation: Add north attribute to ABI
+ docs
+References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com> <1401750890-31854-2-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1401750890-31854-2-git-send-email-reyad.attiyat@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-an IRQ is necessary to handle the ALERT condition; without
-IRQ, the IIO event interface serves no purpose
+On 03/06/14 00:14, Reyad Attiyat wrote:
+> Updated ABI documentation to inculde compass north usages.
+>
+> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+Amazing how many lines of documentation two small additions can make!
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/adc/ad799x.c | 265 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 179 insertions(+), 86 deletions(-)
+Anyhow, I'm keener on having these as as modifiers on a rotation rather than
+there own type.
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index b3799a8..b8a8117 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -101,22 +101,32 @@ enum {
- };
- 
- /**
-- * struct ad799x_chip_info - chip specific information
-+ * struct ad799x_chip_config - chip specific information
-  * @channel:		channel specification
-- * @num_channels:	number of channels
-  * @default_config:	device default configuration
-  * @info:		pointer to iio_info struct
-  */
--struct ad799x_chip_info {
-+struct ad799x_chip_config {
- 	struct iio_chan_spec		channel[9];
--	int				num_channels;
- 	u16				default_config;
- 	const struct iio_info		*info;
- };
- 
-+/**
-+ * struct ad799x_chip_info - chip specific information
-+ * @num_channels:	number of channels
-+ * @noirq_config:	device configuration w/o IRQ
-+ * @irq_config:		device configuration w/IRQ
-+ */
-+struct ad799x_chip_info {
-+	int				num_channels;
-+	const struct ad799x_chip_config	noirq_config;
-+	const struct ad799x_chip_config	irq_config;
-+};
-+
- struct ad799x_state {
- 	struct i2c_client		*client;
--	const struct ad799x_chip_info	*chip_info;
-+	const struct ad799x_chip_config	*chip_config;
- 	struct regulator		*reg;
- 	struct regulator		*vref;
- 	unsigned			id;
-@@ -446,7 +456,13 @@ static const struct iio_info ad7991_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--static const struct iio_info ad7993_4_7_8_info = {
-+static const struct iio_info ad7993_4_7_8_noirq_info = {
-+	.read_raw = &ad799x_read_raw,
-+	.driver_module = THIS_MODULE,
-+	.update_scan_mode = ad7997_8_update_scan_mode,
-+};
-+
-+static const struct iio_info ad7993_4_7_8_irq_info = {
- 	.read_raw = &ad799x_read_raw,
- 	.event_attrs = &ad799x_event_attrs_group,
- 	.read_event_config = &ad799x_read_event_config,
-@@ -501,103 +517,175 @@ static const struct iio_event_spec ad799x_events[] = {
- 
- static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 	[ad7991] = {
--		.channel = {
--			AD799X_CHANNEL(0, 12),
--			AD799X_CHANNEL(1, 12),
--			AD799X_CHANNEL(2, 12),
--			AD799X_CHANNEL(3, 12),
--			IIO_CHAN_SOFT_TIMESTAMP(4),
--		},
- 		.num_channels = 5,
--		.info = &ad7991_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 12),
-+				AD799X_CHANNEL(1, 12),
-+				AD799X_CHANNEL(2, 12),
-+				AD799X_CHANNEL(3, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.info = &ad7991_info,
-+		},
- 	},
- 	[ad7995] = {
--		.channel = {
--			AD799X_CHANNEL(0, 10),
--			AD799X_CHANNEL(1, 10),
--			AD799X_CHANNEL(2, 10),
--			AD799X_CHANNEL(3, 10),
--			IIO_CHAN_SOFT_TIMESTAMP(4),
--		},
- 		.num_channels = 5,
--		.info = &ad7991_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 10),
-+				AD799X_CHANNEL(1, 10),
-+				AD799X_CHANNEL(2, 10),
-+				AD799X_CHANNEL(3, 10),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.info = &ad7991_info,
-+		},
- 	},
- 	[ad7999] = {
--		.channel = {
--			AD799X_CHANNEL(0, 8),
--			AD799X_CHANNEL(1, 8),
--			AD799X_CHANNEL(2, 8),
--			AD799X_CHANNEL(3, 8),
--			IIO_CHAN_SOFT_TIMESTAMP(4),
--		},
- 		.num_channels = 5,
--		.info = &ad7991_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 8),
-+				AD799X_CHANNEL(1, 8),
-+				AD799X_CHANNEL(2, 8),
-+				AD799X_CHANNEL(3, 8),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.info = &ad7991_info,
-+		},
- 	},
- 	[ad7992] = {
--		.channel = {
--			AD799X_CHANNEL_WITH_EVENTS(0, 12),
--			AD799X_CHANNEL_WITH_EVENTS(1, 12),
--			IIO_CHAN_SOFT_TIMESTAMP(3),
--		},
- 		.num_channels = 3,
--		.default_config = AD7998_ALERT_EN,
--		.info = &ad7993_4_7_8_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 12),
-+				AD799X_CHANNEL(1, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(3),
-+			},
-+			.info = &ad7993_4_7_8_noirq_info,
-+		},
-+		.irq_config = {
-+			.channel = {
-+				AD799X_CHANNEL_WITH_EVENTS(0, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(1, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(3),
-+			},
-+			.default_config = AD7998_ALERT_EN,
-+			.info = &ad7993_4_7_8_irq_info,
-+		},
- 	},
- 	[ad7993] = {
--		.channel = {
--			AD799X_CHANNEL_WITH_EVENTS(0, 10),
--			AD799X_CHANNEL_WITH_EVENTS(1, 10),
--			AD799X_CHANNEL_WITH_EVENTS(2, 10),
--			AD799X_CHANNEL_WITH_EVENTS(3, 10),
--			IIO_CHAN_SOFT_TIMESTAMP(4),
--		},
- 		.num_channels = 5,
--		.default_config = AD7998_ALERT_EN,
--		.info = &ad7993_4_7_8_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 10),
-+				AD799X_CHANNEL(1, 10),
-+				AD799X_CHANNEL(2, 10),
-+				AD799X_CHANNEL(3, 10),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.info = &ad7993_4_7_8_noirq_info,
-+		},
-+		.irq_config = {
-+			.channel = {
-+				AD799X_CHANNEL_WITH_EVENTS(0, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(1, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(2, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(3, 10),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.default_config = AD7998_ALERT_EN,
-+			.info = &ad7993_4_7_8_irq_info,
-+		},
- 	},
- 	[ad7994] = {
--		.channel = {
--			AD799X_CHANNEL_WITH_EVENTS(0, 12),
--			AD799X_CHANNEL_WITH_EVENTS(1, 12),
--			AD799X_CHANNEL_WITH_EVENTS(2, 12),
--			AD799X_CHANNEL_WITH_EVENTS(3, 12),
--			IIO_CHAN_SOFT_TIMESTAMP(4),
--		},
- 		.num_channels = 5,
--		.default_config = AD7998_ALERT_EN,
--		.info = &ad7993_4_7_8_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 12),
-+				AD799X_CHANNEL(1, 12),
-+				AD799X_CHANNEL(2, 12),
-+				AD799X_CHANNEL(3, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.info = &ad7993_4_7_8_noirq_info,
-+		},
-+		.irq_config = {
-+			.channel = {
-+				AD799X_CHANNEL_WITH_EVENTS(0, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(1, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(2, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(3, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(4),
-+			},
-+			.default_config = AD7998_ALERT_EN,
-+			.info = &ad7993_4_7_8_irq_info,
-+		},
- 	},
- 	[ad7997] = {
--		.channel = {
--			AD799X_CHANNEL_WITH_EVENTS(0, 10),
--			AD799X_CHANNEL_WITH_EVENTS(1, 10),
--			AD799X_CHANNEL_WITH_EVENTS(2, 10),
--			AD799X_CHANNEL_WITH_EVENTS(3, 10),
--			AD799X_CHANNEL(4, 10),
--			AD799X_CHANNEL(5, 10),
--			AD799X_CHANNEL(6, 10),
--			AD799X_CHANNEL(7, 10),
--			IIO_CHAN_SOFT_TIMESTAMP(8),
--		},
- 		.num_channels = 9,
--		.default_config = AD7998_ALERT_EN,
--		.info = &ad7993_4_7_8_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 10),
-+				AD799X_CHANNEL(1, 10),
-+				AD799X_CHANNEL(2, 10),
-+				AD799X_CHANNEL(3, 10),
-+				AD799X_CHANNEL(4, 10),
-+				AD799X_CHANNEL(5, 10),
-+				AD799X_CHANNEL(6, 10),
-+				AD799X_CHANNEL(7, 10),
-+				IIO_CHAN_SOFT_TIMESTAMP(8),
-+			},
-+			.info = &ad7993_4_7_8_noirq_info,
-+		},
-+		.irq_config = {
-+			.channel = {
-+				AD799X_CHANNEL_WITH_EVENTS(0, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(1, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(2, 10),
-+				AD799X_CHANNEL_WITH_EVENTS(3, 10),
-+				AD799X_CHANNEL(4, 10),
-+				AD799X_CHANNEL(5, 10),
-+				AD799X_CHANNEL(6, 10),
-+				AD799X_CHANNEL(7, 10),
-+				IIO_CHAN_SOFT_TIMESTAMP(8),
-+			},
-+			.default_config = AD7998_ALERT_EN,
-+			.info = &ad7993_4_7_8_irq_info,
-+		},
- 	},
- 	[ad7998] = {
--		.channel = {
--			AD799X_CHANNEL_WITH_EVENTS(0, 12),
--			AD799X_CHANNEL_WITH_EVENTS(1, 12),
--			AD799X_CHANNEL_WITH_EVENTS(2, 12),
--			AD799X_CHANNEL_WITH_EVENTS(3, 12),
--			AD799X_CHANNEL(4, 12),
--			AD799X_CHANNEL(5, 12),
--			AD799X_CHANNEL(6, 12),
--			AD799X_CHANNEL(7, 12),
--			IIO_CHAN_SOFT_TIMESTAMP(8),
--		},
- 		.num_channels = 9,
--		.default_config = AD7998_ALERT_EN,
--		.info = &ad7993_4_7_8_info,
-+		.noirq_config = {
-+			.channel = {
-+				AD799X_CHANNEL(0, 12),
-+				AD799X_CHANNEL(1, 12),
-+				AD799X_CHANNEL(2, 12),
-+				AD799X_CHANNEL(3, 12),
-+				AD799X_CHANNEL(4, 12),
-+				AD799X_CHANNEL(5, 12),
-+				AD799X_CHANNEL(6, 12),
-+				AD799X_CHANNEL(7, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(8),
-+			},
-+			.info = &ad7993_4_7_8_noirq_info,
-+		},
-+		.irq_config = {
-+			.channel = {
-+				AD799X_CHANNEL_WITH_EVENTS(0, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(1, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(2, 12),
-+				AD799X_CHANNEL_WITH_EVENTS(3, 12),
-+				AD799X_CHANNEL(4, 12),
-+				AD799X_CHANNEL(5, 12),
-+				AD799X_CHANNEL(6, 12),
-+				AD799X_CHANNEL(7, 12),
-+				IIO_CHAN_SOFT_TIMESTAMP(8),
-+			},
-+			.default_config = AD7998_ALERT_EN,
-+			.info = &ad7993_4_7_8_irq_info,
-+		},
- 	},
- };
- 
-@@ -607,6 +695,8 @@ static int ad799x_probe(struct i2c_client *client,
- 	int ret;
- 	struct ad799x_state *st;
- 	struct iio_dev *indio_dev;
-+	const struct ad799x_chip_info *chip_info =
-+		&ad799x_chip_info_tbl[id->driver_data];
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
- 	if (indio_dev == NULL)
-@@ -617,8 +707,11 @@ static int ad799x_probe(struct i2c_client *client,
- 	i2c_set_clientdata(client, indio_dev);
- 
- 	st->id = id->driver_data;
--	st->chip_info = &ad799x_chip_info_tbl[st->id];
--	st->config = st->chip_info->default_config;
-+	if (client->irq > 0 && chip_info->irq_config.info)
-+		st->chip_config = &chip_info->irq_config;
-+	else
-+		st->chip_config = &chip_info->noirq_config;
-+	st->config = st->chip_config->default_config;
- 
- 	/* TODO: Add pdata options for filtering and bit delay */
- 
-@@ -641,11 +734,11 @@ static int ad799x_probe(struct i2c_client *client,
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = id->name;
--	indio_dev->info = st->chip_info->info;
-+	indio_dev->info = st->chip_config->info;
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = st->chip_info->channel;
--	indio_dev->num_channels = st->chip_info->num_channels;
-+	indio_dev->channels = st->chip_config->channel;
-+	indio_dev->num_channels = chip_info->num_channels;
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		&ad799x_trigger_handler, NULL);
--- 
-1.9.1
+in_rot_from_north_magnetic_raw and friends (as per your suggestion elsewhere).
+
+Otherwise, whilst obvious, perhaps a line or two in the main _raw attribute
+description to state the obvious and say what this is...
+
+
+J
+
+> ---
+>   Documentation/ABI/testing/sysfs-bus-iio | 76 +++++++++++++++++++++++++++++++++
+>   1 file changed, 76 insertions(+)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 6e02c50..251c2bb 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -165,6 +165,10 @@ Description:
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_tilt_comp_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_tilt_comp_raw
+>   KernelVersion:	2.6.35
+>   Contact:	linux-iio@vger.kernel.org
+>   Description:
+> @@ -249,6 +253,10 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_tilt_comp_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_tilt_comp_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
+>   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
+>   KernelVersion:	2.6.35
+> @@ -436,6 +444,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_thresh_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_thresh_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_thresh_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_thresh_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_thresh_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_thresh_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_thresh_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_thresh_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_thresh_rising_en
+> @@ -481,6 +497,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_roc_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_y_roc_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_z_roc_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_magn_z_roc_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_roc_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_roc_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_roc_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_roc_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_roc_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_roc_falling_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_roc_rising_en
+> +What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_roc_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_rising_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_falling_en
+>   What:		/sys/.../iio:deviceX/events/in_voltageY_roc_rising_en
+> @@ -527,6 +551,14 @@ What:		/sys/.../events/in_magn_y_raw_thresh_rising_value
+>   What:		/sys/.../events/in_magn_y_raw_thresh_falling_value
+>   What:		/sys/.../events/in_magn_z_raw_thresh_rising_value
+>   What:		/sys/.../events/in_magn_z_raw_thresh_falling_value
+> +What:		/sys/.../events/in_north_magnetic_raw_thresh_rising_value
+> +What:		/sys/.../events/in_north_magnetic_raw_thresh_falling_value
+> +What:		/sys/.../events/in_north_true_raw_thresh_rising_value
+> +What:		/sys/.../events/in_north_true_raw_thresh_falling_value
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_thresh_rising_value
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_thresh_falling_value
+> +What:		/sys/.../events/in_north_true_tilt_comp_raw_thresh_rising_value
+> +What:		/sys/.../events/in_north_true_tilt_comp_raw_thresh_falling_value
+>   What:		/sys/.../events/in_voltageY_supply_raw_thresh_rising_value
+>   What:		/sys/.../events/in_voltageY_supply_raw_thresh_falling_value
+>   What:		/sys/.../events/in_voltageY_raw_thresh_rising_value
+> @@ -577,6 +609,18 @@ What:		/sys/.../events/in_magn_y_thresh_either_hysteresis
+>   What:		/sys/.../events/in_magn_z_thresh_rising_hysteresis
+>   What:		/sys/.../events/in_magn_z_thresh_falling_hysteresis
+>   What:		/sys/.../events/in_magn_z_thresh_either_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_thresh_rising_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_thresh_falling_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_thresh_either_hysteresis
+> +What:		/sys/.../events/in_north_true_thresh_rising_hysteresis
+> +What:		/sys/.../events/in_north_true_thresh_falling_hysteresis
+> +What:		/sys/.../events/in_north_true_thresh_either_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_rising_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_falling_hysteresis
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_either_hysteresis
+> +What:		/sys/.../events/in_north_true_tilt_comp_thresh_rising_hysteresis
+> +What:		/sys/.../events/in_north_true_tilt_comp_thresh_falling_hysteresis
+> +What:		/sys/.../events/in_north_true_tilt_comp_thresh_either_hysteresis
+>   What:		/sys/.../events/in_voltageY_thresh_rising_hysteresis
+>   What:		/sys/.../events/in_voltageY_thresh_falling_hysteresis
+>   What:		/sys/.../events/in_voltageY_thresh_either_hysteresis
+> @@ -624,6 +668,14 @@ What:		/sys/.../events/in_magn_y_raw_roc_rising_value
+>   What:		/sys/.../events/in_magn_y_raw_roc_falling_value
+>   What:		/sys/.../events/in_magn_z_raw_roc_rising_value
+>   What:		/sys/.../events/in_magn_z_raw_roc_falling_value
+> +What:		/sys/.../events/in_north_magnetic_raw_roc_rising_value
+> +What:		/sys/.../events/in_north_magnetic_raw_roc_falling_value
+> +What:		/sys/.../events/in_north_true_raw_roc_rising_value
+> +What:		/sys/.../events/in_north_true_raw_roc_falling_value
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_roc_rising_value
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_roc_falling_value
+> +What:		/sys/.../events/in_north_true_tilt_comp_raw_roc_rising_value
+> +What:		/sys/.../events/in_north_true_tilt_comp_raw_roc_falling_value
+>   What:		/sys/.../events/in_voltageY_supply_raw_roc_rising_value
+>   What:		/sys/.../events/in_voltageY_supply_raw_roc_falling_value
+>   What:		/sys/.../events/in_voltageY_raw_roc_rising_value
+> @@ -679,6 +731,22 @@ What:		/sys/.../events/in_magn_z_thresh_rising_period
+>   What:		/sys/.../events/in_magn_z_thresh_falling_period
+>   What:		/sys/.../events/in_magn_z_roc_rising_period
+>   What:		/sys/.../events/in_magn_z_roc_falling_period
+> +What:		/sys/.../events/in_north_magnetic_thresh_rising_period
+> +What:		/sys/.../events/in_north_magnetic_thresh_falling_period
+> +What:		/sys/.../events/in_north_magnetic_roc_rising_period
+> +What:		/sys/.../events/in_north_magnetic_roc_falling_period
+> +What:		/sys/.../events/in_north_true_thresh_rising_period
+> +What:		/sys/.../events/in_north_true_thresh_falling_period
+> +What:		/sys/.../events/in_north_true_roc_rising_period
+> +What:		/sys/.../events/in_north_true_roc_falling_period
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_rising_period
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_falling_period
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_roc_rising_period
+> +What:		/sys/.../events/in_north_magnetic_tilt_comp_roc_falling_period
+> +What:		/sys/.../events/in_north_true_tilt_comp_thresh_rising_period
+> +What:		/sys/.../events/in_north_true_tilt_comp_thresh_falling_period
+> +What:		/sys/.../events/in_north_true_tilt_comp_roc_rising_period
+> +What:		/sys/.../events/in_north_true_tilt_comp_roc_falling_period
+>   What:		/sys/.../events/in_voltageY_supply_thresh_rising_period
+>   What:		/sys/.../events/in_voltageY_supply_thresh_falling_period
+>   What:		/sys/.../events/in_voltageY_supply_roc_rising_period
+> @@ -776,6 +844,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_true_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_tilt_comp_en
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_true_tilt_comp_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
+>   What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
+> @@ -840,6 +912,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_true_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_tilt_comp_index
+> +What:		/sys/.../iio:deviceX/scan_elements/in_north_true_tilt_comp_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
+>   What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
+>
 
