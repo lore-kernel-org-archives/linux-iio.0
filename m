@@ -1,306 +1,493 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:44688 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750735AbaFJQ2D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jun 2014 12:28:03 -0400
-Received: by mail-wg0-f49.google.com with SMTP id y10so1791906wgg.20
-        for <linux-iio@vger.kernel.org>; Tue, 10 Jun 2014 09:28:01 -0700 (PDT)
-From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, jic23@kernel.org,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Subject: [PATCH v2] iio: make blocking read wait for data
-Date: Tue, 10 Jun 2014 18:26:31 +0200
-Message-Id: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
+Received: from mail-we0-f175.google.com ([74.125.82.175]:36665 "EHLO
+	mail-we0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752030AbaFJRdr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jun 2014 13:33:47 -0400
+MIME-Version: 1.0
+In-Reply-To: <5396111B.6090109@kernel.org>
+References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com>
+ <1401750890-31854-4-git-send-email-reyad.attiyat@gmail.com> <5396111B.6090109@kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Tue, 10 Jun 2014 12:33:25 -0500
+Message-ID: <CA+BWVUTxE=dzGthxPXq9JHnW0rqhBhqmz5gTZ-PpiHhxnmSupA@mail.gmail.com>
+Subject: Re: [PATCHv2 3/3] IIO: hid-sensor-magn-3d: Add in support for
+ True/Magnetic North HID usages
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the IIO buffer blocking read only wait until at least one
-data element is available.
-This patch adds the possibility for the userspace to to blocking calls
-for multiple elements. This should limit the read() calls count when
-trying to get data in batches.
-This commit also fix a bug where data is lost if an error happens
-after some data is already read.
+Hey Jonathan,
 
-Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
----
- drivers/iio/industrialio-buffer.c | 138 ++++++++++++++++++++++++++++++++++----
- drivers/iio/kfifo_buf.c           |   4 ++
- include/linux/iio/buffer.h        |  40 +++++++++++
- 3 files changed, 169 insertions(+), 13 deletions(-)
+I will make the changes you suggested thanks for reviewing this. Any
+conclusions on the naming, did you want me to change the sysfs name to
+"in_rot_from_north_true/magnetic"?
 
-Changelog:
-v2: thanks to Lars-Peter Clausen and Jonathan Cameron
-- Avoid breaking default ABI
-- Add watermark and timeout properties to buffers
-
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 36b1ae9..1fe0116 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -56,6 +56,10 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- {
- 	struct iio_dev *indio_dev = filp->private_data;
- 	struct iio_buffer *rb = indio_dev->buffer;
-+	size_t datum_size = rb->access->get_bytes_per_datum(rb);
-+	size_t watermark_bytes = rb->low_watermark * datum_size;
-+	size_t count = 0;
-+	long timeout = rb->timeout;
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -66,24 +70,35 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 
- 	do {
- 		if (!iio_buffer_data_available(rb)) {
--			if (filp->f_flags & O_NONBLOCK)
--				return -EAGAIN;
-+			if (filp->f_flags & O_NONBLOCK) {
-+				ret = -EAGAIN;
-+				break;
-+			}
- 
--			ret = wait_event_interruptible(rb->pollq,
-+			timeout = wait_event_interruptible_timeout(rb->pollq,
- 					iio_buffer_data_available(rb) ||
--					indio_dev->info == NULL);
--			if (ret)
--				return ret;
--			if (indio_dev->info == NULL)
--				return -ENODEV;
-+					indio_dev->info == NULL,
-+					timeout);
-+			if (timeout <= 0) {
-+				ret = timeout;
-+				break;
-+			}
-+
-+			if (indio_dev->info == NULL) {
-+				ret = -ENODEV;
-+				break;
-+			}
- 		}
- 
--		ret = rb->access->read_first_n(rb, n, buf);
--		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
--			ret = -EAGAIN;
--	 } while (ret == 0);
-+		ret = rb->access->read_first_n(rb, n, buf + count);
-+		if (ret < 0)
-+			break;
- 
--	return ret;
-+		n -= ret;
-+		count += ret;
-+	 } while (n > 0 && count < watermark_bytes);
-+
-+	return count ? count : ret;
- }
- 
- /**
-@@ -126,6 +141,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
- 	INIT_LIST_HEAD(&buffer->buffer_list);
- 	init_waitqueue_head(&buffer->pollq);
- 	kref_init(&buffer->ref);
-+	buffer->low_watermark = 1;
-+	buffer->timeout = MAX_SCHEDULE_TIMEOUT;
- }
- EXPORT_SYMBOL(iio_buffer_init);
- 
-@@ -795,6 +812,101 @@ done:
- }
- EXPORT_SYMBOL(iio_buffer_store_enable);
- 
-+ssize_t iio_buffer_show_watermark(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+
-+	return sprintf(buf, "%u\n", buffer->low_watermark);
-+}
-+EXPORT_SYMBOL(iio_buffer_show_watermark);
-+
-+ssize_t iio_buffer_store_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	if (iio_buffer_is_active(indio_dev->buffer)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	buffer->low_watermark = val;
-+	ret = 0;
-+out:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret ? ret : len;
-+}
-+EXPORT_SYMBOL(iio_buffer_store_watermark);
-+
-+static int iio_buffer_timeout_set(struct iio_buffer *buffer, long timeout_us)
-+{
-+	if (timeout_us >= 0) {
-+		buffer->timeout = usecs_to_jiffies(timeout_us);
-+	} else if (timeout_us == -1){
-+		buffer->timeout = MAX_SCHEDULE_TIMEOUT;
-+	} else {
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static long iio_buffer_timeout_get(struct iio_buffer *buffer)
-+{
-+	if (buffer->timeout != MAX_SCHEDULE_TIMEOUT)
-+		return jiffies_to_usecs(buffer->timeout);
-+	return -1;
-+}
-+
-+ssize_t iio_buffer_show_timeout(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+
-+	return sprintf(buf, "%ld\n", iio_buffer_timeout_get(buffer));
-+}
-+EXPORT_SYMBOL(iio_buffer_show_timeout);
-+
-+ssize_t iio_buffer_store_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	long val;
-+	int ret;
-+
-+	ret = kstrtol(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	if (iio_buffer_is_active(indio_dev->buffer)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+	ret = iio_buffer_timeout_set(buffer, val);
-+out:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret ? ret : len;
-+}
-+EXPORT_SYMBOL(iio_buffer_store_timeout);
-+
- /**
-  * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
-  * @indio_dev: the iio device
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index 7134e8a..ab7ea54 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -54,10 +54,14 @@ static int iio_get_length_kfifo(struct iio_buffer *r)
- 
- static IIO_BUFFER_ENABLE_ATTR;
- static IIO_BUFFER_LENGTH_ATTR;
-+static IIO_BUFFER_WATERMARK_ATTR;
-+static IIO_BUFFER_TIMEOUT_ATTR;
- 
- static struct attribute *iio_kfifo_attributes[] = {
- 	&dev_attr_length.attr,
- 	&dev_attr_enable.attr,
-+	&dev_attr_low_watermark.attr,
-+	&dev_attr_timeout.attr,
- 	NULL,
- };
- 
-diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-index 5193927..41c8f11 100644
---- a/include/linux/iio/buffer.h
-+++ b/include/linux/iio/buffer.h
-@@ -61,6 +61,8 @@ struct iio_buffer_access_funcs {
-  * struct iio_buffer - general buffer structure
-  * @length:		[DEVICE] number of datums in buffer
-  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-+ * @low_watermark:	[DEVICE] blocking read granularity in datums
-+ * @timeout:		[DEVICE] blocking read timeout in jiffies
-  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
-  *			control method is used
-  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-@@ -80,6 +82,8 @@ struct iio_buffer_access_funcs {
- struct iio_buffer {
- 	int					length;
- 	int					bytes_per_datum;
-+	unsigned int				low_watermark;
-+	long					timeout;
- 	struct attribute_group			*scan_el_attrs;
- 	long					*scan_mask;
- 	bool					scan_timestamp;
-@@ -201,6 +205,34 @@ ssize_t iio_buffer_store_enable(struct device *dev,
- ssize_t iio_buffer_show_enable(struct device *dev,
- 			       struct device_attribute *attr,
- 			       char *buf);
-+/**
-+ * iio_buffer_show_watermark() - attr to see the read watermark
-+ **/
-+ssize_t iio_buffer_show_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf);
-+/**
-+ * iio_buffer_store_watermark() - attr to configure the read watermark
-+ **/
-+ssize_t iio_buffer_store_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len);
-+/**
-+ * iio_buffer_show_timeout() - attr to see the read timeout (microseconds)
-+ * Note: if no timeout is set, returns -1
-+ **/
-+ssize_t iio_buffer_show_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf);
-+/**
-+ * iio_buffer_store_timeout() - attr to configure read timeout (microseconds)
-+ * Note: to disable the timeout, write -1
-+ **/
-+ssize_t iio_buffer_store_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len);
- #define IIO_BUFFER_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
- 					   iio_buffer_read_length,	\
- 					   iio_buffer_write_length)
-@@ -209,6 +241,14 @@ ssize_t iio_buffer_show_enable(struct device *dev,
- 					   iio_buffer_show_enable,	\
- 					   iio_buffer_store_enable)
- 
-+#define IIO_BUFFER_WATERMARK_ATTR DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,	\
-+					   iio_buffer_show_watermark,	\
-+					   iio_buffer_store_watermark)
-+
-+#define IIO_BUFFER_TIMEOUT_ATTR DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR,	\
-+					   iio_buffer_show_timeout,	\
-+					   iio_buffer_store_timeout)
-+
- bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
- 	const unsigned long *mask);
- 
--- 
-1.9.1
-
+On Mon, Jun 9, 2014 at 2:55 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 03/06/14 00:14, Reyad Attiyat wrote:
+>>
+>> Updated magn_3d_channel enum for all possible north channels
+>>
+>> Added functions to setup iio_chan_spec array depending on which hid usage
+>> reports are found
+>>
+>> Renamed magn_val to iio_val to differentiate the index being used
+>>
+>> Updated magn_3d_state struct to hold pointer array (magn_val_addr[]) which
+>> points to iio_val[]
+>>
+>> Updated magn_3d_parse_report to scan for all compass usages and create iio
+>> channels for each
+>>
+>> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+>
+> Hi Reyad,
+>
+> I've taken a rather quick look at this.  Will probably want to take
+> one more close look at a newer version.
+>
+> Various bits and bobs inline - mostly fine!
+> Jonathan
+>
+>> ---
+>>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 271
+>> +++++++++++++++++---------
+>>   1 file changed, 177 insertions(+), 94 deletions(-)
+>>
+>> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> index 6d162b7..32f4d90 100644
+>> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> @@ -34,63 +34,54 @@ enum magn_3d_channel {
+>>         CHANNEL_SCAN_INDEX_X,
+>>         CHANNEL_SCAN_INDEX_Y,
+>>         CHANNEL_SCAN_INDEX_Z,
+>> +       CHANNEL_SCAN_INDEX_NORTH_MAGN,
+>> +       CHANNEL_SCAN_INDEX_NORTH_TRUE,
+>> +       CHANNEL_SCAN_INDEX_NORTH_TILT_COMP,
+>> +       CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP,
+>>         MAGN_3D_CHANNEL_MAX,
+>>   };
+>>
+>> +#define IIO_CHANNEL_MAX MAGN_3D_CHANNEL_MAX
+>
+> Please don't define a generic sounding name for a local
+> constant.  Why not use MAGN_3D_CHANNEL_MAX everywhere?
+>
+>> +
+>>   struct magn_3d_state {
+>>         struct hid_sensor_hub_callbacks callbacks;
+>>         struct hid_sensor_common common_attributes;
+>>         struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
+>> -       u32 magn_val[MAGN_3D_CHANNEL_MAX];
+>> -};
+>> +       u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+>>
+>> -static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
+>> -       HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
+>> -       HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
+>> -       HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
+>> +       u32 iio_val[IIO_CHANNEL_MAX];
+>> +       int num_iio_channels;
+>>   };
+>>
+>> -/* Channel definitions */
+>> -static const struct iio_chan_spec magn_3d_channels[] = {
+>> -       {
+>> -               .type = IIO_MAGN,
+>> -               .modified = 1,
+>> -               .channel2 = IIO_MOD_X,
+>> -               .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>> -               BIT(IIO_CHAN_INFO_SCALE) |
+>> -               BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>> -               BIT(IIO_CHAN_INFO_HYSTERESIS),
+>> -               .scan_index = CHANNEL_SCAN_INDEX_X,
+>> -       }, {
+>> -               .type = IIO_MAGN,
+>> -               .modified = 1,
+>> -               .channel2 = IIO_MOD_Y,
+>> -               .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>> -               BIT(IIO_CHAN_INFO_SCALE) |
+>> -               BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>> -               BIT(IIO_CHAN_INFO_HYSTERESIS),
+>> -               .scan_index = CHANNEL_SCAN_INDEX_Y,
+>> -       }, {
+>> -               .type = IIO_MAGN,
+>> -               .modified = 1,
+>> -               .channel2 = IIO_MOD_Z,
+>> -               .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>> -               BIT(IIO_CHAN_INFO_SCALE) |
+>> -               BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>> -               BIT(IIO_CHAN_INFO_HYSTERESIS),
+>> -               .scan_index = CHANNEL_SCAN_INDEX_Z,
+>> +/* Find index into magn_3d_state magn[] and magn_val_addr[] from HID
+>> Usage  */
+>> +static int magn_3d_usage_id_to_chan_index(unsigned usage_id){
+>> +       int offset = -1;
+>
+> I'd personally prefer offset = -EINVAL and to have it assigned as
+> a default element in the switch statement rather that here.
+>
+>> +
+>> +       switch (usage_id) {
+>> +       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
+>> +               offset = CHANNEL_SCAN_INDEX_X;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
+>> +               offset = CHANNEL_SCAN_INDEX_Y;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
+>> +               offset = CHANNEL_SCAN_INDEX_Z;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
+>> +               offset = CHANNEL_SCAN_INDEX_NORTH_TILT_COMP;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
+>> +               offset = CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
+>> +               offset = CHANNEL_SCAN_INDEX_NORTH_MAGN;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
+>> +               offset = CHANNEL_SCAN_INDEX_NORTH_TRUE;
+>> +               break;
+>>         }
+>> -};
+>>
+>> -/* Adjust channel real bits based on report descriptor */
+>> -static void magn_3d_adjust_channel_bit_mask(struct iio_chan_spec
+>> *channels,
+>> -                                               int channel, int size)
+>> -{
+>> -       channels[channel].scan_type.sign = 's';
+>> -       /* Real storage bits will change based on the report desc. */
+>> -       channels[channel].scan_type.realbits = size * 8;
+>> -       /* Maximum size of a sample to capture is u32 */
+>> -       channels[channel].scan_type.storagebits = sizeof(u32) * 8;
+>> +       return offset;
+>>   }
+>>
+>>   /* Channel read_raw handler */
+>> @@ -101,21 +92,31 @@ static int magn_3d_read_raw(struct iio_dev
+>> *indio_dev,
+>>   {
+>>         struct magn_3d_state *magn_state = iio_priv(indio_dev);
+>>         int report_id = -1;
+>> -       u32 address;
+>> +       unsigned usage_id;
+>> +       int chan_index = -1;
+>>         int ret;
+>>         int ret_type;
+>>
+>> +       dev_dbg(&indio_dev->dev, "magn_3d_read_raw\n");
+>> +
+>>         *val = 0;
+>>         *val2 = 0;
+>>         switch (mask) {
+>>         case 0:
+>> +               /* We store the HID usage ID of the iio channel
+>> +                * in its address field
+>> +                */
+>> +               usage_id = chan->address;
+>> +               chan_index = magn_3d_usage_id_to_chan_index(usage_id);
+>
+>
+>> +               if(chan_index < 0)
+>> +                       return -EINVAL;
+>> +
+>>                 report_id =
+>> -                       magn_state->magn[chan->scan_index].report_id;
+>> -               address = magn_3d_addresses[chan->scan_index];
+>> +                       magn_state->magn[chan_index].report_id;
+>>                 if (report_id >= 0)
+>>                         *val = sensor_hub_input_attr_get_raw_value(
+>>                                 magn_state->common_attributes.hsdev,
+>> -                               HID_USAGE_SENSOR_COMPASS_3D, address,
+>> +                               HID_USAGE_SENSOR_COMPASS_3D, usage_id,
+>>                                 report_id);
+>>                 else {
+>>                         *val = 0;
+>> @@ -202,12 +203,13 @@ static int magn_3d_proc_event(struct
+>> hid_sensor_hub_device *hsdev,
+>>                                 magn_state->common_attributes.data_ready);
+>>         if (magn_state->common_attributes.data_ready)
+>>                 hid_sensor_push_data(indio_dev,
+>> -                               magn_state->magn_val,
+>> -                               sizeof(magn_state->magn_val));
+>> +                               &(magn_state->iio_val),
+>> +                               sizeof(magn_state->iio_val));
+>>
+>>         return 0;
+>>   }
+>>
+>> +
+>>   /* Capture samples in local storage */
+>>   static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
+>>                                 unsigned usage_id,
+>> @@ -217,63 +219,143 @@ static int magn_3d_capture_sample(struct
+>> hid_sensor_hub_device *hsdev,
+>>         struct iio_dev *indio_dev = platform_get_drvdata(priv);
+>>         struct magn_3d_state *magn_state = iio_priv(indio_dev);
+>>         int offset;
+>> +       u32 *magn_val;
+>>         int ret = -EINVAL;
+>>
+>> -       switch (usage_id) {
+>> +       offset = magn_3d_usage_id_to_chan_index(usage_id);
+>> +       if(offset < 0)
+>> +               return ret;
+>> +
+>> +       magn_val = magn_state->magn_val_addr[offset];
+>> +       if(!magn_val)
+>> +               return ret;
+>> +
+>> +       *(magn_val) =  *(u32 *)raw_data;
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +/* Setup the iio_chan_spec for HID Usage ID */
+>> +static int magn_3d_setup_new_iio_chan(struct hid_sensor_hub_device
+>> *hsdev,
+>> +                               unsigned usage_id,
+>> +                               unsigned attr_usage_id,
+>> +                               struct iio_chan_spec *iio_chans,
+>> +                               struct magn_3d_state *st)
+>> +{
+>> +       int ret = -1;
+>
+> This is kind of backwards to normal practice for this sort of function.
+> Better to maintain ret in the correct state at all times.  Hence
+> start with it being 0 and set to negative when there is an error rather
+> than the other way around.
+>
+>> +       int iio_index;
+>> +       int magn_index;
+>> +       struct iio_chan_spec *channel;
+>> +
+>> +       /* Setup magn_3d_state for new channel */
+>> +       magn_index = magn_3d_usage_id_to_chan_index(attr_usage_id);
+>> +       if(magn_index < 0 || magn_index >= MAGN_3D_CHANNEL_MAX){
+>> +               return -1;
+>> +       }
+>> +
+>> +       /* Check if usage attribute exists in the sensor hub device */
+>> +       ret = sensor_hub_input_get_attribute_info(hsdev,
+>> +               HID_INPUT_REPORT,
+>> +               usage_id,
+>> +               attr_usage_id,
+>> +               &(st->magn[magn_index]));
+>> +       if(ret != 0){
+>> +               /* Usage not found. Nothing to setup.*/
+>> +               return 0;
+>> +       }
+>> +
+>> +       iio_index = st->num_iio_channels;
+>> +       if(iio_index < 0 || iio_index >= IIO_CHANNEL_MAX){
+>
+> I'd be tempted to allocate space dynamically but I guess this works.
+>
+>
+>> +               return -2;
+>> +       }
+>> +
+>> +       /* Check if this usage hasn't been setup */
+>> +       if(st->magn_val_addr[magn_index] != NULL){
+>
+> Space before that bracket here and elsewhere.
+> Don't return your own error codes. Use standard ones.  I guess thees
+> are left from debugging.
+>
+>> +               return -3;
+>> +       }
+>> +       st->magn_val_addr[magn_index] = &(st->iio_val[iio_index]);
+>> +
+>> +       /* Setup IIO Channel spec */
+>> +       channel = &(iio_chans[iio_index]);
+>
+> Just pass this is in as a pointer in the first place?
+> That is a pointer to the current channel location, that may or may
+> not be filled by this function.
+>
+>> +
+>> +       channel->type = IIO_MAGN;
+>> +       channel->address = attr_usage_id;
+>> +       channel->modified = 1;
+>> +
+>> +       switch (attr_usage_id){
+>> +       case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
+>> +               channel->channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
+>> +               channel->channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
+>> +               channel->channel2 = IIO_MOD_NORTH_MAGN;
+>> +               break;
+>> +       case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
+>> +               channel->channel2 = IIO_MOD_NORTH_TRUE;
+>> +               break;
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
+>> +               channel->channel2 = IIO_MOD_X;
+>> +               break;
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
+>> +               channel->channel2 = IIO_MOD_Y;
+>> +               break;
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
+>> -               offset = usage_id -
+>> HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
+>> -               magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
+>> -                                               *(u32 *)raw_data;
+>> -               ret = 0;
+>> -       break;
+>> -       default:
+>> +               channel->channel2 = IIO_MOD_Z;
+>>                 break;
+>> +       default:
+>> +               return -4;
+>
+> huh?  why -4. -EINVAL or -ENOSUP or something similar perhaps.
+>
+>>         }
+>>
+>> +       channel->info_mask_shared_by_type =
+>> +               BIT(IIO_CHAN_INFO_OFFSET) |
+>> +               BIT(IIO_CHAN_INFO_SCALE) |
+>> +               BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>> +               BIT(IIO_CHAN_INFO_HYSTERESIS);
+>> +
+>> +       channel->scan_type.sign = 's';
+>> +       /* Real storage bits will change based on the report desc. */
+>> +       channel->scan_type.realbits = st->magn[magn_index].size * 8;
+>> +       /* Maximum size of a sample to capture is u32 */
+>> +       channel->scan_type.storagebits = sizeof(u32) * 8;
+>> +
+>
+> I'd keen num_iio_channels outside this function and increment it if
+> this function does not return an error.
+>>
+>> +       (st->num_iio_channels)++;
+>
+> Don't do this. ret should have been valid throughout... if not something
+> odd is going on with your use of ret.
+>
+> Hmm. I see it is in the original code :( feel free to clean this up.
+>
+>> +       ret = 0;
+>> +
+>>         return ret;
+>>   }
+>>
+>> -/* Parse report which is specific to an usage id*/
+>> +/* Read the HID reports and setup IIO Channels */
+>>   static int magn_3d_parse_report(struct platform_device *pdev,
+>>                                 struct hid_sensor_hub_device *hsdev,
+>> -                               struct iio_chan_spec *channels,
+>> +                               struct iio_chan_spec *iio_chans,
+>>                                 unsigned usage_id,
+>>                                 struct magn_3d_state *st)
+>>   {
+>> -       int ret;
+>> +       int ret = 0;
+>>         int i;
+>>
+>> -       for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
+>> -               ret = sensor_hub_input_get_attribute_info(hsdev,
+>> -                               HID_INPUT_REPORT,
+>> -                               usage_id,
+>> -                               HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS +
+>> i,
+>> -                               &st->magn[CHANNEL_SCAN_INDEX_X + i]);
+>> -               if (ret < 0)
+>> -                       break;
+>> -               magn_3d_adjust_channel_bit_mask(channels,
+>> -                               CHANNEL_SCAN_INDEX_X + i,
+>> -                               st->magn[CHANNEL_SCAN_INDEX_X + i].size);
+>> -       }
+>> -       dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
+>> -                       st->magn[0].index,
+>> -                       st->magn[0].report_id,
+>> -                       st->magn[1].index, st->magn[1].report_id,
+>> -                       st->magn[2].index, st->magn[2].report_id);
+>> -
+>> -       /* Set Sensitivity field ids, when there is no individual modifier
+>> */
+>> -       if (st->common_attributes.sensitivity.index < 0) {
+>> -               sensor_hub_input_get_attribute_info(hsdev,
+>> -                       HID_FEATURE_REPORT, usage_id,
+>> -                       HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
+>> -                       HID_USAGE_SENSOR_DATA_ORIENTATION,
+>> -                       &st->common_attributes.sensitivity);
+>> -               dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
+>> -                       st->common_attributes.sensitivity.index,
+>> -                       st->common_attributes.sensitivity.report_id);
+>> -       }
+>> +       dev_dbg(&pdev->dev, "magn_3d_parse_reports Usage ID: %x\n",
+>> usage_id);
+>> +       for(i = HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
+>> +           i <= HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS && ret == 0;
+>> +               i++)
+>> +                       ret = magn_3d_setup_new_iio_chan(hsdev,
+>> +                                       usage_id,
+>> +                                       i,
+>> +                                       iio_chans,
+>> +                                       st);
+>> +
+>> +       dev_dbg(&pdev->dev, "magn_3d_parse_reports Found %d\n magnetic
+>> axis. Returned: %d", st->num_iio_channels, ret);
+>> +       for(i = HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH;
+>> +           i <= HID_USAGE_SENSOR_ORIENT_TRUE_NORTH && ret == 0;
+>> +               i++)
+>> +                       ret = magn_3d_setup_new_iio_chan(hsdev,
+>> +                                       usage_id,
+>> +                                       i,
+>> +                                       iio_chans,
+>> +                                       st);
+>
+> As stated above, I'd use whether this succeeds for a given channel to
+> increment the location in iio_chans and then pass in only the 'next' channel
+> location on each pass.  Moving the bounds checks out here as well would be
+> make for a cleaner magn_3d_setup_new_iio_chan function.
+>
+>
+>> +       dev_dbg(&pdev->dev, "magn_3d_parse_reports Found %d\n magnetic
+>> channels. Returned: %d", st->num_iio_channels, ret);
+>>
+>>         return ret;
+>>   }
+>> @@ -307,10 +389,11 @@ static int hid_magn_3d_probe(struct platform_device
+>> *pdev)
+>>                 return ret;
+>>         }
+>>
+>> -       channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
+>> -                          GFP_KERNEL);
+>> +       channels = kcalloc(MAGN_3D_CHANNEL_MAX,
+>> +                       sizeof(struct iio_chan_spec),
+>> +                       GFP_KERNEL);
+>>         if (!channels) {
+>> -               dev_err(&pdev->dev, "failed to duplicate channels\n");
+>> +               dev_err(&pdev->dev, "failed to allocate memory for iio
+>> channel\n");
+>>                 return -ENOMEM;
+>>         }
+>>
+>> @@ -322,7 +405,7 @@ static int hid_magn_3d_probe(struct platform_device
+>> *pdev)
+>>         }
+>>
+>>         indio_dev->channels = channels;
+>> -       indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
+>> +       indio_dev->num_channels = magn_state->num_iio_channels;
+>
+> With a bit of rearranging it strikes me that you can fill num_channels
+> directly rather than having another copy of it....
+>
+>>         indio_dev->dev.parent = &pdev->dev;
+>>         indio_dev->info = &magn_3d_info;
+>>         indio_dev->name = name;
+>>
+>
