@@ -1,127 +1,306 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:55932 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752342AbaFJPTn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jun 2014 11:19:43 -0400
-Date: Tue, 10 Jun 2014 17:19:40 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Robert Hodaszi <robert.hodaszi@digi.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-	marex@denx.de, jbe@pengutronix.de, hector.palacios@digi.com,
-	fabio.estevam@freescale.com, lars@metafoo.de
-Subject: Re: [PATCH 2/2] iio: mxs-lradc: add ADC channel 9 as a copy of
- channel 8
-Message-ID: <20140610151939.GB3429@piout.net>
-References: <1402407695-2984-1-git-send-email-robert.hodaszi@digi.com>
- <1402407695-2984-3-git-send-email-robert.hodaszi@digi.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1402407695-2984-3-git-send-email-robert.hodaszi@digi.com>
+Received: from mail-wg0-f49.google.com ([74.125.82.49]:44688 "EHLO
+	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750735AbaFJQ2D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jun 2014 12:28:03 -0400
+Received: by mail-wg0-f49.google.com with SMTP id y10so1791906wgg.20
+        for <linux-iio@vger.kernel.org>; Tue, 10 Jun 2014 09:28:01 -0700 (PDT)
+From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, jic23@kernel.org,
+	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+Subject: [PATCH v2] iio: make blocking read wait for data
+Date: Tue, 10 Jun 2014 18:26:31 +0200
+Message-Id: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/06/2014 at 15:41:35 +0200, Robert Hodaszi wrote :
-> Commit c8231a9af8147f8a401fc55931ec44abfb937660 ("iio: mxs-lradc: compute
-> temperature from channel 8 and 9") merged channel 8 and channel 9 to create an
-> IIO_TEMP channel. It changed the number of LRADC channels, which could cause
-> incompatibility with previous device-tree declarations, and also makes it
-> illogical (e.g. channel 15 is <&lradc 14>).
-> 
-> Add channel 9 as a copy of channel 8. Reading channel 9 has the same output as
-> reading channel 8.
-> 
-> Signed-off-by: Robert Hodaszi <robert.hodaszi@digi.com>
+Currently the IIO buffer blocking read only wait until at least one
+data element is available.
+This patch adds the possibility for the userspace to to blocking calls
+for multiple elements. This should limit the read() calls count when
+trying to get data in batches.
+This commit also fix a bug where data is lost if an error happens
+after some data is already read.
 
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+---
+ drivers/iio/industrialio-buffer.c | 138 ++++++++++++++++++++++++++++++++++----
+ drivers/iio/kfifo_buf.c           |   4 ++
+ include/linux/iio/buffer.h        |  40 +++++++++++
+ 3 files changed, 169 insertions(+), 13 deletions(-)
 
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c | 61 +++++++++++++++++++++----------------
->  1 file changed, 35 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 52d7517..25c0519 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -1376,8 +1376,8 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
->   * Driver initialization
->   */
->  
-> -#define MXS_ADC_CHAN(idx, chan_type) {				\
-> -	.type = (chan_type),					\
-> +#define MXS_ADC_VOLTAGE_CHAN(idx) {				\
-> +	.type = IIO_VOLTAGE,					\
->  	.indexed = 1,						\
->  	.scan_index = (idx),					\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> @@ -1391,32 +1391,41 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
->  	},							\
->  }
->  
-> +#define MXS_ADC_TEMP_CHAN(idx) {				\
-> +	.type = IIO_TEMP,					\
-> +	.indexed = 1,						\
-> +	.scan_index = (idx),					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> +			      BIT(IIO_CHAN_INFO_SCALE) |	\
-> +			      BIT(IIO_CHAN_INFO_OFFSET),	\
-> +	.channel = (idx),					\
-> +	.address = (idx),					\
-> +	.scan_type = {						\
-> +		.sign = 'u',					\
-> +		.realbits = 18,					\
-> +		.storagebits = 32,				\
-> +	},							\
-> +}
-> +
->  static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
-> -	MXS_ADC_CHAN(0, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(1, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(2, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(3, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(4, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(5, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(6, IIO_VOLTAGE),
-> -	MXS_ADC_CHAN(7, IIO_VOLTAGE),	/* VBATT */
-> +	MXS_ADC_VOLTAGE_CHAN(0),
-> +	MXS_ADC_VOLTAGE_CHAN(1),
-> +	MXS_ADC_VOLTAGE_CHAN(2),
-> +	MXS_ADC_VOLTAGE_CHAN(3),
-> +	MXS_ADC_VOLTAGE_CHAN(4),
-> +	MXS_ADC_VOLTAGE_CHAN(5),
-> +	MXS_ADC_VOLTAGE_CHAN(6),
-> +	MXS_ADC_VOLTAGE_CHAN(7),	/* VBATT */
->  	/* Combined Temperature sensors */
-> -	{
-> -		.type = IIO_TEMP,
-> -		.indexed = 1,
-> -		.scan_index = 8,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_OFFSET) |
-> -				      BIT(IIO_CHAN_INFO_SCALE),
-> -		.channel = 8,
-> -		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
-> -	},
-> -	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
-> -	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
-> -	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
-> -	MXS_ADC_CHAN(13, IIO_VOLTAGE),	/* VDDD */
-> -	MXS_ADC_CHAN(14, IIO_VOLTAGE),	/* VBG */
-> -	MXS_ADC_CHAN(15, IIO_VOLTAGE),	/* VDD5V */
-> +	MXS_ADC_TEMP_CHAN(8),
-> +	/* CH 9 is the same as CH 8. Declared to fix following channel indexes */
-> +	MXS_ADC_TEMP_CHAN(9),
-> +	MXS_ADC_VOLTAGE_CHAN(10),	/* VDDIO */
-> +	MXS_ADC_VOLTAGE_CHAN(11),	/* VTH */
-> +	MXS_ADC_VOLTAGE_CHAN(12),	/* VDDA */
-> +	MXS_ADC_VOLTAGE_CHAN(13),	/* VDDD */
-> +	MXS_ADC_VOLTAGE_CHAN(14),	/* VBG */
-> +	MXS_ADC_VOLTAGE_CHAN(15),	/* VDD5V */
->  };
->  
->  static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
+Changelog:
+v2: thanks to Lars-Peter Clausen and Jonathan Cameron
+- Avoid breaking default ABI
+- Add watermark and timeout properties to buffers
 
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 36b1ae9..1fe0116 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -56,6 +56,10 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ {
+ 	struct iio_dev *indio_dev = filp->private_data;
+ 	struct iio_buffer *rb = indio_dev->buffer;
++	size_t datum_size = rb->access->get_bytes_per_datum(rb);
++	size_t watermark_bytes = rb->low_watermark * datum_size;
++	size_t count = 0;
++	long timeout = rb->timeout;
+ 	int ret;
+ 
+ 	if (!indio_dev->info)
+@@ -66,24 +70,35 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 
+ 	do {
+ 		if (!iio_buffer_data_available(rb)) {
+-			if (filp->f_flags & O_NONBLOCK)
+-				return -EAGAIN;
++			if (filp->f_flags & O_NONBLOCK) {
++				ret = -EAGAIN;
++				break;
++			}
+ 
+-			ret = wait_event_interruptible(rb->pollq,
++			timeout = wait_event_interruptible_timeout(rb->pollq,
+ 					iio_buffer_data_available(rb) ||
+-					indio_dev->info == NULL);
+-			if (ret)
+-				return ret;
+-			if (indio_dev->info == NULL)
+-				return -ENODEV;
++					indio_dev->info == NULL,
++					timeout);
++			if (timeout <= 0) {
++				ret = timeout;
++				break;
++			}
++
++			if (indio_dev->info == NULL) {
++				ret = -ENODEV;
++				break;
++			}
+ 		}
+ 
+-		ret = rb->access->read_first_n(rb, n, buf);
+-		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+-			ret = -EAGAIN;
+-	 } while (ret == 0);
++		ret = rb->access->read_first_n(rb, n, buf + count);
++		if (ret < 0)
++			break;
+ 
+-	return ret;
++		n -= ret;
++		count += ret;
++	 } while (n > 0 && count < watermark_bytes);
++
++	return count ? count : ret;
+ }
+ 
+ /**
+@@ -126,6 +141,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
+ 	INIT_LIST_HEAD(&buffer->buffer_list);
+ 	init_waitqueue_head(&buffer->pollq);
+ 	kref_init(&buffer->ref);
++	buffer->low_watermark = 1;
++	buffer->timeout = MAX_SCHEDULE_TIMEOUT;
+ }
+ EXPORT_SYMBOL(iio_buffer_init);
+ 
+@@ -795,6 +812,101 @@ done:
+ }
+ EXPORT_SYMBOL(iio_buffer_store_enable);
+ 
++ssize_t iio_buffer_show_watermark(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_buffer *buffer = indio_dev->buffer;
++
++	return sprintf(buf, "%u\n", buffer->low_watermark);
++}
++EXPORT_SYMBOL(iio_buffer_show_watermark);
++
++ssize_t iio_buffer_store_watermark(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_buffer *buffer = indio_dev->buffer;
++	unsigned int val;
++	int ret;
++
++	ret = kstrtouint(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	mutex_lock(&indio_dev->mlock);
++	if (iio_buffer_is_active(indio_dev->buffer)) {
++		ret = -EBUSY;
++		goto out;
++	}
++
++	buffer->low_watermark = val;
++	ret = 0;
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret ? ret : len;
++}
++EXPORT_SYMBOL(iio_buffer_store_watermark);
++
++static int iio_buffer_timeout_set(struct iio_buffer *buffer, long timeout_us)
++{
++	if (timeout_us >= 0) {
++		buffer->timeout = usecs_to_jiffies(timeout_us);
++	} else if (timeout_us == -1){
++		buffer->timeout = MAX_SCHEDULE_TIMEOUT;
++	} else {
++		return -EINVAL;
++	}
++	return 0;
++}
++
++static long iio_buffer_timeout_get(struct iio_buffer *buffer)
++{
++	if (buffer->timeout != MAX_SCHEDULE_TIMEOUT)
++		return jiffies_to_usecs(buffer->timeout);
++	return -1;
++}
++
++ssize_t iio_buffer_show_timeout(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_buffer *buffer = indio_dev->buffer;
++
++	return sprintf(buf, "%ld\n", iio_buffer_timeout_get(buffer));
++}
++EXPORT_SYMBOL(iio_buffer_show_timeout);
++
++ssize_t iio_buffer_store_timeout(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_buffer *buffer = indio_dev->buffer;
++	long val;
++	int ret;
++
++	ret = kstrtol(buf, 10, &val);
++	if (ret)
++		return ret;
++
++	mutex_lock(&indio_dev->mlock);
++	if (iio_buffer_is_active(indio_dev->buffer)) {
++		ret = -EBUSY;
++		goto out;
++	}
++	ret = iio_buffer_timeout_set(buffer, val);
++out:
++	mutex_unlock(&indio_dev->mlock);
++	return ret ? ret : len;
++}
++EXPORT_SYMBOL(iio_buffer_store_timeout);
++
+ /**
+  * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
+  * @indio_dev: the iio device
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index 7134e8a..ab7ea54 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -54,10 +54,14 @@ static int iio_get_length_kfifo(struct iio_buffer *r)
+ 
+ static IIO_BUFFER_ENABLE_ATTR;
+ static IIO_BUFFER_LENGTH_ATTR;
++static IIO_BUFFER_WATERMARK_ATTR;
++static IIO_BUFFER_TIMEOUT_ATTR;
+ 
+ static struct attribute *iio_kfifo_attributes[] = {
+ 	&dev_attr_length.attr,
+ 	&dev_attr_enable.attr,
++	&dev_attr_low_watermark.attr,
++	&dev_attr_timeout.attr,
+ 	NULL,
+ };
+ 
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 5193927..41c8f11 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -61,6 +61,8 @@ struct iio_buffer_access_funcs {
+  * struct iio_buffer - general buffer structure
+  * @length:		[DEVICE] number of datums in buffer
+  * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
++ * @low_watermark:	[DEVICE] blocking read granularity in datums
++ * @timeout:		[DEVICE] blocking read timeout in jiffies
+  * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
+  *			control method is used
+  * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
+@@ -80,6 +82,8 @@ struct iio_buffer_access_funcs {
+ struct iio_buffer {
+ 	int					length;
+ 	int					bytes_per_datum;
++	unsigned int				low_watermark;
++	long					timeout;
+ 	struct attribute_group			*scan_el_attrs;
+ 	long					*scan_mask;
+ 	bool					scan_timestamp;
+@@ -201,6 +205,34 @@ ssize_t iio_buffer_store_enable(struct device *dev,
+ ssize_t iio_buffer_show_enable(struct device *dev,
+ 			       struct device_attribute *attr,
+ 			       char *buf);
++/**
++ * iio_buffer_show_watermark() - attr to see the read watermark
++ **/
++ssize_t iio_buffer_show_watermark(struct device *dev,
++				struct device_attribute *attr,
++				char *buf);
++/**
++ * iio_buffer_store_watermark() - attr to configure the read watermark
++ **/
++ssize_t iio_buffer_store_watermark(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t len);
++/**
++ * iio_buffer_show_timeout() - attr to see the read timeout (microseconds)
++ * Note: if no timeout is set, returns -1
++ **/
++ssize_t iio_buffer_show_timeout(struct device *dev,
++				struct device_attribute *attr,
++				char *buf);
++/**
++ * iio_buffer_store_timeout() - attr to configure read timeout (microseconds)
++ * Note: to disable the timeout, write -1
++ **/
++ssize_t iio_buffer_store_timeout(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf,
++				size_t len);
+ #define IIO_BUFFER_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
+ 					   iio_buffer_read_length,	\
+ 					   iio_buffer_write_length)
+@@ -209,6 +241,14 @@ ssize_t iio_buffer_show_enable(struct device *dev,
+ 					   iio_buffer_show_enable,	\
+ 					   iio_buffer_store_enable)
+ 
++#define IIO_BUFFER_WATERMARK_ATTR DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,	\
++					   iio_buffer_show_watermark,	\
++					   iio_buffer_store_watermark)
++
++#define IIO_BUFFER_TIMEOUT_ATTR DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR,	\
++					   iio_buffer_show_timeout,	\
++					   iio_buffer_store_timeout)
++
+ bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+ 	const unsigned long *mask);
+ 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.9.1
+
