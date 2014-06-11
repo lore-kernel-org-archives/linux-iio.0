@@ -1,59 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:44233 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754711AbaFNPNK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 11:13:10 -0400
-Message-ID: <539C66F7.2040607@kernel.org>
-Date: Sat, 14 Jun 2014 16:15:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ve0-f176.google.com ([209.85.128.176]:38807 "EHLO
+	mail-ve0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751328AbaFKOW2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 10:22:28 -0400
 MIME-Version: 1.0
-To: Jimmy Picard <jimmyp11f155@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: fix coding style
-References: <1402638961-14176-1-git-send-email-jimmyp11f155@gmail.com>
-In-Reply-To: <1402638961-14176-1-git-send-email-jimmyp11f155@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337A56F53A6@SW-EX-MBX01.diasemi.com>
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+	<CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
+	<CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
+	<2E89032DDAA8B9408CB92943514A0337A56F53A6@SW-EX-MBX01.diasemi.com>
+Date: Wed, 11 Jun 2014 09:22:27 -0500
+Message-ID: <CAL_JsqJJz2S4fn25pJK5UDG9j36JKnS++VQCMhbdxQd_4-2OFQ@mail.gmail.com>
+Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
+From: Rob Herring <robherring2@gmail.com>
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Support Opensource <Support.Opensource@diasemi.com>,
+	Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/06/14 06:56, Jimmy Picard wrote:
-> This patch fixes coding style reported by checkpatch.pl that missing
-> a blank line after declarations.
+On Wed, Jun 11, 2014 at 8:17 AM, Opensource [Adam Thomson]
+<Adam.Thomson.Opensource@diasemi.com> wrote:
+>> On Wed, Jun 11, 2014 at 13:43, Rob Herring wrote:
+>>
+>> dlg is the correct one and seems to be the most widely used, so we
+>> should go with that and mark the others deprecated.
+>>
+>> diasemi is documented for the da9210, but not used anywhere.
+>>
+>> There appears to be 2 different da9053 bindings. I'd guess the dialog
+>> variant used on 2 i.MX boards is not used. Other i.MX boards use the
+>> dlg version. I'm not sure what is going on with da9055. Please sort
+>> these out.
+>>
 >
-> Signed-off-by: Jimmy Picard <jimmyp11f155@gmail.com>
-Hmm. This is in the trivial enough to be marginally annoying
-category of basically noise.  Normally I'd only take this as
-part of a larger series doing something more interesting, but
-what the heck.
+> The intention is to update the other Dialog drivers after we've agreed this
+> prefix. With regards to da9055, what's the issue here as I believe that uses
+> the 'dlg' prefix already?
 
-Applied to the togreg branch of iio.git
+In documentation it does, but I'm not sure how these strings are used:
 
-J
-> ---
->   drivers/staging/iio/iio_simple_dummy.c | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-> index fd334a0..bf78e6f 100644
-> --- a/drivers/staging/iio/iio_simple_dummy.c
-> +++ b/drivers/staging/iio/iio_simple_dummy.c
-> @@ -550,6 +550,7 @@ error_ret:
->   static __init int iio_dummy_init(void)
->   {
->   	int i, ret;
-> +
->   	if (instances > 10) {
->   		instances = 1;
->   		return -EINVAL;
-> @@ -577,6 +578,7 @@ module_init(iio_dummy_init);
->   static __exit void iio_dummy_exit(void)
->   {
->   	int i;
-> +
->   	for (i = 0; i < instances; i++)
->   		iio_dummy_remove(i);
->   	kfree(iio_dummy_devs);
->
+drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-gpio",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-regulator",
+drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-onkey",
+drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-rtc",
+drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-hwmon",
+drivers/mfd/da9055-core.c:              .of_compatible =
+"dialog,da9055-watchdog",
 
+Rob
