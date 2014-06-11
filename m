@@ -1,91 +1,99 @@
-Return-Path: <spk.linux@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43581 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755512AbaFKIGR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 04:06:17 -0400
+In-Reply-To: <20140611013007.GA32756@kroah.com>
+References: <20140611013007.GA32756@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <1403072503-29246-2-git-send-email-beomho.seo@samsung.com>
-References: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>
-	<1403072503-29246-2-git-send-email-beomho.seo@samsung.com>
-Date: Wed, 18 Jun 2014 12:05:10 +0530
-Message-ID: <CAK5sBcEdvXNmcpFSMr+bL8AEy39u3arcuL1hQi6Lm4W8kWxMGQ@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iio: adc: exynos_adc: Use devm_* APIs
-From: Sachin Kamat <spk.linux@gmail.com>
-To: Beomho Seo <beomho.seo@samsung.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, j.anaszewski@samsung.com,
-	Sachin Kamat <sachin.kamat@linaro.org>, naveen krishna <ch.naveen@samsung.com>, ktsai@capellamicro.com,
-	srinivas.pandruvada@linux.intel.com, t.figa@samsung.com,
-	myungjoo.ham@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: IIO drivers left in drivers/staging/
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 11 Jun 2014 09:05:58 +0100
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: =?UTF-8?Q?Kristina_Mart=C5=A1enko?= <kristina.martsenko@gmail.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <f0db211a-bf69-4a3e-beda-2101af74ae25@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Beomho,
 
-On Wed, Jun 18, 2014 at 11:51 AM, Beomho Seo <beomho.seo@samsung.com> wrote:
-> This patch changes APIs from request_irq() and iio_device_register()
-> to devm_* APIs. Using them, make code simpler.
->
-> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-> ---
->  drivers/iio/adc/exynos_adc.c |   11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index d325aea..37b6eb5 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -337,7 +337,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
->         else
->                 indio_dev->num_channels = MAX_ADC_V2_CHANNELS;
->
-> -       ret = request_irq(info->irq, exynos_adc_isr,
-> +       ret = devm_request_irq(&pdev->dev, info->irq, exynos_adc_isr,
->                                         0, dev_name(&pdev->dev), info);
->         if (ret < 0) {
->                 dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
-> @@ -345,9 +345,9 @@ static int exynos_adc_probe(struct platform_device *pdev)
->                 goto err_disable_clk;
->         }
->
-> -       ret = iio_device_register(indio_dev);
-> +       ret = devm_iio_device_register(&pdev->dev, indio_dev);
->         if (ret)
-> -               goto err_irq;
-> +               goto err_disable_clk;
->
->         exynos_adc_hw_init(info);
->
-> @@ -362,9 +362,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
->  err_of_populate:
->         device_for_each_child(&pdev->dev, NULL,
->                                 exynos_adc_remove_devices);
-> -       iio_device_unregister(indio_dev);
-> -err_irq:
-> -       free_irq(info->irq, info);
->  err_disable_clk:
->         writel(0, info->enable_reg);
->         clk_disable_unprepare(info->clk);
-> @@ -380,8 +377,6 @@ static int exynos_adc_remove(struct platform_device *pdev)
->
->         device_for_each_child(&pdev->dev, NULL,
->                                 exynos_adc_remove_devices);
-> -       iio_device_unregister(indio_dev);
-> -       free_irq(info->irq, info);
->         writel(0, info->enable_reg);
->         clk_disable_unprepare(info->clk);
->         regulator_disable(info->vdd);
-> --
-> 1.7.9.5
->
 
-I am not sure if this change is safe as it changes the order of execution.
-With devm_request_irq, irq is freed only after the function completes, i.e.,
-the order will now be something like
+On June 11, 2014 2:30:07 AM GMT+01:00, Greg KH <gregkh@linuxfoundation.org> wrote:
+>Hi Jonathan,
+Hi Kristina/Greg.
+>
+>I'd really like to figure out what is left to do with all of the
+>remaining IIO staging drivers, and see if we can get them all moved out
+>soon.
+There is a lot of each driver having its own peculiar set of little and sometimes big
+ issues! We have also kind of gotten into the habbit of treating staging graduations as if
+ they were initial driver submissions so proposed moves get quite a bit of review and
+ that often extends the list of things to fix or improve rather a lot. Of course any help is
+ welcome.
 
-writel(0, info->enable_reg)
-clk_disable_unprepare(info->clk);
-regulator_disable(info->vdd);
-iio_device_unregister
-free_irq
+I'll reply in more detail about this later. 
 
-which is not what the original code did.
+For now I have cc'd Lars as he has inherited
+ responsibility for a lot of AD drivers that have been around from the early days when
+ things were a little loose.
+
+If Christina is raring to get started, my notes say the lpc32xx_ADC driver needs some
+ prefixes on #define constants and that is all I picked up for that driver when reviewing it
+ for a staging graduation.
+
+If not, Lars, what about looking at the resolver drivers or perhaps the CDC drivers?
+ If I recall they are pretty clean and straight forward. Probably some ABI in need of
+ documentation (sysfs attribute naming). If not do you have any short term suggestions?
+
+>
+>As part of the OPW intern program, Kristina has agreed to help out with
+>staging kernel drivers and I thought that doing this type of work would
+>be a great task.  There seems to be a number of different types of
+>IIO drivers here, so that should keep her from being bored with just
+>one
+>specific type of sensor.  There are also some "dummy" IIO drivers,
+>which
+>I don't really understand what they are for (as well as why they remain
+>in staging.)
+Ah. There is only really one dummy driver, be it with a software interrupt driver to fake
+ hardware threshold interrupts etc.
+
+This device is basically a fake. The intent was to allow those with no hardware to hand
+ to work at or understand the core of iio.
+It has come in very handy as a test tool!
+
+The other intended purpose is to act as an example of best practice and provide
+ documentation of a sort.
+
+As for why it is still in staging... It comes down to the dubious hack that provides fake event interrupts. We do it much nicer in the sysfs trigger and would like to either use that approach or find something more generic.
+>
+>The drivers/staging/TODO file seems pretty old, being dated back in
+>2009
+>and not really done much with the exception of adding one entry.
+
+Oops
+>
+>So, any thoughts about what to do here?  Any pointers to devices that
+>she can aquire if that needs to happen, or APIs that need to be
+>standardized across types?
+Most ABI bits are now to do with new stuff.
+Having said that the resolver and CDC
+ drivers use some ABI that is probably documented but that documentation is also
+ a candidate for cleaning up and moving out of staging.
+
+Busy day (pesky customer demo) so will get back with more concrete stuff later.
+>
+>thanks,
+>
+>greg k-h
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
-Regards,
-Sachin.
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
