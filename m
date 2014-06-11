@@ -1,1408 +1,818 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:47195 "EHLO mail.kernel.org"
+Received: from plane.gmane.org ([80.91.229.3]:53899 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754989AbaFNRvB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 13:51:01 -0400
-Message-ID: <539C8BF5.4080700@kernel.org>
-Date: Sat, 14 Jun 2014 18:52:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org,
-	Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [PATCH] iio: jsa1212: Add JSA1212 proximity/ALS sensor
-References: <1402696571-32217-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1402696571-32217-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	id S1751238AbaFKIuH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 11 Jun 2014 04:50:07 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1WueEO-0002lc-Dm
+	for linux-iio@vger.kernel.org; Wed, 11 Jun 2014 10:50:04 +0200
+Received: from 146.187.3.109.rev.sfr.net ([109.3.187.146])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 11 Jun 2014 10:50:04 +0200
+Received: from josselin.costanzi by 146.187.3.109.rev.sfr.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Wed, 11 Jun 2014 10:50:04 +0200
+To: linux-iio@vger.kernel.org
+From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+Subject: Re: [PATCH] iio: adc: add CSR SiRFSoC internal ADC driver
+Date: Wed, 11 Jun 2014 10:46:14 +0200
+Message-ID: <ln950m$3v1$1@ger.gmane.org>
+References: <1402307665-3007-1-git-send-email-21cnbao@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/06/14 22:56, Srinivas Pandruvada wrote:
-> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
->
-> This patch adds a new driver for solteam opto JSA1212 proximity and
-> ambient light sensor.
->
-> Basic details of the chip can be found here.
->
-> http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
->
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Hi,
+Barry Song wrote:
 
-The driver has become a little overdesigned in places.  I've made
-a few suggestions on where rearranging things might lead to code that
-is easier to review.
-
-Anyhow, another review that is mostly quadrature to Peter's!
+> From: Guoying Zhang <Guoying.Zhang@csr.com>
+> 
+> SiRFSoC internal ADC provides touchscreen single or dual touch
+> channels, and provides several auxiliary channels to measure
+> temperature, battery and so on.
+> 
+> Signed-off-by: Guoying Zhang <Guoying.Zhang@csr.com>
+> Signed-off-by: Barry Song <Baohua.Song@csr.com>
 > ---
->   drivers/iio/light/Kconfig   |   10 +
->   drivers/iio/light/Makefile  |    1 +
->   drivers/iio/light/jsa1212.c | 1245 +++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 1256 insertions(+)
->   create mode 100644 drivers/iio/light/jsa1212.c
->
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index c89740d..949c614 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -158,4 +158,14 @@ config VCNL4000
->   	 To compile this driver as a module, choose M here: the
->   	 module will be called vcnl4000.
->
-> +config JSA1212
-> +	tristate "JSA1212 ALS and proximity sensor driver"
-> +	depends on I2C
+>  drivers/iio/adc/Kconfig       |   9 +
+>  drivers/iio/adc/Makefile      |   1 +
+>  drivers/iio/adc/sirfsoc_adc.c | 722 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 732 insertions(+)
+>  create mode 100644 drivers/iio/adc/sirfsoc_adc.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index a80d236..8ea6e4b 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -187,6 +187,15 @@ config NAU7802
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called nau7802.
+>  
+> +config SIRFSOC_ADC
+> +        tristate "SiRFSoC ADC"
+> +	depends on ARCH_SIRF
 > +	help
-> +	 Say Y here if you want to build a IIO driver for JSA1212
-> +	 proximity & ALS sensor device.
+> +	  If you say yes here you get support for CSR SiRFSoC internal ADC.
 > +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called jsa1212.
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called sirfsoc_adc.
 > +
->   endmenu
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 3eb36e5..d81ed1f 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -16,3 +16,4 @@ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
->   obj-$(CONFIG_TCS3472)		+= tcs3472.o
->   obj-$(CONFIG_TSL4531)		+= tsl4531.o
->   obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-> +obj-$(CONFIG_JSA1212)		+= jsa1212.o
-> diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
+>  config TI_ADC081C
+>  	tristate "Texas Instruments ADC081C021/027"
+>  	depends on I2C
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 9d60f2d..2912e58 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+>  obj-$(CONFIG_MCP3422) += mcp3422.o
+>  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+>  obj-$(CONFIG_NAU7802) += nau7802.o
+> +obj-$(CONFIG_SIRFSOC_ADC) += sirfsoc_adc.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+> diff --git a/drivers/iio/adc/sirfsoc_adc.c b/drivers/iio/adc/sirfsoc_adc.c
 > new file mode 100644
-> index 0000000..4c58b4c
+> index 0000000..568ae1c
 > --- /dev/null
-> +++ b/drivers/iio/light/jsa1212.c
-> @@ -0,0 +1,1245 @@
+> +++ b/drivers/iio/adc/sirfsoc_adc.c
+> @@ -0,0 +1,722 @@
 > +/*
-> + * JSA1212 Ambient Light & Proximity Sensor Driver
-> + *
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
+> +* ADC Driver for CSR SiRFprimaII/AtlasVI
+> +*
+> +* Copyright (c) 2014 Cambridge Silicon Radio Limited, a CSR plc group company.
+> +*
+> +* Licensed under GPLv2.
+> +*/
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
 > +#include <linux/module.h>
-> +#include <linux/moduleparam.h>
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
+> +#include <linux/kernel.h>
+> +#include <linux/init.h>
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
 > +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/mutex.h>
-> +#include <linux/slab.h>
-> +#include <linux/acpi.h>
-> +#include <linux/gpio/consumer.h>
+> +#include <linux/of.h>
+> +#include <linux/pm.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/reset.h>
+> +#include <linux/rtc/sirfsoc_rtciobrg.h>
+> +
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/events.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
 > +
-> +/* JSA1212 reg address */
-> +#define JSA1212_CONF_REG		0x01
-> +#define JSA1212_INT_REG			0x02
-> +#define JSA1212_PXS_LT_REG		0x03
-> +#define JSA1212_PXS_HT_REG		0x04
-> +#define JSA1212_ALS_TH1_REG		0x05
-> +#define JSA1212_ALS_TH2_REG		0x06
-> +#define JSA1212_ALS_TH3_REG		0x07
-> +#define JSA1212_PXS_DATA_REG		0x08
-> +#define JSA1212_ALS_DT1_REG		0x09
-> +#define JSA1212_ALS_DT2_REG		0x0A
-> +#define JSA1212_ALS_RNG_REG		0x0B
+> +#define DRIVER_NAME "sirfsoc_adc"
 > +
-> +/* JSA1212 reg defaults */
-> +#define JSA1212_CONF_REG_DEF		0x58
-> +#define JSA1212_INT_REG_DEF		0x02
-> +#define JSA1212_PXS_LT_REG_DEF		0x00
-> +#define JSA1212_PXS_HT_REG_DEF		0xFF
-> +#define JSA1212_ALS_TH1_REG_DEF		0x00
-> +#define JSA1212_ALS_TH2_REG_DEF		0xF0
-> +#define JSA1212_ALS_TH3_REG_DEF		0xFF
-> +#define JSA1212_ALS_RNG_REG_DEF		0x00
+> +#define PWR_WAKEEN_TSC_SHIFT	23
+> +#define PWR_WAKEEN_TS_SHIFT	5
+> +#define SIRFSOC_PWRC_TRIGGER_EN	0x8
+> +#define SIRFSOC_PWRC_BASE	0x3000
 > +
-> +/* JSA1212 reg masks */
-> +#define JSA1212_CONF_MASK		0xFF
-> +#define JSA1212_INT_MASK		0xFF
-> +#define JSA1212_PXS_LT_MASK		0xFF
-> +#define JSA1212_PXS_HT_MASK		0xFF
-> +#define JSA1212_ALS_TH1_MASK		0xFF
-> +#define JSA1212_ALS_TH2_LT_MASK		0x0F
-> +#define JSA1212_ALS_TH2_HT_MASK		0xF0
-> +#define JSA1212_ALS_TH3_MASK		0xFF
-> +#define JSA1212_PXS_DATA_MASK		0xFF
-> +#define JSA1212_ALS_DT1_MASK		0xFF
-> +#define JSA1212_ALS_DT2_MASK		0x0F
-> +#define JSA1212_ALS_RNG_MASK		0x07
-> +#define JSA1212_REG_MASK		0xFF
+> +#define DATA_SHIFT_BITS		14
 > +
-> +/* JSA1212 CONF REG bits */
-> +#define JSA1212_CONF_PXS_MASK		0x80
-> +#define JSA1212_CONF_PXS_ENABLE		0x80
-> +#define JSA1212_CONF_PXS_DISABLE	0x00
-> +#define JSA1212_CONF_ALS_MASK		0x04
-> +#define JSA1212_CONF_ALS_ENABLE		0x04
-> +#define JSA1212_CONF_ALS_DISABLE	0x00
+> +#define ADC_CONTROL1		0x00
+> +#define ADC_CONTROL2		0x04
+> +#define ADC_INTR		0x08
+> +#define ADC_COORD		0x0C
+> +#define ADC_PRESSURE		0x10
+> +#define ADC_AUX1		0x14
+> +#define ADC_AUX2		0x18
+> +#define ADC_AUX3		0x1C
+> +#define ADC_AUX4		0x20
+> +#define ADC_AUX5		0x24
+> +#define ADC_AUX6		0x28
+> +#define ADC_CB			0x2C /* Read Back calibration register */
+> +#define ADC_COORD2		0x30
+> +#define ADC_COORD3		0x34
+> +#define ADC_COORD4		0x38
+> +#define ADC_CONTROL3		0x3C
 > +
-> +/* JSA1212 INT REG bits */
-> +#define JSA1212_INT_CTRL_MASK		0x01
-> +#define JSA1212_INT_CTRL_EITHER		0x00
-> +#define JSA1212_INT_CTRL_BOTH		0x01
-> +#define JSA1212_INT_ALS_PRST_MASK	0x06
-> +#define JSA1212_INT_ALS_PRST_1CONV	0x00
-> +#define JSA1212_INT_ALS_PRST_4CONV	0x02
-> +#define JSA1212_INT_ALS_PRST_8CONV	0x04
-> +#define JSA1212_INT_ALS_PRST_16CONV	0x06
-> +#define JSA1212_INT_ALS_FLAG_MASK	0x08
-> +#define JSA1212_INT_ALS_FLAG_CLR	0x00
-> +#define JSA1212_INT_PXS_PRST_MASK	0x60
-> +#define JSA1212_INT_PXS_PRST_1CONV	0x00
-> +#define JSA1212_INT_PXS_PRST_4CONV	0x20
-> +#define JSA1212_INT_PXS_PRST_8CONV	0x40
-> +#define JSA1212_INT_PXS_PRST_16CONV	0x60
-> +#define JSA1212_INT_PXS_FLAG_MASK	0x80
-> +#define JSA1212_INT_PXS_FLAG_CLR	0x00
+> +/* CTRL1 defines */
+> +#define ADC_RESET_QUANT_EN	BIT(24)
+> +#define ADC_RST_B		BIT(23)
+> +#define ADC_RESOLUTION_12	BIT(22)
+> +#define ADC_RBAT_DISABLE	(0x0 << 21)
+> +#define ADC_RBAT_ENABLE		(0x1 << 21)
+> +#define ADC_EXTCM_MASK		(0x3 << 19)
+> +#define ADC_EXTCM(x)		(((x) & 0x3) << 19)
+> +#define ADC_SGAIN_MASK		(0x7 << 16)
+> +#define ADC_SGAIN(x)		(((x) & 0x7) << 16)
+> +#define ADC_POLL		BIT(15)
+> +#define ADC_SEL_MASK		(0xF << 11)
+> +#define ADC_SEL(x)		 (((x) & 0xF) << 11)
+> +#define ADC_FREQ_6K		(0x0 << 8)
+> +#define ADC_FREQ_13K		(0x1 << 8)
+> +#define ADC_DEL_SET_MASK	(0xF << 4)
+> +#define ADC_DEL_SET(x)		(((x) & 0xF) << 4)
+> +#define ADC_TP_TIME_MASK	(0x7)
+> +#define ADC_TP_TIME(x)		(((x) & 0x7) << 0)
 > +
-> +/* JSA1212 ALS RNG REG bits */
-> +#define JSA1212_ALS_RNG_0_2048		0x00
-> +#define JSA1212_ALS_RNG_0_1024		0x01
-> +#define JSA1212_ALS_RNG_0_512		0x02
-> +#define JSA1212_ALS_RNG_0_256		0x03
-> +#define JSA1212_ALS_RNG_0_128		0x04
+> +/* CTRL2 defines */
+> +#define ADC_PRP_MASK		(3 << 14)
+> +/* Pen detector off, digitizer off */
+> +#define ADC_PRP_MODE0		(0 << 14)
+> +/* Pen detector on, digitizer off, digitizer wakes up on pen detect */
+> +#define ADC_PRP_MODE1		BIT(14)
+> +/* Pen detector on, digitizer off, no wake up on pen detect */
+> +#define ADC_PRP_MODE2		(2 << 14)
+> +/* Pen detector on, digitizer on */
+> +#define ADC_PRP_MODE3		(3 << 14)
+> +#define ADC_RTOUCH_MASK		(0x3 << 12)
+> +#define ADC_RTOUCH(x)		(((x) & 0x3) << 12)
+> +#define ADC_DEL_AUTO_MASK	(0xF << 8)
+> +#define ADC_DEL_AUTO(x)		(((x) & 0xF) << 8)
+> +#define ADC_DEL_PRE(x)		(((x) & 0xF) << 4)
+> +#define ADC_DEL_DIS(x)		(((x) & 0xF) << 0)
 > +
-> +/* JSA1212 INT threshold range */
-> +#define JSA1212_ALS_TH_MIN		0x0000
-> +#define JSA1212_ALS_TH_MAX		0x0FFF
-> +#define JSA1212_PXS_TH_MIN		0x00
-> +#define JSA1212_PXS_TH_MAX		0xFF
+> +/* INTR register defines */
+> +#define PEN_INTR_EN		BIT(5)
+> +#define DATA_INTR_EN		BIT(4)
+> +#define PEN_INTR		BIT(1)
+> +#define DATA_INTR		BIT(0)
 > +
-> +#define JSA1212_I2C_RETRY		0x05
-> +#define JSA1212_ALS_DELAY_MS		0xC8
-> +#define JSA1212_PXS_DELAY_MS		0x64
+> +/* DATA register defines */
+> +#define PEN_DOWN		BIT(31)
+> +#define DATA_YVALID		BIT(30)
+> +#define DATA_XVALID		BIT(29)
+> +#define DATA_Z2VALID		BIT(30)
+> +#define DATA_Z1VALID		BIT(29)
+> +#define DATA_AUXVALID		BIT(30)
+> +#define DATA_CB_VALID		BIT(30)
+> +#define DATA_Y2VALID		BIT(30)
+> +#define DATA_X2VALID		BIT(29)
+> +#define DATA_6VALID		BIT(30)
+> +#define DATA_5VALID		BIT(29)
+> +#define DATA_8VALID		BIT(30)
+> +#define DATA_7VALID		BIT(29)
 > +
-> +enum jsa1212_op_mode {
-> +	JSA1212_OPMODE_ALS_EN,
-> +	JSA1212_OPMODE_PXS_EN,
-> +	JSA1212_OPMODE_ALS_EV_EN,
-> +	JSA1212_OPMODE_PXS_EV_EN,
-> +};
+> +#define ADC_DATA_MASK(x)	(0x3FFF << (x))
+> +#define DATA_XMASK		ADC_DATA_MASK(0)
+> +#define DATA_YMASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
+> +#define DATA_Z1MASK		ADC_DATA_MASK(0)
+> +#define DATA_Z2MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
+> +#define DATA_AUXMASK		ADC_DATA_MASK(0)
+> +#define DATA_CBMASK		ADC_DATA_MASK(0)
+> +#define DATA_X2MASK		ADC_DATA_MASK(0)
+> +#define DATA_Y2MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
+> +#define DATA_5MASK		ADC_DATA_MASK(0)
+> +#define DATA_6MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
+> +#define DATA_7MASK		ADC_DATA_MASK(0)
+> +#define DATA_8MASK		ADC_DATA_MASK(DATA_SHIFT_BITS)
 > +
-> +enum jsa1212_cmd_id {
-> +	JSA1212_CMD_POWEROFF,
-> +	JSA1212_CMD_SUSPEND,
-> +	JSA1212_CMD_RAW_ALS,
-> +	JSA1212_CMD_RAW_PXS,
-> +	JSA1212_CMD_ALS_EV_EN,
-> +	JSA1212_CMD_ALS_EV_DIS,
-> +	JSA1212_CMD_PXS_EV_EN,
-> +	JSA1212_CMD_PXS_EV_DIS,
-> +	JSA1212_CMD_RESUME,
-> +};
+> +#define ADC_IDEAL_RELA_RESULT	11597
+> +#define ADC_IDEAL_ABSO_RESULT	9446
 > +
-> +/* Config Register modes */
-> +enum jsa1212_conf_mode {
-> +	JSA1212_CONFMODE_DIS_ALL,
-> +	JSA1212_CONFMODE_ALS_EN,
-> +	JSA1212_CONFMODE_PXS_EN,
-> +	JSA1212_CONFMODE_ALS_DIS,
-> +	JSA1212_CONFMODE_PXS_DIS,
-> +};
+> +#define ADC_MORE_CTL1		(of_machine_is_compatible("sirf,atlas6") ?\
+> +					(ADC_RESET_QUANT_EN | ADC_RST_B) : (0))
 > +
-> +/* Interrrupt Register modes */
-> +enum jsa1212_int_mode {
-> +	JSA1212_INTMODE_ALS_ENABLE,
-> +	JSA1212_INTMODE_ALS_DISABLE,
-> +	JSA1212_INTMODE_PXS_ENABLE,
-> +	JSA1212_INTMODE_PXS_DISABLE,
-> +};
+> +/* Select AD samples to read (SEL bits in ADC_CONTROL1 register) */
+> +#define SIRFSOC_ADC_AUX1_SEL	0x04
+> +#define SIRFSOC_ADC_AUX4_SEL	0x07
+> +#define SIRFSOC_ADC_AUX5_SEL	0x08
+> +#define SIRFSOC_ADC_AUX6_SEL	0x09
+> +#define SIRFSOC_ADC_TS_SEL	0x0A    /* xy sample */
+> +#define SIRFSOC_ADC_TS_SEL_DUAL	0x0F    /* samples for dual touch */
+> +#define SIRFSOC_ADC_TS_SAMPLE_SIZE	4
+> +#define SIRFSOC_ADC_CTL1(sel)    (ADC_POLL | ADC_SEL(sel) | ADC_DEL_SET(6) \
+> +		| ADC_FREQ_6K | ADC_TP_TIME(0) | ADC_SGAIN(0) \
+> +		| ADC_EXTCM(0) | ADC_RBAT_DISABLE | ADC_MORE_CTL1)
 > +
-> +/* Threshold Register types */
-> +enum jsa1212_threshold_id {
-> +	JSA1212_THRESH_ALS,
-> +	JSA1212_THRESH_PXS,
-> +};
-> +
-> +enum jsa1212_threshold_type {
-> +	JSA1212_THRESH_LOW,
-> +	JSA1212_THRESH_HIGH,
-> +	JSA1212_THRESH_MAX,
-> +};
-> +
-> +struct jsa1212_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	u16 als_thresh[JSA1212_THRESH_MAX];
-> +	u8 pxs_thresh[JSA1212_THRESH_MAX];
-> +	u8 als_prst_val;
-> +	u8 pxs_prst_val;
-> +	u8 als_rng_idx;
-> +	unsigned long flags;
-> +	unsigned long state_flags;
-> +};
-> +
-> +/* ALS range idx to val mapping */
-> +unsigned int als_range_val[] = {2048, 1024, 512, 256, 128, 128, 128, 128};
-> +
-> +static int jsa1212_reg_update(struct jsa1212_data *jsa1212_data, u8 reg,
-> +			      u8 bit_mask, u8 new_val)
-> +{
-> +	u8 old_cmd, new_cmd;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(jsa1212_data->client, reg);
-> +	if (ret < 0) {
-> +		dev_err(&jsa1212_data->client->dev,
-> +				"%s: read reg (0X%02X) cmd failed\n",
-> +				__func__, reg);
-> +		return ret;
-> +	}
-I'll ask the silly question.  Does it do any harm to just write without
-bothering to check if it was already true... That way you have
-just one write, rather than a read and a possible write...
-
-If you really have to avoid writing, then I'd suggest perhaps using regmap
-and letting it do caching for you.
-> +
-> +	old_cmd = ret & JSA1212_REG_MASK;
-> +	new_cmd = old_cmd & ~bit_mask;
-> +	new_cmd |= new_val & bit_mask;
-> +
-> +	if (new_cmd != old_cmd) {
-> +
-> +		ret = i2c_smbus_write_byte_data(jsa1212_data->client, reg,
-> +						new_cmd);
-> +		if (ret < 0) {
-> +			dev_err(&jsa1212_data->client->dev,
-> +				"%s: write reg (0X%02X) cmd (0X%02X) failed\n",
-> +				__func__, reg, new_cmd);
-> +			return ret;
-> +		 }
-> +	}
-> +
-> +	 return 0;
+> +#define SIRFSOC_ADC_CHANNEL(_index) {			\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.channel = _index,				\
+> +	.address = _index,				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
 > +}
 > +
-
-> +/* Sets config register modes */
-There is no shared code in here to speak of. It would cleaner just to have
-short separate functions.
-
-> +static int jsa1212_set_confmode(struct jsa1212_data *jsa1212_data,
-> +				enum jsa1212_conf_mode confmode)
+> +/* high priority queue with the bigger value */
+> +enum sirfsoc_adc_service_t {
+> +	SIRFSOC_ADC_SERVICE_AUX = 0,
+> +	SIRFSOC_ADC_SERVICE_TS_PARADOX,
+> +	SIRFSOC_ADC_SERVICE_MAX,
+> +};
+> +
+> +enum sirfsoc_adc_req_status_t {
+> +	SIRFSOC_ADC_REQ_NONE = 0,
+> +	SIRFSOC_ADC_REQ_ACTIVE,
+> +	SIRFSOC_ADC_REQ_BUSY,
+> +	SIRFSOC_ADC_REQ_MAX,
+> +};
+> +
+> +enum sirfsoc_adc_iio_channel {
+> +	CHANNEL_COORD,
+> +	CHANNEL_COORD_DUAL,
+> +	CHANNEL_AUX1,
+> +	CHANNEL_AUX4,
+> +	CHANNEL_AUX5,
+> +	CHANNEL_AUX6,
+> +};
+> +
+> +struct sirfsoc_adc_data {
+> +	u16 x;
+> +	u16 y;
+> +	u16 z1;
+> +	u16 z2;
+> +	u16 aux;
+> +	u8 datavalid;
+> +};
+> +
+> +struct sirfsoc_adc_request {
+> +	enum sirfsoc_adc_service_t type;
+> +	struct sirfsoc_adc_data adc_data;
+> +	u16 mode;
+> +	u16 aux;
+> +	u16 reference;
+> +	u8 delay_bits;
+> +	u32 s_gain_bits;
+> +	enum sirfsoc_adc_req_status_t req_status;
+> +};
+> +
+> +struct sirfsoc_adc {
+> +	struct clk	*clk;
+> +	void __iomem	*base;
+> +	struct sirfsoc_adc_request req;
+> +	struct completion	done;
+> +	struct mutex	adc_lock;
+> +};
+> +
+> +static int sirfsoc_adc_send_request(struct sirfsoc_adc_request *req)
 > +{
-> +	int ret;
-> +
-> +	switch (confmode) {
-> +	case JSA1212_CONFMODE_DIS_ALL:
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_CONF_REG,
-> +					 JSA1212_CONF_ALS_MASK |
-> +					 JSA1212_CONF_PXS_MASK,
-> +					 JSA1212_CONF_ALS_DISABLE |
-> +					 JSA1212_CONF_PXS_DISABLE);
-> +		if (ret < 0)
-> +			goto set_confmode_err;
-> +
-> +		clear_bit(JSA1212_OPMODE_PXS_EN, &jsa1212_data->flags);
-> +		clear_bit(JSA1212_OPMODE_ALS_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CONFMODE_ALS_EN:
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_CONF_REG,
-> +					 JSA1212_CONF_ALS_MASK,
-> +					 JSA1212_CONF_ALS_ENABLE);
-> +		if (ret < 0)
-> +			goto set_confmode_err;
-> +
-> +		set_bit(JSA1212_OPMODE_ALS_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CONFMODE_ALS_DIS:
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_CONF_REG,
-> +					 JSA1212_CONF_ALS_MASK,
-> +					 JSA1212_CONF_ALS_DISABLE);
-> +		if (ret < 0)
-> +			goto set_confmode_err;
-> +
-> +		clear_bit(JSA1212_OPMODE_ALS_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CONFMODE_PXS_EN:
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_CONF_REG,
-> +					 JSA1212_CONF_PXS_MASK,
-> +					 JSA1212_CONF_PXS_ENABLE);
-> +		if (ret < 0)
-> +			goto set_confmode_err;
-> +
-> +		set_bit(JSA1212_OPMODE_PXS_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CONFMODE_PXS_DIS:
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_CONF_REG,
-> +					 JSA1212_CONF_PXS_MASK,
-> +					 JSA1212_CONF_PXS_DISABLE);
-> +		if (ret < 0)
-> +			goto set_confmode_err;
-> +
-> +		clear_bit(JSA1212_OPMODE_PXS_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +
-> +set_confmode_err:
-> +	dev_err(&jsa1212_data->client->dev,
-> +		"jsa1212 set conf mode (%d)\n failed", confmode);
-> +
-> +	return ret;
-> +}
-> +
-> +static int jsa1212_set_thresh(struct jsa1212_data *jsa1212_data,
-> +			      enum jsa1212_threshold_id thresh_id,
-> +			      enum jsa1212_threshold_type thresh_type,
-> +			      u16 val)
-> +{
-> +	int ret;
-> +	u8 reg1 = 0x00, mask1, val1;
-> +	u8 reg2 = 0x00, mask2, val2;
-> +
-> +	switch (thresh_id) {
-> +	case JSA1212_THRESH_ALS:
-> +		switch (thresh_type) {
-> +		case JSA1212_THRESH_LOW:
-> +			reg1 = JSA1212_ALS_TH1_REG;
-> +			mask1 = JSA1212_ALS_TH1_MASK;
-> +			val1 = val & mask1;
-> +			reg2 = JSA1212_ALS_TH2_REG; /* Handles upper 4 bits */
-> +			mask2 = JSA1212_ALS_TH2_LT_MASK;
-> +			val2 = val >> 8 & mask2;
-> +			break;
-> +		case JSA1212_THRESH_HIGH:
-> +			reg1 = JSA1212_ALS_TH3_REG;
-> +			mask1 = JSA1212_ALS_TH3_MASK;
-> +			val1 = val >> 4 & mask1;
-> +			reg2 = JSA1212_ALS_TH2_REG;
-> +			mask2 = JSA1212_ALS_TH2_HT_MASK;
-> +			val2 = val << 4 & mask2;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +		break;
-> +	case JSA1212_THRESH_PXS:
-> +		switch (thresh_type) {
-> +		case JSA1212_THRESH_LOW:
-> +			reg1 = JSA1212_PXS_LT_REG;
-> +			mask1 = JSA1212_PXS_LT_MASK;
-> +			val1 = val & mask1;
-> +			break;
-> +		case JSA1212_THRESH_HIGH:
-> +			reg1 = JSA1212_PXS_HT_REG;
-> +			mask1 = JSA1212_PXS_HT_MASK;
-> +			val1 = val & mask1;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +			break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-Move these cases up into the case statement and you avoid the checking
-reg1/ reg2 which would be cleaner for the cost of repeating one of these
-in both cases. The debug feels somewhat excessive as well!
-Actually, looking again.  Perhaps even scrap the intermediate
-variables and put these directly in the deepest level of the case
-statement.
-
-Let me see (with broken spacing :)
-        switch(thresh_id) {
-	case JSA1212_THRESH_ALS:
-		switch (thresh_type) {
-		case JSA1212_THRESH_LOW:
-			ret = jsa1212_reg_update(jsa1212_data,
-						JSA1212_ALS_TH1_REG,
-				 		JSA1212_ALS_TH1_MASK,
-						val & mask1);
-			if (ret < 0)
-				return ret;
-			ret = jsa1212_reg_update(jsa1212_data,
-						JSA1212_ALS_TH2_REG,
-						JSA1212_ALS_TH2_LT_MASK,
-						val2 = val >> 8 & mask2);
-			break;
-...
-Definitely cleaner..
-
-> +	if (reg1) {
-> +		ret = jsa1212_reg_update(jsa1212_data, reg1, mask1, val1);
-> +		if (ret < 0) {
-> +			dev_err(&jsa1212_data->client->dev,
-> +				"%s failed reg (0X%02X) val (0X%02X)\n",
-> +				__func__, reg1, val1);
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	if (reg2) {
-> +		ret = jsa1212_reg_update(jsa1212_data, reg2, mask2, val2);
-> +		if (ret < 0) {
-> +			dev_err(&jsa1212_data->client->dev,
-> +				"%s failed reg (0X%02X) val (0X%02X)\n",
-> +				__func__, reg2, val2);
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +/*
-> + * In JSA1212 device, Interrupt enabling involves setting threshold registers
-> + * and enabling the interrupt modes in interrupt control register. This
-> + * function handles this functionality.
-> + */
-As with the set_mode below.  There is little unified code in here, so
-why not just have separate functions.  Would be cleaner and it
-might lend itself to a couple of utility functions to reduce code
-duplication.
-
-> +static int jsa1212_set_intmode(struct jsa1212_data *jsa1212_data,
-> +				enum jsa1212_int_mode intmode)
-> +{
-> +	int ret;
-> +	u8 mask, cmd;
-> +
-> +	switch (intmode) {
-> +	case JSA1212_INTMODE_ALS_ENABLE:
-> +		mask = JSA1212_INT_CTRL_MASK | JSA1212_INT_ALS_PRST_MASK;
-> +		cmd = JSA1212_INT_CTRL_EITHER | jsa1212_data->als_prst_val;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_ALS,
-> +				JSA1212_THRESH_LOW,
-> +				jsa1212_data->als_thresh[JSA1212_THRESH_LOW]);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_ALS,
-> +				JSA1212_THRESH_HIGH,
-> +				jsa1212_data->als_thresh[JSA1212_THRESH_HIGH]);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_INT_REG,
-> +					mask, cmd);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +		break;
-> +	case JSA1212_INTMODE_ALS_DISABLE:
-> +		mask = JSA1212_INT_ALS_PRST_MASK;
-> +		cmd = JSA1212_INT_ALS_PRST_4CONV;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_ALS,
-> +					JSA1212_THRESH_LOW,
-> +					JSA1212_ALS_TH_MIN);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_ALS,
-> +					JSA1212_THRESH_HIGH,
-> +					JSA1212_ALS_TH_MAX);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_INT_REG,
-> +					mask, cmd);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		break;
-> +	case JSA1212_INTMODE_PXS_ENABLE:
-> +		mask = JSA1212_INT_CTRL_MASK | JSA1212_INT_PXS_PRST_MASK;
-> +		cmd = JSA1212_INT_CTRL_EITHER | jsa1212_data->pxs_prst_val;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_PXS,
-> +				JSA1212_THRESH_LOW,
-> +				jsa1212_data->pxs_thresh[JSA1212_THRESH_LOW]);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_PXS,
-> +				JSA1212_THRESH_HIGH,
-> +				jsa1212_data->pxs_thresh[JSA1212_THRESH_HIGH]);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_INT_REG,
-> +					mask, cmd);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +		break;
-> +	case JSA1212_INTMODE_PXS_DISABLE:
-> +		mask = JSA1212_INT_PXS_PRST_MASK;
-> +		cmd = JSA1212_INT_PXS_PRST_1CONV;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_PXS,
-> +					JSA1212_THRESH_LOW,
-> +					JSA1212_PXS_TH_MIN);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_set_thresh(jsa1212_data, JSA1212_THRESH_PXS,
-> +					JSA1212_THRESH_HIGH,
-> +					JSA1212_PXS_TH_MAX);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		ret = jsa1212_reg_update(jsa1212_data, JSA1212_INT_REG,
-> +					mask, cmd);
-> +		if (ret < 0)
-> +			goto set_intmode_err;
-> +
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +
-> +set_intmode_err:
-> +	dev_err(&jsa1212_data->client->dev,
-> +			"jsa1212 set int mode (%d)\n failed", intmode);
-> +	return ret;
-> +}
-> +
-
-There is very little unified code in this send_cmd  I think it
-would be cleaner to simpy have individual functions handling
-each element of the switch.
-For the one line cases, just call the conf_mode function directly.
-
-In at least some cases, ripping the code out of set_confmode and
-putting the relevant case into our new function will end up a lot
-cleaner than with these layers of abstraction.
-> +static int jsa1212_send_cmd(struct jsa1212_data *jsa1212_data,
-> +			enum jsa1212_cmd_id cmd_id)
-> +{
+> +	struct sirfsoc_adc *adc = container_of(req, struct sirfsoc_adc, req);
+> +	int control1, control2, intr;
+> +	int data, reg_offset;
 > +	int ret = 0;
-> +	u8 suspend_flags;
 > +
-> +	switch (cmd_id) {
-> +	case JSA1212_CMD_POWEROFF:
-> +	case JSA1212_CMD_SUSPEND:
-> +		suspend_flags = jsa1212_data->flags;
+> +	mutex_lock(&adc->adc_lock);
 > +
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_DIS_ALL);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
+> +	intr = readl(adc->base + ADC_INTR);
+> +	control1 = readl(adc->base + ADC_CONTROL1);
+> +	control2 = readl(adc->base + ADC_CONTROL2);
+> +	writel(intr | DATA_INTR_EN | DATA_INTR, (adc->base + ADC_INTR));
 > +
-> +		jsa1212_data->state_flags = suspend_flags;
+> +	writel(ADC_PRP_MODE3 | req->reference,
+> +		adc->base + ADC_CONTROL2);
 > +
-> +		break;
-> +	case JSA1212_CMD_RAW_ALS:
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_ALS_EN);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
+> +	writel(ADC_POLL | ADC_MORE_CTL1 | req->mode |
+> +		req->aux | req->delay_bits | ADC_RESOLUTION_12,
+> +			adc->base + ADC_CONTROL1);
 > +
-> +		break;
-> +	case JSA1212_CMD_RAW_PXS:
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_PXS_EN);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		break;
-> +	case JSA1212_CMD_ALS_EV_EN:
-> +		ret = jsa1212_set_intmode(jsa1212_data,
-> +					  JSA1212_INTMODE_ALS_ENABLE);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					JSA1212_CONFMODE_ALS_EN);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		set_bit(JSA1212_OPMODE_ALS_EV_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CMD_ALS_EV_DIS:
-> +
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_ALS_DIS);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		ret = jsa1212_set_intmode(jsa1212_data,
-> +					  JSA1212_INTMODE_ALS_DISABLE);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		clear_bit(JSA1212_OPMODE_ALS_EV_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CMD_PXS_EV_EN:
-> +		ret = jsa1212_set_intmode(jsa1212_data,
-> +					  JSA1212_INTMODE_PXS_ENABLE);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_PXS_EN);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		set_bit(JSA1212_OPMODE_PXS_EV_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CMD_PXS_EV_DIS:
-> +
-> +		ret = jsa1212_set_confmode(jsa1212_data,
-> +					   JSA1212_CONFMODE_PXS_DIS);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		ret = jsa1212_set_intmode(jsa1212_data,
-> +					  JSA1212_INTMODE_PXS_DISABLE);
-> +		if (ret < 0)
-> +			goto send_cmd_err;
-> +
-> +		clear_bit(JSA1212_OPMODE_PXS_EV_EN, &jsa1212_data->flags);
-> +
-> +		break;
-> +	case JSA1212_CMD_RESUME:
-> +		if (test_bit(JSA1212_OPMODE_ALS_EN,
-> +			     &jsa1212_data->state_flags)) {
-> +
-> +			ret = jsa1212_set_confmode(jsa1212_data,
-> +						   JSA1212_CONFMODE_ALS_EN);
-> +			if (ret < 0)
-> +				goto send_cmd_err;
-> +		}
-> +
-> +		if (test_bit(JSA1212_OPMODE_PXS_EN,
-> +			     &jsa1212_data->state_flags)) {
-> +
-> +			ret = jsa1212_set_confmode(jsa1212_data,
-> +						   JSA1212_CONFMODE_PXS_EN);
-> +			if (ret < 0)
-> +				goto send_cmd_err;
-> +		}
-> +
-> +		jsa1212_data->state_flags = 0;
-> +
-> +		break;
-> +
-> +	default:
+> +	if (!wait_for_completion_timeout(&adc->done,
+> +		msecs_to_jiffies(50))) {
 > +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	switch (req->mode) {
+> +	case ADC_SEL(3):
+> +		data = readl(adc->base + ADC_PRESSURE);
+> +		if ((data & DATA_Z1VALID) && (data & DATA_Z2VALID)) {
+> +			req->adc_data.z1 = data & DATA_Z1MASK;
+> +			req->adc_data.z2 =
+> +			(data & DATA_Z2MASK) >> DATA_SHIFT_BITS;
+> +			req->adc_data.datavalid = 1;
+> +		}
+> +		break;
+> +	case ADC_SEL(4):
+> +	case ADC_SEL(5):
+> +	case ADC_SEL(6):
+> +	case ADC_SEL(7):
+> +	case ADC_SEL(8):
+> +	case ADC_SEL(9):
+> +		reg_offset = 0x14 + ((req->mode >> 11) - 0x04) * 4;
+> +		data = readl(adc->base + reg_offset);
+> +		if ((data & DATA_AUXVALID)) {
+> +			req->adc_data.aux = data & DATA_AUXMASK;
+> +			req->adc_data.datavalid = 1;
+> +		}
+> +		break;
+> +	case ADC_SEL(11):
+> +	case ADC_SEL(12):
+> +	case ADC_SEL(13):
+> +		reg_offset = ADC_CB;
+> +		data = readl(adc->base + reg_offset);
+> +		if ((data & DATA_AUXVALID)) {
+> +			req->adc_data.aux = data & DATA_AUXMASK;
+> +			req->adc_data.datavalid = 1;
+> +		}
+> +		break;
+> +	default:
 > +		break;
 > +	}
+> +
+> +out:
+> +	writel(intr, adc->base + ADC_INTR);
+> +	writel(control1, adc->base + ADC_CONTROL1);
+> +	writel(control2, adc->base + ADC_CONTROL2);
+> +	mutex_unlock(&adc->adc_lock);
+> +	return ret;
+> +}
+> +
+> +/*struct store params to calibrate*/
+> +struct sirfsoc_adc_cali_data {
+> +	u32 digital_offset;
+> +	u32 digital_again;
+> +	u32 digital_ideal;
+> +	bool is_calibration;
+> +};
+> +
+> +static u32 sirfsoc_adc_offset_cali(struct sirfsoc_adc_request *req)
+> +{
+This function accepts a pointer to any sirfsoc_adc_request. This request
+is then passed to sirfsoc_adc_send_request() which does a
+container_of(req, struct sirfsoc_adc, req). So in reality you can't pass
+"any" request pointer to this function but only one contained in a
+struct sirfsoc_adc. Since it's all internal to this driver, I think you 
+should change sirfsoc_adc_send_request, sirfsoc_adc_*_cali to use a
+struct sirfsoc_adc * as a parameter.
+> +	u32 i, digital_offset = 0, count = 0, sum = 0;
+> +	/* To set the reigsters in order to get the ADC offset */
+> +	req->mode = ADC_SEL(11);
+> +	req->aux = ADC_CB;
+> +	req->s_gain_bits = ADC_SGAIN(7);
+> +	req->delay_bits = ADC_DEL_SET(4);
+> +	req->req_status = SIRFSOC_ADC_REQ_NONE;
+> +
+> +	for (i = 0; i < 10; i++) {
+> +		if (unlikely(sirfsoc_adc_send_request(req)))
+> +			break;
+> +		digital_offset = req->adc_data.aux;
+> +		/* Maybe the value is wrong, so remove it use experience */
+> +		if (digital_offset < 230 && digital_offset > 130) {
+> +			sum += digital_offset;
+> +			count++;
+> +		}
+> +	}
+> +	if (!sum || !count)
+> +		digital_offset = 170;
+> +	else
+> +		digital_offset = sum / count;
+> +
+> +	return digital_offset;
+> +}
+> +
+> +
+> +/* Gain Calibration calibrates the ADC gain error */
+> +static u32 sirfsoc_adc_gain_cali(struct sirfsoc_adc_request *req)
+> +{
+> +	u32 i, digital_gain = 0, count = 0, sum = 0;
+> +	/* To set the reigsters in order to get the ADC gain */
+> +	req->mode = ADC_SEL(12);
+> +	req->aux = ADC_CB;
+> +	req->s_gain_bits = ADC_SGAIN(0);
+> +	req->delay_bits = ADC_DEL_SET(4);
+> +	req->req_status = SIRFSOC_ADC_REQ_NONE;
+> +
+> +	for (i = 0; i < 10; i++) {
+> +		if (unlikely(sirfsoc_adc_send_request(req)))
+> +			break;
+> +		digital_gain = req->adc_data.aux;
+> +		/* Maybe the value is wrong, so remove it use experience */
+> +		if (digital_gain < 6500 && digital_gain > 5500) {
+> +			sum += digital_gain;
+> +			count++;
+> +		}
+> +	}
+> +	if (!sum || !count)
+> +		digital_gain = 5555;
+> +	else
+> +		digital_gain = sum / count;
+> +
+> +	return digital_gain;
+> +}
+> +
+> +/* absolute gain calibration */
+> +static int sirfsoc_adc_adc_cali(struct sirfsoc_adc_request *req,
+> +				struct sirfsoc_adc_cali_data *cali_data)
+> +{
+> +	cali_data->digital_offset = sirfsoc_adc_offset_cali(req);
+> +	if (!(cali_data->digital_offset))
+> +		return -EINVAL;
+> +	cali_data->digital_again = sirfsoc_adc_gain_cali(req);
+> +	if (!(cali_data->digital_again))
+> +		return -EINVAL;
+> +	/*
+> +	 * see Equation 3.2 of SiRFprimaII? Internal ADC and Touch
+> +	 * User Guide
+> +	 */
+> +	cali_data->digital_ideal = (16384 * 1200) / (14 * 333);
+> +	return 0;
+> +}
+> +
+> +
+> +/* get voltage after ADC conversion */
+> +static u32 sirfsoc_adc_get_adc_volt(struct sirfsoc_adc *adc,
+> +				struct sirfsoc_adc_cali_data *cali_data)
+> +{
+> +	u32 digital_out, digital_convert, volt;
+> +	struct sirfsoc_adc_request *req = &adc->req;
+> +	if (!(cali_data->is_calibration)) {
+> +		if (sirfsoc_adc_adc_cali(req, cali_data))
+> +			return 0;
+You should return an error -ENODATA/-EIO?
+> +		cali_data->is_calibration = true;
+> +	}
+> +	req->s_gain_bits = ADC_SGAIN(0);
+> +	req->delay_bits = ADC_DEL_SET(4);
+> +
+> +	sirfsoc_adc_send_request(req);
+> +	if (req->adc_data.aux) {
+> +		digital_out = req->adc_data.aux;
+> +		/*
+> +		 * see Equation 3.3 of SiRFprimaII? Internal ADC and Touch
+> +		 */
+> +		digital_convert = ((digital_out - 2 * cali_data->digital_offset
+> +			* 11645 / 140000) * cali_data->digital_ideal)
+> +			/ (cali_data->digital_again -
+> +			2 * cali_data->digital_offset
+> +			* 11645 / 140000);
+> +		volt = (1200 * digital_convert) / cali_data->digital_ideal;
+> +		volt = volt * 2;
+> +
+> +	} else {
+> +		return 0;
+Same, return an error
+> +	}
+> +
+> +	return volt;
+> +}
+> +
+> +/* get touchscreen coordinates for single touch */
+> +static int sirfsoc_adc_single_ts_sample(struct sirfsoc_adc *adc, int *sample)
+> +{
+> +	int adc_intr;
+> +
+> +	adc_intr = readl(adc->base + ADC_INTR);
+> +	if (adc_intr & PEN_INTR)
+> +		writel(PEN_INTR | PEN_INTR_EN | DATA_INTR_EN,
+> +			adc->base + ADC_INTR);
+> +
+> +	/* check pen status */
+> +	if (!(readl(adc->base + ADC_COORD) & PEN_DOWN))
+> +		return -EINVAL;
+> +
+> +	writel(SIRFSOC_ADC_CTL1(SIRFSOC_ADC_TS_SEL),
+> +		adc->base + ADC_CONTROL1);
+> +
+> +	if (!wait_for_completion_timeout(&adc->done,
+> +		msecs_to_jiffies(50))) {
+> +		return -EBUSY;
+> +	}
+> +
+> +	*sample = readl(adc->base + ADC_COORD);
+> +	return 0;
+> +}
+> +
+> +static const u32 sirfsoc_adc_ts_reg[SIRFSOC_ADC_TS_SAMPLE_SIZE] = {
+> +	ADC_COORD, ADC_COORD2, ADC_COORD3, ADC_COORD4
+> +};
+> +
+> +/* get touchscreen coordinates for dual touch */
+> +static int sirfsoc_adc_dual_ts_sample(struct sirfsoc_adc *adc, int *samples)
+> +{
+> +	int adc_intr;
+> +	int i;
+> +
+> +	adc_intr = readl(adc->base + ADC_INTR);
+> +	if (adc_intr & PEN_INTR)
+> +		writel(PEN_INTR | PEN_INTR_EN | DATA_INTR_EN,
+> +			adc->base + ADC_INTR);
+> +
+> +	/* check pen status */
+> +	if (!(readl(adc->base + ADC_COORD) & PEN_DOWN))
+> +		return -EINVAL;
+> +
+> +	writel(SIRFSOC_ADC_CTL1(SIRFSOC_ADC_TS_SEL_DUAL),
+> +		adc->base + ADC_CONTROL1);
+> +
+> +	if (!wait_for_completion_timeout(&adc->done,
+> +		msecs_to_jiffies(50))) {
+> +		return -EBUSY;
+> +	}
+> +
+> +	for (i = 0; i < SIRFSOC_ADC_TS_SAMPLE_SIZE; i++)
+> +		samples[i] = readl(adc->base + sirfsoc_adc_ts_reg[i]);
 > +
 > +	return 0;
-> +
-> +send_cmd_err:
-> +	dev_err(&jsa1212_data->client->dev,
-> +			"jsa1212 send cmd %d failed\n", cmd_id);
-> +	return ret;
 > +}
 > +
-> +static int jsa1212_read_data(struct jsa1212_data *data,
+> +static int sirfsoc_read_raw(struct iio_dev *indio_dev,
 > +				struct iio_chan_spec const *chan,
-> +				unsigned int *val)
+> +				int *val,
+> +				int *val2,
+> +				long mask)
 > +{
-> +	int ret;
-> +	u8 reg;
-> +	unsigned char buf[2];
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		reg = JSA1212_ALS_DT1_REG;
-> +
-> +		/*Read first 8 bits of 12 bit data*/
-Run checkpatch - though Peter already said that ;)
-> +		ret = i2c_smbus_read_byte_data(data->client, reg);
-> +		if (ret < 0)
-> +			goto data_read_error;
-> +
-> +		buf[0] = ret & JSA1212_ALS_DT1_MASK;
-> +
-> +		reg = JSA1212_ALS_DT2_REG;
-> +
-> +		/*Read next 4 bits of 12 bit data*/
-> +		ret = i2c_smbus_read_byte_data(data->client, reg);
-> +		if (ret < 0)
-> +			goto data_read_error;
-> +
-> +		buf[1] = ret & JSA1212_ALS_DT2_MASK;
-> +
-> +		*val = buf[0] | (buf[1] << 8);
-> +
-This next bit wants a comment. I'm not immediately sure what it is doing...
-(too many other things queued up to try figuring it out now!)
-> +		if (!test_bit(JSA1212_OPMODE_ALS_EV_EN, &data->flags)) {
-> +			ret = jsa1212_set_confmode(data,
-> +						   JSA1212_CONFMODE_ALS_DIS);
-> +			if (ret < 0)
-> +				goto data_read_error;
-> +		}
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		reg = JSA1212_PXS_DATA_REG;
-> +
-> +		/*Read out all data*/
-> +		ret = i2c_smbus_read_byte_data(data->client, reg);
-> +		if (ret < 0)
-> +			goto data_read_error;
-> +
-> +		*val = ret & JSA1212_PXS_DATA_MASK;
-> +
-> +		if (!test_bit(JSA1212_OPMODE_PXS_EV_EN, &data->flags)) {
-> +			ret = jsa1212_set_confmode(data,
-> +					JSA1212_CONFMODE_PXS_DIS);
-> +			if (ret < 0)
-> +				goto data_read_error;
-> +		}
-> +
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +
-Get rid of this error path and return directly.
-> +data_read_error:
-> +	dev_err(&data->client->dev,
-> +		"jsa1212 data read reg (0X%02X)\n", reg);
-> +
-> +	return ret;
-> +}
-> +
-> +
-> +static int jsa1212_read_channel(struct jsa1212_data *jsa1212_data,
-> +				struct iio_chan_spec const *chan, int *val)
-> +{
-> +	int ret, delay = 0;
-> +	enum jsa1212_cmd_id cmd_id;
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		cmd_id = JSA1212_CMD_RAW_ALS;
-> +		delay = JSA1212_ALS_DELAY_MS;
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		cmd_id = JSA1212_CMD_RAW_PXS;
-> +		delay = JSA1212_PXS_DELAY_MS;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto read_chan_err;
-> +	}
-> +
-> +	ret = jsa1212_send_cmd(jsa1212_data, cmd_id);
-> +	if (ret < 0)
-> +		goto read_chan_err;
-> +
-> +	/* Delay for data output */
-> +	msleep(delay);
-> +
-> +	ret = jsa1212_read_data(jsa1212_data, chan, val);
-> +	if (ret < 0)
-> +		goto read_chan_err;
-> +
-> +	return ret;
-> +
-Loose the gotos to here and return wherever they are. The debug doesn't
-really tell us anything much anyway and this complicates the code flow.
-> +read_chan_err:
-> +	dev_err(&jsa1212_data->client->dev,
-> +		"jsa1212 read channel scan id %d failed\n", chan->scan_index);
-> +	return ret;
-> +}
-> +
-> +
-> +static int jsa1212_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&data->lock);
+> +	struct sirfsoc_adc *adc = iio_priv(indio_dev);
+> +	struct sirfsoc_adc_cali_data cali_data;
+> +	int ret = 0;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		ret = jsa1212_read_channel(data, chan, val);
-> +		ret = ret < 0 ? ret : IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			*val = als_range_val[data->als_rng_idx];
-> +			*val2 = BIT(12); /* Max 12 bit value */
-> +			ret = IIO_VAL_FRACTIONAL;
+> +		switch (chan->channel) {
+> +		case CHANNEL_COORD:
+> +			ret = sirfsoc_adc_single_ts_sample(adc, val);
 > +			break;
-> +		case IIO_PROXIMITY:
-Why bother with the IIO_PROXIMITY entry here?  default will do fine ;)
-> +		default:
-> +			ret = -EINVAL;
+> +		case CHANNEL_COORD_DUAL:
+> +			ret = sirfsoc_adc_dual_ts_sample(adc, val);
 > +			break;
+> +		case CHANNEL_AUX1:
+> +			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX1_SEL);
+> +			adc->req.aux = ADC_AUX1;
+> +			*val = sirfsoc_adc_get_adc_volt(adc,
+> +						&cali_data);
+> +			break;
+> +		case CHANNEL_AUX4:
+> +			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX4_SEL);
+> +			adc->req.aux = ADC_AUX4;
+> +			*val = sirfsoc_adc_get_adc_volt(adc,
+> +						&cali_data);
+> +			break;
+> +		case CHANNEL_AUX5:
+> +			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX5_SEL);
+> +			adc->req.aux = ADC_AUX5;
+> +			*val = sirfsoc_adc_get_adc_volt(adc,
+> +						&cali_data);
+> +			break;
+> +		case CHANNEL_AUX6:
+> +			adc->req.mode = ADC_SEL(SIRFSOC_ADC_AUX6_SEL);
+> +			adc->req.aux = ADC_AUX6;
+> +			*val = sirfsoc_adc_get_adc_volt(adc,
+> +						&cali_data);
+> +			break;
+I'm not an expert on IIO but shouldn't the conversion from raw be "on
+demand"?  Here you seem to return the voltage already processed when we 
+expect the raw value plus a IIO_CHAN_INFO_SCALE attribute
 > +		}
-> +		break;
+> +
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
 > +	default:
-> +		ret = -EINVAL;
-> +		break;
+> +		return -EINVAL;
 > +	}
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
+> +	return 0;
 > +}
 > +
-> +static int jsa1212_read_thresh(struct iio_dev *indio_dev,
-> +		const struct iio_chan_spec *chan, enum iio_event_type type,
-> +		enum iio_event_direction dir, enum iio_event_info info,
-> +		int *val, int *val2)
+> +static irqreturn_t sirfsoc_adc_data_irq(int irq, void *handle)
 > +{
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +	int ret;
+> +	struct iio_dev *indio_dev = handle;
+> +	struct sirfsoc_adc *adc = iio_priv(indio_dev);
+> +	int val;
 > +
-> +	mutex_lock(&data->lock);
+> +	val = readl(adc->base + ADC_INTR);
 > +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		switch (dir) {
-> +		case IIO_EV_DIR_RISING:
-> +			*val = data->als_thresh[JSA1212_THRESH_HIGH];
-> +			break;
-> +		case IIO_EV_DIR_FALLING:
-> +			*val = data->als_thresh[JSA1212_THRESH_LOW];
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			goto read_thresh_err;
-> +		}
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		switch (dir) {
-> +		case IIO_EV_DIR_RISING:
-> +			*val = data->pxs_thresh[JSA1212_THRESH_HIGH];
-> +			break;
-> +		case IIO_EV_DIR_FALLING:
-> +			*val = data->pxs_thresh[JSA1212_THRESH_LOW];
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			goto read_thresh_err;
-> +		}
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto read_thresh_err;
+> +	if (val & DATA_INTR) {
+> +		writel(PEN_INTR_EN | DATA_INTR | DATA_INTR_EN,
+> +			adc->base + ADC_INTR);
+> +		complete(&adc->done);
 > +	}
 > +
-> +	return IIO_VAL_INT;
-> +
-> +read_thresh_err:
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int jsa1212_write_thresh(struct iio_dev *indio_dev,
-> +				const struct iio_chan_spec *chan,
-> +				enum iio_event_type type,
-> +				enum iio_event_direction dir,
-> +				enum iio_event_info info, int val,
-> +				int val2)
-> +{
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +	int ret = IIO_VAL_INT;
-> +
-> +	mutex_lock(&data->lock);
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		switch (dir) {
-> +		case IIO_EV_DIR_RISING:
-> +			data->als_thresh[JSA1212_THRESH_HIGH] = val;
-So the event values are only updated on enabling the event?
-No chance of doing it live?  If not I'd rather you changed this to
-return -EBUSY when the event in question is running.  That makes it
-explicity that it should be disabled if anyone wants to change the
-threshold.  With light sensors, adaptive setting of thresholds is pretty
-common and sooner or later someone will try to do it with this sensor.
-
-> +			break;
-> +		case IIO_EV_DIR_FALLING:
-> +			data->als_thresh[JSA1212_THRESH_LOW] = val;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			goto write_thresh_err;
-> +		}
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		switch (dir) {
-> +		case IIO_EV_DIR_RISING:
-> +			data->pxs_thresh[JSA1212_THRESH_HIGH] = val;
-> +			break;
-> +		case IIO_EV_DIR_FALLING:
-> +			data->pxs_thresh[JSA1212_THRESH_LOW] = val;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-why the goto.  It goes there anyway ;)
-> +			goto write_thresh_err;
-> +		}
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +write_thresh_err:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int jsa1212_read_event_config(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir)
-> +{
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +	int event_en;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		event_en = test_bit(JSA1212_OPMODE_ALS_EV_EN, &data->flags);
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		event_en = test_bit(JSA1212_OPMODE_PXS_EV_EN, &data->flags);
-> +		break;
-> +	default:
-> +		event_en = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return event_en;
-> +}
-> +
-> +static int jsa1212_write_event_config(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir, int state)
-> +{
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	enum jsa1212_cmd_id cmd_id;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		cmd_id = state ? JSA1212_CMD_ALS_EV_EN :
-> +				JSA1212_CMD_ALS_EV_DIS;
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		cmd_id = state ? JSA1212_CMD_PXS_EV_EN :
-> +				JSA1212_CMD_PXS_EV_DIS;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		goto event_unlock;
-> +	}
-> +
-> +	ret = jsa1212_send_cmd(data, cmd_id);
-> +
-Drop blank lines between functional calls and error checking..
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"write event failed channel (%d) cmd (%d)",
-> +			chan->type, cmd_id);
-> +	}
-> +
-> +event_unlock:
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_event_spec jsa1212_als_event_spec[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +
-> +};
-> +
-> +static const struct iio_event_spec jsa1212_pxs_event_spec[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +};
-One day I'll understand why hardware designers decide not to tell us
-which threshold was crossed... Oh well.
-> +
-> +static const struct iio_chan_spec jsa1212_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.event_spec = jsa1212_als_event_spec,
-> +		.num_event_specs = ARRAY_SIZE(jsa1212_als_event_spec),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.event_spec = jsa1212_pxs_event_spec,
-> +		.num_event_specs = ARRAY_SIZE(jsa1212_pxs_event_spec),
-> +	}
-> +};
-> +
-> +static const struct iio_info jsa1212_info_no_irq = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= &jsa1212_read_raw,
-> +};
-> +
-> +static const struct iio_info jsa1212_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= &jsa1212_read_raw,
-> +	.read_event_value	= &jsa1212_read_thresh,
-> +	.write_event_value	= &jsa1212_write_thresh,
-> +	.read_event_config	= &jsa1212_read_event_config,
-> +	.write_event_config	= &jsa1212_write_event_config,
-> +
-unwanted blank line..
-> +};
-> +
-> +static irqreturn_t jsa1212_interrupt_handler(int irq, void *private)
-> +{
-> +	struct iio_dev *dev_info = private;
-> +	struct jsa1212_data *data = iio_priv(dev_info);
-> +	int ret;
-> +	u8 int_data;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, JSA1212_INT_REG);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"irq read int reg failed\n");
-> +		goto irq_done;
-> +	}
-> +
-> +	int_data = ret & JSA1212_INT_MASK;
-> +
-> +	if (int_data & JSA1212_INT_ALS_FLAG_MASK)
-> +		iio_push_event(dev_info,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +				IIO_EV_TYPE_THRESH,
-> +				IIO_EV_DIR_EITHER),
-> +				iio_get_time_ns());
-> +
-> +	if (int_data & JSA1212_INT_PXS_FLAG_MASK)
-> +		iio_push_event(dev_info,
-> +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-> +				IIO_EV_TYPE_THRESH,
-> +				IIO_EV_DIR_EITHER),
-> +				iio_get_time_ns());
-> +
-> +	ret = jsa1212_reg_update(data, JSA1212_INT_REG,
-> +				JSA1212_INT_ALS_FLAG_MASK|
-> +				JSA1212_INT_PXS_FLAG_MASK,
-> +				JSA1212_INT_ALS_FLAG_CLR|
-> +				JSA1212_INT_PXS_FLAG_CLR);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"irq write int reg failed\n");
-> +		goto irq_done;
-> +	}
-> +
-> +irq_done:
 > +	return IRQ_HANDLED;
 > +}
 > +
-> +static int jsa1212_chip_init(struct jsa1212_data *data)
+> +#ifdef CONFIG_PM_SLEEP
+> +static int sirfsoc_adc_suspend(struct device *dev)
 > +{
-> +	int ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct sirfsoc_adc *adc = iio_priv(indio_dev);
 > +
-> +	ret = i2c_smbus_write_byte_data(data->client, JSA1212_CONF_REG,
-> +					JSA1212_CONF_REG_DEF);
-> +	if (ret < 0)
-> +		goto chip_init_err;
+> +	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(
+> +		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN)
+> +		& ~(1 << PWR_WAKEEN_TSC_SHIFT),
+> +		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
 > +
-> +	ret = i2c_smbus_write_byte_data(data->client, JSA1212_INT_REG,
-> +					JSA1212_INT_REG_DEF);
-> +	if (ret < 0)
-> +		goto chip_init_err;
-> +
-> +	data->als_thresh[JSA1212_THRESH_LOW] = JSA1212_ALS_TH_MIN;
-> +	data->als_thresh[JSA1212_THRESH_HIGH] = JSA1212_ALS_TH_MAX;
-> +	data->pxs_thresh[JSA1212_THRESH_LOW] = JSA1212_PXS_TH_MIN;
-> +	data->pxs_thresh[JSA1212_THRESH_HIGH] = JSA1212_PXS_TH_MAX;
-> +	data->als_prst_val = JSA1212_INT_ALS_PRST_4CONV;
-> +	data->pxs_prst_val = JSA1212_INT_PXS_PRST_1CONV;
-> +	data->flags = 0x00;
-> +	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
-> +
+> +	clk_disable_unprepare(adc->clk);
 > +	return 0;
-> +
-> +chip_init_err:
-> +	dev_err(&data->client->dev, "Chip init err\n");
-> +	return ret;
 > +}
 > +
-
-This next one really feels like it should be factored out into a
-utility function somewhere.  It's long involved and the same each time...
-> +static int jsa1212_acpi_gpio_irq_probe(struct i2c_client *client,
-> +				       struct jsa1212_data *data)
-data doesn't actually seem to be used which is 'interesting'.
+> +static int sirfsoc_adc_resume(struct device *dev)
 > +{
-> +	const struct acpi_device_id *id;
-> +	struct device *dev;
-> +	struct gpio_desc *gpio;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct sirfsoc_adc *adc = iio_priv(indio_dev);
 > +	int ret;
+> +	int val;
 > +
-> +	if (!client)
-> +		return -EINVAL;
+> +	clk_prepare_enable(adc->clk);
 > +
-> +	dev = &client->dev;
-> +	if (!ACPI_HANDLE(dev))
-> +		return -ENODEV;
+> +	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(
+> +		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN)
+> +		| (1 << PWR_WAKEEN_TS_SHIFT),
+> +		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
 > +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!id)
-> +		return -ENODEV;
-> +
-> +	/* ALS/proximity event gpio interrupt pin */
-> +	gpio = devm_gpiod_get_index(dev, "jsa1212_int", 0);
-> +	if (IS_ERR(gpio)) {
-> +		dev_err(dev, "acpi gpio get index failed\n");
-> +		return PTR_ERR(gpio);
+> +	ret = device_reset(dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to reset\n");
+> +		return ret;
 > +	}
 > +
-> +	ret = gpiod_direction_input(gpio);
-> +	if (ret)
-> +		return ret;
+> +	writel(ADC_PRP_MODE3 | ADC_RTOUCH(1) | ADC_DEL_PRE(2) |
+> +		ADC_DEL_DIS(5),  adc->base + ADC_CONTROL2);
 > +
-> +	ret = gpiod_to_irq(gpio);
-> +	if (ret < 0)
-> +		return ret;
+> +	val = readl(adc->base + ADC_INTR);
 > +
-> +	dev_dbg(dev, "gpio probe sucess gpio:%d irq:%d\n",
-> +					desc_to_gpio(gpio), ret);
+> +	/* Clear interrupts and enable PEN interrupt */
+> +	writel(val | PEN_INTR | DATA_INTR | PEN_INTR_EN |
+> +		DATA_INTR_EN,  adc->base + ADC_INTR);
 > +
-> +	return ret;
+> +	return 0;
 > +}
+> +#endif
 > +
-> +static int jsa1212_probe(struct i2c_client *client,
-> +			     const struct i2c_device_id *id)
+> +static const struct dev_pm_ops sirfsoc_adc_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(sirfsoc_adc_suspend, sirfsoc_adc_resume)
+> +};
+> +
+> +static const struct of_device_id sirfsoc_adc_of_match[] = {
+> +	{ .compatible = "sirf,prima2-adc",},
+> +	{}
+> +};
+> +
+> +static struct iio_chan_spec const sirfsoc_adc_iio_channels[] = {
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_COORD),
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_COORD_DUAL),
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX1),
+> +	/* AtlasVI has no AUX2 and AUX3 */
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX4),
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX5),
+> +	SIRFSOC_ADC_CHANNEL(CHANNEL_AUX6),
+> +};
+> +
+> +static const struct iio_info sirfsoc_adc_info = {
+> +	.read_raw = &sirfsoc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int sirfsoc_adc_probe(struct platform_device *pdev)
 > +{
-> +	struct jsa1212_data *jsa1212_data;
+> +	struct resource	*mem_res;
+> +	struct sirfsoc_adc *adc;
 > +	struct iio_dev *indio_dev;
-> +	int ret;
+> +	int irq;
+> +	int ret = 0;
 > +
-> +	if (!i2c_check_functionality(client->adapter,
-> +				     I2C_FUNC_SMBUS_BYTE_DATA))
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
+> +	indio_dev = iio_device_alloc(sizeof(struct sirfsoc_adc));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	jsa1212_data = iio_priv(indio_dev);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	jsa1212_data->client = client;
-> +
-> +	mutex_init(&jsa1212_data->lock);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->channels = jsa1212_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
-> +	indio_dev->name = id->name;
+> +	indio_dev->info = &sirfsoc_adc_info;
+> +	indio_dev->channels = sirfsoc_adc_iio_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(sirfsoc_adc_iio_channels);
+> +	indio_dev->name = "sirfsoc adc";
+> +	indio_dev->dev.parent = &pdev->dev;
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	adc = iio_priv(indio_dev);
 > +
-> +	ret = jsa1212_chip_init(jsa1212_data);
-> +	if (ret < 0)
-> +		return ret;
+> +	platform_set_drvdata(pdev, indio_dev);
 > +
-Unwanted brackets...
-> +	if (client->irq < 0) {
-> +		client->irq = jsa1212_acpi_gpio_irq_probe(client,
-> +							  jsa1212_data);
+> +	adc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(adc->clk)) {
+> +		dev_err(&pdev->dev, "get adc clk err\n");
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
+> +	clk_prepare_enable(adc->clk);
+> +
+> +	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!mem_res) {
+> +		dev_err(&pdev->dev, "Unalbe to get io resource\n");
+> +		ret = -ENODEV;
+> +		goto err;
 > +	}
 > +
-> +	if (client->irq >= 0) {
-> +		indio_dev->info = &jsa1212_info;
+> +	adc->base = devm_request_and_ioremap(&pdev->dev, mem_res);
+> +	if (adc->base == NULL) {
+> +		dev_err(&pdev->dev, "IO remap failed!\n");
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
 > +
-> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> +						NULL,
-> +						jsa1212_interrupt_handler,
-> +						IRQF_TRIGGER_FALLING |
-> +							IRQF_ONESHOT,
-> +						"jsa1212_thresh_event",
-> +						indio_dev);
-> +		if (ret) {
-> +			dev_err(&client->dev, "request irq (%d) failed\n",
-> +					client->irq);
-> +			return ret;
-> +		}
-> +	} else
-> +		indio_dev->info = &jsa1212_info_no_irq;
+> +	init_completion(&adc->done);
+> +	mutex_init(&adc->adc_lock);
 > +
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
-Basic rule of thumb. Never use devm_ form of iio_device_register if you
-have a remove function.  If there is a remove, then there is something
-that should be done 'after' removing the userspace interfaces, not before
-them as happens here.
+> +	sirfsoc_rtc_iobrg_writel(sirfsoc_rtc_iobrg_readl(SIRFSOC_PWRC_BASE +
+> +		SIRFSOC_PWRC_TRIGGER_EN) | (1 << PWR_WAKEEN_TS_SHIFT),
+> +		SIRFSOC_PWRC_BASE + SIRFSOC_PWRC_TRIGGER_EN);
+> +
+> +	ret = device_reset(&pdev->dev);
 > +	if (ret) {
-> +		dev_err(&client->dev, "%s: regist device failed\n", __func__);
-> +		return -ENODEV;
+> +		dev_err(&pdev->dev, "Failed to reset\n");
+> +		goto err;
 > +	}
+> +
+> +	writel(ADC_PRP_MODE3 | ADC_RTOUCH(1) | ADC_DEL_PRE(2) |
+> +		ADC_DEL_DIS(5),  adc->base + ADC_CONTROL2);
+> +
+> +	/* Clear interrupts and enable PEN INTR */
+> +	writel(readl(adc->base + ADC_INTR) | PEN_INTR | DATA_INTR |
+> +		PEN_INTR_EN | DATA_INTR_EN,  adc->base + ADC_INTR);
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "Failed to get IRQ!\n");
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	ret = devm_request_irq(&pdev->dev, irq, sirfsoc_adc_data_irq,
+> +		0, DRIVER_NAME, indio_dev);
+> +
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Failed to register irq handler\n");
+> +		ret = -ENODEV;
+> +		goto err;
+> +	}
+> +
+> +	ret = of_platform_populate(pdev->dev.of_node, sirfsoc_adc_of_match,
+> +		NULL, &pdev->dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Failed to add child nodes\n");
+> +		goto err;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to register adc iio dev\n");
+> +		goto err;
+> +	}
+> +
+> +	return 0;
+> +
+> +err:
+> +	iio_device_free(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int sirfsoc_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct sirfsoc_adc *adc = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	clk_disable_unprepare(adc->clk);
+> +	iio_device_free(indio_dev);
 > +
 > +	return 0;
 > +}
 > +
-> +static int jsa1212_remove(struct i2c_client *client)
-> +{
-> +	struct jsa1212_data *data;
-> +	int ret;
-> +
-Unregister the device manually.  Otherwise you'll still have exposed
-userspace interfaces AFTER you have turned the power off.  All sorts
-of weird bugs ensue ;)
-> +	data = iio_priv(i2c_get_clientdata(client));
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = jsa1212_send_cmd(data, JSA1212_CMD_POWEROFF);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "send shutdown cmd failed\n");
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int jsa1212_suspend(struct device *dev)
-> +{
-> +	int ret;
-> +	struct jsa1212_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = jsa1212_send_cmd(data, JSA1212_CMD_SUSPEND);
-> +	if (ret < 0)
-> +		dev_err(dev, "send shutdown cmd failed\n");
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int jsa1212_resume(struct device *dev)
-> +{
-> +	int ret;
-> +	struct jsa1212_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = jsa1212_send_cmd(data, JSA1212_CMD_RESUME);
-> +	if (ret < 0)
-> +		dev_err(dev, "send resume cmd failed\n");
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
-> +#define JSA1212_PM_OPS (&jsa1212_pm_ops)
-> +#else
-> +#define JSA1212_PM_OPS NULL
-> +#endif
-> +
-> +static const struct acpi_device_id jsa1212_acpi_match[] = {
-> +	{"JSA1212", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
-> +
-> +static const struct i2c_device_id jsa1212_id[] = {
-> +	{ "jsa1212", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, jsa1212_id);
-> +
-> +static struct i2c_driver jsa1212_driver = {
+> +static struct platform_driver sirfsoc_adc_driver = {
 > +	.driver = {
-> +		.name	= "jsa1212",
-> +		.pm	= &jsa1212_pm_ops,
-> +		.owner	= THIS_MODULE,
-> +		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
+> +		.name	= DRIVER_NAME,
+> +		.of_match_table = sirfsoc_adc_of_match,
+> +		.pm	= &sirfsoc_adc_pm_ops,
 > +	},
-> +	.probe		= jsa1212_probe,
-> +	.remove		= jsa1212_remove,
-> +	.id_table	= jsa1212_id,
+> +	.probe		= sirfsoc_adc_probe,
+> +	.remove		= sirfsoc_adc_remove,
 > +};
-> +module_i2c_driver(jsa1212_driver);
 > +
-> +MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
-> +MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
+> +module_platform_driver(sirfsoc_adc_driver);
+> +
+> +MODULE_AUTHOR("Guoying Zhang <Guoying.Zhang@csr.com>");
+> +MODULE_DESCRIPTION("SiRF SoC On-chip ADC driver");
 > +MODULE_LICENSE("GPL v2");
->
+
 
