@@ -1,39 +1,76 @@
-Return-Path: <Adam.Thomson.Opensource@diasemi.com>
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Rob Herring <robherring2@gmail.com>, Geert Uytterhoeven
-	<geert@linux-m68k.org>
-CC: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>, "Lee
- Jones" <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
-	"Jonathan Cameron" <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, "Ian
- Campbell" <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
- Opensource" <Support.Opensource@diasemi.com>, Guennadi Liakhovetski
-	<g.liakhovetski@gmx.de>
-Subject: RE: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
-Date: Wed, 11 Jun 2014 13:17:15 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337A56F53A6@SW-EX-MBX01.diasemi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.163]:62806 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750817AbaFKLRo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 07:17:44 -0400
+Message-ID: <0e7c03b0467ae1eace9dafebe6946d01d48e72f2.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
 References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
- <CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
-In-Reply-To: <CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Wed, 11 Jun 2014 12:11:25 +0100
+Subject: [PATCH 3/8] iio: of_iio_channel_get_by_name() returns non-null
+ pointers for error legs
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, <devicetree@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-PiBPbiBXZWQsIEp1biAxMSwgMjAxNCBhdCAxMzo0MywgUm9iIEhlcnJpbmcgd3JvdGU6DQo+IA0K
-PiBkbGcgaXMgdGhlIGNvcnJlY3Qgb25lIGFuZCBzZWVtcyB0byBiZSB0aGUgbW9zdCB3aWRlbHkg
-dXNlZCwgc28gd2UNCj4gc2hvdWxkIGdvIHdpdGggdGhhdCBhbmQgbWFyayB0aGUgb3RoZXJzIGRl
-cHJlY2F0ZWQuDQo+IA0KPiBkaWFzZW1pIGlzIGRvY3VtZW50ZWQgZm9yIHRoZSBkYTkyMTAsIGJ1
-dCBub3QgdXNlZCBhbnl3aGVyZS4NCj4gDQo+IFRoZXJlIGFwcGVhcnMgdG8gYmUgMiBkaWZmZXJl
-bnQgZGE5MDUzIGJpbmRpbmdzLiBJJ2QgZ3Vlc3MgdGhlIGRpYWxvZw0KPiB2YXJpYW50IHVzZWQg
-b24gMiBpLk1YIGJvYXJkcyBpcyBub3QgdXNlZC4gT3RoZXIgaS5NWCBib2FyZHMgdXNlIHRoZQ0K
-PiBkbGcgdmVyc2lvbi4gSSdtIG5vdCBzdXJlIHdoYXQgaXMgZ29pbmcgb24gd2l0aCBkYTkwNTUu
-IFBsZWFzZSBzb3J0DQo+IHRoZXNlIG91dC4NCj4gDQoNClRoZSBpbnRlbnRpb24gaXMgdG8gdXBk
-YXRlIHRoZSBvdGhlciBEaWFsb2cgZHJpdmVycyBhZnRlciB3ZSd2ZSBhZ3JlZWQgdGhpcw0KcHJl
-Zml4LiBXaXRoIHJlZ2FyZHMgdG8gZGE5MDU1LCB3aGF0J3MgdGhlIGlzc3VlIGhlcmUgYXMgSSBi
-ZWxpZXZlIHRoYXQgdXNlcw0KdGhlICdkbGcnIHByZWZpeCBhbHJlYWR5Pw0K
+Currently in the inkern.c code for IIO framework, the function
+of_iio_channel_get_by_name() will return a non-NULL pointer when
+it cannot find a channel using of_iio_channel_get() and when it
+tries to search for 'io-channel-ranges' property and fails. This
+is incorrect behaviour as the function which calls this expects
+a NULL pointer for failure. This patch rectifies the issue.
+
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ drivers/iio/inkern.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 0cf5f8e..1e8e94d 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -183,7 +183,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+ 		else if (name && index >= 0) {
+ 			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+ 				np->full_name, name ? name : "", index);
+-			return chan;
++			return NULL;
+ 		}
+
+ 		/*
+@@ -193,8 +193,9 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+ 		 */
+ 		np = np->parent;
+ 		if (np && !of_get_property(np, "io-channel-ranges", NULL))
+-			break;
++			return NULL;
+ 	}
++
+ 	return chan;
+ }
+
+@@ -317,6 +318,7 @@ struct iio_channel *iio_channel_get(struct device *dev,
+ 		if (channel != NULL)
+ 			return channel;
+ 	}
++
+ 	return iio_channel_get_sys(name, channel_name);
+ }
+ EXPORT_SYMBOL_GPL(iio_channel_get);
+--
+1.9.3
+
