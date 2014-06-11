@@ -1,63 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47890 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751028AbaFLFAk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Jun 2014 01:00:40 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 06/12] iio: Move documentation of iio-trig-sysfs to ABI/testing
-Date: Thu, 12 Jun 2014 07:00:23 +0200
-Message-Id: <1402549229-4449-7-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
+Received: from aserp1040.oracle.com ([141.146.126.69]:34560 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752878AbaFKG4v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 02:56:51 -0400
+Date: Wed, 11 Jun 2014 09:53:56 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>, Josh Wu <josh.wu@atmel.com>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Nicolas Ferre <nicolas.ferre@atmel.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Thomas Meyer <thomas@m3y3r.de>,
+	Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [patch] iio: adc: at91: signedness bug in
+ at91_adc_get_trigger_value_by_name()
+Message-ID: <20140611065356.GB16443@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-iio-trig-sysfs has left staging with commit e64e7d5c
+The function returns a u8 so the -ENOMEM is truncated to a positive
+value.  The caller tests for zero returns and treats them as an error
+so I have changed the -ENOMEM to 0.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs         | 11 +++++++++++
- drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs | 11 -----------
- 2 files changed, 11 insertions(+), 11 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
- delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-new file mode 100644
-index 0000000..5235e6c
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/triggerX/trigger_now
-+KernelVersion:	2.6.38
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This file is provided by the iio-trig-sysfs stand-alone trigger
-+		driver. Writing this file with any value triggers an event
-+		driven driver, associated with this trigger, to capture data
-+		into an in kernel buffer. This approach can be valuable during
-+		automated testing or in situations, where other trigger methods
-+		are not applicable. For example no RTC or spare GPIOs.
-+		X is the IIO index of the trigger.
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs b/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
-deleted file mode 100644
-index 5235e6c..0000000
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
-+++ /dev/null
-@@ -1,11 +0,0 @@
--What:		/sys/bus/iio/devices/triggerX/trigger_now
--KernelVersion:	2.6.38
--Contact:	linux-iio@vger.kernel.org
--Description:
--		This file is provided by the iio-trig-sysfs stand-alone trigger
--		driver. Writing this file with any value triggers an event
--		driven driver, associated with this trigger, to capture data
--		into an in kernel buffer. This approach can be valuable during
--		automated testing or in situations, where other trigger methods
--		are not applicable. For example no RTC or spare GPIOs.
--		X is the IIO index of the trigger.
--- 
-1.9.1
-
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 3b5bacd..5ebe33d 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -525,7 +525,7 @@ static u8 at91_adc_get_trigger_value_by_name(struct iio_dev *idev,
+ 				idev->id,
+ 				triggers[i].name);
+ 		if (!name)
+-			return -ENOMEM;
++			return 0;
+ 
+ 		if (strcmp(trigger_name, name) == 0) {
+ 			value = triggers[i].value;
