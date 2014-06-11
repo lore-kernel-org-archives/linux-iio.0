@@ -1,175 +1,57 @@
-Return-Path: <reyad.attiyat@gmail.com>
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	linux-input@vger.kernel.org,
-	jkosina@suse.cz
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCHv2 1/3] IIO: Documentation: Add north attribute to ABI docs
-Date: Mon,  2 Jun 2014 18:14:48 -0500
-Message-Id: <1401750890-31854-2-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1401750890-31854-1-git-send-email-reyad.attiyat@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f49.google.com ([209.85.215.49]:55666 "EHLO
+	mail-la0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750730AbaFKMJN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 08:09:13 -0400
+MIME-Version: 1.0
+In-Reply-To: <bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+Date: Wed, 11 Jun 2014 14:09:11 +0200
+Message-ID: <CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
+Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	support.opensource@diasemi.com,
+	Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Updated ABI documentation to inculde compass north usages.
+On Wed, Jun 11, 2014 at 1:11 PM, Adam Thomson
+<Adam.Thomson.Opensource@diasemi.com> wrote:
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -36,6 +36,7 @@ dallas        Maxim Integrated Products (formerly Dallas Semiconductor)
+>  davicom        DAVICOM Semiconductor, Inc.
+>  denx   Denx Software Engineering
+>  digi   Digi International Inc.
+> +dlg    Dialog Semiconductor Ltd.
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 76 +++++++++++++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+"diasemi" has been proposed before
+https://groups.google.com/forum/#!msg/linux.kernel/htUxLpV_Ng0/ClJVAxgK4e4J
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 6e02c50..251c2bb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -165,6 +165,10 @@ Description:
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_raw
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_tilt_comp_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_tilt_comp_raw
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -249,6 +253,10 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_magnetic_tilt_comp_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_north_true_tilt_comp_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- KernelVersion:	2.6.35
-@@ -436,6 +444,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_thresh_rising_en
-@@ -481,6 +497,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_y_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_magnetic_tilt_comp_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_north_true_tilt_comp_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_roc_rising_en
-@@ -527,6 +551,14 @@ What:		/sys/.../events/in_magn_y_raw_thresh_rising_value
- What:		/sys/.../events/in_magn_y_raw_thresh_falling_value
- What:		/sys/.../events/in_magn_z_raw_thresh_rising_value
- What:		/sys/.../events/in_magn_z_raw_thresh_falling_value
-+What:		/sys/.../events/in_north_magnetic_raw_thresh_rising_value
-+What:		/sys/.../events/in_north_magnetic_raw_thresh_falling_value
-+What:		/sys/.../events/in_north_true_raw_thresh_rising_value
-+What:		/sys/.../events/in_north_true_raw_thresh_falling_value
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_thresh_rising_value
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_thresh_falling_value
-+What:		/sys/.../events/in_north_true_tilt_comp_raw_thresh_rising_value
-+What:		/sys/.../events/in_north_true_tilt_comp_raw_thresh_falling_value
- What:		/sys/.../events/in_voltageY_supply_raw_thresh_rising_value
- What:		/sys/.../events/in_voltageY_supply_raw_thresh_falling_value
- What:		/sys/.../events/in_voltageY_raw_thresh_rising_value
-@@ -577,6 +609,18 @@ What:		/sys/.../events/in_magn_y_thresh_either_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_rising_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_falling_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_either_hysteresis
-+What:		/sys/.../events/in_north_magnetic_thresh_rising_hysteresis
-+What:		/sys/.../events/in_north_magnetic_thresh_falling_hysteresis
-+What:		/sys/.../events/in_north_magnetic_thresh_either_hysteresis
-+What:		/sys/.../events/in_north_true_thresh_rising_hysteresis
-+What:		/sys/.../events/in_north_true_thresh_falling_hysteresis
-+What:		/sys/.../events/in_north_true_thresh_either_hysteresis
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_rising_hysteresis
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_falling_hysteresis
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_either_hysteresis
-+What:		/sys/.../events/in_north_true_tilt_comp_thresh_rising_hysteresis
-+What:		/sys/.../events/in_north_true_tilt_comp_thresh_falling_hysteresis
-+What:		/sys/.../events/in_north_true_tilt_comp_thresh_either_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_rising_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_falling_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_either_hysteresis
-@@ -624,6 +668,14 @@ What:		/sys/.../events/in_magn_y_raw_roc_rising_value
- What:		/sys/.../events/in_magn_y_raw_roc_falling_value
- What:		/sys/.../events/in_magn_z_raw_roc_rising_value
- What:		/sys/.../events/in_magn_z_raw_roc_falling_value
-+What:		/sys/.../events/in_north_magnetic_raw_roc_rising_value
-+What:		/sys/.../events/in_north_magnetic_raw_roc_falling_value
-+What:		/sys/.../events/in_north_true_raw_roc_rising_value
-+What:		/sys/.../events/in_north_true_raw_roc_falling_value
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_roc_rising_value
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_raw_roc_falling_value
-+What:		/sys/.../events/in_north_true_tilt_comp_raw_roc_rising_value
-+What:		/sys/.../events/in_north_true_tilt_comp_raw_roc_falling_value
- What:		/sys/.../events/in_voltageY_supply_raw_roc_rising_value
- What:		/sys/.../events/in_voltageY_supply_raw_roc_falling_value
- What:		/sys/.../events/in_voltageY_raw_roc_rising_value
-@@ -679,6 +731,22 @@ What:		/sys/.../events/in_magn_z_thresh_rising_period
- What:		/sys/.../events/in_magn_z_thresh_falling_period
- What:		/sys/.../events/in_magn_z_roc_rising_period
- What:		/sys/.../events/in_magn_z_roc_falling_period
-+What:		/sys/.../events/in_north_magnetic_thresh_rising_period
-+What:		/sys/.../events/in_north_magnetic_thresh_falling_period
-+What:		/sys/.../events/in_north_magnetic_roc_rising_period
-+What:		/sys/.../events/in_north_magnetic_roc_falling_period
-+What:		/sys/.../events/in_north_true_thresh_rising_period
-+What:		/sys/.../events/in_north_true_thresh_falling_period
-+What:		/sys/.../events/in_north_true_roc_rising_period
-+What:		/sys/.../events/in_north_true_roc_falling_period
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_rising_period
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_thresh_falling_period
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_roc_rising_period
-+What:		/sys/.../events/in_north_magnetic_tilt_comp_roc_falling_period
-+What:		/sys/.../events/in_north_true_tilt_comp_thresh_rising_period
-+What:		/sys/.../events/in_north_true_tilt_comp_thresh_falling_period
-+What:		/sys/.../events/in_north_true_tilt_comp_roc_rising_period
-+What:		/sys/.../events/in_north_true_tilt_comp_roc_falling_period
- What:		/sys/.../events/in_voltageY_supply_thresh_rising_period
- What:		/sys/.../events/in_voltageY_supply_thresh_falling_period
- What:		/sys/.../events/in_voltageY_supply_roc_rising_period
-@@ -776,6 +844,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_true_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_tilt_comp_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_true_tilt_comp_en
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
- What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
- What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
-@@ -840,6 +912,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_true_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_magnetic_tilt_comp_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_north_true_tilt_comp_index
- What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_index
- What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
--- 
-1.9.3
+"dialog", "diasemi", and "dlg" all seem to be already in use...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
