@@ -1,89 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:39919 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750993AbaFOUSX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 15 Jun 2014 16:18:23 -0400
-Message-ID: <539E0001.60005@kernel.org>
-Date: Sun, 15 Jun 2014 21:20:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-la0-f54.google.com ([209.85.215.54]:47870 "EHLO
+	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751510AbaFKNCE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 09:02:04 -0400
 MIME-Version: 1.0
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+In-Reply-To: <CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+	<CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
+	<CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
+Date: Wed, 11 Jun 2014 15:01:57 +0200
+Message-ID: <CAMuHMdVD1Rui6NL6AS2iAaw+bmXbU6juA9ugO1rFSw_5W-49tA@mail.gmail.com>
+Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Rob Herring <robherring2@gmail.com>
+Cc: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
 	Lee Jones <lee.jones@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
 	David Woodhouse <dwmw2@infradead.org>,
 	Rob Herring <robh+dt@kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH 3/8] iio: of_iio_channel_get_by_name() returns non-null
- pointers for error legs
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com> <0e7c03b0467ae1eace9dafebe6946d01d48e72f2.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <0e7c03b0467ae1eace9dafebe6946d01d48e72f2.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	support.opensource@diasemi.com,
+	Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Simon Horman <horms@verge.net.au>,
+	Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/06/14 12:11, Adam Thomson wrote:
-> Currently in the inkern.c code for IIO framework, the function
-> of_iio_channel_get_by_name() will return a non-NULL pointer when
-> it cannot find a channel using of_iio_channel_get() and when it
-> tries to search for 'io-channel-ranges' property and fails. This
-> is incorrect behaviour as the function which calls this expects
-> a NULL pointer for failure. This patch rectifies the issue.
+On Wed, Jun 11, 2014 at 2:43 PM, Rob Herring <robherring2@gmail.com> wrote:
+> On Wed, Jun 11, 2014 at 7:09 AM, Geert Uytterhoeven
+> <geert@linux-m68k.org> wrote:
+>> On Wed, Jun 11, 2014 at 1:11 PM, Adam Thomson
+>> <Adam.Thomson.Opensource@diasemi.com> wrote:
+>>> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+>>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+>>> @@ -36,6 +36,7 @@ dallas        Maxim Integrated Products (formerly Dallas Semiconductor)
+>>>  davicom        DAVICOM Semiconductor, Inc.
+>>>  denx   Denx Software Engineering
+>>>  digi   Digi International Inc.
+>>> +dlg    Dialog Semiconductor Ltd.
+>>
+>> "diasemi" has been proposed before
+>> https://groups.google.com/forum/#!msg/linux.kernel/htUxLpV_Ng0/ClJVAxgK4e4J
+>>
+>> "dialog", "diasemi", and "dlg" all seem to be already in use...
 >
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Hi Adam,
+> dlg is the correct one and seems to be the most widely used, so we
+> should go with that and mark the others deprecated.
+>
+> diasemi is documented for the da9210, but not used anywhere.
 
-Good find.  I've only recently sent a pull request for fixes upstream,
-so I'll pick this up in a day or so once that has gone.
+It users are queued in Simon's tree, for two Renesas boards.
 
-J
-> ---
->   drivers/iio/inkern.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 0cf5f8e..1e8e94d 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -183,7 +183,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
->   		else if (name && index >= 0) {
->   			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
->   				np->full_name, name ? name : "", index);
-> -			return chan;
-> +			return NULL;
->   		}
->
->   		/*
-> @@ -193,8 +193,9 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
->   		 */
->   		np = np->parent;
->   		if (np && !of_get_property(np, "io-channel-ranges", NULL))
-> -			break;
-> +			return NULL;
->   	}
-> +
->   	return chan;
->   }
->
-> @@ -317,6 +318,7 @@ struct iio_channel *iio_channel_get(struct device *dev,
->   		if (channel != NULL)
->   			return channel;
->   	}
-> +
->   	return iio_channel_get_sys(name, channel_name);
->   }
->   EXPORT_SYMBOL_GPL(iio_channel_get);
-> --
-> 1.9.3
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+> There appears to be 2 different da9053 bindings. I'd guess the dialog
+> variant used on 2 i.MX boards is not used. Other i.MX boards use the
+> dlg version. I'm not sure what is going on with da9055. Please sort
+> these out.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
