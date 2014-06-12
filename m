@@ -1,95 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpfb2-g21.free.fr ([212.27.42.10]:40221 "EHLO
-	smtpfb2-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753421AbaFXOrH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 10:47:07 -0400
-From: Denis Carikli <denis@eukrea.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Denis Carikli <denis@eukrea.com>
-Subject: [PATCH v4 4/6] ARM: dts: imx25: Add TSC and ADC support
-Date: Tue, 24 Jun 2014 16:46:33 +0200
-Message-Id: <1403621195-9622-4-git-send-email-denis@eukrea.com>
-In-Reply-To: <1403621195-9622-1-git-send-email-denis@eukrea.com>
-References: <1403621195-9622-1-git-send-email-denis@eukrea.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:47785 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751008AbaFLEy2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Jun 2014 00:54:28 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+Subject: [PATCH v3 00/12] ad799x cleanup
+Date: Thu, 12 Jun 2014 06:54:04 +0200
+Message-Id: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
----
-Changelog v3->v4:
-- None
+v3 folds reading/writing event values and range checking into first patch
 
-Changelog v2->v3:
-- Added ADC controller support: making a separate patch
-  for it would have been overkill.
-- Moved the common TSC and ADC sub-nodes inside this patch
-  instead of having a copy in each dts using it.
----
- arch/arm/boot/dts/imx25.dtsi |   30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+Peter Meerwald (12):
+  iio:adc:ad799x: Fix reading and writing of event values, apply shift
+  iio:adc:ad799x: Fix ad799x_chip_info kerneldoc
+  iio:adc:ad799x: Drop I2C access helper functions
+  iio:adc:ad799x: Save some lines in ad7997_8_update_scan_mode() exit
+    handling
+  iio:adc:ad799x: Use BIT() and GENMASK()
+  iio:adc:ad799x: Only expose event interface when IRQ is available
+  iio:adc:ad799x: Make chan_spec const in ad799x_chip_config struct
+  iio:adc:ad799x: Add helper function to read/write config register
+  iio:adc:ad799x: Write default config on probe and reset alert status
+    on probe
+  iio:adc:ad799x: Set conversion channels and rename
+    ad7997_8_update_scan_mode()
+  iio:adc:ad799x: Return more meaningful event enabled state
+  iio:adc:ad799x: Allow to write event config
 
-diff --git a/arch/arm/boot/dts/imx25.dtsi b/arch/arm/boot/dts/imx25.dtsi
-index c174039..358c78a 100644
---- a/arch/arm/boot/dts/imx25.dtsi
-+++ b/arch/arm/boot/dts/imx25.dtsi
-@@ -264,13 +264,37 @@
- 				status = "disabled";
- 			};
- 
--			tsc: tsc@50030000 {
--				compatible = "fsl,imx25-adc", "fsl,imx21-tsc";
--				reg = <0x50030000 0x4000>;
-+			tscadc: tscadc@50030000 {
-+				compatible = "fsl,imx25-tsadc";
-+				reg = <0x50030000 0xc>;
- 				interrupts = <46>;
- 				clocks = <&clks 119>;
- 				clock-names = "ipg";
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+				ranges;
- 				status = "disabled";
-+
-+				adc: adc@50030800 {
-+					compatible = "fsl,imx25-gcq";
-+					reg = <0x50030800 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <1>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					status = "disabled";
-+				};
-+
-+				tsc: tcq@50030400 {
-+					compatible = "fsl,imx25-tcq";
-+					reg = <0x50030400 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <0>;
-+					fsl,wires = <4>;
-+					status = "disabled";
-+				};
- 			};
- 
- 			ssi1: ssi@50034000 {
+ drivers/iio/adc/ad799x.c | 509 ++++++++++++++++++++++++++++-------------------
+ 1 file changed, 306 insertions(+), 203 deletions(-)
+
 -- 
-1.7.9.5
+1.9.1
 
