@@ -1,52 +1,35 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] io: accel: kxcjk1013 Fix missing unlock errors
-Date: Mon, 16 Jun 2014 12:00:57 -0700
-Message-Id: <1402945257-12665-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <pmeerw@pmeerw.net>
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v3 02/12] iio:adc:ad799x: Fix ad799x_chip_info kerneldoc
+Date: Thu, 12 Jun 2014 06:54:06 +0200
+Message-Id: <1402548856-3564-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-Fix unlock at two places. One when i2c error occurs and other
-when trigger set state when raw read is in progress.
-
-kbuild test robot errors:
->> drivers/iio/accel/kxcjk-1013.c:531:3-9: preceding lock on line 524
->> drivers/iio/accel/kxcjk-1013.c:376:4-10: preceding lock on line 368
-
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/accel/kxcjk-1013.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ad799x.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 2326e43..72a6dbb 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -372,8 +372,10 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
- 			int sleep_val;
- 
- 			ret = kxcjk1013_set_mode(data, OPERATION);
--			if (ret < 0)
-+			if (ret < 0) {
-+				mutex_unlock(&data->mutex);
- 				return ret;
-+			}
- 			++data->power_state;
- 			sleep_val = kxcjk1013_get_startup_times(data);
- 			if (sleep_val < 20000)
-@@ -527,8 +529,10 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 		kxcjk1013_set_mode(data, OPERATION);
- 		++data->power_state;
- 	} else {
--		if (--data->power_state)
-+		if (--data->power_state) {
-+			mutex_unlock(&data->mutex);
- 			return 0;
-+		}
- 		kxcjk1013_chip_setup_interrupt(data, false);
- 		kxcjk1013_set_mode(data, STANDBY);
- 	}
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 6eba301..6cf9ee1 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -105,9 +105,8 @@ enum {
+  * struct ad799x_chip_info - chip specific information
+  * @channel:		channel specification
+  * @num_channels:	number of channels
+- * @monitor_mode:	whether the chip supports monitor interrupts
+  * @default_config:	device default configuration
+- * @event_attrs:	pointer to the monitor event attribute group
++ * @info:		pointer to iio_info struct
+  */
+ struct ad799x_chip_info {
+ 	struct iio_chan_spec		channel[9];
 -- 
-1.7.11.7
+1.9.1
