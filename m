@@ -1,96 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta3.messagelabs.com ([195.245.230.170]:45982 "EHLO
-	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751311AbaFKLSE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 07:18:04 -0400
-Message-ID: <1cd1f7ea5d3a5a799bccbafda9672012c3b55bba.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Wed, 11 Jun 2014 12:11:21 +0100
-Subject: [PATCH 2/8] mfd: da9150: Add DT binding documentation for core
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, <devicetree@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from ns.pmeerw.net ([87.118.82.44]:47784 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750896AbaFLEy2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Jun 2014 00:54:28 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v3 01/12] iio:adc:ad799x: Fix reading and writing of event values, apply shift
+Date: Thu, 12 Jun 2014 06:54:05 +0200
+Message-Id: <1402548856-3564-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
----
- Documentation/devicetree/bindings/mfd/da9150.txt | 53 ++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
+last two bits of ADC and limit values are zero and should not be reported
+(ad7993, ad7997); compare with read_raw()
 
-diff --git a/Documentation/devicetree/bindings/mfd/da9150.txt b/Documentation/devicetree/bindings/mfd/da9150.txt
-new file mode 100644
-index 0000000..5c9adc3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/da9150.txt
-@@ -0,0 +1,53 @@
-+Dialog Semiconductor DA9150 Combined Charger/Fuel-Gauge MFD bindings
+event values are 10 (ad7993, ad7997) or 12 bit max., check the range on write
+
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/adc/ad799x.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 39b4cb4..6eba301 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -427,9 +427,12 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+ 
++	if (val < 0 || val > RES_MASK(chan->scan_type.realbits))
++		return -EINVAL;
 +
-+DA9150 consists of a group of sub-devices (I2C Only):
-+
-+Device			 Description
-+------			 -----------
-+da9150-gpio		: GPIOs
-+da9150-gpadc		: IIO - GPADC
-+da9150-charger		: Power Supply (Charger)
-+da9150-fg		: Power Supply (Fuel-Gauge)
-+
-+======
-+
-+Required properties:
-+- compatible : Should be "dlg,da9150"
-+- reg: Specifies the I2C slave address
-+- interrupt-parent: Specifies the phandle of the interrupt controller to which
-+  the IRQs from da9150 are delivered to.
-+- interrupts: IRQ line info for da9150 chip.
-+- interrupt-controller: da9150 has internal IRQs (own IRQ domain).
-+
-+Sub-devices:
-+- da9150-gpio: See Documentation/devicetree/bindings/gpio/gpio-da9150.txt
-+- da9150-gpadc: See Documentation/devicetree/bindings/iio/da9150-gpadc.txt
-+- da9150-charger: See Documentation/devicetree/bindings/power/da9150-charger.txt
-+- da9150-fg: See Documentation/devicetree/bindings/power/da9150-fg.txt
-+
-+
-+Example:
-+
-+	charger_fg: da9150@58 {
-+		compatible = "dlg,da9150";
-+		reg = <0x58>;
-+		interrupt-parent = <&gpio6>;
-+		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-+		interrupt-controller;
-+
-+		da9150-gpio {
-+			...
-+		};
-+
-+		gpadc: da9150-gpadc {
-+			...
-+		};
-+
-+		da9150-charger {
-+			...
-+		};
-+
-+		da9150-fg {
-+			...
-+		};
-+	};
---
-1.9.3
+ 	mutex_lock(&indio_dev->mlock);
+ 	ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir, info),
+-		val);
++		val << chan->scan_type.shift);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return ret;
+@@ -452,7 +455,8 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
+ 	mutex_unlock(&indio_dev->mlock);
+ 	if (ret < 0)
+ 		return ret;
+-	*val = valin;
++	*val = (valin >> chan->scan_type.shift) &
++		RES_MASK(chan->scan_type.realbits);
+ 
+ 	return IIO_VAL_INT;
+ }
+-- 
+1.9.1
 
