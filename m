@@ -1,36 +1,68 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [RFC PATCH 0/2] raw read performance improvement
-Date: Thu, 26 Jun 2014 17:40:24 -0700
-Message-Id: <1403829626-17660-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:47892 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751246AbaFLFAk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Jun 2014 01:00:40 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 07/12] staging:iio: Update iio_event_monitor program
+Date: Thu, 12 Jun 2014 07:00:24 +0200
+Message-Id: <1402549229-4449-8-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-We see several performance issues reading individual axis, when
-raw read is the only option. Since most of the time user space reads x, y
-and z, one after other, this results in three sysfs reads, and based on
-chipset we have to power up or set up measurement mode and wait for
-response.
-For example reading x,y and z takes 160ms for ak8975, it is true for
-other too. But reading together takes only 80ms.
+add types recently added
 
-IIO types already defined a modifier for X_AND_Y_AND_Z, which is used
-by one driver to send event code. This modifier has no value assigned
-so (null) appears in sysfs. If this is not correct then we may need 
-another modifier. 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/Documentation/iio_event_monitor.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Since we have now raw_read with capability to read multiple values,
-we can use this callback to return values to iio core.
-
-Srinivas Pandruvada (2):
-  iio: core: add xyz modifier value
-  iio: magnetometer: ak8975: Improve performance of raw reads
-
- drivers/iio/industrialio-core.c   |  1 +
- drivers/iio/magnetometer/ak8975.c | 58 ++++++++++++++++++++++++++-------------
- 2 files changed, 40 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+index 3a9b000..cb35a97 100644
+--- a/drivers/staging/iio/Documentation/iio_event_monitor.c
++++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+@@ -46,6 +46,9 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_TIMESTAMP] = "timestamp",
+ 	[IIO_CAPACITANCE] = "capacitance",
+ 	[IIO_ALTVOLTAGE] = "altvoltage",
++	[IIO_CCT] = "cct",
++	[IIO_PRESSURE] = "pressure",
++	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -70,6 +73,8 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_IR] = "ir",
+ 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
+ 	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
++	[IIO_MOD_LIGHT_BOTH] = "both",
++	[IIO_MOD_LIGHT_IR] = "ir",
+ 	[IIO_MOD_LIGHT_CLEAR] = "clear",
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+@@ -100,6 +105,9 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_TIMESTAMP:
+ 	case IIO_CAPACITANCE:
+ 	case IIO_ALTVOLTAGE:
++	case IIO_CCT:
++	case IIO_PRESSURE:
++	case IIO_HUMIDITYRELATIVE:
+ 		break;
+ 	default:
+ 		return false;
+@@ -114,6 +122,8 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_IR:
+ 	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+ 	case IIO_MOD_SUM_SQUARED_X_Y_Z:
++	case IIO_MOD_LIGHT_BOTH:
++	case IIO_MOD_LIGHT_IR:
+ 	case IIO_MOD_LIGHT_CLEAR:
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
 -- 
-1.8.3.2
+1.9.1
+
