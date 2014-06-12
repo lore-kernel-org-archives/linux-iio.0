@@ -1,61 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:52974 "EHLO
-	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932845AbaFLJlj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Jun 2014 05:41:39 -0400
-From: Jimmy P <jimmyp11f155@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>
-Cc: Jimmy P <jimmyp11f155@gmail.com>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: fix coding style
-Date: Thu, 12 Jun 2014 17:42:43 +0800
-Message-Id: <1402566163-9860-1-git-send-email-jimmyp11f155@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <5399A09B.2070608@metafoo.de>
+Date: Thu, 12 Jun 2014 14:44:11 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+CC: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH v2] iio: make blocking read wait for data
+References: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
+In-Reply-To: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch fixes coding style errors reported by checkpatch.pl for
-lines that was over 80 chars long. The macro value shoud be put in () as
-well.
+On 06/10/2014 06:26 PM, Josselin Costanzi wrote:
+> Currently the IIO buffer blocking read only wait until at least one
+> data element is available.
+> This patch adds the possibility for the userspace to to blocking calls
+> for multiple elements. This should limit the read() calls count when
+> trying to get data in batches.
+> This commit also fix a bug where data is lost if an error happens
+> after some data is already read.
+>
+> Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
 
-Signed-off-by: Jimmy P <jimmyp11f155@gmail.com>
----
- drivers/staging/iio/frequency/ad5930.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+This is going into the right direction. But where did that timeout come 
+from? If a user wants a timeout on the read() call they should open the 
+device in non-blocking mode and use poll() with a timeout. I dont think we 
+should add a different way of doing this since the poll() method already 
+works fine.
 
-diff --git a/drivers/staging/iio/frequency/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
-index a4aeee6..95a3550 100644
---- a/drivers/staging/iio/frequency/ad5930.c
-+++ b/drivers/staging/iio/frequency/ad5930.c
-@@ -21,7 +21,7 @@
- 
- #define DRV_NAME "ad5930"
- 
--#define value_mask (u16)0xf000
-+#define value_mask ((u16)0xf000)
- #define addr_shift 12
- 
- /* Register format: 4 bits addr + 12 bits value */
-@@ -52,12 +52,15 @@ static ssize_t ad5930_set_parameter(struct device *dev,
- 
- 	config->control = (config->control & ~value_mask);
- 	config->incnum = (config->control & ~value_mask) | (1 << addr_shift);
--	config->frqdelt[0] = (config->control & ~value_mask) | (2 << addr_shift);
-+	config->frqdelt[0] = (config->control & ~value_mask) |
-+				(2 << addr_shift);
- 	config->frqdelt[1] = (config->control & ~value_mask) | 3 << addr_shift;
- 	config->incitvl = (config->control & ~value_mask) | 4 << addr_shift;
- 	config->buritvl = (config->control & ~value_mask) | 8 << addr_shift;
--	config->strtfrq[0] = (config->control & ~value_mask) | 0xc << addr_shift;
--	config->strtfrq[1] = (config->control & ~value_mask) | 0xd << addr_shift;
-+	config->strtfrq[0] = (config->control & ~value_mask) |
-+				0xc << addr_shift;
-+	config->strtfrq[1] = (config->control & ~value_mask) |
-+				0xd << addr_shift;
- 
- 	xfer.len = len;
- 	xfer.tx_buf = config;
--- 
-2.0.0
+Also read() should still return once it got data and not wait until the full 
+buffer has been read. Also poll() should not return until there is more data 
+than the watermark in the buffer. So this means the pollq of the buffer 
+should not be woken up until more data is in the buffer then the watermark. 
+E.g. in iio_store_to_kfifo
 
+if (kfifo_len(&kf->kf) >= kf->buffer.watermark)
+	wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
+
+iio_kfifo_buf_data_available() can be re-factored to return the amount of 
+data that is available rather than just if data is available or not.
+
+In iio_buffer_data_available() you can then compare the result of the 
+data_available() callback with the watermark and return true or false 
+depending on that.
+
+There is one more case that needs to be handled which is the buffer being 
+disabled. When the buffer is disabled iio_buffer_data_available() should 
+return true if there is data in the buffer regardless of whether it is above 
+or below the watermark. This also means that the pollq needs to be woken up 
+when the buffer is disabled. This should be done in iio_buffer_deactivate() 
+before the iio_buffer_put().
+
+- Lars
