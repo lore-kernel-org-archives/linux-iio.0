@@ -1,97 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43586 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754058AbaFKIGV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 04:06:21 -0400
-In-Reply-To: <20140611013007.GA32756@kroah.com>
-References: <20140611013007.GA32756@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: IIO drivers left in drivers/staging/
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Wed, 11 Jun 2014 07:37:50 +0100
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: =?UTF-8?Q?Kristina_Mart=C5=A1enko?= <kristina.martsenko@gmail.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <b66009b3-0777-4003-b381-af9298f7091a@email.android.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:47890 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751028AbaFLFAn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 12 Jun 2014 01:00:43 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 12/12] staging:iio-trig-periodic-rtc: Allow to reset frequency to 0
+Date: Thu, 12 Jun 2014 07:00:29 +0200
+Message-Id: <1402549229-4449-13-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+periodic rtc trigger initially has frequency 0
 
+it is possible to change trigger frequency on-the-fly, but it is not
+possible to set frequency back to 0
 
-On June 11, 2014 2:30:07 AM GMT+01:00, Greg KH <gregkh@linuxfoundation.org> wrote:
->Hi Jonathan,
-Hi Kristina/Greg.
->
->I'd really like to figure out what is left to do with all of the
->remaining IIO staging drivers, and see if we can get them all moved out
->soon.
-There is a lot of each driver having its own peculiar set of little and sometimes big
- issues! We have also kind of gotten into the habbit of treating staging graduations as if
- they were initial driver submissions so proposed moves get quite a bit of review and
- that often extends the list of things to fix or improve rather a lot. Of course any help is
- welcome.
+this patch allows to set trigger frequency to 0, thereby disabling
+the rtc interrupt
 
-I'll reply in more detail about this later. 
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-For now I have cc'd Lars as he has inherited
- responsibility for a lot of AD drivers that have been around from the early days when
- things were a little loose.
-
-If Christina is raring to get started, my notes say the lpc32xx_ADC driver needs some
- prefixes on #define constants and that is all I picked up for that driver when reviewing it
- for a staging graduation.
-
-If not, Lars, what about looking at the resolver drivers or perhaps the CDC drivers?
- If I recall they are pretty clean and straight forward. Probably some ABI in need of
- documentation (sysfs attribute naming). If not do you have any short term suggestions?
-
->
->As part of the OPW intern program, Kristina has agreed to help out with
->staging kernel drivers and I thought that doing this type of work would
->be a great task.  There seems to be a number of different types of
->IIO drivers here, so that should keep her from being bored with just
->one
->specific type of sensor.  There are also some "dummy" IIO drivers,
->which
->I don't really understand what they are for (as well as why they remain
->in staging.)
-Ah. There is only really one dummy driver, be it with a software interrupt driver to fake
- hardware threshold interrupts etc.
-
-This device is basically a fake. The intent was to allow those with no hardware to hand
- to work at or understand the core of iio.
-It has come in very handy as a test tool!
-
-The other intended purpose is to act as an example of best practice and provide
- documentation of a sort.
-
-As for why it is still in staging... It comes down to the dubious hack that provides fake event interrupts. We do it much nicer in the sysfs trigger and would like to either use that approach or find something more generic.
->
->The drivers/staging/TODO file seems pretty old, being dated back in
->2009
->and not really done much with the exception of adding one entry.
-
-Oops
->
->So, any thoughts about what to do here?  Any pointers to devices that
->she can aquire if that needs to happen, or APIs that need to be
->standardized across types?
-Most ABI bits are now to do with new stuff.
-Having said that the resolver and CDC
- drivers use some ABI that is probably documented but that documentation is also
- a candidate for cleaning up and moving out of staging.
-
-Busy day (pesky customer demo) so will get back with more concrete stuff later.
->
->thanks,
->
->greg k-h
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+index 362a54a..b5108a1 100644
+--- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
++++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+@@ -26,16 +26,22 @@ struct iio_prtc_trigger_info {
+ 	struct rtc_device *rtc;
+ 	int frequency;
+ 	struct rtc_task task;
++	bool state;
+ };
+ 
+ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
+ {
+ 	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+-	if (trig_info->frequency == 0)
++	int ret;
++	if (trig_info->frequency == 0 && state)
+ 		return -EINVAL;
+ 	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
+ 			trig_info->frequency);
+-	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
++	ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
++	if (ret == 0)
++		trig_info->state = state;
++
++	return ret;
+ }
+ 
+ static ssize_t iio_trig_periodic_read_freq(struct device *dev,
+@@ -61,7 +67,14 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
+ 	if (ret)
+ 		goto error_ret;
+ 
+-	ret = rtc_irq_set_freq(trig_info->rtc, &trig_info->task, val);
++	if (val > 0) {
++		ret = rtc_irq_set_freq(trig_info->rtc, &trig_info->task, val);
++		if (ret == 0 && trig_info->state && trig_info->frequency == 0)
++			ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 1);
++	} else if (val == 0) {
++		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
++	} else
++		ret = -EINVAL;
+ 	if (ret)
+ 		goto error_ret;
+ 
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.9.1
+
