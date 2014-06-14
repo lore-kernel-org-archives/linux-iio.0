@@ -1,32 +1,59 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Thu, 12 Jun 2014 09:10:50 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jimmy P <jimmyp11f155@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: fix coding style
-Message-ID: <20140612161050.GA12586@kroah.com>
-References: <1402566163-9860-1-git-send-email-jimmyp11f155@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:44017 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754760AbaFNPCS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:02:18 -0400
+Message-ID: <539C646F.3080103@kernel.org>
+Date: Sat, 14 Jun 2014 16:04:15 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1402566163-9860-1-git-send-email-jimmyp11f155@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 04/12] iio:adc:ad7476: Use GENMASK() macro
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-5-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jun 12, 2014 at 05:42:43PM +0800, Jimmy P wrote:
-> This patch fixes coding style errors reported by checkpatch.pl for
-> lines that was over 80 chars long. The macro value shoud be put in () as
-> well.
-> 
-> Signed-off-by: Jimmy P <jimmyp11f155@gmail.com>
+On 12/06/14 06:00, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 
-We need a "real" or "full" name here for the signed-off-by: line, please
-read Documentation/SubmittingPatches for the full details as to what
-this line means and why we need that.
+Thanks,
+> ---
+>   drivers/iio/adc/ad7476.c | 5 ++---
+>   1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> index d141d45..ce400ec 100644
+> --- a/drivers/iio/adc/ad7476.c
+> +++ b/drivers/iio/adc/ad7476.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/regulator/consumer.h>
+>   #include <linux/err.h>
+>   #include <linux/module.h>
+> +#include <linux/bitops.h>
+>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+> @@ -21,8 +22,6 @@
+>   #include <linux/iio/trigger_consumer.h>
+>   #include <linux/iio/triggered_buffer.h>
+>
+> -#define RES_MASK(bits)	((1 << (bits)) - 1)
+> -
+>   struct ad7476_state;
+>
+>   struct ad7476_chip_info {
+> @@ -117,7 +116,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>   		if (ret < 0)
+>   			return ret;
+>   		*val = (ret >> st->chip_info->channel[0].scan_type.shift) &
+> -			RES_MASK(st->chip_info->channel[0].scan_type.realbits);
+> +			GENMASK(st->chip_info->channel[0].scan_type.realbits - 1, 0);
+>   		return IIO_VAL_INT;
+>   	case IIO_CHAN_INFO_SCALE:
+>   		if (!st->chip_info->int_vref_uv) {
+>
 
-Also, this patch does multiple things, please break it up into different
-patches, each only doing one specific thing.
-
-thanks,
-
-greg k-h
