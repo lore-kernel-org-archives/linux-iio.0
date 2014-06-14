@@ -1,82 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve0-f176.google.com ([209.85.128.176]:38807 "EHLO
-	mail-ve0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751328AbaFKOW2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 10:22:28 -0400
+Received: from mail.kernel.org ([198.145.19.201]:44044 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754760AbaFNPDX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:03:23 -0400
+Message-ID: <539C64B0.8070806@kernel.org>
+Date: Sat, 14 Jun 2014 16:05:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <2E89032DDAA8B9408CB92943514A0337A56F53A6@SW-EX-MBX01.diasemi.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
-	<CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
-	<2E89032DDAA8B9408CB92943514A0337A56F53A6@SW-EX-MBX01.diasemi.com>
-Date: Wed, 11 Jun 2014 09:22:27 -0500
-Message-ID: <CAL_JsqJJz2S4fn25pJK5UDG9j36JKnS++VQCMhbdxQd_4-2OFQ@mail.gmail.com>
-Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
-From: Rob Herring <robherring2@gmail.com>
-To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Support Opensource <Support.Opensource@diasemi.com>,
-	Guennadi Liakhovetski <g.liakhovetski@gmx.de>
-Content-Type: text/plain; charset=UTF-8
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 06/12] iio: Move documentation of iio-trig-sysfs to
+ ABI/testing
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-7-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-7-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 11, 2014 at 8:17 AM, Opensource [Adam Thomson]
-<Adam.Thomson.Opensource@diasemi.com> wrote:
->> On Wed, Jun 11, 2014 at 13:43, Rob Herring wrote:
->>
->> dlg is the correct one and seems to be the most widely used, so we
->> should go with that and mark the others deprecated.
->>
->> diasemi is documented for the da9210, but not used anywhere.
->>
->> There appears to be 2 different da9053 bindings. I'd guess the dialog
->> variant used on 2 i.MX boards is not used. Other i.MX boards use the
->> dlg version. I'm not sure what is going on with da9055. Please sort
->> these out.
->>
+On 12/06/14 06:00, Peter Meerwald wrote:
+> iio-trig-sysfs has left staging with commit e64e7d5c
 >
-> The intention is to update the other Dialog drivers after we've agreed this
-> prefix. With regards to da9055, what's the issue here as I believe that uses
-> the 'dlg' prefix already?
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Thanks,
 
-In documentation it does, but I'm not sure how these strings are used:
+Applied to the togreg branch of iio.git
 
-drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-gpio",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-regulator",
-drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-onkey",
-drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-rtc",
-drivers/mfd/da9055-core.c:              .of_compatible = "dialog,da9055-hwmon",
-drivers/mfd/da9055-core.c:              .of_compatible =
-"dialog,da9055-watchdog",
+J
+> ---
+>   Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs         | 11 +++++++++++
+>   drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs | 11 -----------
+>   2 files changed, 11 insertions(+), 11 deletions(-)
+>   create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+>   delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+> new file mode 100644
+> index 0000000..5235e6c
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+> @@ -0,0 +1,11 @@
+> +What:		/sys/bus/iio/devices/triggerX/trigger_now
+> +KernelVersion:	2.6.38
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This file is provided by the iio-trig-sysfs stand-alone trigger
+> +		driver. Writing this file with any value triggers an event
+> +		driven driver, associated with this trigger, to capture data
+> +		into an in kernel buffer. This approach can be valuable during
+> +		automated testing or in situations, where other trigger methods
+> +		are not applicable. For example no RTC or spare GPIOs.
+> +		X is the IIO index of the trigger.
+> diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs b/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+> deleted file mode 100644
+> index 5235e6c..0000000
+> --- a/drivers/staging/iio/Documentation/sysfs-bus-iio-trigger-sysfs
+> +++ /dev/null
+> @@ -1,11 +0,0 @@
+> -What:		/sys/bus/iio/devices/triggerX/trigger_now
+> -KernelVersion:	2.6.38
+> -Contact:	linux-iio@vger.kernel.org
+> -Description:
+> -		This file is provided by the iio-trig-sysfs stand-alone trigger
+> -		driver. Writing this file with any value triggers an event
+> -		driven driver, associated with this trigger, to capture data
+> -		into an in kernel buffer. This approach can be valuable during
+> -		automated testing or in situations, where other trigger methods
+> -		are not applicable. For example no RTC or spare GPIOs.
+> -		X is the IIO index of the trigger.
+>
 
-Rob
