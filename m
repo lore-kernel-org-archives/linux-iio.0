@@ -1,305 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:21474 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932442AbaFRCVN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jun 2014 22:21:13 -0400
-From: Chanwoo Choi <cw00.choi@samsung.com>
-To: jic23@kernel.org, ch.naveen@samsung.com, t.figa@samsung.com,
-	kgene.kim@samsung.com
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, sachin.kamat@linaro.org,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+Return-Path: <sre@kernel.org>
+Date: Sat, 14 Jun 2014 17:47:33 +0200
+From: Sebastian Reichel <sre@kernel.org>
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
 	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCHv4 1/4] iio: adc: exynos_adc: Add exynos_adc_ops structure to
- improve readability
-Date: Wed, 18 Jun 2014 11:20:58 +0900
-Message-id: <1403058061-24271-2-git-send-email-cw00.choi@samsung.com>
-In-reply-to: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com>
-References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-iio@vger.kernel.org, Pali Roh?r <pali.rohar@gmail.com>
+Subject: Re: [PATCHv2 1/2] rx51_battery: convert to iio consumer
+Message-ID: <20140614154733.GB13614@earth.universe>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+ <1393705366-32420-1-git-send-email-sre@debian.org>
+ <1393705366-32420-2-git-send-email-sre@debian.org>
+ <5336A9F9.4080504@kernel.org>
+ <20140420120823.GB12135@amd.pavel.ucw.cz>
+ <20140423160936.GB32049@earth.universe>
+ <20140614083231.GA15326@Nokia-N900>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="TRYliJ5NKNqkz5bu"
+In-Reply-To: <20140614083231.GA15326@Nokia-N900>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset add 'exynos_adc_ops' structure which includes some functions
-to control ADC operation according to ADC version (v1 or v2).
 
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- drivers/iio/adc/exynos_adc.c | 174 +++++++++++++++++++++++++++++--------------
- 1 file changed, 120 insertions(+), 54 deletions(-)
+--TRYliJ5NKNqkz5bu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 010578f..c30def6 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -90,6 +90,7 @@ struct exynos_adc {
- 	struct clk		*clk;
- 	unsigned int		irq;
- 	struct regulator	*vdd;
-+	struct exynos_adc_ops	*ops;
- 
- 	struct completion	completion;
- 
-@@ -97,6 +98,13 @@ struct exynos_adc {
- 	unsigned int            version;
- };
- 
-+struct exynos_adc_ops {
-+	void (*init_hw)(struct exynos_adc *info);
-+	void (*clear_irq)(struct exynos_adc *info);
-+	void (*start_conv)(struct exynos_adc *info, unsigned long addr);
-+	void (*stop_conv)(struct exynos_adc *info);
-+};
-+
- static const struct of_device_id exynos_adc_match[] = {
- 	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
- 	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
-@@ -112,30 +120,98 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
- 	return (unsigned int)match->data;
- }
- 
--static void exynos_adc_hw_init(struct exynos_adc *info)
-+static void exynos_adc_v1_init_hw(struct exynos_adc *info)
-+{
-+	u32 con1;
-+
-+	/* set default prescaler values and Enable prescaler */
-+	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-+
-+	/* Enable 12-bit ADC resolution */
-+	con1 |= ADC_V1_CON_RES;
-+	writel(con1, ADC_V1_CON(info->regs));
-+}
-+
-+static void exynos_adc_v1_start_conv(struct exynos_adc *info, unsigned long addr)
-+{
-+	u32 con1;
-+
-+	writel(addr, ADC_V1_MUX(info->regs));
-+
-+	con1 = readl(ADC_V1_CON(info->regs));
-+	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-+}
-+
-+static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
-+{
-+	writel(1, ADC_V1_INTCLR(info->regs));
-+}
-+
-+static void exynos_adc_v1_stop_conv(struct exynos_adc *info)
-+{
-+	u32 con;
-+
-+	con = readl(ADC_V1_CON(info->regs));
-+	con |= ADC_V1_CON_STANDBY;
-+	writel(con, ADC_V1_CON(info->regs));
-+}
-+
-+static struct exynos_adc_ops exynos_adc_v1_ops = {
-+	.init_hw	= exynos_adc_v1_init_hw,
-+	.clear_irq	= exynos_adc_v1_clear_irq,
-+	.start_conv	= exynos_adc_v1_start_conv,
-+	.stop_conv	= exynos_adc_v1_stop_conv,
-+};
-+
-+static void exynos_adc_v2_init_hw(struct exynos_adc *info)
- {
- 	u32 con1, con2;
- 
--	if (info->version == ADC_V2) {
--		con1 = ADC_V2_CON1_SOFT_RESET;
--		writel(con1, ADC_V2_CON1(info->regs));
-+	con1 = ADC_V2_CON1_SOFT_RESET;
-+	writel(con1, ADC_V2_CON1(info->regs));
- 
--		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
--			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
--		writel(con2, ADC_V2_CON2(info->regs));
-+	con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
-+		ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
-+	writel(con2, ADC_V2_CON2(info->regs));
- 
--		/* Enable interrupts */
--		writel(1, ADC_V2_INT_EN(info->regs));
--	} else {
--		/* set default prescaler values and Enable prescaler */
--		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-+	/* Enable interrupts */
-+	writel(1, ADC_V2_INT_EN(info->regs));
-+}
- 
--		/* Enable 12-bit ADC resolution */
--		con1 |= ADC_V1_CON_RES;
--		writel(con1, ADC_V1_CON(info->regs));
--	}
-+static void exynos_adc_v2_start_conv(struct exynos_adc *info, unsigned long addr)
-+{
-+	u32 con1, con2;
-+
-+	con2 = readl(ADC_V2_CON2(info->regs));
-+	con2 &= ~ADC_V2_CON2_ACH_MASK;
-+	con2 |= ADC_V2_CON2_ACH_SEL(addr);
-+	writel(con2, ADC_V2_CON2(info->regs));
-+
-+	con1 = readl(ADC_V2_CON1(info->regs));
-+	writel(con1 | ADC_CON_EN_START, ADC_V2_CON1(info->regs));
-+}
-+
-+static void exynos_adc_v2_clear_irq(struct exynos_adc *info)
-+{
-+	writel(1, ADC_V2_INT_ST(info->regs));
-+}
-+
-+static void exynos_adc_v2_stop_conv(struct exynos_adc *info)
-+{
-+	u32 con;
-+
-+	con = readl(ADC_V2_CON1(info->regs));
-+	con &= ~ADC_CON_EN_START;
-+	writel(con, ADC_V2_CON1(info->regs));
- }
- 
-+static struct exynos_adc_ops exynos_adc_v2_ops = {
-+	.init_hw	= exynos_adc_v2_init_hw,
-+	.start_conv	= exynos_adc_v2_start_conv,
-+	.clear_irq	= exynos_adc_v2_clear_irq,
-+	.stop_conv	= exynos_adc_v2_stop_conv,
-+};
-+
- static int exynos_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
- 				int *val,
-@@ -144,7 +220,6 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- {
- 	struct exynos_adc *info = iio_priv(indio_dev);
- 	unsigned long timeout;
--	u32 con1, con2;
- 	int ret;
- 
- 	if (mask != IIO_CHAN_INFO_RAW)
-@@ -154,28 +229,15 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
- 	reinit_completion(&info->completion);
- 
- 	/* Select the channel to be used and Trigger conversion */
--	if (info->version == ADC_V2) {
--		con2 = readl(ADC_V2_CON2(info->regs));
--		con2 &= ~ADC_V2_CON2_ACH_MASK;
--		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
--		writel(con2, ADC_V2_CON2(info->regs));
--
--		con1 = readl(ADC_V2_CON1(info->regs));
--		writel(con1 | ADC_CON_EN_START,
--				ADC_V2_CON1(info->regs));
--	} else {
--		writel(chan->address, ADC_V1_MUX(info->regs));
--
--		con1 = readl(ADC_V1_CON(info->regs));
--		writel(con1 | ADC_CON_EN_START,
--				ADC_V1_CON(info->regs));
--	}
-+	if (info->ops->start_conv)
-+		info->ops->start_conv(info, chan->address);
- 
- 	timeout = wait_for_completion_timeout
- 			(&info->completion, EXYNOS_ADC_TIMEOUT);
- 	if (timeout == 0) {
- 		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
--		exynos_adc_hw_init(info);
-+		if (info->ops->init_hw)
-+			info->ops->init_hw(info);
- 		ret = -ETIMEDOUT;
- 	} else {
- 		*val = info->value;
-@@ -193,13 +255,11 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
- 	struct exynos_adc *info = (struct exynos_adc *)dev_id;
- 
- 	/* Read value */
--	info->value = readl(ADC_V1_DATX(info->regs)) &
--						ADC_DATX_MASK;
-+	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
-+
- 	/* clear irq */
--	if (info->version == ADC_V2)
--		writel(1, ADC_V2_INT_ST(info->regs));
--	else
--		writel(1, ADC_V1_INTCLR(info->regs));
-+	if (info->ops->clear_irq)
-+		info->ops->clear_irq(info);
- 
- 	complete(&info->completion);
- 
-@@ -277,6 +337,19 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 
- 	info = iio_priv(indio_dev);
- 
-+	info->version = exynos_adc_get_version(pdev);
-+	switch (info->version) {
-+	case ADC_V1:
-+		info->ops = &exynos_adc_v1_ops;
-+		break;
-+	case ADC_V2:
-+		info->ops = &exynos_adc_v2_ops;
-+		break;
-+	default:
-+		dev_err(&pdev->dev, "failed to identify ADC version\n");
-+		return -EINVAL;
-+	};
-+
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->regs = devm_ioremap_resource(&pdev->dev, mem);
- 	if (IS_ERR(info->regs))
-@@ -321,8 +394,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 
- 	writel(1, info->enable_reg);
- 
--	info->version = exynos_adc_get_version(pdev);
--
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	indio_dev->name = dev_name(&pdev->dev);
-@@ -349,7 +420,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_irq;
- 
--	exynos_adc_hw_init(info);
-+	if (info->ops->init_hw)
-+		info->ops->init_hw(info);
- 
- 	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
- 	if (ret < 0) {
-@@ -394,17 +466,9 @@ static int exynos_adc_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct exynos_adc *info = iio_priv(indio_dev);
--	u32 con;
- 
--	if (info->version == ADC_V2) {
--		con = readl(ADC_V2_CON1(info->regs));
--		con &= ~ADC_CON_EN_START;
--		writel(con, ADC_V2_CON1(info->regs));
--	} else {
--		con = readl(ADC_V1_CON(info->regs));
--		con |= ADC_V1_CON_STANDBY;
--		writel(con, ADC_V1_CON(info->regs));
--	}
-+	if (info->ops->stop_conv)
-+		info->ops->stop_conv(info);
- 
- 	writel(0, info->enable_reg);
- 	clk_disable_unprepare(info->clk);
-@@ -428,7 +492,9 @@ static int exynos_adc_resume(struct device *dev)
- 		return ret;
- 
- 	writel(1, info->enable_reg);
--	exynos_adc_hw_init(info);
-+
-+	if (info->ops->init_hw)
-+		info->ops->init_hw(info);
- 
- 	return 0;
- }
--- 
-1.8.0
+On Sat, Jun 14, 2014 at 10:32:32AM +0200, Pavel Machek wrote:
+> > The problem is, that the power subsystem maintainers seem to be too
+> > busy with real life. The last change in their git [0] was 2014-02-01
+> > and I haven't seen any mail from them on the mailinglist since about
+> > the same time. I have just queried his status @ Google+ (there were
+> > some life-signs there).
+>=20
+> If there is still no life out there, you may want to ask
+> Rafael W. to queue the patches...
 
+Don't worry, I haven't forgotten the patches. I don't think they
+make it into 3.16, but they will go into 3.17. For now I have
+put them into a dev branch on [0] and requested to take over the
+power supply subsystem (see thread [1] on LKML).
+
+[0] https://git.kernel.org/cgit/linux/kernel/git/sre/linux-power-supply.git
+[1] https://lkml.org/lkml/2014/5/16/504
+
+-- Sebastian
+
+--TRYliJ5NKNqkz5bu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJTnG6UAAoJENju1/PIO/qahdAP/2AlUpdABUFOHnAoDN/pJKXn
+SJe9seEdV37eOfqoizjL9sZTD0JdaubgP/ryLBaFDIcUaaghkCx1kP1FkusaTeF/
+UzCr7yy8Hzdh2mfyhTiyIw9xVEz7eJ0QJ0tpF5SpJF9q7mKpZtbwzpMjukshN3nN
+0R9WnMXVRyXd7OGzC/eE4Ka1Nz2xXco2Ib9zja3dYdQXFEYg+swjiLbuOEyaObmG
+nyDrzeNq6Qx8FZ4E5n+gUSKZCfWCLyxoCQTvL+HR0HH/Aop5g4siLGxLDZ0dvSML
+dSO710Y0nbjaMnarsDIyADzOpFTyjHy+rgjjax4nPWyqWtkhaE1OPi9WA0uFSVrt
+RL7tAgzjwsAI8SjyfyRiKX0xvTxIivXLPSqB4+/JcNU/Dm/BB518ZktEqIXUHrrb
+lTjyQwcM39m+yk1+Jr1l2qOfWggEZlR6/a4yGJRPLWKUiX2SiSFuDbtWxLPTUhpE
+QGL8l7ijGXaGxoi9vPa7OR280iPhNeE60kMo7dpSZVhkjPml87mwDrCQy2keGz4Z
+oAjBPWEc0+PXvESll0NAXrl+EUWi9Zxgi+Jad1ABI+WIqdFg57p7O2MHX+0ngjPB
+3bkbCWoL2RCEhN5QZWKcEmAg9Jbm2LJ8zPiV6Bn+MEOeDIy7o8HRgz7lDXfX97QO
+vh673dAMRHtNXo5osaa5
+=hq0y
+-----END PGP SIGNATURE-----
+
+--TRYliJ5NKNqkz5bu--
