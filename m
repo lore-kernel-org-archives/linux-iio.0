@@ -1,85 +1,304 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:44193 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751766AbaFULmd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 21 Jun 2014 07:42:33 -0400
-Message-ID: <53A57021.5010402@kernel.org>
-Date: Sat, 21 Jun 2014 12:44:33 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sat, 14 Jun 2014 19:08:54 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Remove timestamp argument from iio_trigger_poll()
+ and iio_trigger_poll_chained()
+In-Reply-To: <539C69E8.1080402@kernel.org>
+Message-ID: <alpine.DEB.2.01.1406141907450.21119@pmeerw.net>
+References: <1402552013-9666-1-git-send-email-pmeerw@pmeerw.net> <539C69E8.1080402@kernel.org>
 MIME-Version: 1.0
-To: Sachin Kamat <spk.linux@gmail.com>,
-	Beomho Seo <beomho.seo@samsung.com>
-CC: linux-iio@vger.kernel.org, j.anaszewski@samsung.com,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	naveen krishna <ch.naveen@samsung.com>, ktsai@capellamicro.com,
-	srinivas.pandruvada@linux.intel.com, t.figa@samsung.com,
-	myungjoo.ham@samsung.com, jh80.chung@samsung.com,
-	cw00.choi@samsung.com
-Subject: Re: [PATCH 2/5] iio: light: cm32181: Use devm_* APIs
-References: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>	<1403072503-29246-3-git-send-email-beomho.seo@samsung.com> <CAK5sBcFv_oQt=stra-7T821xYwQiDCURNnhUpEwwDabu1YcsSw@mail.gmail.com>
-In-Reply-To: <CAK5sBcFv_oQt=stra-7T821xYwQiDCURNnhUpEwwDabu1YcsSw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 18/06/14 09:20, Sachin Kamat wrote:
-> Hi Beomho,
->
-> On Wed, Jun 18, 2014 at 11:51 AM, Beomho Seo <beomho.seo@samsung.com> wrote:
->> This patch changes API from iio_device_register() to devm_* API.
->> Using API make code simpler.
->>
->> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-Hmm. Fair enough I suppose.
 
-Applied to the togreg branch of iio.git
+> Applied to the togreg branch of iio.git with the minor amendment that
+> the hrtimer isn't actually there in mainline!
 
-Jonathan
->> ---
->>   drivers/iio/light/cm32181.c |   11 +----------
->>   1 file changed, 1 insertion(+), 10 deletions(-)
->>
->> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
->> index d976e6c..ad36b29 100644
->> --- a/drivers/iio/light/cm32181.c
->> +++ b/drivers/iio/light/cm32181.c
->> @@ -331,7 +331,7 @@ static int cm32181_probe(struct i2c_client *client,
->>                  return ret;
->>          }
->>
->> -       ret = iio_device_register(indio_dev);
->> +       ret = devm_iio_device_register(&client->dev, indio_dev);
->>          if (ret) {
->>                  dev_err(&client->dev,
->>                          "%s: regist device failed\n",
->> @@ -342,14 +342,6 @@ static int cm32181_probe(struct i2c_client *client,
->>          return 0;
->>   }
->>
->> -static int cm32181_remove(struct i2c_client *client)
->> -{
->> -       struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> -
->> -       iio_device_unregister(indio_dev);
->> -       return 0;
->> -}
->> -
->>   static const struct i2c_device_id cm32181_id[] = {
->>          { "cm32181", 0 },
->>          { }
->> @@ -370,7 +362,6 @@ static struct i2c_driver cm32181_driver = {
->>          },
->>          .id_table       = cm32181_id,
->>          .probe          = cm32181_probe,
->> -       .remove         = cm32181_remove,
->>   };
->>
->>   module_i2c_driver(cm32181_driver);
->> --
->> 1.7.9.5
->>
->
-> Looks good.
-> Reviewed-by: Sachin Kamat <sachin.kamat@samsung.com>
->
+ah, my fault
 
+> (anyone want to pick that one up and do whatever the last reviews
+> said needed doing?)
+
+I'm working on it; review suggested a common framework for similar 
+triggers, I'm trying to figure it out...
+
+p.
+
+> > ---
+> >   drivers/iio/adc/ad_sigma_delta.c                    | 2 +-
+> >   drivers/iio/adc/at91_adc.c                          | 2 +-
+> >   drivers/iio/adc/xilinx-xadc-core.c                  | 2 +-
+> >   drivers/iio/industrialio-trigger.c                  | 8 ++++----
+> >   drivers/iio/light/gp2ap020a00f.c                    | 2 +-
+> >   drivers/iio/proximity/as3935.c                      | 2 +-
+> >   drivers/iio/trigger/iio-trig-hrtimer.c              | 2 +-
+> >   drivers/iio/trigger/iio-trig-interrupt.c            | 3 +--
+> >   drivers/iio/trigger/iio-trig-sysfs.c                | 2 +-
+> >   drivers/staging/iio/accel/lis3l02dq_ring.c          | 2 +-
+> >   drivers/staging/iio/adc/mxs-lradc.c                 | 2 +-
+> >   drivers/staging/iio/meter/ade7758_trigger.c         | 2 +-
+> >   drivers/staging/iio/trigger/iio-trig-bfin-timer.c   | 2 +-
+> >   drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 3 +--
+> >   include/linux/iio/trigger.h                         | 5 ++---
+> >   15 files changed, 19 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/ad_sigma_delta.c
+> > b/drivers/iio/adc/ad_sigma_delta.c
+> > index 9a4e0e3..c55b81f 100644
+> > --- a/drivers/iio/adc/ad_sigma_delta.c
+> > +++ b/drivers/iio/adc/ad_sigma_delta.c
+> > @@ -410,7 +410,7 @@ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq,
+> > void *private)
+> >   	complete(&sigma_delta->completion);
+> >   	disable_irq_nosync(irq);
+> >   	sigma_delta->irq_dis = true;
+> > -	iio_trigger_poll(sigma_delta->trig, iio_get_time_ns());
+> > +	iio_trigger_poll(sigma_delta->trig);
+> > 
+> >   	return IRQ_HANDLED;
+> >   }
+> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> > index 89777ed..b959201 100644
+> > --- a/drivers/iio/adc/at91_adc.c
+> > +++ b/drivers/iio/adc/at91_adc.c
+> > @@ -149,7 +149,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev
+> > *idev)
+> > 
+> >   	if (iio_buffer_enabled(idev)) {
+> >   		disable_irq_nosync(irq);
+> > -		iio_trigger_poll(idev->trig, iio_get_time_ns());
+> > +		iio_trigger_poll(idev->trig);
+> >   	} else {
+> >   		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
+> >   		st->done = true;
+> > diff --git a/drivers/iio/adc/xilinx-xadc-core.c
+> > b/drivers/iio/adc/xilinx-xadc-core.c
+> > index ab52be2..fd2745c 100644
+> > --- a/drivers/iio/adc/xilinx-xadc-core.c
+> > +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> > @@ -486,7 +486,7 @@ static irqreturn_t xadc_axi_interrupt_handler(int irq,
+> > void *devid)
+> >   		return IRQ_NONE;
+> > 
+> >   	if ((status & XADC_AXI_INT_EOS) && xadc->trigger)
+> > -		iio_trigger_poll(xadc->trigger, 0);
+> > +		iio_trigger_poll(xadc->trigger);
+> > 
+> >   	if (status & XADC_AXI_INT_ALARM_MASK) {
+> >   		/*
+> > diff --git a/drivers/iio/industrialio-trigger.c
+> > b/drivers/iio/industrialio-trigger.c
+> > index 3383b02..d31098e 100644
+> > --- a/drivers/iio/industrialio-trigger.c
+> > +++ b/drivers/iio/industrialio-trigger.c
+> > @@ -114,7 +114,7 @@ static struct iio_trigger
+> > *iio_trigger_find_by_name(const char *name,
+> >   	return trig;
+> >   }
+> > 
+> > -void iio_trigger_poll(struct iio_trigger *trig, s64 time)
+> > +void iio_trigger_poll(struct iio_trigger *trig)
+> >   {
+> >   	int i;
+> > 
+> > @@ -133,12 +133,12 @@ EXPORT_SYMBOL(iio_trigger_poll);
+> > 
+> >   irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private)
+> >   {
+> > -	iio_trigger_poll(private, iio_get_time_ns());
+> > +	iio_trigger_poll(private);
+> >   	return IRQ_HANDLED;
+> >   }
+> >   EXPORT_SYMBOL(iio_trigger_generic_data_rdy_poll);
+> > 
+> > -void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time)
+> > +void iio_trigger_poll_chained(struct iio_trigger *trig)
+> >   {
+> >   	int i;
+> > 
+> > @@ -161,7 +161,7 @@ void iio_trigger_notify_done(struct iio_trigger *trig)
+> >   		trig->ops->try_reenable)
+> >   		if (trig->ops->try_reenable(trig))
+> >   			/* Missed an interrupt so launch new poll now */
+> > -			iio_trigger_poll(trig, 0);
+> > +			iio_trigger_poll(trig);
+> >   }
+> >   EXPORT_SYMBOL(iio_trigger_notify_done);
+> > 
+> > diff --git a/drivers/iio/light/gp2ap020a00f.c
+> > b/drivers/iio/light/gp2ap020a00f.c
+> > index 04bdb85..221ed16 100644
+> > --- a/drivers/iio/light/gp2ap020a00f.c
+> > +++ b/drivers/iio/light/gp2ap020a00f.c
+> > @@ -827,7 +827,7 @@ static void gp2ap020a00f_iio_trigger_work(struct
+> > irq_work *work)
+> >   	struct gp2ap020a00f_data *data =
+> >   		container_of(work, struct gp2ap020a00f_data, work);
+> > 
+> > -	iio_trigger_poll(data->trig, 0);
+> > +	iio_trigger_poll(data->trig);
+> >   }
+> > 
+> >   static irqreturn_t gp2ap020a00f_prox_sensing_handler(int irq, void *data)
+> > diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+> > index bf677bf..5e780ef 100644
+> > --- a/drivers/iio/proximity/as3935.c
+> > +++ b/drivers/iio/proximity/as3935.c
+> > @@ -232,7 +232,7 @@ static void as3935_event_work(struct work_struct *work)
+> > 
+> >   	switch (val) {
+> >   	case AS3935_EVENT_INT:
+> > -		iio_trigger_poll(st->trig, iio_get_time_ns());
+> > +		iio_trigger_poll(st->trig);
+> >   		break;
+> >   	case AS3935_NOISE_INT:
+> >   		dev_warn(&st->spi->dev, "noise level is too high");
+> > diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c
+> > b/drivers/iio/trigger/iio-trig-hrtimer.c
+> > index c75fecc..fc0e6dc 100644
+> > --- a/drivers/iio/trigger/iio-trig-hrtimer.c
+> > +++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+> > @@ -164,7 +164,7 @@ static enum hrtimer_restart
+> > iio_hrtimer_trigger_func(struct hrtimer *timer)
+> >   		struct iio_hrtimer_trigger_data, timer);
+> > 
+> >   	hrtimer_forward_now(timer, trig_data->period);
+> > -	iio_trigger_poll(trig_data->trig, iio_get_time_ns());
+> > +	iio_trigger_poll(trig_data->trig);
+> > 
+> >   	return HRTIMER_RESTART;
+> >   }
+> > diff --git a/drivers/iio/trigger/iio-trig-interrupt.c
+> > b/drivers/iio/trigger/iio-trig-interrupt.c
+> > index 02577ec..7a149a7 100644
+> > --- a/drivers/iio/trigger/iio-trig-interrupt.c
+> > +++ b/drivers/iio/trigger/iio-trig-interrupt.c
+> > @@ -24,8 +24,7 @@ struct iio_interrupt_trigger_info {
+> > 
+> >   static irqreturn_t iio_interrupt_trigger_poll(int irq, void *private)
+> >   {
+> > -	/* Timestamp not currently provided */
+> > -	iio_trigger_poll(private, 0);
+> > +	iio_trigger_poll(private);
+> >   	return IRQ_HANDLED;
+> >   }
+> > 
+> > diff --git a/drivers/iio/trigger/iio-trig-sysfs.c
+> > b/drivers/iio/trigger/iio-trig-sysfs.c
+> > index 5b21489..b6346472 100644
+> > --- a/drivers/iio/trigger/iio-trig-sysfs.c
+> > +++ b/drivers/iio/trigger/iio-trig-sysfs.c
+> > @@ -95,7 +95,7 @@ static void iio_sysfs_trigger_work(struct irq_work *work)
+> >   	struct iio_sysfs_trig *trig = container_of(work, struct
+> > iio_sysfs_trig,
+> >   							work);
+> > 
+> > -	iio_trigger_poll(trig->trig, 0);
+> > +	iio_trigger_poll(trig->trig);
+> >   }
+> > 
+> >   static ssize_t iio_sysfs_trigger_poll(struct device *dev,
+> > diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> > b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> > index 79cefe0..bf33fde 100644
+> > --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> > +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> > @@ -31,7 +31,7 @@ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void
+> > *private)
+> >   	struct lis3l02dq_state *st = iio_priv(indio_dev);
+> > 
+> >   	if (st->trigger_on) {
+> > -		iio_trigger_poll(st->trig, iio_get_time_ns());
+> > +		iio_trigger_poll(st->trig);
+> >   		return IRQ_HANDLED;
+> >   	} else
+> >   		return IRQ_WAKE_THREAD;
+> > diff --git a/drivers/staging/iio/adc/mxs-lradc.c
+> > b/drivers/staging/iio/adc/mxs-lradc.c
+> > index dae8d1a..d861999 100644
+> > --- a/drivers/staging/iio/adc/mxs-lradc.c
+> > +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> > @@ -1166,7 +1166,7 @@ static irqreturn_t mxs_lradc_handle_irq(int irq, void
+> > *data)
+> >   		mxs_lradc_handle_touch(lradc);
+> > 
+> >   	if (iio_buffer_enabled(iio))
+> > -		iio_trigger_poll(iio->trig, iio_get_time_ns());
+> > +		iio_trigger_poll(iio->trig);
+> >   	else if (reg & LRADC_CTRL1_LRADC_IRQ(0))
+> >   		complete(&lradc->completion);
+> > 
+> > diff --git a/drivers/staging/iio/meter/ade7758_trigger.c
+> > b/drivers/staging/iio/meter/ade7758_trigger.c
+> > index 7a94ddd..ea01b8f 100644
+> > --- a/drivers/staging/iio/meter/ade7758_trigger.c
+> > +++ b/drivers/staging/iio/meter/ade7758_trigger.c
+> > @@ -21,7 +21,7 @@
+> >   static irqreturn_t ade7758_data_rdy_trig_poll(int irq, void *private)
+> >   {
+> >   	disable_irq_nosync(irq);
+> > -	iio_trigger_poll(private, iio_get_time_ns());
+> > +	iio_trigger_poll(private);
+> > 
+> >   	return IRQ_HANDLED;
+> >   }
+> > diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> > b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> > index 26e1ca0..16f1a06 100644
+> > --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> > +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> > @@ -154,7 +154,7 @@ static irqreturn_t iio_bfin_tmr_trigger_isr(int irq,
+> > void *devid)
+> >   	struct bfin_tmr_state *st = devid;
+> > 
+> >   	clear_gptimer_intr(st->t->id);
+> > -	iio_trigger_poll(st->trig, 0);
+> > +	iio_trigger_poll(st->trig);
+> > 
+> >   	return IRQ_HANDLED;
+> >   }
+> > diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> > b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> > index b5108a1..b1aeb88 100644
+> > --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> > +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> > @@ -106,8 +106,7 @@ static const struct attribute_group
+> > *iio_trig_prtc_attr_groups[] = {
+> > 
+> >   static void iio_prtc_trigger_poll(void *private_data)
+> >   {
+> > -	/* Timestamp is not provided currently */
+> > -	iio_trigger_poll(private_data, 0);
+> > +	iio_trigger_poll(private_data);
+> >   }
+> > 
+> >   static const struct iio_trigger_ops iio_prtc_trigger_ops = {
+> > diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> > index 369cf2c..4b79ffe 100644
+> > --- a/include/linux/iio/trigger.h
+> > +++ b/include/linux/iio/trigger.h
+> > @@ -129,12 +129,11 @@ void iio_trigger_unregister(struct iio_trigger
+> > *trig_info);
+> >   /**
+> >    * iio_trigger_poll() - called on a trigger occurring
+> >    * @trig:	trigger which occurred
+> > - * @time:	timestamp when trigger occurred
+> >    *
+> >    * Typically called in relevant hardware interrupt handler.
+> >    **/
+> > -void iio_trigger_poll(struct iio_trigger *trig, s64 time);
+> > -void iio_trigger_poll_chained(struct iio_trigger *trig, s64 time);
+> > +void iio_trigger_poll(struct iio_trigger *trig);
+> > +void iio_trigger_poll_chained(struct iio_trigger *trig);
+> > 
+> >   irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private);
+> > 
+> > 
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
