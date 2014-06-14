@@ -1,98 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.120]:33688 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750953AbaFPNMT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jun 2014 09:12:19 -0400
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"Ian Campbell" <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Support Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH 1/8] mfd: Add support for DA9150 combined charger &
- fuel-gauge device
-Date: Mon, 16 Jun 2014 13:12:10 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB4FD95E@SW-EX-MBX01.diasemi.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
- <bf472aa7fddd1e67a3d5b9024b5b621744146a27.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
- <539DF8C6.8030009@kernel.org>
-In-Reply-To: <539DF8C6.8030009@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail.kernel.org ([198.145.19.201]:44006 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754760AbaFNPBj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:01:39 -0400
+Message-ID: <539C6448.9000704@kernel.org>
+Date: Sat, 14 Jun 2014 16:03:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 03/12] iio:adc:ad7887: Use BIT() and GENMASK() macros
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-4-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCBKdW4gMTUsIDIwMTQgYXQgMjA6NDksIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6IA0K
-DQo+IEhpIEFkYW0sDQo+IA0KPiBTb21lIGdlbmVyYWwgY29tbWVudHMgaW5saW5lLg0KPiANCj4g
-SXQncyBiZWVuIGEgd2hpbGUgc2luY2UgSSd2ZSBsb29rZWQgYXQgYW55IHBhcnRpY3VsYXJseSBz
-aW1pbGFyIHBhcnRzLA0KPiBidXQgaXQgc2VlbXMgdG8gbWUgdGhhdCBhIGxvdCBvZiBpbmRpcmVj
-dGlvbiBnZXRzIGFkZGVkIGhlcmUgdGhhdA0KPiBpZiBhbnl0aGluZyBtYWtlcyB0aGUgY29kZXMg
-c2xpZ2h0bHkgaGFyZGVyIHRvIGZvbGxvdy4uLg0KPiANCj4gRmVlbCBmcmVlIHRvIGRpc2FncmVl
-IHdpdGggbWUgdGhvdWdoIQ0KDQpXaWxsIGRvIDopDQoNCj4gVG8gbXkgbWluZCBhbGwgdGhlc2Ug
-d3JhcHBlcnMgYWRkIG5vdGhpbmcgc2lnbmlmaWNhbnQgc28geW91IG1pZ2h0IGFzIHdlbGwNCj4g
-anVzdCBjYWxsIGRhOTE1MC0+cmVhZF9kZXYgZXRjIGRpcmVjdGx5Lg0KPiANCj4gQWxzbywgd2hh
-dCBhcmUgdGhlIHJlYWRfcWlmIGFuZCB3cml0ZV9xaWYgZm9yPyAgVGhleSBkb24ndCBzZWVtIHRv
-IGJlIHVzZWQNCj4gYW55d2hlcmUuDQoNCnJlYWRfcWlmIGFuZCB3cml0ZV9xaWYgYXJlIGZvciB0
-aGUgRnVlbC1HYXVnZSBmdW5jdGlvbmFsaXR5IG9mIHRoZSBjaGlwLiBUaGUNCmFzc29jaWF0ZWQg
-ZHJpdmVyIHdpbGwgYmUgc3VibWl0dGVkIGFmdGVyIGFjY2VwdGFuY2Ugb2YgaW5pdGlhbCBkcml2
-ZXIgY29kZSwNCmFuZCB3aWxsIG1ha2UgdXNlIG9mIHRoZXNlIGZ1bmN0aW9ucy4NCg0KVGhlIHdy
-YXBwZXJzIGF1dG9tYXRpY2FsbHkgY2hvb3NlIHRoZSBjb3JyZWN0IGNsaWVudCB0byB1c2UgKFFJ
-RiB1c2VzIGENCmRpZmZlcmVudCBzbGF2ZSBhZGRyZXNzIHRvIHRoZSBtYWluIGNoaXAgb25lKS4g
-TWVhbnMgdGhlIGNoaWxkIGRyaXZlcnMgb25seSBuZWVkDQp0byBwYXNzIHRocm91Z2ggdGhlIGRh
-OTE1MCBzdHJ1Y3QgYW5kIHRoZSByZXN0IGlzIGRlYWx0IHdpdGggdW5kZXJuZWF0aC4NCg0KPiBU
-aGUgb25seSByZWFsIHJlYXNvbiBJIGNhbiBzZWUgZm9yIHRoZXNlIHdyYXBwZXJzIGlzIGJlY2F1
-c2UgeW91IHdhbnQNCj4gdG8gaGlkZSB0aGUgc3RydWN0IGRhOTE1MCBjb250ZW50cyBmcm9tIHRo
-ZSBjaGlsZHJlbiBvZiB0aGUgbWZkLiBBcyB5b3UNCj4gYXJlbid0IGRvaW5nIHRoYXQsIHlvdSBt
-aWdodCBhcyB3ZWxsIGRyb3AgdGhlc2UgaW4gZmF2b3VyIG9mIGRpcmVjdA0KPiBjYWxscyB0byBy
-ZWdtYXBfcmVhZCBhbmQgZnJpZW5kcy4NCg0KQXMgSSBoYXZlIGEgbmVlZCB0byBwYXNzIHRocm91
-Z2ggdGhlIG1haW4gZGE5MTUwIHN0cnVjdCBwb2ludCBmb3IgdGhlDQphZm9yZW1lbnRpb25lZCB3
-cmFwcGVycywgaXQgc2VlbWVkIGNsZWFuZXIgYW5kIG1vcmUgY29uc2lzdGVudCB0byBoYXZlIHdy
-YXBwZXJzDQpmb3IgdGhlc2UgYXMgd2VsbCwgd2hpY2ggZGlkIHRoZSBqb2Igb2YgcmVnbWFwIGFj
-Y2Vzcy4gTWVhbnMgYWxsIEhXIGFjY2Vzcw0KdXNlcyB0aGUgc2FtZSBraW5kIG9mIGFwcHJvYWNo
-LCBhbmQgYWxsIHN1Yi1kZXZpY2VzIGp1c3QgbmVlZCBhIHBvaW50IHRvIHRoZQ0KbWFpbiBkYTkx
-NTAgc3RydWN0IHRvIGJlIGFibGUgdG8gdXNlIHRoZSBmdW5jdGlvbnMuDQoNCj4gSSdsbCBjb250
-aW51ZSBteSB0aXJhZGUgYWdhaW5zdCBvYnZpb3VzIGNvbW1lbnRzLiBXcm9uZyBmb3JtYXQgYW5k
-DQo+IGFkZHMgbm90aGluZyB0byB3aGF0IGlzIGhlcmUgYXMgaW5pdCBhbmQgZXhpdCBmdW5jdGlv
-bnMgYXJlIGNsZWFybHkNCj4gZG9pbmcgd2hhdCB0aGVpciBuYW1lIHN1Z2dlc3RzIChpdCdzIG9u
-ZSBvZiBteSBwZXQgaGF0ZXMgOykNCg0KSSBhZ3JlZSB0aGUgY29tbWVudCBkb2Vzbid0IGFkZCBt
-dWNoIGluIHRlcm1zIG9mIGRlc2NyaXB0aW9uIGJ1dCBmb3IgbWUgaXQNCmJyZWFrcyB1cCB0aGUg
-Y29kZSB0byBtYWtlIGl0IGVhc2llciB0byBmb2xsb3cuIEhvd2V2ZXIgaWYgSSBnZXQgYW4gb3Zl
-cndoZWxtaW5nDQpoYXRyZWQgZm9yIHRoaXMgSSBjYW4gY2hhbmdlIGl0LiBBbHNvLCBJIGtub3cg
-dGhlIHJ1bGUgcmVnYXJkaW5nIHNpbmdsZS9tdWx0aXBsZQ0KbGluZSBjb21tZW50cyBidXQgaGVy
-ZSBhZ2FpbiBJIGZlZWwgaXQgaGVscHMgc2VwYXJhdGUgdGhlIGNvZGUgYW5kIG1ha2VzIGl0DQpl
-YXNpZXIgdG8gcmVhZC4NCg0KPiBBcyBhIGdlbmVyYWwgZ29vZCBwcmFjdGljZSBwb2ludCwgSSdk
-IHJhdGhlciB0aGF0IHRoZSBkcml2ZXIgc3VwcG9ydGVkDQo+IG1vcmUgdGhhbiBvbmUgaW5zdGFu
-Y2Ugb2YgdGhlIGNoaXAuLiBIZW5jZSB5b3UnZCB0YWtlIGEgY29weSBvZiBkYTkxNTBfZGV2cw0K
-PiB0byB1c2UgaGVyZS4gIEkgZ3Vlc3MgaXQgaXMgcmVsYXRpdmVseSB1bmxpa2VseSB3aXRoIG9u
-ZSBvZiB0aGVzZSwgYnV0DQo+IHlvdSBuZXZlciBrbm93IDspDQoNCkhhdmUgZm9sbG93ZWQgdGhl
-IGdlbmVyYWwgbWV0aG9kcyBmb3IgTUZEIGhlcmUsIGFuZCBhIG51bWJlciBvZiBkcml2ZXJzIHRh
-a2UgdGhlDQpzYW1lIGFwcHJvYWNoLiBBbHNvLCBJIHRoaW5rIGl0IHdvdWxkIGJlIHVuZGVzaXJh
-YmxlIHRvIGhhdmUgbXVsdGlwbGUgY2hhcmdlcg0KY2hpcHMgb2YgdGhlIHNhbWUgdHlwZSBpbiBv
-bmUgcGxhdGZvcm0uIEkgYWdyZWUgZ2VuZXJhbGx5IGl0J3MgYmVzdCB0byBzdXBwb3J0DQptdWx0
-aXBsZSBpbnN0YW5jZXMsIGJ1dCBoZXJlIEkgZG9uJ3QgdGhpbmsgd2Ugc2hvdWxkLg0KDQo+IFdo
-eSBkb2VzIHRoaXMgbmVlZCBpdCdzIG93biBmaWxlPyAgRG9lcyB0aGUgREE5MTUwIHN1cHBvcnQg
-YW55IG90aGVyDQo+IGludGVyZmFjZXM/DQoNClllcywgdGhlIERBOTE1MCBhbHNvIGhhcyBhIFNQ
-SSBpbnRlcmZhY2UuIEF0IHByZXNlbnQgdGhlIHBsYW4gaXMgdG8ganVzdCBhZGQgSTJDDQpzdXBw
-b3J0IGZvciBub3csIGJ1dCBpbiB0aGUgZnV0dXJlIHdlIG1heSBhZGQgU1BJIHN1cHBvcnQsIHNv
-IGhhdmUgd3JpdHRlbiB0aGUNCmNvZGUgd2l0aCB0aGlzIGluIG1pbmQuDQoNCj4gV2h5IHRoZSBp
-bmRpcmVjdGlvbj8gIFRoZSBkYTkxNTAgb25seSBzdXBwb3J0cyBpMmMgYXMgZmFyIGFzIEkgY2Fu
-IHNlZS4NCg0KQXMgcGVyIG15IGxhc3QgY29tbWVudC4gDQoNCj4gSSdkIHJvbGwgdGhpcyBpbnRv
-IG9uZSBsaW5lIGFuZCBub3QgYm90aGVyIHdpdGggdGhlIGxvY2FsIHZhcmlhYmxlLi4uDQoNCkZh
-aXIgZW5vdWdoIGJ1dCBJIHRoaW5rIHRoaXMga2VlcHMgdGhlIGNvZGUgY2xlYW5lciwgYW5kIHRv
-IG1lIGl0IG1ha2VzIHNlbnNlDQpmb3IgdGhlIGFjdHVhbCBsb2dpYyB0byBiZSBpbiBjb3JlIGZp
-bGUgYXMgdGhhdCdzIGludGVyZmFjZSBhZ25vc3RpYy4NCg0KPiBEcm9wIGNvbW1lbnRzIG9uIHRo
-aW5ncyB0aGF0IGFyZSBzZWxmLWV2aWRlbnQuICBBbHNvIHRoZXNlIGFyZSBvbmUNCj4gbGluZSBj
-b21tZW50cyBzbyBzaG91bGQgYmUgdXNpbmcgdGhlIHNpbmdsZSBsaW5lIGNvbW1lbnQgc3ludGF4
-Lg0KDQpBcyBwZXIgbXkgcHJldmlvdXMgY29tbWVudCBJIHRoaW5rIGl0IGp1c3QgaGVscHMgdG8g
-YnJlYWsgdXAgdGhlIGNvZGUgYW5kIG1ha2VzDQppdCBtb3JlIHJlYWRhYmxlLiBXaWxsIGNoYW5n
-ZSBpdCB0aG91Z2ggaWYgdGhlIGdlbmVyYWwgY29uc2Vuc3VzIGlzIHRvIHJlbW92ZQ0KaXQuDQo=
+On 12/06/14 06:00, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
+
+thanks
+> ---
+>   drivers/iio/adc/ad7887.c | 21 ++++++++++-----------
+>   1 file changed, 10 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+> index 749a6ca..2fd012e 100644
+> --- a/drivers/iio/adc/ad7887.c
+> +++ b/drivers/iio/adc/ad7887.c
+> @@ -15,6 +15,7 @@
+>   #include <linux/err.h>
+>   #include <linux/module.h>
+>   #include <linux/interrupt.h>
+> +#include <linux/bitops.h>
+>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+> @@ -25,14 +26,14 @@
+>
+>   #include <linux/platform_data/ad7887.h>
+>
+> -#define AD7887_REF_DIS		(1 << 5) /* on-chip reference disable */
+> -#define AD7887_DUAL		(1 << 4) /* dual-channel mode */
+> -#define AD7887_CH_AIN1		(1 << 3) /* convert on channel 1, DUAL=1 */
+> -#define AD7887_CH_AIN0		(0 << 3) /* convert on channel 0, DUAL=0,1 */
+> -#define AD7887_PM_MODE1		(0)	 /* CS based shutdown */
+> -#define AD7887_PM_MODE2		(1)	 /* full on */
+> -#define AD7887_PM_MODE3		(2)	 /* auto shutdown after conversion */
+> -#define AD7887_PM_MODE4		(3)	 /* standby mode */
+> +#define AD7887_REF_DIS		BIT(5)	/* on-chip reference disable */
+> +#define AD7887_DUAL		BIT(4)	/* dual-channel mode */
+> +#define AD7887_CH_AIN1		BIT(3)	/* convert on channel 1, DUAL=1 */
+> +#define AD7887_CH_AIN0		0	/* convert on channel 0, DUAL=0,1 */
+> +#define AD7887_PM_MODE1		0	/* CS based shutdown */
+> +#define AD7887_PM_MODE2		1	/* full on */
+> +#define AD7887_PM_MODE3		2	/* auto shutdown after conversion */
+> +#define AD7887_PM_MODE4		3	/* standby mode */
+>
+>   enum ad7887_channels {
+>   	AD7887_CH0,
+> @@ -40,8 +41,6 @@ enum ad7887_channels {
+>   	AD7887_CH1,
+>   };
+>
+> -#define RES_MASK(bits)	((1 << (bits)) - 1)
+> -
+>   /**
+>    * struct ad7887_chip_info - chip specifc information
+>    * @int_vref_mv:	the internal reference voltage
+> @@ -167,7 +166,7 @@ static int ad7887_read_raw(struct iio_dev *indio_dev,
+>   		if (ret < 0)
+>   			return ret;
+>   		*val = ret >> chan->scan_type.shift;
+> -		*val &= RES_MASK(chan->scan_type.realbits);
+> +		*val &= GENMASK(chan->scan_type.realbits - 1, 0);
+>   		return IIO_VAL_INT;
+>   	case IIO_CHAN_INFO_SCALE:
+>   		if (st->reg) {
+>
+
