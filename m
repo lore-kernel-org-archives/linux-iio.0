@@ -1,56 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:16450 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753338AbaFXMX3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 08:23:29 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: naveenkrishna.ch@gmail.com, kgene.kim@samsung.com,
-	linux-arm-kernel@lists.infradead.org, cpgs@samsung.com,
-	devicetree@vger.kernel.org, lars@metafoo.de,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 1/4] devicetree: bindings: Document murata vendor prefix
-Date: Tue, 24 Jun 2014 17:49:13 +0530
-Message-id: <1403612356-23685-2-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
-References: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail.kernel.org ([198.145.19.201]:43852 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754734AbaFNOrF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 10:47:05 -0400
+Message-ID: <539C60DE.1010209@kernel.org>
+Date: Sat, 14 Jun 2014 15:49:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 02/12] iio:adc:ad5504: Use BIT() and GENMASK() macros
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-3-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add Murata Manufacturing Co., Ltd. to the list of device tree
-vendor prefixes.
+On 12/06/14 06:00, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+I would have ever so slightly preferred the kernel doc fix
+to be in another patch, but ah well.
 
-Murata manufactures NTC (Negative Temperature Coefficient) based
-Thermistors for small scale applications like Mobiles and PDAs.
+Applied to the togreg branch of iio.git
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
----
-This changes is needed for the following reasons
-
-1. The vendor prefix "ntc" is not defined in vendor-prefixes.txt
-   Thus, giving an error when checked with scripts/checkpatch.pl
-2. Murata Manufacturing Co., Ltd. Is the vendor for the
-   NTC (Negative Temperature Coefficient) based thermistors.
-   Hence, "murata" is the right vendor-prefix, Not "ntc".
-3. NTC is a technology used, But the prefix "ntc" is wrongly
-   and heavily used in the driver and the documentation.
-
- .../devicetree/bindings/vendor-prefixes.txt        |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 4d7f375..a39b7d7 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -84,6 +84,7 @@ moxa	Moxa
- mpl	MPL AG
- mundoreader	Mundo Reader S.L.
- mxicy	Macronix International Co., Ltd.
-+murata	Murata Manufacturing Co., Ltd.
- national	National Semiconductor
- neonode		Neonode Inc.
- netgear	NETGEAR
--- 
-1.7.9.5
+Thanks,
+> ---
+>   drivers/iio/dac/ad5504.c | 11 +++++------
+>   1 file changed, 5 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+> index 1e64493..c917dd2 100644
+> --- a/drivers/iio/dac/ad5504.c
+> +++ b/drivers/iio/dac/ad5504.c
+> @@ -15,17 +15,16 @@
+>   #include <linux/sysfs.h>
+>   #include <linux/regulator/consumer.h>
+>   #include <linux/module.h>
+> +#include <linux/bitops.h>
+>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+>   #include <linux/iio/events.h>
+>   #include <linux/iio/dac/ad5504.h>
+>
+> -#define AD5505_BITS			12
+> -#define AD5504_RES_MASK			((1 << (AD5505_BITS)) - 1)
+> -
+> -#define AD5504_CMD_READ			(1 << 15)
+> -#define AD5504_CMD_WRITE		(0 << 15)
+> +#define AD5504_RES_MASK			GENMASK(11, 0)
+> +#define AD5504_CMD_READ			BIT(15)
+> +#define AD5504_CMD_WRITE		0
+>   #define AD5504_ADDR(addr)		((addr) << 12)
+>
+>   /* Registers */
+> @@ -42,7 +41,7 @@
+>
+>   /**
+>    * struct ad5446_state - driver instance specific data
+> - * @us:			spi_device
+> + * @spi:			spi_device
+>    * @reg:		supply regulator
+>    * @vref_mv:		actual reference voltage used
+>    * @pwr_down_mask	power down mask
+>
 
