@@ -1,54 +1,58 @@
-Return-Path: <morbidrsa@gmail.com>
-From: Johannes Thumshirn <morbidrsa@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,  linux-iio@vger.kernel.org,  kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: adc: checking for NULL instead of IS_ERR() in probe
-References: <20140328083126.GO25192@mwanda>
-	<CAGH8bx77dKAm7w53F5MfTXaPm6KxQcVCXERnW-oXmR5Ww-HLTw@mail.gmail.com>
-	<5336995C.90701@kernel.org>
-Date: Thu, 12 Jun 2014 20:44:21 +0200
-In-Reply-To: <5336995C.90701@kernel.org> (Jonathan Cameron's message of "Sat,
-	29 Mar 2014 09:58:52 +0000")
-Message-ID: <87lht2q86y.fsf@sauron.localdomain>
+Return-Path: <pavel@ucw.cz>
+Date: Sat, 14 Jun 2014 10:32:32 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: Sebastian Reichel <sre@debian.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Marek Belisko <marek@goldelico.com>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, Pali Roh?r <pali.rohar@gmail.com>
+Subject: Re: [PATCHv2 1/2] rx51_battery: convert to iio consumer
+Message-ID: <20140614083231.GA15326@Nokia-N900>
+References: <1393375569-21751-1-git-send-email-sre@debian.org>
+ <1393705366-32420-1-git-send-email-sre@debian.org>
+ <1393705366-32420-2-git-send-email-sre@debian.org>
+ <5336A9F9.4080504@kernel.org>
+ <20140420120823.GB12135@amd.pavel.ucw.cz>
+ <20140423160936.GB32049@earth.universe>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140423160936.GB32049@earth.universe>
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan Cameron <jic23@kernel.org> writes:
+On Wed 2014-04-23 18:09:37, Sebastian Reichel wrote:
+> On Sun, Apr 20, 2014 at 02:08:23PM +0200, Pavel Machek wrote:
+> > On Sat 2014-03-29 11:09:45, Jonathan Cameron wrote:
+> > > On 01/03/14 20:22, Sebastian Reichel wrote:
+> > > >Update rx51-battery driver to use the new IIO API of
+> > > >twl4030-madc and add DT support.
+> > > >
+> > > >Signed-off-by: Sebastian Reichel <sre@debian.org>
+> > > This looks fine to me.  I'd love to see a more generic solution, but
+> > > we can work on that another time.
+> > > 
+> > > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > 
+> > Reviewed-by: Pavel Machek <pavel@ucw.cz>
+> > 
+> > I don't see this patch in 3.15-rc nor -next. What is needed to push
+> > this patch?
+> 
+> The problem is, that the power subsystem maintainers seem to be too
+> busy with real life. The last change in their git [0] was 2014-02-01
+> and I haven't seen any mail from them on the mailinglist since about
+> the same time. I have just queried his status @ Google+ (there were
+> some life-signs there).
 
-> On 28/03/14 14:07, johannes thumshirn wrote:
->> On Fri, Mar 28, 2014 at 9:33 AM, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->>>
->>> mcb_request_mem() returns an ERR_PTR(), it doesn't return NULL.
->>>
->>> Fixes: 74aeac4da66f ('iio: adc: Add MEN 16z188 ADC driver')
->>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->>>
->>> diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
->>> index 6989c16..b58d630 100644
->>> --- a/drivers/iio/adc/men_z188_adc.c
->>> +++ b/drivers/iio/adc/men_z188_adc.c
->>> @@ -121,8 +121,8 @@ static int men_z188_probe(struct mcb_device *dev,
->>>          indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
->>>
->>>          mem = mcb_request_mem(dev, "z188-adc");
->>> -       if (!mem)
->>> -               return -ENOMEM;
->>> +       if (IS_ERR(mem))
->>> +               return PTR_ERR(mem);
->>>
->>>          adc->base = ioremap(mem->start, resource_size(mem));
->>>          if (adc->base == NULL)
->>
->> Acked-by: Johannes Thumshirn <johannes.thumshirn@men.de>
->>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
->
-> Or I can pick this up after the merge window has closed if Greg hasn't
-> already taken it.
->
-> Jonathan
+If there is stilll no life out there, you may want to ask
+Rafael W. to queue the patches...
 
-Did someone actually take this patch, or was it somehow lost?
-
-Johannes
+-- 
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
