@@ -1,67 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpfb1-g21.free.fr ([212.27.42.9]:41399 "EHLO
-	smtpfb1-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753667AbaFXOrI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 10:47:08 -0400
-From: Denis Carikli <denis@eukrea.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Denis Carikli <denis@eukrea.com>
-Subject: [PATCH v4 5/6] ARM: dts: imx25: mbimxsd25: Add touchscreen support.
-Date: Tue, 24 Jun 2014 16:46:34 +0200
-Message-Id: <1403621195-9622-5-git-send-email-denis@eukrea.com>
-In-Reply-To: <1403621195-9622-1-git-send-email-denis@eukrea.com>
-References: <1403621195-9622-1-git-send-email-denis@eukrea.com>
+Received: from mail.kernel.org ([198.145.19.201]:42979 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754591AbaFNN7r (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 09:59:47 -0400
+Message-ID: <539C55C5.7080001@kernel.org>
+Date: Sat, 14 Jun 2014 15:01:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Marek Vasut <marex@denx.de>,
+	Robert Hodaszi <robert.hodaszi@digi.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org, alexandre.belloni@free-electrons.com,
+	jbe@pengutronix.de, hector.palacios@digi.com,
+	fabio.estevam@freescale.com, lars@metafoo.de
+Subject: Re: [PATCH 1/2] iio: mxs-lradc: fix divider
+References: <1402407695-2984-1-git-send-email-robert.hodaszi@digi.com> <1402407695-2984-2-git-send-email-robert.hodaszi@digi.com> <201406110047.59372.marex@denx.de>
+In-Reply-To: <201406110047.59372.marex@denx.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
----
-Changelog v3->v4:
-- None
-
-Changelog v2->v3:
-- Most of the non-board specific tsc and tscadc
-  parts were moved to imx25.dtsi. So this patch
-  was adapted to that.
-- Thanks to a fix in the tsc driver, the 
-  'fsl,pen-debounce = <100>;' is not necessary anymore.
----
- .../imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts  |    8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
-index 68d0834..2f3bc3f 100644
---- a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
-+++ b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
-@@ -71,3 +71,11 @@
- 	lcd-supply = <&reg_lcd_3v3>;
- 	status = "okay";
- };
-+
-+&tsc {
-+	status = "okay";
-+};
-+
-+&tscadc {
-+	status = "okay";
-+};
--- 
-1.7.9.5
+On 10/06/14 23:47, Marek Vasut wrote:
+> On Tuesday, June 10, 2014 at 03:41:34 PM, Robert Hodaszi wrote:
+>> All channels' single measurement are happening on CH 0. So enabling /
+>> disabling the divider once is not enough, because it has impact on all
+>> channels.
+>>
+>> Set only a flag, then check this on each measurement, and enable / disable
+>> the divider as required.
+>>
+>> Signed-off-by: Robert Hodaszi <robert.hodaszi@digi.com>
+>
+> Acked-by: Marek Vasut <marex@denx.de>
+Applied to the fixes-togreg branch of iio.git
+Also marked for stable.
+>
+> Best regards,
+> Marek Vasut
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
