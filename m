@@ -1,79 +1,81 @@
-Return-Path: <sre@kernel.org>
-Date: Sat, 14 Jun 2014 17:47:33 +0200
-From: Sebastian Reichel <sre@kernel.org>
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Marek Belisko <marek@goldelico.com>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Pali Roh?r <pali.rohar@gmail.com>
-Subject: Re: [PATCHv2 1/2] rx51_battery: convert to iio consumer
-Message-ID: <20140614154733.GB13614@earth.universe>
-References: <1393375569-21751-1-git-send-email-sre@debian.org>
- <1393705366-32420-1-git-send-email-sre@debian.org>
- <1393705366-32420-2-git-send-email-sre@debian.org>
- <5336A9F9.4080504@kernel.org>
- <20140420120823.GB12135@amd.pavel.ucw.cz>
- <20140423160936.GB32049@earth.universe>
- <20140614083231.GA15326@Nokia-N900>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:44027 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754760AbaFNPCl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:02:41 -0400
+Message-ID: <539C6486.8000407@kernel.org>
+Date: Sat, 14 Jun 2014 16:04:38 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="TRYliJ5NKNqkz5bu"
-In-Reply-To: <20140614083231.GA15326@Nokia-N900>
-List-ID: <linux-iio@vger.kernel.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 05/12] iio:adc:ad7298: Use BIT() and GENMASK() macros
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-6-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-6-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 12/06/14 06:00, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git
 
---TRYliJ5NKNqkz5bu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks,
+> ---
+>   drivers/iio/adc/ad7298.c | 21 +++++++++------------
+>   1 file changed, 9 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+> index 2a3b65c..4a8c0a2 100644
+> --- a/drivers/iio/adc/ad7298.c
+> +++ b/drivers/iio/adc/ad7298.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/delay.h>
+>   #include <linux/module.h>
+>   #include <linux/interrupt.h>
+> +#include <linux/bitops.h>
+>
+>   #include <linux/iio/iio.h>
+>   #include <linux/iio/sysfs.h>
+> @@ -25,23 +26,19 @@
+>
+>   #include <linux/platform_data/ad7298.h>
+>
+> -#define AD7298_WRITE	(1 << 15) /* write to the control register */
+> -#define AD7298_REPEAT	(1 << 14) /* repeated conversion enable */
+> -#define AD7298_CH(x)	(1 << (13 - (x))) /* channel select */
+> -#define AD7298_TSENSE	(1 << 5) /* temperature conversion enable */
+> -#define AD7298_EXTREF	(1 << 2) /* external reference enable */
+> -#define AD7298_TAVG	(1 << 1) /* temperature sensor averaging enable */
+> -#define AD7298_PDD	(1 << 0) /* partial power down enable */
+> +#define AD7298_WRITE	BIT(15) /* write to the control register */
+> +#define AD7298_REPEAT	BIT(14) /* repeated conversion enable */
+> +#define AD7298_CH(x)	BIT(13 - (x)) /* channel select */
+> +#define AD7298_TSENSE	BIT(5) /* temperature conversion enable */
+> +#define AD7298_EXTREF	BIT(2) /* external reference enable */
+> +#define AD7298_TAVG	BIT(1) /* temperature sensor averaging enable */
+> +#define AD7298_PDD	BIT(0) /* partial power down enable */
+>
+>   #define AD7298_MAX_CHAN		8
+> -#define AD7298_BITS		12
+> -#define AD7298_STORAGE_BITS	16
+>   #define AD7298_INTREF_mV	2500
+>
+>   #define AD7298_CH_TEMP		9
+>
+> -#define RES_MASK(bits)	((1 << (bits)) - 1)
+> -
+>   struct ad7298_state {
+>   	struct spi_device		*spi;
+>   	struct regulator		*reg;
+> @@ -257,7 +254,7 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
+>   			return ret;
+>
+>   		if (chan->address != AD7298_CH_TEMP)
+> -			*val = ret & RES_MASK(AD7298_BITS);
+> +			*val = ret & GENMASK(chan->scan_type.realbits - 1, 0);
+>
+>   		return IIO_VAL_INT;
+>   	case IIO_CHAN_INFO_SCALE:
+>
 
-On Sat, Jun 14, 2014 at 10:32:32AM +0200, Pavel Machek wrote:
-> > The problem is, that the power subsystem maintainers seem to be too
-> > busy with real life. The last change in their git [0] was 2014-02-01
-> > and I haven't seen any mail from them on the mailinglist since about
-> > the same time. I have just queried his status @ Google+ (there were
-> > some life-signs there).
->=20
-> If there is still no life out there, you may want to ask
-> Rafael W. to queue the patches...
-
-Don't worry, I haven't forgotten the patches. I don't think they
-make it into 3.16, but they will go into 3.17. For now I have
-put them into a dev branch on [0] and requested to take over the
-power supply subsystem (see thread [1] on LKML).
-
-[0] https://git.kernel.org/cgit/linux/kernel/git/sre/linux-power-supply.git
-[1] https://lkml.org/lkml/2014/5/16/504
-
--- Sebastian
-
---TRYliJ5NKNqkz5bu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJTnG6UAAoJENju1/PIO/qahdAP/2AlUpdABUFOHnAoDN/pJKXn
-SJe9seEdV37eOfqoizjL9sZTD0JdaubgP/ryLBaFDIcUaaghkCx1kP1FkusaTeF/
-UzCr7yy8Hzdh2mfyhTiyIw9xVEz7eJ0QJ0tpF5SpJF9q7mKpZtbwzpMjukshN3nN
-0R9WnMXVRyXd7OGzC/eE4Ka1Nz2xXco2Ib9zja3dYdQXFEYg+swjiLbuOEyaObmG
-nyDrzeNq6Qx8FZ4E5n+gUSKZCfWCLyxoCQTvL+HR0HH/Aop5g4siLGxLDZ0dvSML
-dSO710Y0nbjaMnarsDIyADzOpFTyjHy+rgjjax4nPWyqWtkhaE1OPi9WA0uFSVrt
-RL7tAgzjwsAI8SjyfyRiKX0xvTxIivXLPSqB4+/JcNU/Dm/BB518ZktEqIXUHrrb
-lTjyQwcM39m+yk1+Jr1l2qOfWggEZlR6/a4yGJRPLWKUiX2SiSFuDbtWxLPTUhpE
-QGL8l7ijGXaGxoi9vPa7OR280iPhNeE60kMo7dpSZVhkjPml87mwDrCQy2keGz4Z
-oAjBPWEc0+PXvESll0NAXrl+EUWi9Zxgi+Jad1ABI+WIqdFg57p7O2MHX+0ngjPB
-3bkbCWoL2RCEhN5QZWKcEmAg9Jbm2LJ8zPiV6Bn+MEOeDIy7o8HRgz7lDXfX97QO
-vh673dAMRHtNXo5osaa5
-=hq0y
------END PGP SIGNATURE-----
-
---TRYliJ5NKNqkz5bu--
