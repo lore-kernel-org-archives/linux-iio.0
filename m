@@ -1,52 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:44097 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:44310 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754805AbaFNPHn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 11:07:43 -0400
-Message-ID: <539C65B4.5090504@kernel.org>
-Date: Sat, 14 Jun 2014 16:09:40 +0100
+	id S1754710AbaFNPP1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:15:27 -0400
+Message-ID: <539C6783.4060607@kernel.org>
+Date: Sat, 14 Jun 2014 16:17:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 10/12] staging:iio: Fix error handling in generic_buffer
- example
-References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-11-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402549229-4449-11-git-send-email-pmeerw@pmeerw.net>
+To: Johannes Thumshirn <morbidrsa@gmail.com>
+CC: Dan Carpenter <dan.carpenter@oracle.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio: adc: checking for NULL instead of IS_ERR() in probe
+References: <20140328083126.GO25192@mwanda>	<CAGH8bx77dKAm7w53F5MfTXaPm6KxQcVCXERnW-oXmR5Ww-HLTw@mail.gmail.com>	<5336995C.90701@kernel.org> <87lht2q86y.fsf@sauron.localdomain>
+In-Reply-To: <87lht2q86y.fsf@sauron.localdomain>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/14 06:00, Peter Meerwald wrote:
-> read() does not return -EAGAIN
-> read() returns -1 and the errno value needs to be checked for -EAGAIN
+On 12/06/14 19:44, Johannes Thumshirn wrote:
+> Jonathan Cameron <jic23@kernel.org> writes:
 >
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git
+>> On 28/03/14 14:07, johannes thumshirn wrote:
+>>> On Fri, Mar 28, 2014 at 9:33 AM, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>>>>
+>>>> mcb_request_mem() returns an ERR_PTR(), it doesn't return NULL.
+>>>>
+>>>> Fixes: 74aeac4da66f ('iio: adc: Add MEN 16z188 ADC driver')
+>>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>>>
+>>>> diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
+>>>> index 6989c16..b58d630 100644
+>>>> --- a/drivers/iio/adc/men_z188_adc.c
+>>>> +++ b/drivers/iio/adc/men_z188_adc.c
+>>>> @@ -121,8 +121,8 @@ static int men_z188_probe(struct mcb_device *dev,
+>>>>           indio_dev->num_channels = ARRAY_SIZE(z188_adc_iio_channels);
+>>>>
+>>>>           mem = mcb_request_mem(dev, "z188-adc");
+>>>> -       if (!mem)
+>>>> -               return -ENOMEM;
+>>>> +       if (IS_ERR(mem))
+>>>> +               return PTR_ERR(mem);
+>>>>
+>>>>           adc->base = ioremap(mem->start, resource_size(mem));
+>>>>           if (adc->base == NULL)
+>>>
+>>> Acked-by: Johannes Thumshirn <johannes.thumshirn@men.de>
+>>>
+>> Acked-by: Jonathan Cameron <jic23@kernel.org>
+>>
+>> Or I can pick this up after the merge window has closed if Greg hasn't
+>> already taken it.
+>>
+>> Jonathan
+>
+> Did someone actually take this patch, or was it somehow lost?
+>
+I've picked it up now and applied it to the fixes-togreg branch of iio.git
 
-thanks
-> ---
->   drivers/staging/iio/Documentation/generic_buffer.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-> index 40d0eca..044ea19 100644
-> --- a/drivers/staging/iio/Documentation/generic_buffer.c
-> +++ b/drivers/staging/iio/Documentation/generic_buffer.c
-> @@ -305,9 +305,12 @@ int main(int argc, char **argv)
->   		read_size = read(fp,
->   				 data,
->   				 toread*scan_size);
-> -		if (read_size == -EAGAIN) {
-> -			printf("nothing available\n");
-> -			continue;
-> +		if (read_size < 0) {
-> +			if (errno == -EAGAIN) {
-> +				printf("nothing available\n");
-> +				continue;
-> +			} else
-> +				break;
->   		}
->   		for (i = 0; i < read_size/scan_size; i++)
->   			process_scan(data + scan_size*i,
+Thanks for pointing out I'd forgotten it and sorry about that. I've also
+marked it for stable.
+
+> Johannes
 >
 
