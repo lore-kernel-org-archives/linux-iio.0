@@ -1,31 +1,53 @@
-Return-Path: <beomho.seo@samsung.com>
-From: Beomho Seo <beomho.seo@samsung.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, j.anaszewski@samsung.com,
- sachin.kamat@linaro.org, ch.naveen@samsung.com, ktsai@capellamicro.com,
- srinivas.pandruvada@linux.intel.com, t.figa@samsung.com
-Cc: myungjoo.ham@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com,
- Beomho Seo <beomho.seo@samsung.com>
-Subject: [PATCH 0/5] iio: Using devm_* APIs in some sensor drivers
-Date: Wed, 18 Jun 2014 15:21:38 +0900
-Message-id: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:44077 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754805AbaFNPGh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 14 Jun 2014 11:06:37 -0400
+Message-ID: <539C6572.40805@kernel.org>
+Date: Sat, 14 Jun 2014 16:08:34 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 08/12] staging:iio: Fix iio_utils.h function prototypes
+References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-9-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402549229-4449-9-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch use devm_* APIs for some sensor drivers.
-Using them make sensor driver simpler.
+On 12/06/14 06:00, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git
 
-Beomho Seo (5):
-  iio: adc: exynos_adc: Use devm_* APIs
-  iio: light: cm32181: Use devm_* APIs
-  iio: light: cm36651: Use devm_* APIs
-  iio: light: gp2ap020a00f: Use devm_* APIs
-  iio: magnetometer: ak8975: Use devm_* APIs
+Thanks
+> ---
+>   drivers/staging/iio/Documentation/iio_utils.h | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/staging/iio/Documentation/iio_utils.h b/drivers/staging/iio/Documentation/iio_utils.h
+> index a9cfc06..0973a09 100644
+> --- a/drivers/staging/iio/Documentation/iio_utils.h
+> +++ b/drivers/staging/iio/Documentation/iio_utils.h
+> @@ -633,7 +633,7 @@ error_free:
+>
+>   int read_sysfs_float(char *filename, char *basedir, float *val)
+>   {
+> -	float ret = 0;
+> +	int ret = 0;
+>   	FILE  *sysfsfp;
+>   	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
+>   	if (temp == NULL) {
+> @@ -653,9 +653,9 @@ error_free:
+>   	return ret;
+>   }
+>
+> -read_sysfs_string(const char *filename, const char *basedir, char *str)
+> +int read_sysfs_string(const char *filename, const char *basedir, char *str)
+>   {
+> -	float ret = 0;
+> +	int ret = 0;
+>   	FILE  *sysfsfp;
+>   	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
+>   	if (temp == NULL) {
+>
 
- drivers/iio/adc/exynos_adc.c      |   11 +++------
- drivers/iio/light/cm32181.c       |   11 +--------
- drivers/iio/light/cm36651.c       |   11 ++++-----
- drivers/iio/light/gp2ap020a00f.c  |   10 +++-----
- drivers/iio/magnetometer/ak8975.c |   48 ++++++++-----------------------------
- 5 files changed, 21 insertions(+), 70 deletions(-)
-
--- 
-1.7.9.5
