@@ -1,401 +1,353 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: linux-iio@vger.kernel.org
-Cc: Martin Liska <marxin.liska@gmail.com>,
-	Marek Vasut <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>
-Subject: [PATCH v6] iio: acpi: Add ACPI0008 ALS driver
-Date: Sun,  1 Jun 2014 16:54:33 +0200
-Message-Id: <1401634473-9241-1-git-send-email-marex@denx.de>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <539C3645.60107@gmx.de>
+Date: Sat, 14 Jun 2014 13:47:17 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+CC: jic23@kernel.org, Stefan Nilsson <stefan.nilsson@unixphere.com>
+Subject: Re: [PATCH v2] iio: Add t5403 barometric pressure sensor driver
+References: <1401738254-9601-1-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1401738254-9601-1-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Martin Liska <marxin.liska@gmail.com>
-
-Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
-This driver currently supports only the ALI property, yet is ready to
-be easily extended to handle ALC, ALT, ALP ones as well.
-
-Signed-off-by: Martin Liska <marxin.liska@gmail.com>
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
----
- drivers/iio/light/Kconfig    |  10 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/acpi-als.c | 315 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 326 insertions(+)
- create mode 100644 drivers/iio/light/acpi-als.c
-
-V2: Fix the channel mask, so it's really reading RAW data.
-V3: Put scan timestamp into the buffer only when enabled,
-     Set the light sensor ID to 0 instead of 1
-V4: Select IIO_TRIGGERED_BUFFER as we need it here
-V5: Use irq_work to trigger the buffer
-     Use module_acpi_driver()
-V6: Align with 3.15-rc7
-    Use iio_push_to_buffers_with_timestamp()
-    Use iio_trigger_set_drvdata()
-    Use .info_mask_separate
-    Use devm_iio_device_alloc()
-    Stuff the event buffer into struct acpi_als so we don't alloc mem twice
-    Compute the evt_buffer size automatically based on acpi_als_channels[]
-    Implement .validate_device() and .validate_trigger()
-    Tested on MacBook Air (Mid 2013) and Acer IconiaTab W510
-
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index c89740d..d367c83 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -5,6 +5,16 @@
- 
- menu "Light sensors"
- 
-+config ACPI_ALS
-+	tristate "ACPI Ambient Light Sensor"
-+	depends on ACPI
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	 Support for the ACPI0008 Ambient Light Sensor.
-+
-+	 This driver can also be built as a module.  If so, the module
-+	 will be called acpi-als.
-+
- config ADJD_S311
- 	tristate "ADJD-S311-CR999 digital color sensor"
- 	select IIO_BUFFER
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 3eb36e5..3074394 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_ACPI_ALS)	+= acpi-als.o
- obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
- obj-$(CONFIG_APDS9300)		+= apds9300.o
- obj-$(CONFIG_CM32181)		+= cm32181.o
-diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-new file mode 100644
-index 0000000..f4ab108
---- /dev/null
-+++ b/drivers/iio/light/acpi-als.c
-@@ -0,0 +1,315 @@
-+/*
-+ * ACPI Ambient Light Sensor Driver
-+ *
-+ * Based on ALS driver:
-+ * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
-+ *
-+ * Rework for IIO subsystem:
-+ * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
-+ *
-+ * Final cleanup and debugging:
-+ * Copyright (C) 2013-2014 Marek Vasut <marex@denx.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/acpi.h>
-+#include <linux/err.h>
-+#include <linux/mutex.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define ACPI_ALS_CLASS			"als"
-+#define ACPI_ALS_DEVICE_NAME		"acpi-als"
-+#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
-+
-+ACPI_MODULE_NAME("acpi-als");
-+
-+/*
-+ * So far, there's only one channel in here, but the specification for
-+ * ACPI0008 says there can be more to what the block can report. Like
-+ * chromaticity and such. We are ready for incoming additions!
-+ */
-+static const struct iio_chan_spec acpi_als_channels[] = {
-+	{
-+		.type		= IIO_LIGHT,
-+		.indexed	= 0,
-+		.channel	= 0,
-+		.scan_index	= 0,
-+		.scan_type	= {
-+			.sign 		= 'u',
-+			.realbits	= 10,
-+			.storagebits	= 16,
-+		},
-+		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-+	},
-+};
-+
-+/*
-+ * The event buffer contains timestamp and all the data from
-+ * the ACPI0008 block. There are multiple, but so far we only
-+ * support _ALI (illuminance). Once someone adds new channels
-+ * to acpi_als_channels[], the evt_buffer below will grow
-+ * automatically.
-+ */
-+#define EVT_NR_SOURCES		ARRAY_SIZE(acpi_als_channels)
-+#define EVT_BUFFER_SIZE		\
-+	(sizeof(int64_t) + (EVT_NR_SOURCES * sizeof(uint16_t)))
-+
-+struct acpi_als {
-+	struct acpi_device	*device;
-+	struct iio_trigger	*trig;
-+	struct mutex		lock;
-+
-+	uint16_t		evt_buffer[EVT_BUFFER_SIZE];
-+};
-+
-+/*
-+ * All types of properties the ACPI0008 block can report. The ALI, ALC, ALT
-+ * and ALP can all be handled by als_read_value() below, while the ALR is
-+ * special.
-+ *
-+ * The _ALR property returns tables that can be used to fine-tune the values
-+ * reported by the other props based on the particular hardware type and it's
-+ * location (it contains tables for "rainy", "bright inhouse lighting" etc.).
-+ *
-+ * So far, we support only ALI (illuminance).
-+ */
-+#define ACPI_ALS_ILLUMINANCE	"_ALI"
-+#define ACPI_ALS_CHROMATICITY	"_ALC"
-+#define ACPI_ALS_COLOR_TEMP	"_ALT"
-+#define ACPI_ALS_POLLING	"_ALP"
-+#define ACPI_ALS_TABLES		"_ALR"
-+
-+static int32_t als_read_value(struct acpi_als *als, char *prop)
-+{
-+	unsigned long long illuminance;
-+	acpi_status status;
-+
-+	status = acpi_evaluate_integer(als->device->handle,
-+				prop, NULL, &illuminance);
-+
-+	if (ACPI_FAILURE(status)) {
-+		ACPI_EXCEPTION((AE_INFO, status,
-+				"Error reading ALS illuminance"));
-+		/* Something went wrong, it's pitch black outside! */
-+		illuminance = 0;
-+	}
-+
-+	return illuminance;
-+}
-+
-+static void acpi_als_notify(struct acpi_device *device, u32 event)
-+{
-+	struct iio_dev *iio = acpi_driver_data(device);
-+	struct acpi_als *als = iio_priv(iio);
-+	uint16_t *buffer = als->evt_buffer;
-+	int64_t time_ns = iio_get_time_ns();
-+
-+	mutex_lock(&als->lock);
-+
-+	memset(buffer, 0, EVT_BUFFER_SIZE);
-+
-+	switch (event) {
-+	case ACPI_ALS_NOTIFY_ILLUMINANCE:
-+		*buffer++ = als_read_value(als, ACPI_ALS_ILLUMINANCE);
-+		break;
-+	default:
-+		/* Unhandled event */
-+		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
-+			event);
-+		return;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(iio, (uint8_t *)als->evt_buffer,
-+					   time_ns);
-+
-+	mutex_unlock(&als->lock);
-+}
-+
-+static int acpi_als_read_raw(struct iio_dev *iio,
-+			struct iio_chan_spec const *chan, int *val,
-+			int *val2, long mask)
-+{
-+	struct acpi_als *als = iio_priv(iio);
-+
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	/* we support only illumination (_ALI) so far. */
-+	if (chan->type != IIO_LIGHT)
-+		return -EINVAL;
-+
-+	*val = als_read_value(als, ACPI_ALS_ILLUMINANCE);
-+	return IIO_VAL_INT;
-+}
-+
-+static int acpi_als_validate_trigger(struct iio_dev *iio,
-+				     struct iio_trigger *trig)
-+{
-+	if (iio->dev.parent != trig->dev.parent)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static const struct iio_info acpi_als_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= acpi_als_read_raw,
-+	.validate_trigger	= acpi_als_validate_trigger,
-+};
-+
-+static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *iio = pf->indio_dev;
-+	struct acpi_als *als = iio_priv(iio);
-+
-+	iio_trigger_notify_done(als->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int acpi_als_validate_device(struct iio_trigger *trig,
-+				    struct iio_dev *iio)
-+{
-+	if (iio->dev.parent != trig->dev.parent)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static const struct iio_trigger_ops acpi_als_trigger_ops = {
-+	.owner			= THIS_MODULE,
-+	.validate_device	= acpi_als_validate_device,
-+};
-+
-+static int acpi_als_trigger_init(struct iio_dev *iio)
-+{
-+	struct acpi_als *als = iio_priv(iio);
-+	struct device *dev = &iio->dev;
-+	struct iio_trigger *trig;
-+	int ret;
-+
-+	trig = devm_iio_trigger_alloc(dev, "%s-dev%i", iio->name, iio->id);
-+	if (!trig)
-+		return -ENOMEM;
-+
-+	trig->dev.parent = dev->parent;
-+	trig->ops = &acpi_als_trigger_ops;
-+	iio_trigger_set_drvdata(trig, iio);
-+
-+	ret = iio_trigger_register(trig);
-+	if (ret) {
-+		iio_trigger_free(trig);
-+		return ret;
-+	}
-+
-+	als->trig = trig;
-+
-+	return 0;
-+}
-+
-+static void acpi_als_trigger_remove(struct iio_dev *iio)
-+{
-+	struct acpi_als *als = iio_priv(iio);
-+	iio_trigger_unregister(als->trig);
-+}
-+
-+static int acpi_als_add(struct acpi_device *device)
-+{
-+	struct acpi_als *als;
-+	struct iio_dev *iio;
-+	int ret;
-+
-+	iio = devm_iio_device_alloc(&device->dev, sizeof(*als));
-+	if (!iio)
-+		return -ENOMEM;
-+
-+	als = iio_priv(iio);
-+
-+	device->driver_data = iio;
-+	als->device = device;
-+	mutex_init(&als->lock);
-+
-+	iio->name = ACPI_ALS_DEVICE_NAME;
-+	iio->dev.parent = &device->dev;
-+	iio->info = &acpi_als_info;
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->channels = acpi_als_channels;
-+	iio->num_channels = ARRAY_SIZE(acpi_als_channels);
-+
-+	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
-+					&acpi_als_trigger_handler, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = acpi_als_trigger_init(iio);
-+	if (ret)
-+		goto err_trig;
-+
-+	ret = iio_device_register(iio);
-+	if (ret < 0)
-+		goto err_dev;
-+
-+	return 0;
-+
-+err_dev:
-+	acpi_als_trigger_remove(iio);
-+err_trig:
-+	iio_triggered_buffer_cleanup(iio);
-+	return ret;
-+}
-+
-+static int acpi_als_remove(struct acpi_device *device)
-+{
-+	struct iio_dev *iio = acpi_driver_data(device);
-+
-+	iio_device_unregister(iio);
-+	iio_triggered_buffer_cleanup(iio);
-+	acpi_als_trigger_remove(iio);
-+
-+	return 0;
-+}
-+
-+static const struct acpi_device_id acpi_als_device_ids[] = {
-+	{"ACPI0008", 0},
-+	{"", 0},
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
-+
-+static struct acpi_driver acpi_als_driver = {
-+	.name	= "acpi_als",
-+	.class	= ACPI_ALS_CLASS,
-+	.ids	= acpi_als_device_ids,
-+	.ops = {
-+		.add	= acpi_als_add,
-+		.remove	= acpi_als_remove,
-+		.notify	= acpi_als_notify,
-+	},
-+};
-+
-+module_acpi_driver(acpi_als_driver);
-+
-+MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
-+MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
-+MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
-+MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
-+MODULE_LICENSE("GPL");
--- 
-2.0.0.rc2
+Peter Meerwald schrieb:
+> 16-bit pressure and temperature sensor
+>
+> the chip can do I2C and SPI, only the I2C interface is supported
+> by the driver at the moment
+>
+> datasheet: http://www.epcos.com/inf/57/ds/T5400.pdf
+> application note: http://www.epcos.com/blob/993154/download/1/t5403-applicationnote.pdf
+>
+> an out-of-tree driver targetting the input subsystem is at
+> https://github.com/unixphere/t5400, it was rejected here:
+> http://comments.gmane.org/gmane.linux.kernel.input/28107
+>
+> v2: (thanks Hartmut Knaack)
+> * fix MODE_HIGH, equals 2
+> * check INT_TIME mask in write_raw()
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Stefan Nilsson <stefan.nilsson@unixphere.com>
+Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+Looks good to me.
+> ---
+>  drivers/iio/pressure/Kconfig  |  10 ++
+>  drivers/iio/pressure/Makefile |   1 +
+>  drivers/iio/pressure/t5403.c  | 275 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 286 insertions(+)
+>  create mode 100644 drivers/iio/pressure/t5403.c
+>
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index ffac8ac..15afbc9 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -70,4 +70,14 @@ config IIO_ST_PRESS_SPI
+>  	depends on IIO_ST_PRESS
+>  	depends on IIO_ST_SENSORS_SPI
+>  
+> +config T5403
+> +	tristate "EPCOS T5403 digital barometric pressure sensor driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the EPCOS T5403 pressure sensor
+> +	  connected via I2C.
+> +
+> +          To compile this driver as a module, choose M here: the module
+> +          will be called t5403.
+> +
+>  endmenu
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index c53d250..90a37e8 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -9,6 +9,7 @@ obj-$(CONFIG_MPL3115) += mpl3115.o
+>  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+>  st_pressure-y := st_pressure_core.o
+>  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+> +obj-$(CONFIG_T5403) += t5403.o
+>  
+>  obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
+>  obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
+> diff --git a/drivers/iio/pressure/t5403.c b/drivers/iio/pressure/t5403.c
+> new file mode 100644
+> index 0000000..e11cd39
+> --- /dev/null
+> +++ b/drivers/iio/pressure/t5403.c
+> @@ -0,0 +1,275 @@
+> +/*
+> + * t5403.c - Support for EPCOS T5403 pressure/temperature sensor
+> + *
+> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * (7-bit I2C slave address 0x77)
+> + *
+> + * TODO: end-of-conversion irq
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/delay.h>
+> +
+> +#define T5403_DATA 0xf5 /* data, LSB first, 16 bit */
+> +#define T5403_CALIB_DATA 0x8e /* 10 calibration coeff., LSB first, 16 bit */
+> +#define T5403_SLAVE_ADDR 0x88 /* I2C slave address, 0x77 */
+> +#define T5403_COMMAND 0xf1
+> +
+> +/* command bits */
+> +#define T5403_MODE_SHIFT 3 /* conversion time: 2, 8, 16, 66 ms */
+> +#define T5403_PT BIT(1) /* 0 .. pressure, 1 .. temperature measurement */
+> +#define T5403_SCO BIT(0) /* start conversion */
+> +
+> +#define T5403_MODE_LOW 0
+> +#define T5403_MODE_STANDARD 1
+> +#define T5403_MODE_HIGH 2
+> +#define T5403_MODE_ULTRA_HIGH 3
+> +
+> +#define T5403_I2C_MASK (~BIT(7))
+> +#define T5403_I2C_ADDR 0x77
+> +
+> +static const int t5403_pressure_conv_ms[] = {2, 8, 16, 66};
+> +
+> +struct t5403_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	int mode;
+> +	__le16 c[10];
+> +};
+> +
+> +#define T5403_C_U16(i) le16_to_cpu(data->c[(i) - 1])
+> +#define T5403_C(i) sign_extend32(T5403_C_U16(i), 15)
+> +
+> +static int t5403_read(struct t5403_data *data, bool pressure)
+> +{
+> +	int wait_time = 3;  /* wakeup time in ms */
+> +
+> +	int ret = i2c_smbus_write_byte_data(data->client, T5403_COMMAND,
+> +		(pressure ? (data->mode << T5403_MODE_SHIFT) : T5403_PT) |
+> +		T5403_SCO);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	wait_time += pressure ? t5403_pressure_conv_ms[data->mode] : 2;
+> +
+> +	msleep(wait_time);
+> +
+> +	return i2c_smbus_read_word_data(data->client, T5403_DATA);
+> +}
+> +
+> +static int t5403_comp_pressure(struct t5403_data *data, int *val, int *val2)
+> +{
+> +	int ret;
+> +	s16 t_r;
+> +	u16 p_r;
+> +	s32 S, O, X;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	ret = t5403_read(data, false);
+> +	if (ret < 0)
+> +		goto done;
+> +	t_r = ret;
+> +
+> +	ret = t5403_read(data, true);
+> +	if (ret < 0)
+> +		goto done;
+> +	p_r = ret;
+> +
+> +	/* see EPCOS application note */
+> +	S = T5403_C_U16(3) + (s32) T5403_C_U16(4) * t_r / 0x20000 +
+> +		T5403_C(5) * t_r / 0x8000 * t_r / 0x80000 +
+> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x8000 * t_r / 0x10000;
+> +
+> +	O = T5403_C(6) * 0x4000 + T5403_C(7) * t_r / 8 +
+> +		T5403_C(8) * t_r / 0x8000 * t_r / 16 +
+> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x10000 * t_r;
+> +
+> +	X = (S * p_r + O) / 0x4000;
+> +
+> +	X += ((X - 75000) * (X - 75000) / 0x10000 - 9537) *
+> +	    T5403_C(10) / 0x10000;
+> +
+> +	*val = X / 1000;
+> +	*val2 = (X % 1000) * 1000;
+> +
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int t5403_comp_temp(struct t5403_data *data, int *val)
+> +{
+> +	int ret;
+> +	s16 t_r;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = t5403_read(data, false);
+> +	if (ret < 0)
+> +		goto done;
+> +	t_r = ret;
+> +
+> +	/* see EPCOS application note */
+> +	*val = ((s32) T5403_C_U16(1) * t_r / 0x100 +
+> +		(s32) T5403_C_U16(2) * 0x40) * 1000 / 0x10000;
+> +
+> +done:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int t5403_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  int *val, int *val2, long mask)
+> +{
+> +	struct t5403_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		switch (chan->type) {
+> +		case IIO_PRESSURE:
+> +			ret = t5403_comp_pressure(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_TEMP:
+> +			ret = t5403_comp_temp(data, val);
+> +			if (ret < 0)
+> +				return ret;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +	    }
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = t5403_pressure_conv_ms[data->mode] * 1000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int t5403_write_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int val, int val2, long mask)
+> +{
+> +	struct t5403_data *data = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +		for (i = 0; i < ARRAY_SIZE(t5403_pressure_conv_ms); i++)
+> +			if (val2 == t5403_pressure_conv_ms[i] * 1000) {
+> +				mutex_lock(&data->lock);
+> +				data->mode = i;
+> +				mutex_unlock(&data->lock);
+> +				return 0;
+> +			}
+> +		return -EINVAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_chan_spec t5403_channels[] = {
+> +	{
+> +		.type = IIO_PRESSURE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +		    BIT(IIO_CHAN_INFO_INT_TIME),
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	},
+> +};
+> +
+> +static IIO_CONST_ATTR_INT_TIME_AVAIL("0.002 0.008 0.016 0.066");
+> +
+> +static struct attribute *t5403_attributes[] = {
+> +	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group t5403_attribute_group = {
+> +	.attrs = t5403_attributes,
+> +};
+> +
+> +static const struct iio_info t5403_info = {
+> +	.read_raw = &t5403_read_raw,
+> +	.write_raw = &t5403_write_raw,
+> +	.attrs = &t5403_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int t5403_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct t5403_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+> +	    I2C_FUNC_SMBUS_I2C_BLOCK))
+> +		return -ENODEV;
+> +
+> +	ret = i2c_smbus_read_byte_data(client, T5403_SLAVE_ADDR);
+> +	if (ret < 0)
+> +		return ret;
+> +	if ((ret & T5403_I2C_MASK) != T5403_I2C_ADDR)
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->info = &t5403_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = t5403_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(t5403_channels);
+> +
+> +	data->mode = T5403_MODE_STANDARD;
+> +
+> +	ret = i2c_smbus_read_i2c_block_data(data->client, T5403_CALIB_DATA,
+> +	    sizeof(data->c), (u8 *) data->c);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id t5403_id[] = {
+> +	{ "t5403", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, t5403_id);
+> +
+> +static struct i2c_driver t5403_driver = {
+> +	.driver = {
+> +		.name	= "t5403",
+> +	},
+> +	.probe = t5403_probe,
+> +	.id_table = t5403_id,
+> +};
+> +module_i2c_driver(t5403_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("EPCOS T5403 pressure/temperature sensor driver");
+> +MODULE_LICENSE("GPL");
