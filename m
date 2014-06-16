@@ -1,40 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:44087 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754805AbaFNPHC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 11:07:02 -0400
-Message-ID: <539C658A.8060108@kernel.org>
-Date: Sat, 14 Jun 2014 16:08:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 09/12] staging:iio: Fix mention of INDIO_RING_TRIGGERED
- to INDIO_BUFFER_TRIGGERED
-References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-10-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402549229-4449-10-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:34196 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932522AbaFPWaW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jun 2014 18:30:22 -0400
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH v3 2/3] iio: types: Added support for rotation from north usage attributes
+Date: Mon, 16 Jun 2014 17:30:02 -0500
+Message-Id: <1402957803-5154-3-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1402957803-5154-1-git-send-email-reyad.attiyat@gmail.com>
+References: <1402957803-5154-1-git-send-email-reyad.attiyat@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/14 06:00, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git
+Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
 
-Thanks,
-> ---
->   drivers/staging/iio/Documentation/trigger.txt | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/Documentation/trigger.txt b/drivers/staging/iio/Documentation/trigger.txt
-> index 64e2e08..7c0e505 100644
-> --- a/drivers/staging/iio/Documentation/trigger.txt
-> +++ b/drivers/staging/iio/Documentation/trigger.txt
-> @@ -31,5 +31,5 @@ consumers.
->   Trigger Consumers
->
->   Currently triggers are only used for the filling of software
-> -buffers and as such any device supporting INDIO_RING_TRIGGERED has the
-> +buffers and as such any device supporting INDIO_BUFFER_TRIGGERED has the
->   consumer interface automatically created.
->
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+---
+ drivers/iio/industrialio-core.c | 4 ++++
+ include/linux/iio/types.h       | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4b1f375..af3e76d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
++	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
++	[IIO_MOD_NORTH_TRUE] = "from_north_true",
++	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
++	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+ };
+ 
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d480631..d09c40d 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -56,6 +56,10 @@ enum iio_modifier {
+ 	IIO_MOD_QUATERNION,
+ 	IIO_MOD_TEMP_AMBIENT,
+ 	IIO_MOD_TEMP_OBJECT,
++	IIO_MOD_NORTH_MAGN,
++	IIO_MOD_NORTH_TRUE,
++	IIO_MOD_NORTH_MAGN_TILT_COMP,
++	IIO_MOD_NORTH_TRUE_TILT_COMP
+ };
+ 
+ enum iio_event_type {
+-- 
+1.9.3
 
