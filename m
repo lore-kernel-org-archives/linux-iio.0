@@ -1,129 +1,332 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:60352 "EHLO mail.kernel.org"
+Received: from plane.gmane.org ([80.91.229.3]:36950 "EHLO plane.gmane.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751391AbaFRSH3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 18 Jun 2014 14:07:29 -0400
-Message-ID: <53A1D5D8.7060107@kernel.org>
-Date: Wed, 18 Jun 2014 19:09:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Linux IIO List <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO new drivers, features and cleanups for 3.17 - set 1
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	id S1754976AbaFPKKz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 16 Jun 2014 06:10:55 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1WwTsL-0004AJ-AV
+	for linux-iio@vger.kernel.org; Mon, 16 Jun 2014 12:10:53 +0200
+Received: from 146.187.3.109.rev.sfr.net ([109.3.187.146])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2014 12:10:53 +0200
+Received: from josselin.costanzi by 146.187.3.109.rev.sfr.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2014 12:10:53 +0200
+To: linux-iio@vger.kernel.org
+From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+Subject: Re: [PATCH v2] iio: make blocking read wait for data
+Date: Mon, 16 Jun 2014 12:10:35 +0200
+Message-ID: <lnmfqs$n26$1@ger.gmane.org>
+References: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr> <539C8194.6010002@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 34683a5c6e0ffaa61528ff71c283efe3063cc53f:
+Jonathan Cameron wrote:
 
-   fix format string missmatch in staging/iio/Documentation/iio_utils.h (2014-05-25 12:09:37 +0100)
+> On 10/06/14 17:26, Josselin Costanzi wrote:
+>> Currently the IIO buffer blocking read only wait until at least one
+>> data element is available.
+>> This patch adds the possibility for the userspace to to blocking calls
+>> for multiple elements. This should limit the read() calls count when
+>> trying to get data in batches.
+>> This commit also fix a bug where data is lost if an error happens
+>> after some data is already read.
+>>
+>> Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+> Hi Josselin,
+> 
+> Thanks for taking this on. Definitely a useful little bit of functionality.
+> I'll take a close look once all the bits Lars picked up on are sorted.
+> 
+> Right now, why watermark_low?  (rather than simply watermark?).
+It was to match the SO_RCVLOWAT socket option wich I understand as
+"socket_receive_low_watermark".
 
-are available in the git repository at:
+> And you know what comes with adding new ABI.  Documentation please :)
+Yes, I'll have to work on that! Once we all agree on the interface we want 
+to provide.
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.17a
+>> ---
+>>   drivers/iio/industrialio-buffer.c | 138 ++++++++++++++++++++++++++++++++++----
+>>   drivers/iio/kfifo_buf.c           |   4 ++
+>>   include/linux/iio/buffer.h        |  40 +++++++++++
+>>   3 files changed, 169 insertions(+), 13 deletions(-)
+>>
+>> Changelog:
+>> v2: thanks to Lars-Peter Clausen and Jonathan Cameron
+>> - Avoid breaking default ABI
+>> - Add watermark and timeout properties to buffers
+>>
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index 36b1ae9..1fe0116 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -56,6 +56,10 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>   {
+>>   	struct iio_dev *indio_dev = filp->private_data;
+>>   	struct iio_buffer *rb = indio_dev->buffer;
+>> +	size_t datum_size = rb->access->get_bytes_per_datum(rb);
+>> +	size_t watermark_bytes = rb->low_watermark * datum_size;
+>> +	size_t count = 0;
+>> +	long timeout = rb->timeout;
+>>   	int ret;
+>>
+>>   	if (!indio_dev->info)
+>> @@ -66,24 +70,35 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>
+>>   	do {
+>>   		if (!iio_buffer_data_available(rb)) {
+>> -			if (filp->f_flags & O_NONBLOCK)
+>> -				return -EAGAIN;
+>> +			if (filp->f_flags & O_NONBLOCK) {
+>> +				ret = -EAGAIN;
+>> +				break;
+>> +			}
+>>
+>> -			ret = wait_event_interruptible(rb->pollq,
+>> +			timeout = wait_event_interruptible_timeout(rb->pollq,
+>>   					iio_buffer_data_available(rb) ||
+>> -					indio_dev->info == NULL);
+>> -			if (ret)
+>> -				return ret;
+>> -			if (indio_dev->info == NULL)
+>> -				return -ENODEV;
+>> +					indio_dev->info == NULL,
+>> +					timeout);
+>> +			if (timeout <= 0) {
+>> +				ret = timeout;
+>> +				break;
+>> +			}
+>> +
+>> +			if (indio_dev->info == NULL) {
+>> +				ret = -ENODEV;
+>> +				break;
+>> +			}
+>>   		}
+>>
+>> -		ret = rb->access->read_first_n(rb, n, buf);
+>> -		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+>> -			ret = -EAGAIN;
+>> -	 } while (ret == 0);
+>> +		ret = rb->access->read_first_n(rb, n, buf + count);
+>> +		if (ret < 0)
+>> +			break;
+>>
+>> -	return ret;
+>> +		n -= ret;
+>> +		count += ret;
+>> +	 } while (n > 0 && count < watermark_bytes);
+>> +
+>> +	return count ? count : ret;
+>>   }
+>>
+>>   /**
+>> @@ -126,6 +141,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
+>>   	INIT_LIST_HEAD(&buffer->buffer_list);
+>>   	init_waitqueue_head(&buffer->pollq);
+>>   	kref_init(&buffer->ref);
+>> +	buffer->low_watermark = 1;
+>> +	buffer->timeout = MAX_SCHEDULE_TIMEOUT;
+>>   }
+>>   EXPORT_SYMBOL(iio_buffer_init);
+>>
+>> @@ -795,6 +812,101 @@ done:
+>>   }
+>>   EXPORT_SYMBOL(iio_buffer_store_enable);
+>>
+>> +ssize_t iio_buffer_show_watermark(struct device *dev,
+>> +				   struct device_attribute *attr,
+>> +				   char *buf)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct iio_buffer *buffer = indio_dev->buffer;
+>> +
+>> +	return sprintf(buf, "%u\n", buffer->low_watermark);
+>> +}
+>> +EXPORT_SYMBOL(iio_buffer_show_watermark);
+>> +
+>> +ssize_t iio_buffer_store_watermark(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				const char *buf,
+>> +				size_t len)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct iio_buffer *buffer = indio_dev->buffer;
+>> +	unsigned int val;
+>> +	int ret;
+>> +
+>> +	ret = kstrtouint(buf, 10, &val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	mutex_lock(&indio_dev->mlock);
+>> +	if (iio_buffer_is_active(indio_dev->buffer)) {
+>> +		ret = -EBUSY;
+>> +		goto out;
+>> +	}
+>> +
+>> +	buffer->low_watermark = val;
+>> +	ret = 0;
+>> +out:
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +	return ret ? ret : len;
+>> +}
+>> +EXPORT_SYMBOL(iio_buffer_store_watermark);
+>> +
+>> +static int iio_buffer_timeout_set(struct iio_buffer *buffer, long timeout_us)
+>> +{
+>> +	if (timeout_us >= 0) {
+>> +		buffer->timeout = usecs_to_jiffies(timeout_us);
+>> +	} else if (timeout_us == -1){
+>> +		buffer->timeout = MAX_SCHEDULE_TIMEOUT;
+>> +	} else {
+>> +		return -EINVAL;
+>> +	}
+>> +	return 0;
+>> +}
+>> +
+>> +static long iio_buffer_timeout_get(struct iio_buffer *buffer)
+>> +{
+>> +	if (buffer->timeout != MAX_SCHEDULE_TIMEOUT)
+>> +		return jiffies_to_usecs(buffer->timeout);
+>> +	return -1;
+>> +}
+>> +
+>> +ssize_t iio_buffer_show_timeout(struct device *dev,
+>> +				   struct device_attribute *attr,
+>> +				   char *buf)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct iio_buffer *buffer = indio_dev->buffer;
+>> +
+>> +	return sprintf(buf, "%ld\n", iio_buffer_timeout_get(buffer));
+>> +}
+>> +EXPORT_SYMBOL(iio_buffer_show_timeout);
+>> +
+>> +ssize_t iio_buffer_store_timeout(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				const char *buf,
+>> +				size_t len)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct iio_buffer *buffer = indio_dev->buffer;
+>> +	long val;
+>> +	int ret;
+>> +
+>> +	ret = kstrtol(buf, 10, &val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	mutex_lock(&indio_dev->mlock);
+>> +	if (iio_buffer_is_active(indio_dev->buffer)) {
+>> +		ret = -EBUSY;
+>> +		goto out;
+>> +	}
+>> +	ret = iio_buffer_timeout_set(buffer, val);
+>> +out:
+>> +	mutex_unlock(&indio_dev->mlock);
+>> +	return ret ? ret : len;
+>> +}
+>> +EXPORT_SYMBOL(iio_buffer_store_timeout);
+>> +
+>>   /**
+>>    * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
+>>    * @indio_dev: the iio device
+>> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+>> index 7134e8a..ab7ea54 100644
+>> --- a/drivers/iio/kfifo_buf.c
+>> +++ b/drivers/iio/kfifo_buf.c
+>> @@ -54,10 +54,14 @@ static int iio_get_length_kfifo(struct iio_buffer *r)
+>>
+>>   static IIO_BUFFER_ENABLE_ATTR;
+>>   static IIO_BUFFER_LENGTH_ATTR;
+>> +static IIO_BUFFER_WATERMARK_ATTR;
+>> +static IIO_BUFFER_TIMEOUT_ATTR;
+>>
+>>   static struct attribute *iio_kfifo_attributes[] = {
+>>   	&dev_attr_length.attr,
+>>   	&dev_attr_enable.attr,
+>> +	&dev_attr_low_watermark.attr,
+>> +	&dev_attr_timeout.attr,
+>>   	NULL,
+>>   };
+>>
+>> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+>> index 5193927..41c8f11 100644
+>> --- a/include/linux/iio/buffer.h
+>> +++ b/include/linux/iio/buffer.h
+>> @@ -61,6 +61,8 @@ struct iio_buffer_access_funcs {
+>>    * struct iio_buffer - general buffer structure
+>>    * @length:		[DEVICE] number of datums in buffer
+>>    * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
+>> + * @low_watermark:	[DEVICE] blocking read granularity in datums
+>> + * @timeout:		[DEVICE] blocking read timeout in jiffies
+>>    * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
+>>    *			control method is used
+>>    * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
+>> @@ -80,6 +82,8 @@ struct iio_buffer_access_funcs {
+>>   struct iio_buffer {
+>>   	int					length;
+>>   	int					bytes_per_datum;
+>> +	unsigned int				low_watermark;
+>> +	long					timeout;
+>>   	struct attribute_group			*scan_el_attrs;
+>>   	long					*scan_mask;
+>>   	bool					scan_timestamp;
+>> @@ -201,6 +205,34 @@ ssize_t iio_buffer_store_enable(struct device *dev,
+>>   ssize_t iio_buffer_show_enable(struct device *dev,
+>>   			       struct device_attribute *attr,
+>>   			       char *buf);
+>> +/**
+>> + * iio_buffer_show_watermark() - attr to see the read watermark
+>> + **/
+>> +ssize_t iio_buffer_show_watermark(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				char *buf);
+>> +/**
+>> + * iio_buffer_store_watermark() - attr to configure the read watermark
+>> + **/
+>> +ssize_t iio_buffer_store_watermark(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				const char *buf,
+>> +				size_t len);
+>> +/**
+>> + * iio_buffer_show_timeout() - attr to see the read timeout (microseconds)
+>> + * Note: if no timeout is set, returns -1
+>> + **/
+>> +ssize_t iio_buffer_show_timeout(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				char *buf);
+>> +/**
+>> + * iio_buffer_store_timeout() - attr to configure read timeout (microseconds)
+>> + * Note: to disable the timeout, write -1
+>> + **/
+>> +ssize_t iio_buffer_store_timeout(struct device *dev,
+>> +				struct device_attribute *attr,
+>> +				const char *buf,
+>> +				size_t len);
+>>   #define IIO_BUFFER_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
+>>   					   iio_buffer_read_length,	\
+>>   					   iio_buffer_write_length)
+>> @@ -209,6 +241,14 @@ ssize_t iio_buffer_show_enable(struct device *dev,
+>>   					   iio_buffer_show_enable,	\
+>>   					   iio_buffer_store_enable)
+>>
+>> +#define IIO_BUFFER_WATERMARK_ATTR DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,	\
+>> +					   iio_buffer_show_watermark,	\
+>> +					   iio_buffer_store_watermark)
+>> +
+>> +#define IIO_BUFFER_TIMEOUT_ATTR DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR,	\
+>> +					   iio_buffer_show_timeout,	\
+>> +					   iio_buffer_store_timeout)
+>> +
+>>   bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+>>   	const unsigned long *mask);
+>>
+>>
 
-for you to fetch changes up to 88f6da779a37a3579e580296776ba86d6c6bd980:
 
-   iio: accel: kxcjk1013 Fix missing unlock errors (2014-06-16 20:57:36 +0100)
-
-----------------------------------------------------------------
-First round of new drivers, cleanups and functionality for the 3.17 cycle.
-
-New drivers
-* t5403 barometric pressure sensor
-* kxcjk1013 accelerometer (with a locking followup fix).
-* ak09911 digital compass
-
-Documentation
-* ABI docs for proximity added (interface has been there a long time but
-   somehow snuck through without being documented)
-* Move iio-trig-sysfs documentation out of staging (got left behind when
-   the driver moved some time ago).
-
-Cleanups
-  * drop the timestamp argument from iio_trigger_poll(_chained) as
-    nothing has been done with it for some time.
-  * ad799x kerneldoc for ad799x_chip brought up to date.
-  * replace a number of reimplementations of the GENMASK macro and
-    use the BIT macro to cleanup a few locations.
-  * bring the iio_event_monitor example program up to date with new
-    device types.
-  * fix some incorrect function prototypes in iio_utils.h example code.
-  * INDIO_RING_TRIGGERED to INDIO_BUFFER_TRIGGERED fix in docs. This
-    got left behind after we renamed it a long time back.
-  * fix error handling in the generic_buffer example program.
-  * small tidy ups in the iio-trig-periodic-rtc driver.
-  * Allow reseting iio-trig-periodic-rtc frequency to 0 (default) after
-    it has changed.
-  * Trivial tidy ups in coding style in iio_simply_dummy
-
-----------------------------------------------------------------
-Jimmy Picard (1):
-       staging: iio: fix coding style by adding blank lines in iio_simple_dummy
-
-Peter Meerwald (16):
-       iio: Add ABI documentation for proximity
-       iio: Add t5403 barometric pressure sensor driver
-       iio:adc:ad799x: Fix ad799x_chip_info kerneldoc
-       iio:adc:ad5791: Use BIT() and GENMASK() macros
-       iio:adc:ad5504: Use BIT() and GENMASK() macros
-       iio:adc:ad7887: Use BIT() and GENMASK() macros
-       iio:adc:ad7476: Use GENMASK() macro
-       iio:adc:ad7298: Use BIT() and GENMASK() macros
-       iio: Move documentation of iio-trig-sysfs to ABI/testing
-       staging:iio: Update iio_event_monitor program
-       staging:iio: Fix iio_utils.h function prototypes
-       staging:iio: Fix mention of INDIO_RING_TRIGGERED to INDIO_BUFFER_TRIGGERED
-       staging:iio: Fix error handling in generic_buffer example
-       staging:iio-trig-periodic-rtc: Cleanup
-       staging:iio-trig-periodic-rtc: Allow to reset frequency to 0
-       iio: Remove timestamp argument from iio_trigger_poll() and iio_trigger_poll_chained()
-
-Srinivas Pandruvada (3):
-       iio: accel: kxcjk1013 3-axis accelerometer driver
-       iio: AK09911 : 3 axis compass support
-       iio: accel: kxcjk1013 Fix missing unlock errors
-
-  Documentation/ABI/testing/sysfs-bus-iio            |  13 +
-  .../ABI/testing}/sysfs-bus-iio-trigger-sysfs       |   0
-  drivers/iio/accel/Kconfig                          |  12 +
-  drivers/iio/accel/Makefile                         |   1 +
-  drivers/iio/accel/kxcjk-1013.c                     | 764 +++++++++++++++++++++
-  drivers/iio/adc/ad7298.c                           |  21 +-
-  drivers/iio/adc/ad7476.c                           |   5 +-
-  drivers/iio/adc/ad7887.c                           |  21 +-
-  drivers/iio/adc/ad799x.c                           |   3 +-
-  drivers/iio/adc/ad_sigma_delta.c                   |   2 +-
-  drivers/iio/adc/at91_adc.c                         |   2 +-
-  drivers/iio/adc/xilinx-xadc-core.c                 |   2 +-
-  drivers/iio/dac/ad5504.c                           |  11 +-
-  drivers/iio/dac/ad5791.c                           |  29 +-
-  drivers/iio/industrialio-trigger.c                 |   8 +-
-  drivers/iio/light/gp2ap020a00f.c                   |   2 +-
-  drivers/iio/magnetometer/Kconfig                   |  10 +
-  drivers/iio/magnetometer/Makefile                  |   1 +
-  drivers/iio/magnetometer/ak09911.c                 | 326 +++++++++
-  drivers/iio/pressure/Kconfig                       |  10 +
-  drivers/iio/pressure/Makefile                      |   1 +
-  drivers/iio/pressure/t5403.c                       | 275 ++++++++
-  drivers/iio/proximity/as3935.c                     |   2 +-
-  drivers/iio/trigger/iio-trig-interrupt.c           |   3 +-
-  drivers/iio/trigger/iio-trig-sysfs.c               |   2 +-
-  drivers/staging/iio/Documentation/generic_buffer.c |   9 +-
-  .../staging/iio/Documentation/iio_event_monitor.c  |  10 +
-  drivers/staging/iio/Documentation/iio_utils.h      |   6 +-
-  drivers/staging/iio/Documentation/trigger.txt      |   2 +-
-  drivers/staging/iio/accel/lis3l02dq_ring.c         |   2 +-
-  drivers/staging/iio/adc/mxs-lradc.c                |   2 +-
-  drivers/staging/iio/iio_simple_dummy.c             |   2 +
-  drivers/staging/iio/meter/ade7758_trigger.c        |   2 +-
-  drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |   2 +-
-  .../staging/iio/trigger/iio-trig-periodic-rtc.c    |  29 +-
-  include/linux/iio/accel/kxcjk_1013.h               |  22 +
-  include/linux/iio/trigger.h                        |   5 +-
-  37 files changed, 1535 insertions(+), 84 deletions(-)
-  rename {drivers/staging/iio/Documentation => Documentation/ABI/testing}/sysfs-bus-iio-trigger-sysfs (100%)
-  create mode 100644 drivers/iio/accel/kxcjk-1013.c
-  create mode 100644 drivers/iio/magnetometer/ak09911.c
-  create mode 100644 drivers/iio/pressure/t5403.c
-  create mode 100644 include/linux/iio/accel/kxcjk_1013.h
