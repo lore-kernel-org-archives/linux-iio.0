@@ -1,316 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:46489 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:34338 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754751AbaFNRGy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 13:06:54 -0400
-Message-ID: <539C8194.6010002@kernel.org>
-Date: Sat, 14 Jun 2014 18:08:36 +0100
+	id S1755875AbaFPULW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 16 Jun 2014 16:11:22 -0400
+Message-ID: <539F4FDC.80300@kernel.org>
+Date: Mon, 16 Jun 2014 21:13:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>,
-	linux-iio@vger.kernel.org
-CC: lars@metafoo.de
-Subject: Re: [PATCH v2] iio: make blocking read wait for data
-References: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
-In-Reply-To: <1402417591-32536-1-git-send-email-josselin.costanzi@mobile-devices.fr>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Support Opensource <Support.Opensource@diasemi.com>
+Subject: Re: [PATCH 1/8] mfd: Add support for DA9150 combined charger & fuel-gauge
+ device
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com> <bf472aa7fddd1e67a3d5b9024b5b621744146a27.1402484954.git.Adam.Thomson.Opensource@diasemi.com> <539DF8C6.8030009@kernel.org> <2E89032DDAA8B9408CB92943514A0337AB4FD95E@SW-EX-MBX01.diasemi.com>
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB4FD95E@SW-EX-MBX01.diasemi.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/06/14 17:26, Josselin Costanzi wrote:
-> Currently the IIO buffer blocking read only wait until at least one
-> data element is available.
-> This patch adds the possibility for the userspace to to blocking calls
-> for multiple elements. This should limit the read() calls count when
-> trying to get data in batches.
-> This commit also fix a bug where data is lost if an error happens
-> after some data is already read.
+On 16/06/14 14:12, Opensource [Adam Thomson] wrote:
+> On Sun, Jun 15, 2014 at 20:49, Jonathan Cameron wrote:
 >
-> Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Hi Josselin,
+>> Hi Adam,
+>>
+>> Some general comments inline.
+>>
+>> It's been a while since I've looked at any particularly similar parts,
+>> but it seems to me that a lot of indirection gets added here that
+>> if anything makes the codes slightly harder to follow...
+>>
+>> Feel free to disagree with me though!
+>
+> Will do :)
+>
+>> To my mind all these wrappers add nothing significant so you might as well
+>> just call da9150->read_dev etc directly.
+>>
+>> Also, what are the read_qif and write_qif for?  They don't seem to be used
+>> anywhere.
+>
+> read_qif and write_qif are for the Fuel-Gauge functionality of the chip. The
+> associated driver will be submitted after acceptance of initial driver code,
+> and will make use of these functions.
+I'll be interested to see how this interacts with the rest of the driver.
+Or does it?  Often these dual i2c address devices are best handled as two
+entirely separate drivers sitting on the same bus.  No idea if that
+is true here as don't have a datasheet!
+>
+> The wrappers automatically choose the correct client to use (QIF uses a
+> different slave address to the main chip one). Means the child drivers only need
+> to pass through the da9150 struct and the rest is dealt with underneath.
+>
+>> The only real reason I can see for these wrappers is because you want
+>> to hide the struct da9150 contents from the children of the mfd. As you
+>> aren't doing that, you might as well drop these in favour of direct
+>> calls to regmap_read and friends.
+>
+> As I have a need to pass through the main da9150 struct point for the
+> aforementioned wrappers, it seemed cleaner and more consistent to have wrappers
+> for these as well, which did the job of regmap access. Means all HW access
+> uses the same kind of approach, and all sub-devices just need a point to the
+> main da9150 struct to be able to use the functions.
+>
+>> I'll continue my tirade against obvious comments. Wrong format and
+>> adds nothing to what is here as init and exit functions are clearly
+>> doing what their name suggests (it's one of my pet hates ;)
+>
+> I agree the comment doesn't add much in terms of description but for me it
+> breaks up the code to make it easier to follow. However if I get an overwhelming
+> hatred for this I can change it. Also, I know the rule regarding single/multiple
+> line comments but here again I feel it helps separate the code and makes it
+> easier to read.
+Kernel code generally has to keep to the kernel coding style.  If you leave the
+single line comments as are, then chances are the mfd maintainers will get a
+patch soon after 'fixing' them which is always irritating.
 
-Thanks for taking this on. Definitely a useful little bit of functionality.
-I'll take a close look once all the bits Lars picked up on are sorted.
+Having said that, mfd is their area not mine, so up to Lee / Samuel.
+The same is true of the code structure comments. Now for the IIO driver
+I get to be picky ;)
+>
+>> As a general good practice point, I'd rather that the driver supported
+>> more than one instance of the chip.. Hence you'd take a copy of da9150_devs
+>> to use here.  I guess it is relatively unlikely with one of these, but
+>> you never know ;)
+>
+> Have followed the general methods for MFD here, and a number of drivers take the
+> same approach. Also, I think it would be undesirable to have multiple charger
+> chips of the same type in one platform. I agree generally it's best to support
+> multiple instances, but here I don't think we should.
+I'm happy to let this go if it is something that would not be done, but we
+certainly should not be preventing it if someone wants to build hardware
+with more than one of these.  If they submit a patch later allowing it because
+they have hardware that does this, then there is no way anyone is going to
+block it.
+>
+>> Why does this need it's own file?  Does the DA9150 support any other
+>> interfaces?
+>
+> Yes, the DA9150 also has a SPI interface. At present the plan is to just add I2C
+> support for now, but in the future we may add SPI support, so have written the
+> code with this in mind.
+>
+>> Why the indirection?  The da9150 only supports i2c as far as I can see.
+>
+> As per my last comment.
+Fair enough.  I couldn't find a datasheet and the product brief only seemed to mention
+i2c.
+>
+>> I'd roll this into one line and not bother with the local variable...
+>
+> Fair enough but I think this keeps the code cleaner, and to me it makes sense
+> for the actual logic to be in core file as that's interface agnostic.
+>
+>> Drop comments on things that are self-evident.  Also these are one
+>> line comments so should be using the single line comment syntax.
+>
+> As per my previous comment I think it just helps to break up the code and makes
+> it more readable. Will change it though if the general consensus is to remove
+> it.
 
-Right now, why watermark_low?  (rather than simply watermark?).
-
-And you know what comes with adding new ABI.  Documentation please :)
-> ---
->   drivers/iio/industrialio-buffer.c | 138 ++++++++++++++++++++++++++++++++++----
->   drivers/iio/kfifo_buf.c           |   4 ++
->   include/linux/iio/buffer.h        |  40 +++++++++++
->   3 files changed, 169 insertions(+), 13 deletions(-)
->
-> Changelog:
-> v2: thanks to Lars-Peter Clausen and Jonathan Cameron
-> - Avoid breaking default ABI
-> - Add watermark and timeout properties to buffers
->
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 36b1ae9..1fe0116 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -56,6 +56,10 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->   {
->   	struct iio_dev *indio_dev = filp->private_data;
->   	struct iio_buffer *rb = indio_dev->buffer;
-> +	size_t datum_size = rb->access->get_bytes_per_datum(rb);
-> +	size_t watermark_bytes = rb->low_watermark * datum_size;
-> +	size_t count = 0;
-> +	long timeout = rb->timeout;
->   	int ret;
->
->   	if (!indio_dev->info)
-> @@ -66,24 +70,35 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->
->   	do {
->   		if (!iio_buffer_data_available(rb)) {
-> -			if (filp->f_flags & O_NONBLOCK)
-> -				return -EAGAIN;
-> +			if (filp->f_flags & O_NONBLOCK) {
-> +				ret = -EAGAIN;
-> +				break;
-> +			}
->
-> -			ret = wait_event_interruptible(rb->pollq,
-> +			timeout = wait_event_interruptible_timeout(rb->pollq,
->   					iio_buffer_data_available(rb) ||
-> -					indio_dev->info == NULL);
-> -			if (ret)
-> -				return ret;
-> -			if (indio_dev->info == NULL)
-> -				return -ENODEV;
-> +					indio_dev->info == NULL,
-> +					timeout);
-> +			if (timeout <= 0) {
-> +				ret = timeout;
-> +				break;
-> +			}
-> +
-> +			if (indio_dev->info == NULL) {
-> +				ret = -ENODEV;
-> +				break;
-> +			}
->   		}
->
-> -		ret = rb->access->read_first_n(rb, n, buf);
-> -		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
-> -			ret = -EAGAIN;
-> -	 } while (ret == 0);
-> +		ret = rb->access->read_first_n(rb, n, buf + count);
-> +		if (ret < 0)
-> +			break;
->
-> -	return ret;
-> +		n -= ret;
-> +		count += ret;
-> +	 } while (n > 0 && count < watermark_bytes);
-> +
-> +	return count ? count : ret;
->   }
->
->   /**
-> @@ -126,6 +141,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
->   	INIT_LIST_HEAD(&buffer->buffer_list);
->   	init_waitqueue_head(&buffer->pollq);
->   	kref_init(&buffer->ref);
-> +	buffer->low_watermark = 1;
-> +	buffer->timeout = MAX_SCHEDULE_TIMEOUT;
->   }
->   EXPORT_SYMBOL(iio_buffer_init);
->
-> @@ -795,6 +812,101 @@ done:
->   }
->   EXPORT_SYMBOL(iio_buffer_store_enable);
->
-> +ssize_t iio_buffer_show_watermark(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +
-> +	return sprintf(buf, "%u\n", buffer->low_watermark);
-> +}
-> +EXPORT_SYMBOL(iio_buffer_show_watermark);
-> +
-> +ssize_t iio_buffer_store_watermark(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = kstrtouint(buf, 10, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	if (iio_buffer_is_active(indio_dev->buffer)) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +
-> +	buffer->low_watermark = val;
-> +	ret = 0;
-> +out:
-> +	mutex_unlock(&indio_dev->mlock);
-> +	return ret ? ret : len;
-> +}
-> +EXPORT_SYMBOL(iio_buffer_store_watermark);
-> +
-> +static int iio_buffer_timeout_set(struct iio_buffer *buffer, long timeout_us)
-> +{
-> +	if (timeout_us >= 0) {
-> +		buffer->timeout = usecs_to_jiffies(timeout_us);
-> +	} else if (timeout_us == -1){
-> +		buffer->timeout = MAX_SCHEDULE_TIMEOUT;
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static long iio_buffer_timeout_get(struct iio_buffer *buffer)
-> +{
-> +	if (buffer->timeout != MAX_SCHEDULE_TIMEOUT)
-> +		return jiffies_to_usecs(buffer->timeout);
-> +	return -1;
-> +}
-> +
-> +ssize_t iio_buffer_show_timeout(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +
-> +	return sprintf(buf, "%ld\n", iio_buffer_timeout_get(buffer));
-> +}
-> +EXPORT_SYMBOL(iio_buffer_show_timeout);
-> +
-> +ssize_t iio_buffer_store_timeout(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +	long val;
-> +	int ret;
-> +
-> +	ret = kstrtol(buf, 10, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	if (iio_buffer_is_active(indio_dev->buffer)) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +	ret = iio_buffer_timeout_set(buffer, val);
-> +out:
-> +	mutex_unlock(&indio_dev->mlock);
-> +	return ret ? ret : len;
-> +}
-> +EXPORT_SYMBOL(iio_buffer_store_timeout);
-> +
->   /**
->    * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
->    * @indio_dev: the iio device
-> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-> index 7134e8a..ab7ea54 100644
-> --- a/drivers/iio/kfifo_buf.c
-> +++ b/drivers/iio/kfifo_buf.c
-> @@ -54,10 +54,14 @@ static int iio_get_length_kfifo(struct iio_buffer *r)
->
->   static IIO_BUFFER_ENABLE_ATTR;
->   static IIO_BUFFER_LENGTH_ATTR;
-> +static IIO_BUFFER_WATERMARK_ATTR;
-> +static IIO_BUFFER_TIMEOUT_ATTR;
->
->   static struct attribute *iio_kfifo_attributes[] = {
->   	&dev_attr_length.attr,
->   	&dev_attr_enable.attr,
-> +	&dev_attr_low_watermark.attr,
-> +	&dev_attr_timeout.attr,
->   	NULL,
->   };
->
-> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-> index 5193927..41c8f11 100644
-> --- a/include/linux/iio/buffer.h
-> +++ b/include/linux/iio/buffer.h
-> @@ -61,6 +61,8 @@ struct iio_buffer_access_funcs {
->    * struct iio_buffer - general buffer structure
->    * @length:		[DEVICE] number of datums in buffer
->    * @bytes_per_datum:	[DEVICE] size of individual datum including timestamp
-> + * @low_watermark:	[DEVICE] blocking read granularity in datums
-> + * @timeout:		[DEVICE] blocking read timeout in jiffies
->    * @scan_el_attrs:	[DRIVER] control of scan elements if that scan mode
->    *			control method is used
->    * @scan_mask:		[INTERN] bitmask used in masking scan mode elements
-> @@ -80,6 +82,8 @@ struct iio_buffer_access_funcs {
->   struct iio_buffer {
->   	int					length;
->   	int					bytes_per_datum;
-> +	unsigned int				low_watermark;
-> +	long					timeout;
->   	struct attribute_group			*scan_el_attrs;
->   	long					*scan_mask;
->   	bool					scan_timestamp;
-> @@ -201,6 +205,34 @@ ssize_t iio_buffer_store_enable(struct device *dev,
->   ssize_t iio_buffer_show_enable(struct device *dev,
->   			       struct device_attribute *attr,
->   			       char *buf);
-> +/**
-> + * iio_buffer_show_watermark() - attr to see the read watermark
-> + **/
-> +ssize_t iio_buffer_show_watermark(struct device *dev,
-> +				struct device_attribute *attr,
-> +				char *buf);
-> +/**
-> + * iio_buffer_store_watermark() - attr to configure the read watermark
-> + **/
-> +ssize_t iio_buffer_store_watermark(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t len);
-> +/**
-> + * iio_buffer_show_timeout() - attr to see the read timeout (microseconds)
-> + * Note: if no timeout is set, returns -1
-> + **/
-> +ssize_t iio_buffer_show_timeout(struct device *dev,
-> +				struct device_attribute *attr,
-> +				char *buf);
-> +/**
-> + * iio_buffer_store_timeout() - attr to configure read timeout (microseconds)
-> + * Note: to disable the timeout, write -1
-> + **/
-> +ssize_t iio_buffer_store_timeout(struct device *dev,
-> +				struct device_attribute *attr,
-> +				const char *buf,
-> +				size_t len);
->   #define IIO_BUFFER_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
->   					   iio_buffer_read_length,	\
->   					   iio_buffer_write_length)
-> @@ -209,6 +241,14 @@ ssize_t iio_buffer_show_enable(struct device *dev,
->   					   iio_buffer_show_enable,	\
->   					   iio_buffer_store_enable)
->
-> +#define IIO_BUFFER_WATERMARK_ATTR DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,	\
-> +					   iio_buffer_show_watermark,	\
-> +					   iio_buffer_store_watermark)
-> +
-> +#define IIO_BUFFER_TIMEOUT_ATTR DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR,	\
-> +					   iio_buffer_show_timeout,	\
-> +					   iio_buffer_store_timeout)
-> +
->   bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
->   	const unsigned long *mask);
->
->
 
