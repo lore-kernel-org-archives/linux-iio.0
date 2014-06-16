@@ -1,78 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f54.google.com ([209.85.215.54]:47870 "EHLO
-	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751510AbaFKNCE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jun 2014 09:02:04 -0400
-MIME-Version: 1.0
-In-Reply-To: <CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
-References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<bf4b6d7b061e66d3ca7f3dd44319b9e26ae7103f.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
-	<CAMuHMdWirVk+jrz40yw4=zAOFH6VTX9CXcpO01e0rK8S8VGGHw@mail.gmail.com>
-	<CAL_JsqK0RqYuZ8YB1sBZK7hMXvp6oEPfAu11m95F61_kGV3Ptg@mail.gmail.com>
-Date: Wed, 11 Jun 2014 15:01:57 +0200
-Message-ID: <CAMuHMdVD1Rui6NL6AS2iAaw+bmXbU6juA9ugO1rFSw_5W-49tA@mail.gmail.com>
-Subject: Re: [PATCH 8/8] DT: Add vendor prefix for Dialog Semiconductor Ltd.
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: Rob Herring <robherring2@gmail.com>
-Cc: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
+Received: from smtp6-g21.free.fr ([212.27.42.6]:53590 "EHLO smtp6-g21.free.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755307AbaFPJ3R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 16 Jun 2014 05:29:17 -0400
+From: Denis Carikli <denis@eukrea.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	support.opensource@diasemi.com,
-	Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Simon Horman <horms@verge.net.au>,
-	Linux-sh list <linux-sh@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Denis Carikli <denis@eukrea.com>
+Subject: [PATCH v3 5/6] ARM: dts: imx25: mbimxsd25: Add touchscreen support.
+Date: Mon, 16 Jun 2014 11:28:52 +0200
+Message-Id: <1402910933-20534-5-git-send-email-denis@eukrea.com>
+In-Reply-To: <1402910933-20534-1-git-send-email-denis@eukrea.com>
+References: <1402910933-20534-1-git-send-email-denis@eukrea.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 11, 2014 at 2:43 PM, Rob Herring <robherring2@gmail.com> wrote:
-> On Wed, Jun 11, 2014 at 7:09 AM, Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
->> On Wed, Jun 11, 2014 at 1:11 PM, Adam Thomson
->> <Adam.Thomson.Opensource@diasemi.com> wrote:
->>> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> @@ -36,6 +36,7 @@ dallas        Maxim Integrated Products (formerly Dallas Semiconductor)
->>>  davicom        DAVICOM Semiconductor, Inc.
->>>  denx   Denx Software Engineering
->>>  digi   Digi International Inc.
->>> +dlg    Dialog Semiconductor Ltd.
->>
->> "diasemi" has been proposed before
->> https://groups.google.com/forum/#!msg/linux.kernel/htUxLpV_Ng0/ClJVAxgK4e4J
->>
->> "dialog", "diasemi", and "dlg" all seem to be already in use...
->
-> dlg is the correct one and seems to be the most widely used, so we
-> should go with that and mark the others deprecated.
->
-> diasemi is documented for the da9210, but not used anywhere.
+Signed-off-by: Denis Carikli <denis@eukrea.com>
+---
+Changelog v2->v3:
+- Most of the non-board specific tsc and tscadc
+  parts were moved to imx25.dtsi. So this patch
+  was adapted to that.
+- Thanks to a fix in the tsc driver, the 
+  'fsl,pen-debounce = <100>;' is not necessary anymore.
+---
+ .../imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts  |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-It users are queued in Simon's tree, for two Renesas boards.
+diff --git a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
+index 9797280..df24046 100644
+--- a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
++++ b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
+@@ -70,3 +70,11 @@
+ 	lcd-supply = <&reg_lcd_3v3>;
+ 	status = "okay";
+ };
++
++&tsc {
++	status = "okay";
++};
++
++&tscadc {
++	status = "okay";
++};
+-- 
+1.7.9.5
 
-> There appears to be 2 different da9053 bindings. I'd guess the dialog
-> variant used on 2 i.MX boards is not used. Other i.MX boards use the
-> dlg version. I'm not sure what is going on with da9055. Please sort
-> these out.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
