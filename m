@@ -1,137 +1,89 @@
-Return-Path: <beomho.seo@samsung.com>
-From: Beomho Seo <beomho.seo@samsung.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, j.anaszewski@samsung.com,
- sachin.kamat@linaro.org, ch.naveen@samsung.com, ktsai@capellamicro.com,
- srinivas.pandruvada@linux.intel.com, t.figa@samsung.com
-Cc: myungjoo.ham@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com,
- Beomho Seo <beomho.seo@samsung.com>
-Subject: [PATCH v2] iio: magnetometer: ak8975: Use devm_* APIs
-Date: Mon, 23 Jun 2014 21:34:05 +0900
-Message-id: <1403526846-28299-1-git-send-email-beomho.seo@samsung.com>
+Return-Path: <denis@eukrea.com>
+Message-ID: <539F1373.9090006@eukrea.com>
+Date: Mon, 16 Jun 2014 17:55:31 +0200
+From: Denis Carikli <denis@eukrea.com>
+MIME-Version: 1.0
+To: Lee Jones <lee.jones@linaro.org>
+CC: linux-input@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+ Samuel Ortiz <sameo@linux.intel.com>,
+ =?UTF-8?B?RXJpYyBCw6luYXJk?= <eric@eukrea.com>,
+ linux-iio@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, Peter Meerwald <pmeerw@pmeerw.net>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ Markus Pargmann <mpa@pengutronix.de>, Shawn Guo <shawn.guo@linaro.org>,
+ Fabio Estevam <festevam@gmail.com>,
+ Sascha Hauer <kernel@pengutronix.de>,
+ Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 1/6] mfd: fsl imx25 Touchscreen ADC driver
+References: <1402910933-20534-1-git-send-email-denis@eukrea.com> <20140616112649.GQ14323@lee--X1>
+In-Reply-To: <20140616112649.GQ14323@lee--X1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch use devm_* APIs make driver simpler.
+On 06/16/2014 01:26 PM, Lee Jones wrote:
+>
+>> +static void mx25_tsadc_nop(struct irq_data *d)
+>> +{
+>> +}
+>
+> Err, no, this is not required.  Just don't populate the call-backs.
+>
+>> +static int mx25_tsadc_set_wake_nop(struct irq_data *d, unsigned int state)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static struct irq_chip mx25_tsadc_irq_chip = {
+>> +	.name = "mx25-tsadc",
+>> +	.irq_ack = mx25_tsadc_nop,
+>> +	.irq_mask = mx25_tsadc_nop,
+>> +	.irq_unmask = mx25_tsadc_nop,
+>
+> No need to do this.
 
-Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
----
-Changes in v2:
-- Return -ENOMEM and -ENPOSYS directly.
-- Withdraw some patch set because ordering issue.
----
- drivers/iio/magnetometer/ak8975.c |   58 +++++++++----------------------------
- 1 file changed, 14 insertions(+), 44 deletions(-)
+I can avoid all callbacks but the irq_mask/irq_unmask ones:
+Even if I add some flags to prevent it to be called during probe, it 
+can't be avoided to be called when an IRQ arrives.
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 09ea5c4..a29592c 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -165,7 +165,7 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- 	else
- 		irq = gpio_to_irq(data->eoc_gpio);
- 
--	rc = request_irq(irq, ak8975_irq_handler,
-+	rc = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
- 			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 			 dev_name(&client->dev), data);
- 	if (rc < 0) {
-@@ -520,21 +520,21 @@ static int ak8975_probe(struct i2c_client *client,
- 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
- 	   poll if so */
- 	if (gpio_is_valid(eoc_gpio)) {
--		err = gpio_request_one(eoc_gpio, GPIOF_IN, "ak_8975");
-+		err = devm_gpio_request_one(&client->dev, eoc_gpio,
-+							GPIOF_IN, "ak_8975");
- 		if (err < 0) {
- 			dev_err(&client->dev,
- 				"failed to request GPIO %d, error %d\n",
- 							eoc_gpio, err);
--			goto exit;
-+			return err;
- 		}
- 	}
- 
- 	/* Register with IIO */
--	indio_dev = iio_device_alloc(sizeof(*data));
--	if (indio_dev == NULL) {
--		err = -ENOMEM;
--		goto exit_gpio;
--	}
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 
-@@ -549,17 +549,16 @@ static int ak8975_probe(struct i2c_client *client,
- 		name = (char *) id->name;
- 	} else if (ACPI_HANDLE(&client->dev))
- 		name = ak8975_match_acpi_device(&client->dev, &data->chipset);
--	else {
--		err = -ENOSYS;
--		goto exit_free_iio;
--	}
-+	else
-+		return -ENOSYS;
-+
- 	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
- 
- 	/* Perform some basic start-of-day setup of the device. */
- 	err = ak8975_setup(client);
- 	if (err < 0) {
- 		dev_err(&client->dev, "AK8975 initialization fails\n");
--		goto exit_free_iio;
-+		return err;
- 	}
- 
- 	data->client = client;
-@@ -571,37 +570,9 @@ static int ak8975_probe(struct i2c_client *client,
- 	indio_dev->info = &ak8975_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = name;
--	err = iio_device_register(indio_dev);
-+	err = devm_iio_device_register(&client->dev, indio_dev);
- 	if (err < 0)
--		goto exit_free_iio;
--
--	return 0;
--
--exit_free_iio:
--	iio_device_free(indio_dev);
--	if (data->eoc_irq)
--		free_irq(data->eoc_irq, data);
--exit_gpio:
--	if (gpio_is_valid(eoc_gpio))
--		gpio_free(eoc_gpio);
--exit:
--	return err;
--}
--
--static int ak8975_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct ak8975_data *data = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--
--	if (data->eoc_irq)
--		free_irq(data->eoc_irq, data);
--
--	if (gpio_is_valid(data->eoc_gpio))
--		gpio_free(data->eoc_gpio);
--
--	iio_device_free(indio_dev);
-+		return err;
- 
- 	return 0;
- }
-@@ -628,7 +599,6 @@ static struct i2c_driver ak8975_driver = {
- 		.acpi_match_table = ACPI_PTR(ak_acpi_match),
- 	},
- 	.probe		= ak8975_probe,
--	.remove		= ak8975_remove,
- 	.id_table	= ak8975_id,
- };
- module_i2c_driver(ak8975_driver);
--- 
-1.7.9.5
+It's called by handle_level_irq, which is setup as handler in 
+mx25_tsadc_domain_map. I don't think it's a good idea to rewrite it not 
+to depend on irq_mask/irq_unmask.
+
+Here's what happens when an IRQ arrives (Shortened version):
+[<c005391c>] (handle_level_irq)
+[<c0050930>] (generic_handle_irq)
+[<c02dc544>] (mx25_tsadc_irq_handler)
+[<c0050930>] (generic_handle_irq)
+[<c0009e64>] (handle_IRQ)
+[<c0008710>] (avic_handle_irq)
+[...]
+
+Then handle_level_irq it runs mask_ack_irq inconditionally.
+mask_ack_irq in turn will try to executes irq_mask_ack or else irq_mask 
+(without checking if it's NULL) and then will provoke the NULL pointer.
+
+Instead when I look in drivers/mfd/ I see the following drivers which 
+have some dummy handlers:
+wm8994-irq.c, ucb1x00-core.c, tc6393xb.c, htc-egpio.c, arizona-irq.c
+
+So I wonder if dummy callbacks are allowed or if it's an old practice 
+that has been deprecated.
+
+Else I wonder how to avoid them:
+- By setting some flags (which ones?).
+- Or by re-architecting the IRQ handling between the MFD and its 
+sub-devices in a way that the mfd driver is responsible for enabling and 
+disabling the IRQs (instead of its subdevices). That would be done 
+inside .irq_enable() and a .irq_disable().
+Most of the mfd drivers that handle an IRQ controller have theses callbacks.
+
+In the later case, how the subdevice would enable the interrupts, would 
+it be done automatically? or would it have to enable the parent mfd's 
+interrupts trough explicit callbacks or wrapper functions that will call 
+the callbacks(irq_enable and so on, with the irq taken from the mfd's 
+private struct).
+
+I've fixed the rest of the concerns but I'll wait for an answer before 
+resending so I can fix this issue too.
+
+Denis.
