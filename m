@@ -1,318 +1,678 @@
-Return-Path: <naveenkrishna.ch@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:34149 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753365AbaFPUEq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 16 Jun 2014 16:04:46 -0400
+Message-ID: <539F4E50.9040209@kernel.org>
+Date: Mon, 16 Jun 2014 21:06:40 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1403058061-24271-2-git-send-email-cw00.choi@samsung.com>
-References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com> <1403058061-24271-2-git-send-email-cw00.choi@samsung.com>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Wed, 18 Jun 2014 10:57:35 +0530
-Message-ID: <CAHfPSqDjthqrV0X_XXBRvQk8C-yzBmcMB91OS8gpj9Q-tyKfRQ@mail.gmail.com>
-Subject: Re: [PATCHv4 1/4] iio: adc: exynos_adc: Add exynos_adc_ops structure
- to improve readability
-To: Chanwoo Choi <cw00.choi@samsung.com>
-Cc: jic23@kernel.org, My self <ch.naveen@samsung.com>, t.figa@samsung.com,
-	Kukjin Kim <kgene.kim@samsung.com>, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, armadeus-forum@lists.sourceforge.net,
+	knaack.h@gmx.de, lars@metafoo.de, devicetree@vger.kernel.org,
+	pmeerw@pmeerw.net
+Subject: Re: [PATCH v7] iio: add support of the max1027
+References: <1402784830-5853-1-git-send-email-tremyfr@yahoo.fr>
+In-Reply-To: <1402784830-5853-1-git-send-email-tremyfr@yahoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Chanwoo,
-
-On 18 June 2014 07:50, Chanwoo Choi <cw00.choi@samsung.com> wrote:
-> This patchset add 'exynos_adc_ops' structure which includes some functions
-> to control ADC operation according to ADC version (v1 or v2).
+On 14/06/14 23:27, Philippe Reynes wrote:
+> This driver add partial support of the
+> maxim 1027/1029/1031. Differential mode is not
+> supported.
 >
-> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> It was tested on armadeus apf27 board.
+>
+> Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
+I'm happy with this now.
 
-This is a good piece of change, Thanks.
+Hartmut, anything else you want to raise, or do you want to add
+a reviewed by? No particular rush at this point in a cycle so
+would be nice to acknowledge your hard work - I am very pleased
+to see how my reviewing you (and others!) are now doing on this
+list.  Makes my side of things much more manageable!
 
-Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+J
 > ---
->  drivers/iio/adc/exynos_adc.c | 174 +++++++++++++++++++++++++++++--------------
->  1 file changed, 120 insertions(+), 54 deletions(-)
+>   .../devicetree/bindings/iio/adc/max1027-adc.txt    |   22 +
+>   drivers/iio/adc/Kconfig                            |    9 +
+>   drivers/iio/adc/Makefile                           |    1 +
+>   drivers/iio/adc/max1027.c                          |  521 ++++++++++++++++++++
+>   4 files changed, 553 insertions(+), 0 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>   create mode 100644 drivers/iio/adc/max1027.c
 >
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index 010578f..c30def6 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -90,6 +90,7 @@ struct exynos_adc {
->         struct clk              *clk;
->         unsigned int            irq;
->         struct regulator        *vdd;
-> +       struct exynos_adc_ops   *ops;
+> Changelog:
+> v7: (thanks Hartmut Knaack and Jonathan Cameron for the feedback)
+> - use const with info in max1027_state
+> - use bitops.h (and BIT)
+> - separate operators with whitespace
+> - define a reg member in max1027_state
 >
->         struct completion       completion;
+> v6: (thanks Peter Meerwald for the feedback)
+> - dont use index with temperature
+> - use const on scan mask
+> - use __be16 * for buffer
+> - return -EBUSY if trigger is already running
+> - replace it by interrupt in comment
+> - dont finish case with ";"
+> - use iio_push_to_buffers
+> - remove useless initialization of st->buffer
+> - remove useless obvious comment
 >
-> @@ -97,6 +98,13 @@ struct exynos_adc {
->         unsigned int            version;
->  };
+> v5: (thanks Jonathan Cameron for the feedback)
+> - add validate_trigger
+> - add validate_device
+> - remove useless (void *) cast
+> - use allocated buffer for spi_write
 >
-> +struct exynos_adc_ops {
-> +       void (*init_hw)(struct exynos_adc *info);
-> +       void (*clear_irq)(struct exynos_adc *info);
-> +       void (*start_conv)(struct exynos_adc *info, unsigned long addr);
-> +       void (*stop_conv)(struct exynos_adc *info);
+> v4: (thanks Jonathan Cameron for the feedback)
+> - use iio_trigger_generic_data_rdy_poll
+>
+> v3: (thanks Hartmut Knaack, Lars-Peter Clausen and Jonathan Cameron for the feedback)
+> - move to drivers/iio/adc (was in staging)
+> - clean binding doc
+> - drop empty update_scan_mode callback
+> - add a lock around single channel read code
+> - remove useless wrappers around spi_write and spi_read
+> - fix available scan mask (a bit was missing)
+> - remove useless header
+> - some others little cleanp
+>
+> v2: (thanks Hartmut Knaack and Jonathan Cameron for the feedback)
+> - really use devm_*
+> - use demux magic
+> - use spi_read and spi_write (instead of spi_sync)
+> - use define for register (instead of hardcoded value)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+> new file mode 100644
+> index 0000000..a8770cc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+> @@ -0,0 +1,22 @@
+> +* Maxim 1027/1029/1031 Analog to Digital Converter (ADC)
+> +
+> +Required properties:
+> +  - compatible: Should be "maxim,max1027" or "maxim,max1029" or "maxim,max1031"
+> +  - reg: SPI chip select number for the device
+> +  - interrupt-parent: phandle to the parent interrupt controller
+> +  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> +  - interrupts: IRQ line for the ADC
+> +  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> +
+> +Recommended properties:
+> +- spi-max-frequency: Definition as per
+> +                     Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Example:
+> +adc@0 {
+> +	compatible = "maxim,max1027";
+> +	reg = <0>;
+> +	interrupt-parent = <&gpio5>;
+> +	interrupts = <15 IRQ_TYPE_EDGE_RISING>;
+> +	spi-max-frequency = <1000000>;
+> +};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index a80d236..20a7073 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -131,6 +131,15 @@ config LP8788_ADC
+>   	help
+>   	  Say yes here to build support for TI LP8788 ADC.
+>
+> +config MAX1027
+> +	tristate "Maxim max1027 ADC driver"
+> +	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  Say yes here to build support for Maxim SPI ADC models
+> +	  max1027, max1029 and max1031.
+> +
+>   config MAX1363
+>   	tristate "Maxim max1363 ADC driver"
+>   	depends on I2C
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 9d60f2d..38cf5c3 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD799X) += ad799x.o
+>   obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>   obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>   obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> +obj-$(CONFIG_MAX1027) += max1027.o
+>   obj-$(CONFIG_MAX1363) += max1363.o
+>   obj-$(CONFIG_MCP320X) += mcp320x.o
+>   obj-$(CONFIG_MCP3422) += mcp3422.o
+> diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> new file mode 100644
+> index 0000000..87ee1c7
+> --- /dev/null
+> +++ b/drivers/iio/adc/max1027.c
+> @@ -0,0 +1,521 @@
+> + /*
+> +  * iio/adc/max1027.c
+> +  * Copyright (C) 2014 Philippe Reynes
+> +  *
+> +  * based on linux/drivers/iio/ad7923.c
+> +  * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
+> +  * Copyright 2012 CS Systemes d'Information
+> +  *
+> +  * This program is free software; you can redistribute it and/or modify
+> +  * it under the terms of the GNU General Public License version 2 as
+> +  * published by the Free Software Foundation.
+> +  *
+> +  * max1027.c
+> +  *
+> +  * Partial support for max1027 and similar chips.
+> +  */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/delay.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#define MAX1027_CONV_REG  BIT(7)
+> +#define MAX1027_SETUP_REG BIT(6)
+> +#define MAX1027_AVG_REG   BIT(5)
+> +#define MAX1027_RST_REG   BIT(4)
+> +
+> +/* conversion register */
+> +#define MAX1027_TEMP      BIT(0)
+> +#define MAX1027_SCAN_0_N  (0x00 << 1)
+> +#define MAX1027_SCAN_N_M  (0x01 << 1)
+> +#define MAX1027_SCAN_N    (0x02 << 1)
+> +#define MAX1027_NOSCAN    (0x03 << 1)
+> +#define MAX1027_CHAN(n)   ((n) << 3)
+> +
+> +/* setup register */
+> +#define MAX1027_UNIPOLAR  0x02
+> +#define MAX1027_BIPOLAR   0x03
+> +#define MAX1027_REF_MODE0 (0x00 << 2)
+> +#define MAX1027_REF_MODE1 (0x01 << 2)
+> +#define MAX1027_REF_MODE2 (0x02 << 2)
+> +#define MAX1027_REF_MODE3 (0x03 << 2)
+> +#define MAX1027_CKS_MODE0 (0x00 << 4)
+> +#define MAX1027_CKS_MODE1 (0x01 << 4)
+> +#define MAX1027_CKS_MODE2 (0x02 << 4)
+> +#define MAX1027_CKS_MODE3 (0x03 << 4)
+> +
+> +/* averaging register */
+> +#define MAX1027_NSCAN_4   0x00
+> +#define MAX1027_NSCAN_8   0x01
+> +#define MAX1027_NSCAN_12  0x02
+> +#define MAX1027_NSCAN_16  0x03
+> +#define MAX1027_NAVG_4    (0x00 << 2)
+> +#define MAX1027_NAVG_8    (0x01 << 2)
+> +#define MAX1027_NAVG_16   (0x02 << 2)
+> +#define MAX1027_NAVG_32   (0x03 << 2)
+> +#define MAX1027_AVG_EN    BIT(4)
+> +
+> +enum max1027_id {
+> +	max1027,
+> +	max1029,
+> +	max1031,
 > +};
 > +
->  static const struct of_device_id exynos_adc_match[] = {
->         { .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
->         { .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
-> @@ -112,30 +120,98 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
->         return (unsigned int)match->data;
->  }
->
-> -static void exynos_adc_hw_init(struct exynos_adc *info)
-> +static void exynos_adc_v1_init_hw(struct exynos_adc *info)
-> +{
-> +       u32 con1;
+> +static const struct spi_device_id max1027_id[] = {
+> +	{"max1027", max1027},
+> +	{"max1029", max1029},
+> +	{"max1031", max1031},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, max1027_id);
 > +
-> +       /* set default prescaler values and Enable prescaler */
-> +       con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id max1027_adc_dt_ids[] = {
+> +	{ .compatible = "maxim,max1027" },
+> +	{ .compatible = "maxim,max1029" },
+> +	{ .compatible = "maxim,max1031" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
+> +#endif
 > +
-> +       /* Enable 12-bit ADC resolution */
-> +       con1 |= ADC_V1_CON_RES;
-> +       writel(con1, ADC_V1_CON(info->regs));
-> +}
+> +#define MAX1027_V_CHAN(index)						\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = index,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.scan_index = index + 1,				\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 10,					\
+> +			.storagebits = 16,				\
+> +			.shift = 2,					\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
 > +
-> +static void exynos_adc_v1_start_conv(struct exynos_adc *info, unsigned long addr)
-> +{
-> +       u32 con1;
+> +#define MAX1027_T_CHAN							\
+> +	{								\
+> +		.type = IIO_TEMP,					\
+> +		.channel = 0,						\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.scan_index = 0,					\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 12,					\
+> +			.storagebits = 16,				\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
 > +
-> +       writel(addr, ADC_V1_MUX(info->regs));
-> +
-> +       con1 = readl(ADC_V1_CON(info->regs));
-> +       writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
-> +{
-> +       writel(1, ADC_V1_INTCLR(info->regs));
-> +}
-> +
-> +static void exynos_adc_v1_stop_conv(struct exynos_adc *info)
-> +{
-> +       u32 con;
-> +
-> +       con = readl(ADC_V1_CON(info->regs));
-> +       con |= ADC_V1_CON_STANDBY;
-> +       writel(con, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static struct exynos_adc_ops exynos_adc_v1_ops = {
-> +       .init_hw        = exynos_adc_v1_init_hw,
-> +       .clear_irq      = exynos_adc_v1_clear_irq,
-> +       .start_conv     = exynos_adc_v1_start_conv,
-> +       .stop_conv      = exynos_adc_v1_stop_conv,
+> +static const struct iio_chan_spec max1027_channels[] = {
+> +	MAX1027_T_CHAN,
+> +	MAX1027_V_CHAN(0),
+> +	MAX1027_V_CHAN(1),
+> +	MAX1027_V_CHAN(2),
+> +	MAX1027_V_CHAN(3),
+> +	MAX1027_V_CHAN(4),
+> +	MAX1027_V_CHAN(5),
+> +	MAX1027_V_CHAN(6),
+> +	MAX1027_V_CHAN(7)
 > +};
 > +
-> +static void exynos_adc_v2_init_hw(struct exynos_adc *info)
->  {
->         u32 con1, con2;
->
-> -       if (info->version == ADC_V2) {
-> -               con1 = ADC_V2_CON1_SOFT_RESET;
-> -               writel(con1, ADC_V2_CON1(info->regs));
-> +       con1 = ADC_V2_CON1_SOFT_RESET;
-> +       writel(con1, ADC_V2_CON1(info->regs));
->
-> -               con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
-> -                       ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
-> -               writel(con2, ADC_V2_CON2(info->regs));
-> +       con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
-> +               ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
-> +       writel(con2, ADC_V2_CON2(info->regs));
->
-> -               /* Enable interrupts */
-> -               writel(1, ADC_V2_INT_EN(info->regs));
-> -       } else {
-> -               /* set default prescaler values and Enable prescaler */
-> -               con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-> +       /* Enable interrupts */
-> +       writel(1, ADC_V2_INT_EN(info->regs));
-> +}
->
-> -               /* Enable 12-bit ADC resolution */
-> -               con1 |= ADC_V1_CON_RES;
-> -               writel(con1, ADC_V1_CON(info->regs));
-> -       }
-> +static void exynos_adc_v2_start_conv(struct exynos_adc *info, unsigned long addr)
-> +{
-> +       u32 con1, con2;
-> +
-> +       con2 = readl(ADC_V2_CON2(info->regs));
-> +       con2 &= ~ADC_V2_CON2_ACH_MASK;
-> +       con2 |= ADC_V2_CON2_ACH_SEL(addr);
-> +       writel(con2, ADC_V2_CON2(info->regs));
-> +
-> +       con1 = readl(ADC_V2_CON1(info->regs));
-> +       writel(con1 | ADC_CON_EN_START, ADC_V2_CON1(info->regs));
-> +}
-> +
-> +static void exynos_adc_v2_clear_irq(struct exynos_adc *info)
-> +{
-> +       writel(1, ADC_V2_INT_ST(info->regs));
-> +}
-> +
-> +static void exynos_adc_v2_stop_conv(struct exynos_adc *info)
-> +{
-> +       u32 con;
-> +
-> +       con = readl(ADC_V2_CON1(info->regs));
-> +       con &= ~ADC_CON_EN_START;
-> +       writel(con, ADC_V2_CON1(info->regs));
->  }
->
-> +static struct exynos_adc_ops exynos_adc_v2_ops = {
-> +       .init_hw        = exynos_adc_v2_init_hw,
-> +       .start_conv     = exynos_adc_v2_start_conv,
-> +       .clear_irq      = exynos_adc_v2_clear_irq,
-> +       .stop_conv      = exynos_adc_v2_stop_conv,
+> +static const struct iio_chan_spec max1029_channels[] = {
+> +	MAX1027_T_CHAN,
+> +	MAX1027_V_CHAN(0),
+> +	MAX1027_V_CHAN(1),
+> +	MAX1027_V_CHAN(2),
+> +	MAX1027_V_CHAN(3),
+> +	MAX1027_V_CHAN(4),
+> +	MAX1027_V_CHAN(5),
+> +	MAX1027_V_CHAN(6),
+> +	MAX1027_V_CHAN(7),
+> +	MAX1027_V_CHAN(8),
+> +	MAX1027_V_CHAN(9),
+> +	MAX1027_V_CHAN(10),
+> +	MAX1027_V_CHAN(11)
 > +};
 > +
->  static int exynos_read_raw(struct iio_dev *indio_dev,
->                                 struct iio_chan_spec const *chan,
->                                 int *val,
-> @@ -144,7 +220,6 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  {
->         struct exynos_adc *info = iio_priv(indio_dev);
->         unsigned long timeout;
-> -       u32 con1, con2;
->         int ret;
->
->         if (mask != IIO_CHAN_INFO_RAW)
-> @@ -154,28 +229,15 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->         reinit_completion(&info->completion);
->
->         /* Select the channel to be used and Trigger conversion */
-> -       if (info->version == ADC_V2) {
-> -               con2 = readl(ADC_V2_CON2(info->regs));
-> -               con2 &= ~ADC_V2_CON2_ACH_MASK;
-> -               con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
-> -               writel(con2, ADC_V2_CON2(info->regs));
-> -
-> -               con1 = readl(ADC_V2_CON1(info->regs));
-> -               writel(con1 | ADC_CON_EN_START,
-> -                               ADC_V2_CON1(info->regs));
-> -       } else {
-> -               writel(chan->address, ADC_V1_MUX(info->regs));
-> -
-> -               con1 = readl(ADC_V1_CON(info->regs));
-> -               writel(con1 | ADC_CON_EN_START,
-> -                               ADC_V1_CON(info->regs));
-> -       }
-> +       if (info->ops->start_conv)
-> +               info->ops->start_conv(info, chan->address);
->
->         timeout = wait_for_completion_timeout
->                         (&info->completion, EXYNOS_ADC_TIMEOUT);
->         if (timeout == 0) {
->                 dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
-> -               exynos_adc_hw_init(info);
-> +               if (info->ops->init_hw)
-> +                       info->ops->init_hw(info);
->                 ret = -ETIMEDOUT;
->         } else {
->                 *val = info->value;
-> @@ -193,13 +255,11 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->         struct exynos_adc *info = (struct exynos_adc *)dev_id;
->
->         /* Read value */
-> -       info->value = readl(ADC_V1_DATX(info->regs)) &
-> -                                               ADC_DATX_MASK;
-> +       info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+> +static const struct iio_chan_spec max1031_channels[] = {
+> +	MAX1027_T_CHAN,
+> +	MAX1027_V_CHAN(0),
+> +	MAX1027_V_CHAN(1),
+> +	MAX1027_V_CHAN(2),
+> +	MAX1027_V_CHAN(3),
+> +	MAX1027_V_CHAN(4),
+> +	MAX1027_V_CHAN(5),
+> +	MAX1027_V_CHAN(6),
+> +	MAX1027_V_CHAN(7),
+> +	MAX1027_V_CHAN(8),
+> +	MAX1027_V_CHAN(9),
+> +	MAX1027_V_CHAN(10),
+> +	MAX1027_V_CHAN(11),
+> +	MAX1027_V_CHAN(12),
+> +	MAX1027_V_CHAN(13),
+> +	MAX1027_V_CHAN(14),
+> +	MAX1027_V_CHAN(15)
+> +};
 > +
->         /* clear irq */
-> -       if (info->version == ADC_V2)
-> -               writel(1, ADC_V2_INT_ST(info->regs));
-> -       else
-> -               writel(1, ADC_V1_INTCLR(info->regs));
-> +       if (info->ops->clear_irq)
-> +               info->ops->clear_irq(info);
->
->         complete(&info->completion);
->
-> @@ -277,6 +337,19 @@ static int exynos_adc_probe(struct platform_device *pdev)
->
->         info = iio_priv(indio_dev);
->
-> +       info->version = exynos_adc_get_version(pdev);
-> +       switch (info->version) {
-> +       case ADC_V1:
-> +               info->ops = &exynos_adc_v1_ops;
-> +               break;
-> +       case ADC_V2:
-> +               info->ops = &exynos_adc_v2_ops;
-> +               break;
-> +       default:
-> +               dev_err(&pdev->dev, "failed to identify ADC version\n");
-> +               return -EINVAL;
-> +       };
+> +static const unsigned long max1027_available_scan_masks[] = {
+> +	0x000001ff,
+> +	0x00000000,
+> +};
 > +
->         mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->         info->regs = devm_ioremap_resource(&pdev->dev, mem);
->         if (IS_ERR(info->regs))
-> @@ -321,8 +394,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
->
->         writel(1, info->enable_reg);
->
-> -       info->version = exynos_adc_get_version(pdev);
-> -
->         platform_set_drvdata(pdev, indio_dev);
->
->         indio_dev->name = dev_name(&pdev->dev);
-> @@ -349,7 +420,8 @@ static int exynos_adc_probe(struct platform_device *pdev)
->         if (ret)
->                 goto err_irq;
->
-> -       exynos_adc_hw_init(info);
-> +       if (info->ops->init_hw)
-> +               info->ops->init_hw(info);
->
->         ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
->         if (ret < 0) {
-> @@ -394,17 +466,9 @@ static int exynos_adc_suspend(struct device *dev)
->  {
->         struct iio_dev *indio_dev = dev_get_drvdata(dev);
->         struct exynos_adc *info = iio_priv(indio_dev);
-> -       u32 con;
->
-> -       if (info->version == ADC_V2) {
-> -               con = readl(ADC_V2_CON1(info->regs));
-> -               con &= ~ADC_CON_EN_START;
-> -               writel(con, ADC_V2_CON1(info->regs));
-> -       } else {
-> -               con = readl(ADC_V1_CON(info->regs));
-> -               con |= ADC_V1_CON_STANDBY;
-> -               writel(con, ADC_V1_CON(info->regs));
-> -       }
-> +       if (info->ops->stop_conv)
-> +               info->ops->stop_conv(info);
->
->         writel(0, info->enable_reg);
->         clk_disable_unprepare(info->clk);
-> @@ -428,7 +492,9 @@ static int exynos_adc_resume(struct device *dev)
->                 return ret;
->
->         writel(1, info->enable_reg);
-> -       exynos_adc_hw_init(info);
+> +static const unsigned long max1029_available_scan_masks[] = {
+> +	0x00001fff,
+> +	0x00000000,
+> +};
 > +
-> +       if (info->ops->init_hw)
-> +               info->ops->init_hw(info);
+> +static const unsigned long max1031_available_scan_masks[] = {
+> +	0x0001ffff,
+> +	0x00000000,
+> +};
+> +
+> +struct max1027_chip_info {
+> +	const struct iio_chan_spec *channels;
+> +	unsigned int num_channels;
+> +	const unsigned long *available_scan_masks;
+> +};
+> +
+> +static const struct max1027_chip_info max1027_chip_info_tbl[] = {
+> +	[max1027] = {
+> +		.channels = max1027_channels,
+> +		.num_channels = ARRAY_SIZE(max1027_channels),
+> +		.available_scan_masks = max1027_available_scan_masks,
+> +	},
+> +	[max1029] = {
+> +		.channels = max1029_channels,
+> +		.num_channels = ARRAY_SIZE(max1029_channels),
+> +		.available_scan_masks = max1029_available_scan_masks,
+> +	},
+> +	[max1031] = {
+> +		.channels = max1031_channels,
+> +		.num_channels = ARRAY_SIZE(max1031_channels),
+> +		.available_scan_masks = max1031_available_scan_masks,
+> +	},
+> +};
+> +
+> +struct max1027_state {
+> +	const struct max1027_chip_info	*info;
+> +	struct spi_device		*spi;
+> +	struct iio_trigger		*trig;
+> +	__be16				*buffer;
+> +	struct mutex			lock;
+> +
+> +	u8				reg ____cacheline_aligned;
+> +};
+> +
+> +static int max1027_read_single_value(struct iio_dev *indio_dev,
+> +				     struct iio_chan_spec const *chan,
+> +				     int *val)
+> +{
+> +	int ret;
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		dev_warn(&indio_dev->dev, "trigger mode already enabled");
+> +		return -EBUSY;
+> +	}
+> +
+> +	/* Start acquisition on conversion register write */
+> +	st->reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2 | MAX1027_CKS_MODE2;
+> +	ret = spi_write(st->spi, &st->reg, 1);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev,
+> +			"Failed to configure setup register\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Configure conversion register with the requested chan */
+> +	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
+> +		  MAX1027_NOSCAN | !!(chan->type == IIO_TEMP);
+> +	ret = spi_write(st->spi, &st->reg, 1);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev,
+> +			"Failed to configure conversion register\n");
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * For an unknown reason, when we use the mode "10" (write
+> +	 * conversion register), the interrupt doesn't occur every time.
+> +	 * So we just wait 1 ms.
+> +	 */
+> +	mdelay(1);
+> +
+> +	/* Read result */
+> +	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*val = be16_to_cpu(st->buffer[0]);
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int max1027_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	int ret = 0;
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&st->lock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = max1027_read_single_value(indio_dev, chan, val);
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			*val = 1;
+> +			*val2 = 8;
+> +			ret = IIO_VAL_FRACTIONAL;
+> +			break;
+> +		case IIO_VOLTAGE:
+> +			*val = 2500;
+> +			*val2 = 10;
+> +			ret = IIO_VAL_FRACTIONAL_LOG2;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&st->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int max1027_debugfs_reg_access(struct iio_dev *indio_dev,
+> +				      unsigned reg, unsigned writeval,
+> +				      unsigned *readval)
+> +{
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +	u8 *val = (u8 *)st->buffer;
+> +
+> +	if (readval != NULL)
+> +		return -EINVAL;
+> +
+> +	*val = (u8)writeval;
+> +	return spi_write(st->spi, val, 1);
+> +}
+> +
+> +static int max1027_validate_trigger(struct iio_dev *indio_dev,
+> +				    struct iio_trigger *trig)
+> +{
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +
+> +	if (st->trig != trig)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int max1027_set_trigger_state(struct iio_trigger *trig, bool state)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	if (state) {
+> +		/* Start acquisition on cnvst */
+> +		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE0 |
+> +			  MAX1027_REF_MODE2;
+> +		ret = spi_write(st->spi, &st->reg, 1);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		/* Scan from 0 to max */
+> +		st->reg = MAX1027_CONV_REG | MAX1027_CHAN(0) |
+> +			  MAX1027_SCAN_N_M | MAX1027_TEMP;
+> +		ret = spi_write(st->spi, &st->reg, 1);
+> +		if (ret < 0)
+> +			return ret;
+> +	} else {
+> +		/* Start acquisition on conversion register write */
+> +		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE2	|
+> +			  MAX1027_REF_MODE2;
+> +		ret = spi_write(st->spi, &st->reg, 1);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int max1027_validate_device(struct iio_trigger *trig,
+> +				   struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
+> +
+> +	if (indio != indio_dev)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t max1027_trigger_handler(int irq, void *private)
+> +{
+> +	struct iio_poll_func *pf = (struct iio_poll_func *)private;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct max1027_state *st = iio_priv(indio_dev);
+> +
+> +	pr_debug("%s(irq=%d, private=0x%p)\n", __func__, irq, private);
+> +
+> +	/* fill buffer with all channel */
+> +	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
+> +
+> +	iio_push_to_buffers(indio_dev, st->buffer);
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_trigger_ops max1027_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.validate_device = &max1027_validate_device,
+> +	.set_trigger_state = &max1027_set_trigger_state,
+> +};
+> +
+> +static const struct iio_info max1027_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = &max1027_read_raw,
+> +	.validate_trigger = &max1027_validate_trigger,
+> +	.debugfs_reg_access = &max1027_debugfs_reg_access,
+> +};
+> +
+> +static int max1027_probe(struct spi_device *spi)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct max1027_state *st;
+> +
+> +	pr_debug("%s: probe(spi = 0x%p)\n", __func__, spi);
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +	if (indio_dev == NULL) {
+> +		pr_err("Can't allocate iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->spi = spi;
+> +	st->info = &max1027_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+> +
+> +	mutex_init(&st->lock);
+> +
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->info = &max1027_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = st->info->channels;
+> +	indio_dev->num_channels = st->info->num_channels;
+> +	indio_dev->available_scan_masks = st->info->available_scan_masks;
+> +
+> +	st->buffer = devm_kmalloc(&indio_dev->dev,
+> +				  indio_dev->num_channels * 2,
+> +				  GFP_KERNEL);
+> +	if (st->buffer == NULL) {
+> +		dev_err(&indio_dev->dev, "Can't allocate bufffer\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+> +					 &max1027_trigger_handler, NULL);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
+> +		return ret;
+> +	}
+> +
+> +	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+> +							indio_dev->name);
+> +	if (st->trig == NULL) {
+> +		ret = -ENOMEM;
+> +		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
+> +		goto fail_trigger_alloc;
+> +	}
+> +
+> +	st->trig->ops = &max1027_trigger_ops;
+> +	st->trig->dev.parent = &spi->dev;
+> +	iio_trigger_set_drvdata(st->trig, indio_dev);
+> +	iio_trigger_register(st->trig);
+> +
+> +	ret = devm_request_threaded_irq(&spi->dev, spi->irq,
+> +					iio_trigger_generic_data_rdy_poll,
+> +					NULL,
+> +					IRQF_TRIGGER_FALLING,
+> +					spi->dev.driver->name, st->trig);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
+> +		goto fail_dev_register;
+> +	}
+> +
+> +	/* Disable averaging */
+> +	st->reg = MAX1027_AVG_REG;
+> +	ret = spi_write(st->spi, &st->reg, 1);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Failed to configure averaging register\n");
+> +		goto fail_dev_register;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&indio_dev->dev, "Failed to register iio device\n");
+> +		goto fail_dev_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +fail_dev_register:
+> +fail_trigger_alloc:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int max1027_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	pr_debug("%s: remove(spi = 0x%p)\n", __func__, spi);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct spi_driver max1027_driver = {
+> +	.driver = {
+> +		.name	= "max1027",
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= max1027_probe,
+> +	.remove		= max1027_remove,
+> +	.id_table	= max1027_id,
+> +};
+> +module_spi_driver(max1027_driver);
+> +
+> +MODULE_AUTHOR("Philippe Reynes <tremyfr@yahoo.fr>");
+> +MODULE_DESCRIPTION("MAX1027/MAX1029/MAX1031 ADC");
+> +MODULE_LICENSE("GPL v2");
 >
->         return 0;
->  }
-> --
-> 1.8.0
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-
-
--- 
-Shine bright,
-(: Nav :)
