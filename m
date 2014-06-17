@@ -1,58 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f179.google.com ([209.85.192.179]:34196 "EHLO
-	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932522AbaFPWaW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jun 2014 18:30:22 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v3 2/3] iio: types: Added support for rotation from north usage attributes
-Date: Mon, 16 Jun 2014 17:30:02 -0500
-Message-Id: <1402957803-5154-3-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1402957803-5154-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1402957803-5154-1-git-send-email-reyad.attiyat@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Lee Jones <lee.jones@linaro.org>, "Opensource [Adam Thomson]"
+	<Adam.Thomson.Opensource@diasemi.com>
+CC: Samuel Ortiz <sameo@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Dmitry
+ Eremin-Solenikov" <dbaryshkov@gmail.com>, David Woodhouse
+	<dwmw2@infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
+ Opensource" <Support.Opensource@diasemi.com>
+Subject: RE: [PATCH 6/8] power: Add support for DA9150 Charger
+Date: Tue, 17 Jun 2014 08:21:39 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB4FDA47@SW-EX-MBX01.diasemi.com>
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+ <d4ef0d7ce2d6a2919d528ed75e82d2b99ec8d962.1402484954.git.Adam.Thomson.Opensource@diasemi.com>
+ <20140616132749.GW14323@lee--X1>
+In-Reply-To: <20140616132749.GW14323@lee--X1>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
-
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
----
- drivers/iio/industrialio-core.c | 4 ++++
- include/linux/iio/types.h       | 4 ++++
- 2 files changed, 8 insertions(+)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4b1f375..af3e76d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index d480631..d09c40d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -56,6 +56,10 @@ enum iio_modifier {
- 	IIO_MOD_QUATERNION,
- 	IIO_MOD_TEMP_AMBIENT,
- 	IIO_MOD_TEMP_OBJECT,
-+	IIO_MOD_NORTH_MAGN,
-+	IIO_MOD_NORTH_TRUE,
-+	IIO_MOD_NORTH_MAGN_TILT_COMP,
-+	IIO_MOD_NORTH_TRUE_TILT_COMP
- };
- 
- enum iio_event_type {
--- 
-1.9.3
-
+T24gSnVuZSAxNiwgMjAxNCAxNDoyOCwgTGVlIEpvbmVzIHdyb3RlOg0KDQo+ID4gKyNpZm5kZWYg
+X0RBOTE1MF9DSEFSR0VSX0gNCj4gPiArI2RlZmluZSBfREE5MTUwX0NIQVJHRVJfSA0KPiANCj4g
+VHdvICdfJ3MgYXJlIG5vcm1hbGx5IHByZWZlcnJlZC4NCg0KT2ssIGNhbiBjaGFuZ2UgaXQgYWNj
+b3JkaW5nbHkuDQoNCj4gDQo+ID4gKyNpbmNsdWRlIDxsaW51eC9kZXZpY2UuaD4NCj4gPiArI2lu
+Y2x1ZGUgPGxpbnV4L2kyYy5oPg0KPiANCj4gV2hhdCBhcmUgeW91IHVzaW5nIHRoaXMgZm9yPw0K
+DQpOb3RoaW5nLiBXaWxsIHJlbW92ZSB0aGVtLiBUaGFua3MuDQoNCj4gPiArI2luY2x1ZGUgPGxp
+bnV4L21mZC9kYTkxNTAvY29yZS5oPg0KPiA+ICsNCj4gPiArDQo+IA0KPiBFeHRyYSAnXG4nIGhl
+cmUuDQoNClllcywganVzdCBzZXBhcmF0ZSBpbmNsdWRlcyBmcm9tIHRoZSByZXN0IG9mIHRoZSBm
+aWxlLiBGaW5kIGl0IG1vcmUgcmVhZGFibGUuDQpJZiBpdCdzIGFuIGlzc3VlIHRob3VnaCBJIGNh
+biByZW1vdmUgaXQuDQoNCj4gPiArCXN0cnVjdCBwb3dlcl9zdXBwbHkgYWM7DQo+ID4gKwlzdHJ1
+Y3QgcG93ZXJfc3VwcGx5IHVzYjsNCj4gPiArCXN0cnVjdCBwb3dlcl9zdXBwbHkgYmF0dGVyeTsN
+Cj4gDQo+IERvIHlvdSB3YW50IHRoZXNlIChvciBwb2ludGVycyB0byB0aGVzZSkgaGVyZT8NCj4g
+DQo+IEhvdyBtdWNoIHNwYWNlIGRvIHRoZXkgdGFrZSB1cD8NCg0KWWVzIHRoZXNlIGFyZSByZXF1
+aXJlZCBpbiB0aGF0IHN0cnVjdHVyZS4gVGhpcyBpcyB0aGUgY29tbW9uIGFwcHJvYWNoIGZvcg0K
+cG93ZXJfc3VwcGx5IGRyaXZlcnMuIFRoZSBzdHJ1Y3R1cmVzLCBoYXZpbmcgaGFkIGEgdmVyeSBx
+dWljayBsb29rLCBhcmUgYXJvdW5kDQptYXliZSA3MCBieXRlcyBlYWNoLg0K
