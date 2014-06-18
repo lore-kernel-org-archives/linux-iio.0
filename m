@@ -1,101 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:60942 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965132AbaFRIye (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jun 2014 04:54:34 -0400
-Message-id: <53A153C6.1030703@samsung.com>
-Date: Wed, 18 Jun 2014 17:54:30 +0900
-From: Chanwoo Choi <cw00.choi@samsung.com>
-MIME-version: 1.0
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: jic23@kernel.org, ch.naveen@samsung.com, t.figa@samsung.com,
-	kgene.kim@samsung.com, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org, rdunlap@infradead.org,
-	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCHv4 3/4] iio: devicetree: Add DT binding documentation for
- Exynos3250 ADC
-References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com>
- <1403058061-24271-4-git-send-email-cw00.choi@samsung.com>
- <53A14F4D.7080204@gmail.com>
-In-reply-to: <53A14F4D.7080204@gmail.com>
-Content-type: text/plain; charset=ISO-8859-1
+Received: from mailout4.samsung.com ([203.254.224.34]:28211 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756649AbaFRGV5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jun 2014 02:21:57 -0400
+Received: from epcpsbgr5.samsung.com
+ (u145.gpu120.samsung.co.kr [203.254.230.145])
+ by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N7C00HT9PO9VR10@mailout4.samsung.com> for
+ linux-iio@vger.kernel.org; Wed, 18 Jun 2014 15:21:45 +0900 (KST)
+From: Beomho Seo <beomho.seo@samsung.com>
+To: linux-iio@vger.kernel.org, jic23@kernel.org,
+	j.anaszewski@samsung.com, sachin.kamat@linaro.org,
+	ch.naveen@samsung.com, ktsai@capellamicro.com,
+	srinivas.pandruvada@linux.intel.com, t.figa@samsung.com
+Cc: myungjoo.ham@samsung.com, jh80.chung@samsung.com,
+	cw00.choi@samsung.com, Beomho Seo <beomho.seo@samsung.com>
+Subject: [PATCH 3/5] iio: light: cm36651: Use devm_* APIs
+Date: Wed, 18 Jun 2014 15:21:41 +0900
+Message-id: <1403072503-29246-4-git-send-email-beomho.seo@samsung.com>
+In-reply-to: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>
+References: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Tomasz,
+This patch changes APIs from request_threaded_irq()
+and iio_device_register() to devm_* APIS.
+Using them make code simpler.
 
-On 06/18/2014 05:35 PM, Tomasz Figa wrote:
-> Hi Chanwoo,
-> 
-> On 18.06.2014 04:21, Chanwoo Choi wrote:
->> This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
->> special clock ('sclk_tsadc') for ADC which provide clock to internal ADC.
->>
->> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->> ---
->>  .../devicetree/bindings/arm/samsung/exynos-adc.txt   | 20 ++++++++++++++++++++
->>  1 file changed, 20 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> index 5d49f2b..3a5af82 100644
->> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> @@ -14,6 +14,8 @@ Required properties:
->>  				for exynos4412/5250 controllers.
->>  			Must be "samsung,exynos-adc-v2" for
->>  				future controllers.
->> +			Must be "samsung,exynos3250-adc-v2" for
->> +				for exynos3250 controllers.
-> 
-> You might change the last line for:
-> 
-> for controllers compatible with ADC of Exynos3250.
-> 
-> This is to make it also account for possible future SoCs which need
-> exactly the same handling.
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+ drivers/iio/light/cm36651.c |   11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-OK, I'll modify it as folloiwng according to your comment:
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index 39fc67e..2fd9579 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -679,7 +679,8 @@ static int cm36651_probe(struct i2c_client *client,
+ 		goto error_i2c_unregister_ara;
+ 	}
+ 
+-	ret = request_threaded_irq(client->irq, NULL, cm36651_irq_handler,
++	ret = devm_request_threaded_irq(&client->dev, client->irq,
++					NULL, cm36651_irq_handler,
+ 					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+ 							"cm36651", indio_dev);
+ 	if (ret) {
+@@ -687,16 +688,14 @@ static int cm36651_probe(struct i2c_client *client,
+ 		goto error_i2c_unregister_ara;
+ 	}
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (ret) {
+ 		dev_err(&client->dev, "%s: regist device failed\n", __func__);
+-		goto error_free_irq;
++		goto error_i2c_unregister_ara;
+ 	}
+ 
+ 	return 0;
+ 
+-error_free_irq:
+-	free_irq(client->irq, indio_dev);
+ error_i2c_unregister_ara:
+ 	i2c_unregister_device(cm36651->ara_client);
+ error_i2c_unregister_ps:
+@@ -711,9 +710,7 @@ static int cm36651_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct cm36651_data *cm36651 = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+ 	regulator_disable(cm36651->vled_reg);
+-	free_irq(client->irq, indio_dev);
+ 	i2c_unregister_device(cm36651->ps_client);
+ 	i2c_unregister_device(cm36651->ara_client);
+ 
+-- 
+1.7.9.5
 
->> +			Must be "samsung,exynos3250-adc-v2" for
->> +				for controllers compatible with ADC of Exynos3250.
-
-> 
-> 
->>  - reg:			Contains ADC register address range (base address and
->>  			length) and the address of the phy enable register.
->>  - interrupts: 		Contains the interrupt information for the timer. The
->> @@ -21,7 +23,11 @@ Required properties:
->>  			the Samsung device uses.
->>  - #io-channel-cells = <1>; As ADC has multiple outputs
->>  - clocks		From common clock binding: handle to adc clock.
->> +			From common clock binding: handle to sclk_tsadc clock
->> +			if using Exynos3250.
-> 
-> This is not clear. It might sound like the "sclk_tsadc" clock is used on
-> Exynos3250 and "adc" on remaining SoCs. I'd write this simply as:
-> 
->>>From common clock bindings: handles to clocks specified in "clock-names"
-> property, in the same order.
-
-I'll modify it.
-
-> 
->>  - clock-names		From common clock binding: Shall be "adc".
->> +			From common clock binding: Shall be "sclk_tsadc"
->> +			if using Exynos3250.
-> 
-> This is also not clear. I'd recommend something like:
-> 
->>>From common clock bindings: list of clock input names used by ADC block:
->     - "adc" : ADC bus clock,
->     - "sclk_tsadc" : ADC special clock (only for Exynos3250 and
-> compatible ADC blocks).
-
-I'll modify it.
-
-Best Regards,
-Chanwoo Choi
