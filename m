@@ -1,35 +1,85 @@
-Return-Path: <festevam@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-we0-f176.google.com ([74.125.82.176]:41687 "EHLO
+	mail-we0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756381AbaFRIfq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jun 2014 04:35:46 -0400
+Message-ID: <53A14F4D.7080204@gmail.com>
+Date: Wed, 18 Jun 2014 10:35:25 +0200
+From: Tomasz Figa <tomasz.figa@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <53A55BD8.7030905@kernel.org>
-References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de>
-	<1402672899-6995-1-git-send-email-denis@eukrea.com>
-	<1402672899-6995-3-git-send-email-denis@eukrea.com>
-	<53A55BD8.7030905@kernel.org>
-Date: Sat, 21 Jun 2014 16:55:52 -0300
-Message-ID: <CAOMZO5BxZDX5TDZdUCbpTw2LpVC=vr4cnn4eSpzd_023wcy+Fg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] input: touchscreen: imx25 tcq driver
-From: Fabio Estevam <festevam@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Carikli <denis@eukrea.com>, Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	=?UTF-8?B?RXJpYyBCw6luYXJk?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Lee Jones <lee.jones@linaro.org>,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>, Markus Pargmann <mpa@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	ch.naveen@samsung.com, t.figa@samsung.com, kgene.kim@samsung.com
+CC: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, sachin.kamat@linaro.org,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCHv4 3/4] iio: devicetree: Add DT binding documentation for
+ Exynos3250 ADC
+References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com> <1403058061-24271-4-git-send-email-cw00.choi@samsung.com>
+In-Reply-To: <1403058061-24271-4-git-send-email-cw00.choi@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 21, 2014 at 7:18 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> +
->> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->
-> Could this not in theory fail?
+Hi Chanwoo,
 
-Yes, but devm_ioremap_resource will take care of it, so we don't need
-to check for error here.
+On 18.06.2014 04:21, Chanwoo Choi wrote:
+> This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
+> special clock ('sclk_tsadc') for ADC which provide clock to internal ADC.
+> 
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>  .../devicetree/bindings/arm/samsung/exynos-adc.txt   | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index 5d49f2b..3a5af82 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -14,6 +14,8 @@ Required properties:
+>  				for exynos4412/5250 controllers.
+>  			Must be "samsung,exynos-adc-v2" for
+>  				future controllers.
+> +			Must be "samsung,exynos3250-adc-v2" for
+> +				for exynos3250 controllers.
 
->
->> +       mem = devm_ioremap_resource(dev, res);
->> +       if (!mem)
->> +               return -ENOMEM;
+You might change the last line for:
+
+for controllers compatible with ADC of Exynos3250.
+
+This is to make it also account for possible future SoCs which need
+exactly the same handling.
+
+
+>  - reg:			Contains ADC register address range (base address and
+>  			length) and the address of the phy enable register.
+>  - interrupts: 		Contains the interrupt information for the timer. The
+> @@ -21,7 +23,11 @@ Required properties:
+>  			the Samsung device uses.
+>  - #io-channel-cells = <1>; As ADC has multiple outputs
+>  - clocks		From common clock binding: handle to adc clock.
+> +			From common clock binding: handle to sclk_tsadc clock
+> +			if using Exynos3250.
+
+This is not clear. It might sound like the "sclk_tsadc" clock is used on
+Exynos3250 and "adc" on remaining SoCs. I'd write this simply as:
+
+>From common clock bindings: handles to clocks specified in "clock-names"
+property, in the same order.
+
+>  - clock-names		From common clock binding: Shall be "adc".
+> +			From common clock binding: Shall be "sclk_tsadc"
+> +			if using Exynos3250.
+
+This is also not clear. I'd recommend something like:
+
+>From common clock bindings: list of clock input names used by ADC block:
+    - "adc" : ADC bus clock,
+    - "sclk_tsadc" : ADC special clock (only for Exynos3250 and
+compatible ADC blocks).
+
+Best regards,
+Tomasz
