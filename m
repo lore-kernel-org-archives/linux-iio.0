@@ -1,41 +1,26 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:59365 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755780AbaFPWaQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jun 2014 18:30:16 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v3 0/3] IIO: Add support for rotation from north usage attributes
-Date: Mon, 16 Jun 2014 17:30:00 -0500
-Message-Id: <1402957803-5154-1-git-send-email-reyad.attiyat@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Wed, 18 Jun 2014 10:41:48 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First set of IIO fixes for the 3.16 cycle. (take 2)
+Message-ID: <20140618174148.GA11977@kroah.com>
+References: <53A1CC65.5010100@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <53A1CC65.5010100@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-These patches add support for rotation from north HID usage attributes to
-the magnetometer 3d driver.
+On Wed, Jun 18, 2014 at 06:29:09PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 86281966c7395aa9a13a20c52e26005f5e142451:
+> 
+>   Merge tag 'iio-fixes-for-3.15b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2014-04-30 14:19:23 -0700)
+> 
+> are available in the git repository at:
+> 
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.16a
 
-Changes from v2:
-	Use devm_kcalloc for all dynamic allocations
-	Cleanup formatting of if statements
-	Scan for the usage attributes present then dynamically allocate iio channel and value arrays
-	Use proper return errors (-EINVAL) and (-ENOMEM)
+Pulled and pushed out, thanks,
 
-
-Reyad Attiyat (3):
-  iio: documentation: Added documentation for rotation from north usage
-    attributes
-  iio: types: Added support for rotation from north usage attributes
-  iio: hid-sensor-magn-3d: Add support for rotation from north usage
-    attributes
-
- Documentation/ABI/testing/sysfs-bus-iio       |  79 +++++-
- drivers/iio/industrialio-core.c               |   4 +
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 394 +++++++++++++++++---------
- include/linux/iio/types.h                     |   4 +
- 4 files changed, 352 insertions(+), 129 deletions(-)
-
--- 
-1.9.3
-
+greg k-h
