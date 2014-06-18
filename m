@@ -1,66 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail00k.mail.t-online.hu ([84.2.227.137]:64321 "EHLO
-	mail00k.mail.t-online.hu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751741AbaFJNvu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jun 2014 09:51:50 -0400
-From: Robert Hodaszi <robert.hodaszi@digi.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	gregkh@linuxfoundation.org, marex@denx.de,
-	alexandre.belloni@free-electrons.com, jbe@pengutronix.de,
-	hector.palacios@digi.com, fabio.estevam@freescale.com,
-	lars@metafoo.de, Robert Hodaszi <robert.hodaszi@digi.com>
-Subject: [PATCH 1/2] iio: mxs-lradc: fix divider
-Date: Tue, 10 Jun 2014 15:41:34 +0200
-Message-Id: <1402407695-2984-2-git-send-email-robert.hodaszi@digi.com>
-In-Reply-To: <1402407695-2984-1-git-send-email-robert.hodaszi@digi.com>
-References: <1402407695-2984-1-git-send-email-robert.hodaszi@digi.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <spk.linux@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1403072503-29246-3-git-send-email-beomho.seo@samsung.com>
+References: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com>
+	<1403072503-29246-3-git-send-email-beomho.seo@samsung.com>
+Date: Wed, 18 Jun 2014 13:50:59 +0530
+Message-ID: <CAK5sBcFv_oQt=stra-7T821xYwQiDCURNnhUpEwwDabu1YcsSw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] iio: light: cm32181: Use devm_* APIs
+From: Sachin Kamat <spk.linux@gmail.com>
+To: Beomho Seo <beomho.seo@samsung.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, j.anaszewski@samsung.com,
+	Sachin Kamat <sachin.kamat@linaro.org>, naveen krishna <ch.naveen@samsung.com>, ktsai@capellamicro.com,
+	srinivas.pandruvada@linux.intel.com, t.figa@samsung.com,
+	myungjoo.ham@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-All channels' single measurement are happening on CH 0. So enabling / disabling
-the divider once is not enough, because it has impact on all channels.
+Hi Beomho,
 
-Set only a flag, then check this on each measurement, and enable / disable the
-divider as required.
+On Wed, Jun 18, 2014 at 11:51 AM, Beomho Seo <beomho.seo@samsung.com> wrote:
+> This patch changes API from iio_device_register() to devm_* API.
+> Using API make code simpler.
+>
+> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+> ---
+>  drivers/iio/light/cm32181.c |   11 +----------
+>  1 file changed, 1 insertion(+), 10 deletions(-)
+>
+> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+> index d976e6c..ad36b29 100644
+> --- a/drivers/iio/light/cm32181.c
+> +++ b/drivers/iio/light/cm32181.c
+> @@ -331,7 +331,7 @@ static int cm32181_probe(struct i2c_client *client,
+>                 return ret;
+>         }
+>
+> -       ret = iio_device_register(indio_dev);
+> +       ret = devm_iio_device_register(&client->dev, indio_dev);
+>         if (ret) {
+>                 dev_err(&client->dev,
+>                         "%s: regist device failed\n",
+> @@ -342,14 +342,6 @@ static int cm32181_probe(struct i2c_client *client,
+>         return 0;
+>  }
+>
+> -static int cm32181_remove(struct i2c_client *client)
+> -{
+> -       struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> -
+> -       iio_device_unregister(indio_dev);
+> -       return 0;
+> -}
+> -
+>  static const struct i2c_device_id cm32181_id[] = {
+>         { "cm32181", 0 },
+>         { }
+> @@ -370,7 +362,6 @@ static struct i2c_driver cm32181_driver = {
+>         },
+>         .id_table       = cm32181_id,
+>         .probe          = cm32181_probe,
+> -       .remove         = cm32181_remove,
+>  };
+>
+>  module_i2c_driver(cm32181_driver);
+> --
+> 1.7.9.5
+>
 
-Signed-off-by: Robert Hodaszi <robert.hodaszi@digi.com>
----
- drivers/staging/iio/adc/mxs-lradc.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Looks good.
+Reviewed-by: Sachin Kamat <sachin.kamat@samsung.com>
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index dae8d1a..52d7517 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -846,6 +846,14 @@ static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
- 			LRADC_CTRL1);
- 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
- 
-+	/* Enable / disable the divider per requirement */
-+	if (test_bit(chan, &lradc->is_divided))
-+		mxs_lradc_reg_set(lradc, 1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
-+			LRADC_CTRL2);
-+	else
-+		mxs_lradc_reg_clear(lradc,
-+			1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET, LRADC_CTRL2);
-+
- 	/* Clean the slot's previous content, then set new one. */
- 	mxs_lradc_reg_clear(lradc, LRADC_CTRL4_LRADCSELECT_MASK(0),
- 			LRADC_CTRL4);
-@@ -961,15 +969,11 @@ static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
- 		if (val == scale_avail[MXS_LRADC_DIV_DISABLED].integer &&
- 		    val2 == scale_avail[MXS_LRADC_DIV_DISABLED].nano) {
- 			/* divider by two disabled */
--			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
--			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_CLR);
- 			clear_bit(chan->channel, &lradc->is_divided);
- 			ret = 0;
- 		} else if (val == scale_avail[MXS_LRADC_DIV_ENABLED].integer &&
- 			   val2 == scale_avail[MXS_LRADC_DIV_ENABLED].nano) {
- 			/* divider by two enabled */
--			writel(1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
--			       lradc->base + LRADC_CTRL2 + STMP_OFFSET_REG_SET);
- 			set_bit(chan->channel, &lradc->is_divided);
- 			ret = 0;
- 		}
+-- 
+Regards,
+Sachin.
