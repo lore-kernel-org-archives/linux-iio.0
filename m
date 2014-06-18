@@ -1,434 +1,110 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53B0305D.3030406@gmx.de>
-Date: Sun, 29 Jun 2014 17:27:25 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:36470 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754664AbaFRTsn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 18 Jun 2014 15:48:43 -0400
+Message-ID: <53A1ED91.5050407@kernel.org>
+Date: Wed, 18 Jun 2014 20:50:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: kristina.martsenko@gmail.com, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 5/7] iio: adis: Switch sampling frequency attr to core
- support.
-References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-6-git-send-email-jic23@kernel.org>
-In-Reply-To: <1403467186-26639-6-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Sachin Kamat <spk.linux@gmail.com>
+CC: Beomho Seo <beomho.seo@samsung.com>, linux-iio@vger.kernel.org,
+	j.anaszewski@samsung.com, Sachin Kamat <sachin.kamat@linaro.org>,
+	naveen krishna <ch.naveen@samsung.com>, ktsai@capellamicro.com,
+	t.figa@samsung.com, myungjoo.ham@samsung.com,
+	jh80.chung@samsung.com, cw00.choi@samsung.com
+Subject: Re: [PATCH 1/5] iio: adc: exynos_adc: Use devm_* APIs
+References: <1403072503-29246-1-git-send-email-beomho.seo@samsung.com> <1403072503-29246-2-git-send-email-beomho.seo@samsung.com> <CAK5sBcEdvXNmcpFSMr+bL8AEy39u3arcuL1hQi6Lm4W8kWxMGQ@mail.gmail.com> <53A1A7FA.7040605@linux.intel.com>
+In-Reply-To: <53A1A7FA.7040605@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> By using the info_mask_shared_by_all element of the channel spec, acce
-> to the sampling frequency becomes available to in kernel users of the
-> driver.  It also shortens and simplifies the code.
+On 18/06/14 15:53, Srinivas Pandruvada wrote:
+> On 06/17/2014 11:35 PM, Sachin Kamat wrote:
+>> Hi Beomho,
+>>
+>> On Wed, Jun 18, 2014 at 11:51 AM, Beomho Seo <beomho.seo@samsung.com> wrote:
+>>> This patch changes APIs from request_irq() and iio_device_register()
+>>> to devm_* APIs. Using them, make code simpler.
+>>>
+>>> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+>>> ---
+>>>   drivers/iio/adc/exynos_adc.c |   11 +++--------
+>>>   1 file changed, 3 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+>>> index d325aea..37b6eb5 100644
+>>> --- a/drivers/iio/adc/exynos_adc.c
+>>> +++ b/drivers/iio/adc/exynos_adc.c
+>>> @@ -337,7 +337,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>>>          else
+>>>                  indio_dev->num_channels = MAX_ADC_V2_CHANNELS;
+>>>
+>>> -       ret = request_irq(info->irq, exynos_adc_isr,
+>>> +       ret = devm_request_irq(&pdev->dev, info->irq, exynos_adc_isr,
+>>>                                          0, dev_name(&pdev->dev), info);
+>>>          if (ret < 0) {
+>>>                  dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
+>>> @@ -345,9 +345,9 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>>>                  goto err_disable_clk;
+>>>          }
+>>>
+>>> -       ret = iio_device_register(indio_dev);
+>>> +       ret = devm_iio_device_register(&pdev->dev, indio_dev);
+> Same here. The remove operation needs some clock / regulator disable.
+> So devm_xx may be not be correct based on Jonathan's recent comments.
+devm will be fine for anything before non devm elements that need to be
+reversed.  After that the ordering gets messed up in the driver tear down
+as described.
 >
-> This particular conversion was made more complicated by the shared library
-> and the fact that a number of the drivers do not actually have support for
-> setting or reading the sampling frequency.  The hardware, in those cases
-> investigated supports it. It's just never been implemented.
+> Thanks,
+> Srinivas
+>>>          if (ret)
+>>> -               goto err_irq;
+>>> +               goto err_disable_clk;
+>>>
+>>>          exynos_adc_hw_init(info);
+>>>
+>>> @@ -362,9 +362,6 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>>>   err_of_populate:
+>>>          device_for_each_child(&pdev->dev, NULL,
+>>>                                  exynos_adc_remove_devices);
+>>> -       iio_device_unregister(indio_dev);
+>>> -err_irq:
+>>> -       free_irq(info->irq, info);
+>>>   err_disable_clk:
+>>>          writel(0, info->enable_reg);
+>>>          clk_disable_unprepare(info->clk);
+>>> @@ -380,8 +377,6 @@ static int exynos_adc_remove(struct platform_device *pdev)
+>>>
+>>>          device_for_each_child(&pdev->dev, NULL,
+>>>                                  exynos_adc_remove_devices);
+>>> -       iio_device_unregister(indio_dev);
+>>> -       free_irq(info->irq, info);
+>>>          writel(0, info->enable_reg);
+>>>          clk_disable_unprepare(info->clk);
+>>>          regulator_disable(info->vdd);
+>>> --
+>>> 1.7.9.5
+>>>
+>>
+>> I am not sure if this change is safe as it changes the order of execution.
+>> With devm_request_irq, irq is freed only after the function completes, i.e.,
+>> the order will now be something like
+>>
+>> writel(0, info->enable_reg)
+>> clk_disable_unprepare(info->clk);
+>> regulator_disable(info->vdd);
+>> iio_device_unregister
+>> free_irq
+>>
+>> which is not what the original code did.
+>>
 >
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
-Looks good to me.
->  drivers/iio/gyro/adis16260.c               | 124 +++++++++++------------------
->  drivers/staging/iio/accel/adis16201_core.c |  14 ++--
->  drivers/staging/iio/accel/adis16203_core.c |  11 +--
->  drivers/staging/iio/accel/adis16204_core.c |  12 +--
->  drivers/staging/iio/accel/adis16209_core.c |  18 +++--
->  drivers/staging/iio/accel/adis16240_core.c |  12 +--
->  include/linux/iio/imu/adis.h               |  33 ++++----
->  7 files changed, 99 insertions(+), 125 deletions(-)
->
-> diff --git a/drivers/iio/gyro/adis16260.c b/drivers/iio/gyro/adis16260.c
-> index 22b6fb8..75fe0ed 100644
-> --- a/drivers/iio/gyro/adis16260.c
-> +++ b/drivers/iio/gyro/adis16260.c
-> @@ -101,65 +101,6 @@
->  #define ADIS16260_SCAN_TEMP	3
->  #define ADIS16260_SCAN_ANGL	4
->  
-> -static ssize_t adis16260_read_frequency(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct adis *adis = iio_priv(indio_dev);
-> -	int ret, len = 0;
-> -	u16 t;
-> -	int sps;
-> -	ret = adis_read_reg_16(adis, ADIS16260_SMPL_PRD, &t);
-> -	if (ret)
-> -		return ret;
-> -
-> -	if (spi_get_device_id(adis->spi)->driver_data) /* If an adis16251 */
-> -		sps = (t & ADIS16260_SMPL_PRD_TIME_BASE) ? 8 : 256;
-> -	else
-> -		sps = (t & ADIS16260_SMPL_PRD_TIME_BASE) ? 66 : 2048;
-> -	sps /= (t & ADIS16260_SMPL_PRD_DIV_MASK) + 1;
-> -	len = sprintf(buf, "%d\n", sps);
-> -	return len;
-> -}
-> -
-> -static ssize_t adis16260_write_frequency(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct adis *adis = iio_priv(indio_dev);
-> -	unsigned int val;
-> -	int ret;
-> -	u8 t;
-> -
-> -	ret = kstrtouint(buf, 10, &val);
-> -	if (ret)
-> -		return ret;
-> -
-> -	mutex_lock(&indio_dev->mlock);
-> -	if (spi_get_device_id(adis->spi)->driver_data)
-> -		t = 256 / val;
-> -	else
-> -		t = 2048 / val;
-> -
-> -	if (t > ADIS16260_SMPL_PRD_DIV_MASK)
-> -		t = ADIS16260_SMPL_PRD_DIV_MASK;
-> -	else if (t > 0)
-> -		t--;
-> -
-> -	if (t >= 0x0A)
-> -		adis->spi->max_speed_hz = ADIS16260_SPI_SLOW;
-> -	else
-> -		adis->spi->max_speed_hz = ADIS16260_SPI_FAST;
-> -	ret = adis_write_reg_8(adis, ADIS16260_SMPL_PRD, t);
-> -
-> -	mutex_unlock(&indio_dev->mlock);
-> -
-> -	return ret ? ret : len;
-> -}
-> -
->  /* Power down the device */
->  static int adis16260_stop_device(struct iio_dev *indio_dev)
->  {
-> @@ -174,18 +115,19 @@ static int adis16260_stop_device(struct iio_dev *indio_dev)
->  	return ret;
->  }
->  
-> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-> -		adis16260_read_frequency,
-> -		adis16260_write_frequency);
-> -
->  static const struct iio_chan_spec adis16260_channels[] = {
->  	ADIS_GYRO_CHAN(X, ADIS16260_GYRO_OUT, ADIS16260_SCAN_GYRO,
->  		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> -		BIT(IIO_CHAN_INFO_CALIBSCALE), 14),
-> -	ADIS_INCLI_CHAN(X, ADIS16260_ANGL_OUT, ADIS16260_SCAN_ANGL, 0, 14),
-> -	ADIS_TEMP_CHAN(ADIS16260_TEMP_OUT, ADIS16260_SCAN_TEMP, 12),
-> -	ADIS_SUPPLY_CHAN(ADIS16260_SUPPLY_OUT, ADIS16260_SCAN_SUPPLY, 12),
-> -	ADIS_AUX_ADC_CHAN(ADIS16260_AUX_ADC, ADIS16260_SCAN_AUX_ADC, 12),
-> +		BIT(IIO_CHAN_INFO_CALIBSCALE),
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ), 14),
-> +	ADIS_INCLI_CHAN(X, ADIS16260_ANGL_OUT, ADIS16260_SCAN_ANGL, 0,
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ), 14),
-> +	ADIS_TEMP_CHAN(ADIS16260_TEMP_OUT, ADIS16260_SCAN_TEMP,
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ), 12),
-> +	ADIS_SUPPLY_CHAN(ADIS16260_SUPPLY_OUT, ADIS16260_SCAN_SUPPLY,
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ), 12),
-> +	ADIS_AUX_ADC_CHAN(ADIS16260_AUX_ADC, ADIS16260_SCAN_AUX_ADC,
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ), 12),
->  	IIO_CHAN_SOFT_TIMESTAMP(5),
->  };
->  
-> @@ -258,6 +200,20 @@ static int adis16260_read_raw(struct iio_dev *indio_dev,
->  
->  		*val = val16;
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = adis_read_reg_16(adis, ADIS16260_SMPL_PRD, &val16);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (spi_get_device_id(adis->spi)->driver_data)
-> +		/* If an adis16251 */
-> +			*val = (val16 & ADIS16260_SMPL_PRD_TIME_BASE) ?
-> +				8 : 256;
-> +		else
-> +			*val = (val16 & ADIS16260_SMPL_PRD_TIME_BASE) ?
-> +				66 : 2048;
-> +		*val /= (val16 & ADIS16260_SMPL_PRD_DIV_MASK) + 1;
-> +		return IIO_VAL_INT;
->  	}
->  	return -EINVAL;
->  }
-> @@ -269,7 +225,9 @@ static int adis16260_write_raw(struct iio_dev *indio_dev,
->  			       long mask)
->  {
->  	struct adis *adis = iio_priv(indio_dev);
-> +	int ret;
->  	u8 addr;
-> +	u8 t;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_CALIBBIAS:
-> @@ -284,21 +242,31 @@ static int adis16260_write_raw(struct iio_dev *indio_dev,
->  
->  		addr = adis16260_addresses[chan->scan_index][1];
->  		return adis_write_reg_16(adis, addr, val);
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		mutex_lock(&indio_dev->mlock);
-> +		if (spi_get_device_id(adis->spi)->driver_data)
-> +			t = 256 / val;
-> +		else
-> +			t = 2048 / val;
-> +
-> +		if (t > ADIS16260_SMPL_PRD_DIV_MASK)
-> +			t = ADIS16260_SMPL_PRD_DIV_MASK;
-> +		else if (t > 0)
-> +			t--;
-> +
-> +		if (t >= 0x0A)
-> +			adis->spi->max_speed_hz = ADIS16260_SPI_SLOW;
-> +		else
-> +			adis->spi->max_speed_hz = ADIS16260_SPI_FAST;
-> +		ret = adis_write_reg_8(adis, ADIS16260_SMPL_PRD, t);
-> +
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return ret;
->  	}
->  	return -EINVAL;
->  }
->  
-> -static struct attribute *adis16260_attributes[] = {
-> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-> -	NULL
-> -};
-> -
-> -static const struct attribute_group adis16260_attribute_group = {
-> -	.attrs = adis16260_attributes,
-> -};
-> -
->  static const struct iio_info adis16260_info = {
-> -	.attrs = &adis16260_attribute_group,
->  	.read_raw = &adis16260_read_raw,
->  	.write_raw = &adis16260_write_raw,
->  	.update_scan_mode = adis_update_scan_mode,
-> diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-> index 2105576..50ba1fa 100644
-> --- a/drivers/staging/iio/accel/adis16201_core.c
-> +++ b/drivers/staging/iio/accel/adis16201_core.c
-> @@ -131,17 +131,17 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec adis16201_channels[] = {
-> -	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 12),
-> -	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 12),
-> +  ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
-> +  ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
->  	ADIS_ACCEL_CHAN(X, ADIS16201_XACCL_OUT, ADIS16201_SCAN_ACC_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
->  	ADIS_ACCEL_CHAN(Y, ADIS16201_YACCL_OUT, ADIS16201_SCAN_ACC_Y,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> -	ADIS_AUX_ADC_CHAN(ADIS16201_AUX_ADC, ADIS16201_SCAN_AUX_ADC, 12),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
-> +	ADIS_AUX_ADC_CHAN(ADIS16201_AUX_ADC, ADIS16201_SCAN_AUX_ADC, 0, 12),
->  	ADIS_INCLI_CHAN(X, ADIS16201_XINCL_OUT, ADIS16201_SCAN_INCLI_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
->  	ADIS_INCLI_CHAN(X, ADIS16201_YINCL_OUT, ADIS16201_SCAN_INCLI_Y,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
->  	IIO_CHAN_SOFT_TIMESTAMP(7)
->  };
->  
-> diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
-> index 409a28e..f472137 100644
-> --- a/drivers/staging/iio/accel/adis16203_core.c
-> +++ b/drivers/staging/iio/accel/adis16203_core.c
-> @@ -99,13 +99,14 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec adis16203_channels[] = {
-> -	ADIS_SUPPLY_CHAN(ADIS16203_SUPPLY_OUT, ADIS16203_SCAN_SUPPLY, 12),
-> -	ADIS_AUX_ADC_CHAN(ADIS16203_AUX_ADC, ADIS16203_SCAN_AUX_ADC, 12),
-> +	ADIS_SUPPLY_CHAN(ADIS16203_SUPPLY_OUT, ADIS16203_SCAN_SUPPLY, 0, 12),
-> +	ADIS_AUX_ADC_CHAN(ADIS16203_AUX_ADC, ADIS16203_SCAN_AUX_ADC, 0, 12),
->  	ADIS_INCLI_CHAN(X, ADIS16203_XINCL_OUT, ADIS16203_SCAN_INCLI_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
->  	/* Fixme: Not what it appears to be - see data sheet */
-> -	ADIS_INCLI_CHAN(Y, ADIS16203_YINCL_OUT, ADIS16203_SCAN_INCLI_Y, 0, 14),
-> -	ADIS_TEMP_CHAN(ADIS16203_TEMP_OUT, ADIS16203_SCAN_TEMP, 12),
-> +	ADIS_INCLI_CHAN(Y, ADIS16203_YINCL_OUT, ADIS16203_SCAN_INCLI_Y,
-> +		0, 0, 14),
-> +	ADIS_TEMP_CHAN(ADIS16203_TEMP_OUT, ADIS16203_SCAN_TEMP, 0, 12),
->  	IIO_CHAN_SOFT_TIMESTAMP(5),
->  };
->  
-> diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
-> index b8ea768..19eaebc 100644
-> --- a/drivers/staging/iio/accel/adis16204_core.c
-> +++ b/drivers/staging/iio/accel/adis16204_core.c
-> @@ -136,15 +136,15 @@ static int adis16204_write_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec adis16204_channels[] = {
-> -	ADIS_SUPPLY_CHAN(ADIS16204_SUPPLY_OUT, ADIS16204_SCAN_SUPPLY, 12),
-> -	ADIS_AUX_ADC_CHAN(ADIS16204_AUX_ADC, ADIS16204_SCAN_AUX_ADC, 12),
-> -	ADIS_TEMP_CHAN(ADIS16204_TEMP_OUT, ADIS16204_SCAN_TEMP, 12),
-> +	ADIS_SUPPLY_CHAN(ADIS16204_SUPPLY_OUT, ADIS16204_SCAN_SUPPLY, 0, 12),
-> +	ADIS_AUX_ADC_CHAN(ADIS16204_AUX_ADC, ADIS16204_SCAN_AUX_ADC, 0, 12),
-> +	ADIS_TEMP_CHAN(ADIS16204_TEMP_OUT, ADIS16204_SCAN_TEMP, 0, 12),
->  	ADIS_ACCEL_CHAN(X, ADIS16204_XACCL_OUT, ADIS16204_SCAN_ACC_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 14),
->  	ADIS_ACCEL_CHAN(Y, ADIS16204_YACCL_OUT, ADIS16204_SCAN_ACC_Y,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 14),
->  	ADIS_ACCEL_CHAN(ROOT_SUM_SQUARED_X_Y, ADIS16204_XY_RSS_OUT,
-> -		ADIS16204_SCAN_ACC_XY, BIT(IIO_CHAN_INFO_PEAK), 14),
-> +		ADIS16204_SCAN_ACC_XY, BIT(IIO_CHAN_INFO_PEAK), 0, 14),
->  	IIO_CHAN_SOFT_TIMESTAMP(5),
->  };
->  
-> diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-> index 4492e51..374dc6e 100644
-> --- a/drivers/staging/iio/accel/adis16209_core.c
-> +++ b/drivers/staging/iio/accel/adis16209_core.c
-> @@ -130,16 +130,18 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec adis16209_channels[] = {
-> -	ADIS_SUPPLY_CHAN(ADIS16209_SUPPLY_OUT, ADIS16209_SCAN_SUPPLY, 14),
-> -	ADIS_TEMP_CHAN(ADIS16209_TEMP_OUT, ADIS16209_SCAN_TEMP, 12),
-> +	ADIS_SUPPLY_CHAN(ADIS16209_SUPPLY_OUT, ADIS16209_SCAN_SUPPLY, 0, 14),
-> +	ADIS_TEMP_CHAN(ADIS16209_TEMP_OUT, ADIS16209_SCAN_TEMP, 0, 12),
->  	ADIS_ACCEL_CHAN(X, ADIS16209_XACCL_OUT, ADIS16209_SCAN_ACC_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
->  	ADIS_ACCEL_CHAN(Y, ADIS16209_YACCL_OUT, ADIS16209_SCAN_ACC_Y,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS), 14),
-> -	ADIS_AUX_ADC_CHAN(ADIS16209_AUX_ADC, ADIS16209_SCAN_AUX_ADC, 12),
-> -	ADIS_INCLI_CHAN(X, ADIS16209_XINCL_OUT, ADIS16209_SCAN_INCLI_X, 0, 14),
-> -	ADIS_INCLI_CHAN(Y, ADIS16209_YINCL_OUT, ADIS16209_SCAN_INCLI_Y, 0, 14),
-> -	ADIS_ROT_CHAN(X, ADIS16209_ROT_OUT, ADIS16209_SCAN_ROT, 0, 14),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
-> +	ADIS_AUX_ADC_CHAN(ADIS16209_AUX_ADC, ADIS16209_SCAN_AUX_ADC, 0, 12),
-> +	ADIS_INCLI_CHAN(X, ADIS16209_XINCL_OUT, ADIS16209_SCAN_INCLI_X,
-> +		0, 0, 14),
-> +	ADIS_INCLI_CHAN(Y, ADIS16209_YINCL_OUT, ADIS16209_SCAN_INCLI_Y,
-> +		0, 0, 14),
-> +	ADIS_ROT_CHAN(X, ADIS16209_ROT_OUT, ADIS16209_SCAN_ROT, 0, 0, 14),
->  	IIO_CHAN_SOFT_TIMESTAMP(8)
->  };
->  
-> diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-> index 3a303a0..74ace2a 100644
-> --- a/drivers/staging/iio/accel/adis16240_core.c
-> +++ b/drivers/staging/iio/accel/adis16240_core.c
-> @@ -173,15 +173,15 @@ static int adis16240_write_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec adis16240_channels[] = {
-> -	ADIS_SUPPLY_CHAN(ADIS16240_SUPPLY_OUT, ADIS16240_SCAN_SUPPLY, 10),
-> -	ADIS_AUX_ADC_CHAN(ADIS16240_AUX_ADC, ADIS16240_SCAN_AUX_ADC, 10),
-> +	ADIS_SUPPLY_CHAN(ADIS16240_SUPPLY_OUT, ADIS16240_SCAN_SUPPLY, 0, 10),
-> +	ADIS_AUX_ADC_CHAN(ADIS16240_AUX_ADC, ADIS16240_SCAN_AUX_ADC, 0, 10),
->  	ADIS_ACCEL_CHAN(X, ADIS16240_XACCL_OUT, ADIS16240_SCAN_ACC_X,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 10),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
->  	ADIS_ACCEL_CHAN(Y, ADIS16240_YACCL_OUT, ADIS16240_SCAN_ACC_Y,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 10),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
->  	ADIS_ACCEL_CHAN(Z, ADIS16240_ZACCL_OUT, ADIS16240_SCAN_ACC_Z,
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 10),
-> -	ADIS_TEMP_CHAN(ADIS16240_TEMP_OUT, ADIS16240_SCAN_TEMP, 10),
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INFO_PEAK), 0, 10),
-> +	ADIS_TEMP_CHAN(ADIS16240_TEMP_OUT, ADIS16240_SCAN_TEMP, 0, 10),
->  	IIO_CHAN_SOFT_TIMESTAMP(6)
->  };
->  
-> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-> index b665dc7..fa2d01e 100644
-> --- a/include/linux/iio/imu/adis.h
-> +++ b/include/linux/iio/imu/adis.h
-> @@ -157,13 +157,14 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  	const struct iio_chan_spec *chan, unsigned int error_mask,
->  	int *val);
->  
-> -#define ADIS_VOLTAGE_CHAN(addr, si, chan, name, bits) { \
-> +#define ADIS_VOLTAGE_CHAN(addr, si, chan, name, info_all, bits) { \
->  	.type = IIO_VOLTAGE, \
->  	.indexed = 1, \
->  	.channel = (chan), \
->  	.extend_name = name, \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = info_all, \
->  	.address = (addr), \
->  	.scan_index = (si), \
->  	.scan_type = { \
-> @@ -174,19 +175,20 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  	}, \
->  }
->  
-> -#define ADIS_SUPPLY_CHAN(addr, si, bits) \
-> -	ADIS_VOLTAGE_CHAN(addr, si, 0, "supply", bits)
-> +#define ADIS_SUPPLY_CHAN(addr, si, info_all, bits) \
-> +	ADIS_VOLTAGE_CHAN(addr, si, 0, "supply", info_all, bits)
->  
-> -#define ADIS_AUX_ADC_CHAN(addr, si, bits) \
-> -	ADIS_VOLTAGE_CHAN(addr, si, 1, NULL, bits)
-> +#define ADIS_AUX_ADC_CHAN(addr, si, info_all, bits) \
-> +	ADIS_VOLTAGE_CHAN(addr, si, 1, NULL, info_all, bits)
->  
-> -#define ADIS_TEMP_CHAN(addr, si, bits) { \
-> +#define ADIS_TEMP_CHAN(addr, si, info_all, bits) { \
->  	.type = IIO_TEMP, \
->  	.indexed = 1, \
->  	.channel = 0, \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_SCALE) | \
->  		BIT(IIO_CHAN_INFO_OFFSET), \
-> +	.info_mask_shared_by_all = info_all, \
->  	.address = (addr), \
->  	.scan_index = (si), \
->  	.scan_type = { \
-> @@ -197,13 +199,14 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  	}, \
->  }
->  
-> -#define ADIS_MOD_CHAN(_type, mod, addr, si, info_sep, bits) { \
-> +#define ADIS_MOD_CHAN(_type, mod, addr, si, info_sep, info_all, bits) { \
->  	.type = (_type), \
->  	.modified = 1, \
->  	.channel2 = IIO_MOD_ ## mod, \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		 info_sep, \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = info_all, \
->  	.address = (addr), \
->  	.scan_index = (si), \
->  	.scan_type = { \
-> @@ -214,17 +217,17 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  	}, \
->  }
->  
-> -#define ADIS_ACCEL_CHAN(mod, addr, si, info_sep, bits) \
-> -	ADIS_MOD_CHAN(IIO_ACCEL, mod, addr, si, info_sep, bits)
-> +#define ADIS_ACCEL_CHAN(mod, addr, si, info_sep, info_all, bits) \
-> +	ADIS_MOD_CHAN(IIO_ACCEL, mod, addr, si, info_sep, info_all, bits)
->  
-> -#define ADIS_GYRO_CHAN(mod, addr, si, info_sep, bits) \
-> -	ADIS_MOD_CHAN(IIO_ANGL_VEL, mod, addr, si, info_sep, bits)
-> +#define ADIS_GYRO_CHAN(mod, addr, si, info_sep, info_all, bits)		\
-> +	ADIS_MOD_CHAN(IIO_ANGL_VEL, mod, addr, si, info_sep, info_all, bits)
->  
-> -#define ADIS_INCLI_CHAN(mod, addr, si, info_sep, bits) \
-> -	ADIS_MOD_CHAN(IIO_INCLI, mod, addr, si, info_sep, bits)
-> +#define ADIS_INCLI_CHAN(mod, addr, si, info_sep, info_all, bits) \
-> +	ADIS_MOD_CHAN(IIO_INCLI, mod, addr, si, info_sep, info_all, bits)
->  
-> -#define ADIS_ROT_CHAN(mod, addr, si, info_sep, bits) \
-> -	ADIS_MOD_CHAN(IIO_ROT, mod, addr, si, info_sep, bits)
-> +#define ADIS_ROT_CHAN(mod, addr, si, info_sep, info_all, bits) \
-> +	ADIS_MOD_CHAN(IIO_ROT, mod, addr, si, info_sep, info_all, bits)
->  
->  #ifdef CONFIG_IIO_ADIS_LIB_BUFFER
->  
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
