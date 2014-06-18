@@ -1,51 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:14665 "EHLO
+Received: from mailout3.samsung.com ([203.254.224.33]:53437 "EHLO
 	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964828AbaFRGUO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jun 2014 02:20:14 -0400
-Message-id: <53A12F9A.4060603@samsung.com>
-Date: Wed, 18 Jun 2014 15:20:10 +0900
+	with ESMTP id S933839AbaFRIvg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jun 2014 04:51:36 -0400
+Message-id: <53A15315.6060304@samsung.com>
+Date: Wed, 18 Jun 2014 17:51:33 +0900
 From: Chanwoo Choi <cw00.choi@samsung.com>
 MIME-version: 1.0
-To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Cc: jic23@kernel.org, My self <ch.naveen@samsung.com>,
-	t.figa@samsung.com, Kukjin Kim <kgene.kim@samsung.com>,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, sachin.kamat@linaro.org,
-	linux-iio@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org,
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: jic23@kernel.org, ch.naveen@samsung.com, t.figa@samsung.com,
+	kgene.kim@samsung.com, robh+dt@kernel.org, pawel.moll@arm.com,
+	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org, rdunlap@infradead.org,
+	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCHv4 3/4] iio: devicetree: Add DT binding documentation for
- Exynos3250 ADC
+Subject: Re: [PATCHv4 4/4] ARM: dts: Fix wrong compatible string for Exynos3250
+ ADC
 References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com>
- <1403058061-24271-4-git-send-email-cw00.choi@samsung.com>
- <CAHfPSqBepO+73vLyJJox1fP=0-F5KSE3uyjh-HXYXkHRLpw0QA@mail.gmail.com>
-In-reply-to: <CAHfPSqBepO+73vLyJJox1fP=0-F5KSE3uyjh-HXYXkHRLpw0QA@mail.gmail.com>
-Content-type: text/plain; charset=UTF-8
+ <1403058061-24271-5-git-send-email-cw00.choi@samsung.com>
+ <53A14FAC.3050700@gmail.com>
+In-reply-to: <53A14FAC.3050700@gmail.com>
+Content-type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Naveen,
+Hi Tomasz,
 
-On 06/18/2014 03:12 PM, Naveen Krishna Ch wrote:
-> Hello Chanwoo,
+On 06/18/2014 05:37 PM, Tomasz Figa wrote:
+> Hi Chanwoo,
 > 
-> On 18 June 2014 07:51, Chanwoo Choi <cw00.choi@samsung.com> wrote:
->> This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
->> special clock ('sclk_tsadc') for ADC which provide clock to internal ADC.
+> On 18.06.2014 04:21, Chanwoo Choi wrote:
+>> This patchset fix wrong compatible string for Exynos3250 ADC. Exynos3250 SoC
+>> need to control only special clock for ADC. Exynos SoC except for Exynos3250
+>> has not included special clock for ADC. The exynos ADC driver can control
+>> special clock if compatible string is 'exynos3250-adc-v2'.
 >>
 >> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 >> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+>> ---
+>>  arch/arm/boot/dts/exynos3250.dtsi | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/arm/boot/dts/exynos3250.dtsi b/arch/arm/boot/dts/exynos3250.dtsi
+>> index 6c1fb67..107dc44 100644
+>> --- a/arch/arm/boot/dts/exynos3250.dtsi
+>> +++ b/arch/arm/boot/dts/exynos3250.dtsi
+>> @@ -414,10 +414,10 @@
+>>  		};
+>>  
+>>  		adc: adc@126C0000 {
+>> -			compatible = "samsung,exynos-adc-v3";
+>> +			compatible = "samsung,exynos3250-adc-v2";
+>>  			reg = <0x126C0000 0x100>, <0x10020718 0x4>;
+>>  			interrupts = <0 137 0>;
+>> -			clock-names = "adc", "sclk_tsadc";
+>> +			clock-names = "adc", "sclk_adc";
 > 
-> Changes look good to me.
-> Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> So, is it "sclk_adc" or "sclk_tsadc"? The code uses the former, while
+> the documentation mentions the latter. Please fix this.
 
-Thanks for your review.
+OK, I'll fix it by using 'sclk_adc' clock name.
 
 Best Regards,
 Chanwoo Choi
-
-
 
