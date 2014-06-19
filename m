@@ -1,78 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-116.synserver.de ([212.40.185.116]:1046 "EHLO
-	smtp-out-113.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752560AbaFSK5z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jun 2014 06:57:55 -0400
-Message-ID: <53A2C22E.3060409@metafoo.de>
-Date: Thu, 19 Jun 2014 12:57:50 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Denis CIOCCA <denis.ciocca@st.com>, linux-iio@vger.kernel.org
-Subject: Re: IIO hrtimer trigger
-References: <1380483412-13458-1-git-send-email-denis.ciocca@st.com> <524DA508.2030606@metafoo.de> <5251A8BE.9000309@kernel.org> <5252C2CF.8080609@metafoo.de> <53A1ECBC.3010501@kernel.org>
-In-Reply-To: <53A1ECBC.3010501@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hadess@hadess.net>
+Message-ID: <1403176834.30918.32.camel@nuvo>
+Subject: Re: User-space API for accelerometer(s)?
+From: Bastien Nocera <hadess@hadess.net>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
+ Benjamin Tissoires <benjamin.tissoires@redhat.com>, Jonathan Cameron
+ <jic23@kernel.org>
+Date: Thu, 19 Jun 2014 13:20:34 +0200
+In-Reply-To: <53A224AB.9090305@linux.intel.com>
+References: <1403100542.30918.29.camel@nuvo>
+	 <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>
+	 <53A224AB.9090305@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/18/2014 09:47 PM, Jonathan Cameron wrote:
-> On 07/10/13 15:18, Lars-Peter Clausen wrote:
->> On 10/06/2013 08:15 PM, Jonathan Cameron wrote:
->>> On 10/03/13 18:10, Lars-Peter Clausen wrote:
->>>> On 09/29/2013 09:36 PM, Denis CIOCCA wrote:
->>>>> Hi Lars,
->>>>>
->>>>> Thanks for your review.
->>>>> I reviewed the code in accordance with your comments, for the other point
->>>>> can you explain me better please?
->>>>> You intend to use one driver to manage all triggers added by sysfs?
->>>>
->>>> Not necessarily, but I think we should have some common code that manages
->>>> the software triggers.
->>> That is fair enough.
->>>
->>>> But what I'm most concerned about is the userspace
->>>> ABI, since once we have added it, we have to maintain it forever. So the
->>>> big
->>>> question do we think that the current ABI implemented by that patch is good
->>>> enough.
->>> We are pretty much stuck with that for the sysfs trigger already...
->>
->> Unfortunately yes. I never liked its API and I still don't like it and we
->> have to live with it. But this doesn't mean we have to add more of the same.
->>
->>>
->>>> Some thoughts:
->>>>
->>>> * Should it maybe be called timer instead of hrtimer.
->>> Agreed.
->>>> * Do we only want to allow names which follow "hrtimer-%d" or do we want to
->>>> allow arbitrary names.
->>> Arbitary would be fine.
->>>> * Do we want to have a top-level folder for each sw trigger type
->>> I'm not that bothered about this we are hardly talking a huge number of such
->>> folders.
->>>> * Is sysfs actually the right place for this, or should it go into
->>>> configfs?
->>>>    Quote from Documentation/filesystems/configs:
->>>>    "configfs is a ram-based filesystem that provides the converse of
->>>>     sysfs's functionality.  Where sysfs is a filesystem-based view of
->>>>     kernel objects, configfs is a filesystem-based manager of kernel
->>>>     objects, or config_items. [...] Unlike sysfs, the
->>>>     lifetime of the representation is completely driven by userspace.  The
->>>>     kernel modules backing the items must respond to this."
->>> Hmm. maybe, I'm not sure how cleanly this would work and it adds an
->>> additional
->>> dependency for all these types of drivers.  I'll take the lazy option:
->>> Go on Lars, put together a full proposal on the actual interface ;)
->>
->> I'll do that but that might take a few weeks until I get to it.
-> Bump.  Do we want to still wait for this, or should we just go ahead with the
-> hrtimer as is.  It may not be ideal, but it's useful and lets us kill off
-> some much worse options..
+On Wed, 2014-06-18 at 16:45 -0700, Srinivas Pandruvada wrote:
+> On 06/18/2014 04:31 PM, Reyad Attiyat wrote:
+> > Hello Bastien Nocera,
+> >
+> > I'm not the best person to answer your questions but I will try and
+> > help. The best people to talk to would be Jonathan Cameron, the IIO
+> > maintainer, and Srinivas Pandruvada, the author of the hid-sensor-hub
+> > device drivers. I have CC'ed them for you to hopefully get a better
+> > response than what I can offer.
+> >
+> > Your device uses the same sensor hub, over usb, as my device does. I
+> > have a Microsoft Surface and it also uses many of the sensors found on
+> > the Lenovo Yoga.
+> >
+> >> So, my question regarding the IIO user-space API is:
+> >> is it possible to make the IIO accelerometer send out a kevent when the
+> >> orientation changes in a major way (using triggers?) or does user-space
+> >> need to poll the device instead?
+> 
+> You can check a program called generic_buffer.c in 
+> "drivers/staging/iio/Documentation". I have used this as a reference to 
+> port to Android.
+> You don't need to poll, you can also check 
+> "https://github.com/pfps/yoga-laptop/sensors " developed by Peter F. 
+> Patel-Schneider.
 
-I'd really prefer to not compromise on user-space ABI. Quick hacks are 
-sometimes fine for kernel internal things since we can clean them up later. 
-But for userspace ABI we'll be stuck with it forever.
-
+I've read this code, and in fact, I mentioned it in my original mail. I
+fail to see how this code isn't polling. It's also much more complicated
+than doing the same thing for a evdev accelerometer.
