@@ -1,68 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:41144 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1758051AbaFUHza (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jun 2014 03:55:30 -0400
-Date: Sat, 21 Jun 2014 09:55:22 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>,
-	Kristina =?utf-8?Q?Mart=C5=A1enko?=
-	<kristina.martsenko@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: IIO drivers left in drivers/staging/
-Message-ID: <20140621075522.GY19375@piout.net>
-References: <20140611013007.GA32756@kroah.com>
- <f0db211a-bf69-4a3e-beda-2101af74ae25@email.android.com>
- <53998D43.9020209@gmail.com>
- <53A1895A.4090209@gmail.com>
- <alpine.DEB.2.01.1406181445290.28014@pmeerw.net>
- <20140618174717.GC11977@kroah.com>
- <20140619125416.GT19375@piout.net>
- <20140620204248.GF16973@kroah.com>
+Received: from mail.cosmopool.net ([178.63.74.76]:47568 "EHLO
+	mail.cosmopool.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752051AbaFSTqB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jun 2014 15:46:01 -0400
+From: Harald Geyer <harald@ccbib.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+cc: linux-iio@vger.kernel.org
+Subject: Re: iio: dht11 HW issues
+In-reply-to: <5395A138.2030708@metafoo.de>
+References: <E1WtlyB-00012Z-I6@stardust.g4.wien.funkfeuer.at> <5395A138.2030708@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140620204248.GF16973@kroah.com>
+Content-Type: text/plain; charset="us-ascii"
+Date: Thu, 19 Jun 2014 21:45:39 +0200
+Message-Id: <E1WxiHD-0000zG-Ae@stardust.g4.wien.funkfeuer.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/06/2014 at 13:42:48 -0700, Greg KH wrote :
-> > 
-> > I would say that the latest addition to the TODO file is quite valid ;)
-> > We have been looking at moving the mxs-lradc out of staging for a while
-> > now. It still has a few contributions coming from time to time and can
-> > definitely be improved. The main thing to do would be to create an MFD.
-> > 
-> > I understand this may be a considerable amount of work but it has the
-> > advantage of allowing to have a look at at least 3 different subsystems.
-> > 
-> > I am willing to review and test patches.
-> > 
-> > I would suggest that board:
-> > http://www.crystalfontz.com/product/CFA921TS
-> > 
-> > It may not be the cheapeast one but it has good mainline support and I
-> > know it well.
+Lars-Peter Clausen writes:
+> On 06/09/2014 12:53 AM, Harald Geyer wrote:
+> > Alas at least DHT22 seems to have hardware issues: After a few days
+> > of operation (reading the sensor once per minute) the sensor seems
+> > to stop responding entirely and the only way to fix this is to power
+> > cycle the sensor.
+> >
+> > I have tried 3.3 V and 5 V supply and have observed this on at least
+> > two pieces of hardware, so I'm pretty confident the issue is real.
+> > The obvious solution is to use an additional gpio line to control
+> > power for the sensor. Now I'm torn whether to handle this in kernel
+> > space or user space: Since software using the sysfs ABI doesn't even
+> > know (and shouldn't need to know) that the humidity values come from
+> > a DHT22, this clearly should be handled be the kernel driver.
+> >
+> > OTOH there probably is an infinite number of algorithms (and HW
+> > configurations) people might want to use to control power and coming
+> > up with an ABI that allows implementing any of them, will be a
+> > challange. Any guidance is appreciated.
+> >
 > 
-> What sensors does it have on it that are iio drivers that need fixing
-> up?
-> 
+> Yes, this sounds like an issue that should be handled transparently in the 
+> kernel if possible. If you can detect that the sensor does not respond I'd 
+> say add code to the kernel driver to issue a reset if that happens.
 
-It is i.mx28 based so it has the mxs LRADC which is currently supported
-through drivers/staging/iio/adc/mxs-lradc.c.
-It is also a touchscreen controller, a temperature sensor and a battery
-voltage monitor so it would make sense to create an mfd and move the
-touchscreen part in the input subsystem and add a driver for the voltage
-monitor in the power subsystem.
+Detecting the loss of sensor response is easy. The hard part is figuring
+out what to do about it and which ABI should be provided.
 
-You can also have a look at that thread:
-http://www.spinics.net/lists/linux-iio/msg11004.html
+I guess just throwing in an additional (optional) gpio line to control
+power isn't the kernel way of doing things and would be rather unflexible
+for board designers. Somebody might want to control power of several
+sensors with a single gpio line (or even other means but gpio) so 
+probably a regulator is needed?
 
-> It's not that expensive, my budget for Linux devices can cover it...
-> 
+I'm thinking about something like
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+by default all driver instances set:
+regulator_set_voltage(regulator, 0, max_operating_voltage)
+
+if a driver instance is taking measurements it temporarily:
+regulator_set_voltage(regulator, min_operating_voltage, max_operating_voltage)
+
+if a driver instance detects loss of sensor response it does:
+regulator_set_voltage(regulator, 0, 0)
+for a fixed amount of time.
+
+The downside of this: Taking multiple measurements in a row will cause the
+sensors to power cycle a lot. (Might look like a brown out actually.)
+
+Is there a better way of doing this or a more suitable framework than
+regulators?
+
+TIA,
+Harald
