@@ -1,99 +1,65 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-Date: Sat, 21 Jun 2014 11:26:59 +0100
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jan Kardell <jan.kardell@telliq.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	Rachna Patil <rachna@ti.com>, Zubair Lutfullah:
-	zubair.lutfullah@gmail.com
-Subject: Re: [PATCH] iio: ti_am335x_adc: Use same step id at FIFOs both ends
-Message-ID: <20140621102658.GA5177@gmail.com>
-References: <1402521498-11535-1-git-send-email-jan.kardell@telliq.com>
- <53A555A7.7070800@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:42743 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754851AbaFUKfg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 21 Jun 2014 06:35:36 -0400
+Message-ID: <53A5606F.8000103@kernel.org>
+Date: Sat, 21 Jun 2014 11:37:35 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53A555A7.7070800@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] staging: iio/ad7291: fix error code in ad7291_probe()
+References: <20140620192234.GD19824@mwanda>
+In-Reply-To: <20140620192234.GD19824@mwanda>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 21, 2014 at 10:51:35AM +0100, Jonathan Cameron wrote:
-> On 11/06/14 22:18, Jan Kardell wrote:
-> >Since AI lines could be selected at will (linux-3.11) the sending
-> >and receiving ends of the FIFO does not agree about what step is used
-> >for a line. It only works if the last lines are used, like 5,6,7,
-> >and fails if ie 2,4,6 is selected in DT.
-> >
-> >Signed-off-by: Jan Kardell <jan.kardell@telliq.com>
-> I'd like an ack / review from someone more familiar with this part than I
-> am. I have cc'd a few people who might offer a view.
+On 20/06/14 20:22, Dan Carpenter wrote:
+> We should be returning a negative error code instead of success here.
+>
+> This would have been detected by GCC, except that the "ret" variable was
+> initialized with a bogus value to disable GCC's uninitialized variable
+> warnings.  I've cleaned that up, as well.
+>
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Applied to the fixes-togreg branch of iio.git and cc'd to stable.
 
-Been a while since I've seen this driver.
-I'll try a bit..
+Thanks,
 
-> 
-> Thanks,
-> 
-> Jonathan (IIO maintainer)
-> >---
-> >  drivers/iio/adc/ti_am335x_adc.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> >index a4db302..d5dc4c6 100644
-> >--- a/drivers/iio/adc/ti_am335x_adc.c
-> >+++ b/drivers/iio/adc/ti_am335x_adc.c
-> >@@ -374,7 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
-> >  			return -EAGAIN;
-> >  		}
-> >  	}
-> >-	map_val = chan->channel + TOTAL_CHANNELS;
-> >+	map_val = adc_dev->channel_step[chan->scan_index];
+Jonathan
+>
+> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+> index 357cef2..7194bd1 100644
+> --- a/drivers/staging/iio/adc/ad7291.c
+> +++ b/drivers/staging/iio/adc/ad7291.c
+> @@ -465,7 +465,7 @@ static int ad7291_probe(struct i2c_client *client,
+>   	struct ad7291_platform_data *pdata = client->dev.platform_data;
+>   	struct ad7291_chip_info *chip;
+>   	struct iio_dev *indio_dev;
+> -	int ret = 0;
+> +	int ret;
+>
+>   	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+>   	if (!indio_dev)
+> @@ -475,7 +475,7 @@ static int ad7291_probe(struct i2c_client *client,
+>   	if (pdata && pdata->use_external_ref) {
+>   		chip->reg = devm_regulator_get(&client->dev, "vref");
+>   		if (IS_ERR(chip->reg))
+> -			return ret;
+> +			return PTR_ERR(chip->reg);
+>
+>   		ret = regulator_enable(chip->reg);
+>   		if (ret)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-Looking at the code again.
-Could you tell me if using map_val = step_en will work?
-
-Checking TRM, the channel ID is written with step id.
-And if i am not mistaken, step id is already stored in step_en.
-That is the step we enable for sampling.
-Would make sense to check fifo for that step no?
-
-something like
-
-@@ -324,7 +324,7 @@
- 		int *val, int *val2, long mask)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
--	int i, map_val;
-+	int i;
- 	unsigned int fifo1count, read, stepid;
- 	bool found = false;
- 	u32 step_en;
-@@ -342,7 +342,6 @@
- 		if (time_after(jiffies, timeout))
- 			return -EAGAIN;
- 		}
--	map_val = chan->channel + TOTAL_CHANNELS;
- 
- 	/*
- 	 * When the sub-system is first enabled,
-@@ -361,7 +360,7 @@
- 		stepid = read & FIFOREAD_CHNLID_MASK;
- 		stepid = stepid >> 0x10;
- 
--		if (stepid == map_val) {
-+		if (stepid == step_en) {
- 			read = read & FIFOREAD_DATA_MASK;
- 			found = true;
- 			*val = (u16) read;
-
-
-Cheers
-ZubairLK
-
-
-
-> >
-> >  	/*
-> >  	 * We check the complete FIFO. We programmed just one entry but in case
-> >
-> 
