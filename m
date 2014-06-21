@@ -1,661 +1,182 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp2-g21.free.fr ([212.27.42.2]:3053 "EHLO smtp2-g21.free.fr"
+Received: from mail.kernel.org ([198.145.19.201]:43968 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752369AbaFGNis (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 09:38:48 -0400
-From: Philippe Reynes <tremyfr@yahoo.fr>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, armadeus-forum@lists.sourceforge.net,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	devicetree@vger.kernel.org, pmeerw@pmeerw.net,
-	Philippe Reynes <tremyfr@yahoo.fr>
-Subject: [PATCH v6] iio: add support of the max1027
-Date: Sat,  7 Jun 2014 15:38:32 +0200
-Message-Id: <1402148312-22663-1-git-send-email-tremyfr@yahoo.fr>
+	id S1751486AbaFUL15 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 21 Jun 2014 07:27:57 -0400
+Message-ID: <53A56CB3.3030207@kernel.org>
+Date: Sat, 21 Jun 2014 12:29:55 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Support Opensource <Support.Opensource@diasemi.com>
+Subject: Re: [PATCH 4/8] iio: Add support for DA9150 GPADC
+References: <cover.1402484954.git.Adam.Thomson.Opensource@diasemi.com> <3c1a7551c7deaeccdca731fa95f4349c57e04249.1402484954.git.Adam.Thomson.Opensource@diasemi.com> <539DFFC8.3080406@kernel.org> <2E89032DDAA8B9408CB92943514A0337AB4FD9C7@SW-EX-MBX01.diasemi.com>
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB4FD9C7@SW-EX-MBX01.diasemi.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This driver add partial support of the
-maxim 1027/1029/1031. Differential mode is not
-supported.
+On 16/06/14 16:58, Opensource [Adam Thomson] wrote:
+> On June 15, 2014 21:19, Jonathon Cameron wrote:
+>
+>> Hi Adam
+>>
+>> Reasonably clean code, but the _ channels stuff doesn't comply with the ABI
+>> and is rather confusing.
+>
+> To be honest I did debate this in my head for a while. The reason I went with
+> the current approach was to make the driver channel layout match that of the
+> datasheet for the device. Sounds like it wasn't the correct direction though.
+>
+>> If it really does make sense to allow reading these channels at different
+>> ranges (presumably to enhance the effective adc resolution) then we need
+>> to control this via existing ABIs. Controlling it via scale with a
+>> range attribute if required (read only but changes with whatever the
+>> scale attribute it set to).
+>
+> Yes, with smaller range then you get a better degree of accuracy. Ok, will have
+> a look at this and see if I can improve things based on your comments.
+>
+>> Often, for slow parts at least it makes little sense to have provide
+>> software support for variable input ranges.
+>>
+>> Looking at what is covered, is it the case that only one option will make
+>> sense for a given hardware setup? (cover the required range and nothing more).
+>>
+>> If so, perhaps this wants to go into the device tree or similar?
+>
+> Possibly. Having read your comments further on though, and given that
+> it seems reasonable to use the range/scale attribute to choose the resolution,
+> I'd prefer to opt for that approach (seems more flexible).
+Perhaps, but if the reason for these differing ranges is that they tend
+to be wired to lines that have well defined voltage ranges, then I'd move
+it into setup data.  Leads to a cleaner driver.  Flexibility is good, but
+only if actually helps anyone!
+>
+>> Please get rid of excess white space and comments that just tell you
+>> something obvious about the code following them.
+>
+> Preferably I'd like to keep it this way as I think it makes the code
+> easier to read, but if you're dead against it then I'll remove them.
+The issue here is about making kernel review as easy as possible.  That often
+involves making code (and particularly comments) conform to somewhat arbitrary
+rules and conventions.  Just makes the reviewer/maintainers life somewhat easier.
+You'll also probably get follow up patches removing all this stuff on the basis
+of kernel style soon after we merge the driver anyway and those just get
+irritating ;)
+>
+>> Linear in the coeeficients, so fine for raw output with a scale and offset.
+>
+> Ok will have a look at re-working this as per your comment.
+>
+>> Ah, so here is your reasoning behind the 'interesting' underscore channels.
+>> This is just doing different range checks on the channel?  If so allow one
+>> at a time and provide a writable scale info_mask element to control which
+>> is used..
+>>
+>> Looks like there are only thes two channels doing this, so shouldn't be
+>> too hard to support it via more conventional means.
+>
+> The GPIO, VBUS and VSYS related channels provide different ranges. I guess they
+> should all follow the same approach for implementing this alternate range. So I
+> will assume that for the 'repeat' channels where the same raw value is provided
+> on both the _ and non _ channels only one channel should be provided.
+Definitely.
+>
+>> Don't use the |=, just = and you can't avoid assigning reg above.
+>> Actually, it's not complex enough that you couldn't just do it directly into
+>> the write function and skip this local variable.
+>
+> Ok fine. Will update to tidy up.
+>
+>> Unlock first, then check for error.
+>
+> Yep. Makes sense. Will update.
+>
+>> The mixture of having defs here for the shift.
+>>> +	/* MSBs - 8 bits */
+>>> +	result |= result_regs[0] << 2;
+>> and not here is inconsistent.  I honestly don't mind which way, but
+>> just use one style.
+>>
+>> You could just use an endian conversion and shift the combined 16bit result
+>
+> Fair point. Will make this cleaner.
+>
+>> It very rarely makes sense to provide both raw and processed interfaces.
+>> If the transform is nasty and non linear then userspace won't have the info
+>> to do anything with it.  If the transform is linear, then provide scale
+>> and offset and let userspace perform the computation.
+>
+> The charger module uses certain channels for its readings, and to me it makes
+> more sense for that calculation to be done by the GPADC. However having looked
+> at the inkern.c framework code it looks like if you request a processed channel
+> and it's doesn't provide that feature, then the code drops to linear scaling if
+> possible to provide the processed value. I take it this is the preferred
+> approach then?
+Yup.  Saves on replicating code.  Mostly the raw access stuff is there for consistency
+with buffered access (where speed matters and we may or may not want to convert to
+real units).  So you should provide the information to do the scaling anyway, so
+just let the core code handle it for you.
+> Just thought it was more consistent to see the calculation using
+> dedicated functions (processed channel approach).
+>
+>> Get rid of this comment and any other ones that don't add any
+>> actual information.  Also this is single line comment, please
+>> check the comment syntax.
+>
+> As per previous comment on this topic.
+>
+>> Why a blank line here.
+>
+> Accidental. Will remove it.
+>
+>> The device register call is the one that exposes userspace interfaces. As
+>> a general rule it wants to be the last thing in probe as everything
+>> else should be setup first.
+>
+> Ok, that's something I missed. Will make the change.
+>
+>>> +#include <linux/iio/machine.h>
+>> This isn't used in the header, so should be included in the c file, not here.
+>
+> Yes, is something I meant to remove during development increments. Consider it
+> gone.
+>
+>>> +#include <linux/mfd/da9150/core.h>
+>> Having moved the struct definition into the c file
+>> this header include will not want to be here.
+>
+> I personally would prefer a separate header for the definitions as I believe
+> this is tidier. Have never really liked struct definitions in c files.
+Again, kernel coding style. Have everything as local as you can.
+Makes it obvious nothing else uses the structure and also ever so slightly
+cuts down on compile time (all helps!)
 
-It was tested on armadeus apf27 board.
-
-Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
----
- .../devicetree/bindings/iio/adc/max1027-adc.txt    |   22 +
- drivers/iio/adc/Kconfig                            |    9 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/max1027.c                          |  522 ++++++++++++++++++++
- 4 files changed, 554 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
- create mode 100644 drivers/iio/adc/max1027.c
-
-Changelog:
-v6: (thanks Peter Meerwald for the feedback)
-- dont use index with temperature
-- use const on scan mask
-- use __be16 * for buffer
-- return -EBUSY if trigger is already running
-- replace it by interrupt in comment
-- dont finish case with ";"
-- use iio_push_to_buffers
-- remove useless initialization of st->buffer
-- remove useless obvious comment
-
-v5: (thanks Jonathan Cameron for the feedback)
-- add validate_trigger
-- add validate_device
-- remove useless (void *) cast
-- use allocated buffer for spi_write
-
-v4: (thanks Jonathan Cameron for the feedback)
-- use iio_trigger_generic_data_rdy_poll
-
-v3: (thanks Hartmut Knaack, Lars-Peter Clausen and Jonathan Cameron for the feedback)
-- move to drivers/iio/adc (was in staging)
-- clean binding doc
-- drop empty update_scan_mode callback
-- add a lock around single channel read code
-- remove useless wrappers around spi_write and spi_read
-- fix available scan mask (a bit was missing)
-- remove useless header
-- some others little cleanp
-
-v2: (thanks Hartmut Knaack and Jonathan Cameron for the feedback)
-- really use devm_* 
-- use demux magic
-- use spi_read and spi_write (instead of spi_sync)
-- use define for register (instead of hardcoded value)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
-new file mode 100644
-index 0000000..a8770cc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
-@@ -0,0 +1,22 @@
-+* Maxim 1027/1029/1031 Analog to Digital Converter (ADC)
-+
-+Required properties:
-+  - compatible: Should be "maxim,max1027" or "maxim,max1029" or "maxim,max1031"
-+  - reg: SPI chip select number for the device
-+  - interrupt-parent: phandle to the parent interrupt controller
-+  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-+  - interrupts: IRQ line for the ADC
-+  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-+
-+Recommended properties:
-+- spi-max-frequency: Definition as per
-+                     Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Example:
-+adc@0 {
-+	compatible = "maxim,max1027";
-+	reg = <0>;
-+	interrupt-parent = <&gpio5>;
-+	interrupts = <15 IRQ_TYPE_EDGE_RISING>;
-+	spi-max-frequency = <1000000>;
-+};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 24c28e3..517f886 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -119,6 +119,15 @@ config LP8788_ADC
- 	help
- 	  Say yes here to build support for TI LP8788 ADC.
- 
-+config MAX1027
-+	tristate "Maxim max1027 ADC driver"
-+	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for Maxim SPI ADC models
-+	  max1027, max1029 and max1031.
-+
- config MAX1363
- 	tristate "Maxim max1363 ADC driver"
- 	depends on I2C
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ab346d8..daac784 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-+obj-$(CONFIG_MAX1027) += max1027.o
- obj-$(CONFIG_MAX1363) += max1363.o
- obj-$(CONFIG_MCP320X) += mcp320x.o
- obj-$(CONFIG_MCP3422) += mcp3422.o
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-new file mode 100644
-index 0000000..92d6c7f
---- /dev/null
-+++ b/drivers/iio/adc/max1027.c
-@@ -0,0 +1,522 @@
-+ /*
-+  * iio/adc/max1027.c
-+  * Copyright (C) 2014 Philippe Reynes
-+  *
-+  * based on linux/drivers/iio/ad7923.c
-+  * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
-+  * Copyright 2012 CS Systemes d'Information
-+  *
-+  * This program is free software; you can redistribute it and/or modify
-+  * it under the terms of the GNU General Public License version 2 as
-+  * published by the Free Software Foundation.
-+  *
-+  * max1027.c
-+  *
-+  * Partial support for max1027 and similar chips.
-+  */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/delay.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define MAX1027_CONV_REG  0x80
-+#define MAX1027_SETUP_REG 0x40
-+#define MAX1027_AVG_REG   0x20
-+#define MAX1027_RST_REG   0x10
-+
-+/* conversion register */
-+#define MAX1027_TEMP      0x01
-+#define MAX1027_SCAN_0_N  (0x00 << 1)
-+#define MAX1027_SCAN_N_M  (0x01 << 1)
-+#define MAX1027_SCAN_N    (0x02 << 1)
-+#define MAX1027_NOSCAN    (0x03 << 1)
-+#define MAX1027_CHAN(n)   ((n) << 3)
-+
-+/* setup register */
-+#define MAX1027_UNIPOLAR  0x02
-+#define MAX1027_BIPOLAR   0x03
-+#define MAX1027_REF_MODE0 (0x00 << 2)
-+#define MAX1027_REF_MODE1 (0x01 << 2)
-+#define MAX1027_REF_MODE2 (0x02 << 2)
-+#define MAX1027_REF_MODE3 (0x03 << 2)
-+#define MAX1027_CKS_MODE0 (0x00 << 4)
-+#define MAX1027_CKS_MODE1 (0x01 << 4)
-+#define MAX1027_CKS_MODE2 (0x02 << 4)
-+#define MAX1027_CKS_MODE3 (0x03 << 4)
-+
-+/* averaging register */
-+#define MAX1027_NSCAN_4   0x00
-+#define MAX1027_NSCAN_8   0x01
-+#define MAX1027_NSCAN_12  0x02
-+#define MAX1027_NSCAN_16  0x03
-+#define MAX1027_NAVG_4    (0x00 << 2)
-+#define MAX1027_NAVG_8    (0x01 << 2)
-+#define MAX1027_NAVG_16   (0x02 << 2)
-+#define MAX1027_NAVG_32   (0x03 << 2)
-+#define MAX1027_AVG_EN    (0x01 << 4)
-+
-+enum max1027_id {
-+	max1027,
-+	max1029,
-+	max1031,
-+};
-+
-+static const struct spi_device_id max1027_id[] = {
-+	{"max1027", max1027},
-+	{"max1029", max1029},
-+	{"max1031", max1031},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, max1027_id);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id max1027_adc_dt_ids[] = {
-+	{ .compatible = "maxim,max1027" },
-+	{ .compatible = "maxim,max1029" },
-+	{ .compatible = "maxim,max1031" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
-+#endif
-+
-+#define MAX1027_V_CHAN(index)						\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = index,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+		.scan_index = index+1,					\
-+		.scan_type = {						\
-+			.sign = 'u',					\
-+			.realbits = 10,					\
-+			.storagebits = 16,				\
-+			.shift = 2,					\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+#define MAX1027_T_CHAN							\
-+	{								\
-+		.type = IIO_TEMP,					\
-+		.channel = 0,						\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+		.scan_index = 0,					\
-+		.scan_type = {						\
-+			.sign = 'u',					\
-+			.realbits = 12,					\
-+			.storagebits = 16,				\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+static const struct iio_chan_spec max1027_channels[] = {
-+	MAX1027_T_CHAN,
-+	MAX1027_V_CHAN(0),
-+	MAX1027_V_CHAN(1),
-+	MAX1027_V_CHAN(2),
-+	MAX1027_V_CHAN(3),
-+	MAX1027_V_CHAN(4),
-+	MAX1027_V_CHAN(5),
-+	MAX1027_V_CHAN(6),
-+	MAX1027_V_CHAN(7)
-+};
-+
-+static const struct iio_chan_spec max1029_channels[] = {
-+	MAX1027_T_CHAN,
-+	MAX1027_V_CHAN(0),
-+	MAX1027_V_CHAN(1),
-+	MAX1027_V_CHAN(2),
-+	MAX1027_V_CHAN(3),
-+	MAX1027_V_CHAN(4),
-+	MAX1027_V_CHAN(5),
-+	MAX1027_V_CHAN(6),
-+	MAX1027_V_CHAN(7),
-+	MAX1027_V_CHAN(8),
-+	MAX1027_V_CHAN(9),
-+	MAX1027_V_CHAN(10),
-+	MAX1027_V_CHAN(11)
-+};
-+
-+static const struct iio_chan_spec max1031_channels[] = {
-+	MAX1027_T_CHAN,
-+	MAX1027_V_CHAN(0),
-+	MAX1027_V_CHAN(1),
-+	MAX1027_V_CHAN(2),
-+	MAX1027_V_CHAN(3),
-+	MAX1027_V_CHAN(4),
-+	MAX1027_V_CHAN(5),
-+	MAX1027_V_CHAN(6),
-+	MAX1027_V_CHAN(7),
-+	MAX1027_V_CHAN(8),
-+	MAX1027_V_CHAN(9),
-+	MAX1027_V_CHAN(10),
-+	MAX1027_V_CHAN(11),
-+	MAX1027_V_CHAN(12),
-+	MAX1027_V_CHAN(13),
-+	MAX1027_V_CHAN(14),
-+	MAX1027_V_CHAN(15)
-+};
-+
-+static const unsigned long max1027_available_scan_masks[] = {
-+	0x000001ff,
-+	0x00000000,
-+};
-+
-+static const unsigned long max1029_available_scan_masks[] = {
-+	0x00001fff,
-+	0x00000000,
-+};
-+
-+static const unsigned long max1031_available_scan_masks[] = {
-+	0x0001ffff,
-+	0x00000000,
-+};
-+
-+struct max1027_chip_info {
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
-+	const unsigned long *available_scan_masks;
-+};
-+
-+static const struct max1027_chip_info max1027_chip_info_tbl[] = {
-+	[max1027] = {
-+		.channels = max1027_channels,
-+		.num_channels = ARRAY_SIZE(max1027_channels),
-+		.available_scan_masks = max1027_available_scan_masks,
-+	},
-+	[max1029] = {
-+		.channels = max1029_channels,
-+		.num_channels = ARRAY_SIZE(max1029_channels),
-+		.available_scan_masks = max1029_available_scan_masks,
-+	},
-+	[max1031] = {
-+		.channels = max1031_channels,
-+		.num_channels = ARRAY_SIZE(max1031_channels),
-+		.available_scan_masks = max1031_available_scan_masks,
-+	},
-+};
-+
-+struct max1027_state {
-+	struct max1027_chip_info	*info;
-+	struct spi_device		*spi;
-+	struct iio_trigger		*trig;
-+	__be16				*buffer;
-+	struct mutex			lock;
-+};
-+
-+static int max1027_read_single_value(struct iio_dev *indio_dev,
-+				     struct iio_chan_spec const *chan,
-+				     int *val)
-+{
-+	int ret;
-+	struct max1027_state *st = iio_priv(indio_dev);
-+	unsigned char *reg = (unsigned char *)st->buffer;
-+
-+	if (iio_buffer_enabled(indio_dev)) {
-+		dev_warn(&indio_dev->dev, "trigger mode already enabled");
-+		return -EBUSY;
-+	}
-+
-+	/* Start acquisition on conversion register write */
-+	*reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2 | MAX1027_CKS_MODE2;
-+	ret = spi_write(st->spi, reg, 1);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev,
-+			"Failed to configure setup register\n");
-+		return ret;
-+	}
-+
-+	/* Configure conversion register with the requested chan */
-+	*reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel)
-+		| MAX1027_NOSCAN | !!(chan->type == IIO_TEMP);
-+	ret = spi_write(st->spi, reg, 1);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev,
-+			"Failed to configure conversion register\n");
-+		return ret;
-+	}
-+
-+	/*
-+	 * For an unknown reason, when we use the mode "10" (write
-+	 * conversion register), the interrupt doesn't occur every time.
-+	 * So we just wait 1 ms.
-+	 */
-+	mdelay(1);
-+
-+	/* Read result */
-+	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = be16_to_cpu(st->buffer[0]);
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int max1027_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	int ret = 0;
-+	struct max1027_state *st = iio_priv(indio_dev);
-+
-+	mutex_lock(&st->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = max1027_read_single_value(indio_dev, chan, val);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_TEMP:
-+			*val = 1;
-+			*val2 = 8;
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		case IIO_VOLTAGE:
-+			*val = 2500;
-+			*val2 = 10;
-+			ret = IIO_VAL_FRACTIONAL_LOG2;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int max1027_debugfs_reg_access(struct iio_dev *indio_dev,
-+				      unsigned reg, unsigned writeval,
-+				      unsigned *readval)
-+{
-+	struct max1027_state *st = iio_priv(indio_dev);
-+	unsigned char *val = (unsigned char *)st->buffer;
-+
-+	if (readval != NULL)
-+		return -EINVAL;
-+
-+	*val = (unsigned char)writeval;
-+	return spi_write(st->spi, val, 1);
-+}
-+
-+static int max1027_validate_trigger(struct iio_dev *indio_dev,
-+				    struct iio_trigger *trig)
-+{
-+	struct max1027_state *st = iio_priv(indio_dev);
-+
-+	if (st->trig != trig)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int max1027_set_trigger_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct max1027_state *st = iio_priv(indio_dev);
-+	unsigned char *reg = (unsigned char *)st->buffer;
-+	int ret;
-+
-+	if (state) {
-+		/* Start acquisition on cnvst */
-+		*reg = MAX1027_SETUP_REG|MAX1027_CKS_MODE0|MAX1027_REF_MODE2;
-+		ret = spi_write(st->spi, reg, 1);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Scan from 0 to max */
-+		*reg = MAX1027_CONV_REG | MAX1027_CHAN(0)
-+			| MAX1027_SCAN_N_M | MAX1027_TEMP;
-+		ret = spi_write(st->spi, reg, 1);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		/* Start acquisition on conversion register write */
-+		*reg = MAX1027_SETUP_REG|MAX1027_CKS_MODE2|MAX1027_REF_MODE2;
-+		ret = spi_write(st->spi, reg, 1);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int max1027_validate_device(struct iio_trigger *trig,
-+				   struct iio_dev *indio_dev)
-+{
-+	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
-+
-+	if (indio != indio_dev)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static irqreturn_t max1027_trigger_handler(int irq, void *private)
-+{
-+	struct iio_poll_func *pf = (struct iio_poll_func *)private;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct max1027_state *st = iio_priv(indio_dev);
-+
-+	pr_debug("%s(irq=%d, private=0x%p)\n", __func__, irq, private);
-+
-+	/* fill buffer with all channel */
-+	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
-+
-+	iio_push_to_buffers(indio_dev, st->buffer);
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct iio_trigger_ops max1027_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.validate_device = &max1027_validate_device,
-+	.set_trigger_state = &max1027_set_trigger_state,
-+};
-+
-+static const struct iio_info max1027_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &max1027_read_raw,
-+	.validate_trigger = &max1027_validate_trigger,
-+	.debugfs_reg_access = &max1027_debugfs_reg_access,
-+};
-+
-+static int max1027_probe(struct spi_device *spi)
-+{
-+	int err;
-+	unsigned char *reg;
-+	struct iio_dev *indio_dev;
-+	struct max1027_state *st;
-+
-+	pr_debug("%s: probe(spi = 0x%p)\n", __func__, spi);
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (indio_dev == NULL) {
-+		pr_err("can't allocate iio device\n");
-+		return -ENOMEM;
-+	}
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	st = iio_priv(indio_dev);
-+	st->spi = spi;
-+	st->info = (struct max1027_chip_info *)
-+		&max1027_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-+
-+	mutex_init(&st->lock);
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &max1027_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = st->info->channels;
-+	indio_dev->num_channels = st->info->num_channels;
-+	indio_dev->available_scan_masks = st->info->available_scan_masks;
-+
-+	st->buffer = devm_kmalloc(&indio_dev->dev,
-+				  indio_dev->num_channels * 2,
-+				  GFP_KERNEL);
-+	if (st->buffer == NULL) {
-+		dev_err(&indio_dev->dev, "Can't allocate bufffer\n");
-+		return -ENOMEM;
-+	}
-+
-+	err = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+					 &max1027_trigger_handler, NULL);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
-+		return err;
-+	}
-+
-+	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
-+							indio_dev->name);
-+	if (st->trig == NULL) {
-+		err = -ENOMEM;
-+		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
-+		goto fail_trigger_alloc;
-+	}
-+
-+	st->trig->ops = &max1027_trigger_ops;
-+	st->trig->dev.parent = &spi->dev;
-+	iio_trigger_set_drvdata(st->trig, indio_dev);
-+	iio_trigger_register(st->trig);
-+
-+	err = devm_request_threaded_irq(&spi->dev, spi->irq,
-+					iio_trigger_generic_data_rdy_poll,
-+					NULL,
-+					IRQF_TRIGGER_FALLING,
-+					spi->dev.driver->name, st->trig);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
-+		goto fail_dev_register;
-+	}
-+
-+	/* Disable averaging */
-+	reg = (unsigned char *)st->buffer;
-+	*reg = MAX1027_AVG_REG;
-+	err = spi_write(st->spi, reg, 1);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "Failed to configure averaging register\n");
-+		goto fail_dev_register;
-+	}
-+
-+	err = iio_device_register(indio_dev);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "Failed to register iio device\n");
-+		goto fail_dev_register;
-+	}
-+
-+	return 0;
-+
-+fail_dev_register:
-+fail_trigger_alloc:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return err;
-+}
-+
-+static int max1027_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+
-+	pr_debug("%s: remove(spi = 0x%p)\n", __func__, spi);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return 0;
-+}
-+
-+static struct spi_driver max1027_driver = {
-+	.driver = {
-+		.name	= "max1027",
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe		= max1027_probe,
-+	.remove		= max1027_remove,
-+	.id_table	= max1027_id,
-+};
-+module_spi_driver(max1027_driver);
-+
-+MODULE_AUTHOR("Philippe Reynes <tremyfr@yahoo.fr>");
-+MODULE_DESCRIPTION("MAX1027/MAX1029/MAX1031 ADC");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.4.4
+Anyhow, please bring them into the c code.   Have only stuff that is genuinely
+shared between different c files in headers.  If those c files are in the same
+directory then have the header within the directory as well.
+> I could
+> move this header to the same directory as the source file, if that is preferred.
+> As it stands this header is only related to DA9150 in its current location, so
+> is this a big issue? If not then I'd rather keep it as is.
+>
+>>> +/* Private data */
+>> Why is this in the header?  Should be defined directly in the c file
+>> as nothing outside the driver should be touching it.
+>
+> As per previous comment.
+>
 
