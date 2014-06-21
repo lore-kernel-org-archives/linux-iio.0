@@ -1,72 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f178.google.com ([74.125.82.178]:42924 "EHLO
-	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751005AbaF0QUX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 12:20:23 -0400
-Received: by mail-we0-f178.google.com with SMTP id x48so5476056wes.23
-        for <linux-iio@vger.kernel.org>; Fri, 27 Jun 2014 09:20:22 -0700 (PDT)
-From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, lars@metafoo.de,
-	yannick.bedhomme@mobile-devices.fr,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Subject: [PATCH 1/2] iio: staging: sca3000: hide stufftoread logic
-Date: Fri, 27 Jun 2014 18:20:00 +0200
-Message-Id: <1403886001-23354-2-git-send-email-josselin.costanzi@mobile-devices.fr>
-In-Reply-To: <1403886001-23354-1-git-send-email-josselin.costanzi@mobile-devices.fr>
-References: <1403886001-23354-1-git-send-email-josselin.costanzi@mobile-devices.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hadess@hadess.net>
+Message-ID: <1403354266.3385.7.camel@nuvo>
+Subject: Re: User-space API for accelerometer(s)?
+From: Bastien Nocera <hadess@hadess.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Reyad Attiyat
+	 <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org, Benjamin Tissoires
+	 <benjamin.tissoires@redhat.com>
+Date: Sat, 21 Jun 2014 14:37:46 +0200
+In-Reply-To: <53A57414.8000104@kernel.org>
+References: <1403100542.30918.29.camel@nuvo>
+		 <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>
+		 <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>
+	 <53A57414.8000104@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Change sca3000_ring implementation so that it exports a data_available
-function to iio.
+On Sat, 2014-06-21 at 13:01 +0100, Jonathan Cameron wrote:
+> On 19/06/14 12:20, Bastien Nocera wrote:
+> > On Wed, 2014-06-18 at 16:45 -0700, Srinivas Pandruvada wrote:
+> >> On 06/18/2014 04:31 PM, Reyad Attiyat wrote:
+> >>> Hello Bastien Nocera,
+> >>>
+> >>> I'm not the best person to answer your questions but I will try and
+> >>> help. The best people to talk to would be Jonathan Cameron, the IIO
+> >>> maintainer, and Srinivas Pandruvada, the author of the hid-sensor-hub
+> >>> device drivers. I have CC'ed them for you to hopefully get a better
+> >>> response than what I can offer.
+> >>>
+> >>> Your device uses the same sensor hub, over usb, as my device does. I
+> >>> have a Microsoft Surface and it also uses many of the sensors found on
+> >>> the Lenovo Yoga.
+> >>>
+> >>>> So, my question regarding the IIO user-space API is:
+> >>>> is it possible to make the IIO accelerometer send out a kevent when the
+> >>>> orientation changes in a major way (using triggers?) or does user-space
+> >>>> need to poll the device instead?
+> >>
+> >> You can check a program called generic_buffer.c in
+> >> "drivers/staging/iio/Documentation". I have used this as a reference to
+> >> port to Android.
+> >> You don't need to poll, you can also check
+> >> "https://github.com/pfps/yoga-laptop/sensors " developed by Peter F.
+> >> Patel-Schneider.
+> >
+> > I've read this code, and in fact, I mentioned it in my original mail. I
+> > fail to see how this code isn't polling. It's also much more complicated
+> > than doing the same thing for a evdev accelerometer.
+> >
+> Just to throw it in there.  There is an out of tree bridge driver from
+> IIO to input.  It's only out of tree because I haven't had a chance to
+> tidy it up (anyone else is welcome to take this on if they like!)
+> Google for iio_input.c to find it.
 
-Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
----
- drivers/iio/industrialio-buffer.c        | 5 +----
- drivers/staging/iio/accel/sca3000_ring.c | 6 ++++++
- 2 files changed, 7 insertions(+), 4 deletions(-)
+Found it, thanks :)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 36b1ae9..2952ee0 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -39,10 +39,7 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
- 
- static bool iio_buffer_data_available(struct iio_buffer *buf)
- {
--	if (buf->access->data_available)
--		return buf->access->data_available(buf);
--
--	return buf->stufftoread;
-+	return buf->access->data_available(buf);
- }
- 
- /**
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 1987106..33f0e92 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -141,6 +141,11 @@ static int sca3000_ring_get_bytes_per_datum(struct iio_buffer *r)
- 	return 6;
- }
- 
-+static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
-+{
-+	return r->stufftoread;
-+}
-+
- static IIO_BUFFER_ENABLE_ATTR;
- static IIO_BUFFER_LENGTH_ATTR;
- 
-@@ -274,6 +279,7 @@ static const struct iio_buffer_access_funcs sca3000_ring_access_funcs = {
- 	.read_first_n = &sca3000_read_first_n_hw_rb,
- 	.get_length = &sca3000_ring_get_length,
- 	.get_bytes_per_datum = &sca3000_ring_get_bytes_per_datum,
-+	.data_available = sca3000_ring_buf_data_available,
- 	.release = sca3000_ring_release,
- };
- 
--- 
-1.9.1
+http://thread.gmane.org/gmane.linux.kernel.iio/4464/
 
+(By the way, "iio_input", not "iio_snoop")
+
+> The intent of that was to allow general accelerometer drivers and similar
+> in IIO to work in conjunction with iio-input to provide input style interfaces.
+> This came about after previous debates on where the 'right' place for
+> accelerometers was in the kernel. I believe that at least in principle,
+> Dmitry was happy with this concept.
+
+Cool. The only question left would be whether this could throw a kevent
+when the orientation changes in a major way. This is a firmware feature
+in the WeTab/Pegatron machine, and is useful because it avoids the need
+to have the accelerometer constantly opened when not needed (saving
+battery by avoiding wakeups).
+
+Would it be worth adding such a feature inside the iio-input driver? I
+would have preferred it if the hardware sent those events, but I'd be
+happy just the same if the driver did it. The backing IIO device is
+always opened and processing data, it seems, whether or not the backing
+input device is opened in user-space or not.
+
+Cheers
