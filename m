@@ -1,432 +1,701 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f169.google.com ([209.85.223.169]:32984 "EHLO
-	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751914AbaFPL05 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jun 2014 07:26:57 -0400
-Received: by mail-ie0-f169.google.com with SMTP id at1so4951031iec.28
-        for <linux-iio@vger.kernel.org>; Mon, 16 Jun 2014 04:26:56 -0700 (PDT)
-Date: Mon, 16 Jun 2014 12:26:49 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Denis Carikli <denis@eukrea.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: Re: [PATCH v3 1/6] mfd: fsl imx25 Touchscreen ADC driver
-Message-ID: <20140616112649.GQ14323@lee--X1>
-References: <1402910933-20534-1-git-send-email-denis@eukrea.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53405 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752481AbaFWMyP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jun 2014 08:54:15 -0400
+In-Reply-To: <53A7EE7F.1060803@gmx.de>
+References: <1402784830-5853-1-git-send-email-tremyfr@yahoo.fr> <53A7EE7F.1060803@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1402910933-20534-1-git-send-email-denis@eukrea.com>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v7] iio: add support of the max1027
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 23 Jun 2014 13:54:07 +0100
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, armadeus-forum@lists.sourceforge.net,
+	lars@metafoo.de, devicetree@vger.kernel.org, pmeerw@pmeerw.net
+Message-ID: <7137790a-5b6a-448b-90e3-839520a4af18@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> From: Markus Pargmann <mpa@pengutronix.de>
-> 
-> This is the core driver for imx25 touchscreen/adc driver. The module
-> has one shared ADC and two different conversion queues which use the
-> ADC. The two queues are identical. Both can be used for general purpose
-> ADC but one is meant to be used for touchscreens.
-> 
-> This driver is the core which manages the central components and
-> registers of the TSC/ADC unit. It manages the IRQs and forwards them to
-> the correct components.
-> 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> Signed-off-by: Denis Carikli <denis@eukrea.com>
-> ---
-> Changelog v2->v3:
-> - None
-> ---
->  .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |   46 ++++
->  drivers/mfd/Kconfig                                |    9 +
->  drivers/mfd/Makefile                               |    2 +
->  drivers/mfd/fsl-imx25-tsadc.c                      |  232 ++++++++++++++++++++
->  include/linux/mfd/imx25-tsadc.h                    |  138 ++++++++++++
->  5 files changed, 427 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
->  create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
->  create mode 100644 include/linux/mfd/imx25-tsadc.h
 
-[...]
 
-> diff --git a/drivers/mfd/fsl-imx25-tsadc.c b/drivers/mfd/fsl-imx25-tsadc.c
-> new file mode 100644
-> index 0000000..10332c2
-> --- /dev/null
-> +++ b/drivers/mfd/fsl-imx25-tsadc.c
+On June 23, 2014 10:08:15 AM GMT+01:00, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>Philippe Reynes schrieb:
+>> This driver add partial support of the
+>> maxim 1027/1029/1031. Differential mode is not
+>> supported.
+>>
+>> It was tested on armadeus apf27 board.
+>>
+>> Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
+>Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+>> ---
+>Not sure if it's too late, already. Looks pretty good to me, no
+>show-stoppers. Though 3 minor issues inline, comments welcome.
+>>  .../devicetree/bindings/iio/adc/max1027-adc.txt    |   22 +
+>>  drivers/iio/adc/Kconfig                            |    9 +
+>>  drivers/iio/adc/Makefile                           |    1 +
+>>  drivers/iio/adc/max1027.c                          |  521
+>++++++++++++++++++++
+>>  4 files changed, 553 insertions(+), 0 deletions(-)
+>>  create mode 100644
+>Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>>  create mode 100644 drivers/iio/adc/max1027.c
+>>
+>> Changelog:
+>> v7: (thanks Hartmut Knaack and Jonathan Cameron for the feedback)
+>> - use const with info in max1027_state
+>> - use bitops.h (and BIT)
+>> - separate operators with whitespace
+>> - define a reg member in max1027_state
+>>
+>> v6: (thanks Peter Meerwald for the feedback)
+>> - dont use index with temperature
+>> - use const on scan mask
+>> - use __be16 * for buffer
+>> - return -EBUSY if trigger is already running
+>> - replace it by interrupt in comment
+>> - dont finish case with ";"
+>> - use iio_push_to_buffers
+>> - remove useless initialization of st->buffer
+>> - remove useless obvious comment
+>>
+>> v5: (thanks Jonathan Cameron for the feedback)
+>> - add validate_trigger
+>> - add validate_device
+>> - remove useless (void *) cast
+>> - use allocated buffer for spi_write
+>>
+>> v4: (thanks Jonathan Cameron for the feedback)
+>> - use iio_trigger_generic_data_rdy_poll
+>>
+>> v3: (thanks Hartmut Knaack, Lars-Peter Clausen and Jonathan Cameron
+>for the feedback)
+>> - move to drivers/iio/adc (was in staging)
+>> - clean binding doc
+>> - drop empty update_scan_mode callback
+>> - add a lock around single channel read code
+>> - remove useless wrappers around spi_write and spi_read
+>> - fix available scan mask (a bit was missing)
+>> - remove useless header
+>> - some others little cleanp
+>>
+>> v2: (thanks Hartmut Knaack and Jonathan Cameron for the feedback)
+>> - really use devm_* 
+>> - use demux magic
+>> - use spi_read and spi_write (instead of spi_sync)
+>> - use define for register (instead of hardcoded value)
+>>
+>> diff --git
+>a/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>> new file mode 100644
+>> index 0000000..a8770cc
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+>> @@ -0,0 +1,22 @@
+>> +* Maxim 1027/1029/1031 Analog to Digital Converter (ADC)
+>> +
+>> +Required properties:
+>> +  - compatible: Should be "maxim,max1027" or "maxim,max1029" or
+>"maxim,max1031"
+>> +  - reg: SPI chip select number for the device
+>> +  - interrupt-parent: phandle to the parent interrupt controller
+>> +  see:
+>Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+>> +  - interrupts: IRQ line for the ADC
+>> +  see:
+>Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+>> +
+>> +Recommended properties:
+>> +- spi-max-frequency: Definition as per
+>> +                    
+>Documentation/devicetree/bindings/spi/spi-bus.txt
+>> +
+>> +Example:
+>> +adc@0 {
+>> +	compatible = "maxim,max1027";
+>> +	reg = <0>;
+>> +	interrupt-parent = <&gpio5>;
+>> +	interrupts = <15 IRQ_TYPE_EDGE_RISING>;
+>> +	spi-max-frequency = <1000000>;
+>> +};
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index a80d236..20a7073 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -131,6 +131,15 @@ config LP8788_ADC
+>>  	help
+>>  	  Say yes here to build support for TI LP8788 ADC.
+>>  
+>> +config MAX1027
+>> +	tristate "Maxim max1027 ADC driver"
+>> +	depends on SPI
+>> +	select IIO_BUFFER
+>> +	select IIO_TRIGGERED_BUFFER
+>> +	help
+>> +	  Say yes here to build support for Maxim SPI ADC models
+>> +	  max1027, max1029 and max1031.
+>> +
+>>  config MAX1363
+>>  	tristate "Maxim max1363 ADC driver"
+>>  	depends on I2C
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 9d60f2d..38cf5c3 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD799X) += ad799x.o
+>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>> +obj-$(CONFIG_MAX1027) += max1027.o
+>>  obj-$(CONFIG_MAX1363) += max1363.o
+>>  obj-$(CONFIG_MCP320X) += mcp320x.o
+>>  obj-$(CONFIG_MCP3422) += mcp3422.o
+>> diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+>> new file mode 100644
+>> index 0000000..87ee1c7
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/max1027.c
+>> @@ -0,0 +1,521 @@
+>> + /*
+>> +  * iio/adc/max1027.c
+>> +  * Copyright (C) 2014 Philippe Reynes
+>> +  *
+>> +  * based on linux/drivers/iio/ad7923.c
+>> +  * Copyright 2011 Analog Devices Inc (from AD7923 Driver)
+>> +  * Copyright 2012 CS Systemes d'Information
+>> +  *
+>> +  * This program is free software; you can redistribute it and/or
+>modify
+>> +  * it under the terms of the GNU General Public License version 2
+>as
+>> +  * published by the Free Software Foundation.
+>> +  *
+>> +  * max1027.c
+>> +  *
+>> +  * Partial support for max1027 and similar chips.
+>> +  */
+>> +
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/delay.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +
+>> +#define MAX1027_CONV_REG  BIT(7)
+>> +#define MAX1027_SETUP_REG BIT(6)
+>> +#define MAX1027_AVG_REG   BIT(5)
+>> +#define MAX1027_RST_REG   BIT(4)
+>> +
+>> +/* conversion register */
+>> +#define MAX1027_TEMP      BIT(0)
+>> +#define MAX1027_SCAN_0_N  (0x00 << 1)
+>> +#define MAX1027_SCAN_N_M  (0x01 << 1)
+>> +#define MAX1027_SCAN_N    (0x02 << 1)
+>> +#define MAX1027_NOSCAN    (0x03 << 1)
+>> +#define MAX1027_CHAN(n)   ((n) << 3)
+>> +
+>> +/* setup register */
+>> +#define MAX1027_UNIPOLAR  0x02
+>> +#define MAX1027_BIPOLAR   0x03
+>> +#define MAX1027_REF_MODE0 (0x00 << 2)
+>> +#define MAX1027_REF_MODE1 (0x01 << 2)
+>> +#define MAX1027_REF_MODE2 (0x02 << 2)
+>> +#define MAX1027_REF_MODE3 (0x03 << 2)
+>> +#define MAX1027_CKS_MODE0 (0x00 << 4)
+>> +#define MAX1027_CKS_MODE1 (0x01 << 4)
+>> +#define MAX1027_CKS_MODE2 (0x02 << 4)
+>> +#define MAX1027_CKS_MODE3 (0x03 << 4)
+>> +
+>> +/* averaging register */
+>> +#define MAX1027_NSCAN_4   0x00
+>> +#define MAX1027_NSCAN_8   0x01
+>> +#define MAX1027_NSCAN_12  0x02
+>> +#define MAX1027_NSCAN_16  0x03
+>> +#define MAX1027_NAVG_4    (0x00 << 2)
+>> +#define MAX1027_NAVG_8    (0x01 << 2)
+>> +#define MAX1027_NAVG_16   (0x02 << 2)
+>> +#define MAX1027_NAVG_32   (0x03 << 2)
+>> +#define MAX1027_AVG_EN    BIT(4)
+>> +
+>> +enum max1027_id {
+>> +	max1027,
+>> +	max1029,
+>> +	max1031,
+>> +};
+>> +
+>> +static const struct spi_device_id max1027_id[] = {
+>> +	{"max1027", max1027},
+>> +	{"max1029", max1029},
+>> +	{"max1031", max1031},
+>> +	{}
+>> +};
+>> +MODULE_DEVICE_TABLE(spi, max1027_id);
+>> +
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id max1027_adc_dt_ids[] = {
+>> +	{ .compatible = "maxim,max1027" },
+>> +	{ .compatible = "maxim,max1029" },
+>> +	{ .compatible = "maxim,max1031" },
+>> +	{},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
+>> +#endif
+>> +
+>> +#define MAX1027_V_CHAN(index)						\
+>> +	{								\
+>> +		.type = IIO_VOLTAGE,					\
+>> +		.indexed = 1,						\
+>> +		.channel = index,					\
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> +		.scan_index = index + 1,				\
+>> +		.scan_type = {						\
+>> +			.sign = 'u',					\
+>> +			.realbits = 10,					\
+>> +			.storagebits = 16,				\
+>> +			.shift = 2,					\
+>> +			.endianness = IIO_BE,				\
+>> +		},							\
+>> +	}
+>> +
+>> +#define MAX1027_T_CHAN							\
+>> +	{								\
+>> +		.type = IIO_TEMP,					\
+>> +		.channel = 0,						\
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> +		.scan_index = 0,					\
+>> +		.scan_type = {						\
+>> +			.sign = 'u',					\
+>> +			.realbits = 12,					\
+>> +			.storagebits = 16,				\
+>> +			.endianness = IIO_BE,				\
+>> +		},							\
+>> +	}
+>> +
+>> +static const struct iio_chan_spec max1027_channels[] = {
+>> +	MAX1027_T_CHAN,
+>> +	MAX1027_V_CHAN(0),
+>> +	MAX1027_V_CHAN(1),
+>> +	MAX1027_V_CHAN(2),
+>> +	MAX1027_V_CHAN(3),
+>> +	MAX1027_V_CHAN(4),
+>> +	MAX1027_V_CHAN(5),
+>> +	MAX1027_V_CHAN(6),
+>> +	MAX1027_V_CHAN(7)
+>> +};
+>> +
+>> +static const struct iio_chan_spec max1029_channels[] = {
+>> +	MAX1027_T_CHAN,
+>> +	MAX1027_V_CHAN(0),
+>> +	MAX1027_V_CHAN(1),
+>> +	MAX1027_V_CHAN(2),
+>> +	MAX1027_V_CHAN(3),
+>> +	MAX1027_V_CHAN(4),
+>> +	MAX1027_V_CHAN(5),
+>> +	MAX1027_V_CHAN(6),
+>> +	MAX1027_V_CHAN(7),
+>> +	MAX1027_V_CHAN(8),
+>> +	MAX1027_V_CHAN(9),
+>> +	MAX1027_V_CHAN(10),
+>> +	MAX1027_V_CHAN(11)
+>> +};
+>> +
+>> +static const struct iio_chan_spec max1031_channels[] = {
+>> +	MAX1027_T_CHAN,
+>> +	MAX1027_V_CHAN(0),
+>> +	MAX1027_V_CHAN(1),
+>> +	MAX1027_V_CHAN(2),
+>> +	MAX1027_V_CHAN(3),
+>> +	MAX1027_V_CHAN(4),
+>> +	MAX1027_V_CHAN(5),
+>> +	MAX1027_V_CHAN(6),
+>> +	MAX1027_V_CHAN(7),
+>> +	MAX1027_V_CHAN(8),
+>> +	MAX1027_V_CHAN(9),
+>> +	MAX1027_V_CHAN(10),
+>> +	MAX1027_V_CHAN(11),
+>> +	MAX1027_V_CHAN(12),
+>> +	MAX1027_V_CHAN(13),
+>> +	MAX1027_V_CHAN(14),
+>> +	MAX1027_V_CHAN(15)
+>> +};
+>> +
+>> +static const unsigned long max1027_available_scan_masks[] = {
+>> +	0x000001ff,
+>> +	0x00000000,
+>> +};
+>> +
+>> +static const unsigned long max1029_available_scan_masks[] = {
+>> +	0x00001fff,
+>> +	0x00000000,
+>> +};
+>> +
+>> +static const unsigned long max1031_available_scan_masks[] = {
+>> +	0x0001ffff,
+>> +	0x00000000,
+>> +};
+>> +
+>> +struct max1027_chip_info {
+>> +	const struct iio_chan_spec *channels;
+>> +	unsigned int num_channels;
+>> +	const unsigned long *available_scan_masks;
+>> +};
+>> +
+>> +static const struct max1027_chip_info max1027_chip_info_tbl[] = {
+>> +	[max1027] = {
+>> +		.channels = max1027_channels,
+>> +		.num_channels = ARRAY_SIZE(max1027_channels),
+>> +		.available_scan_masks = max1027_available_scan_masks,
+>> +	},
+>> +	[max1029] = {
+>> +		.channels = max1029_channels,
+>> +		.num_channels = ARRAY_SIZE(max1029_channels),
+>> +		.available_scan_masks = max1029_available_scan_masks,
+>> +	},
+>> +	[max1031] = {
+>> +		.channels = max1031_channels,
+>> +		.num_channels = ARRAY_SIZE(max1031_channels),
+>> +		.available_scan_masks = max1031_available_scan_masks,
+>> +	},
+>> +};
+>> +
+>> +struct max1027_state {
+>> +	const struct max1027_chip_info	*info;
+>> +	struct spi_device		*spi;
+>> +	struct iio_trigger		*trig;
+>> +	__be16				*buffer;
+>> +	struct mutex			lock;
+>> +
+>> +	u8				reg ____cacheline_aligned;
+>Why is it necessary to align a single byte variable? Even if the
+>compiler pads and aligns it to the architectures optimum size and
+>position, I don't see how it could wrap to another cacheline.
 
-[...]
-
-> +static struct regmap_config mx25_tsadc = {
-> +	.fast_io = true,
-> +	.max_register = 0x8,
-
-Why are you representing this and this alone, in hex?
-
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = 4,
-> +};
-> +
-> +struct regmap *mx25_tsadc_get_regmap(struct device *dev)
-> +{
-> +	struct platform_device *pdev;
-> +	struct mx25_tsadc_priv *priv;
-> +
-> +	if (!dev)
-> +		return NULL;
-> +
-> +	pdev = container_of(dev, struct platform_device, dev);
-> +	priv = platform_get_drvdata(pdev);
-> +	if (IS_ERR_OR_NULL(priv->regs))
-> +		return NULL;
-
-What?  Why are you going to all the trouble of requesting driver data
-through pdev?
-
-In fact, why have this function at all?  Just pull out the information
-you need from the child device driver.
-
-> +	return priv->regs;
-> +}
-> +EXPORT_SYMBOL(mx25_tsadc_get_regmap);
-> +
-> +struct clk *mx25_tsadc_get_ipg(struct device *dev)
-> +{
-> +	struct platform_device *pdev;
-> +	struct mx25_tsadc_priv *priv;
-> +
-> +	if (!dev)
-> +		return NULL;
-> +
-> +	pdev = container_of(dev, struct platform_device, dev);
-> +	priv = platform_get_drvdata(pdev);
-> +	if (IS_ERR_OR_NULL(priv->clk))
-> +		return NULL;
-> +
-> +	return priv->clk;
-
-As above - both points.
-
-> +}
-> +EXPORT_SYMBOL(mx25_tsadc_get_ipg);
-
-[...]
-
-> +static void mx25_tsadc_nop(struct irq_data *d)
-> +{
-> +}
-
-Err, no, this is not required.  Just don't populate the call-backs.
-
-> +static int mx25_tsadc_set_wake_nop(struct irq_data *d, unsigned int state)
-> +{
-> +	return 0;
-> +}
-> +
-> +static struct irq_chip mx25_tsadc_irq_chip = {
-> +	.name = "mx25-tsadc",
-> +	.irq_ack = mx25_tsadc_nop,
-> +	.irq_mask = mx25_tsadc_nop,
-> +	.irq_unmask = mx25_tsadc_nop,
-
-No need to do this.
-
-> +	.irq_set_wake = mx25_tsadc_set_wake_nop,
-> +};
-> +
-> +static int mx25_tsadc_domain_map(struct irq_domain *d, unsigned int irq,
-> +			     irq_hw_number_t hwirq)
-> +{
-> +	struct mx25_tsadc_priv *priv = d->host_data;
-> +
-> +	irq_set_chip_data(irq, priv);
-> +	irq_set_chip_and_handler(irq, &mx25_tsadc_irq_chip,
-> +				 handle_level_irq);
-> +
-> +
-
-Too many '\n's here.
-
-> +	set_irq_flags(irq, IRQF_VALID);
-> +
-> +	return 0;
-> +}
-
-[...]
-
-> +static int mx25_tsadc_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *np = dev->of_node;
-> +	struct mx25_tsadc_priv *priv;
-> +	struct resource *iores;
-
-It would be more consistent if you just called this 'res'.
-
-> +	int ret;
-> +	void __iomem *iomem;
-> +
-> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	iomem = devm_ioremap_resource(dev, iores);
-> +	if (IS_ERR(iomem)) {
-> +		dev_err(dev, "Failed to remap iomem\n");
-
-No need for an error message here, devm_ioremap_resource() is noisy
-enough.
-
-> +		return PTR_ERR(iomem);
-> +	}
-> +
-> +	priv->regs = regmap_init_mmio(dev, iomem, &mx25_tsadc);
-
-devm_*?
-
-Best to identify the regmap config as such -
-mx25_tsadc_regmap_config.
-
-> +	if (IS_ERR(priv->regs)) {
-> +		dev_err(dev, "Failed to initialize regmap\n");
-> +		return PTR_ERR(priv->regs);
-> +	}
-> +
-> +	priv->clk = devm_clk_get(dev, "ipg");
-> +	if (IS_ERR(priv->clk)) {
-> +		dev_err(dev, "Failed to get ipg clock\n");
-> +		return PTR_ERR(priv->clk);
-> +	}
-> +
-> +	/* Enable clock and reset the component */
-> +	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_CLK_EN,
-> +			MX25_TGCR_CLK_EN);
-> +	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_TSC_RST,
-> +			MX25_TGCR_TSC_RST);
-> +
-> +	/* Setup powersaving mode, but enable internal reference voltage */
-> +	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_POWERMODE_MASK,
-> +			MX25_TGCR_POWERMODE_SAVE);
-> +	regmap_update_bits(priv->regs, MX25_TSC_TGCR, MX25_TGCR_INTREFEN,
-> +			MX25_TGCR_INTREFEN);
-> +
-> +	ret = mx25_tsadc_setup_irq(pdev, priv);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to setup irqs\n");
-
-mx25_tsadc_setup_irq() is noisy enough.  No need for added prints.
-
-> +		return ret;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, priv);
-> +
-> +	of_platform_populate(np, NULL, NULL, dev);
-> +
-> +	dev_info(dev, "i.MX25 Touchscreen and ADC core driver loaded\n");
-
-Remove this.
-
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id mx25_tsadc_ids[] = {
-> +	{ .compatible = "fsl,imx25-tsadc", },
-
-No need for the ',' after the '"'.
-
-> +	{ /* Sentinel */ }
-> +};
-> +
-> +static struct platform_driver mx25_tsadc_driver = {
-> +	.driver		= {
-
-You're lining up '=' from different layers here.  I suggest you don't
-do that.
-
-> +		.name	= "mx25-tsadc",
-> +		.owner	= THIS_MODULE,
-> +		.of_match_table = mx25_tsadc_ids,
-
-If this driver DT only?
-
-> +	},
-> +	.probe		= mx25_tsadc_probe,
-> +};
-> +module_platform_driver(mx25_tsadc_driver);
-> +
-> +MODULE_DESCRIPTION("MFD for ADC/TSC for Freescale mx25");
-> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:mx25-tsadc");
-> diff --git a/include/linux/mfd/imx25-tsadc.h b/include/linux/mfd/imx25-tsadc.h
-> new file mode 100644
-> index 0000000..6fba341
-> --- /dev/null
-> +++ b/include/linux/mfd/imx25-tsadc.h
-> @@ -0,0 +1,138 @@
-> +#ifndef _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_
-> +#define _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_
-> +
-> +struct regmap;
-> +struct device;
-> +struct clk;
-> +
-> +struct regmap *mx25_tsadc_get_regmap(struct device *dev);
-> +struct clk *mx25_tsadc_get_ipg(struct device *dev);
-
-Remove these, they're pointless.
-
-> +#define MX25_TSC_TGCR 0x00
-> +#define MX25_TSC_TGSR 0x04
-> +#define MX25_TSC_TICR 0x08
-> +
-> +/* The same register layout for TC and GC queue */
-> +#define MX25_ADCQ_FIFO 0x00
-> +#define MX25_ADCQ_CR 0x04
-> +#define MX25_ADCQ_SR 0x08
-> +#define MX25_ADCQ_MR 0x0c
-> +#define MX25_ADCQ_ITEM_7_0 0x20
-> +#define MX25_ADCQ_ITEM_15_8 0x24
-> +#define MX25_ADCQ_CFG(n) (0x40 + ((n) * 0x4))
-> +
-> +/* Register values */
-> +/* Queue Config register */
-> +#define MX25_ADCQ_MR_MASK 0xffffffff
-> +
-> +/* TGCR */
-> +#define MX25_TGCR_PDBTIME(x) ((x) << 25)
-> +#define MX25_TGCR_PDBTIME_MASK MX25_TGCR_PDBTIME(0x7f)
-> +#define MX25_TGCR_PDBEN (1 << 24)
-> +#define MX25_TGCR_PDEN (1 << 23)
-> +#define MX25_TGCR_ADCCLKCFG(x) ((x) << 16)
-> +#define MX25_TGCR_GET_ADCCLK(x) (((x) >> 16) & 0x1f)
-> +#define MX25_TGCR_INTREFEN (1 << 10)
-> +#define MX25_TGCR_POWERMODE_MASK (3 << 8)
-> +#define MX25_TGCR_POWERMODE_SAVE (1 << 8)
-> +#define MX25_TGCR_POWERMODE_ON (2 << 8)
-> +#define MX25_TGCR_STLC (1 << 5)
-> +#define MX25_TGCR_SLPC (1 << 4)
-> +#define MX25_TGCR_FUNC_RST (1 << 2)
-> +#define MX25_TGCR_TSC_RST (1 << 1)
-> +#define MX25_TGCR_CLK_EN (1 << 0)
-
-The (1 << X)'s can be replaced with BIT(X).
-
-> +/* TGSR */
-> +#define MX25_TGSR_SLP_INT (1 << 2)
-> +#define MX25_TGSR_GCQ_INT (1 << 1)
-> +#define MX25_TGSR_TCQ_INT (1 << 0)
-> +
-> +/* ADCQ_ITEM_* */
-> +#define _MX25_ADCQ_ITEM(item, x) ((x) << ((item) * 4))
-> +#define MX25_ADCQ_ITEM(item, x) ((item) >= 8 ? \
-> +		_MX25_ADCQ_ITEM((item) - 8, (x)) : _MX25_ADCQ_ITEM((item), (x)))
-> +
-> +/* ADCQ_FIFO (TCQFIFO and GCQFIFO) */
-> +#define MX25_ADCQ_FIFO_DATA(x) (((x) >> 4) & 0xfff)
-> +#define MX25_ADCQ_FIFO_ID(x) ((x) & 0xf)
-> +
-> +/* ADCQ_CR (TCQR and GCQR) */
-> +#define MX25_ADCQ_CR_PDCFG_LEVEL (1 << 19)
-> +#define MX25_ADCQ_CR_PDMSK (1 << 18)
-> +#define MX25_ADCQ_CR_FRST (1 << 17)
-> +#define MX25_ADCQ_CR_QRST (1 << 16)
-> +#define MX25_ADCQ_CR_RWAIT_MASK (0xf << 12)
-> +#define MX25_ADCQ_CR_RWAIT(x) ((x) << 12)
-> +#define MX25_ADCQ_CR_WMRK_MASK (0xf << 8)
-> +#define MX25_ADCQ_CR_WMRK(x) ((x) << 8)
-> +#define MX25_ADCQ_CR_LITEMID_MASK (0xf << 4)
-> +#define MX25_ADCQ_CR_LITEMID(x) ((x) << 4)
-> +#define MX25_ADCQ_CR_RPT (1 << 3)
-> +#define MX25_ADCQ_CR_FQS (1 << 2)
-> +#define MX25_ADCQ_CR_QSM_MASK 0x3
-> +#define MX25_ADCQ_CR_QSM_PD 0x1
-> +#define MX25_ADCQ_CR_QSM_FQS 0x2
-> +#define MX25_ADCQ_CR_QSM_FQS_PD 0x3
-> +
-> +/* ADCQ_SR (TCQSR and GCQSR) */
-> +#define MX25_ADCQ_SR_FDRY (1 << 15)
-> +#define MX25_ADCQ_SR_FULL (1 << 14)
-> +#define MX25_ADCQ_SR_EMPT (1 << 13)
-> +#define MX25_ADCQ_SR_FDN(x) (((x) >> 8) & 0x1f)
-> +#define MX25_ADCQ_SR_FRR (1 << 6)
-> +#define MX25_ADCQ_SR_FUR (1 << 5)
-> +#define MX25_ADCQ_SR_FOR (1 << 4)
-> +#define MX25_ADCQ_SR_EOQ (1 << 1)
-> +#define MX25_ADCQ_SR_PD (1 << 0)
-> +
-> +/* ADCQ_MR (TCQMR and GCQMR) */
-> +#define MX25_ADCQ_MR_FDRY_DMA (1 << 31)
-> +#define MX25_ADCQ_MR_FER_DMA (1 << 22)
-> +#define MX25_ADCQ_MR_FUR_DMA (1 << 21)
-> +#define MX25_ADCQ_MR_FOR_DMA (1 << 20)
-> +#define MX25_ADCQ_MR_EOQ_DMA (1 << 17)
-> +#define MX25_ADCQ_MR_PD_DMA (1 << 16)
-> +#define MX25_ADCQ_MR_FDRY_IRQ (1 << 15)
-> +#define MX25_ADCQ_MR_FER_IRQ (1 << 6)
-> +#define MX25_ADCQ_MR_FUR_IRQ (1 << 5)
-> +#define MX25_ADCQ_MR_FOR_IRQ (1 << 4)
-> +#define MX25_ADCQ_MR_EOQ_IRQ (1 << 1)
-> +#define MX25_ADCQ_MR_PD_IRQ (1 << 0)
-> +
-> +/* ADCQ_CFG (TICR, TCC0-7,GCC0-7) */
-> +#define MX25_ADCQ_CFG_SETTLING_TIME(x) ((x) << 24)
-> +#define MX25_ADCQ_CFG_IGS (1 << 20)
-> +#define MX25_ADCQ_CFG_NOS_MASK (0xf << 16)
-> +#define MX25_ADCQ_CFG_NOS(x) (((x) - 1) << 16)
-> +#define MX25_ADCQ_CFG_WIPER (1 << 15)
-> +#define MX25_ADCQ_CFG_YNLR (1 << 14)
-> +#define MX25_ADCQ_CFG_YPLL_HIGH 0
-> +#define MX25_ADCQ_CFG_YPLL_OFF (1 << 12)
-> +#define MX25_ADCQ_CFG_YPLL_LOW (3 << 12)
-> +#define MX25_ADCQ_CFG_XNUR_HIGH 0
-> +#define MX25_ADCQ_CFG_XNUR_OFF (1 << 10)
-> +#define MX25_ADCQ_CFG_XNUR_LOW (3 << 10)
-> +#define MX25_ADCQ_CFG_XPUL_OFF (1 << 9)
-> +#define MX25_ADCQ_CFG_XPUL_HIGH 0
-> +#define MX25_ADCQ_CFG_REFP_YP 0
-> +#define MX25_ADCQ_CFG_REFP_XP (1 << 7)
-> +#define MX25_ADCQ_CFG_REFP_EXT (2 << 7)
-> +#define MX25_ADCQ_CFG_REFP_INT (3 << 7)
-> +#define MX25_ADCQ_CFG_REFP_MASK (3 << 7)
-> +#define MX25_ADCQ_CFG_IN_XP 0
-> +#define MX25_ADCQ_CFG_IN_YP (1 << 4)
-> +#define MX25_ADCQ_CFG_IN_XN (2 << 4)
-> +#define MX25_ADCQ_CFG_IN_YN (3 << 4)
-> +#define MX25_ADCQ_CFG_IN_WIPER (4 << 4)
-> +#define MX25_ADCQ_CFG_IN_AUX0 (5 << 4)
-> +#define MX25_ADCQ_CFG_IN_AUX1 (6 << 4)
-> +#define MX25_ADCQ_CFG_IN_AUX2 (7 << 4)
-> +#define MX25_ADCQ_CFG_REFN_XN 0
-> +#define MX25_ADCQ_CFG_REFN_YN (1 << 2)
-> +#define MX25_ADCQ_CFG_REFN_NGND (2 << 2)
-> +#define MX25_ADCQ_CFG_REFN_NGND2 (3 << 2)
-> +#define MX25_ADCQ_CFG_REFN_MASK (3 << 2)
-> +#define MX25_ADCQ_CFG_PENIACK (1 << 1)
-
-Can you line up all of the definitions for the entire file with tabs.
-They are currently incredibly hard to read.
-
-> +
-> +
-
-Extra '\n'.
-> +#endif  /* _LINUX_INCLUDE_INPUT_IMX25_TSADC_H_ */
+Issue is not that. Point is to prevent DMA yo this variable resulting in other bits of the structure getting overwritten.
+>> +};
+>> +
+>> +static int max1027_read_single_value(struct iio_dev *indio_dev,
+>> +				     struct iio_chan_spec const *chan,
+>> +				     int *val)
+>> +{
+>> +	int ret;
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +
+>> +	if (iio_buffer_enabled(indio_dev)) {
+>> +		dev_warn(&indio_dev->dev, "trigger mode already enabled");
+>> +		return -EBUSY;
+>> +	}
+>> +
+>> +	/* Start acquisition on conversion register write */
+>> +	st->reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2 |
+>MAX1027_CKS_MODE2;
+>> +	ret = spi_write(st->spi, &st->reg, 1);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev,
+>> +			"Failed to configure setup register\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	/* Configure conversion register with the requested chan */
+>> +	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
+>> +		  MAX1027_NOSCAN | !!(chan->type == IIO_TEMP);
+>> +	ret = spi_write(st->spi, &st->reg, 1);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev,
+>> +			"Failed to configure conversion register\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	/*
+>> +	 * For an unknown reason, when we use the mode "10" (write
+>> +	 * conversion register), the interrupt doesn't occur every time.
+>> +	 * So we just wait 1 ms.
+>> +	 */
+>> +	mdelay(1);
+>> +
+>> +	/* Read result */
+>> +	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 :
+>2);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	*val = be16_to_cpu(st->buffer[0]);
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static int max1027_read_raw(struct iio_dev *indio_dev,
+>> +			    struct iio_chan_spec const *chan,
+>> +			    int *val, int *val2, long mask)
+>> +{
+>> +	int ret = 0;
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +
+>> +	mutex_lock(&st->lock);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		ret = max1027_read_single_value(indio_dev, chan, val);
+>> +		break;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		switch (chan->type) {
+>> +		case IIO_TEMP:
+>> +			*val = 1;
+>> +			*val2 = 8;
+>> +			ret = IIO_VAL_FRACTIONAL;
+>> +			break;
+>> +		case IIO_VOLTAGE:
+>> +			*val = 2500;
+>> +			*val2 = 10;
+>> +			ret = IIO_VAL_FRACTIONAL_LOG2;
+>> +			break;
+>> +		default:
+>> +			ret = -EINVAL;
+>> +			break;
+>> +		}
+>> +		break;
+>No big deal, but I don't see, how this break is ever reached. ^^
+>> +	default:
+>> +		ret = -EINVAL;
+>> +		break;
+>> +	}
+>> +
+>> +	mutex_unlock(&st->lock);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int max1027_debugfs_reg_access(struct iio_dev *indio_dev,
+>> +				      unsigned reg, unsigned writeval,
+>> +				      unsigned *readval)
+>> +{
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +	u8 *val = (u8 *)st->buffer;
+>> +
+>> +	if (readval != NULL)
+>> +		return -EINVAL;
+>> +
+>> +	*val = (u8)writeval;
+>> +	return spi_write(st->spi, val, 1);
+>> +}
+>> +
+>> +static int max1027_validate_trigger(struct iio_dev *indio_dev,
+>> +				    struct iio_trigger *trig)
+>> +{
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +
+>> +	if (st->trig != trig)
+>> +		return -EINVAL;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int max1027_set_trigger_state(struct iio_trigger *trig, bool
+>state)
+>> +{
+>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	if (state) {
+>> +		/* Start acquisition on cnvst */
+>> +		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE0 |
+>> +			  MAX1027_REF_MODE2;
+>> +		ret = spi_write(st->spi, &st->reg, 1);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +
+>> +		/* Scan from 0 to max */
+>> +		st->reg = MAX1027_CONV_REG | MAX1027_CHAN(0) |
+>> +			  MAX1027_SCAN_N_M | MAX1027_TEMP;
+>> +		ret = spi_write(st->spi, &st->reg, 1);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	} else {
+>> +		/* Start acquisition on conversion register write */
+>> +		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE2	|
+>> +			  MAX1027_REF_MODE2;
+>> +		ret = spi_write(st->spi, &st->reg, 1);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int max1027_validate_device(struct iio_trigger *trig,
+>> +				   struct iio_dev *indio_dev)
+>> +{
+>> +	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
+>> +
+>> +	if (indio != indio_dev)
+>> +		return -EINVAL;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static irqreturn_t max1027_trigger_handler(int irq, void *private)
+>> +{
+>> +	struct iio_poll_func *pf = (struct iio_poll_func *)private;
+>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>> +	struct max1027_state *st = iio_priv(indio_dev);
+>> +
+>> +	pr_debug("%s(irq=%d, private=0x%p)\n", __func__, irq, private);
+>> +
+>> +	/* fill buffer with all channel */
+>> +	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
+>> +
+>> +	iio_push_to_buffers(indio_dev, st->buffer);
+>> +
+>> +	iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static const struct iio_trigger_ops max1027_trigger_ops = {
+>> +	.owner = THIS_MODULE,
+>> +	.validate_device = &max1027_validate_device,
+>> +	.set_trigger_state = &max1027_set_trigger_state,
+>> +};
+>> +
+>> +static const struct iio_info max1027_info = {
+>> +	.driver_module = THIS_MODULE,
+>> +	.read_raw = &max1027_read_raw,
+>> +	.validate_trigger = &max1027_validate_trigger,
+>> +	.debugfs_reg_access = &max1027_debugfs_reg_access,
+>> +};
+>> +
+>> +static int max1027_probe(struct spi_device *spi)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev;
+>> +	struct max1027_state *st;
+>> +
+>> +	pr_debug("%s: probe(spi = 0x%p)\n", __func__, spi);
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>> +	if (indio_dev == NULL) {
+>> +		pr_err("Can't allocate iio device\n");
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	spi_set_drvdata(spi, indio_dev);
+>> +
+>> +	st = iio_priv(indio_dev);
+>> +	st->spi = spi;
+>> +	st->info =
+>&max1027_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>> +
+>> +	mutex_init(&st->lock);
+>> +
+>> +	indio_dev->name = spi_get_device_id(spi)->name;
+>> +	indio_dev->dev.parent = &spi->dev;
+>> +	indio_dev->info = &max1027_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = st->info->channels;
+>> +	indio_dev->num_channels = st->info->num_channels;
+>> +	indio_dev->available_scan_masks = st->info->available_scan_masks;
+>> +
+>> +	st->buffer = devm_kmalloc(&indio_dev->dev,
+>> +				  indio_dev->num_channels * 2,
+>> +				  GFP_KERNEL);
+>> +	if (st->buffer == NULL) {
+>> +		dev_err(&indio_dev->dev, "Can't allocate bufffer\n");
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	ret = iio_triggered_buffer_setup(indio_dev,
+>&iio_pollfunc_store_time,
+>> +					 &max1027_trigger_handler, NULL);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+>> +							indio_dev->name);
+>> +	if (st->trig == NULL) {
+>> +		ret = -ENOMEM;
+>> +		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
+>> +		goto fail_trigger_alloc;
+>> +	}
+>> +
+>> +	st->trig->ops = &max1027_trigger_ops;
+>> +	st->trig->dev.parent = &spi->dev;
+>> +	iio_trigger_set_drvdata(st->trig, indio_dev);
+>> +	iio_trigger_register(st->trig);
+>> +
+>> +	ret = devm_request_threaded_irq(&spi->dev, spi->irq,
+>> +					iio_trigger_generic_data_rdy_poll,
+>> +					NULL,
+>> +					IRQF_TRIGGER_FALLING,
+>> +					spi->dev.driver->name, st->trig);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
+>> +		goto fail_dev_register;
+>> +	}
+>> +
+>> +	/* Disable averaging */
+>> +	st->reg = MAX1027_AVG_REG;
+>> +	ret = spi_write(st->spi, &st->reg, 1);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev, "Failed to configure averaging
+>register\n");
+>> +		goto fail_dev_register;
+>> +	}
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret < 0) {
+>> +		dev_err(&indio_dev->dev, "Failed to register iio device\n");
+>> +		goto fail_dev_register;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +fail_dev_register:
+>> +fail_trigger_alloc:
+>One of the labels could be dropped.
+>> +	iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int max1027_remove(struct spi_device *spi)
+>> +{
+>> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +
+>> +	pr_debug("%s: remove(spi = 0x%p)\n", __func__, spi);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +	iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static struct spi_driver max1027_driver = {
+>> +	.driver = {
+>> +		.name	= "max1027",
+>> +		.owner	= THIS_MODULE,
+>> +	},
+>> +	.probe		= max1027_probe,
+>> +	.remove		= max1027_remove,
+>> +	.id_table	= max1027_id,
+>> +};
+>> +module_spi_driver(max1027_driver);
+>> +
+>> +MODULE_AUTHOR("Philippe Reynes <tremyfr@yahoo.fr>");
+>> +MODULE_DESCRIPTION("MAX1027/MAX1029/MAX1031 ADC");
+>> +MODULE_LICENSE("GPL v2");
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
