@@ -1,100 +1,137 @@
-Return-Path: <jan@arkub.com>
-Message-ID: <53A80840.5050906@telliq.com>
-Date: Mon, 23 Jun 2014 12:58:08 +0200
-From: Jan Kardell <jan.kardell@telliq.com>
-MIME-Version: 1.0
-To: Zubair Lutfullah : <zubair.lutfullah@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-CC: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
- Rachna Patil <rachna@ti.com>,
- "Zubair Lutfullah: zubair.lutfullah"@gmail.com
-Subject: Re: [PATCH] iio: ti_am335x_adc: Use same step id at FIFOs both ends
-References: <1402521498-11535-1-git-send-email-jan.kardell@telliq.com> <53A555A7.7070800@kernel.org> <20140621102658.GA5177@gmail.com>
-In-Reply-To: <20140621102658.GA5177@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Return-Path: <beomho.seo@samsung.com>
+From: Beomho Seo <beomho.seo@samsung.com>
+To: linux-iio@vger.kernel.org, jic23@kernel.org, j.anaszewski@samsung.com,
+ sachin.kamat@linaro.org, ch.naveen@samsung.com, ktsai@capellamicro.com,
+ srinivas.pandruvada@linux.intel.com, t.figa@samsung.com
+Cc: myungjoo.ham@samsung.com, jh80.chung@samsung.com, cw00.choi@samsung.com,
+ Beomho Seo <beomho.seo@samsung.com>
+Subject: [PATCH v2] iio: magnetometer: ak8975: Use devm_* APIs
+Date: Mon, 23 Jun 2014 21:34:05 +0900
+Message-id: <1403526846-28299-1-git-send-email-beomho.seo@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Zubair Lutfullah : skriver:
-> On Sat, Jun 21, 2014 at 10:51:35AM +0100, Jonathan Cameron wrote:
->> On 11/06/14 22:18, Jan Kardell wrote:
->>> Since AI lines could be selected at will (linux-3.11) the sending
->>> and receiving ends of the FIFO does not agree about what step is used
->>> for a line. It only works if the last lines are used, like 5,6,7,
->>> and fails if ie 2,4,6 is selected in DT.
->>>
->>> Signed-off-by: Jan Kardell <jan.kardell@telliq.com>
->> I'd like an ack / review from someone more familiar with this part than I
->> am. I have cc'd a few people who might offer a view.
-> Been a while since I've seen this driver.
-> I'll try a bit..
->
->> Thanks,
->>
->> Jonathan (IIO maintainer)
->>> ---
->>>   drivers/iio/adc/ti_am335x_adc.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->>> index a4db302..d5dc4c6 100644
->>> --- a/drivers/iio/adc/ti_am335x_adc.c
->>> +++ b/drivers/iio/adc/ti_am335x_adc.c
->>> @@ -374,7 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
->>>   			return -EAGAIN;
->>>   		}
->>>   	}
->>> -	map_val = chan->channel + TOTAL_CHANNELS;
->>> +	map_val = adc_dev->channel_step[chan->scan_index];
-> Looking at the code again.
-> Could you tell me if using map_val = step_en will work?
->
-> Checking TRM, the channel ID is written with step id.
-> And if i am not mistaken, step id is already stored in step_en.
-> That is the step we enable for sampling.
-> Would make sense to check fifo for that step no?
-step_en is is a bitmask of 16 bits intended for the STEPENABLE
-register, one bit for each of the 16 possible steps, while stepid is a
-four bit number, 0-15, indentifying the step used. So your suggestion
-does not work.
+This patch use devm_* APIs make driver simpler.
 
-//Jan
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+---
+Changes in v2:
+- Return -ENOMEM and -ENPOSYS directly.
+- Withdraw some patch set because ordering issue.
+---
+ drivers/iio/magnetometer/ak8975.c |   58 +++++++++----------------------------
+ 1 file changed, 14 insertions(+), 44 deletions(-)
 
-> something like
->
-> @@ -324,7 +324,7 @@
->   		int *val, int *val2, long mask)
->   {
->   	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> -	int i, map_val;
-> +	int i;
->   	unsigned int fifo1count, read, stepid;
->   	bool found = false;
->   	u32 step_en;
-> @@ -342,7 +342,6 @@
->   		if (time_after(jiffies, timeout))
->   			return -EAGAIN;
->   		}
-> -	map_val = chan->channel + TOTAL_CHANNELS;
->   
->   	/*
->   	 * When the sub-system is first enabled,
-> @@ -361,7 +360,7 @@
->   		stepid = read & FIFOREAD_CHNLID_MASK;
->   		stepid = stepid >> 0x10;
->   
-> -		if (stepid == map_val) {
-> +		if (stepid == step_en) {
->   			read = read & FIFOREAD_DATA_MASK;
->   			found = true;
->   			*val = (u16) read;
->
->
-> Cheers
-> ZubairLK
->
->
->
->>>   	/*
->>>   	 * We check the complete FIFO. We programmed just one entry but in case
->>>
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 09ea5c4..a29592c 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -165,7 +165,7 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+ 	else
+ 		irq = gpio_to_irq(data->eoc_gpio);
+ 
+-	rc = request_irq(irq, ak8975_irq_handler,
++	rc = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
+ 			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+ 			 dev_name(&client->dev), data);
+ 	if (rc < 0) {
+@@ -520,21 +520,21 @@ static int ak8975_probe(struct i2c_client *client,
+ 	/* We may not have a GPIO based IRQ to scan, that is fine, we will
+ 	   poll if so */
+ 	if (gpio_is_valid(eoc_gpio)) {
+-		err = gpio_request_one(eoc_gpio, GPIOF_IN, "ak_8975");
++		err = devm_gpio_request_one(&client->dev, eoc_gpio,
++							GPIOF_IN, "ak_8975");
+ 		if (err < 0) {
+ 			dev_err(&client->dev,
+ 				"failed to request GPIO %d, error %d\n",
+ 							eoc_gpio, err);
+-			goto exit;
++			return err;
+ 		}
+ 	}
+ 
+ 	/* Register with IIO */
+-	indio_dev = iio_device_alloc(sizeof(*data));
+-	if (indio_dev == NULL) {
+-		err = -ENOMEM;
+-		goto exit_gpio;
+-	}
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+@@ -549,17 +549,16 @@ static int ak8975_probe(struct i2c_client *client,
+ 		name = (char *) id->name;
+ 	} else if (ACPI_HANDLE(&client->dev))
+ 		name = ak8975_match_acpi_device(&client->dev, &data->chipset);
+-	else {
+-		err = -ENOSYS;
+-		goto exit_free_iio;
+-	}
++	else
++		return -ENOSYS;
++
+ 	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
+ 
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+ 		dev_err(&client->dev, "AK8975 initialization fails\n");
+-		goto exit_free_iio;
++		return err;
+ 	}
+ 
+ 	data->client = client;
+@@ -571,37 +570,9 @@ static int ak8975_probe(struct i2c_client *client,
+ 	indio_dev->info = &ak8975_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->name = name;
+-	err = iio_device_register(indio_dev);
++	err = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (err < 0)
+-		goto exit_free_iio;
+-
+-	return 0;
+-
+-exit_free_iio:
+-	iio_device_free(indio_dev);
+-	if (data->eoc_irq)
+-		free_irq(data->eoc_irq, data);
+-exit_gpio:
+-	if (gpio_is_valid(eoc_gpio))
+-		gpio_free(eoc_gpio);
+-exit:
+-	return err;
+-}
+-
+-static int ak8975_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-	struct ak8975_data *data = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-
+-	if (data->eoc_irq)
+-		free_irq(data->eoc_irq, data);
+-
+-	if (gpio_is_valid(data->eoc_gpio))
+-		gpio_free(data->eoc_gpio);
+-
+-	iio_device_free(indio_dev);
++		return err;
+ 
+ 	return 0;
+ }
+@@ -628,7 +599,6 @@ static struct i2c_driver ak8975_driver = {
+ 		.acpi_match_table = ACPI_PTR(ak_acpi_match),
+ 	},
+ 	.probe		= ak8975_probe,
+-	.remove		= ak8975_remove,
+ 	.id_table	= ak8975_id,
+ };
+ module_i2c_driver(ak8975_driver);
+-- 
+1.7.9.5
