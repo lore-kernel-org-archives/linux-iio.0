@@ -1,217 +1,100 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:43118 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752392AbaFVT6Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 22 Jun 2014 15:58:25 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: kristina.martsenko@gmail.com, Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 6/7] iio: imu: adis16400 switch sampling frequency attr to core support.
-Date: Sun, 22 Jun 2014 20:59:45 +0100
-Message-Id: <1403467186-26639-7-git-send-email-jic23@kernel.org>
-In-Reply-To: <1403467186-26639-1-git-send-email-jic23@kernel.org>
-References: <1403467186-26639-1-git-send-email-jic23@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jan@arkub.com>
+Message-ID: <53A80840.5050906@telliq.com>
+Date: Mon, 23 Jun 2014 12:58:08 +0200
+From: Jan Kardell <jan.kardell@telliq.com>
+MIME-Version: 1.0
+To: Zubair Lutfullah : <zubair.lutfullah@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+ Rachna Patil <rachna@ti.com>,
+ "Zubair Lutfullah: zubair.lutfullah"@gmail.com
+Subject: Re: [PATCH] iio: ti_am335x_adc: Use same step id at FIFOs both ends
+References: <1402521498-11535-1-git-send-email-jan.kardell@telliq.com> <53A555A7.7070800@kernel.org> <20140621102658.GA5177@gmail.com>
+In-Reply-To: <20140621102658.GA5177@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-By using the info_mask_shared_by_all element of the channel spec, access
-to the sampling frequency becomes available to in kernel users of the
-driver.  It also shortens and simplifies the code.
+Zubair Lutfullah : skriver:
+> On Sat, Jun 21, 2014 at 10:51:35AM +0100, Jonathan Cameron wrote:
+>> On 11/06/14 22:18, Jan Kardell wrote:
+>>> Since AI lines could be selected at will (linux-3.11) the sending
+>>> and receiving ends of the FIFO does not agree about what step is used
+>>> for a line. It only works if the last lines are used, like 5,6,7,
+>>> and fails if ie 2,4,6 is selected in DT.
+>>>
+>>> Signed-off-by: Jan Kardell <jan.kardell@telliq.com>
+>> I'd like an ack / review from someone more familiar with this part than I
+>> am. I have cc'd a few people who might offer a view.
+> Been a while since I've seen this driver.
+> I'll try a bit..
+>
+>> Thanks,
+>>
+>> Jonathan (IIO maintainer)
+>>> ---
+>>>   drivers/iio/adc/ti_am335x_adc.c | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>>> index a4db302..d5dc4c6 100644
+>>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>>> @@ -374,7 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+>>>   			return -EAGAIN;
+>>>   		}
+>>>   	}
+>>> -	map_val = chan->channel + TOTAL_CHANNELS;
+>>> +	map_val = adc_dev->channel_step[chan->scan_index];
+> Looking at the code again.
+> Could you tell me if using map_val = step_en will work?
+>
+> Checking TRM, the channel ID is written with step id.
+> And if i am not mistaken, step id is already stored in step_en.
+> That is the step we enable for sampling.
+> Would make sense to check fifo for that step no?
+step_en is is a bitmask of 16 bits intended for the STEPENABLE
+register, one bit for each of the 16 possible steps, while stepid is a
+four bit number, 0-15, indentifying the step used. So your suggestion
+does not work.
 
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/imu/adis16400_core.c | 78 +++++++++++++---------------------------
- 1 file changed, 25 insertions(+), 53 deletions(-)
+//Jan
 
-diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-index 433583b..dfad54b 100644
---- a/drivers/iio/imu/adis16400_core.c
-+++ b/drivers/iio/imu/adis16400_core.c
-@@ -214,21 +214,6 @@ static int adis16400_set_freq(struct adis16400_state *st, unsigned int freq)
- 	return adis_write_reg_8(&st->adis, ADIS16400_SMPL_PRD, val);
- }
- 
--static ssize_t adis16400_read_frequency(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct adis16400_state *st = iio_priv(indio_dev);
--	int ret;
--
--	ret = st->variant->get_freq(st);
--	if (ret < 0)
--		return ret;
--
--	return sprintf(buf, "%d.%.3d\n", ret / 1000, ret % 1000);
--}
--
- static const unsigned adis16400_3db_divisors[] = {
- 	[0] = 2, /* Special case */
- 	[1] = 6,
-@@ -260,30 +245,6 @@ static int adis16400_set_filter(struct iio_dev *indio_dev, int sps, int val)
- 	return ret;
- }
- 
--static ssize_t adis16400_write_frequency(struct device *dev,
--	struct device_attribute *attr, const char *buf, size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct adis16400_state *st = iio_priv(indio_dev);
--	int i, f, val;
--	int ret;
--
--	ret = iio_str_to_fixpoint(buf, 100, &i, &f);
--	if (ret)
--		return ret;
--
--	val = i * 1000 + f;
--
--	if (val <= 0)
--		return -EINVAL;
--
--	mutex_lock(&indio_dev->mlock);
--	st->variant->set_freq(st, val);
--	mutex_unlock(&indio_dev->mlock);
--
--	return len;
--}
--
- /* Power down the device */
- static int adis16400_stop_device(struct iio_dev *indio_dev)
- {
-@@ -350,10 +311,6 @@ err_ret:
- 	return ret;
- }
- 
--static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
--			      adis16400_read_frequency,
--			      adis16400_write_frequency);
--
- static const uint8_t adis16400_addresses[] = {
- 	[ADIS16400_SCAN_GYRO_X] = ADIS16400_XGYRO_OFF,
- 	[ADIS16400_SCAN_GYRO_Y] = ADIS16400_YGYRO_OFF,
-@@ -394,6 +351,16 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
- 			val * 1000 + val2 / 1000);
- 		mutex_unlock(&indio_dev->mlock);
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		sps = val * 1000 + val2 / 1000; 
-+
-+		if (sps <= 0)
-+			return -EINVAL;
-+
-+		mutex_lock(&indio_dev->mlock);
-+		ret = st->variant->set_freq(st, sps);
-+		mutex_unlock(&indio_dev->mlock);
-+		return ret;		
- 	default:
- 		return -EINVAL;
- 	}
-@@ -474,6 +441,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			return ret;
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = st->variant->get_freq(st);
-+		if (ret < 0)
-+		   	return ret;
-+		*val = ret / 1000;
-+		*val2 = (ret % 1000) * 1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -486,6 +460,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.extend_name = name, \
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
- 		BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = (si), \
- 	.scan_type = { \
-@@ -511,6 +486,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		BIT(IIO_CHAN_INFO_CALIBBIAS),		  \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
- 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = addr, \
- 	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
- 	.scan_type = { \
-@@ -530,6 +506,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		BIT(IIO_CHAN_INFO_CALIBBIAS), \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
- 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
- 	.scan_type = { \
-@@ -548,6 +525,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
- 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
- 	.scan_type = { \
-@@ -573,6 +551,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 		BIT(IIO_CHAN_INFO_SCALE), \
- 	.info_mask_shared_by_type = \
- 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
- 	.scan_type = { \
-@@ -591,6 +570,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
- 		BIT(IIO_CHAN_INFO_OFFSET) | \
- 		BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = ADIS16350_SCAN_TEMP_X, \
- 	.scan_type = { \
-@@ -608,6 +588,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
- 	.channel2 = IIO_MOD_ ## mod, \
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (addr), \
- 	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
- 	.scan_type = { \
-@@ -649,6 +630,7 @@ static const struct iio_chan_spec adis16448_channels[] = {
- 		.type = IIO_PRESSURE,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 		.address = ADIS16448_BARO_OUT,
- 		.scan_index = ADIS16400_SCAN_BARO,
- 		.scan_type = {
-@@ -704,15 +686,6 @@ static const struct iio_chan_spec adis16334_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
- };
- 
--static struct attribute *adis16400_attributes[] = {
--	&iio_dev_attr_sampling_frequency.dev_attr.attr,
--	NULL
--};
--
--static const struct attribute_group adis16400_attribute_group = {
--	.attrs = adis16400_attributes,
--};
--
- static struct adis16400_chip_info adis16400_chips[] = {
- 	[ADIS16300] = {
- 		.channels = adis16300_channels,
-@@ -813,7 +786,6 @@ static const struct iio_info adis16400_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &adis16400_read_raw,
- 	.write_raw = &adis16400_write_raw,
--	.attrs = &adis16400_attribute_group,
- 	.update_scan_mode = adis16400_update_scan_mode,
- 	.debugfs_reg_access = adis_debugfs_reg_access,
- };
--- 
-2.0.0
-
+> something like
+>
+> @@ -324,7 +324,7 @@
+>   		int *val, int *val2, long mask)
+>   {
+>   	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> -	int i, map_val;
+> +	int i;
+>   	unsigned int fifo1count, read, stepid;
+>   	bool found = false;
+>   	u32 step_en;
+> @@ -342,7 +342,6 @@
+>   		if (time_after(jiffies, timeout))
+>   			return -EAGAIN;
+>   		}
+> -	map_val = chan->channel + TOTAL_CHANNELS;
+>   
+>   	/*
+>   	 * When the sub-system is first enabled,
+> @@ -361,7 +360,7 @@
+>   		stepid = read & FIFOREAD_CHNLID_MASK;
+>   		stepid = stepid >> 0x10;
+>   
+> -		if (stepid == map_val) {
+> +		if (stepid == step_en) {
+>   			read = read & FIFOREAD_DATA_MASK;
+>   			found = true;
+>   			*val = (u16) read;
+>
+>
+> Cheers
+> ZubairLK
+>
+>
+>
+>>>   	/*
+>>>   	 * We check the complete FIFO. We programmed just one entry but in case
+>>>
