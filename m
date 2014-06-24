@@ -1,58 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47893 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751226AbaFLFAm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Jun 2014 01:00:42 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2 11/12] staging:iio-trig-periodic-rtc: Cleanup
-Date: Thu, 12 Jun 2014 07:00:28 +0200
-Message-Id: <1402549229-4449-12-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mailout3.samsung.com ([203.254.224.33]:11285 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751407AbaFXMXA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 08:23:00 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: naveenkrishna.ch@gmail.com, kgene.kim@samsung.com,
+	linux-arm-kernel@lists.infradead.org, cpgs@samsung.com,
+	devicetree@vger.kernel.org, lars@metafoo.de
+Subject: [PATCH 0/4] hwmon: ntc_thermistor: prepose vendor prefix change
+Date: Tue, 24 Jun 2014 17:49:12 +0530
+Message-id: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix extra space in module description
-Silence output about trigger frequency when trigger gets enabled/disabled
-Add dash to make trigger name look nicer (periodicrtc0 -> periodic-rtc0)
+As Murata is the manufacturer of the NTC (Negative Temperature coefficient)
+based Thermistors. ntc_thermistor driver extensively used the prefix "ntc".
+But, vendor-prefix should be "murata" instead of "ntc".
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+This patchset
+1. Updates the vendor-prefix, DT bindings and Documentation,
+   where ever necessary.
+2. Adds thermistor nodes to Exynos5420 and Exynos5800 based boards.
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index 38ecb4b..362a54a 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -33,7 +33,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
- 	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
- 	if (trig_info->frequency == 0)
- 		return -EINVAL;
--	dev_info(&trig_info->rtc->dev, "trigger frequency is %d\n",
-+	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
- 			trig_info->frequency);
- 	return rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
- }
-@@ -128,8 +128,7 @@ static int iio_trig_periodic_rtc_probe(struct platform_device *dev)
- 		iio_trigger_set_drvdata(trig, trig_info);
- 		trig->ops = &iio_prtc_trigger_ops;
- 		/* RTC access */
--		trig_info->rtc
--			= rtc_class_open(pdata[i]);
-+		trig_info->rtc = rtc_class_open(pdata[i]);
- 		if (trig_info->rtc == NULL) {
- 			ret = -EINVAL;
- 			goto error_free_trig_info;
-@@ -199,5 +198,5 @@ static struct platform_driver iio_trig_periodic_rtc_driver = {
- module_platform_driver(iio_trig_periodic_rtc_driver);
- 
- MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
--MODULE_DESCRIPTION("Periodic realtime clock  trigger for the iio subsystem");
-+MODULE_DESCRIPTION("Periodic realtime clock trigger for the iio subsystem");
- MODULE_LICENSE("GPL v2");
+Patches:
+1/4. devicetree: bindings: Document murata vendor prefix
+     Adds the vendor prefix "murata" to vendor-prefixes.txt.
+2/4. hwmon: ntc_thermistor: Use the manufacturer name properly
+     Updates the driver, Kconfig, device tree bindings and Documentation
+     with the Manufacturer/vendor information.
+3/4. ARM: DTS: use new compatible string as per the documentation
+     Updates the device node in Exynos4412 based Trats2 board
+     with the new device tree bindings.
+4/4. ARM: DTS: Add NTC thermistor nodes as child nodes to ADC
+     Adds Thermistor nodes to Exynos5420 and Exynos5800 based boards.
+
+This patchset
+Naveen Krishna Chatradhi (4):
+  devicetree: bindings: Document murata vendor prefix
+  hwmon: ntc_thermistor: Use the manufacturer name properly
+  ARM: DTS: Add NTC thermistor nodes as child nodes to ADC
+  ARM: DTS: use new compatible string as per the documentation
+
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt |    2 +-
+ .../devicetree/bindings/hwmon/ntc_thermistor.txt   |   12 ++++----
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ Documentation/hwmon/ntc_thermistor                 |    8 ++---
+ arch/arm/boot/dts/exynos4412-trats2.dts            |    4 +--
+ arch/arm/boot/dts/exynos5420-peach-pit.dts         |   32 ++++++++++++++++++++
+ drivers/hwmon/Kconfig                              |    5 +--
+ drivers/hwmon/ntc_thermistor.c                     |   12 ++++----
+ 8 files changed, 55 insertions(+), 21 deletions(-)
+
 -- 
-1.9.1
+1.7.9.5
 
