@@ -1,489 +1,175 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f43.google.com ([74.125.82.43]:53564 "EHLO
-	mail-wg0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751005AbaF0QU0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 12:20:26 -0400
-Received: by mail-wg0-f43.google.com with SMTP id b13so5190495wgh.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Jun 2014 09:20:25 -0700 (PDT)
-From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, lars@metafoo.de,
-	yannick.bedhomme@mobile-devices.fr,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Subject: [PATCH 2/2] iio: add watermark logic to iio read and poll
-Date: Fri, 27 Jun 2014 18:20:01 +0200
-Message-Id: <1403886001-23354-3-git-send-email-josselin.costanzi@mobile-devices.fr>
-In-Reply-To: <1403886001-23354-1-git-send-email-josselin.costanzi@mobile-devices.fr>
-References: <1403886001-23354-1-git-send-email-josselin.costanzi@mobile-devices.fr>
+Received: from mailout2.samsung.com ([203.254.224.25]:16516 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751821AbaFXMYG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 08:24:06 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: naveenkrishna.ch@gmail.com, kgene.kim@samsung.com,
+	linux-arm-kernel@lists.infradead.org, cpgs@samsung.com,
+	devicetree@vger.kernel.org, lars@metafoo.de,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 2/4] hwmon: ntc_thermistor: Use the manufacturer name properly
+Date: Tue, 24 Jun 2014 17:49:14 +0530
+Message-id: <1403612356-23685-3-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
+References: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the IIO buffer blocking read only wait until at least one
-data element is available.
-This patch makes the reader sleep until enough data is collected before
-returning to userspace. This should limit the read() calls count when
-trying to get data in batches.
+Murata Manufacturing Co., Ltd is the vendor for
+NTC (Negative Temperature coefficient) based Thermistors.
+But, the driver extensively uses "NTC" as the vendor name.
 
-Co-author: Yannick Bedhomme <yannick.bedhomme@mobile-devices.fr>
-Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+This patch corrects the vendor name also updates the
+compatibility strings according to the vendor-prefix.txt
+
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
 ---
- Documentation/ABI/testing/sysfs-bus-iio  |  21 ++++
- drivers/iio/industrialio-buffer.c        | 188 +++++++++++++++++++++++++++----
- drivers/iio/kfifo_buf.c                  |  15 +--
- drivers/staging/iio/accel/sca3000_ring.c |   4 +-
- include/linux/iio/buffer.h               |  48 +++++++-
- 5 files changed, 244 insertions(+), 32 deletions(-)
+This changes is needed for the following reasons
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a9757dc..0a4662e 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -933,3 +933,24 @@ Description:
- 		x y z w. Here x, y, and z component represents the axis about
- 		which a rotation will occur and w component represents the
- 		amount of rotation.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/low_watermark
-+KernelVersion:	3.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A single positive integer specifying the maximum number of scan
-+		elements to wait for.
-+		Poll will block until the watermark is reached.
-+		Blocking read will wait until the minimum between the requested
-+		read amount or the low water mark is available.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/timeout
-+KernelVersion:	3.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A single non-negative integer that represents an activity
-+		timeout in microseconds for which we wait during blocking read
-+		operation. The timer is reset each time a new sample is added
-+		to the buffer.
-+		By default its value is zero which indicates the read operation
-+		will not timeout.
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 2952ee0..c8ee523 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -37,7 +37,7 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
- 	return !list_empty(&buf->buffer_list);
+1. The vendor prefix "ntc" is not defined in vendor-prefixes.txt
+   Thus, giving an error when checked with scripts/checkpatch.pl
+2. Murata Manufacturing Co., Ltd. Is the vendor for the
+   NTC (Negative Temperature Coefficient) based thermistors.
+   Hence, "murata" is the right vendor-prefix, Not "ntc".
+3. NTC is a technology used, But the prefix "ntc" is wrongly
+   and heavily used in the driver and the documentation.
+
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt |    2 +-
+ .../devicetree/bindings/hwmon/ntc_thermistor.txt   |   12 ++++++------
+ Documentation/hwmon/ntc_thermistor                 |    8 ++++----
+ drivers/hwmon/Kconfig                              |    5 +++--
+ drivers/hwmon/ntc_thermistor.c                     |   12 ++++++------
+ 5 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+index 5d49f2b..832fe8c 100644
+--- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
++++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+@@ -48,7 +48,7 @@ adc@12D10000 {
+ 
+ 	/* NTC thermistor is a hwmon device */
+ 	ncp15wb473@0 {
+-		compatible = "ntc,ncp15wb473";
++		compatible = "murata,ncp15wb473";
+ 		pullup-uv = <1800000>;
+ 		pullup-ohm = <47000>;
+ 		pulldown-ohm = <0>;
+diff --git a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+index c6f6667..4e9f344 100644
+--- a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
++++ b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+@@ -3,11 +3,11 @@ NTC Thermistor hwmon sensors
+ 
+ Requires node properties:
+ - "compatible" value : one of
+-	"ntc,ncp15wb473"
+-	"ntc,ncp18wb473"
+-	"ntc,ncp21wb473"
+-	"ntc,ncp03wb473"
+-	"ntc,ncp15wl333"
++	"murata,ncp15wb473"
++	"murata,ncp18wb473"
++	"murata,ncp21wb473"
++	"murata,ncp03wb473"
++	"murata,ncp15wl333"
+ - "pullup-uv"	Pull up voltage in micro volts
+ - "pullup-ohm"	Pull up resistor value in ohms
+ - "pulldown-ohm" Pull down resistor value in ohms
+@@ -21,7 +21,7 @@ Read more about iio bindings at
+ 
+ Example:
+ 	ncp15wb473@0 {
+-		compatible = "ntc,ncp15wb473";
++		compatible = "murata,ncp15wb473";
+ 		pullup-uv = <1800000>;
+ 		pullup-ohm = <47000>;
+ 		pulldown-ohm = <0>;
+diff --git a/Documentation/hwmon/ntc_thermistor b/Documentation/hwmon/ntc_thermistor
+index 3bfda94..057b770 100644
+--- a/Documentation/hwmon/ntc_thermistor
++++ b/Documentation/hwmon/ntc_thermistor
+@@ -1,7 +1,7 @@
+ Kernel driver ntc_thermistor
+ =================
+ 
+-Supported thermistors:
++Supported thermistors from Murata:
+ * Murata NTC Thermistors NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, NCP15WL333
+   Prefixes: 'ncp15wb473', 'ncp18wb473', 'ncp21wb473', 'ncp03wb473', 'ncp15wl333'
+   Datasheet: Publicly available at Murata
+@@ -15,9 +15,9 @@ Authors:
+ Description
+ -----------
+ 
+-The NTC thermistor is a simple thermistor that requires users to provide the
+-resistance and lookup the corresponding compensation table to get the
+-temperature input.
++The NTC (Negative Temperature Coefficient) thermistor is a simple thermistor
++that requires users to provide the resistance and lookup the corresponding
++compensation table to get the temperature input.
+ 
+ The NTC driver provides lookup tables with a linear approximation function
+ and four circuit models with an option not to use any of the four models.
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 08531a1..154851b 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1052,7 +1052,7 @@ config SENSORS_PC87427
+ 	  will be called pc87427.
+ 
+ config SENSORS_NTC_THERMISTOR
+-	tristate "NTC thermistor support"
++	tristate "NTC based thermistor support from Murata"
+ 	depends on !OF || IIO=n || IIO
+ 	help
+ 	  This driver supports NTC thermistors sensor reading and its
+@@ -1060,7 +1060,8 @@ config SENSORS_NTC_THERMISTOR
+ 	  send notifications about the temperature.
+ 
+ 	  Currently, this driver supports
+-	  NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333.
++	  NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333
++	  from Murata.
+ 
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called ntc-thermistor.
+diff --git a/drivers/hwmon/ntc_thermistor.c b/drivers/hwmon/ntc_thermistor.c
+index e76feb86..6c38fc8 100644
+--- a/drivers/hwmon/ntc_thermistor.c
++++ b/drivers/hwmon/ntc_thermistor.c
+@@ -163,15 +163,15 @@ static int ntc_adc_iio_read(struct ntc_thermistor_platform_data *pdata)
  }
  
--static bool iio_buffer_data_available(struct iio_buffer *buf)
-+static size_t iio_buffer_data_available(struct iio_buffer *buf)
- {
- 	return buf->access->data_available(buf);
- }
-@@ -53,6 +53,11 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- {
- 	struct iio_dev *indio_dev = filp->private_data;
- 	struct iio_buffer *rb = indio_dev->buffer;
-+	size_t datum_size = rb->access->get_bytes_per_datum(rb);
-+	size_t to_read = min_t(size_t, n / datum_size, rb->low_watermark);
-+	size_t data_available;
-+	size_t count = 0;
-+	long timeout = -1;
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -62,25 +67,49 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 		return -EINVAL;
- 
- 	do {
--		if (!iio_buffer_data_available(rb)) {
--			if (filp->f_flags & O_NONBLOCK)
--				return -EAGAIN;
-+		data_available = iio_buffer_data_available(rb);
- 
--			ret = wait_event_interruptible(rb->pollq,
--					iio_buffer_data_available(rb) ||
--					indio_dev->info == NULL);
--			if (ret)
--				return ret;
--			if (indio_dev->info == NULL)
--				return -ENODEV;
-+		if (filp->f_flags & O_NONBLOCK) {
-+			if (!data_available) {
-+				ret = -EAGAIN;
-+				break;
-+			}
-+		} else {
-+			if (data_available < to_read) {
-+				timeout = wait_event_interruptible_timeout(
-+					rb->pollq,
-+					iio_buffer_data_available(rb) >= to_read ||
-+					indio_dev->info == NULL,
-+					rb->timeout);
-+
-+				if (indio_dev->info == NULL) {
-+					ret = -ENODEV;
-+					break;
-+				}
-+
-+				if (timeout < 0) {
-+					ret = timeout;
-+					break;
-+				}
-+			}
- 		}
- 
--		ret = rb->access->read_first_n(rb, n, buf);
--		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
--			ret = -EAGAIN;
--	 } while (ret == 0);
-+		ret = rb->access->read_first_n(rb, n, buf + count);
-+		if (ret < 0)
-+			break;
- 
--	return ret;
-+		count += ret;
-+		n -= ret;
-+		to_read -= ret / datum_size;
-+	 } while (to_read > 0 && timeout > 0);
-+
-+	if (count)
-+		return count;
-+	if (ret < 0)
-+		return ret;
-+
-+	WARN_ON(timeout);
-+	return -EAGAIN;
- }
- 
- /**
-@@ -96,9 +125,8 @@ unsigned int iio_buffer_poll(struct file *filp,
- 		return -ENODEV;
- 
- 	poll_wait(filp, &rb->pollq, wait);
--	if (iio_buffer_data_available(rb))
-+	if (iio_buffer_data_available(rb) >= rb->low_watermark)
- 		return POLLIN | POLLRDNORM;
--	/* need a way of knowing if there may be enough data... */
- 	return 0;
- }
- 
-@@ -123,6 +151,8 @@ void iio_buffer_init(struct iio_buffer *buffer)
- 	INIT_LIST_HEAD(&buffer->buffer_list);
- 	init_waitqueue_head(&buffer->pollq);
- 	kref_init(&buffer->ref);
-+	buffer->low_watermark = 1;
-+	buffer->timeout = MAX_SCHEDULE_TIMEOUT;
- }
- EXPORT_SYMBOL(iio_buffer_init);
- 
-@@ -442,7 +472,16 @@ ssize_t iio_buffer_write_length(struct device *dev,
- 	}
- 	mutex_unlock(&indio_dev->mlock);
- 
--	return ret ? ret : len;
-+	if (ret)
-+		return ret;
-+
-+	if (buffer->access->get_length)
-+		val = buffer->access->get_length(buffer);
-+
-+	if (val < buffer->low_watermark)
-+		buffer->low_watermark = val;
-+
-+	return len;
- }
- EXPORT_SYMBOL(iio_buffer_write_length);
- 
-@@ -513,6 +552,7 @@ static void iio_buffer_activate(struct iio_dev *indio_dev,
- static void iio_buffer_deactivate(struct iio_buffer *buffer)
- {
- 	list_del_init(&buffer->buffer_list);
-+	wake_up_interruptible(&buffer->pollq);
- 	iio_buffer_put(buffer);
- }
- 
-@@ -792,6 +832,105 @@ done:
- }
- EXPORT_SYMBOL(iio_buffer_store_enable);
- 
-+ssize_t iio_buffer_show_watermark(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+
-+	return sprintf(buf, "%u\n", buffer->low_watermark);
-+}
-+EXPORT_SYMBOL(iio_buffer_show_watermark);
-+
-+ssize_t iio_buffer_store_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (buffer->access->get_length &&
-+		(val > buffer->access->get_length(buffer)))
-+		return -EINVAL;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	if (iio_buffer_is_active(indio_dev->buffer)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	buffer->low_watermark = val;
-+	ret = 0;
-+out:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret ? ret : len;
-+}
-+EXPORT_SYMBOL(iio_buffer_store_watermark);
-+
-+static int iio_buffer_timeout_set(struct iio_buffer *buffer, long timeout_us)
-+{
-+	if (timeout_us > 0) {
-+		buffer->timeout = usecs_to_jiffies(timeout_us);
-+	} else if (timeout_us == 0){
-+		buffer->timeout = MAX_SCHEDULE_TIMEOUT;
-+	} else {
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static long iio_buffer_timeout_get(struct iio_buffer *buffer)
-+{
-+	if (buffer->timeout != MAX_SCHEDULE_TIMEOUT)
-+		return jiffies_to_usecs(buffer->timeout);
-+	return 0;
-+}
-+
-+ssize_t iio_buffer_show_timeout(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+
-+	return sprintf(buf, "%ld\n", iio_buffer_timeout_get(buffer));
-+}
-+EXPORT_SYMBOL(iio_buffer_show_timeout);
-+
-+ssize_t iio_buffer_store_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	long val;
-+	int ret;
-+
-+	ret = kstrtol(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&indio_dev->mlock);
-+	if (iio_buffer_is_active(indio_dev->buffer)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+	ret = iio_buffer_timeout_set(buffer, val);
-+out:
-+	mutex_unlock(&indio_dev->mlock);
-+	return ret ? ret : len;
-+}
-+EXPORT_SYMBOL(iio_buffer_store_timeout);
-+
- /**
-  * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
-  * @indio_dev: the iio device
-@@ -913,8 +1052,17 @@ static const void *iio_demux(struct iio_buffer *buffer,
- static int iio_push_to_buffer(struct iio_buffer *buffer, const void *data)
- {
- 	const void *dataout = iio_demux(buffer, data);
-+	int ret;
- 
--	return buffer->access->store_to(buffer, dataout);
-+	ret = buffer->access->store_to(buffer, dataout);
-+	if (ret)
-+		return ret;
-+
-+	/* We can't just test for watermark to decide if we wake the poll queue
-+	 * because read may request less samples than the watermark
-+	 */
-+	wake_up_interruptible(&buffer->pollq);
-+	return 0;
- }
- 
- static void iio_buffer_demux_free(struct iio_buffer *buffer)
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index 7134e8a..79ceb35 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -54,10 +54,14 @@ static int iio_get_length_kfifo(struct iio_buffer *r)
- 
- static IIO_BUFFER_ENABLE_ATTR;
- static IIO_BUFFER_LENGTH_ATTR;
-+static IIO_BUFFER_WATERMARK_ATTR;
-+static IIO_BUFFER_TIMEOUT_ATTR;
- 
- static struct attribute *iio_kfifo_attributes[] = {
- 	&dev_attr_length.attr,
- 	&dev_attr_enable.attr,
-+	&dev_attr_low_watermark.attr,
-+	&dev_attr_timeout.attr,
- 	NULL,
+ static const struct of_device_id ntc_match[] = {
+-	{ .compatible = "ntc,ncp15wb473",
++	{ .compatible = "murata,ncp15wb473",
+ 		.data = &ntc_thermistor_id[0] },
+-	{ .compatible = "ntc,ncp18wb473",
++	{ .compatible = "murata,ncp18wb473",
+ 		.data = &ntc_thermistor_id[1] },
+-	{ .compatible = "ntc,ncp21wb473",
++	{ .compatible = "murata,ncp21wb473",
+ 		.data = &ntc_thermistor_id[2] },
+-	{ .compatible = "ntc,ncp03wb473",
++	{ .compatible = "murata,ncp03wb473",
+ 		.data = &ntc_thermistor_id[3] },
+-	{ .compatible = "ntc,ncp15wl333",
++	{ .compatible = "murata,ncp15wl333",
+ 		.data = &ntc_thermistor_id[4] },
+ 	{ },
  };
+@@ -534,7 +534,7 @@ static struct platform_driver ntc_thermistor_driver = {
  
-@@ -107,9 +111,6 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
- 	ret = kfifo_in(&kf->kf, data, 1);
- 	if (ret != 1)
- 		return -EBUSY;
--
--	wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
--
- 	return 0;
- }
+ module_platform_driver(ntc_thermistor_driver);
  
-@@ -133,16 +134,16 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
- 	return copied;
- }
- 
--static bool iio_kfifo_buf_data_available(struct iio_buffer *r)
-+static size_t iio_kfifo_buf_data_available(struct iio_buffer *r)
- {
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
--	bool empty;
-+	size_t samples;
- 
- 	mutex_lock(&kf->user_lock);
--	empty = kfifo_is_empty(&kf->kf);
-+	samples = kfifo_len(&kf->kf);
- 	mutex_unlock(&kf->user_lock);
- 
--	return !empty;
-+	return samples;
- }
- 
- static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 33f0e92..91f838f 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -141,9 +141,9 @@ static int sca3000_ring_get_bytes_per_datum(struct iio_buffer *r)
- 	return 6;
- }
- 
--static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
-+static size_t sca3000_ring_buf_data_available(struct iio_buffer *r)
- {
--	return r->stufftoread;
-+	return r->stufftoread ? r->low_watermark : 0;
- }
- 
- static IIO_BUFFER_ENABLE_ATTR;
-diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-index 5193927..837f5ec 100644
---- a/include/linux/iio/buffer.h
-+++ b/include/linux/iio/buffer.h
-@@ -21,8 +21,8 @@ struct iio_buffer;
-  * struct iio_buffer_access_funcs - access functions for buffers.
-  * @store_to:		actually store stuff to the buffer
-  * @read_first_n:	try to get a specified number of bytes (must exist)
-- * @data_available:	indicates whether data for reading from the buffer is
-- *			available.
-+ * @data_available:	indicates how much data is available for reading from
-+ *			the buffer.
-  * @request_update:	if a parameter change has been marked, update underlying
-  *			storage.
-  * @get_bytes_per_datum:get current bytes per datum
-@@ -45,7 +45,7 @@ struct iio_buffer_access_funcs {
- 	int (*read_first_n)(struct iio_buffer *buffer,
- 			    size_t n,
- 			    char __user *buf);
--	bool (*data_available)(struct iio_buffer *buffer);
-+	size_t (*data_available)(struct iio_buffer *buffer);
- 
- 	int (*request_update)(struct iio_buffer *buffer);
- 
-@@ -76,6 +76,10 @@ struct iio_buffer_access_funcs {
-  * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
-  * @buffer_list:	[INTERN] entry in the devices list of current buffers.
-  * @ref:		[INTERN] reference count of the buffer.
-+ * @low_watermark:	[INTERN] number of datums for poll/blocking read to
-+ * 			wait for.
-+ * @timeout:		[INTERN] inactivity timeout in jiffies for blocking
-+ * 			read.
-  */
- struct iio_buffer {
- 	int					length;
-@@ -93,6 +97,8 @@ struct iio_buffer {
- 	void					*demux_bounce;
- 	struct list_head			buffer_list;
- 	struct kref				ref;
-+	unsigned int				low_watermark;
-+	unsigned long				timeout;
- };
- 
- /**
-@@ -201,6 +207,34 @@ ssize_t iio_buffer_store_enable(struct device *dev,
- ssize_t iio_buffer_show_enable(struct device *dev,
- 			       struct device_attribute *attr,
- 			       char *buf);
-+/**
-+ * iio_buffer_show_watermark() - attr to see the read watermark
-+ **/
-+ssize_t iio_buffer_show_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf);
-+/**
-+ * iio_buffer_store_watermark() - attr to configure the read watermark
-+ **/
-+ssize_t iio_buffer_store_watermark(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len);
-+/**
-+ * iio_buffer_show_timeout() - attr to see the read timeout (microseconds)
-+ * Note: if no timeout is set, returns 0
-+ **/
-+ssize_t iio_buffer_show_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				char *buf);
-+/**
-+ * iio_buffer_store_timeout() - attr to configure read timeout (microseconds)
-+ * Note: to disable the timeout, write 0
-+ **/
-+ssize_t iio_buffer_store_timeout(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf,
-+				size_t len);
- #define IIO_BUFFER_LENGTH_ATTR DEVICE_ATTR(length, S_IRUGO | S_IWUSR,	\
- 					   iio_buffer_read_length,	\
- 					   iio_buffer_write_length)
-@@ -209,6 +243,14 @@ ssize_t iio_buffer_show_enable(struct device *dev,
- 					   iio_buffer_show_enable,	\
- 					   iio_buffer_store_enable)
- 
-+#define IIO_BUFFER_WATERMARK_ATTR DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,	\
-+					   iio_buffer_show_watermark,	\
-+					   iio_buffer_store_watermark)
-+
-+#define IIO_BUFFER_TIMEOUT_ATTR DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR,	\
-+					   iio_buffer_show_timeout,	\
-+					   iio_buffer_store_timeout)
-+
- bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
- 	const unsigned long *mask);
- 
+-MODULE_DESCRIPTION("NTC Thermistor Driver");
++MODULE_DESCRIPTION("NTC based Thermistor Driver from Murata");
+ MODULE_AUTHOR("MyungJoo Ham <myungjoo.ham@samsung.com>");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:ntc-thermistor");
 -- 
-1.9.1
+1.7.9.5
 
