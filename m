@@ -1,45 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:42979 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754591AbaFNN7r (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 09:59:47 -0400
-Message-ID: <539C55C5.7080001@kernel.org>
-Date: Sat, 14 Jun 2014 15:01:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>,
-	Robert Hodaszi <robert.hodaszi@digi.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	gregkh@linuxfoundation.org, alexandre.belloni@free-electrons.com,
-	jbe@pengutronix.de, hector.palacios@digi.com,
-	fabio.estevam@freescale.com, lars@metafoo.de
-Subject: Re: [PATCH 1/2] iio: mxs-lradc: fix divider
-References: <1402407695-2984-1-git-send-email-robert.hodaszi@digi.com> <1402407695-2984-2-git-send-email-robert.hodaszi@digi.com> <201406110047.59372.marex@denx.de>
-In-Reply-To: <201406110047.59372.marex@denx.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from smtpfb2-g21.free.fr ([212.27.42.10]:40266 "EHLO
+	smtpfb2-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753242AbaFXOrS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 10:47:18 -0400
+From: Denis Carikli <denis@eukrea.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Denis Carikli <denis@eukrea.com>
+Subject: [PATCH v4 6/6] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
+Date: Tue, 24 Jun 2014 16:46:35 +0200
+Message-Id: <1403621195-9622-6-git-send-email-denis@eukrea.com>
+In-Reply-To: <1403621195-9622-1-git-send-email-denis@eukrea.com>
+References: <1403621195-9622-1-git-send-email-denis@eukrea.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/06/14 23:47, Marek Vasut wrote:
-> On Tuesday, June 10, 2014 at 03:41:34 PM, Robert Hodaszi wrote:
->> All channels' single measurement are happening on CH 0. So enabling /
->> disabling the divider once is not enough, because it has impact on all
->> channels.
->>
->> Set only a flag, then check this on each measurement, and enable / disable
->> the divider as required.
->>
->> Signed-off-by: Robert Hodaszi <robert.hodaszi@digi.com>
->
-> Acked-by: Marek Vasut <marex@denx.de>
-Applied to the fixes-togreg branch of iio.git
-Also marked for stable.
->
-> Best regards,
-> Marek Vasut
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Denis Carikli <denis@eukrea.com>
+---
+Changelog v3->v4:
+- None
+
+Changelog v2->v3:
+- Added ADC support, splitting it would be overkill.
+---
+ arch/arm/configs/imx_v4_v5_defconfig |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
+index 68abce9..43dd6e9 100644
+--- a/arch/arm/configs/imx_v4_v5_defconfig
++++ b/arch/arm/configs/imx_v4_v5_defconfig
+@@ -97,6 +97,7 @@ CONFIG_KEYBOARD_IMX=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
++CONFIG_TOUCHSCREEN_MX25=y
+ CONFIG_TOUCHSCREEN_MC13783=y
+ # CONFIG_LEGACY_PTYS is not set
+ CONFIG_SERIAL_8250=m
+@@ -117,6 +118,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_MC13783_ADC=m
+ CONFIG_WATCHDOG=y
+ CONFIG_IMX2_WDT=y
++CONFIG_MFD_MX25_TSADC=y
+ CONFIG_MFD_MC13XXX_SPI=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -183,6 +185,8 @@ CONFIG_DMADEVICES=y
+ CONFIG_IMX_SDMA=y
+ CONFIG_IMX_DMA=y
+ # CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IIO=y
++CONFIG_FSL_MX25_ADC=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
+-- 
+1.7.9.5
 
