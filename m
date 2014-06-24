@@ -1,67 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:43852 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754734AbaFNOrF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 14 Jun 2014 10:47:05 -0400
-Message-ID: <539C60DE.1010209@kernel.org>
-Date: Sat, 14 Jun 2014 15:49:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ob0-f172.google.com ([209.85.214.172]:51566 "EHLO
+	mail-ob0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753521AbaFXVyE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 17:54:04 -0400
+Received: by mail-ob0-f172.google.com with SMTP id uy5so1091228obc.17
+        for <linux-iio@vger.kernel.org>; Tue, 24 Jun 2014 14:54:03 -0700 (PDT)
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 02/12] iio:adc:ad5504: Use BIT() and GENMASK() macros
-References: <1402549229-4449-1-git-send-email-pmeerw@pmeerw.net> <1402549229-4449-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402549229-4449-3-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <1403612356-23685-5-git-send-email-ch.naveen@samsung.com>
+References: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
+	<1403612356-23685-5-git-send-email-ch.naveen@samsung.com>
+Date: Tue, 24 Jun 2014 14:54:03 -0700
+Message-ID: <CAD=FV=Wmi73S4c5TPUqnNyycQ5xX5SbYy_ES-cbbJF2Hr0tqvQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ARM: DTS: Add NTC thermistor nodes as child nodes to ADC
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"cpgs ." <cpgs@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Tushar Behera <tushar.b@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/14 06:00, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-I would have ever so slightly preferred the kernel doc fix
-to be in another patch, but ah well.
+Naveen,
 
-Applied to the togreg branch of iio.git
-
-Thanks,
+On Tue, Jun 24, 2014 at 5:19 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> Exynos5420 based Peach PIT and Exynos5800 based PI boards have
+> 4 NTC thermistors to measure temperatures at various points on the
+> board.
+>
+> IIO based ADC becomes the parent and NTC thermistors are the childs,
+> via the HWMON interface.
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Cc: Doug Anderson <dianders@chromium.org>
 > ---
->   drivers/iio/dac/ad5504.c | 11 +++++------
->   1 file changed, 5 insertions(+), 6 deletions(-)
+> This patch needs
+> 1. MAX77802 PMIC device tree nodes (for ldo9)
+>    https://www.mail-archive.com/devicetree@vger.kernel.org/msg31430.html
+> 2. Uses the DT documentation for NTC thermistors updated with vendor-prefix
 >
-> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-> index 1e64493..c917dd2 100644
-> --- a/drivers/iio/dac/ad5504.c
-> +++ b/drivers/iio/dac/ad5504.c
-> @@ -15,17 +15,16 @@
->   #include <linux/sysfs.h>
->   #include <linux/regulator/consumer.h>
->   #include <linux/module.h>
-> +#include <linux/bitops.h>
->
->   #include <linux/iio/iio.h>
->   #include <linux/iio/sysfs.h>
->   #include <linux/iio/events.h>
->   #include <linux/iio/dac/ad5504.h>
->
-> -#define AD5505_BITS			12
-> -#define AD5504_RES_MASK			((1 << (AD5505_BITS)) - 1)
-> -
-> -#define AD5504_CMD_READ			(1 << 15)
-> -#define AD5504_CMD_WRITE		(0 << 15)
-> +#define AD5504_RES_MASK			GENMASK(11, 0)
-> +#define AD5504_CMD_READ			BIT(15)
-> +#define AD5504_CMD_WRITE		0
->   #define AD5504_ADDR(addr)		((addr) << 12)
->
->   /* Registers */
-> @@ -42,7 +41,7 @@
->
->   /**
->    * struct ad5446_state - driver instance specific data
-> - * @us:			spi_device
-> + * @spi:			spi_device
->    * @reg:		supply regulator
->    * @vref_mv:		actual reference voltage used
->    * @pwr_down_mask	power down mask
->
+>  arch/arm/boot/dts/exynos5420-peach-pit.dts |   32 ++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
 
+* You forgot: status="okay" for the ADC.  One might question how this
+patch was tested.
+
+* Please also include this change for pi.
+
+* We just got through the painful process of sorting this .dts file.
+Please sort "&adc" alphabetically.  Kukjin: please confirm that you
+will keep an eye on patches and make sure that they are sorted OK.
+
+
+Other than those problems this seems to work fine to me.
+
+-Doug
