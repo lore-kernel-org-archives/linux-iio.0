@@ -1,100 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:47801 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751028AbaFLEy3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 12 Jun 2014 00:54:29 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 09/12] iio:adc:ad799x: Write default config on probe and reset alert status on probe
-Date: Thu, 12 Jun 2014 06:54:13 +0200
-Message-Id: <1402548856-3564-10-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
-References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net>
+Received: from smtpfb1-g21.free.fr ([212.27.42.9]:41399 "EHLO
+	smtpfb1-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753667AbaFXOrI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 10:47:08 -0400
+From: Denis Carikli <denis@eukrea.com>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Denis Carikli <denis@eukrea.com>
+Subject: [PATCH v4 5/6] ARM: dts: imx25: mbimxsd25: Add touchscreen support.
+Date: Tue, 24 Jun 2014 16:46:34 +0200
+Message-Id: <1403621195-9622-5-git-send-email-denis@eukrea.com>
+In-Reply-To: <1403621195-9622-1-git-send-email-denis@eukrea.com>
+References: <1403621195-9622-1-git-send-email-denis@eukrea.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-writing ALERT_EN and BUSY_ALERT to the chip config register clears
-pending alerts, BUSY_ALERT is cleared when reading back the register
-
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Denis Carikli <denis@eukrea.com>
 ---
- drivers/iio/adc/ad799x.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+Changelog v3->v4:
+- None
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index fe2a9b1..84ce9b4 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -595,7 +595,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				AD799X_CHANNEL_WITH_EVENTS(1, 12),
- 				IIO_CHAN_SOFT_TIMESTAMP(3),
- 			},
--			.default_config = AD7998_ALERT_EN,
-+			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
- 			.info = &ad7993_4_7_8_irq_info,
- 		},
- 	},
-@@ -619,7 +619,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				AD799X_CHANNEL_WITH_EVENTS(3, 10),
- 				IIO_CHAN_SOFT_TIMESTAMP(4),
- 			},
--			.default_config = AD7998_ALERT_EN,
-+			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
- 			.info = &ad7993_4_7_8_irq_info,
- 		},
- 	},
-@@ -643,7 +643,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				AD799X_CHANNEL_WITH_EVENTS(3, 12),
- 				IIO_CHAN_SOFT_TIMESTAMP(4),
- 			},
--			.default_config = AD7998_ALERT_EN,
-+			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
- 			.info = &ad7993_4_7_8_irq_info,
- 		},
- 	},
-@@ -675,7 +675,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				AD799X_CHANNEL(7, 10),
- 				IIO_CHAN_SOFT_TIMESTAMP(8),
- 			},
--			.default_config = AD7998_ALERT_EN,
-+			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
- 			.info = &ad7993_4_7_8_irq_info,
- 		},
- 	},
-@@ -707,7 +707,7 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
- 				AD799X_CHANNEL(7, 12),
- 				IIO_CHAN_SOFT_TIMESTAMP(8),
- 			},
--			.default_config = AD7998_ALERT_EN,
-+			.default_config = AD7998_ALERT_EN | AD7998_BUSY_ALERT,
- 			.info = &ad7993_4_7_8_irq_info,
- 		},
- 	},
-@@ -735,7 +735,6 @@ static int ad799x_probe(struct i2c_client *client,
- 		st->chip_config = &chip_info->irq_config;
- 	else
- 		st->chip_config = &chip_info->noirq_config;
--	st->config = st->chip_config->default_config;
- 
- 	/* TODO: Add pdata options for filtering and bit delay */
- 
-@@ -764,6 +763,14 @@ static int ad799x_probe(struct i2c_client *client,
- 	indio_dev->channels = st->chip_config->channel;
- 	indio_dev->num_channels = chip_info->num_channels;
- 
-+	ret = ad799x_write_config(st, st->chip_config->default_config);
-+	if (ret < 0)
-+		goto error_disable_reg;
-+	ret = ad799x_read_config(st);
-+	if (ret < 0)
-+		goto error_disable_reg;
-+	st->config = ret;
+Changelog v2->v3:
+- Most of the non-board specific tsc and tscadc
+  parts were moved to imx25.dtsi. So this patch
+  was adapted to that.
+- Thanks to a fix in the tsc driver, the 
+  'fsl,pen-debounce = <100>;' is not necessary anymore.
+---
+ .../imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts  |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
+index 68d0834..2f3bc3f 100644
+--- a/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
++++ b/arch/arm/boot/dts/imx25-eukrea-mbimxsd25-baseboard-cmo-qvga.dts
+@@ -71,3 +71,11 @@
+ 	lcd-supply = <&reg_lcd_3v3>;
+ 	status = "okay";
+ };
 +
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		&ad799x_trigger_handler, NULL);
- 	if (ret)
++&tsc {
++	status = "okay";
++};
++
++&tscadc {
++	status = "okay";
++};
 -- 
-1.9.1
+1.7.9.5
 
