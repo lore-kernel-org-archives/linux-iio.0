@@ -1,47 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:48231 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751273AbaF1Cha (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 22:37:30 -0400
-Date: Fri, 27 Jun 2014 22:37:18 -0400
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Guillaume Morin <guillaume@morinfr.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] staging: iio: ad9850.c: fix checkpatch.pl error
-Message-ID: <20140628023718.GB3579@kroah.com>
-References: <4d0e6b74dcc10ef5d60c9cab4f2df886782fb3c3.1403919775.git.guillaume@morinfr.org>
- <20140628020935.GA14333@kroah.com>
- <20140628023009.GA13273@bender.morinfr.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140628023009.GA13273@bender.morinfr.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:16450 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753338AbaFXMX3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 08:23:29 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: naveenkrishna.ch@gmail.com, kgene.kim@samsung.com,
+	linux-arm-kernel@lists.infradead.org, cpgs@samsung.com,
+	devicetree@vger.kernel.org, lars@metafoo.de,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 1/4] devicetree: bindings: Document murata vendor prefix
+Date: Tue, 24 Jun 2014 17:49:13 +0530
+Message-id: <1403612356-23685-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
+References: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 28, 2014 at 04:30:09AM +0200, Guillaume Morin wrote:
-> On 27 Jun 19:09, Greg Kroah-Hartman wrote:
-> > > v2: add missing Signed-off-by 
-> > 
-> > That doesn't go here.
-> 
-> I guess I am struggling to get git send-email do what I want
+Add Murata Manufacturing Co., Ltd. to the list of device tree
+vendor prefixes.
 
-Put that below the --- line.
+Murata manufactures NTC (Negative Temperature Coefficient) based
+Thermistors for small scale applications like Mobiles and PDAs.
 
-> > And what checkpatch error did you fix?  And are you sure it needs to be
-> > fixed?
-> 
-> That's what I changed:
-> 
-> $ scripts/checkpatch.pl -f drivers/staging/iio/frequency/ad9850.c
-> ERROR: Macros with complex values should be enclosed in parenthesis
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+---
+This changes is needed for the following reasons
 
-Then why didn't you say that :)
+1. The vendor prefix "ntc" is not defined in vendor-prefixes.txt
+   Thus, giving an error when checked with scripts/checkpatch.pl
+2. Murata Manufacturing Co., Ltd. Is the vendor for the
+   NTC (Negative Temperature Coefficient) based thermistors.
+   Hence, "murata" is the right vendor-prefix, Not "ntc".
+3. NTC is a technology used, But the prefix "ntc" is wrongly
+   and heavily used in the driver and the documentation.
 
-> I assumed that if it was reported as an error, it needed to be fixed...
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ 1 file changed, 1 insertion(+)
 
-Use your judgement, checkpatch is a tool, it isn't always correct.
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 4d7f375..a39b7d7 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -84,6 +84,7 @@ moxa	Moxa
+ mpl	MPL AG
+ mundoreader	Mundo Reader S.L.
+ mxicy	Macronix International Co., Ltd.
++murata	Murata Manufacturing Co., Ltd.
+ national	National Semiconductor
+ neonode		Neonode Inc.
+ netgear	NETGEAR
+-- 
+1.7.9.5
 
-greg k-h
