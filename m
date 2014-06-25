@@ -1,66 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:49376 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757493AbaFZMWq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 08:22:46 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, cpgs@samsung.com,
-	Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 1/3] ARM: DTS: use new compatible string for thermistors in
- trats2
-Date: Thu, 26 Jun 2014 17:49:06 +0530
-Message-id: <1403785148-20792-2-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
-References: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail-we0-f179.google.com ([74.125.82.179]:49145 "EHLO
+	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755444AbaFYKiL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jun 2014 06:38:11 -0400
+Received: by mail-we0-f179.google.com with SMTP id w62so1804640wes.38
+        for <linux-iio@vger.kernel.org>; Wed, 25 Jun 2014 03:38:09 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1403677773-21141-5-git-send-email-ch.naveen@samsung.com>
+References: <1403677773-21141-1-git-send-email-ch.naveen@samsung.com>
+	<1403677773-21141-5-git-send-email-ch.naveen@samsung.com>
+Date: Wed, 25 Jun 2014 12:38:09 +0200
+Message-ID: <CABxcv=nfKPiV92FOHqfzrM5hCv9ZUiDMiN3oGVyTPF+d6TimxA@mail.gmail.com>
+Subject: Re: [PATCH 4/4 v2] ARM: DTS: Add NTC thermistor nodes to Exynos5420
+ based Peach_PIT
+From: Javier Martinez Canillas <javier@dowhile0.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: "linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"cpgs ." <cpgs@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Doug Anderson <dianders@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-As Murata Manufactures the NTC based thermistors. The vendor
-name in the compatibility is preposed to change to "murata"
+Hello Naveen,
 
-This patch uses the new compatibility string in exynos4412 based
-Trats2 board.
+On Wed, Jun 25, 2014 at 8:29 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> Exynos5420 based Peach PIT board has 4 NTC thermistors to measure
+> temperatures at various points on the board.
+>
+> IIO based ADC becomes the parent and NTC thermistors are the childs,
+> via the HWMON interface.
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Cc: Doug Anderson <dianders@chromium.org>
+> ---
+> Changes since v1:
+> 1. Arranged the ADC node alphabetical
+> 2. Added "status = "okay"" to the ADC node
+>
+> This patch needs
+> 1. MAX77802 PMIC device tree nodes (for ldo9)
+>    https://www.mail-archive.com/devicetree@vger.kernel.org/msg31430.html
+> 2. Uses the DT documentation for NTC thermistors updated with vendor-prefix
+>
+> This patch set is tested
+> 1. On Peach PIT board via sysfs entry exposed by hwmon
+> localhost ~ # cat /sys/class/hwmon/hwmon*/device/temp1_input
+> 37436
+> 36449
+> 38560
+> 38059
+>
+> 2. Backward compatibility is tested by replacing "murata" with "ntc"
+>    in the dts nodes and running the above test.
+>
+>  arch/arm/boot/dts/exynos5420-peach-pit.dts |   34 ++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>
+> diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+> index b96a66a..19d733d 100644
+> --- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
+> +++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+> @@ -101,6 +101,40 @@
+>         };
+>  };
+>
+> +&adc {
+> +       status = "okay";
+> +       vdd-supply = <&ldo9_reg>;
+> +
+> +       ncp15wb473@3 {
+> +               compatible = "murata,ncp15wb473";
+> +               pullup-uv = <1800000>;
+> +               pullup-ohm = <47000>;
+> +               pulldown-ohm = <0>;
+> +               io-channels = <&adc 3>;
+> +       };
+> +       ncp15wb473@4 {
+> +               compatible = "murata,ncp15wb473";
+> +               pullup-uv = <1800000>;
+> +               pullup-ohm = <47000>;
+> +               pulldown-ohm = <0>;
+> +               io-channels = <&adc 4>;
+> +       };
+> +       ncp15wb473@5 {
+> +               compatible = "murata,ncp15wb473";
+> +               pullup-uv = <1800000>;
+> +               pullup-ohm = <47000>;
+> +               pulldown-ohm = <0>;
+> +               io-channels = <&adc 5>;
+> +       };
+> +       ncp15wb473@6 {
+> +               compatible = "murata,ncp15wb473";
+> +               pullup-uv = <1800000>;
+> +               pullup-ohm = <47000>;
+> +               pulldown-ohm = <0>;
+> +               io-channels = <&adc 6>;
+> +       };
+> +};
+> +
+>  &dp {
+>         status = "okay";
+>         pinctrl-names = "default";
+> --
+> 1.7.9.5
+>
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: Chanwoo Choi <cw00.choi@samsung.com>
-Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
----
-This patch is carried forward (tracking purpose) along with the other
-dts changes in the patch set discussed
-http://www.spinics.net/lists/linux-iio/msg13486.html
-
-This patch was posted
-http://www.spinics.net/lists/linux-samsung-soc/msg33037.html
-
-
- arch/arm/boot/dts/exynos4412-trats2.dts |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/boot/dts/exynos4412-trats2.dts b/arch/arm/boot/dts/exynos4412-trats2.dts
-index 11967f4..d35755a 100644
---- a/arch/arm/boot/dts/exynos4412-trats2.dts
-+++ b/arch/arm/boot/dts/exynos4412-trats2.dts
-@@ -771,7 +771,7 @@
- 	};
- 
- 	thermistor-ap@0 {
--		compatible = "ntc,ncp15wb473";
-+		compatible = "murata,ncp15wb473";
- 		pullup-uv = <1800000>;	 /* VCC_1.8V_AP */
- 		pullup-ohm = <100000>;	 /* 100K */
- 		pulldown-ohm = <100000>; /* 100K */
-@@ -779,7 +779,7 @@
- 	};
- 
- 	thermistor-battery@1 {
--		compatible = "ntc,ncp15wb473";
-+		compatible = "murata,ncp15wb473";
- 		pullup-uv = <1800000>;	 /* VCC_1.8V_AP */
- 		pullup-ohm = <100000>;	 /* 100K */
- 		pulldown-ohm = <100000>; /* 100K */
--- 
-1.7.9.5
-
+Tested-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
