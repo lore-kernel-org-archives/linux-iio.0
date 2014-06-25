@@ -1,214 +1,204 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53B03275.9020805@gmx.de>
-Date: Sun, 29 Jun 2014 17:36:21 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:65426 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752683AbaFYKgV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jun 2014 06:36:21 -0400
+Received: by mail-wi0-f176.google.com with SMTP id n3so7582415wiv.3
+        for <linux-iio@vger.kernel.org>; Wed, 25 Jun 2014 03:36:18 -0700 (PDT)
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: kristina.martsenko@gmail.com, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 6/7] iio: imu: adis16400 switch sampling frequency attr
- to core support.
-References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-7-git-send-email-jic23@kernel.org>
-In-Reply-To: <1403467186-26639-7-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1403677773-21141-3-git-send-email-ch.naveen@samsung.com>
+References: <1403677773-21141-1-git-send-email-ch.naveen@samsung.com>
+	<1403677773-21141-3-git-send-email-ch.naveen@samsung.com>
+Date: Wed, 25 Jun 2014 12:36:18 +0200
+Message-ID: <CABxcv=knKWT6kJYWBV59U_jeV2yeQJkuRof9qZaGgxOVLJ5WDQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4 v2] hwmon: ntc_thermistor: Use the manufacturer name properly
+From: Javier Martinez Canillas <javier@dowhile0.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: "linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Naveen Krishna Ch <naveenkrishna.ch@gmail.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"cpgs ." <cpgs@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> By using the info_mask_shared_by_all element of the channel spec, access
-> to the sampling frequency becomes available to in kernel users of the
-> driver.  It also shortens and simplifies the code.
+Hello Naveen,
+
+On Wed, Jun 25, 2014 at 8:29 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> Murata Manufacturing Co., Ltd is the vendor for
+> NTC (Negative Temperature coefficient) based Thermistors.
+> But, the driver extensively uses "NTC" as the vendor name.
 >
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+> This patch corrects the vendor name also updates the
+> compatibility strings according to the vendor-prefix.txt
+>
+> Note: Drivers continue to support the previous compatible strings
+> but further addition of these compatible strings in device tree
+> is deprecated.
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
 > ---
-Looks good to me.
->  drivers/iio/imu/adis16400_core.c | 78 +++++++++++++---------------------------
->  1 file changed, 25 insertions(+), 53 deletions(-)
+> Changes since v1:
+> 1. Kept the old compatible string marked as <DEPRECATED> in code and
+>    in the Documentation.
 >
-> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-> index 433583b..dfad54b 100644
-> --- a/drivers/iio/imu/adis16400_core.c
-> +++ b/drivers/iio/imu/adis16400_core.c
-> @@ -214,21 +214,6 @@ static int adis16400_set_freq(struct adis16400_state *st, unsigned int freq)
->  	return adis_write_reg_8(&st->adis, ADIS16400_SMPL_PRD, val);
->  }
->  
-> -static ssize_t adis16400_read_frequency(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct adis16400_state *st = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	ret = st->variant->get_freq(st);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	return sprintf(buf, "%d.%.3d\n", ret / 1000, ret % 1000);
-> -}
-> -
->  static const unsigned adis16400_3db_divisors[] = {
->  	[0] = 2, /* Special case */
->  	[1] = 6,
-> @@ -260,30 +245,6 @@ static int adis16400_set_filter(struct iio_dev *indio_dev, int sps, int val)
->  	return ret;
->  }
->  
-> -static ssize_t adis16400_write_frequency(struct device *dev,
-> -	struct device_attribute *attr, const char *buf, size_t len)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct adis16400_state *st = iio_priv(indio_dev);
-> -	int i, f, val;
-> -	int ret;
-> -
-> -	ret = iio_str_to_fixpoint(buf, 100, &i, &f);
-> -	if (ret)
-> -		return ret;
-> -
-> -	val = i * 1000 + f;
-> -
-> -	if (val <= 0)
-> -		return -EINVAL;
-> -
-> -	mutex_lock(&indio_dev->mlock);
-> -	st->variant->set_freq(st, val);
-> -	mutex_unlock(&indio_dev->mlock);
-> -
-> -	return len;
-> -}
-> -
->  /* Power down the device */
->  static int adis16400_stop_device(struct iio_dev *indio_dev)
->  {
-> @@ -350,10 +311,6 @@ err_ret:
->  	return ret;
->  }
->  
-> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-> -			      adis16400_read_frequency,
-> -			      adis16400_write_frequency);
-> -
->  static const uint8_t adis16400_addresses[] = {
->  	[ADIS16400_SCAN_GYRO_X] = ADIS16400_XGYRO_OFF,
->  	[ADIS16400_SCAN_GYRO_Y] = ADIS16400_YGYRO_OFF,
-> @@ -394,6 +351,16 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
->  			val * 1000 + val2 / 1000);
->  		mutex_unlock(&indio_dev->mlock);
->  		return ret;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		sps = val * 1000 + val2 / 1000; 
+>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    2 +-
+>  .../devicetree/bindings/hwmon/ntc_thermistor.txt   |   20 ++++++++++++++------
+>  Documentation/hwmon/ntc_thermistor                 |    8 ++++----
+>  drivers/hwmon/Kconfig                              |    5 +++--
+>  drivers/hwmon/ntc_thermistor.c                     |   14 +++++++++++++-
+>  5 files changed, 35 insertions(+), 14 deletions(-)
+>
+
+Looks good to me.
+
+Reviewed-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index 5d49f2b..832fe8c 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -48,7 +48,7 @@ adc@12D10000 {
+>
+>         /* NTC thermistor is a hwmon device */
+>         ncp15wb473@0 {
+> -               compatible = "ntc,ncp15wb473";
+> +               compatible = "murata,ncp15wb473";
+>                 pullup-uv = <1800000>;
+>                 pullup-ohm = <47000>;
+>                 pulldown-ohm = <0>;
+> diff --git a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> index c6f6667..b117b2e 100644
+> --- a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> +++ b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> @@ -3,11 +3,19 @@ NTC Thermistor hwmon sensors
+>
+>  Requires node properties:
+>  - "compatible" value : one of
+> -       "ntc,ncp15wb473"
+> -       "ntc,ncp18wb473"
+> -       "ntc,ncp21wb473"
+> -       "ntc,ncp03wb473"
+> -       "ntc,ncp15wl333"
+> +       "murata,ncp15wb473"
+> +       "murata,ncp18wb473"
+> +       "murata,ncp21wb473"
+> +       "murata,ncp03wb473"
+> +       "murata,ncp15wl333"
 > +
-> +		if (sps <= 0)
-> +			return -EINVAL;
+> +/* Usage of vendor name "ntc" is deprecated */
+> +<DEPRECATED>   "ntc,ncp15wb473"
+> +<DEPRECATED>   "ntc,ncp18wb473"
+> +<DEPRECATED>   "ntc,ncp21wb473"
+> +<DEPRECATED>   "ntc,ncp03wb473"
+> +<DEPRECATED>   "ntc,ncp15wl333"
 > +
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = st->variant->set_freq(st, sps);
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return ret;		
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -474,6 +441,13 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = st->variant->get_freq(st);
-> +		if (ret < 0)
-> +		   	return ret;
-> +		*val = ret / 1000;
-> +		*val2 = (ret % 1000) * 1000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -486,6 +460,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  	.extend_name = name, \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = (si), \
->  	.scan_type = { \
-> @@ -511,6 +486,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  		BIT(IIO_CHAN_INFO_CALIBBIAS),		  \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
->  		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = addr, \
->  	.scan_index = ADIS16400_SCAN_GYRO_ ## mod, \
->  	.scan_type = { \
-> @@ -530,6 +506,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
->  		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = ADIS16400_SCAN_ACC_ ## mod, \
->  	.scan_type = { \
-> @@ -548,6 +525,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
->  		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = ADIS16400_SCAN_MAGN_ ## mod, \
->  	.scan_type = { \
-> @@ -573,6 +551,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  		BIT(IIO_CHAN_INFO_SCALE), \
->  	.info_mask_shared_by_type = \
->  		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = ADIS16350_SCAN_TEMP_ ## mod, \
->  	.scan_type = { \
-> @@ -591,6 +570,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_OFFSET) | \
->  		BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = ADIS16350_SCAN_TEMP_X, \
->  	.scan_type = { \
-> @@ -608,6 +588,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
->  	.channel2 = IIO_MOD_ ## mod, \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (addr), \
->  	.scan_index = ADIS16300_SCAN_INCLI_ ## mod, \
->  	.scan_type = { \
-> @@ -649,6 +630,7 @@ static const struct iio_chan_spec adis16448_channels[] = {
->  		.type = IIO_PRESSURE,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  		.address = ADIS16448_BARO_OUT,
->  		.scan_index = ADIS16400_SCAN_BARO,
->  		.scan_type = {
-> @@ -704,15 +686,6 @@ static const struct iio_chan_spec adis16334_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->  };
->  
-> -static struct attribute *adis16400_attributes[] = {
-> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-> -	NULL
-> -};
-> -
-> -static const struct attribute_group adis16400_attribute_group = {
-> -	.attrs = adis16400_attributes,
-> -};
-> -
->  static struct adis16400_chip_info adis16400_chips[] = {
->  	[ADIS16300] = {
->  		.channels = adis16300_channels,
-> @@ -813,7 +786,6 @@ static const struct iio_info adis16400_info = {
->  	.driver_module = THIS_MODULE,
->  	.read_raw = &adis16400_read_raw,
->  	.write_raw = &adis16400_write_raw,
-> -	.attrs = &adis16400_attribute_group,
->  	.update_scan_mode = adis16400_update_scan_mode,
->  	.debugfs_reg_access = adis_debugfs_reg_access,
->  };
+>  - "pullup-uv"  Pull up voltage in micro volts
+>  - "pullup-ohm" Pull up resistor value in ohms
+>  - "pulldown-ohm" Pull down resistor value in ohms
+> @@ -21,7 +29,7 @@ Read more about iio bindings at
+>
+>  Example:
+>         ncp15wb473@0 {
+> -               compatible = "ntc,ncp15wb473";
+> +               compatible = "murata,ncp15wb473";
+>                 pullup-uv = <1800000>;
+>                 pullup-ohm = <47000>;
+>                 pulldown-ohm = <0>;
+> diff --git a/Documentation/hwmon/ntc_thermistor b/Documentation/hwmon/ntc_thermistor
+> index 3bfda94..057b770 100644
+> --- a/Documentation/hwmon/ntc_thermistor
+> +++ b/Documentation/hwmon/ntc_thermistor
+> @@ -1,7 +1,7 @@
+>  Kernel driver ntc_thermistor
+>  =================
+>
+> -Supported thermistors:
+> +Supported thermistors from Murata:
+>  * Murata NTC Thermistors NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, NCP15WL333
+>    Prefixes: 'ncp15wb473', 'ncp18wb473', 'ncp21wb473', 'ncp03wb473', 'ncp15wl333'
+>    Datasheet: Publicly available at Murata
+> @@ -15,9 +15,9 @@ Authors:
+>  Description
+>  -----------
+>
+> -The NTC thermistor is a simple thermistor that requires users to provide the
+> -resistance and lookup the corresponding compensation table to get the
+> -temperature input.
+> +The NTC (Negative Temperature Coefficient) thermistor is a simple thermistor
+> +that requires users to provide the resistance and lookup the corresponding
+> +compensation table to get the temperature input.
+>
+>  The NTC driver provides lookup tables with a linear approximation function
+>  and four circuit models with an option not to use any of the four models.
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index 08531a1..154851b 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -1052,7 +1052,7 @@ config SENSORS_PC87427
+>           will be called pc87427.
+>
+>  config SENSORS_NTC_THERMISTOR
+> -       tristate "NTC thermistor support"
+> +       tristate "NTC thermistor support from Murata"
+>         depends on !OF || IIO=n || IIO
+>         help
+>           This driver supports NTC thermistors sensor reading and its
+> @@ -1060,7 +1060,8 @@ config SENSORS_NTC_THERMISTOR
+>           send notifications about the temperature.
+>
+>           Currently, this driver supports
+> -         NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333.
+> +         NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333
+> +         from Murata.
+>
+>           This driver can also be built as a module.  If so, the module
+>           will be called ntc-thermistor.
+> diff --git a/drivers/hwmon/ntc_thermistor.c b/drivers/hwmon/ntc_thermistor.c
+> index e76feb86..bdfbe91 100644
+> --- a/drivers/hwmon/ntc_thermistor.c
+> +++ b/drivers/hwmon/ntc_thermistor.c
+> @@ -163,6 +163,18 @@ static int ntc_adc_iio_read(struct ntc_thermistor_platform_data *pdata)
+>  }
+>
+>  static const struct of_device_id ntc_match[] = {
+> +       { .compatible = "murata,ncp15wb473",
+> +               .data = &ntc_thermistor_id[0] },
+> +       { .compatible = "murata,ncp18wb473",
+> +               .data = &ntc_thermistor_id[1] },
+> +       { .compatible = "murata,ncp21wb473",
+> +               .data = &ntc_thermistor_id[2] },
+> +       { .compatible = "murata,ncp03wb473",
+> +               .data = &ntc_thermistor_id[3] },
+> +       { .compatible = "murata,ncp15wl333",
+> +               .data = &ntc_thermistor_id[4] },
+> +
+> +       /* Usage of vendor name "ntc" is deprecated */
+>         { .compatible = "ntc,ncp15wb473",
+>                 .data = &ntc_thermistor_id[0] },
+>         { .compatible = "ntc,ncp18wb473",
+> @@ -534,7 +546,7 @@ static struct platform_driver ntc_thermistor_driver = {
+>
+>  module_platform_driver(ntc_thermistor_driver);
+>
+> -MODULE_DESCRIPTION("NTC Thermistor Driver");
+> +MODULE_DESCRIPTION("NTC Thermistor Driver from Murata");
+>  MODULE_AUTHOR("MyungJoo Ham <myungjoo.ham@samsung.com>");
+>  MODULE_LICENSE("GPL");
+>  MODULE_ALIAS("platform:ntc-thermistor");
+> --
+> 1.7.9.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
