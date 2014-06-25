@@ -1,49 +1,49 @@
-Return-Path: <linux+jic23=kernel.org@arm.linux.org.uk>
-Date: Sun, 29 Jun 2014 12:49:01 +0100
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Fabio Estevam <festevam@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
-	linux-iio@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Denis Carikli <denis@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>, linux-input@vger.kernel.org,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Shawn Guo <shawn.guo@linaro.org>, Lee Jones <lee.jones@linaro.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 2/6] input: touchscreen: imx25 tcq driver
-Message-ID: <20140629114901.GO32514@n2100.arm.linux.org.uk>
-References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de> <1402672899-6995-1-git-send-email-denis@eukrea.com> <1402672899-6995-3-git-send-email-denis@eukrea.com> <53A55BD8.7030905@kernel.org> <CAOMZO5BxZDX5TDZdUCbpTw2LpVC=vr4cnn4eSpzd_023wcy+Fg@mail.gmail.com> <53AFF1C4.1010402@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f180.google.com ([209.85.214.180]:43659 "EHLO
+	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757240AbaFYRA6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jun 2014 13:00:58 -0400
+Received: by mail-ob0-f180.google.com with SMTP id vb8so2454017obc.11
+        for <linux-iio@vger.kernel.org>; Wed, 25 Jun 2014 10:00:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53AFF1C4.1010402@kernel.org>
-Sender: Russell King - ARM Linux <linux@arm.linux.org.uk>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAHfPSqAAWFtCQQrKBhLFuE2OuO_fwmUOhcOX9zKk8eMRMNSVvg@mail.gmail.com>
+References: <1403612356-23685-1-git-send-email-ch.naveen@samsung.com>
+	<1403612356-23685-5-git-send-email-ch.naveen@samsung.com>
+	<CAD=FV=Wmi73S4c5TPUqnNyycQ5xX5SbYy_ES-cbbJF2Hr0tqvQ@mail.gmail.com>
+	<CAHfPSqAAWFtCQQrKBhLFuE2OuO_fwmUOhcOX9zKk8eMRMNSVvg@mail.gmail.com>
+Date: Wed, 25 Jun 2014 10:00:57 -0700
+Message-ID: <CAD=FV=VnHZY3vC6y3B-3xXMnYCV+UVrCcgT5y73FJEuKdot_Sw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ARM: DTS: Add NTC thermistor nodes as child nodes to ADC
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"cpgs ." <cpgs@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Tushar Behera <tushar.b@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jun 29, 2014 at 12:00:20PM +0100, Jonathan Cameron wrote:
-> On 21/06/14 20:55, Fabio Estevam wrote:
->> On Sat, Jun 21, 2014 at 7:18 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>> +
->>>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>
->>> Could this not in theory fail?
->>
->> Yes, but devm_ioremap_resource will take care of it, so we don't need
->> to check for error here.
-> Nothing like counter intuitive behaviour.  Ah well.
->
-> Thanks for explaining this!
+Naveen,
 
-Maybe it would be better to have:
+On Tue, Jun 24, 2014 at 10:04 PM, Naveen Krishna Ch
+<naveenkrishna.ch@gmail.com> wrote:
+> Also, we have few similar nodes on Peach PI  and Peach PIT.
+> Any plans or discussion on merging the common nodes ?
 
-	mem = platform_ioremap_resource(pdev, IORESOURCE_MEM, 0);
+There was some discussion about this in another thread with Javier.
+We were thinking of doing more "config fragments" like I did for the
+keyboard.  See <https://lkml.org/lkml/2014/6/24/337> for context.
 
-which wraps up both the platform_get_resource() call with
-devm_ioremap_resource() so driver writers don't have to be concerned
-about this aspect?
+If someone wants to try to break some config fragments out feel free
+to send up patches.  Until that is done let's at least keep pit and pi
+as close to the same as possible (try to add features to both and try
+to make sure that "diff" between the two looks good).
 
--- 
-FTTC broadband for 0.8mile line: now at 9.7Mbps down 460kbps up... slowly
-improving, and getting towards what was expected from it.
+-Doug
