@@ -1,148 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:49454 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757415AbaFZMXY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 08:23:24 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, cpgs@samsung.com
-Subject: [PATCH 3/3] ARM: DTS: Add common dts file for Peach PIT and PI along
- with ADC nodes
-Date: Thu, 26 Jun 2014 17:49:08 +0530
-Message-id: <1403785148-20792-4-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail-vc0-f176.google.com ([209.85.220.176]:36174 "EHLO
+	mail-vc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755527AbaFZPqQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 11:46:16 -0400
+Received: by mail-vc0-f176.google.com with SMTP id ik5so3706126vcb.21
+        for <linux-iio@vger.kernel.org>; Thu, 26 Jun 2014 08:46:15 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1403785148-20792-3-git-send-email-ch.naveen@samsung.com>
 References: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
+	<1403785148-20792-3-git-send-email-ch.naveen@samsung.com>
+Date: Thu, 26 Jun 2014 08:46:14 -0700
+Message-ID: <CAD=FV=W=e-5LJRacxA-sSUUn8cBB5oCHJkwz=Py7iU2fdERVRA@mail.gmail.com>
+Subject: Re: [PATCH 2/3] ARM: DTS: Add NTC thermistor nodes to Exynos5250
+ based Snow
+From: Doug Anderson <dianders@chromium.org>
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	"cpgs ." <cpgs@samsung.com>, Tushar Behera <tushar.b@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-DTS files exynos5420-peach-pit.dts and exynos5800-peach-pi.dts
-have lots of device tree nodes in common.
+Naveen,
 
-This patch creates a cros-exynos-peach.dts file, which can carry the
-device tree nodes common across exynos5420-peach-pit.dts and
-exynos5800-peach-pi.dts. Starting with ADC based Thermistor nodes.
+On Thu, Jun 26, 2014 at 5:19 AM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> Exynos5250 based Snow board has 4 NTC thermistors to measure
+> temperatures at various points on the board.
+>
+> IIO based ADC becomes the parent and NTC thermistors are the childs,
+> via the HWMON interface.
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> ---
+> Posted earlier by Doug Anderson @ https://lkml.org/lkml/2013/3/27/453
+>
+> This patch depends on (1/4 and 2/4 patches of) patchset posted
+> http://www.spinics.net/lists/linux-iio/msg13486.html
+> Which were applied on to Guenter Roeck's tree.
+>
+> cat sysfs entries exported by hwmon for 4 thermistors
+> and verified the values on Snow.
+>
+>  arch/arm/boot/dts/exynos5250-snow.dts |   34 +++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
 
-Also, enables ADC based thermistors for peach_pi and peach_pit.
+NAK.
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
----
-This patchset needs
-"[PATCH v4 00/14] Add Maxim 77802 PMIC support" by "Javier Martinez Canillas"
-Posted  https://lkml.org/lkml/2014/6/25/668
+The first chunk of exynos5250-snow devices have the thermistors
+populated, but a huge chunk of devices also _don't_ have them
+populated.
 
-Intention is to slowly move the common DT nodes across exynos5420-peach-pit.dts
-and exynos5800-peach-pi.dts into cros-exynos-peach.dts
+If I remember my history properly, rev3 and earlier all had
+thermistors.  Some of rev4 might have thermistors (I never got a clear
+answer).  ...and rev5 definitely doesn't have resistors.  Aside from
+thermistors there's no good reason to differentiate rev3 and rev4
+(they just have different memory).  The upstream kernel may eventually
+need to differentiate rev4 and rev5 since they have a different audio
+codec.
 
-I'm unsure of the naming conventions for dts files
-   Named it "cros-exynos-peach.dts" as below.
-   used for "cros" + based on "exynos" + boards named "peach" in common.
+See <https://chromium-review.googlesource.com/#/c/170841/> for some
+descriptions of the different revisions of snow and how they were
+handled in the Chrome OS tree.
 
-cat sysfs entries exported by hwmon for 4 thermistors
-and verified the values on peach pit.
+See <https://chromium-review.googlesource.com/#/c/186357/> for
+thermistors talk.  Patch set #1 actually split out rev3, but we then
+decided that we really didn't need to use the thermistors on any of
+the revisions so the later patchsets just totally take them out.
 
- arch/arm/boot/dts/cros-exynos-peach.dtsi   |   41 ++++++++++++++++++++++++++++
- arch/arm/boot/dts/exynos5420-peach-pit.dts |    6 ++++
- arch/arm/boot/dts/exynos5800-peach-pi.dts  |    6 ++++
- 3 files changed, 53 insertions(+)
- create mode 100644 arch/arm/boot/dts/cros-exynos-peach.dtsi
-
-diff --git a/arch/arm/boot/dts/cros-exynos-peach.dtsi b/arch/arm/boot/dts/cros-exynos-peach.dtsi
-new file mode 100644
-index 0000000..86135bd
---- /dev/null
-+++ b/arch/arm/boot/dts/cros-exynos-peach.dtsi
-@@ -0,0 +1,41 @@
-+/*
-+ * Common device tree include for Exynos5420 based Peach PIT and
-+ * Exynos5800 based Peach PI.
-+ *
-+ * Copyright (c) 2014 Samsung Electronics Co., Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+*/
-+
-+&adc {
-+	ncp15wb473@3 {
-+		compatible = "murata,ncp15wb473";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <47000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&adc 3>;
-+	};
-+	ncp15wb473@4 {
-+		compatible = "murata,ncp15wb473";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <47000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&adc 4>;
-+	};
-+	ncp15wb473@5 {
-+		compatible = "murata,ncp15wb473";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <47000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&adc 5>;
-+	};
-+	ncp15wb473@6 {
-+		compatible = "murata,ncp15wb473";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <47000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&adc 6>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
-index d124394..682b9c2 100644
---- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
-+++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
-@@ -12,6 +12,7 @@
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/gpio/gpio.h>
- #include "exynos5420.dtsi"
-+#include "cros-exynos-peach.dtsi"
- 
- / {
- 	model = "Google Peach Pit Rev 6+";
-@@ -101,6 +102,11 @@
- 	};
- };
- 
-+&adc {
-+	status = "okay";
-+	vdd-supply = <&ldo9_reg>;
-+};
-+
- &dp {
- 	status = "okay";
- 	pinctrl-names = "default";
-diff --git a/arch/arm/boot/dts/exynos5800-peach-pi.dts b/arch/arm/boot/dts/exynos5800-peach-pi.dts
-index c36c9ce..7552173 100644
---- a/arch/arm/boot/dts/exynos5800-peach-pi.dts
-+++ b/arch/arm/boot/dts/exynos5800-peach-pi.dts
-@@ -12,6 +12,7 @@
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/gpio/gpio.h>
- #include "exynos5800.dtsi"
-+#include "cros-exynos-peach.dtsi"
- 
- / {
- 	model = "Google Peach Pi Rev 10+";
-@@ -99,6 +100,11 @@
- 	};
- };
- 
-+&adc {
-+	status = "okay";
-+	vdd-supply = <&ldo9_reg>;
-+};
-+
- &dp {
- 	status = "okay";
- 	pinctrl-names = "default";
--- 
-1.7.9.5
-
+-Doug
