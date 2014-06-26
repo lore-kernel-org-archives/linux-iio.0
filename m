@@ -1,246 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:50859 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752600AbaF2Mxa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 29 Jun 2014 08:53:30 -0400
-Message-ID: <53B00C46.30805@gmx.de>
-Date: Sun, 29 Jun 2014 14:53:26 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from mail-qg0-f49.google.com ([209.85.192.49]:49304 "EHLO
+	mail-qg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756719AbaFZLqf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 07:46:35 -0400
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: kristina.martsenko@gmail.com, Ge Gao <ggao@invensense.com>
-Subject: Re: [PATCH 3/7] iio: imu: mpu6050 switch sampling frequency attr
- to core support.
-References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-4-git-send-email-jic23@kernel.org>
-In-Reply-To: <1403467186-26639-4-git-send-email-jic23@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
+In-Reply-To: <CAHfPSqBL9hH+r8Fy4GbbY1E_sJVCP-gpDHATDJgRHP4wKrFaiA@mail.gmail.com>
+References: <1403677773-21141-1-git-send-email-ch.naveen@samsung.com>
+ <1403677773-21141-5-git-send-email-ch.naveen@samsung.com> <CAD=FV=WeuFhGK=JNEm20CT73J=c1Zc_dZGQT6bKeob895M+kQA@mail.gmail.com>
+ <CAHfPSqBL9hH+r8Fy4GbbY1E_sJVCP-gpDHATDJgRHP4wKrFaiA@mail.gmail.com>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Thu, 26 Jun 2014 17:16:14 +0530
+Message-ID: <CAHfPSqBx7o2Lcoz89VgnUbCKVAxi6mG_j3piTe=fWrF853gWhQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4 v2] ARM: DTS: Add NTC thermistor nodes to Exynos5420
+ based Peach_PIT
+To: Doug Anderson <dianders@chromium.org>
+Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"cpgs ." <cpgs@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb:
-> By using the info_mask_shared_by_all element of the channel spec, acce
-The "ss" of "access" got lost somehow :o
-> to the sampling frequency becomes available to in kernel users of the
-> driver.  It also shortens and simplifies the code a little.
-I'm not totally convinced of your solution in the way that you unconditionally wake up the device, even if an invalid mask is selected in inv_mpu6050_write_raw.
-Other than that, just two minor issues inline.
->
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> Cc: Ge Gao <ggao@invensense.com>
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 149 +++++++++++------------------
->  1 file changed, 58 insertions(+), 91 deletions(-)
->
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index af287bf..088ad87 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -316,6 +316,9 @@ error_read_raw:
->  		default:
->  			return -EINVAL;
->  		}
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = st->chip_config.fifo_rate;
-> +		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -359,51 +362,6 @@ static int inv_mpu6050_write_accel_fs(struct inv_mpu6050_state *st, int fs)
->  	return 0;
->  }
->  
-> -static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
-> -			       struct iio_chan_spec const *chan,
-> -			       int val,
-> -			       int val2,
-> -			       long mask) {
-> -	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
-> -	int result;
-> -
-> -	mutex_lock(&indio_dev->mlock);
-> -	/* we should only update scale when the chip is disabled, i.e.,
-> -		not running */
-> -	if (st->chip_config.enable) {
-> -		result = -EBUSY;
-> -		goto error_write_raw;
-> -	}
-> -	result = inv_mpu6050_set_power_itg(st, true);
-> -	if (result)
-> -		goto error_write_raw;
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_SCALE:
-> -		switch (chan->type) {
-> -		case IIO_ANGL_VEL:
-> -			result = inv_mpu6050_write_fsr(st, val);
-> -			break;
-> -		case IIO_ACCEL:
-> -			result = inv_mpu6050_write_accel_fs(st, val);
-> -			break;
-> -		default:
-> -			result = -EINVAL;
-> -			break;
-> -		}
-> -		break;
-> -	default:
-> -		result = -EINVAL;
-> -		break;
-> -	}
-> -
-> -error_write_raw:
-> -	result |= inv_mpu6050_set_power_itg(st, false);
-> -	mutex_unlock(&indio_dev->mlock);
-> -
-> -	return result;
-> -}
-> -
->  /**
->   *  inv_mpu6050_set_lpf() - set low pass filer based on fifo rate.
->   *
-> @@ -435,63 +393,74 @@ static int inv_mpu6050_set_lpf(struct inv_mpu6050_state *st, int rate)
->  	return 0;
->  }
->  
-> -/**
-> - * inv_mpu6050_fifo_rate_store() - Set fifo rate.
-> - */
-> -static ssize_t inv_mpu6050_fifo_rate_store(struct device *dev,
-> -	struct device_attribute *attr, const char *buf, size_t count)
-> -{
-> -	s32 fifo_rate;
-> -	u8 d;
-> +static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val,
-> +			       int val2,
-> +			       long mask) {
-> +	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
-Double whitespace ^^
->  	int result;
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
-> -
-> -	if (kstrtoint(buf, 10, &fifo_rate))
-> -		return -EINVAL;
-> -	if (fifo_rate < INV_MPU6050_MIN_FIFO_RATE ||
-> -				fifo_rate > INV_MPU6050_MAX_FIFO_RATE)
-> -		return -EINVAL;
-> -	if (fifo_rate == st->chip_config.fifo_rate)
-> -		return count;
-> +	u8 d;
->  
->  	mutex_lock(&indio_dev->mlock);
-> +	/* we should only update scale when the chip is disabled, i.e.,
-> +		not running */
-Nasty multiline comment.
->  	if (st->chip_config.enable) {
->  		result = -EBUSY;
-> -		goto fifo_rate_fail;
-> +		goto error_write_raw;
->  	}
->  	result = inv_mpu6050_set_power_itg(st, true);
->  	if (result)
-> -		goto fifo_rate_fail;
-> +		goto error_write_raw;
->  
-> -	d = INV_MPU6050_ONE_K_HZ / fifo_rate - 1;
-> -	result = inv_mpu6050_write_reg(st, st->reg->sample_rate_div, d);
-> -	if (result)
-> -		goto fifo_rate_fail;
-> -	st->chip_config.fifo_rate = fifo_rate;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			result = inv_mpu6050_write_fsr(st, val);
-> +			break;
-> +		case IIO_ACCEL:
-> +			result = inv_mpu6050_write_accel_fs(st, val);
-> +			break;
-> +		default:
-> +			result = -EINVAL;
-> +			break;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (val < INV_MPU6050_MIN_FIFO_RATE ||
-> +		    val > INV_MPU6050_MAX_FIFO_RATE ||
-> +		    val2 != 0) {
-> +			result = -EINVAL;
-> +			break;
-> +		}
-> +		if (val == st->chip_config.fifo_rate) {
-> +			result = 0;
-> +			break;
-> +		}
->  
-> -	result = inv_mpu6050_set_lpf(st, fifo_rate);
-> -	if (result)
-> -		goto fifo_rate_fail;
-> +		result = inv_mpu6050_set_power_itg(st, true);
-> +		if (result)
-> +			break;
->  
-> -fifo_rate_fail:
-> -	result |= inv_mpu6050_set_power_itg(st, false);
-> -	mutex_unlock(&indio_dev->mlock);
-> -	if (result)
-> -		return result;
-> +		d = INV_MPU6050_ONE_K_HZ / val - 1;
-> +		result = inv_mpu6050_write_reg(st, st->reg->sample_rate_div, d);
-> +		if (result)
-> +			break;
-> +		st->chip_config.fifo_rate = val;
->  
-> -	return count;
-> -}
-> +		result = inv_mpu6050_set_lpf(st, val);
-> +		break;
-> +	default:
-> +		result = -EINVAL;
-> +		break;
-> +	}
->  
-> -/**
-> - * inv_fifo_rate_show() - Get the current sampling rate.
-> - */
-> -static ssize_t inv_fifo_rate_show(struct device *dev,
-> -	struct device_attribute *attr, char *buf)
-> -{
-> -	struct inv_mpu6050_state *st = iio_priv(dev_to_iio_dev(dev));
-> +error_write_raw:
-> +	result |= inv_mpu6050_set_power_itg(st, false);
-Don't we totally corrupt the error code when trying to OR two codes?
-> +	mutex_unlock(&indio_dev->mlock);
->  
-> -	return sprintf(buf, "%d\n", st->chip_config.fifo_rate);
-> +	return result;
->  }
->  
->  /**
-> @@ -546,6 +515,7 @@ static int inv_mpu6050_validate_trigger(struct iio_dev *indio_dev,
->  		.channel2 = _channel2,                                \
->  		.info_mask_shared_by_type =  BIT(IIO_CHAN_INFO_SCALE), \
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),         \
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  		.scan_index = _index,                                 \
->  		.scan_type = {                                        \
->  				.sign = 's',                          \
-> @@ -580,8 +550,6 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
->  
->  /* constant IIO attribute */
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 20 50 100 200 500");
-> -static IIO_DEV_ATTR_SAMP_FREQ(S_IRUGO | S_IWUSR, inv_fifo_rate_show,
-> -	inv_mpu6050_fifo_rate_store);
->  static IIO_DEVICE_ATTR(in_gyro_matrix, S_IRUGO, inv_attr_show, NULL,
->  	ATTR_GYRO_MATRIX);
->  static IIO_DEVICE_ATTR(in_accel_matrix, S_IRUGO, inv_attr_show, NULL,
-> @@ -590,7 +558,6 @@ static IIO_DEVICE_ATTR(in_accel_matrix, S_IRUGO, inv_attr_show, NULL,
->  static struct attribute *inv_attributes[] = {
->  	&iio_dev_attr_in_gyro_matrix.dev_attr.attr,
->  	&iio_dev_attr_in_accel_matrix.dev_attr.attr,
-> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->  	NULL,
->  };
+Hello Kukjin,
 
+On 26 June 2014 11:46, Naveen Krishna Ch <naveenkrishna.ch@gmail.com> wrote:
+> Doug,
+>
+> On 26 June 2014 02:10, Doug Anderson <dianders@chromium.org> wrote:
+>> Naveen,
+>>
+>> On Tue, Jun 24, 2014 at 11:29 PM, Naveen Krishna Chatradhi
+>> <ch.naveen@samsung.com> wrote:
+>>> Exynos5420 based Peach PIT board has 4 NTC thermistors to measure
+>>> temperatures at various points on the board.
+>>>
+>>> IIO based ADC becomes the parent and NTC thermistors are the childs,
+>>> via the HWMON interface.
+>>>
+>>> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+>>> Cc: Doug Anderson <dianders@chromium.org>
+>>> ---
+>>> Changes since v1:
+>>> 1. Arranged the ADC node alphabetical
+>>> 2. Added "status = "okay"" to the ADC node
+>>>
+>>> This patch needs
+>>> 1. MAX77802 PMIC device tree nodes (for ldo9)
+>>>    https://www.mail-archive.com/devicetree@vger.kernel.org/msg31430.html
+>>> 2. Uses the DT documentation for NTC thermistors updated with vendor-prefix
+>>>
+>>> This patch set is tested
+>>> 1. On Peach PIT board via sysfs entry exposed by hwmon
+>>> localhost ~ # cat /sys/class/hwmon/hwmon*/device/temp1_input
+>>> 37436
+>>> 36449
+>>> 38560
+>>> 38059
+>>>
+>>> 2. Backward compatibility is tested by replacing "murata" with "ntc"
+>>>    in the dts nodes and running the above test.
+>>>
+>>>  arch/arm/boot/dts/exynos5420-peach-pit.dts |   34 ++++++++++++++++++++++++++++
+>>>  1 file changed, 34 insertions(+)
+>>
+>> Now that Javier has spun his patch, perhaps you can fold the "pi"
+>> version in here too?
+>
+> Sure, thanks for the information.
+>
+> Snow also needs the adc nodes.
+> Will try to implement an adc fragment for PIT, PI and Snow.
+
+I've a plan to create a common file (cros-exynos-peach.dts) for
+exynos5420-peach-pit.dts and exynos5800-peach-pi.dts
+And add the ADC nodes directly into that.
+
+In favor of the above, can you abandon the following patches
+
+1. [PATCH 3/4 v2] ARM: DTS: use new compatible string for thermistors in trats2
+    http://www.spinics.net/lists/linux-samsung-soc/msg33037.html
+
+2. [PATCH 4/4 v2] ARM: DTS: Add NTC thermistor nodes to Exynos5420
+based Peach_PIT
+http://www.spinics.net/lists/linux-samsung-soc/msg33038.html
+
+>
+>>
+>> Reviewed-by: Doug Anderson <dianders@chromium.org>
+>> Tested-by: Doug Anderson <dianders@chromium.org>
+>
+>
+>
+> --
+> Shine bright,
+> (: Nav :)
+
+
+
+-- 
+Thanks,
+(: Nav :)
