@@ -1,66 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:53607 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751423AbaF2LsC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 29 Jun 2014 07:48:02 -0400
-Message-ID: <53AFFD69.8060702@kernel.org>
-Date: Sun, 29 Jun 2014 12:50:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-qa0-f54.google.com ([209.85.216.54]:48956 "EHLO
+	mail-qa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757250AbaFZQjI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 12:39:08 -0400
 MIME-Version: 1.0
-To: Chanwoo Choi <cw00.choi@samsung.com>, ch.naveen@samsung.com,
-	t.figa@samsung.com, kgene.kim@samsung.com
-CC: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, sachin.kamat@linaro.org,
-	kyungmin.park@samsung.com, linux-iio@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCHv5 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and
- code clean
-References: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
-In-Reply-To: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <CABxcv=nTfkRkpz_zZuxYHznjDuNgpiKO+FD4MnHi2C_2e32eqA@mail.gmail.com>
+References: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com> <CABxcv=nTfkRkpz_zZuxYHznjDuNgpiKO+FD4MnHi2C_2e32eqA@mail.gmail.com>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Thu, 26 Jun 2014 22:08:47 +0530
+Message-ID: <CAHfPSqC2sjkrpYz53QzW1PDSV2E9yfSEnE734JHH1zUONnh=rw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] ARM: DTS: create common dtsi for Peach pit and pi boards
+To: Javier Martinez Canillas <javier@dowhile0.org>
+Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	"linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel <linux-kernel@vger.kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"cpgs ." <cpgs@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/06/14 05:30, Chanwoo Choi wrote:
-> Changes from v4:
-> - Use 'exynos_adc_data' structure instead of 'exynos_adc_ops' structure
->    and remove enum variable of ADC version
-> - Fix wrong name of special clock (sclk_tsadc -> sclk_adc)
-> - Add reviewed message by Naveen Krishna Chatradhi
-> - Add functions for ADC clock control
->
-> Changes from v3:
-> - Add new 'exynos_adc_ops' structure to improve readability according to
->   Tomasz Figa comment[1]
->   [1] https://lkml.org/lkml/2014/4/16/238
-> - Add new 'exynos3250-adc-v2' compatible string to support Exynos3250 ADC
-> - Fix wrong compaitlbe string of ADC in Exynos3250 dtsi file
->
-> Changes from v2:
-> - Check return value of clock function to deal with error exception
-> - Fix minor coding style to improve readability
->
-> Changes from v1:
-> - Add new "samsung,exynos-adc-v3" compatible to support Exynos3250 ADC
-> - Add a patch about DT binding documentation
->
-> Chanwoo Choi (4):
->    iio: adc: exynos_adc: Add exynos_adc_data structure to improve readability
->    iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
->    iio: devicetree: Add DT binding documentation for Exynos3250 ADC
->    ARM: dts: Fix wrong compatible string for Exynos3250 ADC
->
->   .../devicetree/bindings/arm/samsung/exynos-adc.txt |  26 +-
->   arch/arm/boot/dts/exynos3250.dtsi                  |   4 +-
->   drivers/iio/adc/exynos_adc.c                       | 326 +++++++++++++++------
->   3 files changed, 268 insertions(+), 88 deletions(-)
->
-I am happy with this series, but given it touches some exynos bindings, I would
-like an ack from Kukjin Kim (or according to MAINTAINERS Ben Dooks) before taking it
-all through IIO.
+Hello Javier,
 
-Thanks,
+On 26 June 2014 20:51, Javier Martinez Canillas <javier@dowhile0.org> wrote:
+> Hello Naveen,
+>
+> On Thu, Jun 26, 2014 at 2:19 PM, Naveen Krishna Chatradhi
+> <ch.naveen@samsung.com> wrote:
+>> This patchset does the following
+>> 1. Create a common dtsi file cros-exynos-peach.dtsi for
+>>    exynos5420-peach-pit.dts and exynos5800-peach-pi.dts
+>
+> There was some previous discussion in this list about what's the best
+> approach to handle common DTS chunks, please take a look to
+> http://patchwork.ozlabs.org/patch/362633/.
+>
+> In summary, there is a common .dtsi file for Daisy based boards
+> (arch/arm/boot/dts/exynos5250-cros-common.dtsi) but it seems it turned
+> out to do more harm than good since having a single .dtsi for all the
+> common DTS chunks is not quite flexible. As more boards gets
+> introduced you have to start moving stuff from the common .dtsi file
+> to the board .dts.
+>
+> The same was tried to do for OMAP2+ boards and it turned out that you
+> need to either a) create a hierarchy of .dtsi files to model all the
+> different board combinations that have similar fragments or b) split
+> out isolated DTS fragments on an .dtsi and include a set of this
+> fragments.
+>
+>  For an example of a) you can take a look to
+> arch/arm/boot/dts/omap3-overo* and for b) to
+> arch/arm/boot/dts/omap-gpmc-smsc9*.dtsi.
+>
+> For a Peach Pit/Pi specific example of b) you can look at the recent
+> arch/arm/boot/dts/cros-ec-keyboard.dtsi file that Doug added for Peach
+> Pit/Pi keyboard.
 
-Jonathan
+Right. It makes sense to have multiple smaller chunks
+that can be included in more boards than having one big chunk
+which can only be used for 2 or 3 boards.
+But, then i was unsure. If Device Tree communities likes having more
+smaller fragment files under one "arch/arm/boot/dts/ directory".
+
+
+>
+> Personally I think that b) is a more flexible and reusable approach.
+> So, maybe instead of creating a cros-exynos-peach.dts to contain all
+> the common DT nodes you can add a cros-ec-thermistor.dsti file that
+> only includes the ADC based Thermistor nodes?
+
+I've started with making a fragment dts naming it "cros-exynos-adc.dts".
+Then moved on with an implementation similar to
+exynos5250-cros-common.dtsi
+
+>
+> Thanks a lot and best regards,
+> Javier
+
+Will wait for few more opinions and make a fragment instead of common dtsi.
+Thank you a lot for the information and the references.
+
+>
+>> 2. Adds the ADC based Thermistor nodes and enables them in peach_pit.dts
+>>    and peach_pi.dts
+>> 3. Adds the ADC based Thermistor nodes for Exynos5250 based Snow
+>> 4. Corrects the vendor prefix for thermistors in exynos4412-trats2.dts
+>>
+>> Naveen Krishna Chatradhi (3):
+>>   ARM: DTS: use new compatible string for thermistors in trats2
+>>   ARM: DTS: Add NTC thermistor nodes to Exynos5250 based Snow
+>>   ARM: DTS: Add common dts file for Peach PIT and PI along with ADC
+>>     nodes
+>>
+>>  arch/arm/boot/dts/cros-exynos-peach.dtsi   |   41 ++++++++++++++++++++++++++++
+>>  arch/arm/boot/dts/exynos4412-trats2.dts    |    4 +--
+>>  arch/arm/boot/dts/exynos5250-snow.dts      |   34 +++++++++++++++++++++++
+>>  arch/arm/boot/dts/exynos5420-peach-pit.dts |    6 ++++
+>>  arch/arm/boot/dts/exynos5800-peach-pi.dts  |    6 ++++
+>>  5 files changed, 89 insertions(+), 2 deletions(-)
+>>  create mode 100644 arch/arm/boot/dts/cros-exynos-peach.dtsi
+>>
+>> --
+>> 1.7.9.5
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
+
+-- 
+Shine bright,
+(: Nav :)
