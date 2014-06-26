@@ -1,51 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:41750 "EHLO
-	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754807AbaFTTXF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jun 2014 15:23:05 -0400
-Date: Fri, 20 Jun 2014 22:22:34 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	kernel-janitors@vger.kernel.org
-Subject: [patch] staging: iio/ad7291: fix error code in ad7291_probe()
-Message-ID: <20140620192234.GD19824@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mailout4.samsung.com ([203.254.224.34]:49376 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757493AbaFZMWq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 08:22:46 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dianders@chromium.org, gregkh@linuxfoundation.org,
+	naveenkrishna.ch@gmail.com, cpgs@samsung.com,
+	Chanwoo Choi <cw00.choi@samsung.com>
+Subject: [PATCH 1/3] ARM: DTS: use new compatible string for thermistors in
+ trats2
+Date: Thu, 26 Jun 2014 17:49:06 +0530
+Message-id: <1403785148-20792-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
+References: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We should be returning a negative error code instead of success here.
+As Murata Manufactures the NTC based thermistors. The vendor
+name in the compatibility is preposed to change to "murata"
 
-This would have been detected by GCC, except that the "ret" variable was
-initialized with a bogus value to disable GCC's uninitialized variable
-warnings.  I've cleaned that up, as well.
+This patch uses the new compatibility string in exynos4412 based
+Trats2 board.
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Cc: Chanwoo Choi <cw00.choi@samsung.com>
+Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
+---
+This patch is carried forward (tracking purpose) along with the other
+dts changes in the patch set discussed
+http://www.spinics.net/lists/linux-iio/msg13486.html
 
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index 357cef2..7194bd1 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -465,7 +465,7 @@ static int ad7291_probe(struct i2c_client *client,
- 	struct ad7291_platform_data *pdata = client->dev.platform_data;
- 	struct ad7291_chip_info *chip;
- 	struct iio_dev *indio_dev;
--	int ret = 0;
-+	int ret;
+This patch was posted
+http://www.spinics.net/lists/linux-samsung-soc/msg33037.html
+
+
+ arch/arm/boot/dts/exynos4412-trats2.dts |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/exynos4412-trats2.dts b/arch/arm/boot/dts/exynos4412-trats2.dts
+index 11967f4..d35755a 100644
+--- a/arch/arm/boot/dts/exynos4412-trats2.dts
++++ b/arch/arm/boot/dts/exynos4412-trats2.dts
+@@ -771,7 +771,7 @@
+ 	};
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
-@@ -475,7 +475,7 @@ static int ad7291_probe(struct i2c_client *client,
- 	if (pdata && pdata->use_external_ref) {
- 		chip->reg = devm_regulator_get(&client->dev, "vref");
- 		if (IS_ERR(chip->reg))
--			return ret;
-+			return PTR_ERR(chip->reg);
+ 	thermistor-ap@0 {
+-		compatible = "ntc,ncp15wb473";
++		compatible = "murata,ncp15wb473";
+ 		pullup-uv = <1800000>;	 /* VCC_1.8V_AP */
+ 		pullup-ohm = <100000>;	 /* 100K */
+ 		pulldown-ohm = <100000>; /* 100K */
+@@ -779,7 +779,7 @@
+ 	};
  
- 		ret = regulator_enable(chip->reg);
- 		if (ret)
+ 	thermistor-battery@1 {
+-		compatible = "ntc,ncp15wb473";
++		compatible = "murata,ncp15wb473";
+ 		pullup-uv = <1800000>;	 /* VCC_1.8V_AP */
+ 		pullup-ohm = <100000>;	 /* 100K */
+ 		pulldown-ohm = <100000>; /* 100K */
+-- 
+1.7.9.5
+
