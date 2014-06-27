@@ -1,87 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:56388 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751392AbaF2Opo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 29 Jun 2014 10:45:44 -0400
-Message-ID: <53B02713.1070702@kernel.org>
-Date: Sun, 29 Jun 2014 15:47:47 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 01/12] iio:adc:ad799x: Fix reading and writing of event
- values, apply shift
-References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net> <1402548856-3564-2-git-send-email-pmeerw@pmeerw.net> <53995FD2.1040603@metafoo.de> <539C5A0B.8030407@kernel.org>
-In-Reply-To: <539C5A0B.8030407@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mailout3.samsung.com ([203.254.224.33]:65270 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750729AbaF0EaQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 00:30:16 -0400
+From: Chanwoo Choi <cw00.choi@samsung.com>
+To: jic23@kernel.org, ch.naveen@samsung.com, t.figa@samsung.com,
+	kgene.kim@samsung.com
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, sachin.kamat@linaro.org,
+	kyungmin.park@samsung.com, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>
+Subject: [PATCHv5 3/4] iio: devicetree: Add DT binding documentation for
+ Exynos3250 ADC
+Date: Fri, 27 Jun 2014 13:30:05 +0900
+Message-id: <1403843406-28229-4-git-send-email-cw00.choi@samsung.com>
+In-reply-to: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
+References: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/06/14 15:19, Jonathan Cameron wrote:
-> On 12/06/14 09:07, Lars-Peter Clausen wrote:
->> On 06/12/2014 06:54 AM, Peter Meerwald wrote:
->>> last two bits of ADC and limit values are zero and should not be reported
->>> (ad7993, ad7997); compare with read_raw()
->>>
->>> event values are 10 (ad7993, ad7997) or 12 bit max., check the range on write
->>>
->>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->>
->> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-> Given I've been rather slow on pull requests yet, fixes-togreg has this file
-> in the wrong place at the moment.  Hence I've applied this to
-> fixes-togreg-post-3.16-rc1.
->
-> I'll unwind this over the next day or so.
-Oops, took me rather longer that that - sorry.
+This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
+special clock ('sclk_adc') for ADC which provide clock to internal ADC.
 
-Anyhow, just sent pull request that includes this first patch so we
-are underway!
->>
->> Thanks.
->>
->>> ---
->>>   drivers/iio/adc/ad799x.c | 8 ++++++--
->>>   1 file changed, 6 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
->>> index 39b4cb4..6eba301 100644
->>> --- a/drivers/iio/adc/ad799x.c
->>> +++ b/drivers/iio/adc/ad799x.c
->>> @@ -427,9 +427,12 @@ static int ad799x_write_event_value(struct iio_dev *indio_dev,
->>>       int ret;
->>>       struct ad799x_state *st = iio_priv(indio_dev);
->>>
->>> +    if (val < 0 || val > RES_MASK(chan->scan_type.realbits))
->>> +        return -EINVAL;
->>> +
->>>       mutex_lock(&indio_dev->mlock);
->>>       ret = ad799x_i2c_write16(st, ad799x_threshold_reg(chan, dir, info),
->>> -        val);
->>> +        val << chan->scan_type.shift);
->>>       mutex_unlock(&indio_dev->mlock);
->>>
->>>       return ret;
->>> @@ -452,7 +455,8 @@ static int ad799x_read_event_value(struct iio_dev *indio_dev,
->>>       mutex_unlock(&indio_dev->mlock);
->>>       if (ret < 0)
->>>           return ret;
->>> -    *val = valin;
->>> +    *val = (valin >> chan->scan_type.shift) &
->>> +        RES_MASK(chan->scan_type.realbits);
->>>
->>>       return IIO_VAL_INT;
->>>   }
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+---
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt | 26 ++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+index 5d49f2b..b87749a 100644
+--- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
++++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+@@ -14,14 +14,22 @@ Required properties:
+ 				for exynos4412/5250 controllers.
+ 			Must be "samsung,exynos-adc-v2" for
+ 				future controllers.
++			Must be "samsung,exynos3250-adc-v2" for
++				for controllers compatible with ADC of
++				Exynos3250.
+ - reg:			Contains ADC register address range (base address and
+ 			length) and the address of the phy enable register.
+ - interrupts: 		Contains the interrupt information for the timer. The
+ 			format is being dependent on which interrupt controller
+ 			the Samsung device uses.
+ - #io-channel-cells = <1>; As ADC has multiple outputs
+-- clocks		From common clock binding: handle to adc clock.
+-- clock-names		From common clock binding: Shall be "adc".
++- clocks		From common clock bindings: handles to clocks specified
++			in "clock-names" property, in the same order.
++- clock-names		From common clock bindings: list of clock input names
++			used by ADC block:
++			- "adc" : ADC bus clock
++			- "sclk_adc" : ADC special clock (only for Exynos3250
++				       and compatible ADC block)
+ - vdd-supply		VDD input supply.
+ 
+ Note: child nodes can be added for auto probing from device tree.
+@@ -41,6 +49,20 @@ adc: adc@12D10000 {
+ 	vdd-supply = <&buck5_reg>;
+ };
+ 
++Example: adding device info in dtsi file for Exynos3250 with additional sclk
++
++adc: adc@126C0000 {
++	compatible = "samsung,exynos3250-adc-v2";
++	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
++	interrupts = <0 137 0>;
++	#io-channel-cells = <1>;
++	io-channel-ranges;
++
++	clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
++	clock-names = "adc", "sclk_adc";
++
++	vdd-supply = <&buck5_reg>;
++};
+ 
+ Example: Adding child nodes in dts file
+ 
+-- 
+1.8.0
 
