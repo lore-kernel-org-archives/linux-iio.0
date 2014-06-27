@@ -1,74 +1,209 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:58617 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932485AbaFCWmY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 3 Jun 2014 18:42:24 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, knaack.h@gmx.de
-Subject: [PATCH 00/15] ad799x cleanup
-Date: Wed,  4 Jun 2014 00:42:00 +0200
-Message-Id: <1401835335-29969-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail-qc0-f172.google.com ([209.85.216.172]:38554 "EHLO
+	mail-qc0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752367AbaF0M7m convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 08:59:42 -0400
+Received: by mail-qc0-f172.google.com with SMTP id o8so4508911qcw.31
+        for <linux-iio@vger.kernel.org>; Fri, 27 Jun 2014 05:59:41 -0700 (PDT)
+MIME-Version: 1.0
+Date: Fri, 27 Jun 2014 14:59:41 +0200
+Message-ID: <CAJKbBDDFD294xnqkYq_auW=ppMyPJxigYUF-YAhXZVXw3NN5Xg@mail.gmail.com>
+Subject: [PATCH 0/2] hwmon: ntc_thermistor: Adds support for EPCOS ntc thermistor
+From: Johannes Pointner <johannes.pointner@gmail.com>
+To: Jean Delvare <jdelvare@suse.de>
+Cc: Guenter Roeck <linux@roeck-us.net>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	lm-sensors@lm-sensors.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+The patch series adds support for the ntc thermistor B57330V2103 from
+ EPCOS.
 
-I ran into some issues with IIO events using the ad799x ADC driver with an
-ad7997 chip; the following series has cleanups and fixes
+Signed-off-by: Johannes Pointner <johannes.pointner@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-patches 1-6, 8 are cleanup
-
-patch 7 exposes the IIO event interface of the driver only if an IRQ has been configured
-for the device; no IRQ -> no events
-
-patch 9 shifts out the last two bits when reading the event value on ad7993 and ad7997
-(which have 10-bit ADCs); same as read_raw()
-
-patch 10 checks the range of the event value on write and shifts the value into place;
-similar to the previous patch
-
-patch 11 adds helper function to read/write the chip's config register (16-bit on 
-ad7997/ad7998, 8-bit everywhere else)
-
-patch 12 actually writes the default config to the chip and keeps a copy of
-the config register in the driver's state
-
-patch 13 changes update_scan_mode() to store the enabled channels in the config
-register, on ad7992/ad7993/ad7994/ad7997/ad7998, hence the rename
-
-patch 14 reports only those events as enabled which actually are
-
-patch 15 allows to write the event config, previously events could only be
-set implicitly via the buffer scan mode
-
-regards, p.
-
-Peter Meerwald (15):
-  staging:iio: Update iio_event_monitor program
-  staging:iio: Fix iio_utils.h function prototypes
-  iio:adc:ad799x: Fix ad799x_chip_info kerneldoc
-  iio:adc:ad799x: Drop I2C access helper functions
-  iio:adc:ad799x: Save some lines in ad7997_8_update_scan_mode() exit
-    handling
-  iio:adc:ad799x: Use BIT() and GENMASK()
-  iio:adc:ad799x: Only expose event interface when IRQ is available
-  iio:adc:ad799x: Make chan_spec const in ad799x_chip_config struct
-  iio:adc:ad799x: Fix reported event values, apply shift
-  iio:adc:ad799x: Check event value range on write
-  iio:adc:ad799x: Add helper function to read/write config register
-  iio:adc:ad799x: Write default config on probe and reset alert status
-    on probe
-  iio:adc:ad799x: Rename ad7997_8_update_scan_mode() to
-    ad799x_update_scan_mode()
-  iio:adc:ad799x: Return more meaningful event enabled state
-  iio:adc:ad799x: Allow to write event config
-
- drivers/iio/adc/ad799x.c                           | 507 ++++++++++++---------
- .../staging/iio/Documentation/iio_event_monitor.c  |  10 +
- drivers/staging/iio/Documentation/iio_utils.h      |   6 +-
- 3 files changed, 317 insertions(+), 206 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt
+b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 46a311e..97c9c06 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -42,6 +42,7 @@ dmo    Data Modul AG
+ ebv    EBV Elektronik
+ edt    Emerging Display Technologies
+ emmicro    EM Microelectronic
++epcos    EPCOS AG
+ epfl    Ecole Polytechnique Fédérale de Lausanne
+ epson    Seiko Epson Corp.
+ est    ESTeem Wireless Modems
 -- 
-1.9.1
+2.0.0
 
+
+>From 402f8f19051ef341fe477f914aa14f1e7e5a5e34 Mon Sep 17 00:00:00 2001
+From: Johannes Pointner <johannes.pointner@gmail.com>
+Date: Fri, 27 Jun 2014 14:12:02 +0200
+Subject: [PATCH 2/2] Adds support for the ntc thermistor B57330V2103 from
+ EPCOS
+
+Signed-off-by: Johannes Pointner <johannes.pointner@gmail.com>
+---
+ .../devicetree/bindings/hwmon/ntc_thermistor.txt   |  1 +
+ Documentation/hwmon/ntc_thermistor                 |  5 +++
+ drivers/hwmon/Kconfig                              |  2 +-
+ drivers/hwmon/ntc_thermistor.c                     | 50 +++++++++++++++++++++-
+ include/linux/platform_data/ntc_thermistor.h       |  1 +
+ 5 files changed, 57 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+index b117b2e..367d4a3 100644
+--- a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
++++ b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+@@ -8,6 +8,7 @@ Requires node properties:
+     "murata,ncp21wb473"
+     "murata,ncp03wb473"
+     "murata,ncp15wl333"
++    "epcos,b57330v2103"
+
+ /* Usage of vendor name "ntc" is deprecated */
+ <DEPRECATED>    "ntc,ncp15wb473"
+diff --git a/Documentation/hwmon/ntc_thermistor
+b/Documentation/hwmon/ntc_thermistor
+index 057b770..c5e05e2 100644
+--- a/Documentation/hwmon/ntc_thermistor
++++ b/Documentation/hwmon/ntc_thermistor
+@@ -6,6 +6,11 @@ Supported thermistors from Murata:
+   Prefixes: 'ncp15wb473', 'ncp18wb473', 'ncp21wb473', 'ncp03wb473',
+'ncp15wl333'
+   Datasheet: Publicly available at Murata
+
++Supported thermistors from EPCOS:
++* EPCOS NTC Thermistors B57330V2103
++  Prefixes: b57330v2103
++  Datasheet: Publicly available at EPCOS
++
+ Other NTC thermistors can be supported simply by adding compensation
+ tables; e.g., NCP15WL333 support is added by the table ncpXXwl333.
+
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 02d3d85..b34d673 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1061,7 +1061,7 @@ config SENSORS_NTC_THERMISTOR
+
+       Currently, this driver supports
+       NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333
+-      from Murata.
++      from Murata and B57330V2103 from EPCOS.
+
+       This driver can also be built as a module.  If so, the module
+       will be called ntc-thermistor.
+diff --git a/drivers/hwmon/ntc_thermistor.c b/drivers/hwmon/ntc_thermistor.c
+index bdfbe91..25c8deb 100644
+--- a/drivers/hwmon/ntc_thermistor.c
++++ b/drivers/hwmon/ntc_thermistor.c
+@@ -51,6 +51,7 @@ static const struct platform_device_id ntc_thermistor_id[] = {
+     { "ncp21wb473", TYPE_NCPXXWB473 },
+     { "ncp03wb473", TYPE_NCPXXWB473 },
+     { "ncp15wl333", TYPE_NCPXXWL333 },
++    { "b57330v2103", TYPE_B57330V2103},
+     { },
+ };
+
+@@ -133,6 +134,47 @@ static const struct ntc_compensation ncpXXwl333[] = {
+     { .temp_c    = 125, .ohm    = 707 },
+ };
+
++/*
++ * The following compensation table is from the specification of EPCOS NTC
++ * Thermistors Datasheet
++ */
++static const struct ntc_compensation b57330v2103[] = {
++    { .temp_c    = -40, .ohm    = 190030 },
++    { .temp_c    = -35, .ohm    = 145360 },
++    { .temp_c    = -30, .ohm    = 112060 },
++    { .temp_c    = -25, .ohm    = 87041 },
++    { .temp_c    = -20, .ohm    = 68104 },
++    { .temp_c    = -15, .ohm    = 53665 },
++    { .temp_c    = -10, .ohm    = 42576 },
++    { .temp_c    = -5, .ohm    = 34001 },
++    { .temp_c    = 0, .ohm    = 27326 },
++    { .temp_c    = 5, .ohm    = 22096 },
++    { .temp_c    = 10, .ohm    = 17973 },
++    { .temp_c    = 15, .ohm    = 14703 },
++    { .temp_c    = 20, .ohm    = 12090 },
++    { .temp_c    = 25, .ohm    = 10000 },
++    { .temp_c    = 30, .ohm    = 8311 },
++    { .temp_c    = 35, .ohm    = 6941 },
++    { .temp_c    = 40, .ohm    = 5825 },
++    { .temp_c    = 45, .ohm    = 4911 },
++    { .temp_c    = 50, .ohm    = 4158 },
++    { .temp_c    = 55, .ohm    = 3536 },
++    { .temp_c    = 60, .ohm    = 3019 },
++    { .temp_c    = 65, .ohm    = 2588 },
++    { .temp_c    = 70, .ohm    = 2227 },
++    { .temp_c    = 75, .ohm    = 1924 },
++    { .temp_c    = 80, .ohm    = 1668 },
++    { .temp_c    = 85, .ohm    = 1451 },
++    { .temp_c    = 90, .ohm    = 1266 },
++    { .temp_c    = 95, .ohm    = 1108 },
++    { .temp_c    = 100, .ohm    = 973 },
++    { .temp_c    = 105, .ohm    = 857 },
++    { .temp_c    = 110, .ohm    = 757 },
++    { .temp_c    = 115, .ohm    = 671 },
++    { .temp_c    = 120, .ohm    = 596 },
++    { .temp_c    = 125, .ohm    = 531 },
++};
++
+ struct ntc_data {
+     struct device *hwmon_dev;
+     struct ntc_thermistor_platform_data *pdata;
+@@ -173,6 +215,8 @@ static const struct of_device_id ntc_match[] = {
+         .data = &ntc_thermistor_id[3] },
+     { .compatible = "murata,ncp15wl333",
+         .data = &ntc_thermistor_id[4] },
++    { .compatible = "epcos,b57330v2103",
++        .data = &ntc_thermistor_id[5]},
+
+     /* Usage of vendor name "ntc" is deprecated */
+     { .compatible = "ntc,ncp15wb473",
+@@ -490,6 +534,10 @@ static int ntc_thermistor_probe(struct
+platform_device *pdev)
+         data->comp = ncpXXwl333;
+         data->n_comp = ARRAY_SIZE(ncpXXwl333);
+         break;
++    case TYPE_B57330V2103:
++        data->comp = b57330v2103;
++        data->n_comp = ARRAY_SIZE(b57330v2103);
++        break;
+     default:
+         dev_err(&pdev->dev, "Unknown device type: %lu(%s)\n",
+                 pdev_id->driver_data, pdev_id->name);
+@@ -546,7 +594,7 @@ static struct platform_driver ntc_thermistor_driver = {
+
+ module_platform_driver(ntc_thermistor_driver);
+
+-MODULE_DESCRIPTION("NTC Thermistor Driver from Murata");
++MODULE_DESCRIPTION("NTC Thermistor Driver");
+ MODULE_AUTHOR("MyungJoo Ham <myungjoo.ham@samsung.com>");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:ntc-thermistor");
+diff --git a/include/linux/platform_data/ntc_thermistor.h
+b/include/linux/platform_data/ntc_thermistor.h
+index c7285b5..0a6de4c 100644
+--- a/include/linux/platform_data/ntc_thermistor.h
++++ b/include/linux/platform_data/ntc_thermistor.h
+@@ -26,6 +26,7 @@ struct iio_channel;
+ enum ntc_thermistor_type {
+     TYPE_NCPXXWB473,
+     TYPE_NCPXXWL333,
++    TYPE_B57330V2103,
+ };
+
+ struct ntc_thermistor_platform_data {
+-- 
+2.0.0
