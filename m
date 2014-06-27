@@ -1,41 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:9700 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757431AbaFZMWb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 08:22:31 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	dianders@chromium.org, gregkh@linuxfoundation.org,
-	naveenkrishna.ch@gmail.com, cpgs@samsung.com
-Subject: [PATCH 0/3] ARM: DTS: create common dtsi for Peach pit and pi boards
-Date: Thu, 26 Jun 2014 17:49:05 +0530
-Message-id: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:50038 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751150AbaF0Rx5 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jun 2014 13:53:57 -0400
+Received: by mail-we0-f173.google.com with SMTP id t60so5542060wes.32
+        for <linux-iio@vger.kernel.org>; Fri, 27 Jun 2014 10:53:56 -0700 (PDT)
+From: Johannes Pointner <johannes.pointner@gmail.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Jean Delvare <jdelvare@suse.de>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	lm-sensors@lm-sensors.org, linux-iio@vger.kernel.org
+Subject: [PATCH 1/2] Adds the vendor prefix "epcos" to vendor-prefixes.txt
+Date: Fri, 27 Jun 2014 19:53:53 +0200
+Message-ID: <2420621.lSeA9X6AqK@lenovobook>
+In-Reply-To: <53AD7F8F.7070501@roeck-us.net>
+References: <CAJKbBDDFD294xnqkYq_auW=ppMyPJxigYUF-YAhXZVXw3NN5Xg@mail.gmail.com> <53AD7F8F.7070501@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patchset does the following
-1. Create a common dtsi file cros-exynos-peach.dtsi for
-   exynos5420-peach-pit.dts and exynos5800-peach-pi.dts
-2. Adds the ADC based Thermistor nodes and enables them in peach_pit.dts
-   and peach_pi.dts
-3. Adds the ADC based Thermistor nodes for Exynos5250 based Snow
-4. Corrects the vendor prefix for thermistors in exynos4412-trats2.dts
+This patch adds the vendor prefix for "epcos" to the vendor-prefixes.
 
-Naveen Krishna Chatradhi (3):
-  ARM: DTS: use new compatible string for thermistors in trats2
-  ARM: DTS: Add NTC thermistor nodes to Exynos5250 based Snow
-  ARM: DTS: Add common dts file for Peach PIT and PI along with ADC
-    nodes
+Signed-off-by: Johannes Pointner <johannes.pointner@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
- arch/arm/boot/dts/cros-exynos-peach.dtsi   |   41 ++++++++++++++++++++++++++++
- arch/arm/boot/dts/exynos4412-trats2.dts    |    4 +--
- arch/arm/boot/dts/exynos5250-snow.dts      |   34 +++++++++++++++++++++++
- arch/arm/boot/dts/exynos5420-peach-pit.dts |    6 ++++
- arch/arm/boot/dts/exynos5800-peach-pi.dts  |    6 ++++
- 5 files changed, 89 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm/boot/dts/cros-exynos-peach.dtsi
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt 
+b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 46a311e..97c9c06 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -42,6 +42,7 @@ dmo	Data Modul AG
+ ebv	EBV Elektronik
+ edt	Emerging Display Technologies
+ emmicro	EM Microelectronic
++epcos	EPCOS AG
+ epfl	Ecole Polytechnique Fédérale de Lausanne
+ epson	Seiko Epson Corp.
+ est	ESTeem Wireless Modems
 -- 
-1.7.9.5
-
+2.0.0
