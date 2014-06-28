@@ -1,39 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:51215 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751237AbaF1IzM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 28 Jun 2014 04:55:12 -0400
-Message-ID: <53AE836E.7010303@kernel.org>
-Date: Sat, 28 Jun 2014 09:57:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <mwelling79@gmail.com>
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Sat, 28 Jun 2014 01:35:43 -0500
+From: Michael Welling <mwelling@ieee.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Guillaume Morin <guillaume@morinfr.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] staging: iio: ad9850.c: fix checkpatch.pl error
+Message-ID: <20140628063542.GA2420@deathray>
+References: <4d0e6b74dcc10ef5d60c9cab4f2df886782fb3c3.1403919775.git.guillaume@morinfr.org>
+ <20140628020935.GA14333@kroah.com>
+ <20140628023009.GA13273@bender.morinfr.org>
+ <20140628023718.GB3579@kroah.com>
+ <20140628031045.GA13985@bender.morinfr.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, armadeus-forum@lists.sourceforge.net,
-	lars@metafoo.de, devicetree@vger.kernel.org, pmeerw@pmeerw.net
-Subject: Re: [PATCH v7] iio: add support of the max1027
-References: <1402784830-5853-1-git-send-email-tremyfr@yahoo.fr> <53A7EE7F.1060803@gmx.de>
-In-Reply-To: <53A7EE7F.1060803@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140628031045.GA13985@bender.morinfr.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/06/14 10:08, Hartmut Knaack wrote:
-> Philippe Reynes schrieb:
->> This driver add partial support of the
->> maxim 1027/1029/1031. Differential mode is not
->> supported.
->>
->> It was tested on armadeus apf27 board.
->>
->> Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
-> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
->> ---
-> Not sure if it's too late, already. Looks pretty good to me, no show-stoppers. Though 3 minor issues inline, comments welcome.
-As I hadn't gotten around to pushing this out to the
-actual togreg branch I've added the reviewed-by.
+On Sat, Jun 28, 2014 at 05:10:46AM +0200, Guillaume Morin wrote:
+> On 27 Jun 22:37, Greg Kroah-Hartman wrote:
+> > Put that below the --- line.
+> 
+> Will do.
+> 
+> > > > And what checkpatch error did you fix?  And are you sure it needs to be
+> > > > fixed?
+> > > 
+> > > That's what I changed:
+> > > 
+> > > $ scripts/checkpatch.pl -f drivers/staging/iio/frequency/ad9850.c
+> > > ERROR: Macros with complex values should be enclosed in parenthesis
+> > 
+> > Then why didn't you say that :)
+> 
+> Well it was not totally clear to me if that was obvious or not.  Anyway,
+> I'll mention it in the future.
+> 
+> > 
+> > > I assumed that if it was reported as an error, it needed to be fixed...
+> > 
+> > Use your judgement, checkpatch is a tool, it isn't always correct.
+> 
+> Right, I guess it's borderline.  Should I resend the patch or just drop
+> it?
 
-Thanks Hartmut.
+These days we have GENMASK.
+ 
+http://lxr.free-electrons.com/source/include/linux/bitops.h#L21
+ 
+Maybe the macro can be used directly instead of the value_mask.
 
-J
-
+> 
+> Guillaume.
+> 
+> -- 
+> Guillaume Morin <guillaume@morinfr.org>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
