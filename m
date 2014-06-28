@@ -1,59 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp6-g21.free.fr ([212.27.42.6]:51596 "EHLO smtp6-g21.free.fr"
+Received: from mail.kernel.org ([198.145.19.201]:51215 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751215AbaF1PNY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 28 Jun 2014 11:13:24 -0400
-From: Guillaume Morin <guillaume@morinfr.org>
-To: gregkh@linuxfoundation.org, jic23@kernel.org
-Cc: Guillaume Morin <guillaume@morinfr.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, mwelling@ieee.org
-Subject: [PATCH v3 1/1] staging: iio: ad9850.c: code cleanup
-Date: Sat, 28 Jun 2014 17:13:19 +0200
-Message-Id: <936f1ac494ee8708e37a8cb16a70aa3f007e93cd.1403965958.git.guillaume@morinfr.org>
+	id S1751237AbaF1IzM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 28 Jun 2014 04:55:12 -0400
+Message-ID: <53AE836E.7010303@kernel.org>
+Date: Sat, 28 Jun 2014 09:57:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, armadeus-forum@lists.sourceforge.net,
+	lars@metafoo.de, devicetree@vger.kernel.org, pmeerw@pmeerw.net
+Subject: Re: [PATCH v7] iio: add support of the max1027
+References: <1402784830-5853-1-git-send-email-tremyfr@yahoo.fr> <53A7EE7F.1060803@gmx.de>
+In-Reply-To: <53A7EE7F.1060803@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-checkpath.pl was complaining about value_mask:
-ERROR: Macros with complex values should be enclosed in parenthesis
+On 23/06/14 10:08, Hartmut Knaack wrote:
+> Philippe Reynes schrieb:
+>> This driver add partial support of the
+>> maxim 1027/1029/1031. Differential mode is not
+>> supported.
+>>
+>> It was tested on armadeus apf27 board.
+>>
+>> Signed-off-by: Philippe Reynes <tremyfr@yahoo.fr>
+> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+>> ---
+> Not sure if it's too late, already. Looks pretty good to me, no show-stoppers. Though 3 minor issues inline, comments welcome.
+As I hadn't gotten around to pushing this out to the
+actual togreg branch I've added the reviewed-by.
 
-I fixed this by simply removing it since it's not used (as well as another macro).
-Got rid of the un-necessary error_ret label as well.  Both changes were suggested
-by Michael Welling.
+Thanks Hartmut.
 
-Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
----
-Changes since v2:
-- Got rid of the macro altogether since it's unused
-- removed unused addr_shit
-- remove error_ret since it's not needed
-
- drivers/staging/iio/frequency/ad9850.c |    6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/staging/iio/frequency/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
-index af877ff..8727933 100644
---- a/drivers/staging/iio/frequency/ad9850.c
-+++ b/drivers/staging/iio/frequency/ad9850.c
-@@ -21,9 +21,6 @@
- 
- #define DRV_NAME "ad9850"
- 
--#define value_mask (u16)0xf000
--#define addr_shift 12
--
- /* Register format: 4 bits addr + 12 bits value */
- struct ad9850_config {
- 	u8 control[5];
-@@ -50,9 +47,6 @@ static ssize_t ad9850_set_parameter(struct device *dev,
- 	mutex_lock(&st->lock);
- 
- 	ret = spi_sync_transfer(st->sdev, &xfer, 1);
--	if (ret)
--		goto error_ret;
--error_ret:
- 	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
--- 
-1.7.10.4
+J
 
