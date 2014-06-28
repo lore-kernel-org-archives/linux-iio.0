@@ -1,269 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:20027 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753843AbaFTAU2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jun 2014 20:20:28 -0400
-Message-id: <53A37E44.6040501@samsung.com>
-Date: Fri, 20 Jun 2014 09:20:20 +0900
-From: Chanwoo Choi <cw00.choi@samsung.com>
-MIME-version: 1.0
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: jic23@kernel.org, ch.naveen@samsung.com, t.figa@samsung.com,
-	kgene.kim@samsung.com, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org, rdunlap@infradead.org,
-	sachin.kamat@linaro.org, linux-iio@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCHv4 1/4] iio: adc: exynos_adc: Add exynos_adc_ops structure
- to improve readability
-References: <1403058061-24271-1-git-send-email-cw00.choi@samsung.com>
- <1403058061-24271-2-git-send-email-cw00.choi@samsung.com>
- <53A145F7.8080000@gmail.com>
-In-reply-to: <53A145F7.8080000@gmail.com>
-Content-type: text/plain; charset=ISO-8859-1
+Received: from mga02.intel.com ([134.134.136.20]:44407 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751200AbaF1QqN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 28 Jun 2014 12:46:13 -0400
+Message-ID: <53AEF154.6010303@linux.intel.com>
+Date: Sat, 28 Jun 2014 09:46:12 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [RFC PATCH 0/2] raw read performance improvement
+References: <1403829626-17660-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53AE8186.8040707@kernel.org> <53AEC02F.5040301@linux.intel.com> <53AECDC4.7070407@kernel.org>
+In-Reply-To: <53AECDC4.7070407@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Tomasz,
 
-On 06/18/2014 04:55 PM, Tomasz Figa wrote:
-> Hi Chanwoo,
-> 
-> On 18.06.2014 04:20, Chanwoo Choi wrote:
->> This patchset add 'exynos_adc_ops' structure which includes some functions
->> to control ADC operation according to ADC version (v1 or v2).
+On 06/28/2014 07:14 AM, Jonathan Cameron wrote:
+> On 28/06/14 14:16, Srinivas Pandruvada wrote:
 >>
->> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->> ---
->>  drivers/iio/adc/exynos_adc.c | 174 +++++++++++++++++++++++++++++--------------
->>  1 file changed, 120 insertions(+), 54 deletions(-)
+>> On 06/28/2014 01:49 AM, Jonathan Cameron wrote:
+>>> On 27/06/14 01:40, Srinivas Pandruvada wrote:
+>>>> We see several performance issues reading individual axis, when
+>>>> raw read is the only option. Since most of the time user space 
+>>>> reads x, y
+>>>> and z, one after other, this results in three sysfs reads, and 
+>>>> based on
+>>>> chipset we have to power up or set up measurement mode and wait for
+>>>> response.
+>>> That's probably a case for a change in the driver to schedule the power
+>>> down for a little period after the read rather than immediately...
+>> Agree, if we can do that. But some chips have a single measurement mode,
+>> after measurement is done they go to sleep mode, like AK8975 (they
+>> do have other modes with power penalty).
+>>>> For example reading x,y and z takes 160ms for ak8975, it is true for
+>>>> other too. But reading together takes only 80ms.
+>>>>
+>>>> IIO types already defined a modifier for X_AND_Y_AND_Z, which is used
+>>>> by one driver to send event code. This modifier has no value assigned
+>>>> so (null) appears in sysfs. If this is not correct then we may need
+>>>> another modifier.
+>>>>
+>>>> Since we have now raw_read with capability to read multiple values,
+>>>> we can use this callback to return values to iio core.
+>>>>
+>>> I've actually argued fairly strongly against this sort of multiple
+>>> channel simply because it means there are multiple ways of 
+>>> presenting the
+>>> same data in the ABI. The big difference with the Quaternion case is 
+>>> that
+>>> the elements of that have no meaning whatsoever if you don't have them
+>>> all.
+>>>
+>>> Previously any indication that people wanted higher performance reads
+>>> would mean that I'd just tell them that is what the chardev interface
+>>> is for.  Here a simple sysfs trigger and a couple of extra lines in the
+>>> driver and you'd have what you want with considerably less overhead.
+>> But using these I/F, you loose IIO ABI advantage for user space. This 
+>> was
+>> the model followed and still followed by, but requires special user 
+>> space changes
+>> for every sensor driver. With IIO model, we let vendors pick their 
+>> components
+>> as long as they have an IIO driver, with no change in user space.
+> I'm unclear by why this needs special purpose userspace.
+> Generally it's trivial to establish if a part supplies it's own
+> trigger (data ready for example). If not then a sysfs trigger
+> or similar is needed and can be instantiated just fine by
+> generic userspace.
+I misunderstood your comment. We always provide the buffer I/F, where we 
+have
+some data ready interrupts. In this case we are fine. We don't have 
+sysfs triggers,
+which, I should try to check how much time I can save.
+>>>
+>>> Hence my initial thought to this patch is that I'm not keen. However,
+>>> lets let it sit for a while and see what other comments people have.
+>>> Perhaps if there is enough demand I might rethink my position.
+>>>
+>> Let's see, I feel that it will help for phone/tablet like power 
+>> sensitive devices but doemands performance.
+> Sure - though you are never going to get significant performance through
+> sysfs interfaces...  They just aren't intended for that purpose. Last
+> thing we want to do is convert back and forwards from a string for 
+> starters!
+I am not talking about bandwidth limitation from user/kernel interface, 
+which sysfs is not designed for.
+We have better options than even char-dev for that purpose.
+
+I understand your point of providing a single way to present data. This 
+change breaks this assumption. If someone else needs,
+we can discuss again.
+
+Thanks,
+Srinivas
+
+>
+> J
 >>
->> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->> index 010578f..c30def6 100644
->> --- a/drivers/iio/adc/exynos_adc.c
->> +++ b/drivers/iio/adc/exynos_adc.c
->> @@ -90,6 +90,7 @@ struct exynos_adc {
->>  	struct clk		*clk;
->>  	unsigned int		irq;
->>  	struct regulator	*vdd;
->> +	struct exynos_adc_ops	*ops;
->>  
->>  	struct completion	completion;
->>  
->> @@ -97,6 +98,13 @@ struct exynos_adc {
->>  	unsigned int            version;
->>  };
->>  
->> +struct exynos_adc_ops {
->> +	void (*init_hw)(struct exynos_adc *info);
->> +	void (*clear_irq)(struct exynos_adc *info);
->> +	void (*start_conv)(struct exynos_adc *info, unsigned long addr);
->> +	void (*stop_conv)(struct exynos_adc *info);
->> +};
->> +
->>  static const struct of_device_id exynos_adc_match[] = {
->>  	{ .compatible = "samsung,exynos-adc-v1", .data = (void *)ADC_V1 },
->>  	{ .compatible = "samsung,exynos-adc-v2", .data = (void *)ADC_V2 },
->> @@ -112,30 +120,98 @@ static inline unsigned int exynos_adc_get_version(struct platform_device *pdev)
->>  	return (unsigned int)match->data;
->>  }
->>  
->> -static void exynos_adc_hw_init(struct exynos_adc *info)
->> +static void exynos_adc_v1_init_hw(struct exynos_adc *info)
->> +{
->> +	u32 con1;
->> +
->> +	/* set default prescaler values and Enable prescaler */
->> +	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
->> +
->> +	/* Enable 12-bit ADC resolution */
->> +	con1 |= ADC_V1_CON_RES;
->> +	writel(con1, ADC_V1_CON(info->regs));
->> +}
->> +
->> +static void exynos_adc_v1_start_conv(struct exynos_adc *info, unsigned long addr)
->> +{
->> +	u32 con1;
->> +
->> +	writel(addr, ADC_V1_MUX(info->regs));
->> +
->> +	con1 = readl(ADC_V1_CON(info->regs));
->> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
->> +}
->> +
->> +static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
->> +{
->> +	writel(1, ADC_V1_INTCLR(info->regs));
->> +}
->> +
->> +static void exynos_adc_v1_stop_conv(struct exynos_adc *info)
->> +{
->> +	u32 con;
->> +
->> +	con = readl(ADC_V1_CON(info->regs));
->> +	con |= ADC_V1_CON_STANDBY;
->> +	writel(con, ADC_V1_CON(info->regs));
->> +}
->> +
->> +static struct exynos_adc_ops exynos_adc_v1_ops = {
->> +	.init_hw	= exynos_adc_v1_init_hw,
->> +	.clear_irq	= exynos_adc_v1_clear_irq,
->> +	.start_conv	= exynos_adc_v1_start_conv,
->> +	.stop_conv	= exynos_adc_v1_stop_conv,
->> +};
->> +
->> +static void exynos_adc_v2_init_hw(struct exynos_adc *info)
->>  {
->>  	u32 con1, con2;
->>  
->> -	if (info->version == ADC_V2) {
->> -		con1 = ADC_V2_CON1_SOFT_RESET;
->> -		writel(con1, ADC_V2_CON1(info->regs));
->> +	con1 = ADC_V2_CON1_SOFT_RESET;
->> +	writel(con1, ADC_V2_CON1(info->regs));
->>  
->> -		con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
->> -			ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
->> -		writel(con2, ADC_V2_CON2(info->regs));
->> +	con2 = ADC_V2_CON2_OSEL | ADC_V2_CON2_ESEL |
->> +		ADC_V2_CON2_HIGHF | ADC_V2_CON2_C_TIME(0);
->> +	writel(con2, ADC_V2_CON2(info->regs));
->>  
->> -		/* Enable interrupts */
->> -		writel(1, ADC_V2_INT_EN(info->regs));
->> -	} else {
->> -		/* set default prescaler values and Enable prescaler */
->> -		con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
->> +	/* Enable interrupts */
->> +	writel(1, ADC_V2_INT_EN(info->regs));
->> +}
->>  
->> -		/* Enable 12-bit ADC resolution */
->> -		con1 |= ADC_V1_CON_RES;
->> -		writel(con1, ADC_V1_CON(info->regs));
->> -	}
->> +static void exynos_adc_v2_start_conv(struct exynos_adc *info, unsigned long addr)
->> +{
->> +	u32 con1, con2;
->> +
->> +	con2 = readl(ADC_V2_CON2(info->regs));
->> +	con2 &= ~ADC_V2_CON2_ACH_MASK;
->> +	con2 |= ADC_V2_CON2_ACH_SEL(addr);
->> +	writel(con2, ADC_V2_CON2(info->regs));
->> +
->> +	con1 = readl(ADC_V2_CON1(info->regs));
->> +	writel(con1 | ADC_CON_EN_START, ADC_V2_CON1(info->regs));
->> +}
->> +
->> +static void exynos_adc_v2_clear_irq(struct exynos_adc *info)
->> +{
->> +	writel(1, ADC_V2_INT_ST(info->regs));
->> +}
->> +
->> +static void exynos_adc_v2_stop_conv(struct exynos_adc *info)
->> +{
->> +	u32 con;
->> +
->> +	con = readl(ADC_V2_CON1(info->regs));
->> +	con &= ~ADC_CON_EN_START;
->> +	writel(con, ADC_V2_CON1(info->regs));
->>  }
->>  
->> +static struct exynos_adc_ops exynos_adc_v2_ops = {
->> +	.init_hw	= exynos_adc_v2_init_hw,
->> +	.start_conv	= exynos_adc_v2_start_conv,
->> +	.clear_irq	= exynos_adc_v2_clear_irq,
->> +	.stop_conv	= exynos_adc_v2_stop_conv,
->> +};
->> +
->>  static int exynos_read_raw(struct iio_dev *indio_dev,
->>  				struct iio_chan_spec const *chan,
->>  				int *val,
->> @@ -144,7 +220,6 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->>  {
->>  	struct exynos_adc *info = iio_priv(indio_dev);
->>  	unsigned long timeout;
->> -	u32 con1, con2;
->>  	int ret;
->>  
->>  	if (mask != IIO_CHAN_INFO_RAW)
->> @@ -154,28 +229,15 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->>  	reinit_completion(&info->completion);
->>  
->>  	/* Select the channel to be used and Trigger conversion */
->> -	if (info->version == ADC_V2) {
->> -		con2 = readl(ADC_V2_CON2(info->regs));
->> -		con2 &= ~ADC_V2_CON2_ACH_MASK;
->> -		con2 |= ADC_V2_CON2_ACH_SEL(chan->address);
->> -		writel(con2, ADC_V2_CON2(info->regs));
->> -
->> -		con1 = readl(ADC_V2_CON1(info->regs));
->> -		writel(con1 | ADC_CON_EN_START,
->> -				ADC_V2_CON1(info->regs));
->> -	} else {
->> -		writel(chan->address, ADC_V1_MUX(info->regs));
->> -
->> -		con1 = readl(ADC_V1_CON(info->regs));
->> -		writel(con1 | ADC_CON_EN_START,
->> -				ADC_V1_CON(info->regs));
->> -	}
->> +	if (info->ops->start_conv)
->> +		info->ops->start_conv(info, chan->address);
->>  
->>  	timeout = wait_for_completion_timeout
->>  			(&info->completion, EXYNOS_ADC_TIMEOUT);
->>  	if (timeout == 0) {
->>  		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
->> -		exynos_adc_hw_init(info);
->> +		if (info->ops->init_hw)
->> +			info->ops->init_hw(info);
->>  		ret = -ETIMEDOUT;
->>  	} else {
->>  		*val = info->value;
->> @@ -193,13 +255,11 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->>  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
->>  
->>  	/* Read value */
->> -	info->value = readl(ADC_V1_DATX(info->regs)) &
->> -						ADC_DATX_MASK;
->> +	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
->> +
->>  	/* clear irq */
->> -	if (info->version == ADC_V2)
->> -		writel(1, ADC_V2_INT_ST(info->regs));
->> -	else
->> -		writel(1, ADC_V1_INTCLR(info->regs));
->> +	if (info->ops->clear_irq)
->> +		info->ops->clear_irq(info);
->>  
->>  	complete(&info->completion);
->>  
->> @@ -277,6 +337,19 @@ static int exynos_adc_probe(struct platform_device *pdev)
->>  
->>  	info = iio_priv(indio_dev);
->>  
->> +	info->version = exynos_adc_get_version(pdev);
->> +	switch (info->version) {
->> +	case ADC_V1:
->> +		info->ops = &exynos_adc_v1_ops;
->> +		break;
->> +	case ADC_V2:
->> +		info->ops = &exynos_adc_v2_ops;
->> +		break;
->> +	default:
->> +		dev_err(&pdev->dev, "failed to identify ADC version\n");
->> +		return -EINVAL;
->> +	};
-> 
-> Just drop the enum completely and assign the struct pointer directly to
-> driver data fields in match tables. I also suspect that the struct
-> should be "variant" not "ops", because it will also require other data
-> than function pointers, e.g. "needs_sclk".
-
-OK, I will use "variant" structure instead of "ops" and drop enum vairable of ADC version.
-
-Best Regards,
-Chanwoo Choi
+>> Thanks,
+>> Srinivas
+>>
+>>> Jonathan
+>>>> Srinivas Pandruvada (2):
+>>>>    iio: core: add xyz modifier value
+>>>>    iio: magnetometer: ak8975: Improve performance of raw reads
+>>>>
+>>>>   drivers/iio/industrialio-core.c   |  1 +
+>>>>   drivers/iio/magnetometer/ak8975.c | 58 
+>>>> ++++++++++++++++++++++++++-------------
+>>>>   2 files changed, 40 insertions(+), 19 deletions(-)
+>>>>
+>>>
+>>>
+>>
+>
+>
 
