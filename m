@@ -1,76 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpfb2-g21.free.fr ([212.27.42.10]:40266 "EHLO
-	smtpfb2-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753242AbaFXOrS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jun 2014 10:47:18 -0400
-From: Denis Carikli <denis@eukrea.com>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Return-Path: <guillaume@morinfr.org>
+Date: Sat, 28 Jun 2014 05:10:46 +0200
+From: Guillaume Morin <guillaume@morinfr.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Guillaume Morin <guillaume@morinfr.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: =?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Denis Carikli <denis@eukrea.com>
-Subject: [PATCH v4 6/6] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
-Date: Tue, 24 Jun 2014 16:46:35 +0200
-Message-Id: <1403621195-9622-6-git-send-email-denis@eukrea.com>
-In-Reply-To: <1403621195-9622-1-git-send-email-denis@eukrea.com>
-References: <1403621195-9622-1-git-send-email-denis@eukrea.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] staging: iio: ad9850.c: fix checkpatch.pl error
+Message-ID: <20140628031045.GA13985@bender.morinfr.org>
+References: <4d0e6b74dcc10ef5d60c9cab4f2df886782fb3c3.1403919775.git.guillaume@morinfr.org>
+ <20140628020935.GA14333@kroah.com>
+ <20140628023009.GA13273@bender.morinfr.org>
+ <20140628023718.GB3579@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140628023718.GB3579@kroah.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
----
-Changelog v3->v4:
-- None
+On 27 Jun 22:37, Greg Kroah-Hartman wrote:
+> Put that below the --- line.
 
-Changelog v2->v3:
-- Added ADC support, splitting it would be overkill.
----
- arch/arm/configs/imx_v4_v5_defconfig |    4 ++++
- 1 file changed, 4 insertions(+)
+Will do.
 
-diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
-index 68abce9..43dd6e9 100644
---- a/arch/arm/configs/imx_v4_v5_defconfig
-+++ b/arch/arm/configs/imx_v4_v5_defconfig
-@@ -97,6 +97,7 @@ CONFIG_KEYBOARD_IMX=y
- # CONFIG_INPUT_MOUSE is not set
- CONFIG_INPUT_TOUCHSCREEN=y
- CONFIG_TOUCHSCREEN_ADS7846=m
-+CONFIG_TOUCHSCREEN_MX25=y
- CONFIG_TOUCHSCREEN_MC13783=y
- # CONFIG_LEGACY_PTYS is not set
- CONFIG_SERIAL_8250=m
-@@ -117,6 +118,7 @@ CONFIG_HWMON=m
- CONFIG_SENSORS_MC13783_ADC=m
- CONFIG_WATCHDOG=y
- CONFIG_IMX2_WDT=y
-+CONFIG_MFD_MX25_TSADC=y
- CONFIG_MFD_MC13XXX_SPI=y
- CONFIG_REGULATOR=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
-@@ -183,6 +185,8 @@ CONFIG_DMADEVICES=y
- CONFIG_IMX_SDMA=y
- CONFIG_IMX_DMA=y
- # CONFIG_IOMMU_SUPPORT is not set
-+CONFIG_IIO=y
-+CONFIG_FSL_MX25_ADC=y
- CONFIG_EXT2_FS=y
- CONFIG_EXT3_FS=y
- CONFIG_EXT4_FS=y
+> > > And what checkpatch error did you fix?  And are you sure it needs to be
+> > > fixed?
+> > 
+> > That's what I changed:
+> > 
+> > $ scripts/checkpatch.pl -f drivers/staging/iio/frequency/ad9850.c
+> > ERROR: Macros with complex values should be enclosed in parenthesis
+> 
+> Then why didn't you say that :)
+
+Well it was not totally clear to me if that was obvious or not.  Anyway,
+I'll mention it in the future.
+
+> 
+> > I assumed that if it was reported as an error, it needed to be fixed...
+> 
+> Use your judgement, checkpatch is a tool, it isn't always correct.
+
+Right, I guess it's borderline.  Should I resend the patch or just drop
+it?
+
+Guillaume.
+
 -- 
-1.7.9.5
-
+Guillaume Morin <guillaume@morinfr.org>
