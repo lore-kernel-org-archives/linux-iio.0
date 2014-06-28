@@ -1,48 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:55026 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752226AbaF2PLk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jun 2014 11:11:40 -0400
-Message-ID: <53B02CA9.4020905@roeck-us.net>
-Date: Sun, 29 Jun 2014 08:11:37 -0700
-From: Guenter Roeck <linux@roeck-us.net>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Sat, 28 Jun 2014 12:03:16 -0400
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Guillaume Morin <guillaume@morinfr.org>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, mwelling@ieee.org
+Subject: Re: [PATCH v4 1/1] staging: iio: ad9850.c: code cleanup
+Message-ID: <20140628160316.GB11019@kroah.com>
+References: <936f1ac494ee8708e37a8cb16a70aa3f007e93cd.1403966025.git.guillaume@morinfr.org>
 MIME-Version: 1.0
-To: Jan Kardell <jan.kardell@telliq.com>,
-	Johannes Pointner <johannes.pointner@gmail.com>,
-	Jean Delvare <jdelvare@suse.de>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-CC: lm-sensors@lm-sensors.org, linux-iio@vger.kernel.org
-Subject: Re: hwmon: ntc_thermistor: Add another ntc(epcos) to the driver
-References: <CAJKbBDDYdGATTtW0Vz6v1iqnwkLgjj8dB8-dgM0xPAb+UkHvAg@mail.gmail.com> <53B02147.1000608@telliq.com>
-In-Reply-To: <53B02147.1000608@telliq.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <936f1ac494ee8708e37a8cb16a70aa3f007e93cd.1403966025.git.guillaume@morinfr.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/29/2014 07:23 AM, Jan Kardell wrote:
-> Johannes Pointner skriver:
->> As I saw in the latest patches for the ntc_thermistor, in which as
->> part of the patch the module description changed to :
->>
->> MODULE_DESCRIPTION("NTC Thermistor Driver from Murata");
->>
->> I wanted to know if it is intended to extend the driver for further
->> manufacturers like in my case for an epcos ntc in the future?
->>
->> Of course I would create the necessary patch.
->>
->> Thanks,
->> Hannes
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-> Why not move the table to DT? There are lots of NTC types out there, and each type comes in an number of varietes. IMHO it seems impractical to change the code for each one, and the tables would grow to be very large.
->
+On Sat, Jun 28, 2014 at 05:54:39PM +0200, Guillaume Morin wrote:
+> checkpath.pl was complaining about value_mask:
+> ERROR: Macros with complex values should be enclosed in parenthesis
+> 
+> I fixed this by simply removing it since it's not used (as well as another
+> macro).  Got rid of the un-necessary error_ret label as well.
+> 
+> Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
+> Reported-by: Michael Welling <mwelling@ieee.org>
+> ---
+> Changes since v3:
+> - Added Reported-by: Michael Welling <mwelling@ieee.org>
+> 
+>  drivers/staging/iio/frequency/ad9850.c |    6 ------
+>  1 file changed, 6 deletions(-)
 
-I would not mandate it, but I would he happy to accept a patch.
+Very good, thanks for pushing through and doing this.
 
-Guenter
-
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
