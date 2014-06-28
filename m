@@ -1,49 +1,37 @@
-Return-Path: <guillaume@morinfr.org>
-Date: Sat, 28 Jun 2014 05:10:46 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp6-g21.free.fr ([212.27.42.6]:26074 "EHLO smtp6-g21.free.fr"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751273AbaF1BrO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 27 Jun 2014 21:47:14 -0400
 From: Guillaume Morin <guillaume@morinfr.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Guillaume Morin <guillaume@morinfr.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>, linux-iio@vger.kernel.org,
+To: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>
+Cc: Guillaume Morin <guillaume@morinfr.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] staging: iio: ad9850.c: fix checkpatch.pl error
-Message-ID: <20140628031045.GA13985@bender.morinfr.org>
-References: <4d0e6b74dcc10ef5d60c9cab4f2df886782fb3c3.1403919775.git.guillaume@morinfr.org>
- <20140628020935.GA14333@kroah.com>
- <20140628023009.GA13273@bender.morinfr.org>
- <20140628023718.GB3579@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140628023718.GB3579@kroah.com>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 1/1] staging: iio: ad9850.c: fix checkpatch.pl error
+Date: Sat, 28 Jun 2014 03:46:56 +0200
+Message-Id: <4d0e6b74dcc10ef5d60c9cab4f2df886782fb3c3.1403919775.git.guillaume@morinfr.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 27 Jun 22:37, Greg Kroah-Hartman wrote:
-> Put that below the --- line.
+v2: add missing Signed-off-by 
 
-Will do.
+Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
 
-> > > And what checkpatch error did you fix?  And are you sure it needs to be
-> > > fixed?
-> > 
-> > That's what I changed:
-> > 
-> > $ scripts/checkpatch.pl -f drivers/staging/iio/frequency/ad9850.c
-> > ERROR: Macros with complex values should be enclosed in parenthesis
-> 
-> Then why didn't you say that :)
-
-Well it was not totally clear to me if that was obvious or not.  Anyway,
-I'll mention it in the future.
-
-> 
-> > I assumed that if it was reported as an error, it needed to be fixed...
-> 
-> Use your judgement, checkpatch is a tool, it isn't always correct.
-
-Right, I guess it's borderline.  Should I resend the patch or just drop
-it?
-
-Guillaume.
-
+diff --git a/drivers/staging/iio/frequency/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
+index af877ff..6183670 100644
+--- a/drivers/staging/iio/frequency/ad9850.c
++++ b/drivers/staging/iio/frequency/ad9850.c
+@@ -21,7 +21,7 @@
+ 
+ #define DRV_NAME "ad9850"
+ 
+-#define value_mask (u16)0xf000
++#define value_mask ((u16)0xf000)
+ #define addr_shift 12
+ 
+ /* Register format: 4 bits addr + 12 bits value */
 -- 
-Guillaume Morin <guillaume@morinfr.org>
+1.7.10.4
+
