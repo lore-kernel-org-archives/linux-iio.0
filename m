@@ -1,103 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:52601 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:52646 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753107AbaF2KzV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 29 Jun 2014 06:55:21 -0400
-Message-ID: <53AFF114.4050905@kernel.org>
-Date: Sun, 29 Jun 2014 11:57:24 +0100
+	id S1752813AbaF2K6Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 29 Jun 2014 06:58:16 -0400
+Message-ID: <53AFF1C4.1010402@kernel.org>
+Date: Sun, 29 Jun 2014 12:00:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Belisko Marek <marek.belisko@gmail.com>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Rob Landley <rob@landley.net>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: Re: [PATCH 1/2] staging: iio: hmc5843: Add all available models to
- device tree id table.
-References: <1392387929-31491-1-git-send-email-marek@goldelico.com>	<530338B2.603@kernel.org>	<CAAfyv36ZdwpoGsARQKRfvX4EeanZVVus5A444KSE8LOmePhyig@mail.gmail.com> <CAAfyv34-gTwWU-QZmFFFXnwNeWNjxObVrFkaxN2CNSNuuo_EqQ@mail.gmail.com>
-In-Reply-To: <CAAfyv34-gTwWU-QZmFFFXnwNeWNjxObVrFkaxN2CNSNuuo_EqQ@mail.gmail.com>
+To: Fabio Estevam <festevam@gmail.com>
+CC: Denis Carikli <denis@eukrea.com>, Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	=?UTF-8?B?RXJpYyBCw6luYXJk?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: Re: [PATCH v2 2/6] input: touchscreen: imx25 tcq driver
+References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de>	<1402672899-6995-1-git-send-email-denis@eukrea.com>	<1402672899-6995-3-git-send-email-denis@eukrea.com>	<53A55BD8.7030905@kernel.org> <CAOMZO5BxZDX5TDZdUCbpTw2LpVC=vr4cnn4eSpzd_023wcy+Fg@mail.gmail.com>
+In-Reply-To: <CAOMZO5BxZDX5TDZdUCbpTw2LpVC=vr4cnn4eSpzd_023wcy+Fg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/06/14 21:48, Belisko Marek wrote:
-> PIng? Jonathan do you have any objections to this approach? Can you
-> please pick it? Thx.
-Sorry, this one dropped through the cracks.
+On 21/06/14 20:55, Fabio Estevam wrote:
+> On Sat, Jun 21, 2014 at 7:18 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> +
+>>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>
+>> Could this not in theory fail?
+>
+> Yes, but devm_ioremap_resource will take care of it, so we don't need
+> to check for error here.
+Nothing like counter intuitive behaviour.  Ah well.
 
-Applied to the togreg branch of iio.git along with the documentation patch that
-goes with it.
-
-Jonathan
+Thanks for explaining this!
 >
-> On Tue, Feb 18, 2014 at 9:35 PM, Belisko Marek <marek.belisko@gmail.com> wrote:
->> Hi Jonathan,
 >>
->> On Tue, Feb 18, 2014 at 11:40 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 14/02/14 14:25, Marek Belisko wrote:
->>>>
->>>> Signed-off-by: Marek Belisko <marek@goldelico.com>
->>>
->>> I wonder how this got missed.  However, for those data elements to be
->>> useful, you will
->>> need to read them somewhere in the driver I think.... (if there is any magic
->>> that puts this in the relevant i2c locations then point it out to me!)
->> There is a table called hmc5843_chip_info_tbl which contains entries
->> for all models
->> which this driver can handle. And magic is that correct model variant
->> is set probe function:
->> line: idata->variant = &hmc5843_chip_info_tbl[id->driver_data];
->> (id->driver_data contains model value).
->>>
->>>> ---
->>>>    drivers/staging/iio/magnetometer/hmc5843.c | 4 +++-
->>>>    1 file changed, 3 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c
->>>> b/drivers/staging/iio/magnetometer/hmc5843.c
->>>> index d4f4dd9..f595fdc 100644
->>>> --- a/drivers/staging/iio/magnetometer/hmc5843.c
->>>> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
->>>> @@ -630,7 +630,9 @@ static const struct i2c_device_id hmc5843_id[] = {
->>>>    MODULE_DEVICE_TABLE(i2c, hmc5843_id);
->>>>
->>>>    static const struct of_device_id hmc5843_of_match[] = {
->>>> -       { .compatible = "honeywell,hmc5843" },
->>>> +       { .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
->>>> +       { .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
->>>> +       { .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID
->>>> },
->>>>          {}
->>>>    };
->>>>    MODULE_DEVICE_TABLE(of, hmc5843_of_match);
->>>>
->>>
->>
->> BR,
->>
->> marek
->>
->> --
->> as simple and primitive as possible
->> -------------------------------------------------
->> Marek Belisko - OPEN-NANDRA
->> Freelance Developer
->>
->> Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
->> Tel: +421 915 052 184
->> skype: marekwhite
->> twitter: #opennandra
->> web: http://open-nandra.com
->
-> BR,
->
-> marek
->
+>>> +       mem = devm_ioremap_resource(dev, res);
+>>> +       if (!mem)
+>>> +               return -ENOMEM;
 
