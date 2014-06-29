@@ -1,45 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:52481 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:53380 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752809AbaF2KvJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 29 Jun 2014 06:51:09 -0400
-Message-ID: <53AFF01A.2010307@kernel.org>
-Date: Sun, 29 Jun 2014 11:53:14 +0100
+	id S1751423AbaF2Lfi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 29 Jun 2014 07:35:38 -0400
+Message-ID: <53AFFA86.6000403@kernel.org>
+Date: Sun, 29 Jun 2014 12:37:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	Guillaume Morin <guillaume@morinfr.org>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	mwelling@ieee.org
-Subject: Re: [PATCH v4 1/1] staging: iio: ad9850.c: code cleanup
-References: <936f1ac494ee8708e37a8cb16a70aa3f007e93cd.1403966025.git.guillaume@morinfr.org> <20140628160316.GB11019@kroah.com>
-In-Reply-To: <20140628160316.GB11019@kroah.com>
+To: Chanwoo Choi <cw00.choi@samsung.com>, ch.naveen@samsung.com,
+	t.figa@samsung.com, kgene.kim@samsung.com
+CC: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, sachin.kamat@linaro.org,
+	kyungmin.park@samsung.com, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCHv5 3/4] iio: devicetree: Add DT binding documentation for
+ Exynos3250 ADC
+References: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com> <1403843406-28229-4-git-send-email-cw00.choi@samsung.com>
+In-Reply-To: <1403843406-28229-4-git-send-email-cw00.choi@samsung.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/06/14 17:03, Greg KH wrote:
-> On Sat, Jun 28, 2014 at 05:54:39PM +0200, Guillaume Morin wrote:
->> checkpath.pl was complaining about value_mask:
->> ERROR: Macros with complex values should be enclosed in parenthesis
->>
->> I fixed this by simply removing it since it's not used (as well as another
->> macro).  Got rid of the un-necessary error_ret label as well.
->>
->> Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
->> Reported-by: Michael Welling <mwelling@ieee.org>
+On 27/06/14 05:30, Chanwoo Choi wrote:
+> This patch add DT binding documentation for Exynos3250 ADC IP. Exynos3250 has
+> special clock ('sclk_adc') for ADC which provide clock to internal ADC.
+>
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> Reviewed-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+One trivial inline.  As a fairly obvious extension of the existing bindings
+'probably' doesn't really need a dt maintainer ack (or the 3 weeks)
+> ---
+>   .../devicetree/bindings/arm/samsung/exynos-adc.txt | 26 ++++++++++++++++++++--
+>   1 file changed, 24 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index 5d49f2b..b87749a 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -14,14 +14,22 @@ Required properties:
+>   				for exynos4412/5250 controllers.
+>   			Must be "samsung,exynos-adc-v2" for
+>   				future controllers.
+> +			Must be "samsung,exynos3250-adc-v2" for
+> +				for controllers compatible with ADC of
+for for
+> +				Exynos3250.
+>   - reg:			Contains ADC register address range (base address and
+>   			length) and the address of the phy enable register.
+>   - interrupts: 		Contains the interrupt information for the timer. The
+>   			format is being dependent on which interrupt controller
+>   			the Samsung device uses.
+>   - #io-channel-cells = <1>; As ADC has multiple outputs
+> -- clocks		From common clock binding: handle to adc clock.
+> -- clock-names		From common clock binding: Shall be "adc".
+> +- clocks		From common clock bindings: handles to clocks specified
+> +			in "clock-names" property, in the same order.
+> +- clock-names		From common clock bindings: list of clock input names
+> +			used by ADC block:
+> +			- "adc" : ADC bus clock
+> +			- "sclk_adc" : ADC special clock (only for Exynos3250
+> +				       and compatible ADC block)
+>   - vdd-supply		VDD input supply.
+>
+>   Note: child nodes can be added for auto probing from device tree.
+> @@ -41,6 +49,20 @@ adc: adc@12D10000 {
+>   	vdd-supply = <&buck5_reg>;
+>   };
+>
+> +Example: adding device info in dtsi file for Exynos3250 with additional sclk
+> +
+> +adc: adc@126C0000 {
+> +	compatible = "samsung,exynos3250-adc-v2";
+> +	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
+> +	interrupts = <0 137 0>;
+> +	#io-channel-cells = <1>;
+> +	io-channel-ranges;
+> +
+> +	clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
+> +	clock-names = "adc", "sclk_adc";
+> +
+> +	vdd-supply = <&buck5_reg>;
+> +};
+>
+>   Example: Adding child nodes in dts file
+>
+>
 
->> ---
->> Changes since v3:
->> - Added Reported-by: Michael Welling <mwelling@ieee.org>
->>
->>   drivers/staging/iio/frequency/ad9850.c |    6 ------
->>   1 file changed, 6 deletions(-)
->
-> Very good, thanks for pushing through and doing this.
->
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->
-Applied to the togreg branch of iio.git
-
-Thanks,
