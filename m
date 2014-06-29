@@ -1,40 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:55535 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756853AbaFYOMg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jun 2014 10:12:36 -0400
-Message-ID: <53AAD8C8.3080506@roeck-us.net>
-Date: Wed, 25 Jun 2014 07:12:24 -0700
-From: Guenter Roeck <linux@roeck-us.net>
+Received: from mail.kernel.org ([198.145.19.201]:52601 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753107AbaF2KzV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 29 Jun 2014 06:55:21 -0400
+Message-ID: <53AFF114.4050905@kernel.org>
+Date: Sun, 29 Jun 2014 11:57:24 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Kukjin Kim <kgene.kim@samsung.com>,
-	'Naveen Krishna Chatradhi' <ch.naveen@samsung.com>,
-	linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-	jdelvare@suse.de
-CC: naveenkrishna.ch@gmail.com, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH 0/4 v2] hwmon: ntc_thermistor: prepose vendor prefix change
-References: <1403677773-21141-1-git-send-email-ch.naveen@samsung.com> <02b501cf9064$34f16b80$9ed44280$@samsung.com>
-In-Reply-To: <02b501cf9064$34f16b80$9ed44280$@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Belisko Marek <marek.belisko@gmail.com>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Rob Landley <rob@landley.net>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [PATCH 1/2] staging: iio: hmc5843: Add all available models to
+ device tree id table.
+References: <1392387929-31491-1-git-send-email-marek@goldelico.com>	<530338B2.603@kernel.org>	<CAAfyv36ZdwpoGsARQKRfvX4EeanZVVus5A444KSE8LOmePhyig@mail.gmail.com> <CAAfyv34-gTwWU-QZmFFFXnwNeWNjxObVrFkaxN2CNSNuuo_EqQ@mail.gmail.com>
+In-Reply-To: <CAAfyv34-gTwWU-QZmFFFXnwNeWNjxObVrFkaxN2CNSNuuo_EqQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/25/2014 03:57 AM, Kukjin Kim wrote:
-> Naveen Krishna Chatradhi wrote:
+On 27/06/14 21:48, Belisko Marek wrote:
+> PIng? Jonathan do you have any objections to this approach? Can you
+> please pick it? Thx.
+Sorry, this one dropped through the cracks.
+
+Applied to the togreg branch of iio.git along with the documentation patch that
+goes with it.
+
+Jonathan
+>
+> On Tue, Feb 18, 2014 at 9:35 PM, Belisko Marek <marek.belisko@gmail.com> wrote:
+>> Hi Jonathan,
 >>
-> + Jean Delvare, Guenter Roeck
+>> On Tue, Feb 18, 2014 at 11:40 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 14/02/14 14:25, Marek Belisko wrote:
+>>>>
+>>>> Signed-off-by: Marek Belisko <marek@goldelico.com>
+>>>
+>>> I wonder how this got missed.  However, for those data elements to be
+>>> useful, you will
+>>> need to read them somewhere in the driver I think.... (if there is any magic
+>>> that puts this in the relevant i2c locations then point it out to me!)
+>> There is a table called hmc5843_chip_info_tbl which contains entries
+>> for all models
+>> which this driver can handle. And magic is that correct model variant
+>> is set probe function:
+>> line: idata->variant = &hmc5843_chip_info_tbl[id->driver_data];
+>> (id->driver_data contains model value).
+>>>
+>>>> ---
+>>>>    drivers/staging/iio/magnetometer/hmc5843.c | 4 +++-
+>>>>    1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/staging/iio/magnetometer/hmc5843.c
+>>>> b/drivers/staging/iio/magnetometer/hmc5843.c
+>>>> index d4f4dd9..f595fdc 100644
+>>>> --- a/drivers/staging/iio/magnetometer/hmc5843.c
+>>>> +++ b/drivers/staging/iio/magnetometer/hmc5843.c
+>>>> @@ -630,7 +630,9 @@ static const struct i2c_device_id hmc5843_id[] = {
+>>>>    MODULE_DEVICE_TABLE(i2c, hmc5843_id);
+>>>>
+>>>>    static const struct of_device_id hmc5843_of_match[] = {
+>>>> -       { .compatible = "honeywell,hmc5843" },
+>>>> +       { .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
+>>>> +       { .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
+>>>> +       { .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID
+>>>> },
+>>>>          {}
+>>>>    };
+>>>>    MODULE_DEVICE_TABLE(of, hmc5843_of_match);
+>>>>
+>>>
+>>
+>> BR,
+>>
+>> marek
+>>
+>> --
+>> as simple and primitive as possible
+>> -------------------------------------------------
+>> Marek Belisko - OPEN-NANDRA
+>> Freelance Developer
+>>
+>> Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
+>> Tel: +421 915 052 184
+>> skype: marekwhite
+>> twitter: #opennandra
+>> web: http://open-nandra.com
 >
-> I'm adding maintainers for drivers/hwmon/ntc* but I'm not sure.
+> BR,
 >
-> Hi,
+> marek
 >
-> This series looks good to me. I will take 3/4 and 4/4 for exynos DT changes once
-> hwmon/ntc maintainer pick the others.
->
-
-I applied both patches. Currently going through my test cycle.
-I'll send them to Linus Thursday or Friday.
-
-Guenter
 
