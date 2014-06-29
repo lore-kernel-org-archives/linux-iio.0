@@ -1,76 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f176.google.com ([209.85.220.176]:36174 "EHLO
-	mail-vc0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755527AbaFZPqQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jun 2014 11:46:16 -0400
-Received: by mail-vc0-f176.google.com with SMTP id ik5so3706126vcb.21
-        for <linux-iio@vger.kernel.org>; Thu, 26 Jun 2014 08:46:15 -0700 (PDT)
+Received: from mail.kernel.org ([198.145.19.201]:54988 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753211AbaF2Nfo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 29 Jun 2014 09:35:44 -0400
+Message-ID: <53B016AD.3020008@kernel.org>
+Date: Sun, 29 Jun 2014 14:37:49 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1403785148-20792-3-git-send-email-ch.naveen@samsung.com>
-References: <1403785148-20792-1-git-send-email-ch.naveen@samsung.com>
-	<1403785148-20792-3-git-send-email-ch.naveen@samsung.com>
-Date: Thu, 26 Jun 2014 08:46:14 -0700
-Message-ID: <CAD=FV=W=e-5LJRacxA-sSUUn8cBB5oCHJkwz=Py7iU2fdERVRA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] ARM: DTS: Add NTC thermistor nodes to Exynos5250
- based Snow
-From: Doug Anderson <dianders@chromium.org>
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-Cc: linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+To: Federico Di Pierro <nierro92@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	"cpgs ." <cpgs@samsung.com>, Tushar Behera <tushar.b@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+	Jingoo Han <jg1.han@samsung.com>,
+	Sachin Kamat <sachin.kamat@linaro.org>
+CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] staging: iio: Coding style issues fix.
+References: <1404034862-5789-1-git-send-email-nierro92@gmail.com>
+In-Reply-To: <1404034862-5789-1-git-send-email-nierro92@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Naveen,
+On 29/06/14 10:41, Federico Di Pierro wrote:
+> Fix some little style issues in drivers/staging/iio/frequency/ad9832.c .
+> This is my latest task of the eudyptula challenge (third attempt!)
+>
+> Signed-off-by: Federico Di Pierro <nierro92@gmail.com>
+I'd have preferred more meaty work on this driver, but I guess every
+little bit helps...
 
-On Thu, Jun 26, 2014 at 5:19 AM, Naveen Krishna Chatradhi
-<ch.naveen@samsung.com> wrote:
-> Exynos5250 based Snow board has 4 NTC thermistors to measure
-> temperatures at various points on the board.
->
-> IIO based ADC becomes the parent and NTC thermistors are the childs,
-> via the HWMON interface.
->
-> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+Applied to the togreg branch of iio.git
+
+Thanks,
+
+
 > ---
-> Posted earlier by Doug Anderson @ https://lkml.org/lkml/2013/3/27/453
+>   drivers/staging/iio/frequency/ad9832.c | 14 ++++++--------
+>   1 file changed, 6 insertions(+), 8 deletions(-)
 >
-> This patch depends on (1/4 and 2/4 patches of) patchset posted
-> http://www.spinics.net/lists/linux-iio/msg13486.html
-> Which were applied on to Guenter Roeck's tree.
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index c7d0307..b7c8351 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -57,7 +57,7 @@ static int ad9832_write_frequency(struct ad9832_state *st,
+>   }
 >
-> cat sysfs entries exported by hwmon for 4 thermistors
-> and verified the values on Snow.
+>   static int ad9832_write_phase(struct ad9832_state *st,
+> -				  unsigned long addr, unsigned long phase)
+> +			      unsigned long addr, unsigned long phase)
+>   {
+>   	if (phase > (1 << AD9832_PHASE_BITS))
+>   		return -EINVAL;
+> @@ -72,10 +72,8 @@ static int ad9832_write_phase(struct ad9832_state *st,
+>   	return spi_sync(st->spi, &st->phase_msg);
+>   }
 >
->  arch/arm/boot/dts/exynos5250-snow.dts |   34 +++++++++++++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
+> -static ssize_t ad9832_write(struct device *dev,
+> -		struct device_attribute *attr,
+> -		const char *buf,
+> -		size_t len)
+> +static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+> +			    const char *buf, size_t len)
+>   {
+>   	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>   	struct ad9832_state *st = iio_priv(indio_dev);
+> @@ -109,11 +107,11 @@ static ssize_t ad9832_write(struct device *dev,
+>   		ret = spi_sync(st->spi, &st->msg);
+>   		break;
+>   	case AD9832_FREQ_SYM:
+> -		if (val == 1)
+> +		if (val == 1) {
+>   			st->ctrl_fp |= AD9832_FREQ;
+> -		else if (val == 0)
+> +		} else if (val == 0) {
+>   			st->ctrl_fp &= ~AD9832_FREQ;
+> -		else {
+> +		} else {
+>   			ret = -EINVAL;
+>   			break;
+>   		}
+>
 
-NAK.
-
-The first chunk of exynos5250-snow devices have the thermistors
-populated, but a huge chunk of devices also _don't_ have them
-populated.
-
-If I remember my history properly, rev3 and earlier all had
-thermistors.  Some of rev4 might have thermistors (I never got a clear
-answer).  ...and rev5 definitely doesn't have resistors.  Aside from
-thermistors there's no good reason to differentiate rev3 and rev4
-(they just have different memory).  The upstream kernel may eventually
-need to differentiate rev4 and rev5 since they have a different audio
-codec.
-
-See <https://chromium-review.googlesource.com/#/c/170841/> for some
-descriptions of the different revisions of snow and how they were
-handled in the Chrome OS tree.
-
-See <https://chromium-review.googlesource.com/#/c/186357/> for
-thermistors talk.  Patch set #1 actually split out rev3, but we then
-decided that we really didn't need to use the thermistors on any of
-the revisions so the later patchsets just totally take them out.
-
--Doug
