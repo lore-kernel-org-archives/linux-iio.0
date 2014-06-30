@@ -1,74 +1,28 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:47991 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753407AbaF3Bvq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jun 2014 21:51:46 -0400
-Message-id: <53B0C2AB.4030201@samsung.com>
-Date: Mon, 30 Jun 2014 10:51:39 +0900
-From: Chanwoo Choi <cw00.choi@samsung.com>
-MIME-version: 1.0
-To: kgene.kim@samsung.com
-Cc: Jonathan Cameron <jic23@kernel.org>, ch.naveen@samsung.com,
-	t.figa@samsung.com, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org, rdunlap@infradead.org,
-	sachin.kamat@linaro.org, kyungmin.park@samsung.com,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCHv5 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and
- code clean
-References: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
- <53AFFD69.8060702@kernel.org>
-In-reply-to: <53AFFD69.8060702@kernel.org>
-Content-type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <53B11C56.5060808@metafoo.de>
+Date: Mon, 30 Jun 2014 10:14:14 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>, Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org
+CC: kristina.martsenko@gmail.com
+Subject: Re: [PATCH 6/7] iio: imu: adis16400 switch sampling frequency attr
+ to core support.
+References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-7-git-send-email-jic23@kernel.org> <53B03275.9020805@gmx.de>
+In-Reply-To: <53B03275.9020805@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Dear Kukjin,
-
-On 06/29/2014 08:50 PM, Jonathan Cameron wrote:
-> On 27/06/14 05:30, Chanwoo Choi wrote:
->> Changes from v4:
->> - Use 'exynos_adc_data' structure instead of 'exynos_adc_ops' structure
->>    and remove enum variable of ADC version
->> - Fix wrong name of special clock (sclk_tsadc -> sclk_adc)
->> - Add reviewed message by Naveen Krishna Chatradhi
->> - Add functions for ADC clock control
+On 06/29/2014 05:36 PM, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> By using the info_mask_shared_by_all element of the channel spec, access
+>> to the sampling frequency becomes available to in kernel users of the
+>> driver.  It also shortens and simplifies the code.
 >>
->> Changes from v3:
->> - Add new 'exynos_adc_ops' structure to improve readability according to
->>   Tomasz Figa comment[1]
->>   [1] https://lkml.org/lkml/2014/4/16/238
->> - Add new 'exynos3250-adc-v2' compatible string to support Exynos3250 ADC
->> - Fix wrong compaitlbe string of ADC in Exynos3250 dtsi file
->>
->> Changes from v2:
->> - Check return value of clock function to deal with error exception
->> - Fix minor coding style to improve readability
->>
->> Changes from v1:
->> - Add new "samsung,exynos-adc-v3" compatible to support Exynos3250 ADC
->> - Add a patch about DT binding documentation
->>
->> Chanwoo Choi (4):
->>    iio: adc: exynos_adc: Add exynos_adc_data structure to improve readability
->>    iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
->>    iio: devicetree: Add DT binding documentation for Exynos3250 ADC
->>    ARM: dts: Fix wrong compatible string for Exynos3250 ADC
->>
->>   .../devicetree/bindings/arm/samsung/exynos-adc.txt |  26 +-
->>   arch/arm/boot/dts/exynos3250.dtsi                  |   4 +-
->>   drivers/iio/adc/exynos_adc.c                       | 326 +++++++++++++++------
->>   3 files changed, 268 insertions(+), 88 deletions(-)
->>
-> I am happy with this series, but given it touches some exynos bindings, I would
-> like an ack from Kukjin Kim (or according to MAINTAINERS Ben Dooks) before taking it
-> all through IIO.
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
 
-Could you please review this patchset about exynos dtsi and bindings?
+Thanks.
 
-Best Regards,
-Chanwoo Choi
-
-
-
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
