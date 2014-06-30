@@ -1,83 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([143.182.124.21]:10120 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752293AbaF1NQd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 28 Jun 2014 09:16:33 -0400
-Message-ID: <53AEC02F.5040301@linux.intel.com>
-Date: Sat, 28 Jun 2014 06:16:31 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] raw read performance improvement
-References: <1403829626-17660-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53AE8186.8040707@kernel.org>
-In-Reply-To: <53AE8186.8040707@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Received: from mail-ig0-f179.google.com ([209.85.213.179]:36537 "EHLO
+	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754002AbaF3C6x (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jun 2014 22:58:53 -0400
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH v4 2/4] iio: types: Added support for rotation from north usage attributes
+Date: Sun, 29 Jun 2014 21:58:37 -0500
+Message-Id: <1404097119-19922-3-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1404097119-19922-1-git-send-email-reyad.attiyat@gmail.com>
+References: <1404097119-19922-1-git-send-email-reyad.attiyat@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
 
-On 06/28/2014 01:49 AM, Jonathan Cameron wrote:
-> On 27/06/14 01:40, Srinivas Pandruvada wrote:
->> We see several performance issues reading individual axis, when
->> raw read is the only option. Since most of the time user space reads 
->> x, y
->> and z, one after other, this results in three sysfs reads, and based on
->> chipset we have to power up or set up measurement mode and wait for
->> response.
-> That's probably a case for a change in the driver to schedule the power
-> down for a little period after the read rather than immediately...
-Agree, if we can do that. But some chips have a single measurement mode,
-after measurement is done they go to sleep mode, like AK8975 (they
-do have other modes with power penalty).
->> For example reading x,y and z takes 160ms for ak8975, it is true for
->> other too. But reading together takes only 80ms.
->>
->> IIO types already defined a modifier for X_AND_Y_AND_Z, which is used
->> by one driver to send event code. This modifier has no value assigned
->> so (null) appears in sysfs. If this is not correct then we may need
->> another modifier.
->>
->> Since we have now raw_read with capability to read multiple values,
->> we can use this callback to return values to iio core.
->>
-> I've actually argued fairly strongly against this sort of multiple
-> channel simply because it means there are multiple ways of presenting the
-> same data in the ABI. The big difference with the Quaternion case is that
-> the elements of that have no meaning whatsoever if you don't have them
-> all.
->
-> Previously any indication that people wanted higher performance reads
-> would mean that I'd just tell them that is what the chardev interface
-> is for.  Here a simple sysfs trigger and a couple of extra lines in the
-> driver and you'd have what you want with considerably less overhead.
-But using these I/F, you loose IIO ABI advantage for user space. This was
-the model followed and still followed by, but requires special user 
-space changes
-for every sensor driver. With IIO model, we let vendors pick their 
-components
-as long as they have an IIO driver, with no change in user space.
->
-> Hence my initial thought to this patch is that I'm not keen. However,
-> lets let it sit for a while and see what other comments people have.
-> Perhaps if there is enough demand I might rethink my position.
->
-Let's see, I feel that it will help for phone/tablet like power 
-sensitive devices but demands performance.
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+---
+ drivers/iio/industrialio-core.c | 4 ++++
+ include/linux/iio/types.h       | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-Thanks,
-Srinivas
-
-> Jonathan
->> Srinivas Pandruvada (2):
->>    iio: core: add xyz modifier value
->>    iio: magnetometer: ak8975: Improve performance of raw reads
->>
->>   drivers/iio/industrialio-core.c   |  1 +
->>   drivers/iio/magnetometer/ak8975.c | 58 
->> ++++++++++++++++++++++++++-------------
->>   2 files changed, 40 insertions(+), 19 deletions(-)
->>
->
->
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4b1f375..af3e76d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
++	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
++	[IIO_MOD_NORTH_TRUE] = "from_north_true",
++	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
++	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+ };
+ 
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d480631..d09c40d 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -56,6 +56,10 @@ enum iio_modifier {
+ 	IIO_MOD_QUATERNION,
+ 	IIO_MOD_TEMP_AMBIENT,
+ 	IIO_MOD_TEMP_OBJECT,
++	IIO_MOD_NORTH_MAGN,
++	IIO_MOD_NORTH_TRUE,
++	IIO_MOD_NORTH_MAGN_TILT_COMP,
++	IIO_MOD_NORTH_TRUE_TILT_COMP
+ };
+ 
+ enum iio_event_type {
+-- 
+1.9.3
 
