@@ -1,39 +1,142 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-004.synserver.de ([212.40.185.4]:1070 "EHLO
-	smtp-out-003.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754859AbaF3Isk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jun 2014 04:48:40 -0400
-Message-ID: <53B12467.5080107@metafoo.de>
-Date: Mon, 30 Jun 2014 10:48:39 +0200
+Return-Path: <lars@metafoo.de>
 From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: kristina.martsenko@gmail.com
-Subject: Re: [PATCH 5/7] iio: adis: Switch sampling frequency attr to core
- support.
-References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-6-git-send-email-jic23@kernel.org> <53B0305D.3030406@gmx.de>
-In-Reply-To: <53B0305D.3030406@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio:ad7291: Move out of staging
+Date: Mon, 30 Jun 2014 10:50:42 +0200
+Message-Id: <1404118242-14357-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/29/2014 05:27 PM, Hartmut Knaack wrote:
-> Jonathan Cameron schrieb:
->> By using the info_mask_shared_by_all element of the channel spec, acce
->> to the sampling frequency becomes available to in kernel users of the
->> driver.  It also shortens and simplifies the code.
->>
->> This particular conversion was made more complicated by the shared library
->> and the fact that a number of the drivers do not actually have support for
->> setting or reading the sampling frequency.  The hardware, in those cases
->> investigated supports it. It's just never been implemented.
->>
->> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
->> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+The ad7291 driver is in a reasonable shape. It does not use non-standard API/ABI
+and there are no major style issues with the driver. So this patch moves it out
+of staging.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+There is one small warning from checkpatch which is also fixed in this patch.
+The patch also sorts the #include directives in alphabetical order.
 
-Thanks.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/Kconfig                                     | 10 ++++++++++
+ drivers/iio/adc/Makefile                                    |  1 +
+ drivers/{staging => }/iio/adc/ad7291.c                      | 13 +++++++------
+ drivers/staging/iio/adc/Kconfig                             |  7 -------
+ drivers/staging/iio/adc/Makefile                            |  1 -
+ .../iio/adc => include/linux/platform_data}/ad7291.h        |  0
+ 6 files changed, 18 insertions(+), 14 deletions(-)
+ rename drivers/{staging => }/iio/adc/ad7291.c (99%)
+ rename {drivers/staging/iio/adc => include/linux/platform_data}/ad7291.h (100%)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 20a7073..11b048a 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -20,6 +20,16 @@ config AD7266
+ 	  Say yes here to build support for Analog Devices AD7265 and AD7266
+ 	  ADCs.
+ 
++config AD7291
++	tristate "Analog Devices AD7291 ADC driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Analog Devices AD7291
++	  8 Channel ADC with temperature sensor.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7291.
++
+ config AD7298
+ 	tristate "Analog Devices AD7298 ADC driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 38cf5c3..ad81b51 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -5,6 +5,7 @@
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+ obj-$(CONFIG_AD7266) += ad7266.o
++obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7923) += ad7923.o
+ obj-$(CONFIG_AD7476) += ad7476.o
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
+similarity index 99%
+rename from drivers/staging/iio/adc/ad7291.c
+rename to drivers/iio/adc/ad7291.c
+index 357cef2..1728e68 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/iio/adc/ad7291.c
+@@ -6,22 +6,22 @@
+  * Licensed under the GPL-2 or later.
+  */
+ 
+-#include <linux/interrupt.h>
+ #include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
++#include <linux/err.h>
+ #include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/err.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
+ 
+-#include "ad7291.h"
++#include <linux/platform_data/ad7291.h>
+ 
+ /*
+  * Simplified handling
+@@ -375,6 +375,7 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
+ 		case IIO_VOLTAGE:
+ 			if (chip->reg) {
+ 				int vref;
++
+ 				vref = regulator_get_voltage(chip->reg);
+ 				if (vref < 0)
+ 					return vref;
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index b87e382..75d2d1b 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -3,13 +3,6 @@
+ #
+ menu "Analog to digital converters"
+ 
+-config AD7291
+-	tristate "Analog Devices AD7291 ADC driver"
+-	depends on I2C
+-	help
+-	  Say yes here to build support for Analog Devices AD7291
+-	  8 Channel ADC with temperature sensor.
+-
+ config AD7606
+ 	tristate "Analog Devices AD7606 ADC driver"
+ 	depends on GPIOLIB
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index afdcd1f..1c4277d 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -8,7 +8,6 @@ ad7606-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+ ad7606-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+ obj-$(CONFIG_AD7606) += ad7606.o
+ 
+-obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
+diff --git a/drivers/staging/iio/adc/ad7291.h b/include/linux/platform_data/ad7291.h
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7291.h
+rename to include/linux/platform_data/ad7291.h
+-- 
+1.8.0
