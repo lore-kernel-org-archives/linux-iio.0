@@ -1,58 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f179.google.com ([209.85.213.179]:36537 "EHLO
-	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754002AbaF3C6x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jun 2014 22:58:53 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v4 2/4] iio: types: Added support for rotation from north usage attributes
-Date: Sun, 29 Jun 2014 21:58:37 -0500
-Message-Id: <1404097119-19922-3-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1404097119-19922-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1404097119-19922-1-git-send-email-reyad.attiyat@gmail.com>
+Received: from smtp-out-252.synserver.de ([212.40.185.252]:1076 "EHLO
+	smtp-out-252.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754569AbaF3IOx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jun 2014 04:14:53 -0400
+Message-ID: <53B11C47.1070401@metafoo.de>
+Date: Mon, 30 Jun 2014 10:13:59 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: kristina.martsenko@gmail.com
+Subject: Re: [PATCH 7/7] iio: imu: adis16480 switch sampling frequency attr
+ to core support
+References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-8-git-send-email-jic23@kernel.org> <53B034C6.8090805@gmx.de>
+In-Reply-To: <53B034C6.8090805@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
+On 06/29/2014 05:46 PM, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> By using the info_mask_shared_by_all element of the channel spec, access
+>> to the sampling frequency becomes available to in kernel users of the
+>> driver.  It also shortens and simplifies the code.
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
----
- drivers/iio/industrialio-core.c | 4 ++++
- include/linux/iio/types.h       | 4 ++++
- 2 files changed, 8 insertions(+)
+Sorry for the dealy. Thanks.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4b1f375..af3e76d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index d480631..d09c40d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -56,6 +56,10 @@ enum iio_modifier {
- 	IIO_MOD_QUATERNION,
- 	IIO_MOD_TEMP_AMBIENT,
- 	IIO_MOD_TEMP_OBJECT,
-+	IIO_MOD_NORTH_MAGN,
-+	IIO_MOD_NORTH_TRUE,
-+	IIO_MOD_NORTH_MAGN_TILT_COMP,
-+	IIO_MOD_NORTH_TRUE_TILT_COMP
- };
- 
- enum iio_event_type {
--- 
-1.9.3
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
