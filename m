@@ -1,368 +1,197 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:55509 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752391AbaFGK4D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Jun 2014 06:56:03 -0400
-Message-ID: <5392F031.70706@kernel.org>
-Date: Sat, 07 Jun 2014 11:57:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:49398 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756554AbaGANvD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Jul 2014 09:51:03 -0400
+Date: Tue, 1 Jul 2014 06:50:56 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Johannes Pointner <johannes.pointner@gmail.com>
+Cc: Jean Delvare <jdelvare@suse.de>,
+	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	lm-sensors@lm-sensors.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: PATCH 2/2 v2] Adds support for the ntc thermistor B57330V2103
+ from  EPCOS
+Message-ID: <20140701135056.GA512@roeck-us.net>
+References: <CAJKbBDDFD294xnqkYq_auW=ppMyPJxigYUF-YAhXZVXw3NN5Xg@mail.gmail.com>
+ <53AD7F8F.7070501@roeck-us.net>
+ <1591178.8bErWY6Byk@lenovobook>
+ <1714701.bPhuGb1mhL@lenovobook>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-CC: Stefan Nilsson <stefan.nilsson@unixphere.com>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH v2] iio: Add t5403 barometric pressure sensor driver
-References: <1401738254-9601-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1401738254-9601-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1714701.bPhuGb1mhL@lenovobook>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/06/14 20:44, Peter Meerwald wrote:
-> 16-bit pressure and temperature sensor
->
-> the chip can do I2C and SPI, only the I2C interface is supported
-> by the driver at the moment
->
-> datasheet: http://www.epcos.com/inf/57/ds/T5400.pdf
-> application note: http://www.epcos.com/blob/993154/download/1/t5403-applicationnote.pdf
->
-> an out-of-tree driver targetting the input subsystem is at
-> https://github.com/unixphere/t5400, it was rejected here:
-> http://comments.gmane.org/gmane.linux.kernel.input/28107
->
-> v2: (thanks Hartmut Knaack)
-> * fix MODE_HIGH, equals 2
-> * check INT_TIME mask in write_raw()
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Stefan Nilsson <stefan.nilsson@unixphere.com>
-This looks good to me.  Harmut, do you want to take another
-look?  Either way I'd like a reviewed by from you as
-you have been doing a lot of good reviews and definitely
-deserve to be credited for it!
+On Tue, Jul 01, 2014 at 08:05:52AM +0200, Johannes Pointner wrote:
+> This patch adds support for the ntc thermistor B57330V2103 from EPCOS.
+> 
+> Change since v1:
+> 1. Rearranged compatible node values alphabetically
+> 2. Fixed wrapped line
+> 
+> Signed-off-by: Johannes Pointner <johannes.pointner@gmail.com>
 
-(Peter, you should have cc'd Hartmut btw given he'd reviewed the
-previous version).
+Copying the devicetree mailing list.
 
-Jonathan
+Looks ok to me, though I'll wait a bit to see if there is feedback
+on this or the addition of epcos to the list of manufacturers from
+the devicetree group. Unless there is negative feedback, I'll queue
+it up for 3.17.
+
+Thanks,
+Guenter
+
 > ---
->   drivers/iio/pressure/Kconfig  |  10 ++
->   drivers/iio/pressure/Makefile |   1 +
->   drivers/iio/pressure/t5403.c  | 275 ++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 286 insertions(+)
->   create mode 100644 drivers/iio/pressure/t5403.c
->
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index ffac8ac..15afbc9 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -70,4 +70,14 @@ config IIO_ST_PRESS_SPI
->   	depends on IIO_ST_PRESS
->   	depends on IIO_ST_SENSORS_SPI
->
-> +config T5403
-> +	tristate "EPCOS T5403 digital barometric pressure sensor driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for the EPCOS T5403 pressure sensor
-> +	  connected via I2C.
+>  .../devicetree/bindings/hwmon/ntc_thermistor.txt   |  1 +
+>  Documentation/hwmon/ntc_thermistor                 |  5 +++
+>  drivers/hwmon/Kconfig                              |  2 +-
+>  drivers/hwmon/ntc_thermistor.c                     | 50 +++++++++++++++++++++-
+>  include/linux/platform_data/ntc_thermistor.h       |  1 +
+>  5 files changed, 57 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> index b117b2e..2391e5c 100644
+> --- a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> +++ b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+> @@ -3,6 +3,7 @@ NTC Thermistor hwmon sensors
+>  
+>  Requires node properties:
+>  - "compatible" value : one of
+> +	"epcos,b57330v2103"
+>  	"murata,ncp15wb473"
+>  	"murata,ncp18wb473"
+>  	"murata,ncp21wb473"
+> diff --git a/Documentation/hwmon/ntc_thermistor b/Documentation/hwmon/ntc_thermistor
+> index 057b770..c5e05e2 100644
+> --- a/Documentation/hwmon/ntc_thermistor
+> +++ b/Documentation/hwmon/ntc_thermistor
+> @@ -6,6 +6,11 @@ Supported thermistors from Murata:
+>    Prefixes: 'ncp15wb473', 'ncp18wb473', 'ncp21wb473', 'ncp03wb473', 'ncp15wl333'
+>    Datasheet: Publicly available at Murata
+>  
+> +Supported thermistors from EPCOS:
+> +* EPCOS NTC Thermistors B57330V2103
+> +  Prefixes: b57330v2103
+> +  Datasheet: Publicly available at EPCOS
 > +
-> +          To compile this driver as a module, choose M here: the module
-> +          will be called t5403.
-> +
->   endmenu
-> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> index c53d250..90a37e8 100644
-> --- a/drivers/iio/pressure/Makefile
-> +++ b/drivers/iio/pressure/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_MPL3115) += mpl3115.o
->   obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
->   st_pressure-y := st_pressure_core.o
->   st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
-> +obj-$(CONFIG_T5403) += t5403.o
->
->   obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
->   obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
-> diff --git a/drivers/iio/pressure/t5403.c b/drivers/iio/pressure/t5403.c
-> new file mode 100644
-> index 0000000..e11cd39
-> --- /dev/null
-> +++ b/drivers/iio/pressure/t5403.c
-> @@ -0,0 +1,275 @@
+>  Other NTC thermistors can be supported simply by adding compensation
+>  tables; e.g., NCP15WL333 support is added by the table ncpXXwl333.
+>  
+> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+> index 02d3d85..b34d673 100644
+> --- a/drivers/hwmon/Kconfig
+> +++ b/drivers/hwmon/Kconfig
+> @@ -1061,7 +1061,7 @@ config SENSORS_NTC_THERMISTOR
+>  
+>  	  Currently, this driver supports
+>  	  NCP15WB473, NCP18WB473, NCP21WB473, NCP03WB473, and NCP15WL333
+> -	  from Murata.
+> +	  from Murata and B57330V2103 from EPCOS.
+>  
+>  	  This driver can also be built as a module.  If so, the module
+>  	  will be called ntc-thermistor.
+> diff --git a/drivers/hwmon/ntc_thermistor.c b/drivers/hwmon/ntc_thermistor.c
+> index bdfbe91..25c8deb 100644
+> --- a/drivers/hwmon/ntc_thermistor.c
+> +++ b/drivers/hwmon/ntc_thermistor.c
+> @@ -51,6 +51,7 @@ static const struct platform_device_id ntc_thermistor_id[] = {
+>  	{ "ncp21wb473", TYPE_NCPXXWB473 },
+>  	{ "ncp03wb473", TYPE_NCPXXWB473 },
+>  	{ "ncp15wl333", TYPE_NCPXXWL333 },
+> +	{ "b57330v2103", TYPE_B57330V2103},
+>  	{ },
+>  };
+>  
+> @@ -133,6 +134,47 @@ static const struct ntc_compensation ncpXXwl333[] = {
+>  	{ .temp_c	= 125, .ohm	= 707 },
+>  };
+>  
 > +/*
-> + * t5403.c - Support for EPCOS T5403 pressure/temperature sensor
-> + *
-> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * (7-bit I2C slave address 0x77)
-> + *
-> + * TODO: end-of-conversion irq
+> + * The following compensation table is from the specification of EPCOS NTC
+> + * Thermistors Datasheet
 > + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/delay.h>
-> +
-> +#define T5403_DATA 0xf5 /* data, LSB first, 16 bit */
-> +#define T5403_CALIB_DATA 0x8e /* 10 calibration coeff., LSB first, 16 bit */
-> +#define T5403_SLAVE_ADDR 0x88 /* I2C slave address, 0x77 */
-> +#define T5403_COMMAND 0xf1
-> +
-> +/* command bits */
-> +#define T5403_MODE_SHIFT 3 /* conversion time: 2, 8, 16, 66 ms */
-> +#define T5403_PT BIT(1) /* 0 .. pressure, 1 .. temperature measurement */
-> +#define T5403_SCO BIT(0) /* start conversion */
-> +
-> +#define T5403_MODE_LOW 0
-> +#define T5403_MODE_STANDARD 1
-> +#define T5403_MODE_HIGH 2
-> +#define T5403_MODE_ULTRA_HIGH 3
-> +
-> +#define T5403_I2C_MASK (~BIT(7))
-> +#define T5403_I2C_ADDR 0x77
-> +
-> +static const int t5403_pressure_conv_ms[] = {2, 8, 16, 66};
-> +
-> +struct t5403_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	int mode;
-> +	__le16 c[10];
+> +static const struct ntc_compensation b57330v2103[] = {
+> +	{ .temp_c	= -40, .ohm	= 190030 },
+> +	{ .temp_c	= -35, .ohm	= 145360 },
+> +	{ .temp_c	= -30, .ohm	= 112060 },
+> +	{ .temp_c	= -25, .ohm	= 87041 },
+> +	{ .temp_c	= -20, .ohm	= 68104 },
+> +	{ .temp_c	= -15, .ohm	= 53665 },
+> +	{ .temp_c	= -10, .ohm	= 42576 },
+> +	{ .temp_c	= -5, .ohm	= 34001 },
+> +	{ .temp_c	= 0, .ohm	= 27326 },
+> +	{ .temp_c	= 5, .ohm	= 22096 },
+> +	{ .temp_c	= 10, .ohm	= 17973 },
+> +	{ .temp_c	= 15, .ohm	= 14703 },
+> +	{ .temp_c	= 20, .ohm	= 12090 },
+> +	{ .temp_c	= 25, .ohm	= 10000 },
+> +	{ .temp_c	= 30, .ohm	= 8311 },
+> +	{ .temp_c	= 35, .ohm	= 6941 },
+> +	{ .temp_c	= 40, .ohm	= 5825 },
+> +	{ .temp_c	= 45, .ohm	= 4911 },
+> +	{ .temp_c	= 50, .ohm	= 4158 },
+> +	{ .temp_c	= 55, .ohm	= 3536 },
+> +	{ .temp_c	= 60, .ohm	= 3019 },
+> +	{ .temp_c	= 65, .ohm	= 2588 },
+> +	{ .temp_c	= 70, .ohm	= 2227 },
+> +	{ .temp_c	= 75, .ohm	= 1924 },
+> +	{ .temp_c	= 80, .ohm	= 1668 },
+> +	{ .temp_c	= 85, .ohm	= 1451 },
+> +	{ .temp_c	= 90, .ohm	= 1266 },
+> +	{ .temp_c	= 95, .ohm	= 1108 },
+> +	{ .temp_c	= 100, .ohm	= 973 },
+> +	{ .temp_c	= 105, .ohm	= 857 },
+> +	{ .temp_c	= 110, .ohm	= 757 },
+> +	{ .temp_c	= 115, .ohm	= 671 },
+> +	{ .temp_c	= 120, .ohm	= 596 },
+> +	{ .temp_c	= 125, .ohm	= 531 },
 > +};
 > +
-> +#define T5403_C_U16(i) le16_to_cpu(data->c[(i) - 1])
-> +#define T5403_C(i) sign_extend32(T5403_C_U16(i), 15)
-> +
-> +static int t5403_read(struct t5403_data *data, bool pressure)
-> +{
-> +	int wait_time = 3;  /* wakeup time in ms */
-> +
-> +	int ret = i2c_smbus_write_byte_data(data->client, T5403_COMMAND,
-> +		(pressure ? (data->mode << T5403_MODE_SHIFT) : T5403_PT) |
-> +		T5403_SCO);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	wait_time += pressure ? t5403_pressure_conv_ms[data->mode] : 2;
-> +
-> +	msleep(wait_time);
-> +
-> +	return i2c_smbus_read_word_data(data->client, T5403_DATA);
-> +}
-> +
-> +static int t5403_comp_pressure(struct t5403_data *data, int *val, int *val2)
-> +{
-> +	int ret;
-> +	s16 t_r;
-> +	u16 p_r;
-> +	s32 S, O, X;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = t5403_read(data, false);
-> +	if (ret < 0)
-> +		goto done;
-> +	t_r = ret;
-> +
-> +	ret = t5403_read(data, true);
-> +	if (ret < 0)
-> +		goto done;
-> +	p_r = ret;
-> +
-> +	/* see EPCOS application note */
-> +	S = T5403_C_U16(3) + (s32) T5403_C_U16(4) * t_r / 0x20000 +
-> +		T5403_C(5) * t_r / 0x8000 * t_r / 0x80000 +
-> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x8000 * t_r / 0x10000;
-> +
-> +	O = T5403_C(6) * 0x4000 + T5403_C(7) * t_r / 8 +
-> +		T5403_C(8) * t_r / 0x8000 * t_r / 16 +
-> +		T5403_C(9) * t_r / 0x8000 * t_r / 0x10000 * t_r;
-> +
-> +	X = (S * p_r + O) / 0x4000;
-> +
-> +	X += ((X - 75000) * (X - 75000) / 0x10000 - 9537) *
-> +	    T5403_C(10) / 0x10000;
-> +
-> +	*val = X / 1000;
-> +	*val2 = (X % 1000) * 1000;
-> +
-> +done:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int t5403_comp_temp(struct t5403_data *data, int *val)
-> +{
-> +	int ret;
-> +	s16 t_r;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = t5403_read(data, false);
-> +	if (ret < 0)
-> +		goto done;
-> +	t_r = ret;
-> +
-> +	/* see EPCOS application note */
-> +	*val = ((s32) T5403_C_U16(1) * t_r / 0x100 +
-> +		(s32) T5403_C_U16(2) * 0x40) * 1000 / 0x10000;
-> +
-> +done:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int t5403_read_raw(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan,
-> +			  int *val, int *val2, long mask)
-> +{
-> +	struct t5403_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		switch (chan->type) {
-> +		case IIO_PRESSURE:
-> +			ret = t5403_comp_pressure(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		case IIO_TEMP:
-> +			ret = t5403_comp_temp(data, val);
-> +			if (ret < 0)
-> +				return ret;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +	    }
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*val = 0;
-> +		*val2 = t5403_pressure_conv_ms[data->mode] * 1000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int t5403_write_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int val, int val2, long mask)
-> +{
-> +	struct t5403_data *data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (val != 0)
-> +			return -EINVAL;
-> +		for (i = 0; i < ARRAY_SIZE(t5403_pressure_conv_ms); i++)
-> +			if (val2 == t5403_pressure_conv_ms[i] * 1000) {
-> +				mutex_lock(&data->lock);
-> +				data->mode = i;
-> +				mutex_unlock(&data->lock);
-> +				return 0;
-> +			}
-> +		return -EINVAL;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec t5403_channels[] = {
-> +	{
-> +		.type = IIO_PRESSURE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +		    BIT(IIO_CHAN_INFO_INT_TIME),
-> +	},
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	},
-> +};
-> +
-> +static IIO_CONST_ATTR_INT_TIME_AVAIL("0.002 0.008 0.016 0.066");
-> +
-> +static struct attribute *t5403_attributes[] = {
-> +	&iio_const_attr_integration_time_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group t5403_attribute_group = {
-> +	.attrs = t5403_attributes,
-> +};
-> +
-> +static const struct iio_info t5403_info = {
-> +	.read_raw = &t5403_read_raw,
-> +	.write_raw = &t5403_write_raw,
-> +	.attrs = &t5403_attribute_group,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int t5403_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct t5403_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-> +	    I2C_FUNC_SMBUS_I2C_BLOCK))
-> +		return -ENODEV;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, T5403_SLAVE_ADDR);
-> +	if (ret < 0)
-> +		return ret;
-> +	if ((ret & T5403_I2C_MASK) != T5403_I2C_ADDR)
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	mutex_init(&data->lock);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	indio_dev->info = &t5403_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = t5403_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(t5403_channels);
-> +
-> +	data->mode = T5403_MODE_STANDARD;
-> +
-> +	ret = i2c_smbus_read_i2c_block_data(data->client, T5403_CALIB_DATA,
-> +	    sizeof(data->c), (u8 *) data->c);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static const struct i2c_device_id t5403_id[] = {
-> +	{ "t5403", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, t5403_id);
-> +
-> +static struct i2c_driver t5403_driver = {
-> +	.driver = {
-> +		.name	= "t5403",
-> +	},
-> +	.probe = t5403_probe,
-> +	.id_table = t5403_id,
-> +};
-> +module_i2c_driver(t5403_driver);
-> +
-> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-> +MODULE_DESCRIPTION("EPCOS T5403 pressure/temperature sensor driver");
-> +MODULE_LICENSE("GPL");
->
-
+>  struct ntc_data {
+>  	struct device *hwmon_dev;
+>  	struct ntc_thermistor_platform_data *pdata;
+> @@ -173,6 +215,8 @@ static const struct of_device_id ntc_match[] = {
+>  		.data = &ntc_thermistor_id[3] },
+>  	{ .compatible = "murata,ncp15wl333",
+>  		.data = &ntc_thermistor_id[4] },
+> +	{ .compatible = "epcos,b57330v2103",
+> +		.data = &ntc_thermistor_id[5]},
+>  
+>  	/* Usage of vendor name "ntc" is deprecated */
+>  	{ .compatible = "ntc,ncp15wb473",
+> @@ -490,6 +534,10 @@ static int ntc_thermistor_probe(struct platform_device *pdev)
+>  		data->comp = ncpXXwl333;
+>  		data->n_comp = ARRAY_SIZE(ncpXXwl333);
+>  		break;
+> +	case TYPE_B57330V2103:
+> +		data->comp = b57330v2103;
+> +		data->n_comp = ARRAY_SIZE(b57330v2103);
+> +		break;
+>  	default:
+>  		dev_err(&pdev->dev, "Unknown device type: %lu(%s)\n",
+>  				pdev_id->driver_data, pdev_id->name);
+> @@ -546,7 +594,7 @@ static struct platform_driver ntc_thermistor_driver = {
+>  
+>  module_platform_driver(ntc_thermistor_driver);
+>  
+> -MODULE_DESCRIPTION("NTC Thermistor Driver from Murata");
+> +MODULE_DESCRIPTION("NTC Thermistor Driver");
+>  MODULE_AUTHOR("MyungJoo Ham <myungjoo.ham@samsung.com>");
+>  MODULE_LICENSE("GPL");
+>  MODULE_ALIAS("platform:ntc-thermistor");
+> diff --git a/include/linux/platform_data/ntc_thermistor.h b/include/linux/platform_data/ntc_thermistor.h
+> index c7285b5..0a6de4c 100644
+> --- a/include/linux/platform_data/ntc_thermistor.h
+> +++ b/include/linux/platform_data/ntc_thermistor.h
+> @@ -26,6 +26,7 @@ struct iio_channel;
+>  enum ntc_thermistor_type {
+>  	TYPE_NCPXXWB473,
+>  	TYPE_NCPXXWL333,
+> +	TYPE_B57330V2103,
+>  };
+>  
+>  struct ntc_thermistor_platform_data {
+> -- 
+> 2.0.1
+> 
