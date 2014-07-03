@@ -1,30 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-164.synserver.de ([212.40.185.164]:1066 "EHLO
-	smtp-out-164.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755731AbaGCHZf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 03:25:35 -0400
-Message-ID: <53B5056B.8070801@metafoo.de>
-Date: Thu, 03 Jul 2014 09:25:31 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
-CC: jic23@kernel.org, spk.linux@gmail.com,
-	Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH 5/5] iio: xilinx-xadc: Remove unused variable
-References: <1404369485-1903-1-git-send-email-sachin.kamat@samsung.com> <1404369485-1903-5-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369485-1903-5-git-send-email-sachin.kamat@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <spk.linux@gmail.com>
+Sender: Sachin Kamat <spk.linux@gmail.com>
+From: Sachin Kamat <sachin.kamat@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	gregkh@linuxfoundation.org,
+	spk.linux@gmail.com,
+	Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: [PATCH 1/1] staging: iio: ad9832: Remove redundant check
+Date: Thu,  3 Jul 2014 17:26:08 +0530
+Message-Id: <1404388568-5370-1-git-send-email-sachin.kamat@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/03/2014 08:38 AM, Sachin Kamat wrote:
-> 'offset’ is not used in the function. Remove it.
->
-> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-> Cc: Lars-Peter Clauen <lars@metafoo.de>
-> Cc: Michal Simek <michal.simek@xilinx.com>
+'val' is unsigned and cannot be negative.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
+Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+---
+ drivers/staging/iio/frequency/ad9832.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks.
-
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index b7c8351..cf68159 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -120,7 +120,7 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 		ret = spi_sync(st->spi, &st->msg);
+ 		break;
+ 	case AD9832_PHASE_SYM:
+-		if (val < 0 || val > 3) {
++		if (val > 3) {
+ 			ret = -EINVAL;
+ 			break;
+ 		}
+-- 
+1.7.9.5
