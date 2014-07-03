@@ -1,64 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-173.synserver.de ([212.40.185.173]:1055 "EHLO
-	smtp-out-170.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751285AbaGCSAE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 14:00:04 -0400
-Message-ID: <53B599DC.1040705@metafoo.de>
-Date: Thu, 03 Jul 2014 19:58:52 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.kernel.org ([198.145.19.201]:46491 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755457AbaGCRyx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 3 Jul 2014 13:54:53 -0400
+Message-ID: <53B5996C.5000204@kernel.org>
+Date: Thu, 03 Jul 2014 18:57:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Bastien Nocera <hadess@hadess.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>,
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+CC: Fabio Estevam <festevam@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	=?ISO-8859-1?Q?Eric_B=E9nard?= <eric@eukrea.com>,
 	linux-iio@vger.kernel.org,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: Re: User-space API for accelerometer(s)?
-References: <1403100542.30918.29.camel@nuvo>		 <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>		 <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>	 <53A57414.8000104@kernel.org> <1404216616.7785.1.camel@nuvo> <53B59837.8080907@jic23.retrosnub.co.uk>
-In-Reply-To: <53B59837.8080907@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Denis Carikli <denis@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-input@vger.kernel.org, Markus Pargmann <mpa@pengutronix.de>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 2/6] input: touchscreen: imx25 tcq driver
+References: <1392913312-9030-1-git-send-email-mpa@pengutronix.de> <1402672899-6995-1-git-send-email-denis@eukrea.com> <1402672899-6995-3-git-send-email-denis@eukrea.com> <53A55BD8.7030905@kernel.org> <CAOMZO5BxZDX5TDZdUCbpTw2LpVC=vr4cnn4eSpzd_023wcy+Fg@mail.gmail.com> <53AFF1C4.1010402@kernel.org> <20140629114901.GO32514@n2100.arm.linux.org.uk>
+In-Reply-To: <20140629114901.GO32514@n2100.arm.linux.org.uk>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/03/2014 07:51 PM, Jonathan Cameron wrote:
-> On 01/07/14 13:10, Bastien Nocera wrote:
->> Hey again Jonathan,
->>
->> On Sat, 2014-06-21 at 13:01 +0100, Jonathan Cameron wrote:
->> <snip>
->>> Just to throw it in there.  There is an out of tree bridge driver from
->>> IIO to input.  It's only out of tree because I haven't had a chance to
->>> tidy it up (anyone else is welcome to take this on if they like!)
->>> Google for iio_input.c to find it.
+On 29/06/14 12:49, Russell King - ARM Linux wrote:
+> On Sun, Jun 29, 2014 at 12:00:20PM +0100, Jonathan Cameron wrote:
+>> On 21/06/14 20:55, Fabio Estevam wrote:
+>>> On Sat, Jun 21, 2014 at 7:18 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>>> +
+>>>>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>
+>>>> Could this not in theory fail?
 >>>
->>> The intent of that was to allow general accelerometer drivers and similar
->>> in IIO to work in conjunction with iio-input to provide input style interfaces.
->>> This came about after previous debates on where the 'right' place for
->>> accelerometers was in the kernel. I believe that at least in principle,
->>> Dmitry was happy with this concept.
+>>> Yes, but devm_ioremap_resource will take care of it, so we don't need
+>>> to check for error here.
+>> Nothing like counter intuitive behaviour.  Ah well.
 >>
->> After updating forward-porting the driver so that it runs on a more
->> recent version of the kernel, I tried to get it running.
->>
->> I'm guessing that you expected the iio_input driver to be instantiated
->> by a board specific file. Is there any way to have it generically try
->> out all the IIO devices, similarly to pci_register_driver()? Or should I
->> do that in the hid-sensor-accel driver?
-> At the moment we only have support to instantiate it via such a board specific
-> file. We probably want to be a little careful about how to add more generic
-> means for creating such bindings..
+>> Thanks for explaining this!
 >
-> Simply generically trying all IIO drivers isn't the way to go as there is
-> no obvious way of deciding what it makes sense to bind to on a given machine.
+> Maybe it would be better to have:
 >
-> Perhaps something closer to the way you can instantiate i2c devices from
-> userspace, or perhaps we need to consider something else such as configfs for
-> creating such bindings... (cc'd Lars for comments on whether that makes sense...)
+> 	mem = platform_ioremap_resource(pdev, IORESOURCE_MEM, 0);
+>
+> which wraps up both the platform_get_resource() call with
+> devm_ioremap_resource() so driver writers don't have to be concerned
+> about this aspect?
+>
+Good idea.
 
-Yes, configfs is what came to my mind after reading the first few lines of 
-Bastien's mail. Exposing a IIO device as something other than a IIO device is a 
-policy decision. And policy decisions should preferably be made by userspace. 
-But yea, we have to be careful with the ABI.
-
-- Lars
+Something like that would certainly make more sense to me.
