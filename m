@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f179.google.com ([209.85.192.179]:40574 "EHLO
-	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750937AbaGCGry (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 02:47:54 -0400
-Received: by mail-pd0-f179.google.com with SMTP id w10so13240356pde.24
-        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2014 23:47:53 -0700 (PDT)
+Received: from mail-pd0-f182.google.com ([209.85.192.182]:57453 "EHLO
+	mail-pd0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750951AbaGCGr5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 02:47:57 -0400
+Received: by mail-pd0-f182.google.com with SMTP id y13so13229518pdi.41
+        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2014 23:47:57 -0700 (PDT)
 From: Sachin Kamat <sachin.kamat@samsung.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, spk.linux@gmail.com,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/7] iio: hid-sensor-accel-3d: Fix return values
-Date: Thu,  3 Jul 2014 12:14:07 +0530
-Message-Id: <1404369852-3255-2-git-send-email-sachin.kamat@samsung.com>
+Subject: [PATCH 3/7] iio: hid-sensor-magn-3d: Fix return values
+Date: Thu,  3 Jul 2014 12:14:08 +0530
+Message-Id: <1404369852-3255-3-git-send-email-sachin.kamat@samsung.com>
 In-Reply-To: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
 References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -26,34 +26,34 @@ upon success.
 Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c |    7 ++-----
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c |    7 ++-----
  1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 69abf91..54e464e 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -110,7 +110,6 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
- 	struct accel_3d_state *accel_state = iio_priv(indio_dev);
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 41cf29e..b2b0937 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -110,7 +110,6 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
+ 	struct magn_3d_state *magn_state = iio_priv(indio_dev);
  	int report_id = -1;
  	u32 address;
 -	int ret;
  	int ret_type;
  	s32 poll_value;
  
-@@ -151,14 +150,12 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+@@ -153,14 +152,12 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
  		ret_type = IIO_VAL_INT;
  		break;
  	case IIO_CHAN_INFO_SAMP_FREQ:
 -		ret = hid_sensor_read_samp_freq_value(
 +		ret_type = hid_sensor_read_samp_freq_value(
- 			&accel_state->common_attributes, val, val2);
+ 			&magn_state->common_attributes, val, val2);
 -		ret_type = IIO_VAL_INT_PLUS_MICRO;
  		break;
  	case IIO_CHAN_INFO_HYSTERESIS:
 -		ret = hid_sensor_read_raw_hyst_value(
 +		ret_type = hid_sensor_read_raw_hyst_value(
- 			&accel_state->common_attributes, val, val2);
+ 			&magn_state->common_attributes, val, val2);
 -		ret_type = IIO_VAL_INT_PLUS_MICRO;
  		break;
  	default:
