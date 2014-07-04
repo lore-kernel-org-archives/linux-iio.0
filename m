@@ -1,214 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:27452 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751690AbaGKJKr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jul 2014 05:10:47 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org
-Subject: [PATCH 2/4] Documentation: dt-bindings: move exynos-adc.txt to more
- iio/adc/
-Date: Fri, 11 Jul 2014 14:36:27 +0530
-Message-id: <1405069589-10388-3-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
-References: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59557 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753552AbaGDVJL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Jul 2014 17:09:11 -0400
+In-Reply-To: <53B6F9A4.2080302@linux.intel.com>
+References: <53B6F9A4.2080302@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: panic in iio_trigger_notify_done
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Fri, 04 Jul 2014 22:09:02 +0100
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Message-ID: <3bdcc377-bc21-40ca-894c-162cee7c0cf0@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The DT bindings in exynos-adc.txt applies to the ADC
-driver (exynos-adc.c) developed based on IIO framework.
 
-The bindings are more appropriate to be under
-Documentation/devicetree/bindings/iio/adc/
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: devicetree@vger.kernel.org
----
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |   82 --------------------
- .../devicetree/bindings/iio/adc/exynos-adc.txt     |   82 ++++++++++++++++++++
- 2 files changed, 82 insertions(+), 82 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
+On July 4, 2014 7:59:48 PM GMT+01:00, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+>Hi Jonathan,
+>
+>I got reports of some rare to reproduce random crash in inv_mpu6050
+>driver.
+>Always crash points to iio_trigger_notify_done.
+>Usually, when user space disconnects the trigger by writing a dummy
+>name,
+>(following example generic_buffer.c)
+>this indio_dev->trig can be set to NULL. But there can be race between
+>kernel and user space, so still the iio_trigger_notify_done can be
+>called, which will try to dereference on NULL pointer.
+>
+>Recently you commented on my patch that setting
+>"indio_dev->trig
+>This is dangerous.  Doing it like this will, IIRC leave the wrong
+>reference counts for the trigger.  If you really, really want to do
+>this then call iio_get_trigger on the trigger as well to increment
+>the use count.  Preferred option is to leave the binding to userspace
+>after the driver is probed.
+>"
+>
+>I have seen several drivers in upstream kernel is doing this
+>assignment,
+>I have patches to correct all of them assuming  they will used on
+>x86 platform.
+>
+>Is it OK to submit patches for all even, if we don't have evidence of 
+>problem?
+Absolutely. I had a feeling I haven't kept a close eye on this one and I is definitely a real
+ issue as you can tract the reference counts easily enough and see it is zero when it
+ should not be! 
 
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-deleted file mode 100644
-index b87749a..0000000
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ /dev/null
-@@ -1,82 +0,0 @@
--Samsung Exynos Analog to Digital Converter bindings
--
--The devicetree bindings are for the new ADC driver written for
--Exynos4 and upward SoCs from Samsung.
--
--New driver handles the following
--1. Supports ADC IF found on EXYNOS4412/EXYNOS5250
--   and future SoCs from Samsung
--2. Add ADC driver under iio/adc framework
--3. Also adds the Documentation for device tree bindings
--
--Required properties:
--- compatible:		Must be "samsung,exynos-adc-v1"
--				for exynos4412/5250 controllers.
--			Must be "samsung,exynos-adc-v2" for
--				future controllers.
--			Must be "samsung,exynos3250-adc-v2" for
--				for controllers compatible with ADC of
--				Exynos3250.
--- reg:			Contains ADC register address range (base address and
--			length) and the address of the phy enable register.
--- interrupts: 		Contains the interrupt information for the timer. The
--			format is being dependent on which interrupt controller
--			the Samsung device uses.
--- #io-channel-cells = <1>; As ADC has multiple outputs
--- clocks		From common clock bindings: handles to clocks specified
--			in "clock-names" property, in the same order.
--- clock-names		From common clock bindings: list of clock input names
--			used by ADC block:
--			- "adc" : ADC bus clock
--			- "sclk_adc" : ADC special clock (only for Exynos3250
--				       and compatible ADC block)
--- vdd-supply		VDD input supply.
--
--Note: child nodes can be added for auto probing from device tree.
--
--Example: adding device info in dtsi file
--
--adc: adc@12D10000 {
--	compatible = "samsung,exynos-adc-v1";
--	reg = <0x12D10000 0x100>, <0x10040718 0x4>;
--	interrupts = <0 106 0>;
--	#io-channel-cells = <1>;
--	io-channel-ranges;
--
--	clocks = <&clock 303>;
--	clock-names = "adc";
--
--	vdd-supply = <&buck5_reg>;
--};
--
--Example: adding device info in dtsi file for Exynos3250 with additional sclk
--
--adc: adc@126C0000 {
--	compatible = "samsung,exynos3250-adc-v2";
--	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
--	interrupts = <0 137 0>;
--	#io-channel-cells = <1>;
--	io-channel-ranges;
--
--	clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
--	clock-names = "adc", "sclk_adc";
--
--	vdd-supply = <&buck5_reg>;
--};
--
--Example: Adding child nodes in dts file
--
--adc@12D10000 {
--
--	/* NTC thermistor is a hwmon device */
--	ncp15wb473@0 {
--		compatible = "ntc,ncp15wb473";
--		pullup-uv = <1800000>;
--		pullup-ohm = <47000>;
--		pulldown-ohm = <0>;
--		io-channels = <&adc 4>;
--	};
--};
--
--Note: Does not apply to ADC driver under arch/arm/plat-samsung/
--Note: The child node can be added under the adc node or separately.
-diff --git a/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
-new file mode 100644
-index 0000000..b87749a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
-@@ -0,0 +1,82 @@
-+Samsung Exynos Analog to Digital Converter bindings
-+
-+The devicetree bindings are for the new ADC driver written for
-+Exynos4 and upward SoCs from Samsung.
-+
-+New driver handles the following
-+1. Supports ADC IF found on EXYNOS4412/EXYNOS5250
-+   and future SoCs from Samsung
-+2. Add ADC driver under iio/adc framework
-+3. Also adds the Documentation for device tree bindings
-+
-+Required properties:
-+- compatible:		Must be "samsung,exynos-adc-v1"
-+				for exynos4412/5250 controllers.
-+			Must be "samsung,exynos-adc-v2" for
-+				future controllers.
-+			Must be "samsung,exynos3250-adc-v2" for
-+				for controllers compatible with ADC of
-+				Exynos3250.
-+- reg:			Contains ADC register address range (base address and
-+			length) and the address of the phy enable register.
-+- interrupts: 		Contains the interrupt information for the timer. The
-+			format is being dependent on which interrupt controller
-+			the Samsung device uses.
-+- #io-channel-cells = <1>; As ADC has multiple outputs
-+- clocks		From common clock bindings: handles to clocks specified
-+			in "clock-names" property, in the same order.
-+- clock-names		From common clock bindings: list of clock input names
-+			used by ADC block:
-+			- "adc" : ADC bus clock
-+			- "sclk_adc" : ADC special clock (only for Exynos3250
-+				       and compatible ADC block)
-+- vdd-supply		VDD input supply.
-+
-+Note: child nodes can be added for auto probing from device tree.
-+
-+Example: adding device info in dtsi file
-+
-+adc: adc@12D10000 {
-+	compatible = "samsung,exynos-adc-v1";
-+	reg = <0x12D10000 0x100>, <0x10040718 0x4>;
-+	interrupts = <0 106 0>;
-+	#io-channel-cells = <1>;
-+	io-channel-ranges;
-+
-+	clocks = <&clock 303>;
-+	clock-names = "adc";
-+
-+	vdd-supply = <&buck5_reg>;
-+};
-+
-+Example: adding device info in dtsi file for Exynos3250 with additional sclk
-+
-+adc: adc@126C0000 {
-+	compatible = "samsung,exynos3250-adc-v2";
-+	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+	interrupts = <0 137 0>;
-+	#io-channel-cells = <1>;
-+	io-channel-ranges;
-+
-+	clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
-+	clock-names = "adc", "sclk_adc";
-+
-+	vdd-supply = <&buck5_reg>;
-+};
-+
-+Example: Adding child nodes in dts file
-+
-+adc@12D10000 {
-+
-+	/* NTC thermistor is a hwmon device */
-+	ncp15wb473@0 {
-+		compatible = "ntc,ncp15wb473";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <47000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&adc 4>;
-+	};
-+};
-+
-+Note: Does not apply to ADC driver under arch/arm/plat-samsung/
-+Note: The child node can be added under the adc node or separately.
+
+>
+>Thanks,
+>Srinivas
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-1.7.9.5
-
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
