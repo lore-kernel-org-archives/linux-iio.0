@@ -1,45 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:43397 "EHLO mail.kernel.org"
+Received: from mout.gmx.net ([212.227.15.18]:54611 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758475AbaGOR3M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 15 Jul 2014 13:29:12 -0400
-Message-ID: <53C5656F.9030200@kernel.org>
-Date: Tue, 15 Jul 2014 18:31:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	id S1031495AbaGDWbv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 4 Jul 2014 18:31:51 -0400
+Message-ID: <53B72B50.2070601@gmx.de>
+Date: Sat, 05 Jul 2014 00:31:44 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Himangi Saraogi <himangi774@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-CC: Julia Lawall <julia.lawall@lip6.fr>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: question regarding drivers/staging/iio/adc/ad7280a.c
-References: <CAB78YHwneVuVBPujeKE=rEygvtyn=VvtLtd75+pvwqxPxYcB6g@mail.gmail.com>
-In-Reply-To: <CAB78YHwneVuVBPujeKE=rEygvtyn=VvtLtd75+pvwqxPxYcB6g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] staging:iio:ad7291: Move out of staging
+References: <1404118242-14357-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1404118242-14357-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/07/14 21:31, Himangi Saraogi wrote:
-> Hi,
+Lars-Peter Clausen schrieb:
+> The ad7291 driver is in a reasonable shape. It does not use non-standard API/ABI
+> and there are no major style issues with the driver. So this patch moves it out
+> of staging.
 >
-> The code seems to have a memory leak. The function ad7280_attr_init
-> calls kasprintf a number of times, which calls kmalloc (or more
-> precisely kmalloc_track_caller), but this data does not ever seem to
-> be freed. I propose to introduce a devm_  version of kasprintf, which
-> will be useful for other files also. I am not very sure that will it
-> be useful to introduce a bunch of kfrees, just to remove the memory
-> leaks immediately, but I think it would be safer just to devm
-> everything, so then one is sure that everything is freed as it should
-> be, in the right order.
+> There is one small warning from checkpatch which is also fixed in this patch.
+> The patch also sorts the #include directives in alphabetical order.
+So far, I just took a quick peek into the drivers sources and hope to find some more time for a review later this weekend. But one style issue caught my attention, which I would prefer to have fixed before moving out of staging: the double indentations in ad7291_threshold_reg().
 >
-The question here is whether such a memory leak squashing would be
-worth applying to stable.  Personally I'd go with no. In which case
-feel free to fix it via the introduction of a devm version.
-
-
-Jonathan
-> Thanks
-> Himangi
-
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>  drivers/iio/adc/Kconfig                                     | 10 ++++++++++
+>  drivers/iio/adc/Makefile                                    |  1 +
+>  drivers/{staging => }/iio/adc/ad7291.c                      | 13 +++++++------
+>  drivers/staging/iio/adc/Kconfig                             |  7 -------
+>  drivers/staging/iio/adc/Makefile                            |  1 -
+>  .../iio/adc => include/linux/platform_data}/ad7291.h        |  0
+>  6 files changed, 18 insertions(+), 14 deletions(-)
+>  rename drivers/{staging => }/iio/adc/ad7291.c (99%)
+>  rename {drivers/staging/iio/adc => include/linux/platform_data}/ad7291.h (100%)
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 20a7073..11b048a 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -20,6 +20,16 @@ config AD7266
+>  	  Say yes here to build support for Analog Devices AD7265 and AD7266
+>  	  ADCs.
+>  
+> +config AD7291
+> +	tristate "Analog Devices AD7291 ADC driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for Analog Devices AD7291
+> +	  8 Channel ADC with temperature sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ad7291.
+> +
+>  config AD7298
+>  	tristate "Analog Devices AD7298 ADC driver"
+>  	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 38cf5c3..ad81b51 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -5,6 +5,7 @@
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
+>  obj-$(CONFIG_AD7266) += ad7266.o
+> +obj-$(CONFIG_AD7291) += ad7291.o
+>  obj-$(CONFIG_AD7298) += ad7298.o
+>  obj-$(CONFIG_AD7923) += ad7923.o
+>  obj-$(CONFIG_AD7476) += ad7476.o
+> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
+> similarity index 99%
+> rename from drivers/staging/iio/adc/ad7291.c
+> rename to drivers/iio/adc/ad7291.c
+> index 357cef2..1728e68 100644
+> --- a/drivers/staging/iio/adc/ad7291.c
+> +++ b/drivers/iio/adc/ad7291.c
+> @@ -6,22 +6,22 @@
+>   * Licensed under the GPL-2 or later.
+>   */
+>  
+> -#include <linux/interrupt.h>
+>  #include <linux/device.h>
+> -#include <linux/kernel.h>
+> -#include <linux/slab.h>
+> -#include <linux/sysfs.h>
+> +#include <linux/err.h>
+>  #include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+>  #include <linux/regulator/consumer.h>
+> -#include <linux/err.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/events.h>
+>  
+> -#include "ad7291.h"
+> +#include <linux/platform_data/ad7291.h>
+>  
+>  /*
+>   * Simplified handling
+> @@ -375,6 +375,7 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
+>  		case IIO_VOLTAGE:
+>  			if (chip->reg) {
+>  				int vref;
+> +
+>  				vref = regulator_get_voltage(chip->reg);
+>  				if (vref < 0)
+>  					return vref;
+> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+> index b87e382..75d2d1b 100644
+> --- a/drivers/staging/iio/adc/Kconfig
+> +++ b/drivers/staging/iio/adc/Kconfig
+> @@ -3,13 +3,6 @@
+>  #
+>  menu "Analog to digital converters"
+>  
+> -config AD7291
+> -	tristate "Analog Devices AD7291 ADC driver"
+> -	depends on I2C
+> -	help
+> -	  Say yes here to build support for Analog Devices AD7291
+> -	  8 Channel ADC with temperature sensor.
+> -
+>  config AD7606
+>  	tristate "Analog Devices AD7606 ADC driver"
+>  	depends on GPIOLIB
+> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+> index afdcd1f..1c4277d 100644
+> --- a/drivers/staging/iio/adc/Makefile
+> +++ b/drivers/staging/iio/adc/Makefile
+> @@ -8,7 +8,6 @@ ad7606-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+>  ad7606-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+>  obj-$(CONFIG_AD7606) += ad7606.o
+>  
+> -obj-$(CONFIG_AD7291) += ad7291.o
+>  obj-$(CONFIG_AD7780) += ad7780.o
+>  obj-$(CONFIG_AD7816) += ad7816.o
+>  obj-$(CONFIG_AD7192) += ad7192.o
+> diff --git a/drivers/staging/iio/adc/ad7291.h b/include/linux/platform_data/ad7291.h
+> similarity index 100%
+> rename from drivers/staging/iio/adc/ad7291.h
+> rename to include/linux/platform_data/ad7291.h
 
