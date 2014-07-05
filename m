@@ -1,93 +1,477 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:37964 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753495AbaGOOic (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jul 2014 10:38:32 -0400
-Message-ID: <53C53CE1.4090803@gmail.com>
-Date: Tue, 15 Jul 2014 22:38:25 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>,
-	Richard Weinberger <richard@nod.at>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com>
-In-Reply-To: <53C47FB7.6080304@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from ns.pmeerw.net ([87.118.82.44]:49292 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755295AbaGEMim (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 5 Jul 2014 08:38:42 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 3/3] iio: Add driver for AMS/TAOS tcs3414 digital color sensor
+Date: Sat,  5 Jul 2014 14:38:34 +0200
+Message-Id: <1404563914-27516-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net>
+References: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/15/2014 09:11 AM, Chen Gang wrote:
-> 
-> 
-> On 07/15/2014 08:53 AM, Guenter Roeck wrote:
->> On 07/14/2014 05:34 PM, Chen Gang wrote:
->>> On 07/14/2014 05:22 PM, Chen Gang wrote:
->>>>
->>>> 在 2014年7月14日，下午4:57，Richard Weinberger <richard@nod.at> 写道：
->>>>
->>>>> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
->>>>>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->>>>>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>>>>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
->>>>>>>>> Maybe we could add COMPILE_TEST to the version string too?
->>>>>>>>> Just to detect such kernels fast in user bug reports...
->>>>>>>>
->>>>>>>> What kind of bug report are you going to get?
->>>>>>>
->>>>>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
->>>>>>> complains that it does not work. :)
->>>>>>
->>>>>> These drivers are typically drivers for some SoC peripheral and the
->>>>>> device will simply physically not exist on a platform that does not
->>>>>> provide HAS_IOMEM. This is not really any
->>>>>> different from making the driver selectable via COMPILE_TEST for
->>>>>> any other platform. To hit the issue you'd have to instantiate a
->>>>>> device driver instance for a device that
->>>>>> physically does not exist. This will always result in a failure.
->>>>>
->>>>> Okay, you have convinced me. :)
->>>>>
->>>
->>> After search the history patches, I found one related patch which made
->>> by myself (when I am in Asianux):
->>>
->>>    "https://lkml.org/lkml/2013/7/1/641"
->>>
->>> For me, it is a long discussion, and forced many members have to join
->>> in. Please help check again.
->>>
->>
->> One thing you could try would be to return NULL (or where appropriate
->> an error) in the #else case of CONFIG_HAS_IOMEM and CONFIG_HAS_IOPORT,
->> ie dont take COMPILE_TEST into account at all. Obviously that means
->> you won't be able to dump a warning message in the COMPILE_TEST
->> case, but at least the code would compile. The rejection of above patch
->> would make a good case for this approach.
->>
-> 
-> OK, thanks: at least, it can be improved.  But still welcome any other
-> opinions of another related members.
-> 
+16-bit digital color sensor with red, green, blue and clear channel
 
-If no reply within 3 days (2014-07-18), I shall try to send related
-patch for it within this week end (2014-07-20).
+datasheet: http://ams.com/eng/content/download/250258/975997/TCS3414_Datasheet_EN_v1.pdf
 
-Thanks.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+---
+ drivers/iio/light/Kconfig   |  12 ++
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/tcs3414.c | 405 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 418 insertions(+)
+ create mode 100644 drivers/iio/light/tcs3414.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 7d83dca..bf05ca5 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -128,6 +128,18 @@ config LTR501
+ 	 This driver can also be built as a module.  If so, the module
+          will be called ltr501.
+ 
++config TCS3414
++	tristate "TAOS TCS3414 digital color sensor"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	 If you say yes here you get support for the TAOS TCS3414
++	 family of digital color sensors.
++
++	 This driver can also be built as a module.  If so, the module
++	 will be called tcs3414.
++
+ config TCS3472
+ 	tristate "TAOS TCS3472 color light-to-digital converter"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index f3d1857..8b8c09f 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
++obj-$(CONFIG_TCS3414)		+= tcs3414.o
+ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+ obj-$(CONFIG_TSL4531)		+= tsl4531.o
+ obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
+new file mode 100644
+index 0000000..a9e449b
+--- /dev/null
++++ b/drivers/iio/light/tcs3414.c
+@@ -0,0 +1,405 @@
++/*
++ * tcs3414.c - Support for TAOS TCS3414 digital color sensor
++ *
++ * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * Digital color sensor with 16-bit channels for red, green, blue, clear);
++ * 7-bit I2C slave address 0x39 (TCS3414) or 0x29, 0x49, 0x59 (TCS3413,
++ * TCS3415, TCS3416, resp.)
++ *
++ * TODO: sync, interrupt support, thresholds, prescaler
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/pm.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define TCS3414_DRV_NAME "tcs3414"
++
++#define TCS3414_COMMAND BIT(7)
++#define TCS3414_COMMAND_WORD (TCS3414_COMMAND | BIT(5))
++
++#define TCS3414_CONTROL (TCS3414_COMMAND | 0x00)
++#define TCS3414_TIMING (TCS3414_COMMAND | 0x01)
++#define TCS3414_ID (TCS3414_COMMAND | 0x04)
++#define TCS3414_GAIN (TCS3414_COMMAND | 0x07)
++#define TCS3414_DATA_GREEN (TCS3414_COMMAND_WORD | 0x10)
++#define TCS3414_DATA_RED (TCS3414_COMMAND_WORD | 0x12)
++#define TCS3414_DATA_BLUE (TCS3414_COMMAND_WORD | 0x14)
++#define TCS3414_DATA_CLEAR (TCS3414_COMMAND_WORD | 0x16)
++
++#define TCS3414_CONTROL_ADC_VALID BIT(4)
++#define TCS3414_CONTROL_ADC_EN BIT(1)
++#define TCS3414_CONTROL_POWER BIT(0)
++
++#define TCS3414_INTEG_MASK GENMASK(1, 0)
++#define TCS3414_INTEG_12MS 0x0
++#define TCS3414_INTEG_100MS 0x1
++#define TCS3414_INTEG_400MS 0x2
++
++#define TCS3414_GAIN_MASK GENMASK(5, 4)
++#define TCS3414_GAIN_SHIFT 4
++
++struct tcs3414_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u8 control;
++	u8 gain;
++	u8 timing;
++	u16 buffer[8]; /* 4x 16-bit + 8 bytes timestamp */
++};
++
++#define TCS3414_CHANNEL(_color, _si, _addr) { \
++	.type = IIO_INTENSITY, \
++	.modified = 1, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_INT_TIME), \
++	.channel2 = IIO_MOD_LIGHT_##_color, \
++	.address = _addr, \
++	.scan_index = _si, \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 16, \
++		.storagebits = 16, \
++		.endianness = IIO_CPU, \
++	}, \
++}
++
++/* scale factors: 1/gain */
++static const int tcs3414_scales[][2] = {
++	{1, 0}, {0, 250000}, {0, 62500}, {0, 15625}
++};
++
++/* integration time in ms */
++static const int tcs3414_times[] = { 12, 100, 400 };
++
++static const struct iio_chan_spec tcs3414_channels[] = {
++	TCS3414_CHANNEL(GREEN, 0, TCS3414_DATA_GREEN),
++	TCS3414_CHANNEL(RED, 1, TCS3414_DATA_RED),
++	TCS3414_CHANNEL(BLUE, 2, TCS3414_DATA_BLUE),
++	TCS3414_CHANNEL(CLEAR, 3, TCS3414_DATA_CLEAR),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++};
++
++static int tcs3414_req_data(struct tcs3414_data *data)
++{
++	int tries = 25;
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control | TCS3414_CONTROL_ADC_EN);
++	if (ret < 0)
++		return ret;
++
++	while (tries--) {
++		ret = i2c_smbus_read_byte_data(data->client, TCS3414_CONTROL);
++		if (ret < 0)
++			return ret;
++		if (ret & TCS3414_CONTROL_ADC_VALID)
++			break;
++		msleep(20);
++	}
++
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control);
++	if (ret < 0)
++		return ret;
++
++	if (tries < 0) {
++		dev_err(&data->client->dev, "data not ready\n");
++		return -EIO;
++	}
++
++	return 0;
++}
++
++static int tcs3414_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct tcs3414_data *data = iio_priv(indio_dev);
++	int i, ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
++		mutex_lock(&data->lock);
++		ret = tcs3414_req_data(data);
++		if (ret < 0) {
++			mutex_unlock(&data->lock);
++			return ret;
++		}
++		ret = i2c_smbus_read_word_data(data->client, chan->address);
++		mutex_unlock(&data->lock);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++	i = (data->gain & TCS3414_GAIN_MASK) >> TCS3414_GAIN_SHIFT;
++	*val = tcs3414_scales[i][0];
++		*val2 = tcs3414_scales[i][1];
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		*val2 = tcs3414_times[data->timing & TCS3414_INTEG_MASK] * 1000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++static int tcs3414_write_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int val, int val2, long mask)
++{
++	struct tcs3414_data *data = iio_priv(indio_dev);
++	int i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		for (i = 0; i < ARRAY_SIZE(tcs3414_scales); i++) {
++			if (val == tcs3414_scales[i][0] &&
++				val2 == tcs3414_scales[i][1]) {
++				data->gain &= ~TCS3414_GAIN_MASK;
++				data->gain |= i << TCS3414_GAIN_SHIFT;
++				return i2c_smbus_write_byte_data(
++					data->client, TCS3414_GAIN,
++					data->gain);
++			}
++		}
++		return -EINVAL;
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0)
++			return -EINVAL;
++		for (i = 0; i < ARRAY_SIZE(tcs3414_times); i++) {
++			if (val == tcs3414_times[i] * 1000) {
++				data->timing &= ~TCS3414_INTEG_MASK;
++				data->timing |= i;
++				return i2c_smbus_write_byte_data(
++					data->client, TCS3414_TIMING,
++					data->timing);
++			}
++		}
++		return -EINVAL;
++	default:
++		return -EINVAL;
++	}
++}
++
++static irqreturn_t tcs3414_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct tcs3414_data *data = iio_priv(indio_dev);
++	int i, j = 0;
++
++	for_each_set_bit(i, indio_dev->active_scan_mask,
++		indio_dev->masklength) {
++		int ret = i2c_smbus_read_word_data(data->client,
++			TCS3414_DATA_GREEN + 2*i);
++		if (ret < 0)
++			goto done;
++
++		data->buffer[j++] = ret;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++		iio_get_time_ns());
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static IIO_CONST_ATTR(scale_available, "1 0.25 0.0625 0.015625");
++static IIO_CONST_ATTR_INT_TIME_AVAIL("0.012 0.1 0.4");
++
++static struct attribute *tcs3414_attributes[] = {
++	&iio_const_attr_scale_available.dev_attr.attr,
++	&iio_const_attr_integration_time_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group tcs3414_attribute_group = {
++	.attrs = tcs3414_attributes,
++};
++
++static const struct iio_info tcs3414_info = {
++	.read_raw = tcs3414_read_raw,
++	.write_raw = tcs3414_write_raw,
++	.attrs = &tcs3414_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static int tcs3414_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct tcs3414_data *data = iio_priv(indio_dev);
++
++	data->control |= TCS3414_CONTROL_ADC_EN;
++	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control);
++}
++
++static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct tcs3414_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = iio_triggered_buffer_predisable(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	data->control &= ~TCS3414_CONTROL_ADC_EN;
++	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control);
++}
++
++static const struct iio_buffer_setup_ops tcs3414_buffer_setup_ops = {
++	.preenable = tcs3414_buffer_preenable,
++	.postenable = &iio_triggered_buffer_postenable,
++	.predisable = tcs3414_buffer_predisable,
++};
++
++static int tcs3414_probe(struct i2c_client *client,
++			   const struct i2c_device_id *id)
++{
++	struct tcs3414_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &tcs3414_info;
++	indio_dev->name = TCS3414_DRV_NAME;
++	indio_dev->channels = tcs3414_channels;
++	indio_dev->num_channels = ARRAY_SIZE(tcs3414_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = i2c_smbus_read_byte_data(data->client, TCS3414_ID);
++	if (ret < 0)
++		return ret;
++
++	switch (ret & 0xf0) {
++	case 0x00:
++		dev_info(&client->dev, "TCS3404 found\n");
++		break;
++	case 0x10:
++		dev_info(&client->dev, "TCS3413/14/15/16 found\n");
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	data->control = TCS3414_CONTROL_POWER;
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control);
++	if (ret < 0)
++		return ret;
++
++	data->timing = TCS3414_INTEG_12MS; /* free running */
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_TIMING,
++		data->timing);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, TCS3414_GAIN);
++	if (ret < 0)
++		return ret;
++	data->gain = ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++		tcs3414_trigger_handler, &tcs3414_buffer_setup_ops);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto buffer_cleanup;
++
++	return 0;
++
++buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++	return ret;
++}
++
++static int tcs3414_powerdown(struct tcs3414_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control & ~(TCS3414_CONTROL_POWER |
++		TCS3414_CONTROL_ADC_EN));
++}
++
++static int tcs3414_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	tcs3414_powerdown(iio_priv(indio_dev));
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int tcs3414_suspend(struct device *dev)
++{
++	struct tcs3414_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
++	return tcs3414_powerdown(data);
++}
++
++static int tcs3414_resume(struct device *dev)
++{
++	struct tcs3414_data *data = iio_priv(i2c_get_clientdata(
++		to_i2c_client(dev)));
++	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++		data->control);
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(tcs3414_pm_ops, tcs3414_suspend, tcs3414_resume);
++
++static const struct i2c_device_id tcs3414_id[] = {
++	{ "tcs3414", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, tcs3414_id);
++
++static struct i2c_driver tcs3414_driver = {
++	.driver = {
++		.name	= TCS3414_DRV_NAME,
++		.pm	= &tcs3414_pm_ops,
++		.owner	= THIS_MODULE,
++	},
++	.probe		= tcs3414_probe,
++	.remove		= tcs3414_remove,
++	.id_table	= tcs3414_id,
++};
++module_i2c_driver(tcs3414_driver);
++
++MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
++MODULE_DESCRIPTION("TCS3414 digital color sensors driver");
++MODULE_LICENSE("GPL");
 -- 
-Chen Gang
+1.9.1
 
-Open share and attitude like air water and life which God blessed
