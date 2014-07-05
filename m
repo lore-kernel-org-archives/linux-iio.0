@@ -1,57 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56846 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752859AbaGHP1d (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jul 2014 11:27:33 -0400
-In-Reply-To: <20140708132355.GV30458@sirena.org.uk>
-References: <1403287927-30031-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53A6E6D1.7090507@kernel.org> <53A78159.90400@linux.intel.com> <53AFF4A5.2020505@kernel.org> <53B0225F.6030704@linux.intel.com> <53B025EF.5060600@kernel.org> <20140707143600.GA2469@sirena.org.uk> <53BAC744.3070704@kernel.org> <20140708132355.GV30458@sirena.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: accel: BMC150 accel support
+Received: from mail.kernel.org ([198.145.19.201]:56053 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754719AbaGEKIH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 5 Jul 2014 06:08:07 -0400
+Message-ID: <53B7CF06.3000608@kernel.org>
+Date: Sat, 05 Jul 2014 11:10:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 08 Jul 2014 16:27:27 +0100
-To: Mark Brown <broonie@kernel.org>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org
-Message-ID: <c49bed5a-0737-4376-9429-c070834e71e9@email.android.com>
+MIME-Version: 1.0
+To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
+CC: spk.linux@gmail.com,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH 4/7] iio: hid-sensor-als: Fix return values
+References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com> <1404369852-3255-4-git-send-email-sachin.kamat@samsung.com>
+In-Reply-To: <1404369852-3255-4-git-send-email-sachin.kamat@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 03/07/14 07:44, Sachin Kamat wrote:
+> IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_HYSTERESIS cases ignored
+> the actual return values (which could be -EINVAL) and instead
+> returned IIO_VAL_INT_PLUS_MICRO always. Return the actual value
+> obtained from the functions. Both functions return IIO_VAL_INT_PLUS_MICRO
+> upon success.
+>
+> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
+> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the fixes-togreg branch of iio.git.
 
+Thanks
+> ---
+>   drivers/iio/light/hid-sensor-als.c |    7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+> index f34c943..96e71e1 100644
+> --- a/drivers/iio/light/hid-sensor-als.c
+> +++ b/drivers/iio/light/hid-sensor-als.c
+> @@ -79,7 +79,6 @@ static int als_read_raw(struct iio_dev *indio_dev,
+>   	struct als_state *als_state = iio_priv(indio_dev);
+>   	int report_id = -1;
+>   	u32 address;
+> -	int ret;
+>   	int ret_type;
+>   	s32 poll_value;
+>
+> @@ -129,14 +128,12 @@ static int als_read_raw(struct iio_dev *indio_dev,
+>   		ret_type = IIO_VAL_INT;
+>   		break;
+>   	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		ret = hid_sensor_read_samp_freq_value(
+> +		ret_type = hid_sensor_read_samp_freq_value(
+>   				&als_state->common_attributes, val, val2);
+> -		ret_type = IIO_VAL_INT_PLUS_MICRO;
+>   		break;
+>   	case IIO_CHAN_INFO_HYSTERESIS:
+> -		ret = hid_sensor_read_raw_hyst_value(
+> +		ret_type = hid_sensor_read_raw_hyst_value(
+>   				&als_state->common_attributes, val, val2);
+> -		ret_type = IIO_VAL_INT_PLUS_MICRO;
+>   		break;
+>   	default:
+>   		ret_type = -EINVAL;
+>
 
-On July 8, 2014 2:23:55 PM GMT+01:00, Mark Brown <broonie@kernel.org> wrote:
->On Mon, Jul 07, 2014 at 05:13:56PM +0100, Jonathan Cameron wrote:
->> On 07/07/14 15:36, Mark Brown wrote:
->
->> >With regulators the delays are handled transparently in the
->framework -
->> >by the time the functions return the operation should have
->commpleted.
->> >If there is a need to have a non-blocking interface we'll have to
->add
->> >this.  The delays can be queried with _time() functions.
->
->> We are looking at a somewhat tangential question here...
->
->I don't think so...
->
->> Hence rather than picking a given power state (deep sleep or similar)
->> we want the control to be on capture latency.  Hence userspace
->> can specify the 'worst case' latency it will accept and the
->> device will hence enter the lowest power state, between samples,
->> that it can without failing to meet the requirement.
->> 
->> What I was wondering is whether there is anything similar
->> elsewhere that you know of? For example, could we query a
->> regulator driver to ask it how long it will take to start up
->> a given output?
->
->...hence my comment that "The delays can be queried with _time()
->functions - you don't need to implement the delays but you can find out
->what they will be.
-Ah sounds like I miss interpreted your response! 
-Will look into the _time stuff.
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
