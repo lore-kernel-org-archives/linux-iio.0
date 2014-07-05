@@ -1,56 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:56242 "EHLO mail.kernel.org"
+Received: from ns.pmeerw.net ([87.118.82.44]:49285 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754719AbaGEKTQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 5 Jul 2014 06:19:16 -0400
-Message-ID: <53B7D1A5.4050102@kernel.org>
-Date: Sat, 05 Jul 2014 11:21:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
-CC: spk.linux@gmail.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH 7/7] iio: hid-sensors: Fix compilation warning
-References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com> <1404369852-3255-7-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369852-3255-7-git-send-email-sachin.kamat@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	id S1755304AbaGEMim (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 5 Jul 2014 08:38:42 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+Subject: [PATCH 0/3] iio: new color light sensor drivers
+Date: Sat,  5 Jul 2014 14:38:31 +0200
+Message-Id: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/14 07:44, Sachin Kamat wrote:
-> Move the 'static' keyword to beginning of definition to silence the
-> following compilation warning:
-> drivers/iio/common/hid-sensors/hid-sensor-attributes.c:34:1: warning: ‘static’ is not at beginning of declaration [-Wold-style-declaration]
->
-> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git
+first patch is a cleanup/bug fix (locking around dependent
+I2C communication)
 
-Thanks,
+patch 2 and 3 add new drivers for two digital color sensors
+(Intersil isl29125 and AMS/TAOS TCS3414)
 
+Peter Meerwald (3):
+  iio:tcs3472: Check for buffer enabled and locking
+  iio: Add Intersil isl29125 digital color light sensor driver
+  iio: Add driver for AMS/TAOS tcs3414 digital color sensor
 
-> ---
->   .../iio/common/hid-sensors/hid-sensor-attributes.c |    4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 403dd3d..1614340 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -26,12 +26,12 @@
->   #include <linux/iio/iio.h>
->   #include <linux/iio/sysfs.h>
->
-> -struct {
-> +static struct {
->   	u32 usage_id;
->   	int unit; /* 0 for default others from HID sensor spec */
->   	int scale_val0; /* scale, whole number */
->   	int scale_val1; /* scale, fraction in micros */
-> -} static unit_conversion[] = {
-> +} unit_conversion[] = {
->   	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
->   	{HID_USAGE_SENSOR_ACCEL_3D,
->   		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
->
+ drivers/iio/light/Kconfig    |  24 +++
+ drivers/iio/light/Makefile   |   2 +
+ drivers/iio/light/isl29125.c | 347 ++++++++++++++++++++++++++++++++++++
+ drivers/iio/light/tcs3414.c  | 405 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/iio/light/tcs3472.c  |  11 +-
+ 5 files changed, 788 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/light/isl29125.c
+ create mode 100644 drivers/iio/light/tcs3414.c
+
+-- 
+1.9.1
 
