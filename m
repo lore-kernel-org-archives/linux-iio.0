@@ -1,69 +1,316 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:46509 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:49573 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750946AbaGGH6J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 03:58:09 -0400
-Message-ID: <53BA5394.7080208@kernel.org>
-Date: Mon, 07 Jul 2014 09:00:20 +0100
+	id S1751231AbaGGJCf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 05:02:35 -0400
+Message-ID: <53BA62AD.4030503@kernel.org>
+Date: Mon, 07 Jul 2014 10:04:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio:tcs3472: Check for buffer enabled and locking
-References: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net> <1404563914-27516-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1404563914-27516-2-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: kristina.martsenko@gmail.com, Denis Ciocca <denis.ciocca@st.com>
+Subject: Re: [PATCH 1/7] iio:st sensors: remove custom sampling frequence
+ attribute in favour of core support.
+References: <1403467186-26639-1-git-send-email-jic23@kernel.org> <1403467186-26639-2-git-send-email-jic23@kernel.org> <53AFF83D.9020901@gmx.de>
+In-Reply-To: <53AFF83D.9020901@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/07/14 13:38, Peter Meerwald wrote:
-> From: Peter Meerwald <p.meerwald@bct-electronic.com>
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the fixes-togreg branch of iio.git
+On 29/06/14 12:27, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb:
+>> This allows in kernel client drivers to access this
+>>
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git
 
-Thanks Peter,
-> ---
->   drivers/iio/light/tcs3472.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
+Thanks,
+
+>> ---
+> Good job!
+>>   drivers/iio/accel/st_accel_core.c               | 12 ++++++++--
+>>   drivers/iio/common/st_sensors/st_sensors_core.c | 29 -------------------------
+>>   drivers/iio/gyro/st_gyro_core.c                 | 12 ++++++++--
+>>   drivers/iio/magnetometer/st_magn_core.c         | 12 ++++++++--
+>>   drivers/iio/pressure/st_pressure_core.c         | 27 +++++++++++++++++++++--
+>>   include/linux/iio/common/st_sensors.h           | 12 +---------
+>>   6 files changed, 56 insertions(+), 48 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+>> index a2abf7c..0878648 100644
+>> --- a/drivers/iio/accel/st_accel_core.c
+>> +++ b/drivers/iio/accel/st_accel_core.c
+>> @@ -393,6 +393,9 @@ static int st_accel_read_raw(struct iio_dev *indio_dev,
+>>   		*val = 0;
+>>   		*val2 = adata->current_fullscale->gain;
+>>   		return IIO_VAL_INT_PLUS_MICRO;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = adata->odr;
+>> +		return IIO_VAL_INT;
+>>   	default:
+>>   		return -EINVAL;
+>>   	}
+>> @@ -410,6 +413,13 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
+>>   	case IIO_CHAN_INFO_SCALE:
+>>   		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+>>   		break;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		if (val2)
+>> +			return -EINVAL;
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		err = st_sensors_set_odr(indio_dev, val);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		return err;
+>>   	default:
+>>   		return -EINVAL;
+>>   	}
+>> @@ -417,14 +427,12 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
+>>   	return err;
+>>   }
+>>
+>> -static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+>>   static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+>>   static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_accel_scale_available);
+>>
+>>   static struct attribute *st_accel_attributes[] = {
+>>   	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>>   	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>   	NULL,
+>>   };
+>>
+>> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> index e8b932f..30fb640 100644
+>> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+>> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> @@ -463,35 +463,6 @@ read_wai_error:
+>>   }
+>>   EXPORT_SYMBOL(st_sensors_check_device_support);
+>>
+>> -ssize_t st_sensors_sysfs_get_sampling_frequency(struct device *dev,
+>> -				struct device_attribute *attr, char *buf)
+>> -{
+>> -	struct st_sensor_data *adata = iio_priv(dev_get_drvdata(dev));
+>> -
+>> -	return sprintf(buf, "%d\n", adata->odr);
+>> -}
+>> -EXPORT_SYMBOL(st_sensors_sysfs_get_sampling_frequency);
+>> -
+>> -ssize_t st_sensors_sysfs_set_sampling_frequency(struct device *dev,
+>> -		struct device_attribute *attr, const char *buf, size_t size)
+>> -{
+>> -	int err;
+>> -	unsigned int odr;
+>> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>> -
+>> -	err = kstrtoint(buf, 10, &odr);
+>> -	if (err < 0)
+>> -		goto conversion_error;
+>> -
+>> -	mutex_lock(&indio_dev->mlock);
+>> -	err = st_sensors_set_odr(indio_dev, odr);
+>> -	mutex_unlock(&indio_dev->mlock);
+>> -
+>> -conversion_error:
+>> -	return err < 0 ? err : size;
+>> -}
+>> -EXPORT_SYMBOL(st_sensors_sysfs_set_sampling_frequency);
+>> -
+>>   ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
+>>   				struct device_attribute *attr, char *buf)
+>>   {
+>> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+>> index ed74a90..f156fc6 100644
+>> --- a/drivers/iio/gyro/st_gyro_core.c
+>> +++ b/drivers/iio/gyro/st_gyro_core.c
+>> @@ -245,6 +245,9 @@ static int st_gyro_read_raw(struct iio_dev *indio_dev,
+>>   		*val = 0;
+>>   		*val2 = gdata->current_fullscale->gain;
+>>   		return IIO_VAL_INT_PLUS_MICRO;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = gdata->odr;
+>> +		return IIO_VAL_INT;
+>>   	default:
+>>   		return -EINVAL;
+>>   	}
+>> @@ -262,6 +265,13 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
+>>   	case IIO_CHAN_INFO_SCALE:
+>>   		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+>>   		break;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		if (val2)
+>> +			return -EINVAL;
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		err = st_sensors_set_odr(indio_dev, val);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		return err;
+>>   	default:
+>>   		err = -EINVAL;
+>>   	}
+>> @@ -269,14 +279,12 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
+>>   	return err;
+>>   }
+>>
+>> -static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+>>   static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+>>   static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_anglvel_scale_available);
+>>
+>>   static struct attribute *st_gyro_attributes[] = {
+>>   	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>>   	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
+>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>   	NULL,
+>>   };
+>>
+>> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+>> index 240a21d..a4b6413 100644
+>> --- a/drivers/iio/magnetometer/st_magn_core.c
+>> +++ b/drivers/iio/magnetometer/st_magn_core.c
+>> @@ -299,6 +299,9 @@ static int st_magn_read_raw(struct iio_dev *indio_dev,
+>>   		else
+>>   			*val2 = mdata->current_fullscale->gain;
+>>   		return IIO_VAL_INT_PLUS_MICRO;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = mdata->odr;
+>> +		return IIO_VAL_INT;
+>>   	default:
+>>   		return -EINVAL;
+>>   	}
+>> @@ -316,6 +319,13 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
+>>   	case IIO_CHAN_INFO_SCALE:
+>>   		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+>>   		break;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		if (val2)
+>> +			return -EINVAL;
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		err = st_sensors_set_odr(indio_dev, val);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		return err;
+>>   	default:
+>>   		err = -EINVAL;
+>>   	}
+>> @@ -323,14 +333,12 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
+>>   	return err;
+>>   }
+>>
+>> -static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+>>   static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+>>   static ST_SENSORS_DEV_ATTR_SCALE_AVAIL(in_magn_scale_available);
+>>
+>>   static struct attribute *st_magn_attributes[] = {
+>>   	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>>   	&iio_dev_attr_in_magn_scale_available.dev_attr.attr,
+>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>   	NULL,
+>>   };
+>>
+>> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+>> index cd7e01f..473d914 100644
+>> --- a/drivers/iio/pressure/st_pressure_core.c
+>> +++ b/drivers/iio/pressure/st_pressure_core.c
+>> @@ -307,6 +307,27 @@ static const struct st_sensors st_press_sensors[] = {
+>>   	},
+>>   };
+>>
+>> +static int st_press_write_raw(struct iio_dev *indio_dev,
+>> +			      struct iio_chan_spec const *ch,
+>> +			      int val,
+>> +			      int val2,
+>> +			      long mask)
+>> +{
+>> +	int err;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		if (val2)
+>> +			return -EINVAL;
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		err = st_sensors_set_odr(indio_dev, val);
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		return err;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>>   static int st_press_read_raw(struct iio_dev *indio_dev,
+>>   			struct iio_chan_spec const *ch, int *val,
+>>   							int *val2, long mask)
+>> @@ -349,6 +370,9 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>>   		}
+>>
+>>   		return IIO_VAL_FRACTIONAL;
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val = pdata->odr;
+>> +		return IIO_VAL_INT;
+>>   	default:
+>>   		return -EINVAL;
+>>   	}
+>> @@ -357,12 +381,10 @@ read_error:
+>>   	return err;
+>>   }
+>>
+>> -static ST_SENSOR_DEV_ATTR_SAMP_FREQ();
+>>   static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+>>
+>>   static struct attribute *st_press_attributes[] = {
+>>   	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>   	NULL,
+>>   };
+>>
+>> @@ -374,6 +396,7 @@ static const struct iio_info press_info = {
+>>   	.driver_module = THIS_MODULE,
+>>   	.attrs = &st_press_attribute_group,
+>>   	.read_raw = &st_press_read_raw,
+>> +	.write_raw = &st_press_write_raw,
+>>   };
+>>
+>>   #ifdef CONFIG_IIO_TRIGGER
+>> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+>> index 96f51f0..d8257ab 100644
+>> --- a/include/linux/iio/common/st_sensors.h
+>> +++ b/include/linux/iio/common/st_sensors.h
+>> @@ -47,6 +47,7 @@
+>>   	.type = device_type, \
+>>   	.modified = mod, \
+>>   	.info_mask_separate = mask, \
+>> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>>   	.scan_index = index, \
+>>   	.channel2 = ch2, \
+>>   	.address = addr, \
+>> @@ -59,11 +60,6 @@
+>>   	}, \
+>>   }
+>>
+>> -#define ST_SENSOR_DEV_ATTR_SAMP_FREQ() \
+>> -		IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO, \
+>> -			st_sensors_sysfs_get_sampling_frequency, \
+>> -			st_sensors_sysfs_set_sampling_frequency)
+>> -
+>>   #define ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL() \
+>>   		IIO_DEV_ATTR_SAMP_FREQ_AVAIL( \
+>>   			st_sensors_sysfs_sampling_frequency_avail)
+>> @@ -285,12 +281,6 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+>>   int st_sensors_check_device_support(struct iio_dev *indio_dev,
+>>   			int num_sensors_list, const struct st_sensors *sensors);
+>>
+>> -ssize_t st_sensors_sysfs_get_sampling_frequency(struct device *dev,
+>> -				struct device_attribute *attr, char *buf);
+>> -
+>> -ssize_t st_sensors_sysfs_set_sampling_frequency(struct device *dev,
+>> -		struct device_attribute *attr, const char *buf, size_t size);
+>> -
+>>   ssize_t st_sensors_sysfs_sampling_frequency_avail(struct device *dev,
+>>   				struct device_attribute *attr, char *buf);
+>>
 >
-> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
-> index fe063a0..7525699 100644
-> --- a/drivers/iio/light/tcs3472.c
-> +++ b/drivers/iio/light/tcs3472.c
-> @@ -52,6 +52,7 @@
->
->   struct tcs3472_data {
->   	struct i2c_client *client;
-> +	struct mutex lock;
->   	u8 enable;
->   	u8 control;
->   	u8 atime;
-> @@ -116,10 +117,17 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
->
->   	switch (mask) {
->   	case IIO_CHAN_INFO_RAW:
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
-> +
-> +		mutex_lock(&data->lock);
->   		ret = tcs3472_req_data(data);
-> -		if (ret < 0)
-> +		if (ret < 0) {
-> +			mutex_unlock(&data->lock);
->   			return ret;
-> +		}
->   		ret = i2c_smbus_read_word_data(data->client, chan->address);
-> +		mutex_unlock(&data->lock);
->   		if (ret < 0)
->   			return ret;
->   		*val = ret;
-> @@ -255,6 +263,7 @@ static int tcs3472_probe(struct i2c_client *client,
->   	data = iio_priv(indio_dev);
->   	i2c_set_clientdata(client, indio_dev);
->   	data->client = client;
-> +	mutex_init(&data->lock);
->
->   	indio_dev->dev.parent = &client->dev;
->   	indio_dev->info = &tcs3472_info;
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
