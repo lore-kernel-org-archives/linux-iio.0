@@ -1,182 +1,485 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:61235 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752871AbaGTR5y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Jul 2014 13:57:54 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v7 1/4] iio: Documentation: Add documentation for rotation from north sensor usage attributes
-Date: Sun, 20 Jul 2014 12:57:40 -0500
-Message-Id: <1405879063-2292-2-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
+Received: from mail.kernel.org ([198.145.19.201]:48217 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750855AbaGGIbW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 04:31:22 -0400
+Message-ID: <53BA5B5C.7040204@kernel.org>
+Date: Mon, 07 Jul 2014 09:33:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: Add driver for AMS/TAOS tcs3414 digital color
+ sensor
+References: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net> <1404563914-27516-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1404563914-27516-4-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added documentation for the sysfs attributes supported by the rotation from north
-sensor.
+On 05/07/14 13:38, Peter Meerwald wrote:
+> 16-bit digital color sensor with red, green, blue and clear channel
+>
+> datasheet: http://ams.com/eng/content/download/250258/975997/TCS3414_Datasheet_EN_v1.pdf
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Another nice clean driver,
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 82 +++++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
+Applied to the togreg branch of iio.git initially pushed out as staging.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a9757dc..995642f 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -260,6 +260,10 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- KernelVersion:	2.6.35
-@@ -447,6 +451,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_y_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_tilt_comp_thresh_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_tilt_comp_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_rising_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_thresh_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_thresh_rising_en
-@@ -492,6 +504,14 @@ What:		/sys/.../iio:deviceX/events/in_magn_y_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_y_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_magn_z_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_tilt_comp_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_magnetic_tilt_comp_roc_falling_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_tilt_comp_roc_rising_en
-+What:		/sys/.../iio:deviceX/events/in_rot_from_north_true_tilt_comp_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_rising_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_supply_roc_falling_en
- What:		/sys/.../iio:deviceX/events/in_voltageY_roc_rising_en
-@@ -538,6 +558,14 @@ What:		/sys/.../events/in_magn_y_raw_thresh_rising_value
- What:		/sys/.../events/in_magn_y_raw_thresh_falling_value
- What:		/sys/.../events/in_magn_z_raw_thresh_rising_value
- What:		/sys/.../events/in_magn_z_raw_thresh_falling_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_raw_thresh_rising_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_raw_thresh_falling_value
-+What:		/sys/.../events/in_rot_from_north_true_raw_thresh_rising_value
-+What:		/sys/.../events/in_rot_from_north_true_raw_thresh_falling_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_raw_thresh_rising_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_raw_thresh_falling_value
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_raw_thresh_rising_value
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_raw_thresh_falling_value
- What:		/sys/.../events/in_voltageY_supply_raw_thresh_rising_value
- What:		/sys/.../events/in_voltageY_supply_raw_thresh_falling_value
- What:		/sys/.../events/in_voltageY_raw_thresh_rising_value
-@@ -588,6 +616,18 @@ What:		/sys/.../events/in_magn_y_thresh_either_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_rising_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_falling_hysteresis
- What:		/sys/.../events/in_magn_z_thresh_either_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_rising_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_falling_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_either_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_thresh_rising_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_thresh_falling_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_thresh_either_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_hysteresis
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_either_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_rising_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_falling_hysteresis
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_either_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_rising_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_falling_hysteresis
- What:		/sys/.../events/in_voltageY_thresh_either_hysteresis
-@@ -635,6 +675,14 @@ What:		/sys/.../events/in_magn_y_raw_roc_rising_value
- What:		/sys/.../events/in_magn_y_raw_roc_falling_value
- What:		/sys/.../events/in_magn_z_raw_roc_rising_value
- What:		/sys/.../events/in_magn_z_raw_roc_falling_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_raw_roc_rising_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_raw_roc_falling_value
-+What:		/sys/.../events/in_rot_from_north_true_raw_roc_rising_value
-+What:		/sys/.../events/in_rot_from_north_true_raw_roc_falling_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_raw_roc_rising_value
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_raw_roc_falling_value
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_raw_roc_rising_value
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_raw_roc_falling_value
- What:		/sys/.../events/in_voltageY_supply_raw_roc_rising_value
- What:		/sys/.../events/in_voltageY_supply_raw_roc_falling_value
- What:		/sys/.../events/in_voltageY_raw_roc_rising_value
-@@ -690,6 +738,22 @@ What:		/sys/.../events/in_magn_z_thresh_rising_period
- What:		/sys/.../events/in_magn_z_thresh_falling_period
- What:		/sys/.../events/in_magn_z_roc_rising_period
- What:		/sys/.../events/in_magn_z_roc_falling_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_rising_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_falling_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_roc_rising_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_roc_falling_period
-+What:		/sys/.../events/in_rot_from_north_true_thresh_rising_period
-+What:		/sys/.../events/in_rot_from_north_true_thresh_falling_period
-+What:		/sys/.../events/in_rot_from_north_true_roc_rising_period
-+What:		/sys/.../events/in_rot_from_north_true_roc_falling_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_rising_period
-+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_falling_period
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_rising_period
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_falling_period
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_rising_period
-+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_falling_period
- What:		/sys/.../events/in_voltageY_supply_thresh_rising_period
- What:		/sys/.../events/in_voltageY_supply_thresh_falling_period
- What:		/sys/.../events/in_voltageY_supply_roc_rising_period
-@@ -787,6 +851,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_en
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_magnetic_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_true_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_magnetic_tilt_comp_en
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_true_tilt_comp_en
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
- What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
- What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
-@@ -853,6 +921,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_anglvel_z_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_x_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_y_index
- What:		/sys/.../iio:deviceX/scan_elements/in_magn_z_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_magnetic_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_true_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_magnetic_tilt_comp_index
-+What:		/sys/.../iio:deviceX/scan_elements/in_rot_from_north_true_tilt_comp_index
- What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_index
- What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_index
- What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_index
-@@ -933,3 +1005,13 @@ Description:
- 		x y z w. Here x, y, and z component represents the axis about
- 		which a rotation will occur and w component represents the
- 		amount of rotation.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_raw
-+KernelVersion:	3.15
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value of rotation from true/magnetic north measured with
-+		or without compensation from tilt sensors.
--- 
-1.9.3
+Thanks,
+
+> ---
+>   drivers/iio/light/Kconfig   |  12 ++
+>   drivers/iio/light/Makefile  |   1 +
+>   drivers/iio/light/tcs3414.c | 405 ++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 418 insertions(+)
+>   create mode 100644 drivers/iio/light/tcs3414.c
+>
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 7d83dca..bf05ca5 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -128,6 +128,18 @@ config LTR501
+>   	 This driver can also be built as a module.  If so, the module
+>            will be called ltr501.
+>
+> +config TCS3414
+> +	tristate "TAOS TCS3414 digital color sensor"
+> +	depends on I2C
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	 If you say yes here you get support for the TAOS TCS3414
+> +	 family of digital color sensors.
+> +
+> +	 This driver can also be built as a module.  If so, the module
+> +	 will be called tcs3414.
+> +
+>   config TCS3472
+>   	tristate "TAOS TCS3472 color light-to-digital converter"
+>   	depends on I2C
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index f3d1857..8b8c09f 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+>   obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+>   obj-$(CONFIG_LTR501)		+= ltr501.o
+>   obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+> +obj-$(CONFIG_TCS3414)		+= tcs3414.o
+>   obj-$(CONFIG_TCS3472)		+= tcs3472.o
+>   obj-$(CONFIG_TSL4531)		+= tsl4531.o
+>   obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+> diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
+> new file mode 100644
+> index 0000000..a9e449b
+> --- /dev/null
+> +++ b/drivers/iio/light/tcs3414.c
+> @@ -0,0 +1,405 @@
+> +/*
+> + * tcs3414.c - Support for TAOS TCS3414 digital color sensor
+> + *
+> + * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Digital color sensor with 16-bit channels for red, green, blue, clear);
+> + * 7-bit I2C slave address 0x39 (TCS3414) or 0x29, 0x49, 0x59 (TCS3413,
+> + * TCS3415, TCS3416, resp.)
+> + *
+> + * TODO: sync, interrupt support, thresholds, prescaler
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/delay.h>
+> +#include <linux/pm.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#define TCS3414_DRV_NAME "tcs3414"
+> +
+> +#define TCS3414_COMMAND BIT(7)
+> +#define TCS3414_COMMAND_WORD (TCS3414_COMMAND | BIT(5))
+> +
+> +#define TCS3414_CONTROL (TCS3414_COMMAND | 0x00)
+> +#define TCS3414_TIMING (TCS3414_COMMAND | 0x01)
+> +#define TCS3414_ID (TCS3414_COMMAND | 0x04)
+> +#define TCS3414_GAIN (TCS3414_COMMAND | 0x07)
+> +#define TCS3414_DATA_GREEN (TCS3414_COMMAND_WORD | 0x10)
+> +#define TCS3414_DATA_RED (TCS3414_COMMAND_WORD | 0x12)
+> +#define TCS3414_DATA_BLUE (TCS3414_COMMAND_WORD | 0x14)
+> +#define TCS3414_DATA_CLEAR (TCS3414_COMMAND_WORD | 0x16)
+> +
+> +#define TCS3414_CONTROL_ADC_VALID BIT(4)
+> +#define TCS3414_CONTROL_ADC_EN BIT(1)
+> +#define TCS3414_CONTROL_POWER BIT(0)
+> +
+> +#define TCS3414_INTEG_MASK GENMASK(1, 0)
+> +#define TCS3414_INTEG_12MS 0x0
+> +#define TCS3414_INTEG_100MS 0x1
+> +#define TCS3414_INTEG_400MS 0x2
+> +
+> +#define TCS3414_GAIN_MASK GENMASK(5, 4)
+> +#define TCS3414_GAIN_SHIFT 4
+> +
+> +struct tcs3414_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	u8 control;
+> +	u8 gain;
+> +	u8 timing;
+> +	u16 buffer[8]; /* 4x 16-bit + 8 bytes timestamp */
+> +};
+> +
+> +#define TCS3414_CHANNEL(_color, _si, _addr) { \
+> +	.type = IIO_INTENSITY, \
+> +	.modified = 1, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
+> +		BIT(IIO_CHAN_INFO_INT_TIME), \
+> +	.channel2 = IIO_MOD_LIGHT_##_color, \
+> +	.address = _addr, \
+> +	.scan_index = _si, \
+> +	.scan_type = { \
+> +		.sign = 'u', \
+> +		.realbits = 16, \
+> +		.storagebits = 16, \
+> +		.endianness = IIO_CPU, \
+> +	}, \
+> +}
+> +
+> +/* scale factors: 1/gain */
+> +static const int tcs3414_scales[][2] = {
+> +	{1, 0}, {0, 250000}, {0, 62500}, {0, 15625}
+> +};
+> +
+> +/* integration time in ms */
+> +static const int tcs3414_times[] = { 12, 100, 400 };
+> +
+> +static const struct iio_chan_spec tcs3414_channels[] = {
+> +	TCS3414_CHANNEL(GREEN, 0, TCS3414_DATA_GREEN),
+> +	TCS3414_CHANNEL(RED, 1, TCS3414_DATA_RED),
+> +	TCS3414_CHANNEL(BLUE, 2, TCS3414_DATA_BLUE),
+> +	TCS3414_CHANNEL(CLEAR, 3, TCS3414_DATA_CLEAR),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+> +static int tcs3414_req_data(struct tcs3414_data *data)
+> +{
+> +	int tries = 25;
+> +	int ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control | TCS3414_CONTROL_ADC_EN);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	while (tries--) {
+> +		ret = i2c_smbus_read_byte_data(data->client, TCS3414_CONTROL);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (ret & TCS3414_CONTROL_ADC_VALID)
+> +			break;
+> +		msleep(20);
+> +	}
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (tries < 0) {
+> +		dev_err(&data->client->dev, "data not ready\n");
+> +		return -EIO;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int tcs3414_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	struct tcs3414_data *data = iio_priv(indio_dev);
+> +	int i, ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+> +		mutex_lock(&data->lock);
+> +		ret = tcs3414_req_data(data);
+> +		if (ret < 0) {
+> +			mutex_unlock(&data->lock);
+> +			return ret;
+> +		}
+> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
+> +		mutex_unlock(&data->lock);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +	i = (data->gain & TCS3414_GAIN_MASK) >> TCS3414_GAIN_SHIFT;
+> +	*val = tcs3414_scales[i][0];
+> +		*val2 = tcs3414_scales[i][1];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = tcs3414_times[data->timing & TCS3414_INTEG_MASK] * 1000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int tcs3414_write_raw(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan,
+> +			       int val, int val2, long mask)
+> +{
+> +	struct tcs3414_data *data = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		for (i = 0; i < ARRAY_SIZE(tcs3414_scales); i++) {
+> +			if (val == tcs3414_scales[i][0] &&
+> +				val2 == tcs3414_scales[i][1]) {
+> +				data->gain &= ~TCS3414_GAIN_MASK;
+> +				data->gain |= i << TCS3414_GAIN_SHIFT;
+> +				return i2c_smbus_write_byte_data(
+> +					data->client, TCS3414_GAIN,
+> +					data->gain);
+> +			}
+> +		}
+> +		return -EINVAL;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +		for (i = 0; i < ARRAY_SIZE(tcs3414_times); i++) {
+> +			if (val == tcs3414_times[i] * 1000) {
+> +				data->timing &= ~TCS3414_INTEG_MASK;
+> +				data->timing |= i;
+> +				return i2c_smbus_write_byte_data(
+> +					data->client, TCS3414_TIMING,
+> +					data->timing);
+> +			}
+> +		}
+> +		return -EINVAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static irqreturn_t tcs3414_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct tcs3414_data *data = iio_priv(indio_dev);
+> +	int i, j = 0;
+> +
+> +	for_each_set_bit(i, indio_dev->active_scan_mask,
+> +		indio_dev->masklength) {
+> +		int ret = i2c_smbus_read_word_data(data->client,
+> +			TCS3414_DATA_GREEN + 2*i);
+> +		if (ret < 0)
+> +			goto done;
+> +
+> +		data->buffer[j++] = ret;
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +		iio_get_time_ns());
+> +
+> +done:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static IIO_CONST_ATTR(scale_available, "1 0.25 0.0625 0.015625");
+> +static IIO_CONST_ATTR_INT_TIME_AVAIL("0.012 0.1 0.4");
+> +
+> +static struct attribute *tcs3414_attributes[] = {
+> +	&iio_const_attr_scale_available.dev_attr.attr,
+> +	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group tcs3414_attribute_group = {
+> +	.attrs = tcs3414_attributes,
+> +};
+> +
+> +static const struct iio_info tcs3414_info = {
+> +	.read_raw = tcs3414_read_raw,
+> +	.write_raw = tcs3414_write_raw,
+> +	.attrs = &tcs3414_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int tcs3414_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct tcs3414_data *data = iio_priv(indio_dev);
+> +
+> +	data->control |= TCS3414_CONTROL_ADC_EN;
+> +	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control);
+> +}
+> +
+> +static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	struct tcs3414_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = iio_triggered_buffer_predisable(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->control &= ~TCS3414_CONTROL_ADC_EN;
+> +	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops tcs3414_buffer_setup_ops = {
+> +	.preenable = tcs3414_buffer_preenable,
+> +	.postenable = &iio_triggered_buffer_postenable,
+> +	.predisable = tcs3414_buffer_predisable,
+> +};
+> +
+> +static int tcs3414_probe(struct i2c_client *client,
+> +			   const struct i2c_device_id *id)
+> +{
+> +	struct tcs3414_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &tcs3414_info;
+> +	indio_dev->name = TCS3414_DRV_NAME;
+> +	indio_dev->channels = tcs3414_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(tcs3414_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3414_ID);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	switch (ret & 0xf0) {
+> +	case 0x00:
+> +		dev_info(&client->dev, "TCS3404 found\n");
+> +		break;
+> +	case 0x10:
+> +		dev_info(&client->dev, "TCS3413/14/15/16 found\n");
+> +		break;
+> +	default:
+> +		return -ENODEV;
+> +	}
+> +
+> +	data->control = TCS3414_CONTROL_POWER;
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->timing = TCS3414_INTEG_12MS; /* free running */
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3414_TIMING,
+> +		data->timing);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3414_GAIN);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->gain = ret;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +		tcs3414_trigger_handler, &tcs3414_buffer_setup_ops);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto buffer_cleanup;
+> +
+> +	return 0;
+> +
+> +buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int tcs3414_powerdown(struct tcs3414_data *data)
+> +{
+> +	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control & ~(TCS3414_CONTROL_POWER |
+> +		TCS3414_CONTROL_ADC_EN));
+> +}
+> +
+> +static int tcs3414_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	tcs3414_powerdown(iio_priv(indio_dev));
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int tcs3414_suspend(struct device *dev)
+> +{
+> +	struct tcs3414_data *data = iio_priv(i2c_get_clientdata(
+> +		to_i2c_client(dev)));
+> +	return tcs3414_powerdown(data);
+> +}
+> +
+> +static int tcs3414_resume(struct device *dev)
+> +{
+> +	struct tcs3414_data *data = iio_priv(i2c_get_clientdata(
+> +		to_i2c_client(dev)));
+> +	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+> +		data->control);
+> +}
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(tcs3414_pm_ops, tcs3414_suspend, tcs3414_resume);
+> +
+> +static const struct i2c_device_id tcs3414_id[] = {
+> +	{ "tcs3414", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, tcs3414_id);
+> +
+> +static struct i2c_driver tcs3414_driver = {
+> +	.driver = {
+> +		.name	= TCS3414_DRV_NAME,
+> +		.pm	= &tcs3414_pm_ops,
+> +		.owner	= THIS_MODULE,
+> +	},
+> +	.probe		= tcs3414_probe,
+> +	.remove		= tcs3414_remove,
+> +	.id_table	= tcs3414_id,
+> +};
+> +module_i2c_driver(tcs3414_driver);
+> +
+> +MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
+> +MODULE_DESCRIPTION("TCS3414 digital color sensors driver");
+> +MODULE_LICENSE("GPL");
+>
 
