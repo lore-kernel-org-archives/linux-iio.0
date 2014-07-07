@@ -1,190 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mta1.parkeon.com ([91.121.43.66]:60833 "EHLO mta1.parkeon.com"
+Received: from mail.kernel.org ([198.145.19.201]:57006 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753136AbaG2JBp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Jul 2014 05:01:45 -0400
-Subject: [PATCH V2 7/8] iio: mma8452: add an attribute to enable the
- highpass filter
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Cc: pmeerw@pmeerw.net
-Date: Tue, 29 Jul 2014 11:01:43 +0200
-Message-ID: <20140729090143.4618.9179.stgit@localhost>
-In-Reply-To: <20140729090128.4618.92936.stgit@localhost>
-References: <20140729090128.4618.92936.stgit@localhost>
+	id S1752806AbaGGMX0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 08:23:26 -0400
+Message-ID: <53BA91C1.10808@kernel.org>
+Date: Mon, 07 Jul 2014 13:25:37 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+To: Linus Walleij <linus.walleij@linaro.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>
+CC: Lee Jones <lee.jones@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [RESEND PATCH 2/3] iio: st_sensors: add device tree bindings
+References: <1404726486-2610-1-git-send-email-linus.walleij@linaro.org> <CACRpkdY+xa6TAOcyEb6ZO37RmshsjmB4WgPD59UPn=WEBnR7nQ@mail.gmail.com>
+In-Reply-To: <CACRpkdY+xa6TAOcyEb6ZO37RmshsjmB4WgPD59UPn=WEBnR7nQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The hardware contains a single configurable highpass filter which
-is normally used for transient detection (event).
+On 07/07/14 10:52, Linus Walleij wrote:
+> On Mon, Jul 7, 2014 at 11:48 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+>> This adds some basic, simple device tree bindings to the STMicro
+>> MEMS sensor drivers.
+>>
+>> Cc: devicetree@vger.kernel.org
+>> Cc: Lee Jones <lee.jones@linaro.org>
+>> Cc: Denis CIOCCA <denis.ciocca@st.com>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> I'd like an indication of if we can merge this thing as I can then merge the
+> corresponding device tree changes for Ux500 to the ARM SoC tree.
+It's been a while.
+No one has commented.
+This is pretty obviously good.
 
-However it is also possible to enable this filter for normal channel
-reading. Add a new attribute in_accel_high_pass_filter_en to do this.
+Applied to the togreg branch of iio.git - initially pushed out as testing.
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/iio/accel/mma8452.c |  115 +++++++++++++++++++++++++++++--------------
- 1 file changed, 78 insertions(+), 37 deletions(-)
+Thanks
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index eb68f9a..62589f9 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -62,6 +62,7 @@
- #define MMA8452_DATA_CFG_FS_2G 0
- #define MMA8452_DATA_CFG_FS_4G 1
- #define MMA8452_DATA_CFG_FS_8G 2
-+#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
- 
- #define MMA8452_INT_DRDY	BIT(0)
- #define MMA8452_INT_FF_MT	BIT(2)
-@@ -106,6 +107,43 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- 		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
- }
- 
-+static int mma8452_standby(struct mma8452_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-+		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
-+}
-+
-+static int mma8452_active(struct mma8452_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-+		data->ctrl_reg1);
-+}
-+
-+static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
-+{
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	/* config can only be changed when in standby */
-+	ret = mma8452_standby(data);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, reg, val);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = mma8452_active(data);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = 0;
-+fail:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
- static ssize_t mma8452_show_int_plus_micros(char *buf,
- 	const int (*vals)[2], int n)
- {
-@@ -201,11 +239,50 @@ static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
- 		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
- }
- 
-+static ssize_t mma8452_show_hp_cutoff_en(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n",
-+		data->data_cfg & MMA8452_DATA_CFG_HPF_MASK ? 1 : 0);
-+}
-+
-+static ssize_t mma8452_store_hp_cutoff_en(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	bool state;
-+	int ret;
-+
-+	ret = strtobool(buf, &state);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (state)
-+		data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
-+	else
-+		data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
-+
-+	ret = mma8452_change_config(data, MMA8452_DATA_CFG, data->data_cfg);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
- static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
- 	mma8452_show_scale_avail, NULL, 0);
- static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
- 			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
-+static IIO_DEVICE_ATTR(in_accel_filter_high_pass_en,
-+			 S_IRUGO | S_IWUSR,
-+			 mma8452_show_hp_cutoff_en,
-+			 mma8452_store_hp_cutoff_en, 0);
- 
- static int mma8452_get_samp_freq_index(struct mma8452_data *data,
- 	int val, int val2)
-@@ -282,43 +359,6 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static int mma8452_standby(struct mma8452_data *data)
--{
--	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
--		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
--}
--
--static int mma8452_active(struct mma8452_data *data)
--{
--	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
--		data->ctrl_reg1);
--}
--
--static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
--{
--	int ret;
--
--	mutex_lock(&data->lock);
--
--	/* config can only be changed when in standby */
--	ret = mma8452_standby(data);
--	if (ret < 0)
--		goto fail;
--
--	ret = i2c_smbus_write_byte_data(data->client, reg, val);
--	if (ret < 0)
--		goto fail;
--
--	ret = mma8452_active(data);
--	if (ret < 0)
--		goto fail;
--
--	ret = 0;
--fail:
--	mutex_unlock(&data->lock);
--	return ret;
--}
--
- static int mma8452_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
-@@ -636,6 +676,7 @@ static struct attribute *mma8452_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_high_pass_en.dev_attr.attr,
- 	NULL
- };
- 
+Jonathan
 
