@@ -1,21 +1,105 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <53B50557.5010302@metafoo.de>
-Date: Thu, 03 Jul 2014 09:25:11 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:56680 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752573AbaGGMK6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 08:10:58 -0400
+Message-ID: <53BA8ED5.9010808@kernel.org>
+Date: Mon, 07 Jul 2014 13:13:09 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
-CC: jic23@kernel.org, spk.linux@gmail.com,
- Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: Re: [PATCH 4/5] iio: ad5686: Remove redundant variable
-References: <1404369485-1903-1-git-send-email-sachin.kamat@samsung.com> <1404369485-1903-4-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369485-1903-4-git-send-email-sachin.kamat@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
+CC: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND PATCH 1/3] iio: st_sensors: get platform data from device
+ tree
+References: <1404726435-2565-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1404726435-2565-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/03/2014 08:38 AM, Sachin Kamat wrote:
-> ‘regdone’ is not used in the function. Remove it.
+On 07/07/14 10:47, Linus Walleij wrote:
+> Currently the STMicroelectronics sensors only support one single
+> platform data item: configuration of the DRDY (data ready) pin
+> for a particular design. Augment the core to prioritize and take
+> this information from the device tree if the parent device has an
+> assigned device node, else fall back to passed in platform data
+> (usually the default data).
 >
-> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-> Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Denis CIOCCA <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Thanks for resending these.  I'd lost them completely!
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Anyhow, applied to the togreg branch of iio.git which will initially
+get pushed out as testing for the autobuilders to play ball.
+
+J
+> ---
+>   drivers/iio/common/st_sensors/st_sensors_core.c | 35 ++++++++++++++++++++++++-
+>   1 file changed, 34 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index e8b932fed70e..1cdcef94e6a2 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -14,8 +14,8 @@
+>   #include <linux/delay.h>
+>   #include <linux/iio/iio.h>
+>   #include <linux/regulator/consumer.h>
+> +#include <linux/of.h>
+>   #include <asm/unaligned.h>
+> -
+>   #include <linux/iio/common/st_sensors.h>
+>
+>
+> @@ -265,14 +265,47 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+>   	return 0;
+>   }
+>
+> +#ifdef CONFIG_OF
+> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+> +		struct st_sensors_platform_data *defdata)
+> +{
+> +	struct st_sensors_platform_data *pdata;
+> +	struct device_node *np = dev->of_node;
+> +	u32 val;
+> +
+> +	if (!np)
+> +		return NULL;
+> +
+> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+> +	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
+> +		pdata->drdy_int_pin = (u8) val;
+> +	else
+> +		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
+> +
+> +	return pdata;
+> +}
+> +#else
+> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+> +		struct st_sensors_platform_data *defdata)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>   int st_sensors_init_sensor(struct iio_dev *indio_dev,
+>   					struct st_sensors_platform_data *pdata)
+>   {
+>   	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +	struct st_sensors_platform_data *of_pdata;
+>   	int err = 0;
+>
+>   	mutex_init(&sdata->tb.buf_lock);
+>
+> +	/* If OF/DT pdata exists, it will take precedence of anything else */
+> +	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
+> +	if (of_pdata)
+> +		pdata = of_pdata;
+> +
+>   	if (pdata)
+>   		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
+>
+>
+
