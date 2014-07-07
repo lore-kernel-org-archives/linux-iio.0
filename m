@@ -1,52 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f178.google.com ([209.85.214.178]:50227 "EHLO
-	mail-ob0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752857AbaGGNyD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jul 2014 09:54:03 -0400
-Received: by mail-ob0-f178.google.com with SMTP id wn1so4619938obc.37
-        for <linux-iio@vger.kernel.org>; Mon, 07 Jul 2014 06:54:03 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <53BA918D.2050402@kernel.org>
-References: <1404726525-2649-1-git-send-email-linus.walleij@linaro.org>
-	<53BA918D.2050402@kernel.org>
-Date: Mon, 7 Jul 2014 15:54:03 +0200
-Message-ID: <CACRpkdYCh7qQM7C1WpphNyhi96NkYEP8chXOtQP3YdyuprmptA@mail.gmail.com>
-Subject: Re: [RESEND PATCH 3/3] iio: st_sensors: add devicetree probing support
-From: Linus Walleij <linus.walleij@linaro.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:51275 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753451AbaGGOhk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jul 2014 10:37:40 -0400
+Date: Mon, 7 Jul 2014 16:36:00 +0200
+From: Mark Brown <broonie@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Message-ID: <20140707143600.GA2469@sirena.org.uk>
+References: <1403287927-30031-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <53A6E6D1.7090507@kernel.org>
+ <53A78159.90400@linux.intel.com>
+ <53AFF4A5.2020505@kernel.org>
+ <53B0225F.6030704@linux.intel.com>
+ <53B025EF.5060600@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WIyZ46R2i8wDzkSu"
+In-Reply-To: <53B025EF.5060600@kernel.org>
+Subject: Re: [PATCH] iio: accel: BMC150 accel support
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jul 7, 2014 at 2:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 
-> ERROR: "st_sensors_of_i2c_probe" [drivers/iio/pressure/st_pressure_i2c.ko]
-> undefined!
-> ERROR: "st_sensors_of_i2c_probe" [drivers/iio/magnetometer/st_magn_i2c.ko]
-> undefined!
-> ERROR: "st_sensors_of_i2c_probe" [drivers/iio/gyro/st_gyro_i2c.ko]
-> undefined!
-> ERROR: "st_sensors_of_i2c_probe" [drivers/iio/accel/st_accel_i2c.ko]
-> undefined!
-> scripts/Makefile.modpost:90: recipe for target '__modpost' failed
-> make[1]: *** [__modpost] Error 1
-> Makefile:1047: recipe for target 'modules' failed
-> make: *** [modules] Error 2
->
-> When CONFIG_OF not selected.
+--WIyZ46R2i8wDzkSu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Um, when CONFIG_OF is *not* selected?
+On Sun, Jun 29, 2014 at 03:42:55PM +0100, Jonathan Cameron wrote:
+> On 29/06/14 15:27, Srinivas Pandruvada wrote:
 
-This looks more like it is selected, but the symbol is missing, since
-I missed to export that symbol, right?
+Please don't use my Linaro address for upstream things, use my
+kernel.org one (which is the one I always use for mail and is in
+MAINTAINERS).
 
-In the !CONFIG_OF case there is a static inline in
-<linux/iio/common/st_sensors_i2c.h> to handle that.
+I'm also having a bit of an issue reading the mail due to it not being
+word wrapped.
 
-The v2 patch I just sent should fix this issue...
+> If we are dependent on regulators to leave certain states, do we have access to how long
+> they take to start up?  What about bringing buses up...
 
-Yours,
-Linus Walleij
+> Cc'd Mark Brown on the basis he knows all sorts of hideous corners of the kernel way
+> better than me ;)
+
+With regulators the delays are handled transparently in the framework -
+by the time the functions return the operation should have commpleted.
+If there is a need to have a non-blocking interface we'll have to add
+this.  The delays can be queried with _time() functions.
+
+--WIyZ46R2i8wDzkSu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTurBHAAoJELSic+t+oim90WoP/2FbPaTUcglsvRatPmnD8XnM
+PZu754a0ulyU5Oy2zzQPfXuABzV2YycMFw4koce6wBc+dGQrEsslAr+AA0YQREEB
+TN1tBHZ1ixS6SaAQBNF4383NYqQvoHMResCUsFGPgJ989u6nXwGqJpQObQ4rcJcN
+TpIDhLt5QS+2bDgNx6muhB109JW6OaZrstNM4R0DYPKPh2j6xBGlRVJBMZd3G/vp
+e/wreIHYelqOPlC6iop22nFa55TH+L8fqH0FUWmqMnJb8kqkl0o36/JHQFS1952o
+oliET0hsiKBfKSbQQ4PRfEuE76cHi8q1uyfp7gYeFGWrLcVGo8PkMkqDVCGmsR4C
+4EdNYePlpVilUGp+HP5Lzbp1ssKaeVpg9HydNuctudZZs5BITCS7H3W67MAeRMfA
+SHwyYtRXmAPc3OM7NGKp09LM9KP/2gaLiuVYd7ybInfwBDn/bHMi7nhwE2HKb7Ai
+W1Eu6uVuXnTzEVsPYIlkSgKJhgFr6YXgJLdq9JhpZWHejvqgY9ANBMjCqickgKjg
+XRrYNAkcZcfw6sahXhjEIRngM/1KWDzs3xNaNpfuk6e/ggVrCrMWoGwNCwQdwep6
+ym+/8STRQpwq+OxxfOP6BhJMHqiTet7XNWo33cnpsdBAAHkEVK3pomr8/8TwY76J
+zuoZGf6PJCnA4NOGNtQC
+=ULDo
+-----END PGP SIGNATURE-----
+
+--WIyZ46R2i8wDzkSu--
