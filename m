@@ -1,96 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.20]:60940 "EHLO mout.gmx.net"
+Received: from mail.kernel.org ([198.145.19.201]:57651 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753413AbaGHLHB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 8 Jul 2014 07:07:01 -0400
-Message-ID: <53BBD0CF.4050702@gmx.de>
-Date: Tue, 08 Jul 2014 13:06:55 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+	id S1752089AbaGGMer (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 08:34:47 -0400
+Message-ID: <53BA9469.7000600@kernel.org>
+Date: Mon, 07 Jul 2014 13:36:57 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/6] staging:iio:ad7291 fix defines
-Content-Type: text/plain; charset=ISO-8859-15
+To: Himangi Saraogi <himangi774@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+CC: julia.lawall@lip6.fr, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] staging: iio: Introduce the use of devm_ioremap_resource
+References: <20140701184413.GA2980@himangi-Dell>
+In-Reply-To: <20140701184413.GA2980@himangi-Dell>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use BIT and GENMASK, remove unused defines, use AD7291_VOLTAGE_OFFSET
-definition and move AD7291_BITS.
+On 01/07/14 19:44, Himangi Saraogi wrote:
+> This patch introduces the use of devm_ioremap_resource. It does away
+> with call to request_mem_region and the error checking on
+> platform_get_resource. Also, the calls to free the allocated resources
+> like release_mem_region and iounmap are done away with. The ret variable
+> in the probe function is also eliminated. Also, a bug is fixed as the
+> goto in the error handling of request_mem_region should not have
+> called release_mem_region which releases a resource that has not been
+> allocated.
+>
+> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Again, looks superficially fine, but I'd like an ack from someone
+at Analog ideally.
+Cc'd Lars
+> ---
+>   drivers/staging/iio/adc/ad7606_par.c | 37 ++++++------------------------------
+>   1 file changed, 6 insertions(+), 31 deletions(-)
+>
+> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+> index 8a48d18..7511839 100644
+> --- a/drivers/staging/iio/adc/ad7606_par.c
+> +++ b/drivers/staging/iio/adc/ad7606_par.c
+> @@ -53,7 +53,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
+>   	struct iio_dev *indio_dev;
+>   	void __iomem *addr;
+>   	resource_size_t remap_size;
+> -	int ret, irq;
+> +	int irq;
+>
+>   	irq = platform_get_irq(pdev, 0);
+>   	if (irq < 0) {
+> @@ -62,56 +62,31 @@ static int ad7606_par_probe(struct platform_device *pdev)
+>   	}
+>
+>   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	if (!res)
+> -		return -ENODEV;
+> +	addr = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(addr))
+> +		return PTR_ERR(addr);
+>
+>   	remap_size = resource_size(res);
+>
+> -	/* Request the regions */
+> -	if (!request_mem_region(res->start, remap_size, "iio-ad7606")) {
+> -		ret = -EBUSY;
+> -		goto out1;
+> -	}
+> -	addr = ioremap(res->start, remap_size);
+> -	if (!addr) {
+> -		ret = -ENOMEM;
+> -		goto out1;
+> -	}
+> -
+>   	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
+>   			  platform_get_device_id(pdev)->driver_data,
+>   			  remap_size > 1 ? &ad7606_par16_bops :
+>   			  &ad7606_par8_bops);
+>
+> -	if (IS_ERR(indio_dev))  {
+> -		ret = PTR_ERR(indio_dev);
+> -		goto out2;
+> -	}
+> +	if (IS_ERR(indio_dev))
+> +		return PTR_ERR(indio_dev);
+>
+>   	platform_set_drvdata(pdev, indio_dev);
+>
+>   	return 0;
+> -
+> -out2:
+> -	iounmap(addr);
+> -out1:
+> -	release_mem_region(res->start, remap_size);
+> -
+> -	return ret;
+>   }
+>
+>   static int ad7606_par_remove(struct platform_device *pdev)
+>   {
+>   	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> -	struct resource *res;
+> -	struct ad7606_state *st = iio_priv(indio_dev);
+>
+>   	ad7606_remove(indio_dev, platform_get_irq(pdev, 0));
+>
+> -	iounmap(st->base_address);
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	release_mem_region(res->start, resource_size(res));
+> -
+>   	return 0;
+>   }
+>
+>
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
----
-diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
-index b868c64..8ff3536 100644
---- a/drivers/staging/iio/adc/ad7291.c
-+++ b/drivers/staging/iio/adc/ad7291.c
-@@ -46,31 +46,27 @@
- #define AD7291_VOLTAGE_ALERT_STATUS	0x1F
- #define AD7291_T_ALERT_STATUS		0x20
- 
-+#define AD7291_BITS			12
- #define AD7291_VOLTAGE_LIMIT_COUNT	8
- 
- 
- /*
-  * AD7291 command
-  */
--#define AD7291_AUTOCYCLE		(1 << 0)
--#define AD7291_RESET			(1 << 1)
--#define AD7291_ALERT_CLEAR		(1 << 2)
--#define AD7291_ALERT_POLARITY		(1 << 3)
--#define AD7291_EXT_REF			(1 << 4)
--#define AD7291_NOISE_DELAY		(1 << 5)
--#define AD7291_T_SENSE_MASK		(1 << 7)
--#define AD7291_VOLTAGE_MASK		0xFF00
--#define AD7291_VOLTAGE_OFFSET		0x8
-+#define AD7291_AUTOCYCLE		BIT(0)
-+#define AD7291_RESET			BIT(1)
-+#define AD7291_ALERT_CLEAR		BIT(2)
-+#define AD7291_ALERT_POLARITY		BIT(3)
-+#define AD7291_EXT_REF			BIT(4)
-+#define AD7291_NOISE_DELAY		BIT(5)
-+#define AD7291_T_SENSE_MASK		BIT(7)
-+#define AD7291_VOLTAGE_MASK		GENMASK(15, 8)
-+#define AD7291_VOLTAGE_OFFSET		8
- 
- /*
-  * AD7291 value masks
-  */
--#define AD7291_CHANNEL_MASK		0xF000
--#define AD7291_BITS			12
--#define AD7291_VALUE_MASK		0xFFF
--#define AD7291_T_VALUE_SIGN		0x400
--#define AD7291_T_VALUE_FLOAT_OFFSET	2
--#define AD7291_T_VALUE_FLOAT_MASK	0x2
-+#define AD7291_VALUE_MASK		GENMASK(11, 0)
- 
- struct ad7291_chip_info {
- 	struct i2c_client	*client;
-@@ -172,7 +168,7 @@ static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
- 		offset = chan->channel;
- 		break;
- 	case IIO_TEMP:
--		offset = 8;
-+		offset = AD7291_VOLTAGE_OFFSET;
- 		break;
- 	}
- 
-@@ -246,7 +242,7 @@ static int ad7291_read_event_config(struct iio_dev *indio_dev,
- 
- 	switch (chan->type) {
- 	case IIO_VOLTAGE:
--		if (chip->c_mask & (1 << (15 - chan->channel)))
-+		if (chip->c_mask & BIT(15 - chan->channel))
- 			return 1;
- 		else
- 			return 0;
-@@ -331,7 +327,7 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
- 			}
- 			/* Enable this channel alone */
- 			regval = chip->command & (~AD7291_VOLTAGE_MASK);
--			regval |= 1 << (15 - chan->channel);
-+			regval |= BIT(15 - chan->channel);
- 			ret = ad7291_i2c_write(chip, AD7291_COMMAND, regval);
- 			if (ret < 0) {
- 				mutex_unlock(&chip->state_lock);
