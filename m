@@ -1,68 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:42177 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:42282 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752189AbaGGQLq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 12:11:46 -0400
-Message-ID: <53BAC744.3070704@kernel.org>
-Date: Mon, 07 Jul 2014 17:13:56 +0100
+	id S1751280AbaGGQOE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 7 Jul 2014 12:14:04 -0400
+Message-ID: <53BAC7CF.2020501@kernel.org>
+Date: Mon, 07 Jul 2014 17:16:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Mark Brown <broonie@kernel.org>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: BMC150 accel support
-References: <1403287927-30031-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53A6E6D1.7090507@kernel.org> <53A78159.90400@linux.intel.com> <53AFF4A5.2020505@kernel.org> <53B0225F.6030704@linux.intel.com> <53B025EF.5060600@kernel.org> <20140707143600.GA2469@sirena.org.uk>
-In-Reply-To: <20140707143600.GA2469@sirena.org.uk>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Daniel Baluta <daniel.baluta@intel.com>, pmeerw@pmeerw.net
+CC: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: remove duplicate case labels
+References: <1404742333-22681-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1404742333-22681-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/07/14 15:36, Mark Brown wrote:
-> On Sun, Jun 29, 2014 at 03:42:55PM +0100, Jonathan Cameron wrote:
->> On 29/06/14 15:27, Srinivas Pandruvada wrote:
+On 07/07/14 15:12, Daniel Baluta wrote:
+> Otherwise, compiling iio_event_monitor program fails:
 >
-> Please don't use my Linaro address for upstream things, use my
-> kernel.org one (which is the one I always use for mail and is in
-> MAINTAINERS).
-Will do.
+> io_event_monitor.c: In function ‘event_is_known’:
+> iio_event_monitor.c:125:2: error: duplicate case value
+>    case IIO_MOD_LIGHT_BOTH:
+>    ^
+> iio_event_monitor.c:121:2: error: previously used here
+>    case IIO_MOD_LIGHT_BOTH:
 >
-> I'm also having a bit of an issue reading the mail due to it not being
-> word wrapped.
-It does indeed seem to have gotten wrapped at a random, somewhat
-longer than normal length... Oops.
+> Fixes: da4db94 (iio staging: add recently added modifiers to iio_event_monitor)
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git.  It's a fix to example code so
+probably not worth pushing out any faster.
+
+Thanks,
+
+Jonathan
+> ---
+>   drivers/staging/iio/Documentation/iio_event_monitor.c | 2 --
+>   1 file changed, 2 deletions(-)
 >
->> If we are dependent on regulators to leave certain states, do we have access to how long
->> they take to start up?  What about bringing buses up...
+> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> index cb35a97..569d6f8 100644
+> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> @@ -122,8 +122,6 @@ static bool event_is_known(struct iio_event_data *event)
+>   	case IIO_MOD_LIGHT_IR:
+>   	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+>   	case IIO_MOD_SUM_SQUARED_X_Y_Z:
+> -	case IIO_MOD_LIGHT_BOTH:
+> -	case IIO_MOD_LIGHT_IR:
+>   	case IIO_MOD_LIGHT_CLEAR:
+>   	case IIO_MOD_LIGHT_RED:
+>   	case IIO_MOD_LIGHT_GREEN:
 >
->> Cc'd Mark Brown on the basis he knows all sorts of hideous corners of the kernel way
->> better than me ;)
->
-> With regulators the delays are handled transparently in the framework -
-> by the time the functions return the operation should have commpleted.
-> If there is a need to have a non-blocking interface we'll have to add
-> this.  The delays can be queried with _time() functions.
-We are looking at a somewhat tangential question here...
-
-What we have is a device that has various power saving levels.  As
-the basic interest of IIO is grabbing data, in a sense it is the
-time taken to return from a given level and grab some data that
-acts as the controlling variable on how low a power state the
-device should go into.
-
-Hence rather than picking a given power state (deep sleep or similar)
-we want the control to be on capture latency.  Hence userspace
-can specify the 'worst case' latency it will accept and the
-device will hence enter the lowest power state, between samples,
-that it can without failing to meet the requirement.
-
-What I was wondering is whether there is anything similar
-elsewhere that you know of? For example, could we query a
-regulator driver to ask it how long it will take to start up
-a given output?
-
-This extension beyond the device it self to it's power supplies
-and for example bus is more of an idle thought than an actual
-plan at this stage.
-
-J  
 
