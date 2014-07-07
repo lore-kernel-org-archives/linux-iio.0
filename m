@@ -1,89 +1,41 @@
-Return-Path: <reyad.attiyat@gmail.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Mon, 7 Jul 2014 21:32:39 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Josef Gajdusek <atx@atx.name>, linux-iio@vger.kernel.org,
+    devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] staging:iio:hmc5843: Added regmap support
+In-Reply-To: <8e31f2b8-25ed-450e-9b70-f9338f8f3c4b@email.android.com>
+Message-ID: <alpine.DEB.2.01.1407072131050.23477@pmeerw.net>
+References: <20140707185013.GA10383@dashie> <8e31f2b8-25ed-450e-9b70-f9338f8f3c4b@email.android.com>
 MIME-Version: 1.0
-In-Reply-To: <53C59F78.8060009@linux.intel.com>
-References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
- <53BD9BD5.5030204@linux.intel.com> <CA+BWVUSLtG9pH245ofyGsrST5H_5W_EbvOXZ_YkCxmg4DX09_A@mail.gmail.com>
- <53C59F78.8060009@linux.intel.com>
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-Date: Tue, 15 Jul 2014 22:38:27 -0500
-Message-ID: <CA+BWVUQWKSKxDqMvGwAzUcnqBotPFkWD=PsjFC3qHpvo_=xYtw@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] iio: Add support for rotation from north
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-Hey Srinivas
 
-Thanks for looking into this for me!
-I'll fix it up and resubmit soon.
+> >> > This patch changes hmc5843.c to use regmap. This provides
+> >transparent caching
+> >> > to the code as well as abstraction necessary to add support for
+> >SPI-based
+> >> > hmc5983.
+> >> >
+> >> > Signed-off-by: Josef Gajdusek <atx@atx.name>
+> >> Hi Josef,
+> >> 
+> >> A few little bits and pieces inline.
+> >> Peter, could you also take a look at this series?
 
-On Tue, Jul 15, 2014 at 4:39 PM, Srinivas Pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
-> Hi,
->
-> Since you have only one attribute, it is working for you.
-> There is a dereference error in *channels.
->
-> Check the attached diff, which will fix this.
->
-> Thanks,
-> Srinivas
->
->
-> On 07/09/2014 03:12 PM, Reyad Attiyat wrote:
->>
->> Hey Srinivas,
->>
->> I did look into the panic you sent. I wasn't sure exactly what caused
->> the NULL pointer.
->> I tested it with out applying the last rotation from north patch, so
->> no hid usages are found, my device only has rotation_from_north, and
->> hid_parse_report() would return -EINVAL.
->> I added another check to make sure a iio channel were set up, and
->> return -EINVAL if not, but couldn't think of anything else.
->>
->> Could you test this version with dynamic debugging and see if it is
->> finding any hid usage attributes.
->> Any ideas what could cause this? I think I'm handling errors properly
->> by returning what parse_report returns (-EINVAL or -ENOMEM) in probe
->>
->> Thanks,
->> Reyad Attiyat
->>
->> On Wed, Jul 9, 2014 at 2:45 PM, Srinivas Pandruvada
->> <srinivas.pandruvada@linux.intel.com> wrote:
->>>
->>> On 07/09/2014 12:30 PM, Reyad Attiyat wrote:
->>>>
->>>> This series of patches modifies magn-3d driver to handle the rotation
->>>> from north usage. This is done by scanning the report and then building
->>>> the iio arrays (vals and channels) dynamically.
->>>>
->>>> Changes from V4
->>>> I use the address field of struct iio_chan_spec to hold the array index
->>>> of the usage attribute. The scan_index field is generated when creating
->>>> an iio channel.
->>>>
->>>> Reyad Attiyat (4):
->>>>     iio: Documentation: Add documentation for rotation from north sensor
->>>>       usage attributes
->>>>     iio: types: Added support for rotation from north usage attributes
->>>>     iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
->>>>       iio channels
->>>>     iio: hid-sensor-magn-3d: Add support for rotation from north
->>>>
->>>>    Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
->>>>    drivers/iio/industrialio-core.c               |   4 +
->>>>    drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199
->>>> ++++++++++++++++++++------
->>>>    include/linux/iio/types.h                     |   4 +
->>>>    4 files changed, 245 insertions(+), 44 deletions(-)
->>>>
->>> Did you get chance to look at the cause of panic?
->>>
->>> Thanks,
->>> Srinivas
->
->
+I might manage to test the proposed code on a hmc5883l, probably until the 
+weekend; otherwise patches look good
+
+> >strange, I remember this causing issues. Now I am unable to
+> >reproduce them so it was probably something else. Do you want me to
+> >resend or can you apply without these lines swapped?
+> 
+> I am feeling lazy plus might not get to this until Saturday so resend.
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
