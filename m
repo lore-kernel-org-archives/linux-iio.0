@@ -1,25 +1,36 @@
 Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 9 Jul 2014 10:58:00 +0200 (CEST)
+Date: Wed, 9 Jul 2014 01:41:00 +0200 (CEST)
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
 cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
     =?UTF-8?Q?eddie=28=E8=94=A1=E6=9E=AB=29?= <cf@rock-chips.com>,
     huangtao@rock-chips.com
-Subject: Re: [PATCH v2 1/2] iio: adc: add driver for Rockchip saradc
-In-Reply-To: <2482306.yDb91TH59G@diego>
-Message-ID: <alpine.DEB.2.01.1407091052520.15209@pmeerw.net>
-References: <2959154.xc8BQActsn@diego> <2482306.yDb91TH59G@diego>
+Subject: Re: [PATCH 1/2] iio: adc: add driver for Rockchip saradc
+In-Reply-To: <2959154.xc8BQActsn@diego>
+Message-ID: <alpine.DEB.2.01.1407090126480.10379@pmeerw.net>
+References: <2959154.xc8BQActsn@diego>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
 
 > The ADC is a 3-channel signal-ended 10-bit Successive Approximation
-> Register (SAR) A/D Converter. It uses the supply and ground as its reference
+> Register (SAR) A/D Converter. It uses the supply and ground as it reference
+
+its reference
+
 > and converts the analog input signal into 10-bit binary digital codes.
 
-two more small thing I missed before...
-
+minor comments inline below
+ 
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> ---
+>  drivers/iio/adc/Kconfig           |  10 ++
+>  drivers/iio/adc/Makefile          |   1 +
+>  drivers/iio/adc/rockchip_saradc.c | 317 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 328 insertions(+)
+>  create mode 100644 drivers/iio/adc/rockchip_saradc.c
+> 
 > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
 > index a80d236..5d36bdb 100644
 > --- a/drivers/iio/adc/Kconfig
@@ -55,10 +66,10 @@ two more small thing I missed before...
 >  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
 > diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
 > new file mode 100644
-> index 0000000..3f0164c
+> index 0000000..dc4029d
 > --- /dev/null
 > +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -0,0 +1,313 @@
+> @@ -0,0 +1,317 @@
 > +/*
 > + * Rockchip Successive Approximation Register (SAR) A/D Converter
 > + * Copyright (C) 2014 ROCKCHIP, Inc.
@@ -100,7 +111,10 @@ two more small thing I missed before...
 > +#define SARADC_DLY_PU_SOC_MASK		0x3f
 > +
 > +#define SARADC_BITS			10
-> +#define SARADC_TIMEOUT			msecs_to_jiffies(100)
+> +#define SARADC_TIMEOUT			(msecs_to_jiffies(100))
+
+no parenthesis necessary
+
 > +
 > +struct rockchip_saradc {
 > +	void __iomem		*regs;
@@ -109,7 +123,10 @@ two more small thing I missed before...
 > +	struct completion	completion;
 > +	struct regulator	*vref;
 > +	int			vref_mv;
-> +	u16			last_val;
+> +	u32			last_val;
+
+u16 should be enough?
+
 > +};
 > +
 > +static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
@@ -122,7 +139,10 @@ two more small thing I missed before...
 > +	case IIO_CHAN_INFO_RAW:
 > +		mutex_lock(&indio_dev->mlock);
 > +
-> +		/* Select the channel to be used and trigger conversion */
+> +		/* Select the channel to be used and Trigger conversion */
+
+trigger
+
 > +		writel_relaxed(0x08, info->regs + SARADC_DLY_PU_SOC);
 > +		writel(SARADC_CTRL_POWER_CTRL
 > +				| (chan->channel & SARADC_CTRL_CHN_MASK)
@@ -144,8 +164,12 @@ two more small thing I missed before...
 > +		*val2 = SARADC_BITS;
 > +		return IIO_VAL_FRACTIONAL_LOG2;
 > +	default:
-> +		return -EINVAL;
+> +		break;
 > +	}
+> +	return -EINVAL;
+
+move the return -EINVAL up, instead of the break
+
 > +}
 > +
 > +static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
@@ -156,9 +180,9 @@ two more small thing I missed before...
 > +	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
 > +	info->last_val &= SARADC_DATA_MASK;
 > +
-> +	/* clear irq & power down adc */
+> +	/* clear irq & power down adc*/
 
-Clear
+space before */ missing
 
 > +	writel_relaxed(0, info->regs + SARADC_CTRL);
 > +
@@ -176,11 +200,11 @@ Clear
 > +	.type = IIO_VOLTAGE,				\
 > +	.indexed = 1,					\
 > +	.channel = _index,				\
+> +	.address = _index,				\
+
+no need to set address, not used
+
 > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-
-_read_raw() handles INFO_SCAN, so there should be a
-.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
-
 > +	.datasheet_name = _id,				\
 > +}
 > +
@@ -222,9 +246,13 @@ _read_raw() handles INFO_SCAN, so there should be a
 > +	}
 > +
 > +	ret = devm_request_irq(&pdev->dev, irq, rockchip_saradc_isr,
-> +			       0, dev_name(&pdev->dev), info);
+> +					0, dev_name(&pdev->dev), info);
 > +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
+> +		dev_err(&pdev->dev, "failed requesting irq, %d\n", ret);
+
+why print the ret value here? the irq number would probably make more 
+sense? this is unusual
+
 > +		return ret;
 > +	}
 > +
@@ -265,12 +293,20 @@ _read_raw() handles INFO_SCAN, so there should be a
 > +		return ret;
 > +	}
 > +
-> +	ret = regulator_get_voltage(info->vref);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to get regulator voltage\n");
+> +	info->vref_mv = regulator_get_voltage(info->vref);
+
+probably use ret here...
+
+> +	if (info->vref_mv < 0) {
+> +		dev_err(&pdev->dev, "failed to get regulator voltage, %d\n",
+> +			info->vref_mv);
+> +		ret = info->vref_mv;
 > +		goto err_reg_voltage;
 > +	}
-> +	info->vref_mv = ret / 1000;
+
+and here info->vref_mv = ret / 1000;
+
+> +	info->vref_mv /= 1000;
 > +
 > +	ret = clk_prepare_enable(info->pclk);
 > +	if (ret) {
