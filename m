@@ -1,85 +1,99 @@
-Return-Path: <zubair.lutfullah@gmail.com>
-From: "Zubair Lutfullah :" <zubair.lutfullah@gmail.com>
-Date: Tue, 8 Jul 2014 19:53:45 +0100
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jan Kardell <jan.kardell@telliq.com>, Zubair Lutfullah:
-	zubair.lutfullah@gmail.com,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	Rachna Patil <rachna@ti.com>
-Subject: Re: [PATCH] iio: ti_am335x_adc: Use same step id at FIFOs both ends
-Message-ID: <20140708185344.GA4868@gmail.com>
-References: <1402521498-11535-1-git-send-email-jan.kardell@telliq.com>
- <53A555A7.7070800@kernel.org>
- <20140621102658.GA5177@gmail.com>
- <53A80840.5050906@telliq.com>
- <53BAD468.8090908@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:35105 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754281AbaGHUHt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 8 Jul 2014 16:07:49 -0400
+Message-ID: <53BC5018.7020006@kernel.org>
+Date: Tue, 08 Jul 2014 21:10:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53BAD468.8090908@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 3/6] staging:iio:ad7291 fix ad7291_threshold_reg()
+References: <53BBD0CD.3030203@gmx.de>
+In-Reply-To: <53BBD0CD.3030203@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jul 07, 2014 at 06:10:00PM +0100, Jonathan Cameron wrote:
-> On 23/06/14 11:58, Jan Kardell wrote:
-> >Zubair Lutfullah : skriver:
-> >>On Sat, Jun 21, 2014 at 10:51:35AM +0100, Jonathan Cameron wrote:
-> >>>On 11/06/14 22:18, Jan Kardell wrote:
-> >>>>Since AI lines could be selected at will (linux-3.11) the sending
-> >>>>and receiving ends of the FIFO does not agree about what step is used
-> >>>>for a line. It only works if the last lines are used, like 5,6,7,
-> >>>>and fails if ie 2,4,6 is selected in DT.
-> >>>>
-> >>>>Signed-off-by: Jan Kardell <jan.kardell@telliq.com>
-> >>>I'd like an ack / review from someone more familiar with this part than I
-> >>>am. I have cc'd a few people who might offer a view.
-> >>Been a while since I've seen this driver.
-> >>I'll try a bit..
-> >>
-> >>>Thanks,
-> >>>
-> >>>Jonathan (IIO maintainer)
-> >>>>---
-> >>>>  drivers/iio/adc/ti_am335x_adc.c | 2 +-
-> >>>>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>>>
-> >>>>diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> >>>>index a4db302..d5dc4c6 100644
-> >>>>--- a/drivers/iio/adc/ti_am335x_adc.c
-> >>>>+++ b/drivers/iio/adc/ti_am335x_adc.c
-> >>>>@@ -374,7 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
-> >>>>              return -EAGAIN;
-> >>>>          }
-> >>>>      }
-> >>>>-    map_val = chan->channel + TOTAL_CHANNELS;
-> >>>>+    map_val = adc_dev->channel_step[chan->scan_index];
-> >>Looking at the code again.
-> >>Could you tell me if using map_val = step_en will work?
-> >>
-> I'm completely lost!  Zubair, has Jan answered your query?
-> (he says trying to avoid diving into the data sheets)
-> 
+On 08/07/14 12:06, Hartmut Knaack wrote:
+> ad7291_threshold_reg() should return the register number of a threshold
+> register, and thus be safe without handling a default case.
+Whilst the code is bug free without those defaults currently I'd rather keep them
+there to suppress the warnings we will get without them...
 
-Sorry for the long delays.
+Also without an explanation, please don't stick 'fix' in the title - makes
+my fingers want to send it to stable.
 
-Yes Jan has answered my query.
+Warning wise...
+e.g. with gcc4.9 on x86_64 I get the following tiny output ;)
 
-It took a while to bring up my Beagle again.
+   CC [M]  drivers/staging/iio/adc/ad7291.o
+drivers/staging/iio/adc/ad7291.c: In function ‘ad7291_threshold_reg’:
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_CURRENT’ not handled in switch [-Wswitch]
+   switch (chan->type) {
+   ^
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_POWER’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_ACCEL’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_ANGL_VEL’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_MAGN’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_LIGHT’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_INTENSITY’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_PROXIMITY’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_INCLI’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_ROT’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_ANGL’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_TIMESTAMP’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_CAPACITANCE’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_ALTVOLTAGE’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_CCT’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_PRESSURE’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:170:2: warning: enumeration value ‘IIO_HUMIDITYRELATIVE’ not handled in switch [-Wswitch]
+drivers/staging/iio/adc/ad7291.c:179:2: warning: enumeration value ‘IIO_EV_INFO_ENABLE’ not handled in switch [-Wswitch]
+   switch (info) {
+   ^
+drivers/staging/iio/adc/ad7291.c:188:1: warning: control reaches end of non-void function [-Wreturn-type]
+  }
+  ^
+drivers/staging/iio/adc/ad7291.c: In function ‘ad7291_threshold_reg.isra.5’:
+drivers/staging/iio/adc/ad7291.c:45:31: warning: ‘offset’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  #define AD7291_HYST(x)   ((x) * 3 + 0x6)
+                                ^
+drivers/staging/iio/adc/ad7291.c:168:15: note: ‘offset’ was declared here
+   unsigned int offset;
+                ^
 
-But you can put my <Tested-by>.
 
-And I think I figured out where things went awry.
+>
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+> index f5d29ef..b868c64 100644
+> --- a/drivers/staging/iio/adc/ad7291.c
+> +++ b/drivers/staging/iio/adc/ad7291.c
+> @@ -174,8 +174,6 @@ static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
+>   	case IIO_TEMP:
+>   		offset = 8;
+>   		break;
+> -	default:
+> -	    return 0;
+>   	}
+>
+>   	switch (info) {
+> @@ -186,10 +184,7 @@ static unsigned int ad7291_threshold_reg(const struct iio_chan_spec *chan,
+>   			return AD7291_DATA_LOW(offset);
+>   	case IIO_EV_INFO_HYSTERESIS:
+>   		return AD7291_HYST(offset);
+> -	default:
+> -		break;
+>   	}
+> -	return 0;
+>   }
+>
+>   static int ad7291_read_event_value(struct iio_dev *indio_dev,
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-It used to be that, the single channel read would read all channels.
-Despite what was configured in DT. And then return the required channel.
-
-When Sebastian fixed that in  mfd: input: iio: ti_amm335x: Rework TSC/ADC synchronization
-
-This bug crept up. only the required channel is enabled. But when reading the fifo
-it is checked against the old incorrect channel id.
-
-I am guessing he would check the driver by enabling all channels like I do. ;)
-
-A very nice bug caught by Jan.
-
-Cheers
-ZubairLK
