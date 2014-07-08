@@ -1,66 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:56074 "EHLO mail.kernel.org"
+Received: from mout.gmx.net ([212.227.17.21]:56984 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754719AbaGEKIZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 5 Jul 2014 06:08:25 -0400
-Message-ID: <53B7CF1A.6080501@kernel.org>
-Date: Sat, 05 Jul 2014 11:10:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	id S1752753AbaGHLGz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 8 Jul 2014 07:06:55 -0400
+Message-ID: <53BBD0C7.4050003@gmx.de>
+Date: Tue, 08 Jul 2014 13:06:47 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
-CC: spk.linux@gmail.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH 5/7] iio: hid-sensor-gyro-3d: Fix return values
-References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com> <1404369852-3255-5-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369852-3255-5-git-send-email-sachin.kamat@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/6] staging:iio:ad7291 remove double define
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/14 07:44, Sachin Kamat wrote:
-> IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_HYSTERESIS cases ignored
-> the actual return values (which could be -EINVAL) and instead
-> returned IIO_VAL_INT_PLUS_MICRO always. Return the actual value
-> obtained from the functions. Both functions return IIO_VAL_INT_PLUS_MICRO
-> upon success.
->
-> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the fixes-togreg branch of iio.git
+Remove second instance of definition of AD7291_BITS.
 
-Thanks,
-> ---
->   drivers/iio/gyro/hid-sensor-gyro-3d.c |    7 ++-----
->   1 file changed, 2 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> index 40f4e49..fa034a3 100644
-> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> @@ -110,7 +110,6 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
->   	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
->   	int report_id = -1;
->   	u32 address;
-> -	int ret;
->   	int ret_type;
->   	s32 poll_value;
->
-> @@ -151,14 +150,12 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
->   		ret_type = IIO_VAL_INT;
->   		break;
->   	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		ret = hid_sensor_read_samp_freq_value(
-> +		ret_type = hid_sensor_read_samp_freq_value(
->   			&gyro_state->common_attributes, val, val2);
-> -			ret_type = IIO_VAL_INT_PLUS_MICRO;
->   		break;
->   	case IIO_CHAN_INFO_HYSTERESIS:
-> -		ret = hid_sensor_read_raw_hyst_value(
-> +		ret_type = hid_sensor_read_raw_hyst_value(
->   			&gyro_state->common_attributes, val, val2);
-> -		ret_type = IIO_VAL_INT_PLUS_MICRO;
->   		break;
->   	default:
->   		ret_type = -EINVAL;
->
-
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/staging/iio/adc/ad7291.c
+index 7194bd1..c08b258 100644
+--- a/drivers/staging/iio/adc/ad7291.c
++++ b/drivers/staging/iio/adc/ad7291.c
+@@ -73,8 +73,6 @@
+ #define AD7291_T_VALUE_FLOAT_OFFSET	2
+ #define AD7291_T_VALUE_FLOAT_MASK	0x2
+ 
+-#define AD7291_BITS			12
+-
+ struct ad7291_chip_info {
+ 	struct i2c_client	*client;
+ 	struct regulator	*reg;
