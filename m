@@ -1,144 +1,318 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:55791 "EHLO
-	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752654AbaGGUhv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jul 2014 16:37:51 -0400
-Date: Mon, 7 Jul 2014 22:37:49 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net
-Subject: [PATCH v2 4/5] staging:iio:hmc5843: Add support for i2c hmc5983
-Message-ID: <20140707203748.GF10383@dashie>
-References: <20140707203326.GB10383@dashie>
+Received: from mail-ve0-f172.google.com ([209.85.128.172]:47571 "EHLO
+	mail-ve0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752135AbaGHP77 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jul 2014 11:59:59 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140707203326.GB10383@dashie>
+In-Reply-To: <53BACE70.3070901@kernel.org>
+References: <1404097119-19922-1-git-send-email-reyad.attiyat@gmail.com>
+ <1404097119-19922-4-git-send-email-reyad.attiyat@gmail.com> <53BACE70.3070901@kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Tue, 8 Jul 2014 10:59:37 -0500
+Message-ID: <CA+BWVURrNpJZ2sUr7=nysf22LEc_eT-w1GQM8zDu7C_-ti7qmA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] iio: hid-sensor-magn-3d: Scan for usage attributes
+ before setting up iio channels
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the hmc5983 i2c interface.
-This chip is almost identical to the hmc5883. The difference being added
-temperature compensation, additional available sample rate (220Hz) and an SPI
-interface.
+Hey Jonathan,
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/Kconfig        |  2 +-
- drivers/staging/iio/magnetometer/hmc5843.h      |  1 +
- drivers/staging/iio/magnetometer/hmc5843_core.c | 20 +++++++++++++++++---
- drivers/staging/iio/magnetometer/hmc5843_i2c.c  |  5 +++--
- 4 files changed, 22 insertions(+), 6 deletions(-)
+Thanks for the review. I'll be sure to fix up all the formatting you
+mentioned and run it through the checkpatch.pl script.
 
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index 28c2612..32c69c0 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -16,7 +16,7 @@ config SENSORS_HMC5843
- 	  This driver can also be compiled as a set of modules.
- 	  If so, these modules will be created:
- 	  - hmc5843_core (core functions)
--	  - hmc5843_i2c (support for HMC5843, HMC5883 and HMC5883L)
-+	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
- 
- config SENSORS_HMC5843_I2C
- 	tristate
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
-index 4e3cce3..c36041a 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.h
-+++ b/drivers/staging/iio/magnetometer/hmc5843.h
-@@ -29,6 +29,7 @@ enum hmc5843_ids {
- 	HMC5843_ID,
- 	HMC5883_ID,
- 	HMC5883L_ID,
-+	HMC5983_ID,
- };
- 
- struct hmc5843_data {
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index a808e4e..fe7a79a 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -101,6 +101,11 @@ static const int hmc5883_regval_to_samp_freq[][2] = {
- 	{75, 0}
- };
- 
-+static const int hmc5983_regval_to_samp_freq[][2] = {
-+	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-+	{75, 0}, {220, 0}
-+};
-+
- /* Describe chip variants */
- struct hmc5843_chip_info {
- 	const struct iio_chan_spec *channels;
-@@ -457,7 +462,7 @@ static const struct iio_chan_spec hmc5843_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
--/* Beware: Y and Z are exchanged on HMC5883 */
-+/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
- static const struct iio_chan_spec hmc5883_channels[] = {
- 	HMC5843_CHANNEL(X, 0),
- 	HMC5843_CHANNEL(Z, 1),
-@@ -504,6 +509,15 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- 		.n_regval_to_nanoscale =
- 				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
- 	},
-+	[HMC5983_ID] = {
-+		.channels = hmc5883_channels,
-+		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
-+		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-+	}
- };
- 
- static int hmc5843_init(struct hmc5843_data *data)
-@@ -516,7 +530,7 @@ static int hmc5843_init(struct hmc5843_data *data)
- 	if (ret < 0)
- 		return ret;
- 	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
--		dev_err(data->dev, "no HMC5843/5883/5883L sensor\n");
-+		dev_err(data->dev, "no HMC5843/5883/5883L/5983 sensor\n");
- 		return -ENODEV;
- 	}
- 
-@@ -608,5 +622,5 @@ int hmc5843_common_remove(struct iio_dev *indio_dev)
- EXPORT_SYMBOL(hmc5843_common_remove);
- 
- MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com>");
--MODULE_DESCRIPTION("HMC5843/5883/5883L core driver");
-+MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 core driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-index b3c92d9..753c914 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-@@ -1,5 +1,5 @@
- /*
-- * i2c driver for hmc5843/5843/5883/5883l
-+ * i2c driver for hmc5843/5843/5883/5883l/5983
-  *
-  * Split from hmc5843.c
-  * Copyright (C) Josef Gajdusek <atx@atx.name>
-@@ -79,6 +79,7 @@ static const struct i2c_device_id hmc5843_id[] = {
- 	{ "hmc5843", HMC5843_ID },
- 	{ "hmc5883", HMC5883_ID },
- 	{ "hmc5883l", HMC5883L_ID },
-+	{ "hmc5983", HMC5983_ID },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, hmc5843_id);
-@@ -102,5 +103,5 @@ static struct i2c_driver hmc5843_driver = {
- module_i2c_driver(hmc5843_driver);
- 
- MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
--MODULE_DESCRIPTION("HMC5843/5883/5883L i2c driver");
-+MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 i2c driver");
- MODULE_LICENSE("GPL");
--- 
-1.8.5.5
+> There should be an explanation here of what has changed from one version to
+> the
+> next.
+Will include updates in future patch notes.
+
+> The patches should have been run through checkpatch.pl (at least one place
+> below
+> indicates that didn't happen).
+>
+> Mostly little bits left.  Now I would definitely like an ack or reviewed-by
+> from Srinivas for this one if at all possible.
+> Any tested-bys, particularly with parts that don't have the new channel
+> types, would also be good.
+>
+> Jonathan
+>
+>>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 111
+>> +++++++++++++++++---------
+>>   1 file changed, 75 insertions(+), 36 deletions(-)
+>>
+>> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> index 41cf29e..070d20e 100644
+>> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> @@ -42,7 +42,8 @@ struct magn_3d_state {
+>>         struct hid_sensor_hub_callbacks callbacks;
+>>         struct hid_sensor_common common_attributes;
+>>         struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
+>> -       u32 magn_val[MAGN_3D_CHANNEL_MAX];
+>> +       u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+>> +       u32 *iio_val;
+>>         int scale_pre_decml;
+>>         int scale_post_decml;
+>>         int scale_precision;
+>> @@ -221,8 +222,8 @@ static int magn_3d_proc_event(struct
+>> hid_sensor_hub_device *hsdev,
+>>         dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
+>>         if (atomic_read(&magn_state->common_attributes.data_ready))
+>>                 hid_sensor_push_data(indio_dev,
+>> -                               magn_state->magn_val,
+>> -                               sizeof(magn_state->magn_val));
+>> +                               magn_state->iio_val,
+>> +                               sizeof(magn_state->iio_val));
+>>
+>>         return 0;
+>>   }
+>> @@ -236,52 +237,99 @@ static int magn_3d_capture_sample(struct
+>> hid_sensor_hub_device *hsdev,
+>>         struct iio_dev *indio_dev = platform_get_drvdata(priv);
+>>         struct magn_3d_state *magn_state = iio_priv(indio_dev);
+>>         int offset;
+>> -       int ret = -EINVAL;
+>> +       int ret = 0;
+>> +       u32 *iio_val = NULL;
+>
+> This has me a little confused.  You have an iio_val in your state
+> structure and in this function.  I can't actually find anywhere where
+> the elements of the one in the state structure are ever assigned to
+> anything.
+>
+>
+
+I assign the pointer location of iio_vals to:
+ u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+
+I also added this array just for the locations. The assignment occurs
+in the parse_report
+function, after iio_vals is allocated, like this  st->magn_val_addr[i]
+= &(st->iio_val[*chan_count]).
+I'll add a comment to explain the usage better.
 
 
+>>
+>>         switch (usage_id) {
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
+>>         case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
+>>                 offset = usage_id -
+>> HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
+>> -               magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
+>> -                                               *(u32 *)raw_data;
+>> -               ret = 0;
+>> +               iio_val = magn_state->magn_val_addr[CHANNEL_SCAN_INDEX_X +
+>> offset];
+>> +
+>>         break;
+>>         default:
+>> -               break;
+>> +               return -EINVAL;
+>>         }
+>>
+>> +       if(iio_val)
+>
+> white space after if please.
+>
+>> +               *iio_val = *(u32 *)raw_data;
+>> +       else
+>> +               ret = -EINVAL;
+>> +
+>>         return ret;
+>>   }
+>>
+>>   /* Parse report which is specific to an usage id*/
+>>   static int magn_3d_parse_report(struct platform_device *pdev,
+>>                                 struct hid_sensor_hub_device *hsdev,
+>> -                               struct iio_chan_spec *channels,
+>> +                               struct iio_chan_spec **channels,
+>> +                               int *chan_count,
+>>                                 unsigned usage_id,
+>>                                 struct magn_3d_state *st)
+>>   {
+>> -       int ret;
+>> +       int ret = 0;
+>>         int i;
+>> +       int attr_count = 0;
+>> +
+>> +       /* Scan for each usage attribute supported */
+>> +       for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
+>> +               u32 address = magn_3d_addresses[i];
+>>
+>> -       for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
+>> +               /* Check if usage attribute exists in the sensor hub
+>> device */
+>>                 ret = sensor_hub_input_get_attribute_info(hsdev,
+>> -                               HID_INPUT_REPORT,
+>> -                               usage_id,
+>> -                               HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS +
+>> i,
+>> -                               &st->magn[CHANNEL_SCAN_INDEX_X + i]);
+>> -               if (ret < 0)
+>> -                       break;
+>> -               magn_3d_adjust_channel_bit_mask(channels,
+>> -                               CHANNEL_SCAN_INDEX_X + i,
+>> -                               st->magn[CHANNEL_SCAN_INDEX_X + i].size);
+>
+> I would have preferred you kept the indenting the same as before. That would
+> make it more obvious what changed.
+>
+>> +                       HID_INPUT_REPORT,
+>> +                       usage_id,
+>> +                       address,
+>> +                       &(st->magn[i]));
+>> +               if (!ret)
+>> +                       attr_count++;
+>>         }
+>> -       dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
+>> +
+>> +       dev_dbg(&pdev->dev, "magn_3d Found %d usage attributes\n",
+>> +                       attr_count);
+>> +       dev_dbg(&pdev->dev, "magn_3d X: %x:%x Y: %x:%x Z: %x:%x\n",
+>>                         st->magn[0].index,
+>>                         st->magn[0].report_id,
+>>                         st->magn[1].index, st->magn[1].report_id,
+>>                         st->magn[2].index, st->magn[2].report_id);
+>>
+>> +       if (attr_count > 0)
+>> +               ret = 0;
+>
+> This would suggest to me that you want to rename the ret above (used
+> to indicate if a channel is there) as something more specific so you
+> don't end up appearing to squash and error here...
+>
+
+The ret value above needs to be zeroed out as it is used to break out
+of the for loop when scanning for usage attributes.
+I will use a different variable name perhaps to distinguish the two.
+>> +       else
+>> +               return  -EINVAL;
+>
+> Again your spacing is messed up. Please fix.
+>
+>> +
+>> +       /* Setup IIO channel array */
+>> +       *channels = devm_kcalloc(&pdev->dev, attr_count,
+>> +
+>
+> The resulting indenting here is a complete mess. Please fix.
+>
+>
+> sizeof(struct iio_chan_spec),
+>>
+>> +
+>> GFP_KERNEL);
+>> +       if (!*channels) {
+>> +               dev_err(&pdev->dev, "failed to allocate space for iio
+>> channels\n");
+>> +               return -ENOMEM;
+>> +       }
+>> +
+>> +       st->iio_val = devm_kcalloc(&pdev->dev, attr_count,
+>> +
+>> sizeof(u32),
+>> +
+>> GFP_KERNEL);
+>> +       if (!st->iio_val) {
+>> +               dev_err(&pdev->dev, "failed to allocate space for iio
+>> values array\n");
+>> +               return -ENOMEM;
+>> +       }
+>> +
+>> +       for (i = 0, *chan_count = 0;
+>> +           i < MAGN_3D_CHANNEL_MAX && *chan_count < attr_count;
+>> +               i++)
+>> +       {
+>> +               if (st->magn[i].index >= 0) {
+>> +                       /* Setup IIO channel struct */
+>> +                       *channels[*chan_count] = magn_3d_channels[i];
+>> +
+>> +                       st->magn_val_addr[i] =
+>> &(st->iio_val[*chan_count]);
+>> +                       magn_3d_adjust_channel_bit_mask(*channels,
+>> *chan_count, st->magn[i].size);
+>
+> The above should be wrapped appropriately.
+>
+>> +                       (*chan_count)++;
+>> +               }
+>> +       }
+>> +
+>>         st->scale_precision = hid_sensor_format_scale(
+>>                                 HID_USAGE_SENSOR_COMPASS_3D,
+>>                                 &st->magn[CHANNEL_SCAN_INDEX_X],
+>> @@ -311,6 +359,7 @@ static int hid_magn_3d_probe(struct platform_device
+>> *pdev)
+>>         struct magn_3d_state *magn_state;
+>>         struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+>>         struct iio_chan_spec *channels;
+>> +       int chan_count = 0;
+>>
+>>         indio_dev = devm_iio_device_alloc(&pdev->dev,
+>>                                           sizeof(struct magn_3d_state));
+>> @@ -331,22 +380,15 @@ static int hid_magn_3d_probe(struct platform_device
+>> *pdev)
+>>                 return ret;
+>>         }
+>>
+>> -       channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
+>> -                          GFP_KERNEL);
+>> -       if (!channels) {
+>> -               dev_err(&pdev->dev, "failed to duplicate channels\n");
+>> -               return -ENOMEM;
+>> -       }
+>> -
+>> -       ret = magn_3d_parse_report(pdev, hsdev, channels,
+>> -                               HID_USAGE_SENSOR_COMPASS_3D, magn_state);
+>> +       ret = magn_3d_parse_report(pdev, hsdev, &channels,
+>> +                               &chan_count, HID_USAGE_SENSOR_COMPASS_3D,
+>> magn_state);
+>>         if (ret) {
+>>                 dev_err(&pdev->dev, "failed to setup attributes\n");
+>> -               goto error_free_dev_mem;
+>> +               return ret;
+>>         }
+>>
+>>         indio_dev->channels = channels;
+>> -       indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
+>> +       indio_dev->num_channels = chan_count;
+>>         indio_dev->dev.parent = &pdev->dev;
+>>         indio_dev->info = &magn_3d_info;
+>>         indio_dev->name = name;
+>> @@ -356,7 +398,7 @@ static int hid_magn_3d_probe(struct platform_device
+>> *pdev)
+>>                 NULL, NULL);
+>>         if (ret) {
+>>                 dev_err(&pdev->dev, "failed to initialize trigger
+>> buffer\n");
+>> -               goto error_free_dev_mem;
+>> +               return ret;
+>>         }
+>>         atomic_set(&magn_state->common_attributes.data_ready, 0);
+>>         ret = hid_sensor_setup_trigger(indio_dev, name,
+>> @@ -390,8 +432,6 @@ error_remove_trigger:
+>>         hid_sensor_remove_trigger(&magn_state->common_attributes);
+>>   error_unreg_buffer_funcs:
+>>         iio_triggered_buffer_cleanup(indio_dev);
+>> -error_free_dev_mem:
+>> -       kfree(indio_dev->channels);
+>>         return ret;
+>>   }
+>>
+>> @@ -406,7 +446,6 @@ static int hid_magn_3d_remove(struct platform_device
+>> *pdev)
+>>         iio_device_unregister(indio_dev);
+>>         hid_sensor_remove_trigger(&magn_state->common_attributes);
+>>         iio_triggered_buffer_cleanup(indio_dev);
+>> -       kfree(indio_dev->channels);
+>>
+>>         return 0;
+>>   }
+>>
+>
