@@ -1,162 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:53837 "EHLO
-	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752357AbaGGUhU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jul 2014 16:37:20 -0400
-Date: Mon, 7 Jul 2014 22:37:17 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net
-Subject: [PATCH v2 3/5] staging:iio:hmc5843: register <-> value arrays now
- can have different lengths
-Message-ID: <20140707203717.GE10383@dashie>
-References: <20140707203326.GB10383@dashie>
+Received: from mail.kernel.org ([198.145.19.201]:55239 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752907AbaGHSB3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 8 Jul 2014 14:01:29 -0400
+Message-ID: <53BC327A.3070000@kernel.org>
+Date: Tue, 08 Jul 2014 19:03:38 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140707203326.GB10383@dashie>
+To: Mark Brown <broonie@kernel.org>
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: BMC150 accel support
+References: <1403287927-30031-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53A6E6D1.7090507@kernel.org> <53A78159.90400@linux.intel.com> <53AFF4A5.2020505@kernel.org> <53B0225F.6030704@linux.intel.com> <53B025EF.5060600@kernel.org> <20140707143600.GA2469@sirena.org.uk> <53BAC744.3070704@kernel.org> <20140708132355.GV30458@sirena.org.uk> <c49bed5a-0737-4376-9429-c070834e71e9@email.android.com>
+In-Reply-To: <c49bed5a-0737-4376-9429-c070834e71e9@email.android.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changed structure of struct hmc5843_chip_info to include length of translation
-arrays. Code previously using #defined constant has been changed accordingly.
-This allows to integrate devices which do have different amounts of available
-rates/scales.
+On 08/07/14 16:27, Jonathan Cameron wrote:
+>
+>
+> On July 8, 2014 2:23:55 PM GMT+01:00, Mark Brown <broonie@kernel.org> wrote:
+>> On Mon, Jul 07, 2014 at 05:13:56PM +0100, Jonathan Cameron wrote:
+>>> On 07/07/14 15:36, Mark Brown wrote:
+>>
+>>>> With regulators the delays are handled transparently in the
+>> framework -
+>>>> by the time the functions return the operation should have
+>> commpleted.
+>>>> If there is a need to have a non-blocking interface we'll have to
+>> add
+>>>> this.  The delays can be queried with _time() functions.
+>>
+>>> We are looking at a somewhat tangential question here...
+>>
+>> I don't think so...
+>>
+>>> Hence rather than picking a given power state (deep sleep or similar)
+>>> we want the control to be on capture latency.  Hence userspace
+>>> can specify the 'worst case' latency it will accept and the
+>>> device will hence enter the lowest power state, between samples,
+>>> that it can without failing to meet the requirement.
+>>>
+>>> What I was wondering is whether there is anything similar
+>>> elsewhere that you know of? For example, could we query a
+>>> regulator driver to ask it how long it will take to start up
+>>> a given output?
+>>
+>> ...hence my comment that "The delays can be queried with _time()
+>> functions - you don't need to implement the delays but you can find out
+>> what they will be.
+> Ah sounds like I miss interpreted your response!
+> Will look into the _time stuff.
+>
+Right, this will certainly act as a starting point, though will
+be a little bit interesting to make it all work together.
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/hmc5843_core.c | 34 +++++++++++++++++--------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+Anyhow, no idea when or if anyone will have time to look at the
+levels beyond the sensor drivers themselves.
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index efabca5..a808e4e 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -39,7 +39,6 @@
-  */
- #define HMC5843_RANGE_GAIN_OFFSET		0x05
- #define HMC5843_RANGE_GAIN_DEFAULT		0x01
--#define HMC5843_RANGE_GAINS			8
- #define HMC5843_RANGE_GAIN_MASK		0xe0
- 
- /* Device status */
-@@ -59,7 +58,6 @@
-  */
- #define HMC5843_RATE_OFFSET			0x02
- #define HMC5843_RATE_DEFAULT			0x04
--#define HMC5843_RATES				7
- #define HMC5843_RATE_MASK		0x1c
- 
- /* Device measurement configuration */
-@@ -69,15 +67,15 @@
- #define HMC5843_MEAS_CONF_MASK			0x03
- 
- /* Scaling factors: 10000000/Gain */
--static const int hmc5843_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5843_regval_to_nanoscale[] = {
- 	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
- };
- 
--static const int hmc5883_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883_regval_to_nanoscale[] = {
- 	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
- };
- 
--static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883l_regval_to_nanoscale[] = {
- 	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
- };
- 
-@@ -94,11 +92,11 @@ static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-  * 6		| 50			| 75
-  * 7		| Not used		| Not used
-  */
--static const int hmc5843_regval_to_samp_freq[7][2] = {
-+static const int hmc5843_regval_to_samp_freq[][2] = {
- 	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
- };
- 
--static const int hmc5883_regval_to_samp_freq[7][2] = {
-+static const int hmc5883_regval_to_samp_freq[][2] = {
- 	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
- 	{75, 0}
- };
-@@ -107,7 +105,9 @@ static const int hmc5883_regval_to_samp_freq[7][2] = {
- struct hmc5843_chip_info {
- 	const struct iio_chan_spec *channels;
- 	const int (*regval_to_samp_freq)[2];
-+	const int n_regval_to_samp_freq;
- 	const int *regval_to_nanoscale;
-+	const int n_regval_to_nanoscale;
- };
- 
- /* The lower two bits contain the current conversion mode */
-@@ -248,7 +248,7 @@ static ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
- 			data->variant->regval_to_samp_freq[i][1]);
-@@ -278,7 +278,7 @@ static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
- {
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		if (val == data->variant->regval_to_samp_freq[i][0] &&
- 			val2 == data->variant->regval_to_samp_freq[i][1])
- 			return i;
-@@ -307,7 +307,7 @@ static ssize_t hmc5843_show_scale_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"0.%09d ", data->variant->regval_to_nanoscale[i]);
- 
-@@ -327,7 +327,7 @@ static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
- 	if (val != 0)
- 		return -EINVAL;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		if (val2 == data->variant->regval_to_nanoscale[i])
- 			return i;
- 
-@@ -480,17 +480,29 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- 	[HMC5843_ID] = {
- 		.channels = hmc5843_channels,
- 		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
- 	},
- 	[HMC5883_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
- 	},
- 	[HMC5883L_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
- 	},
- };
- 
--- 
-1.8.5.5
+Thanks Mark,
 
+Jonathan
