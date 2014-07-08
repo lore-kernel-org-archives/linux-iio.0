@@ -1,45 +1,41 @@
-Return-Path: <hadess@hadess.net>
-Message-ID: <1404916405.10032.3.camel@nuvo>
-Subject: Re: User-space API for accelerometer(s)?
-From: Bastien Nocera <hadess@hadess.net>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, Reyad Attiyat
- <reyad.attiyat@gmail.com>,  linux-iio@vger.kernel.org, Benjamin Tissoires
- <benjamin.tissoires@redhat.com>,  Lars-Peter Clausen <lars@metafoo.de>
-Date: Wed, 09 Jul 2014 16:33:25 +0200
-In-Reply-To: <53B59837.8080907@jic23.retrosnub.co.uk>
-References: <1403100542.30918.29.camel@nuvo>
-			 <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>
-			 <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>
-		 <53A57414.8000104@kernel.org> <1404216616.7785.1.camel@nuvo>
-	 <53B59837.8080907@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <atx@atalax.net>
+Date: Tue, 8 Jul 2014 15:37:11 +0200
+From: Josef Gajdusek <atx@atalax.net>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com
+Subject: [PATCH v3 0/5] staging:iio:hmc5843: Few adjustments and support for
+ hmc5983
+Message-ID: <20140708133711.GB14393@dashie>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2014-07-03 at 18:51 +0100, Jonathan Cameron wrote:
-<snip>
-> We did also have a uinput based approach at one point but it was fairly clunky.
-> That took data from iio buffers and pushed it back into the kernel via inputs
-> userspace driver support. Not particularly nice but I thought I'd best mention
-> it!
+This patch series modifies the hmc5843 driver to support the hmc5983 i2c and
+spi interfaces.
 
-This is how I went in the end:
-https://github.com/hadess/iio-sensor-proxy/
+Josef Gajdusek (5):
+  staging:iio:hmc5843: Added regmap support
+  staging:iio:hmc5843: Split hmc5843.c to multiple files
+  staging:iio:hmc5843: register <-> value arrays now can have different
+    lengths
+  staging:iio:hmc5843: Add support for i2c hmc5983
+  staging:iio:hmc5843: Add support for spi hmc5983
 
-It's still far too resource hungry compared to the amount of work it's
-doing (1 full percent of CPU!), and the rotation is too sensitive.
+ drivers/staging/iio/magnetometer/Kconfig        |  23 +-
+ drivers/staging/iio/magnetometer/Makefile       |   4 +-
+ drivers/staging/iio/magnetometer/hmc5843.c      | 652 ------------------------
+ drivers/staging/iio/magnetometer/hmc5843.h      |  76 +++
+ drivers/staging/iio/magnetometer/hmc5843_core.c | 624 +++++++++++++++++++++++
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c  | 107 ++++
+ drivers/staging/iio/magnetometer/hmc5843_spi.c  | 105 ++++
+ 7 files changed, 935 insertions(+), 656 deletions(-)
+ delete mode 100644 drivers/staging/iio/magnetometer/hmc5843.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843.h
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_core.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_i2c.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
 
-But, along with this systemd patch:
-http://cgit.freedesktop.org/systemd/systemd/commit/?id=a545c6e1aa31b4d7e80c9d3609d9fc4fc9921498
-
-It works out of the box with GNOME's orientation plugin.
-
-I think that the code could also do with a bit more cleanup.
-
-Please drop me a mail privately or file an issue if you can test this on
-various systems (other models of Yoga and the Surface would be nice to
-test), and I'll add it to the list of tested devices.
-
-Cheers
+-- 
+1.8.5.5
