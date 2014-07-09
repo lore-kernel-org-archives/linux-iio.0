@@ -1,60 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50350 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752061AbaGKLbS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jul 2014 07:31:18 -0400
-In-Reply-To: <53BFB963.7070407@parkeon.com>
-References: <53BFB963.7070407@parkeon.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: Acceleration units and mma8452 driver
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 11 Jul 2014 12:31:13 +0100
-To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
-Message-ID: <8445f626-07d7-45eb-8578-b9efa5ed082d@email.android.com>
+Received: from mailout3.samsung.com ([203.254.224.33]:44017 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751268AbaGIH1c (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jul 2014 03:27:32 -0400
+Message-id: <53BCEEE1.4010403@samsung.com>
+Date: Wed, 09 Jul 2014 16:27:29 +0900
+From: Chanwoo Choi <cw00.choi@samsung.com>
+MIME-version: 1.0
+To: kgene.kim@samsung.com
+Cc: Jonathan Cameron <jic23@kernel.org>, ch.naveen@samsung.com,
+	t.figa@samsung.com, robh+dt@kernel.org, pawel.moll@arm.com,
+	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org, rdunlap@infradead.org,
+	sachin.kamat@linaro.org, kyungmin.park@samsung.com,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCHv5 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and
+ code clean
+References: <1403843406-28229-1-git-send-email-cw00.choi@samsung.com>
+ <53AFFD69.8060702@kernel.org> <53B0C2AB.4030201@samsung.com>
+In-reply-to: <53B0C2AB.4030201@samsung.com>
+Content-type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Dear Kukjin Kim,
 
+This patch modified Exynos3250 dtsi to support ADC with IIO.
+Could you please reivew this patchset about exynos3250.dtsi?
 
-On July 11, 2014 11:16:03 AM GMT+01:00, Martin Fuzzey <mfuzzey@parkeon.com> wrote:
->Hi all,
->
->I'm new to iio and have a question on acceleration units.
->
->Documentation/ABI/testing/sysfs-bus-iio states "after application of 
->scale and offset are m/s^2"
->
->However the mma8452 driver, when in 2G full scale mode provides a scale
->
->factor of 0.000977
->
->/sys/bus/iio/devices/iio:device0# cat in_accel_scale
->0.000977
->
->Full scale positive raw value (12 bits) is 2047 so that gives 2G 
->(0.000977 * 2047)
->
->So this driver seems to be using G as units rather than m/s^2.
->
->Am I misunderstanding or is this a driver or doc bug?
->
-Driver bug. Good catch. Do you want to prepare a patch?
+Best Regards,
+Chanwoo Choi
 
-Thanks
+On 06/30/2014 10:51 AM, Chanwoo Choi wrote:
+> Dear Kukjin,
+> 
+> On 06/29/2014 08:50 PM, Jonathan Cameron wrote:
+>> On 27/06/14 05:30, Chanwoo Choi wrote:
+>>> Changes from v4:
+>>> - Use 'exynos_adc_data' structure instead of 'exynos_adc_ops' structure
+>>>    and remove enum variable of ADC version
+>>> - Fix wrong name of special clock (sclk_tsadc -> sclk_adc)
+>>> - Add reviewed message by Naveen Krishna Chatradhi
+>>> - Add functions for ADC clock control
+>>>
+>>> Changes from v3:
+>>> - Add new 'exynos_adc_ops' structure to improve readability according to
+>>>   Tomasz Figa comment[1]
+>>>   [1] https://lkml.org/lkml/2014/4/16/238
+>>> - Add new 'exynos3250-adc-v2' compatible string to support Exynos3250 ADC
+>>> - Fix wrong compaitlbe string of ADC in Exynos3250 dtsi file
+>>>
+>>> Changes from v2:
+>>> - Check return value of clock function to deal with error exception
+>>> - Fix minor coding style to improve readability
+>>>
+>>> Changes from v1:
+>>> - Add new "samsung,exynos-adc-v3" compatible to support Exynos3250 ADC
+>>> - Add a patch about DT binding documentation
+>>>
+>>> Chanwoo Choi (4):
+>>>    iio: adc: exynos_adc: Add exynos_adc_data structure to improve readability
+>>>    iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
+>>>    iio: devicetree: Add DT binding documentation for Exynos3250 ADC
+>>>    ARM: dts: Fix wrong compatible string for Exynos3250 ADC
+>>>
+>>>   .../devicetree/bindings/arm/samsung/exynos-adc.txt |  26 +-
+>>>   arch/arm/boot/dts/exynos3250.dtsi                  |   4 +-
+>>>   drivers/iio/adc/exynos_adc.c                       | 326 +++++++++++++++------
+>>>   3 files changed, 268 insertions(+), 88 deletions(-)
+>>>
+>> I am happy with this series, but given it touches some exynos bindings, I would
+>> like an ack from Kukjin Kim (or according to MAINTAINERS Ben Dooks) before taking it
+>> all through IIO.
+> 
+> Could you please review this patchset about exynos dtsi and bindings?
+> 
+> Best Regards,
+> Chanwoo Choi
+> 
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
 
-Jonathan
-
->Regards,
->
->Martin
->
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
