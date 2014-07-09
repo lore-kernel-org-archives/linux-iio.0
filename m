@@ -1,44 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:35223 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751747AbaGMUxs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 13 Jul 2014 16:53:48 -0400
-Message-ID: <53C2F262.7030503@kernel.org>
-Date: Sun, 13 Jul 2014 21:56:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <53BD9BD5.5030204@linux.intel.com>
+Date: Wed, 09 Jul 2014 12:45:25 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 04/12] iio:adc:ad799x: Save some lines in ad7997_8_update_scan_mode()
- exit handling
-References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net> <1402548856-3564-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1402548856-3564-5-git-send-email-pmeerw@pmeerw.net>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ jic23@kernel.org
+Subject: Re: [PATCH v5 0/4] iio: Add support for rotation from north
+References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/06/14 05:54, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied
-> ---
->   drivers/iio/adc/ad799x.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+On 07/09/2014 12:30 PM, Reyad Attiyat wrote:
+> This series of patches modifies magn-3d driver to handle the rotation
+> from north usage. This is done by scanning the report and then building
+> the iio arrays (vals and channels) dynamically.
 >
-> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> index 34d93a5..878400c 100644
-> --- a/drivers/iio/adc/ad799x.c
-> +++ b/drivers/iio/adc/ad799x.c
-> @@ -193,10 +193,8 @@ static int ad7997_8_update_scan_mode(struct iio_dev *indio_dev,
->   		return i2c_smbus_write_word_swapped(st->client, AD7998_CONF_REG,
->   			st->config | (*scan_mask << AD799X_CHANNEL_SHIFT));
->   	default:
-> -		break;
-> +		return 0;
->   	}
-> -
-> -	return 0;
->   }
+> Changes from V4
+> I use the address field of struct iio_chan_spec to hold the array index
+> of the usage attribute. The scan_index field is generated when creating
+> an iio channel.
 >
->   static int ad799x_scan_direct(struct ad799x_state *st, unsigned ch)
+> Reyad Attiyat (4):
+>    iio: Documentation: Add documentation for rotation from north sensor
+>      usage attributes
+>    iio: types: Added support for rotation from north usage attributes
+>    iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
+>      iio channels
+>    iio: hid-sensor-magn-3d: Add support for rotation from north
 >
+>   Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
+>   drivers/iio/industrialio-core.c               |   4 +
+>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199 ++++++++++++++++++++------
+>   include/linux/iio/types.h                     |   4 +
+>   4 files changed, 245 insertions(+), 44 deletions(-)
+>
+Did you get chance to look at the cause of panic?
 
+Thanks,
+Srinivas
