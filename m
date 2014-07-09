@@ -1,104 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:27452 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752242AbaGKJKm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jul 2014 05:10:42 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org
-Subject: [PATCH 3/4] Documentation: dt-bindings: update exynos-adc.txt with
- syscon handle
-Date: Fri, 11 Jul 2014 14:36:28 +0530
-Message-id: <1405069589-10388-4-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
-References: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
+Received: from mail-wi0-f172.google.com ([209.85.212.172]:38646 "EHLO
+	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751778AbaGIWNU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jul 2014 18:13:20 -0400
+MIME-Version: 1.0
+In-Reply-To: <53BD9BD5.5030204@linux.intel.com>
+References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com> <53BD9BD5.5030204@linux.intel.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Wed, 9 Jul 2014 17:12:58 -0500
+Message-ID: <CA+BWVUSLtG9pH245ofyGsrST5H_5W_EbvOXZ_YkCxmg4DX09_A@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] iio: Add support for rotation from north
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch updates the DT bindings in exynos-adc.txt with the
-syscon phandle to the ADC nodes.
+Hey Srinivas,
 
-Also removes the 2nd "reg" property, which used to carry the
-ADC_PHY regiser base from PMU.
+I did look into the panic you sent. I wasn't sure exactly what caused
+the NULL pointer.
+I tested it with out applying the last rotation from north patch, so
+no hid usages are found, my device only has rotation_from_north, and
+hid_parse_report() would return -EINVAL.
+I added another check to make sure a iio channel were set up, and
+return -EINVAL if not, but couldn't think of anything else.
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: devicetree@vger.kernel.org
----
- .../devicetree/bindings/iio/adc/exynos-adc.txt     |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Could you test this version with dynamic debugging and see if it is
+finding any hid usage attributes.
+Any ideas what could cause this? I think I'm handling errors properly
+by returning what parse_report returns (-EINVAL or -ENOMEM) in probe
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
-index b87749a..808bbfa 100644
---- a/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
-@@ -1,10 +1,11 @@
- Samsung Exynos Analog to Digital Converter bindings
- 
- The devicetree bindings are for the new ADC driver written for
--Exynos4 and upward SoCs from Samsung.
-+Exynos4 and Exynos5 series SoCs from Samsung.
-+Now supports Exynos3250 too.
- 
- New driver handles the following
--1. Supports ADC IF found on EXYNOS4412/EXYNOS5250
-+1. Supports ADC IF found on Exynos3250/EXYNOS4412/EXYNOS5 series
-    and future SoCs from Samsung
- 2. Add ADC driver under iio/adc framework
- 3. Also adds the Documentation for device tree bindings
-@@ -18,7 +19,7 @@ Required properties:
- 				for controllers compatible with ADC of
- 				Exynos3250.
- - reg:			Contains ADC register address range (base address and
--			length) and the address of the phy enable register.
-+			length)
- - interrupts: 		Contains the interrupt information for the timer. The
- 			format is being dependent on which interrupt controller
- 			the Samsung device uses.
-@@ -31,6 +32,8 @@ Required properties:
- 			- "sclk_adc" : ADC special clock (only for Exynos3250
- 				       and compatible ADC block)
- - vdd-supply		VDD input supply.
-+- samsung,syscon-phandle Contains the PMU system controller node
-+			(To access the ADC_PHY register)
- 
- Note: child nodes can be added for auto probing from device tree.
- 
-@@ -38,7 +41,7 @@ Example: adding device info in dtsi file
- 
- adc: adc@12D10000 {
- 	compatible = "samsung,exynos-adc-v1";
--	reg = <0x12D10000 0x100>, <0x10040718 0x4>;
-+	reg = <0x12D10000 0x100>;
- 	interrupts = <0 106 0>;
- 	#io-channel-cells = <1>;
- 	io-channel-ranges;
-@@ -47,13 +50,14 @@ adc: adc@12D10000 {
- 	clock-names = "adc";
- 
- 	vdd-supply = <&buck5_reg>;
-+	samsung,syscon-phandle = <&pmu_system_controller>;
- };
- 
- Example: adding device info in dtsi file for Exynos3250 with additional sclk
- 
- adc: adc@126C0000 {
- 	compatible = "samsung,exynos3250-adc-v2";
--	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+	reg = <0x126C0000 0x100>;
- 	interrupts = <0 137 0>;
- 	#io-channel-cells = <1>;
- 	io-channel-ranges;
-@@ -62,6 +66,7 @@ adc: adc@126C0000 {
- 	clock-names = "adc", "sclk_adc";
- 
- 	vdd-supply = <&buck5_reg>;
-+	samsung,syscon-phandle = <&pmu_system_controller>;
- };
- 
- Example: Adding child nodes in dts file
--- 
-1.7.9.5
+Thanks,
+Reyad Attiyat
 
+On Wed, Jul 9, 2014 at 2:45 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> On 07/09/2014 12:30 PM, Reyad Attiyat wrote:
+>>
+>> This series of patches modifies magn-3d driver to handle the rotation
+>> from north usage. This is done by scanning the report and then building
+>> the iio arrays (vals and channels) dynamically.
+>>
+>> Changes from V4
+>> I use the address field of struct iio_chan_spec to hold the array index
+>> of the usage attribute. The scan_index field is generated when creating
+>> an iio channel.
+>>
+>> Reyad Attiyat (4):
+>>    iio: Documentation: Add documentation for rotation from north sensor
+>>      usage attributes
+>>    iio: types: Added support for rotation from north usage attributes
+>>    iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
+>>      iio channels
+>>    iio: hid-sensor-magn-3d: Add support for rotation from north
+>>
+>>   Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
+>>   drivers/iio/industrialio-core.c               |   4 +
+>>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199
+>> ++++++++++++++++++++------
+>>   include/linux/iio/types.h                     |   4 +
+>>   4 files changed, 245 insertions(+), 44 deletions(-)
+>>
+> Did you get chance to look at the cause of panic?
+>
+> Thanks,
+> Srinivas
