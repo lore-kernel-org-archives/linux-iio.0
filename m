@@ -1,180 +1,382 @@
-Return-Path: <atx@atalax.net>
-Date: Mon, 7 Jul 2014 22:38:16 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net
-Subject: [PATCH v2 5/5] staging:iio:hmc5843: Add support for spi hmc5983
-Message-ID: <20140707203816.GG10383@dashie>
-References: <20140707203326.GB10383@dashie>
+Return-Path: <heiko@sntech.de>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, =?utf-8?B?ZWRkaWUo6JSh5p6rKQ==?= <cf@rock-chips.com>, huangtao@rock-chips.com, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH v2 1/2] iio: adc: add driver for Rockchip saradc
+Date: Wed, 09 Jul 2014 10:44:06 +0200
+Message-ID: <2482306.yDb91TH59G@diego>
+In-Reply-To: <2959154.xc8BQActsn@diego>
+References: <2959154.xc8BQActsn@diego>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140707203326.GB10383@dashie>
+Content-Type: text/plain; charset="us-ascii"
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds support for the hmc5983 spi interface.
-This chip is almost identical to the hmc5883. The difference being added
-temperature compensation, additional available sample rate (220Hz) and an SPI
-interface.
+The ADC is a 3-channel signal-ended 10-bit Successive Approximation
+Register (SAR) A/D Converter. It uses the supply and ground as its reference
+and converts the analog input signal into 10-bit binary digital codes.
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- drivers/staging/iio/magnetometer/Kconfig       |   8 ++
- drivers/staging/iio/magnetometer/Makefile      |   1 +
- drivers/staging/iio/magnetometer/hmc5843_spi.c | 105 +++++++++++++++++++++++++
- 3 files changed, 114 insertions(+)
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
+changes since v1:
+- address comments from Peter Meerwald
 
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index 32c69c0..bc5c355 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -9,6 +9,7 @@ config SENSORS_HMC5843
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	select SENSORS_HMC5843_I2C if (I2C)
-+	select SENSORS_HMC5843_SPI if (SPI_MASTER)
- 	help
- 	  Say Y here to add support for the Honeywell HMC5843, HMC5883 and
- 	  HMC5883L 3-Axis Magnetometer (digital compass).
-@@ -17,6 +18,7 @@ config SENSORS_HMC5843
- 	  If so, these modules will be created:
- 	  - hmc5843_core (core functions)
- 	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
-+	  - hmc5843_spi (support for HMC5983)
+ drivers/iio/adc/Kconfig           |  10 ++
+ drivers/iio/adc/Makefile          |   1 +
+ drivers/iio/adc/rockchip_saradc.c | 313 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 324 insertions(+)
+ create mode 100644 drivers/iio/adc/rockchip_saradc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a80d236..5d36bdb 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -187,6 +187,16 @@ config NAU7802
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called nau7802.
  
- config SENSORS_HMC5843_I2C
- 	tristate
-@@ -24,4 +26,10 @@ config SENSORS_HMC5843_I2C
- 	depends on SENSORS_HMC5843
- 	select REGMAP_I2C
- 
-+config SENSORS_HMC5843_SPI
-+	tristate
-+	depends on SPI_MASTER
-+	depends on SENSORS_HMC5843
-+	select REGMAP_SPI
++config ROCKCHIP_SARADC
++	tristate "Rockchip SARADC driver"
++	depends on ARCH_ROCKCHIP || (OF && COMPILE_TEST)
++	help
++	  Say yes here to build support for the SARADC found in SoCs from
++	  Rockchip.
 +
- endmenu
-diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-index 65baf1c..33761a1 100644
---- a/drivers/staging/iio/magnetometer/Makefile
-+++ b/drivers/staging/iio/magnetometer/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
- obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-+obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
++	  To compile this driver as a module, choose M here: the
++	  module will be called rockchip_saradc.
++
+ config TI_ADC081C
+ 	tristate "Texas Instruments ADC081C021/027"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 9d60f2d..8e2932d 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
++obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+ obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
 new file mode 100644
-index 0000000..3f71ee0
+index 0000000..3f0164c
 --- /dev/null
-+++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-@@ -0,0 +1,105 @@
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -0,0 +1,313 @@
 +/*
-+ * SPI driver for hmc5983
-+ *
-+ * Copyright (C) Josef Gajdusek <atx@atx.name>
++ * Rockchip Successive Approximation Register (SAR) A/D Converter
++ * Copyright (C) 2014 ROCKCHIP, Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
 + *
-+ * */
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
 +
 +#include <linux/module.h>
-+#include <linux/spi/spi.h>
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/clk.h>
++#include <linux/completion.h>
++#include <linux/regulator/consumer.h>
 +#include <linux/iio/iio.h>
 +
-+#include "hmc5843.h"
++#define SARADC_DATA			0x00
++#define SARADC_DATA_MASK		0x3ff
 +
-+struct regmap_config hmc5843_spi_regmap_config = {
-+		.reg_bits = 8,
-+		.val_bits = 8,
++#define SARADC_STAS			0x04
++#define SARADC_STAS_BUSY		BIT(0)
 +
-+		.rd_table = &hmc5843_readable_table,
-+		.wr_table = &hmc5843_writable_table,
-+		.volatile_table = &hmc5843_volatile_table,
++#define SARADC_CTRL			0x08
++#define SARADC_CTRL_IRQ_STATUS		BIT(6)
++#define SARADC_CTRL_IRQ_ENABLE		BIT(5)
++#define SARADC_CTRL_POWER_CTRL		BIT(3)
++#define SARADC_CTRL_CHN_MASK		0x7
 +
-+		/* Autoincrement address pointer */
-+		.read_flag_mask = 0xc0,
++#define SARADC_DLY_PU_SOC		0x0c
++#define SARADC_DLY_PU_SOC_MASK		0x3f
 +
-+		.cache_type = REGCACHE_RBTREE,
++#define SARADC_BITS			10
++#define SARADC_TIMEOUT			msecs_to_jiffies(100)
++
++struct rockchip_saradc {
++	void __iomem		*regs;
++	struct clk		*pclk;
++	struct clk		*clk;
++	struct completion	completion;
++	struct regulator	*vref;
++	int			vref_mv;
++	u16			last_val;
 +};
 +
-+static int hmc5843_spi_probe(struct spi_device *spi)
++static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    int *val, int *val2, long mask)
 +{
-+	struct hmc5843_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
++	struct rockchip_saradc *info = iio_priv(indio_dev);
 +
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
 +
-+	spi->mode = SPI_MODE_3;
-+	spi->max_speed_hz = 8000000;
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret)
-+		return ret;
++		/* Select the channel to be used and trigger conversion */
++		writel_relaxed(0x08, info->regs + SARADC_DLY_PU_SOC);
++		writel(SARADC_CTRL_POWER_CTRL
++				| (chan->channel & SARADC_CTRL_CHN_MASK)
++				| SARADC_CTRL_IRQ_ENABLE,
++		       info->regs + SARADC_CTRL);
 +
-+	spi_set_drvdata(spi, indio_dev);
++		if (!wait_for_completion_timeout(&info->completion,
++						 SARADC_TIMEOUT)) {
++			writel_relaxed(0, info->regs + SARADC_CTRL);
++			mutex_unlock(&indio_dev->mlock);
++			return -ETIMEDOUT;
++		}
 +
-+	data = iio_priv(indio_dev);
-+	data->dev = &spi->dev;
-+	data->regmap = devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config);
-+
-+	indio_dev->dev.parent = &spi->dev;
-+
-+	return hmc5843_common_probe(indio_dev, HMC5983_ID);
++		*val = info->last_val;
++		mutex_unlock(&indio_dev->mlock);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = info->vref_mv;
++		*val2 = SARADC_BITS;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static int hmc5843_spi_remove(struct spi_device *spi)
++static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
 +{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	return hmc5843_common_remove(indio_dev);
++	struct rockchip_saradc *info = (struct rockchip_saradc *)dev_id;
++
++	/* Read value */
++	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
++	info->last_val &= SARADC_DATA_MASK;
++
++	/* clear irq & power down adc */
++	writel_relaxed(0, info->regs + SARADC_CTRL);
++
++	complete(&info->completion);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_info rockchip_saradc_iio_info = {
++	.read_raw = rockchip_saradc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define ADC_CHANNEL(_index, _id) {			\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.channel = _index,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.datasheet_name = _id,				\
++}
++
++static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
++	ADC_CHANNEL(0, "adc0"),
++	ADC_CHANNEL(1, "adc1"),
++	ADC_CHANNEL(2, "adc2"),
++};
++
++static int rockchip_saradc_probe(struct platform_device *pdev)
++{
++	struct rockchip_saradc *info = NULL;
++	struct device_node *np = pdev->dev.of_node;
++	struct iio_dev *indio_dev = NULL;
++	struct resource	*mem;
++	int ret = -ENODEV;
++	int irq;
++	u32 rate;
++
++	if (!np)
++		return ret;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
++		return -ENOMEM;
++	}
++	info = iio_priv(indio_dev);
++
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	info->regs = devm_request_and_ioremap(&pdev->dev, mem);
++	if (!info->regs)
++		return -ENOMEM;
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		return irq;
++	}
++
++	ret = devm_request_irq(&pdev->dev, irq, rockchip_saradc_isr,
++			       0, dev_name(&pdev->dev), info);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
++		return ret;
++	}
++
++	init_completion(&info->completion);
++
++	info->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
++	if (IS_ERR(info->pclk)) {
++		dev_err(&pdev->dev, "failed to get pclk\n");
++		return PTR_ERR(info->pclk);
++	}
++
++	info->clk = devm_clk_get(&pdev->dev, "saradc");
++	if (IS_ERR(info->clk)) {
++		dev_err(&pdev->dev, "failed to get adc clock\n");
++		return PTR_ERR(info->clk);
++	}
++
++	info->vref = devm_regulator_get(&pdev->dev, "vref");
++	if (IS_ERR(info->vref)) {
++		dev_err(&pdev->dev, "failed to get regulator, %ld\n",
++			PTR_ERR(info->vref));
++		return PTR_ERR(info->vref);
++	}
++
++	/* use a default of 1MHz for the converter clock */
++	if (of_property_read_u32(np, "clock-frequency", &rate))
++		rate = 1000000;
++
++	ret = clk_set_rate(info->clk, rate);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
++		return ret;
++	}
++
++	ret = regulator_enable(info->vref);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to enable vref regulator\n");
++		return ret;
++	}
++
++	ret = regulator_get_voltage(info->vref);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to get regulator voltage\n");
++		goto err_reg_voltage;
++	}
++	info->vref_mv = ret / 1000;
++
++	ret = clk_prepare_enable(info->pclk);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to enable pclk\n");
++		goto err_reg_voltage;
++	}
++
++	ret = clk_prepare_enable(info->clk);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to enable converter clock\n");
++		goto err_pclk;
++	}
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->info = &rockchip_saradc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	indio_dev->channels = rockchip_saradc_iio_channels;
++	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_clk;
++
++	return 0;
++
++err_clk:
++	clk_disable_unprepare(info->clk);
++err_pclk:
++	clk_disable_unprepare(info->pclk);
++err_reg_voltage:
++	regulator_disable(info->vref);
++	return ret;
++}
++
++static int rockchip_saradc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct rockchip_saradc *info = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	clk_disable_unprepare(info->clk);
++	clk_disable_unprepare(info->pclk);
++	regulator_disable(info->vref);
++
++	return 0;
 +}
 +
 +#ifdef CONFIG_PM_SLEEP
-+static int hmc5843_spi_suspend(struct device *dev)
++static int rockchip_saradc_suspend(struct device *dev)
 +{
-+	return hmc5843_common_suspend(spi_get_drvdata(to_spi_device(dev)));
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct rockchip_saradc *info = iio_priv(indio_dev);
++
++	clk_disable_unprepare(info->clk);
++	clk_disable_unprepare(info->pclk);
++	regulator_disable(info->vref);
++
++	return 0;
 +}
 +
-+static int hmc5843_spi_resume(struct device *dev)
++static int rockchip_saradc_resume(struct device *dev)
 +{
-+	return hmc5843_common_resume(spi_get_drvdata(to_spi_device(dev)));
-+}
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct rockchip_saradc *info = iio_priv(indio_dev);
++	int ret;
 +
-+static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
-+		hmc5843_spi_suspend, hmc5843_spi_resume);
-+#define HMC5843_PM_OPS (&hmc5843_pm_ops)
-+#else
-+#define HMC5843_PM_OPS NULL
++	ret = regulator_enable(info->vref);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(info->pclk);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(info->clk);
++	if (ret)
++		return ret;
++
++	return ret;
++}
 +#endif
 +
++static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
++			 rockchip_saradc_suspend, rockchip_saradc_resume);
 +
-+static const struct spi_device_id hmc5843_id[] = {
-+	{ "hmc5983", HMC5983_ID },
-+	{ }
++static const struct of_device_id rockchip_saradc_match[] = {
++	{ .compatible = "rockchip,saradc" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
++
++static struct platform_driver rockchip_saradc_driver = {
++	.probe		= rockchip_saradc_probe,
++	.remove		= rockchip_saradc_remove,
++	.driver		= {
++		.name	= "rockchip-saradc",
++		.owner	= THIS_MODULE,
++		.of_match_table = rockchip_saradc_match,
++		.pm	= &rockchip_saradc_pm_ops,
++	},
 +};
 +
-+static struct spi_driver hmc5843_driver = {
-+		.driver = {
-+				.name = "hmc5843",
-+				.pm = HMC5843_PM_OPS,
-+				.owner = THIS_MODULE,
-+		},
-+		.id_table = hmc5843_id,
-+		.probe = hmc5843_spi_probe,
-+		.remove = hmc5843_spi_remove,
-+};
-+
-+module_spi_driver(hmc5843_driver);
-+
-+MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-+MODULE_DESCRIPTION("HMC5983 SPI driver");
-+MODULE_LICENSE("GPL");
++module_platform_driver(rockchip_saradc_driver);
 -- 
-1.8.5.5
+1.9.0
