@@ -1,49 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mta1.parkeon.com ([91.121.43.66]:43138 "EHLO mta1.parkeon.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753670AbaGKN1k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 11 Jul 2014 09:27:40 -0400
-Subject: [PATCH] iio: mma8452: Use correct acceleration units.
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Fri, 11 Jul 2014 14:54:31 +0200
-Message-ID: <20140711125431.22109.59659.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <reyad.attiyat@gmail.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH v5 2/4] iio: types: Added support for rotation from north usage attributes
+Date: Wed,  9 Jul 2014 14:30:11 -0500
+Message-Id: <1404934213-2733-3-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
+References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The userspace interface for acceleration sensors is documented as using
-m/s^2 units [Documentation/ABI/testing/sysfs-bus-iio]
+Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
 
-The fullscale raw value for the mma8452 (-2048) corresponds to -2G, -4G or -8G
-depending on the seleted mode.
-
-The scale table was converting to G rather than m/s^2.
-Change the scaling table to match the documented interface.
-
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
 ---
- drivers/iio/accel/mma8452.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-core.c | 4 ++++
+ include/linux/iio/types.h       | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 17aeea1..61eba5a 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -111,8 +111,13 @@ static const int mma8452_samp_freq[8][2] = {
- 	{6, 250000}, {1, 560000}
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4b1f375..af3e76d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
++	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
++	[IIO_MOD_NORTH_TRUE] = "from_north_true",
++	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
++	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
  };
  
-+/* Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
-+ * The userspace interface uses m/s^2 and we declare micro units
-+ * So scale factor is given by:
-+ * 	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
-+ */
- static const int mma8452_scales[3][2] = {
--	{0, 977}, {0, 1953}, {0, 3906}
-+	{0, 9577}, {0, 19154}, {0, 38307}
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d480631..d09c40d 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -56,6 +56,10 @@ enum iio_modifier {
+ 	IIO_MOD_QUATERNION,
+ 	IIO_MOD_TEMP_AMBIENT,
+ 	IIO_MOD_TEMP_OBJECT,
++	IIO_MOD_NORTH_MAGN,
++	IIO_MOD_NORTH_TRUE,
++	IIO_MOD_NORTH_MAGN_TILT_COMP,
++	IIO_MOD_NORTH_TRUE_TILT_COMP
  };
  
- static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
-
+ enum iio_event_type {
+-- 
+1.9.3
