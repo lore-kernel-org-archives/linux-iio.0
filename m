@@ -1,39 +1,37 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <53C288F0.3070001@metafoo.de>
-Date: Sun, 13 Jul 2014 15:26:08 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
- Chen Gang <gang.chen.5i5j@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- dmitry.torokhov@gmail.com, thierry.reding@gmail.com, jic23@kernel.org,
- wim@iguana.be, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
- teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com,
- knaack.h@gmx.de, rdunlap@infradead.org, linux-input@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
- Liqin Chen <liqin.linux@gmail.com>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at>
-In-Reply-To: <53C25551.1050909@nod.at>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 4/8] iio: hid_sensor_hub: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:15 -0700
+Message-Id: <1405098739-25470-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/13/2014 11:45 AM, Richard Weinberger wrote:
-> Am 13.07.2014 11:27, schrieb Lennox Wu:
->> As I said before, some configurations don't make sense.
->
-> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
-> Chen's fixes seem reasonable as not all architectures support iomem.
+This can result in wrong reference count for trigger device, leave the binding
+to user space via current_trigger sysfs entry.
+Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+with Jonathan.
 
-Maybe we should stub out ioremap() and friends when COMPILE_TEST is enabled to 
-avoid these linker errors. That's in my opinion better than turning most of the 
-'depends on COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The 
-issue comes up quite a lot and it is often overlooked when adding a driver that 
-can be build when COMPILE_TEST is enabled.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Lars
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index a3109a6..5fdf475 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -122,7 +122,7 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 		dev_err(&indio_dev->dev, "Trigger Register Failed\n");
+ 		goto error_free_trig;
+ 	}
+-	indio_dev->trig = attrb->trigger = trig;
++	attrb->trigger = trig;
+ 
+ 	return ret;
+ 
+-- 
+1.9.1
