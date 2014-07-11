@@ -3,9 +3,9 @@ From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 5/8] iio: st_sensors: Remove indio_dev->trig assignment
-Date: Fri, 11 Jul 2014 10:12:16 -0700
-Message-Id: <1405098739-25470-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 6/8] iio: gyro: itg3200: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:17 -0700
+Message-Id: <1405098739-25470-6-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -17,20 +17,22 @@ with Jonathan.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iio/gyro/itg3200_buffer.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index 8fc3a97..b64f514 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -49,7 +49,6 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
- 		goto iio_trigger_register_error;
- 	}
--	indio_dev->trig = sdata->trig;
+diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
+index e3b3c50..2ba20f6 100644
+--- a/drivers/iio/gyro/itg3200_buffer.c
++++ b/drivers/iio/gyro/itg3200_buffer.c
+@@ -131,9 +131,6 @@ int itg3200_probe_trigger(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		goto error_free_irq;
  
+-	/* select default trigger */
+-	indio_dev->trig = st->trig;
+-
  	return 0;
  
+ error_free_irq:
 -- 
 1.9.1
