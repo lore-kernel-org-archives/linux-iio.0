@@ -3,11 +3,9 @@ From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 8/8] iio: meter: ade7758: Remove indio_dev->trig assignment
-Date: Fri, 11 Jul 2014 10:12:19 -0700
-Message-Id: <1405098739-25470-8-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/8] iio: accel: bma180: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:12 -0700
+Message-Id: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 This can result in wrong reference count for trigger device, leave the binding
@@ -17,21 +15,20 @@ with Jonathan.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/staging/iio/meter/ade7758_trigger.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/iio/accel/bma180.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-index ea01b8f..3a98627 100644
---- a/drivers/staging/iio/meter/ade7758_trigger.c
-+++ b/drivers/staging/iio/meter/ade7758_trigger.c
-@@ -84,8 +84,6 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
- 	iio_trigger_set_drvdata(st->trig, indio_dev);
- 	ret = iio_trigger_register(st->trig);
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index a7e68c8..1595065 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -569,7 +569,6 @@ static int bma180_probe(struct i2c_client *client,
+ 	trig->ops = &bma180_trigger_ops;
+ 	iio_trigger_set_drvdata(trig, indio_dev);
+ 	data->trig = trig;
+-	indio_dev->trig = trig;
  
--	/* select default trigger */
--	indio_dev->trig = st->trig;
+ 	ret = iio_trigger_register(trig);
  	if (ret)
- 		goto error_free_irq;
- 
 -- 
 1.9.1
