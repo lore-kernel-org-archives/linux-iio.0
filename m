@@ -1,67 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:49428 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:49460 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751014AbaGKURW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 11 Jul 2014 16:17:22 -0400
-Message-ID: <53C046D8.5070500@kernel.org>
-Date: Fri, 11 Jul 2014 21:19:36 +0100
+	id S1751014AbaGKUTe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 11 Jul 2014 16:19:34 -0400
+Message-ID: <53C0475C.3040603@kernel.org>
+Date: Fri, 11 Jul 2014 21:21:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:core: Handle error when mask type is not separate
-References: <1404853414-9263-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1404853414-9263-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH] iio: core : events ABI for specifying period
+References: <1404858591-10061-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1404858591-10061-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/07/14 22:03, Srinivas Pandruvada wrote:
-> When event spec is shared by multiple channels, which has definition
-> for mask_shared_by_type, iio_device_register_eventset fails.
+On 08/07/14 23:29, Srinivas Pandruvada wrote:
+> The iio sysfs ABI defines a way to specify period for roc and thresholds.
+> What:		/sys/.../events/in_accel_x_thresh_rising_period
+> What:		/sys/.../events/in_accel_x_thresh_falling_period
+> what:		/sys/.../events/in_accel_x_roc_rising_period
+> What:		/sys/.../events/in_accel_x_roc_falling_period
 >
-> For example:
-> static const struct iio_event_spec iio_dummy_events[] = {
-> 	{
-> 		.type = IIO_EV_TYPE_THRESH,
-> 		.dir = IIO_EV_DIR_RISING,
-> 		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> 		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
-> 	}, {
-> 		.type = IIO_EV_TYPE_THRESH,
-> 		.dir = IIO_EV_DIR_FALLING,
-> 		.mask_separate = BIT(IIO_EV_INFO_ENABLE),a
-> 		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
-> 	}
-> };
+> But there is no way to add period with the current event info enum.
 >
-> If two channels use this event spec, this will result in error.
->
-> This change handles EBUSY error similar to iio_device_add_info_mask_type().
+> Added IIO_EV_INFO_PERIOD and corresponding string.
 >
 > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Good spot.  Applied to the fixes-togreg branch of iio.git and marked
-for stable.  Grep suggests there is only one user in the tree (lis3l02dq)
-but still worth getting the fix out there for that one.
+One of several even related element that haven't gotten added yet but
+we'll do them as and when anyone cares.
 
-J
+Thanks,
+
+Jonathan
 > ---
->   drivers/iio/industrialio-event.c | 3 +++
->   1 file changed, 3 insertions(+)
+>   drivers/iio/industrialio-event.c | 1 +
+>   include/linux/iio/types.h        | 1 +
+>   2 files changed, 2 insertions(+)
 >
 > diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index 258a973..bfbf4d4 100644
+> index bfbf4d4..0c1e37e 100644
 > --- a/drivers/iio/industrialio-event.c
 > +++ b/drivers/iio/industrialio-event.c
-> @@ -345,6 +345,9 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
->   			&indio_dev->event_interface->dev_attr_list);
->   		kfree(postfix);
+> @@ -209,6 +209,7 @@ static const char * const iio_ev_info_text[] = {
+>   	[IIO_EV_INFO_ENABLE] = "en",
+>   	[IIO_EV_INFO_VALUE] = "value",
+>   	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
+> +	[IIO_EV_INFO_PERIOD] = "period",
+>   };
 >
-> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
-> +			continue;
-> +
->   		if (ret)
->   			return ret;
+>   static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index d09c40d..4a2af8a 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -74,6 +74,7 @@ enum iio_event_info {
+>   	IIO_EV_INFO_ENABLE,
+>   	IIO_EV_INFO_VALUE,
+>   	IIO_EV_INFO_HYSTERESIS,
+> +	IIO_EV_INFO_PERIOD,
+>   };
 >
+>   enum iio_event_direction {
 >
 
