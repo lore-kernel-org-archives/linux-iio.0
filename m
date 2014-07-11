@@ -1,156 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:42799 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755463AbaGQIn1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 04:43:27 -0400
-Date: Thu, 17 Jul 2014 10:37:57 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Chen Gang <gang.chen.5i5j@gmail.com>
-Cc: Guenter Roeck <linux@roeck-us.net>,
-	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Message-ID: <20140717083756.GA19686@ulmo>
-References: <20140713201753.GA29955@kroah.com>
- <53C39569.9020802@nod.at>
- <53C3994C.1010309@metafoo.de>
- <53C39B66.4060500@nod.at>
- <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
- <53C47725.8000005@gmail.com>
- <53C47B76.4080306@roeck-us.net>
- <53C47FB7.6080304@gmail.com>
- <53C53CE1.4090803@gmail.com>
- <53C7269E.4010702@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
-In-Reply-To: <53C7269E.4010702@gmail.com>
+Received: from mail-qc0-f174.google.com ([209.85.216.174]:53157 "EHLO
+	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755213AbaGKUKq convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jul 2014 16:10:46 -0400
+Received: by mail-qc0-f174.google.com with SMTP id x13so1406364qcv.19
+        for <linux-iio@vger.kernel.org>; Fri, 11 Jul 2014 13:10:45 -0700 (PDT)
+From: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Subject: ad5622 faulty i2c bus tracking
+Date: Fri, 11 Jul 2014 16:10:42 -0400
+Message-Id: <1B63ACC2-620E-419A-B346-C156B0059FA2@gmail.com>
+Cc: Kevin Cotton <CottonK@Sonatest.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	michael.hennerich@analog.com
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi all,
 
---HcAYCG3uE/tztfnV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We are seing odd behaviour with the ad5622.
 
-On Thu, Jul 17, 2014 at 09:27:58AM +0800, Chen Gang wrote:
-[...]
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index c2421e0..a7500c3 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -630,7 +630,16 @@ extern unsigned long devm_get_free_pages(struct devi=
-ce *dev,
->  					 gfp_t gfp_mask, unsigned int order);
->  extern void devm_free_pages(struct device *dev, unsigned long addr);
-> =20
-> +#ifdef CONFIG_HAS_IOMEM
->  void __iomem *devm_ioremap_resource(struct device *dev, struct resource =
-*res);
-> +#elif defined(CONFIG_COMPILE_TEST)
-> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
-> +						struct resource *res)
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+This is what our bus looks like:
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- UU UU 
+10: -- -- -- -- -- -- -- -- UU UU UU UU -- -- UU UU 
+20: -- UU -- -- -- -- -- -- -- -- -- -- 2c -- -- -- 
+30: UU -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: -- -- -- -- -- -- -- -- UU UU UU UU -- -- -- -- 
+50: UU UU UU -- -- -- -- -- -- -- -- -- -- -- -- -- 
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+70: -- -- -- -- -- -- -- —                         
 
-Maybe: "Hardware doesn't support memory-mapped I/O"? I'm not sure if
-it's useful to include the reference to COMPILE_TEST, especially since
-the #elif will be dropped in favour of a simple #else.
+It is pretty crowded but works well, under normal conditions. All except the two
+ad5622 we have at 0x0e and 0x0f.
 
-> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
+Recently weve been experimenting with writing more content to one of the eeproms
+we have on the bus (at24 driven). This, joint with another condition exacerbated
+a problem which has always been present.
 
-There's apparently an IOMEM_ERR_PTR() for this nowadays...
+Ive shrunk down the procedure to cause the faulty behaviour to its simplest
+expression. To close in the the root cause, we physically eliminated all chips
+one by one (by lifting pins) until we were practically left with the ad5622 and
+one eeprom (0x51). We identified the two DACs as the cause by removing them, and
+observing the problem went away. So we are confident the ad5622 is doing
+something wrong.
 
-> +}
-> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
-> =20
->  /* allows to add/remove a custom action to devres stack */
->  int devm_add_action(struct device *dev, void (*action)(void *), void *da=
-ta);
-> diff --git a/include/linux/io.h b/include/linux/io.h
-> index b76e6e5..59128aa 100644
-> --- a/include/linux/io.h
-> +++ b/include/linux/io.h
-> @@ -58,14 +58,42 @@ static inline void devm_ioport_unmap(struct device *d=
-ev, void __iomem *addr)
->  }
->  #endif
-> =20
-> +#ifdef CONFIG_HAS_IOMEM
-> +
->  void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
->  			    unsigned long size);
->  void __iomem *devm_ioremap_nocache(struct device *dev, resource_size_t o=
-ffset,
->  				    unsigned long size);
->  void devm_iounmap(struct device *dev, void __iomem *addr);
-> +void devm_ioremap_release(struct device *dev, void *res);
-> +
-> +#elif defined(CONFIG_COMPILE_TEST)
-> +
-> +static inline void __iomem *devm_ioremap(struct device *dev,
-> +				resource_size_t offset, unsigned long size)
+I analyze the bus using a tektronik scope with the bus analysis feature. With
+all i2c slave drivers unbound, I do this command:
 
-For consistency with other functions above, please keep arguments on
-subsequent lines aligned with the first argument on the first line, like
-so:
+i2cset -f -y 0 0x51 0x0 0x0 0xff 0x0e 0x1f 0xff i
 
-static inline void __iomem *devm_ioremap(struct device *dev,
-					 resource_size_t offset,
-					 unsigned long size)
+This normal sequence is a write of 4 bytes at offset 0 of the eeprom. The 0x51
+eeprom acks correctly up to 0x1b, then the master tries to write the next byte
+(0xff) but a slave (ad5622) is holding the data line to the ground. The master
+immediately detects this as a loss of bus arbitration and the transfer halts and
+fails.
 
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-> +	return NULL;
-> +}
-> +static inline void __iomem *devm_ioremap_nocache(struct device *dev,
-> +				resource_size_t offset, unsigned long size)
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-> +	return NULL;
-> +}
+I can delay the failure by writing non-1s after the 0x1b. Which makes sense
+because at that point, even if the ad5622 is grounding the data line, so is the
+master.
 
-Perhaps this should call devm_ioremap() so we don't have to repeat the
-same error message? Or maybe make it:
+In another scenario, I manually configure the ad5622 in the iio sysfs directory.
+I remove the powerdown bit and setup the max voltage value. I setup a scope trig
+on the falling edge of the signal measured on the raw output of the DAC. I issue
+this command:
 
-	#define devm_ioremap_nocache devm_ioremap
+i2cset -y -f 0 0x51 0 0 0xFF 0x0e 0x1c 0x69 0xFF i
 
-?
+The scope trigs at the end of the last 0xFF. The output voltage drops to 2/3 the
+ref voltage on the chip. Trying to make sense of this, we reasonned that if the
+0x1C69 is lined up correctly in the ad5622s register, it would select the 1k
+pull-down in the chip. Our design has a pull up on the Vout. The measured
+voltage fits what we should expect if our pull-up was fighting the chips 1k
+pull-down. So the chip seems to be grabbing the value and using it. Note: in the
+i2cset command, the address can be swapped for 0x52, ou other eeprom. The 0xff
+can be any value.
 
-Thierry
+Further, in case this helps those still reading if I write these bytes in the
+eeprom at its offset 0 like so: i2cset -f -y 0 0x51 0x0 0x0 0xff 0xff 0xff 0x0e
+0x1c 0xff i
 
---HcAYCG3uE/tztfnV
-Content-Type: application/pgp-signature
+Then when I read it back, the fault is also revealed.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Here are two screenshots of this last scenario:
+https://drive.google.com/folderview?id=0B-AMxW_pZfvkZS0zMHZXSmF1eVE&usp=drive_web
 
-iQIcBAEBAgAGBQJTx4tkAAoJEN0jrNd/PrOhPFsP/RtP+U7gdFVyMKLDo+VHJhfM
-jUloIvPcehSqMA6dMW8RY5HcbHi4cDgtRSzTD+PsP+xmOmhsYyljZo8zRQUWUEzj
-/oQ0/EGapQssJVPDzlwcw5hM1aIgMJ6Prte4JXDgNG0a/HtJYszSRCrjuqydFHgX
-2nR7cJwABSAmCauB0ZciqyePMlIFArNeUzIIN6DvfnAhAsBC2IMSpHaa20Fd+9En
-/nv2pN21Rkzis/521g6ECEdivS5SkIBuDMAa9bHvU7tRzae08Gdoa/MhAW8bP4SA
-vh09U76m3W+eyvSiNAmrJ5ROIZBFTxewmDIxYFgdk1JCr5J/QyUTERPWNqxdiQG1
-Ur6oPZ0C/j/Xi25w2oXSIojc1hMofYRIKVX3dDoRScjG1ylOtyW8gP3fjaHUW2gR
-whwAJYkEWnRebJqpCBLlE2vu3DjNlDSMmAs9oYk9FO1dHxKdtucl0jw9YMRHaRHz
-9KK5MnWwDune9dZM1MJYL6xGcPSrpCruW26Af4i9xMYjzlGiOJPE3FD8Ppu6R/iN
-Jo8bF5N8Q38mqwetLRGaR36tdu+sfc2xhWi7O1CXrBzYq96hm62JIILTTdAFhHkZ
-0kZ/OY9zudihO3kRAmTHGU1VcBfAc0COzjQMlCAtuFbXBBYnby2U8AvLwLiMdKb9
-k/sXMgNrAeZRiM8ThB8D
-=enXN
------END PGP SIGNATURE-----
+The purple line if the Vout. The different ground levels are caused by the
+master being two board stacks away from the probe point. The voltage levels at
+the chips was measured and determined to be well within the ad5622s tolerances.
+Nevertheless, we are working to a test gig to isolate the ad5622 with a
+bitbanged i2c master so I can reproduce any communication including simulated
+ack bits.
 
---HcAYCG3uE/tztfnV--
+Has anything like this been observed/reported? Are there any solutions or
+workaround (higher chip rev, etc.)? Aside from support.analog.com, any ideas
+who else could provide insight on the matter?
+
+Thanks for your help!
