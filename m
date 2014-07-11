@@ -3,9 +3,9 @@ From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 6/8] iio: gyro: itg3200: Remove indio_dev->trig assignment
-Date: Fri, 11 Jul 2014 10:12:17 -0700
-Message-Id: <1405098739-25470-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 8/8] iio: meter: ade7758: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:19 -0700
+Message-Id: <1405098739-25470-8-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -17,22 +17,21 @@ with Jonathan.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/gyro/itg3200_buffer.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/staging/iio/meter/ade7758_trigger.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
-index e3b3c50..2ba20f6 100644
---- a/drivers/iio/gyro/itg3200_buffer.c
-+++ b/drivers/iio/gyro/itg3200_buffer.c
-@@ -131,9 +131,6 @@ int itg3200_probe_trigger(struct iio_dev *indio_dev)
- 	if (ret)
- 		goto error_free_irq;
+diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
+index ea01b8f..3a98627 100644
+--- a/drivers/staging/iio/meter/ade7758_trigger.c
++++ b/drivers/staging/iio/meter/ade7758_trigger.c
+@@ -84,8 +84,6 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
+ 	iio_trigger_set_drvdata(st->trig, indio_dev);
+ 	ret = iio_trigger_register(st->trig);
  
 -	/* select default trigger */
 -	indio_dev->trig = st->trig;
--
- 	return 0;
+ 	if (ret)
+ 		goto error_free_irq;
  
- error_free_irq:
 -- 
 1.9.1
