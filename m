@@ -1,112 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:51023 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754356AbaGASoU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 1 Jul 2014 14:44:20 -0400
-Date: Wed, 2 Jul 2014 00:14:13 +0530
-From: Himangi Saraogi <himangi774@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: julia.lawall@lip6.fr
-Subject: [PATCH] staging: iio: Introduce the use of devm_ioremap_resource
-Message-ID: <20140701184413.GA2980@himangi-Dell>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 5/8] iio: st_sensors: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:16 -0700
+Message-Id: <1405098739-25470-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch introduces the use of devm_ioremap_resource. It does away
-with call to request_mem_region and the error checking on
-platform_get_resource. Also, the calls to free the allocated resources
-like release_mem_region and iounmap are done away with. The ret variable
-in the probe function is also eliminated. Also, a bug is fixed as the
-goto in the error handling of request_mem_region should not have
-called release_mem_region which releases a resource that has not been
-allocated.
+This can result in wrong reference count for trigger device, leave the binding
+to user space via current_trigger sysfs entry.
+Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+with Jonathan.
 
-Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/staging/iio/adc/ad7606_par.c | 37 ++++++------------------------------
- 1 file changed, 6 insertions(+), 31 deletions(-)
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 8a48d18..7511839 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -53,7 +53,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
- 	struct iio_dev *indio_dev;
- 	void __iomem *addr;
- 	resource_size_t remap_size;
--	int ret, irq;
-+	int irq;
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
-@@ -62,56 +62,31 @@ static int ad7606_par_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index 8fc3a97..b64f514 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -49,7 +49,6 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
+ 		goto iio_trigger_register_error;
  	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -ENODEV;
-+	addr = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(addr))
-+		return PTR_ERR(addr);
- 
- 	remap_size = resource_size(res);
- 
--	/* Request the regions */
--	if (!request_mem_region(res->start, remap_size, "iio-ad7606")) {
--		ret = -EBUSY;
--		goto out1;
--	}
--	addr = ioremap(res->start, remap_size);
--	if (!addr) {
--		ret = -ENOMEM;
--		goto out1;
--	}
--
- 	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
- 			  platform_get_device_id(pdev)->driver_data,
- 			  remap_size > 1 ? &ad7606_par16_bops :
- 			  &ad7606_par8_bops);
- 
--	if (IS_ERR(indio_dev))  {
--		ret = PTR_ERR(indio_dev);
--		goto out2;
--	}
-+	if (IS_ERR(indio_dev))
-+		return PTR_ERR(indio_dev);
- 
- 	platform_set_drvdata(pdev, indio_dev);
+-	indio_dev->trig = sdata->trig;
  
  	return 0;
--
--out2:
--	iounmap(addr);
--out1:
--	release_mem_region(res->start, remap_size);
--
--	return ret;
- }
- 
- static int ad7606_par_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct resource *res;
--	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	ad7606_remove(indio_dev, platform_get_irq(pdev, 0));
- 
--	iounmap(st->base_address);
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, resource_size(res));
--
- 	return 0;
- }
  
 -- 
 1.9.1
-
