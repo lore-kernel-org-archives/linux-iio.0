@@ -1,65 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59557 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753552AbaGDVJL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 4 Jul 2014 17:09:11 -0400
-In-Reply-To: <53B6F9A4.2080302@linux.intel.com>
-References: <53B6F9A4.2080302@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: panic in iio_trigger_notify_done
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 04 Jul 2014 22:09:02 +0100
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org
-Message-ID: <3bdcc377-bc21-40ca-894c-162cee7c0cf0@email.android.com>
+Received: from mailout2.samsung.com ([203.254.224.25]:16778 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752227AbaGKJKm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jul 2014 05:10:42 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org
+Subject: [PATCH 0/4] iio: exynos-adc: use syscon instead of ioremap
+Date: Fri, 11 Jul 2014 14:36:25 +0530
+Message-id: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch does the following
+1. Use the syscon and Regmap API instead of ioremappaing the
+   ADC_PHY register from PMU.
+2. Moves the exynos-adc.txt from bindings/arm/samsung/
+   to bindings/iio/adc/.
+3. Updates the Documentation in exynos-adc.txt with syscon phandle
+   for the ADC nodes.
+4. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
+   Exynos5420 with the syscon phandle.
 
+Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
+by verifying sysfs entries provided by HWMON based NTC thermistors.
 
-On July 4, 2014 7:59:48 PM GMT+01:00, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->Hi Jonathan,
->
->I got reports of some rare to reproduce random crash in inv_mpu6050
->driver.
->Always crash points to iio_trigger_notify_done.
->Usually, when user space disconnects the trigger by writing a dummy
->name,
->(following example generic_buffer.c)
->this indio_dev->trig can be set to NULL. But there can be race between
->kernel and user space, so still the iio_trigger_notify_done can be
->called, which will try to dereference on NULL pointer.
->
->Recently you commented on my patch that setting
->"indio_dev->trig
->This is dangerous.  Doing it like this will, IIRC leave the wrong
->reference counts for the trigger.  If you really, really want to do
->this then call iio_get_trigger on the trigger as well to increment
->the use count.  Preferred option is to leave the binding to userspace
->after the driver is probed.
->"
->
->I have seen several drivers in upstream kernel is doing this
->assignment,
->I have patches to correct all of them assuming  they will used on
->x86 platform.
->
->Is it OK to submit patches for all even, if we don't have evidence of 
->problem?
-Absolutely. I had a feeling I haven't kept a close eye on this one and I is definitely a real
- issue as you can tract the reference counts easily enough and see it is zero when it
- should not be! 
+Tested-By for Exynos3250, Exynos4x12 would be appreciated.
 
+Naveen Krishna Chatradhi (4):
+  iio: exyno-adc: use syscon for PMU register access
+  Documentation: dt-bindings: move exynos-adc.txt to more iio/adc/
+  Documentation: dt-bindings: update exynos-adc.txt with syscon handle
+  ARM: dts: exynos: Add sysreg phandle to ADC node
 
->
->Thanks,
->Srinivas
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt |   82 ------------------
+ .../devicetree/bindings/iio/adc/exynos-adc.txt     |   87 ++++++++++++++++++++
+ arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
+ arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
+ arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
+ arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
+ drivers/iio/adc/exynos_adc.c                       |   29 +++++--
+ 7 files changed, 115 insertions(+), 95 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
 
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.7.9.5
+
