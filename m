@@ -1,67 +1,38 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53C05DD8.9050500@gmx.de>
-Date: Fri, 11 Jul 2014 23:57:44 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko@sntech.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>, =?UTF-8?B?ImVkZGllKOiUoeaeqyki?=
- <cf@rock-chips.com>, huangtao@rock-chips.com
-Subject: Re: [PATCH 2/2] dt-bindings: document Rockchip saradc
-References: <2959154.xc8BQActsn@diego> <3591595.sBj6Zqo42A@diego>
-In-Reply-To: <3591595.sBj6Zqo42A@diego>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 3/8] iio: adc: ad_sigma_delta: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:14 -0700
+Message-Id: <1405098739-25470-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Heiko Stübner schrieb:
-> This add the necessary binding documentation for the saradc found in all recent
-> processors from Rockchip.
->
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> ---
-Spotted some typos, see inline.
->  .../bindings/iio/adc/rockchip-saradc.txt           | 28 ++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
->
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> new file mode 100644
-> index 0000000..603ac9c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> @@ -0,0 +1,28 @@
-> +Rockhip Successive Approximation Register (SAR) A/D Converter bindings
-Should be "Rockchip".
-> +
-> +Required properties:
-> +- compatible: Should be "rockchip,saradc"
-> +- reg: physical base address of the controller and length of memory mapped
-> +       region.
-> +- interrupts: The interrupt number to the cpu. The interrupt specifier format
-> +              depends on the interrupt controller.
-> +- clocks: Must contain an entry for each entry in clock-names.
-> +- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk" for
-> +               the peripheral clock.
-> +- vref-supply: The regulator supply ADC refrence voltage.
-... reference voltage.
-> +- #io-channel-cells: Should be 1, see ../iio-bindings.txt
-> +
-> +Optional properties :
-> +- clock-frequency : converter frequency in Hz. If omitted, 1MHz is used.
-> +
-> +Example:
-> +	saradc: saradc@2006c000 {
-> +		compatible = "rockchip,saradc";
-> +		reg = <0x2006c000 0x100>;
-> +		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-> +		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
-> +		clock-names = "saradc", "apb_pclk";
-> +		#io-channel-cells = <1>;
-> +		vref-supply = <&vcc18>;
-> +		clock-frequency = <1000000>;
-> +	};
+This can result in wrong reference count for trigger device, leave the binding
+to user space via current_trigger sysfs entry.
+Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+with Jonathan.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/adc/ad_sigma_delta.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index c55b81f..966159e 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -471,9 +471,6 @@ static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		goto error_free_irq;
+ 
+-	/* select default trigger */
+-	indio_dev->trig = sigma_delta->trig;
+-
+ 	return 0;
+ 
+ error_free_irq:
+-- 
+1.9.1
