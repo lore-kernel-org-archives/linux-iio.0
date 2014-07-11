@@ -3,9 +3,9 @@ From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 7/8] iio: inv_mpu6050: Remove indio_dev->trig assignment
-Date: Fri, 11 Jul 2014 10:12:18 -0700
-Message-Id: <1405098739-25470-7-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/8] iio: accel: kxcjk-1013: Remove indio_dev->trig assignment
+Date: Fri, 11 Jul 2014 10:12:13 -0700
+Message-Id: <1405098739-25470-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1405098739-25470-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -17,20 +17,20 @@ with Jonathan.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 1 -
+ drivers/iio/accel/kxcjk-1013.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-index 03b9372..57aabd4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-@@ -135,7 +135,6 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
- 	ret = iio_trigger_register(st->trig);
- 	if (ret)
- 		goto error_free_irq;
--	indio_dev->trig = st->trig;
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 72a6dbb..6a091f8 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -644,7 +644,6 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 		trig->ops = &kxcjk1013_trigger_ops;
+ 		iio_trigger_set_drvdata(trig, indio_dev);
+ 		data->trig = trig;
+-		indio_dev->trig = trig;
  
- 	return 0;
- 
+ 		ret = iio_trigger_register(trig);
+ 		if (ret)
 -- 
 1.9.1
