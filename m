@@ -1,67 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:49460 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751014AbaGKUTe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 11 Jul 2014 16:19:34 -0400
-Message-ID: <53C0475C.3040603@kernel.org>
-Date: Fri, 11 Jul 2014 21:21:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <53C05DD8.9050500@gmx.de>
+Date: Fri, 11 Jul 2014 23:57:44 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: core : events ABI for specifying period
-References: <1404858591-10061-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1404858591-10061-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko@sntech.de>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>, =?UTF-8?B?ImVkZGllKOiUoeaeqyki?=
+ <cf@rock-chips.com>, huangtao@rock-chips.com
+Subject: Re: [PATCH 2/2] dt-bindings: document Rockchip saradc
+References: <2959154.xc8BQActsn@diego> <3591595.sBj6Zqo42A@diego>
+In-Reply-To: <3591595.sBj6Zqo42A@diego>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/07/14 23:29, Srinivas Pandruvada wrote:
-> The iio sysfs ABI defines a way to specify period for roc and thresholds.
-> What:		/sys/.../events/in_accel_x_thresh_rising_period
-> What:		/sys/.../events/in_accel_x_thresh_falling_period
-> what:		/sys/.../events/in_accel_x_roc_rising_period
-> What:		/sys/.../events/in_accel_x_roc_falling_period
+Heiko Stübner schrieb:
+> This add the necessary binding documentation for the saradc found in all recent
+> processors from Rockchip.
 >
-> But there is no way to add period with the current event info enum.
->
-> Added IIO_EV_INFO_PERIOD and corresponding string.
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-One of several even related element that haven't gotten added yet but
-we'll do them as and when anyone cares.
-
-Thanks,
-
-Jonathan
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 > ---
->   drivers/iio/industrialio-event.c | 1 +
->   include/linux/iio/types.h        | 1 +
->   2 files changed, 2 insertions(+)
+Spotted some typos, see inline.
+>  .../bindings/iio/adc/rockchip-saradc.txt           | 28 ++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
 >
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index bfbf4d4..0c1e37e 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -209,6 +209,7 @@ static const char * const iio_ev_info_text[] = {
->   	[IIO_EV_INFO_ENABLE] = "en",
->   	[IIO_EV_INFO_VALUE] = "value",
->   	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
-> +	[IIO_EV_INFO_PERIOD] = "period",
->   };
->
->   static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index d09c40d..4a2af8a 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -74,6 +74,7 @@ enum iio_event_info {
->   	IIO_EV_INFO_ENABLE,
->   	IIO_EV_INFO_VALUE,
->   	IIO_EV_INFO_HYSTERESIS,
-> +	IIO_EV_INFO_PERIOD,
->   };
->
->   enum iio_event_direction {
->
-
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> new file mode 100644
+> index 0000000..603ac9c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> @@ -0,0 +1,28 @@
+> +Rockhip Successive Approximation Register (SAR) A/D Converter bindings
+Should be "Rockchip".
+> +
+> +Required properties:
+> +- compatible: Should be "rockchip,saradc"
+> +- reg: physical base address of the controller and length of memory mapped
+> +       region.
+> +- interrupts: The interrupt number to the cpu. The interrupt specifier format
+> +              depends on the interrupt controller.
+> +- clocks: Must contain an entry for each entry in clock-names.
+> +- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk" for
+> +               the peripheral clock.
+> +- vref-supply: The regulator supply ADC refrence voltage.
+... reference voltage.
+> +- #io-channel-cells: Should be 1, see ../iio-bindings.txt
+> +
+> +Optional properties :
+> +- clock-frequency : converter frequency in Hz. If omitted, 1MHz is used.
+> +
+> +Example:
+> +	saradc: saradc@2006c000 {
+> +		compatible = "rockchip,saradc";
+> +		reg = <0x2006c000 0x100>;
+> +		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+> +		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
+> +		clock-names = "saradc", "apb_pclk";
+> +		#io-channel-cells = <1>;
+> +		vref-supply = <&vcc18>;
+> +		clock-frequency = <1000000>;
+> +	};
