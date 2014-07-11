@@ -1,112 +1,49 @@
-Return-Path: <reyad.attiyat@gmail.com>
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v5 4/4] iio: hid-sensor-magn-3d: Add support for rotation from north
-Date: Wed,  9 Jul 2014 14:30:13 -0500
-Message-Id: <1404934213-2733-5-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mta1.parkeon.com ([91.121.43.66]:43138 "EHLO mta1.parkeon.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753670AbaGKN1k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 11 Jul 2014 09:27:40 -0400
+Subject: [PATCH] iio: mma8452: Use correct acceleration units.
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Date: Fri, 11 Jul 2014 14:54:31 +0200
+Message-ID: <20140711125431.22109.59659.stgit@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add the HID usage attribute ID's and IIO channel info for rotation
-from north support.
+The userspace interface for acceleration sensors is documented as using
+m/s^2 units [Documentation/ABI/testing/sysfs-bus-iio]
 
-Changes from v4
-Removed the scan index as this is set dynamically
+The fullscale raw value for the mma8452 (-2048) corresponds to -2G, -4G or -8G
+depending on the seleted mode.
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+The scale table was converting to G rather than m/s^2.
+Change the scaling table to match the documented interface.
+
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 53 ++++++++++++++++++++++++++-
- 1 file changed, 52 insertions(+), 1 deletion(-)
+ drivers/iio/accel/mma8452.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index f69664b..b9391c5 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -35,6 +35,10 @@ enum magn_3d_channel {
- 	CHANNEL_SCAN_INDEX_X,
- 	CHANNEL_SCAN_INDEX_Y,
- 	CHANNEL_SCAN_INDEX_Z,
-+	CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP,
-+	CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP,
-+	CHANNEL_SCAN_INDEX_NORTH_MAGN,
-+	CHANNEL_SCAN_INDEX_NORTH_TRUE,
- 	MAGN_3D_CHANNEL_MAX,
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 17aeea1..61eba5a 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -111,8 +111,13 @@ static const int mma8452_samp_freq[8][2] = {
+ 	{6, 250000}, {1, 560000}
  };
  
-@@ -57,7 +61,11 @@ struct magn_3d_state {
- static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
- 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
- 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
--	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
-+	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS,
-+	HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_MAGN_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
++/* Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
++ * The userspace interface uses m/s^2 and we declare micro units
++ * So scale factor is given by:
++ * 	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
++ */
+ static const int mma8452_scales[3][2] = {
+-	{0, 977}, {0, 1953}, {0, 3906}
++	{0, 9577}, {0, 19154}, {0, 38307}
  };
  
- /* Channel definitions */
-@@ -89,6 +97,42 @@ static const struct iio_chan_spec magn_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_MAGN,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_TRUE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
- 	}
- };
- 
-@@ -248,6 +292,13 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
- 		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS)
- 				+ CHANNEL_SCAN_INDEX_X;
- 	break;
-+	case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
-+		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH)
-+				+ CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP;
-+	break;
- 	default:
- 		return -EINVAL;
- 	}
--- 
-1.9.3
+ static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+
