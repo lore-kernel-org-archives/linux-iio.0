@@ -1,64 +1,41 @@
-Return-Path: <atx@atx.name>
-Date: Tue, 15 Jul 2014 14:24:10 +0200
-From: Josef Gajdusek <atx@atx.name>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: [PATCH v4 0/5] staging:iio:hmc5843: Few adjustments and support for
- hmc5983
-Message-ID: <20140715122410.GA30770@dashie>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.19.201]:35273 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751747AbaGMUyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 13 Jul 2014 16:54:47 -0400
+Message-ID: <53C2F29E.1010907@kernel.org>
+Date: Sun, 13 Jul 2014 21:57:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 07/12] iio:adc:ad799x: Make chan_spec const in ad799x_chip_config
+ struct
+References: <1402548856-3564-1-git-send-email-pmeerw@pmeerw.net> <1402548856-3564-8-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1402548856-3564-8-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch series modifies the hmc5843 driver to support the hmc5983 i2c and
-spi interfaces.
+On 12/06/14 05:54, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+applied
+> ---
+>   drivers/iio/adc/ad799x.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> index b8a8117..92401c9 100644
+> --- a/drivers/iio/adc/ad799x.c
+> +++ b/drivers/iio/adc/ad799x.c
+> @@ -107,7 +107,7 @@ enum {
+>    * @info:		pointer to iio_info struct
+>    */
+>   struct ad799x_chip_config {
+> -	struct iio_chan_spec		channel[9];
+> +	const struct iio_chan_spec	channel[9];
+>   	u16				default_config;
+>   	const struct iio_info		*info;
+>   };
+>
 
-v2:
-	* Reverted the changed order of iio unregister and setting hmc mode to sleep
-
-v3:
-	* Fixed bug introduced in the first patch
-	* Readded few comment lines which have gone missing in the hmc5843.c ->
-	  hmc5843_core.c move
-
-v4: 
-    * Changes suggested by Lars in https://lkml.org/lkml/2014/7/14/968
-	  * The i2c and spi drivers are now user-selectable with the core driver
-	    being selected automatically
-	  * The regmap_config structs in both _spi and _i2c files are now static
-	  * The iio_dev allocation is now done in the common function
-	  * pm ops are now defined in the header file and the same definition is
-	    shared between both interface-specific drivers
-	* regmap tables in hmc5843.h are not longer static (this fixed bunch of 
-	  variable not used warnings)
-
-Jonathan, the patch series applies cleanly against mainline (for me at least), 
-maybe you already have some hmc5843 related patches in your tree which are not 
-yet in upstream? (probably https://lkml.org/lkml/2014/2/14/312)
-
-Josef Gajdusek (5):
-  staging:iio:hmc5843: Added regmap support
-  staging:iio:hmc5843: Split hmc5843.c to multiple files
-  staging:iio:hmc5843: register <-> value arrays now can have different
-    lengths
-  staging:iio:hmc5843: Add support for i2c hmc5983
-  staging:iio:hmc5843: Add support for spi hmc5983
-
- drivers/staging/iio/magnetometer/Kconfig        |  30 +-
- drivers/staging/iio/magnetometer/Makefile       |   4 +-
- drivers/staging/iio/magnetometer/hmc5843.c      | 652 ------------------------
- drivers/staging/iio/magnetometer/hmc5843.h      |  86 ++++
- drivers/staging/iio/magnetometer/hmc5843_core.c | 638 +++++++++++++++++++++++
- drivers/staging/iio/magnetometer/hmc5843_i2c.c  |  74 +++
- drivers/staging/iio/magnetometer/hmc5843_spi.c  |  73 +++
- 7 files changed, 900 insertions(+), 657 deletions(-)
- delete mode 100644 drivers/staging/iio/magnetometer/hmc5843.c
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843.h
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_core.c
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_i2c.c
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
-
--- 
-1.8.5.5
