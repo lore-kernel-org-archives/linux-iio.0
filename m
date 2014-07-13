@@ -1,248 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:54014 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752529AbaG0Ugk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 27 Jul 2014 16:36:40 -0400
-Message-ID: <53D562AD.4090706@gmx.de>
-Date: Sun, 27 Jul 2014 22:35:57 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53696 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751313AbaGMTRc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jul 2014 15:17:32 -0400
+Date: Sun, 13 Jul 2014 12:22:02 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Richard Weinberger <richard@nod.at>, dmitry.torokhov@gmail.com,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	thierry.reding@gmail.com, Lennox Wu <lennox.wu@gmail.com>,
+	Chen Gang <gang.chen.5i5j@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Message-ID: <20140713192202.GA19090@kroah.com>
+References: <53C1F7DE.3060102@gmail.com>
+ <201407130545.23004.marex@denx.de>
+ <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com>
+ <53C25551.1050909@nod.at>
+ <53C288F0.3070001@metafoo.de>
+ <53C28C4A.70907@nod.at>
+ <53C29015.5070607@metafoo.de>
+ <53C291C8.6050303@nod.at>
+ <53C296C2.30304@metafoo.de>
 MIME-Version: 1.0
-To: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org
-CC: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
-	kyungmin.park@samsung.com, t.figa@samsung.com,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: adc: exynos_adc: Add support for S3C24xx ADC
-References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com> <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
-In-Reply-To: <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <53C296C2.30304@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Chanwoo Choi schrieb:
-> This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The s3c24xx
-> is alomost same as ADCv1. But, There are a little difference as following:
-> - ADCMUX register address to select channel
-> - ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
-Hi, just some style issues: better separate things like 10bit with a space to 10 bit, there are some instances of this type in your code. Another issue inline.
->
-> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  .../devicetree/bindings/arm/samsung/exynos-adc.txt | 10 ++-
->  drivers/iio/adc/exynos_adc.c                       | 89 +++++++++++++++++++++-
->  2 files changed, 96 insertions(+), 3 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> index b6e3989..fe34c76 100644
-> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> @@ -11,11 +11,19 @@ New driver handles the following
->  
->  Required properties:
->  - compatible:		Must be "samsung,exynos-adc-v1"
-> -				for exynos4412/5250 controllers.
-> +				for exynos4412/5250 and s5pv210 controllers.
->  			Must be "samsung,exynos-adc-v2" for
->  				future controllers.
->  			Must be "samsung,exynos3250-adc" for
->  				controllers compatible with ADC of Exynos3250.
-> +			Must be "samsung,s3c2410-adc" for
-> +				the ADC in s3c2410 and compatibles
-> +			Must be "samsung,s3c2416-adc" for
-> +				the ADC in s3c2416 and compatibles
-> +			Must be "samsung,s3c2440-adc" for
-> +				the ADC in s3c2440 and compatibles
-> +			Must be "samsung,s3c2443-adc" for
-> +				the ADC in s3c2443 and compatibles
->  			Must be "samsung,s3c6410-adc" for
->  				the ADC in s3c6410 and compatibles
->  - reg:			Contains ADC register address range (base address and
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index 05bdd2f12..7d28032 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -51,6 +51,9 @@
->  #define ADC_V1_MUX(x)		((x) + 0x1c)
->  #define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
->  
-> +/* S3C2410 ADC registers definitions */
-> +#define ADC_S3C2410_MUX(x)	((x) + 0x18)
-> +
->  /* Future ADC_V2 registers definitions */
->  #define ADC_V2_CON1(x)		((x) + 0x00)
->  #define ADC_V2_CON2(x)		((x) + 0x04)
-> @@ -67,6 +70,8 @@
->  
->  /* Bit definitions for S3C2410 ADC */
->  #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) <<3)
-> +#define ADC_S3C2410_DATX_MASK	0x3FF
-> +#define ADC_S3C2416_CON_RES_SEL	(1 << 3)
-Since it is done this way in this driver, better use (1u << 3) here.
->  
->  /* Bit definitions for ADC_V2 */
->  #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
-> @@ -84,6 +89,7 @@
->  
->  /* Bit definitions common for ADC_V1 and ADC_V2 */
->  #define ADC_CON_EN_START	(1u << 0)
-> +#define ADC_CON_EN_START_MASK	(0x3 << 0)
->  #define ADC_DATX_MASK		0xFFF
->  
->  #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
-> @@ -101,12 +107,14 @@ struct exynos_adc {
->  	struct completion	completion;
->  
->  	u32			value;
-> +	u32			value2;
->  	unsigned int            version;
->  };
->  
->  struct exynos_adc_data {
->  	int num_channels;
->  	bool needs_sclk;
-> +	u32 mask;
->  
->  	void (*init_hw)(struct exynos_adc *info);
->  	void (*exit_hw)(struct exynos_adc *info);
-> @@ -217,6 +225,17 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
->  
->  static const struct exynos_adc_data const exynos_adc_v1_data = {
->  	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.clear_irq	= exynos_adc_v1_clear_irq,
-> +	.start_conv	= exynos_adc_v1_start_conv,
-> +};
-> +
-> +static struct exynos_adc_data const exynos_adc_s3c24xx_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_S3C2410_DATX_MASK, /* 10bit ADC resolution */
->  
->  	.init_hw	= exynos_adc_v1_init_hw,
->  	.exit_hw	= exynos_adc_v1_exit_hw,
-> @@ -224,6 +243,55 @@ static const struct exynos_adc_data const exynos_adc_v1_data = {
->  	.start_conv	= exynos_adc_v1_start_conv,
->  };
->  
-> +static void exynos_adc_s3c2416_start_conv(struct exynos_adc *info,
-> +					  unsigned long addr)
-> +{
-> +	u32 con1;
-> +
-> +	/* Enable 12bit ADC resolution */
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	con1 |= ADC_S3C2416_CON_RES_SEL;
-> +	writel(con1, ADC_V1_CON(info->regs));
-> +
-> +	/* Select channel for S3C2416 */
-> +	writel(addr, ADC_S3C2410_MUX(info->regs));
-> +
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static struct exynos_adc_data const exynos_adc_s3c2416_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.clear_irq	= exynos_adc_v1_clear_irq,
-> +	.start_conv	= exynos_adc_s3c2416_start_conv,
-> +};
-> +
-> +static void exynos_adc_s3c2443_start_conv(struct exynos_adc *info,
-> +					  unsigned long addr)
-> +{
-> +	u32 con1;
-> +
-> +	/* Select channel for S3C2433 */
-> +	writel(addr, ADC_S3C2410_MUX(info->regs));
-> +
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static struct exynos_adc_data const exynos_adc_s3c2443_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_S3C2410_DATX_MASK, /* 10bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.clear_irq	= exynos_adc_v1_clear_irq,
-> +	.start_conv	= exynos_adc_s3c2443_start_conv,
-> +};
-> +
->  static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
->  					  unsigned long addr)
->  {
-> @@ -237,6 +305,7 @@ static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
->  
->  static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
->  	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12bit ADC resolution */
->  
->  	.init_hw	= exynos_adc_v1_init_hw,
->  	.exit_hw	= exynos_adc_v1_exit_hw,
-> @@ -293,6 +362,7 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
->  
->  static const struct exynos_adc_data const exynos_adc_v2_data = {
->  	.num_channels	= MAX_ADC_V2_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12bit ADC resolution */
->  
->  	.init_hw	= exynos_adc_v2_init_hw,
->  	.exit_hw	= exynos_adc_v2_exit_hw,
-> @@ -302,6 +372,7 @@ static const struct exynos_adc_data const exynos_adc_v2_data = {
->  
->  static const struct exynos_adc_data const exynos3250_adc_data = {
->  	.num_channels	= MAX_EXYNOS3250_ADC_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12bit ADC resolution */
->  	.needs_sclk	= true,
->  
->  	.init_hw	= exynos_adc_v2_init_hw,
-> @@ -312,6 +383,18 @@ static const struct exynos_adc_data const exynos3250_adc_data = {
->  
->  static const struct of_device_id exynos_adc_match[] = {
->  	{
-> +		.compatible = "samsung,s3c2410-adc",
-> +		.data = &exynos_adc_s3c24xx_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2416-adc",
-> +		.data = &exynos_adc_s3c2416_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2440-adc",
-> +		.data = &exynos_adc_s3c24xx_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2443-adc",
-> +		.data = &exynos_adc_s3c2443_data,
-> +	}, {
->  		.compatible = "samsung,s3c6410-adc",
->  		.data = &exynos_adc_s3c64xx_data,
->  	}, {
-> @@ -365,7 +448,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  		ret = -ETIMEDOUT;
->  	} else {
->  		*val = info->value;
-> -		*val2 = 0;
-> +		*val2 = info->value2;
->  		ret = IIO_VAL_INT;
->  	}
->  
-> @@ -377,9 +460,11 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->  {
->  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
-> +	u32 mask = info->data->mask;
->  
->  	/* Read value */
-> -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
-> +	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
-> +	info->value2 = readl(ADC_V1_DATY(info->regs)) & mask;
->  
->  	/* clear irq */
->  	if (info->data->clear_irq)
+On Sun, Jul 13, 2014 at 04:25:06PM +0200, Lars-Peter Clausen wrote:
+> On 07/13/2014 04:03 PM, Richard Weinberger wrote:
+> >Am 13.07.2014 15:56, schrieb Lars-Peter Clausen:
+> >>On 07/13/2014 03:40 PM, Richard Weinberger wrote:
+> >>>Am 13.07.2014 15:26, schrieb Lars-Peter Clausen:
+> >>>>On 07/13/2014 11:45 AM, Richard Weinberger wrote:
+> >>>>>Am 13.07.2014 11:27, schrieb Lennox Wu:
+> >>>>>>As I said before, some configurations don't make sense.
+> >>>>>
+> >>>>>If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
+> >>>>>Chen's fixes seem reasonable as not all architectures support iomem.
+> >>>>
+> >>>>Maybe we should stub out ioremap() and friends when COMPILE_TEST is enabled to avoid these linker errors. That's in my opinion better than turning most of the 'depends on
+> >>>>COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The issue comes up quite a lot and it is often overlooked when adding a driver that can be build when COMPILE_TEST is
+> >>>>enabled.
+> >>>
+> >>>And what should this stub do?
+> >>>Except calling BUG()...
+> >>
+> >>return NULL;
+> >>
+> >>It's for compile testing, it's not meant to work at runtime.
+> >
+> >Hm, I really don't like the idea of having a non-working kernel.
+> >IMHO either it should build _and_ run and nothing else.
+> >Greg, what do you think?
+> 
+> The kernel will still be working fine and you can run it on a system. The
+> drivers which use ioremap() or similar are probably not instantiated on a
+> system that does not provide HAS_IOMEM. But even if it was the driver should
+> handle ioremap() returning NULL gracefully and abort the driver probe. That
+> said you'll probably not run a kernel that was built with COMPILE_TEST on
+> your real hardware since it contains so many drivers that are completely
+> useless on your hardware. The idea of COMPILE_TEST is to have as much
+> compile test exposure as possible to the code that is enabled by
+> COMPILE_TEST. Stubbing out ioremap() and friends when HAS_IOMEM is not set
+> and COMPILE_TEST is set makes it easier to get there.
 
+I run my kernels with COMPILE_TEST enabled as I need to build test
+things that I don't happen to use.
+
+I like the 'return NULL' option for this, it hits us all the time, might
+as well fix it properly like this so that we don't have to deal with
+Kconfig changes everywhere.
+
+Also put a big "This platform does not support IOMEM" error printk in
+there, so that people have a chance to figure out what is going on if
+they happen to run such a driver on a platform that can't support it.
+
+thanks,
+
+greg k-h
