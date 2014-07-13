@@ -1,51 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:57185 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752652AbaGGM2H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 08:28:07 -0400
-Message-ID: <53BA92DA.7070304@kernel.org>
-Date: Mon, 07 Jul 2014 13:30:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:46534 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751359AbaGMDp7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jul 2014 23:45:59 -0400
+From: Marek Vasut <marex@denx.de>
+To: Chen Gang <gang.chen.5i5j@gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Sun, 13 Jul 2014 05:45:22 +0200
+Cc: gregkh@linuxfoundation.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
+	jic23@kernel.org, wim@iguana.be, benh@kernel.crashing.org,
+	kys@microsoft.com, schwidefsky@de.ibm.com, teg@jklm.no,
+	Mischa.Jonker@synopsys.com, msalter@redhat.com, lars@metafoo.de,
+	richard@nod.at, knaack.h@gmx.de, rdunlap@infradead.org,
+	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>
+References: <53C1F7DE.3060102@gmail.com>
+In-Reply-To: <53C1F7DE.3060102@gmail.com>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: srinivas.pandruvada@linux.intel.com, archana.patni@linux.intel.com,
-	subramony.sesha@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: hid-sensors: make hid_sensor_get_reporting_interval
- static
-References: <1404120584-11795-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1404120584-11795-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201407130545.23004.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/06/14 10:29, Daniel Baluta wrote:
-> This fixes the following sparse warning:
->
->    CHECK   drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> drivers/iio/common/hid-sensors/hid-sensor-attributes.c:346:5: warning:
-> symbol 'hid_sensor_get_reporting_interval' was not declared. Should it be static?
->
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git, initially pushed out as testing
-for the autobuilders to play.  Thanks,
+On Sunday, July 13, 2014 at 05:07:10 AM, Chen Gang wrote:
+> Several drivers need 'devm_ioremap_resource' which need HAS_IOMEM enabled.
+> So let them depend on HAS_IOMEM.
+> 
+> The related error (with allmodconfig under score):
+> 
+>     MODPOST 1365 modules
+>   ERROR: "devm_ioremap_resource" [drivers/watchdog/tegra_wdt.ko] undefined!
+>   ERROR: "devm_ioremap_resource" [drivers/watchdog/of_xilinx_wdt.ko]
+> undefined! ERROR: "devm_ioremap_resource"
+> [drivers/staging/iio/adc/mxs-lradc.ko] undefined! ERROR:
+> "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefined! ERROR:
+> "devm_ioremap_resource" [drivers/input/serio/olpc_apsp.ko] undefined!
+> ERROR: "devm_ioremap_resource" [drivers/input/serio/arc_ps2.ko] undefined!
 
-Jonathan
-> ---
->   drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 403dd3d..8220df1 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -343,6 +343,7 @@ int hid_sensor_format_scale(u32 usage_id,
->   }
->   EXPORT_SYMBOL(hid_sensor_format_scale);
->
-> +static
->   int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
->   					u32 usage_id,
->   					struct hid_sensor_common *st)
->
+This stuff should go through different trees, so I'd suggest to split this into 
+multiple patches. Thanks for catching this stuff !
 
+Best regards,
+Marek Vasut
