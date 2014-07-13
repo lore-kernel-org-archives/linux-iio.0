@@ -1,40 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f171.google.com ([209.85.220.171]:36454 "EHLO
-	mail-vc0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750952AbaGaWgN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jul 2014 18:36:13 -0400
-From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
-	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Subject: [PATCH 4/8] staging: iio: accel: adis16209_core.c: fix coding style
-Date: Thu, 31 Jul 2014 19:34:54 -0300
-Message-Id: <1406846098-19866-5-git-send-email-mopsfelder@gmail.com>
-In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
-References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53936 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751813AbaGMTcv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jul 2014 15:32:51 -0400
+Date: Sun, 13 Jul 2014 12:37:21 -0700
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.17 - set 3
+Message-ID: <20140713193721.GA18325@kroah.com>
+References: <53C2D73A.4090208@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <53C2D73A.4090208@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds missing blank line after declaration.
+On Sun, Jul 13, 2014 at 08:00:10PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 14b596c9d80bf63da3f0fcbddfd67eb62197afb4:
+> 
+>   staging: cxt1e1: remove driver (2014-07-01 09:05:33 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.17c
 
-Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
----
- drivers/staging/iio/accel/adis16209_core.c |    1 +
- 1 file changed, 1 insertion(+)
+Pulled and pushed out, thanks.
 
-diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
-index 374dc6e..b2c7aed 100644
---- a/drivers/staging/iio/accel/adis16209_core.c
-+++ b/drivers/staging/iio/accel/adis16209_core.c
-@@ -44,6 +44,7 @@ static int adis16209_write_raw(struct iio_dev *indio_dev,
- 	int bits;
- 	s16 val16;
- 	u8 addr;
-+
- 	switch (mask) {
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		switch (chan->type) {
--- 
-1.7.10.4
-
+greg k-h
