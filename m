@@ -1,46 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:45592 "EHLO mail.kernel.org"
+Received: from gloria.sntech.de ([95.129.55.99]:51398 "EHLO gloria.sntech.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758166AbaGSKp6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 19 Jul 2014 06:45:58 -0400
-Message-ID: <53CA4CF1.5030504@kernel.org>
-Date: Sat, 19 Jul 2014 11:48:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	id S1753396AbaGMLZP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 13 Jul 2014 07:25:15 -0400
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	=?utf-8?B?ZWRkaWUo6JSh5p6rKQ==?= <cf@rock-chips.com>,
+	huangtao@rock-chips.com
+Subject: [PATCH v4 2/2] dt-bindings: document Rockchip saradc
+Date: Sun, 13 Jul 2014 13:26:40 +0200
+Message-ID: <7439684.1fjWVfLerD@diego>
+In-Reply-To: <3234956.d4q5ZB3IB8@diego>
+References: <3234956.d4q5ZB3IB8@diego>
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Subject: Re: [PATCH v6 0/4] iio: Add support for rotation from north
-References: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/07/14 19:18, Reyad Attiyat wrote:
-> This series of patches modifies magn-3d driver to handle the rotation
-> from north usage. This is done by scanning the report and then building
-> the iio arrays (vals and channels) dynamically.
->
-> Changes from V5
-> - Fix kernel panics from dereference
->
-> Reyad Attiyat (4):
->    iio: Documentation: Add documentation for rotation from north sensor
->      usage attributes
->    iio: types: Added support for rotation from north usage attributes
->    iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
->      iio channels
->    iio: hid-sensor-magn-3d: Add support for rotation from north
->
->   Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
->   drivers/iio/industrialio-core.c               |   4 +
->   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199 ++++++++++++++++++++------
->   include/linux/iio/types.h                     |   4 +
->   4 files changed, 245 insertions(+), 44 deletions(-)
->
-I'm happy enough with this series, but would like an ack or reviewed by
-from Srinivas before taking it.
+This add the necessary binding documentation for the saradc found in all recent
+processors from Rockchip.
 
-Thanks,
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+changes since v1:
+- fix typos found by Hartmut Knaack
 
-Jonathan
+ .../bindings/iio/adc/rockchip-saradc.txt           | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+new file mode 100644
+index 0000000..e38f13d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+@@ -0,0 +1,28 @@
++Rockchip Successive Approximation Register (SAR) A/D Converter bindings
++
++Required properties:
++- compatible: Should be "rockchip,saradc"
++- reg: physical base address of the controller and length of memory mapped
++       region.
++- interrupts: The interrupt number to the cpu. The interrupt specifier format
++              depends on the interrupt controller.
++- clocks: Must contain an entry for each entry in clock-names.
++- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk" for
++               the peripheral clock.
++- vref-supply: The regulator supply ADC reference voltage.
++- #io-channel-cells: Should be 1, see ../iio-bindings.txt
++
++Optional properties :
++- clock-frequency : converter frequency in Hz. If omitted, 1MHz is used.
++
++Example:
++	saradc: saradc@2006c000 {
++		compatible = "rockchip,saradc";
++		reg = <0x2006c000 0x100>;
++		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
++		clock-names = "saradc", "apb_pclk";
++		#io-channel-cells = <1>;
++		vref-supply = <&vcc18>;
++		clock-frequency = <1000000>;
++	};
+-- 
+1.9.0
+
+
