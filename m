@@ -1,57 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:56884 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757046AbaGNUiq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Jul 2014 16:38:46 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 1/3] iio:kxcjk-1013: Correct error messages
-Date: Mon, 14 Jul 2014 22:38:36 +0200
-Message-Id: <1405370318-19699-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net>
-References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:34732 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752526AbaGMKGx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jul 2014 06:06:53 -0400
+Message-ID: <53C25A36.3040207@gmail.com>
+Date: Sun, 13 Jul 2014 18:06:46 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+MIME-Version: 1.0
+To: Richard Weinberger <richard@nod.at>
+CC: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
+	jic23@kernel.org, wim@iguana.be,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com,
+	lars@metafoo.de, knaack.h@gmx.de, rdunlap@infradead.org,
+	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at>
+In-Reply-To: <53C25551.1050909@nod.at>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/kxcjk-1013.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 07/13/2014 05:45 PM, Richard Weinberger wrote:
+> Am 13.07.2014 11:27, schrieb Lennox Wu:
+>> As I said before, some configurations don't make sense.
+> 
+> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
+> Chen's fixes seem reasonable as not all architectures support iomem.
+>
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 72a6dbb..a11588c 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -144,7 +144,7 @@ static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
- 
- 	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
- 	if (ret < 0) {
--		dev_err(&data->client->dev, "Error writing reg_int_rel\n");
-+		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
- 		return ret;
- 	}
- 
-@@ -183,7 +183,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL1,
- 					ret);
- 	if (ret < 0) {
--		dev_err(&data->client->dev, "Error reading reg_ctrl\n");
-+		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
- 		return ret;
- 	}
- 
-@@ -337,7 +337,7 @@ static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
- 	ret = i2c_smbus_read_word_data(data->client, reg);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
--			"failed to read accel_%c registers\n", 'x' + axis);
-+			"failed to read accel_%c register\n", 'x' + axis);
- 		return ret;
- 	}
- 
+OK, thanks. And I shall split them into several patches, although we can
+understand that score may not need them.
+
+
+Thanks.
 -- 
-1.9.1
+Chen Gang
 
+Open share and attitude like air water and life which God blessed
