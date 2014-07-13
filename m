@@ -1,63 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:43656 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750951AbaGCGsF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 02:48:05 -0400
-Received: by mail-pa0-f47.google.com with SMTP id kq14so13851231pab.6
-        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2014 23:48:03 -0700 (PDT)
-From: Sachin Kamat <sachin.kamat@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, spk.linux@gmail.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 5/7] iio: hid-sensor-gyro-3d: Fix return values
-Date: Thu,  3 Jul 2014 12:14:10 +0530
-Message-Id: <1404369852-3255-5-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
-References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
+Received: from a.ns.miles-group.at ([95.130.255.143]:65275 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752898AbaGMNke (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 13 Jul 2014 09:40:34 -0400
+Message-ID: <53C28C4A.70907@nod.at>
+Date: Sun, 13 Jul 2014 15:40:26 +0200
+From: Richard Weinberger <richard@nod.at>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Chen Gang <gang.chen.5i5j@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
+	jic23@kernel.org, wim@iguana.be,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com,
+	knaack.h@gmx.de, rdunlap@infradead.org,
+	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de>
+In-Reply-To: <53C288F0.3070001@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_HYSTERESIS cases ignored
-the actual return values (which could be -EINVAL) and instead
-returned IIO_VAL_INT_PLUS_MICRO always. Return the actual value
-obtained from the functions. Both functions return IIO_VAL_INT_PLUS_MICRO
-upon success.
+Am 13.07.2014 15:26, schrieb Lars-Peter Clausen:
+> On 07/13/2014 11:45 AM, Richard Weinberger wrote:
+>> Am 13.07.2014 11:27, schrieb Lennox Wu:
+>>> As I said before, some configurations don't make sense.
+>>
+>> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
+>> Chen's fixes seem reasonable as not all architectures support iomem.
+> 
+> Maybe we should stub out ioremap() and friends when COMPILE_TEST is enabled to avoid these linker errors. That's in my opinion better than turning most of the 'depends on
+> COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The issue comes up quite a lot and it is often overlooked when adding a driver that can be build when COMPILE_TEST is
+> enabled.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/gyro/hid-sensor-gyro-3d.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+And what should this stub do?
+Except calling BUG()...
 
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index 40f4e49..fa034a3 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -110,7 +110,6 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
- 	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
- 	int report_id = -1;
- 	u32 address;
--	int ret;
- 	int ret_type;
- 	s32 poll_value;
- 
-@@ -151,14 +150,12 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		ret = hid_sensor_read_samp_freq_value(
-+		ret_type = hid_sensor_read_samp_freq_value(
- 			&gyro_state->common_attributes, val, val2);
--			ret_type = IIO_VAL_INT_PLUS_MICRO;
- 		break;
- 	case IIO_CHAN_INFO_HYSTERESIS:
--		ret = hid_sensor_read_raw_hyst_value(
-+		ret_type = hid_sensor_read_raw_hyst_value(
- 			&gyro_state->common_attributes, val, val2);
--		ret_type = IIO_VAL_INT_PLUS_MICRO;
- 		break;
- 	default:
- 		ret_type = -EINVAL;
--- 
-1.7.9.5
-
+Thanks,
+//richard
