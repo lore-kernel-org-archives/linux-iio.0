@@ -1,169 +1,140 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:18634 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755021AbaGQAhF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 20:37:05 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 4/6] iio: accel: kxcjk-1013: Set adjustable range
-Date: Wed, 16 Jul 2014 17:42:32 -0700
-Message-Id: <1405557754-19601-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:57581 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750886AbaGNISP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jul 2014 04:18:15 -0400
+Date: Mon, 14 Jul 2014 10:18:10 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Richard Weinberger <richard@nod.at>, dmitry.torokhov@gmail.com,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Lennox Wu <lennox.wu@gmail.com>,
+	Chen Gang <gang.chen.5i5j@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Message-ID: <20140714081809.GJ2081@ulmo>
+References: <53C1F7DE.3060102@gmail.com>
+ <201407130545.23004.marex@denx.de>
+ <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com>
+ <53C25551.1050909@nod.at>
+ <53C288F0.3070001@metafoo.de>
+ <53C28C4A.70907@nod.at>
+ <53C29015.5070607@metafoo.de>
+ <53C291C8.6050303@nod.at>
+ <53C296C2.30304@metafoo.de>
+ <20140713192202.GA19090@kroah.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BOmey7/79ja+7F5w"
+In-Reply-To: <20140713192202.GA19090@kroah.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This chip can support 3 different ranges. Allowing range specification.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/kxcjk-1013.c | 80 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 79 insertions(+), 1 deletion(-)
+--BOmey7/79ja+7F5w
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 4912143..975f8a6 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -70,6 +70,10 @@
- #define KXCJK1013_REG_INT_REG1_BIT_IEA	BIT(4)
- #define KXCJK1013_REG_INT_REG1_BIT_IEN	BIT(5)
- 
-+#define KXCJK1013_RANGE_2G		0x00
-+#define KXCJK1013_RANGE_4G		0x01
-+#define KXCJK1013_RANGE_8G		0x02
-+
- #define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
- #define KXCJK1013_MAX_STARTUP_TIME_US	100000
- 
-@@ -86,6 +90,7 @@ struct kxcjk1013_data {
- 	struct mutex mutex;
- 	s16 buffer[8];
- 	u8 odr_bits;
-+	u8 range;
- 	bool active_high_intr;
- 	bool trigger_on;
- };
-@@ -120,6 +125,14 @@ static const struct {
- 			   {0x02, 21000}, {0x03, 11000}, {0x04, 6400},
- 			   {0x05, 3900}, {0x06, 2700}, {0x07, 2100} };
- 
-+static const struct {
-+	u16 scale;
-+	u8 gsel_0;
-+	u8 gsel_1;
-+} KXCJK1013_scale_table[] = { {9582, 0, 0},
-+			      {19163, 0, 1},
-+			      {38326, 1, 0} };
-+
- static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
- 			      enum kxcjk1013_mode mode)
- {
-@@ -190,6 +203,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	/* Setting range to 4G */
- 	ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
- 	ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
-+	data->range = KXCJK1013_RANGE_4G;
- 
- 	/* Set 12 bit mode */
- 	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
-@@ -422,6 +436,59 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
- 	return KXCJK1013_MAX_STARTUP_TIME_US;
- }
- 
-+static int kxcjk1013_set_scale(struct kxcjk1013_data *data, int val)
-+{
-+	int ret, i;
-+	enum kxcjk1013_mode store_mode;
-+
-+
-+	for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
-+		if (KXCJK1013_scale_table[i].scale == val) {
-+
-+			ret = kxcjk1013_get_mode(data, &store_mode);
-+			if (ret < 0)
-+				return ret;
-+
-+			ret = kxcjk1013_set_mode(data, STANDBY);
-+			if (ret < 0)
-+				return ret;
-+
-+			ret = i2c_smbus_read_byte_data(data->client,
-+						       KXCJK1013_REG_CTRL1);
-+			if (ret < 0) {
-+				dev_err(&data->client->dev,
-+						"Error reading reg_ctrl1\n");
-+				return ret;
-+			}
-+
-+			ret |= (KXCJK1013_scale_table[i].gsel_0 << 3);
-+			ret |= (KXCJK1013_scale_table[i].gsel_1 << 4);
-+
-+			ret = i2c_smbus_write_byte_data(data->client,
-+							KXCJK1013_REG_CTRL1,
-+							ret);
-+			if (ret < 0) {
-+				dev_err(&data->client->dev,
-+					"Error writing reg_ctrl1\n");
-+				return ret;
-+			}
-+
-+			data->range = i;
-+			dev_dbg(&data->client->dev, "New Scale range %d\n", i);
-+
-+			if (store_mode == OPERATION) {
-+				ret = kxcjk1013_set_mode(data, OPERATION);
-+				if (ret)
-+					return ret;
-+			}
-+
-+			return 0;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
- 			      struct iio_chan_spec const *chan, int *val,
- 			      int *val2, long mask)
-@@ -458,7 +525,7 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
- 
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 0;
--		*val2 = 19163; /* range +-4g (4/2047*9.806650) */
-+		*val2 = KXCJK1013_scale_table[data->range].scale;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -485,6 +552,14 @@ static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
- 		ret = kxcjk1013_set_odr(data, val, val2);
- 		mutex_unlock(&data->mutex);
- 		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val)
-+			return -EINVAL;
-+
-+		mutex_lock(&data->mutex);
-+		ret = kxcjk1013_set_scale(data, val2);
-+		mutex_unlock(&data->mutex);
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -506,8 +581,11 @@ static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
- 	"0.781000 1.563000 3.125000 6.250000 12.500000 25 50 100 200 400 800 1600");
- 
-+static IIO_CONST_ATTR(in_accel_scale_available, "0.009582 0.019163 0.038326");
-+
- static struct attribute *kxcjk1013_attributes[] = {
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
--- 
-1.7.11.7
+On Sun, Jul 13, 2014 at 12:22:02PM -0700, Greg Kroah-Hartman wrote:
+> On Sun, Jul 13, 2014 at 04:25:06PM +0200, Lars-Peter Clausen wrote:
+> > On 07/13/2014 04:03 PM, Richard Weinberger wrote:
+> > >Am 13.07.2014 15:56, schrieb Lars-Peter Clausen:
+> > >>On 07/13/2014 03:40 PM, Richard Weinberger wrote:
+> > >>>Am 13.07.2014 15:26, schrieb Lars-Peter Clausen:
+> > >>>>On 07/13/2014 11:45 AM, Richard Weinberger wrote:
+> > >>>>>Am 13.07.2014 11:27, schrieb Lennox Wu:
+> > >>>>>>As I said before, some configurations don't make sense.
+> > >>>>>
+> > >>>>>If such a configuration can be achieved using allmod/yesconfig it =
+has to be fixed.
+> > >>>>>Chen's fixes seem reasonable as not all architectures support iome=
+m.
+> > >>>>
+> > >>>>Maybe we should stub out ioremap() and friends when COMPILE_TEST is=
+ enabled to avoid these linker errors. That's in my opinion better than tur=
+ning most of the 'depends on
+> > >>>>COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The issu=
+e comes up quite a lot and it is often overlooked when adding a driver that=
+ can be build when COMPILE_TEST is
+> > >>>>enabled.
+> > >>>
+> > >>>And what should this stub do?
+> > >>>Except calling BUG()...
+> > >>
+> > >>return NULL;
+> > >>
+> > >>It's for compile testing, it's not meant to work at runtime.
+> > >
+> > >Hm, I really don't like the idea of having a non-working kernel.
+> > >IMHO either it should build _and_ run and nothing else.
+> > >Greg, what do you think?
+> >=20
+> > The kernel will still be working fine and you can run it on a system. T=
+he
+> > drivers which use ioremap() or similar are probably not instantiated on=
+ a
+> > system that does not provide HAS_IOMEM. But even if it was the driver s=
+hould
+> > handle ioremap() returning NULL gracefully and abort the driver probe. =
+That
+> > said you'll probably not run a kernel that was built with COMPILE_TEST =
+on
+> > your real hardware since it contains so many drivers that are completely
+> > useless on your hardware. The idea of COMPILE_TEST is to have as much
+> > compile test exposure as possible to the code that is enabled by
+> > COMPILE_TEST. Stubbing out ioremap() and friends when HAS_IOMEM is not =
+set
+> > and COMPILE_TEST is set makes it easier to get there.
+>=20
+> I run my kernels with COMPILE_TEST enabled as I need to build test
+> things that I don't happen to use.
+>=20
+> I like the 'return NULL' option for this, it hits us all the time, might
+> as well fix it properly like this so that we don't have to deal with
+> Kconfig changes everywhere.
 
+I agree. One nit, though: devm_ioremap_resource() returns an ERR_PTR()-
+encoded error code, so the dummy should probably be returning something
+like ERR_PTR(-ENOSYS) instead of NULL.
+
+> Also put a big "This platform does not support IOMEM" error printk in
+> there, so that people have a chance to figure out what is going on if
+> they happen to run such a driver on a platform that can't support it.
+
+Yes, that sounds like a very good idea and should be indication enough
+of what exactly has gone wrong.
+
+Thierry
+
+--BOmey7/79ja+7F5w
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJTw5JBAAoJEN0jrNd/PrOhjqEP/2Ul93ulC/7A4lZBNo6jm7bH
+9iCLPnVC8QWk77FXi9HOB2yVjGsyYjtMApBSwj7DfYsxu/FBhOG6lXcVMIPhs2Kx
+rByJ+QQON/YRcVzDYvI7HoOqcMFxaA60A/DfRE1S4rBxPJ+THR3cEx1jIvyIvz/+
+tSNkHPvV/5qu2jq4KXX2jMaY1L9xyD7TNVV9jDjKK/qIa5d9VZ8qehfy/t/cp7sW
+jsN/XkDJCcvmPMbw+M4zHtm2MtDoZbnf32XL8geE3OjxdTY3DLJ6aHKCuKeaPx5P
+guVXbvbtHWuqP2WXPrSQV2qiPX+xgICrZirygy7hfqmvouomDT6AzdwhrQyDOZLM
+nScJYZP1PWvbh4bKTFCOymf/K36QQciZZLVl20JLAqF9SVN2ew1bv3g6YrXVNYNg
+klOQFwRQ8TLUDSsSZtj/rMpr1sB7hdtMPTHjF4m+kcvAq1g8OfAHOT4EFXRdQqjq
+c5W508a/Vffnm+uBJjiGlzT87IHHUQ1GJ22EXNmKJHEr2H7ril8yMBMzUTB4uzOJ
+z9OBk5+gmNihzMaL2HcbIEsBBH88ymozpNQOHI3P857b7Esrfwkce1S3K2TWfAdx
+bn58JkyfJlGMiRVvL4GrhIzd75yUrKU+GdplUmqzYS7bMmv1jwxC1ZQ/VmhInOG8
+sSUlOlxTRVflqAJBcp/e
+=q6Y2
+-----END PGP SIGNATURE-----
+
+--BOmey7/79ja+7F5w--
