@@ -1,59 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mta1.parkeon.com ([91.121.43.66]:48242 "EHLO mta1.parkeon.com"
+Received: from a.ns.miles-group.at ([95.130.255.143]:65278 "EHLO radon.swed.at"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753856AbaGKNG5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 11 Jul 2014 09:06:57 -0400
-Subject: [PATCH] iio: mma8452: add DT support
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Fri, 11 Jul 2014 15:06:54 +0200
-Message-ID: <20140711130654.22566.53801.stgit@localhost>
+	id S1750745AbaGNIbn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Jul 2014 04:31:43 -0400
+Message-ID: <53C39569.9020802@nod.at>
+Date: Mon, 14 Jul 2014 10:31:37 +0200
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Lars-Peter Clausen <lars@metafoo.de>, dmitry.torokhov@gmail.com,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	thierry.reding@gmail.com, Lennox Wu <lennox.wu@gmail.com>,
+	Chen Gang <gang.chen.5i5j@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com>
+In-Reply-To: <20140713201753.GA29955@kroah.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Allow the mma8452 to be described in the device tree.
+Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
+> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
+>> Maybe we could add COMPILE_TEST to the version string too?
+>> Just to detect such kernels fast in user bug reports...
+> 
+> What kind of bug report are you going to get?
 
-Since no device specific binding attributes exist the trivial
-I2C binding is sufficient to describe the compatible string.
+User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
+complains that it does not work. :)
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- .../devicetree/bindings/i2c/trivial-devices.txt    |    1 +
- drivers/iio/accel/mma8452.c                        |    6 ++++++
- 2 files changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index b1cb341..1705f36 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -34,6 +34,7 @@ epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
- fsl,mag3110		MAG3110: Xtrinsic High Accuracy, 3D Magnetometer
- fsl,mc13892		MC13892: Power Management Integrated Circuit (PMIC) for i.MX35/51
- fsl,mma8450		MMA8450Q: Xtrinsic Low-power, 3-axis Xtrinsic Accelerometer
-+fsl,mma8452		MMA8452Q: 3-axis 12-bit / 8-bit Digital Accelerometer
- fsl,mpr121		MPR121: Proximity Capacitive Touch Sensor Controller
- fsl,sgtl5000		SGTL5000: Ultra Low-Power Audio Codec
- gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire Interface
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 61eba5a..6804c2e 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -428,9 +428,15 @@ static const struct i2c_device_id mma8452_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, mma8452_id);
- 
-+static const struct of_device_id mma8452_dt_ids[] = {
-+	{ .compatible = "fsl,mma8452" },
-+	{ }
-+};
-+
- static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
-+		.of_match_table = of_match_ptr(mma8452_dt_ids),
- 		.pm	= MMA8452_PM_OPS,
- 	},
- 	.probe = mma8452_probe,
-
+Thanks,
+//richard
