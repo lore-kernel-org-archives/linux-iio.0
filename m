@@ -1,118 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:14900 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757081AbaGQLXg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:23:36 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
-	jic23@kernel.org
-Subject: [PATCH 4/4 v2] ARM: dts: exynos: Add sysreg phandle to ADC node
-Date: Thu, 17 Jul 2014 16:49:53 +0530
-Message-id: <1405595993-16661-5-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
-References: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:56881 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757099AbaGNUiq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 14 Jul 2014 16:38:46 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org
+Subject: [PATCH 0/3] iio: accel driver fixes
+Date: Mon, 14 Jul 2014 22:38:35 +0200
+Message-Id: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Instead of using the ADC_PHY register base address, use sysreg phandle
-in ADC node to control ADC_PHY configuration register.
+couple of fixes for IIO accel drivers
 
-This patch adds syscon node for Exynos3250, Exynos4x12, Exynos5250,
-and Exynos5420, Exynos5800.
+patch 1 is just trivial error message fixing
+patch 2 fixes the scan_type endianness of the I2C kxcjk-1013 sensor
+patch 3 fixes the acceleration units (m/s^2 vs. g) of the bma180 driver
 
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-samsung-soc@vger.kernel.org
----
-Changes since v1:
-None
+Peter Meerwald (3):
+  iio:kxcjk-1013: Correct error messages
+  iio:kxcjk-1013: Fix endianness in scan_type
+  iio:bma180: Fix scale factors to report correct acceleration units
 
- arch/arm/boot/dts/exynos3250.dtsi |    3 ++-
- arch/arm/boot/dts/exynos4x12.dtsi |    3 ++-
- arch/arm/boot/dts/exynos5250.dtsi |    3 ++-
- arch/arm/boot/dts/exynos5420.dtsi |    3 ++-
- 4 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/iio/accel/bma180.c     | 4 ++--
+ drivers/iio/accel/kxcjk-1013.c | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos3250.dtsi b/arch/arm/boot/dts/exynos3250.dtsi
-index c5e15db..51c9b0d 100644
---- a/arch/arm/boot/dts/exynos3250.dtsi
-+++ b/arch/arm/boot/dts/exynos3250.dtsi
-@@ -262,12 +262,13 @@
- 
- 		adc: adc@126C0000 {
- 			compatible = "samsung,exynos3250-adc-v2";
--			reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+			reg = <0x126C0000 0x100>;
- 			interrupts = <0 137 0>;
- 			clock-names = "adc", "sclk_adc";
- 			clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
- 			#io-channel-cells = <1>;
- 			io-channel-ranges;
-+			samsung,syscon-phandle = <&pmu_system_controller>;
- 			status = "disabled";
- 		};
- 
-diff --git a/arch/arm/boot/dts/exynos4x12.dtsi b/arch/arm/boot/dts/exynos4x12.dtsi
-index c5a943d..9a18d9b 100644
---- a/arch/arm/boot/dts/exynos4x12.dtsi
-+++ b/arch/arm/boot/dts/exynos4x12.dtsi
-@@ -114,13 +114,14 @@
- 
- 	adc: adc@126C0000 {
- 		compatible = "samsung,exynos-adc-v1";
--		reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+		reg = <0x126C0000 0x100>;
- 		interrupt-parent = <&combiner>;
- 		interrupts = <10 3>;
- 		clocks = <&clock CLK_TSADC>;
- 		clock-names = "adc";
- 		#io-channel-cells = <1>;
- 		io-channel-ranges;
-+		samsung,syscon-phandle = <&pmu_system_controller>;
- 		status = "disabled";
- 	};
- 
-diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
-index 834fb5a..6003777 100644
---- a/arch/arm/boot/dts/exynos5250.dtsi
-+++ b/arch/arm/boot/dts/exynos5250.dtsi
-@@ -762,12 +762,13 @@
- 
- 	adc: adc@12D10000 {
- 		compatible = "samsung,exynos-adc-v1";
--		reg = <0x12D10000 0x100>, <0x10040718 0x4>;
-+		reg = <0x12D10000 0x100>
- 		interrupts = <0 106 0>;
- 		clocks = <&clock CLK_ADC>;
- 		clock-names = "adc";
- 		#io-channel-cells = <1>;
- 		io-channel-ranges;
-+		samsung,syscon-phandle = <&pmu_system_controller>;
- 		status = "disabled";
- 	};
- 
-diff --git a/arch/arm/boot/dts/exynos5420.dtsi b/arch/arm/boot/dts/exynos5420.dtsi
-index e385322..6979da8 100644
---- a/arch/arm/boot/dts/exynos5420.dtsi
-+++ b/arch/arm/boot/dts/exynos5420.dtsi
-@@ -525,12 +525,13 @@
- 
- 	adc: adc@12D10000 {
- 		compatible = "samsung,exynos-adc-v2";
--		reg = <0x12D10000 0x100>, <0x10040720 0x4>;
-+		reg = <0x12D10000 0x100>;
- 		interrupts = <0 106 0>;
- 		clocks = <&clock CLK_TSADC>;
- 		clock-names = "adc";
- 		#io-channel-cells = <1>;
- 		io-channel-ranges;
-+		samsung,syscon-phandle = <&pmu_system_controller>;
- 		status = "disabled";
- 	};
- 
 -- 
-1.7.9.5
+1.9.1
 
