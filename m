@@ -1,32 +1,134 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43789 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755689AbaGNQMi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jul 2014 12:12:38 -0400
-In-Reply-To: <53B934A9.9090603@gmail.com>
-References: <53B934A9.9090603@gmail.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <53C405EB.8080108@metafoo.de>
+Date: Mon, 14 Jul 2014 18:31:39 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] staging: iio: iio_simple_dummy_events.c: fix coding style
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 14 Jul 2014 17:12:18 +0100
-To: vv <zhengdi05@gmail.com>, linux-iio@vger.kernel.org
-Message-ID: <e75d9818-92d1-4758-b2bb-2e718d89b9f4@email.android.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Josef Gajdusek <atx@atalax.net>, linux-iio@vger.kernel.org
+CC: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+ jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+ dan.carpenter@oracle.com
+Subject: Re: [PATCH v3 2/5] staging:iio:hmc5843: Split hmc5843.c to multiple
+ files
+References: <20140708133711.GB14393@dashie> <20140708133913.GD14393@dashie>
+In-Reply-To: <20140708133913.GD14393@dashie>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Sorry but insignificant code style patches like this are a waste of everyone's time.
-
-Also please use a real name in signoffs etc and if at all possible send the patch inline.
-
-I have no objection to code style cleanup but handling every patch takes time and hence 
-like many others I get grumpy at one line changes to formatting.
-
-Jonathan
-
-On July 6, 2014 12:36:09 PM GMT+01:00, vv <zhengdi05@gmail.com> wrote:
+On 07/08/2014 03:39 PM, Josef Gajdusek wrote:
+[...]
+> diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+> index ad88d61..28c2612 100644
+> --- a/drivers/staging/iio/magnetometer/Kconfig
+> +++ b/drivers/staging/iio/magnetometer/Kconfig
+> @@ -5,15 +5,23 @@ menu "Magnetometer sensors"
 >
+>   config SENSORS_HMC5843
+>   	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer"
+> -	depends on I2C
+> +	depends on (I2C || SPI_MASTER)
+>   	select IIO_BUFFER
+>   	select IIO_TRIGGERED_BUFFER
+> -	select REGMAP_I2C
+> +	select SENSORS_HMC5843_I2C if (I2C)
 
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+This approach doesn't work to well and will cause randconfig build failures. 
+If SPI_MASTER is 'y' and I2C is 'm' you'll be able to select this driver as 
+built-in, which in turn will also select SENSORS_HMC5843_I2C as built-in, 
+which means you'll get unresolved symbols during linking since core I2C 
+support is built as a module. A better approach is to have a user-selectable 
+symbol per bus and a non-user-selectable symbol for the core infrastructure 
+of the driver. e.g.
+
+config SENSORS_HMC5843
+	tristate
+	select IIO_BUFFER
+	...
+
+config SENSORS_HMC5843_I2C
+	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer (I2C)"
+	select SENSORS_HMC5843
+	select REGMAP_I2C
+
+config SENSORS_HMC5843_SPI
+	tristate "Honeywell HMC5843/5883/5883L 3-Axis Magnetometer (SPI)"
+	select SENSORS_HMC5843
+	select REGMAP_SPI
+
+
+
+ > +struct regmap_config hmc5843_i2c_regmap_config = {
+
+static
+
+ > +		.reg_bits = 8,
+ > +		.val_bits = 8,
+ > +
+ > +		.rd_table = &hmc5843_readable_table,
+ > +		.wr_table = &hmc5843_writable_table,
+ > +		.volatile_table = &hmc5843_volatile_table,
+ > +
+ > +		.cache_type = REGCACHE_RBTREE,
+ > +};
+
+
+ > +static int hmc5843_i2c_probe(struct i2c_client *client,
+ > +			 const struct i2c_device_id *id)
+ > +{
+ > +	struct hmc5843_data *data;
+ > +	struct iio_dev *indio_dev;
+ > +
+ > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ > +	if (indio_dev == NULL)
+ > +		return -ENOMEM;
+ > +
+ > +	i2c_set_clientdata(client, indio_dev);
+ > +
+ > +	data = iio_priv(indio_dev);
+ > +	data->dev = &client->dev;
+ > +	data->regmap = devm_regmap_init_i2c(client, &hmc5843_i2c_regmap_config);
+ > +
+ > +	indio_dev->name = id->name;
+ > +	indio_dev->dev.parent = &client->dev;
+ > +
+ > +	return hmc5843_common_probe(indio_dev, id->driver_data);
+ > +}
+
+If you do the allocation of the IIO device in the common function this can 
+be simplified a bit. E.g.
+
+static int hmc5843_i2c_probe(struct i2c_client *client,
+			 const struct i2c_device_id *id)
+{
+	return hmc5853_common_probe(&client->dev,
+		devm_regmap_init_i2c(client, &mc5843_i2c_regmap_config),
+		id->driver_data);
+}
+
+
+ > +#ifdef CONFIG_PM_SLEEP
+ > +static int hmc5843_i2c_suspend(struct device *dev)
+ > +{
+ > +	return hmc5843_common_suspend(i2c_get_clientdata(to_i2c_client(dev)));
+ > +}
+ > +
+ > +static int hmc5843_i2c_resume(struct device *dev)
+ > +{
+ > +	return hmc5843_common_resume(i2c_get_clientdata(to_i2c_client(dev)));
+ > +}
+ > +
+ > +static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
+ > +		hmc5843_i2c_suspend, hmc5843_i2c_resume);
+ > +#define HMC5843_PM_OPS (&hmc5843_pm_ops)
+ > +#else
+ > +#define HMC5843_PM_OPS NULL
+ > +#endif
+
+Those ops will be the same for both SPI and I2C. 
+i2c_get_clientdata(to_i2c_client(dev)) is the same as dev_get_drvdata(dev), 
+so this can go into the core driver.
+
+
+Also as a hint for future patches, if you rename a file use 
+'git-format-patch -M', this will make the patch a bit more legible.
+
+- Lars
