@@ -1,23 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:45330 "EHLO mail.kernel.org"
+Received: from mga09.intel.com ([134.134.136.24]:63622 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752536AbaGOSOm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 15 Jul 2014 14:14:42 -0400
-Message-ID: <53C5701A.6000507@kernel.org>
-Date: Tue, 15 Jul 2014 19:16:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+	id S1759933AbaGOVvN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Jul 2014 17:51:13 -0400
+Message-ID: <53C59F78.8060009@linux.intel.com>
+Date: Tue, 15 Jul 2014 14:39:04 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Reyad Attiyat <reyad.attiyat@gmail.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Reyad Attiyat <reyad.attiyat@gmail.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
 Subject: Re: [PATCH v5 0/4] iio: Add support for rotation from north
 References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com> <53BD9BD5.5030204@linux.intel.com> <CA+BWVUSLtG9pH245ofyGsrST5H_5W_EbvOXZ_YkCxmg4DX09_A@mail.gmail.com>
 In-Reply-To: <CA+BWVUSLtG9pH245ofyGsrST5H_5W_EbvOXZ_YkCxmg4DX09_A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: multipart/mixed;
+ boundary="------------050309040802090906050803"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/07/14 23:12, Reyad Attiyat wrote:
+This is a multi-part message in MIME format.
+--------------050309040802090906050803
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+Since you have only one attribute, it is working for you.
+There is a dereference error in *channels.
+
+Check the attached diff, which will fix this.
+
+Thanks,
+Srinivas
+
+On 07/09/2014 03:12 PM, Reyad Attiyat wrote:
 > Hey Srinivas,
 >
 > I did look into the panic you sent. I wasn't sure exactly what caused
@@ -35,15 +51,10 @@ On 09/07/14 23:12, Reyad Attiyat wrote:
 >
 > Thanks,
 > Reyad Attiyat
-Just to confirm what you may suspect...  I'm holding this series until
-Srinivas and Reyad have confirmed the cause of Srinivas' panic.
-
-Jonathan
 >
 > On Wed, Jul 9, 2014 at 2:45 PM, Srinivas Pandruvada
 > <srinivas.pandruvada@linux.intel.com> wrote:
 >> On 07/09/2014 12:30 PM, Reyad Attiyat wrote:
->>>
 >>> This series of patches modifies magn-3d driver to handle the rotation
 >>> from north usage. This is done by scanning the report and then building
 >>> the iio arrays (vals and channels) dynamically.
@@ -72,9 +83,58 @@ Jonathan
 >>
 >> Thanks,
 >> Srinivas
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
 
+
+--------------050309040802090906050803
+Content-Type: text/x-patch;
+ name="hid-sensor-magn-3d.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="hid-sensor-magn-3d.diff"
+
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 070d20e..63f23af 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -271,6 +271,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 	int ret = 0;
+ 	int i;
+ 	int attr_count = 0;
++	struct iio_chan_spec *_channels;
+ 
+ 	/* Scan for each usage attribute supported */
+ 	for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
+@@ -300,10 +301,10 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 		return  -EINVAL;
+ 
+ 	/* Setup IIO channel array */
+-	*channels = devm_kcalloc(&pdev->dev, attr_count,
++	_channels = devm_kcalloc(&pdev->dev, attr_count,
+ 								sizeof(struct iio_chan_spec),
+ 								GFP_KERNEL);
+-	if (!*channels) {
++	if (!_channels) {
+ 		dev_err(&pdev->dev, "failed to allocate space for iio channels\n");
+ 		return -ENOMEM;
+ 	}
+@@ -322,14 +323,16 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 	{
+ 		if (st->magn[i].index >= 0) {
+ 			/* Setup IIO channel struct */
+-			*channels[*chan_count] = magn_3d_channels[i];
++			_channels[*chan_count] = magn_3d_channels[i];
+ 
+ 			st->magn_val_addr[i] = &(st->iio_val[*chan_count]);
+-			magn_3d_adjust_channel_bit_mask(*channels, *chan_count, st->magn[i].size);
++			magn_3d_adjust_channel_bit_mask(_channels, *chan_count, st->magn[i].size);
+ 			(*chan_count)++;
+ 		}
+ 	}
+ 
++	*channels = _channels;
++
+ 	st->scale_precision = hid_sensor_format_scale(
+ 				HID_USAGE_SENSOR_COMPASS_3D,
+ 				&st->magn[CHANNEL_SCAN_INDEX_X],
+
+--------------050309040802090906050803--
