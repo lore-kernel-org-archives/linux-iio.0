@@ -1,62 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qa0-f46.google.com ([209.85.216.46]:52009 "EHLO
-	mail-qa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751750AbaGQEVm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 00:21:42 -0400
+Received: from mail.kernel.org ([198.145.19.201]:45241 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754573AbaGOSLG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Jul 2014 14:11:06 -0400
+Message-ID: <53C56F40.1070304@kernel.org>
+Date: Tue, 15 Jul 2014 19:13:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <53AAD8C8.3080506@roeck-us.net>
-References: <1403677773-21141-1-git-send-email-ch.naveen@samsung.com>
- <02b501cf9064$34f16b80$9ed44280$@samsung.com> <53AAD8C8.3080506@roeck-us.net>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Thu, 17 Jul 2014 09:51:21 +0530
-Message-ID: <CAHfPSqCGf2d6xXDGr974+4ipNsYx3-fOLT+u2OGN=c9FVPEkZg@mail.gmail.com>
-Subject: Re: [PATCH 0/4 v2] hwmon: ntc_thermistor: prepose vendor prefix change
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Kukjin Kim <kgene.kim@samsung.com>,
-	Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, linux-iio@vger.kernel.org,
-	jdelvare@suse.de,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-	lars@metafoo.de
-Content-Type: text/plain; charset=UTF-8
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	Kukjin Kim <kgene.kim@samsung.com>
+Subject: Re: [PATCH 0/4] iio: exynos-adc: use syscon instead of ioremap
+References: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Kukjin,
-
-On 25 June 2014 19:42, Guenter Roeck <linux@roeck-us.net> wrote:
-> On 06/25/2014 03:57 AM, Kukjin Kim wrote:
->>
->> Naveen Krishna Chatradhi wrote:
->>>
->>>
->> + Jean Delvare, Guenter Roeck
->>
->> I'm adding maintainers for drivers/hwmon/ntc* but I'm not sure.
->>
->> Hi,
->>
->> This series looks good to me. I will take 3/4 and 4/4 for exynos DT
->> changes once
->> hwmon/ntc maintainer pick the others.
->>
+On 11/07/14 10:06, Naveen Krishna Chatradhi wrote:
+> This patch does the following
+> 1. Use the syscon and Regmap API instead of ioremappaing the
+>     ADC_PHY register from PMU.
+> 2. Moves the exynos-adc.txt from bindings/arm/samsung/
+>     to bindings/iio/adc/.
+> 3. Updates the Documentation in exynos-adc.txt with syscon phandle
+>     for the ADC nodes.
+> 4. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
+>     Exynos5420 with the syscon phandle.
 >
-> I applied both patches. Currently going through my test cycle.
-> I'll send them to Linus Thursday or Friday.
-
-I see the 1/4 and 2/4 merged in togreg branch of
-http://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-
-Can you pull the 3/4 and 4/4 patches.
-
+> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
+> by verifying sysfs entries provided by HWMON based NTC thermistors.
 >
-> Guenter
+> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
+>
+This series all looks fine to me.  Took me a minute to work out what the point
+of the syscon change was (perhaps a little description in the cover letter
+would have been nice ;)
+
+Anyhow, with the device tree changes in here we'll have to let it sit for
+a while.  I'll also definitely want an ack from
+Kukjin Kim <kgene.kim@samsung.com> for the device tree changes.
+
+Jonathan
+> Naveen Krishna Chatradhi (4):
+>    iio: exyno-adc: use syscon for PMU register access
+>    Documentation: dt-bindings: move exynos-adc.txt to more iio/adc/
+>    Documentation: dt-bindings: update exynos-adc.txt with syscon handle
+>    ARM: dts: exynos: Add sysreg phandle to ADC node
+>
+>   .../devicetree/bindings/arm/samsung/exynos-adc.txt |   82 ------------------
+>   .../devicetree/bindings/iio/adc/exynos-adc.txt     |   87 ++++++++++++++++++++
+>   arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
+>   arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
+>   arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
+>   arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
+>   drivers/iio/adc/exynos_adc.c                       |   29 +++++--
+>   7 files changed, 115 insertions(+), 95 deletions(-)
+>   delete mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>   create mode 100644 Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
 >
 
-
-
--- 
-Regards,
-(: Naveen :)
