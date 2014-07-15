@@ -1,102 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qc0-f173.google.com ([209.85.216.173]:32943 "EHLO
-	mail-qc0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754898AbaGQLrj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:47:39 -0400
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49048 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932461AbaGOJVg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jul 2014 05:21:36 -0400
+In-Reply-To: <CAAj6DX2Tnt6=CuNAhkq_D=pknbEv=j7tf7Dtm7aoCm3gMu+RQw@mail.gmail.com>
+References: <1405359159-12379-1-git-send-email-tremyfr@yahoo.fr> <53C43BD6.9030102@kernel.org> <CAAj6DX2Tnt6=CuNAhkq_D=pknbEv=j7tf7Dtm7aoCm3gMu+RQw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <53C56FB1.2040700@kernel.org>
-References: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com>
- <53C56F40.1070304@kernel.org> <53C56FB1.2040700@kernel.org>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Thu, 17 Jul 2014 17:17:18 +0530
-Message-ID: <CAHfPSqDqJuhsMMocpz0jWxJhAuFQDpfssNB3kFN9bMcaPGtH0g@mail.gmail.com>
-Subject: Re: [PATCH 0/4] iio: exynos-adc: use syscon instead of ioremap
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, lars@metafoo.de, cpgs@samsung.com,
-	grundler@chromium.org, Kukjin Kim <kgene.kim@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio: add support of the max5821
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Tue, 15 Jul 2014 10:21:26 +0100
+To: Antonio Borneo <borneo.antonio@gmail.com>
+CC: Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	armadeus-forum@lists.sourceforge.net, devicetree@vger.kernel.org,
+	julien.boibessot@free.fr
+Message-ID: <c0929d8c-7835-4522-9280-6c1c422df035@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Jonathan,
 
-On 15 July 2014 23:45, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 15/07/14 19:13, Jonathan Cameron wrote:
->>
->> On 11/07/14 10:06, Naveen Krishna Chatradhi wrote:
->>>
->>> This patch does the following
->>> 1. Use the syscon and Regmap API instead of ioremappaing the
->>>     ADC_PHY register from PMU.
->>> 2. Moves the exynos-adc.txt from bindings/arm/samsung/
->>>     to bindings/iio/adc/.
->>> 3. Updates the Documentation in exynos-adc.txt with syscon phandle
->>>     for the ADC nodes.
->>> 4. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
->>>     Exynos5420 with the syscon phandle.
->>>
->>> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
->>> by verifying sysfs entries provided by HWMON based NTC thermistors.
->>>
->>> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
->>>
->> This series all looks fine to me.  Took me a minute to work out what the
->> point
->> of the syscon change was (perhaps a little description in the cover letter
->> would have been nice ;)
->>
->> Anyhow, with the device tree changes in here we'll have to let it sit for
->> a while.  I'll also definitely want an ack from
->> Kukjin Kim <kgene.kim@samsung.com> for the device tree changes.
+
+On July 15, 2014 9:56:17 AM GMT+01:00, Antonio Borneo <borneo.antonio@gmail.com> wrote:
+>On Tue, Jul 15, 2014 at 4:21 AM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> On 14/07/14 18:32, Philippe Reynes wrote:
 >
-> Although I haven't tried it, I'd imagine this might cause a little bit
-> of merging fun with the other exynos series waiting for Kukjin to
-> ack...
-
-I've tried to rebase on top of Chongwoo's v5 version changes for Exynos5320.
-there is one conflict with Documentation. I've submitted the v2 version.
-
-> [PATCHv5 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and code clean
->>
->>
->> Jonathan
->>>
->>> Naveen Krishna Chatradhi (4):
->>>    iio: exyno-adc: use syscon for PMU register access
->>>    Documentation: dt-bindings: move exynos-adc.txt to more iio/adc/
->>>    Documentation: dt-bindings: update exynos-adc.txt with syscon handle
->>>    ARM: dts: exynos: Add sysreg phandle to ADC node
->>>
->>>   .../devicetree/bindings/arm/samsung/exynos-adc.txt |   82
->>> ------------------
->>>   .../devicetree/bindings/iio/adc/exynos-adc.txt     |   87
->>> ++++++++++++++++++++
->>>   arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
->>>   arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
->>>   arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
->>>   arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
->>>   drivers/iio/adc/exynos_adc.c                       |   29 +++++--
->>>   7 files changed, 115 insertions(+), 95 deletions(-)
->>>   delete mode 100644
->>> Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>>   create mode 100644
->>> Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>Hi Jonathan,
 >
+>regarding your comment below
 >
-
-
+><snip>
+>>> +static int max5821_get_value(struct iio_dev *indio_dev,
+>>> +                            int *val, int channel)
+>>> +{
+>>> +       struct max5821_data *data = iio_priv(indio_dev);
+>>> +       struct i2c_client *client = data->client;
+>>> +       u8 outbuf[1];
+>>> +       u8 inbuf[2];
+>>> +       int ret;
+>>> +
+>>> +       switch (channel) {
+>>> +       case 0:
+>>> +               outbuf[0] = MAX5821_READ_DAC_A_COMMAND;
+>>> +               break;
+>>> +       case 1:
+>>> +               outbuf[0] = MAX5821_READ_DAC_B_COMMAND;
+>>> +               break;
+>>> +       default:
+>>> +               return -EINVAL;
+>>> +       }
+>>> +
+>>> +       ret = i2c_master_send(client, outbuf, 1);
+>>> +       if (ret < 0)
+>>> +               return ret;
+>>> +       else if (ret != 1)
+>>> +               return -EIO;
+>>> +
+>>> +       ret = i2c_master_recv(client, inbuf, 2);
+>>> +       if (ret < 0)
+>>> +               return ret;
+>>> +       else if (ret != 2)
+>>> +               return -EIO;
+>>
+>> It somehow always feels like this error handling should be in the
+>> i2c core.  Just how often does it make sense to receive too little
+>> from and i2c transaction?  Anyhow, such is life ;)
+>
+>You wrote:
+>
+>> You could set this up to use i2c_transfer instead of separating it
+>like
+>> this.
+>
+>Accordingly to:
+>- Documentation/i2c/i2c-protocol
+>- Documentation/i2c/writing-clients
+>a sequence of i2c_master_send() and i2c_master_recv() is not fully
+>equivalent to a single i2c_transfer(); in latter case the transactions
+>would be combined and the stop bit in between would be removed.
+>
+>I checked the datasheet of max5821 and it reports that
+>"Each transmit sequence is framed by a START (S) or REPEATED START
+>(Sr) condition and a STOP (P) condition."
+>So combined transaction should work with this device.
+>
+>But we have few I2C controllers that cannot send combined transactions
+>and would return error.
+>E.g. in drivers/i2c/busses/i2c-powermac.c
+>i2c_powermac_master_xfer() returns -EOPNOTSUPP when num!=1.
+>
+>What is the proper way to address this:
+>- use combine transactions, since supported by majority of (but not
+>all) controllers?
+>or
+>- keep individual transactions, if not strictly required by the
+>protocol of the I2C device?
+I would go with working on the vast majority unless we have a user actually using such
+ an i2c controller.
+>
+>Thanks,
+>Antonio
 
 -- 
-Regards,
-(: Naveen :)
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
