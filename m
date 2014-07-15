@@ -1,112 +1,74 @@
-Return-Path: <tremyfr@yahoo.fr>
-Message-ID: <53C58BBE.5080305@yahoo.fr>
-Date: Tue, 15 Jul 2014 22:14:54 +0200
-From: trem <tremyfr@yahoo.fr>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.active-venture.com ([67.228.131.205]:55769 "EHLO
+	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753241AbaGOAxN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jul 2014 20:53:13 -0400
+Message-ID: <53C47B76.4080306@roeck-us.net>
+Date: Mon, 14 Jul 2014 17:53:10 -0700
+From: Guenter Roeck <linux@roeck-us.net>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Antonio Borneo <borneo.antonio@gmail.com>,
- Philippe Reynes <tremyfr@yahoo.fr>,
- linux-iio@vger.kernel.org,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- armadeus-forum@lists.sourceforge.net, devicetree@vger.kernel.org,
- julien.boibessot@free.fr, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: add support of the max5821
-References: <1405359159-12379-1-git-send-email-tremyfr@yahoo.fr> <53C43BD6.9030102@kernel.org> <CAAj6DX2Tnt6=CuNAhkq_D=pknbEv=j7tf7Dtm7aoCm3gMu+RQw@mail.gmail.com> <c0929d8c-7835-4522-9280-6c1c422df035@email.android.com>
-In-Reply-To: <c0929d8c-7835-4522-9280-6c1c422df035@email.android.com>
+To: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Richard Weinberger <richard@nod.at>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com>
+In-Reply-To: <53C47725.8000005@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi all,
-
-Thanks for those feedback, as usual, very fast and efficient.
-I'll send a v2 as soon as I've integrated all your remarks.
-
-Best regards,
-Philippe
-
-
-
-On 15/07/14 11:21, Jonathan Cameron wrote:
->
->
-> On July 15, 2014 9:56:17 AM GMT+01:00, Antonio Borneo<borneo.antonio@gmail.com>  wrote:
->> On Tue, Jul 15, 2014 at 4:21 AM, Jonathan Cameron<jic23@kernel.org>
->> wrote:
->>> On 14/07/14 18:32, Philippe Reynes wrote:
+On 07/14/2014 05:34 PM, Chen Gang wrote:
+> On 07/14/2014 05:22 PM, Chen Gang wrote:
 >>
->> Hi Jonathan,
+>> 在 2014年7月14日，下午4:57，Richard Weinberger <richard@nod.at> 写道：
 >>
->> regarding your comment below
->>
->> <snip>
->>>> +static int max5821_get_value(struct iio_dev *indio_dev,
->>>> +                            int *val, int channel)
->>>> +{
->>>> +       struct max5821_data *data = iio_priv(indio_dev);
->>>> +       struct i2c_client *client = data->client;
->>>> +       u8 outbuf[1];
->>>> +       u8 inbuf[2];
->>>> +       int ret;
->>>> +
->>>> +       switch (channel) {
->>>> +       case 0:
->>>> +               outbuf[0] = MAX5821_READ_DAC_A_COMMAND;
->>>> +               break;
->>>> +       case 1:
->>>> +               outbuf[0] = MAX5821_READ_DAC_B_COMMAND;
->>>> +               break;
->>>> +       default:
->>>> +               return -EINVAL;
->>>> +       }
->>>> +
->>>> +       ret = i2c_master_send(client, outbuf, 1);
->>>> +       if (ret<  0)
->>>> +               return ret;
->>>> +       else if (ret != 1)
->>>> +               return -EIO;
->>>> +
->>>> +       ret = i2c_master_recv(client, inbuf, 2);
->>>> +       if (ret<  0)
->>>> +               return ret;
->>>> +       else if (ret != 2)
->>>> +               return -EIO;
+>>> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
+>>>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
+>>>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
+>>>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
+>>>>>>> Maybe we could add COMPILE_TEST to the version string too?
+>>>>>>> Just to detect such kernels fast in user bug reports...
+>>>>>>
+>>>>>> What kind of bug report are you going to get?
+>>>>>
+>>>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
+>>>>> complains that it does not work. :)
+>>>>
+>>>> These drivers are typically drivers for some SoC peripheral and the device will simply physically not exist on a platform that does not provide HAS_IOMEM. This is not really any
+>>>> different from making the driver selectable via COMPILE_TEST for any other platform. To hit the issue you'd have to instantiate a device driver instance for a device that
+>>>> physically does not exist. This will always result in a failure.
 >>>
->>> It somehow always feels like this error handling should be in the
->>> i2c core.  Just how often does it make sense to receive too little
->>> from and i2c transaction?  Anyhow, such is life ;)
->>
->> You wrote:
->>
->>> You could set this up to use i2c_transfer instead of separating it
->> like
->>> this.
->>
->> Accordingly to:
->> - Documentation/i2c/i2c-protocol
->> - Documentation/i2c/writing-clients
->> a sequence of i2c_master_send() and i2c_master_recv() is not fully
->> equivalent to a single i2c_transfer(); in latter case the transactions
->> would be combined and the stop bit in between would be removed.
->>
->> I checked the datasheet of max5821 and it reports that
->> "Each transmit sequence is framed by a START (S) or REPEATED START
->> (Sr) condition and a STOP (P) condition."
->> So combined transaction should work with this device.
->>
->> But we have few I2C controllers that cannot send combined transactions
->> and would return error.
->> E.g. in drivers/i2c/busses/i2c-powermac.c
->> i2c_powermac_master_xfer() returns -EOPNOTSUPP when num!=1.
->>
->> What is the proper way to address this:
->> - use combine transactions, since supported by majority of (but not
->> all) controllers?
->> or
->> - keep individual transactions, if not strictly required by the
->> protocol of the I2C device?
-> I would go with working on the vast majority unless we have a user actually using such
->   an i2c controller.
->>
->> Thanks,
->> Antonio
+>>> Okay, you have convinced me. :)
+>>>
 >
+> After search the history patches, I found one related patch which made
+> by myself (when I am in Asianux):
+>
+>    "https://lkml.org/lkml/2013/7/1/641"
+>
+> For me, it is a long discussion, and forced many members have to join
+> in. Please help check again.
+>
+
+One thing you could try would be to return NULL (or where appropriate
+an error) in the #else case of CONFIG_HAS_IOMEM and CONFIG_HAS_IOPORT,
+ie dont take COMPILE_TEST into account at all. Obviously that means
+you won't be able to dump a warning message in the COMPILE_TEST
+case, but at least the code would compile. The rejection of above patch
+would make a good case for this approach.
+
+Guenter
+
