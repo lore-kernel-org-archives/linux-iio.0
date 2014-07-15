@@ -1,30 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:64110 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759021AbaGXNHu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 24 Jul 2014 09:07:50 -0400
-Message-ID: <61739.163.33.230.161.1406207197.squirrel@linux.intel.com>
-Date: Thu, 24 Jul 2014 13:06:37 -0000 (GMT)
-Subject: IIO for PCIe-DMA ADC
-From: "Krzysztof Sywula" <krzysztof.m.sywula@linux.intel.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Tue, 15 Jul 2014 08:54:09 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
+cc: jic23@kernel.org, Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH 3/3] iio:bma180: Fix scale factors to report correct
+ acceleration units
+In-Reply-To: <1405370318-19699-4-git-send-email-pmeerw@pmeerw.net>
+Message-ID: <alpine.DEB.2.01.1407150853171.27866@pmeerw.net>
+References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net> <1405370318-19699-4-git-send-email-pmeerw@pmeerw.net>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi there, I’m designing a PCIe driver for DMA enabled ADC. Is IIO handling
-such a combo? I'm based on kernel 3.8.7.
 
-Website:
-http://wiki.analog.com/software/linux/docs/iio/iio
-says "However typical DMA operated devices such as ones connected to a
-high speed synchronous serial (McBSP, SPORT) or high speed synchronous
-parallel (EPI, PPI) or FPGA peripherals are also subject to this
-subsystem."
+the default value (250->2452) needs to be changed as well, I'll send an 
+updated patch
 
-which is not clear enough for me to answer that question.
+p.
 
-Thanks,
-Krzysztof Sywula
+> The userspace interface for acceleration sensors is documented as using
+> m/s^2 units [Documentation/ABI/testing/sysfs-bus-iio]
+> 
+> The fullscale raw values for the BMA80 corresponds to -/+ 1, 1.5, 2, etc G
+> depending on the selected mode.
+> 
+> The scale table was converting to G rather than m/s^2.
+> Change the scaling table to match the documented interface.
+> 
+> See commit 71702e6e, iio: mma8452: Use correct acceleration units,
+> for a related fix.
+> 
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+> ---
+>  drivers/iio/accel/bma180.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index a7e68c8..b1c7ab4 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -74,7 +74,7 @@
+>  #define BMA180_FLP_FREQ_AVAILABLE \
+>  	"10 20 40 75 150 300"
+>  #define BMA180_SCALE_AVAILABLE \
+> -	"0.000130 0.000190 0.000250 0.000380 0.000500 0.000990 0.001980"
+> +	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
+>  
+>  struct bma180_data {
+>  	struct i2c_client *client;
+> @@ -94,7 +94,7 @@ enum bma180_axis {
+>  };
+>  
+>  static int bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+> -static int scale_table[] = { 130, 190, 250, 380, 500, 990, 1980 };
+> +static int scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+>  
+>  static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
+>  {
+> 
 
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
