@@ -1,304 +1,148 @@
-Return-Path: <reyad.attiyat@gmail.com>
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v5 3/4] iio: hid-sensor-magn-3d: Scan for usage attributes before setting up iio channels
-Date: Wed,  9 Jul 2014 14:30:12 -0500
-Message-Id: <1404934213-2733-4-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:48114 "EHLO
+	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1758859AbaGOM1l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jul 2014 08:27:41 -0400
+Date: Tue, 15 Jul 2014 14:27:38 +0200
+From: Josef Gajdusek <atx@atalax.net>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com, lars@metafoo.de
+Subject: [PATCH v4 5/5] staging:iio:hmc5843: Add support for spi hmc5983
+Message-ID: <20140715122738.GF30770@dashie>
+References: <20140715122410.GA30770@dashie>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140715122410.GA30770@dashie>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Scan for and count the HID usage attributes supported by the driver.
-This allows for the driver to only setup the IIO channels for the
-sensor usages present in the HID USB reports.
+This patch adds support for the hmc5983 spi interface.
+This chip is almost identical to the hmc5883. The difference being added
+temperature compensation, additional available sample rate (220Hz) and an SPI
+interface.
 
-Changes from v4
-Renamed iio_val array to iio_vals
-Renamed return value of hid sensor attribute for loop
-Fixed formatting
-Added comment about magn_val_addr and iio_vals
-Added more debugging information and checks
-Removed static initalizing of scan_index, it is now set dynamically
-Use struct iio_chan_spec address field to store magn array index (could be set statically)
-
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+Signed-off-by: Josef Gajdusek <atx@atx.name>
 ---
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 144 ++++++++++++++++++--------
- 1 file changed, 100 insertions(+), 44 deletions(-)
+ drivers/staging/iio/magnetometer/Kconfig       | 15 ++++++
+ drivers/staging/iio/magnetometer/Makefile      |  1 +
+ drivers/staging/iio/magnetometer/hmc5843_spi.c | 73 ++++++++++++++++++++++++++
+ 3 files changed, 89 insertions(+)
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
 
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 41cf29e..f69664b 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -42,7 +42,12 @@ struct magn_3d_state {
- 	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
--	u32 magn_val[MAGN_3D_CHANNEL_MAX];
-+
-+	/* dynamically sized array to hold sensor values */
-+	u32 *iio_vals;
-+	/* array of pointers to sensor value */
-+	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
-+
- 	int scale_pre_decml;
- 	int scale_post_decml;
- 	int scale_precision;
-@@ -66,7 +71,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = CHANNEL_SCAN_INDEX_X,
- 	}, {
- 		.type = IIO_MAGN,
- 		.modified = 1,
-@@ -76,7 +80,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = CHANNEL_SCAN_INDEX_Y,
- 	}, {
- 		.type = IIO_MAGN,
- 		.modified = 1,
-@@ -86,7 +89,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = CHANNEL_SCAN_INDEX_Z,
- 	}
- };
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index c086f33..dec814a 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -22,4 +22,19 @@ config SENSORS_HMC5843_I2C
+ 	  - hmc5843_core (core functions)
+ 	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
  
-@@ -127,8 +129,8 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
- 		msleep_interruptible(poll_value * 2);
- 
- 		report_id =
--			magn_state->magn[chan->scan_index].report_id;
--		address = magn_3d_addresses[chan->scan_index];
-+			magn_state->magn[chan->address].report_id;
-+		address = magn_3d_addresses[chan->address];
- 		if (report_id >= 0)
- 			*val = sensor_hub_input_attr_get_raw_value(
- 				magn_state->common_attributes.hsdev,
-@@ -221,8 +223,8 @@ static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
- 	dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
- 	if (atomic_read(&magn_state->common_attributes.data_ready))
- 		hid_sensor_push_data(indio_dev,
--				magn_state->magn_val,
--				sizeof(magn_state->magn_val));
-+				magn_state->iio_vals,
-+				sizeof(magn_state->iio_vals));
- 
- 	return 0;
- }
-@@ -236,52 +238,114 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
- 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
- 	struct magn_3d_state *magn_state = iio_priv(indio_dev);
- 	int offset;
--	int ret = -EINVAL;
-+	int ret = 0;
-+	u32 *iio_val = NULL;
- 
- 	switch (usage_id) {
- 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
- 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
- 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
--		offset = usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
--		magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
--						*(u32 *)raw_data;
--		ret = 0;
-+		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS)
-+				+ CHANNEL_SCAN_INDEX_X;
- 	break;
- 	default:
--		break;
-+		return -EINVAL;
- 	}
- 
-+	if (!!(iio_val = magn_state->magn_val_addr[offset]))
-+		*iio_val = *(u32 *)raw_data;
-+	else
-+		ret = -EINVAL;
++config SENSORS_HMC5843_SPI
++	tristate "Honeywell HMC5983 3-Axis Magnetometer (SPI)"
++	depends on SPI_MASTER
++	select SENSORS_HMC5843
++	select REGMAP_SPI
++	help
++	  Say Y here to add support for the Honeywell HMC5983 3-Axis Magnetometer
++	  (digital compass).
 +
- 	return ret;
- }
++	  This driver can also be compiled as a set of modules.
++	  If so, these modules will be created:
++	  - hmc5843_core (core functions)
++	  - hmc5843_spi (support for HMC5983)
++
++
+ endmenu
+diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
+index 65baf1c..33761a1 100644
+--- a/drivers/staging/iio/magnetometer/Makefile
++++ b/drivers/staging/iio/magnetometer/Makefile
+@@ -4,3 +4,4 @@
  
- /* Parse report which is specific to an usage id*/
- static int magn_3d_parse_report(struct platform_device *pdev,
- 				struct hid_sensor_hub_device *hsdev,
--				struct iio_chan_spec *channels,
-+				struct iio_chan_spec **channels,
-+				int *chan_count,
- 				unsigned usage_id,
- 				struct magn_3d_state *st)
- {
--	int ret;
- 	int i;
-+	int attr_count = 0;
+ obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
+ obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
++obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+new file mode 100644
+index 0000000..62964a4
+--- /dev/null
++++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+@@ -0,0 +1,73 @@
++/*
++ * SPI driver for hmc5983
++ *
++ * Copyright (C) Josef Gajdusek <atx@atx.name>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * */
 +
-+	/* Scan for each usage attribute supported */
-+	for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
-+		int status;
-+		u32 address = magn_3d_addresses[i];
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/iio/iio.h>
 +
-+		/* Check if usage attribute exists in the sensor hub device */
-+		status = sensor_hub_input_get_attribute_info(hsdev,
-+			HID_INPUT_REPORT,
-+			usage_id,
-+			address,
-+			&(st->magn[i]));
-+		if (!status)
-+			attr_count++;
-+	}
- 
--	for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
--		ret = sensor_hub_input_get_attribute_info(hsdev,
--				HID_INPUT_REPORT,
--				usage_id,
--				HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS + i,
--				&st->magn[CHANNEL_SCAN_INDEX_X + i]);
--		if (ret < 0)
--			break;
--		magn_3d_adjust_channel_bit_mask(channels,
--				CHANNEL_SCAN_INDEX_X + i,
--				st->magn[CHANNEL_SCAN_INDEX_X + i].size);
-+	if (attr_count <= 0) {
-+		dev_err(&pdev->dev,
-+			"failed to find any supported usage attributes in report\n");
-+		return  -EINVAL;
- 	}
--	dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
++#include "hmc5843.h"
 +
-+	dev_dbg(&pdev->dev, "magn_3d Found %d usage attributes\n",
-+			attr_count);
-+	dev_dbg(&pdev->dev, "magn_3d X: %x:%x Y: %x:%x Z: %x:%x\n",
- 			st->magn[0].index,
- 			st->magn[0].report_id,
- 			st->magn[1].index, st->magn[1].report_id,
- 			st->magn[2].index, st->magn[2].report_id);
- 
-+	/* Setup IIO channel array */
-+	*channels = devm_kcalloc(&pdev->dev, attr_count,
-+				sizeof(struct iio_chan_spec),
-+				GFP_KERNEL);
-+	if (!*channels) {
-+		dev_err(&pdev->dev,
-+			"failed to allocate space for iio channels\n");
-+		return -ENOMEM;
-+	}
++static struct regmap_config hmc5843_spi_regmap_config = {
++		.reg_bits = 8,
++		.val_bits = 8,
 +
-+	st->iio_vals = devm_kcalloc(&pdev->dev, attr_count,
-+				sizeof(u32),
-+				GFP_KERNEL);
-+	if (!st->iio_vals) {
-+		dev_err(&pdev->dev,
-+			"failed to allocate space for iio values array\n");
-+		return -ENOMEM;
-+	}
++		.rd_table = &hmc5843_readable_table,
++		.wr_table = &hmc5843_writable_table,
++		.volatile_table = &hmc5843_volatile_table,
 +
-+	for (i = 0, *chan_count = 0;
-+	i < MAGN_3D_CHANNEL_MAX && *chan_count < attr_count;
-+	i++){
-+		if (st->magn[i].index >= 0) {
-+			/* Setup IIO channel struct */
-+			(*channels[*chan_count]) = magn_3d_channels[i];
-+			(*channels[*chan_count]).scan_index = *chan_count;
-+			(*channels[*chan_count]).address = i;
++		/* Autoincrement address pointer */
++		.read_flag_mask = 0xc0,
 +
-+			/* Set magn_val_addr to iio value address */
-+			st->magn_val_addr[i] = &(st->iio_vals[*chan_count]);
-+			magn_3d_adjust_channel_bit_mask(*channels,
-+							*chan_count,
-+							st->magn[i].size);
-+			(*chan_count)++;
-+		}
-+	}
++		.cache_type = REGCACHE_RBTREE,
++};
 +
-+	if (*chan_count <= 0) {
-+		dev_err(&pdev->dev,
-+			"failed to find any magnetic channels setup\n");
-+		return -EINVAL;
-+	}
++static int hmc5843_spi_probe(struct spi_device *spi)
++{
++	int ret;
 +
-+	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
-+			*chan_count);
-+
- 	st->scale_precision = hid_sensor_format_scale(
- 				HID_USAGE_SENSOR_COMPASS_3D,
- 				&st->magn[CHANNEL_SCAN_INDEX_X],
-@@ -299,7 +363,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
- 			st->common_attributes.sensitivity.report_id);
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- /* Function to initialize the processing for usage id */
-@@ -311,6 +375,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
- 	struct magn_3d_state *magn_state;
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 	struct iio_chan_spec *channels;
-+	int chan_count = 0;
- 
- 	indio_dev = devm_iio_device_alloc(&pdev->dev,
- 					  sizeof(struct magn_3d_state));
-@@ -331,22 +396,16 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
--			   GFP_KERNEL);
--	if (!channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
--		return -ENOMEM;
--	}
--
--	ret = magn_3d_parse_report(pdev, hsdev, channels,
-+	ret = magn_3d_parse_report(pdev, hsdev,
-+				&channels, &chan_count,
- 				HID_USAGE_SENSOR_COMPASS_3D, magn_state);
- 	if (ret) {
--		dev_err(&pdev->dev, "failed to setup attributes\n");
--		goto error_free_dev_mem;
-+		dev_err(&pdev->dev, "failed to parse report\n");
++	spi->mode = SPI_MODE_3;
++	spi->max_speed_hz = 8000000;
++	spi->bits_per_word = 8;
++	ret = spi_setup(spi);
++	if (ret)
 +		return ret;
- 	}
- 
- 	indio_dev->channels = channels;
--	indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
-+	indio_dev->num_channels = chan_count;
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->info = &magn_3d_info;
- 	indio_dev->name = name;
-@@ -356,7 +415,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
- 		NULL, NULL);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
--		goto error_free_dev_mem;
-+		return ret;
- 	}
- 	atomic_set(&magn_state->common_attributes.data_ready, 0);
- 	ret = hid_sensor_setup_trigger(indio_dev, name,
-@@ -390,8 +449,6 @@ error_remove_trigger:
- 	hid_sensor_remove_trigger(&magn_state->common_attributes);
- error_unreg_buffer_funcs:
- 	iio_triggered_buffer_cleanup(indio_dev);
--error_free_dev_mem:
--	kfree(indio_dev->channels);
- 	return ret;
- }
- 
-@@ -406,7 +463,6 @@ static int hid_magn_3d_remove(struct platform_device *pdev)
- 	iio_device_unregister(indio_dev);
- 	hid_sensor_remove_trigger(&magn_state->common_attributes);
- 	iio_triggered_buffer_cleanup(indio_dev);
--	kfree(indio_dev->channels);
- 
- 	return 0;
- }
++
++	return hmc5843_common_probe(&spi->dev,
++			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
++			HMC5983_ID);
++}
++
++static int hmc5843_spi_remove(struct spi_device *spi)
++{
++	return hmc5843_common_remove(&spi->dev);
++}
++
++static const struct spi_device_id hmc5843_id[] = {
++	{ "hmc5983", HMC5983_ID },
++	{ }
++};
++
++static struct spi_driver hmc5843_driver = {
++		.driver = {
++				.name = "hmc5843",
++				.pm = HMC5843_PM_OPS,
++				.owner = THIS_MODULE,
++		},
++		.id_table = hmc5843_id,
++		.probe = hmc5843_spi_probe,
++		.remove = hmc5843_spi_remove,
++};
++
++module_spi_driver(hmc5843_driver);
++
++MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
++MODULE_DESCRIPTION("HMC5983 SPI driver");
++MODULE_LICENSE("GPL");
 -- 
-1.9.3
+1.8.5.5
+
