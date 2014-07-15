@@ -1,44 +1,112 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:22449 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754038AbaGOSkg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 15 Jul 2014 14:40:36 -0400
-Message-ID: <53C576F6.2070604@linux.intel.com>
-Date: Tue, 15 Jul 2014 11:46:14 -0700
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <tremyfr@yahoo.fr>
+Message-ID: <53C58BBE.5080305@yahoo.fr>
+Date: Tue, 15 Jul 2014 22:14:54 +0200
+From: trem <tremyfr@yahoo.fr>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH 2/3] iio:kxcjk-1013: Fix endianness in scan_type
-References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net> <1405370318-19699-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405370318-19699-3-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Antonio Borneo <borneo.antonio@gmail.com>,
+ Philippe Reynes <tremyfr@yahoo.fr>,
+ linux-iio@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ armadeus-forum@lists.sourceforge.net, devicetree@vger.kernel.org,
+ julien.boibessot@free.fr, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: add support of the max5821
+References: <1405359159-12379-1-git-send-email-tremyfr@yahoo.fr> <53C43BD6.9030102@kernel.org> <CAAj6DX2Tnt6=CuNAhkq_D=pknbEv=j7tf7Dtm7aoCm3gMu+RQw@mail.gmail.com> <c0929d8c-7835-4522-9280-6c1c422df035@email.android.com>
+In-Reply-To: <c0929d8c-7835-4522-9280-6c1c422df035@email.android.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/14/2014 01:38 PM, Peter Meerwald wrote:
-> driver uses i2c_smbus_read_word_data() to the data in the trigger handler and hence
-> already does endianness conversion; the I2C chip has data in little endian, but the
-> value is provides in CPU endianness
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->   drivers/iio/accel/kxcjk-1013.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index a11588c..ea96170 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -466,7 +466,7 @@ static const struct attribute_group kxcjk1013_attrs_group = {
->   		.realbits = 12,						\
->   		.storagebits = 16,					\
->   		.shift = 4,						\
-> -		.endianness = IIO_LE,					\
-> +		.endianness = IIO_CPU,					\
->   	},								\
->   }
+Hi all,
+
+Thanks for those feedback, as usual, very fast and efficient.
+I'll send a v2 as soon as I've integrated all your remarks.
+
+Best regards,
+Philippe
+
+
+
+On 15/07/14 11:21, Jonathan Cameron wrote:
 >
 >
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> On July 15, 2014 9:56:17 AM GMT+01:00, Antonio Borneo<borneo.antonio@gmail.com>  wrote:
+>> On Tue, Jul 15, 2014 at 4:21 AM, Jonathan Cameron<jic23@kernel.org>
+>> wrote:
+>>> On 14/07/14 18:32, Philippe Reynes wrote:
+>>
+>> Hi Jonathan,
+>>
+>> regarding your comment below
+>>
+>> <snip>
+>>>> +static int max5821_get_value(struct iio_dev *indio_dev,
+>>>> +                            int *val, int channel)
+>>>> +{
+>>>> +       struct max5821_data *data = iio_priv(indio_dev);
+>>>> +       struct i2c_client *client = data->client;
+>>>> +       u8 outbuf[1];
+>>>> +       u8 inbuf[2];
+>>>> +       int ret;
+>>>> +
+>>>> +       switch (channel) {
+>>>> +       case 0:
+>>>> +               outbuf[0] = MAX5821_READ_DAC_A_COMMAND;
+>>>> +               break;
+>>>> +       case 1:
+>>>> +               outbuf[0] = MAX5821_READ_DAC_B_COMMAND;
+>>>> +               break;
+>>>> +       default:
+>>>> +               return -EINVAL;
+>>>> +       }
+>>>> +
+>>>> +       ret = i2c_master_send(client, outbuf, 1);
+>>>> +       if (ret<  0)
+>>>> +               return ret;
+>>>> +       else if (ret != 1)
+>>>> +               return -EIO;
+>>>> +
+>>>> +       ret = i2c_master_recv(client, inbuf, 2);
+>>>> +       if (ret<  0)
+>>>> +               return ret;
+>>>> +       else if (ret != 2)
+>>>> +               return -EIO;
+>>>
+>>> It somehow always feels like this error handling should be in the
+>>> i2c core.  Just how often does it make sense to receive too little
+>>> from and i2c transaction?  Anyhow, such is life ;)
+>>
+>> You wrote:
+>>
+>>> You could set this up to use i2c_transfer instead of separating it
+>> like
+>>> this.
+>>
+>> Accordingly to:
+>> - Documentation/i2c/i2c-protocol
+>> - Documentation/i2c/writing-clients
+>> a sequence of i2c_master_send() and i2c_master_recv() is not fully
+>> equivalent to a single i2c_transfer(); in latter case the transactions
+>> would be combined and the stop bit in between would be removed.
+>>
+>> I checked the datasheet of max5821 and it reports that
+>> "Each transmit sequence is framed by a START (S) or REPEATED START
+>> (Sr) condition and a STOP (P) condition."
+>> So combined transaction should work with this device.
+>>
+>> But we have few I2C controllers that cannot send combined transactions
+>> and would return error.
+>> E.g. in drivers/i2c/busses/i2c-powermac.c
+>> i2c_powermac_master_xfer() returns -EOPNOTSUPP when num!=1.
+>>
+>> What is the proper way to address this:
+>> - use combine transactions, since supported by majority of (but not
+>> all) controllers?
+>> or
+>> - keep individual transactions, if not strictly required by the
+>> protocol of the I2C device?
+> I would go with working on the vast majority unless we have a user actually using such
+>   an i2c controller.
+>>
+>> Thanks,
+>> Antonio
+>
