@@ -1,75 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:52908 "EHLO gloria.sntech.de"
+Received: from ns.pmeerw.net ([87.118.82.44]:37966 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933711AbaGWWJF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Jul 2014 18:09:05 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?utf-8?B?ZWRkaWUo6JSh5p6rKQ==?= <cf@rock-chips.com>,
-	huangtao@rock-chips.com
-Subject: [PATCH v6 2/2] dt-bindings: document Rockchip saradc
-Date: Wed, 23 Jul 2014 23:24:37 +0200
-Message-ID: <8132020.MqcOnlblHg@diego>
-In-Reply-To: <1984475.34C1XMW1q3@diego>
-References: <1984475.34C1XMW1q3@diego>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+	id S1757871AbaGOGzL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 15 Jul 2014 02:55:11 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH v2 3/3] iio:bma180: Fix scale factors to report correct acceleration units
+Date: Tue, 15 Jul 2014 08:55:05 +0200
+Message-Id: <1405407305-32759-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This add the necessary binding documentation for the saradc found in all recent
-processors from Rockchip.
+The userspace interface for acceleration sensors is documented as using
+m/s^2 units [Documentation/ABI/testing/sysfs-bus-iio]
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+The fullscale raw values for the BMA80 corresponds to -/+ 1, 1.5, 2, etc G
+depending on the selected mode.
+
+The scale table was converting to G rather than m/s^2.
+Change the scaling table to match the documented interface.
+
+See commit 71702e6e, iio: mma8452: Use correct acceleration units,
+for a related fix.
+
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 ---
-changes since v5:
-- remove clock-frquency property as described in patch 1/2
+ drivers/iio/accel/bma180.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- .../bindings/iio/adc/rockchip-saradc.txt           | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-new file mode 100644
-index 0000000..5d3ec1d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -0,0 +1,24 @@
-+Rockchip Successive Approximation Register (SAR) A/D Converter bindings
-+
-+Required properties:
-+- compatible: Should be "rockchip,saradc"
-+- reg: physical base address of the controller and length of memory mapped
-+       region.
-+- interrupts: The interrupt number to the cpu. The interrupt specifier format
-+              depends on the interrupt controller.
-+- clocks: Must contain an entry for each entry in clock-names.
-+- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk" for
-+               the peripheral clock.
-+- vref-supply: The regulator supply ADC reference voltage.
-+- #io-channel-cells: Should be 1, see ../iio-bindings.txt
-+
-+Example:
-+	saradc: saradc@2006c000 {
-+		compatible = "rockchip,saradc";
-+		reg = <0x2006c000 0x100>;
-+		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
-+		clock-names = "saradc", "apb_pclk";
-+		#io-channel-cells = <1>;
-+		vref-supply = <&vcc18>;
-+	};
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index a7e68c8..28388bb 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -68,13 +68,13 @@
+ /* Defaults values */
+ #define BMA180_DEF_PMODE	0
+ #define BMA180_DEF_BW		20
+-#define BMA180_DEF_SCALE	250
++#define BMA180_DEF_SCALE	2452
+ 
+ /* Available values for sysfs */
+ #define BMA180_FLP_FREQ_AVAILABLE \
+ 	"10 20 40 75 150 300"
+ #define BMA180_SCALE_AVAILABLE \
+-	"0.000130 0.000190 0.000250 0.000380 0.000500 0.000990 0.001980"
++	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
+ 
+ struct bma180_data {
+ 	struct i2c_client *client;
+@@ -94,7 +94,7 @@ enum bma180_axis {
+ };
+ 
+ static int bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+-static int scale_table[] = { 130, 190, 250, 380, 500, 990, 1980 };
++static int scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+ 
+ static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
+ {
 -- 
-1.9.0
-
+1.9.1
 
