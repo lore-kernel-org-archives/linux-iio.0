@@ -1,30 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37243 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754231AbaGHWlg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jul 2014 18:41:36 -0400
-Date: Tue, 8 Jul 2014 15:46:01 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.16 - set 3
-Message-ID: <20140708224601.GA18942@kroah.com>
-References: <53BC5543.4040806@kernel.org>
+Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:37377 "EHLO
+	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932801AbaGPNGl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jul 2014 09:06:41 -0400
+Date: Wed, 16 Jul 2014 15:06:36 +0200
+From: Josef Gajdusek <atx@atx.name>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com, lars@metafoo.de
+Subject: [PATCH v4 (staging-next) 0/5] staging:iio:hmc5843: Few adjustments
+ and support for hmc5983
+Message-ID: <20140716130635.GA3315@dashie>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <53BC5543.4040806@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 08, 2014 at 09:32:03PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 6b64168de843b16e96a22f9e98c6afc92ee1da71:
-> 
->   Merge tag 'iio-fixes-for-3.16b' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2014-06-29 09:43:23 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.16c
+This patch series modifies the hmc5843 driver to support the hmc5983 i2c and
+spi interfaces.
 
-Pulled and pushed out, thanks.
+v2:
+	* Reverted the changed order of iio unregister and setting hmc mode to sleep
 
-greg k-h
+v3:
+	* Fixed bug introduced in the first patch
+	* Readded few comment lines which have gone missing in the hmc5843.c ->
+	  hmc5843_core.c move
+
+v4: 
+    * Changes suggested by Lars in https://lkml.org/lkml/2014/7/14/968
+	  * The i2c and spi drivers are now user-selectable with the core driver
+	    being selected automatically
+	  * The regmap_config structs in both _spi and _i2c files are now static
+	  * The iio_dev allocation is now done in the common function
+	  * pm ops are now defined in the header file and the same definition is
+	    shared between both interface-specific drivers
+	* regmap tables in hmc5843.h are not longer static (this fixed bunch of 
+	  variable not used warnings)
+
+Rebased v4 on top of staging-next
+
+Josef Gajdusek (5):
+  staging:iio:hmc5843: Added regmap support
+  staging:iio:hmc5843: Split hmc5843.c to multiple files
+  staging:iio:hmc5843: register <-> value arrays now can have different
+    lengths
+  staging:iio:hmc5843: Add support for i2c hmc5983
+  staging:iio:hmc5843: Add support for spi hmc5983
+
+ drivers/staging/iio/magnetometer/Kconfig        |  30 +-
+ drivers/staging/iio/magnetometer/Makefile       |   4 +-
+ drivers/staging/iio/magnetometer/hmc5843.c      | 652 ------------------------
+ drivers/staging/iio/magnetometer/hmc5843.h      |  86 ++++
+ drivers/staging/iio/magnetometer/hmc5843_core.c | 638 +++++++++++++++++++++++
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c  |  74 +++
+ drivers/staging/iio/magnetometer/hmc5843_spi.c  |  73 +++
+ 7 files changed, 900 insertions(+), 657 deletions(-)
+ delete mode 100644 drivers/staging/iio/magnetometer/hmc5843.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843.h
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_core.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_i2c.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
+
+-- 
+1.8.5.5
+
