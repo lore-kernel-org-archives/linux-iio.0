@@ -1,106 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f47.google.com ([74.125.82.47]:48927 "EHLO
-	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932951AbaGPOl7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jul 2014 10:41:59 -0400
-Received: by mail-wg0-f47.google.com with SMTP id b13so972111wgh.18
-        for <linux-iio@vger.kernel.org>; Wed, 16 Jul 2014 07:41:56 -0700 (PDT)
-Received: from [10.32.51.161] (ip65.parkeon.com. [213.152.31.65])
-        by mx.google.com with ESMTPSA id ft17sm40189254wjc.14.2014.07.16.07.41.55
-        for <linux-iio@vger.kernel.org>
-        (version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
-        Wed, 16 Jul 2014 07:41:55 -0700 (PDT)
-Message-ID: <53C68F32.9050407@parkeon.com>
-Date: Wed, 16 Jul 2014 16:41:54 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
+Received: from smtp-out-125.synserver.de ([212.40.185.125]:1052 "EHLO
+	smtp-out-125.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759279AbaGPLOV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jul 2014 07:14:21 -0400
+Message-ID: <53C65E8F.2080708@metafoo.de>
+Date: Wed, 16 Jul 2014 13:14:23 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-Subject: Accelerometer events
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Jonathan Cameron <jic23@kernel.org>,
+	Himangi Saraogi <himangi774@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+CC: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: question regarding drivers/staging/iio/adc/ad7280a.c
+References: <CAB78YHwneVuVBPujeKE=rEygvtyn=VvtLtd75+pvwqxPxYcB6g@mail.gmail.com> <53C5656F.9030200@kernel.org>
+In-Reply-To: <53C5656F.9030200@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+On 07/15/2014 07:31 PM, Jonathan Cameron wrote:
+> On 14/07/14 21:31, Himangi Saraogi wrote:
+>> Hi,
+>>
+>> The code seems to have a memory leak. The function ad7280_attr_init
+>> calls kasprintf a number of times, which calls kmalloc (or more
+>> precisely kmalloc_track_caller), but this data does not ever seem to
+>> be freed. I propose to introduce a devm_  version of kasprintf, which
+>> will be useful for other files also. I am not very sure that will it
+>> be useful to introduce a bunch of kfrees, just to remove the memory
+>> leaks immediately, but I think it would be safer just to devm
+>> everything, so then one is sure that everything is freed as it should
+>> be, in the right order.
+>>
+> The question here is whether such a memory leak squashing would be
+> worth applying to stable.  Personally I'd go with no. In which case
+> feel free to fix it via the introduction of a devm version.
 
-I am in the process of adding events support to the mma8452 driver 
-(patches will be forthcoming when cooked a little more).
+devm is probably fine here.
 
-However I have a few questions.
+The long term fix should be to switch the driver to use 
+iio_chan_spec_ext_info infrastructure which will handle the allocation and 
+freeing internally in the IIO framework.
 
-The hardware can generate an interrupt when the absolute value of the 
-high pass filtered acceleration exceeds a configurable threshold.
-This is called "transient detection" in the datasheet.
-There is only a single threshold but the interrupt can be enabled or 
-disabled for each axis.
+- Lars
 
-So I define this as:
-static const struct iio_event_spec mma8452_transient_event[] = {
-     {
-         .type = IIO_EV_TYPE_MAG,
-         .dir = IIO_EV_DIR_RISING,
-         .mask_separate = BIT(IIO_EV_INFO_ENABLE),
-         .mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
-     },
-};
-
-That causes the following sysfs entries to be created:
-# ls -l /sys/bus/iio/devices/iio:device0/events
--rw-r--r-- 1 root root 4096 Jul 16 13:25 in_accel_mag_rising_value
--rw-r--r-- 1 root root 4096 Jul 16 13:25 in_accel_x_mag_rising_en
--rw-r--r-- 1 root root 4096 Jul 16 13:25 in_accel_y_mag_rising_en
--rw-r--r-- 1 root root 4096 Jul 16 13:26 in_accel_z_mag_rising_en
-
-IE one enable switch per axis and one threshold (as expected).
-
-However Documentation/ABI/testing/sysfs-bus-iio seems to indicate that 
-the threshold values
-should have raw or input variants.  [ 
-/sys/.../events/in_accel_raw_mag_value]
-
-This part is handled by the core, not the driver. Is there a problem here?
-
-When raw values are used for the threshold, how is userspace to know the 
-conversion factor?
-In the case of the mma8452 it cannot use the current scale factor 
-available in
-     /sys/bus/iio/devices/iio\:device0/in_accel_scale
-because the transient detection is always configured using 8G/127 units, 
-regardless of the full
-scale value (2G, 4G, 8G) selected for measurements.
-
-Does this mean there should be another in_accel_scale in the events 
-sysfs subdirectory?
-
-My understanding of "rising"/"falling" is the crossing over / under the 
-threshold.
-However this hardware can only generate interrupts for exceeding the 
-threshold (for magnitude)
-It can however determine the sign of the acceleration (+ve or -ve) when 
-this occurs - how should
-this information be sent as an event?
-I could use the "direction" attribute supplied to IIO_UNMOD_EVENT_CODE 
-bit this seems to be an abuse.
-
-All this transient detection part works with high pass filtered data 
-(and the filter frequency is
-configurable). There is no mention of high pass filters in the ABI, only 
-low pass. So how should this
-be handled?
-
-Finally I have been using the example userspace code in 
-drivers/staging/Doc/ iio_event_monitor.c
-But that does
-     #include <linux/iio/events.h>
-
-Which is not exported by the kernel in include/uapi - is this a 
-problem?  (Easy enough to hack around for testing
-but if user space code is supposed to be using these interfaces...)
-
-
-NB: for the moment I am doing this on 3.13 (I will update to latest 
-mainline soon) but I haven't seen
-anything in the latest git that affects the above.
-
-Regards,
-
-Martin
