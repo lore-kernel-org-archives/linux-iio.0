@@ -1,83 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:55028 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755218AbaGQK34 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 06:29:56 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Richard Weinberger <richard@nod.at>
-Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
-Date: Thu, 17 Jul 2014 12:28:28 +0200
-Message-ID: <8453588.VVyODXRso0@wuerfel>
-In-Reply-To: <53C796E1.8080708@nod.at>
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C796E1.8080708@nod.at>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Received: from ns.pmeerw.net ([87.118.82.44]:41228 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934637AbaGPSdH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 14:33:07 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 12/13] iio:bma180: Implement _available sysfs attribute dynamically
+Date: Wed, 16 Jul 2014 20:32:55 +0200
+Message-Id: <1405535576-26482-13-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thursday 17 July 2014 11:26:57 Richard Weinberger wrote:
-> Am 17.07.2014 11:20, schrieb Arnd Bergmann:
-> > On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
-> >>                                          gfp_t gfp_mask, unsigned int order);
-> >>  extern void devm_free_pages(struct device *dev, unsigned long addr);
-> >>  
-> >> +#ifdef CONFIG_HAS_IOMEM
-> >>  void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
-> >> +#elif defined(CONFIG_COMPILE_TEST)
-> >> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
-> >> +                                               struct resource *res)
-> >> +{
-> >> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-> >> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
-> >> +}
-> >> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
-> >>  
-> >>  /* allows to add/remove a custom action to devres stack */
-> > 
-> > To be honest, I think it's a bad idea to introduce wrappers functions
-> > that are only available when CONFIG_COMPILE_TEST is set.
-> > 
-> > COMPILE_TEST is a great tool in general, but it has its limits.
-> > In particular, the case for !CONFIG_IOMEM is completely obscure
-> > and we won't find any bugs by allowing more drivers to be built
-> > in those configurations, but attempting to do it would cause
-> > endless churn by changing each instance of 'depends on HAS_IOMEM'
-> > to 'depends on HAS_IOMEM || COMPILE_TEST'.
-> > 
-> > Note that s390 no has gained support for IOMEM, tile has it most
-> > of the time (when PCI is enabled, so you get it in half the
-> > test builds already), score should set HAS_IOMEM and doesn't
-> > even have public compilers, and uml doesn't even compile in
-> > latest mainline. Nothing else ever sets NO_IOMEM.
-> 
-> Huh? UML (v3.16-rc5-143-gb6603fe) builds fine here. What build issue are you facing?
+makes it easier to add more chip variants and removes redundancy:
+scales and frequencies are now stated just once
 
-This is what I got upon trying earlier. I have not attempted to look into
-why this is happening. Note this is on linux-next from yesterday,
-not mainline as I incorrectly stated above.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 54 ++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 43 insertions(+), 11 deletions(-)
 
-In file included from ../arch/um/include/asm/fixmap.h:58:0,
-                 from ../arch/um/include/asm/pgtable.h:11,
-                 from ../include/linux/mm.h:51,
-                 from ../kernel/uid16.c:6:
-../include/asm-generic/fixmap.h: In function 'fix_to_virt':
-../include/asm-generic/fixmap.h:31:2: error: size of unnamed array is negative
-  BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 6e940b0..9fbc81f 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -83,12 +83,6 @@ struct bma180_part_info {
+ #define BMA180_DEF_BW		20
+ #define BMA180_DEF_SCALE	2452
+ 
+-/* Available values for sysfs */
+-#define BMA180_FLP_FREQ_AVAILABLE \
+-	"10 20 40 75 150 300"
+-#define BMA180_SCALE_AVAILABLE \
+-	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
+-
+ struct bma180_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *trig;
+@@ -347,13 +341,51 @@ err:
+ 	dev_err(&data->client->dev, "failed to disable the chip\n");
+ }
+ 
+-static IIO_CONST_ATTR(in_accel_filter_low_pass_3db_frequency_available,
+-		BMA180_FLP_FREQ_AVAILABLE);
+-static IIO_CONST_ATTR(in_accel_scale_available, BMA180_SCALE_AVAILABLE);
++static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
++				 bool micros)
++{
++	size_t len = 0;
++	int i;
++
++	for (i = 0; i < n; i++) {
++		if (!vals[i])
++			continue;
++		len += scnprintf(buf + len, PAGE_SIZE - len,
++			micros ? "0.%06d " : "%d ", vals[i]);
++	}
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t bma180_show_filter_freq_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
++
++	return bma180_show_avail(buf, data->part_info->bw_table,
++		data->part_info->num_bw, false);
++}
++
++static ssize_t bma180_show_scale_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
++
++	return bma180_show_avail(buf, data->part_info->scale_table,
++		data->part_info->num_scales, true);
++}
++
++static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
++	S_IRUGO, bma180_show_filter_freq_avail, NULL, 0);
++
++static IIO_DEVICE_ATTR(in_accel_scale_available,
++	S_IRUGO, bma180_show_scale_avail, NULL, 0);
+ 
+ static struct attribute *bma180_attributes[] = {
+-	&iio_const_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
+-	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
++	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.
++		dev_attr.attr,
++	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+-- 
+1.9.1
 
-
-	Arnd
