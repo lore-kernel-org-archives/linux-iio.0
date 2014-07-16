@@ -1,157 +1,89 @@
-Return-Path: <atx@atalax.net>
-Date: Wed, 16 Jul 2014 15:08:27 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: [PATCH v4 (staging-next) 3/5] staging:iio:hmc5843: register <->
- value arrays now can have different lengths
-Message-ID: <20140716130827.GD3315@dashie>
-References: <20140716130635.GA3315@dashie>
+Return-Path: <reyad.attiyat@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140716130635.GA3315@dashie>
+In-Reply-To: <53C59F78.8060009@linux.intel.com>
+References: <1404934213-2733-1-git-send-email-reyad.attiyat@gmail.com>
+ <53BD9BD5.5030204@linux.intel.com> <CA+BWVUSLtG9pH245ofyGsrST5H_5W_EbvOXZ_YkCxmg4DX09_A@mail.gmail.com>
+ <53C59F78.8060009@linux.intel.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Tue, 15 Jul 2014 22:38:27 -0500
+Message-ID: <CA+BWVUQWKSKxDqMvGwAzUcnqBotPFkWD=PsjFC3qHpvo_=xYtw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] iio: Add support for rotation from north
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Changed structure of struct hmc5843_chip_info to include length of translation
-arrays. Code previously using #defined constant has been changed accordingly.
-This allows to integrate devices which do have different amounts of available
-rates/scales.
+Hey Srinivas
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/hmc5843_core.c | 34 +++++++++++++++++--------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+Thanks for looking into this for me!
+I'll fix it up and resubmit soon.
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index bdeaf43..08fb0be 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -39,7 +39,6 @@
-  */
- #define HMC5843_RANGE_GAIN_OFFSET		0x05
- #define HMC5843_RANGE_GAIN_DEFAULT		0x01
--#define HMC5843_RANGE_GAINS			8
- #define HMC5843_RANGE_GAIN_MASK		0xe0
- 
- /* Device status */
-@@ -59,7 +58,6 @@
-  */
- #define HMC5843_RATE_OFFSET			0x02
- #define HMC5843_RATE_DEFAULT			0x04
--#define HMC5843_RATES				7
- #define HMC5843_RATE_MASK		0x1c
- 
- /* Device measurement configuration */
-@@ -69,15 +67,15 @@
- #define HMC5843_MEAS_CONF_MASK			0x03
- 
- /* Scaling factors: 10000000/Gain */
--static const int hmc5843_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5843_regval_to_nanoscale[] = {
- 	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
- };
- 
--static const int hmc5883_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883_regval_to_nanoscale[] = {
- 	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
- };
- 
--static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883l_regval_to_nanoscale[] = {
- 	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
- };
- 
-@@ -94,11 +92,11 @@ static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-  * 6		| 50			| 75
-  * 7		| Not used		| Not used
-  */
--static const int hmc5843_regval_to_samp_freq[7][2] = {
-+static const int hmc5843_regval_to_samp_freq[][2] = {
- 	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
- };
- 
--static const int hmc5883_regval_to_samp_freq[7][2] = {
-+static const int hmc5883_regval_to_samp_freq[][2] = {
- 	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
- 	{75, 0}
- };
-@@ -107,7 +105,9 @@ static const int hmc5883_regval_to_samp_freq[7][2] = {
- struct hmc5843_chip_info {
- 	const struct iio_chan_spec *channels;
- 	const int (*regval_to_samp_freq)[2];
-+	const int n_regval_to_samp_freq;
- 	const int *regval_to_nanoscale;
-+	const int n_regval_to_nanoscale;
- };
- 
- /* The lower two bits contain the current conversion mode */
-@@ -248,7 +248,7 @@ static ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
- 			data->variant->regval_to_samp_freq[i][1]);
-@@ -278,7 +278,7 @@ static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
- {
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		if (val == data->variant->regval_to_samp_freq[i][0] &&
- 			val2 == data->variant->regval_to_samp_freq[i][1])
- 			return i;
-@@ -307,7 +307,7 @@ static ssize_t hmc5843_show_scale_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"0.%09d ", data->variant->regval_to_nanoscale[i]);
- 
-@@ -327,7 +327,7 @@ static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
- 	if (val != 0)
- 		return -EINVAL;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		if (val2 == data->variant->regval_to_nanoscale[i])
- 			return i;
- 
-@@ -480,17 +480,29 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- 	[HMC5843_ID] = {
- 		.channels = hmc5843_channels,
- 		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
- 	},
- 	[HMC5883_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
- 	},
- 	[HMC5883L_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
- 	},
- };
- 
--- 
-1.8.5.5
+On Tue, Jul 15, 2014 at 4:39 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> Hi,
+>
+> Since you have only one attribute, it is working for you.
+> There is a dereference error in *channels.
+>
+> Check the attached diff, which will fix this.
+>
+> Thanks,
+> Srinivas
+>
+>
+> On 07/09/2014 03:12 PM, Reyad Attiyat wrote:
+>>
+>> Hey Srinivas,
+>>
+>> I did look into the panic you sent. I wasn't sure exactly what caused
+>> the NULL pointer.
+>> I tested it with out applying the last rotation from north patch, so
+>> no hid usages are found, my device only has rotation_from_north, and
+>> hid_parse_report() would return -EINVAL.
+>> I added another check to make sure a iio channel were set up, and
+>> return -EINVAL if not, but couldn't think of anything else.
+>>
+>> Could you test this version with dynamic debugging and see if it is
+>> finding any hid usage attributes.
+>> Any ideas what could cause this? I think I'm handling errors properly
+>> by returning what parse_report returns (-EINVAL or -ENOMEM) in probe
+>>
+>> Thanks,
+>> Reyad Attiyat
+>>
+>> On Wed, Jul 9, 2014 at 2:45 PM, Srinivas Pandruvada
+>> <srinivas.pandruvada@linux.intel.com> wrote:
+>>>
+>>> On 07/09/2014 12:30 PM, Reyad Attiyat wrote:
+>>>>
+>>>> This series of patches modifies magn-3d driver to handle the rotation
+>>>> from north usage. This is done by scanning the report and then building
+>>>> the iio arrays (vals and channels) dynamically.
+>>>>
+>>>> Changes from V4
+>>>> I use the address field of struct iio_chan_spec to hold the array index
+>>>> of the usage attribute. The scan_index field is generated when creating
+>>>> an iio channel.
+>>>>
+>>>> Reyad Attiyat (4):
+>>>>     iio: Documentation: Add documentation for rotation from north sensor
+>>>>       usage attributes
+>>>>     iio: types: Added support for rotation from north usage attributes
+>>>>     iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
+>>>>       iio channels
+>>>>     iio: hid-sensor-magn-3d: Add support for rotation from north
+>>>>
+>>>>    Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
+>>>>    drivers/iio/industrialio-core.c               |   4 +
+>>>>    drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199
+>>>> ++++++++++++++++++++------
+>>>>    include/linux/iio/types.h                     |   4 +
+>>>>    4 files changed, 245 insertions(+), 44 deletions(-)
+>>>>
+>>> Did you get chance to look at the cause of panic?
+>>>
+>>> Thanks,
+>>> Srinivas
+>
+>
