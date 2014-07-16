@@ -1,97 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f182.google.com ([209.85.214.182]:54857 "EHLO
-	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932539AbaGOI4S (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jul 2014 04:56:18 -0400
-MIME-Version: 1.0
-In-Reply-To: <53C43BD6.9030102@kernel.org>
-References: <1405359159-12379-1-git-send-email-tremyfr@yahoo.fr>
-	<53C43BD6.9030102@kernel.org>
-Date: Tue, 15 Jul 2014 16:56:17 +0800
-Message-ID: <CAAj6DX2Tnt6=CuNAhkq_D=pknbEv=j7tf7Dtm7aoCm3gMu+RQw@mail.gmail.com>
-Subject: Re: [PATCH] iio: add support of the max5821
-From: Antonio Borneo <borneo.antonio@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Philippe Reynes <tremyfr@yahoo.fr>, linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	armadeus-forum@lists.sourceforge.net, devicetree@vger.kernel.org,
-	julien.boibessot@free.fr
-Content-Type: text/plain; charset=UTF-8
+Received: from ns.pmeerw.net ([87.118.82.44]:41207 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934817AbaGPSdE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 14:33:04 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 03/13] iio:bma180: Enable use of device without IRQ
+Date: Wed, 16 Jul 2014 20:32:46 +0200
+Message-Id: <1405535576-26482-4-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 15, 2014 at 4:21 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 14/07/14 18:32, Philippe Reynes wrote:
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 54 +++++++++++++++++++++++++---------------------
+ 1 file changed, 29 insertions(+), 25 deletions(-)
 
-Hi Jonathan,
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index a077cc8..f5e26fb 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -529,7 +529,6 @@ static int bma180_probe(struct i2c_client *client,
+ {
+ 	struct bma180_data *data;
+ 	struct iio_dev *indio_dev;
+-	struct iio_trigger *trig;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+@@ -553,29 +552,31 @@ static int bma180_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bma180_info;
+ 
+-	trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
+-	if (!trig) {
+-		ret = -ENOMEM;
+-		goto err_chip_disable;
+-	}
++	if (client->irq > 0) {
++		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
++			indio_dev->id);
++		if (!data->trig) {
++			ret = -ENOMEM;
++			goto err_chip_disable;
++		}
+ 
+-	ret = devm_request_irq(&client->dev, client->irq,
+-			iio_trigger_generic_data_rdy_poll,
+-			IRQF_TRIGGER_RISING, BMA180_IRQ_NAME, trig);
+-	if (ret) {
+-		dev_err(&client->dev, "unable to request IRQ\n");
+-		goto err_trigger_free;
+-	}
++		ret = devm_request_irq(&client->dev, client->irq,
++			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
++			BMA180_IRQ_NAME, data->trig);
++		if (ret) {
++			dev_err(&client->dev, "unable to request IRQ\n");
++			goto err_trigger_free;
++		}
+ 
+-	trig->dev.parent = &client->dev;
+-	trig->ops = &bma180_trigger_ops;
+-	iio_trigger_set_drvdata(trig, indio_dev);
+-	data->trig = trig;
+-	indio_dev->trig = trig;
++		data->trig->dev.parent = &client->dev;
++		data->trig->ops = &bma180_trigger_ops;
++		iio_trigger_set_drvdata(data->trig, indio_dev);
++		indio_dev->trig = data->trig;
+ 
+-	ret = iio_trigger_register(trig);
+-	if (ret)
+-		goto err_trigger_free;
++		ret = iio_trigger_register(data->trig);
++		if (ret)
++			goto err_trigger_free;
++	}
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 			bma180_trigger_handler, NULL);
+@@ -595,9 +596,10 @@ static int bma180_probe(struct i2c_client *client,
+ err_buffer_cleanup:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ err_trigger_unregister:
+-	iio_trigger_unregister(trig);
++	if (data->trig)
++		iio_trigger_unregister(data->trig);
+ err_trigger_free:
+-	iio_trigger_free(trig);
++	iio_trigger_free(data->trig);
+ err_chip_disable:
+ 	bma180_chip_disable(data);
+ 
+@@ -611,8 +613,10 @@ static int bma180_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	iio_trigger_unregister(data->trig);
+-	iio_trigger_free(data->trig);
++	if (data->trig) {
++		iio_trigger_unregister(data->trig);
++		iio_trigger_free(data->trig);
++	}
+ 
+ 	mutex_lock(&data->mutex);
+ 	bma180_chip_disable(data);
+-- 
+1.9.1
 
-regarding your comment below
-
-<snip>
->> +static int max5821_get_value(struct iio_dev *indio_dev,
->> +                            int *val, int channel)
->> +{
->> +       struct max5821_data *data = iio_priv(indio_dev);
->> +       struct i2c_client *client = data->client;
->> +       u8 outbuf[1];
->> +       u8 inbuf[2];
->> +       int ret;
->> +
->> +       switch (channel) {
->> +       case 0:
->> +               outbuf[0] = MAX5821_READ_DAC_A_COMMAND;
->> +               break;
->> +       case 1:
->> +               outbuf[0] = MAX5821_READ_DAC_B_COMMAND;
->> +               break;
->> +       default:
->> +               return -EINVAL;
->> +       }
->> +
->> +       ret = i2c_master_send(client, outbuf, 1);
->> +       if (ret < 0)
->> +               return ret;
->> +       else if (ret != 1)
->> +               return -EIO;
->> +
->> +       ret = i2c_master_recv(client, inbuf, 2);
->> +       if (ret < 0)
->> +               return ret;
->> +       else if (ret != 2)
->> +               return -EIO;
->
-> It somehow always feels like this error handling should be in the
-> i2c core.  Just how often does it make sense to receive too little
-> from and i2c transaction?  Anyhow, such is life ;)
-
-You wrote:
-
-> You could set this up to use i2c_transfer instead of separating it like
-> this.
-
-Accordingly to:
-- Documentation/i2c/i2c-protocol
-- Documentation/i2c/writing-clients
-a sequence of i2c_master_send() and i2c_master_recv() is not fully
-equivalent to a single i2c_transfer(); in latter case the transactions
-would be combined and the stop bit in between would be removed.
-
-I checked the datasheet of max5821 and it reports that
-"Each transmit sequence is framed by a START (S) or REPEATED START
-(Sr) condition and a STOP (P) condition."
-So combined transaction should work with this device.
-
-But we have few I2C controllers that cannot send combined transactions
-and would return error.
-E.g. in drivers/i2c/busses/i2c-powermac.c
-i2c_powermac_master_xfer() returns -EOPNOTSUPP when num!=1.
-
-What is the proper way to address this:
-- use combine transactions, since supported by majority of (but not
-all) controllers?
-or
-- keep individual transactions, if not strictly required by the
-protocol of the I2C device?
-
-Thanks,
-Antonio
