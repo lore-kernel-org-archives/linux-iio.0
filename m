@@ -1,147 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:14293 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756951AbaGQLX1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:23:27 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
-	jic23@kernel.org
-Subject: [PATCH 1/4 v2] iio: exyno-adc: use syscon for PMU register access
-Date: Thu, 17 Jul 2014 16:49:50 +0530
-Message-id: <1405595993-16661-2-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
-References: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:41222 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934923AbaGPSdG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 14:33:06 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 06/13] iio:bma180: Use bool instead of int for state
+Date: Wed, 16 Jul 2014 20:32:49 +0200
+Message-Id: <1405535576-26482-7-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch updates the IIO based ADC driver to use syscon and regmap
-APIs to access and use PMU registers instead of remapping the PMU
-registers in the driver.
-
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 ---
-Changes since v1:
-None
+ drivers/iio/accel/bma180.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
 
- drivers/iio/adc/exynos_adc.c |   29 ++++++++++++++++++++---------
- 1 file changed, 20 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index b63e882..60847ef 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -38,6 +38,8 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/regmap.h>
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 284598d..aa7566f 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -62,11 +62,8 @@
+ #define BMA180_LOW_NOISE	0x00
+ #define BMA180_LOW_POWER	0x03
  
- /* EXYNOS4412/5250 ADC_V1 registers definitions */
- #define ADC_V1_CON(x)		((x) + 0x00)
-@@ -79,11 +81,14 @@
+-#define BMA180_LOW_NOISE_STR	"low_noise"
+-#define BMA180_LOW_POWER_STR	"low_power"
+-
+ /* Defaults values */
+-#define BMA180_DEF_PMODE	0
++#define BMA180_DEF_PMODE	false
+ #define BMA180_DEF_BW		20
+ #define BMA180_DEF_SCALE	2452
  
- #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
- 
-+#define EXYNOS_ADCV1_PHY_OFFSET	0x0718
-+#define EXYNOS_ADCV2_PHY_OFFSET	0x0720
-+
- struct exynos_adc {
- 	struct exynos_adc_data	*data;
- 	struct device		*dev;
- 	void __iomem		*regs;
--	void __iomem		*enable_reg;
-+	struct regmap		*pmu_map;
- 	struct clk		*clk;
- 	struct clk		*sclk;
- 	unsigned int		irq;
-@@ -98,6 +103,7 @@ struct exynos_adc {
- struct exynos_adc_data {
- 	int num_channels;
- 	bool needs_sclk;
-+	int phy_offset;
- 
- 	void (*init_hw)(struct exynos_adc *info);
- 	void (*exit_hw)(struct exynos_adc *info);
-@@ -169,7 +175,7 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
- {
- 	u32 con1;
- 
--	writel(1, info->enable_reg);
-+	regmap_write(info->pmu_map, info->data->phy_offset, 1);
- 
- 	/* set default prescaler values and Enable prescaler */
- 	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-@@ -183,7 +189,7 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
- {
- 	u32 con;
- 
--	writel(0, info->enable_reg);
-+	regmap_write(info->pmu_map, info->data->phy_offset, 0);
- 
- 	con = readl(ADC_V1_CON(info->regs));
- 	con |= ADC_V1_CON_STANDBY;
-@@ -208,6 +214,7 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
- 
- static struct exynos_adc_data const exynos_adc_v1_data = {
- 	.num_channels	= MAX_ADC_V1_CHANNELS,
-+	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
- 
- 	.init_hw	= exynos_adc_v1_init_hw,
- 	.exit_hw	= exynos_adc_v1_exit_hw,
-@@ -219,7 +226,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
- {
- 	u32 con1, con2;
- 
--	writel(1, info->enable_reg);
-+	regmap_write(info->pmu_map, info->data->phy_offset, 1);
- 
- 	con1 = ADC_V2_CON1_SOFT_RESET;
- 	writel(con1, ADC_V2_CON1(info->regs));
-@@ -236,7 +243,7 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
- {
- 	u32 con;
- 
--	writel(0, info->enable_reg);
-+	regmap_write(info->pmu_map, info->data->phy_offset, 0);
- 
- 	con = readl(ADC_V2_CON1(info->regs));
- 	con &= ~ADC_CON_EN_START;
-@@ -271,10 +278,12 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
- 
- static struct exynos_adc_data const exynos_adc_v2_data = {
- 	__EXYNOS_ADC_V2_DATA
-+	.phy_offset = EXYNOS_ADCV2_PHY_OFFSET,
+@@ -80,10 +77,10 @@ struct bma180_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *trig;
+ 	struct mutex mutex;
+-	int sleep_state;
++	bool sleep_state;
+ 	int scale;
+ 	int bw;
+-	int pmode;
++	bool pmode;
+ 	char *buff;
  };
  
- static struct exynos_adc_data const exynos3250_adc_v2_data = {
- 	__EXYNOS_ADC_V2_DATA
-+	.phy_offset = EXYNOS_ADCV1_PHY_OFFSET,
- 	.needs_sclk = true,
+@@ -133,7 +130,7 @@ static int bma180_reset_intr(struct bma180_data *data)
+ 	return ret;
+ }
+ 
+-static int bma180_set_new_data_intr_state(struct bma180_data *data, int state)
++static int bma180_set_new_data_intr_state(struct bma180_data *data, bool state)
+ {
+ 	u8 reg_val = state ? BMA180_NEW_DATA_INT : 0x00;
+ 	int ret = i2c_smbus_write_byte_data(data->client, BMA180_CTRL_REG3,
+@@ -153,7 +150,7 @@ err:
+ 	return ret;
+ }
+ 
+-static int bma180_set_sleep_state(struct bma180_data *data, int state)
++static int bma180_set_sleep_state(struct bma180_data *data, bool state)
+ {
+ 	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_SLEEP, state);
+ 
+@@ -167,7 +164,7 @@ static int bma180_set_sleep_state(struct bma180_data *data, int state)
+ 	return 0;
+ }
+ 
+-static int bma180_set_ee_writing_state(struct bma180_data *data, int state)
++static int bma180_set_ee_writing_state(struct bma180_data *data, bool state)
+ {
+ 	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_EE_W, state);
+ 
+@@ -225,7 +222,7 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+ 	return -EINVAL;
+ }
+ 
+-static int bma180_set_pmode(struct bma180_data *data, int mode)
++static int bma180_set_pmode(struct bma180_data *data, bool mode)
+ {
+ 	u8 reg_val = mode ? BMA180_LOW_POWER : BMA180_LOW_NOISE;
+ 	int ret = bma180_set_bits(data, BMA180_TCO_Z, BMA180_MODE_CONFIG,
+@@ -275,10 +272,10 @@ static int bma180_chip_init(struct bma180_data *data)
+ 	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
+ 	if (ret)
+ 		goto err;
+-	ret = bma180_set_ee_writing_state(data, 1);
++	ret = bma180_set_ee_writing_state(data, true);
+ 	if (ret)
+ 		goto err;
+-	ret = bma180_set_new_data_intr_state(data, 0);
++	ret = bma180_set_new_data_intr_state(data, false);
+ 	if (ret)
+ 		goto err;
+ 	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
+@@ -303,11 +300,11 @@ err:
+ 
+ static void bma180_chip_disable(struct bma180_data *data)
+ {
+-	if (bma180_set_new_data_intr_state(data, 0))
++	if (bma180_set_new_data_intr_state(data, false))
+ 		goto err;
+-	if (bma180_set_ee_writing_state(data, 0))
++	if (bma180_set_ee_writing_state(data, false))
+ 		goto err;
+-	if (bma180_set_sleep_state(data, 1))
++	if (bma180_set_sleep_state(data, true))
+ 		goto err;
+ 
+ 	return;
+@@ -410,10 +407,7 @@ static const struct iio_info bma180_info = {
+ 	.driver_module		= THIS_MODULE,
  };
  
-@@ -437,10 +446,12 @@ static int exynos_adc_probe(struct platform_device *pdev)
- 	if (IS_ERR(info->regs))
- 		return PTR_ERR(info->regs);
+-static const char * const bma180_power_modes[] = {
+-	BMA180_LOW_NOISE_STR,
+-	BMA180_LOW_POWER_STR,
+-};
++static const char * const bma180_power_modes[] = { "low_noise", "low_power" };
  
--	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
--	if (IS_ERR(info->enable_reg))
--		return PTR_ERR(info->enable_reg);
-+	info->pmu_map = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
-+					"samsung,syscon-phandle");
-+	if (IS_ERR(info->pmu_map)) {
-+		dev_err(&pdev->dev, "syscon regmap lookup failed.\n");
-+		return PTR_ERR(info->pmu_map);
-+	}
+ static int bma180_get_power_mode(struct iio_dev *indio_dev,
+ 		const struct iio_chan_spec *chan)
+@@ -633,7 +627,7 @@ static int bma180_suspend(struct device *dev)
+ 	int ret;
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
+ 	mutex_lock(&data->mutex);
+-	ret = bma180_set_sleep_state(data, 1);
++	ret = bma180_set_sleep_state(data, true);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return ret;
+@@ -646,7 +640,7 @@ static int bma180_resume(struct device *dev)
+ 	int ret;
+ 
+ 	mutex_lock(&data->mutex);
+-	ret = bma180_set_sleep_state(data, 0);
++	ret = bma180_set_sleep_state(data, false);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return ret;
 -- 
-1.7.9.5
+1.9.1
 
