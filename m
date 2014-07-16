@@ -1,41 +1,83 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 7 Jul 2014 21:32:39 +0200 (CEST)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:41213 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934896AbaGPSdE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 14:33:04 -0400
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Josef Gajdusek <atx@atx.name>, linux-iio@vger.kernel.org,
-    devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/5] staging:iio:hmc5843: Added regmap support
-In-Reply-To: <8e31f2b8-25ed-450e-9b70-f9338f8f3c4b@email.android.com>
-Message-ID: <alpine.DEB.2.01.1407072131050.23477@pmeerw.net>
-References: <20140707185013.GA10383@dashie> <8e31f2b8-25ed-450e-9b70-f9338f8f3c4b@email.android.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 04/13] iio:bma180: Prefix remaining tables and functions with bma18_
+Date: Wed, 16 Jul 2014 20:32:47 +0200
+Message-Id: <1405535576-26482-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+and minor cleanups
 
-> >> > This patch changes hmc5843.c to use regmap. This provides
-> >transparent caching
-> >> > to the code as well as abstraction necessary to add support for
-> >SPI-based
-> >> > hmc5983.
-> >> >
-> >> > Signed-off-by: Josef Gajdusek <atx@atx.name>
-> >> Hi Josef,
-> >> 
-> >> A few little bits and pieces inline.
-> >> Peter, could you also take a look at this series?
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-I might manage to test the proposed code on a hmc5883l, probably until the 
-weekend; otherwise patches look good
-
-> >strange, I remember this causing issues. Now I am unable to
-> >reproduce them so it was probably something else. Do you want me to
-> >resend or can you apply without these lines swapped?
-> 
-> I am feeling lazy plus might not get to this until Saturday so resend.
-
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index f5e26fb..d7f34b4 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -49,7 +49,7 @@
+ #define BMA180_SMP_SKIP		BIT(0)
+ 
+ /* Bit masks for registers bit fields */
+-#define BMA180_RANGE		0x0e /* Range of measured accel values*/
++#define BMA180_RANGE		0x0e /* Range of measured accel values */
+ #define BMA180_BW		0xf0 /* Accel bandwidth */
+ #define BMA180_MODE_CONFIG	0x03 /* Config operation modes */
+ 
+@@ -93,8 +93,8 @@ enum bma180_axis {
+ 	AXIS_Z,
+ };
+ 
+-static int bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+-static int scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
++static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
++static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+ 
+ static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
+ {
+@@ -107,7 +107,7 @@ static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
+ 	ret = i2c_smbus_read_word_data(data->client, reg);
+ 	if (ret < 0)
+ 		dev_err(&data->client->dev,
+-			"failed to read accel_%c registers\n", 'x' + axis);
++			"failed to read accel_%c register\n", 'x' + axis);
+ 
+ 	return ret;
+ }
+@@ -185,8 +185,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
+ 	if (data->sleep_state)
+ 		return -EBUSY;
+ 
+-	for (i = 0; i < ARRAY_SIZE(bw_table); ++i) {
+-		if (bw_table[i] == val) {
++	for (i = 0; i < ARRAY_SIZE(bma180_bw_table); ++i) {
++		if (bma180_bw_table[i] == val) {
+ 			ret = bma180_set_bits(data,
+ 					BMA180_BW_TCS, BMA180_BW, i);
+ 			if (ret) {
+@@ -209,8 +209,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+ 	if (data->sleep_state)
+ 		return -EBUSY;
+ 
+-	for (i = 0; i < ARRAY_SIZE(scale_table); ++i)
+-		if (scale_table[i] == val) {
++	for (i = 0; i < ARRAY_SIZE(bma180_scale_table); ++i)
++		if (bma180_scale_table[i] == val) {
+ 			ret = bma180_set_bits(data,
+ 					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
+ 			if (ret) {
 -- 
+1.9.1
 
-Peter Meerwald
-+43-664-2444418 (mobile)
