@@ -1,52 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:56089 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753712AbaGQKeY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 06:34:24 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
-Date: Thu, 17 Jul 2014 12:33:32 +0200
-Message-ID: <6350114.L77bTv76Ul@wuerfel>
-In-Reply-To: <20140717095657.GC17877@ulmo>
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <20140717095657.GC17877@ulmo>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Received: from ns.pmeerw.net ([87.118.82.44]:41226 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S934931AbaGPSdG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 14:33:06 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 10/13] iio:bma180: Introduce part-specific _config() and disable() code
+Date: Wed, 16 Jul 2014 20:32:53 +0200
+Message-Id: <1405535576-26482-11-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thursday 17 July 2014 11:56:58 Thierry Reding wrote:
-> On Thu, Jul 17, 2014 at 11:20:36AM +0200, Arnd Bergmann wrote:
-> [...]
-> >                       score should set HAS_IOMEM and doesn't
-> > even have public compilers
-> 
-> This begs an interesting question. Should it be made a requirement to
-> have publicly available compilers for new architectures so that they can
-> at least be compile-tested? Preferably this would of course be in source
-> form so that there aren't any dependencies on the distribution.
+move part of bma180_init() to bma180_config() (split initialization and
+configuration code); configuration is heavily chip-specific
 
-The question has come up a few times. I wouldn't mandate that the port
-has an upstream gcc (you've got to start mainlining one of them first
-after all), but having compilers available for download should probably be
-required. It's hard to ask for a particular quality of that gcc port
-though, or to expect it to stay available online.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
-Where did you find the gcc port for score?
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index fc7c7b8..a25b060 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -37,6 +37,8 @@ struct bma180_part_info {
+ 	unsigned num_scales;
+ 	const int *bw_table;
+ 	unsigned num_bw;
++	int (*chip_config)(struct bma180_data *data);
++	void (*chip_disable)(struct bma180_data *data);
+ };
+ 
+ /* Register set */
+@@ -279,21 +281,28 @@ static int bma180_chip_init(struct bma180_data *data)
+ 	int ret = i2c_smbus_read_byte_data(data->client, BMA180_CHIP_ID);
+ 
+ 	if (ret < 0)
+-		goto err;
+-	if (ret != BMA180_ID_REG_VAL) {
+-		ret = -ENODEV;
+-		goto err;
+-	}
++		return ret;
++	if (ret != BMA180_ID_REG_VAL)
++		return -ENODEV;
+ 
+ 	ret = bma180_soft_reset(data);
+ 	if (ret)
+-		goto err;
++		return ret;
+ 	/*
+ 	 * No serial transaction should occur within minimum 10 us
+ 	 * after soft_reset command
+ 	 */
+ 	msleep(20);
+ 
++	return 0;
++}
++
++static int bma180_chip_config(struct bma180_data *data)
++{
++	int ret = bma180_chip_init(data);
++
++	if (ret)
++		goto err;
+ 	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
+ 	if (ret)
+ 		goto err;
+@@ -319,7 +328,7 @@ static int bma180_chip_init(struct bma180_data *data)
+ 	return 0;
+ 
+ err:
+-	dev_err(&data->client->dev, "failed to init the chip\n");
++	dev_err(&data->client->dev, "failed to config the chip\n");
+ 	return ret;
+ }
+ 
+@@ -507,6 +516,8 @@ static const struct bma180_part_info bma180_part_info[] = {
+ 		bma180_channels, ARRAY_SIZE(bma180_channels),
+ 		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
+ 		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
++		bma180_chip_config,
++		bma180_chip_disable,
+ 	},
+ };
+ 
+@@ -578,7 +589,7 @@ static int bma180_probe(struct i2c_client *client,
+ 	data->client = client;
+ 	data->part_info = &bma180_part_info[id->driver_data];
+ 
+-	ret = bma180_chip_init(data);
++	ret = data->part_info->chip_config(data);
+ 	if (ret < 0)
+ 		goto err_chip_disable;
+ 
+@@ -640,7 +651,7 @@ err_trigger_unregister:
+ err_trigger_free:
+ 	iio_trigger_free(data->trig);
+ err_chip_disable:
+-	bma180_chip_disable(data);
++	data->part_info->chip_disable(data);
+ 
+ 	return ret;
+ }
+@@ -658,7 +669,7 @@ static int bma180_remove(struct i2c_client *client)
+ 	}
+ 
+ 	mutex_lock(&data->mutex);
+-	bma180_chip_disable(data);
++	data->part_info->chip_disable(data);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+-- 
+1.9.1
 
-	Arnd
