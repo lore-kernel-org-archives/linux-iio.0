@@ -1,74 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:49487 "EHLO
-	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753280AbaGOAfc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jul 2014 20:35:32 -0400
-Message-ID: <53C4774D.6040900@gmail.com>
-Date: Tue, 15 Jul 2014 08:35:25 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
+Return-Path: <richard@nod.at>
+Message-ID: <53C7AC6F.1070001@nod.at>
+Date: Thu, 17 Jul 2014 12:58:55 +0200
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
-	Geert Uytterhoeven <geert@linux-m68k.org>
+To: Arnd Bergmann <arnd@arndb.de>
+CC: Chen Gang <gang.chen.5i5j@gmail.com>,
+ Guenter Roeck <linux@roeck-us.net>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>,
+ Lennox Wu <lennox.wu@gmail.com>,
+ Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>,
+ msalter@redhat.com, linux-pwm@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
+ linux-input@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+ Mischa.Jonker@synopsys.com, jic23@kernel.org,
+ Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
  'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
-In-Reply-To: <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C796E1.8080708@nod.at> <8453588.VVyODXRso0@wuerfel>
+In-Reply-To: <8453588.VVyODXRso0@wuerfel>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/14/2014 05:22 PM, Chen Gang wrote:
-> 
-> Âú® 2014Âπ¥7Êúà14Êó•Ôºå‰∏ãÂçà4:57ÔºåRichard Weinberger <richard@nod.at> ÂÜôÈÅìÔºö
-> 
->> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
->>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
->>>>>> Maybe we could add COMPILE_TEST to the version string too?
->>>>>> Just to detect such kernels fast in user bug reports...
->>>>>
->>>>> What kind of bug report are you going to get?
->>>>
->>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
->>>> complains that it does not work. :)
+Am 17.07.2014 12:28, schrieb Arnd Bergmann:
+> On Thursday 17 July 2014 11:26:57 Richard Weinberger wrote:
+>> Am 17.07.2014 11:20, schrieb Arnd Bergmann:
+>>> On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
+>>>>                                          gfp_t gfp_mask, unsigned int order);
+>>>>  extern void devm_free_pages(struct device *dev, unsigned long addr);
+>>>>  
+>>>> +#ifdef CONFIG_HAS_IOMEM
+>>>>  void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+>>>> +#elif defined(CONFIG_COMPILE_TEST)
+>>>> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
+>>>> +                                               struct resource *res)
+>>>> +{
+>>>> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+>>>> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
+>>>> +}
+>>>> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
+>>>>  
+>>>>  /* allows to add/remove a custom action to devres stack */
 >>>
->>> These drivers are typically drivers for some SoC peripheral and the device will simply physically not exist on a platform that does not provide HAS_IOMEM. This is not really any
->>> different from making the driver selectable via COMPILE_TEST for any other platform. To hit the issue you'd have to instantiate a device driver instance for a device that
->>> physically does not exist. This will always result in a failure.
+>>> To be honest, I think it's a bad idea to introduce wrappers functions
+>>> that are only available when CONFIG_COMPILE_TEST is set.
+>>>
+>>> COMPILE_TEST is a great tool in general, but it has its limits.
+>>> In particular, the case for !CONFIG_IOMEM is completely obscure
+>>> and we won't find any bugs by allowing more drivers to be built
+>>> in those configurations, but attempting to do it would cause
+>>> endless churn by changing each instance of 'depends on HAS_IOMEM'
+>>> to 'depends on HAS_IOMEM || COMPILE_TEST'.
+>>>
+>>> Note that s390 no has gained support for IOMEM, tile has it most
+>>> of the time (when PCI is enabled, so you get it in half the
+>>> test builds already), score should set HAS_IOMEM and doesn't
+>>> even have public compilers, and uml doesn't even compile in
+>>> latest mainline. Nothing else ever sets NO_IOMEM.
 >>
->> Okay, you have convinced me. :)
->>
-
-After search the history patches, I found one related patch which made
-by myself (when I am in Asianux):
-
-  "https://lkml.org/lkml/2013/7/1/641"
-
-For me, it is a long discussion, and forced many members have to join
-in. Please help check again.
-
-Thanks.
-
+>> Huh? UML (v3.16-rc5-143-gb6603fe) builds fine here. What build issue are you facing?
 > 
-> OK, thank all of you, and I shall send the related patch for it. 
+> This is what I got upon trying earlier. I have not attempted to look into
+> why this is happening. Note this is on linux-next from yesterday,
+> not mainline as I incorrectly stated above.
 > 
-> I will try to finish it within this week.
-> 
+> In file included from ../arch/um/include/asm/fixmap.h:58:0,
+>                  from ../arch/um/include/asm/pgtable.h:11,
+>                  from ../include/linux/mm.h:51,
+>                  from ../kernel/uid16.c:6:
+> ../include/asm-generic/fixmap.h: In function 'fix_to_virt':
+> ../include/asm-generic/fixmap.h:31:2: error: size of unnamed array is negative
+>   BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
 
--- 
-Chen Gang
+So, this is next-20140716?
+I don't see the fixmap issue you're reporting, also not on the most recent next.
 
-Open, share, and attitude like air, water, and life which God blessed
+All I see is the known ext4 issue with CONFIG_SMP=n:
+
+fs/ext4/super.c: In function ëext4_commit_superí:
+fs/ext4/super.c:4547:41: error: ëstruct percpu_counterí has no member named ëcountersí
+  if (EXT4_SB(sb)->s_freeclusters_counter.counters)
+                                         ^
+fs/ext4/super.c:4551:39: error: ëstruct percpu_counterí has no member named ëcountersí
+  if (EXT4_SB(sb)->s_freeinodes_counter.counters)
+
+Thanks,
+//richard
