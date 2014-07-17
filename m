@@ -1,18 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:35153 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755128AbaGQJ5Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 05:57:16 -0400
-Date: Thu, 17 Jul 2014 11:56:58 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
-	Guenter Roeck <linux@roeck-us.net>,
+Received: from smtp-out-155.synserver.de ([212.40.185.155]:1120 "EHLO
+	smtp-out-155.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755741AbaGQKkZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 06:40:25 -0400
+Message-ID: <53C7A819.40403@metafoo.de>
+Date: Thu, 17 Jul 2014 12:40:25 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Arnd Bergmann <arnd@arndb.de>, Chen Gang <gang.chen.5i5j@gmail.com>
+CC: Guenter Roeck <linux@roeck-us.net>,
 	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
 	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
 	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
 	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
 	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
@@ -23,54 +24,56 @@ Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
 	Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
  'devm_ioremap_resource'
-Message-ID: <20140717095657.GC17877@ulmo>
-References: <201407130545.23004.marex@denx.de>
- <53C53CE1.4090803@gmail.com>
- <53C7269E.4010702@gmail.com>
- <6823014.2plXDE9VA9@wuerfel>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="R+My9LyyhiUvIEro"
+References: <201407130545.23004.marex@denx.de> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com> <6823014.2plXDE9VA9@wuerfel>
 In-Reply-To: <6823014.2plXDE9VA9@wuerfel>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 07/17/2014 11:20 AM, Arnd Bergmann wrote:
+> On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
+>>                                           gfp_t gfp_mask, unsigned int order);
+>>   extern void devm_free_pages(struct device *dev, unsigned long addr);
+>>
+>> +#ifdef CONFIG_HAS_IOMEM
+>>   void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+>> +#elif defined(CONFIG_COMPILE_TEST)
+>> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
+>> +                                               struct resource *res)
+>> +{
+>> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+>> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
+>> +}
+>> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
+>>
+>>   /* allows to add/remove a custom action to devres stack */
+>
+> To be honest, I think it's a bad idea to introduce wrappers functions
+> that are only available when CONFIG_COMPILE_TEST is set.
+>
+> COMPILE_TEST is a great tool in general, but it has its limits.
+> In particular, the case for !CONFIG_IOMEM is completely obscure
+> and we won't find any bugs by allowing more drivers to be built
+> in those configurations, but attempting to do it would cause
+> endless churn by changing each instance of 'depends on HAS_IOMEM'
+> to 'depends on HAS_IOMEM || COMPILE_TEST'.
 
---R+My9LyyhiUvIEro
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The point of this exercise is that we do not have to replace a good chunk of 
+'depends on COMPILE_TEST' with 'depends on COMPILE_TEST && HAS_IOMEM'
 
-On Thu, Jul 17, 2014 at 11:20:36AM +0200, Arnd Bergmann wrote:
-[...]
->                       score should set HAS_IOMEM and doesn't
-> even have public compilers
+E.g. the typical Kconfig entry for your random SoC peripheral driver looks like
 
-This begs an interesting question. Should it be made a requirement to
-have publicly available compilers for new architectures so that they can
-at least be compile-tested? Preferably this would of course be in source
-form so that there aren't any dependencies on the distribution.
+config ARCH_FOOBAR_DRIVER
+	depends on ARCH_FOOBAR || COMPILE_TEST
+	...
 
-Thierry
+Now when COMPILE_TEST is not set there is a implicit dependency on HAS_IOMEM 
+since the architecture will provide it. If COMPILE_TEST is selected the 
+driver will also be build-able on architectures that do no have HAS_IOMEM 
+and hence linking the driver fails. One way to fix this is of course to 
+replace the COMPILE_TEST with (COMPILE_TEST && HAS_IOMEM). But this is very 
+often overlooked and only noticed later on when somebody actually builds a 
+allyesconfig on an architecture that does not provide HAS_IOMEM. To avoid 
+these kinds of build errors and tedious fixup patches the idea is to provide 
+a stub function when HAS_IOMEM is not enabled, but COMPILE_TEST is enabled.
 
---R+My9LyyhiUvIEro
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJTx53pAAoJEN0jrNd/PrOhf/8P/2X54LIgpjrxnJPx8B4sv3TP
-o9A12YuzrVI/fL3USm6qF9uSgq/J2d5w34PzDP9zcj5AkCPHY9nJXHbkKnUBE9jj
-dxRP4mOrdfZG+Pvmc5gvD48KqwonrvEay0qYqDQLWdBtl7sRP/DA3KObVLCdRD8f
-SGCjaJSxdcPjKjrEICUlEQ+xZk2rhILWdLHt9BhDxuzapdFxIgxy5RZQpQdJDm1Z
-FKR20aKreT+2drvj8rJKIqN5qJN/9o832J6vH6iWc+a4DxthIMNyM1iAolBZ/DwL
-E2z0CAVTuEVtsOjTZ/MfhAMW5O/SyQeEnG+V5yi3cp3Z2P9OO3kNvbXDwleTPRZ+
-wEtiIy0vSQALP/Gkbwqwk2pAkMsefc9Du7JPlSF8kXNsxB2QOSbuxcQasz35VeMR
-CgDRx1DOO+sDInHq0SneO3B0mhQRCvRXX1mKghVxkWRr/GLFjaPqBW7NjrZy88Wr
-qNX/TyGadB0n+in1o4K7IxrNOunlFmnqzhujhmZo6UKzjZljlf1qlcmEVnnOeMkB
-qa6F7AYwz4ifJt/VUtRSsa0NJkPnNZCwAwdgSR+xn6dFdOUC5plqKx5pCT1rC7Cp
-cCalBOg8Dp7saiFGij5RWCsiMT6g4HzFCCnaupylrWrAds2C0bf8q/3GyEQ41mco
-CEVT3bsEWUOF1QYRyoi0
-=U/Tt
------END PGP SIGNATURE-----
-
---R+My9LyyhiUvIEro--
