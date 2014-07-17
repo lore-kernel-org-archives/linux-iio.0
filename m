@@ -1,68 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:41224 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934939AbaGPSdG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 14:33:06 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 08/13] iio:bma180: Drop _update_scan_mode()
-Date: Wed, 16 Jul 2014 20:32:51 +0200
-Message-Id: <1405535576-26482-9-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
-References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Chen Gang <gang.chen.5i5j@gmail.com>
+Cc: Guenter Roeck <linux@roeck-us.net>, Richard Weinberger <richard@nod.at>, Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Thu, 17 Jul 2014 11:20:36 +0200
+Message-ID: <6823014.2plXDE9VA9@wuerfel>
+In-Reply-To: <53C7269E.4010702@gmail.com>
+References: <201407130545.23004.marex@denx.de> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-statically allocate maximum size
+On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
+>                                          gfp_t gfp_mask, unsigned int order);
+>  extern void devm_free_pages(struct device *dev, unsigned long addr);
+>  
+> +#ifdef CONFIG_HAS_IOMEM
+>  void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+> +#elif defined(CONFIG_COMPILE_TEST)
+> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
+> +                                               struct resource *res)
+> +{
+> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
+> +}
+> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
+>  
+>  /* allows to add/remove a custom action to devres stack */
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/accel/bma180.c | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+To be honest, I think it's a bad idea to introduce wrappers functions
+that are only available when CONFIG_COMPILE_TEST is set.
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index 91260a0..5838318 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -82,7 +82,7 @@ struct bma180_data {
- 	int scale;
- 	int bw;
- 	bool pmode;
--	char *buff;
-+	u8 buff[16]; /* 3x 16-bit + 8-bit + padding + timestamp */
- };
- 
- enum bma180_chan {
-@@ -408,26 +408,10 @@ static int bma180_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
--static int bma180_update_scan_mode(struct iio_dev *indio_dev,
--		const unsigned long *scan_mask)
--{
--	struct bma180_data *data = iio_priv(indio_dev);
--
--	if (data->buff)
--		devm_kfree(&indio_dev->dev, data->buff);
--	data->buff = devm_kzalloc(&indio_dev->dev,
--			indio_dev->scan_bytes, GFP_KERNEL);
--	if (!data->buff)
--		return -ENOMEM;
--
--	return 0;
--}
--
- static const struct iio_info bma180_info = {
- 	.attrs			= &bma180_attrs_group,
- 	.read_raw		= bma180_read_raw,
- 	.write_raw		= bma180_write_raw,
--	.update_scan_mode	= bma180_update_scan_mode,
- 	.driver_module		= THIS_MODULE,
- };
- 
--- 
-1.9.1
+COMPILE_TEST is a great tool in general, but it has its limits.
+In particular, the case for !CONFIG_IOMEM is completely obscure
+and we won't find any bugs by allowing more drivers to be built
+in those configurations, but attempting to do it would cause
+endless churn by changing each instance of 'depends on HAS_IOMEM'
+to 'depends on HAS_IOMEM || COMPILE_TEST'.
 
+Note that s390 no has gained support for IOMEM, tile has it most
+of the time (when PCI is enabled, so you get it in half the
+test builds already), score should set HAS_IOMEM and doesn't
+even have public compilers, and uml doesn't even compile in
+latest mainline. Nothing else ever sets NO_IOMEM.
+
+	Arnd
