@@ -1,58 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:62230 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752510AbaGQSSj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 14:18:39 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v6 2/4] iio: types: Added support for rotation from north usage attributes
-Date: Thu, 17 Jul 2014 13:18:27 -0500
-Message-Id: <1405621109-21147-3-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
+Received: from mail-pd0-f169.google.com ([209.85.192.169]:58857 "EHLO
+	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752692AbaGQUkt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 16:40:49 -0400
+Date: Fri, 18 Jul 2014 02:10:40 +0530
+From: Himangi Saraogi <himangi774@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: julia.lawall@lip6.fr
+Subject: [PATCH] staging: iio: adis16203: Use devm_iio_device_register
+Message-ID: <20140717204040.GA22788@himangi-Dell>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
+This patch introduces the use of iio_device_register and does away with
+the call to the corressponding unregister function in the probe and
+remove functions of the driver respectively.
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+Acked-by: Julia Lawall <julia.lawall@lip6.fr>
 ---
- drivers/iio/industrialio-core.c | 4 ++++
- include/linux/iio/types.h       | 4 ++++
- 2 files changed, 8 insertions(+)
+ drivers/staging/iio/accel/adis16203_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4b1f375..af3e76d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
- };
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index 409a28e..5077779 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -175,7 +175,7 @@ static int adis16203_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_cleanup_buffer_trigger;
  
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index d480631..d09c40d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -56,6 +56,10 @@ enum iio_modifier {
- 	IIO_MOD_QUATERNION,
- 	IIO_MOD_TEMP_AMBIENT,
- 	IIO_MOD_TEMP_OBJECT,
-+	IIO_MOD_NORTH_MAGN,
-+	IIO_MOD_NORTH_TRUE,
-+	IIO_MOD_NORTH_MAGN_TILT_COMP,
-+	IIO_MOD_NORTH_TRUE_TILT_COMP
- };
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret)
+ 		goto error_cleanup_buffer_trigger;
  
- enum iio_event_type {
+@@ -191,7 +191,6 @@ static int adis16203_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct adis *st = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+ 	adis_cleanup_buffer_and_trigger(st, indio_dev);
+ 
+ 	return 0;
 -- 
-1.9.3
+1.9.1
 
