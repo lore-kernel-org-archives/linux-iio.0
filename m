@@ -1,76 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:45296 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932306AbaGOSM7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 15 Jul 2014 14:12:59 -0400
-Message-ID: <53C56FB1.2040700@kernel.org>
-Date: Tue, 15 Jul 2014 19:15:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:55028 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755218AbaGQK34 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 06:29:56 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Richard Weinberger <richard@nod.at>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Thu, 17 Jul 2014 12:28:28 +0200
+Message-ID: <8453588.VVyODXRso0@wuerfel>
+In-Reply-To: <53C796E1.8080708@nod.at>
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C796E1.8080708@nod.at>
 MIME-Version: 1.0
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
-	Kukjin Kim <kgene.kim@samsung.com>
-Subject: Re: [PATCH 0/4] iio: exynos-adc: use syscon instead of ioremap
-References: <1405069589-10388-1-git-send-email-ch.naveen@samsung.com> <53C56F40.1070304@kernel.org>
-In-Reply-To: <53C56F40.1070304@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/07/14 19:13, Jonathan Cameron wrote:
-> On 11/07/14 10:06, Naveen Krishna Chatradhi wrote:
->> This patch does the following
->> 1. Use the syscon and Regmap API instead of ioremappaing the
->>     ADC_PHY register from PMU.
->> 2. Moves the exynos-adc.txt from bindings/arm/samsung/
->>     to bindings/iio/adc/.
->> 3. Updates the Documentation in exynos-adc.txt with syscon phandle
->>     for the ADC nodes.
->> 4. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
->>     Exynos5420 with the syscon phandle.
->>
->> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
->> by verifying sysfs entries provided by HWMON based NTC thermistors.
->>
->> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
->>
-> This series all looks fine to me.  Took me a minute to work out what the point
-> of the syscon change was (perhaps a little description in the cover letter
-> would have been nice ;)
->
-> Anyhow, with the device tree changes in here we'll have to let it sit for
-> a while.  I'll also definitely want an ack from
-> Kukjin Kim <kgene.kim@samsung.com> for the device tree changes.
-Although I haven't tried it, I'd imagine this might cause a little bit
-of merging fun with the other exynos series waiting for Kukjin to
-ack...
-[PATCHv5 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and code clean
->
-> Jonathan
->> Naveen Krishna Chatradhi (4):
->>    iio: exyno-adc: use syscon for PMU register access
->>    Documentation: dt-bindings: move exynos-adc.txt to more iio/adc/
->>    Documentation: dt-bindings: update exynos-adc.txt with syscon handle
->>    ARM: dts: exynos: Add sysreg phandle to ADC node
->>
->>   .../devicetree/bindings/arm/samsung/exynos-adc.txt |   82 ------------------
->>   .../devicetree/bindings/iio/adc/exynos-adc.txt     |   87 ++++++++++++++++++++
->>   arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
->>   arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
->>   arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
->>   arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
->>   drivers/iio/adc/exynos_adc.c                       |   29 +++++--
->>   7 files changed, 115 insertions(+), 95 deletions(-)
->>   delete mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>   create mode 100644 Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Thursday 17 July 2014 11:26:57 Richard Weinberger wrote:
+> Am 17.07.2014 11:20, schrieb Arnd Bergmann:
+> > On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
+> >>                                          gfp_t gfp_mask, unsigned int order);
+> >>  extern void devm_free_pages(struct device *dev, unsigned long addr);
+> >>  
+> >> +#ifdef CONFIG_HAS_IOMEM
+> >>  void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+> >> +#elif defined(CONFIG_COMPILE_TEST)
+> >> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
+> >> +                                               struct resource *res)
+> >> +{
+> >> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+> >> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
+> >> +}
+> >> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
+> >>  
+> >>  /* allows to add/remove a custom action to devres stack */
+> > 
+> > To be honest, I think it's a bad idea to introduce wrappers functions
+> > that are only available when CONFIG_COMPILE_TEST is set.
+> > 
+> > COMPILE_TEST is a great tool in general, but it has its limits.
+> > In particular, the case for !CONFIG_IOMEM is completely obscure
+> > and we won't find any bugs by allowing more drivers to be built
+> > in those configurations, but attempting to do it would cause
+> > endless churn by changing each instance of 'depends on HAS_IOMEM'
+> > to 'depends on HAS_IOMEM || COMPILE_TEST'.
+> > 
+> > Note that s390 no has gained support for IOMEM, tile has it most
+> > of the time (when PCI is enabled, so you get it in half the
+> > test builds already), score should set HAS_IOMEM and doesn't
+> > even have public compilers, and uml doesn't even compile in
+> > latest mainline. Nothing else ever sets NO_IOMEM.
+> 
+> Huh? UML (v3.16-rc5-143-gb6603fe) builds fine here. What build issue are you facing?
 
+This is what I got upon trying earlier. I have not attempted to look into
+why this is happening. Note this is on linux-next from yesterday,
+not mainline as I incorrectly stated above.
+
+In file included from ../arch/um/include/asm/fixmap.h:58:0,
+                 from ../arch/um/include/asm/pgtable.h:11,
+                 from ../include/linux/mm.h:51,
+                 from ../kernel/uid16.c:6:
+../include/asm-generic/fixmap.h: In function 'fix_to_virt':
+../include/asm-generic/fixmap.h:31:2: error: size of unnamed array is negative
+  BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
+
+
+	Arnd
