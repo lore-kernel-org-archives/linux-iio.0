@@ -1,103 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:41228 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934637AbaGPSdH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 14:33:07 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 12/13] iio:bma180: Implement _available sysfs attribute dynamically
-Date: Wed, 16 Jul 2014 20:32:55 +0200
-Message-Id: <1405535576-26482-13-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
-References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mout.kundenserver.de ([212.227.126.131]:56089 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753712AbaGQKeY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 06:34:24 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Richard Weinberger <richard@nod.at>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Thu, 17 Jul 2014 12:33:32 +0200
+Message-ID: <6350114.L77bTv76Ul@wuerfel>
+In-Reply-To: <20140717095657.GC17877@ulmo>
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <20140717095657.GC17877@ulmo>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-makes it easier to add more chip variants and removes redundancy:
-scales and frequencies are now stated just once
+On Thursday 17 July 2014 11:56:58 Thierry Reding wrote:
+> On Thu, Jul 17, 2014 at 11:20:36AM +0200, Arnd Bergmann wrote:
+> [...]
+> >                       score should set HAS_IOMEM and doesn't
+> > even have public compilers
+> 
+> This begs an interesting question. Should it be made a requirement to
+> have publicly available compilers for new architectures so that they can
+> at least be compile-tested? Preferably this would of course be in source
+> form so that there aren't any dependencies on the distribution.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/accel/bma180.c | 54 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 11 deletions(-)
+The question has come up a few times. I wouldn't mandate that the port
+has an upstream gcc (you've got to start mainlining one of them first
+after all), but having compilers available for download should probably be
+required. It's hard to ask for a particular quality of that gcc port
+though, or to expect it to stay available online.
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index 6e940b0..9fbc81f 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -83,12 +83,6 @@ struct bma180_part_info {
- #define BMA180_DEF_BW		20
- #define BMA180_DEF_SCALE	2452
- 
--/* Available values for sysfs */
--#define BMA180_FLP_FREQ_AVAILABLE \
--	"10 20 40 75 150 300"
--#define BMA180_SCALE_AVAILABLE \
--	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
--
- struct bma180_data {
- 	struct i2c_client *client;
- 	struct iio_trigger *trig;
-@@ -347,13 +341,51 @@ err:
- 	dev_err(&data->client->dev, "failed to disable the chip\n");
- }
- 
--static IIO_CONST_ATTR(in_accel_filter_low_pass_3db_frequency_available,
--		BMA180_FLP_FREQ_AVAILABLE);
--static IIO_CONST_ATTR(in_accel_scale_available, BMA180_SCALE_AVAILABLE);
-+static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
-+				 bool micros)
-+{
-+	size_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < n; i++) {
-+		if (!vals[i])
-+			continue;
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+			micros ? "0.%06d " : "%d ", vals[i]);
-+	}
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t bma180_show_filter_freq_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bma180_show_avail(buf, data->part_info->bw_table,
-+		data->part_info->num_bw, false);
-+}
-+
-+static ssize_t bma180_show_scale_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bma180_show_avail(buf, data->part_info->scale_table,
-+		data->part_info->num_scales, true);
-+}
-+
-+static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-+	S_IRUGO, bma180_show_filter_freq_avail, NULL, 0);
-+
-+static IIO_DEVICE_ATTR(in_accel_scale_available,
-+	S_IRUGO, bma180_show_scale_avail, NULL, 0);
- 
- static struct attribute *bma180_attributes[] = {
--	&iio_const_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
--	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.
-+		dev_attr.attr,
-+	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
--- 
-1.9.1
+Where did you find the gcc port for score?
 
+	Arnd
