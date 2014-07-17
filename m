@@ -1,154 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f180.google.com ([209.85.192.180]:63277 "EHLO
-	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751764AbaGMDO2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jul 2014 23:14:28 -0400
-Message-ID: <53C1F98D.9030603@gmail.com>
-Date: Sun, 13 Jul 2014 11:14:21 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-MIME-Version: 1.0
-To: gregkh@linuxfoundation.org
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
-	jic23@kernel.org, wim@iguana.be, benh@kernel.crashing.org,
-	kys@microsoft.com, schwidefsky@de.ibm.com, teg@jklm.no,
-	Mischa.Jonker@synopsys.com, msalter@redhat.com, lars@metafoo.de,
-	richard@nod.at, knaack.h@gmx.de, marex@denx.de,
-	rdunlap@infradead.org, linux-input@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
-	Liqin Chen <liqin.linux@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>,
-	David Rientjes <rientjes@google.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <53C1F7DE.3060102@gmail.com>
-In-Reply-To: <53C1F7DE.3060102@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mailout1.samsung.com ([203.254.224.24]:26629 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757068AbaGQLXf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:23:35 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	jic23@kernel.org
+Subject: [PATCH 3/4 v2] Documentation: dt-bindings: update exynos-adc.txt with
+ syscon handle
+Date: Thu, 17 Jul 2014 16:49:52 +0530
+Message-id: <1405595993-16661-4-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
+References: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch updates the DT bindings in exynos-adc.txt with the
+syscon phandle to the ADC nodes.
 
-After this last patch, score architecture can pass allmodconfig. :-)
+Also removes the 2nd "reg" property, which used to carry the
+ADC_PHY regiser base from PMU.
 
-And also find a compiler issue, I will try to fix it, but shall not notify
-kernel mailing list, again. The related issue is below (it seems a kernel
-issue, but in fact, it is a compiler's issue):
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: devicetree@vger.kernel.org
+---
+Changes since v1:
+rebased on top of Changwoo's v5 ADC patches for exynos3250
 
-    CC [M]  drivers/staging/lustre/lustre/ptlrpc/sec.o
-  drivers/staging/lustre/lustre/ptlrpc/sec.c: In function 'sptlrpc_cli_ctx_expire':
-  drivers/staging/lustre/lustre/ptlrpc/sec.c:309:13: error: 'struct ptlrpc_ctx_ops' has no member named '__die'
-    ctx->cc_ops->die(ctx, 0);
-               ^
-  drivers/staging/lustre/lustre/ptlrpc/sec.c: In function 'ctx_refresh_timeout':
-  drivers/staging/lustre/lustre/ptlrpc/sec.c:594:26: error: 'struct ptlrpc_ctx_ops' has no member named '__die'
-     req->rq_cli_ctx->cc_ops->die(req->rq_cli_ctx, 0);
-                            ^
-  make[5]: *** [drivers/staging/lustre/lustre/ptlrpc/sec.o] Error 1
-  make[4]: *** [drivers/staging/lustre/lustre/ptlrpc] Error 2
-  make[3]: *** [drivers/staging/lustre/lustre] Error 2
-  make[2]: *** [drivers/staging/lustre] Error 2
-  make[1]: *** [drivers/staging] Error 2
-  make: *** [drivers] Error 2
+iio: adc: exynos_adc: Support Exynos3250 ADC and code clean
+https://lkml.org/lkml/2014/6/27/16
 
-Thanks.
+ .../devicetree/bindings/iio/adc/exynos-adc.txt     |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-On 07/13/2014 11:07 AM, Chen Gang wrote:
-> Several drivers need 'devm_ioremap_resource' which need HAS_IOMEM enabled.
-> So let them depend on HAS_IOMEM.
-> 
-> The related error (with allmodconfig under score):
-> 
->     MODPOST 1365 modules
->   ERROR: "devm_ioremap_resource" [drivers/watchdog/tegra_wdt.ko] undefined!
->   ERROR: "devm_ioremap_resource" [drivers/watchdog/of_xilinx_wdt.ko] undefined!
->   ERROR: "devm_ioremap_resource" [drivers/staging/iio/adc/mxs-lradc.ko] undefined!
->   ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefined!
->   ERROR: "devm_ioremap_resource" [drivers/input/serio/olpc_apsp.ko] undefined!
->   ERROR: "devm_ioremap_resource" [drivers/input/serio/arc_ps2.ko] undefined!
-> 
-> 
-> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
-> ---
->  drivers/input/serio/Kconfig     | 3 ++-
->  drivers/pwm/Kconfig             | 2 +-
->  drivers/staging/iio/adc/Kconfig | 2 +-
->  drivers/watchdog/Kconfig        | 3 ++-
->  4 files changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
-> index bc2d474..449d45f 100644
-> --- a/drivers/input/serio/Kconfig
-> +++ b/drivers/input/serio/Kconfig
-> @@ -244,6 +244,7 @@ config SERIO_PS2MULT
->  
->  config SERIO_ARC_PS2
->  	tristate "ARC PS/2 support"
-> +	depends on HAS_IOMEM
->  	help
->  	  Say Y here if you have an ARC FPGA platform with a PS/2
->  	  controller in it.
-> @@ -263,7 +264,7 @@ config SERIO_APBPS2
->  
->  config SERIO_OLPC_APSP
->  	tristate "OLPC AP-SP input support"
-> -	depends on OLPC || COMPILE_TEST
-> +	depends on (OLPC || COMPILE_TEST) && HAS_IOMEM
->  	help
->  	  Say Y here if you want support for the keyboard and touchpad included
->  	  in the OLPC XO-1.75 and XO-4 laptops.
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 4ad7b89..2faf5ce 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -82,7 +82,7 @@ config PWM_BFIN
->  
->  config PWM_CLPS711X
->  	tristate "CLPS711X PWM support"
-> -	depends on ARCH_CLPS711X || COMPILE_TEST
-> +	depends on (ARCH_CLPS711X || COMPILE_TEST) && HAS_IOMEM
->  	help
->  	  Generic PWM framework driver for Cirrus Logic CLPS711X.
->  
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index b87e382..4e927d2 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -94,7 +94,7 @@ config LPC32XX_ADC
->  
->  config MXS_LRADC
->  	tristate "Freescale i.MX23/i.MX28 LRADC"
-> -	depends on ARCH_MXS || COMPILE_TEST
-> +	depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
->  	depends on INPUT
->  	select STMP_DEVICE
->  	select IIO_BUFFER
-> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-> index 76dd541..0e4abb2 100644
-> --- a/drivers/watchdog/Kconfig
-> +++ b/drivers/watchdog/Kconfig
-> @@ -113,6 +113,7 @@ config WM8350_WATCHDOG
->  
->  config XILINX_WATCHDOG
->  	tristate "Xilinx Watchdog timer"
-> +	depends on HAS_IOMEM
->  	select WATCHDOG_CORE
->  	help
->  	  Watchdog driver for the xps_timebase_wdt ip core.
-> @@ -434,7 +435,7 @@ config SIRFSOC_WATCHDOG
->  
->  config TEGRA_WATCHDOG
->  	tristate "Tegra watchdog"
-> -	depends on ARCH_TEGRA || COMPILE_TEST
-> +	depends on (ARCH_TEGRA || COMPILE_TEST) && HAS_IOMEM
->  	select WATCHDOG_CORE
->  	help
->  	  Say Y here to include support for the watchdog timer
-> 
-
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
+index 0b0ed85..1634df3 100644
+--- a/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/exynos-adc.txt
+@@ -1,10 +1,11 @@
+ Samsung Exynos Analog to Digital Converter bindings
+ 
+ The devicetree bindings are for the new ADC driver written for
+-Exynos4 and upward SoCs from Samsung.
++Exynos4 and Exynos5 series SoCs from Samsung.
++Now supports Exynos3250 too.
+ 
+ New driver handles the following
+-1. Supports ADC IF found on EXYNOS4412/EXYNOS5250
++1. Supports ADC IF found on Exynos3250/EXYNOS4412/EXYNOS5 series
+    and future SoCs from Samsung
+ 2. Add ADC driver under iio/adc framework
+ 3. Also adds the Documentation for device tree bindings
+@@ -18,7 +19,7 @@ Required properties:
+ 				for controllers compatible with ADC of
+ 				Exynos3250.
+ - reg:			Contains ADC register address range (base address and
+-			length) and the address of the phy enable register.
++			length)
+ - interrupts: 		Contains the interrupt information for the timer. The
+ 			format is being dependent on which interrupt controller
+ 			the Samsung device uses.
+@@ -31,6 +32,8 @@ Required properties:
+ 			- "sclk_adc" : ADC special clock (only for Exynos3250
+ 				       and compatible ADC block)
+ - vdd-supply		VDD input supply.
++- samsung,syscon-phandle Contains the PMU system controller node
++			(To access the ADC_PHY register)
+ 
+ Note: child nodes can be added for auto probing from device tree.
+ 
+@@ -38,7 +41,7 @@ Example: adding device info in dtsi file
+ 
+ adc: adc@12D10000 {
+ 	compatible = "samsung,exynos-adc-v1";
+-	reg = <0x12D10000 0x100>, <0x10040718 0x4>;
++	reg = <0x12D10000 0x100>;
+ 	interrupts = <0 106 0>;
+ 	#io-channel-cells = <1>;
+ 	io-channel-ranges;
+@@ -47,13 +50,14 @@ adc: adc@12D10000 {
+ 	clock-names = "adc";
+ 
+ 	vdd-supply = <&buck5_reg>;
++	samsung,syscon-phandle = <&pmu_system_controller>;
+ };
+ 
+ Example: adding device info in dtsi file for Exynos3250 with additional sclk
+ 
+ adc: adc@126C0000 {
+ 	compatible = "samsung,exynos3250-adc-v2";
+-	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
++	reg = <0x126C0000 0x100>;
+ 	interrupts = <0 137 0>;
+ 	#io-channel-cells = <1>;
+ 	io-channel-ranges;
+@@ -62,6 +66,7 @@ adc: adc@126C0000 {
+ 	clock-names = "adc", "sclk_adc";
+ 
+ 	vdd-supply = <&buck5_reg>;
++	samsung,syscon-phandle = <&pmu_system_controller>;
+ };
+ 
+ Example: Adding child nodes in dts file
 -- 
-Chen Gang
+1.7.9.5
 
-Open share and attitude like air water and life which God blessed
