@@ -1,67 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:41227 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934947AbaGPSdH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 14:33:07 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 11/13] iio:bma180: Prepare for accelerometer channels with different resolutions
-Date: Wed, 16 Jul 2014 20:32:54 +0200
-Message-Id: <1405535576-26482-12-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
-References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail-pd0-f169.google.com ([209.85.192.169]:48543 "EHLO
+	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754898AbaGQLrE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:47:04 -0400
+Message-ID: <53C7B7AF.3070103@gmail.com>
+Date: Thu, 17 Jul 2014 19:46:55 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+MIME-Version: 1.0
+To: Arnd Bergmann <arnd@arndb.de>
+CC: Guenter Roeck <linux@roeck-us.net>,
+	Richard Weinberger <richard@nod.at>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+	Liqin Chen <liqin.linux@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7977B.9090903@gmail.com> <7018119.hVYUML2rzD@wuerfel>
+In-Reply-To: <7018119.hVYUML2rzD@wuerfel>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-allow to specify channels resolution and compute shift assuming
-16-bit registers and MSB allocation
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/accel/bma180.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index a25b060..6e940b0 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -474,7 +474,7 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
- 	{ },
- };
- 
--#define BMA180_ACC_CHANNEL(_axis) {					\
-+#define BMA180_ACC_CHANNEL(_axis, _bits) {				\
- 	.type = IIO_ACCEL,						\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##_axis,					\
-@@ -484,9 +484,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
- 	.scan_index = AXIS_##_axis,					\
- 	.scan_type = {							\
- 		.sign = 's',						\
--		.realbits = 14,						\
-+		.realbits = _bits,					\
- 		.storagebits = 16,					\
--		.shift = 2,						\
-+		.shift = 16 - _bits,					\
- 	},								\
- 	.ext_info = bma180_ext_info,					\
- }
-@@ -504,9 +504,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
- }
- 
- static const struct iio_chan_spec bma180_channels[] = {
--	BMA180_ACC_CHANNEL(X),
--	BMA180_ACC_CHANNEL(Y),
--	BMA180_ACC_CHANNEL(Z),
-+	BMA180_ACC_CHANNEL(X, 14),
-+	BMA180_ACC_CHANNEL(Y, 14),
-+	BMA180_ACC_CHANNEL(Z, 14),
- 	BMA180_TEMP_CHANNEL,
- 	IIO_CHAN_SOFT_TIMESTAMP(4),
- };
+On 07/17/2014 06:38 PM, Arnd Bergmann wrote:
+> On Thursday 17 July 2014 17:29:31 Chen Gang wrote:
+>>>
+>>> COMPILE_TEST is a great tool in general, but it has its limits.
+>>> In particular, the case for !CONFIG_IOMEM is completely obscure
+>>> and we won't find any bugs by allowing more drivers to be built
+>>> in those configurations, but attempting to do it would cause
+>>> endless churn by changing each instance of 'depends on HAS_IOMEM'
+>>> to 'depends on HAS_IOMEM || COMPILE_TEST'.
+>>>
+>>
+>> Architecture members and driver members really have different tastes,
+>> they are different roles. It really need additional discussion.
+>>
+>> For me, I only want to change devm_io*map*, not touch so much.
+> 
+> But what do you gain from that? All drivers that need these
+> functions should already 'depends on HAS_IOMEM' and if they don't,
+> we should fix /that/ instead. I don't see this dependency as any
+> different from a lot of others (PCI, DMAENGINE, HAVE_CLK, ...)
+> that we use to intentionally annotate drivers that need a particular
+> feature to be present for compilation. Do you want to do the
+> same hack to those?
+> 
+>> Welcome any other members' idea or suggestions.
+> 
+>>> Note that s390 no has gained support for IOMEM, tile has it most
+>>> of the time (when PCI is enabled, so you get it in half the
+>>> test builds already), score should set HAS_IOMEM and doesn't
+>>> even have public compilers, and uml doesn't even compile in
+>>> latest mainline. Nothing else ever sets NO_IOMEM.
+>>>
+>>
+
+I guess, we are just discussing about them in another threads, so I skip
+them. If it is still necessary to reply (e.g. I misunderstand), please
+let me know, thanks.
+
+>> In latest gcc and binutils, can compile score cross compiler
+>> successfully for building kernel (but I am not quite sure whether the
+>> compiling result are really OK, but I guess so).
+> 
+> Ok. Would you mind sending a patch that enables HAS_IOMEM on
+> score?
+>  
+
+For me, welcome the score related maintainers' idea and suggestions.
+
+>> And next (maybe after finish allmodconfig for microblaze), I shall try
+>> to let uml pass allmodconfig for linux-next tree.
+> 
+> That is a fair goal, but it seems better to do that by ensuring
+> we don't build any code that tries to call the MMIO functions
+> rather than trying to make them build.
+> 
+
+When I am performing uml, I will try and also communicate with the
+related maintainers for it (their suggestions and ideas are valuable).
+
+Thanks.
 -- 
-1.9.1
+Chen Gang
 
+Open, share, and attitude like air, water, and life which God blessed
