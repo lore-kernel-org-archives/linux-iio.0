@@ -1,29 +1,55 @@
-Return-Path: <arnd@arndb.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.130]:53997 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932332AbaGQLZU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:25:20 -0400
 From: Arnd Bergmann <arnd@arndb.de>
-To: Chanwoo Choi <cw00.choi@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, jic23@kernel.org, ch.naveen@samsung.com, mark.rutland@arm.com, devicetree@vger.kernel.org, kgene.kim@samsung.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org, t.figa@samsung.com, rdunlap@infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, kyungmin.park@samsung.com, robh+dt@kernel.org, galak@codeaurora.org
-Subject: Re: [PATCHv6 2/4] iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
-Date: Fri, 18 Jul 2014 13:14:55 +0200
-Message-ID: <6917971.QKItNU3coA@wuerfel>
-In-Reply-To: <53C8F050.6060104@samsung.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <6485839.CnzmD0SeQj@wuerfel> <53C8F050.6060104@samsung.com>
+To: Richard Weinberger <richard@nod.at>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Thu, 17 Jul 2014 13:24:46 +0200
+Message-ID: <5581945.I7Fc5qufcE@wuerfel>
+In-Reply-To: <53C7AC6F.1070001@nod.at>
+References: <201407130545.23004.marex@denx.de> <8453588.VVyODXRso0@wuerfel> <53C7AC6F.1070001@nod.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Friday 18 July 2014 19:00:48 Chanwoo Choi wrote:
-> On 07/18/2014 06:47 PM, Arnd Bergmann wrote:
+On Thursday 17 July 2014 12:58:55 Richard Weinberger wrote:
+> > This is what I got upon trying earlier. I have not attempted to look into
+> > why this is happening. Note this is on linux-next from yesterday,
+> > not mainline as I incorrectly stated above.
 > > 
-> > Further, why is it called "sclk_adc" rather than just "sclk"?
+> > In file included from ../arch/um/include/asm/fixmap.h:58:0,
+> >                  from ../arch/um/include/asm/pgtable.h:11,
+> >                  from ../include/linux/mm.h:51,
+> >                  from ../kernel/uid16.c:6:
+> > ../include/asm-generic/fixmap.h: In function 'fix_to_virt':
+> > ../include/asm-generic/fixmap.h:31:2: error: size of unnamed array is negative
+> >   BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
 > 
-> The sclk means 'special clock' in Exynos TRM. Exynos SoC has varisou sclk clocks.
-> 'sclk_adc' is only used for ADC IP.
+> So, this is next-20140716?
+> I don't see the fixmap issue you're reporting, also not on the most recent next.
 
-But that sounds like sclk_adc is the name of the global name
-of the clock signal coming out of the clock controller.
+Sorry, nevermind. I had a workaround for a gcc-4.9 bug applied that
+turned off optimization for uid16.c, which fixed the build for ARM for
+me but happened to break x86 including uml.
 
-I still think it would be best to name it 'sclk' as the input
-for the adc. It shouldn't rely on a particular name of the
-clock controller.
+Without that patch, I don't see this problem.
 
 	Arnd
