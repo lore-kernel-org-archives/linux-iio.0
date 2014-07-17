@@ -1,119 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-175.synserver.de ([212.40.185.175]:1092 "EHLO
+Received: from smtp-out-175.synserver.de ([212.40.185.175]:1080 "EHLO
 	smtp-out-171.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S934649AbaGQP7t (ORCPT
+	by vger.kernel.org with ESMTP id S934257AbaGQP7t (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 11:59:49 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 4/4] iio: buffer: Coalesce adjacent demux table entries
-Date: Thu, 17 Jul 2014 17:59:49 +0200
-Message-Id: <1405612789-27964-4-git-send-email-lars@metafoo.de>
+Subject: [PATCH 2/4] iio: buffer: Use roundup() instead of ALIGN()
+Date: Thu, 17 Jul 2014 17:59:47 +0200
+Message-Id: <1405612789-27964-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1405612789-27964-1-git-send-email-lars@metafoo.de>
 References: <1405612789-27964-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When copying multiple multiple samples that are adjacent in both the source as
-well as the destination buffer, instead of creating a new demux table entry for
-each sample just increase the length of the previous entry by the size of the
-new sample. This makes the demuxing process slightly more efficient.
+ALIGN() only works correctly if the alignment is a power of two. Some drivers
+use 3 bytes for the storage size of the word in which case ALIGN() will cause
+incorrect results. Use the more generic roundup() instead.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-buffer.c | 47 +++++++++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 19 deletions(-)
+This at least makes the rules for alignment predictable and consistent. But
+mixing 3 bytes words with other word sizes will still result in strange layouts.
+E.g. 4-byte word, 3-byte word will result in 4-byte word, 2-byte alignment gap,
+3-byte word.
+---
+ drivers/iio/industrialio-buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 5063703..779e5b3 100644
+index 0472ee2..6da5272 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -942,13 +942,34 @@ int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data)
- }
- EXPORT_SYMBOL_GPL(iio_push_to_buffers);
- 
-+static int iio_buffer_add_demux(struct iio_buffer *buffer,
-+	struct iio_demux_table **p, unsigned int in_loc, unsigned int out_loc,
-+	unsigned int length)
-+{
-+
-+	if (*p && (*p)->from + (*p)->length == in_loc &&
-+		(*p)->to + (*p)->length == out_loc) {
-+		(*p)->length += length;
-+	} else {
-+		*p = kmalloc(sizeof(*p), GFP_KERNEL);
-+		if (*p == NULL)
-+			return -ENOMEM;
-+		(*p)->from = in_loc;
-+		(*p)->to = out_loc;
-+		(*p)->length = length;
-+		list_add_tail(&(*p)->l, &buffer->demux_list);
-+	}
-+
-+	return 0;
-+}
-+
- static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 				   struct iio_buffer *buffer)
- {
- 	const struct iio_chan_spec *ch;
- 	int ret, in_ind = -1, out_ind, length;
- 	unsigned in_loc = 0, out_loc = 0;
--	struct iio_demux_table *p;
-+	struct iio_demux_table *p = NULL;
- 
- 	/* Clear out any old demux */
- 	iio_buffer_demux_free(buffer);
-@@ -981,11 +1002,6 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 			/* Make sure we are aligned */
- 			in_loc = roundup(in_loc, length) + length;
- 		}
--		p = kmalloc(sizeof(*p), GFP_KERNEL);
--		if (p == NULL) {
--			ret = -ENOMEM;
--			goto error_clear_mux_table;
--		}
- 		ch = iio_find_channel_from_si(indio_dev, in_ind);
- 		if (ch->scan_type.repeat > 1)
- 			length = ch->scan_type.storagebits / 8 *
-@@ -994,20 +1010,14 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+@@ -486,7 +486,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+ 				ch->scan_type.repeat;
+ 		else
  			length = ch->scan_type.storagebits / 8;
- 		out_loc = roundup(out_loc, length);
- 		in_loc = roundup(in_loc, length);
--		p->from = in_loc;
--		p->to = out_loc;
--		p->length = length;
--		list_add_tail(&p->l, &buffer->demux_list);
-+		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
-+		if (ret)
-+			goto error_clear_mux_table;
- 		out_loc += length;
- 		in_loc += length;
+-		bytes = ALIGN(bytes, length);
++		bytes = roundup(bytes, length);
+ 		bytes += length;
  	}
- 	/* Relies on scan_timestamp being last */
- 	if (buffer->scan_timestamp) {
--		p = kmalloc(sizeof(*p), GFP_KERNEL);
--		if (p == NULL) {
--			ret = -ENOMEM;
--			goto error_clear_mux_table;
--		}
- 		ch = iio_find_channel_from_si(indio_dev,
- 			indio_dev->scan_index_timestamp);
- 		if (ch->scan_type.repeat > 1)
-@@ -1017,10 +1027,9 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 	if (timestamp) {
+@@ -497,7 +497,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+ 				ch->scan_type.repeat;
+ 		else
  			length = ch->scan_type.storagebits / 8;
- 		out_loc = roundup(out_loc, length);
- 		in_loc = roundup(in_loc, length);
--		p->from = in_loc;
--		p->to = out_loc;
--		p->length = length;
--		list_add_tail(&p->l, &buffer->demux_list);
-+		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
-+		if (ret)
-+			goto error_clear_mux_table;
- 		out_loc += length;
- 		in_loc += length;
+-		bytes = ALIGN(bytes, length);
++		bytes = roundup(bytes, length);
+ 		bytes += length;
  	}
+ 	return bytes;
 -- 
 1.8.0
 
