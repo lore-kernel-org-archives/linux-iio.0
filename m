@@ -1,113 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:64341 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752709AbaGQSSn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 14:18:43 -0400
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:62230 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752510AbaGQSSj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 14:18:39 -0400
 From: Reyad Attiyat <reyad.attiyat@gmail.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
 Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v6 4/4] iio: hid-sensor-magn-3d: Add support for rotation from north
-Date: Thu, 17 Jul 2014 13:18:29 -0500
-Message-Id: <1405621109-21147-5-git-send-email-reyad.attiyat@gmail.com>
+Subject: [PATCH v6 2/4] iio: types: Added support for rotation from north usage attributes
+Date: Thu, 17 Jul 2014 13:18:27 -0500
+Message-Id: <1405621109-21147-3-git-send-email-reyad.attiyat@gmail.com>
 In-Reply-To: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
 References: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add the HID usage attribute ID's and IIO channel info for rotation
-from north support.
+Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
 
 Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
 ---
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 53 ++++++++++++++++++++++++++-
- 1 file changed, 52 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-core.c | 4 ++++
+ include/linux/iio/types.h       | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index d3b9114..3ec777a 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -35,6 +35,10 @@ enum magn_3d_channel {
- 	CHANNEL_SCAN_INDEX_X,
- 	CHANNEL_SCAN_INDEX_Y,
- 	CHANNEL_SCAN_INDEX_Z,
-+	CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP,
-+	CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP,
-+	CHANNEL_SCAN_INDEX_NORTH_MAGN,
-+	CHANNEL_SCAN_INDEX_NORTH_TRUE,
- 	MAGN_3D_CHANNEL_MAX,
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4b1f375..af3e76d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
++	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
++	[IIO_MOD_NORTH_TRUE] = "from_north_true",
++	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
++	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
  };
  
-@@ -57,7 +61,11 @@ struct magn_3d_state {
- static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
- 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
- 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
--	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
-+	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS,
-+	HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_MAGN_NORTH,
-+	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
+ /* relies on pairs of these shared then separate */
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d480631..d09c40d 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -56,6 +56,10 @@ enum iio_modifier {
+ 	IIO_MOD_QUATERNION,
+ 	IIO_MOD_TEMP_AMBIENT,
+ 	IIO_MOD_TEMP_OBJECT,
++	IIO_MOD_NORTH_MAGN,
++	IIO_MOD_NORTH_TRUE,
++	IIO_MOD_NORTH_MAGN_TILT_COMP,
++	IIO_MOD_NORTH_TRUE_TILT_COMP
  };
  
- /* Channel definitions */
-@@ -89,6 +97,42 @@ static const struct iio_chan_spec magn_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_MAGN,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+	}, {
-+		.type = IIO_ROT,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_NORTH_TRUE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
- 	}
- };
- 
-@@ -245,6 +289,13 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
- 		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS)
- 				+ CHANNEL_SCAN_INDEX_X;
- 	break;
-+	case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
-+	case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
-+		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH)
-+				+ CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP;
-+	break;
- 	default:
- 		return -EINVAL;
- 	}
+ enum iio_event_type {
 -- 
 1.9.3
 
