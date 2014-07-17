@@ -1,116 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:41207 "EHLO pmeerw.net"
+Received: from mga02.intel.com ([134.134.136.20]:18599 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934817AbaGPSdE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 14:33:04 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH 03/13] iio:bma180: Enable use of device without IRQ
-Date: Wed, 16 Jul 2014 20:32:46 +0200
-Message-Id: <1405535576-26482-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
-References: <1405535576-26482-1-git-send-email-pmeerw@pmeerw.net>
+	id S1754993AbaGQAhE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 16 Jul 2014 20:37:04 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/6] iio: accel: kxcjk-1013: Use try_reenable to ack intr
+Date: Wed, 16 Jul 2014 17:42:30 -0700
+Message-Id: <1405557754-19601-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/accel/bma180.c | 54 +++++++++++++++++++++++++---------------------
- 1 file changed, 29 insertions(+), 25 deletions(-)
+This chip needs explicit interrupt ack, introducing try_reenable
+callback. Also removed separate function to ack interrupt as this
+doesn't add any value.
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index a077cc8..f5e26fb 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -529,7 +529,6 @@ static int bma180_probe(struct i2c_client *client,
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/kxcjk-1013.c | 33 ++++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 4702aeb..bff5161 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -138,19 +138,6 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+ 	return 0;
+ }
+ 
+-static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
+-{
+-	int ret;
+-
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_int_rel\n");
+-		return ret;
+-	}
+-
+-	return ret;
+-}
+-
+ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
  {
- 	struct bma180_data *data;
- 	struct iio_dev *indio_dev;
--	struct iio_trigger *trig;
  	int ret;
+@@ -498,15 +485,11 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+ 			 indio_dev->masklength) {
+ 		ret = kxcjk1013_get_acc_reg(data, bit);
+ 		if (ret < 0) {
+-			kxcjk1013_chip_ack_intr(data);
+ 			mutex_unlock(&data->mutex);
+ 			goto err;
+ 		}
+ 		data->buffer[i++] = ret;
+ 	}
+-
+-	kxcjk1013_chip_ack_intr(data);
+-
+ 	mutex_unlock(&data->mutex);
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-@@ -553,29 +552,31 @@ static int bma180_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &bma180_info;
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+@@ -517,6 +500,21 @@ err:
+ 	return IRQ_HANDLED;
+ }
  
--	trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
--	if (!trig) {
--		ret = -ENOMEM;
--		goto err_chip_disable;
--	}
-+	if (client->irq > 0) {
-+		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
-+			indio_dev->id);
-+		if (!data->trig) {
-+			ret = -ENOMEM;
-+			goto err_chip_disable;
-+		}
- 
--	ret = devm_request_irq(&client->dev, client->irq,
--			iio_trigger_generic_data_rdy_poll,
--			IRQF_TRIGGER_RISING, BMA180_IRQ_NAME, trig);
--	if (ret) {
--		dev_err(&client->dev, "unable to request IRQ\n");
--		goto err_trigger_free;
--	}
-+		ret = devm_request_irq(&client->dev, client->irq,
-+			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
-+			BMA180_IRQ_NAME, data->trig);
-+		if (ret) {
-+			dev_err(&client->dev, "unable to request IRQ\n");
-+			goto err_trigger_free;
-+		}
- 
--	trig->dev.parent = &client->dev;
--	trig->ops = &bma180_trigger_ops;
--	iio_trigger_set_drvdata(trig, indio_dev);
--	data->trig = trig;
--	indio_dev->trig = trig;
-+		data->trig->dev.parent = &client->dev;
-+		data->trig->ops = &bma180_trigger_ops;
-+		iio_trigger_set_drvdata(data->trig, indio_dev);
-+		indio_dev->trig = data->trig;
- 
--	ret = iio_trigger_register(trig);
--	if (ret)
--		goto err_trigger_free;
-+		ret = iio_trigger_register(data->trig);
-+		if (ret)
-+			goto err_trigger_free;
++static int kxcjk1013_trig_try_reen(struct iio_trigger *trig)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
++		return ret;
 +	}
++
++	return 0;
++}
++
+ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
+ {
+@@ -543,6 +541,7 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 			bma180_trigger_handler, NULL);
-@@ -595,9 +596,10 @@ static int bma180_probe(struct i2c_client *client,
- err_buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
- err_trigger_unregister:
--	iio_trigger_unregister(trig);
-+	if (data->trig)
-+		iio_trigger_unregister(data->trig);
- err_trigger_free:
--	iio_trigger_free(trig);
-+	iio_trigger_free(data->trig);
- err_chip_disable:
- 	bma180_chip_disable(data);
+ static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
+ 	.set_trigger_state = kxcjk1013_data_rdy_trigger_set_state,
++	.try_reenable = kxcjk1013_trig_try_reen,
+ 	.owner = THIS_MODULE,
+ };
  
-@@ -611,8 +613,10 @@ static int bma180_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
--	iio_trigger_unregister(data->trig);
--	iio_trigger_free(data->trig);
-+	if (data->trig) {
-+		iio_trigger_unregister(data->trig);
-+		iio_trigger_free(data->trig);
-+	}
- 
- 	mutex_lock(&data->mutex);
- 	bma180_chip_disable(data);
 -- 
-1.9.1
+1.7.11.7
 
