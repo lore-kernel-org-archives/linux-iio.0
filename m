@@ -1,100 +1,147 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:48543 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754898AbaGQLrE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:47:04 -0400
-Message-ID: <53C7B7AF.3070103@gmail.com>
-Date: Thu, 17 Jul 2014 19:46:55 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-MIME-Version: 1.0
-To: Arnd Bergmann <arnd@arndb.de>
-CC: Guenter Roeck <linux@roeck-us.net>,
-	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-	Liqin Chen <liqin.linux@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7977B.9090903@gmail.com> <7018119.hVYUML2rzD@wuerfel>
-In-Reply-To: <7018119.hVYUML2rzD@wuerfel>
-Content-Type: text/plain; charset=ISO-8859-1
+Received: from mailout4.samsung.com ([203.254.224.34]:14293 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756951AbaGQLX1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:23:27 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	jic23@kernel.org
+Subject: [PATCH 1/4 v2] iio: exyno-adc: use syscon for PMU register access
+Date: Thu, 17 Jul 2014 16:49:50 +0530
+Message-id: <1405595993-16661-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
+References: <1405595993-16661-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch updates the IIO based ADC driver to use syscon and regmap
+APIs to access and use PMU registers instead of remapping the PMU
+registers in the driver.
 
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+---
+Changes since v1:
+None
 
-On 07/17/2014 06:38 PM, Arnd Bergmann wrote:
-> On Thursday 17 July 2014 17:29:31 Chen Gang wrote:
->>>
->>> COMPILE_TEST is a great tool in general, but it has its limits.
->>> In particular, the case for !CONFIG_IOMEM is completely obscure
->>> and we won't find any bugs by allowing more drivers to be built
->>> in those configurations, but attempting to do it would cause
->>> endless churn by changing each instance of 'depends on HAS_IOMEM'
->>> to 'depends on HAS_IOMEM || COMPILE_TEST'.
->>>
->>
->> Architecture members and driver members really have different tastes,
->> they are different roles. It really need additional discussion.
->>
->> For me, I only want to change devm_io*map*, not touch so much.
-> 
-> But what do you gain from that? All drivers that need these
-> functions should already 'depends on HAS_IOMEM' and if they don't,
-> we should fix /that/ instead. I don't see this dependency as any
-> different from a lot of others (PCI, DMAENGINE, HAVE_CLK, ...)
-> that we use to intentionally annotate drivers that need a particular
-> feature to be present for compilation. Do you want to do the
-> same hack to those?
-> 
->> Welcome any other members' idea or suggestions.
-> 
->>> Note that s390 no has gained support for IOMEM, tile has it most
->>> of the time (when PCI is enabled, so you get it in half the
->>> test builds already), score should set HAS_IOMEM and doesn't
->>> even have public compilers, and uml doesn't even compile in
->>> latest mainline. Nothing else ever sets NO_IOMEM.
->>>
->>
+ drivers/iio/adc/exynos_adc.c |   29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
-I guess, we are just discussing about them in another threads, so I skip
-them. If it is still necessary to reply (e.g. I misunderstand), please
-let me know, thanks.
-
->> In latest gcc and binutils, can compile score cross compiler
->> successfully for building kernel (but I am not quite sure whether the
->> compiling result are really OK, but I guess so).
-> 
-> Ok. Would you mind sending a patch that enables HAS_IOMEM on
-> score?
->  
-
-For me, welcome the score related maintainers' idea and suggestions.
-
->> And next (maybe after finish allmodconfig for microblaze), I shall try
->> to let uml pass allmodconfig for linux-next tree.
-> 
-> That is a fair goal, but it seems better to do that by ensuring
-> we don't build any code that tries to call the MMIO functions
-> rather than trying to make them build.
-> 
-
-When I am performing uml, I will try and also communicate with the
-related maintainers for it (their suggestions and ideas are valuable).
-
-Thanks.
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index b63e882..60847ef 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -38,6 +38,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/machine.h>
+ #include <linux/iio/driver.h>
++#include <linux/mfd/syscon.h>
++#include <linux/regmap.h>
+ 
+ /* EXYNOS4412/5250 ADC_V1 registers definitions */
+ #define ADC_V1_CON(x)		((x) + 0x00)
+@@ -79,11 +81,14 @@
+ 
+ #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+ 
++#define EXYNOS_ADCV1_PHY_OFFSET	0x0718
++#define EXYNOS_ADCV2_PHY_OFFSET	0x0720
++
+ struct exynos_adc {
+ 	struct exynos_adc_data	*data;
+ 	struct device		*dev;
+ 	void __iomem		*regs;
+-	void __iomem		*enable_reg;
++	struct regmap		*pmu_map;
+ 	struct clk		*clk;
+ 	struct clk		*sclk;
+ 	unsigned int		irq;
+@@ -98,6 +103,7 @@ struct exynos_adc {
+ struct exynos_adc_data {
+ 	int num_channels;
+ 	bool needs_sclk;
++	int phy_offset;
+ 
+ 	void (*init_hw)(struct exynos_adc *info);
+ 	void (*exit_hw)(struct exynos_adc *info);
+@@ -169,7 +175,7 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
+ {
+ 	u32 con1;
+ 
+-	writel(1, info->enable_reg);
++	regmap_write(info->pmu_map, info->data->phy_offset, 1);
+ 
+ 	/* set default prescaler values and Enable prescaler */
+ 	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+@@ -183,7 +189,7 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
+ {
+ 	u32 con;
+ 
+-	writel(0, info->enable_reg);
++	regmap_write(info->pmu_map, info->data->phy_offset, 0);
+ 
+ 	con = readl(ADC_V1_CON(info->regs));
+ 	con |= ADC_V1_CON_STANDBY;
+@@ -208,6 +214,7 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
+ 
+ static struct exynos_adc_data const exynos_adc_v1_data = {
+ 	.num_channels	= MAX_ADC_V1_CHANNELS,
++	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+ 
+ 	.init_hw	= exynos_adc_v1_init_hw,
+ 	.exit_hw	= exynos_adc_v1_exit_hw,
+@@ -219,7 +226,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
+ {
+ 	u32 con1, con2;
+ 
+-	writel(1, info->enable_reg);
++	regmap_write(info->pmu_map, info->data->phy_offset, 1);
+ 
+ 	con1 = ADC_V2_CON1_SOFT_RESET;
+ 	writel(con1, ADC_V2_CON1(info->regs));
+@@ -236,7 +243,7 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
+ {
+ 	u32 con;
+ 
+-	writel(0, info->enable_reg);
++	regmap_write(info->pmu_map, info->data->phy_offset, 0);
+ 
+ 	con = readl(ADC_V2_CON1(info->regs));
+ 	con &= ~ADC_CON_EN_START;
+@@ -271,10 +278,12 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
+ 
+ static struct exynos_adc_data const exynos_adc_v2_data = {
+ 	__EXYNOS_ADC_V2_DATA
++	.phy_offset = EXYNOS_ADCV2_PHY_OFFSET,
+ };
+ 
+ static struct exynos_adc_data const exynos3250_adc_v2_data = {
+ 	__EXYNOS_ADC_V2_DATA
++	.phy_offset = EXYNOS_ADCV1_PHY_OFFSET,
+ 	.needs_sclk = true,
+ };
+ 
+@@ -437,10 +446,12 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(info->regs))
+ 		return PTR_ERR(info->regs);
+ 
+-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+-	if (IS_ERR(info->enable_reg))
+-		return PTR_ERR(info->enable_reg);
++	info->pmu_map = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
++					"samsung,syscon-phandle");
++	if (IS_ERR(info->pmu_map)) {
++		dev_err(&pdev->dev, "syscon regmap lookup failed.\n");
++		return PTR_ERR(info->pmu_map);
++	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0) {
 -- 
-Chen Gang
+1.7.9.5
 
-Open, share, and attitude like air, water, and life which God blessed
