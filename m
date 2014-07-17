@@ -1,388 +1,204 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:18636 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755030AbaGQAhF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 16 Jul 2014 20:37:05 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 5/6] iio: accel: kxcjk-1013: Support thresholds
-Date: Wed, 16 Jul 2014 17:42:33 -0700
-Message-Id: <1405557754-19601-5-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gang.chen.5i5j@gmail.com>
+Message-ID: <53C7269E.4010702@gmail.com>
+Date: Thu, 17 Jul 2014 09:27:58 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+MIME-Version: 1.0
+To: Guenter Roeck <linux@roeck-us.net>,
+ Richard Weinberger <richard@nod.at>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>,
+ Lennox Wu <lennox.wu@gmail.com>,
+ Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>,
+ msalter@redhat.com, linux-pwm@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
+ linux-input@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+ Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
+ Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com>
+In-Reply-To: <53C53CE1.4090803@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This chip can operate in two modes. In one mode it can issue periodic
-interrupts based on sample rate setting or when there is a motion.
-Using events mechanism to allow configuration and receive events.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+
+On 07/15/2014 10:38 PM, Chen Gang wrote:
+> On 07/15/2014 09:11 AM, Chen Gang wrote:
+>>
+>>
+>> On 07/15/2014 08:53 AM, Guenter Roeck wrote:
+>>> On 07/14/2014 05:34 PM, Chen Gang wrote:
+>>>> On 07/14/2014 05:22 PM, Chen Gang wrote:
+>>>>>
+>>>>> 在 2014年7月14日，下午4:57，Richard Weinberger <richard@nod.at> 写道：
+>>>>>
+>>>>>> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
+>>>>>>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
+>>>>>>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
+>>>>>>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
+>>>>>>>>>> Maybe we could add COMPILE_TEST to the version string too?
+>>>>>>>>>> Just to detect such kernels fast in user bug reports...
+>>>>>>>>>
+>>>>>>>>> What kind of bug report are you going to get?
+>>>>>>>>
+>>>>>>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
+>>>>>>>> complains that it does not work. :)
+>>>>>>>
+>>>>>>> These drivers are typically drivers for some SoC peripheral and the
+>>>>>>> device will simply physically not exist on a platform that does not
+>>>>>>> provide HAS_IOMEM. This is not really any
+>>>>>>> different from making the driver selectable via COMPILE_TEST for
+>>>>>>> any other platform. To hit the issue you'd have to instantiate a
+>>>>>>> device driver instance for a device that
+>>>>>>> physically does not exist. This will always result in a failure.
+>>>>>>
+>>>>>> Okay, you have convinced me. :)
+>>>>>>
+>>>>
+>>>> After search the history patches, I found one related patch which made
+>>>> by myself (when I am in Asianux):
+>>>>
+>>>>    "https://lkml.org/lkml/2013/7/1/641"
+>>>>
+>>>> For me, it is a long discussion, and forced many members have to join
+>>>> in. Please help check again.
+>>>>
+>>>
+>>> One thing you could try would be to return NULL (or where appropriate
+>>> an error) in the #else case of CONFIG_HAS_IOMEM and CONFIG_HAS_IOPORT,
+>>> ie dont take COMPILE_TEST into account at all. Obviously that means
+>>> you won't be able to dump a warning message in the COMPILE_TEST
+>>> case, but at least the code would compile. The rejection of above patch
+>>> would make a good case for this approach.
+>>>
+
+For me, only let 'devm_io*map*' support COMPILE_TEST is OK, that can fix
+all related issues:
+
+
+[PATCH] lib: devres: Add dumy functions to support COMPILE_TEST when no IOMEM
+
+For some architectures which no IOMEM, 'devres' will be skipped. But
+many drivers may still want COMPILE_TEST, so let 'devres' support it.
+
+The related error (with allmodconfig under score):
+
+    MODPOST 1365 modules
+  ERROR: "devm_ioremap_resource" [drivers/watchdog/tegra_wdt.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/watchdog/of_xilinx_wdt.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/staging/iio/adc/mxs-lradc.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/input/serio/olpc_apsp.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/input/serio/arc_ps2.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-xgene.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-stk17ta8.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1742.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1553.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1511.ko] undefined!
+  ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1286.ko] undefined!
+  ERROR: "devm_ioremap" [drivers/rtc/rtc-rp5c01.ko] undefined!
+  ERROR: "devm_ioremap" [drivers/rtc/rtc-msm6242.ko] undefined!
+  ERROR: "devm_ioremap" [drivers/rtc/rtc-m48t59.ko] undefined!
+  ERROR: "devm_ioremap" [drivers/rtc/rtc-m48t35.ko] undefined!
+  ERROR: "devm_ioremap" [drivers/rtc/rtc-bq4802.ko] undefined!
+
+
+Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
 ---
- drivers/iio/accel/kxcjk-1013.c | 238 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 230 insertions(+), 8 deletions(-)
+ include/linux/device.h |  9 +++++++++
+ include/linux/io.h     | 30 +++++++++++++++++++++++++++++-
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 975f8a6..f5bb682 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -27,6 +27,7 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/trigger.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/accel/kxcjk_1013.h>
-@@ -92,6 +93,9 @@ struct kxcjk1013_data {
- 	u8 odr_bits;
- 	u8 range;
- 	bool active_high_intr;
-+	int ev_enable_state;
-+	int wake_thres;
-+	int wake_dur;
- 	bool trigger_on;
- };
+diff --git a/include/linux/device.h b/include/linux/device.h
+index c2421e0..a7500c3 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -630,7 +630,16 @@ extern unsigned long devm_get_free_pages(struct device *dev,
+ 					 gfp_t gfp_mask, unsigned int order);
+ extern void devm_free_pages(struct device *dev, unsigned long addr);
  
-@@ -116,6 +120,23 @@ static const struct {
- 			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
- 			{1600, 0, 0x07} };
++#ifdef CONFIG_HAS_IOMEM
+ void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
++#elif defined(CONFIG_COMPILE_TEST)
++static inline void __iomem *devm_ioremap_resource(struct device *dev,
++						struct resource *res)
++{
++	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
++	return (__force void __iomem *)ERR_PTR(-ENXIO);
++}
++#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
  
-+static const struct {
-+	int val;
-+	int val2;
-+	int odr_bits;
-+} wake_odr_data_rate_table[] = { {0, 781000, 0x00},
-+				 {1, 563000, 0x01},
-+				 {3, 125000, 0x02},
-+				 {6, 250000, 0x03},
-+				 {12, 500000, 0x04},
-+				 {25, 0, 0x05},
-+				 {50, 0, 0x06},
-+				 {100, 0, 0x06},
-+				 {200, 0, 0x06},
-+				 {400, 0, 0x06},
-+				 {800, 0, 0x06},
-+				 {1600, 0, 0x06} };
-+
- /* Refer to section 4 of the specification */
- static const struct {
- 	int odr_bits;
-@@ -283,10 +304,36 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- 	return 0;
+ /* allows to add/remove a custom action to devres stack */
+ int devm_add_action(struct device *dev, void (*action)(void *), void *data);
+diff --git a/include/linux/io.h b/include/linux/io.h
+index b76e6e5..59128aa 100644
+--- a/include/linux/io.h
++++ b/include/linux/io.h
+@@ -58,14 +58,42 @@ static inline void devm_ioport_unmap(struct device *dev, void __iomem *addr)
  }
+ #endif
  
-+static int kxcjk1013_chip_update_thresholds(struct kxcjk1013_data *data)
++#ifdef CONFIG_HAS_IOMEM
++
+ void __iomem *devm_ioremap(struct device *dev, resource_size_t offset,
+ 			    unsigned long size);
+ void __iomem *devm_ioremap_nocache(struct device *dev, resource_size_t offset,
+ 				    unsigned long size);
+ void devm_iounmap(struct device *dev, void __iomem *addr);
++void devm_ioremap_release(struct device *dev, void *res);
++
++#elif defined(CONFIG_COMPILE_TEST)
++
++static inline void __iomem *devm_ioremap(struct device *dev,
++				resource_size_t offset, unsigned long size)
 +{
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					KXCJK1013_REG_WAKE_TIMER,
-+					data->wake_dur);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"Error writing reg_wake_timer\n");
-+		return ret;
-+	}
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					KXCJK1013_REG_WAKE_THRES,
-+					data->wake_thres);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"Error writing reg_wake_thres\n");
-+		return ret;
-+	}
-+
-+	return 0;
++	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
++	return NULL;
++}
++static inline void __iomem *devm_ioremap_nocache(struct device *dev,
++				resource_size_t offset, unsigned long size)
++{
++	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
++	return NULL;
 +}
 +
- static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
- 					  bool status)
- {
- 	int ret;
-+	u8 intr_bit;
- 	enum kxcjk1013_mode store_mode;
- 
- 	ret = kxcjk1013_get_mode(data, &store_mode);
-@@ -316,6 +363,16 @@ static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
- 		return ret;
- 	}
- 
-+	if (data->wake_thres) {
-+		if (status) {
-+			ret = kxcjk1013_chip_update_thresholds(data);
-+			if (ret < 0)
-+				return ret;
-+		}
-+		intr_bit = KXCJK1013_REG_CTRL1_BIT_WUFE;
-+	} else
-+		intr_bit = KXCJK1013_REG_CTRL1_BIT_DRDY;
-+
- 	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-@@ -323,9 +380,10 @@ static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
- 	}
- 
- 	if (status)
--		ret |= KXCJK1013_REG_CTRL1_BIT_DRDY;
-+		ret |= intr_bit;
- 	else
--		ret &= ~KXCJK1013_REG_CTRL1_BIT_DRDY;
-+		ret &= ~(KXCJK1013_REG_CTRL1_BIT_WUFE |
-+			 KXCJK1013_REG_CTRL1_BIT_DRDY);
- 
- 	ret = i2c_smbus_write_byte_data(data->client,
- 					KXCJK1013_REG_CTRL1, ret);
-@@ -357,6 +415,20 @@ static int kxcjk1013_convert_freq_to_bit(int val, int val2)
- 	return -EINVAL;
- }
- 
-+static int kxcjk1013_convert_wake_odr_to_bit(int val, int val2)
++static inline void devm_iounmap(struct device *dev, void __iomem *addr)
 +{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(wake_odr_data_rate_table); ++i) {
-+		if (wake_odr_data_rate_table[i].val == val &&
-+			wake_odr_data_rate_table[i].val2 == val2) {
-+			return wake_odr_data_rate_table[i].odr_bits;
-+		}
-+	}
-+
-+	return -EINVAL;
 +}
 +
- static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- {
- 	int ret;
-@@ -385,6 +457,17 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- 
- 	data->odr_bits = odr_bits;
- 
-+	odr_bits = kxcjk1013_convert_wake_odr_to_bit(val, val2);
-+	if (odr_bits < 0)
-+		return odr_bits;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL2,
-+					odr_bits);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "Error writing reg_ctrl2\n");
-+		return ret;
-+	}
-+
- 	if (store_mode == OPERATION) {
- 		ret = kxcjk1013_set_mode(data, OPERATION);
- 		if (ret < 0)
-@@ -567,6 +650,94 @@ static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int kxcjk1013_read_event(struct iio_dev *indio_dev,
-+				   const struct iio_chan_spec *chan,
-+				   enum iio_event_type type,
-+				   enum iio_event_direction dir,
-+				   enum iio_event_info info,
-+				   int *val, int *val2)
++static inline void devm_ioremap_release(struct device *dev, void *res)
 +{
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+
-+	*val2 = 0;
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		*val = data->wake_thres;
-+		break;
-+	case IIO_EV_INFO_PERIOD:
-+		*val = data->wake_dur;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return IIO_VAL_INT;
 +}
 +
-+static int kxcjk1013_write_event(struct iio_dev *indio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir,
-+				    enum iio_event_info info,
-+				    int val, int val2)
-+{
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
++#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
 +
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		data->wake_thres = val;
-+		break;
-+	case IIO_EV_INFO_PERIOD:
-+		data->wake_dur	= val;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int kxcjk1013_read_event_config(struct iio_dev *indio_dev,
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir)
-+{
-+
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+
-+	return data->ev_enable_state;
-+}
-+
-+static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
-+					const struct iio_chan_spec *chan,
-+					enum iio_event_type type,
-+					enum iio_event_direction dir,
-+					int state)
-+{
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (data->trigger_on)
-+		return -EAGAIN;
-+
-+	if (state && data->ev_enable_state)
-+		return 0;
-+
-+	mutex_lock(&data->mutex);
-+	ret = kxcjk1013_chip_setup_interrupt(data, state);
-+	if (!ret) {
-+		ret = kxcjk1013_set_power_state(data, state);
-+		if (ret < 0) {
-+			mutex_unlock(&data->mutex);
-+			return ret;
-+		}
-+	}
-+	data->ev_enable_state = state;
-+	mutex_unlock(&data->mutex);
-+
-+	return 0;
-+}
-+
- static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
- 				      struct iio_trigger *trig)
- {
-@@ -593,6 +764,14 @@ static const struct attribute_group kxcjk1013_attrs_group = {
- 	.attrs = kxcjk1013_attributes,
- };
+ int check_signature(const volatile void __iomem *io_addr,
+ 			const unsigned char *signature, int length);
+-void devm_ioremap_release(struct device *dev, void *res);
  
-+static const struct iio_event_spec kxcjk1013_event = {
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_EITHER,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+				 BIT(IIO_EV_INFO_ENABLE) |
-+				 BIT(IIO_EV_INFO_PERIOD)
-+};
-+
- #define KXCJK1013_CHANNEL(_axis) {					\
- 	.type = IIO_ACCEL,						\
- 	.modified = 1,							\
-@@ -608,6 +787,8 @@ static const struct attribute_group kxcjk1013_attrs_group = {
- 		.shift = 4,						\
- 		.endianness = IIO_LE,					\
- 	},								\
-+	.event_spec = &kxcjk1013_event,				\
-+	.num_event_specs = 1						\
- }
- 
- static const struct iio_chan_spec kxcjk1013_channels[] = {
-@@ -621,6 +802,10 @@ static const struct iio_info kxcjk1013_info = {
- 	.attrs			= &kxcjk1013_attrs_group,
- 	.read_raw		= kxcjk1013_read_raw,
- 	.write_raw		= kxcjk1013_write_raw,
-+	.read_event_value	= kxcjk1013_read_event,
-+	.write_event_value	= kxcjk1013_write_event,
-+	.write_event_config	= kxcjk1013_write_event_config,
-+	.read_event_config	= kxcjk1013_read_event_config,
- 	.validate_trigger	= kxcjk1013_validate_trigger,
- 	.driver_module		= THIS_MODULE,
- };
-@@ -675,6 +860,9 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct kxcjk1013_data *data = iio_priv(indio_dev);
- 	int ret;
- 
-+	if (data->ev_enable_state)
-+		return -EAGAIN;
-+
- 	if (state && data->trigger_on)
- 		return 0;
- 
-@@ -699,6 +887,38 @@ static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						     0,
-+						     IIO_MOD_X_OR_Y_OR_Z,
-+						     IIO_EV_TYPE_THRESH,
-+						     IIO_EV_DIR_EITHER),
-+						     iio_get_time_ns());
-+
-+	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
-+	if (ret < 0)
-+		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+
-+	if (data->trigger_on) {
-+		iio_trigger_poll(data->trig);
-+		return IRQ_HANDLED;
-+	} else
-+		return IRQ_WAKE_THREAD;
-+}
-+
- static int kxcjk1013_acpi_gpio_probe(struct i2c_client *client,
- 				     struct kxcjk1013_data *data)
- {
-@@ -783,11 +1003,13 @@ static int kxcjk1013_probe(struct i2c_client *client,
- 
- 		data->trig_mode = true;
- 
--		ret = devm_request_irq(&client->dev, client->irq,
--					iio_trigger_generic_data_rdy_poll,
--					IRQF_TRIGGER_RISING,
--					KXCJK1013_IRQ_NAME,
--					trig);
-+		ret = devm_request_threaded_irq(&client->dev, client->irq,
-+						kxcjk1013_data_rdy_trig_poll,
-+						kxcjk1013_event_handler,
-+						IRQF_TRIGGER_RISING |
-+								IRQF_ONESHOT,
-+						KXCJK1013_IRQ_NAME,
-+						indio_dev);
- 		if (ret) {
- 			dev_err(&client->dev, "unable to request IRQ\n");
- 			goto err_trigger_free;
-@@ -889,7 +1111,7 @@ static int kxcjk1013_resume(struct device *dev)
- 
- 	mutex_lock(&data->mutex);
- 	/* Check, if the suspend occured while active */
--	if (data->trigger_on)
-+	if (data->trigger_on || data->ev_enable_state)
- 		ret = kxcjk1013_set_mode(data, OPERATION);
- 	mutex_unlock(&data->mutex);
- 
+ /*
+  * Some systems do not have legacy ISA devices.
 -- 
-1.7.11.7
+1.9.2.459.g68773ac
 
+>>
+>> OK, thanks: at least, it can be improved.  But still welcome any other
+>> opinions of another related members.
+>>
+> 
+> If no reply within 3 days (2014-07-18), I shall try to send related
+> patch for it within this week end (2014-07-20).
+> 
+> Thanks.
+> 
+
+-- 
+Chen Gang
+
+Open, share, and attitude like air, water, and life which God blessed
