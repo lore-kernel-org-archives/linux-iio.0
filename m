@@ -1,35 +1,113 @@
-Return-Path: <reyad.attiyat@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:64341 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752709AbaGQSSn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 14:18:43 -0400
 From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
 Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v6 0/4] iio: Add support for rotation from north
-Date: Thu, 17 Jul 2014 13:18:25 -0500
-Message-Id: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH v6 4/4] iio: hid-sensor-magn-3d: Add support for rotation from north
+Date: Thu, 17 Jul 2014 13:18:29 -0500
+Message-Id: <1405621109-21147-5-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
+References: <1405621109-21147-1-git-send-email-reyad.attiyat@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This series of patches modifies magn-3d driver to handle the rotation
-from north usage. This is done by scanning the report and then building
-the iio arrays (vals and channels) dynamically.
+Add the HID usage attribute ID's and IIO channel info for rotation
+from north support.
 
-Changes from V5
-- Fix kernel panics from dereference
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 53 ++++++++++++++++++++++++++-
+ 1 file changed, 52 insertions(+), 1 deletion(-)
 
-Reyad Attiyat (4):
-  iio: Documentation: Add documentation for rotation from north sensor
-    usage attributes
-  iio: types: Added support for rotation from north usage attributes
-  iio: hid-sensor-magn-3d: Scan for usage attributes before setting up
-    iio channels
-  iio: hid-sensor-magn-3d: Add support for rotation from north
-
- Documentation/ABI/testing/sysfs-bus-iio       |  82 +++++++++++
- drivers/iio/industrialio-core.c               |   4 +
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 199 ++++++++++++++++++++------
- include/linux/iio/types.h                     |   4 +
- 4 files changed, 245 insertions(+), 44 deletions(-)
-
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index d3b9114..3ec777a 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -35,6 +35,10 @@ enum magn_3d_channel {
+ 	CHANNEL_SCAN_INDEX_X,
+ 	CHANNEL_SCAN_INDEX_Y,
+ 	CHANNEL_SCAN_INDEX_Z,
++	CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP,
++	CHANNEL_SCAN_INDEX_NORTH_TRUE_TILT_COMP,
++	CHANNEL_SCAN_INDEX_NORTH_MAGN,
++	CHANNEL_SCAN_INDEX_NORTH_TRUE,
+ 	MAGN_3D_CHANNEL_MAX,
+ };
+ 
+@@ -57,7 +61,11 @@ struct magn_3d_state {
+ static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
+ 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS,
+ 	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS,
+-	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS
++	HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS,
++	HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
++	HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH,
++	HID_USAGE_SENSOR_ORIENT_MAGN_NORTH,
++	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
+ };
+ 
+ /* Channel definitions */
+@@ -89,6 +97,42 @@ static const struct iio_chan_spec magn_3d_channels[] = {
+ 		BIT(IIO_CHAN_INFO_SCALE) |
+ 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+ 		BIT(IIO_CHAN_INFO_HYSTERESIS),
++	}, {
++		.type = IIO_ROT,
++		.modified = 1,
++		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++	}, {
++		.type = IIO_ROT,
++		.modified = 1,
++		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++	}, {
++		.type = IIO_ROT,
++		.modified = 1,
++		.channel2 = IIO_MOD_NORTH_MAGN,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++	}, {
++		.type = IIO_ROT,
++		.modified = 1,
++		.channel2 = IIO_MOD_NORTH_TRUE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
+ 	}
+ };
+ 
+@@ -245,6 +289,13 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
+ 		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS)
+ 				+ CHANNEL_SCAN_INDEX_X;
+ 	break;
++	case HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH:
++	case HID_USAGE_SENSOR_ORIENT_COMP_TRUE_NORTH:
++	case HID_USAGE_SENSOR_ORIENT_MAGN_NORTH:
++	case HID_USAGE_SENSOR_ORIENT_TRUE_NORTH:
++		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH)
++				+ CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP;
++	break;
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
 1.9.3
+
