@@ -1,89 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:49488 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756021AbaGRJsv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 05:48:51 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
-	ch.naveen@samsung.com, mark.rutland@arm.com,
-	devicetree@vger.kernel.org, kgene.kim@samsung.com,
-	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk,
-	linux-iio@vger.kernel.org, t.figa@samsung.com,
-	rdunlap@infradead.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	kyungmin.park@samsung.com, robh+dt@kernel.org, galak@codeaurora.org
-Subject: Re: [PATCHv6 2/4] iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
-Date: Fri, 18 Jul 2014 11:47:42 +0200
-Message-ID: <6485839.CnzmD0SeQj@wuerfel>
-In-Reply-To: <1405663186-26464-3-git-send-email-cw00.choi@samsung.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <1405663186-26464-3-git-send-email-cw00.choi@samsung.com>
+Received: from mail-pd0-f177.google.com ([209.85.192.177]:60074 "EHLO
+	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754657AbaGQL2q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 07:28:46 -0400
+Message-ID: <53C7B365.4080000@gmail.com>
+Date: Thu, 17 Jul 2014 19:28:37 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: Arnd Bergmann <arnd@arndb.de>, Lars-Peter Clausen <lars@metafoo.de>
+CC: Guenter Roeck <linux@roeck-us.net>,
+	Richard Weinberger <richard@nod.at>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>, cmetcalf@tilera.com
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel>
+In-Reply-To: <6485666.LVFO2YCEQx@wuerfel>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Friday 18 July 2014 14:59:44 Chanwoo Choi wrote:
-> This patch control special clock for ADC in Exynos series's FSYS block.
-> If special clock of ADC is registerd on clock list of common clk framework,
-> Exynos ADC drvier have to control this clock.
+On 07/17/2014 06:48 PM, Arnd Bergmann wrote:
+> On Thursday 17 July 2014 12:40:25 Lars-Peter Clausen wrote:
+>> On 07/17/2014 11:20 AM, Arnd Bergmann wrote:
+>>> On Thursday 17 July 2014 09:27:58 Chen Gang wrote:
+>>>>                                           gfp_t gfp_mask, unsigned int order);
+>>>>   extern void devm_free_pages(struct device *dev, unsigned long addr);
+>>>>
+>>>> +#ifdef CONFIG_HAS_IOMEM
+>>>>   void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+>>>> +#elif defined(CONFIG_COMPILE_TEST)
+>>>> +static inline void __iomem *devm_ioremap_resource(struct device *dev,
+>>>> +                                               struct resource *res)
+>>>> +{
+>>>> +       pr_warn("no hardware io memory, only for COMPILE_TEST\n");
+>>>> +       return (__force void __iomem *)ERR_PTR(-ENXIO);
+>>>> +}
+>>>> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
+>>>>
+>>>>   /* allows to add/remove a custom action to devres stack */
+>>>
+>>> To be honest, I think it's a bad idea to introduce wrappers functions
+>>> that are only available when CONFIG_COMPILE_TEST is set.
+>>>
+>>> COMPILE_TEST is a great tool in general, but it has its limits.
+>>> In particular, the case for !CONFIG_IOMEM is completely obscure
+>>> and we won't find any bugs by allowing more drivers to be built
+>>> in those configurations, but attempting to do it would cause
+>>> endless churn by changing each instance of 'depends on HAS_IOMEM'
+>>> to 'depends on HAS_IOMEM || COMPILE_TEST'.
+>>
+>> The point of this exercise is that we do not have to replace a good chunk of 
+>> 'depends on COMPILE_TEST' with 'depends on COMPILE_TEST && HAS_IOMEM'
 > 
-> Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
-> - 'adc' clock: bus clock for ADC
+> Ok, I see.
 > 
-> Exynos3250 has additional 'sclk_adc' clock as following:
-> - 'sclk_adc' clock: special clock for ADC which provide clock to internal ADC
+>> E.g. the typical Kconfig entry for your random SoC peripheral driver looks like
+>>
+>> config ARCH_FOOBAR_DRIVER
+>>         depends on ARCH_FOOBAR || COMPILE_TEST
+>>         ...
+>>
+>> Now when COMPILE_TEST is not set there is a implicit dependency on HAS_IOMEM 
+>> since the architecture will provide it. If COMPILE_TEST is selected the 
+>> driver will also be build-able on architectures that do no have HAS_IOMEM 
+>> and hence linking the driver fails. One way to fix this is of course to 
+>> replace the COMPILE_TEST with (COMPILE_TEST && HAS_IOMEM). But this is very 
+>> often overlooked and only noticed later on when somebody actually builds a 
+>> allyesconfig on an architecture that does not provide HAS_IOMEM. To avoid 
+>> these kinds of build errors and tedious fixup patches the idea is to provide 
+>> a stub function when HAS_IOMEM is not enabled, but COMPILE_TEST is enabled.
 > 
-> Exynos 4210/4212/4412 and Exynos5250/5420 has not included 'sclk_adc' clock
-> in FSYS_BLK. But, Exynos3250 based on Cortex-A7 has only included 'sclk_adc'
-> clock in FSYS_BLK.
+> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
+> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
+> to build on UML seems pointless to me and we special-case it in a number of
+> places already.
+> 
 
-Do you know if any of the older ADC blocks have an "sclk" input as well?
+According to current source code, tile still has chance to choose
+NO_IOMEM, for me, welcome the tile's maintainer's ideas or suggestions.
 
-Further, why is it called "sclk_adc" rather than just "sclk"?
 
-> @@ -199,13 +262,20 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
->         writel(con1 | ADC_CON_EN_START, ADC_V2_CON1(info->regs));
->  }
->  
-> +#define __EXYNOS_ADC_V2_DATA                           \
-> +       .num_channels   = MAX_ADC_V2_CHANNELS,          \
-> +       .init_hw        = exynos_adc_v2_init_hw,        \
-> +       .exit_hw        = exynos_adc_v2_exit_hw,        \
-> +       .clear_irq      = exynos_adc_v2_clear_irq,      \
-> +       .start_conv     = exynos_adc_v2_start_conv,     \
-> +
->  static struct exynos_adc_data const exynos_adc_v2_data = {
-> -       .num_channels   = MAX_ADC_V2_CHANNELS,
-> +       __EXYNOS_ADC_V2_DATA
-> +};
->  
-> -       .init_hw        = exynos_adc_v2_init_hw,
-> -       .exit_hw        = exynos_adc_v2_exit_hw,
-> -       .clear_irq      = exynos_adc_v2_clear_irq,
-> -       .start_conv     = exynos_adc_v2_start_conv,
-> +static struct exynos_adc_data const exynos3250_adc_v2_data = {
-> +       __EXYNOS_ADC_V2_DATA
-> +       .needs_sclk = true,
->  };
+Thanks.
+-- 
+Chen Gang
 
-I think the macro hurts readability. Please just duplicate the definition
-here.
-
->  static const struct of_device_id exynos_adc_match[] = {
-> @@ -215,6 +285,9 @@ static const struct of_device_id exynos_adc_match[] = {
->         }, {
->                 .compatible = "samsung,exynos-adc-v2",
->                 .data = (void *)&exynos_adc_v2_data,
-> +       }, {
-> +               .compatible = "samsung,exynos3250-adc-v2",
-> +               .data = (void *)&exynos3250_adc_v2_data,
->         },
->         {},
-
-Remove the '(void *)' cast here and mark the structure as 'const'.
-We intentionally use a 'const void *' type here to verify that
-the driver doesn't modify the per-device type data at runtime,
-which would be bad if you ever have multiple device instances.
-
-	Arnd
+Open, share, and attitude like air, water, and life which God blessed
