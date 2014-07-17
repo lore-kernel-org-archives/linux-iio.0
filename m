@@ -1,48 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37375 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752760AbaGRB1a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 21:27:30 -0400
-Date: Thu, 17 Jul 2014 18:27:29 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Himangi Saraogi <himangi774@gmail.com>
-Cc: devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Julia Lawall <julia.lawall@lip6.fr>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: question regarding drivers/staging/iio/adc/ad7280a.c
-Message-ID: <20140718012729.GA24211@kroah.com>
-References: <CAB78YHwneVuVBPujeKE=rEygvtyn=VvtLtd75+pvwqxPxYcB6g@mail.gmail.com>
- <53C5656F.9030200@kernel.org>
- <53C65E8F.2080708@metafoo.de>
- <CAB78YHzEPZf-8m0zwFz5PZWkqMuX9m5W01f2JGQ+7MbAkTACPg@mail.gmail.com>
- <20140717205815.GB1532@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140717205815.GB1532@kroah.com>
+Received: from smtp-out-175.synserver.de ([212.40.185.175]:1079 "EHLO
+	smtp-out-171.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S934305AbaGQP7t (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 11:59:49 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/4] iio: buffer: Fix demux table creation
+Date: Thu, 17 Jul 2014 17:59:46 +0200
+Message-Id: <1405612789-27964-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jul 17, 2014 at 01:58:15PM -0700, Greg Kroah-Hartman wrote:
-> On Thu, Jul 17, 2014 at 11:40:04PM +0530, Himangi Saraogi wrote:
-> > Hi,
-> > 
-> > I have sent in a patch for adding devm_kasprintf https://lkml.org/lkml/2014/7/
-> > 16/667.
-> > I will be updating this file and send in a patch once it is accepted. Was it
-> > the right thing
-> > to do to send the devm_kasprintf patch separately from the patch on the file to
-> > use it for,
-> > because the person applying the later may not see the dependency?
-> 
-> Well, you should have told me there was a dependancy :)
-> 
-> As I'll end up taking both of these patches in the end, I'll queue your
-> devm_kasprintf patch up in my staging-next tree so that it will work
-> properly with your patch.
+When creating the demux table we need to iterate over the selected scan mask for
+the buffer to get the samples which should be copied to destination buffer.
+Right now the code uses the mask which contains all active channels, which means
+the demux table contains entries which causes it to copy all the samples from
+source to destination buffer one by one without doing any demuxing.
 
-Now applied there, so all should be good, right?
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks,
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 2952ee0..0472ee2 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -963,7 +963,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 
+ 	/* Now we have the two masks, work from least sig and build up sizes */
+ 	for_each_set_bit(out_ind,
+-			 indio_dev->active_scan_mask,
++			 buffer->scan_mask,
+ 			 indio_dev->masklength) {
+ 		in_ind = find_next_bit(indio_dev->active_scan_mask,
+ 				       indio_dev->masklength,
+-- 
+1.8.0
 
-greg k-h
