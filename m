@@ -1,194 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:53462 "EHLO
-	mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750848AbaGSUqL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jul 2014 16:46:11 -0400
-Date: Sat, 19 Jul 2014 22:46:08 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Himangi Saraogi <himangi774@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, julia.lawall@lip6.fr,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] staging:iio:ad7280a: Use managed interfaces
-In-Reply-To: <53CAD915.506@kernel.org>
-Message-ID: <alpine.DEB.2.02.1407192245340.1989@localhost6.localdomain6>
-References: <20140719103341.GA18568@himangi-Dell> <53CAD915.506@kernel.org>
+Received: from mail-ie0-f177.google.com ([209.85.223.177]:64617 "EHLO
+	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932078AbaGRQXR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 12:23:17 -0400
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <6104032.PNRl85V92G@wuerfel>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
+	<1405663186-26464-4-git-send-email-cw00.choi@samsung.com>
+	<6104032.PNRl85V92G@wuerfel>
+Date: Sat, 19 Jul 2014 01:23:15 +0900
+Message-ID: <CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
+Subject: Re: [PATCHv6 3/4] iio: devicetree: Add DT binding documentation for
+ Exynos3250 ADC
+From: Chanwoo Choi <cwchoi00@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	naveen krishna <ch.naveen@samsung.com>,
+	Kukjin Kim <kgene.kim@samsung.com>,
+	Rob Herring <robh+dt@kernel.org>, pawel.moll@arm.com,
+	Mark Rutland <mark.rutland@arm.com>,
+	ijc+devicetree@hellion.org.uk, Kumar Gala <galak@codeaurora.org>,
+	rdunlap@infradead.org, Kyungmin Park <kyungmin.park@samsung.com>,
+	Tomasz Figa <t.figa@samsung.com>, linux-iio@vger.kernel.org,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	devicetree <devicetree@vger.kernel.org>,
+	linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Fri, Jul 18, 2014 at 6:50 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Friday 18 July 2014 14:59:45 Chanwoo Choi wrote:
+>>                         Must be "samsung,exynos-adc-v2" for
+>>                                 future controllers.
+>
+> It would be good to change 'future controllers' to something else now.
+> Presumably that word was used before the actual products were announced,
+> but now they are publically known.
+>
+>> +                       Must be "samsung,exynos3250-adc-v2" for
+>> +                               controllers compatible with ADC of Exynos3250.
+>
+> Doesn't this version have a specific name as well? The ADC block
+> seems to use version numbers, so better put those in here to avoid
+> confusion when another Exynos7890 comes out that uses the same
+> ADC as exynos3250.
+
+If don't add new compatible including specific exynos version,
+I would add new 'adc-needs-sclk' property with existing 'exynos-adc-v2'
+compatible name.
 
 
-On Sat, 19 Jul 2014, Jonathan Cameron wrote:
+Dear Naveen, Tomasz,
 
-> On 19/07/14 11:33, Himangi Saraogi wrote:
-> > This patch moves data allocated using unmanaged interfaces to managed
-> > interfaces like devm_kzalloc, devm_iio_device_register, devm_kasprintf,
-> > devm_request_threaded_irq and does away with the calls to free the
-> > allocated memory in the probe and remove functions. Some labels in the
-> > probe function are also removed.
-> > 
-> > Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-> cc'ing Lars who tends to look after Analog Devices drivers
-> and more specifically was involved in the thread that lead to this
-> patch.
-> 
-> Also, the devm_kasprintf does not appear to be in upstream so this
-> patch should have made an dependency clear.
-> 
-> https://lkml.org/lkml/2014/7/16/667
-> 
-> What is the intended merge path for that patch?
+If existing exynos-adc driver add just one property for 'sclk_adc'
+as following, exynos-adc could not include the exynos version
+in compatible name.
 
-Greg said that he would be taking it.  He already took the devm_kasprintf 
-patch.
+I need your opinion about it.
 
-julia
+                adc: adc@126C0000 {
+                        compatible = "samsung,exynos-adc-v2";
+                        reg = <0x126C0000 0x100>, <0x10020718 0x4>;
+                        interrupts = <0 137 0>;
+                        clock-names = "adc", "sclk_adc";
+                        clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
++                        adc-needs-sclk;
+                        #io-channel-cells = <1>;
+                        io-channel-ranges;
+                }
 
-> 
-> 
-> > ---
-> > I am not very sure if devmifying request_irq is a good idea as it
-> > leads to the freeing of the interrupt after the ad7280_write.
-> Agreed. I wouldn't do it!
-> 
-> Otherwise, all looks fine.
-> >   drivers/staging/iio/adc/ad7280a.c | 57
-> > ++++++++++++++-------------------------
-> >   1 file changed, 20 insertions(+), 37 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/ad7280a.c
-> > b/drivers/staging/iio/adc/ad7280a.c
-> > index d215edf..3706b3e 100644
-> > --- a/drivers/staging/iio/adc/ad7280a.c
-> > +++ b/drivers/staging/iio/adc/ad7280a.c
-> > @@ -486,8 +486,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
-> >   {
-> >   	int dev, ch, cnt;
-> > 
-> > -	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
-> > -			       sizeof(*st->channels), GFP_KERNEL);
-> > +	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 +
-> > 2,
-> > +				    sizeof(*st->channels), GFP_KERNEL);
-> >   	if (st->channels == NULL)
-> >   		return -ENOMEM;
-> > 
-> > @@ -547,8 +547,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
-> >   {
-> >   	int dev, ch, cnt;
-> > 
-> > -	st->iio_attr = kzalloc(sizeof(*st->iio_attr) * (st->slave_num + 1) *
-> > -				AD7280A_CELLS_PER_DEV * 2, GFP_KERNEL);
-> > +	st->iio_attr = devm_kzalloc(&st->spi->dev, sizeof(*st->iio_attr) *
-> > +				    (st->slave_num + 1) *
-> > +				    AD7280A_CELLS_PER_DEV * 2, GFP_KERNEL);
-> >   	if (st->iio_attr == NULL)
-> >   		return -ENOMEM;
-> > 
-> > @@ -564,7 +565,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
-> >   			st->iio_attr[cnt].dev_attr.store =
-> >   				ad7280_store_balance_sw;
-> >   			st->iio_attr[cnt].dev_attr.attr.name =
-> > -				kasprintf(GFP_KERNEL,
-> > +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-> >   					"in%d-in%d_balance_switch_en",
-> >   					(dev * AD7280A_CELLS_PER_DEV) + ch,
-> >   					(dev * AD7280A_CELLS_PER_DEV) + ch +
-> > 1);
-> > @@ -581,7 +582,8 @@ static int ad7280_attr_init(struct ad7280_state *st)
-> >   			st->iio_attr[cnt].dev_attr.store =
-> >   				ad7280_store_balance_timer;
-> >   			st->iio_attr[cnt].dev_attr.attr.name =
-> > -				kasprintf(GFP_KERNEL,
-> > "in%d-in%d_balance_timer",
-> > +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-> > +					"in%d-in%d_balance_timer",
-> >   					(dev * AD7280A_CELLS_PER_DEV) + ch,
-> >   					(dev * AD7280A_CELLS_PER_DEV) + ch +
-> > 1);
-> >   			ad7280_attributes[cnt] =
-> > @@ -900,48 +902,36 @@ static int ad7280_probe(struct spi_device *spi)
-> > 
-> >   	ret = ad7280_attr_init(st);
-> >   	if (ret < 0)
-> > -		goto error_free_channels;
-> > +		return ret;
-> > 
-> > -	ret = iio_device_register(indio_dev);
-> > +	ret = devm_iio_device_register(&spi->dev, indio_dev);
-> >   	if (ret)
-> > -		goto error_free_attr;
-> > +		return ret;
-> > 
-> >   	if (spi->irq > 0) {
-> >   		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
-> >   				   AD7280A_ALERT, 1,
-> >   				   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN);
-> >   		if (ret)
-> > -			goto error_unregister;
-> > +			return ret;
-> > 
-> >   		ret = ad7280_write(st, AD7280A_DEVADDR(st->slave_num),
-> >   				   AD7280A_ALERT, 0,
-> >   				   AD7280A_ALERT_GEN_STATIC_HIGH |
-> >   				   (pdata->chain_last_alert_ignore & 0xF));
-> >   		if (ret)
-> > -			goto error_unregister;
-> > -
-> > -		ret = request_threaded_irq(spi->irq,
-> > -					   NULL,
-> > -					   ad7280_event_handler,
-> > -					   IRQF_TRIGGER_FALLING |
-> > -					   IRQF_ONESHOT,
-> > -					   indio_dev->name,
-> > -					   indio_dev);
-> > +			return ret;
-> > +
-> > +		ret = devm_request_threaded_irq(&spi->dev, spi->irq, NULL,
-> > +						ad7280_event_handler,
-> > +						IRQF_TRIGGER_FALLING |
-> > +						IRQF_ONESHOT, indio_dev->name,
-> > +						indio_dev);
-> >   		if (ret)
-> > -			goto error_unregister;
-> > +			return ret;
-> >   	}
-> > 
-> >   	return 0;
-> > -error_unregister:
-> > -	iio_device_unregister(indio_dev);
-> > -
-> > -error_free_attr:
-> > -	kfree(st->iio_attr);
-> > -
-> > -error_free_channels:
-> > -	kfree(st->channels);
-> > -
-> > -	return ret;
-> >   }
-> > 
-> >   static int ad7280_remove(struct spi_device *spi)
-> > @@ -949,16 +939,9 @@ static int ad7280_remove(struct spi_device *spi)
-> >   	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> >   	struct ad7280_state *st = iio_priv(indio_dev);
-> > 
-> > -	if (spi->irq > 0)
-> > -		free_irq(spi->irq, indio_dev);
-> > -	iio_device_unregister(indio_dev);
-> > -
-> >   	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
-> >   			AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
-> > 
-> > -	kfree(st->channels);
-> > -	kfree(st->iio_attr);
-> > -
-> >   	return 0;
-> >   }
-> > 
-> > 
-> 
-> 
+Thanks,
+Chanwoo Choi
