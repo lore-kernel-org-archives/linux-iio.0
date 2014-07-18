@@ -1,82 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f169.google.com ([209.85.223.169]:50848 "EHLO
-	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030432AbaGRRCL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 13:02:11 -0400
+Received: from mail-ig0-f182.google.com ([209.85.213.182]:54285 "EHLO
+	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756009AbaGRQsT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 12:48:19 -0400
 MIME-Version: 1.0
-In-Reply-To: <5835825.JtcDoyOP8b@wuerfel>
+In-Reply-To: <10264770.8SXiIS8qhq@wuerfel>
 References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
-	<6104032.PNRl85V92G@wuerfel>
-	<CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
-	<5835825.JtcDoyOP8b@wuerfel>
-Date: Sat, 19 Jul 2014 02:02:09 +0900
-Message-ID: <CAGTfZH3mnPJ72wi7aFYoChe_OeuRVsUVo3KGRRLTV5scwPbO4g@mail.gmail.com>
-Subject: Re: [PATCHv6 3/4] iio: devicetree: Add DT binding documentation for
- Exynos3250 ADC
+	<32226622.5gSmvBRKvZ@wuerfel>
+	<CAGTfZH3vz9MLN+1fPM22zKE64oMNDgcib3is0nfzZhhLkmdNvw@mail.gmail.com>
+	<10264770.8SXiIS8qhq@wuerfel>
+Date: Sat, 19 Jul 2014 01:48:18 +0900
+Message-ID: <CAGTfZH1jOEj8D6kJSd=-dgpSiU=sxs5W2TM=-rNtsZb-SkRD9Q@mail.gmail.com>
+Subject: Re: [PATCHv6 2/4] iio: adc: exynos_adc: Control special clock of ADC
+ to support Exynos3250 ADC
 From: Chanwoo Choi <cwchoi00@gmail.com>
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
-	naveen krishna <ch.naveen@samsung.com>,
-	Kukjin Kim <kgene.kim@samsung.com>,
-	Rob Herring <robh+dt@kernel.org>, pawel.moll@arm.com,
+Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
 	Mark Rutland <mark.rutland@arm.com>,
-	ijc+devicetree@hellion.org.uk, Kumar Gala <galak@codeaurora.org>,
-	rdunlap@infradead.org, Kyungmin Park <kyungmin.park@samsung.com>,
-	Tomasz Figa <t.figa@samsung.com>, linux-iio@vger.kernel.org,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
 	devicetree <devicetree@vger.kernel.org>,
-	linux-doc@vger.kernel.org
+	Kukjin Kim <kgene.kim@samsung.com>, pawel.moll@arm.com,
+	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
+	Tomasz Figa <t.figa@samsung.com>, rdunlap@infradead.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	naveen krishna <ch.naveen@samsung.com>, jic23@kernel.org
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jul 19, 2014 at 1:33 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Saturday 19 July 2014 01:23:15 Chanwoo Choi wrote:
->> If don't add new compatible including specific exynos version,
->> I would add new 'adc-needs-sclk' property with existing 'exynos-adc-v2'
->> compatible name.
+On Sat, Jul 19, 2014 at 1:31 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Saturday 19 July 2014 01:11:53 Chanwoo Choi wrote:
 >>
+>>   Exynos3250/Exynos4/Exynos5 has 'adc' clock as following:
+>>   - 'adc' clock: bus clock for ADC
 >>
->> Dear Naveen, Tomasz,
->>
->> If existing exynos-adc driver add just one property for 'sclk_adc'
->> as following, exynos-adc could not include the exynos version
->> in compatible name.
->>
->> I need your opinion about it.
->>
->>                 adc: adc@126C0000 {
->>                         compatible = "samsung,exynos-adc-v2";
->>                         reg = <0x126C0000 0x100>, <0x10020718 0x4>;
->>                         interrupts = <0 137 0>;
->>                         clock-names = "adc", "sclk_adc";
->>                         clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
->> +                        adc-needs-sclk;
->>                         #io-channel-cells = <1>;
->>                         io-channel-ranges;
->>                 }
+>>   Exynos3250 has additional 'sclk_adc' clock as following:
+>>   - 'sclk_adc' clock: special clock for ADC which provide clock to internal ADC
 >
-> How about just making it an optional clock? That would be much
-> easier because then you can simply see if the clock itself is
-> there and use it, or otherwise ignore it.
+> The bus clock is often named "apb_pclk", but it's too late to change
+> that now, and it's not clear if the device is actually on APB.
+>
+> The problem with "sclk_adc" is that it's very close to the name used
+> in the clock provider, with is CLK_SCLK_TSADC. Please try to avoid
+> the ambiguity here and make it clear that they are not referring
+> to the same thing. "internal" or "special" might be good if you want
+> to avoid "sclk".
 
-The v1 of this patchset[1] got the clock of 'sclk_adc'  but if the dt node
-of ADC in dtsi file didn't include 'sclk_adc', print just warning message
-without stopping probe as following:
+OK, thanks for your feedback.
+I'll try to find proper name.
 
- [1] https://lkml.org/lkml/2014/4/10/710
-
-+       info->sclk = devm_clk_get(&pdev->dev, "sclk_adc");
-+       if (IS_ERR(info->sclk)) {
-+               dev_warn(&pdev->dev, "failed getting sclk clock, err = %ld\n",
-+                                                       PTR_ERR(info->sclk));
-+               info->sclk = NULL;
-+       }
-
-But, Tomasz Figa suggested the method[2] of this patchset(v6).
- [2] https://lkml.org/lkml/2014/4/11/189
-
-Thanks,
 Chanwoo Choi
