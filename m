@@ -1,55 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:41896 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752571AbaGTQuu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Jul 2014 12:50:50 -0400
-Message-ID: <53CBF3F6.2060601@kernel.org>
-Date: Sun, 20 Jul 2014 17:53:10 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.187]:50441 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1760775AbaGRJnk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 05:43:40 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Chanwoo Choi <cw00.choi@samsung.com>
+Cc: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, kyungmin.park@samsung.com,
+	t.figa@samsung.com, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCHv6 1/4] iio: adc: exynos_adc: Add exynos_adc_data structure to improve readability
+Date: Fri, 18 Jul 2014 11:42:35 +0200
+Message-ID: <6186153.TIYp5NXPIq@wuerfel>
+In-Reply-To: <1405663186-26464-2-git-send-email-cw00.choi@samsung.com>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <1405663186-26464-2-git-send-email-cw00.choi@samsung.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio:kxcjk-1013: Fix endianness in scan_type
-References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net> <1405370318-19699-3-git-send-email-pmeerw@pmeerw.net> <53C576F6.2070604@linux.intel.com>
-In-Reply-To: <53C576F6.2070604@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/07/14 19:46, Srinivas Pandruvada wrote:
-> On 07/14/2014 01:38 PM, Peter Meerwald wrote:
->> driver uses i2c_smbus_read_word_data() to the data in the trigger handler and hence
->> already does endianness conversion; the I2C chip has data in little endian, but the
->> value is provides in CPU endianness
->>
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git
+On Friday 18 July 2014 14:59:43 Chanwoo Choi wrote:
+> This patchset add 'exynos_adc_data' structure which includes some functions
+> to control ADC operation and specific data according to ADC version (v1 or v2).
+> 
 
-Thanks,
+This new structure makes a lot of sense for covering the exynos specific
+versions, but it will likely give a little more complexity for the
+older models. We'll have to deal with that later then, no need to
+hold up your patch. Interestingly, the version numbers seem weird. The
+old driver uses
 
->> ---
->>   drivers/iio/accel/kxcjk-1013.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
->> index a11588c..ea96170 100644
->> --- a/drivers/iio/accel/kxcjk-1013.c
->> +++ b/drivers/iio/accel/kxcjk-1013.c
->> @@ -466,7 +466,7 @@ static const struct attribute_group kxcjk1013_attrs_group = {
->>           .realbits = 12,                        \
->>           .storagebits = 16,                    \
->>           .shift = 4,                        \
->> -        .endianness = IIO_LE,                    \
->> +        .endianness = IIO_CPU,                    \
->>       },                                \
->>   }
->>
->>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	{
+                .name           = "s3c24xx-adc",
+                .driver_data    = TYPE_ADCV1,
+        }, {
+                .name           = "s3c2443-adc",
+                .driver_data    = TYPE_ADCV11,
+        }, {
+                .name           = "s3c2416-adc",
+                .driver_data    = TYPE_ADCV12,
+        }, {
+                .name           = "s3c64xx-adc",
+                .driver_data    = TYPE_ADCV2,
+        }, {
+                .name           = "samsung-adc-v3",
+                .driver_data    = TYPE_ADCV3,
+	}
 
+Where TYPE_ADCV3 seems to be the same as the new ADC_V1 used in this
+driver. Do you have an explanation for that?
+
+	Arnd
