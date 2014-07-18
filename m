@@ -1,56 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:40867 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751159AbaGTPg4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Jul 2014 11:36:56 -0400
-Message-ID: <53CBE2A4.6080709@kernel.org>
-Date: Sun, 20 Jul 2014 16:39:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.24]:55253 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1761066AbaGRJja (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 05:39:30 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	ch.naveen@samsung.com, mark.rutland@arm.com,
+	devicetree@vger.kernel.org, kgene.kim@samsung.com,
+	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk,
+	linux-iio@vger.kernel.org, t.figa@samsung.com,
+	rdunlap@infradead.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	kyungmin.park@samsung.com, robh+dt@kernel.org, galak@codeaurora.org
+Subject: Re: [PATCHv6 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and code clean
+Date: Fri, 18 Jul 2014 11:38:27 +0200
+Message-ID: <59765980.V0Hsx6tyKd@wuerfel>
+In-Reply-To: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 6/6] iio: accel: kxcjk-1013: Increment ref counter for
- indio_dev->trig
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/07/14 01:42, Srinivas Pandruvada wrote:
-> Assigning indio_dev->trig is not a good idea, as this can result in
-> wrong reference count for trigger device. If assigned, it is better to
-> increment reference counter by calling iio_trigger_get.
-> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-> with Jonathan.
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-I've parked the intervening patches to allow time for the runtime pm one
-to sit on the list.
+On Friday 18 July 2014 14:59:42 Chanwoo Choi wrote:
+> This patchset support Exynos3250 ADC (Analog Digital Converter) because
+> Exynos3250 has additional special clock for ADC IP.
+> 
 
-This one is a bug fix (and should have been earlier in the series!).
-I've applied it to the togreg branch of iio.git.
+by coincidence, I have just looked at the same driver in order to
+add support for s3c24xx and s3c64xx, so we can remove the plat-samsung
+adc framework they still use.  Those changes would naturally conflict
+with yours, but I think it makes sense for your patches to come first.
 
-Lars is of course correct that we could do this in a nicer fashion, but
-I'd rather get the simple fix in place and tidy up later, than delay it
-now.
+I'll comment a bit more on the individual patches. I didn't have
+interest in them earlier, so I didn't comment so far.
 
-Jonathan
-> ---
->   drivers/iio/accel/kxcjk-1013.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index f5bb682..40ecf8b 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1020,6 +1020,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
->   		iio_trigger_set_drvdata(trig, indio_dev);
->   		data->trig = trig;
->   		indio_dev->trig = trig;
-> +		iio_trigger_get(indio_dev->trig);
->
->   		ret = iio_trigger_register(trig);
->   		if (ret)
->
+Another aspect that came up is the touchscreen support. Right now,
+there is drivers/input/touchscreen/s3c2410_ts.c which is intimately
+tied to arch/arm/plat-samsung/adc.c. The best way forward (as discussed
+on IRC as few days ago) seems to be to integrate support for that into
+the exynos_adc driver. Can you comment on which parts actually support
+touchscreen? Did touchscreen support get dropped in the exynos hardware,
+or is the driver just missing at the moment?
 
+	Arnd
