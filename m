@@ -1,64 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:57457 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756778AbaGRPXj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 11:23:39 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Chanwoo Choi <cwchoi00@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	devicetree <devicetree@vger.kernel.org>,
-	Kukjin Kim <kgene.kim@samsung.com>, pawel.moll@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
-	Tomasz Figa <t.figa@samsung.com>, rdunlap@infradead.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Chanwoo Choi <cw00.choi@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-	galak@codeaurora.org, naveen krishna <ch.naveen@samsung.com>,
-	jic23@kernel.org
-Subject: Re: [PATCHv6 2/4] iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
-Date: Fri, 18 Jul 2014 17:23:30 +0200
-Message-ID: <32226622.5gSmvBRKvZ@wuerfel>
-In-Reply-To: <CAGTfZH1EHiTpo2Abua=+kDfNoOQx+ydPHU51=+qW8mgCL4Lwvg@mail.gmail.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <6917971.QKItNU3coA@wuerfel> <CAGTfZH1EHiTpo2Abua=+kDfNoOQx+ydPHU51=+qW8mgCL4Lwvg@mail.gmail.com>
+Received: from mail-vc0-f169.google.com ([209.85.220.169]:62842 "EHLO
+	mail-vc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1422773AbaGRPhX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 11:37:23 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <53C8FC1E.9090003@nod.at>
+References: <201407130545.23004.marex@denx.de>
+	<6823014.2plXDE9VA9@wuerfel>
+	<53C7A819.40403@metafoo.de>
+	<6485666.LVFO2YCEQx@wuerfel>
+	<53C8114D.30601@nod.at>
+	<53C86C10.2000608@gmail.com>
+	<53C8CE59.3060103@nod.at>
+	<53C8FA78.1020501@gmail.com>
+	<53C8FC1E.9090003@nod.at>
+Date: Fri, 18 Jul 2014 23:37:21 +0800
+Message-ID: <CAF0htA6Vvp+d4=wPuqJJhT+FxEUoT9mbJ3_NQuEJTP-hniS-KQ@mail.gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+From: Lennox Wu <lennox.wu@gmail.com>
+To: Richard Weinberger <richard@nod.at>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Tom Gundersen <teg@jklm.no>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Saturday 19 July 2014 00:15:35 Chanwoo Choi wrote:
-> On Fri, Jul 18, 2014 at 8:14 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Friday 18 July 2014 19:00:48 Chanwoo Choi wrote:
-> >> On 07/18/2014 06:47 PM, Arnd Bergmann wrote:
-> >> >
-> >> > Further, why is it called "sclk_adc" rather than just "sclk"?
-> >>
-> >> The sclk means 'special clock' in Exynos TRM. Exynos SoC has varisou sclk clocks.
-> >> 'sclk_adc' is only used for ADC IP.
-> >
-> > But that sounds like sclk_adc is the name of the global name
-> > of the clock signal coming out of the clock controller.
-> >
-> > I still think it would be best to name it 'sclk' as the input
-> > for the adc. It shouldn't rely on a particular name of the
-> > clock controller.
-> 
-> I think 'sclk' is too common name. 'sclk' don't include specific device name.
-> As I know, usual clock name includes the name of IP or includes the
-> specific meaning for each IP.
+Score can provide dummy functions if HAS_IOMEM  and NO_IOMEM will be
+removed, even if we indeed have no IOMEM.
 
-No, normally it does not include the name of the IP, that's my whole point.
-Including the name of the IP is completely pointless because that is
-implied by the fact that it's being used by that particular IP.
+Best,
+Lennox
 
-Ideally you would find the data sheet for the ADC IP block and figure
-out what this clock is used for, then find the right name for that.
-In a lot of cases, we are actually better off not naming the clocks
-at all but simply enumerating them if nobody knows what they are good
-for. In that case, you would simply have the first clock and the second
-clock of the ADC part and enable them both.
-
-	Arnd
+2014-07-18 18:51 GMT+08:00 Richard Weinberger <richard@nod.at>:
+> Am 18.07.2014 12:44, schrieb Chen Gang:
+>> On 07/18/2014 03:35 PM, Richard Weinberger wrote:
+>>> Am 18.07.2014 02:36, schrieb Chen Gang:
+>>>>
+>>>> On 07/18/2014 02:09 AM, Richard Weinberger wrote:
+>>>>> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
+>>>>>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
+>>>>>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
+>>>>>> to build on UML seems pointless to me and we special-case it in a number of
+>>>>>> places already.
+>>>>>
+>>>>> If UML is the only arch without io memory the dependency on !UML seems
+>>>>> reasonable to me. :-)
+>>>>>
+>>>>
+>>>> For me, if only uml left, I suggest to implement dummy functions within
+>>>> uml instead of let CONFIG_UML appear in generic include directory. And
+>>>> then remove all HAS_IOMEM and NO_IOMEM from kernel.
+>>>
+>>> Erm, this is something completely different.
+>>> I thought we're focusing on COMPILE_TEST?
+>>>
+>>
+>> COMPILE_TEST is none-architecture specific, but UML is. So in generic
+>> include folder, if we're focusing on choosing whether COMPILE_TEST or
+>> UML, for me, I will choose COMPILE_TEST.
+>>
+>> If we're not only focusing on COMPILE_TEST, for me, if something only
+>> depend on one architecture, I'd like to put them under "arch/*/" folder.
+>>
+>> Especially, after that, we can remove all HAS_IOMEM and NO_IOMEM, nobody
+>> has to think of them again. :-)
+>
+> And then we end up with a solution that on UML a lot of completely useless
+> drivers are build which fail in various interesting manners because you'll
+> add stubs for all kinds of io memory related functions to arch/um/?
+> We had this kind of discussion already. You'll need more than ioremap...
+>
+> I like Arnd's idea *much* more to make COMPILE_TEST depend on !UML.
+>
+> Thanks,
+> //richard
