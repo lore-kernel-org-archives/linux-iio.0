@@ -1,47 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:34732 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752526AbaGMKGx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jul 2014 06:06:53 -0400
-Message-ID: <53C25A36.3040207@gmail.com>
-Date: Sun, 13 Jul 2014 18:06:46 +0800
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:53051 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752675AbaGRAgn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 17 Jul 2014 20:36:43 -0400
+Message-ID: <53C86C10.2000608@gmail.com>
+Date: Fri, 18 Jul 2014 08:36:32 +0800
 From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+To: Richard Weinberger <richard@nod.at>, Arnd Bergmann <arnd@arndb.de>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: Guenter Roeck <linux@roeck-us.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
-	jic23@kernel.org, wim@iguana.be,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com,
-	lars@metafoo.de, knaack.h@gmx.de, rdunlap@infradead.org,
-	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
  'devm_ioremap_resource'
-References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at>
-In-Reply-To: <53C25551.1050909@nod.at>
-Content-Type: text/plain; charset=UTF-8
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel> <53C8114D.30601@nod.at>
+In-Reply-To: <53C8114D.30601@nod.at>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/13/2014 05:45 PM, Richard Weinberger wrote:
-> Am 13.07.2014 11:27, schrieb Lennox Wu:
->> As I said before, some configurations don't make sense.
-> 
-> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
-> Chen's fixes seem reasonable as not all architectures support iomem.
->
 
-OK, thanks. And I shall split them into several patches, although we can
-understand that score may not need them.
+On 07/18/2014 02:09 AM, Richard Weinberger wrote:
+> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
+>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
+>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
+>> to build on UML seems pointless to me and we special-case it in a number of
+>> places already.
+> 
+> If UML is the only arch without io memory the dependency on !UML seems
+> reasonable to me. :-)
+> 
+
+For me, if only uml left, I suggest to implement dummy functions within
+uml instead of let CONFIG_UML appear in generic include directory. And
+then remove all HAS_IOMEM and NO_IOMEM from kernel.
+
+If score sticks to NO_IOMEM, and can not remove score from kernel only
+because of this reason. I also suggest implement dummy functions within
+score itself.
 
 
 Thanks.
 -- 
 Chen Gang
 
-Open share and attitude like air water and life which God blessed
+Open, share, and attitude like air, water, and life which God blessed
