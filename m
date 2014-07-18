@@ -1,43 +1,103 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-To: Chanwoo Choi <cwchoi00@gmail.com>
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org, naveen krishna <ch.naveen@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Rob Herring <robh+dt@kernel.org>, pawel.moll@arm.com, Mark Rutland <mark.rutland@arm.com>, ijc+devicetree@hellion.org.uk, Kumar Gala <galak@codeaurora.org>, rdunlap@infradead.org, Kyungmin Park <kyungmin.park@samsung.com>, Tomasz Figa <t.figa@samsung.com>, linux-iio@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-doc@vger.kernel.org
-Subject: Re: [PATCHv6 3/4] iio: devicetree: Add DT binding documentation for Exynos3250 ADC
-Date: Fri, 18 Jul 2014 18:33:06 +0200
-Message-ID: <5835825.JtcDoyOP8b@wuerfel>
-In-Reply-To: <CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <6104032.PNRl85V92G@wuerfel> <CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:64707 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030501AbaGRSCf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 14:02:35 -0400
+Message-ID: <53C9612E.3040001@gmail.com>
+Date: Sat, 19 Jul 2014 02:02:22 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-List-ID: <linux-iio@vger.kernel.org>
+To: Lennox Wu <lennox.wu@gmail.com>
+CC: Richard Weinberger <richard@nod.at>, Arnd Bergmann <arnd@arndb.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Tom Gundersen <teg@jklm.no>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel> <53C8114D.30601@nod.at> <53C86C10.2000608@gmail.com> <53C8CE59.3060103@nod.at> <53C8FA78.1020501@gmail.com> <53C8FC1E.9090003@nod.at> <CAF0htA6Vvp+d4=wPuqJJhT+FxEUoT9mbJ3_NQuEJTP-hniS-KQ@mail.gmail.com>
+In-Reply-To: <CAF0htA6Vvp+d4=wPuqJJhT+FxEUoT9mbJ3_NQuEJTP-hniS-KQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Saturday 19 July 2014 01:23:15 Chanwoo Choi wrote:
-> If don't add new compatible including specific exynos version,
-> I would add new 'adc-needs-sclk' property with existing 'exynos-adc-v2'
-> compatible name.
+On 07/18/2014 11:37 PM, Lennox Wu wrote:
+> Score can provide dummy functions if HAS_IOMEM  and NO_IOMEM will be
+> removed, even if we indeed have no IOMEM.
 > 
-> 
-> Dear Naveen, Tomasz,
-> 
-> If existing exynos-adc driver add just one property for 'sclk_adc'
-> as following, exynos-adc could not include the exynos version
-> in compatible name.
-> 
-> I need your opinion about it.
-> 
->                 adc: adc@126C0000 {
->                         compatible = "samsung,exynos-adc-v2";
->                         reg = <0x126C0000 0x100>, <0x10020718 0x4>;
->                         interrupts = <0 137 0>;
->                         clock-names = "adc", "sclk_adc";
->                         clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
-> +                        adc-needs-sclk;
->                         #io-channel-cells = <1>;
->                         io-channel-ranges;
->                 }
 
-How about just making it an optional clock? That would be much
-easier because then you can simply see if the clock itself is
-there and use it, or otherwise ignore it.
+Thank you for your reply, for score, your ideas is OK to me.
 
-	Arnd
+
+And for the COMPILE_TEST needs still discussing below:
+
+> 2014-07-18 18:51 GMT+08:00 Richard Weinberger <richard@nod.at>:
+>> Am 18.07.2014 12:44, schrieb Chen Gang:
+>>> On 07/18/2014 03:35 PM, Richard Weinberger wrote:
+>>>> Am 18.07.2014 02:36, schrieb Chen Gang:
+>>>>>
+>>>>> On 07/18/2014 02:09 AM, Richard Weinberger wrote:
+>>>>>> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
+>>>>>>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
+>>>>>>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
+>>>>>>> to build on UML seems pointless to me and we special-case it in a number of
+>>>>>>> places already.
+>>>>>>
+>>>>>> If UML is the only arch without io memory the dependency on !UML seems
+>>>>>> reasonable to me. :-)
+>>>>>>
+>>>>>
+>>>>> For me, if only uml left, I suggest to implement dummy functions within
+>>>>> uml instead of let CONFIG_UML appear in generic include directory. And
+>>>>> then remove all HAS_IOMEM and NO_IOMEM from kernel.
+>>>>
+>>>> Erm, this is something completely different.
+>>>> I thought we're focusing on COMPILE_TEST?
+>>>>
+>>>
+>>> COMPILE_TEST is none-architecture specific, but UML is. So in generic
+>>> include folder, if we're focusing on choosing whether COMPILE_TEST or
+>>> UML, for me, I will choose COMPILE_TEST.
+>>>
+>>> If we're not only focusing on COMPILE_TEST, for me, if something only
+>>> depend on one architecture, I'd like to put them under "arch/*/" folder.
+>>>
+>>> Especially, after that, we can remove all HAS_IOMEM and NO_IOMEM, nobody
+>>> has to think of them again. :-)
+>>
+>> And then we end up with a solution that on UML a lot of completely useless
+>> drivers are build which fail in various interesting manners because you'll
+>> add stubs for all kinds of io memory related functions to arch/um/?
+>> We had this kind of discussion already. You'll need more than ioremap...
+>>
+>> I like Arnd's idea *much* more to make COMPILE_TEST depend on !UML.
+>>
+
+That will let UML itself against COMPILE_TEST (but all the other
+architectures not).
+
+And if let COMPILE_TEST depend on !UML, can we still remove all
+HAS_IOMEM and NO_IOMEM from kernel? (I guess so).
+
+If we can remove them, we can send related patch firstly -- that will
+let current discussion be in UML architecture wide instead of kernel
+wide.
+
+
+Thanks.
+-- 
+Chen Gang
+
+Open share and attitude like air water and life which God blessed
