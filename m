@@ -1,15 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f177.google.com ([209.85.223.177]:64617 "EHLO
-	mail-ie0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932078AbaGRQXR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 12:23:17 -0400
+Received: from mail-ie0-f169.google.com ([209.85.223.169]:50848 "EHLO
+	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030432AbaGRRCL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 13:02:11 -0400
 MIME-Version: 1.0
-In-Reply-To: <6104032.PNRl85V92G@wuerfel>
+In-Reply-To: <5835825.JtcDoyOP8b@wuerfel>
 References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
-	<1405663186-26464-4-git-send-email-cw00.choi@samsung.com>
 	<6104032.PNRl85V92G@wuerfel>
-Date: Sat, 19 Jul 2014 01:23:15 +0900
-Message-ID: <CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
+	<CAGTfZH3cH-QFMbfTWJJfTPTRT-Bij2TW=6CH_Yy-GaZqZvn-Xg@mail.gmail.com>
+	<5835825.JtcDoyOP8b@wuerfel>
+Date: Sat, 19 Jul 2014 02:02:09 +0900
+Message-ID: <CAGTfZH3mnPJ72wi7aFYoChe_OeuRVsUVo3KGRRLTV5scwPbO4g@mail.gmail.com>
 Subject: Re: [PATCHv6 3/4] iio: devicetree: Add DT binding documentation for
  Exynos3250 ADC
 From: Chanwoo Choi <cwchoi00@gmail.com>
@@ -31,46 +32,51 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jul 18, 2014 at 6:50 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Friday 18 July 2014 14:59:45 Chanwoo Choi wrote:
->>                         Must be "samsung,exynos-adc-v2" for
->>                                 future controllers.
+On Sat, Jul 19, 2014 at 1:33 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Saturday 19 July 2014 01:23:15 Chanwoo Choi wrote:
+>> If don't add new compatible including specific exynos version,
+>> I would add new 'adc-needs-sclk' property with existing 'exynos-adc-v2'
+>> compatible name.
+>>
+>>
+>> Dear Naveen, Tomasz,
+>>
+>> If existing exynos-adc driver add just one property for 'sclk_adc'
+>> as following, exynos-adc could not include the exynos version
+>> in compatible name.
+>>
+>> I need your opinion about it.
+>>
+>>                 adc: adc@126C0000 {
+>>                         compatible = "samsung,exynos-adc-v2";
+>>                         reg = <0x126C0000 0x100>, <0x10020718 0x4>;
+>>                         interrupts = <0 137 0>;
+>>                         clock-names = "adc", "sclk_adc";
+>>                         clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
+>> +                        adc-needs-sclk;
+>>                         #io-channel-cells = <1>;
+>>                         io-channel-ranges;
+>>                 }
 >
-> It would be good to change 'future controllers' to something else now.
-> Presumably that word was used before the actual products were announced,
-> but now they are publically known.
->
->> +                       Must be "samsung,exynos3250-adc-v2" for
->> +                               controllers compatible with ADC of Exynos3250.
->
-> Doesn't this version have a specific name as well? The ADC block
-> seems to use version numbers, so better put those in here to avoid
-> confusion when another Exynos7890 comes out that uses the same
-> ADC as exynos3250.
+> How about just making it an optional clock? That would be much
+> easier because then you can simply see if the clock itself is
+> there and use it, or otherwise ignore it.
 
-If don't add new compatible including specific exynos version,
-I would add new 'adc-needs-sclk' property with existing 'exynos-adc-v2'
-compatible name.
+The v1 of this patchset[1] got the clock of 'sclk_adc'  but if the dt node
+of ADC in dtsi file didn't include 'sclk_adc', print just warning message
+without stopping probe as following:
 
+ [1] https://lkml.org/lkml/2014/4/10/710
 
-Dear Naveen, Tomasz,
++       info->sclk = devm_clk_get(&pdev->dev, "sclk_adc");
++       if (IS_ERR(info->sclk)) {
++               dev_warn(&pdev->dev, "failed getting sclk clock, err = %ld\n",
++                                                       PTR_ERR(info->sclk));
++               info->sclk = NULL;
++       }
 
-If existing exynos-adc driver add just one property for 'sclk_adc'
-as following, exynos-adc could not include the exynos version
-in compatible name.
-
-I need your opinion about it.
-
-                adc: adc@126C0000 {
-                        compatible = "samsung,exynos-adc-v2";
-                        reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-                        interrupts = <0 137 0>;
-                        clock-names = "adc", "sclk_adc";
-                        clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
-+                        adc-needs-sclk;
-                        #io-channel-cells = <1>;
-                        io-channel-ranges;
-                }
+But, Tomasz Figa suggested the method[2] of this patchset(v6).
+ [2] https://lkml.org/lkml/2014/4/11/189
 
 Thanks,
 Chanwoo Choi
