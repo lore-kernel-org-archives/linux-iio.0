@@ -1,32 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:56881 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757099AbaGNUiq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 14 Jul 2014 16:38:46 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org
-Subject: [PATCH 0/3] iio: accel driver fixes
-Date: Mon, 14 Jul 2014 22:38:35 +0200
-Message-Id: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Chanwoo Choi <cw00.choi@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org, jic23@kernel.org, ch.naveen@samsung.com, mark.rutland@arm.com, devicetree@vger.kernel.org, kgene.kim@samsung.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org, t.figa@samsung.com, rdunlap@infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, kyungmin.park@samsung.com, robh+dt@kernel.org, galak@codeaurora.org
+Subject: Re: [PATCHv6 2/4] iio: adc: exynos_adc: Control special clock of ADC to support Exynos3250 ADC
+Date: Fri, 18 Jul 2014 13:14:55 +0200
+Message-ID: <6917971.QKItNU3coA@wuerfel>
+In-Reply-To: <53C8F050.6060104@samsung.com>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <6485839.CnzmD0SeQj@wuerfel> <53C8F050.6060104@samsung.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-couple of fixes for IIO accel drivers
+On Friday 18 July 2014 19:00:48 Chanwoo Choi wrote:
+> On 07/18/2014 06:47 PM, Arnd Bergmann wrote:
+> > 
+> > Further, why is it called "sclk_adc" rather than just "sclk"?
+> 
+> The sclk means 'special clock' in Exynos TRM. Exynos SoC has varisou sclk clocks.
+> 'sclk_adc' is only used for ADC IP.
 
-patch 1 is just trivial error message fixing
-patch 2 fixes the scan_type endianness of the I2C kxcjk-1013 sensor
-patch 3 fixes the acceleration units (m/s^2 vs. g) of the bma180 driver
+But that sounds like sclk_adc is the name of the global name
+of the clock signal coming out of the clock controller.
 
-Peter Meerwald (3):
-  iio:kxcjk-1013: Correct error messages
-  iio:kxcjk-1013: Fix endianness in scan_type
-  iio:bma180: Fix scale factors to report correct acceleration units
+I still think it would be best to name it 'sclk' as the input
+for the adc. It shouldn't rely on a particular name of the
+clock controller.
 
- drivers/iio/accel/bma180.c     | 4 ++--
- drivers/iio/accel/kxcjk-1013.c | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
--- 
-1.9.1
-
+	Arnd
