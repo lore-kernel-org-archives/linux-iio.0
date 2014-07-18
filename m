@@ -1,69 +1,86 @@
-Return-Path: <cw00.choi@samsung.com>
-From: Chanwoo Choi <cw00.choi@samsung.com>
-To: jic23@kernel.org, ch.naveen@samsung.com
-Cc: arnd@arndb.de, kgene.kim@samsung.com, robh+dt@kernel.org,
- pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
- galak@codeaurora.org, rdunlap@infradead.org, kyungmin.park@samsung.com,
- t.figa@samsung.com, linux-iio@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCHv7 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and code
- clean
-Date: Mon, 21 Jul 2014 11:17:44 +0900
-Message-id: <1405909068-22539-1-git-send-email-cw00.choi@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qg0-f46.google.com ([209.85.192.46]:63126 "EHLO
+	mail-qg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934026AbaGRKLt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 06:11:49 -0400
+MIME-Version: 1.0
+In-Reply-To: <6186153.TIYp5NXPIq@wuerfel>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
+ <1405663186-26464-2-git-send-email-cw00.choi@samsung.com> <6186153.TIYp5NXPIq@wuerfel>
+From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
+Date: Fri, 18 Jul 2014 15:41:27 +0530
+Message-ID: <CAHfPSqBDOEH5HurG=rECV=d+MM_YjTEpsiwuTgtNgFgCQ0P2bw@mail.gmail.com>
+Subject: Re: [PATCHv6 1/4] iio: adc: exynos_adc: Add exynos_adc_data structure
+ to improve readability
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
+	My self <ch.naveen@samsung.com>,
+	Kukjin Kim <kgene.kim@samsung.com>, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	rdunlap@infradead.org, kyungmin.park@samsung.com,
+	t.figa@samsung.com, linux-iio@vger.kernel.org,
+	"linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patchset support Exynos3250 ADC (Analog Digital Converter) because
-Exynos3250 has additional special clock for ADC IP.
+Hello Arnd,
 
-Changes from v6:
-- Use "exynos3250-adc" compatible string instead of "exynos3250-adc-v2"
-- Use "sclk" clock name instead of "sclk_adc"
-- Remove un-necessary macro for exyno-adc-data-v2 structure.
-- Remove '(void *)' cast and mark the exynos-adc-data structure as 'const'
-- Change the number of ADC channels (Exynos3250 has only two channels for ADC)
+On 18 July 2014 15:12, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Friday 18 July 2014 14:59:43 Chanwoo Choi wrote:
+>> This patchset add 'exynos_adc_data' structure which includes some functions
+>> to control ADC operation and specific data according to ADC version (v1 or v2).
+>>
+>
+> This new structure makes a lot of sense for covering the exynos specific
+> versions, but it will likely give a little more complexity for the
+> older models. We'll have to deal with that later then, no need to
+> hold up your patch. Interestingly, the version numbers seem weird. The
+> old driver uses
+>
+>         {
+>                 .name           = "s3c24xx-adc",
+>                 .driver_data    = TYPE_ADCV1,
+>         }, {
+>                 .name           = "s3c2443-adc",
+>                 .driver_data    = TYPE_ADCV11,
+>         }, {
+>                 .name           = "s3c2416-adc",
+>                 .driver_data    = TYPE_ADCV12,
+>         }, {
+>                 .name           = "s3c64xx-adc",
+>                 .driver_data    = TYPE_ADCV2,
+>         }, {
+>                 .name           = "samsung-adc-v3",
+>                 .driver_data    = TYPE_ADCV3,
+>         }
+>
+> Where TYPE_ADCV3 seems to be the same as the new ADC_V1 used in this
+> driver. Do you have an explanation for that?
 
-Changes from v5:
-- Add acked message by Kukjin Kim
-- Add reviewed messgae by Tomasz Figa
-- Fix typo (for for -> for)
+As per suggestion from Doug Anderson,
+I've implemented IIO based ADC driver to work with Exynos5250.
+keeping the plat-samsung/adc.c unchanged.
 
-Changes from v4:
-- Use 'exynos_adc_data' structure instead of 'exynos_adc_ops' structure
-  and remove enum variable of ADC version
-- Fix wrong name of special clock (sclk_tsadc -> sclk_adc)
-- Add reviewed message by Naveen Krishna Chatradhi
-- Add functions for ADC clock control
+Assuming Exynos5250 is the one using the driver for the first time.
+i've named it v1 and so on.
 
-Changes from v3:
-- Add new 'exynos_adc_ops' structure to improve readability according to
- Tomasz Figa comment[1]
- [1] https://lkml.org/lkml/2014/4/16/238
-- Add new 'exynos3250-adc-v2' compatible string to support Exynos3250 ADC
-- Fix wrong compaitlbe string of ADC in Exynos3250 dtsi file
+Now, This seems to cause a lot of confusion.
 
-Changes from v2:
-- Check return value of clock function to deal with error exception
-- Fix minor coding style to improve readability
-
-Changes from v1:
-- Add new "samsung,exynos-adc-v3" compatible to support Exynos3250 ADC
-- Add a patch about DT binding documentation
+>
+>         Arnd
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 
-Chanwoo Choi (4):
-  iio: adc: exynos_adc: Add exynos_adc_data structure to improve
-    readability
-  iio: adc: exynos_adc: Control special clock of ADC to support
-    Exynos3250 ADC
-  iio: devicetree: Add DT binding documentation for Exynos3250 ADC
-  ARM: dts: Fix wrong compatible string for Exynos3250 ADC
-
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |  25 +-
- arch/arm/boot/dts/exynos3250.dtsi                  |   4 +-
- drivers/iio/adc/exynos_adc.c                       | 335 +++++++++++++++------
- 3 files changed, 274 insertions(+), 90 deletions(-)
 
 -- 
-1.8.0
+Shine bright,
+(: Nav :)
