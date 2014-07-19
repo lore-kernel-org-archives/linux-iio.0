@@ -1,1151 +1,252 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sat, 19 Jul 2014 13:21:14 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-    linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:gyro:bmg160 Gyro Sensor driver
-In-Reply-To: <53CA4C15.3080204@kernel.org>
-Message-ID: <alpine.DEB.2.01.1407191305410.8459@pmeerw.net>
-References: <1405720775-29663-1-git-send-email-srinivas.pandruvada@linux.intel.com> <53CA4C15.3080204@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:54503 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755639AbaGSTnU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jul 2014 15:43:20 -0400
+Received: by mail-wg0-f50.google.com with SMTP id n12so4921102wgh.9
+        for <linux-iio@vger.kernel.org>; Sat, 19 Jul 2014 12:43:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Sat, 19 Jul 2014 14:42:59 -0500
+Message-ID: <CA+BWVURSgSNT-H03=YMEcakjcfNkoGgQ6TBNc9DwWOrJ=XT+Lg@mail.gmail.com>
+Subject: Kernel panic when hid-sensor-hub is removed
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+Hey Srinivas,
+
+I noticed a kernel panic when the hid-sensor-hub is removed and a
+trigger/buffer has been setup. My device changes it's HID ID depending
+on which microsoft keyboard is attached. This change removes the USB
+device and reattaches it. I belive the kernel panic happens since it's
+trying to send a usb packet after the device is gone. The usb packet
+is created by hid_sensor_power_state() when the trigger predisabled
+callback is called.
+
+I have a fix that checks hid_device->status before calling
+hid_sensor_power_state() but I had to set hid_device->status, to
+removed, earlier in hid-core hid_destroy_device() for this to work.
+
+I'll post the kernel panic below.
+Do you think using hid_device status is appropriate or should some
+other variable be used, maybe one per hid sensor hub device?
 
 
-> A few comments inline.  This is a bit of a fiddly one isn't it ;)
+[  234.449988] BUG: unable to handle kernel NULL pointer dereference
+at 0000000000000058
+[  234.450134] IP: [<ffffffff8161746f>] hid_submit_ctrl+0x7f/0x290
+[  234.450234] PGD 0
+[  234.450275] Oops: 0002 [#1] PREEMPT SMP
+[  234.450348] Modules linked in: uinput ip6t_rpfilter ip6t_REJECT
+fuse xt_conntrack ebtable_nat ebtable_broute bridge stp llc
+ebtable_filter ebtables ip6table_nat nf_conntrack_ipv6 nf_defrag_ipv6
+nf_nat_ipv6 ip6table_mangle ip6table_security ip6table_raw
+ip6table_filter ip6_tables iptable_nat nf_conntrack_ipv4
+nf_defrag_ipv4 nf_nat_ipv4 nf_nat nf_conntrack iptable_mangle
+iptable_security iptable_raw mwifiex_usb mwifiex cfg80211
+x86_pkg_temp_thermal rfkill coretemp kvm_intel hid_sensor_rotation
+hid_sensor_als hid_sensor_accel_3d hid_sensor_gyro_3d
+hid_sensor_magn_3d(O) hid_sensor_incl_3d hid_sensor_trigger kvm
+hid_sensor_iio_common industrialio_triggered_buffer
+snd_hda_codec_realtek kfifo_buf snd_hda_codec_generic
+snd_hda_codec_hdmi industrialio snd_hda_intel iTCO_wdt
+iTCO_vendor_support snd_hda_controller
+[  234.451613]  snd_hda_codec vfat fat crc32_pclmul snd_hwdep
+crc32c_intel uvcvideo snd_seq ghash_clmulni_intel videobuf2_vmalloc
+videobuf2_memops microcode videobuf2_core v4l2_common snd_seq_device
+videodev joydev snd_pcm hid_sensor_hub media snd_timer snd
+hid_multitouch i2c_i801 mei_me lpc_ich mei tpm_infineon soundcore
+tpm_tis tpm i2c_hid i2c_designware_platform i2c_designware_core
+binfmt_misc i915 i2c_algo_bit drm_kms_helper drm sd_mod i2c_core video
+[  234.452205] CPU: 2 PID: 39 Comm: khubd Tainted: G          IO
+3.16.0-rc5+ #112
+[  234.452284] Hardware name: Microsoft Corporation Surface Pro
+2/Surface Pro 2, BIOS 2.03.0250 09/06/2013
+[  234.452383] task: ffff880118aba6e0 ti: ffff8800daf80000 task.ti:
+ffff8800daf80000
+[  234.452461] RIP: 0010:[<ffffffff8161746f>]  [<ffffffff8161746f>]
+hid_submit_ctrl+0x7f/0x290
+[  234.452558] RSP: 0018:ffff8800daf83750  EFLAGS: 00010086
+[  234.452616] RAX: 0000000080000300 RBX: ffff88003f60c000 RCX: 0000000000000000
+[  234.452690] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffff880117f78000
+[  234.452767] RBP: ffff8800daf83788 R08: 0000000000000001 R09: 0000000000000001
+[  234.452842] R10: 0000000000000001 R11: 0000000000000000 R12: ffff880117f78000
+[  234.452919] R13: ffff88003f11a290 R14: 000000000000000c R15: ffff880091cb3ab8
+[  234.452993] FS:  0000000000000000(0000) GS:ffff88011b000000(0000)
+knlGS:0000000000000000
+[  234.453077] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  234.453139] CR2: 0000000000000058 CR3: 0000000001c11000 CR4: 00000000001407e0
+[  234.453216] Stack:
+[  234.453241]  ffff880117f3dcd0 ffff880117f78000 ffff88003f60c000
+ffff880117f78000
+[  234.453335]  ffff880117f78000 ffff88003f11a290 0000000000000000
+ffff8800daf837b0
+[  234.453431]  ffffffff81617707 ffff880117f78000 ffff88003f60c000
+0000000000000013
+[  234.453527] Call Trace:
+[  234.453565]  [<ffffffff81617707>] usbhid_restart_ctrl_queue+0x87/0x140
+[  234.453641]  [<ffffffff81617a88>] usbhid_submit_report+0x2c8/0x370
+[  234.453711]  [<ffffffff81617b4a>] usbhid_request+0x1a/0x30
+[  234.453783]  [<ffffffffa020edfb>] sensor_hub_set_feature+0x8b/0xd0
+[hid_sensor_hub]
+[  234.453867]  [<ffffffffa02d9084>] hid_sensor_power_state+0x84/0x110
+[hid_sensor_trigger]
+[  234.453920]  [<ffffffffa02d9129>]
+hid_sensor_data_rdy_trigger_set_state+0x19/0x20 [hid_sensor_trigger]
+[  234.453981]  [<ffffffffa034d5b7>]
+iio_triggered_buffer_predisable+0xa7/0xb0 [industrialio]
+[  234.454035]  [<ffffffffa034cc4a>] iio_disable_all_buffers+0x3a/0xc0
+[industrialio]
+[  234.454084]  [<ffffffffa03487d3>] iio_device_unregister+0x53/0x80
+[industrialio]
+[  234.454130]  [<ffffffffa026c06a>] hid_accel_3d_remove+0x2a/0x50
+[hid_sensor_accel_3d]
+[  234.454179]  [<ffffffff814f433d>] platform_drv_remove+0x1d/0x40
+[  234.454217]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.454255]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.454293]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.454329]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.454369]  [<ffffffff81512190>] ? mfd_cell_disable+0x80/0x80
+[  234.454406]  [<ffffffff814f41d1>] platform_device_del+0x21/0xc0
+[  234.454443]  [<ffffffff814f4282>] platform_device_unregister+0x12/0x30
+[  234.454482]  [<ffffffff815121d3>] mfd_remove_devices_fn+0x43/0x50
+[  234.454518]  [<ffffffff814ed3e3>] device_for_each_child+0x43/0x70
+[  234.454555]  [<ffffffff81512105>] mfd_remove_devices+0x25/0x30
+[  234.454595]  [<ffffffffa020ebd7>] sensor_hub_remove+0x87/0x140
+[hid_sensor_hub]
+[  234.454639]  [<ffffffff81607c5b>] hid_device_remove+0x6b/0xd0
+[  234.454677]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.454734]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.454765]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.454795]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.454822]  [<ffffffff81607d47>] hid_destroy_device+0x27/0x60
+[  234.454852]  [<ffffffff81616972>] usbhid_disconnect+0x22/0x50
+[  234.454883]  [<ffffffff81568597>] usb_unbind_interface+0x77/0x2b0
+[  234.454914]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.454945]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.454975]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.455005]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.456529]  [<ffffffff81565cd1>] usb_disable_device+0x91/0x2a0
+[  234.457652]  [<ffffffff8155b046>] usb_disconnect+0x96/0x2e0
+[  234.458812]  [<ffffffff8155d74a>] hub_thread+0xb5a/0x1840
+[  234.459947]  [<ffffffff817a1ffc>] ? _raw_spin_unlock_irq+0x2c/0x60
+[  234.461043]  [<ffffffff810edb10>] ? abort_exclusive_wait+0xb0/0xb0
+[  234.462179]  [<ffffffff8155cbf0>] ? hub_port_debounce+0x140/0x140
+[  234.463258]  [<ffffffff810c1379>] kthread+0xf9/0x110
+[  234.464328]  [<ffffffff810c1280>] ? insert_kthread_work+0x80/0x80
+[  234.465404]  [<ffffffff817a2dfc>] ret_from_fork+0x7c/0xb0
+[  234.466437]  [<ffffffff810c1280>] ? insert_kthread_work+0x80/0x80
+[  234.467431] Code: 8d 74 10 01 48 8b 87 a8 19 00 00 48 8b 53 30 48
+8b 00 8b 80 70 ff ff ff c1 e0 08 84 c9 0f 85 e9 00 00 00 0d 00 00 00
+80 4d 85 ff <89> 42 58 48 8b 43 30 44 89 b0 88 00 00 00 74 2e 48 8b bb
+48 18
+[  234.468523] RIP  [<ffffffff8161746f>] hid_submit_ctrl+0x7f/0x290
+[  234.469501]  RSP <ffff8800daf83750>
+[  234.470430] CR2: 0000000000000058
+[  234.478900] ---[ end trace a68f124f1f3439e3 ]---
+[  234.478904] BUG: sleeping function called from invalid context at
+kernel/locking/rwsem.c:41
+[  234.478905] in_atomic(): 1, irqs_disabled(): 1, pid: 39, name: khubd
+[  234.478906] INFO: lockdep is turned off.
+[  234.478907] irq event stamp: 88244
+[  234.478908] hardirqs last  enabled at (88243): [<ffffffff817a1fa5>]
+_raw_spin_unlock_irqrestore+0x65/0x90
+[  234.478912] hardirqs last disabled at (88244): [<ffffffff817a297b>]
+_raw_spin_lock_irqsave+0x2b/0xa0
+[  234.478914] softirqs last  enabled at (88204): [<ffffffff8109cc0b>]
+__do_softirq+0x21b/0x4e0
+[  234.478917] softirqs last disabled at (88185): [<ffffffff8109d0b5>]
+irq_exit+0xc5/0xd0
+[  234.478919] Preemption disabled at:[<ffffffff816177f8>]
+usbhid_submit_report+0x38/0x370
 
-some more comments on top
+[  234.478924] CPU: 2 PID: 39 Comm: khubd Tainted: G      D   IO
+3.16.0-rc5+ #112
+[  234.478926] Hardware name: Microsoft Corporation Surface Pro
+2/Surface Pro 2, BIOS 2.03.0250 09/06/2013
+[  234.478927]  ffffffff81a4e169 ffff8800daf833b8 ffffffff8179924a
+0000000000000000
+[  234.478929]  ffff8800daf833e0 ffffffff810cbf20 ffff880118a6e2b8
+ffff880118a6e328
+[  234.478932]  ffff8800daf836a8 ffff8800daf83408 ffffffff817a056a
+ffff8800daf83418
+[  234.478934] Call Trace:
+[  234.478937]  [<ffffffff8179924a>] dump_stack+0x4e/0x7a
+[  234.478940]  [<ffffffff810cbf20>] __might_sleep+0x170/0x260
+[  234.478942]  [<ffffffff817a056a>] down_read+0x2a/0xa0
+[  234.478946]  [<ffffffff810ad004>] exit_signals+0x24/0x130
+[  234.478948]  [<ffffffff81098d0d>] do_exit+0xbd/0xd90
+[  234.478952]  [<ffffffff8110ee35>] ? kmsg_dump+0x145/0x210
+[  234.478954]  [<ffffffff8110ed12>] ? kmsg_dump+0x22/0x210
+[  234.478958]  [<ffffffff8101e99b>] oops_end+0x9b/0xe0
+[  234.478961]  [<ffffffff81061c8c>] no_context+0x12c/0x300
+[  234.478963]  [<ffffffff81061eed>] __bad_area_nosemaphore+0x8d/0x220
+[  234.478965]  [<ffffffff81062093>] bad_area_nosemaphore+0x13/0x20
+[  234.478967]  [<ffffffff8106242e>] __do_page_fault+0xce/0x620
+[  234.478970]  [<ffffffff810ed684>] ? __wake_up+0x44/0x50
+[  234.478973]  [<ffffffff813e1017>] ? debug_smp_processor_id+0x17/0x20
+[  234.478976]  [<ffffffff810f623b>] ? get_lock_stats+0x2b/0x60
+[  234.478978]  [<ffffffff810f63de>] ? put_lock_stats.isra.29+0xe/0x30
+[  234.478980]  [<ffffffff810f681e>] ? lock_release_holdtime.part.30+0xde/0x160
+[  234.478983]  [<ffffffff813d689d>] ? trace_hardirqs_off_thunk+0x3a/0x3c
+[  234.478985]  [<ffffffff810629a2>] do_page_fault+0x22/0x30
+[  234.478988]  [<ffffffff817a4f68>] page_fault+0x28/0x30
+[  234.478991]  [<ffffffff8161746f>] ? hid_submit_ctrl+0x7f/0x290
+[  234.478993]  [<ffffffff81617707>] usbhid_restart_ctrl_queue+0x87/0x140
+[  234.478996]  [<ffffffff81617a88>] usbhid_submit_report+0x2c8/0x370
+[  234.478998]  [<ffffffff81617b4a>] usbhid_request+0x1a/0x30
+[  234.479004]  [<ffffffffa020edfb>] sensor_hub_set_feature+0x8b/0xd0
+[hid_sensor_hub]
+[  234.479008]  [<ffffffffa02d9084>] hid_sensor_power_state+0x84/0x110
+[hid_sensor_trigger]
+[  234.479011]  [<ffffffffa02d9129>]
+hid_sensor_data_rdy_trigger_set_state+0x19/0x20 [hid_sensor_trigger]
+[  234.479016]  [<ffffffffa034d5b7>]
+iio_triggered_buffer_predisable+0xa7/0xb0 [industrialio]
+[  234.479020]  [<ffffffffa034cc4a>] iio_disable_all_buffers+0x3a/0xc0
+[industrialio]
+[  234.479024]  [<ffffffffa03487d3>] iio_device_unregister+0x53/0x80
+[industrialio]
+[  234.479027]  [<ffffffffa026c06a>] hid_accel_3d_remove+0x2a/0x50
+[hid_sensor_accel_3d]
+[  234.479030]  [<ffffffff814f433d>] platform_drv_remove+0x1d/0x40
+[  234.479033]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.479036]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.479038]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.479040]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.479042]  [<ffffffff81512190>] ? mfd_cell_disable+0x80/0x80
+[  234.479045]  [<ffffffff814f41d1>] platform_device_del+0x21/0xc0
+[  234.479047]  [<ffffffff814f4282>] platform_device_unregister+0x12/0x30
+[  234.479049]  [<ffffffff815121d3>] mfd_remove_devices_fn+0x43/0x50
+[  234.479051]  [<ffffffff814ed3e3>] device_for_each_child+0x43/0x70
+[  234.479053]  [<ffffffff81512105>] mfd_remove_devices+0x25/0x30
+[  234.479057]  [<ffffffffa020ebd7>] sensor_hub_remove+0x87/0x140
+[hid_sensor_hub]
+[  234.479059]  [<ffffffff81607c5b>] hid_device_remove+0x6b/0xd0
+[  234.479063]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.479065]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.479067]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.479069]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.479071]  [<ffffffff81607d47>] hid_destroy_device+0x27/0x60
+[  234.479074]  [<ffffffff81616972>] usbhid_disconnect+0x22/0x50
+[  234.479076]  [<ffffffff81568597>] usb_unbind_interface+0x77/0x2b0
+[  234.479079]  [<ffffffff814f18bf>] __device_release_driver+0x7f/0xf0
+[  234.479081]  [<ffffffff814f1955>] device_release_driver+0x25/0x40
+[  234.479083]  [<ffffffff814f121c>] bus_remove_device+0x11c/0x1a0
+[  234.479085]  [<ffffffff814ed7d6>] device_del+0x136/0x1e0
+[  234.479088]  [<ffffffff81565cd1>] usb_disable_device+0x91/0x2a0
+[  234.479090]  [<ffffffff8155b046>] usb_disconnect+0x96/0x2e0
+[  234.479092]  [<ffffffff8155d74a>] hub_thread+0xb5a/0x1840
+[  234.479094]  [<ffffffff817a1ffc>] ? _raw_spin_unlock_irq+0x2c/0x60
+[  234.479096]  [<ffffffff810edb10>] ? abort_exclusive_wait+0xb0/0xb0
+[  234.479098]  [<ffffffff8155cbf0>] ? hub_port_debounce+0x140/0x140
+[  234.479101]  [<ffffffff810c1379>] kthread+0xf9/0x110
+[  234.479103]  [<ffffffff810c1280>] ? insert_kthread_work+0x80/0x80
+[  234.479106]  [<ffffffff817a2dfc>] ret_from_fork+0x7c/0xb0
+[  234.479107]  [<ffffffff810c1280>] ? insert_kthread_work+0x80/0x80
 
-> > diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> > index ac2d69e..d630ae9 100644
-> > --- a/drivers/iio/gyro/Kconfig
-> > +++ b/drivers/iio/gyro/Kconfig
-> > @@ -50,6 +50,17 @@ config ADXRS450
-> >   	  This driver can also be built as a module.  If so, the module
-> >   	  will be called adxrs450.
-> > 
-> > +config BMG160
-> > +	tristate "BOSCH BMG160 Gyro Sensor"
-> > +	depends on I2C
-> > +	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
-> > +	help
-> > +	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
-> > +	  driver.
-> > +
-> > +	  This driver can also be built as a module.  If so, the module
-> > +	  will be called bmg160.
-> > +
-> >   config HID_SENSOR_GYRO_3D
-> >   	depends on HID_SENSOR_HUB
-> >   	select IIO_BUFFER
-> > diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> > index 2f2752a..36a3877 100644
-> > --- a/drivers/iio/gyro/Makefile
-> > +++ b/drivers/iio/gyro/Makefile
-> > @@ -8,6 +8,7 @@ obj-$(CONFIG_ADIS16130) += adis16130.o
-> >   obj-$(CONFIG_ADIS16136) += adis16136.o
-> >   obj-$(CONFIG_ADIS16260) += adis16260.o
-> >   obj-$(CONFIG_ADXRS450) += adxrs450.o
-> > +obj-$(CONFIG_BMG160) += bmg160.o
-> > 
-> >   obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
-> > 
-> > diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> > new file mode 100644
-> > index 0000000..72381d0
-> > --- /dev/null
-> > +++ b/drivers/iio/gyro/bmg160.c
-> > @@ -0,0 +1,984 @@
-> > +/*
-> > + * BMG160 Gyro Sensor driver
-> > + * Copyright (c) 2014, Intel Corporation.
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify it
-> > + * under the terms and conditions of the GNU General Public License,
-> > + * version 2, as published by the Free Software Foundation.
-> > + *
-> > + * This program is distributed in the hope it will be useful, but WITHOUT
-> > + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-> > for
-> > + * more details.
-> > + */
-> > +
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/acpi.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/pm.h>
-> > +#include <linux/pm_runtime.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/buffer.h>
-> > +#include <linux/iio/trigger.h>
-> > +#include <linux/iio/events.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +
-> > +#define BMG160_DRV_NAME			"bmg160"
-> > +#define BMG160_IRQ_NAME			"bmg160_event"
-> > +#define BMG160_GPIO_NAME		"gpio_int"
-> > +
-> > +#define BMG160_REG_CHIP_ID		0x00
-> > +#define BMG160_CHIP_ID_VAL		0x0F
-> > +
-> > +#define BMG160_REG_PMU_LPW		0x11
-> > +#define BMG160_PMU_SLP_MASK		0xE0
-> > +#define BMG160_PMU_SLP_SHIFT		5
-> > +#define BMG160_PMU_BIT_SLEEP_DUR_MASK	0x17
-> > +#define BMG160_PMU_BIT_SLEEP_DUR_SHIFT	1
-> > +
-> > +#define BMG160_REG_RANGE		0x0F
-> > +
-> > +#define BMG160_RANGE_2000DPS		0
-> > +#define BMG160_RANGE_1000DPS		1
-> > +#define BMG160_RANGE_500DPS		2
-> > +#define BMG160_RANGE_250DPS		3
-> > +#define BMG160_RANGE_125DPS		4
-> > +
-> > +#define BMG160_REG_PMU_BW		0x10
-> > +#define BMG160_No_Filter		0
-
-NO_FILTER
-
-> > +#define BMG160_DEF_BW			100
-> > +
-> > +#define BMG160_REG_INT_MAP_0		0x17
-> > +#define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
-> > +
-> > +#define BMG160_REG_INT_RST_LATCH	0x21
-> > +#define BMG160_INT_MODE_LATCH_RESET	0x80
-> > +#define BMG160_INT_MODE_LATCH_INT	0x0F
-> > +
-> > +#define BMG160_REG_INT_EN_0		0x15
-> > +#define BMG160_DATA_ENABLE_INT		BIT(7)
-> > +
-> > +#define BMG160_REG_XOUT_L		0x02
-> > +#define BMG160_AXIS_TO_REG(axis)	(BMG160_REG_XOUT_L + (axis * 2))
-> > +
-> > +#define BMG160_REG_SLOPE_THRES		0x1B
-> > +#define BMG160_SLOPE_THRES_MASK		0x0F
-> > +
-> > +#define BMG160_REG_MOTION_INTR		0x1C
-> > +#define BMG160_INT_MOTION_X		BIT(0)
-> > +#define BMG160_INT_MOTION_Y		BIT(1)
-> > +#define BMG160_INT_MOTION_Z		BIT(2)
-> > +#define BMG160_ANY_DUR_MASK		0x30
-> > +#define BMG160_ANY_DUR_SHIFT		4
-> > +/*
-> > + * We are using Any-motion detection as described in section 4.8.5.
-> > + * The min sample duration for rate comparison, This will reduce the
-> > + * affective rate by this factor, so for user space notification, use
-> > + * this factor, so setting 100HZ actually results notification of
-> > + * 25HZ only. This chip doesn't allow going below this value.
-> > + */
-> 
-> Hmm. Doesn't this only apply to the events?  The dataready signal will
-> still tick along at full rate?  If so have a primary sampling_frequency
-> that is the full rate and an additional element for the events that
-> is ready only and a 1/4 the value.
-> 
-> > +#define BMG160_ANY_DUR_MIN_SAMPLE	4
-> > +
-> > +#define BMG160_MAX_STARTUP_TIME_MS	80
-> > +
-> > +#define BMG160_SLEEP_DELAY_MS	2000
-> > +static int bmg160_power_off_delay_ms = BMG160_SLEEP_DELAY_MS;
-> > +module_param(bmg160_power_off_delay_ms, int, 0644);
-> > +MODULE_PARM_DESC(bmg160_power_off_delay_ms,
-> > +	"BMG160 Gyroscope power of delay in milli seconds.");
-> Hmm. Does this make sense as a module parameter?  What changes it?
-> > +
-> > +struct bmg160_data {
-> > +	struct i2c_client *client;
-> > +	struct iio_trigger *trig;
-> > +	struct mutex mutex;
-> > +	s16 buffer[12];
-> I count 3 for the channels (pad to 4) and 4 for the timestamp.
-> So a total buffer size of 8 not 12 (as in words)
-> > +	u8 bw_bits;
-> > +	u32 dps_range;
-> > +	int ev_enable_state;
-
-ev_enable_state seems to be a bool
-
-> > +	int slope_thres;
-> > +	bool trigger_on;
-> > +};
-> > +
-> > +enum bmg160_axis {
-> > +	AXIS_X,
-> > +	AXIS_Y,
-> > +	AXIS_Z,
-> > +};
-> > +
-> > +enum bmg160_operation_mode {
-> > +	BMG160_MODE_NORMAL,
-> > +	BMG160_MODE_DEEP_SUSPEND,
-> > +	BMG160_MODE_SUSPEND,
-> > +};
-> > +
-> > +static const struct {
-> > +	int val;
-> > +	int bw_bits;
-
-bw_bits should be u8
-
-> > +} bmg160_samp_freq_table[] = { {100, 0x07},
-> > +			       {200, 0x06},
-> > +			       {400, 0x03},
-> > +			       {1000, 0x02},
-> > +			       {2000, 0x01} };
-> > +
-> > +static const struct {
-> > +	int scale;
-> > +	int dps_range;
-
-u8 dps_range
-
-> > +} bmg160_scale_table[] = { { 1065, BMG160_RANGE_2000DPS},
-> > +			   { 532, BMG160_RANGE_1000DPS},
-> > +			   { 266, BMG160_RANGE_500DPS},
-> > +			   { 133, BMG160_RANGE_250DPS},
-> > +			   { 66, BMG160_RANGE_125DPS} };
-> > +
-> > +static int bmg160_set_mode(struct bmg160_data *data,
-> > +			   enum bmg160_operation_mode mode)
-> > +{
-> > +	int ret;
-> > +	u8 lpw_bits = 0;
-> > +
-> > +	lpw_bits = mode << BMG160_PMU_SLP_SHIFT;
-> > +
-> > +	dev_dbg(&data->client->dev, "Set Mode bits %x\n", lpw_bits);
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_PMU_LPW, lpw_bits);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error writing reg_pmu_lpw\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_convert_freq_to_bit(int val)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
-> > +		if (bmg160_samp_freq_table[i].val == val)
-> > +			return bmg160_samp_freq_table[i].bw_bits;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bmg160_set_bw(struct bmg160_data *data, int val)
-> > +{
-> > +	int ret;
-> > +	int bw_bits;
-> > +
-> > +	bw_bits = bmg160_convert_freq_to_bit(val);
-> > +	if (bw_bits < 0)
-> > +		return bw_bits;
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client, BMG160_REG_PMU_BW,
-> > +					bw_bits);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error writing pmu_bw\n");
-
-the error messages are inconsistent, I'd expect reg_pmu_bw here
-
-> > +		return ret;
-> > +	}
-> > +
-> > +	data->bw_bits = bw_bits;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_chip_init(struct bmg160_data *data)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_CHIP_ID);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev,
-> > +			"Error:BMG160_REG_CHIP_ID\n");
-
-"Error reading reg_chip_id"
-
-> > +		return ret;
-> > +	}
-> > +
-> > +	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> > +	if (ret != BMG160_CHIP_ID_VAL) {
-> > +		dev_err(&data->client->dev, "invalid chip %x\n", ret);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	/* Set Bandwidth */
-> > +	ret = bmg160_set_bw(data, BMG160_DEF_BW);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* Set Default Range */
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_RANGE,
-> > +					BMG160_RANGE_500DPS);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev,
-> > +			"Error writing pmu_dps_range\n");
-
-register is called reg_range
-
-> > +		return ret;
-> > +	}
-> > +	data->dps_range = BMG160_RANGE_500DPS;
-> > +
-> > +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_SLOPE_THRES);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error: reading slope_thres\n");
-> > +		return ret;
-> > +	}
-> > +	data->slope_thres = ret;
-> > +
-> > +	return bmg160_set_mode(data, BMG160_MODE_SUSPEND);
-> > +}
-> > +
-> > +static int bmg160_set_power_state(struct bmg160_data *data, bool on)
-> > +{
-> > +	int ret;
-> > +
-> > +#ifdef CONFIG_PM_RUNTIME
-> > +	if (on)
-> > +		ret = pm_runtime_get_sync(&data->client->dev);
-> > +	else {
-> > +		pm_runtime_put_noidle(&data->client->dev);
-> > +		ret = pm_schedule_suspend(&data->client->dev,
-> > +					  bmg160_power_off_delay_ms);
-> > +	}
-> > +#else
-> > +	if (on) {
-> > +		ret = bmg160_set_mode(data, BMG160_MODE_NORMAL);
-> > +		if (!ret)
-> > +			msleep_interruptible(BMG160_MAX_STARTUP_TIME_MS);
-> > +	} else
-> > +		ret = bmg160_set_mode(data, BMG160_MODE_SUSPEND);
-> > +#endif
-> > +
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev,
-> > +			"Failed: bmg160_set_power_state for %d\n", on);
-> > +		return ret;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_chip_setup_interrupt(struct bmg160_data *data, bool
-> > status)
-> > +{
-> > +	int ret;
-> > +
-> > +	/* Enable/Disable INT1 mapping */
-> > +	ret = i2c_smbus_read_byte_data(data->client,
-> > +				       BMG160_REG_INT_MAP_0);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error read reg_int_map0\n");
-
-reading
-
-> > +		return ret;
-> > +	}
-> > +	if (status)
-> > +		ret |= BMG160_INT_MAP_0_BIT_ANY;
-> > +	else
-> > +		ret &= ~BMG160_INT_MAP_0_BIT_ANY;
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_INT_MAP_0,
-> > +					ret);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error write reg_int_map0\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* Set latched mode interrupt and clear any latched interrupt */
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_INT_RST_LATCH,
-> > +					BMG160_INT_MODE_LATCH_INT |
-> > +					BMG160_INT_MODE_LATCH_RESET);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error write reg_rst_latch\n");
-
-writing (I'll stop this kind of nitpicking here :)
-
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* Enable/Disable slope interrupts */
-> > +	if (status) {
-> > +
-> > +		/* Update slope thres */
-> > +		ret = i2c_smbus_write_byte_data(data->client,
-> > +						BMG160_REG_SLOPE_THRES,
-> > +						data->slope_thres);
-> > +		if (ret < 0) {
-> > +			dev_err(&data->client->dev,
-> > +				"Error write reg_slope_thres\n");
-> > +			return ret;
-> > +		}
-> > +
-> > +		ret = i2c_smbus_write_byte_data(data->client,
-> > +						BMG160_REG_MOTION_INTR,
-> > +						BMG160_INT_MOTION_X |
-> > +						BMG160_INT_MOTION_Y |
-> > +						BMG160_INT_MOTION_Z);
-> > +		if (ret < 0) {
-> > +			dev_err(&data->client->dev,
-> > +				"Error write reg_motion_intr\n");
-> > +			return ret;
-> > +		}
-> > +
-> > +		ret = i2c_smbus_write_byte_data(data->client,
-> > +						BMG160_REG_INT_EN_0,
-> > +						BMG160_DATA_ENABLE_INT);
-> > +	} else
-> > +		ret = i2c_smbus_write_byte_data(data->client,
-> > +						BMG160_REG_INT_EN_0,
-> > +						0);
-> > +
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error writing reg_int_en0\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bmg160_get_bw(struct bmg160_data *data, int *val)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
-> > +		if (bmg160_samp_freq_table[i].bw_bits == data->bw_bits) {
-> > +			*val = bmg160_samp_freq_table[i].val;
-> > +			return IIO_VAL_INT;
-> > +		}
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bmg160_set_scale(struct bmg160_data *data, int val)
-> > +{
-> > +	int ret, i;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
-> > +		if (bmg160_scale_table[i].scale == val) {
-> > +			ret = i2c_smbus_write_byte_data(
-> > +					data->client,
-> > +					BMG160_REG_RANGE,
-> > +					bmg160_scale_table[i].dps_range);
-> > +			if (ret < 0) {
-> > +				dev_err(&data->client->dev,
-> > +					"Error writing pmu_dps_range\n");
-> > +				return ret;
-> > +			}
-> > +			data->dps_range = bmg160_scale_table[i].dps_range;
-> > +			return 0;
-> > +		}
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bmg160_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan,
-> > +			   int *val, int *val2, long mask)
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		mutex_lock(&data->mutex);
-> > +		if (iio_buffer_enabled(indio_dev))
-> > +			ret = -EBUSY;
-> > +		else {
-> > +			ret = bmg160_set_power_state(data, true);
-> > +			if (ret < 0) {
-> > +				mutex_unlock(&data->mutex);
-> > +				return ret;
-> > +			}
-> > +			ret = i2c_smbus_read_word_data(data->client,
-> > +						       BMG160_AXIS_TO_REG(
-> > +						       chan->scan_index));
-> > +			if (ret < 0) {
-> > +				bmg160_set_power_state(data, false);
-> > +				mutex_unlock(&data->mutex);
-> > +				return ret;
-> > +			}
-> > +			*val = sign_extend32(ret, 15);
-> > +			ret = bmg160_set_power_state(data, false);
-> > +		}
-> > +		mutex_unlock(&data->mutex);
-> > +
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		return IIO_VAL_INT;
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		*val = 0;
-> > +		switch (data->dps_range) {
-
-do a lookup in bmg160_scale_table which stores this mapping already?
-
-> > +		case BMG160_RANGE_2000DPS:
-> > +			*val2 = 1065;
-> > +			break;
-> > +		case BMG160_RANGE_1000DPS:
-> > +			*val2 = 532;
-> > +			break;
-> > +		case BMG160_RANGE_500DPS:
-> > +			*val2 = 266;
-> > +			break;
-> > +		case BMG160_RANGE_250DPS:
-> > +			*val2 = 133;
-> > +			break;
-> > +		case BMG160_RANGE_125DPS:
-> > +			*val2 = 66;
-> > +			break;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		*val2 = 0;
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bmg160_get_bw(data, val);
-> > +		if (ret == IIO_VAL_INT)
-> > +			*val /= BMG160_ANY_DUR_MIN_SAMPLE;
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int bmg160_write_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan,
-> > +			    int val, int val2, long mask)
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bmg160_set_bw(data, val * BMG160_ANY_DUR_MIN_SAMPLE);
-> > +		mutex_unlock(&data->mutex);
-
-return ret;
-
-> > +		break;
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		if (val)
-> > +			return -EINVAL;
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bmg160_set_scale(data, val2);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	default:
-> > +		ret = -EINVAL;
-
-return -EINVAL;
-
-> > +	}
-> > +
-> > +	return ret;
-
-remove line above
-
-> > +}
-> > +
-> > +static int bmg160_read_event(struct iio_dev *indio_dev,
-> > +			     const struct iio_chan_spec *chan,
-> > +			     enum iio_event_type type,
-> > +			     enum iio_event_direction dir,
-> > +			     enum iio_event_info info,
-> > +			     int *val, int *val2)
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	*val2 = 0;
-> > +	switch (info) {
-> > +	case IIO_EV_INFO_VALUE:
-> > +		*val = data->slope_thres & BMG160_SLOPE_THRES_MASK;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return IIO_VAL_INT;
-> > +}
-> > +
-> > +static int bmg160_write_event(struct iio_dev *indio_dev,
-> > +			      const struct iio_chan_spec *chan,
-> > +			      enum iio_event_type type,
-> > +			      enum iio_event_direction dir,
-> > +			      enum iio_event_info info,
-> > +			      int val, int val2)
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (info) {
-> > +	case IIO_EV_INFO_VALUE:
-> > +		data->slope_thres &= ~BMG160_SLOPE_THRES_MASK;
-> > +		data->slope_thres |= (val & BMG160_SLOPE_THRES_MASK);
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_read_event_config(struct iio_dev *indio_dev,
-> > +				    const struct iio_chan_spec *chan,
-> > +				    enum iio_event_type type,
-> > +				    enum iio_event_direction dir)
-> > +{
-> > +
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	return data->ev_enable_state;
-> > +}
-> > +
-> > +static int bmg160_write_event_config(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir,
-> > +				     int state)
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (data->trigger_on)
-> > +		return -EAGAIN;
-> > +
-> > +	if (state && data->ev_enable_state)
-> > +		return 0;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	ret = bmg160_chip_setup_interrupt(data, state);
-> > +	if (!ret) {
-> > +		ret = bmg160_set_power_state(data, state);
-> > +		if (ret < 0) {
-> > +			mutex_unlock(&data->mutex);
-> > +			return ret;
-> > +		}
-> > +	}
-> > +	data->ev_enable_state = state;
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmc150_validate_trigger(struct iio_dev *indio_dev,
-> > +				   struct iio_trigger *trig)
-
-prefix should be bmg160, not bmc150
-
-> > +{
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	if (data->trig != trig)
-> > +		return -EINVAL;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-> > +		"25.0 50.0 100.0 250.0 500.0");
-> You don't need the .0's though I don't suppose it does any harm!
-> > +
-> > +static IIO_CONST_ATTR(in_anglvel_scale_available,
-> > +		      "0.001065 0.000532 0.000133 0.000066");
-> > +
-> > +static struct attribute *bmg160_attributes[] = {
-> > +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> > +	&iio_const_attr_in_anglvel_scale_available.dev_attr.attr,
-> > +	NULL,
-> > +};
-> > +
-> > +static const struct attribute_group bmg160_attrs_group = {
-> > +	.attrs = bmg160_attributes,
-> > +};
-> > +
-> > +static const struct iio_event_spec bmg160_event = {
-> > +		.type = IIO_EV_TYPE_ROC,
-> > +		.dir = IIO_EV_DIR_EITHER,
-> > +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> > +					   BIT(IIO_EV_INFO_ENABLE)
-> > +};
-> > +
-> > +#define BMG160_CHANNEL(_axis) {
-> > \
-> > +	.type = IIO_ANGL_VEL,						\
-> > +	.modified = 1,							\
-> > +	.channel2 = IIO_MOD_##_axis,					\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> > +				BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
-> > +	.scan_index = AXIS_##_axis,					\
-> > +	.scan_type = {							\
-> > +		.sign = 's',						\
-> > +		.realbits = 16,						\
-> > +		.storagebits = 16,					\
-> I'd not bother specifying shift as it will default to zero anyway.
-> > +		.shift = 0,						\
-> > +	},								\
-> > +	.event_spec = &bmg160_event,					\
-> > +	.num_event_specs = 1						\
-> > +}
-> > +
-> > +static const struct iio_chan_spec bmg160_channels[] = {
-> > +	BMG160_CHANNEL(X),
-> > +	BMG160_CHANNEL(Y),
-> > +	BMG160_CHANNEL(Z),
-> Isn't there a temp sensor?  Add it as non buffered (scan_index = -1)
-> > +	IIO_CHAN_SOFT_TIMESTAMP(3),
-> > +};
-> > +
-> > +static const struct iio_info bmg160_info = {
-> > +	.attrs			= &bmg160_attrs_group,
-> > +	.read_raw		= bmg160_read_raw,
-> > +	.write_raw		= bmg160_write_raw,
-> > +	.read_event_value	= bmg160_read_event,
-> > +	.write_event_value	= bmg160_write_event,
-> > +	.write_event_config	= bmg160_write_event_config,
-> > +	.read_event_config	= bmg160_read_event_config,
-> > +	.validate_trigger	= bmc150_validate_trigger,
-> > +	.driver_module		= THIS_MODULE,
-> > +};
-> > +
-> > +static irqreturn_t bmg160_trigger_handler(int irq, void *p)
-> > +{
-> > +	struct iio_poll_func *pf = p;
-> > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int bit, ret, i = 0;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-> > +			 indio_dev->masklength) {
-> > +		ret = i2c_smbus_read_word_data(data->client,
-> > +					       BMG160_AXIS_TO_REG(bit));
-> > +		if (ret < 0) {
-> > +			mutex_unlock(&data->mutex);
-> > +			goto err;
-> > +		}
-> > +		data->buffer[i++] = ret;
-> > +	}
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> > +					   pf->timestamp);
-> > +err:
-> > +	iio_trigger_notify_done(indio_dev->trig);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int bmg160_trig_try_reen(struct iio_trigger *trig)
-> > +{
-> > +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	/* Set latched mode interrupt and clear any latched interrupt */
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_INT_RST_LATCH,
-> > +					BMG160_INT_MODE_LATCH_INT |
-> > +					BMG160_INT_MODE_LATCH_RESET);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev, "Error writing reg_rst_latch\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> > +					     bool state)
-> > +{
-> > +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (data->ev_enable_state)
-> > +		return -EAGAIN;
-> > +
-> > +	if (state && data->trigger_on)
-> > +		return 0;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	ret = bmg160_chip_setup_interrupt(data, state);
-> > +	if (!ret) {
-> > +		ret = bmg160_set_power_state(data, state);
-> > +		if (ret < 0) {
-> > +			mutex_unlock(&data->mutex);
-> > +			return ret;
-> > +		}
-> > +	}
-> > +	data->trigger_on = state;
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct iio_trigger_ops bmg160_trigger_ops = {
-> > +	.set_trigger_state = bmg160_data_rdy_trigger_set_state,
-> > +	.try_reenable = bmg160_trig_try_reen,
-> > +	.owner = THIS_MODULE,
-> > +};
-> > +
-> > +static irqreturn_t bmg160_event_handler(int irq, void *private)
-> > +{
-> > +	struct iio_dev *indio_dev = private;
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> To my read we have two possible events. An any motion and a high rate.
-> This is the any motion? I guess it is ROC change.  The direction bit
-> isn't for this purpose.  It is intended for events that fire an interrupt
-> when a threshold is crossed in any direction.  Here you actually have
-> a rising rate of change (though I'm not sure we have it definited clearly
-> as being unsigned...)  Might need some clarification of a distinction between
-> IIO_EV_TYPE_ROC and say IIO_EV_TYPE_MAG_ROC.
-> 
-> Whilst not strictly necessary I'd also read the status to confirm that it
-> was this event.  I think you can also confirm the axis (or first one to
-> trigger which isn't ideal).
-> 
-> The other event type is going to be more 'interesting' to add!
-> 
-> > +	iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
-> > +						     0,
-> > +						     IIO_MOD_X_OR_Y_OR_Z,
-> > +						     IIO_EV_TYPE_ROC,
-> > +						     IIO_EV_DIR_EITHER),
-> > +						     iio_get_time_ns());
-> > +
-> > +	ret = i2c_smbus_write_byte_data(data->client,
-> > +					BMG160_REG_INT_RST_LATCH,
-> > +					BMG160_INT_MODE_LATCH_INT |
-> > +					BMG160_INT_MODE_LATCH_RESET);
-> > +	if (ret < 0)
-> > +		dev_err(&data->client->dev, "Error writing reg_rst_latch\n");
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
-> > +{
-> > +	struct iio_dev *indio_dev = private;
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	if (data->trigger_on) {
-> > +		iio_trigger_poll(data->trig);
-> > +		return IRQ_HANDLED;
-> > +	} else
-> > +		return IRQ_WAKE_THREAD;
-> From my quick glance at the datasheet it's perfectly possible to have
-> both data ready and events on the same interrupt pin.  Here you prevent
-> this.
-> 
-> I presume that this is to avoid limiting the dataready trigger to only the
-> chained form? (e.g. bottom half only). The complexity being that if you do
-> that you'll both limit the use of the trigger and make it trickier to get
-> the time stamp (you'll need to roll your own save of it here).
-> 
-> Admitedly any sane implementation of this (to my mind) that wants both
-> fast data capture and events should be using the pair of interrupt pins ;)
-> > +}
-> > +
-> > +static int bmg160_acpi_gpio_probe(struct i2c_client *client,
-> > +				  struct bmg160_data *data)
-> > +{
-> > +	const struct acpi_device_id *id;
-> > +	struct device *dev;
-> > +	struct gpio_desc *gpio;
-> > +	int ret;
-> > +
-> > +	if (!client)
-> > +		return -EINVAL;
-> > +
-> > +	dev = &client->dev;
-> > +	if (!ACPI_HANDLE(dev))
-> > +		return -ENODEV;
-> > +
-> > +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > +	if (!id)
-> > +		return -ENODEV;
-> > +
-> > +	/* data ready gpio interrupt pin */
-> > +	gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0);
-> > +	if (IS_ERR(gpio)) {
-> > +		dev_err(dev, "acpi gpio get index failed\n");
-> > +		return PTR_ERR(gpio);
-> > +	}
-> > +
-> > +	ret = gpiod_direction_input(gpio);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = gpiod_to_irq(gpio);
-> > +
-> > +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio),
-> > ret);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bmg160_probe(struct i2c_client *client,
-> > +			const struct i2c_device_id *id)
-> > +{
-> > +	struct bmg160_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +	struct iio_trigger *trig = NULL;
-> Why the intialization? Doesn't appear necessary.
-> > +	int ret;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	i2c_set_clientdata(client, indio_dev);
-> > +	data->client = client;
-> > +
-> > +	ret = bmg160_chip_init(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	mutex_init(&data->mutex);
-> > +
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->channels = bmg160_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(bmg160_channels);
-> > +	indio_dev->name = BMG160_DRV_NAME;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->info = &bmg160_info;
-> > +
-> > +	if (client->irq <= 0)
-> > +		client->irq = bmg160_acpi_gpio_probe(client, data);
-> > +
-> > +	if (client->irq > 0) {
-> interesting.  So the top half id doing the dataready but only launches
-> the bottom half if not firing the trigger irq chip.  I suppose that
-> should work cleanly.
-> > +		ret = devm_request_threaded_irq(
-> > +					&client->dev, client->irq,
-> > +					bmg160_data_rdy_trig_poll,
-> > +					bmg160_event_handler,
-> > +					IRQF_TRIGGER_RISING,
-> > +					BMG160_IRQ_NAME,
-> > +					indio_dev);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
-> > +					 indio_dev->id);
-> > +		if (!trig)
-> > +			return -ENOMEM;
-> > +
-> > +		trig->dev.parent = &client->dev;
-> > +		trig->ops = &bmg160_trigger_ops;
-> > +		iio_trigger_set_drvdata(trig, indio_dev);
-> > +		data->trig = trig;
-> > +
-> > +		ret = iio_trigger_register(trig);
-> > +		if (ret)
-> > +			goto err_trigger_free;
-> > +
-> > +		ret = iio_triggered_buffer_setup(indio_dev,
-> > +						 &iio_pollfunc_store_time,
-> > +						 bmg160_trigger_handler,
-> > +						 NULL);
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev,
-> > +				"iio triggered buffer setup failed\n");
-> > +			goto err_trigger_unregister;
-> > +		}
-> > +	}
-> > +
-> > +	ret = iio_device_register(indio_dev);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "unable to register iio device\n");
-> > +		goto err_buffer_cleanup;
-> > +	}
-> > +	ret = pm_runtime_set_active(&client->dev);
-> > +	if (ret)
-> > +		goto err_iio_unregister;
-> > +
-> > +	pm_runtime_enable(&client->dev);
-> > +
-> > +	return 0;
-> > +
-> > +err_iio_unregister:
-> > +	iio_device_unregister(indio_dev);
-> > +err_buffer_cleanup:
-> > +	if (data->trig)
-> > +		iio_triggered_buffer_cleanup(indio_dev);
-> > +err_trigger_unregister:
-> > +	if (data->trig)
-> > +		iio_trigger_unregister(trig);
-> > +err_trigger_free:
-> > +	if (data->trig)
-> > +		iio_trigger_free(trig);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bmg160_remove(struct i2c_client *client)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	pm_runtime_disable(&client->dev);
-> > +	pm_runtime_set_suspended(&client->dev);
-> > +	pm_runtime_put_noidle(&client->dev);
-> I'm not at all familiar with the runtime PM stuff and their documentation
-> doesn't exactlly make it obvious what fits where!  Hence if anyone else
-> wants to take a deep dive in and comment on this I'd be most happy.
-> > +
-> > +	iio_device_unregister(indio_dev);
-> > +
-> > +	if (data->trig) {
-> > +		iio_triggered_buffer_cleanup(indio_dev);
-> > +		iio_trigger_unregister(data->trig);
-> It won't make a huge amount of difference but is there any disadvantage
-> in using the devm_iio_trigger_alloc call and dropping the frees?
-> > +		iio_trigger_free(data->trig);
-> > +	}
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	bmg160_set_mode(data, BMG160_MODE_DEEP_SUSPEND);
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +#ifdef CONFIG_PM_SLEEP
-> > +static int bmg160_suspend(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	bmg160_set_mode(data, BMG160_MODE_SUSPEND);
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bmg160_resume(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	if (data->trigger_on || data->ev_enable_state)
-> > +		bmg160_set_mode(data, BMG160_MODE_NORMAL);
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> > +#ifdef CONFIG_PM_RUNTIME
-> > +static int bmg160_runtime_suspend(struct device *dev)
-> > +{
-> Given the only difference between the runtime and normal versions is
-> the locking, perhaps it makes sense to merge the code into a utility function?
-> Might not be worth the hassel though.
-> 
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +
-> > +	return bmg160_set_mode(data, BMG160_MODE_SUSPEND);
-> > +}
-> > +
-> > +static int bmg160_runtime_resume(struct device *dev)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> > +	struct bmg160_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	ret = bmg160_set_mode(data, BMG160_MODE_NORMAL);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	msleep_interruptible(BMG160_MAX_STARTUP_TIME_MS);
-> > +
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> > +static const struct dev_pm_ops bmg160_pm_ops = {
-> > +	SET_SYSTEM_SLEEP_PM_OPS(bmg160_suspend, bmg160_resume)
-> > +	SET_RUNTIME_PM_OPS(bmg160_runtime_suspend,
-> > +			   bmg160_runtime_resume, NULL)
-> > +};
-> > +
-> > +static const struct acpi_device_id bmg160_acpi_match[] = {
-> > +	{"BMG0160", 0},
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(acpi, bmg160_acpi_match);
-> > +
-> > +static const struct i2c_device_id bmg160_id[] = {
-> > +	{"bmg160", 0},
-> > +	{}
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(i2c, bmg160_id);
-> > +
-> > +static struct i2c_driver bmg160_driver = {
-> > +	.driver = {
-> > +		.name	= BMG160_DRV_NAME,
-> > +		.acpi_match_table = ACPI_PTR(bmg160_acpi_match),
-> > +		.pm	= &bmg160_pm_ops,
-> > +	},
-> > +	.probe		= bmg160_probe,
-> > +	.remove		= bmg160_remove,
-> > +	.id_table	= bmg160_id,
-> > +};
-> > +module_i2c_driver(bmg160_driver);
-> > +
-> > +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
-> > +MODULE_LICENSE("GPL v2");
-> > +MODULE_DESCRIPTION("BMG160 Gyro driver");
-> > 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Thanks,
+Reyad Attiyat
