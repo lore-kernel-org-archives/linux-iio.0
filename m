@@ -1,387 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:40838 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:40867 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751159AbaGTPey (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Jul 2014 11:34:54 -0400
-Message-ID: <53CBE22A.3050401@kernel.org>
-Date: Sun, 20 Jul 2014 16:37:14 +0100
+	id S1751159AbaGTPg4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 20 Jul 2014 11:36:56 -0400
+Message-ID: <53CBE2A4.6080709@kernel.org>
+Date: Sun, 20 Jul 2014 16:39:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, rafael.j.wysocki@intel.com
-Subject: Re: [PATCH 3/6] iio: accel: kxcjk-1013: support runtime pm
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 6/6] iio: accel: kxcjk-1013: Increment ref counter for
+ indio_dev->trig
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 17/07/14 01:42, Srinivas Pandruvada wrote:
-> In an effort to improve raw read performance and at the same time enter
-> low power state at every possible chance.
-> For raw reads, it will keep the system powered on for a user specified
-> max time, this will help read multiple samples without power on/off
-> sequence.
-> When runtime pm is not enabled, then it fallbacks to current scheme
-> of on/off after each read.
+> Assigning indio_dev->trig is not a good idea, as this can result in
+> wrong reference count for trigger device. If assigned, it is better to
+> increment reference counter by calling iio_trigger_get.
+> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+> with Jonathan.
 >
 > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-I'm happy with what you have here, but really don't feel confident enough
-on the runtime_pm side of things to take it without someone with more
-experience of that taking a quick look at it.
+I've parked the intervening patches to allow time for the runtime pm one
+to sit on the list.
 
-Hence, I've cc'd Rafael.  Rafael, if you don't have time to look at this
-feel free to say so and I'll rely on the docs rather than experience.
+This one is a bug fix (and should have been earlier in the series!).
+I've applied it to the togreg branch of iio.git.
+
+Lars is of course correct that we could do this in a nicer fashion, but
+I'd rather get the simple fix in place and tidy up later, than delay it
+now.
+
+Jonathan
 > ---
->   drivers/iio/accel/kxcjk-1013.c | 198 +++++++++++++++++++++++++++++++++--------
->   1 file changed, 160 insertions(+), 38 deletions(-)
+>   drivers/iio/accel/kxcjk-1013.c | 1 +
+>   1 file changed, 1 insertion(+)
 >
 > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index bff5161..4912143 100644
+> index f5bb682..40ecf8b 100644
 > --- a/drivers/iio/accel/kxcjk-1013.c
 > +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -21,6 +21,8 @@
->   #include <linux/string.h>
->   #include <linux/acpi.h>
->   #include <linux/gpio/consumer.h>
-> +#include <linux/pm.h>
-> +#include <linux/pm_runtime.h>
->   #include <linux/iio/iio.h>
->   #include <linux/iio/sysfs.h>
->   #include <linux/iio/buffer.h>
-> @@ -71,15 +73,21 @@
->   #define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
->   #define KXCJK1013_MAX_STARTUP_TIME_US	100000
+> @@ -1020,6 +1020,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>   		iio_trigger_set_drvdata(trig, indio_dev);
+>   		data->trig = trig;
+>   		indio_dev->trig = trig;
+> +		iio_trigger_get(indio_dev->trig);
 >
-> +#define KXCJK1013_SLEEP_DELAY_MS	2000
-> +static int kxcjk1013_power_off_delay_ms = KXCJK1013_SLEEP_DELAY_MS;
-> +module_param(kxcjk1013_power_off_delay_ms, int, 0644);
-> +MODULE_PARM_DESC(kxcjk1013_power_off_delay_ms,
-> +	"KXCJK1013 accelerometer power of delay in milli seconds.");
-> +
->   struct kxcjk1013_data {
->   	struct i2c_client *client;
->   	struct iio_trigger *trig;
->   	bool trig_mode;
->   	struct mutex mutex;
->   	s16 buffer[8];
-> -	int power_state;
->   	u8 odr_bits;
->   	bool active_high_intr;
-> +	bool trigger_on;
->   };
->
->   enum kxcjk1013_axis {
-> @@ -138,6 +146,25 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
->   	return 0;
->   }
->
-> +static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
-> +			      enum kxcjk1013_mode *mode)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	if (ret & KXCJK1013_REG_CTRL1_BIT_PC1)
-> +		*mode = OPERATION;
-> +	else
-> +		*mode = STANDBY;
-> +
-> +	return 0;
-> +}
-> +
->   static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->   {
->   	int ret;
-> @@ -204,10 +231,53 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->   	return 0;
->   }
->
-> +static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
-> +{
-> +	int ret;
-> +
-> +#ifdef CONFIG_PM_RUNTIME
-> +	if (on)
-> +		ret = pm_runtime_get_sync(&data->client->dev);
-> +	else {
-> +		pm_runtime_put_noidle(&data->client->dev);
-> +		ret = pm_schedule_suspend(&data->client->dev,
-> +					  kxcjk1013_power_off_delay_ms);
-> +	}
-> +#else
-> +	if (on) {
-> +		ret = kxcjk1013_set_mode(data, OPERATION);
-> +		if (!ret) {
-> +			int sleep_val;
-> +
-> +			sleep_val = kxcjk1013_get_startup_times(data);
-> +			if (sleep_val < 20000)
-> +				usleep_range(sleep_val, 20000);
-> +			else
-> +				msleep_interruptible(sleep_val/1000);
-> +
-> +		}
-> +	} else
-> +		ret = kxcjk1013_set_mode(data, STANDBY);
-> +#endif
-> +
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"Failed: kxcjk1013_set_power_state for %d\n", on);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
->   					  bool status)
->   {
->   	int ret;
-> +	enum kxcjk1013_mode store_mode;
-> +
-> +	ret = kxcjk1013_get_mode(data, &store_mode);
-> +	if (ret < 0)
-> +		return ret;
->
->   	/* This is requirement by spec to change state to STANDBY */
->   	ret = kxcjk1013_set_mode(data, STANDBY);
-> @@ -250,7 +320,13 @@ static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
->   		return ret;
->   	}
->
-> -	return ret;
-> +	if (store_mode == OPERATION) {
-> +		ret = kxcjk1013_set_mode(data, OPERATION);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
->   }
->
->   static int kxcjk1013_convert_freq_to_bit(int val, int val2)
-> @@ -271,6 +347,11 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->   {
->   	int ret;
->   	int odr_bits;
-> +	enum kxcjk1013_mode store_mode;
-> +
-> +	ret = kxcjk1013_get_mode(data, &store_mode);
-> +	if (ret < 0)
-> +		return ret;
->
->   	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2);
->   	if (odr_bits < 0)
-> @@ -290,9 +371,7 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->
->   	data->odr_bits = odr_bits;
->
-> -	/* Check, if the ODR is changed after data enable */
-> -	if (data->power_state) {
-> -		/* Set the state back to operation */
-> +	if (store_mode == OPERATION) {
->   		ret = kxcjk1013_set_mode(data, OPERATION);
->   		if (ret < 0)
->   			return ret;
-> @@ -356,29 +435,25 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
->   		if (iio_buffer_enabled(indio_dev))
->   			ret = -EBUSY;
->   		else {
-> -			int sleep_val;
-> -
-> -			ret = kxcjk1013_set_mode(data, OPERATION);
-> +			ret = kxcjk1013_set_power_state(data, true);
->   			if (ret < 0) {
->   				mutex_unlock(&data->mutex);
->   				return ret;
->   			}
-> -			++data->power_state;
-> -			sleep_val = kxcjk1013_get_startup_times(data);
-> -			if (sleep_val < 20000)
-> -				usleep_range(sleep_val, 20000);
-> -			else
-> -				msleep_interruptible(sleep_val/1000);
->   			ret = kxcjk1013_get_acc_reg(data, chan->scan_index);
-> -			if (--data->power_state == 0)
-> -				kxcjk1013_set_mode(data, STANDBY);
-> +			if (ret < 0) {
-> +				kxcjk1013_set_power_state(data, false);
-> +				mutex_unlock(&data->mutex);
-> +				return ret;
-> +			}
-> +			*val = sign_extend32(ret >> 4, 11);
-> +			ret = kxcjk1013_set_power_state(data, false);
->   		}
->   		mutex_unlock(&data->mutex);
->
->   		if (ret < 0)
->   			return ret;
->
-> -		*val = sign_extend32(ret >> 4, 11);
->   		return IIO_VAL_INT;
->
->   	case IIO_CHAN_INFO_SCALE:
-> @@ -520,20 +595,21 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
->   {
->   	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->   	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (state && data->trigger_on)
-> +		return 0;
->
->   	mutex_lock(&data->mutex);
-> -	if (state) {
-> -		kxcjk1013_chip_setup_interrupt(data, true);
-> -		kxcjk1013_set_mode(data, OPERATION);
-> -		++data->power_state;
-> -	} else {
-> -		if (--data->power_state) {
-> +	ret = kxcjk1013_chip_setup_interrupt(data, state);
-> +	if (!ret) {
-> +		ret = kxcjk1013_set_power_state(data, state);
-> +		if (ret < 0) {
->   			mutex_unlock(&data->mutex);
-> -			return 0;
-> +			return ret;
->   		}
-> -		kxcjk1013_chip_setup_interrupt(data, false);
-> -		kxcjk1013_set_mode(data, STANDBY);
->   	}
-> +	data->trigger_on = state;
->   	mutex_unlock(&data->mutex);
->
->   	return 0;
-> @@ -660,14 +736,22 @@ static int kxcjk1013_probe(struct i2c_client *client,
->   		}
->   	}
->
-> -	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	ret = iio_device_register(indio_dev);
->   	if (ret < 0) {
->   		dev_err(&client->dev, "unable to register iio device\n");
->   		goto err_buffer_cleanup;
->   	}
->
-> +	ret = pm_runtime_set_active(&client->dev);
-> +	if (ret)
-> +		goto err_iio_unregister;
-> +
-> +	pm_runtime_enable(&client->dev);
-> +
->   	return 0;
->
-> +err_iio_unregister:
-> +	iio_device_unregister(indio_dev);
->   err_buffer_cleanup:
->   	if (data->trig_mode)
->   		iio_triggered_buffer_cleanup(indio_dev);
-> @@ -686,6 +770,12 @@ static int kxcjk1013_remove(struct i2c_client *client)
->   	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->   	struct kxcjk1013_data *data = iio_priv(indio_dev);
->
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
-> +	pm_runtime_put_noidle(&client->dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
->   	if (data->trig_mode) {
->   		iio_triggered_buffer_cleanup(indio_dev);
->   		iio_trigger_unregister(data->trig);
-> @@ -704,35 +794,67 @@ static int kxcjk1013_suspend(struct device *dev)
->   {
->   	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->   	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
->
->   	mutex_lock(&data->mutex);
-> -	kxcjk1013_set_mode(data, STANDBY);
-> +	ret = kxcjk1013_set_mode(data, STANDBY);
->   	mutex_unlock(&data->mutex);
->
-> -	return 0;
-> +	return ret;
->   }
->
->   static int kxcjk1013_resume(struct device *dev)
->   {
->   	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->   	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret = 0;
->
->   	mutex_lock(&data->mutex);
-> +	/* Check, if the suspend occured while active */
-> +	if (data->trigger_on)
-> +		ret = kxcjk1013_set_mode(data, OPERATION);
-> +	mutex_unlock(&data->mutex);
->
-> -	if (data->power_state)
-> -		kxcjk1013_set_mode(data, OPERATION);
-> +	return ret;
-> +}
-> +#endif
->
-> -	mutex_unlock(&data->mutex);
-> +#ifdef CONFIG_PM_RUNTIME
-> +static int kxcjk1013_runtime_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
->
-> -	return 0;
-> +	return kxcjk1013_set_mode(data, STANDBY);
->   }
->
-> -static SIMPLE_DEV_PM_OPS(kxcjk1013_pm_ops, kxcjk1013_suspend, kxcjk1013_resume);
-> -#define KXCJK1013_PM_OPS (&kxcjk1013_pm_ops)
-> -#else
-> -#define KXCJK1013_PM_OPS NULL
-> +static int kxcjk1013_runtime_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	int sleep_val;
-> +
-> +	ret = kxcjk1013_set_mode(data, OPERATION);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	sleep_val = kxcjk1013_get_startup_times(data);
-> +	if (sleep_val < 20000)
-> +		usleep_range(sleep_val, 20000);
-> +	else
-> +		msleep_interruptible(sleep_val/1000);
-> +
-> +	return 0;
-> +}
->   #endif
->
-> +static const struct dev_pm_ops kxcjk1013_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(kxcjk1013_suspend, kxcjk1013_resume)
-> +	SET_RUNTIME_PM_OPS(kxcjk1013_runtime_suspend,
-> +			   kxcjk1013_runtime_resume, NULL)
-> +};
-> +
->   static const struct acpi_device_id kx_acpi_match[] = {
->   	{"KXCJ1013", 0},
->   	{ },
-> @@ -750,7 +872,7 @@ static struct i2c_driver kxcjk1013_driver = {
->   	.driver = {
->   		.name	= KXCJK1013_DRV_NAME,
->   		.acpi_match_table = ACPI_PTR(kx_acpi_match),
-> -		.pm	= KXCJK1013_PM_OPS,
-> +		.pm	= &kxcjk1013_pm_ops,
->   	},
->   	.probe		= kxcjk1013_probe,
->   	.remove		= kxcjk1013_remove,
+>   		ret = iio_trigger_register(trig);
+>   		if (ret)
 >
 
