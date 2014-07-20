@@ -1,29 +1,42 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, Chanwoo Choi <cwchoi00@gmail.com>, jic23@kernel.org, naveen krishna <ch.naveen@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, Rob Herring <robh+dt@kernel.org>, pawel.moll@arm.com, Mark Rutland <mark.rutland@arm.com>, ijc+devicetree@hellion.org.uk, Kumar Gala <galak@codeaurora.org>, rdunlap@infradead.org, Kyungmin Park <kyungmin.park@samsung.com>, Tomasz Figa <t.figa@samsung.com>, linux-iio@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, devicetree <devicetree@vger.kernel.org>, linux-doc@vger.kernel.org
-Subject: Re: [PATCHv6 3/4] iio: devicetree: Add DT binding documentation for Exynos3250 ADC
-Date: Mon, 21 Jul 2014 12:47:01 +0200
-Message-ID: <5314104.0WdOMs1CRl@wuerfel>
-In-Reply-To: <53CCEDBF.7010300@gmail.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <7477106.gq1AqisQx4@wuerfel> <53CCEDBF.7010300@gmail.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <53CBA830.3020306@metafoo.de>
+Date: Sun, 20 Jul 2014 13:29:52 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ jic23@kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 6/6] iio: accel: kxcjk-1013: Increment ref counter for
+ indio_dev->trig
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Monday 21 July 2014 12:38:55 Tomasz Figa wrote:
-> 
-> I believe we should be enforcing as much correctness on DT data as
-> possible without too much burden in the code. Otherwise how we are
-> supposed to know if an error is caused by wrong/missing data in DT, bug
-> in the driver or who knows else?
-> 
-> In this case making this clock required depending on compatible string
-> doesn't seem too bothersome to me.
+On 07/17/2014 02:42 AM, Srinivas Pandruvada wrote:
+> Assigning indio_dev->trig is not a good idea, as this can result in
+> wrong reference count for trigger device. If assigned, it is better to
+> increment reference counter by calling iio_trigger_get.
+> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+> with Jonathan.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>   drivers/iio/accel/kxcjk-1013.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index f5bb682..40ecf8b 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1020,6 +1020,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>   		iio_trigger_set_drvdata(trig, indio_dev);
+>   		data->trig = trig;
+>   		indio_dev->trig = trig;
+> +		iio_trigger_get(indio_dev->trig);
 
-It makes some sense given that we already need the separate compatible
-string (for the number of channels). Without that part, I'd probably
-prefer not having the new string just for the extra clock being required,
-that could be handled more easily by just making it an optional clock.
+Hm, we should change the signature of iio_trigger_get() to return the 
+trigger, this gets it more in sync with other ..._get() APIs in the kernel. 
+Then the above two lines become indio_dev->trig = iio_trigger_get(trig).
 
-	Arnd
+- Lars
