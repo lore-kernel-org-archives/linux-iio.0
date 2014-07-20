@@ -1,125 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:40619 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:40662 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751159AbaGTPMU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Jul 2014 11:12:20 -0400
-Message-ID: <53CBDCE1.6020403@kernel.org>
-Date: Sun, 20 Jul 2014 16:14:41 +0100
+	id S1751159AbaGTPQy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 20 Jul 2014 11:16:54 -0400
+Message-ID: <53CBDDF2.3050904@kernel.org>
+Date: Sun, 20 Jul 2014 16:19:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/4] iio: buffer: Coalesce adjacent demux table entries
-References: <1405612789-27964-1-git-send-email-lars@metafoo.de> <1405612789-27964-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1405612789-27964-4-git-send-email-lars@metafoo.de>
+Subject: Re: [PATCH 1/6] iio: accel: kxcjk-1013: Fix setting frequency
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/07/14 16:59, Lars-Peter Clausen wrote:
-> When copying multiple multiple samples that are adjacent in both the source as
-> well as the destination buffer, instead of creating a new demux table entry for
-> each sample just increase the length of the previous entry by the size of the
-> new sample. This makes the demuxing process slightly more efficient.
+On 17/07/14 01:42, Srinivas Pandruvada wrote:
+> Fix issue with setting of 12.5 and 6.25 HZ. The match of val2 fails.
 >
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Nice.  Will hold these last two until the first one is in and we have decided
-what to do about the second one.
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the togreg branch of iio.git
 
-J
+Thanks,
 > ---
->   drivers/iio/industrialio-buffer.c | 47 +++++++++++++++++++++++----------------
->   1 file changed, 28 insertions(+), 19 deletions(-)
+>   drivers/iio/accel/kxcjk-1013.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 5063703..779e5b3 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -942,13 +942,34 @@ int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data)
->   }
->   EXPORT_SYMBOL_GPL(iio_push_to_buffers);
->
-> +static int iio_buffer_add_demux(struct iio_buffer *buffer,
-> +	struct iio_demux_table **p, unsigned int in_loc, unsigned int out_loc,
-> +	unsigned int length)
-> +{
-> +
-> +	if (*p && (*p)->from + (*p)->length == in_loc &&
-> +		(*p)->to + (*p)->length == out_loc) {
-> +		(*p)->length += length;
-> +	} else {
-> +		*p = kmalloc(sizeof(*p), GFP_KERNEL);
-> +		if (*p == NULL)
-> +			return -ENOMEM;
-> +		(*p)->from = in_loc;
-> +		(*p)->to = out_loc;
-> +		(*p)->length = length;
-> +		list_add_tail(&(*p)->l, &buffer->demux_list);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   				   struct iio_buffer *buffer)
->   {
->   	const struct iio_chan_spec *ch;
->   	int ret, in_ind = -1, out_ind, length;
->   	unsigned in_loc = 0, out_loc = 0;
-> -	struct iio_demux_table *p;
-> +	struct iio_demux_table *p = NULL;
->
->   	/* Clear out any old demux */
->   	iio_buffer_demux_free(buffer);
-> @@ -981,11 +1002,6 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   			/* Make sure we are aligned */
->   			in_loc = roundup(in_loc, length) + length;
->   		}
-> -		p = kmalloc(sizeof(*p), GFP_KERNEL);
-> -		if (p == NULL) {
-> -			ret = -ENOMEM;
-> -			goto error_clear_mux_table;
-> -		}
->   		ch = iio_find_channel_from_si(indio_dev, in_ind);
->   		if (ch->scan_type.repeat > 1)
->   			length = ch->scan_type.storagebits / 8 *
-> @@ -994,20 +1010,14 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   			length = ch->scan_type.storagebits / 8;
->   		out_loc = roundup(out_loc, length);
->   		in_loc = roundup(in_loc, length);
-> -		p->from = in_loc;
-> -		p->to = out_loc;
-> -		p->length = length;
-> -		list_add_tail(&p->l, &buffer->demux_list);
-> +		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
-> +		if (ret)
-> +			goto error_clear_mux_table;
->   		out_loc += length;
->   		in_loc += length;
->   	}
->   	/* Relies on scan_timestamp being last */
->   	if (buffer->scan_timestamp) {
-> -		p = kmalloc(sizeof(*p), GFP_KERNEL);
-> -		if (p == NULL) {
-> -			ret = -ENOMEM;
-> -			goto error_clear_mux_table;
-> -		}
->   		ch = iio_find_channel_from_si(indio_dev,
->   			indio_dev->scan_index_timestamp);
->   		if (ch->scan_type.repeat > 1)
-> @@ -1017,10 +1027,9 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->   			length = ch->scan_type.storagebits / 8;
->   		out_loc = roundup(out_loc, length);
->   		in_loc = roundup(in_loc, length);
-> -		p->from = in_loc;
-> -		p->to = out_loc;
-> -		p->length = length;
-> -		list_add_tail(&p->l, &buffer->demux_list);
-> +		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
-> +		if (ret)
-> +			goto error_clear_mux_table;
->   		out_loc += length;
->   		in_loc += length;
->   	}
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index 72a6dbb..4702aeb 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -98,7 +98,7 @@ static const struct {
+>   	int val2;
+>   	int odr_bits;
+>   } samp_freq_table[] = { {0, 781000, 0x08}, {1, 563000, 0x09},
+> -			{3, 125000, 0x0A}, {6, 25000, 0x0B}, {12, 5000, 0},
+> +			{3, 125000, 0x0A}, {6, 250000, 0x0B}, {12, 500000, 0},
+>   			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
+>   			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
+>   			{1600, 0, 0x07} };
 >
 
