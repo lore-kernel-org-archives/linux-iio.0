@@ -1,44 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:40662 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:40682 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751159AbaGTPQy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 20 Jul 2014 11:16:54 -0400
-Message-ID: <53CBDDF2.3050904@kernel.org>
-Date: Sun, 20 Jul 2014 16:19:14 +0100
+	id S1751734AbaGTPS1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 20 Jul 2014 11:18:27 -0400
+Message-ID: <53CBDE4F.1040002@kernel.org>
+Date: Sun, 20 Jul 2014 16:20:47 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/6] iio: accel: kxcjk-1013: Fix setting frequency
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH 2/6] iio: accel: kxcjk-1013: Use try_reenable to ack intr
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1405557754-19601-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 17/07/14 01:42, Srinivas Pandruvada wrote:
-> Fix issue with setting of 12.5 and 6.25 HZ. The match of val2 fails.
+> This chip needs explicit interrupt ack, introducing try_reenable
+> callback. Also removed separate function to ack interrupt as this
+> doesn't add any value.
 >
 > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Definitely neater this way, though would have worked before as acked in the
+trigger handler...  Patch description seems to suggest it wouldn't?
+
 Applied to the togreg branch of iio.git
 
-Thanks,
+J
 > ---
->   drivers/iio/accel/kxcjk-1013.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/iio/accel/kxcjk-1013.c | 33 ++++++++++++++++-----------------
+>   1 file changed, 16 insertions(+), 17 deletions(-)
 >
 > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 72a6dbb..4702aeb 100644
+> index 4702aeb..bff5161 100644
 > --- a/drivers/iio/accel/kxcjk-1013.c
 > +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -98,7 +98,7 @@ static const struct {
->   	int val2;
->   	int odr_bits;
->   } samp_freq_table[] = { {0, 781000, 0x08}, {1, 563000, 0x09},
-> -			{3, 125000, 0x0A}, {6, 25000, 0x0B}, {12, 5000, 0},
-> +			{3, 125000, 0x0A}, {6, 250000, 0x0B}, {12, 500000, 0},
->   			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
->   			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
->   			{1600, 0, 0x07} };
+> @@ -138,19 +138,6 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+>   	return 0;
+>   }
+>
+> -static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
+> -{
+> -	int ret;
+> -
+> -	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error writing reg_int_rel\n");
+> -		return ret;
+> -	}
+> -
+> -	return ret;
+> -}
+> -
+>   static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+>   {
+>   	int ret;
+> @@ -498,15 +485,11 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+>   			 indio_dev->masklength) {
+>   		ret = kxcjk1013_get_acc_reg(data, bit);
+>   		if (ret < 0) {
+> -			kxcjk1013_chip_ack_intr(data);
+>   			mutex_unlock(&data->mutex);
+>   			goto err;
+>   		}
+>   		data->buffer[i++] = ret;
+>   	}
+> -
+> -	kxcjk1013_chip_ack_intr(data);
+> -
+>   	mutex_unlock(&data->mutex);
+>
+>   	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> @@ -517,6 +500,21 @@ err:
+>   	return IRQ_HANDLED;
+>   }
+>
+> +static int kxcjk1013_trig_try_reen(struct iio_trigger *trig)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "Error reading reg_int_rel\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>   						bool state)
+>   {
+> @@ -543,6 +541,7 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>
+>   static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
+>   	.set_trigger_state = kxcjk1013_data_rdy_trigger_set_state,
+> +	.try_reenable = kxcjk1013_trig_try_reen,
+>   	.owner = THIS_MODULE,
+>   };
+>
 >
 
