@@ -1,166 +1,319 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:51739 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754906AbaGRT2o (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 15:28:44 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
-	ch.naveen@samsung.com, mark.rutland@arm.com,
-	devicetree@vger.kernel.org, kgene.kim@samsung.com,
-	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk,
-	linux-iio@vger.kernel.org, t.figa@samsung.com,
-	rdunlap@infradead.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	kyungmin.park@samsung.com, robh+dt@kernel.org,
-	galak@codeaurora.org, heiko.stuebner@bq.com,
-	Ben Dooks <ben-linux@fluff.org>
-Subject: [PATCH 1/2] iio: exynos-adc: add support for s3c64xx adc
-Date: Fri, 18 Jul 2014 21:27:17 +0200
-Message-ID: <5186890.aLtladpMgD@wuerfel>
-In-Reply-To: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:60941 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753520AbaGTR57 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Jul 2014 13:57:59 -0400
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH v7 3/4] iio: hid-sensor-magn-3d: Scan for usage attributes before setting up iio channels
+Date: Sun, 20 Jul 2014 12:57:42 -0500
+Message-Id: <1405879063-2292-4-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
+References: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADC in s3c64xx is almost the same as exynosv1, but
-has a different 'select' method. Adding this here will be
-helpful to move over the existing s3c64xx platform from the
-legacy plat-samsung/adc driver to the new exynos-adc.
+Scan for and count the HID usage attributes supported by the driver.
+This allows for the driver to only setup the IIO channels for the
+sensor usages present in the HID USB reports.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Changes from v6
+- Fix kernel build error for invalid sizeof by removing the parameter
+from the hid_sensor_push_data
+
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
-[In reply to Exynos3250 ADC support, adding Heiko and Ben]
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 152 ++++++++++++++++++--------
+ 1 file changed, 105 insertions(+), 47 deletions(-)
 
-I spent way too much time this week trying to clean up the
-old plat-samsung/adc.c driver as preparation for s3c64xx multiplatform
-support. Eventually I figured out that all that code is much simpler
-done using the new driver. This adds support for s3c64xx in
-samsung-adc.c, similar code changes can be done to support the
-various s3c24xx variants as well.
-
-This first patch should be fairly straightforward but is not tested
-yet. The second patch is more tricky.
-
-Both are based on the exynos3250 patches sent by Chanwoo Choi.
-
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-index 26232f98d8c5..f84e9250429b 100644
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-@@ -11,11 +11,21 @@ New driver handles the following
- 
- Required properties:
- - compatible:		Must be "samsung,exynos-adc-v1"
--				for exynos4412/5250 controllers.
-+				for exynos4412/5250 and s5pv210 controllers.
- 			Must be "samsung,exynos-adc-v2" for
- 				future controllers.
- 			Must be "samsung,exynos3250-adc-v2" for
- 				controllers compatible with ADC of Exynos3250.
-+			Must be "samsung,s3c2410-adc" for
-+				the ADC in s3c2410 and compatibles
-+			Must be "samsung,s3c2416-adc" for
-+				the ADC in s3c2416 and compatibles
-+			Must be "samsung,s3c2440-adc" for
-+				the ADC in s3c2440 and compatibles
-+			Must be "samsung,s3c2440-adc" for
-+				the ADC in s3c2440 and compatibles
-+			Must be "samsung,s3c2443-adc" for
-+				the ADC in s3c2443 and compatibles
- - reg:			Contains ADC register address range (base address and
- 			length) and the address of the phy enable register.
- - interrupts: 		Contains the interrupt information for the timer. The
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index b63e88247eb2..5f95638513d2 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -39,12 +39,16 @@
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
- 
--/* EXYNOS4412/5250 ADC_V1 registers definitions */
-+/* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
- #define ADC_V1_CON(x)		((x) + 0x00)
-+#define ADC_V1_TSC(x)		((x) + 0x04)
- #define ADC_V1_DLY(x)		((x) + 0x08)
- #define ADC_V1_DATX(x)		((x) + 0x0C)
-+#define ADC_V1_DATY(x)		((x) + 0x10)
-+#define ADC_V1_UPDN(x)		((x) + 0x14)
- #define ADC_V1_INTCLR(x)	((x) + 0x18)
- #define ADC_V1_MUX(x)		((x) + 0x1c)
-+#define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
- 
- /* Future ADC_V2 registers definitions */
- #define ADC_V2_CON1(x)		((x) + 0x00)
-@@ -60,6 +64,30 @@
- #define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
- #define ADC_V1_CON_STANDBY	(1u << 2)
- 
-+#define ADC_S3C2410_CON_SELMUX(x) (((x)&0x7)<<3)
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index b2b0937..161fbd4 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -42,7 +42,12 @@ struct magn_3d_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+ 	struct hid_sensor_common common_attributes;
+ 	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
+-	u32 magn_val[MAGN_3D_CHANNEL_MAX];
 +
-+/* ADCTSC Register Bits */
-+#define ADC_S3C2443_TSC_UD_SEN		(1<<8)
-+#define ADC_S3C2410_TSC_YM_SEN		(1<<7)
-+#define ADC_S3C2410_TSC_YP_SEN		(1<<6)
-+#define ADC_S3C2410_TSC_XM_SEN		(1<<5)
-+#define ADC_S3C2410_TSC_XP_SEN		(1<<4)
-+#define ADC_S3C2410_TSC_PULL_UP_DISABLE	(1<<3)
-+#define ADC_S3C2410_TSC_AUTO_PST	(1<<2)
-+#define ADC_S3C2410_TSC_XY_PST(x)	(((x)&0x3)<<0)
++	/* dynamically sized array to hold sensor values */
++	u32 *iio_vals;
++	/* array of pointers to sensor value */
++	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
 +
-+#define ADC_TSC_WAIT4INT (ADC_S3C2410_TSC_YM_SEN | \
-+			 ADC_S3C2410_TSC_YP_SEN | \
-+			 ADC_S3C2410_TSC_XP_SEN | \
-+			 ADC_S3C2410_TSC_XY_PST(3))
-+
-+#define ADC_TSC_AUTOPST	(ADC_S3C2410_TSC_YM_SEN | \
-+			 ADC_S3C2410_TSC_YP_SEN | \
-+			 ADC_S3C2410_TSC_XP_SEN | \
-+			 ADC_S3C2410_TSC_AUTO_PST | \
-+			 ADC_S3C2410_TSC_XY_PST(0))
-+
-+
- /* Bit definitions for ADC_V2 */
- #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
+ 	int scale_pre_decml;
+ 	int scale_post_decml;
+ 	int scale_precision;
+@@ -66,7 +71,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
+ 		BIT(IIO_CHAN_INFO_SCALE) |
+ 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+ 		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-		.scan_index = CHANNEL_SCAN_INDEX_X,
+ 	}, {
+ 		.type = IIO_MAGN,
+ 		.modified = 1,
+@@ -76,7 +80,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
+ 		BIT(IIO_CHAN_INFO_SCALE) |
+ 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+ 		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-		.scan_index = CHANNEL_SCAN_INDEX_Y,
+ 	}, {
+ 		.type = IIO_MAGN,
+ 		.modified = 1,
+@@ -86,7 +89,6 @@ static const struct iio_chan_spec magn_3d_channels[] = {
+ 		BIT(IIO_CHAN_INFO_SCALE) |
+ 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+ 		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-		.scan_index = CHANNEL_SCAN_INDEX_Z,
+ 	}
+ };
  
-@@ -195,6 +223,26 @@ static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
- 	writel(1, ADC_V1_INTCLR(info->regs));
+@@ -126,8 +128,8 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
+ 		msleep_interruptible(poll_value * 2);
+ 
+ 		report_id =
+-			magn_state->magn[chan->scan_index].report_id;
+-		address = magn_3d_addresses[chan->scan_index];
++			magn_state->magn[chan->address].report_id;
++		address = magn_3d_addresses[chan->address];
+ 		if (report_id >= 0)
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 				magn_state->common_attributes.hsdev,
+@@ -200,8 +202,7 @@ static const struct iio_info magn_3d_info = {
+ };
+ 
+ /* Function to push data to buffer */
+-static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
+-	int len)
++static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data)
+ {
+ 	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
+ 	iio_push_to_buffers(indio_dev, data);
+@@ -217,9 +218,7 @@ static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
+ 
+ 	dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
+ 	if (atomic_read(&magn_state->common_attributes.data_ready))
+-		hid_sensor_push_data(indio_dev,
+-				magn_state->magn_val,
+-				sizeof(magn_state->magn_val));
++		hid_sensor_push_data(indio_dev, magn_state->iio_vals);
+ 
+ 	return 0;
+ }
+@@ -233,52 +232,119 @@ static int magn_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
+ 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
+ 	struct magn_3d_state *magn_state = iio_priv(indio_dev);
+ 	int offset;
+-	int ret = -EINVAL;
++	int ret = 0;
++	u32 *iio_val = NULL;
+ 
+ 	switch (usage_id) {
+ 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS:
+ 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Y_AXIS:
+ 	case HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_Z_AXIS:
+-		offset = usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS;
+-		magn_state->magn_val[CHANNEL_SCAN_INDEX_X + offset] =
+-						*(u32 *)raw_data;
+-		ret = 0;
++		offset = (usage_id - HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS)
++				+ CHANNEL_SCAN_INDEX_X;
+ 	break;
+ 	default:
+-		break;
++		return -EINVAL;
+ 	}
+ 
++	iio_val = magn_state->magn_val_addr[offset];
++
++	if (iio_val != NULL)
++		*iio_val = *((u32 *)raw_data);
++	else
++		ret = -EINVAL;
++
+ 	return ret;
  }
  
-+static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
-+				     unsigned long addr)
-+{
-+	u32 con1;
-+
-+	con1 = readl(ADC_V1_CON(info->regs));
-+	con1 &= ~ADC_S3C2410_CON_SELMUX(7);
-+	con1 |= ADC_S3C2410_CON_SELMUX(addr);
-+	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-+}
-+
-+static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
-+	.num_channels	= MAX_ADC_V1_CHANNELS,
-+
-+	.init_hw	= exynos_adc_v1_init_hw,
-+	.exit_hw	= exynos_adc_v1_exit_hw,
-+	.clear_irq	= exynos_adc_v1_clear_irq,
-+	.start_conv	= exynos_adc_s3c64xx_start_conv,
-+};
-+
- static void exynos_adc_v1_start_conv(struct exynos_adc *info,
- 				     unsigned long addr)
+ /* Parse report which is specific to an usage id*/
+ static int magn_3d_parse_report(struct platform_device *pdev,
+ 				struct hid_sensor_hub_device *hsdev,
+-				struct iio_chan_spec *channels,
++				struct iio_chan_spec **channels,
++				int *chan_count,
+ 				unsigned usage_id,
+ 				struct magn_3d_state *st)
  {
-@@ -280,6 +328,9 @@ static struct exynos_adc_data const exynos3250_adc_v2_data = {
+-	int ret;
+ 	int i;
++	int attr_count = 0;
++	struct iio_chan_spec *_channels;
++
++	/* Scan for each usage attribute supported */
++	for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
++		int status;
++		u32 address = magn_3d_addresses[i];
++
++		/* Check if usage attribute exists in the sensor hub device */
++		status = sensor_hub_input_get_attribute_info(hsdev,
++			HID_INPUT_REPORT,
++			usage_id,
++			address,
++			&(st->magn[i]));
++		if (!status)
++			attr_count++;
++	}
  
- static const struct of_device_id exynos_adc_match[] = {
- 	{
-+		.compatible = "samsung,s3c64100-adc",
-+		.data = &exynos_adc_s3c64xx_data,
-+	}, {
- 		.compatible = "samsung,exynos-adc-v1",
- 		.data = (void *)&exynos_adc_v1_data,
- 	}, {
+-	for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
+-		ret = sensor_hub_input_get_attribute_info(hsdev,
+-				HID_INPUT_REPORT,
+-				usage_id,
+-				HID_USAGE_SENSOR_ORIENT_MAGN_FLUX_X_AXIS + i,
+-				&st->magn[CHANNEL_SCAN_INDEX_X + i]);
+-		if (ret < 0)
+-			break;
+-		magn_3d_adjust_channel_bit_mask(channels,
+-				CHANNEL_SCAN_INDEX_X + i,
+-				st->magn[CHANNEL_SCAN_INDEX_X + i].size);
++	if (attr_count <= 0) {
++		dev_err(&pdev->dev,
++			"failed to find any supported usage attributes in report\n");
++		return  -EINVAL;
+ 	}
+-	dev_dbg(&pdev->dev, "magn_3d %x:%x, %x:%x, %x:%x\n",
++
++	dev_dbg(&pdev->dev, "magn_3d Found %d usage attributes\n",
++			attr_count);
++	dev_dbg(&pdev->dev, "magn_3d X: %x:%x Y: %x:%x Z: %x:%x\n",
+ 			st->magn[0].index,
+ 			st->magn[0].report_id,
+ 			st->magn[1].index, st->magn[1].report_id,
+ 			st->magn[2].index, st->magn[2].report_id);
+ 
++	/* Setup IIO channel array */
++	_channels = devm_kcalloc(&pdev->dev, attr_count,
++				sizeof(struct iio_chan_spec),
++				GFP_KERNEL);
++	if (!_channels) {
++		dev_err(&pdev->dev,
++			"failed to allocate space for iio channels\n");
++		return -ENOMEM;
++	}
++
++	st->iio_vals = devm_kcalloc(&pdev->dev, attr_count,
++				sizeof(u32),
++				GFP_KERNEL);
++	if (!st->iio_vals) {
++		dev_err(&pdev->dev,
++			"failed to allocate space for iio values array\n");
++		return -ENOMEM;
++	}
++
++	for (i = 0, *chan_count = 0;
++	i < MAGN_3D_CHANNEL_MAX && *chan_count < attr_count;
++	i++){
++		if (st->magn[i].index >= 0) {
++			/* Setup IIO channel struct */
++			(_channels[*chan_count]) = magn_3d_channels[i];
++			(_channels[*chan_count]).scan_index = *chan_count;
++			(_channels[*chan_count]).address = i;
++
++			/* Set magn_val_addr to iio value address */
++			st->magn_val_addr[i] = &(st->iio_vals[*chan_count]);
++			magn_3d_adjust_channel_bit_mask(_channels,
++							*chan_count,
++							st->magn[i].size);
++			(*chan_count)++;
++		}
++	}
++
++	if (*chan_count <= 0) {
++		dev_err(&pdev->dev,
++			"failed to find any magnetic channels setup\n");
++		return -EINVAL;
++	}
++
++	*channels = _channels;
++
++	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
++			*chan_count);
++
+ 	st->scale_precision = hid_sensor_format_scale(
+ 				HID_USAGE_SENSOR_COMPASS_3D,
+ 				&st->magn[CHANNEL_SCAN_INDEX_X],
+@@ -296,7 +362,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 			st->common_attributes.sensitivity.report_id);
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ /* Function to initialize the processing for usage id */
+@@ -308,6 +374,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+ 	struct magn_3d_state *magn_state;
+ 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+ 	struct iio_chan_spec *channels;
++	int chan_count = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev,
+ 					  sizeof(struct magn_3d_state));
+@@ -328,22 +395,16 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	channels = kmemdup(magn_3d_channels, sizeof(magn_3d_channels),
+-			   GFP_KERNEL);
+-	if (!channels) {
+-		dev_err(&pdev->dev, "failed to duplicate channels\n");
+-		return -ENOMEM;
+-	}
+-
+-	ret = magn_3d_parse_report(pdev, hsdev, channels,
++	ret = magn_3d_parse_report(pdev, hsdev,
++				&channels, &chan_count,
+ 				HID_USAGE_SENSOR_COMPASS_3D, magn_state);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "failed to setup attributes\n");
+-		goto error_free_dev_mem;
++		dev_err(&pdev->dev, "failed to parse report\n");
++		return ret;
+ 	}
+ 
+ 	indio_dev->channels = channels;
+-	indio_dev->num_channels = ARRAY_SIZE(magn_3d_channels);
++	indio_dev->num_channels = chan_count;
+ 	indio_dev->dev.parent = &pdev->dev;
+ 	indio_dev->info = &magn_3d_info;
+ 	indio_dev->name = name;
+@@ -353,7 +414,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+ 		NULL, NULL);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
+-		goto error_free_dev_mem;
++		return ret;
+ 	}
+ 	atomic_set(&magn_state->common_attributes.data_ready, 0);
+ 	ret = hid_sensor_setup_trigger(indio_dev, name,
+@@ -387,8 +448,6 @@ error_remove_trigger:
+ 	hid_sensor_remove_trigger(&magn_state->common_attributes);
+ error_unreg_buffer_funcs:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-error_free_dev_mem:
+-	kfree(indio_dev->channels);
+ 	return ret;
+ }
+ 
+@@ -403,7 +462,6 @@ static int hid_magn_3d_remove(struct platform_device *pdev)
+ 	iio_device_unregister(indio_dev);
+ 	hid_sensor_remove_trigger(&magn_state->common_attributes);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	kfree(indio_dev->channels);
+ 
+ 	return 0;
+ }
+-- 
+1.9.3
 
