@@ -1,86 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qg0-f46.google.com ([209.85.192.46]:63126 "EHLO
-	mail-qg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934026AbaGRKLt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 18 Jul 2014 06:11:49 -0400
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36650 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751401AbaGTSwy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Jul 2014 14:52:54 -0400
+Message-ID: <53CC1094.4040306@jic23.retrosnub.co.uk>
+Date: Sun, 20 Jul 2014 19:55:16 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-In-Reply-To: <6186153.TIYp5NXPIq@wuerfel>
-References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
- <1405663186-26464-2-git-send-email-cw00.choi@samsung.com> <6186153.TIYp5NXPIq@wuerfel>
-From: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-Date: Fri, 18 Jul 2014 15:41:27 +0530
-Message-ID: <CAHfPSqBDOEH5HurG=rECV=d+MM_YjTEpsiwuTgtNgFgCQ0P2bw@mail.gmail.com>
-Subject: Re: [PATCHv6 1/4] iio: adc: exynos_adc: Add exynos_adc_data structure
- to improve readability
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org,
-	My self <ch.naveen@samsung.com>,
-	Kukjin Kim <kgene.kim@samsung.com>, robh+dt@kernel.org,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	rdunlap@infradead.org, kyungmin.park@samsung.com,
-	t.figa@samsung.com, linux-iio@vger.kernel.org,
-	"linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, linux-kernel@vger.kernel.org,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Linux IIO List <linux-iio@vger.kernel.org>
+Subject: [PULL]  Fifth set of IIO fixes for the 3.16 cycle
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Arnd,
+  The following changes since commit 71702e6e52c8312f4c6797a9787d0f8b5656156f:
 
-On 18 July 2014 15:12, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Friday 18 July 2014 14:59:43 Chanwoo Choi wrote:
->> This patchset add 'exynos_adc_data' structure which includes some functions
->> to control ADC operation and specific data according to ADC version (v1 or v2).
->>
->
-> This new structure makes a lot of sense for covering the exynos specific
-> versions, but it will likely give a little more complexity for the
-> older models. We'll have to deal with that later then, no need to
-> hold up your patch. Interestingly, the version numbers seem weird. The
-> old driver uses
->
->         {
->                 .name           = "s3c24xx-adc",
->                 .driver_data    = TYPE_ADCV1,
->         }, {
->                 .name           = "s3c2443-adc",
->                 .driver_data    = TYPE_ADCV11,
->         }, {
->                 .name           = "s3c2416-adc",
->                 .driver_data    = TYPE_ADCV12,
->         }, {
->                 .name           = "s3c64xx-adc",
->                 .driver_data    = TYPE_ADCV2,
->         }, {
->                 .name           = "samsung-adc-v3",
->                 .driver_data    = TYPE_ADCV3,
->         }
->
-> Where TYPE_ADCV3 seems to be the same as the new ADC_V1 used in this
-> driver. Do you have an explanation for that?
+   iio: mma8452: Use correct acceleration units. (2014-07-12 13:18:55 +0100)
 
-As per suggestion from Doug Anderson,
-I've implemented IIO based ADC driver to work with Exynos5250.
-keeping the plat-samsung/adc.c unchanged.
+are available in the git repository at:
 
-Assuming Exynos5250 is the one using the driver for the first time.
-i've named it v1 and so on.
+   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.16e
 
-Now, This seems to cause a lot of confusion.
+for you to fetch changes up to 9b2a4d35a6ceaf217be61ed8eb3c16986244f640:
 
->
->         Arnd
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+   iio:bma180: Missing check for frequency fractional part (2014-07-20 17:39:47 +0100)
 
+----------------------------------------------------------------
+Fifth set of fixes for IIO in the 3.16 cycle.
 
+One nasty one that has been around a long time and a couple of non compliant
+ABI fixes.
 
--- 
-Shine bright,
-(: Nav :)
+* The demux code used to split out desired channels for devices that only
+   support reading sets of channels at one time had a bug where it was
+   building it's conversion tables against the wrong bitmap resulting in
+   it never actually demuxing anything.  This is an old bug, but will be
+   effecting an increasing number of drivers as it is often used to avoid
+   some fiddly code in the individual drivers.
+
+* bma180 and mma8452 weren't obeying the ABI wrt to units for acceleration.
+   Were in G rather than m/s^2. A little input check was missing from bma180
+   that might lead to acceptance of incorrect values.  This last one is minor
+   but might lead to incorrect userspace code working and problems in the
+   future.
+
+----------------------------------------------------------------
+Lars-Peter Clausen (1):
+       iio: buffer: Fix demux table creation
+
+Peter Meerwald (2):
+       iio:bma180: Fix scale factors to report correct acceleration units
+       iio:bma180: Missing check for frequency fractional part
+
+  drivers/iio/accel/bma180.c        | 8 +++++---
+  drivers/iio/industrialio-buffer.c | 2 +-
+  2 files changed, 6 insertions(+), 4 deletions(-)
