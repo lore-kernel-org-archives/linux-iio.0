@@ -1,165 +1,118 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:53525 "EHLO
-	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752381AbaGVPCt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 11:02:49 -0400
-Date: Tue, 22 Jul 2014 17:02:50 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: [PATCH v5 (staging-next) 4/5] staging:iio:hmc5843: Add support for
- i2c hmc5983
-Message-ID: <20140722150250.GE7845@dashie>
-References: <20140722150009.GA7845@dashie>
+Return-Path: <gang.chen.5i5j@gmail.com>
+Message-ID: <53CB9134.7080705@gmail.com>
+Date: Sun, 20 Jul 2014 17:51:48 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140722150009.GA7845@dashie>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Richard Weinberger <richard@nod.at>
+CC: Lennox Wu <lennox.wu@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Guenter Roeck <linux@roeck-us.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-iio@vger.kernel.org,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Tom Gundersen <teg@jklm.no>, Thierry Reding <thierry.reding@gmail.com>,
+ Marek Vasut <marex@denx.de>,
+ Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+ linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+ linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+ Mischa.Jonker@synopsys.com, jic23@kernel.org,
+ Geert Uytterhoeven <geert@linux-m68k.org>,
+ cmetcalf@tilera.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+ heiko.carstens@de.ibm.com
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel> <53C8114D.30601@nod.at> <53C86C10.2000608@gmail.com> <53C8CE59.3060103@nod.at> <53C8FA78.1020501@gmail.com> <53C8FC1E.9090003@nod.at> <CAF0htA6Vvp+d4=wPuqJJhT+FxEUoT9mbJ3_NQuEJTP-hniS-KQ@mail.gmail.com> <53C9612E.3040001@gmail.com> <53CB801D.1030603@gmail.com> <53CB8FBF.2070206@nod.at>
+In-Reply-To: <53CB8FBF.2070206@nod.at>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds support for the hmc5983 i2c interface.
-This chip is almost identical to the hmc5883. The difference being added
-temperature compensation, additional available sample rate (220Hz) and an SPI
-interface.
+On 07/20/2014 05:45 PM, Richard Weinberger wrote:
+> 
+> 
+> Am 20.07.2014 10:38, schrieb Chen Gang:
+>> On 07/19/2014 02:02 AM, Chen Gang wrote:
+>>>> 2014-07-18 18:51 GMT+08:00 Richard Weinberger <richard@nod.at>:
+>>>>> Am 18.07.2014 12:44, schrieb Chen Gang:
+>>>>>> On 07/18/2014 03:35 PM, Richard Weinberger wrote:
+>>>>>>> Am 18.07.2014 02:36, schrieb Chen Gang:
+>>>>>>>>
+>>>>>>>> On 07/18/2014 02:09 AM, Richard Weinberger wrote:
+>>>>>>>>> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
+>>>>>>>>>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
+>>>>>>>>>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
+>>>>>>>>>> to build on UML seems pointless to me and we special-case it in a number of
+>>>>>>>>>> places already.
+>>>>>>>>>
+>>>>>>>>> If UML is the only arch without io memory the dependency on !UML seems
+>>>>>>>>> reasonable to me. :-)
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> For me, if only uml left, I suggest to implement dummy functions within
+>>>>>>>> uml instead of let CONFIG_UML appear in generic include directory. And
+>>>>>>>> then remove all HAS_IOMEM and NO_IOMEM from kernel.
+>>>>>>>
+>>>>>>> Erm, this is something completely different.
+>>>>>>> I thought we're focusing on COMPILE_TEST?
+>>>>>>>
+>>>>>>
+>>>>>> COMPILE_TEST is none-architecture specific, but UML is. So in generic
+>>>>>> include folder, if we're focusing on choosing whether COMPILE_TEST or
+>>>>>> UML, for me, I will choose COMPILE_TEST.
+>>>>>>
+>>>>>> If we're not only focusing on COMPILE_TEST, for me, if something only
+>>>>>> depend on one architecture, I'd like to put them under "arch/*/" folder.
+>>>>>>
+>>>>>> Especially, after that, we can remove all HAS_IOMEM and NO_IOMEM, nobody
+>>>>>> has to think of them again. :-)
+>>>>>
+>>>>> And then we end up with a solution that on UML a lot of completely useless
+>>>>> drivers are build which fail in various interesting manners because you'll
+>>>>> add stubs for all kinds of io memory related functions to arch/um/?
+>>>>> We had this kind of discussion already. You'll need more than ioremap...
+>>>>>
+>>>>> I like Arnd's idea *much* more to make COMPILE_TEST depend on !UML.
+>>>>>
+>>>
+>>> That will let UML itself against COMPILE_TEST (but all the other
+>>> architectures not).
+>>>
+>>> And if let COMPILE_TEST depend on !UML, can we still remove all
+>>> HAS_IOMEM and NO_IOMEM from kernel? (I guess so).
+>>>
+>>> If we can remove them, we can send related patch firstly -- that will
+>>> let current discussion be in UML architecture wide instead of kernel
+>>> wide.
+>>>
+>>
+>> Next, I shall:
+>>
+>>  - Remove HAS_IOMEM and NO_IOMEM from kernel, firstly.
+> 
+> This needs to be last, otherwise lot's of stuff will break.
+> 
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- .../devicetree/bindings/iio/magnetometer/hmc5843.txt |  1 +
- drivers/staging/iio/magnetometer/Kconfig             |  2 +-
- drivers/staging/iio/magnetometer/hmc5843.h           |  1 +
- drivers/staging/iio/magnetometer/hmc5843_core.c      | 20 +++++++++++++++++---
- drivers/staging/iio/magnetometer/hmc5843_i2c.c       |  6 ++++--
- 5 files changed, 24 insertions(+), 6 deletions(-)
+OK, thanks, that sounds reasonable to me.
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
-index b8cbdd5..8e191ee 100644
---- a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
-@@ -6,6 +6,7 @@ Required properties:
-   Other models which are supported with driver are:
- 	"honeywell,hmc5883"
- 	"honeywell,hmc5883l"
-+	"honeywell,hmc5983"
-   - reg : the I2C address of the magnetometer - typically 0x1e
- 
- Optional properties:
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index 0a27f98..c086f33 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -20,6 +20,6 @@ config SENSORS_HMC5843_I2C
- 	  This driver can also be compiled as a set of modules.
- 	  If so, these modules will be created:
- 	  - hmc5843_core (core functions)
--	  - hmc5843_i2c (support for HMC5843, HMC5883 and HMC5883L)
-+	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
- 
- endmenu
-diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
-index 06b2712..b784e3e 100644
---- a/drivers/staging/iio/magnetometer/hmc5843.h
-+++ b/drivers/staging/iio/magnetometer/hmc5843.h
-@@ -29,6 +29,7 @@ enum hmc5843_ids {
- 	HMC5843_ID,
- 	HMC5883_ID,
- 	HMC5883L_ID,
-+	HMC5983_ID,
- };
- 
- struct hmc5843_data {
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index 08fb0be..914ae1a 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -101,6 +101,11 @@ static const int hmc5883_regval_to_samp_freq[][2] = {
- 	{75, 0}
- };
- 
-+static const int hmc5983_regval_to_samp_freq[][2] = {
-+	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
-+	{75, 0}, {220, 0}
-+};
-+
- /* Describe chip variants */
- struct hmc5843_chip_info {
- 	const struct iio_chan_spec *channels;
-@@ -457,7 +462,7 @@ static const struct iio_chan_spec hmc5843_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
--/* Beware: Y and Z are exchanged on HMC5883 */
-+/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
- static const struct iio_chan_spec hmc5883_channels[] = {
- 	HMC5843_CHANNEL(X, 0),
- 	HMC5843_CHANNEL(Z, 1),
-@@ -504,6 +509,15 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- 		.n_regval_to_nanoscale =
- 				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
- 	},
-+	[HMC5983_ID] = {
-+		.channels = hmc5883_channels,
-+		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
-+		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
-+	}
- };
- 
- static int hmc5843_init(struct hmc5843_data *data)
-@@ -516,7 +530,7 @@ static int hmc5843_init(struct hmc5843_data *data)
- 	if (ret < 0)
- 		return ret;
- 	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
--		dev_err(data->dev, "no HMC5843/5883/5883L sensor\n");
-+		dev_err(data->dev, "no HMC5843/5883/5883L/5983 sensor\n");
- 		return -ENODEV;
- 	}
- 
-@@ -620,5 +634,5 @@ int hmc5843_common_remove(struct device *dev)
- EXPORT_SYMBOL(hmc5843_common_remove);
- 
- MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com>");
--MODULE_DESCRIPTION("HMC5843/5883/5883L core driver");
-+MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 core driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-index 5593a7d..6acd614 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-@@ -1,5 +1,5 @@
- /*
-- * i2c driver for hmc5843/5843/5883/5883l
-+ * i2c driver for hmc5843/5843/5883/5883l/5983
-  *
-  * Split from hmc5843.c
-  * Copyright (C) Josef Gajdusek <atx@atx.name>
-@@ -73,6 +73,7 @@ static const struct i2c_device_id hmc5843_id[] = {
- 	{ "hmc5843", HMC5843_ID },
- 	{ "hmc5883", HMC5883_ID },
- 	{ "hmc5883l", HMC5883L_ID },
-+	{ "hmc5983", HMC5983_ID },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, hmc5843_id);
-@@ -81,6 +82,7 @@ static const struct of_device_id hmc5843_of_match[] = {
- 	{ .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
- 	{ .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
- 	{ .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID },
-+	{ .compatible = "honeywell,hmc5983", .data = (void *)HMC5983_ID },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, hmc5843_of_match);
-@@ -98,5 +100,5 @@ static struct i2c_driver hmc5843_driver = {
- module_i2c_driver(hmc5843_driver);
- 
- MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
--MODULE_DESCRIPTION("HMC5843/5883/5883L i2c driver");
-+MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 i2c driver");
- MODULE_LICENSE("GPL");
+>>  - Try to make dummy IOMEM functions for score architecture.
+>>
+>>  - Continue discussing with UML for it.
+> 
+> If you find sane dummy functions for both UML and score I'm fine with it.
+> 
+
+For me, what you said is necessary, tile and s390 also need dummy IOMEM
+when !PCI.
+
+So for me, I shall implement them in "include/asm-generic", and let uml,
+score, tile and s390 use dummy IOMEM when they need.
+
+Welcome any other members ideas, suggestions and completions.
+
+
+Thanks.
 -- 
-1.8.5.5
+Chen Gang
 
+Open share and attitude like air water and life which God blessed
