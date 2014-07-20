@@ -1,59 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:40500 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752871AbaGTR55 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 20 Jul 2014 13:57:57 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, srinivas.pandruvada@linux.intel.com
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v7 2/4] iio: types: Added support for rotation from north usage attributes
-Date: Sun, 20 Jul 2014 12:57:41 -0500
-Message-Id: <1405879063-2292-3-git-send-email-reyad.attiyat@gmail.com>
-In-Reply-To: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
-References: <1405879063-2292-1-git-send-email-reyad.attiyat@gmail.com>
+Received: from mail.kernel.org ([198.145.19.201]:40526 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751734AbaGTPGd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 20 Jul 2014 11:06:33 -0400
+Message-ID: <53CBDB85.10405@kernel.org>
+Date: Sun, 20 Jul 2014 16:08:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
+Subject: Re: [PATCH 2/4] iio: buffer: Use roundup() instead of ALIGN()
+References: <1405612789-27964-1-git-send-email-lars@metafoo.de> <1405612789-27964-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1405612789-27964-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added the rotation from north usage attributes to the iio modifier enum and to the iio modifier names array.
+On 17/07/14 16:59, Lars-Peter Clausen wrote:
+> ALIGN() only works correctly if the alignment is a power of two. Some drivers
+> use 3 bytes for the storage size of the word in which case ALIGN() will cause
+> incorrect results. Use the more generic roundup() instead.
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Gah.  Which driver is using a non power of two storage size?  I thought I'd caught
+all of those at review.  As you've noted it's a very bad idea.
 
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/industrialio-core.c | 4 ++++
- include/linux/iio/types.h       | 4 ++++
- 2 files changed, 8 insertions(+)
+ From a quick dubious grep I have:
+dac/ad5791.c (not effected as such given we aren't using this stuff for output)
+pressure/st_pressure_core.c
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4b1f375..af3e76d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -87,6 +87,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_QUATERNION] = "quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
-+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index d480631..d09c40d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -56,6 +56,10 @@ enum iio_modifier {
- 	IIO_MOD_QUATERNION,
- 	IIO_MOD_TEMP_AMBIENT,
- 	IIO_MOD_TEMP_OBJECT,
-+	IIO_MOD_NORTH_MAGN,
-+	IIO_MOD_NORTH_TRUE,
-+	IIO_MOD_NORTH_MAGN_TILT_COMP,
-+	IIO_MOD_NORTH_TRUE_TILT_COMP
- };
- 
- enum iio_event_type {
--- 
-1.9.3
+I'd be tempted to fix those up rather than change this and introduce the
+fun you've pointed out below.
+
+What do you think?
+> ---
+> This at least makes the rules for alignment predictable and consistent. But
+> mixing 3 bytes words with other word sizes will still result in strange layouts.
+> E.g. 4-byte word, 3-byte word will result in 4-byte word, 2-byte alignment gap,
+> 3-byte word.
+
+> ---
+>   drivers/iio/industrialio-buffer.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 0472ee2..6da5272 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -486,7 +486,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+>   				ch->scan_type.repeat;
+>   		else
+>   			length = ch->scan_type.storagebits / 8;
+> -		bytes = ALIGN(bytes, length);
+> +		bytes = roundup(bytes, length);
+>   		bytes += length;
+>   	}
+>   	if (timestamp) {
+> @@ -497,7 +497,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
+>   				ch->scan_type.repeat;
+>   		else
+>   			length = ch->scan_type.storagebits / 8;
+> -		bytes = ALIGN(bytes, length);
+> +		bytes = roundup(bytes, length);
+>   		bytes += length;
+>   	}
+>   	return bytes;
+>
 
