@@ -1,42 +1,74 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <53CBA830.3020306@metafoo.de>
-Date: Sun, 20 Jul 2014 13:29:52 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <mfuzzey@parkeon.com>
+Subject: [PATCH] iio: core: Fix double free.
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Date: Mon, 21 Jul 2014 15:22:15 +0200
+Message-ID: <20140721132215.11583.81979.stgit@localhost>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- jic23@kernel.org
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/6] iio: accel: kxcjk-1013: Increment ref counter for
- indio_dev->trig
-References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1405557754-19601-6-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/17/2014 02:42 AM, Srinivas Pandruvada wrote:
-> Assigning indio_dev->trig is not a good idea, as this can result in
-> wrong reference count for trigger device. If assigned, it is better to
-> increment reference counter by calling iio_trigger_get.
-> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-> with Jonathan.
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->   drivers/iio/accel/kxcjk-1013.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index f5bb682..40ecf8b 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1020,6 +1020,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
->   		iio_trigger_set_drvdata(trig, indio_dev);
->   		data->trig = trig;
->   		indio_dev->trig = trig;
-> +		iio_trigger_get(indio_dev->trig);
+When an error occured during event registration memory was freed twice
+resulting in kernel memory corruption and a crash in unrelated code.
 
-Hm, we should change the signature of iio_trigger_get() to return the 
-trigger, this gets it more in sync with other ..._get() APIs in the kernel. 
-Then the above two lines become indio_dev->trig = iio_trigger_get(trig).
+The problem was caused by
+	iio_device_unregister_eventset()
+	iio_device_unregister_sysfs()
 
-- Lars
+being called twice, once on the error path and then
+again via iio_dev_release().
+
+Fix this by making these two functions idempotent so they
+may be called multiple times.
+
+The problem was observed before applying
+	78b33216 iio:core: Handle error when mask type is not separate
+
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+---
+ drivers/iio/industrialio-core.c  |    5 +++--
+ drivers/iio/industrialio-event.c |    1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4b1f375..fa06197 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -828,8 +828,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+  * @attr_list: List of IIO device attributes
+  *
+  * This function frees the memory allocated for each of the IIO device
+- * attributes in the list. Note: if you want to reuse the list after calling
+- * this function you have to reinitialize it using INIT_LIST_HEAD().
++ * attributes in the list.
+  */
+ void iio_free_chan_devattr_list(struct list_head *attr_list)
+ {
+@@ -837,6 +836,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
+ 
+ 	list_for_each_entry_safe(p, n, attr_list, l) {
+ 		kfree(p->dev_attr.attr.name);
++		list_del(&p->l);
+ 		kfree(p);
+ 	}
+ }
+@@ -917,6 +917,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
+ 
+ 	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+ 	kfree(indio_dev->chan_attr_group.attrs);
++	indio_dev->chan_attr_group.attrs = NULL;
+ }
+ 
+ static void iio_dev_release(struct device *device)
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index bfbf4d4..ad7a35f 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -492,6 +492,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+ error_free_setup_event_lines:
+ 	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
+ 	kfree(indio_dev->event_interface);
++	indio_dev->event_interface = NULL;
+ 	return ret;
+ }
+ 
