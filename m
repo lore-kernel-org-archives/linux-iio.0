@@ -1,74 +1,98 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH] iio: core: Fix double free.
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Mon, 21 Jul 2014 15:22:15 +0200
-Message-ID: <20140721132215.11583.81979.stgit@localhost>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:53451 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932647AbaGUQTg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jul 2014 12:19:36 -0400
+Date: Mon, 21 Jul 2014 09:19:32 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, mark.rutland@arm.com,
+	devicetree@vger.kernel.org, kgene.kim@samsung.com,
+	pawel.moll@arm.com, ijc+devicetree@hellion.org.uk,
+	linux-iio@vger.kernel.org, t.figa@samsung.com,
+	rdunlap@infradead.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	kyungmin.park@samsung.com, linux-samsung-soc@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Ben Dooks <ben-linux@fluff.org>, galak@codeaurora.org,
+	ch.naveen@samsung.com, linux-input <linux-input@vger.kernel.org>,
+	heiko.stuebner@bq.com
+Subject: Re: [PATCH 2/2] iio: exynos-adc: add experimental touchscreen support
+Message-ID: <20140721161932.GA12180@core.coreip.homeip.net>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com>
+ <5158672.dMAnnUQc7Z@wuerfel>
+ <20140721144442.GB9112@core.coreip.homeip.net>
+ <6569004.FG0IRy8WyL@wuerfel>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <6569004.FG0IRy8WyL@wuerfel>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-When an error occured during event registration memory was freed twice
-resulting in kernel memory corruption and a crash in unrelated code.
+On Mon, Jul 21, 2014 at 05:11:27PM +0200, Arnd Bergmann wrote:
+> On Monday 21 July 2014 07:44:42 Dmitry Torokhov wrote:
+> > > > 
+> > > > It would be nice to actually close the device even if someone is
+> > > > touching screen. Please implement open/close methods and have them set a
+> > > > flag that you would check here.
+> > > 
+> > > Ok. I think it's even better to move the request_irq() into the open function,
+> > > which will avoid the flag and defer the error handling into the actual opening,
+> > > as well as syncing the running irq with the close function.
+> > 
+> > I do not quite like acquiring resources needed in open. I think drivers should
+> > do all resource acquisition in probe() and leave open()/close() to
+> > activate/quiesce devices.
+> 
+> Ok, I'll move it back then. I'm not sure what I'm supposed to do
+> in open/close then. Isn't it enough to check info->input->users
+> like this?
+> 
+> static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+> {
+>         struct exynos_adc *info = dev_id;
+>         struct iio_dev *dev = dev_get_drvdata(info->dev);
+>         u32 x, y;
+>         bool pressed;
+>         int ret;
+> 
+>         while (info->input->users) {
+>                 ret = exynos_read_s3c64xx_ts(dev, &x, &y);
+>                 if (ret == -ETIMEDOUT)
+>                         break;
+> 
+>                 pressed = x & y & ADC_DATX_PRESSED;
+>                 if (!pressed) {
+>                         input_report_key(info->input, BTN_TOUCH, 0);
+>                         input_sync(info->input);
+>                         break;
+>                 }
+> 
+>                 input_report_abs(info->input, ABS_X, x & ADC_DATX_MASK);
+>                 input_report_abs(info->input, ABS_Y, y & ADC_DATY_MASK);
+>                 input_report_key(info->input, BTN_TOUCH, 1);
+>                 input_sync(info->input);
+> 
+>                 msleep(1);
+>         };
+> 
+>         writel(0, ADC_V1_CLRINTPNDNUP(info->regs));
+> 
+>         return IRQ_HANDLED;
+> }
+> 
+> I could do enable_irq()/disable_irq(), but that leaves a small
+> race at startup where we request the irq line and then immediately
+> disable it again.
 
-The problem was caused by
-	iio_device_unregister_eventset()
-	iio_device_unregister_sysfs()
+I think the above (or a separate flag in driver structure) coupled with
+enable/disable IRQ is fine - input core can deal with calls to input_report_*
+on devices that have been properly allocated but have not been registered yet.
 
-being called twice, once on the error path and then
-again via iio_dev_release().
+drivers/input/keyboard/samsung-keypad.c does similar handling.
 
-Fix this by making these two functions idempotent so they
-may be called multiple times.
+Thanks.
 
-The problem was observed before applying
-	78b33216 iio:core: Handle error when mask type is not separate
-
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/iio/industrialio-core.c  |    5 +++--
- drivers/iio/industrialio-event.c |    1 +
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4b1f375..fa06197 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -828,8 +828,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
-  * @attr_list: List of IIO device attributes
-  *
-  * This function frees the memory allocated for each of the IIO device
-- * attributes in the list. Note: if you want to reuse the list after calling
-- * this function you have to reinitialize it using INIT_LIST_HEAD().
-+ * attributes in the list.
-  */
- void iio_free_chan_devattr_list(struct list_head *attr_list)
- {
-@@ -837,6 +836,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
- 
- 	list_for_each_entry_safe(p, n, attr_list, l) {
- 		kfree(p->dev_attr.attr.name);
-+		list_del(&p->l);
- 		kfree(p);
- 	}
- }
-@@ -917,6 +917,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
- 
- 	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
- 	kfree(indio_dev->chan_attr_group.attrs);
-+	indio_dev->chan_attr_group.attrs = NULL;
- }
- 
- static void iio_dev_release(struct device *device)
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index bfbf4d4..ad7a35f 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -492,6 +492,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- error_free_setup_event_lines:
- 	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
- 	kfree(indio_dev->event_interface);
-+	indio_dev->event_interface = NULL;
- 	return ret;
- }
- 
+-- 
+Dmitry
