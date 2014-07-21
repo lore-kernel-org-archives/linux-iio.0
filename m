@@ -1,417 +1,242 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:49290 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754122AbaGEMim (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 5 Jul 2014 08:38:42 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH 2/3] iio: Add Intersil isl29125 digital color light sensor driver
-Date: Sat,  5 Jul 2014 14:38:33 +0200
-Message-Id: <1404563914-27516-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net>
-References: <1404563914-27516-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-arm-kernel@lists.infradead.org, Chanwoo Choi <cw00.choi@samsung.com>, ch.naveen@samsung.com, mark.rutland@arm.com, devicetree@vger.kernel.org, kgene.kim@samsung.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org, t.figa@samsung.com, rdunlap@infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, kyungmin.park@samsung.com, robh+dt@kernel.org, galak@codeaurora.org, heiko.stuebner@bq.com, Ben Dooks <ben-linux@fluff.org>, linux-input <linux-input@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: exynos-adc: add experimental touchscreen support
+Date: Mon, 21 Jul 2014 12:26:24 +0200
+Message-ID: <6295669.xsr4x9Lmj1@wuerfel>
+In-Reply-To: <5158672.dMAnnUQc7Z@wuerfel>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <20140720202842.GB18347@core.coreip.homeip.net> <5158672.dMAnnUQc7Z@wuerfel>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-datasheet: http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29125.pdf
+On Monday 21 July 2014 12:23:58 Arnd Bergmann wrote:
+> 
+> Thanks a lot for the review! I'll send out the new version after some build testing.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/light/Kconfig    |  12 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/isl29125.c | 347 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 360 insertions(+)
- create mode 100644 drivers/iio/light/isl29125.c
+Here are the changes I did to the adc driver based on the review comments.
+I'll start a new thread for the updated version that includes the changes.
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index c89740d..7d83dca 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -62,6 +62,18 @@ config GP2AP020A00F
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called gp2ap020a00f.
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 3d2caea05977..823d7ebc7f52 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -67,6 +67,9 @@
  
-+config ISL29125
-+	tristate "Intersil ISL29125 digital color light sensor"
-+	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say Y here if you want to build a driver for the Intersil ISL29125
-+	  RGB light sensor for I2C.
+ #define ADC_S3C2410_CON_SELMUX(x) (((x)&0x7)<<3)
+ 
++/* touch screen always uses channel 0 */
++#define ADC_S3C2410_MUX_TS	0
 +
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called isl29125.
+ /* ADCTSC Register Bits */
+ #define ADC_S3C2443_TSC_UD_SEN		(1u << 8)
+ #define ADC_S3C2410_TSC_YM_SEN		(1u << 7)
+@@ -106,6 +109,7 @@
+ #define ADC_CON_EN_START	(1u << 0)
+ #define ADC_DATX_PRESSED	(1u << 15)
+ #define ADC_DATX_MASK		0xFFF
++#define ADC_DATY_MASK		0xFFF
+ 
+ #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+ 
+@@ -123,10 +127,12 @@ struct exynos_adc {
+ 
+ 	struct completion	completion;
+ 
+-	bool			read_ts;
+ 	u32			value;
+-	u32			value2;
+ 	unsigned int            version;
 +
- config HID_SENSOR_ALS
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 3eb36e5..f3d1857 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
- obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
- obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
- obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-+obj-$(CONFIG_ISL29125)		+= isl29125.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-new file mode 100644
-index 0000000..c82f4a6
---- /dev/null
-+++ b/drivers/iio/light/isl29125.c
-@@ -0,0 +1,347 @@
-+/*
-+ * isl29125.c - Support for Intersil ISL29125 RGB light sensor
-+ *
-+ * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * RGB light sensor with 16-bit channels for red, green, blue);
-+ * 7-bit I2C slave address 0x44
-+ *
-+ * TODO: interrupt support, IR compensation, thresholds, 12bit
-+ */
++	bool			read_ts;
++	u32			ts_x;
++	u32			ts_y;
+ };
+ 
+ struct exynos_adc_data {
+@@ -396,21 +402,14 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev,
+-				struct iio_chan_spec const *chan,
+-				int *val,
+-				int *val2,
+-				long mask)
++static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
+ {
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 	unsigned long timeout;
+ 	int ret;
+ 
+-	if (mask != IIO_CHAN_INFO_RAW)
+-		return -EINVAL;
+-
+ 	mutex_lock(&indio_dev->mlock);
+-	info->read_ts = 1;
++	info->read_ts = true;
+ 
+ 	reinit_completion(&info->completion);
+ 
+@@ -418,7 +417,7 @@ static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev,
+ 	       ADC_V1_TSC(info->regs));
+ 
+ 	/* Select the ts channel to be used and Trigger conversion */
+-	info->data->start_conv(info, 0);
++	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
+ 
+ 	timeout = wait_for_completion_timeout
+ 			(&info->completion, EXYNOS_ADC_TIMEOUT);
+@@ -428,12 +427,12 @@ static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev,
+ 			info->data->init_hw(info);
+ 		ret = -ETIMEDOUT;
+ 	} else {
+-		*val = info->value;
+-		*val2 = info->value2;
+-		ret = IIO_VAL_INT;
++		*x = info->ts_x;
++		*y = info->ts_y;
++		ret = 0;
+ 	}
+ 
+-	info->read_ts = 0;
++	info->read_ts = false;
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return ret;
+@@ -445,8 +444,8 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+ 
+ 	/* Read value */
+ 	if (info->read_ts) {
+-		info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+-		info->value2 = readl(ADC_V1_DATY(info->regs)) & ADC_DATX_MASK;
++		info->ts_x = readl(ADC_V1_DATX(info->regs));
++		info->ts_y = readl(ADC_V1_DATY(info->regs));
+ 		writel(ADC_TSC_WAIT4INT | ADC_S3C2443_TSC_UD_SEN, ADC_V1_TSC(info->regs));
+ 	} else {
+ 		info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+@@ -477,7 +476,7 @@ static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+ 	int ret;
+ 
+ 	do {
+-		ret =exynos_read_s3c64xx_ts(dev, NULL, &x, &y, IIO_CHAN_INFO_RAW);
++		ret = exynos_read_s3c64xx_ts(dev, &x, &y);
+ 		if (ret == -ETIMEDOUT)
+ 			break;
+ 
+@@ -486,11 +485,15 @@ static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+ 			break;
+ 
+ 		input_report_abs(info->input, ABS_X, x & ADC_DATX_MASK);
+-		input_report_abs(info->input, ABS_Y, y & ADC_DATX_MASK);
++		input_report_abs(info->input, ABS_Y, y & ADC_DATY_MASK);
+ 		input_report_key(info->input, BTN_TOUCH, 1);
+ 		input_sync(info->input);
+ 
+ 		msleep(1);
 +
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <linux/pm.h>
++		/* device may have been closed while touched */
++		if (!info->input->users)
++			return IRQ_HANDLED;
+ 	} while (1);
+ 
+ 	input_report_key(info->input, BTN_TOUCH, 0);
+@@ -552,10 +555,28 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+ 	return 0;
+ }
+ 
++static int exynos_adc_ts_open(struct input_dev *dev)
++{
++	struct exynos_adc *info = input_get_drvdata(dev);
 +
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define ISL29125_DRV_NAME "isl29125"
-+
-+#define ISL29125_DEVICE_ID 0x00
-+#define ISL29125_CONF1 0x01
-+#define ISL29125_CONF2 0x02
-+#define ISL29125_CONF3 0x03
-+#define ISL29125_STATUS 0x08
-+#define ISL29125_GREEN_DATA 0x09
-+#define ISL29125_RED_DATA 0x0b
-+#define ISL29125_BLUE_DATA 0x0d
-+
-+#define ISL29125_ID 0x7d
-+
-+#define ISL29125_MODE_MASK GENMASK(2, 0)
-+#define ISL29125_MODE_PD 0x0
-+#define ISL29125_MODE_G 0x1
-+#define ISL29125_MODE_R 0x2
-+#define ISL29125_MODE_B 0x3
-+#define ISL29125_MODE_RGB 0x5
-+
-+#define ISL29125_MODE_RANGE BIT(3)
-+
-+#define ISL29125_STATUS_CONV BIT(1)
-+
-+struct isl29125_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	u8 conf1;
-+	u16 buffer[8]; /* 3x 16-bit, padding, 8 bytes timestamp */
-+};
-+
-+#define ISL29125_CHANNEL(_color, _si) { \
-+	.type = IIO_INTENSITY, \
-+	.modified = 1, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+	.channel2 = IIO_MOD_LIGHT_##_color, \
-+	.scan_index = _si, \
-+	.scan_type = { \
-+		.sign = 'u', \
-+		.realbits = 16, \
-+		.storagebits = 16, \
-+		.endianness = IIO_CPU, \
-+	}, \
++	return request_threaded_irq(info->tsirq, NULL, exynos_ts_isr,
++				    0, "touchscreen", info);
 +}
 +
-+static const struct iio_chan_spec isl29125_channels[] = {
-+	ISL29125_CHANNEL(GREEN, 0),
-+	ISL29125_CHANNEL(RED, 1),
-+	ISL29125_CHANNEL(BLUE, 2),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
-+};
-+
-+static const struct {
-+	u8 mode, data;
-+} isl29125_regs[] = {
-+	{ISL29125_MODE_G, ISL29125_GREEN_DATA},
-+	{ISL29125_MODE_R, ISL29125_RED_DATA},
-+	{ISL29125_MODE_B, ISL29125_BLUE_DATA},
-+};
-+
-+static int isl29125_read_data(struct isl29125_data *data, int si)
++static void exynos_adc_ts_close(struct input_dev *dev)
 +{
-+	int tries = 5;
-+	int ret;
++	struct exynos_adc *info = input_get_drvdata(dev);
 +
-+	ret = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		data->conf1 | isl29125_regs[si].mode);
-+	if (ret < 0)
-+		return ret;
-+
-+	msleep(101);
-+
-+	while (tries--) {
-+		ret = i2c_smbus_read_byte_data(data->client, ISL29125_STATUS);
-+		if (ret < 0)
-+			goto fail;
-+		if (ret & ISL29125_STATUS_CONV)
-+			break;
-+		msleep(20);
-+	}
-+
-+	if (tries < 0) {
-+		dev_err(&data->client->dev, "data not ready\n");
-+		ret = -EIO;
-+		goto fail;
-+	}
-+
-+	ret = i2c_smbus_read_word_data(data->client, isl29125_regs[si].data);
-+
-+fail:
-+	i2c_smbus_write_byte_data(data->client, ISL29125_CONF1, data->conf1);
-+	return ret;
++	free_irq(info->tsirq, info);
 +}
 +
-+static int isl29125_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	struct isl29125_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (iio_buffer_enabled(indio_dev))
-+			return -EBUSY;
-+		mutex_lock(&data->lock);
-+		ret = isl29125_read_data(data, chan->scan_index);
-+		mutex_unlock(&data->lock);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		if (data->conf1 & ISL29125_MODE_RANGE)
-+			*val2 = 152590; /* 10k lux full range */
-+		else
-+			*val2 = 5722; /* 375 lux full range */
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int isl29125_write_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val, int val2, long mask)
-+{
-+	struct isl29125_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val != 0)
-+			return -EINVAL;
-+		if (val2 == 152590)
-+			data->conf1 |= ISL29125_MODE_RANGE;
-+		else if (val2 == 5722)
-+			data->conf1 &= ~ISL29125_MODE_RANGE;
-+		else
-+			return -EINVAL;
-+		return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+			data->conf1);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static irqreturn_t isl29125_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct isl29125_data *data = iio_priv(indio_dev);
-+	int i, j = 0;
-+
-+	for_each_set_bit(i, indio_dev->active_scan_mask,
-+		indio_dev->masklength) {
-+		int ret = i2c_smbus_read_word_data(data->client,
-+			isl29125_regs[i].data);
-+		if (ret < 0)
-+			goto done;
-+
-+		data->buffer[j++] = ret;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+		iio_get_time_ns());
-+
-+done:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct iio_info isl29125_info = {
-+	.read_raw = isl29125_read_raw,
-+	.write_raw = isl29125_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int isl29125_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct isl29125_data *data = iio_priv(indio_dev);
-+
-+	data->conf1 |= ISL29125_MODE_RGB;
-+	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		data->conf1);
-+}
-+
-+static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct isl29125_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = iio_triggered_buffer_predisable(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->conf1 &= ~ISL29125_MODE_MASK;
-+	data->conf1 |= ISL29125_MODE_PD;
-+	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		data->conf1);
-+}
-+
-+static const struct iio_buffer_setup_ops isl29125_buffer_setup_ops = {
-+	.preenable = isl29125_buffer_preenable,
-+	.postenable = &iio_triggered_buffer_postenable,
-+	.predisable = isl29125_buffer_predisable,
-+};
-+
-+static int isl29125_probe(struct i2c_client *client,
-+			   const struct i2c_device_id *id)
-+{
-+	struct isl29125_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &isl29125_info;
-+	indio_dev->name = ISL29125_DRV_NAME;
-+	indio_dev->channels = isl29125_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(isl29125_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, ISL29125_DEVICE_ID);
-+	if (ret < 0)
-+		return ret;
-+	if (ret != ISL29125_ID)
+ static int exynos_adc_ts_init(struct exynos_adc *info)
+ {
+ 	int ret;
+ 
++	if (info->tsirq <= 0)
 +		return -ENODEV;
 +
-+	data->conf1 = ISL29125_MODE_PD | ISL29125_MODE_RANGE;
-+	ret = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		data->conf1);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, ISL29125_STATUS, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+		isl29125_trigger_handler, &isl29125_buffer_setup_ops);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto buffer_cleanup;
-+
-+	return 0;
-+
-+buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	return ret;
-+}
-+
-+static int isl29125_powerdown(struct isl29125_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		(data->conf1 & ~ISL29125_MODE_MASK) | ISL29125_MODE_PD);
-+}
-+
-+static int isl29125_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	isl29125_powerdown(iio_priv(indio_dev));
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int isl29125_suspend(struct device *dev)
-+{
-+	struct isl29125_data *data = iio_priv(i2c_get_clientdata(
-+		to_i2c_client(dev)));
-+	return isl29125_powerdown(data);
-+}
-+
-+static int isl29125_resume(struct device *dev)
-+{
-+	struct isl29125_data *data = iio_priv(i2c_get_clientdata(
-+		to_i2c_client(dev)));
-+	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+		data->conf1);
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(isl29125_pm_ops, isl29125_suspend, isl29125_resume);
-+
-+static const struct i2c_device_id isl29125_id[] = {
-+	{ "isl29125", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, isl29125_id);
-+
-+static struct i2c_driver isl29125_driver = {
-+	.driver = {
-+		.name	= ISL29125_DRV_NAME,
-+		.pm	= &isl29125_pm_ops,
-+		.owner	= THIS_MODULE,
-+	},
-+	.probe		= isl29125_probe,
-+	.remove		= isl29125_remove,
-+	.id_table	= isl29125_id,
-+};
-+module_i2c_driver(isl29125_driver);
-+
-+MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-+MODULE_DESCRIPTION("ISL29125 RGB light sensor driver");
-+MODULE_LICENSE("GPL");
--- 
-1.9.1
-
+ 	info->input = input_allocate_device();
+ 	if (!info->input)
+ 		return -ENOMEM;
+@@ -566,33 +587,17 @@ static int exynos_adc_ts_init(struct exynos_adc *info)
+ 	input_set_abs_params(info->input, ABS_X, 0, 0x3FF, 0, 0);
+ 	input_set_abs_params(info->input, ABS_Y, 0, 0x3FF, 0, 0);
+ 
+-	/* data from s3c2410_ts driver */
+ 	info->input->name = "S3C24xx TouchScreen";
+ 	info->input->id.bustype = BUS_HOST;
+-	info->input->id.vendor = 0xDEAD;
+-	info->input->id.product = 0xBEEF;
+-	info->input->id.version = 0x0200;
++	info->input->open = exynos_adc_ts_open;
++	info->input->close = exynos_adc_ts_close;
++	
++	input_set_drvdata(info->input, info);
+ 
+ 	ret = input_register_device(info->input);
+-	if (ret) {
++	if (ret)
+ 		input_free_device(info->input);
+-		goto err;
+-	}
+-
+-	if (info->tsirq > 0)
+-		ret = request_threaded_irq(info->irq, NULL, exynos_ts_isr,
+-					0, "touchscreen", info);
+-	if (ret < 0) {
+-		dev_err(info->dev, "failed requesting touchsccreen irq, irq = %d\n",
+-							info->irq);
+-		goto err_input;
+-	}
+-
+-	return 0;
+ 
+-err_input:
+-	input_unregister_device(info->input);
+-err:
+ 	return ret;
+ }
+ 
+@@ -602,7 +607,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct iio_dev *indio_dev = NULL;
+ 	struct resource	*mem;
+-	bool has_ts;
++	bool has_ts = false;
+ 	int ret = -ENODEV;
+ 	int irq;
+ 
+@@ -711,7 +716,10 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 	if (info->data->init_hw)
+ 		info->data->init_hw(info);
+ 
+-	has_ts = of_property_read_bool(pdev->dev.of_node, "has-touchscreen");
++	/* leave out any TS related code if unreachable */
++	if (IS_BUILTIN(CONFIG_INPUT) ||
++	    (IS_MODULE(CONFIG_INPUT) && config_enabled(MODULE)))
++		has_ts = of_property_read_bool(pdev->dev.of_node, "has-touchscreen");
+ 	if (has_ts)
+ 		ret = exynos_adc_ts_init(info);
+ 	if (ret)
+@@ -752,7 +760,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct exynos_adc *info = iio_priv(indio_dev);
+ 
+-	input_free_device(info->input);	
++	input_unregister_device(info->input);	
+ 	device_for_each_child(&indio_dev->dev, NULL,
+ 				exynos_adc_remove_devices);
+ 	iio_device_unregister(indio_dev);
