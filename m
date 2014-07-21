@@ -1,129 +1,104 @@
-Return-Path: <gang.chen.5i5j@gmail.com>
-Message-ID: <53CB9250.3090903@gmail.com>
-Date: Sun, 20 Jul 2014 17:56:32 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.187]:62048 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754265AbaGUKY1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jul 2014 06:24:27 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Chanwoo Choi <cw00.choi@samsung.com>, ch.naveen@samsung.com,
+	mark.rutland@arm.com, devicetree@vger.kernel.org,
+	kgene.kim@samsung.com, pawel.moll@arm.com,
+	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
+	t.figa@samsung.com, rdunlap@infradead.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, kyungmin.park@samsung.com,
+	robh+dt@kernel.org, galak@codeaurora.org, heiko.stuebner@bq.com,
+	Ben Dooks <ben-linux@fluff.org>,
+	linux-input <linux-input@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: exynos-adc: add experimental touchscreen support
+Date: Mon, 21 Jul 2014 12:23:58 +0200
+Message-ID: <5158672.dMAnnUQc7Z@wuerfel>
+In-Reply-To: <20140720202842.GB18347@core.coreip.homeip.net>
+References: <1405663186-26464-1-git-send-email-cw00.choi@samsung.com> <53CBC969.4090704@kernel.org> <20140720202842.GB18347@core.coreip.homeip.net>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lennox Wu <lennox.wu@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Guenter Roeck <linux@roeck-us.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-iio@vger.kernel.org,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Tom Gundersen <teg@jklm.no>, Thierry Reding <thierry.reding@gmail.com>,
- Marek Vasut <marex@denx.de>,
- Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
- linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
- Mischa.Jonker@synopsys.com, jic23@kernel.org,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- cmetcalf@tilera.com, heiko.carstens@de.ibm.com
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel> <53C8114D.30601@nod.at> <53C86C10.2000608@gmail.com> <53C8CE59.3060103@nod.at> <53C8FA78.1020501@gmail.com> <53C8FC1E.9090003@nod.at> <CAF0htA6Vvp+d4=wPuqJJhT+FxEUoT9mbJ3_NQuEJTP-hniS-KQ@mail.gmail.com> <53C9612E.3040001@gmail.com> <53CB801D.1030603@gmail.com> <53CB8FBF.2070206@nod.at> <53CB9134.7080705@gmail.com>
-In-Reply-To: <53CB9134.7080705@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/20/2014 05:51 PM, Chen Gang wrote:
-> On 07/20/2014 05:45 PM, Richard Weinberger wrote:
->>
->>
->> Am 20.07.2014 10:38, schrieb Chen Gang:
->>> On 07/19/2014 02:02 AM, Chen Gang wrote:
->>>>> 2014-07-18 18:51 GMT+08:00 Richard Weinberger <richard@nod.at>:
->>>>>> Am 18.07.2014 12:44, schrieb Chen Gang:
->>>>>>> On 07/18/2014 03:35 PM, Richard Weinberger wrote:
->>>>>>>> Am 18.07.2014 02:36, schrieb Chen Gang:
->>>>>>>>>
->>>>>>>>> On 07/18/2014 02:09 AM, Richard Weinberger wrote:
->>>>>>>>>> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
->>>>>>>>>>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
->>>>>>>>>>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
->>>>>>>>>>> to build on UML seems pointless to me and we special-case it in a number of
->>>>>>>>>>> places already.
->>>>>>>>>>
->>>>>>>>>> If UML is the only arch without io memory the dependency on !UML seems
->>>>>>>>>> reasonable to me. :-)
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> For me, if only uml left, I suggest to implement dummy functions within
->>>>>>>>> uml instead of let CONFIG_UML appear in generic include directory. And
->>>>>>>>> then remove all HAS_IOMEM and NO_IOMEM from kernel.
->>>>>>>>
->>>>>>>> Erm, this is something completely different.
->>>>>>>> I thought we're focusing on COMPILE_TEST?
->>>>>>>>
->>>>>>>
->>>>>>> COMPILE_TEST is none-architecture specific, but UML is. So in generic
->>>>>>> include folder, if we're focusing on choosing whether COMPILE_TEST or
->>>>>>> UML, for me, I will choose COMPILE_TEST.
->>>>>>>
->>>>>>> If we're not only focusing on COMPILE_TEST, for me, if something only
->>>>>>> depend on one architecture, I'd like to put them under "arch/*/" folder.
->>>>>>>
->>>>>>> Especially, after that, we can remove all HAS_IOMEM and NO_IOMEM, nobody
->>>>>>> has to think of them again. :-)
->>>>>>
->>>>>> And then we end up with a solution that on UML a lot of completely useless
->>>>>> drivers are build which fail in various interesting manners because you'll
->>>>>> add stubs for all kinds of io memory related functions to arch/um/?
->>>>>> We had this kind of discussion already. You'll need more than ioremap...
->>>>>>
->>>>>> I like Arnd's idea *much* more to make COMPILE_TEST depend on !UML.
->>>>>>
->>>>
->>>> That will let UML itself against COMPILE_TEST (but all the other
->>>> architectures not).
->>>>
->>>> And if let COMPILE_TEST depend on !UML, can we still remove all
->>>> HAS_IOMEM and NO_IOMEM from kernel? (I guess so).
->>>>
->>>> If we can remove them, we can send related patch firstly -- that will
->>>> let current discussion be in UML architecture wide instead of kernel
->>>> wide.
->>>>
->>>
->>> Next, I shall:
->>>
->>>  - Remove HAS_IOMEM and NO_IOMEM from kernel, firstly.
->>
->> This needs to be last, otherwise lot's of stuff will break.
->>
+On Sunday 20 July 2014 13:28:42 Dmitry Torokhov wrote:
+> On Sun, Jul 20, 2014 at 02:51:37PM +0100, Jonathan Cameron wrote:
+> > >>+
+> > >>+    do {
+> > >>+        ret =exynos_read_s3c64xx_ts(dev, NULL, &x, &y, IIO_CHAN_INFO_RAW);
+> > >= exynos
+> > >>+        if (ret == -ETIMEDOUT)
+> > >>+            break;
+> > >>+
+> > >>+        pressed = x & y & ADC_DATX_PRESSED;
+> > >>+        if (!pressed)
+> > >>+            break;
+> > >>+
+> > >>+        input_report_abs(info->input, ABS_X, x & ADC_DATX_MASK);
+> > >>+        input_report_abs(info->input, ABS_Y, y & ADC_DATX_MASK);
+> > >>+        input_report_key(info->input, BTN_TOUCH, 1);
+> > >>+        input_sync(info->input);
+> > >>+
+> > >>+        msleep(1);
+> > >>+    } while (1);
 > 
-> OK, thanks, that sounds reasonable to me.
-> 
->>>  - Try to make dummy IOMEM functions for score architecture.
->>>
->>>  - Continue discussing with UML for it.
->>
->> If you find sane dummy functions for both UML and score I'm fine with it.
->>
-> 
-> For me, what you said is necessary, tile and s390 also need dummy IOMEM
-> when !PCI.
-> 
-> So for me, I shall implement them in "include/asm-generic", and let uml,
-> score, tile and s390 use dummy IOMEM when they need.
-> 
-> Welcome any other members ideas, suggestions and completions.
-> 
-> 
+> It would be nice to actually close the device even if someone is
+> touching screen. Please implement open/close methods and have them set a
+> flag that you would check here.
 
-And sorry, I can not finish this discussion and send patch for it within
-this week, for it is really a long necessary discussion.
+Ok. I think it's even better to move the request_irq() into the open function,
+which will avoid the flag and defer the error handling into the actual opening,
+as well as syncing the running irq with the close function.
 
-But, hope we can finish this discussion and send patch for it within
-this month (but in current condition, I am not quite sure).
+> > >>+    /* data from s3c2410_ts driver */
+> > >>+    info->input->name = "S3C24xx TouchScreen";
+> > >>+    info->input->id.bustype = BUS_HOST;
+> > >>+    info->input->id.vendor = 0xDEAD;
+> > >>+    info->input->id.product = 0xBEEF;
+> 
+> You do not need to fill these entries with fake data.
 
-And after finish discussion, welcome any other members help sending
-related patch for it (e.g. implement dummy IOMEM in "asm-generic",
-remove all IOMEM in kernel wide).
+Ok, I wondered about this, but didn't want to change too much from
+the old driver (I changed the version number).
 
-Thanks.
--- 
-Chen Gang
+> > >>+    info->input->id.version = 0x0200;
 
-Open share and attitude like air water and life which God blessed
+Do I need this?
+
+> > >>@@ -576,6 +728,11 @@ static int exynos_adc_probe(struct platform_device *pdev)
+> > >>  err_of_populate:
+> > >>      device_for_each_child(&indio_dev->dev, NULL,
+> > >>                  exynos_adc_remove_devices);
+> > >>+    if (has_ts) {
+> > >>+        input_unregister_device(info->input);
+> > >>+        free_irq(info->tsirq, info);
+> 
+> Are we sure that device is quiesced here and interrupt won't arrive
+> between input_unregister_device() and free_irq()? I guess if you
+> properly implement open/close it won't matter.
+ 
+Should be fixed now.
+
+> > >>+err_iio:
+> > >>      iio_device_unregister(indio_dev);
+> > >>  err_irq:
+> > >>      free_irq(info->irq, info);
+> > >>@@ -595,9 +752,12 @@ static int exynos_adc_remove(struct platform_device *pdev)
+> > >>      struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> > >>      struct exynos_adc *info = iio_priv(indio_dev);
+> > >>
+> > >>+    input_free_device(info->input);
+> 
+> Should be unregister, not free.
+
+Ok.
+
+Thanks a lot for the review! I'll send out the new version after some build testing.
+
+	Arnd
