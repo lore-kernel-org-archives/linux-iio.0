@@ -1,170 +1,365 @@
-Return-Path: <atx@atalax.net>
-Date: Tue, 22 Jul 2014 17:03:10 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: [PATCH v5 (staging-next) 5/5] staging:iio:hmc5843: Add support for
- spi hmc5983
-Message-ID: <20140722150310.GF7845@dashie>
-References: <20140722150009.GA7845@dashie>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pd0-f174.google.com ([209.85.192.174]:38871 "EHLO
+	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754840AbaGVSJJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 14:09:09 -0400
+Date: Tue, 22 Jul 2014 11:09:04 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	kgene.kim@samsung.com, pawel.moll@arm.com, t.figa@samsung.com,
+	linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
+	kyungmin.park@samsung.com, linux-samsung-soc@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Ben Dooks <ben-linux@fluff.org>, galak@codeaurora.org,
+	ch.naveen@samsung.com, linux-input <linux-input@vger.kernel.org>,
+	heiko.stuebner@bq.com
+Subject: Re: [PATCH v2] iio: exynos-adc: add experimental touchscreen support
+Message-ID: <20140722180904.GB5489@core.coreip.homeip.net>
+References: <5068889.1KfVx3ksNo@wuerfel>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140722150009.GA7845@dashie>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5068889.1KfVx3ksNo@wuerfel>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the hmc5983 spi interface.
-This chip is almost identical to the hmc5883. The difference being added
-temperature compensation, additional available sample rate (220Hz) and an SPI
-interface.
+On Tue, Jul 22, 2014 at 03:03:12PM +0200, Arnd Bergmann wrote:
+> This adds support for the touchscreen on Samsung s3c64xx.
+> The driver is completely untested but shows roughly how
+> it could be done, following the example of the at91 driver.
+> 
+> Open questions include:
+> 
+> - compared to the old plat-samsung/adc driver, there is
+>   no support for prioritizing ts over other clients, nor
+>   for oversampling. From my reading of the code, the
+>   priorities didn't actually have any effect at all, but
+>   the oversampling might be needed. Maybe the original
+>   authors have some insight.
+> 
+> - We probably need to add support for platform_data as well,
+>   I've skipped this so far.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> This should address all previous comments, and I've also added
+> a write to ADC_V1_DLY() as the old driver does.
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index cad81b666a67..ba30836c73cb 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -43,6 +43,10 @@ Required properties:
+>  				       and compatible ADC block)
+>  - vdd-supply		VDD input supply.
+>  
+> +Optional properties:
+> +- has-touchscreen:	If present, indicates that a touchscreen is
+> +			connected an usable.
+> +
+>  Note: child nodes can be added for auto probing from device tree.
+>  
+>  Example: adding device info in dtsi file
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 420c5cda09c3..3b684a117b9c 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/err.h>
+> +#include <linux/input.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/machine.h>
+> @@ -66,6 +67,9 @@
+>  
+>  #define ADC_S3C2410_CON_SELMUX(x) (((x)&0x7)<<3)
+>  
+> +/* touch screen always uses channel 0 */
+> +#define ADC_S3C2410_MUX_TS	0
+> +
+>  /* ADCTSC Register Bits */
+>  #define ADC_S3C2443_TSC_UD_SEN		(1u << 8)
+>  #define ADC_S3C2410_TSC_YM_SEN		(1u << 7)
+> @@ -103,24 +107,32 @@
+>  
+>  /* Bit definitions common for ADC_V1 and ADC_V2 */
+>  #define ADC_CON_EN_START	(1u << 0)
+> +#define ADC_DATX_PRESSED	(1u << 15)
+>  #define ADC_DATX_MASK		0xFFF
+> +#define ADC_DATY_MASK		0xFFF
+>  
+>  #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+>  
+>  struct exynos_adc {
+>  	struct exynos_adc_data	*data;
+>  	struct device		*dev;
+> +	struct input_dev	*input;
+>  	void __iomem		*regs;
+>  	void __iomem		*enable_reg;
+>  	struct clk		*clk;
+>  	struct clk		*sclk;
+>  	unsigned int		irq;
+> +	unsigned int		tsirq;
+>  	struct regulator	*vdd;
+>  
+>  	struct completion	completion;
+>  
+>  	u32			value;
+>  	unsigned int            version;
+> +
+> +	bool			read_ts;
+> +	u32			ts_x;
+> +	u32			ts_y;
+>  };
+>  
+>  struct exynos_adc_data {
+> @@ -205,6 +217,9 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
+>  	/* Enable 12-bit ADC resolution */
+>  	con1 |= ADC_V1_CON_RES;
+>  	writel(con1, ADC_V1_CON(info->regs));
+> +
+> +	/* set default touchscreen delay */
+> +	writel(10000, ADC_V1_DLY(info->regs));
+>  }
+>  
+>  static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
+> @@ -390,12 +405,54 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> +static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
+> +{
+> +	struct exynos_adc *info = iio_priv(indio_dev);
+> +	unsigned long timeout;
+> +	int ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	info->read_ts = true;
+> +
+> +	reinit_completion(&info->completion);
+> +
+> +	writel(ADC_S3C2410_TSC_PULL_UP_DISABLE | ADC_TSC_AUTOPST,
+> +	       ADC_V1_TSC(info->regs));
+> +
+> +	/* Select the ts channel to be used and Trigger conversion */
+> +	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
+> +
+> +	timeout = wait_for_completion_timeout
+> +			(&info->completion, EXYNOS_ADC_TIMEOUT);
+> +	if (timeout == 0) {
+> +		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
+> +		if (info->data->init_hw)
+> +			info->data->init_hw(info);
+> +		ret = -ETIMEDOUT;
+> +	} else {
+> +		*x = info->ts_x;
+> +		*y = info->ts_y;
+> +		ret = 0;
+> +	}
+> +
+> +	info->read_ts = false;
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+>  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>  {
+>  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
+>  
+>  	/* Read value */
+> -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+> +	if (info->read_ts) {
+> +		info->ts_x = readl(ADC_V1_DATX(info->regs));
+> +		info->ts_y = readl(ADC_V1_DATY(info->regs));
+> +		writel(ADC_TSC_WAIT4INT | ADC_S3C2443_TSC_UD_SEN, ADC_V1_TSC(info->regs));
+> +	} else {
+> +		info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+> +	}
+>  
+>  	/* clear irq */
+>  	if (info->data->clear_irq)
+> @@ -406,6 +463,46 @@ static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +/*
+> + * Here we (ab)use a threaded interrupt handler to stay running
+> + * for as long as the touchscreen remains pressed, we report
+> + * a new event with the latest data and then sleep until the
+> + * next timer tick. This mirrors the behavior of the old
+> + * driver, with much less code.
+> + */
+> +static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+> +{
+> +	struct exynos_adc *info = dev_id;
+> +	struct iio_dev *dev = dev_get_drvdata(info->dev);
+> +	u32 x, y;
+> +	bool pressed;
+> +	int ret;
+> +
+> +	while (info->input->users) {
+> +		ret = exynos_read_s3c64xx_ts(dev, &x, &y);
+> +		if (ret == -ETIMEDOUT)
+> +			break;
+> +
+> +		pressed = x & y & ADC_DATX_PRESSED;
+> +		if (!pressed) {
+> +			input_report_key(info->input, BTN_TOUCH, 0);
+> +			input_sync(info->input);
+> +			break;
+> +		}
+> +
+> +		input_report_abs(info->input, ABS_X, x & ADC_DATX_MASK);
+> +		input_report_abs(info->input, ABS_Y, y & ADC_DATY_MASK);
+> +		input_report_key(info->input, BTN_TOUCH, 1);
+> +		input_sync(info->input);
+> +
+> +		msleep(1);
+> +	};
+> +
+> +	writel(0, ADC_V1_CLRINTPNDNUP(info->regs));
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static int exynos_adc_reg_access(struct iio_dev *indio_dev,
+>  			      unsigned reg, unsigned writeval,
+>  			      unsigned *readval)
+> @@ -457,12 +554,66 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
+>  	return 0;
+>  }
+>  
+> +static int exynos_adc_ts_open(struct input_dev *dev)
+> +{
+> +	struct exynos_adc *info = input_get_drvdata(dev);
+> +
+> +	enable_irq(info->tsirq);
+> +
+> +	return 0;
+> +}
+> +
+> +static void exynos_adc_ts_close(struct input_dev *dev)
+> +{
+> +	struct exynos_adc *info = input_get_drvdata(dev);
+> +
+> +	disable_irq(info->tsirq);
+> +}
+> +
+> +static int exynos_adc_ts_init(struct exynos_adc *info)
+> +{
+> +	int ret;
+> +
+> +	if (info->tsirq <= 0)
+> +		return -ENODEV;
+> +
+> +	info->input = input_allocate_device();
+> +	if (!info->input)
+> +		return -ENOMEM;
+> +
+> +	info->input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
+> +	info->input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+> +
+> +	input_set_abs_params(info->input, ABS_X, 0, 0x3FF, 0, 0);
+> +	input_set_abs_params(info->input, ABS_Y, 0, 0x3FF, 0, 0);
+> +
+> +	info->input->name = "S3C24xx TouchScreen";
+> +	info->input->id.bustype = BUS_HOST;
+> +	info->input->open = exynos_adc_ts_open;
+> +	info->input->close = exynos_adc_ts_close;
+> +	
+> +	input_set_drvdata(info->input, info);
+> +
+> +	ret = input_register_device(info->input);
+> +	if (ret)
+> +		input_free_device(info->input);
+> +
+> +	disable_irq(info->tsirq);
+> +	ret = request_threaded_irq(info->tsirq, NULL, exynos_ts_isr,
+> +				   0, "touchscreen", info);
+> +	if (ret)
+> +		input_unregister_device(info->input);
+> +
+> +	return ret;
+> +}
+> +
+>  static int exynos_adc_probe(struct platform_device *pdev)
+>  {
+>  	struct exynos_adc *info = NULL;
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct iio_dev *indio_dev = NULL;
+>  	struct resource	*mem;
+> +	bool has_ts = false;
+>  	int ret = -ENODEV;
+>  	int irq;
+>  
+> @@ -498,8 +649,14 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  		dev_err(&pdev->dev, "no irq resource?\n");
+>  		return irq;
+>  	}
+> -
+>  	info->irq = irq;
+> +
+> +	irq = platform_get_irq(pdev, 1);
+> +	if (irq == -EPROBE_DEFER)
+> +		return irq; 
+> +
+> +	info->tsirq = irq;
+> +
+>  	info->dev = &pdev->dev;
+>  
+>  	init_completion(&info->completion);
+> @@ -565,6 +722,15 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  	if (info->data->init_hw)
+>  		info->data->init_hw(info);
+>  
+> +	/* leave out any TS related code if unreachable */
+> +	if (IS_BUILTIN(CONFIG_INPUT) ||
+> +	    (IS_MODULE(CONFIG_INPUT) && config_enabled(MODULE)))
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/Kconfig       |  15 ++++
- drivers/staging/iio/magnetometer/Makefile      |   1 +
- drivers/staging/iio/magnetometer/hmc5843_spi.c | 100 +++++++++++++++++++++++++
- 3 files changed, 116 insertions(+)
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
+This is ugly... We need IS_SUBSYSTEM_AVAILABLE() wrapper for this...
 
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index c086f33..dec814a 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -22,4 +22,19 @@ config SENSORS_HMC5843_I2C
- 	  - hmc5843_core (core functions)
- 	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
- 
-+config SENSORS_HMC5843_SPI
-+	tristate "Honeywell HMC5983 3-Axis Magnetometer (SPI)"
-+	depends on SPI_MASTER
-+	select SENSORS_HMC5843
-+	select REGMAP_SPI
-+	help
-+	  Say Y here to add support for the Honeywell HMC5983 3-Axis Magnetometer
-+	  (digital compass).
-+
-+	  This driver can also be compiled as a set of modules.
-+	  If so, these modules will be created:
-+	  - hmc5843_core (core functions)
-+	  - hmc5843_spi (support for HMC5983)
-+
-+
- endmenu
-diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-index 65baf1c..33761a1 100644
---- a/drivers/staging/iio/magnetometer/Makefile
-+++ b/drivers/staging/iio/magnetometer/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
- obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-+obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-new file mode 100644
-index 0000000..98c4b57
---- /dev/null
-+++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-@@ -0,0 +1,100 @@
-+/*
-+ * SPI driver for hmc5983
-+ *
-+ * Copyright (C) Josef Gajdusek <atx@atx.name>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * */
-+
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+
-+#include "hmc5843.h"
-+
-+static const struct regmap_range hmc5843_readable_ranges[] = {
-+		regmap_reg_range(0, HMC5843_ID_END),
-+};
-+
-+static struct regmap_access_table hmc5843_readable_table = {
-+		.yes_ranges = hmc5843_readable_ranges,
-+		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-+};
-+
-+static const struct regmap_range hmc5843_writable_ranges[] = {
-+		regmap_reg_range(0, HMC5843_MODE_REG),
-+};
-+
-+static struct regmap_access_table hmc5843_writable_table = {
-+		.yes_ranges = hmc5843_writable_ranges,
-+		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-+};
-+
-+static const struct regmap_range hmc5843_volatile_ranges[] = {
-+		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-+};
-+
-+static struct regmap_access_table hmc5843_volatile_table = {
-+		.yes_ranges = hmc5843_volatile_ranges,
-+		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-+};
-+
-+static struct regmap_config hmc5843_spi_regmap_config = {
-+		.reg_bits = 8,
-+		.val_bits = 8,
-+
-+		.rd_table = &hmc5843_readable_table,
-+		.wr_table = &hmc5843_writable_table,
-+		.volatile_table = &hmc5843_volatile_table,
-+
-+		/* Autoincrement address pointer */
-+		.read_flag_mask = 0xc0,
-+
-+		.cache_type = REGCACHE_RBTREE,
-+};
-+
-+static int hmc5843_spi_probe(struct spi_device *spi)
-+{
-+	int ret;
-+
-+	spi->mode = SPI_MODE_3;
-+	spi->max_speed_hz = 8000000;
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret)
-+		return ret;
-+
-+	return hmc5843_common_probe(&spi->dev,
-+			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
-+			HMC5983_ID);
-+}
-+
-+static int hmc5843_spi_remove(struct spi_device *spi)
-+{
-+	return hmc5843_common_remove(&spi->dev);
-+}
-+
-+static const struct spi_device_id hmc5843_id[] = {
-+	{ "hmc5983", HMC5983_ID },
-+	{ }
-+};
-+
-+static struct spi_driver hmc5843_driver = {
-+		.driver = {
-+				.name = "hmc5843",
-+				.pm = HMC5843_PM_OPS,
-+				.owner = THIS_MODULE,
-+		},
-+		.id_table = hmc5843_id,
-+		.probe = hmc5843_spi_probe,
-+		.remove = hmc5843_spi_remove,
-+};
-+
-+module_spi_driver(hmc5843_driver);
-+
-+MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-+MODULE_DESCRIPTION("HMC5983 SPI driver");
-+MODULE_LICENSE("GPL");
+Anyway,
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+
+> +		has_ts = of_property_read_bool(pdev->dev.of_node, "has-touchscreen");
+> +	if (has_ts)
+> +		ret = exynos_adc_ts_init(info);
+> +	if (ret)
+> +		goto err_iio;
+> +
+>  	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "failed adding child nodes\n");
+> @@ -576,6 +742,11 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  err_of_populate:
+>  	device_for_each_child(&indio_dev->dev, NULL,
+>  				exynos_adc_remove_devices);
+> +	if (has_ts) {
+> +		input_unregister_device(info->input);
+> +		free_irq(info->tsirq, info);
+> +	}
+> +err_iio:
+>  	iio_device_unregister(indio_dev);
+>  err_irq:
+>  	free_irq(info->irq, info);
+> @@ -595,6 +766,11 @@ static int exynos_adc_remove(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>  	struct exynos_adc *info = iio_priv(indio_dev);
+>  
+> +	if (IS_BUILTIN(CONFIG_INPUT) ||
+> +	    (IS_MODULE(CONFIG_INPUT) && config_enabled(MODULE))) {
+> +		free_irq(info->tsirq, info);
+> +		input_unregister_device(info->input);
+> +	}
+>  	device_for_each_child(&indio_dev->dev, NULL,
+>  				exynos_adc_remove_devices);
+>  	iio_device_unregister(indio_dev);
+> 
+
 -- 
-1.8.5.5
+Dmitry
