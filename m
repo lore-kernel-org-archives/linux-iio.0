@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:11640 "EHLO
+Received: from mailout4.samsung.com ([203.254.224.34]:9682 "EHLO
 	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751824AbaGVCLT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jul 2014 22:11:19 -0400
+	with ESMTP id S1751147AbaGVCFB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jul 2014 22:05:01 -0400
 From: Chanwoo Choi <cw00.choi@samsung.com>
 To: jic23@kernel.org
 Cc: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
@@ -11,29 +11,67 @@ Cc: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
 	Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 0/2] iio: adc: exynos_adc: Add support for s3c64xx/s3c24xx ADC
-Date: Tue, 22 Jul 2014 11:11:12 +0900
-Message-id: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com>
+Subject: [PATCHv8 0/4] iio: adc: exynos_adc: Support Exynos3250 ADC and code
+ clean
+Date: Tue, 22 Jul 2014 11:04:52 +0900
+Message-id: <1405994696-3117-1-git-send-email-cw00.choi@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch add support for s3c64xx/s3c24xx ADC. s3c64xx/s3c24xx is alomost same
-as ADCv1. But, s3c64xx/s3c24xx has a little difference from ADCv1 as following:
-- ADCMUX register address to select channel
-- ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
+This patchset support Exynos3250 ADC (Analog Digital Converter) because
+Exynos3250 has additional special clock for ADC IP.
 
-This patchset is implemented based on exynos3250 ADC patchset[1].
- [1] http://www.spinics.net/lists/kernel/msg1791299.html
+Changes from v7:
+- Add acked message by Arnd Bergmann
+- Use two compatible string for Exynos3250 ADC as following:
+  : compatible = "samsung,exynos3250-adc", "samsung,exynos-adc-v2;
 
-Arnd Bergmann (1):
-  iio: adc: exynos_adc: add support for s3c64xx adc
+Changes from v6:
+- Use "exynos3250-adc" compatible string instead of "exynos3250-adc-v2"
+- Use "sclk" clock name instead of "sclk_adc"
+- Remove un-necessary macro for exyno-adc-data-v2 structure.
+- Remove '(void *)' cast and mark the exynos-adc-data structure as 'const'
+- Change the number of ADC channels (Exynos3250 has only two channels for ADC)
 
-Chanwoo Choi (1):
-  iio: adc: exynos_adc: Add support for S3C24xx ADC
+Changes from v5:
+- Add acked message by Kukjin Kim
+- Add reviewed messgae by Tomasz Figa
+- Fix typo (for for -> for)
 
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |  12 +-
- drivers/iio/adc/exynos_adc.c                       | 121 ++++++++++++++++++++-
- 2 files changed, 129 insertions(+), 4 deletions(-)
+Changes from v4:
+- Use 'exynos_adc_data' structure instead of 'exynos_adc_ops' structure
+  and remove enum variable of ADC version
+- Fix wrong name of special clock (sclk_tsadc -> sclk_adc)
+- Add reviewed message by Naveen Krishna Chatradhi
+- Add functions for ADC clock control
+
+Changes from v3:
+- Add new 'exynos_adc_ops' structure to improve readability according to
+ Tomasz Figa comment[1]
+ [1] https://lkml.org/lkml/2014/4/16/238
+- Add new 'exynos3250-adc-v2' compatible string to support Exynos3250 ADC
+- Fix wrong compaitlbe string of ADC in Exynos3250 dtsi file
+
+Changes from v2:
+- Check return value of clock function to deal with error exception
+- Fix minor coding style to improve readability
+
+Changes from v1:
+- Add new "samsung,exynos-adc-v3" compatible to support Exynos3250 ADC
+- Add a patch about DT binding documentation
+
+Chanwoo Choi (4):
+  iio: adc: exynos_adc: Add exynos_adc_data structure to improve
+    readability
+  iio: adc: exynos_adc: Control special clock of ADC to support
+    Exynos3250 ADC
+  iio: devicetree: Add DT binding documentation for Exynos3250 ADC
+  ARM: dts: Fix wrong compatible string for Exynos3250 ADC
+
+ .../devicetree/bindings/arm/samsung/exynos-adc.txt |  25 +-
+ arch/arm/boot/dts/exynos3250.dtsi                  |   5 +-
+ drivers/iio/adc/exynos_adc.c                       | 335 +++++++++++++++------
+ 3 files changed, 275 insertions(+), 90 deletions(-)
 
 -- 
 1.8.0
