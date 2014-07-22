@@ -1,60 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:40142 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754070AbaGVOaG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 10:30:06 -0400
-Message-ID: <53CE7566.8020906@gmail.com>
-Date: Tue, 22 Jul 2014 19:59:58 +0530
-From: Varka Bhadram <varkabhadram@gmail.com>
+Return-Path: <atx@atx.name>
+Date: Tue, 22 Jul 2014 17:00:09 +0200
+From: Josef Gajdusek <atx@atx.name>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com, lars@metafoo.de
+Subject: [PATCH v5 (staging-next) 0/5] staging:iio:hmc5843: Few adjustments
+ and support for hmc5983
+Message-ID: <20140722150009.GA7845@dashie>
 MIME-Version: 1.0
-To: Arnd Bergmann <arnd@arndb.de>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-CC: kgene.kim@samsung.com, pawel.moll@arm.com, t.figa@samsung.com,
-	linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
-	kyungmin.park@samsung.com, linux-samsung-soc@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Ben Dooks <ben-linux@fluff.org>, galak@codeaurora.org,
-	ch.naveen@samsung.com, linux-input <linux-input@vger.kernel.org>,
-	heiko.stuebner@bq.com, Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH v2] iio: exynos-adc: add experimental touchscreen support
-References: <5068889.1KfVx3ksNo@wuerfel>
-In-Reply-To: <5068889.1KfVx3ksNo@wuerfel>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
+This patch series modifies the hmc5843 driver to support the hmc5983 i2c and
+spi interfaces.
 
-On Tuesday 22 July 2014 06:33 PM, Arnd Bergmann wrote:
+v2:
+	* Reverted the changed order of iio unregister and setting hmc mode to sleep
 
-(...)
+v3:
+	* Fixed bug introduced in the first patch
+	* Readded few comment lines which have gone missing in the hmc5843.c ->
+	  hmc5843_core.c move
 
->   
-> +static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
-> +{
-> +	struct exynos_adc *info = iio_priv(indio_dev);
-> +	unsigned long timeout;
-> +	int ret;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	info->read_ts = true;
-> +
-> +	reinit_completion(&info->completion);
-> +
-> +	writel(ADC_S3C2410_TSC_PULL_UP_DISABLE | ADC_TSC_AUTOPST,
-> +	       ADC_V1_TSC(info->regs));
-> +
-> +	/* Select the ts channel to be used and Trigger conversion */
-> +	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
-> +
-> +	timeout = wait_for_completion_timeout
-> +			(&info->completion, EXYNOS_ADC_TIMEOUT);
+v4: 
+    * Changes suggested by Lars in https://lkml.org/lkml/2014/7/14/968
+	  * The i2c and spi drivers are now user-selectable with the core driver
+	    being selected automatically
+	  * The regmap_config structs in both _spi and _i2c files are now static
+	  * The iio_dev allocation is now done in the common function
+	  * pm ops are now defined in the header file and the same definition is
+	    shared between both interface-specific drivers
+	* regmap tables in hmc5843.h are not longer static (this fixed bunch of 
+	  variable not used warnings)
 
-Should be properly aligned:
+v5:
+	* Fixed sparse warning (moved regmap configuration structs from the header
+	  file to the _spi and _i2c files)
+	* Added the hmc5983 to Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
 
-	wait_for_completion_timeout(&info->completion,
-				    EXYNOS_ADC_TIMEOUT);
+Josef Gajdusek (5):
+  staging:iio:hmc5843: Added regmap support
+  staging:iio:hmc5843: Split hmc5843.c to multiple files
+  staging:iio:hmc5843: register <-> value arrays now can have different
+    lengths
+  staging:iio:hmc5843: Add support for i2c hmc5983
+  staging:iio:hmc5843: Add support for spi hmc5983
+
+ drivers/staging/iio/magnetometer/Kconfig        |  30 +-
+ drivers/staging/iio/magnetometer/Makefile       |   4 +-
+ drivers/staging/iio/magnetometer/hmc5843.c      | 652 ------------------------
+ drivers/staging/iio/magnetometer/hmc5843.h      |  86 ++++
+ drivers/staging/iio/magnetometer/hmc5843_core.c | 638 +++++++++++++++++++++++
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c  |  74 +++
+ drivers/staging/iio/magnetometer/hmc5843_spi.c  |  73 +++
+ 7 files changed, 900 insertions(+), 657 deletions(-)
+ delete mode 100644 drivers/staging/iio/magnetometer/hmc5843.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843.h
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_core.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_i2c.c
+ create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
 
 -- 
-Regards,
-Varka Bhadram
-
+1.8.5.5
