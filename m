@@ -1,70 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-218.synserver.de ([212.40.185.218]:1082 "EHLO
-	smtp-out-216.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752617AbaGMO0Q (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 13 Jul 2014 10:26:16 -0400
-Message-ID: <53C296C2.30304@metafoo.de>
-Date: Sun, 13 Jul 2014 16:25:06 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:35821 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751253AbaGVL3r (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 07:29:47 -0400
+Message-ID: <53CE4B1F.9080701@gmail.com>
+Date: Tue, 22 Jul 2014 19:29:35 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Chen Gang <gang.chen.5i5j@gmail.com>,
+To: Arnd Bergmann <arnd@arndb.de>
+CC: Lennox Wu <lennox.wu@gmail.com>,
+	Richard Weinberger <richard@nod.at>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
-	jic23@kernel.org, wim@iguana.be,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-iio@vger.kernel.org,
 	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com,
-	knaack.h@gmx.de, rdunlap@infradead.org,
-	linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>
+	Tom Gundersen <teg@jklm.no>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
+	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+	cmetcalf@tilera.com, heiko.carstens@de.ibm.com
 Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
  'devm_ioremap_resource'
-References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at>
-In-Reply-To: <53C291C8.6050303@nod.at>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <201407130545.23004.marex@denx.de> <53CB801D.1030603@gmail.com> <53CB8FC4.4050009@gmail.com> <179292068.QXZf3Zcqzf@wuerfel>
+In-Reply-To: <179292068.QXZf3Zcqzf@wuerfel>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/13/2014 04:03 PM, Richard Weinberger wrote:
-> Am 13.07.2014 15:56, schrieb Lars-Peter Clausen:
->> On 07/13/2014 03:40 PM, Richard Weinberger wrote:
->>> Am 13.07.2014 15:26, schrieb Lars-Peter Clausen:
->>>> On 07/13/2014 11:45 AM, Richard Weinberger wrote:
->>>>> Am 13.07.2014 11:27, schrieb Lennox Wu:
->>>>>> As I said before, some configurations don't make sense.
->>>>>
->>>>> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
->>>>> Chen's fixes seem reasonable as not all architectures support iomem.
->>>>
->>>> Maybe we should stub out ioremap() and friends when COMPILE_TEST is enabled to avoid these linker errors. That's in my opinion better than turning most of the 'depends on
->>>> COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The issue comes up quite a lot and it is often overlooked when adding a driver that can be build when COMPILE_TEST is
->>>> enabled.
+
+
+On 07/22/2014 06:32 PM, Arnd Bergmann wrote:
+> On Sunday 20 July 2014 17:45:40 Chen Gang wrote:
 >>>
->>> And what should this stub do?
->>> Except calling BUG()...
+>>> Next, I shall:
+>>>
+>>>  - Remove HAS_IOMEM and NO_IOMEM from kernel, firstly.
+>>>
+>>>  - Try to make dummy IOMEM functions for score architecture.
+>>>
+>>>  - Continue discussing with UML for it.
+>>>
+>>  
+>> Oh, sorry, I forgot, after remove IOMEM from kernel, also s390 and tile
+>> need implement dummy IOMEM if !PCI.
 >>
->> return NULL;
->>
->> It's for compile testing, it's not meant to work at runtime.
->
-> Hm, I really don't like the idea of having a non-working kernel.
-> IMHO either it should build _and_ run and nothing else.
-> Greg, what do you think?
+>> If possible, I shall try to implement the dummy IOMEM in 'asm-generic',
+>> and let uml, score, s390 and tile use them when they need.
+> 
+> Sorry for going round in circles, but looking back at the original patches,
+> adding the extra 'depends on HAS_IOMEM' does seem much better than the
+> other suggestions that came afterwards.
+> 
+> In particular, removing HAS_IOMEM and NO_IOMEM sounds like an awful idea
+> to me. I'd rather add a HAS_IOPORT in addition to also catch architectures
+> that have no support for PC-style PIO.
+> 
 
-The kernel will still be working fine and you can run it on a system. The 
-drivers which use ioremap() or similar are probably not instantiated on a 
-system that does not provide HAS_IOMEM. But even if it was the driver should 
-handle ioremap() returning NULL gracefully and abort the driver probe. That 
-said you'll probably not run a kernel that was built with COMPILE_TEST on your 
-real hardware since it contains so many drivers that are completely useless on 
-your hardware. The idea of COMPILE_TEST is to have as much compile test 
-exposure as possible to the code that is enabled by COMPILE_TEST. Stubbing out 
-ioremap() and friends when HAS_IOMEM is not set and COMPILE_TEST is set makes 
-it easier to get there.
+Welcome any other members (especially driver members) ideas and
+suggestions -- driver members and architecture members have different
+tastes and different roles.
 
-- Lars
+For me, if no additional reply, I prefer to keep current status, and
+still add 'depends on HAS_IOMEM' for each driver which need it, but I am
+not sure whether driver members can bear it.
 
+
+Thanks.
+-- 
+Chen Gang
+
+Open, share, and attitude like air, water, and life which God blessed
