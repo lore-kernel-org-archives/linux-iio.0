@@ -1,120 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:15730 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751863AbaGVCLV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jul 2014 22:11:21 -0400
-From: Chanwoo Choi <cw00.choi@samsung.com>
-To: jic23@kernel.org
-Cc: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
-	kyungmin.park@samsung.com, t.figa@samsung.com,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	Chanwoo Choi <cw00.choi@samsung.com>
-Subject: [PATCH 1/2] iio: adc: exynos_adc: add support for s3c64xx adc
-Date: Tue, 22 Jul 2014 11:11:13 +0900
-Message-id: <1405995074-3271-2-git-send-email-cw00.choi@samsung.com>
-In-reply-to: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com>
-References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com>
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:40142 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754070AbaGVOaG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 10:30:06 -0400
+Message-ID: <53CE7566.8020906@gmail.com>
+Date: Tue, 22 Jul 2014 19:59:58 +0530
+From: Varka Bhadram <varkabhadram@gmail.com>
+MIME-Version: 1.0
+To: Arnd Bergmann <arnd@arndb.de>,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+CC: kgene.kim@samsung.com, pawel.moll@arm.com, t.figa@samsung.com,
+	linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
+	kyungmin.park@samsung.com, linux-samsung-soc@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Ben Dooks <ben-linux@fluff.org>, galak@codeaurora.org,
+	ch.naveen@samsung.com, linux-input <linux-input@vger.kernel.org>,
+	heiko.stuebner@bq.com, Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH v2] iio: exynos-adc: add experimental touchscreen support
+References: <5068889.1KfVx3ksNo@wuerfel>
+In-Reply-To: <5068889.1KfVx3ksNo@wuerfel>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
 
-The ADC in s3c64xx is almost the same as exynosv1, but
-has a different 'select' method. Adding this here will be
-helpful to move over the existing s3c64xx platform from the
-legacy plat-samsung/adc driver to the new exynos-adc.
+On Tuesday 22 July 2014 06:33 PM, Arnd Bergmann wrote:
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
----
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |  2 ++
- drivers/iio/adc/exynos_adc.c                       | 32 +++++++++++++++++++++-
- 2 files changed, 33 insertions(+), 1 deletion(-)
+(...)
 
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-index 6d34891..b6e3989 100644
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-@@ -16,6 +16,8 @@ Required properties:
- 				future controllers.
- 			Must be "samsung,exynos3250-adc" for
- 				controllers compatible with ADC of Exynos3250.
-+			Must be "samsung,s3c6410-adc" for
-+				the ADC in s3c6410 and compatibles
- - reg:			Contains ADC register address range (base address and
- 			length) and the address of the phy enable register.
- - interrupts: 		Contains the interrupt information for the timer. The
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 87e0895..05bdd2f12 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -40,12 +40,16 @@
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
- 
--/* EXYNOS4412/5250 ADC_V1 registers definitions */
-+/* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
- #define ADC_V1_CON(x)		((x) + 0x00)
-+#define ADC_V1_TSC(x)		((x) + 0x04)
- #define ADC_V1_DLY(x)		((x) + 0x08)
- #define ADC_V1_DATX(x)		((x) + 0x0C)
-+#define ADC_V1_DATY(x)		((x) + 0x10)
-+#define ADC_V1_UPDN(x)		((x) + 0x14)
- #define ADC_V1_INTCLR(x)	((x) + 0x18)
- #define ADC_V1_MUX(x)		((x) + 0x1c)
-+#define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
- 
- /* Future ADC_V2 registers definitions */
- #define ADC_V2_CON1(x)		((x) + 0x00)
-@@ -61,6 +65,9 @@
- #define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
- #define ADC_V1_CON_STANDBY	(1u << 2)
- 
-+/* Bit definitions for S3C2410 ADC */
-+#define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) <<3)
-+
- /* Bit definitions for ADC_V2 */
- #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
- 
-@@ -217,6 +224,26 @@ static const struct exynos_adc_data const exynos_adc_v1_data = {
- 	.start_conv	= exynos_adc_v1_start_conv,
- };
- 
-+static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
-+					  unsigned long addr)
-+{
-+	u32 con1;
-+
-+	con1 = readl(ADC_V1_CON(info->regs));
-+	con1 &= ~ADC_S3C2410_CON_SELMUX(7);
-+	con1 |= ADC_S3C2410_CON_SELMUX(addr);
-+	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-+}
-+
-+static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
-+	.num_channels	= MAX_ADC_V1_CHANNELS,
-+
-+	.init_hw	= exynos_adc_v1_init_hw,
-+	.exit_hw	= exynos_adc_v1_exit_hw,
-+	.clear_irq	= exynos_adc_v1_clear_irq,
-+	.start_conv	= exynos_adc_s3c64xx_start_conv,
-+};
-+
- static void exynos_adc_v2_init_hw(struct exynos_adc *info)
- {
- 	u32 con1, con2;
-@@ -285,6 +312,9 @@ static const struct exynos_adc_data const exynos3250_adc_data = {
- 
- static const struct of_device_id exynos_adc_match[] = {
- 	{
-+		.compatible = "samsung,s3c6410-adc",
-+		.data = &exynos_adc_s3c64xx_data,
-+	}, {
- 		.compatible = "samsung,exynos-adc-v1",
- 		.data = &exynos_adc_v1_data,
- 	}, {
+>   
+> +static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
+> +{
+> +	struct exynos_adc *info = iio_priv(indio_dev);
+> +	unsigned long timeout;
+> +	int ret;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	info->read_ts = true;
+> +
+> +	reinit_completion(&info->completion);
+> +
+> +	writel(ADC_S3C2410_TSC_PULL_UP_DISABLE | ADC_TSC_AUTOPST,
+> +	       ADC_V1_TSC(info->regs));
+> +
+> +	/* Select the ts channel to be used and Trigger conversion */
+> +	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
+> +
+> +	timeout = wait_for_completion_timeout
+> +			(&info->completion, EXYNOS_ADC_TIMEOUT);
+
+Should be properly aligned:
+
+	wait_for_completion_timeout(&info->completion,
+				    EXYNOS_ADC_TIMEOUT);
+
 -- 
-1.8.0
+Regards,
+Varka Bhadram
 
