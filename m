@@ -1,157 +1,77 @@
-Return-Path: <atx@atalax.net>
-Date: Tue, 22 Jul 2014 17:02:14 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: [PATCH v5 (staging-next) 3/5] staging:iio:hmc5843: register <->
- value arrays now can have different lengths
-Message-ID: <20140722150214.GD7845@dashie>
-References: <20140722150009.GA7845@dashie>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.131]:53265 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751861AbaGVIjx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 04:39:53 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Chanwoo Choi <cw00.choi@samsung.com>
+Cc: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com,
+	kyungmin.park@samsung.com, t.figa@samsung.com,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	heiko.stuebner@bq.com
+Subject: Re: [PATCH 2/2] iio: adc: exynos_adc: Add support for S3C24xx ADC
+Date: Tue, 22 Jul 2014 10:39:38 +0200
+Message-ID: <5200888.DXoC06U953@wuerfel>
+In-Reply-To: <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
+References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com> <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140722150009.GA7845@dashie>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Changed structure of struct hmc5843_chip_info to include length of translation
-arrays. Code previously using #defined constant has been changed accordingly.
-This allows to integrate devices which do have different amounts of available
-rates/scales.
+On Tuesday 22 July 2014 11:11:14 Chanwoo Choi wrote:
+> This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The s3c24xx
+> is alomost same as ADCv1. But, There are a little difference as following:
+> - ADCMUX register address to select channel
+> - ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/hmc5843_core.c | 34 +++++++++++++++++--------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+Very good, thanks for doing this patch!
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index bdeaf43..08fb0be 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -39,7 +39,6 @@
-  */
- #define HMC5843_RANGE_GAIN_OFFSET		0x05
- #define HMC5843_RANGE_GAIN_DEFAULT		0x01
--#define HMC5843_RANGE_GAINS			8
- #define HMC5843_RANGE_GAIN_MASK		0xe0
+(adding Heiko to Cc, he's probably interested in seeing this as well.
+
+One comment:
  
- /* Device status */
-@@ -59,7 +58,6 @@
-  */
- #define HMC5843_RATE_OFFSET			0x02
- #define HMC5843_RATE_DEFAULT			0x04
--#define HMC5843_RATES				7
- #define HMC5843_RATE_MASK		0x1c
- 
- /* Device measurement configuration */
-@@ -69,15 +67,15 @@
- #define HMC5843_MEAS_CONF_MASK			0x03
- 
- /* Scaling factors: 10000000/Gain */
--static const int hmc5843_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5843_regval_to_nanoscale[] = {
- 	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
- };
- 
--static const int hmc5883_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883_regval_to_nanoscale[] = {
- 	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
- };
- 
--static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-+static const int hmc5883l_regval_to_nanoscale[] = {
- 	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
- };
- 
-@@ -94,11 +92,11 @@ static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
-  * 6		| 50			| 75
-  * 7		| Not used		| Not used
-  */
--static const int hmc5843_regval_to_samp_freq[7][2] = {
-+static const int hmc5843_regval_to_samp_freq[][2] = {
- 	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
- };
- 
--static const int hmc5883_regval_to_samp_freq[7][2] = {
-+static const int hmc5883_regval_to_samp_freq[][2] = {
- 	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
- 	{75, 0}
- };
-@@ -107,7 +105,9 @@ static const int hmc5883_regval_to_samp_freq[7][2] = {
- struct hmc5843_chip_info {
- 	const struct iio_chan_spec *channels;
- 	const int (*regval_to_samp_freq)[2];
-+	const int n_regval_to_samp_freq;
- 	const int *regval_to_nanoscale;
-+	const int n_regval_to_nanoscale;
- };
- 
- /* The lower two bits contain the current conversion mode */
-@@ -248,7 +248,7 @@ static ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
- 			data->variant->regval_to_samp_freq[i][1]);
-@@ -278,7 +278,7 @@ static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
- {
- 	int i;
- 
--	for (i = 0; i < HMC5843_RATES; i++)
-+	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
- 		if (val == data->variant->regval_to_samp_freq[i][0] &&
- 			val2 == data->variant->regval_to_samp_freq[i][1])
- 			return i;
-@@ -307,7 +307,7 @@ static ssize_t hmc5843_show_scale_avail(struct device *dev,
- 	size_t len = 0;
- 	int i;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		len += scnprintf(buf + len, PAGE_SIZE - len,
- 			"0.%09d ", data->variant->regval_to_nanoscale[i]);
- 
-@@ -327,7 +327,7 @@ static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
- 	if (val != 0)
- 		return -EINVAL;
- 
--	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
-+	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
- 		if (val2 == data->variant->regval_to_nanoscale[i])
- 			return i;
- 
-@@ -480,17 +480,29 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
- 	[HMC5843_ID] = {
- 		.channels = hmc5843_channels,
- 		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
- 	},
- 	[HMC5883_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
- 	},
- 	[HMC5883L_ID] = {
- 		.channels = hmc5883_channels,
- 		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
-+		.n_regval_to_samp_freq =
-+				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
- 		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
-+		.n_regval_to_nanoscale =
-+				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
- 	},
- };
- 
--- 
-1.8.5.5
+> @@ -101,12 +107,14 @@ struct exynos_adc {
+>  	struct completion	completion;
+>  
+>  	u32			value;
+> +	u32			value2;
+>  	unsigned int            version;
+>  };
+> ...
+> @@ -365,7 +448,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>  		ret = -ETIMEDOUT;
+>  	} else {
+>  		*val = info->value;
+> -		*val2 = 0;
+> +		*val2 = info->value2;
+>  		ret = IIO_VAL_INT;
+>  	}
+>  
+> @@ -377,9 +460,11 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+>  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+>  {
+>  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
+> +	u32 mask = info->data->mask;
+>  
+>  	/* Read value */
+> -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+> +	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
+> +	info->value2 = readl(ADC_V1_DATY(info->regs)) & mask;
+>  
+>  	/* clear irq */
+>  	if (info->data->clear_irq)
+
+If I understand it right, this would only be necessary if we want
+to do the touchscreen driver as a separate iio client using the
+in-kernel interfaces. As Jonathan Cameron commented, we probably
+don't want to do that though. Even if we do, it should be a separate
+patch and not mixed in with the s3c24xx support.
+
+Aside from this:
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+
+	Arnd
