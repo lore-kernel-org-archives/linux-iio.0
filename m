@@ -1,77 +1,165 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:53265 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751861AbaGVIjx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 04:39:53 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Chanwoo Choi <cw00.choi@samsung.com>
-Cc: jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com,
-	kyungmin.park@samsung.com, t.figa@samsung.com,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	heiko.stuebner@bq.com
-Subject: Re: [PATCH 2/2] iio: adc: exynos_adc: Add support for S3C24xx ADC
-Date: Tue, 22 Jul 2014 10:39:38 +0200
-Message-ID: <5200888.DXoC06U953@wuerfel>
-In-Reply-To: <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
-References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com> <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
+Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:53525 "EHLO
+	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752381AbaGVPCt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 11:02:49 -0400
+Date: Tue, 22 Jul 2014 17:02:50 +0200
+From: Josef Gajdusek <atx@atalax.net>
+To: linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com, lars@metafoo.de
+Subject: [PATCH v5 (staging-next) 4/5] staging:iio:hmc5843: Add support for
+ i2c hmc5983
+Message-ID: <20140722150250.GE7845@dashie>
+References: <20140722150009.GA7845@dashie>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140722150009.GA7845@dashie>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tuesday 22 July 2014 11:11:14 Chanwoo Choi wrote:
-> This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The s3c24xx
-> is alomost same as ADCv1. But, There are a little difference as following:
-> - ADCMUX register address to select channel
-> - ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
+This patch adds support for the hmc5983 i2c interface.
+This chip is almost identical to the hmc5883. The difference being added
+temperature compensation, additional available sample rate (220Hz) and an SPI
+interface.
 
-Very good, thanks for doing this patch!
+Signed-off-by: Josef Gajdusek <atx@atx.name>
+---
+ .../devicetree/bindings/iio/magnetometer/hmc5843.txt |  1 +
+ drivers/staging/iio/magnetometer/Kconfig             |  2 +-
+ drivers/staging/iio/magnetometer/hmc5843.h           |  1 +
+ drivers/staging/iio/magnetometer/hmc5843_core.c      | 20 +++++++++++++++++---
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c       |  6 ++++--
+ 5 files changed, 24 insertions(+), 6 deletions(-)
 
-(adding Heiko to Cc, he's probably interested in seeing this as well.
-
-One comment:
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
+index b8cbdd5..8e191ee 100644
+--- a/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
++++ b/Documentation/devicetree/bindings/iio/magnetometer/hmc5843.txt
+@@ -6,6 +6,7 @@ Required properties:
+   Other models which are supported with driver are:
+ 	"honeywell,hmc5883"
+ 	"honeywell,hmc5883l"
++	"honeywell,hmc5983"
+   - reg : the I2C address of the magnetometer - typically 0x1e
  
-> @@ -101,12 +107,14 @@ struct exynos_adc {
->  	struct completion	completion;
->  
->  	u32			value;
-> +	u32			value2;
->  	unsigned int            version;
->  };
-> ...
-> @@ -365,7 +448,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  		ret = -ETIMEDOUT;
->  	} else {
->  		*val = info->value;
-> -		*val2 = 0;
-> +		*val2 = info->value2;
->  		ret = IIO_VAL_INT;
->  	}
->  
-> @@ -377,9 +460,11 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->  {
->  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
-> +	u32 mask = info->data->mask;
->  
->  	/* Read value */
-> -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
-> +	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
-> +	info->value2 = readl(ADC_V1_DATY(info->regs)) & mask;
->  
->  	/* clear irq */
->  	if (info->data->clear_irq)
+ Optional properties:
+diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
+index 0a27f98..c086f33 100644
+--- a/drivers/staging/iio/magnetometer/Kconfig
++++ b/drivers/staging/iio/magnetometer/Kconfig
+@@ -20,6 +20,6 @@ config SENSORS_HMC5843_I2C
+ 	  This driver can also be compiled as a set of modules.
+ 	  If so, these modules will be created:
+ 	  - hmc5843_core (core functions)
+-	  - hmc5843_i2c (support for HMC5843, HMC5883 and HMC5883L)
++	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
+ 
+ endmenu
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
+index 06b2712..b784e3e 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.h
++++ b/drivers/staging/iio/magnetometer/hmc5843.h
+@@ -29,6 +29,7 @@ enum hmc5843_ids {
+ 	HMC5843_ID,
+ 	HMC5883_ID,
+ 	HMC5883L_ID,
++	HMC5983_ID,
+ };
+ 
+ struct hmc5843_data {
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
+index 08fb0be..914ae1a 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_core.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
+@@ -101,6 +101,11 @@ static const int hmc5883_regval_to_samp_freq[][2] = {
+ 	{75, 0}
+ };
+ 
++static const int hmc5983_regval_to_samp_freq[][2] = {
++	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
++	{75, 0}, {220, 0}
++};
++
+ /* Describe chip variants */
+ struct hmc5843_chip_info {
+ 	const struct iio_chan_spec *channels;
+@@ -457,7 +462,7 @@ static const struct iio_chan_spec hmc5843_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
+-/* Beware: Y and Z are exchanged on HMC5883 */
++/* Beware: Y and Z are exchanged on HMC5883 and 5983 */
+ static const struct iio_chan_spec hmc5883_channels[] = {
+ 	HMC5843_CHANNEL(X, 0),
+ 	HMC5843_CHANNEL(Z, 1),
+@@ -504,6 +509,15 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+ 		.n_regval_to_nanoscale =
+ 				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
+ 	},
++	[HMC5983_ID] = {
++		.channels = hmc5883_channels,
++		.regval_to_samp_freq = hmc5983_regval_to_samp_freq,
++		.n_regval_to_samp_freq =
++				ARRAY_SIZE(hmc5983_regval_to_samp_freq),
++		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
++		.n_regval_to_nanoscale =
++				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
++	}
+ };
+ 
+ static int hmc5843_init(struct hmc5843_data *data)
+@@ -516,7 +530,7 @@ static int hmc5843_init(struct hmc5843_data *data)
+ 	if (ret < 0)
+ 		return ret;
+ 	if (id[0] != 'H' || id[1] != '4' || id[2] != '3') {
+-		dev_err(data->dev, "no HMC5843/5883/5883L sensor\n");
++		dev_err(data->dev, "no HMC5843/5883/5883L/5983 sensor\n");
+ 		return -ENODEV;
+ 	}
+ 
+@@ -620,5 +634,5 @@ int hmc5843_common_remove(struct device *dev)
+ EXPORT_SYMBOL(hmc5843_common_remove);
+ 
+ MODULE_AUTHOR("Shubhrajyoti Datta <shubhrajyoti@ti.com>");
+-MODULE_DESCRIPTION("HMC5843/5883/5883L core driver");
++MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 core driver");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+index 5593a7d..6acd614 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+@@ -1,5 +1,5 @@
+ /*
+- * i2c driver for hmc5843/5843/5883/5883l
++ * i2c driver for hmc5843/5843/5883/5883l/5983
+  *
+  * Split from hmc5843.c
+  * Copyright (C) Josef Gajdusek <atx@atx.name>
+@@ -73,6 +73,7 @@ static const struct i2c_device_id hmc5843_id[] = {
+ 	{ "hmc5843", HMC5843_ID },
+ 	{ "hmc5883", HMC5883_ID },
+ 	{ "hmc5883l", HMC5883L_ID },
++	{ "hmc5983", HMC5983_ID },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, hmc5843_id);
+@@ -81,6 +82,7 @@ static const struct of_device_id hmc5843_of_match[] = {
+ 	{ .compatible = "honeywell,hmc5843", .data = (void *)HMC5843_ID },
+ 	{ .compatible = "honeywell,hmc5883", .data = (void *)HMC5883_ID },
+ 	{ .compatible = "honeywell,hmc5883l", .data = (void *)HMC5883L_ID },
++	{ .compatible = "honeywell,hmc5983", .data = (void *)HMC5983_ID },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, hmc5843_of_match);
+@@ -98,5 +100,5 @@ static struct i2c_driver hmc5843_driver = {
+ module_i2c_driver(hmc5843_driver);
+ 
+ MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
+-MODULE_DESCRIPTION("HMC5843/5883/5883L i2c driver");
++MODULE_DESCRIPTION("HMC5843/5883/5883L/5983 i2c driver");
+ MODULE_LICENSE("GPL");
+-- 
+1.8.5.5
 
-If I understand it right, this would only be necessary if we want
-to do the touchscreen driver as a separate iio client using the
-in-kernel interfaces. As Jonathan Cameron commented, we probably
-don't want to do that though. Even if we do, it should be a separate
-patch and not mixed in with the s3c24xx support.
-
-Aside from this:
-
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-
-	Arnd
