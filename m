@@ -1,79 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:35821 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751253AbaGVL3r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 07:29:47 -0400
-Message-ID: <53CE4B1F.9080701@gmail.com>
-Date: Tue, 22 Jul 2014 19:29:35 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-MIME-Version: 1.0
+Return-Path: <heiko@sntech.de>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
 To: Arnd Bergmann <arnd@arndb.de>
-CC: Lennox Wu <lennox.wu@gmail.com>,
-	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Tom Gundersen <teg@jklm.no>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-	cmetcalf@tilera.com, heiko.carstens@de.ibm.com
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <53CB801D.1030603@gmail.com> <53CB8FC4.4050009@gmail.com> <179292068.QXZf3Zcqzf@wuerfel>
-In-Reply-To: <179292068.QXZf3Zcqzf@wuerfel>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Chanwoo Choi <cw00.choi@samsung.com>, jic23@kernel.org, ch.naveen@samsung.com, kgene.kim@samsung.com, kyungmin.park@samsung.com, t.figa@samsung.com, linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: exynos_adc: Add support for S3C24xx ADC
+Date: Tue, 22 Jul 2014 12:44:28 +0200
+Message-ID: <175757227.TPQdXAQiJt@diego>
+In-Reply-To: <5200888.DXoC06U953@wuerfel>
+References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com> <1405995074-3271-3-git-send-email-cw00.choi@samsung.com> <5200888.DXoC06U953@wuerfel>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On 07/22/2014 06:32 PM, Arnd Bergmann wrote:
-> On Sunday 20 July 2014 17:45:40 Chen Gang wrote:
->>>
->>> Next, I shall:
->>>
->>>  - Remove HAS_IOMEM and NO_IOMEM from kernel, firstly.
->>>
->>>  - Try to make dummy IOMEM functions for score architecture.
->>>
->>>  - Continue discussing with UML for it.
->>>
->>  
->> Oh, sorry, I forgot, after remove IOMEM from kernel, also s390 and tile
->> need implement dummy IOMEM if !PCI.
->>
->> If possible, I shall try to implement the dummy IOMEM in 'asm-generic',
->> and let uml, score, s390 and tile use them when they need.
+Am Dienstag, 22. Juli 2014, 10:39:38 schrieb Arnd Bergmann:
+> On Tuesday 22 July 2014 11:11:14 Chanwoo Choi wrote:
+> > This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The
+> > s3c24xx
+> > is alomost same as ADCv1. But, There are a little difference as following:
+> > - ADCMUX register address to select channel
+> > - ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
 > 
-> Sorry for going round in circles, but looking back at the original patches,
-> adding the extra 'depends on HAS_IOMEM' does seem much better than the
-> other suggestions that came afterwards.
+> Very good, thanks for doing this patch!
 > 
-> In particular, removing HAS_IOMEM and NO_IOMEM sounds like an awful idea
-> to me. I'd rather add a HAS_IOPORT in addition to also catch architectures
-> that have no support for PC-style PIO.
+> (adding Heiko to Cc, he's probably interested in seeing this as well.
+
+indeed. Thanks for implementing this.
+
+While trying to build a test setup for this, I noticed two points:
+
+(1) I'm not sure what the second register (a "phy enable register" according
+to the binding) is supposed to be.
+According to binding and adc code it is mandatory, but I didn't find any
+lone adc register in the s3c2416 manual.
+
+
+(2) You might need something along the lines of:
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 11b048a..088c99a 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -129,7 +129,7 @@ config AT91_ADC
+ 
+ config EXYNOS_ADC
+        tristate "Exynos ADC driver support"
+-       depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
++       depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+        help
+          Core support for the ADC block found in the Samsung EXYNOS series
+          of SoCs for drivers such as the touchscreen and hwmon to use to share
+
+
+Thanks
+Heiko
+
 > 
-
-Welcome any other members (especially driver members) ideas and
-suggestions -- driver members and architecture members have different
-tastes and different roles.
-
-For me, if no additional reply, I prefer to keep current status, and
-still add 'depends on HAS_IOMEM' for each driver which need it, but I am
-not sure whether driver members can bear it.
-
-
-Thanks.
--- 
-Chen Gang
-
-Open, share, and attitude like air, water, and life which God blessed
+> One comment:
+> > @@ -101,12 +107,14 @@ struct exynos_adc {
+> > 
+> >  	struct completion	completion;
+> >  	
+> >  	u32			value;
+> > 
+> > +	u32			value2;
+> > 
+> >  	unsigned int            version;
+> >  
+> >  };
+> > 
+> > ...
+> > @@ -365,7 +448,7 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+> > 
+> >  		ret = -ETIMEDOUT;
+> >  	
+> >  	} else {
+> >  	
+> >  		*val = info->value;
+> > 
+> > -		*val2 = 0;
+> > +		*val2 = info->value2;
+> > 
+> >  		ret = IIO_VAL_INT;
+> >  	
+> >  	}
+> > 
+> > @@ -377,9 +460,11 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
+> > 
+> >  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
+> >  {
+> >  
+> >  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
+> > 
+> > +	u32 mask = info->data->mask;
+> > 
+> >  	/* Read value */
+> > 
+> > -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
+> > +	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
+> > +	info->value2 = readl(ADC_V1_DATY(info->regs)) & mask;
+> > 
+> >  	/* clear irq */
+> >  	if (info->data->clear_irq)
+> 
+> If I understand it right, this would only be necessary if we want
+> to do the touchscreen driver as a separate iio client using the
+> in-kernel interfaces. As Jonathan Cameron commented, we probably
+> don't want to do that though. Even if we do, it should be a separate
+> patch and not mixed in with the s3c24xx support.
+> 
+> Aside from this:
+> 
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> 
+> 	Arnd
