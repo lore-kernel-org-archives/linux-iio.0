@@ -1,44 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:57006 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.19.201]:35225 "EHLO mail.kernel.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752806AbaGGMX0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 08:23:26 -0400
-Message-ID: <53BA91C1.10808@kernel.org>
-Date: Mon, 07 Jul 2014 13:25:37 +0100
+	id S933189AbaGWU5P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Jul 2014 16:57:15 -0400
+Message-ID: <53D02238.40001@kernel.org>
+Date: Wed, 23 Jul 2014 21:59:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [RESEND PATCH 2/3] iio: st_sensors: add device tree bindings
-References: <1404726486-2610-1-git-send-email-linus.walleij@linaro.org> <CACRpkdY+xa6TAOcyEb6ZO37RmshsjmB4WgPD59UPn=WEBnR7nQ@mail.gmail.com>
-In-Reply-To: <CACRpkdY+xa6TAOcyEb6ZO37RmshsjmB4WgPD59UPn=WEBnR7nQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Chanwoo Choi <cw00.choi@samsung.com>
+CC: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
+	kyungmin.park@samsung.com, t.figa@samsung.com,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCHv8 4/4] ARM: dts: Fix wrong compatible string for Exynos3250
+ ADC
+References: <1405994696-3117-1-git-send-email-cw00.choi@samsung.com> <1405994696-3117-5-git-send-email-cw00.choi@samsung.com>
+In-Reply-To: <1405994696-3117-5-git-send-email-cw00.choi@samsung.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/07/14 10:52, Linus Walleij wrote:
-> On Mon, Jul 7, 2014 at 11:48 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
+On 22/07/14 03:04, Chanwoo Choi wrote:
+> This patchset fix wrong compatible string for Exynos3250 ADC. Exynos3250 SoC
+> need to control only special clock for ADC. Exynos SoC except for Exynos3250
+> has not included special clock for ADC. The exynos ADC driver can control
+> special clock if compatible string is 'exynos3250-adc-v2'.
 >
->> This adds some basic, simple device tree bindings to the STMicro
->> MEMS sensor drivers.
->>
->> Cc: devicetree@vger.kernel.org
->> Cc: Lee Jones <lee.jones@linaro.org>
->> Cc: Denis CIOCCA <denis.ciocca@st.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> I'd like an indication of if we can merge this thing as I can then merge the
-> corresponding device tree changes for Ux500 to the ARM SoC tree.
-It's been a while.
-No one has commented.
-This is pretty obviously good.
-
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+> Acked-by: Kukjin Kim <kgene.kim@samsung.com>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
 Applied to the togreg branch of iio.git - initially pushed out as testing.
 
 Thanks
 
 Jonathan
+> ---
+>   arch/arm/boot/dts/exynos3250.dtsi | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/arm/boot/dts/exynos3250.dtsi b/arch/arm/boot/dts/exynos3250.dtsi
+> index 15c9c87..767189a 100644
+> --- a/arch/arm/boot/dts/exynos3250.dtsi
+> +++ b/arch/arm/boot/dts/exynos3250.dtsi
+> @@ -407,10 +407,11 @@
+>   		};
+>
+>   		adc: adc@126C0000 {
+> -			compatible = "samsung,exynos-adc-v3";
+> +			compatible = "samsung,exynos3250-adc",
+> +				     "samsung,exynos-adc-v2";
+>   			reg = <0x126C0000 0x100>, <0x10020718 0x4>;
+>   			interrupts = <0 137 0>;
+> -			clock-names = "adc", "sclk_tsadc";
+> +			clock-names = "adc", "sclk";
+>   			clocks = <&cmu CLK_TSADC>, <&cmu CLK_SCLK_TSADC>;
+>   			#io-channel-cells = <1>;
+>   			io-channel-ranges;
+>
 
