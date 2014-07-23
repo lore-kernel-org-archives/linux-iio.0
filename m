@@ -1,63 +1,65 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:39673 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750951AbaGCGsH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 02:48:07 -0400
-Received: by mail-pa0-f41.google.com with SMTP id fb1so13934876pad.28
-        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2014 23:48:07 -0700 (PDT)
-From: Sachin Kamat <sachin.kamat@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, spk.linux@gmail.com,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 6/7] iio: hid-sensor-prox: Fix return values
-Date: Thu,  3 Jul 2014 12:14:11 +0530
-Message-Id: <1404369852-3255-6-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
-References: <1404369852-3255-1-git-send-email-sachin.kamat@samsung.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mfuzzey@parkeon.com>
+Subject: [PATCH 5/8] iio: core: add high pass filter attributes
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Date: Wed, 23 Jul 2014 19:17:30 +0200
+Message-ID: <20140723171729.22067.79300.stgit@localhost>
+In-Reply-To: <20140723171719.22067.79447.stgit@localhost>
+References: <20140723171719.22067.79447.stgit@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_HYSTERESIS cases ignored
-the actual return values (which could be -EINVAL) and instead
-returned IIO_VAL_INT_PLUS_MICRO always. Return the actual value
-obtained from the functions. Both functions return IIO_VAL_INT_PLUS_MICRO
-upon success.
-
-Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/light/hid-sensor-prox.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio |   10 ++++++++++
+ drivers/iio/industrialio-core.c         |    2 ++
+ include/linux/iio/iio.h                 |    1 +
+ 3 files changed, 13 insertions(+)
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index d203ef4..412bae8 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -74,7 +74,6 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 	struct prox_state *prox_state = iio_priv(indio_dev);
- 	int report_id = -1;
- 	u32 address;
--	int ret;
- 	int ret_type;
- 	s32 poll_value;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index a9757dc..4825139 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -340,6 +340,16 @@ Description:
+ 		to the underlying data channel, then this parameter
+ 		gives the 3dB frequency of the filter in Hz.
  
-@@ -125,14 +124,12 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		ret = hid_sensor_read_samp_freq_value(
-+		ret_type = hid_sensor_read_samp_freq_value(
- 				&prox_state->common_attributes, val, val2);
--		ret_type = IIO_VAL_INT_PLUS_MICRO;
- 		break;
- 	case IIO_CHAN_INFO_HYSTERESIS:
--		ret = hid_sensor_read_raw_hyst_value(
-+		ret_type = hid_sensor_read_raw_hyst_value(
- 				&prox_state->common_attributes, val, val2);
--		ret_type = IIO_VAL_INT_PLUS_MICRO;
- 		break;
- 	default:
- 		ret_type = -EINVAL;
--- 
-1.7.9.5
-
++What:		/sys/.../in_accel_filter_high_pass_3db_frequency
++What:		/sys/.../in_magn_filter_high_pass_3db_frequency
++What:		/sys/.../in_anglvel_filter_high_pass_3db_frequency
++KernelVersion:	3.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a known or controllable high pass filter is applied
++		to the underlying data channel, then this parameter
++		gives the 3dB frequency of the filter in Hz.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+ KernelVersion:	2.6.37
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index fa06197..967468d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -103,6 +103,8 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+ 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+ 	= "filter_low_pass_3db_frequency",
++	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
++	= "filter_high_pass_3db_frequency",
+ 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index ccde917..88a255d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -31,6 +31,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 	IIO_CHAN_INFO_AVERAGE_RAW,
+ 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
++	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
+ 	IIO_CHAN_INFO_SAMP_FREQ,
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
