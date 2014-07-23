@@ -1,187 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from w-smtp-out-7.wedos.net ([46.28.106.5]:45791 "EHLO
-	we2-f167.wedos.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754825AbaGHNmJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jul 2014 09:42:09 -0400
-Date: Tue, 8 Jul 2014 15:42:06 +0200
-From: Josef Gajdusek <atx@atalax.net>
-To: linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com
-Subject: [PATCH v3 5/5] staging:iio:hmc5843: Add support for spi hmc5983
-Message-ID: <20140708134206.GG14393@dashie>
-References: <20140708133711.GB14393@dashie>
+Received: from mail-pd0-f178.google.com ([209.85.192.178]:33167 "EHLO
+	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752242AbaGWLJg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jul 2014 07:09:36 -0400
+Message-ID: <53CF97E2.9000906@gmail.com>
+Date: Wed, 23 Jul 2014 19:09:22 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140708133711.GB14393@dashie>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+CC: Thierry Reding <thierry.reding@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Richard Weinberger <richard@nod.at>,
+	Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com,
+	Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
+	arnd@arndb.de, linux-input@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com> <20140717083756.GA19686@ulmo> <53C7905D.9090003@gmail.com> <20140717091601.GF25880@mwanda> <53C7951F.6000906@gmail.com>
+In-Reply-To: <53C7951F.6000906@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the hmc5983 spi interface.
-This chip is almost identical to the hmc5883. The difference being added
-temperature compensation, additional available sample rate (220Hz) and an SPI
-interface.
 
-Signed-off-by: Josef Gajdusek <atx@atx.name>
----
- drivers/staging/iio/magnetometer/Kconfig       |   8 ++
- drivers/staging/iio/magnetometer/Makefile      |   1 +
- drivers/staging/iio/magnetometer/hmc5843_spi.c | 105 +++++++++++++++++++++++++
- 3 files changed, 114 insertions(+)
- create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
 
-diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-index 32c69c0..bc5c355 100644
---- a/drivers/staging/iio/magnetometer/Kconfig
-+++ b/drivers/staging/iio/magnetometer/Kconfig
-@@ -9,6 +9,7 @@ config SENSORS_HMC5843
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	select SENSORS_HMC5843_I2C if (I2C)
-+	select SENSORS_HMC5843_SPI if (SPI_MASTER)
- 	help
- 	  Say Y here to add support for the Honeywell HMC5843, HMC5883 and
- 	  HMC5883L 3-Axis Magnetometer (digital compass).
-@@ -17,6 +18,7 @@ config SENSORS_HMC5843
- 	  If so, these modules will be created:
- 	  - hmc5843_core (core functions)
- 	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
-+	  - hmc5843_spi (support for HMC5983)
- 
- config SENSORS_HMC5843_I2C
- 	tristate
-@@ -24,4 +26,10 @@ config SENSORS_HMC5843_I2C
- 	depends on SENSORS_HMC5843
- 	select REGMAP_I2C
- 
-+config SENSORS_HMC5843_SPI
-+	tristate
-+	depends on SPI_MASTER
-+	depends on SENSORS_HMC5843
-+	select REGMAP_SPI
-+
- endmenu
-diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-index 65baf1c..33761a1 100644
---- a/drivers/staging/iio/magnetometer/Makefile
-+++ b/drivers/staging/iio/magnetometer/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
- obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-+obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-new file mode 100644
-index 0000000..3f71ee0
---- /dev/null
-+++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-@@ -0,0 +1,105 @@
-+/*
-+ * SPI driver for hmc5983
-+ *
-+ * Copyright (C) Josef Gajdusek <atx@atx.name>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * */
-+
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+
-+#include "hmc5843.h"
-+
-+struct regmap_config hmc5843_spi_regmap_config = {
-+		.reg_bits = 8,
-+		.val_bits = 8,
-+
-+		.rd_table = &hmc5843_readable_table,
-+		.wr_table = &hmc5843_writable_table,
-+		.volatile_table = &hmc5843_volatile_table,
-+
-+		/* Autoincrement address pointer */
-+		.read_flag_mask = 0xc0,
-+
-+		.cache_type = REGCACHE_RBTREE,
-+};
-+
-+static int hmc5843_spi_probe(struct spi_device *spi)
-+{
-+	struct hmc5843_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	spi->mode = SPI_MODE_3;
-+	spi->max_speed_hz = 8000000;
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret)
-+		return ret;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	data = iio_priv(indio_dev);
-+	data->dev = &spi->dev;
-+	data->regmap = devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config);
-+
-+	indio_dev->dev.parent = &spi->dev;
-+
-+	return hmc5843_common_probe(indio_dev, HMC5983_ID);
-+}
-+
-+static int hmc5843_spi_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	return hmc5843_common_remove(indio_dev);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int hmc5843_spi_suspend(struct device *dev)
-+{
-+	return hmc5843_common_suspend(spi_get_drvdata(to_spi_device(dev)));
-+}
-+
-+static int hmc5843_spi_resume(struct device *dev)
-+{
-+	return hmc5843_common_resume(spi_get_drvdata(to_spi_device(dev)));
-+}
-+
-+static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
-+		hmc5843_spi_suspend, hmc5843_spi_resume);
-+#define HMC5843_PM_OPS (&hmc5843_pm_ops)
-+#else
-+#define HMC5843_PM_OPS NULL
-+#endif
-+
-+
-+static const struct spi_device_id hmc5843_id[] = {
-+	{ "hmc5983", HMC5983_ID },
-+	{ }
-+};
-+
-+static struct spi_driver hmc5843_driver = {
-+		.driver = {
-+				.name = "hmc5843",
-+				.pm = HMC5843_PM_OPS,
-+				.owner = THIS_MODULE,
-+		},
-+		.id_table = hmc5843_id,
-+		.probe = hmc5843_spi_probe,
-+		.remove = hmc5843_spi_remove,
-+};
-+
-+module_spi_driver(hmc5843_driver);
-+
-+MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-+MODULE_DESCRIPTION("HMC5983 SPI driver");
-+MODULE_LICENSE("GPL");
+On 07/17/2014 05:19 PM, Chen Gang wrote:
+> 
+> 
+> On 07/17/2014 05:16 PM, Dan Carpenter wrote:
+>> On Thu, Jul 17, 2014 at 04:59:09PM +0800, Chen Gang wrote:
+>>>>> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
+>>>>
+>>>> There's apparently an IOMEM_ERR_PTR() for this nowadays...
+>>>>
+>>>
+>>> IOMEM_ERR_PTR() is defined within "lib/devres.c", not in "./include".
+>>> But may we move it from "lib/devres.c" to "./include/linux/err.h"?
+>>>
+>>> For me, I am not quite sure, it may need additional discussion, but at
+>>> least, that will be another patch.
+>>
+>> Yes.  Move it there.  That is the right place.
+>>
+
+Sorry for replying late about IOMEM_ERR_PTR().
+
+Although no objections within 2 days, for me, when move something to
+generic header file, it is not only for future using, but also for
+solving current issue, or it has to be suspended for waiting 'trigger'.
+
+So for me, the patch about IOMEM_ERR_PTR() need be suspended, until some
+member find an issue which may be related with IOMEM_ERR_PTR(), more or
+less.
+
+> 
+> OK, thanks, if no another objections within 2 days, I shall send another
+> related patch for it.
+> 
+
+Thanks.
 -- 
-1.8.5.5
+Chen Gang
 
+Open, share, and attitude like air, water, and life which God blessed
