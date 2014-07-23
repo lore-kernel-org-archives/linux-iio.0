@@ -1,152 +1,40 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53BBD2E8.60706@gmx.de>
-Date: Tue, 08 Jul 2014 13:15:52 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:36957 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751937AbaGWNDX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Jul 2014 09:03:23 -0400
+Message-ID: <53CFB269.3040302@linux.intel.com>
+Date: Wed, 23 Jul 2014 06:02:33 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging:iio:ad7291: Move out of staging
-References: <1404118242-14357-1-git-send-email-lars@metafoo.de> <53B72B50.2070601@gmx.de>
-In-Reply-To: <53B72B50.2070601@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Bastien Nocera <hadess@hadess.net>
+CC: "Peter F. Patel-Schneider" <pfpschneider@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: User-space API for accelerometer(s)?
+References: <1403100542.30918.29.camel@nuvo>		    <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>		    <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>		   <53A57414.8000104@kernel.org> <1404216616.7785.1.camel@nuvo>		  <53B59837.8080907@jic23.retrosnub.co.uk> <1404916405.10032.3.camel@nuvo>		 <alpine.DEB.2.01.1407091644570.15209@pmeerw.net>	 <1404944174.3519.1.camel@nuvo> <53BDEE91.80200@gmail.com>	 <53BEAB81.8080108@linux.intel.com> <1406117990.28464.0.camel@hadess.net>
+In-Reply-To: <1406117990.28464.0.camel@hadess.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hartmut Knaack schrieb:
-> Lars-Peter Clausen schrieb:
->> The ad7291 driver is in a reasonable shape. It does not use non-standard API/ABI
->> and there are no major style issues with the driver. So this patch moves it out
->> of staging.
->>
->> There is one small warning from checkpatch which is also fixed in this patch.
->> The patch also sorts the #include directives in alphabetical order.
-> So far, I just took a quick peek into the drivers sources and hope to find some more time for a review later this weekend. But one style issue caught my attention, which I would prefer to have fixed before moving out of staging: the double indentations in ad7291_threshold_reg().
-I finally found the time to review the driver and found some minor issues. No show stoppers, but things we might want to fix before moving out of staging. I just sent out some fixes, so it might be a good idea to apply them first (they should not touch areas of this patch).
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
->>  drivers/iio/adc/Kconfig                                     | 10 ++++++++++
->>  drivers/iio/adc/Makefile                                    |  1 +
->>  drivers/{staging => }/iio/adc/ad7291.c                      | 13 +++++++------
->>  drivers/staging/iio/adc/Kconfig                             |  7 -------
->>  drivers/staging/iio/adc/Makefile                            |  1 -
->>  .../iio/adc => include/linux/platform_data}/ad7291.h        |  0
->>  6 files changed, 18 insertions(+), 14 deletions(-)
->>  rename drivers/{staging => }/iio/adc/ad7291.c (99%)
->>  rename {drivers/staging/iio/adc => include/linux/platform_data}/ad7291.h (100%)
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 20a7073..11b048a 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -20,6 +20,16 @@ config AD7266
->>  	  Say yes here to build support for Analog Devices AD7265 and AD7266
->>  	  ADCs.
->>  
->> +config AD7291
->> +	tristate "Analog Devices AD7291 ADC driver"
->> +	depends on I2C
->> +	help
->> +	  Say yes here to build support for Analog Devices AD7291
->> +	  8 Channel ADC with temperature sensor.
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called ad7291.
->> +
->>  config AD7298
->>  	tristate "Analog Devices AD7298 ADC driver"
->>  	depends on SPI
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index 38cf5c3..ad81b51 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -5,6 +5,7 @@
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_AD_SIGMA_DELTA) += ad_sigma_delta.o
->>  obj-$(CONFIG_AD7266) += ad7266.o
->> +obj-$(CONFIG_AD7291) += ad7291.o
->>  obj-$(CONFIG_AD7298) += ad7298.o
->>  obj-$(CONFIG_AD7923) += ad7923.o
->>  obj-$(CONFIG_AD7476) += ad7476.o
->> diff --git a/drivers/staging/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
->> similarity index 99%
->> rename from drivers/staging/iio/adc/ad7291.c
->> rename to drivers/iio/adc/ad7291.c
->> index 357cef2..1728e68 100644
->> --- a/drivers/staging/iio/adc/ad7291.c
->> +++ b/drivers/iio/adc/ad7291.c
->> @@ -6,22 +6,22 @@
->>   * Licensed under the GPL-2 or later.
->>   */
->>  
->> -#include <linux/interrupt.h>
->>  #include <linux/device.h>
->> -#include <linux/kernel.h>
->> -#include <linux/slab.h>
->> -#include <linux/sysfs.h>
->> +#include <linux/err.h>
->>  #include <linux/i2c.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/kernel.h>
->>  #include <linux/module.h>
->>  #include <linux/mutex.h>
->>  #include <linux/regulator/consumer.h>
->> -#include <linux/err.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->>  
->>  #include <linux/iio/iio.h>
->>  #include <linux/iio/sysfs.h>
->>  #include <linux/iio/events.h>
->>  
->> -#include "ad7291.h"
->> +#include <linux/platform_data/ad7291.h>
->>  
->>  /*
->>   * Simplified handling
->> @@ -375,6 +375,7 @@ static int ad7291_read_raw(struct iio_dev *indio_dev,
->>  		case IIO_VOLTAGE:
->>  			if (chip->reg) {
->>  				int vref;
->> +
->>  				vref = regulator_get_voltage(chip->reg);
->>  				if (vref < 0)
->>  					return vref;
->> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
->> index b87e382..75d2d1b 100644
->> --- a/drivers/staging/iio/adc/Kconfig
->> +++ b/drivers/staging/iio/adc/Kconfig
->> @@ -3,13 +3,6 @@
->>  #
->>  menu "Analog to digital converters"
->>  
->> -config AD7291
->> -	tristate "Analog Devices AD7291 ADC driver"
->> -	depends on I2C
->> -	help
->> -	  Say yes here to build support for Analog Devices AD7291
->> -	  8 Channel ADC with temperature sensor.
->> -
->>  config AD7606
->>  	tristate "Analog Devices AD7606 ADC driver"
->>  	depends on GPIOLIB
->> diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
->> index afdcd1f..1c4277d 100644
->> --- a/drivers/staging/iio/adc/Makefile
->> +++ b/drivers/staging/iio/adc/Makefile
->> @@ -8,7 +8,6 @@ ad7606-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
->>  ad7606-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
->>  obj-$(CONFIG_AD7606) += ad7606.o
->>  
->> -obj-$(CONFIG_AD7291) += ad7291.o
->>  obj-$(CONFIG_AD7780) += ad7780.o
->>  obj-$(CONFIG_AD7816) += ad7816.o
->>  obj-$(CONFIG_AD7192) += ad7192.o
->> diff --git a/drivers/staging/iio/adc/ad7291.h b/include/linux/platform_data/ad7291.h
->> similarity index 100%
->> rename from drivers/staging/iio/adc/ad7291.h
->> rename to include/linux/platform_data/ad7291.h
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+On 07/23/2014 05:19 AM, Bastien Nocera wrote:
+> On Thu, 2014-07-10 at 08:04 -0700, Srinivas Pandruvada wrote:
+>> I suggest to look at https://01.org/android-ia/downloads. Under
+>> device/intel, you can see user space HAL for sensor hubs.
+> I can't find it anywhere on those pages. There only seems to be
+> installable images, with no source code.
 >
+
+You can see instruction here to get source code. You can see source in 
+device/intel folder.
+
+https://01.org/android-ia/downloads/android-4.4.2r1-ia1
+
+Thanks,
+Srinivas
