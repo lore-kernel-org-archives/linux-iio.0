@@ -1,56 +1,164 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:64380 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753625AbaGCGly (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 3 Jul 2014 02:41:54 -0400
-Received: by mail-pd0-f178.google.com with SMTP id r10so13287110pdi.37
-        for <linux-iio@vger.kernel.org>; Wed, 02 Jul 2014 23:41:54 -0700 (PDT)
-From: Sachin Kamat <sachin.kamat@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, spk.linux@gmail.com,
-	Lars-Peter Clauen <lars@metafoo.de>,
-	Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 5/5] iio: xilinx-xadc: Remove unused variable
-Date: Thu,  3 Jul 2014 12:08:05 +0530
-Message-Id: <1404369485-1903-5-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404369485-1903-1-git-send-email-sachin.kamat@samsung.com>
-References: <1404369485-1903-1-git-send-email-sachin.kamat@samsung.com>
+Received: from mail.kernel.org ([198.145.19.201]:34821 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932847AbaGWUsv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 23 Jul 2014 16:48:51 -0400
+Message-ID: <53D02040.1030005@kernel.org>
+Date: Wed, 23 Jul 2014 21:51:12 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: Josef Gajdusek <atx@atalax.net>, linux-iio@vger.kernel.org
+CC: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
+	dan.carpenter@oracle.com, lars@metafoo.de
+Subject: Re: [PATCH v5 (staging-next) 3/5] staging:iio:hmc5843: register <->
+ value arrays now can have different lengths
+References: <20140722150009.GA7845@dashie> <20140722150214.GD7845@dashie>
+In-Reply-To: <20140722150214.GD7845@dashie>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-'offset’ is not used in the function. Remove it.
-
-Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-Cc: Lars-Peter Clauen <lars@metafoo.de>
-Cc: Michal Simek <michal.simek@xilinx.com>
----
- drivers/iio/adc/xilinx-xadc-events.c |    6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
-index 3e7f0d7..edcf3aa 100644
---- a/drivers/iio/adc/xilinx-xadc-events.c
-+++ b/drivers/iio/adc/xilinx-xadc-events.c
-@@ -31,17 +31,11 @@ static const struct iio_chan_spec *xadc_event_to_channel(
- static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
- {
- 	const struct iio_chan_spec *chan;
--	unsigned int offset;
- 
- 	/* Temperature threshold error, we don't handle this yet */
- 	if (event == 0)
- 		return;
- 
--	if (event < 4)
--		offset = event;
--	else
--		offset = event + 4;
--
- 	chan = xadc_event_to_channel(indio_dev, event);
- 
- 	if (chan->type == IIO_TEMP) {
--- 
-1.7.9.5
+On 22/07/14 16:02, Josef Gajdusek wrote:
+> Changed structure of struct hmc5843_chip_info to include length of translation
+> arrays. Code previously using #defined constant has been changed accordingly.
+> This allows to integrate devices which do have different amounts of available
+> rates/scales.
+>
+> Signed-off-by: Josef Gajdusek <atx@atx.name>
+Applied to the togreg branch of iio.git - initially pushed out as testing.
+> ---
+>   drivers/staging/iio/magnetometer/hmc5843_core.c | 34 +++++++++++++++++--------
+>   1 file changed, 23 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
+> index bdeaf43..08fb0be 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_core.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
+> @@ -39,7 +39,6 @@
+>    */
+>   #define HMC5843_RANGE_GAIN_OFFSET		0x05
+>   #define HMC5843_RANGE_GAIN_DEFAULT		0x01
+> -#define HMC5843_RANGE_GAINS			8
+>   #define HMC5843_RANGE_GAIN_MASK		0xe0
+>
+>   /* Device status */
+> @@ -59,7 +58,6 @@
+>    */
+>   #define HMC5843_RATE_OFFSET			0x02
+>   #define HMC5843_RATE_DEFAULT			0x04
+> -#define HMC5843_RATES				7
+>   #define HMC5843_RATE_MASK		0x1c
+>
+>   /* Device measurement configuration */
+> @@ -69,15 +67,15 @@
+>   #define HMC5843_MEAS_CONF_MASK			0x03
+>
+>   /* Scaling factors: 10000000/Gain */
+> -static const int hmc5843_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
+> +static const int hmc5843_regval_to_nanoscale[] = {
+>   	6173, 7692, 10309, 12821, 18868, 21739, 25641, 35714
+>   };
+>
+> -static const int hmc5883_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
+> +static const int hmc5883_regval_to_nanoscale[] = {
+>   	7812, 9766, 13021, 16287, 24096, 27701, 32573, 45662
+>   };
+>
+> -static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
+> +static const int hmc5883l_regval_to_nanoscale[] = {
+>   	7299, 9174, 12195, 15152, 22727, 25641, 30303, 43478
+>   };
+>
+> @@ -94,11 +92,11 @@ static const int hmc5883l_regval_to_nanoscale[HMC5843_RANGE_GAINS] = {
+>    * 6		| 50			| 75
+>    * 7		| Not used		| Not used
+>    */
+> -static const int hmc5843_regval_to_samp_freq[7][2] = {
+> +static const int hmc5843_regval_to_samp_freq[][2] = {
+>   	{0, 500000}, {1, 0}, {2, 0}, {5, 0}, {10, 0}, {20, 0}, {50, 0}
+>   };
+>
+> -static const int hmc5883_regval_to_samp_freq[7][2] = {
+> +static const int hmc5883_regval_to_samp_freq[][2] = {
+>   	{0, 750000}, {1, 500000}, {3, 0}, {7, 500000}, {15, 0}, {30, 0},
+>   	{75, 0}
+>   };
+> @@ -107,7 +105,9 @@ static const int hmc5883_regval_to_samp_freq[7][2] = {
+>   struct hmc5843_chip_info {
+>   	const struct iio_chan_spec *channels;
+>   	const int (*regval_to_samp_freq)[2];
+> +	const int n_regval_to_samp_freq;
+>   	const int *regval_to_nanoscale;
+> +	const int n_regval_to_nanoscale;
+>   };
+>
+>   /* The lower two bits contain the current conversion mode */
+> @@ -248,7 +248,7 @@ static ssize_t hmc5843_show_samp_freq_avail(struct device *dev,
+>   	size_t len = 0;
+>   	int i;
+>
+> -	for (i = 0; i < HMC5843_RATES; i++)
+> +	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
+>   		len += scnprintf(buf + len, PAGE_SIZE - len,
+>   			"%d.%d ", data->variant->regval_to_samp_freq[i][0],
+>   			data->variant->regval_to_samp_freq[i][1]);
+> @@ -278,7 +278,7 @@ static int hmc5843_get_samp_freq_index(struct hmc5843_data *data,
+>   {
+>   	int i;
+>
+> -	for (i = 0; i < HMC5843_RATES; i++)
+> +	for (i = 0; i < data->variant->n_regval_to_samp_freq; i++)
+>   		if (val == data->variant->regval_to_samp_freq[i][0] &&
+>   			val2 == data->variant->regval_to_samp_freq[i][1])
+>   			return i;
+> @@ -307,7 +307,7 @@ static ssize_t hmc5843_show_scale_avail(struct device *dev,
+>   	size_t len = 0;
+>   	int i;
+>
+> -	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
+> +	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
+>   		len += scnprintf(buf + len, PAGE_SIZE - len,
+>   			"0.%09d ", data->variant->regval_to_nanoscale[i]);
+>
+> @@ -327,7 +327,7 @@ static int hmc5843_get_scale_index(struct hmc5843_data *data, int val, int val2)
+>   	if (val != 0)
+>   		return -EINVAL;
+>
+> -	for (i = 0; i < HMC5843_RANGE_GAINS; i++)
+> +	for (i = 0; i < data->variant->n_regval_to_nanoscale; i++)
+>   		if (val2 == data->variant->regval_to_nanoscale[i])
+>   			return i;
+>
+> @@ -480,17 +480,29 @@ static const struct hmc5843_chip_info hmc5843_chip_info_tbl[] = {
+>   	[HMC5843_ID] = {
+>   		.channels = hmc5843_channels,
+>   		.regval_to_samp_freq = hmc5843_regval_to_samp_freq,
+> +		.n_regval_to_samp_freq =
+> +				ARRAY_SIZE(hmc5843_regval_to_samp_freq),
+>   		.regval_to_nanoscale = hmc5843_regval_to_nanoscale,
+> +		.n_regval_to_nanoscale =
+> +				ARRAY_SIZE(hmc5843_regval_to_nanoscale),
+>   	},
+>   	[HMC5883_ID] = {
+>   		.channels = hmc5883_channels,
+>   		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
+> +		.n_regval_to_samp_freq =
+> +				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
+>   		.regval_to_nanoscale = hmc5883_regval_to_nanoscale,
+> +		.n_regval_to_nanoscale =
+> +				ARRAY_SIZE(hmc5883_regval_to_nanoscale),
+>   	},
+>   	[HMC5883L_ID] = {
+>   		.channels = hmc5883_channels,
+>   		.regval_to_samp_freq = hmc5883_regval_to_samp_freq,
+> +		.n_regval_to_samp_freq =
+> +				ARRAY_SIZE(hmc5883_regval_to_samp_freq),
+>   		.regval_to_nanoscale = hmc5883l_regval_to_nanoscale,
+> +		.n_regval_to_nanoscale =
+> +				ARRAY_SIZE(hmc5883l_regval_to_nanoscale),
+>   	},
+>   };
+>
+>
 
