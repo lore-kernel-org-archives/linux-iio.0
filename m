@@ -1,46 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:57396 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751508AbaGGMaM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 08:30:12 -0400
-Message-ID: <53BA9356.8070303@kernel.org>
-Date: Mon, 07 Jul 2014 13:32:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from userp1040.oracle.com ([156.151.31.81]:30279 "EHLO
+	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752278AbaGWLb1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jul 2014 07:31:27 -0400
+Date: Wed, 23 Jul 2014 14:30:23 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Chen Gang <gang.chen.5i5j@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Richard Weinberger <richard@nod.at>,
+	Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com,
+	Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
+	arnd@arndb.de, linux-input@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Message-ID: <20140723113023.GT25880@mwanda>
+References: <53C47725.8000005@gmail.com>
+ <53C47B76.4080306@roeck-us.net>
+ <53C47FB7.6080304@gmail.com>
+ <53C53CE1.4090803@gmail.com>
+ <53C7269E.4010702@gmail.com>
+ <20140717083756.GA19686@ulmo>
+ <53C7905D.9090003@gmail.com>
+ <20140717091601.GF25880@mwanda>
+ <53C7951F.6000906@gmail.com>
+ <53CF97E2.9000906@gmail.com>
 MIME-Version: 1.0
-To: Sachin Kamat <sachin.kamat@samsung.com>, linux-iio@vger.kernel.org
-CC: gregkh@linuxfoundation.org, spk.linux@gmail.com,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: Re: [PATCH 1/1] staging: iio: ad9832: Remove redundant check
-References: <1404388568-5370-1-git-send-email-sachin.kamat@samsung.com>
-In-Reply-To: <1404388568-5370-1-git-send-email-sachin.kamat@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <53CF97E2.9000906@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/14 12:56, Sachin Kamat wrote:
-> 'val' is unsigned and cannot be negative.
->
-> Signed-off-by: Sachin Kamat <sachin.kamat@samsung.com>
-> Cc: Michael Hennerich <hennerich@blackfin.uclinux.org>
-Applied to the togreg branch of iio.git
+On Wed, Jul 23, 2014 at 07:09:22PM +0800, Chen Gang wrote:
+> 
+> 
+> On 07/17/2014 05:19 PM, Chen Gang wrote:
+> > 
+> > 
+> > On 07/17/2014 05:16 PM, Dan Carpenter wrote:
+> >> On Thu, Jul 17, 2014 at 04:59:09PM +0800, Chen Gang wrote:
+> >>>>> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
+> >>>>
+> >>>> There's apparently an IOMEM_ERR_PTR() for this nowadays...
+> >>>>
+> >>>
+> >>> IOMEM_ERR_PTR() is defined within "lib/devres.c", not in "./include".
+> >>> But may we move it from "lib/devres.c" to "./include/linux/err.h"?
+> >>>
+> >>> For me, I am not quite sure, it may need additional discussion, but at
+> >>> least, that will be another patch.
+> >>
+> >> Yes.  Move it there.  That is the right place.
+> >>
+> 
+> Sorry for replying late about IOMEM_ERR_PTR().
+> 
+> Although no objections within 2 days, for me, when move something to
+> generic header file, it is not only for future using, but also for
+> solving current issue, or it has to be suspended for waiting 'trigger'.
+> 
+> So for me, the patch about IOMEM_ERR_PTR() need be suspended, until some
+> member find an issue which may be related with IOMEM_ERR_PTR(), more or
+> less.
 
-Thanks
-> ---
->   drivers/staging/iio/frequency/ad9832.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index b7c8351..cf68159 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -120,7 +120,7 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
->   		ret = spi_sync(st->spi, &st->msg);
->   		break;
->   	case AD9832_PHASE_SYM:
-> -		if (val < 0 || val > 3) {
-> +		if (val > 3) {
->   			ret = -EINVAL;
->   			break;
->   		}
->
+Matthias Brugger already moved it to include/linux/io.h on Friday.
+
+regards,
+dan carpenter
 
