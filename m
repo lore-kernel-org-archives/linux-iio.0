@@ -1,44 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:33391 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752240AbaGVXPG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 22 Jul 2014 19:15:06 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1X9jGx-0004Bh-Ud
-	for linux-iio@vger.kernel.org; Wed, 23 Jul 2014 01:15:04 +0200
-Received: from 5520-maca-inet1-outside.broadcom.com ([216.31.211.11])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 23 Jul 2014 01:15:03 +0200
-Received: from gregory.0xf0 by 5520-maca-inet1-outside.broadcom.com with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Wed, 23 Jul 2014 01:15:03 +0200
-To: linux-iio@vger.kernel.org
-From: Gregory Fong <gregory.0xf0@gmail.com>
-Subject: Re: [PATCH 1/3] iio: ad5064: Explicitly configure whether to use external supply
-Date: Tue, 22 Jul 2014 23:06:11 +0000 (UTC)
-Message-ID: <loom.20140723T010217-267@post.gmane.org>
-References: <1392206518-1457-1-git-send-email-paul.cercueil@analog.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mail-pa0-f53.google.com ([209.85.220.53]:41644 "EHLO
+	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751241AbaGWLhY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jul 2014 07:37:24 -0400
+Message-ID: <53CF9E66.9050101@gmail.com>
+Date: Wed, 23 Jul 2014 19:37:10 +0800
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+MIME-Version: 1.0
+To: Dan Carpenter <dan.carpenter@oracle.com>
+CC: linux-iio@vger.kernel.org,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Richard Weinberger <richard@nod.at>,
+	Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com,
+	Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org,
+	arnd@arndb.de, linux-input@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dmitry.torokhov@gmail.com,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	Mischa.Jonker@synopsys.com, jic23@kernel.org
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com> <20140717083756.GA19686@ulmo> <53C7905D.9090003@gmail.com> <20140717091601.GF25880@mwanda> <53C7951F.6000906@gmail.com> <53CF97E2.9000906@gmail.com> <20140723113023.GT25880@mwanda>
+In-Reply-To: <20140723113023.GT25880@mwanda>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Paul,
 
-Paul Cercueil <paul.cercueil@...> writes:
+
+On 07/23/2014 07:30 PM, Dan Carpenter wrote:
+> On Wed, Jul 23, 2014 at 07:09:22PM +0800, Chen Gang wrote:
+>>
+>>
+>> On 07/17/2014 05:19 PM, Chen Gang wrote:
+>>>
+>>>
+>>> On 07/17/2014 05:16 PM, Dan Carpenter wrote:
+>>>> On Thu, Jul 17, 2014 at 04:59:09PM +0800, Chen Gang wrote:
+>>>>>>> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
+>>>>>>
+>>>>>> There's apparently an IOMEM_ERR_PTR() for this nowadays...
+>>>>>>
+>>>>>
+>>>>> IOMEM_ERR_PTR() is defined within "lib/devres.c", not in "./include".
+>>>>> But may we move it from "lib/devres.c" to "./include/linux/err.h"?
+>>>>>
+>>>>> For me, I am not quite sure, it may need additional discussion, but at
+>>>>> least, that will be another patch.
+>>>>
+>>>> Yes.  Move it there.  That is the right place.
+>>>>
+>>
+>> Sorry for replying late about IOMEM_ERR_PTR().
+>>
+>> Although no objections within 2 days, for me, when move something to
+>> generic header file, it is not only for future using, but also for
+>> solving current issue, or it has to be suspended for waiting 'trigger'.
+>>
+>> So for me, the patch about IOMEM_ERR_PTR() need be suspended, until some
+>> member find an issue which may be related with IOMEM_ERR_PTR(), more or
+>> less.
 > 
-> [snip]
-> - if CONFIG_REGULATOR is disabled, regulator_get() will always
->   return a dummy regulator, which caused a device to always use
->   the external vref mode, even though there is none.
+> Matthias Brugger already moved it to include/linux/io.h on Friday.
+> 
 
-I noticed that this is still a problem in the current driver in the iio
-staging tree, are you planning to resubmit the fix for this part?
+OK, thank you for your work.
 
-Best regards,
-Gregory
+And for me, this 'long discussion' can be finished now (keeping current
+status no touch). But if any members have additional suggestions and
+ideas, still welcome to reply directly.
 
 
+Thanks.
+-- 
+Chen Gang
 
+Open, share, and attitude like air, water, and life which God blessed
