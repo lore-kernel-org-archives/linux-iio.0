@@ -1,67 +1,196 @@
-Return-Path: <festevam@gmail.com>
-From: Fabio Estevam <festevam@gmail.com>
-To: jic23@kernel.org
-Cc: mfuzzey@parkeon.com,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: [PATCH] iio: mma8452: Simplify the PM related hooks
-Date: Thu, 24 Jul 2014 17:16:09 -0300
-Message-Id: <1406232969-26394-1-git-send-email-festevam@gmail.com>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <53D190E1.6050504@linux.intel.com>
+Date: Thu, 24 Jul 2014 16:04:01 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/6] iio: accel: kxcjk-1013: Set adjustable range
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-4-git-send-email-srinivas.pandruvada@linux.intel.com> <53CBE429.3070702@kernel.org>
+In-Reply-To: <53CBE429.3070702@kernel.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
 
-We do not need to define MMA8452_PM_OPS as SIMPLE_DEV_PM_OPS handles the 
-CONFIG_PM_SLEEP=n case just fine.
+On 07/20/2014 08:45 AM, Jonathan Cameron wrote:
+> On 17/07/14 01:42, Srinivas Pandruvada wrote:
+>> This chip can support 3 different ranges. Allowing range specification.
+>>
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> A few minor suggestions.  Basically fine though.
+>> ---
+>>   drivers/iio/accel/kxcjk-1013.c | 80 
+>> +++++++++++++++++++++++++++++++++++++++++-
+>>   1 file changed, 79 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/kxcjk-1013.c 
+>> b/drivers/iio/accel/kxcjk-1013.c
+>> index 4912143..975f8a6 100644
+>> --- a/drivers/iio/accel/kxcjk-1013.c
+>> +++ b/drivers/iio/accel/kxcjk-1013.c
+>> @@ -70,6 +70,10 @@
+>>   #define KXCJK1013_REG_INT_REG1_BIT_IEA    BIT(4)
+>>   #define KXCJK1013_REG_INT_REG1_BIT_IEN    BIT(5)
+>>
+>> +#define KXCJK1013_RANGE_2G        0x00
+>> +#define KXCJK1013_RANGE_4G        0x01
+>> +#define KXCJK1013_RANGE_8G        0x02
+> These are effectively used as an enum?  Hence I'd make them one.
+>
+>> +
+>>   #define KXCJK1013_DATA_MASK_12_BIT    0x0FFF
+>>   #define KXCJK1013_MAX_STARTUP_TIME_US    100000
+>>
+>> @@ -86,6 +90,7 @@ struct kxcjk1013_data {
+>>       struct mutex mutex;
+>>       s16 buffer[8];
+>>       u8 odr_bits;
+>> +    u8 range;
+> with an enum above this becomes a little more obvious too.
+>>       bool active_high_intr;
+>>       bool trigger_on;
+>>   };
+>> @@ -120,6 +125,14 @@ static const struct {
+>>                  {0x02, 21000}, {0x03, 11000}, {0x04, 6400},
+>>                  {0x05, 3900}, {0x06, 2700}, {0x07, 2100} };
+>>
+>> +static const struct {
+>> +    u16 scale;
+>> +    u8 gsel_0;
+>> +    u8 gsel_1;
+> Could use a bitfield to make it clear these are single bits..
+I thought bit fields is not recommended for portability concerns in kernel.
+Hence avoided using bit fields.
 
-While at it get rid of the PM related ifdef's by marking the suspend/resume
-functions as '__maybe_unused'.
+Thanks,
+Srinivas
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/iio/accel/mma8452.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 3c12d49..dc455d7 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -404,24 +404,19 @@ static int mma8452_remove(struct i2c_client *client)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
--static int mma8452_suspend(struct device *dev)
-+static int __maybe_unused mma8452_suspend(struct device *dev)
- {
- 	return mma8452_standby(iio_priv(i2c_get_clientdata(
- 		to_i2c_client(dev))));
- }
- 
--static int mma8452_resume(struct device *dev)
-+static int __maybe_unused mma8452_resume(struct device *dev)
- {
- 	return mma8452_active(iio_priv(i2c_get_clientdata(
- 		to_i2c_client(dev))));
- }
- 
- static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
--#define MMA8452_PM_OPS (&mma8452_pm_ops)
--#else
--#define MMA8452_PM_OPS NULL
--#endif
- 
- static const struct i2c_device_id mma8452_id[] = {
- 	{ "mma8452", 0 },
-@@ -438,7 +433,7 @@ static struct i2c_driver mma8452_driver = {
- 	.driver = {
- 		.name	= "mma8452",
- 		.of_match_table = of_match_ptr(mma8452_dt_ids),
--		.pm	= MMA8452_PM_OPS,
-+		.pm	= &mma8452_pm_ops,
- 	},
- 	.probe = mma8452_probe,
- 	.remove = mma8452_remove,
--- 
-1.8.3.2
+>> +} KXCJK1013_scale_table[] = { {9582, 0, 0},
+>> +                  {19163, 0, 1},
+>> +                  {38326, 1, 0} };
+>> +
+> Once the _4G etc defines are an enum, you can explicitly set the values
+> in the table using [KXCJK1013_RANGE_2G] = etc
+>
+>>   static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+>>                     enum kxcjk1013_mode mode)
+>>   {
+>> @@ -190,6 +203,7 @@ static int kxcjk1013_chip_init(struct 
+>> kxcjk1013_data *data)
+>>       /* Setting range to 4G */
+>>       ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
+>>       ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
+>> +    data->range = KXCJK1013_RANGE_4G;
+> I'd almost be tempted to call the set function here instead of hand 
+> coding
+> this case.  I know it will involve more hardware writes, but it will give
+> slightly more obviously correct code (one path to set it rather than 
+> two).
+>>
+>>       /* Set 12 bit mode */
+>>       ret |= KXCJK1013_REG_CTRL1_BIT_RES;
+>> @@ -422,6 +436,59 @@ static int kxcjk1013_get_startup_times(struct 
+>> kxcjk1013_data *data)
+>>       return KXCJK1013_MAX_STARTUP_TIME_US;
+>>   }
+>>
+>> +static int kxcjk1013_set_scale(struct kxcjk1013_data *data, int val)
+>> +{
+>> +    int ret, i;
+>> +    enum kxcjk1013_mode store_mode;
+>> +
+>> +
+>> +    for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
+>> +        if (KXCJK1013_scale_table[i].scale == val) {
+>> +
+>> +            ret = kxcjk1013_get_mode(data, &store_mode);
+>> +            if (ret < 0)
+>> +                return ret;
+>> +
+>> +            ret = kxcjk1013_set_mode(data, STANDBY);
+>> +            if (ret < 0)
+>> +                return ret;
+>> +
+>> +            ret = i2c_smbus_read_byte_data(data->client,
+>> +                               KXCJK1013_REG_CTRL1);
+>> +            if (ret < 0) {
+>> +                dev_err(&data->client->dev,
+>> +                        "Error reading reg_ctrl1\n");
+>> +                return ret;
+>> +            }
+>> +
+>> +            ret |= (KXCJK1013_scale_table[i].gsel_0 << 3);
+>> +            ret |= (KXCJK1013_scale_table[i].gsel_1 << 4);
+>> +
+>> +            ret = i2c_smbus_write_byte_data(data->client,
+>> +                            KXCJK1013_REG_CTRL1,
+>> +                            ret);
+>> +            if (ret < 0) {
+>> +                dev_err(&data->client->dev,
+>> +                    "Error writing reg_ctrl1\n");
+>> +                return ret;
+>> +            }
+>> +
+>> +            data->range = i;
+>> +            dev_dbg(&data->client->dev, "New Scale range %d\n", i);
+>> +
+>> +            if (store_mode == OPERATION) {
+>> +                ret = kxcjk1013_set_mode(data, OPERATION);
+>> +                if (ret)
+>> +                    return ret;
+>> +            }
+>> +
+>> +            return 0;
+>> +        }
+>> +    }
+>> +
+>> +    return -EINVAL;
+>> +}
+>> +
+>>   static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
+>>                     struct iio_chan_spec const *chan, int *val,
+>>                     int *val2, long mask)
+>> @@ -458,7 +525,7 @@ static int kxcjk1013_read_raw(struct iio_dev 
+>> *indio_dev,
+>>
+>>       case IIO_CHAN_INFO_SCALE:
+>>           *val = 0;
+>> -        *val2 = 19163; /* range +-4g (4/2047*9.806650) */
+>> +        *val2 = KXCJK1013_scale_table[data->range].scale;
+>>           return IIO_VAL_INT_PLUS_MICRO;
+>>
+>>       case IIO_CHAN_INFO_SAMP_FREQ:
+>> @@ -485,6 +552,14 @@ static int kxcjk1013_write_raw(struct iio_dev 
+>> *indio_dev,
+>>           ret = kxcjk1013_set_odr(data, val, val2);
+>>           mutex_unlock(&data->mutex);
+>>           break;
+>> +    case IIO_CHAN_INFO_SCALE:
+>> +        if (val)
+>> +            return -EINVAL;
+>> +
+>> +        mutex_lock(&data->mutex);
+>> +        ret = kxcjk1013_set_scale(data, val2);
+>> +        mutex_unlock(&data->mutex);
+>> +        break;
+>>       default:
+>>           ret = -EINVAL;
+>>       }
+>> @@ -506,8 +581,11 @@ static int kxcjk1013_validate_trigger(struct 
+>> iio_dev *indio_dev,
+>>   static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+>>       "0.781000 1.563000 3.125000 6.250000 12.500000 25 50 100 200 
+>> 400 800 1600");
+>>
+>> +static IIO_CONST_ATTR(in_accel_scale_available, "0.009582 0.019163 
+>> 0.038326");
+>> +
+>>   static struct attribute *kxcjk1013_attributes[] = {
+>> &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>> +    &iio_const_attr_in_accel_scale_available.dev_attr.attr,
+>>       NULL,
+>>   };
+>>
+>>
+>
+>
