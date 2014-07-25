@@ -1,183 +1,68 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH 7/8] iio: mma8452: add an attribute to enable the highpass
- filter
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Wed, 23 Jul 2014 19:17:34 +0200
-Message-ID: <20140723171734.22067.95323.stgit@localhost>
-In-Reply-To: <20140723171719.22067.79447.stgit@localhost>
-References: <20140723171719.22067.79447.stgit@localhost>
+Return-Path: <reyad.attiyat@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <53D2B587.7080506@linux.intel.com>
+References: <1406316745-3351-1-git-send-email-reyad.attiyat@gmail.com> <53D2B587.7080506@linux.intel.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Fri, 25 Jul 2014 16:02:22 -0500
+Message-ID: <CA+BWVUQVpXZ50XMFhRBooff2573EnHn22E2ebofbKfEjch7gqw@mail.gmail.com>
+Subject: Re: [PATCH] iio: hid-sensor-magn-3d: Fix build warning
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-The hardware contains a single configurable highpass filter which
-is normally used for transient detection (event).
+Whoops looks like I typed an extra character, sorry should have caught this.
+Thanks Sirinivas will resend.
 
-However it is also possible to enable this filter for normal channel
-reading. Add a new attribute in_accel_high_pass_filter_en to do this.
-
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/iio/accel/mma8452.c |  115 +++++++++++++++++++++++++++++--------------
- 1 file changed, 78 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 66933b2..c56d34e 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -62,6 +62,7 @@
- #define MMA8452_DATA_CFG_FS_2G 0
- #define MMA8452_DATA_CFG_FS_4G 1
- #define MMA8452_DATA_CFG_FS_8G 2
-+#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
- 
- #define MMA8452_INT_DRDY	BIT(0)
- #define MMA8452_INT_FF_MT	BIT(2)
-@@ -106,6 +107,43 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- 		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
- }
- 
-+static int mma8452_standby(struct mma8452_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-+		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
-+}
-+
-+static int mma8452_active(struct mma8452_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
-+		data->ctrl_reg1);
-+}
-+
-+static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
-+{
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	/* config can only be changed when in standby */
-+	ret = mma8452_standby(data);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, reg, val);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = mma8452_active(data);
-+	if (ret < 0)
-+		goto fail;
-+
-+	ret = 0;
-+fail:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
- static ssize_t mma8452_show_int_plus_micros(char *buf,
- 	const int (*vals)[2], int n)
- {
-@@ -201,11 +239,50 @@ static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
- 		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
- }
- 
-+static ssize_t mma8452_show_hp_cutoff_en(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n",
-+		data->data_cfg & MMA8452_DATA_CFG_HPF_MASK ? 1 : 0);
-+}
-+
-+static ssize_t mma8452_store_hp_cutoff_en(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	bool state;
-+	int ret;
-+
-+	ret = strtobool(buf, &state);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (state)
-+		data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
-+	else
-+		data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
-+
-+	ret = mma8452_change_config(data, MMA8452_DATA_CFG, data->data_cfg);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
- static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
- 	mma8452_show_scale_avail, NULL, 0);
- static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
- 			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
-+static IIO_DEVICE_ATTR(in_accel_filter_high_pass_en,
-+			 S_IRUGO | S_IWUSR,
-+			 mma8452_show_hp_cutoff_en,
-+			 mma8452_store_hp_cutoff_en, 0);
- 
- static int mma8452_get_samp_freq_index(struct mma8452_data *data,
- 	int val, int val2)
-@@ -282,43 +359,6 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static int mma8452_standby(struct mma8452_data *data)
--{
--	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
--		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
--}
--
--static int mma8452_active(struct mma8452_data *data)
--{
--	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
--		data->ctrl_reg1);
--}
--
--static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
--{
--	int ret;
--
--	mutex_lock(&data->lock);
--
--	/* config can only be changed when in standby */
--	ret = mma8452_standby(data);
--	if (ret < 0)
--		goto fail;
--
--	ret = i2c_smbus_write_byte_data(data->client, reg, val);
--	if (ret < 0)
--		goto fail;
--
--	ret = mma8452_active(data);
--	if (ret < 0)
--		goto fail;
--
--	ret = 0;
--fail:
--	mutex_unlock(&data->lock);
--	return ret;
--}
--
- static int mma8452_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
-@@ -636,6 +676,7 @@ static struct attribute *mma8452_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_high_pass_en.dev_attr.attr,
- 	NULL
- };
- 
+On Fri, Jul 25, 2014 at 2:52 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> On 07/25/2014 12:32 PM, Reyad Attiyat wrote:
+>>
+>> Fix build warning, sizeof() called on dynamically
+>> sized pointer, by removing the call and the dependent
+>> function parameter. It is not needed or used in this
+>> driver, when pushing values to an iio buffer.
+>>
+>> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+>> ---
+>>   drivers/iio/magnetometer/hid-sensor-magn-3d.c | 7 ++-----
+>>   1 file changed, 2 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> index 3ec777a..915ffb9 100644
+>> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> @@ -246,8 +246,7 @@ static const struct iio_info magn_3d_info = {
+>>   };
+>>
+>>   /* Function to push data to buffer */
+>> -static void hid_sensor_push_data(struct iio_dev *indio_dev, const void
+>> *data,
+>> -       int len)
+>> +static void hid_sensor_push_data(struct iio_dev *indio_dev, const void
+>> *data)
+>>   {
+>>         dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
+>>         iio_push_to_buffers(indio_dev, data);
+>> @@ -263,9 +262,7 @@ static int magn_3d_proc_event(struct
+>> hid_sensor_hub_device *hsdev,
+>>
+>>         dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
+>>         if (atomic_read(&magn_state->common_attributes.data_ready))
+>> -               hid_sensor_push_data(indio_dev,
+>> -                               magn_state->iio_vals,
+>> -                               sizeof(magn_state->iio_vals));
+>> +               hid_sensor_push_data(indio_devm, magn_state->iio_vals);
+>
+> Is it indio_devm,  not indio_dev?
+>
+> Thanks,
+> Srinivas
+>>
+>>
+>>         return 0;
+>>   }
+>>
+>
