@@ -1,67 +1,49 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH 2/8] iio: mma8452: Add access to registers via DebugFS
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Wed, 23 Jul 2014 19:17:23 +0200
-Message-ID: <20140723171723.22067.70388.stgit@localhost>
-In-Reply-To: <20140723171719.22067.79447.stgit@localhost>
-References: <20140723171719.22067.79447.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <reyad.attiyat@gmail.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH] iio: hid-sensor-magn-3d: Fix build warning
+Date: Fri, 25 Jul 2014 14:32:25 -0500
+Message-Id: <1406316745-3351-1-git-send-email-reyad.attiyat@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/iio/accel/mma8452.c |   25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+Fix build warning, sizeof() called on dynamically
+sized pointer, by removing the call and the dependent
+function parameter. It is not needed or used in this
+driver, when pushing values to an iio buffer.
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 04a4f34..c46df4e 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -34,6 +34,8 @@
- #define MMA8452_CTRL_REG2 0x2b
- #define MMA8452_CTRL_REG2_RST		BIT(6)
- 
-+#define MMA8452_MAX_REG 0x31
-+
- #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
- 
- #define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
-@@ -292,6 +294,28 @@ done:
- 	return IRQ_HANDLED;
- }
- 
-+static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
-+			      unsigned reg, unsigned writeval,
-+			      unsigned *readval)
-+{
-+	int ret;
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+
-+	if (reg > MMA8452_MAX_REG)
-+		return -EINVAL;
-+
-+	if (readval == NULL) {
-+		ret = mma8452_change_config(data, reg, writeval);
-+	} else {
-+		ret = i2c_smbus_read_byte_data(data->client, reg);
-+		if (ret < 0)
-+			return ret;
-+		*readval = ret;
-+		ret = 0;
-+	}
-+	return ret;
-+}
-+
- #define MMA8452_CHANNEL(axis, idx) { \
- 	.type = IIO_ACCEL, \
- 	.modified = 1, \
-@@ -331,6 +355,7 @@ static const struct iio_info mma8452_info = {
- 	.attrs = &mma8452_group,
- 	.read_raw = &mma8452_read_raw,
- 	.write_raw = &mma8452_write_raw,
-+	.debugfs_reg_access = &mma8452_reg_access_dbg,
- 	.driver_module = THIS_MODULE,
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 3ec777a..915ffb9 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -246,8 +246,7 @@ static const struct iio_info magn_3d_info = {
  };
  
+ /* Function to push data to buffer */
+-static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
+-	int len)
++static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data)
+ {
+ 	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
+ 	iio_push_to_buffers(indio_dev, data);
+@@ -263,9 +262,7 @@ static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
+ 
+ 	dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
+ 	if (atomic_read(&magn_state->common_attributes.data_ready))
+-		hid_sensor_push_data(indio_dev,
+-				magn_state->iio_vals,
+-				sizeof(magn_state->iio_vals));
++		hid_sensor_push_data(indio_devm, magn_state->iio_vals);
+ 
+ 	return 0;
+ }
+-- 
+1.9.3
