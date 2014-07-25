@@ -1,105 +1,107 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:56680 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752573AbaGGMK6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 7 Jul 2014 08:10:58 -0400
-Message-ID: <53BA8ED5.9010808@kernel.org>
-Date: Mon, 07 Jul 2014 13:13:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Fri, 25 Jul 2014 07:52:50 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alexandre Courbot <acourbot@nvidia.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Alexander Shiyan <shc_work@mail.ru>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Mauro Carvalho Chehab <m.chehab@samsung.com>,
+	Arnd Bergmann <arnd@arndb.de>, Samuel Ortiz <sameo@linux.intel.com>,
+	Chris Ball <chris@printf.net>, Ulf Hansson <ulf.hansson@linaro.org>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>, Jiri Slaby <jslaby@suse.cz>,
+	Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>,
+	Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
+	Tomi Valkeinen <tomi.valkeinen@ti.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	"John W. Linville" <linville@tuxdriver.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.de>,
+	Brian Austin <brian.austin@cirrus.com>,
+	Paul Handrigan <Paul.Handrigan@cirrus.com>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Jarkko Nikula <jarkko.nikula@bitmer.com>,
+	Pavel Machek <pavel@ucw.cz>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Jean Delvare <khali@linux-fr.org>, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
+	alsa-devel@alsa-project.org, gnurou@gmail.com
+Subject: Re: [PATCH] gpio: extend gpiod_get*() with flags parameter
+Message-ID: <20140725065250.GF7063@lee--X1>
+References: <1406214298-20062-1-git-send-email-acourbot@nvidia.com>
+ <20140724161052.GA15615@kroah.com>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND PATCH 1/3] iio: st_sensors: get platform data from device
- tree
-References: <1404726435-2565-1-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1404726435-2565-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20140724161052.GA15615@kroah.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/07/14 10:47, Linus Walleij wrote:
-> Currently the STMicroelectronics sensors only support one single
-> platform data item: configuration of the DRDY (data ready) pin
-> for a particular design. Augment the core to prioritize and take
-> this information from the device tree if the parent device has an
-> assigned device node, else fall back to passed in platform data
-> (usually the default data).
->
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Denis CIOCCA <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Thanks for resending these.  I'd lost them completely!
+On Thu, 24 Jul 2014, Greg Kroah-Hartman wrote:
 
-Anyhow, applied to the togreg branch of iio.git which will initially
-get pushed out as testing for the autobuilders to play ball.
+> On Fri, Jul 25, 2014 at 12:04:58AM +0900, Alexandre Courbot wrote:
+> > The huge majority of GPIOs have their direction and initial value set
+> > right after being obtained by one of the gpiod_get() functions. The
+> > integer GPIO API had gpio_request_one() that took a convenience flags
+> > parameter allowing to specify an direction and value applied to the
+> > returned GPIO. This feature greatly simplifies client code and ensures
+> > errors are always handled properly.
+> > 
+> > A similar feature has been requested for the gpiod API. Since GPIOs need
+> > a direction to be used anyway, we prefer to extend the existing
+> > functions instead of introducing new functions that would raise the
+> > number of gpiod getters to 16 (!).
+> > 
+> > The drawback of this approach is that all gpiod clients need to be
+> > updated, but there aren't that many and the moment and this results in
+> > smaller (and hopefully safer) code.
+> > 
+> > Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
+> > ---
+> > This change will be difficult to apply without breaking things, but
+> > let's try to do it right. Hopefully the benefit will outweight the
+> > disturbance.
+> > 
+> > This is a patch against -next to list and update all current gpiod
+> > consumers. Updates are trivial at first sight, but it would be nice to
+> > get as many acks as possible from the respective subsystem maintainers.
+> > 
+> > I'm not sure how this could be applied harmlessly though - maybe through
+> > a dedicated branch for -next? Problem is that a lot of new code is not
+> > yet merged into mainline, and conflicts are very likely to occur. Linus,
+> > do you have any suggestion as to how this can be done without blood being
+> > spilled?
+> 
+> Do this in 3 steps, not all at once.
+> 
+> Make a new function that takes the new argument, get that merged
+> 
+> Submit patches that convert drivers over to use the new function.
+> 
+> Once all of those are merged, remove the old function.
+> 
+> That way there are no "flag days" needed, and everyone is happy you
+> don't send out emails with 40+ people in the To: and Cc: lines :)
 
-J
-> ---
->   drivers/iio/common/st_sensors/st_sensors_core.c | 35 ++++++++++++++++++++++++-
->   1 file changed, 34 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index e8b932fed70e..1cdcef94e6a2 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -14,8 +14,8 @@
->   #include <linux/delay.h>
->   #include <linux/iio/iio.h>
->   #include <linux/regulator/consumer.h>
-> +#include <linux/of.h>
->   #include <asm/unaligned.h>
-> -
->   #include <linux/iio/common/st_sensors.h>
->
->
-> @@ -265,14 +265,47 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
->   	return 0;
->   }
->
-> +#ifdef CONFIG_OF
-> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-> +		struct st_sensors_platform_data *defdata)
-> +{
-> +	struct st_sensors_platform_data *pdata;
-> +	struct device_node *np = dev->of_node;
-> +	u32 val;
-> +
-> +	if (!np)
-> +		return NULL;
-> +
-> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> +	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
-> +		pdata->drdy_int_pin = (u8) val;
-> +	else
-> +		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
-> +
-> +	return pdata;
-> +}
-> +#else
-> +static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-> +		struct st_sensors_platform_data *defdata)
-> +{
-> +	return NULL;
-> +}
-> +#endif
-> +
->   int st_sensors_init_sensor(struct iio_dev *indio_dev,
->   					struct st_sensors_platform_data *pdata)
->   {
->   	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +	struct st_sensors_platform_data *of_pdata;
->   	int err = 0;
->
->   	mutex_init(&sdata->tb.buf_lock);
->
-> +	/* If OF/DT pdata exists, it will take precedence of anything else */
-> +	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
-> +	if (of_pdata)
-> +		pdata = of_pdata;
-> +
->   	if (pdata)
->   		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
->
->
++99999
 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
