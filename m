@@ -1,83 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-176.synserver.de ([212.40.185.176]:1091 "EHLO
-	smtp-out-175.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752867AbaG3OA0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jul 2014 10:00:26 -0400
-Message-ID: <53D8FA72.3050204@metafoo.de>
-Date: Wed, 30 Jul 2014 16:00:18 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail.kernel.org ([198.145.19.201]:54868 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752069AbaG0QkC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 27 Jul 2014 12:40:02 -0400
+Message-ID: <53D52BF3.6020903@kernel.org>
+Date: Sun, 27 Jul 2014 17:42:27 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Angelo Compagnucci <angelo.compagnucci@gmail.com>
-CC: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: Why drivers don't depend on CONFIG_REGULATOR?
-References: <CA+TH9VkYTQOEaV4OX2HAZcpvXhgcP8e+Mp1m1otnX5v=OPbBCw@mail.gmail.com> <53D8ECB9.1010503@metafoo.de> <CA+TH9VkMzi1U1C1GagBTEcQ_3E4vGiKoa+2mz-MNiA8x4O5udQ@mail.gmail.com>
-In-Reply-To: <CA+TH9VkMzi1U1C1GagBTEcQ_3E4vGiKoa+2mz-MNiA8x4O5udQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: core: Fix double free.
+References: <20140721132215.11583.81979.stgit@localhost>
+In-Reply-To: <20140721132215.11583.81979.stgit@localhost>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/30/2014 03:23 PM, Angelo Compagnucci wrote:
-> Hi Lars,
+On 21/07/14 14:22, Martin Fuzzey wrote:
+> When an error occured during event registration memory was freed twice
+> resulting in kernel memory corruption and a crash in unrelated code.
 >
-> I have this fixed regulator in my device tree:
+> The problem was caused by
+> 	iio_device_unregister_eventset()
+> 	iio_device_unregister_sysfs()
 >
-> adc_supply: fixedregulator {
->    compatible = "regulator-fixed";
->    regulator-name = "fixed-supply";
->    regulator-min-microvolt = <3300000>;
->    regulator-max-microvolt = <3300000>;
->    regulator-boot-on;
-> };
+> being called twice, once on the error path and then
+> again via iio_dev_release().
 >
-> With CONFIG_REGULATOR=y CONFIG_REGULATOR_FIXED_VOLTAGE=y:
+> Fix this by making these two functions idempotent so they
+> may be called multiple times.
 >
-> # cat in_voltage0_raw in_voltage_scale
-> 4095
-> 0.805664062
+> The problem was observed before applying
+> 	78b33216 iio:core: Handle error when mask type is not separate
 >
-> 4095 * 0.805664062 = 3299.19433389, OK wonderful!
->
-> With CONFIG_REGULATOR not set:
->
-> # cat in_voltage0_raw in_voltage_scale
-> 4095
-> cat: read error: Invalid argument
->
-> How do you cope with something like this? Is this expected?
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Good catch.
 
-We don't really handle this a t the moment. I guess ideally we wouldn't show 
-the scale attribute in this case.
+Applied to the fixes-togreg branch of iio.git and marked
+for stable.
 
+Given the timing this might end up waiting until after the upcoming merge
+windows closes. It's been there a long time with you being the first to notice
+so I'm not that fussed about rushing it out and annoying Linus!
+
+Jonathan
+> ---
+>   drivers/iio/industrialio-core.c  |    5 +++--
+>   drivers/iio/industrialio-event.c |    1 +
+>   2 files changed, 4 insertions(+), 2 deletions(-)
 >
-> Thank you for your time!
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4b1f375..fa06197 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -828,8 +828,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>    * @attr_list: List of IIO device attributes
+>    *
+>    * This function frees the memory allocated for each of the IIO device
+> - * attributes in the list. Note: if you want to reuse the list after calling
+> - * this function you have to reinitialize it using INIT_LIST_HEAD().
+> + * attributes in the list.
+>    */
+>   void iio_free_chan_devattr_list(struct list_head *attr_list)
+>   {
+> @@ -837,6 +836,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
 >
-> 2014-07-30 15:01 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
->> On 07/30/2014 11:51 AM, Angelo Compagnucci wrote:
->>>
->>> Hello List,
->>>
->>> I wasted a little bit of my time this morning understanding why the
->>> regulator I used in my device tree wasn't working, only to discover
->>> later that the regulator support was not enabled in my config.
->>>
->>> I think that all the drivers that use a regulator should depend on the
->>> CONFIG_REGULATOR.
->>>
->>> Is there a reason why any driver has "depends on REGULATOR" in their
->>> Kconfig entry?
->>>
->>> Thank you for your time!
->>
->>
->> Hi,
->>
->> A lot of drivers work just fine without regulator support enabled. When
->> disabled the regulator API stubs itself out with dummy function that always
->> succeed.
->>
->> - Lars
->>
+>   	list_for_each_entry_safe(p, n, attr_list, l) {
+>   		kfree(p->dev_attr.attr.name);
+> +		list_del(&p->l);
+>   		kfree(p);
+>   	}
+>   }
+> @@ -917,6 +917,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
 >
+>   	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+>   	kfree(indio_dev->chan_attr_group.attrs);
+> +	indio_dev->chan_attr_group.attrs = NULL;
+>   }
+>
+>   static void iio_dev_release(struct device *device)
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index bfbf4d4..ad7a35f 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -492,6 +492,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+>   error_free_setup_event_lines:
+>   	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
+>   	kfree(indio_dev->event_interface);
+> +	indio_dev->event_interface = NULL;
+>   	return ret;
+>   }
 >
 >
 
