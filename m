@@ -1,56 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:64023 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752770AbaGYVOW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jul 2014 17:14:22 -0400
-From: Reyad Attiyat <reyad.attiyat@gmail.com>
-To: jic23@kernel.org, srinivas.pandruvada@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>
-Subject: [PATCH v2] iio: hid-sensor-magn-3d: Fix build warning
-Date: Fri, 25 Jul 2014 16:14:17 -0500
-Message-Id: <1406322857-12391-1-git-send-email-reyad.attiyat@gmail.com>
+Received: from mail.kernel.org ([198.145.19.201]:54724 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751821AbaG0QWD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 27 Jul 2014 12:22:03 -0400
+Message-ID: <53D527BB.30309@kernel.org>
+Date: Sun, 27 Jul 2014 17:24:27 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Himangi Saraogi <himangi774@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+CC: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: questions regarding drivers/staging/iio/accel/sca3000_core.c
+References: <CAB78YHyh88+j-knC1HZQinnLU=9wbVPXrYRF81LeOtrV1oGmZA@mail.gmail.com>
+In-Reply-To: <CAB78YHyh88+j-knC1HZQinnLU=9wbVPXrYRF81LeOtrV1oGmZA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix build warning, sizeof() called on dynamically
-sized pointer, by removing the call and the dependent
-function parameter. It is not needed or used in this
-driver, when pushing values to an iio buffer.
-
-Changes from v1
-- Fix mistake in varible name
-
-Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
----
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 3ec777a..1e717c7 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -246,8 +246,7 @@ static const struct iio_info magn_3d_info = {
- };
- 
- /* Function to push data to buffer */
--static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
--	int len)
-+static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data)
- {
- 	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
- 	iio_push_to_buffers(indio_dev, data);
-@@ -263,9 +262,7 @@ static int magn_3d_proc_event(struct hid_sensor_hub_device *hsdev,
- 
- 	dev_dbg(&indio_dev->dev, "magn_3d_proc_event\n");
- 	if (atomic_read(&magn_state->common_attributes.data_ready))
--		hid_sensor_push_data(indio_dev,
--				magn_state->iio_vals,
--				sizeof(magn_state->iio_vals));
-+		hid_sensor_push_data(indio_dev, magn_state->iio_vals);
- 
- 	return 0;
- }
--- 
-1.9.3
-
+On 21/07/14 09:24, Himangi Saraogi wrote:
+> Hi,
+>
+> I was looking at the possibility of using a managed interface for
+> iio_device_register in sca3000_probe. But this will lead to the
+> iio_device_unregister function being called after
+> sca3000_unconfigure_ring in the remove function. I have a few
+> queries:
+>
+> 1. Is it safe to move the unregister function over the
+> sca3000_unconfigure_ring?
+No, in fact it should be before various other things
+(though it isn't currently).  The device unregister
+removes the userspace interfaces.  Hence it should always
+be called before anything else happens in a remove function.
+>
+> 2. Is it correct that on failure the probe function does not call
+> sca3000_unconfigure_ring?
+Nope. That's a bug.  Actually the whole probe function ordering is
+suspicious. The device register should probably be a lot later
+(i.e. last). There might be some esoteric reason that isn't the case
+but I honestly can't remember.  Whilst I have one of these parts
+the wire bodge needs repairing and I haven't fired the board it plugs
+into up for a good while.  If it wasn't such and interesting part I'd
+be tempted to suggest dropping the driver entirely (and find out if
+anyone else actually has one in the process!)
+>
+> 3. If it is fine moving unregister after sca3000_unconfigure_ring, I
+> propose to add a devm counterpart of iio_buffer_unregister. Is it a
+> good idea?
+I'm not sure there enough users to bother and some of those should
+probably use the triggered_buffer helper functions.
+>
+> Thanks, Himangi
