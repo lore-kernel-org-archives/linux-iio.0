@@ -1,41 +1,198 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f169.google.com ([209.85.220.169]:38727 "EHLO
-	mail-vc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750945AbaGaWf7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jul 2014 18:35:59 -0400
-From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
-	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Subject: [PATCH 0/8] staging: iio: accel: multiple coding style fixes
-Date: Thu, 31 Jul 2014 19:34:50 -0300
-Message-Id: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+Received: from mail.kernel.org ([198.145.19.201]:53200 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751078AbaG0NtU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 27 Jul 2014 09:49:20 -0400
+Message-ID: <53D503F1.6000802@kernel.org>
+Date: Sun, 27 Jul 2014 14:51:45 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 4/6] iio: accel: kxcjk-1013: Set adjustable range
+References: <1405557754-19601-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1405557754-19601-4-git-send-email-srinivas.pandruvada@linux.intel.com> <53CBE429.3070702@kernel.org> <53D190E1.6050504@linux.intel.com>
+In-Reply-To: <53D190E1.6050504@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following patches fix (almost) all warnings reported by
-checkpatch.pl.
+On 25/07/14 00:04, Srinivas Pandruvada wrote:
+>
+> On 07/20/2014 08:45 AM, Jonathan Cameron wrote:
+>> On 17/07/14 01:42, Srinivas Pandruvada wrote:
+>>> This chip can support 3 different ranges. Allowing range specification.
+>>>
+>>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>> A few minor suggestions.  Basically fine though.
+>>> ---
+>>>   drivers/iio/accel/kxcjk-1013.c | 80 +++++++++++++++++++++++++++++++++++++++++-
+>>>   1 file changed, 79 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+>>> index 4912143..975f8a6 100644
+>>> --- a/drivers/iio/accel/kxcjk-1013.c
+>>> +++ b/drivers/iio/accel/kxcjk-1013.c
+>>> @@ -70,6 +70,10 @@
+>>>   #define KXCJK1013_REG_INT_REG1_BIT_IEA    BIT(4)
+>>>   #define KXCJK1013_REG_INT_REG1_BIT_IEN    BIT(5)
+>>>
+>>> +#define KXCJK1013_RANGE_2G        0x00
+>>> +#define KXCJK1013_RANGE_4G        0x01
+>>> +#define KXCJK1013_RANGE_8G        0x02
+>> These are effectively used as an enum?  Hence I'd make them one.
+>>
+>>> +
+>>>   #define KXCJK1013_DATA_MASK_12_BIT    0x0FFF
+>>>   #define KXCJK1013_MAX_STARTUP_TIME_US    100000
+>>>
+>>> @@ -86,6 +90,7 @@ struct kxcjk1013_data {
+>>>       struct mutex mutex;
+>>>       s16 buffer[8];
+>>>       u8 odr_bits;
+>>> +    u8 range;
+>> with an enum above this becomes a little more obvious too.
+>>>       bool active_high_intr;
+>>>       bool trigger_on;
+>>>   };
+>>> @@ -120,6 +125,14 @@ static const struct {
+>>>                  {0x02, 21000}, {0x03, 11000}, {0x04, 6400},
+>>>                  {0x05, 3900}, {0x06, 2700}, {0x07, 2100} };
+>>>
+>>> +static const struct {
+>>> +    u16 scale;
+>>> +    u8 gsel_0;
+>>> +    u8 gsel_1;
+>> Could use a bitfield to make it clear these are single bits..
+> I thought bit fields is not recommended for portability concerns in kernel.
+> Hence avoided using bit fields.
+I believe that is more about anything that might be exposed to userspace rather
+than there being any issues using them internally.  Still, it's not something
+I feel strongly about either way!
 
-Murilo Opsfelder Araujo (8):
-  staging: iio: accel: adis16203_core.c: fix coding style
-  staging: iio: accel: adis16201_core.c: fix coding style
-  staging: iio: accel: adis16204_core.c: fix coding style
-  staging: iio: accel: adis16209_core.c: fix coding style
-  staging: iio: accel: adis16240_core.c: fix coding style
-  staging: iio: accel: lis3l02dq_core.c: fix coding style
-  staging: iio: accel: lis3l02dq_ring.c: fix coding style
-  staging: iio: accel: sca3000_core.c: fix coding style
+J
+>
+> Thanks,
+> Srinivas
+>
+>>> +} KXCJK1013_scale_table[] = { {9582, 0, 0},
+>>> +                  {19163, 0, 1},
+>>> +                  {38326, 1, 0} };
+>>> +
+>> Once the _4G etc defines are an enum, you can explicitly set the values
+>> in the table using [KXCJK1013_RANGE_2G] = etc
+>>
+>>>   static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+>>>                     enum kxcjk1013_mode mode)
+>>>   {
+>>> @@ -190,6 +203,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+>>>       /* Setting range to 4G */
+>>>       ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
+>>>       ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
+>>> +    data->range = KXCJK1013_RANGE_4G;
+>> I'd almost be tempted to call the set function here instead of hand coding
+>> this case.  I know it will involve more hardware writes, but it will give
+>> slightly more obviously correct code (one path to set it rather than two).
+>>>
+>>>       /* Set 12 bit mode */
+>>>       ret |= KXCJK1013_REG_CTRL1_BIT_RES;
+>>> @@ -422,6 +436,59 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
+>>>       return KXCJK1013_MAX_STARTUP_TIME_US;
+>>>   }
+>>>
+>>> +static int kxcjk1013_set_scale(struct kxcjk1013_data *data, int val)
+>>> +{
+>>> +    int ret, i;
+>>> +    enum kxcjk1013_mode store_mode;
+>>> +
+>>> +
+>>> +    for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
+>>> +        if (KXCJK1013_scale_table[i].scale == val) {
+>>> +
+>>> +            ret = kxcjk1013_get_mode(data, &store_mode);
+>>> +            if (ret < 0)
+>>> +                return ret;
+>>> +
+>>> +            ret = kxcjk1013_set_mode(data, STANDBY);
+>>> +            if (ret < 0)
+>>> +                return ret;
+>>> +
+>>> +            ret = i2c_smbus_read_byte_data(data->client,
+>>> +                               KXCJK1013_REG_CTRL1);
+>>> +            if (ret < 0) {
+>>> +                dev_err(&data->client->dev,
+>>> +                        "Error reading reg_ctrl1\n");
+>>> +                return ret;
+>>> +            }
+>>> +
+>>> +            ret |= (KXCJK1013_scale_table[i].gsel_0 << 3);
+>>> +            ret |= (KXCJK1013_scale_table[i].gsel_1 << 4);
+>>> +
+>>> +            ret = i2c_smbus_write_byte_data(data->client,
+>>> +                            KXCJK1013_REG_CTRL1,
+>>> +                            ret);
+>>> +            if (ret < 0) {
+>>> +                dev_err(&data->client->dev,
+>>> +                    "Error writing reg_ctrl1\n");
+>>> +                return ret;
+>>> +            }
+>>> +
+>>> +            data->range = i;
+>>> +            dev_dbg(&data->client->dev, "New Scale range %d\n", i);
+>>> +
+>>> +            if (store_mode == OPERATION) {
+>>> +                ret = kxcjk1013_set_mode(data, OPERATION);
+>>> +                if (ret)
+>>> +                    return ret;
+>>> +            }
+>>> +
+>>> +            return 0;
+>>> +        }
+>>> +    }
+>>> +
+>>> +    return -EINVAL;
+>>> +}
+>>> +
+>>>   static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
+>>>                     struct iio_chan_spec const *chan, int *val,
+>>>                     int *val2, long mask)
+>>> @@ -458,7 +525,7 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
+>>>
+>>>       case IIO_CHAN_INFO_SCALE:
+>>>           *val = 0;
+>>> -        *val2 = 19163; /* range +-4g (4/2047*9.806650) */
+>>> +        *val2 = KXCJK1013_scale_table[data->range].scale;
+>>>           return IIO_VAL_INT_PLUS_MICRO;
+>>>
+>>>       case IIO_CHAN_INFO_SAMP_FREQ:
+>>> @@ -485,6 +552,14 @@ static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
+>>>           ret = kxcjk1013_set_odr(data, val, val2);
+>>>           mutex_unlock(&data->mutex);
+>>>           break;
+>>> +    case IIO_CHAN_INFO_SCALE:
+>>> +        if (val)
+>>> +            return -EINVAL;
+>>> +
+>>> +        mutex_lock(&data->mutex);
+>>> +        ret = kxcjk1013_set_scale(data, val2);
+>>> +        mutex_unlock(&data->mutex);
+>>> +        break;
+>>>       default:
+>>>           ret = -EINVAL;
+>>>       }
+>>> @@ -506,8 +581,11 @@ static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
+>>>   static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+>>>       "0.781000 1.563000 3.125000 6.250000 12.500000 25 50 100 200 400 800 1600");
+>>>
+>>> +static IIO_CONST_ATTR(in_accel_scale_available, "0.009582 0.019163 0.038326");
+>>> +
+>>>   static struct attribute *kxcjk1013_attributes[] = {
+>>> &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>>> +    &iio_const_attr_in_accel_scale_available.dev_attr.attr,
+>>>       NULL,
+>>>   };
+>>>
+>>>
+>>
+>>
+>
 
- drivers/staging/iio/accel/adis16201_core.c |    5 +++--
- drivers/staging/iio/accel/adis16203_core.c |    2 ++
- drivers/staging/iio/accel/adis16204_core.c |    1 +
- drivers/staging/iio/accel/adis16209_core.c |    1 +
- drivers/staging/iio/accel/adis16240_core.c |    1 +
- drivers/staging/iio/accel/lis3l02dq_core.c |    4 ++++
- drivers/staging/iio/accel/lis3l02dq_ring.c |    1 +
- drivers/staging/iio/accel/sca3000_core.c   |    4 +++-
- 8 files changed, 16 insertions(+), 3 deletions(-)
-
---
-1.7.10.4
