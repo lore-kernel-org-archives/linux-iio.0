@@ -1,154 +1,94 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH 6/8] io: mma8452: Add highpass filter configuration.
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Wed, 23 Jul 2014 19:17:32 +0200
-Message-ID: <20140723171732.22067.80061.stgit@localhost>
-In-Reply-To: <20140723171719.22067.79447.stgit@localhost>
-References: <20140723171719.22067.79447.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:60714 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751784AbaG1LDp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jul 2014 07:03:45 -0400
+Message-id: <53D62E05.3080803@samsung.com>
+Date: Mon, 28 Jul 2014 20:03:33 +0900
+From: Chanwoo Choi <cw00.choi@samsung.com>
+MIME-version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: jic23@kernel.org, ch.naveen@samsung.com, arnd@arndb.de,
+	kgene.kim@samsung.com, kyungmin.park@samsung.com,
+	t.figa@samsung.com, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: exynos_adc: Add support for S3C24xx ADC
+References: <1405995074-3271-1-git-send-email-cw00.choi@samsung.com>
+ <1405995074-3271-3-git-send-email-cw00.choi@samsung.com>
+ <53D562AD.4090706@gmx.de>
+In-reply-to: <53D562AD.4090706@gmx.de>
+Content-type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Allow the cutoff frequency of the high pass filter to be configured.
+On 07/28/2014 05:35 AM, Hartmut Knaack wrote:
+> Chanwoo Choi schrieb:
+>> This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The s3c24xx
+>> is alomost same as ADCv1. But, There are a little difference as following:
+>> - ADCMUX register address to select channel
+>> - ADCDAT mask (10bit or 12bit ADC resolution according to SoC version)
+> Hi, just some style issues: better separate things like 10bit with a space to 10 bit, there are some instances of this type in your code. Another issue inline.
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
----
- drivers/iio/accel/mma8452.c |   65 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 63 insertions(+), 2 deletions(-)
+OK I'll fix it.
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 7e0c29c..66933b2 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -29,6 +29,8 @@
- #define MMA8452_INT_SRC 0x0c
- #define MMA8452_WHO_AM_I 0x0d
- #define MMA8452_DATA_CFG 0x0e
-+#define MMA8452_HP_FILTER_CUTOFF 0x0f
-+#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
- #define MMA8452_TRANSIENT_CFG 0x1d
- #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
- #define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
-@@ -162,6 +164,18 @@ static const int mma8452_transient_time_step_us[8] = {
- 	20000
- };
- 
-+/* Datasheet table 18 (normal mode) */
-+static const int mma8452_hp_filter_cutoff[8][4][2] = {
-+	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
-+	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
-+	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
-+	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
-+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
-+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
-+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
-+	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
-+};
-+
- static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
-@@ -176,9 +190,22 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
- 		ARRAY_SIZE(mma8452_scales));
- }
- 
-+static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	int i = mma8452_get_odr_index(data);
-+
-+	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
-+		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
-+}
-+
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
- static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
- 	mma8452_show_scale_avail, NULL, 0);
-+static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
-+			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
- 
- static int mma8452_get_samp_freq_index(struct mma8452_data *data,
- 	int val, int val2)
-@@ -194,6 +221,15 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
- 		ARRAY_SIZE(mma8452_scales), val, val2);
- }
- 
-+static int mma8452_get_hp_filter_index(struct mma8452_data *data,
-+	int val, int val2)
-+{
-+	int i = mma8452_get_odr_index(data);
-+
-+	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
-+		ARRAY_SIZE(mma8452_scales[0]), val, val2);
-+}
-+
- static int mma8452_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
-@@ -232,6 +268,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		*val = sign_extend32(ret, 7);
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-+		ret = i2c_smbus_read_byte_data(data->client,
-+						MMA8452_HP_FILTER_CUTOFF);
-+		if (ret < 0)
-+			return ret;
-+		i = mma8452_get_odr_index(data);
-+		ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-+		*val = mma8452_hp_filter_cutoff[i][ret][0];
-+		*val2 = mma8452_hp_filter_cutoff[i][ret][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 	return -EINVAL;
- }
-@@ -278,7 +324,7 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
- 			     int val, int val2, long mask)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
--	int i;
-+	int i, reg;
- 
- 	if (iio_buffer_enabled(indio_dev))
- 		return -EBUSY;
-@@ -306,6 +352,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		return mma8452_change_config(data, MMA8452_OFF_X +
- 			chan->scan_index, val);
-+	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-+		i = mma8452_get_hp_filter_index(data, val, val2);
-+		if (i < 0)
-+			return -EINVAL;
-+
-+		reg = i2c_smbus_read_byte_data(data->client,
-+						MMA8452_HP_FILTER_CUTOFF);
-+		if (reg < 0)
-+			return reg;
-+		reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-+		reg |= i;
-+		return mma8452_change_config(data,
-+				MMA8452_HP_FILTER_CUTOFF, reg);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -552,7 +611,8 @@ static struct attribute_group mma8452_event_attribute_group = {
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
- 		BIT(IIO_CHAN_INFO_CALIBBIAS), \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
--		BIT(IIO_CHAN_INFO_SCALE), \
-+		BIT(IIO_CHAN_INFO_SCALE) | \
-+		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
- 	.scan_index = idx, \
- 	.scan_type = { \
- 		.sign = 's', \
-@@ -575,6 +635,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
- static struct attribute *mma8452_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
- 	NULL
- };
- 
+>>
+>> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> ---
+>>  .../devicetree/bindings/arm/samsung/exynos-adc.txt | 10 ++-
+>>  drivers/iio/adc/exynos_adc.c                       | 89 +++++++++++++++++++++-
+>>  2 files changed, 96 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>> index b6e3989..fe34c76 100644
+>> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>> @@ -11,11 +11,19 @@ New driver handles the following
+>>  
+>>  Required properties:
+>>  - compatible:		Must be "samsung,exynos-adc-v1"
+>> -				for exynos4412/5250 controllers.
+>> +				for exynos4412/5250 and s5pv210 controllers.
+>>  			Must be "samsung,exynos-adc-v2" for
+>>  				future controllers.
+>>  			Must be "samsung,exynos3250-adc" for
+>>  				controllers compatible with ADC of Exynos3250.
+>> +			Must be "samsung,s3c2410-adc" for
+>> +				the ADC in s3c2410 and compatibles
+>> +			Must be "samsung,s3c2416-adc" for
+>> +				the ADC in s3c2416 and compatibles
+>> +			Must be "samsung,s3c2440-adc" for
+>> +				the ADC in s3c2440 and compatibles
+>> +			Must be "samsung,s3c2443-adc" for
+>> +				the ADC in s3c2443 and compatibles
+>>  			Must be "samsung,s3c6410-adc" for
+>>  				the ADC in s3c6410 and compatibles
+>>  - reg:			Contains ADC register address range (base address and
+>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+>> index 05bdd2f12..7d28032 100644
+>> --- a/drivers/iio/adc/exynos_adc.c
+>> +++ b/drivers/iio/adc/exynos_adc.c
+>> @@ -51,6 +51,9 @@
+>>  #define ADC_V1_MUX(x)		((x) + 0x1c)
+>>  #define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
+>>  
+>> +/* S3C2410 ADC registers definitions */
+>> +#define ADC_S3C2410_MUX(x)	((x) + 0x18)
+>> +
+>>  /* Future ADC_V2 registers definitions */
+>>  #define ADC_V2_CON1(x)		((x) + 0x00)
+>>  #define ADC_V2_CON2(x)		((x) + 0x04)
+>> @@ -67,6 +70,8 @@
+>>  
+>>  /* Bit definitions for S3C2410 ADC */
+>>  #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) <<3)
+>> +#define ADC_S3C2410_DATX_MASK	0x3FF
+>> +#define ADC_S3C2416_CON_RES_SEL	(1 << 3)
+> Since it is done this way in this driver, better use (1u << 3) here.
+
+OK, I'll fix it.
+
+Best Regards,
+Chanwoo Choi
