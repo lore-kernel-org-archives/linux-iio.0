@@ -1,35 +1,70 @@
-Return-Path: <mfuzzey@parkeon.com>
-Message-ID: <53D65323.8030507@parkeon.com>
-Date: Mon, 28 Jul 2014 15:41:55 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:5658 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751586AbaG1LJq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Jul 2014 07:09:46 -0400
+Message-ID: <57688.163.33.229.63.1406545747.squirrel@linux.intel.com>
+In-Reply-To: <53D12208.9030500@metafoo.de>
+References: <61739.163.33.230.161.1406207197.squirrel@linux.intel.com>
+    <53D12208.9030500@metafoo.de>
+Date: Mon, 28 Jul 2014 11:09:07 -0000 (GMT)
+Subject: Re: IIO for PCIe-DMA ADC
+From: "Krzysztof Sywula" <krzysztof.m.sywula@linux.intel.com>
+To: "Lars-Peter Clausen" <lars@metafoo.de>
+Cc: "Krzysztof Sywula" <krzysztof.m.sywula@linux.intel.com>,
+	linux-iio@vger.kernel.org
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 4/8] iio: mma8452: Add support for transient event debouncing
-References: <20140723171719.22067.79447.stgit@localhost> <20140723171727.22067.61322.stgit@localhost> <alpine.DEB.2.01.1407232016350.21518@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1407232016350.21518@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;charset=iso-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 23/07/14 20:20, Peter Meerwald wrote:
-> +static ssize_t mma8452_set_transient_period(struct device *dev,
-> +						struct device_attribute *attr,
-> +						const char *buf,
-> +						size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int i, f, us, steps, ret;
-> +
-> +	ret = iio_str_to_fixpoint(buf, USEC_PER_SEC / 10, &i, &f);
-> +	if (ret)
-> +		return ret;
-> +
-> +	us = i * USEC_PER_SEC + f;
-> +	steps = us / mma8452_transient_time_step_us[
-> +				mma8452_get_odr_index(data)];
-> +
-> +	if (steps < 0 || steps > 0xFF)
-> perhaps do the check for negative i earlier; use lowercase hex-values
+Lars, I have few more questions, would love if you could answer.
+- ADC I have uses max 4KHz sampling frequency, SoC CPU is 533MHz; will IIO
+cope?
+- are there any other ADCs in IIO framework that use your DMA-extension?
+- I would like to use dw_dmac DMA driver, I hope both, IIO and your
+DMA-extension will honour that
+- what is the status of upstreaming DMA-extension? Are you commited to any
+dates?
+- is there any out of the box set of tests for IIO/DMA-extension?
+
+Thanks,
+Krzysztof Sywula
+
+> On 07/24/2014 03:06 PM, Krzysztof Sywula wrote:
+>> Hi there, I’m designing a PCIe driver for DMA enabled ADC. Is IIO
+>> handling
+>> such a combo? I'm based on kernel 3.8.7.
+>>
+>> Website:
+>> http://wiki.analog.com/software/linux/docs/iio/iio
+>> says "However typical DMA operated devices such as ones connected to a
+>> high speed synchronous serial (McBSP, SPORT) or high speed synchronous
+>> parallel (EPI, PPI) or FPGA peripherals are also subject to this
+>> subsystem."
+>>
+>> which is not clear enough for me to answer that question.
 >
-Ok done for V2
+>
+> Hi,
+>
+> The current upstream version of IIO does not have built-in support for
+> DMA,
+> but you can always create your custom buffer implementation that handles
+> the
+> DMA.
+>
+> There is a out of tree generic DMA[0] and DMAengine[1] support for IIO.
+> This
+> is both scheduled for mainline submission, but obviously will not be
+> available in a 3.8.7 kernel.
+>
+> - Lars
+>
+> [0]
+> https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers/iio/industrialio-dmabuf.c
+> [1]
+> https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers/iio/industrialio-dmaengine.c
+>
+>
+
