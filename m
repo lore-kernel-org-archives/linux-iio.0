@@ -1,59 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:47209 "EHLO
-	relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932082AbaGWQvH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jul 2014 12:51:07 -0400
-Message-ID: <1406134260.28464.2.camel@hadess.net>
-Subject: Re: User-space API for accelerometer(s)?
-From: Bastien Nocera <hadess@hadess.net>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: "Peter F. Patel-Schneider" <pfpschneider@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>,
-	linux-iio@vger.kernel.org,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Date: Wed, 23 Jul 2014 18:51:00 +0200
-In-Reply-To: <53CFB269.3040302@linux.intel.com>
-References: <1403100542.30918.29.camel@nuvo>
-			    <CA+BWVUSqrJhFwKXHL5q=mwcxmasfkpNB6EqEXC6jPfg0ytOVzA@mail.gmail.com>
-			    <53A224AB.9090305@linux.intel.com> <1403176834.30918.32.camel@nuvo>
-			   <53A57414.8000104@kernel.org> <1404216616.7785.1.camel@nuvo>
-			  <53B59837.8080907@jic23.retrosnub.co.uk> <1404916405.10032.3.camel@nuvo>
-			 <alpine.DEB.2.01.1407091644570.15209@pmeerw.net>
-		 <1404944174.3519.1.camel@nuvo> <53BDEE91.80200@gmail.com>
-		 <53BEAB81.8080108@linux.intel.com> <1406117990.28464.0.camel@hadess.net>
-	 <53CFB269.3040302@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mfuzzey@parkeon.com>
+Message-ID: <53D67210.3060906@parkeon.com>
+Date: Mon, 28 Jul 2014 17:53:52 +0200
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 1/8] iio: mma8452: Initialise before activating
+References: <20140723171719.22067.79447.stgit@localhost> <20140723171721.22067.93513.stgit@localhost> <alpine.DEB.2.01.1407232002160.21518@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1407232002160.21518@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 2014-07-23 at 06:02 -0700, Srinivas Pandruvada wrote:
-> On 07/23/2014 05:19 AM, Bastien Nocera wrote:
-> > On Thu, 2014-07-10 at 08:04 -0700, Srinivas Pandruvada wrote:
-> >> I suggest to look at https://01.org/android-ia/downloads. Under
-> >> device/intel, you can see user space HAL for sensor hubs.
-> > I can't find it anywhere on those pages. There only seems to be
-> > installable images, with no source code.
-> >
-> 
-> You can see instruction here to get source code. You can see source in 
-> device/intel folder.
-> 
-> https://01.org/android-ia/downloads/android-4.4.2r1-ia1
+Hi Peter,
 
-Right, I found this:
-https://github.com/android-ia/device_intel/blob/release/android-4.1.1_r1-ia0/pc_std/libsensors/SensorConfig.h
+On 23/07/14 20:05, Peter Meerwald wrote:
+> Hello Martin,
+>
+>> Many of the hardware configuration registers may only be modified while the
+>> device is inactive.
+> so this means that writing INFO_SAMP_FREQ or INFO_SCALE won't work without
+> deactivating / reactivating the device?
+>   
+> I'm pretty sure I tried this...
 
-Which seems to have a number of bugs (defines "GRAVITY" but actually
-uses "GRAVITY_EARTH" in some of the formulas), and doesn't make it clear
-which one of the sensors each of the sections are for.
+I've tried it and it doesn't work.
 
-In any case, my problem was simply one of threshold. For reference, I've
-also downloaded Microsoft's documentation for hardware manufacturers:
-http://msdn.microsoft.com/en-us/library/windows/hardware/dn613934(v=vs.85).aspx
+Applying this (demo only, not for merging) patch on top of my series to 
+make the debugfs code not deactivate / reactivate on writes:
 
-Cheers
+@@ -608,7 +608,7 @@ static int mma8452_reg_access_dbg(struct iio_dev 
+*indio_dev,
+                 return -EINVAL;
 
+         if (readval == NULL) {
+-               ret = mma8452_change_config(data, reg, writeval);
++               ret = i2c_smbus_write_byte_data(data->client, reg, 
+writeval);
+         } else {
+                 ret = i2c_smbus_read_byte_data(data->client, reg);
+                 if (ret < 0)
+
+
+Then:
+
+# cd /sys/kernel/debug/iio/iio:device0
+# echo 0x0e > direct_reg_access
+# cat direct_reg_access
+0x0
+# echo 0x0e 0x01 >direct_reg_access
+# cat direct_reg_access
+0x0
+
+So the write is not changing anything.
+
+Removing the demo patch so that mma8452_change_config() is used causes 
+it to work as expected:
+
+# echo 0x0e 0x01 > direct_reg_access
+# cat direct_reg_access
+0x1
