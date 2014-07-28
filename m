@@ -1,217 +1,250 @@
-Return-Path: <mfuzzey@parkeon.com>
-Message-ID: <53D6574A.6010203@parkeon.com>
-Date: Mon, 28 Jul 2014 15:59:38 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56233 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752138AbaG1VUm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jul 2014 17:20:42 -0400
+Message-ID: <53D6BEA4.9050808@kernel.org>
+Date: Mon, 28 Jul 2014 22:20:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 7/8] iio: mma8452: add an attribute to enable the highpass
- filter
-References: <20140723171719.22067.79447.stgit@localhost> <20140723171734.22067.95323.stgit@localhost> <alpine.DEB.2.01.1407232035090.21518@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1407232035090.21518@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: Add TI ADC128S052
+References: <1406541787-14578-1-git-send-email-angelo.compagnucci@gmail.com>
+In-Reply-To: <1406541787-14578-1-git-send-email-angelo.compagnucci@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 23/07/14 20:36, Peter Meerwald wrote:
->> The hardware contains a single configurable highpass filter which
->> is normally used for transient detection (event).
->>
->> However it is also possible to enable this filter for normal channel
->> reading. Add a new attribute in_accel_high_pass_filter_en to do this.
-> the patch moves around many lines of code, can likely be made much more
-> compact
-Well yes it does move some code around but that is because new function 
-mma8452_store_hp_cutoff_en(),
-introduced as main purpose of this patch, requires access to 
-mma8452_change_config(), and indirectly
-to mma8452_standby() and mma8452_active()
-
-So this patch moves those three functions earlier in the file.
-
-The only ways I can to see to make it smaller would be:
-
-1) Add a forward declaration for mma8452_change_config()
-2) Place mma8452_store_hp_cutoff_en() later in the file.
-
-But for 1) AFAIKT in the kernel forward declarations are avoided when 
-possible to avoid introducing double maintenance points.
-
-And for 2) that would break the logical grouping of keeping the 
-attribute accessor functions together.
-
-I didn't think the aim was necessarilly to minimize the patch size 
-(providing it remains reviewable) but to maximize the quality of the
-resulting code once the patch is applied.
-
-So, if no strong objections I'd like to keep this as is.
->   
->> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
->> ---
->>   drivers/iio/accel/mma8452.c |  115 +++++++++++++++++++++++++++++--------------
->>   1 file changed, 78 insertions(+), 37 deletions(-)
->>
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index 66933b2..c56d34e 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -62,6 +62,7 @@
->>   #define MMA8452_DATA_CFG_FS_2G 0
->>   #define MMA8452_DATA_CFG_FS_4G 1
->>   #define MMA8452_DATA_CFG_FS_8G 2
->> +#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
->>   
->>   #define MMA8452_INT_DRDY	BIT(0)
->>   #define MMA8452_INT_FF_MT	BIT(2)
->> @@ -106,6 +107,43 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
->>   		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
->>   }
->>   
->> +static int mma8452_standby(struct mma8452_data *data)
->> +{
->> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
->> +		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
->> +}
->> +
->> +static int mma8452_active(struct mma8452_data *data)
->> +{
->> +	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
->> +		data->ctrl_reg1);
->> +}
->> +
->> +static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
->> +{
->> +	int ret;
->> +
->> +	mutex_lock(&data->lock);
->> +
->> +	/* config can only be changed when in standby */
->> +	ret = mma8452_standby(data);
->> +	if (ret < 0)
->> +		goto fail;
->> +
->> +	ret = i2c_smbus_write_byte_data(data->client, reg, val);
->> +	if (ret < 0)
->> +		goto fail;
->> +
->> +	ret = mma8452_active(data);
->> +	if (ret < 0)
->> +		goto fail;
->> +
->> +	ret = 0;
->> +fail:
->> +	mutex_unlock(&data->lock);
->> +	return ret;
->> +}
->> +
->>   static ssize_t mma8452_show_int_plus_micros(char *buf,
->>   	const int (*vals)[2], int n)
->>   {
->> @@ -201,11 +239,50 @@ static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
->>   		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
->>   }
->>   
->> +static ssize_t mma8452_show_hp_cutoff_en(struct device *dev,
->> +				struct device_attribute *attr, char *buf)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct mma8452_data *data = iio_priv(indio_dev);
->> +
->> +	return sprintf(buf, "%d\n",
->> +		data->data_cfg & MMA8452_DATA_CFG_HPF_MASK ? 1 : 0);
->> +}
->> +
->> +static ssize_t mma8452_store_hp_cutoff_en(struct device *dev,
->> +				struct device_attribute *attr,
->> +				const char *buf, size_t len)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct mma8452_data *data = iio_priv(indio_dev);
->> +	bool state;
->> +	int ret;
->> +
->> +	ret = strtobool(buf, &state);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	if (state)
->> +		data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
->> +	else
->> +		data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
->> +
->> +	ret = mma8452_change_config(data, MMA8452_DATA_CFG, data->data_cfg);
->> +	if (ret)
->> +		return ret;
->> +
->> +	return len;
->> +}
->> +
->>   static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
->>   static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
->>   	mma8452_show_scale_avail, NULL, 0);
->>   static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
->>   			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
->> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_en,
->> +			 S_IRUGO | S_IWUSR,
->> +			 mma8452_show_hp_cutoff_en,
->> +			 mma8452_store_hp_cutoff_en, 0);
->>   
->>   static int mma8452_get_samp_freq_index(struct mma8452_data *data,
->>   	int val, int val2)
->> @@ -282,43 +359,6 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->>   	return -EINVAL;
->>   }
->>   
->> -static int mma8452_standby(struct mma8452_data *data)
->> -{
->> -	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
->> -		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
->> -}
->> -
->> -static int mma8452_active(struct mma8452_data *data)
->> -{
->> -	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
->> -		data->ctrl_reg1);
->> -}
->> -
->> -static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
->> -{
->> -	int ret;
->> -
->> -	mutex_lock(&data->lock);
->> -
->> -	/* config can only be changed when in standby */
->> -	ret = mma8452_standby(data);
->> -	if (ret < 0)
->> -		goto fail;
->> -
->> -	ret = i2c_smbus_write_byte_data(data->client, reg, val);
->> -	if (ret < 0)
->> -		goto fail;
->> -
->> -	ret = mma8452_active(data);
->> -	if (ret < 0)
->> -		goto fail;
->> -
->> -	ret = 0;
->> -fail:
->> -	mutex_unlock(&data->lock);
->> -	return ret;
->> -}
->> -
->>   static int mma8452_write_raw(struct iio_dev *indio_dev,
->>   			     struct iio_chan_spec const *chan,
->>   			     int val, int val2, long mask)
->> @@ -636,6 +676,7 @@ static struct attribute *mma8452_attributes[] = {
->>   	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->>   	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
->>   	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
->> +	&iio_dev_attr_in_accel_filter_high_pass_en.dev_attr.attr,
->>   	NULL
->>   };
->>   
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+On 07/28/14 11:03, Angelo Compagnucci wrote:
+> This patch adds support for ADC128S052 from TI.
+> 
+> Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+> ---
+A note of changes from v1 should be here...
+>  drivers/iio/adc/Kconfig         |  10 +++
+>  drivers/iio/adc/Makefile        |   1 +
+>  drivers/iio/adc/ti-adc128s052.c | 180 ++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 191 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-adc128s052.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..3ea56a3 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -216,6 +216,16 @@ config TI_ADC081C
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc081c.
+>  
+> +config TI_ADC128S052
+> +	tristate "Texas Instruments ADC128S052"
+> +	depends on SPI
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADC128S052
+> +	  chip.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-adc128s052.
+> +
+>  config TI_AM335X_ADC
+>  	tristate "TI's AM335X ADC driver"
+>  	depends on MFD_TI_AM335X_TSCADC
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ad81b51..9cc37f6 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -23,6 +23,7 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
+>  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+>  obj-$(CONFIG_NAU7802) += nau7802.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+> +obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+>  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+> new file mode 100644
+> index 0000000..d9ed7bb
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-adc128s052.c
+> @@ -0,0 +1,180 @@
+> +/*
+> + * Copyright (C) 2014 Angelo Compagnucci <angelo.compagnucci@gmail.com>
+> + *
+> + * Driver for Texas Instruments' ADC128S052 ADC chip.
+> + * Datasheet can be found here:
+> + * http://www.ti.com/lit/ds/symlink/adc128s052.pdf
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/err.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/module.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +struct adc128 {
+> +	struct spi_device *spi;
+> +
+> +	struct regulator *reg;
+> +	struct mutex lock;
+> +
+> +	u8 buffer[2] ____cacheline_aligned;
+> +};
+> +
+> +static int adc128_adc_conversion(struct adc128 *adc, u8 channel)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&adc->lock);
+> +
+> +	adc->buffer[0] = channel << 3;
+> +	adc->buffer[1] = 0;
+> +
+> +	ret = spi_write(adc->spi, &adc->buffer, 2);
+> +	if (ret < 0) {
+> +		mutex_unlock(&adc->lock);
+> +		return ret;
+> +	}
+> +
+> +	ret = spi_read(adc->spi, &adc->buffer, 2);
+> +
+> +	mutex_unlock(&adc->lock);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return ((adc->buffer[0] << 8 | adc->buffer[1]) & 0xFFF);
+> +}
+> +
+> +static int adc128_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *channel, int *val,
+> +				int *val2, long mask)
+> +{
+> +	struct adc128 *adc = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +
+> +		ret = adc128_adc_conversion(adc, channel->channel);
+> +		if (ret < 0)
+> +			return -EINVAL;
+> +
+> +		*val = ret;
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +
+> +		ret = regulator_get_voltage(adc->reg);
+> +		if (ret < 0)
+> +			return -EINVAL;
+> +
+> +		*val = ret / 1000;
+> +		*val2 = 12;
+> +		ret = IIO_VAL_FRACTIONAL_LOG2;
+> +		break;
+> +
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +#define ADC128_VOLTAGE_CHANNEL(num)				\
+> +	{							\
+> +		.type = IIO_VOLTAGE,				\
+> +		.indexed = 1,					\
+> +		.channel = (num),				\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
+> +	}
+> +
+> +static const struct iio_chan_spec adc128_channels[] = {
+> +	ADC128_VOLTAGE_CHANNEL(0),
+> +	ADC128_VOLTAGE_CHANNEL(1),
+> +	ADC128_VOLTAGE_CHANNEL(2),
+> +	ADC128_VOLTAGE_CHANNEL(3),
+> +	ADC128_VOLTAGE_CHANNEL(4),
+> +	ADC128_VOLTAGE_CHANNEL(5),
+> +	ADC128_VOLTAGE_CHANNEL(6),
+> +	ADC128_VOLTAGE_CHANNEL(7),
+> +};
+> +
+> +static const struct iio_info adc128_info = {
+> +	.read_raw = adc128_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int adc128_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct adc128 *adc;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	adc = iio_priv(indio_dev);
+> +	adc->spi = spi;
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &adc128_info;
+> +
+> +	indio_dev->channels = adc128_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(adc128_channels);
+> +
+> +	adc->reg = devm_regulator_get(&spi->dev, "vref");
+> +	if (IS_ERR(adc->reg))
+> +		return PTR_ERR(adc->reg);
+> +
+> +	ret = regulator_enable(adc->reg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	mutex_init(&adc->lock);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int adc128_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct adc128 *adc = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	regulator_disable(adc->reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id adc128_id[] = {
+> +	{ "adc128s052", 0},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, adc128_id);
+> +
+> +static struct spi_driver adc128_driver = {
+> +	.driver = {
+> +		.name = "adc128s052",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = adc128_probe,
+> +	.remove = adc128_remove,
+> +	.id_table = adc128_id,
+> +};
+> +module_spi_driver(adc128_driver);
+> +
+> +MODULE_AUTHOR("Angelo Compagnucci <angelo.compagnucci@gmail.com>");
+> +MODULE_DESCRIPTION("Texas Instruments ADC128S052");
+> +MODULE_LICENSE("GPL v2");
+> 
