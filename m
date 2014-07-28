@@ -1,136 +1,79 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH 4/8] iio: mma8452: Add support for transient event debouncing
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Wed, 23 Jul 2014 19:17:27 +0200
-Message-ID: <20140723171727.22067.61322.stgit@localhost>
-In-Reply-To: <20140723171719.22067.79447.stgit@localhost>
-References: <20140723171719.22067.79447.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:55574 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752117AbaG1LTZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 28 Jul 2014 07:19:25 -0400
+From: Teodora Baluta <teodora.baluta@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Teodora Baluta <teodora.baluta@intel.com>
+Subject: [PATCH 2/5] staging: iio: ad5933: fix sparse warning cast to restricted __be16
+Date: Mon, 28 Jul 2014 14:18:30 +0300
+Message-Id: <1406546313-23031-3-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1406546313-23031-1-git-send-email-teodora.baluta@intel.com>
+References: <1406546313-23031-1-git-send-email-teodora.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Allow the debouce counter for transient events to be configured
-using the sysfs attribute events/in_accel_thresh_rising_period
+Fix the following sparse endianness warnings:
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+  CHECK   drivers/staging/iio/impedance-analyzer/ad5933.c
+drivers/staging/iio/impedance-analyzer/ad5933.c:674:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:674:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:674:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:674:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:675:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:675:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:675:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:675:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:677:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:677:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:677:34: warning: cast to
+restricted __be16
+drivers/staging/iio/impedance-analyzer/ad5933.c:677:34: warning: cast to
+restricted __be16
+
+Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
 ---
- drivers/iio/accel/mma8452.c |   75 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 73 insertions(+), 2 deletions(-)
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 8129c0b..7e0c29c 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -129,6 +129,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
- 	return -EINVAL;
- }
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 2cef4b9..87ce844 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -647,7 +647,7 @@ static void ad5933_work(struct work_struct *work)
+ 	struct ad5933_state *st = container_of(work,
+ 		struct ad5933_state, work.work);
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(st->client);
+-	signed short buf[2];
++	u16 buf[2];
+ 	unsigned char status;
  
-+static int mma8452_get_odr_index(struct mma8452_data *data)
-+{
-+	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-+			MMA8452_CTRL_DR_SHIFT;
-+}
-+
- static const int mma8452_samp_freq[8][2] = {
- 	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
- 	{6, 250000}, {1, 560000}
-@@ -144,6 +150,18 @@ static const int mma8452_scales[3][2] = {
- 	{0, 9577}, {0, 19154}, {0, 38307}
- };
+ 	mutex_lock(&indio_dev->mlock);
+@@ -671,10 +671,10 @@ static void ad5933_work(struct work_struct *work)
+ 				scan_count * 2, (u8 *)buf);
  
-+/* Datasheet table 35  (step time vs sample frequency) */
-+static const int mma8452_transient_time_step_us[8] = {
-+	1250,
-+	2500,
-+	5000,
-+	10000,
-+	20000,
-+	20000,
-+	20000,
-+	20000
-+};
-+
- static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
-@@ -203,8 +221,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 		*val2 = mma8452_scales[i][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
--			MMA8452_CTRL_DR_SHIFT;
-+		i = mma8452_get_odr_index(data);
- 		*val = mma8452_samp_freq[i][0];
- 		*val2 = mma8452_samp_freq[i][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-@@ -356,6 +373,52 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
- }
- 
-+static ssize_t mma8452_query_transient_period(struct device *dev,
-+						struct device_attribute *attr,
-+						char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	int us, steps;
-+
-+	steps = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_COUNT);
-+	if (steps < 0)
-+		return steps;
-+
-+	us = mma8452_transient_time_step_us[mma8452_get_odr_index(data)]
-+								* steps;
-+
-+	return sprintf(buf, "%ld.%06ld\n",
-+			us / USEC_PER_SEC, us % USEC_PER_SEC);
-+}
-+
-+static ssize_t mma8452_set_transient_period(struct device *dev,
-+						struct device_attribute *attr,
-+						const char *buf,
-+						size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	int i, f, us, steps, ret;
-+
-+	ret = iio_str_to_fixpoint(buf, USEC_PER_SEC / 10, &i, &f);
-+	if (ret)
-+		return ret;
-+
-+	us = i * USEC_PER_SEC + f;
-+	steps = us / mma8452_transient_time_step_us[
-+				mma8452_get_odr_index(data)];
-+
-+	if (steps < 0 || steps > 0xFF)
-+		return -EINVAL;
-+
-+	ret = mma8452_change_config(data, MMA8452_TRANSIENT_COUNT, steps);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
- static void mma8452_push_transient_event(struct iio_dev *indio_dev,
- 						int chan, u64 ts)
- {
-@@ -464,8 +527,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
-  */
- static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
- 
-+static IIO_DEVICE_ATTR_NAMED(accel_transient_period,
-+			     in_accel_thresh_rising_period,
-+			     S_IRUGO | S_IWUSR,
-+			     mma8452_query_transient_period,
-+			     mma8452_set_transient_period,
-+			     0);
-+
- static struct attribute *mma8452_event_attributes[] = {
- 	&iio_const_attr_accel_transient_scale.dev_attr.attr,
-+	&iio_dev_attr_accel_transient_period.dev_attr.attr,
- 	NULL,
- };
- 
+ 		if (scan_count == 2) {
+-			buf[0] = be16_to_cpu(buf[0]);
+-			buf[1] = be16_to_cpu(buf[1]);
++			be16_to_cpus(&buf[0]);
++			be16_to_cpus(&buf[1]);
+ 		} else {
+-			buf[0] = be16_to_cpu(buf[0]);
++			be16_to_cpus(&buf[0]);
+ 		}
+ 		iio_push_to_buffers(indio_dev, buf);
+ 	} else {
+-- 
+1.9.1
+
