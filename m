@@ -1,87 +1,111 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org
-Subject: [RESEND PATCH 2/3] iio: st_sensors: add device tree bindings
-Date: Mon,  7 Jul 2014 11:48:06 +0200
-Message-Id: <1404726486-2610-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mta1.parkeon.com ([91.121.43.66]:33124 "EHLO mta1.parkeon.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753107AbaG2JBe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 05:01:34 -0400
+Subject: [PATCH V2 1/8] iio: mma8452: Initialise before activating
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: pmeerw@pmeerw.net
+Date: Tue, 29 Jul 2014 11:01:31 +0200
+Message-ID: <20140729090131.4618.11083.stgit@localhost>
+In-Reply-To: <20140729090128.4618.92936.stgit@localhost>
+References: <20140729090128.4618.92936.stgit@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds some basic, simple device tree bindings to the STMicro
-MEMS sensor drivers.
+Many of the hardware configuration registers may only be modified while the
+device is inactive.
 
-Cc: devicetree@vger.kernel.org
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Denis CIOCCA <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Currently the probe code first activates the device and then modifies the
+registers (eg to set the scale). This doesn't actually work but is not
+noticed since the scale used is the default value.
+
+While at it also issue a hardware reset command at probe time.
+
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- .../devicetree/bindings/iio/st-sensors.txt         | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/st-sensors.txt
+ drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-new file mode 100644
-index 000000000000..a7a0a15913ad
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-@@ -0,0 +1,54 @@
-+STMicroelectronics MEMS sensors
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 3c12d49..04a4f34 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -32,6 +32,7 @@
+ #define MMA8452_OFF_Z 0x31
+ #define MMA8452_CTRL_REG1 0x2a
+ #define MMA8452_CTRL_REG2 0x2b
++#define MMA8452_CTRL_REG2_RST		BIT(6)
+ 
+ #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+ 
+@@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
+ 	{6, 250000}, {1, 560000}
+ };
+ 
+-/* 
++/*
+  * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
+  * The userspace interface uses m/s^2 and we declare micro units
+  * So scale factor is given by:
+@@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
+ 
+ static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+ 
++static int mma8452_reset(struct i2c_client *client)
++{
++	int i;
++	int ret;
 +
-+The STMicroelectronics sensor devices are pretty straight-forward I2C or
-+SPI devices, all sharing the same device tree descriptions no matter what
-+type of sensor it is.
++	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
++						MMA8452_CTRL_REG2_RST);
++	if (ret)
++		return ret;
 +
-+Required properties:
-+- compatible: see the list of valid compatible strings below
-+- reg: the I2C or SPI address the device will respond to
++	for (i = 0; i < 10; i++) {
++		udelay(100);
++		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
++		if (ret == -EIO)
++			continue; /* I2C comm reset */
++		if (ret < 0)
++			return ret;
++		if (!(ret & MMA8452_CTRL_REG2_RST))
++			return 0;
++	}
 +
-+Optional properties:
-+- vdd-supply: an optional regulator that needs to be on to provide VDD
-+  power to the sensor.
-+- vddio-supply: an optional regulator that needs to be on to provide the
-+  VDD IO power to the sensor.
-+- st,drdy-int-pin: the pin on the package that will be used to signal
-+  "data ready" (valid values: 1 or 2). This property is not configurable
-+  on all sensors.
++	return -ETIMEDOUT;
++}
 +
-+Sensors may also have applicable pin control settings, those use the
-+standard bindings from pinctrl/pinctrl-bindings.txt.
+ static int mma8452_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
+ 	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
+ 	indio_dev->available_scan_masks = mma8452_scan_masks;
+ 
+-	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+-		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+-	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+-		data->ctrl_reg1);
++	ret = mma8452_reset(client);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
++		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
++	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
++		data->ctrl_reg1);
++	if (ret < 0)
++		return ret;
 +
-+Valid compatible strings:
-+
-+Accelerometers:
-+- st,lsm303dlh-accel
-+- st,lsm303dlhc-accel
-+- st,lis3dh-accel
-+- st,lsm330d-accel
-+- st,lsm330dl-accel
-+- st,lsm330dlc-accel
-+- st,lis331dlh-accel
-+- st,lsm303dl-accel
-+- st,lsm303dlm-accel
-+- st,lsm330-accel
-+
-+Gyroscopes:
-+- st,l3g4200d-gyro
-+- st,lsm330d-gyro
-+- st,lsm330dl-gyro
-+- st,lsm330dlc-gyro
-+- st,l3gd20-gyro
-+- st,l3g4is-gyro
-+- st,lsm330-gyro
-+
-+Magnetometers:
-+- st,lsm303dlhc-magn
-+- st,lsm303dlm-magn
-+- st,lis3mdl-magn
-+
-+Pressure sensors:
-+- st,lps001wp-press
-+- st,lps25h-press
-+- st,lps331ap-press
--- 
-1.9.3
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 		mma8452_trigger_handler, NULL);
+ 	if (ret < 0)
+
