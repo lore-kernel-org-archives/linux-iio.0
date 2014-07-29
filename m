@@ -1,14 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mta1.parkeon.com ([91.121.43.66]:58201 "EHLO mta1.parkeon.com"
+Received: from mta1.parkeon.com ([91.121.43.66]:60833 "EHLO mta1.parkeon.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753109AbaG2JBe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Jul 2014 05:01:34 -0400
-Subject: [PATCH V2 2/8] iio: mma8452: Add access to registers via DebugFS
+	id S1753136AbaG2JBp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 05:01:45 -0400
+Subject: [PATCH V2 7/8] iio: mma8452: add an attribute to enable the
+ highpass filter
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 From: Martin Fuzzey <mfuzzey@parkeon.com>
 Cc: pmeerw@pmeerw.net
-Date: Tue, 29 Jul 2014 11:01:33 +0200
-Message-ID: <20140729090133.4618.78756.stgit@localhost>
+Date: Tue, 29 Jul 2014 11:01:43 +0200
+Message-ID: <20140729090143.4618.9179.stgit@localhost>
 In-Reply-To: <20140729090128.4618.92936.stgit@localhost>
 References: <20140729090128.4618.92936.stgit@localhost>
 MIME-Version: 1.0
@@ -16,59 +17,174 @@ Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The hardware contains a single configurable highpass filter which
+is normally used for transient detection (event).
+
+However it is also possible to enable this filter for normal channel
+reading. Add a new attribute in_accel_high_pass_filter_en to do this.
+
 Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/accel/mma8452.c |   25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/iio/accel/mma8452.c |  115 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 78 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 04a4f34..c46df4e 100644
+index eb68f9a..62589f9 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -34,6 +34,8 @@
- #define MMA8452_CTRL_REG2 0x2b
- #define MMA8452_CTRL_REG2_RST		BIT(6)
+@@ -62,6 +62,7 @@
+ #define MMA8452_DATA_CFG_FS_2G 0
+ #define MMA8452_DATA_CFG_FS_4G 1
+ #define MMA8452_DATA_CFG_FS_8G 2
++#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
  
-+#define MMA8452_MAX_REG 0x31
-+
- #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
- 
- #define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
-@@ -292,6 +294,28 @@ done:
- 	return IRQ_HANDLED;
+ #define MMA8452_INT_DRDY	BIT(0)
+ #define MMA8452_INT_FF_MT	BIT(2)
+@@ -106,6 +107,43 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
+ 		MMA8452_OUT_X, 3 * sizeof(__be16), (u8 *) buf);
  }
  
-+static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
-+			      unsigned reg, unsigned writeval,
-+			      unsigned *readval)
++static int mma8452_standby(struct mma8452_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
++		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
++}
++
++static int mma8452_active(struct mma8452_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
++		data->ctrl_reg1);
++}
++
++static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
 +{
 +	int ret;
-+	struct mma8452_data *data = iio_priv(indio_dev);
 +
-+	if (reg > MMA8452_MAX_REG)
-+		return -EINVAL;
++	mutex_lock(&data->lock);
 +
-+	if (readval == NULL) {
-+		ret = mma8452_change_config(data, reg, writeval);
-+	} else {
-+		ret = i2c_smbus_read_byte_data(data->client, reg);
-+		if (ret < 0)
-+			return ret;
-+		*readval = ret;
-+		ret = 0;
-+	}
++	/* config can only be changed when in standby */
++	ret = mma8452_standby(data);
++	if (ret < 0)
++		goto fail;
++
++	ret = i2c_smbus_write_byte_data(data->client, reg, val);
++	if (ret < 0)
++		goto fail;
++
++	ret = mma8452_active(data);
++	if (ret < 0)
++		goto fail;
++
++	ret = 0;
++fail:
++	mutex_unlock(&data->lock);
 +	return ret;
 +}
 +
- #define MMA8452_CHANNEL(axis, idx) { \
- 	.type = IIO_ACCEL, \
- 	.modified = 1, \
-@@ -331,6 +355,7 @@ static const struct iio_info mma8452_info = {
- 	.attrs = &mma8452_group,
- 	.read_raw = &mma8452_read_raw,
- 	.write_raw = &mma8452_write_raw,
-+	.debugfs_reg_access = &mma8452_reg_access_dbg,
- 	.driver_module = THIS_MODULE,
+ static ssize_t mma8452_show_int_plus_micros(char *buf,
+ 	const int (*vals)[2], int n)
+ {
+@@ -201,11 +239,50 @@ static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
+ 		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
+ }
+ 
++static ssize_t mma8452_show_hp_cutoff_en(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n",
++		data->data_cfg & MMA8452_DATA_CFG_HPF_MASK ? 1 : 0);
++}
++
++static ssize_t mma8452_store_hp_cutoff_en(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
++	bool state;
++	int ret;
++
++	ret = strtobool(buf, &state);
++	if (ret < 0)
++		return ret;
++
++	if (state)
++		data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
++	else
++		data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
++
++	ret = mma8452_change_config(data, MMA8452_DATA_CFG, data->data_cfg);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
+ static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
+ static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
+ 	mma8452_show_scale_avail, NULL, 0);
+ static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
+ 			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
++static IIO_DEVICE_ATTR(in_accel_filter_high_pass_en,
++			 S_IRUGO | S_IWUSR,
++			 mma8452_show_hp_cutoff_en,
++			 mma8452_store_hp_cutoff_en, 0);
+ 
+ static int mma8452_get_samp_freq_index(struct mma8452_data *data,
+ 	int val, int val2)
+@@ -282,43 +359,6 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
+-static int mma8452_standby(struct mma8452_data *data)
+-{
+-	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
+-		data->ctrl_reg1 & ~MMA8452_CTRL_ACTIVE);
+-}
+-
+-static int mma8452_active(struct mma8452_data *data)
+-{
+-	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
+-		data->ctrl_reg1);
+-}
+-
+-static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+-{
+-	int ret;
+-
+-	mutex_lock(&data->lock);
+-
+-	/* config can only be changed when in standby */
+-	ret = mma8452_standby(data);
+-	if (ret < 0)
+-		goto fail;
+-
+-	ret = i2c_smbus_write_byte_data(data->client, reg, val);
+-	if (ret < 0)
+-		goto fail;
+-
+-	ret = mma8452_active(data);
+-	if (ret < 0)
+-		goto fail;
+-
+-	ret = 0;
+-fail:
+-	mutex_unlock(&data->lock);
+-	return ret;
+-}
+-
+ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int val, int val2, long mask)
+@@ -636,6 +676,7 @@ static struct attribute *mma8452_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
++	&iio_dev_attr_in_accel_filter_high_pass_en.dev_attr.attr,
+ 	NULL
  };
  
 
