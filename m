@@ -1,35 +1,27 @@
-Return-Path: <joe@perches.com>
-Message-ID: <1406846509.9953.6.camel@joe-AO725>
-Subject: Re: [PATCH 0/8] staging: iio: accel: multiple coding style fixes
-From: Joe Perches <joe@perches.com>
-To: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, jic23@kernel.org
-Date: Thu, 31 Jul 2014 15:41:49 -0700
-In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
-References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mta1.parkeon.com ([91.121.43.66]:36250 "EHLO mta1.parkeon.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753090AbaG2JBe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 05:01:34 -0400
+Subject: [PATCH V2 0/8] iio: mma8452 enhancements
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: pmeerw@pmeerw.net
+Date: Tue, 29 Jul 2014 11:01:29 +0200
+Message-ID: <20140729090128.4618.92936.stgit@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, 2014-07-31 at 19:34 -0300, Murilo Opsfelder Araujo wrote:
-> The following patches fix (almost) all warnings reported by
-> checkpatch.pl.
-> 
-> Murilo Opsfelder Araujo (8):
->   staging: iio: accel: adis16203_core.c: fix coding style
->   staging: iio: accel: adis16201_core.c: fix coding style
->   staging: iio: accel: adis16204_core.c: fix coding style
->   staging: iio: accel: adis16209_core.c: fix coding style
->   staging: iio: accel: adis16240_core.c: fix coding style
->   staging: iio: accel: lis3l02dq_core.c: fix coding style
->   staging: iio: accel: lis3l02dq_ring.c: fix coding style
->   staging: iio: accel: sca3000_core.c: fix coding style
+This series adds some additional features to the mma8452 accelerometer driver
+	* debugfs register access
+	* transient threshold events
+	* highpass filter
+	* interrupt driven sampling (trigger)
 
-Hi.
+The highpass filter attributes are added to the core.
 
-Next time it might be better to use patch subjects like
+In addition a latent bug in the device initialisation is fixed.
 
-staging: <subsystem> Add blank lines between declarations and code
-
-because "fix coding style" really isn't very descriptive.
+V2: Address review comments from Peter Meerwald
