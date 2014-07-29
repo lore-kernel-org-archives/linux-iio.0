@@ -1,61 +1,68 @@
-Return-Path: <mfuzzey@parkeon.com>
-Message-ID: <53D67210.3060906@parkeon.com>
-Date: Mon, 28 Jul 2014 17:53:52 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 1/8] iio: mma8452: Initialise before activating
-References: <20140723171719.22067.79447.stgit@localhost> <20140723171721.22067.93513.stgit@localhost> <alpine.DEB.2.01.1407232002160.21518@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1407232002160.21518@pmeerw.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:5551 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750998AbaG2WSY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 18:18:24 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2 0/2] iio:gyro:bmg160 Gyro Sensor driver
+Date: Tue, 29 Jul 2014 15:24:19 -0700
+Message-Id: <1406672661-17675-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
+v2:
+- Add device id in any-motion trigger
+- Removed string comparison for trigger name to identify trigger source
+- Prevent disabling any motion interrupts when both any motion trigger
+and events are on, but any one of them is disabled via sysfs
+- Switch on chan->type
+- Created new function to raw read axis
+- Explanation why need to power on for changing sampling freq and scale
 
-On 23/07/14 20:05, Peter Meerwald wrote:
-> Hello Martin,
->
->> Many of the hardware configuration registers may only be modified while the
->> device is inactive.
-> so this means that writing INFO_SAMP_FREQ or INFO_SCALE won't work without
-> deactivating / reactivating the device?
->   
-> I'm pretty sure I tried this...
+v1:
+- Runtime PM: Removed module parameter for delay configuration
+Use RTPM autosuspend delay feature. This allows sysfs configuration of
+autosuspend time.
 
-I've tried it and it doesn't work.
+- Trigger
+As suggested, there are two triggers:
+- data_ready : Trigger which will allow all gyro periodic sampled data to
+be received by user space
+- any-motion: When used, will configure the chipset so that data is
+pushed only when there is any motion, allowing system to enter deeper idle
+power states
 
-Applying this (demo only, not for merging) patch on top of my series to 
-make the debugfs code not deactivate / reactivate on writes:
+- Events
+ROC type events will send direction instead of either.
+Also both events and data triggers can be enabled together.
 
-@@ -608,7 +608,7 @@ static int mma8452_reg_access_dbg(struct iio_dev 
-*indio_dev,
-                 return -EINVAL;
+- Addition of unbuffered TEMP read interface
 
-         if (readval == NULL) {
--               ret = mma8452_change_config(data, reg, writeval);
-+               ret = i2c_smbus_write_byte_data(data->client, reg, 
-writeval);
-         } else {
-                 ret = i2c_smbus_read_byte_data(data->client, reg);
-                 if (ret < 0)
+- Misc error message corrections as suggested by Peter Meerwald
+
+TBD: Add sysfs attribute to trigger to configure thresholds.
+Currently the triggers don't have feature to add sysfs attributes
+unlike IIO device. But this has to be a RFC patch on top. 
+
+v0:
+Base version for review
 
 
-Then:
+Srinivas Pandruvada (2):
+  iio:gyro:bmg160 Gyro Sensor driver
+  iio:gyro:bmg160 documentation
 
-# cd /sys/kernel/debug/iio/iio:device0
-# echo 0x0e > direct_reg_access
-# cat direct_reg_access
-0x0
-# echo 0x0e 0x01 >direct_reg_access
-# cat direct_reg_access
-0x0
+ .../ABI/testing/sysfs-bus-iio-gyro-bmg160          |    9 +
+ drivers/iio/gyro/Kconfig                           |   11 +
+ drivers/iio/gyro/Makefile                          |    1 +
+ drivers/iio/gyro/bmg160.c                          | 1174 ++++++++++++++++++++
+ 4 files changed, 1195 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-gyro-bmg160
+ create mode 100644 drivers/iio/gyro/bmg160.c
 
-So the write is not changing anything.
+-- 
+1.9.1
 
-Removing the demo patch so that mma8452_change_config() is used causes 
-it to work as expected:
-
-# echo 0x0e 0x01 > direct_reg_access
-# cat direct_reg_access
-0x1
