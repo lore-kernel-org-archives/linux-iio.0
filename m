@@ -1,74 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:39744 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755545AbaGOAey (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jul 2014 20:34:54 -0400
-Message-ID: <53C47725.8000005@gmail.com>
-Date: Tue, 15 Jul 2014 08:34:45 +0800
-From: Chen Gang <gang.chen.5i5j@gmail.com>
+Received: from mta1.parkeon.com ([91.121.43.66]:59076 "EHLO mta1.parkeon.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753116AbaG2JBi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 05:01:38 -0400
+Subject: [PATCH V2 4/8] iio: mma8452: Add support for transient event
+ debouncing
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: pmeerw@pmeerw.net
+Date: Tue, 29 Jul 2014 11:01:37 +0200
+Message-ID: <20140729090137.4618.1472.stgit@localhost>
+In-Reply-To: <20140729090128.4618.92936.stgit@localhost>
+References: <20140729090128.4618.92936.stgit@localhost>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
-In-Reply-To: <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/14/2014 05:22 PM, Chen Gang wrote:
-> 
-> 在 2014年7月14日，下午4:57，Richard Weinberger <richard@nod.at> 写道：
-> 
->> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
->>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
->>>>>> Maybe we could add COMPILE_TEST to the version string too?
->>>>>> Just to detect such kernels fast in user bug reports...
->>>>>
->>>>> What kind of bug report are you going to get?
->>>>
->>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
->>>> complains that it does not work. :)
->>>
->>> These drivers are typically drivers for some SoC peripheral and the device will simply physically not exist on a platform that does not provide HAS_IOMEM. This is not really any
->>> different from making the driver selectable via COMPILE_TEST for any other platform. To hit the issue you'd have to instantiate a device driver instance for a device that
->>> physically does not exist. This will always result in a failure.
->>
->> Okay, you have convinced me. :)
->>
+Allow the debouce counter for transient events to be configured
+using the sysfs attribute events/in_accel_thresh_rising_period
 
-After search the history patches, I found one related patch which made
-by myself (when I am in Asianux):
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+---
+ drivers/iio/accel/mma8452.c |   77 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 75 insertions(+), 2 deletions(-)
 
-  "https://lkml.org/lkml/2013/7/1/641"
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 3415b36..1d1e41b 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -129,6 +129,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
+ 	return -EINVAL;
+ }
+ 
++static int mma8452_get_odr_index(struct mma8452_data *data)
++{
++	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
++			MMA8452_CTRL_DR_SHIFT;
++}
++
+ static const int mma8452_samp_freq[8][2] = {
+ 	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
+ 	{6, 250000}, {1, 560000}
+@@ -144,6 +150,18 @@ static const int mma8452_scales[3][2] = {
+ 	{0, 9577}, {0, 19154}, {0, 38307}
+ };
+ 
++/* Datasheet table 35  (step time vs sample frequency) */
++static const int mma8452_transient_time_step_us[8] = {
++	1250,
++	2500,
++	5000,
++	10000,
++	20000,
++	20000,
++	20000,
++	20000
++};
++
+ static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+@@ -203,8 +221,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 		*val2 = mma8452_scales[i][1];
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+-			MMA8452_CTRL_DR_SHIFT;
++		i = mma8452_get_odr_index(data);
+ 		*val = mma8452_samp_freq[i][0];
+ 		*val2 = mma8452_samp_freq[i][1];
+ 		return IIO_VAL_INT_PLUS_MICRO;
+@@ -356,6 +373,54 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+ 	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
+ }
+ 
++static ssize_t mma8452_query_transient_period(struct device *dev,
++						struct device_attribute *attr,
++						char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
++	int us, steps;
++
++	steps = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_COUNT);
++	if (steps < 0)
++		return steps;
++
++	us = mma8452_transient_time_step_us[mma8452_get_odr_index(data)]
++								* steps;
++
++	return sprintf(buf, "%ld.%06ld\n",
++			us / USEC_PER_SEC, us % USEC_PER_SEC);
++}
++
++static ssize_t mma8452_set_transient_period(struct device *dev,
++						struct device_attribute *attr,
++						const char *buf,
++						size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
++	int i, f, us, steps, ret;
++
++	ret = iio_str_to_fixpoint(buf, USEC_PER_SEC / 10, &i, &f);
++	if (ret)
++		return ret;
++	if (ret < 0)
++		return -EINVAL;
++
++	us = i * USEC_PER_SEC + f;
++	steps = us / mma8452_transient_time_step_us[
++				mma8452_get_odr_index(data)];
++
++	if (steps > 0xff)
++		return -EINVAL;
++
++	ret = mma8452_change_config(data, MMA8452_TRANSIENT_COUNT, steps);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
+ static void mma8452_push_transient_event(struct iio_dev *indio_dev,
+ 						int chan, u64 ts)
+ {
+@@ -462,8 +527,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
+  */
+ static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+ 
++static IIO_DEVICE_ATTR_NAMED(accel_transient_period,
++			     in_accel_thresh_rising_period,
++			     S_IRUGO | S_IWUSR,
++			     mma8452_query_transient_period,
++			     mma8452_set_transient_period,
++			     0);
++
+ static struct attribute *mma8452_event_attributes[] = {
+ 	&iio_const_attr_accel_transient_scale.dev_attr.attr,
++	&iio_dev_attr_accel_transient_period.dev_attr.attr,
+ 	NULL,
+ };
+ 
 
-For me, it is a long discussion, and forced many members have to join
-in. Please help check again.
-
-Thanks.
-
-> 
-> OK, thank all of you, and I shall send the related patch for it. 
-> 
-> I will try to finish it within this week.
-> 
-
--- 
-Chen Gang
-
-Open, share, and attitude like air, water, and life which God blessed
