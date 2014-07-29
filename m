@@ -1,90 +1,161 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [RESEND PATCH 1/3] iio: st_sensors: get platform data from device tree
-Date: Mon,  7 Jul 2014 11:47:15 +0200
-Message-Id: <1404726435-2565-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mta1.parkeon.com ([91.121.43.66]:49244 "EHLO mta1.parkeon.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753109AbaG2JBn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 29 Jul 2014 05:01:43 -0400
+Subject: [PATCH V2 6/8] io: mma8452: Add highpass filter configuration.
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: pmeerw@pmeerw.net
+Date: Tue, 29 Jul 2014 11:01:41 +0200
+Message-ID: <20140729090141.4618.89569.stgit@localhost>
+In-Reply-To: <20140729090128.4618.92936.stgit@localhost>
+References: <20140729090128.4618.92936.stgit@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Currently the STMicroelectronics sensors only support one single
-platform data item: configuration of the DRDY (data ready) pin
-for a particular design. Augment the core to prioritize and take
-this information from the device tree if the parent device has an
-assigned device node, else fall back to passed in platform data
-(usually the default data).
+Allow the cutoff frequency of the high pass filter to be configured.
 
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Denis CIOCCA <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c | 35 ++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+ drivers/iio/accel/mma8452.c |   65 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 63 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index e8b932fed70e..1cdcef94e6a2 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -14,8 +14,8 @@
- #include <linux/delay.h>
- #include <linux/iio/iio.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/of.h>
- #include <asm/unaligned.h>
--
- #include <linux/iio/common/st_sensors.h>
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 1d1e41b..eb68f9a 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -29,6 +29,8 @@
+ #define MMA8452_INT_SRC 0x0c
+ #define MMA8452_WHO_AM_I 0x0d
+ #define MMA8452_DATA_CFG 0x0e
++#define MMA8452_HP_FILTER_CUTOFF 0x0f
++#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
+ #define MMA8452_TRANSIENT_CFG 0x1d
+ #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+ #define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
+@@ -162,6 +164,18 @@ static const int mma8452_transient_time_step_us[8] = {
+ 	20000
+ };
  
- 
-@@ -265,14 +265,47 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
- 	return 0;
++/* Datasheet table 18 (normal mode) */
++static const int mma8452_hp_filter_cutoff[8][4][2] = {
++	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
++	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
++	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
++	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
++	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
++	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
++	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
++	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
++};
++
+ static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+@@ -176,9 +190,22 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
+ 		ARRAY_SIZE(mma8452_scales));
  }
  
-+#ifdef CONFIG_OF
-+static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-+		struct st_sensors_platform_data *defdata)
++static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
 +{
-+	struct st_sensors_platform_data *pdata;
-+	struct device_node *np = dev->of_node;
-+	u32 val;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
++	int i = mma8452_get_odr_index(data);
 +
-+	if (!np)
-+		return NULL;
-+
-+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-+	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
-+		pdata->drdy_int_pin = (u8) val;
-+	else
-+		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
-+
-+	return pdata;
++	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
++		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
 +}
-+#else
-+static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-+		struct st_sensors_platform_data *defdata)
++
+ static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
+ static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
+ 	mma8452_show_scale_avail, NULL, 0);
++static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
++			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
+ 
+ static int mma8452_get_samp_freq_index(struct mma8452_data *data,
+ 	int val, int val2)
+@@ -194,6 +221,15 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
+ 		ARRAY_SIZE(mma8452_scales), val, val2);
+ }
+ 
++static int mma8452_get_hp_filter_index(struct mma8452_data *data,
++	int val, int val2)
 +{
-+	return NULL;
-+}
-+#endif
++	int i = mma8452_get_odr_index(data);
 +
- int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 					struct st_sensors_platform_data *pdata)
++	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
++		ARRAY_SIZE(mma8452_scales[0]), val, val2);
++}
++
+ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int *val, int *val2, long mask)
+@@ -232,6 +268,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 			return ret;
+ 		*val = sign_extend32(ret, 7);
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
++		ret = i2c_smbus_read_byte_data(data->client,
++						MMA8452_HP_FILTER_CUTOFF);
++		if (ret < 0)
++			return ret;
++		i = mma8452_get_odr_index(data);
++		ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
++		*val = mma8452_hp_filter_cutoff[i][ret][0];
++		*val2 = mma8452_hp_filter_cutoff[i][ret][1];
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -278,7 +324,7 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 			     int val, int val2, long mask)
  {
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	int i;
++	int i, reg;
  
- 	mutex_init(&sdata->tb.buf_lock);
- 
-+	/* If OF/DT pdata exists, it will take precedence of anything else */
-+	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
-+	if (of_pdata)
-+		pdata = of_pdata;
+ 	if (iio_buffer_enabled(indio_dev))
+ 		return -EBUSY;
+@@ -306,6 +352,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		return mma8452_change_config(data, MMA8452_OFF_X +
+ 			chan->scan_index, val);
++	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
++		i = mma8452_get_hp_filter_index(data, val, val2);
++		if (i < 0)
++			return -EINVAL;
 +
- 	if (pdata)
- 		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
++		reg = i2c_smbus_read_byte_data(data->client,
++						MMA8452_HP_FILTER_CUTOFF);
++		if (reg < 0)
++			return reg;
++		reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
++		reg |= i;
++		return mma8452_change_config(data,
++				MMA8452_HP_FILTER_CUTOFF, reg);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -552,7 +611,8 @@ static struct attribute_group mma8452_event_attribute_group = {
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+ 		BIT(IIO_CHAN_INFO_CALIBBIAS), \
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+-		BIT(IIO_CHAN_INFO_SCALE), \
++		BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
+ 	.scan_index = idx, \
+ 	.scan_type = { \
+ 		.sign = 's', \
+@@ -575,6 +635,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
+ static struct attribute *mma8452_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
++	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
+ 	NULL
+ };
  
--- 
-1.9.3
+
