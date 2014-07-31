@@ -1,35 +1,40 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 0/2] iio: accel: BMC150 accel support
-Date: Thu, 31 Jul 2014 15:59:25 -0700
-Message-Id: <1406847567-9238-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-vc0-f175.google.com ([209.85.220.175]:42469 "EHLO
+	mail-vc0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753285AbaGaWgY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jul 2014 18:36:24 -0400
+From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Subject: [PATCH 7/8] staging: iio: accel: lis3l02dq_ring.c: fix coding style
+Date: Thu, 31 Jul 2014 19:34:57 -0300
+Message-Id: <1406846098-19866-8-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-v1
-Format of this driver is similar to BMG160 gyro as the register
-style for configuration is similar, but not same
-- Any motion trigger as suggested similar to BMG160 gyro
-- Formatting issues suggested during v0 review
-- Addition of TEMP
-- Run Time PM with auto suspend
+This patch adds missing blank lines after declarations.
 
-v0
-Basic version for review
+Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+---
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-Srinivas Pandruvada (2):
-  iio: accel: BMC150 accel support
-  iio: accel: BMC150 accel documentation
-
- .../ABI/testing/sysfs-bus-iio-accel-bmc150         |    7 +
- drivers/iio/accel/Kconfig                          |   13 +
- drivers/iio/accel/Makefile                         |    1 +
- drivers/iio/accel/bmc150-accel.c                   | 1281 ++++++++++++++++++++
- 4 files changed, 1302 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150
- create mode 100644 drivers/iio/accel/bmc150-accel.c
-
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index bf33fde..1d934ee 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -19,6 +19,7 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
+ {
+ 	u16 _lower = lower;
+ 	u16 _upper = upper;
++
+ 	return _lower | (_upper << 8);
+ }
+ 
 -- 
-1.9.1
+1.7.10.4
+
