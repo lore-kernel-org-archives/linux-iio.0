@@ -1,62 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:56664 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754504AbaGVKcR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jul 2014 06:32:17 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Chen Gang <gang.chen.5i5j@gmail.com>
-Cc: Lennox Wu <lennox.wu@gmail.com>,
-	Richard Weinberger <richard@nod.at>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	linux-iio@vger.kernel.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Tom Gundersen <teg@jklm.no>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Marek Vasut <marex@denx.de>,
-	Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com,
-	linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>,
-	jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-	cmetcalf@tilera.com, heiko.carstens@de.ibm.com
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
-Date: Tue, 22 Jul 2014 12:32:06 +0200
-Message-ID: <179292068.QXZf3Zcqzf@wuerfel>
-In-Reply-To: <53CB8FC4.4050009@gmail.com>
-References: <201407130545.23004.marex@denx.de> <53CB801D.1030603@gmail.com> <53CB8FC4.4050009@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Received: from mail-vc0-f177.google.com ([209.85.220.177]:51586 "EHLO
+	mail-vc0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752561AbaGaWgG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jul 2014 18:36:06 -0400
+From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Subject: [PATCH 2/8] staging: iio: accel: adis16201_core.c: fix coding style
+Date: Thu, 31 Jul 2014 19:34:52 -0300
+Message-Id: <1406846098-19866-3-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sunday 20 July 2014 17:45:40 Chen Gang wrote:
-> > 
-> > Next, I shall:
-> > 
-> >  - Remove HAS_IOMEM and NO_IOMEM from kernel, firstly.
-> > 
-> >  - Try to make dummy IOMEM functions for score architecture.
-> > 
-> >  - Continue discussing with UML for it.
-> >
->  
-> Oh, sorry, I forgot, after remove IOMEM from kernel, also s390 and tile
-> need implement dummy IOMEM if !PCI.
-> 
-> If possible, I shall try to implement the dummy IOMEM in 'asm-generic',
-> and let uml, score, s390 and tile use them when they need.
+This patch adds missing blank line after declaration and fixes lines
+starting by space.
 
-Sorry for going round in circles, but looking back at the original patches,
-adding the extra 'depends on HAS_IOMEM' does seem much better than the
-other suggestions that came afterwards.
+Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+---
+ drivers/staging/iio/accel/adis16201_core.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-In particular, removing HAS_IOMEM and NO_IOMEM sounds like an awful idea
-to me. I'd rather add a HAS_IOPORT in addition to also catch architectures
-that have no support for PC-style PIO.
-
-	Arnd
+diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+index 50ba1fa..7eae5fd 100644
+--- a/drivers/staging/iio/accel/adis16201_core.c
++++ b/drivers/staging/iio/accel/adis16201_core.c
+@@ -111,6 +111,7 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+ 	int bits;
+ 	s16 val16;
+ 	u8 addr;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		switch (chan->type) {
+@@ -131,8 +132,8 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_chan_spec adis16201_channels[] = {
+-  ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
+-  ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
++	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
++	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
+ 	ADIS_ACCEL_CHAN(X, ADIS16201_XACCL_OUT, ADIS16201_SCAN_ACC_X,
+ 		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+ 	ADIS_ACCEL_CHAN(Y, ADIS16201_YACCL_OUT, ADIS16201_SCAN_ACC_Y,
+-- 
+1.7.10.4
 
