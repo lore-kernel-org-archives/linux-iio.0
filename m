@@ -1,203 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:54951 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756007AbaGSUuo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 19 Jul 2014 16:50:44 -0400
-Message-ID: <53CADAAE.1030509@kernel.org>
-Date: Sat, 19 Jul 2014 21:53:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Julia Lawall <julia.lawall@lip6.fr>
-CC: Himangi Saraogi <himangi774@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] staging:iio:ad7280a: Use managed interfaces
-References: <20140719103341.GA18568@himangi-Dell> <53CAD915.506@kernel.org> <alpine.DEB.2.02.1407192245340.1989@localhost6.localdomain6>
-In-Reply-To: <alpine.DEB.2.02.1407192245340.1989@localhost6.localdomain6>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <joe@perches.com>
+Message-ID: <1406846509.9953.6.camel@joe-AO725>
+Subject: Re: [PATCH 0/8] staging: iio: accel: multiple coding style fixes
+From: Joe Perches <joe@perches.com>
+To: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, jic23@kernel.org
+Date: Thu, 31 Jul 2014 15:41:49 -0700
+In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/07/14 21:46, Julia Lawall wrote:
->
->
-> On Sat, 19 Jul 2014, Jonathan Cameron wrote:
->
->> On 19/07/14 11:33, Himangi Saraogi wrote:
->>> This patch moves data allocated using unmanaged interfaces to managed
->>> interfaces like devm_kzalloc, devm_iio_device_register, devm_kasprintf,
->>> devm_request_threaded_irq and does away with the calls to free the
->>> allocated memory in the probe and remove functions. Some labels in the
->>> probe function are also removed.
->>>
->>> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
->> cc'ing Lars who tends to look after Analog Devices drivers
->> and more specifically was involved in the thread that lead to this
->> patch.
->>
->> Also, the devm_kasprintf does not appear to be in upstream so this
->> patch should have made an dependency clear.
->>
->> https://lkml.org/lkml/2014/7/16/667
->>
->> What is the intended merge path for that patch?
->
-> Greg said that he would be taking it.  He already took the devm_kasprintf
-> patch.
-Cool.  That's fine (and now you mention it - he did say that in the thread
-I just forgot).  Still, it did want mentioning in the description for this
-patch as well.
->
-> julia
->
->>
->>
->>> ---
->>> I am not very sure if devmifying request_irq is a good idea as it
->>> leads to the freeing of the interrupt after the ad7280_write.
->> Agreed. I wouldn't do it!
->>
->> Otherwise, all looks fine.
->>>    drivers/staging/iio/adc/ad7280a.c | 57
->>> ++++++++++++++-------------------------
->>>    1 file changed, 20 insertions(+), 37 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/adc/ad7280a.c
->>> b/drivers/staging/iio/adc/ad7280a.c
->>> index d215edf..3706b3e 100644
->>> --- a/drivers/staging/iio/adc/ad7280a.c
->>> +++ b/drivers/staging/iio/adc/ad7280a.c
->>> @@ -486,8 +486,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
->>>    {
->>>    	int dev, ch, cnt;
->>>
->>> -	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
->>> -			       sizeof(*st->channels), GFP_KERNEL);
->>> +	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 +
->>> 2,
->>> +				    sizeof(*st->channels), GFP_KERNEL);
->>>    	if (st->channels == NULL)
->>>    		return -ENOMEM;
->>>
->>> @@ -547,8 +547,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
->>>    {
->>>    	int dev, ch, cnt;
->>>
->>> -	st->iio_attr = kzalloc(sizeof(*st->iio_attr) * (st->slave_num + 1) *
->>> -				AD7280A_CELLS_PER_DEV * 2, GFP_KERNEL);
->>> +	st->iio_attr = devm_kzalloc(&st->spi->dev, sizeof(*st->iio_attr) *
->>> +				    (st->slave_num + 1) *
->>> +				    AD7280A_CELLS_PER_DEV * 2, GFP_KERNEL);
->>>    	if (st->iio_attr == NULL)
->>>    		return -ENOMEM;
->>>
->>> @@ -564,7 +565,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
->>>    			st->iio_attr[cnt].dev_attr.store =
->>>    				ad7280_store_balance_sw;
->>>    			st->iio_attr[cnt].dev_attr.attr.name =
->>> -				kasprintf(GFP_KERNEL,
->>> +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
->>>    					"in%d-in%d_balance_switch_en",
->>>    					(dev * AD7280A_CELLS_PER_DEV) + ch,
->>>    					(dev * AD7280A_CELLS_PER_DEV) + ch +
->>> 1);
->>> @@ -581,7 +582,8 @@ static int ad7280_attr_init(struct ad7280_state *st)
->>>    			st->iio_attr[cnt].dev_attr.store =
->>>    				ad7280_store_balance_timer;
->>>    			st->iio_attr[cnt].dev_attr.attr.name =
->>> -				kasprintf(GFP_KERNEL,
->>> "in%d-in%d_balance_timer",
->>> +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
->>> +					"in%d-in%d_balance_timer",
->>>    					(dev * AD7280A_CELLS_PER_DEV) + ch,
->>>    					(dev * AD7280A_CELLS_PER_DEV) + ch +
->>> 1);
->>>    			ad7280_attributes[cnt] =
->>> @@ -900,48 +902,36 @@ static int ad7280_probe(struct spi_device *spi)
->>>
->>>    	ret = ad7280_attr_init(st);
->>>    	if (ret < 0)
->>> -		goto error_free_channels;
->>> +		return ret;
->>>
->>> -	ret = iio_device_register(indio_dev);
->>> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
->>>    	if (ret)
->>> -		goto error_free_attr;
->>> +		return ret;
->>>
->>>    	if (spi->irq > 0) {
->>>    		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
->>>    				   AD7280A_ALERT, 1,
->>>    				   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN);
->>>    		if (ret)
->>> -			goto error_unregister;
->>> +			return ret;
->>>
->>>    		ret = ad7280_write(st, AD7280A_DEVADDR(st->slave_num),
->>>    				   AD7280A_ALERT, 0,
->>>    				   AD7280A_ALERT_GEN_STATIC_HIGH |
->>>    				   (pdata->chain_last_alert_ignore & 0xF));
->>>    		if (ret)
->>> -			goto error_unregister;
->>> -
->>> -		ret = request_threaded_irq(spi->irq,
->>> -					   NULL,
->>> -					   ad7280_event_handler,
->>> -					   IRQF_TRIGGER_FALLING |
->>> -					   IRQF_ONESHOT,
->>> -					   indio_dev->name,
->>> -					   indio_dev);
->>> +			return ret;
->>> +
->>> +		ret = devm_request_threaded_irq(&spi->dev, spi->irq, NULL,
->>> +						ad7280_event_handler,
->>> +						IRQF_TRIGGER_FALLING |
->>> +						IRQF_ONESHOT, indio_dev->name,
->>> +						indio_dev);
->>>    		if (ret)
->>> -			goto error_unregister;
->>> +			return ret;
->>>    	}
->>>
->>>    	return 0;
->>> -error_unregister:
->>> -	iio_device_unregister(indio_dev);
->>> -
->>> -error_free_attr:
->>> -	kfree(st->iio_attr);
->>> -
->>> -error_free_channels:
->>> -	kfree(st->channels);
->>> -
->>> -	return ret;
->>>    }
->>>
->>>    static int ad7280_remove(struct spi_device *spi)
->>> @@ -949,16 +939,9 @@ static int ad7280_remove(struct spi_device *spi)
->>>    	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->>>    	struct ad7280_state *st = iio_priv(indio_dev);
->>>
->>> -	if (spi->irq > 0)
->>> -		free_irq(spi->irq, indio_dev);
->>> -	iio_device_unregister(indio_dev);
->>> -
->>>    	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
->>>    			AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
->>>
->>> -	kfree(st->channels);
->>> -	kfree(st->iio_attr);
->>> -
->>>    	return 0;
->>>    }
->>>
->>>
->>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+On Thu, 2014-07-31 at 19:34 -0300, Murilo Opsfelder Araujo wrote:
+> The following patches fix (almost) all warnings reported by
+> checkpatch.pl.
+> 
+> Murilo Opsfelder Araujo (8):
+>   staging: iio: accel: adis16203_core.c: fix coding style
+>   staging: iio: accel: adis16201_core.c: fix coding style
+>   staging: iio: accel: adis16204_core.c: fix coding style
+>   staging: iio: accel: adis16209_core.c: fix coding style
+>   staging: iio: accel: adis16240_core.c: fix coding style
+>   staging: iio: accel: lis3l02dq_core.c: fix coding style
+>   staging: iio: accel: lis3l02dq_ring.c: fix coding style
+>   staging: iio: accel: sca3000_core.c: fix coding style
 
+Hi.
+
+Next time it might be better to use patch subjects like
+
+staging: <subsystem> Add blank lines between declarations and code
+
+because "fix coding style" really isn't very descriptive.
