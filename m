@@ -1,177 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.19.201]:34933 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932847AbaGWUt3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 23 Jul 2014 16:49:29 -0400
-Message-ID: <53D02064.2000207@kernel.org>
-Date: Wed, 23 Jul 2014 21:51:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from usmamail.tilera.com ([12.216.194.151]:39877 "EHLO
+	USMAMAIL.TILERA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750945AbaGaUJu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jul 2014 16:09:50 -0400
+Message-ID: <53DAA28C.508@tilera.com>
+Date: Thu, 31 Jul 2014 16:09:48 -0400
+From: Chris Metcalf <cmetcalf@tilera.com>
 MIME-Version: 1.0
-To: Josef Gajdusek <atx@atalax.net>, linux-iio@vger.kernel.org
-CC: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org, pmeerw@pmeerw.net,
-	dan.carpenter@oracle.com, lars@metafoo.de
-Subject: Re: [PATCH v5 (staging-next) 5/5] staging:iio:hmc5843: Add support
- for spi hmc5983
-References: <20140722150009.GA7845@dashie> <20140722150310.GF7845@dashie>
-In-Reply-To: <20140722150310.GF7845@dashie>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Arnd Bergmann <arnd@arndb.de>
+CC: Chen Gang <gang.chen.5i5j@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Richard Weinberger <richard@nod.at>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	<dmitry.torokhov@gmail.com>, <linux-iio@vger.kernel.org>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	<teg@jklm.no>, Thierry Reding <thierry.reding@gmail.com>,
+	Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>,
+	Liqin Chen <liqin.linux@gmail.com>, <msalter@redhat.com>,
+	<linux-pwm@vger.kernel.org>, <devel@driverdev.osuosl.org>,
+	<linux-watchdog@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	<knaack.h@gmx.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>,
+	<Mischa.Jonker@synopsys.com>, <jic23@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+References: <201407130545.23004.marex@denx.de> <53C7B365.4080000@gmail.com> <53C834EA.5030605@tilera.com> <5190668.jExaFa8pKn@wuerfel>
+In-Reply-To: <5190668.jExaFa8pKn@wuerfel>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/07/14 16:03, Josef Gajdusek wrote:
-> This patch adds support for the hmc5983 spi interface.
-> This chip is almost identical to the hmc5883. The difference being added
-> temperature compensation, additional available sample rate (220Hz) and an SPI
-> interface.
->
-> Signed-off-by: Josef Gajdusek <atx@atx.name>
-Applied to the togreg branch of iio.git - initially pushed out as testing.
-> ---
->   drivers/staging/iio/magnetometer/Kconfig       |  15 ++++
->   drivers/staging/iio/magnetometer/Makefile      |   1 +
->   drivers/staging/iio/magnetometer/hmc5843_spi.c | 100 +++++++++++++++++++++++++
->   3 files changed, 116 insertions(+)
->   create mode 100644 drivers/staging/iio/magnetometer/hmc5843_spi.c
->
-> diff --git a/drivers/staging/iio/magnetometer/Kconfig b/drivers/staging/iio/magnetometer/Kconfig
-> index c086f33..dec814a 100644
-> --- a/drivers/staging/iio/magnetometer/Kconfig
-> +++ b/drivers/staging/iio/magnetometer/Kconfig
-> @@ -22,4 +22,19 @@ config SENSORS_HMC5843_I2C
->   	  - hmc5843_core (core functions)
->   	  - hmc5843_i2c (support for HMC5843, HMC5883, HMC5883L and HMC5983)
->
-> +config SENSORS_HMC5843_SPI
-> +	tristate "Honeywell HMC5983 3-Axis Magnetometer (SPI)"
-> +	depends on SPI_MASTER
-> +	select SENSORS_HMC5843
-> +	select REGMAP_SPI
-> +	help
-> +	  Say Y here to add support for the Honeywell HMC5983 3-Axis Magnetometer
-> +	  (digital compass).
-> +
-> +	  This driver can also be compiled as a set of modules.
-> +	  If so, these modules will be created:
-> +	  - hmc5843_core (core functions)
-> +	  - hmc5843_spi (support for HMC5983)
-> +
-> +
->   endmenu
-> diff --git a/drivers/staging/iio/magnetometer/Makefile b/drivers/staging/iio/magnetometer/Makefile
-> index 65baf1c..33761a1 100644
-> --- a/drivers/staging/iio/magnetometer/Makefile
-> +++ b/drivers/staging/iio/magnetometer/Makefile
-> @@ -4,3 +4,4 @@
->
->   obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
->   obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
-> +obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-> diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-> new file mode 100644
-> index 0000000..98c4b57
-> --- /dev/null
-> +++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
-> @@ -0,0 +1,100 @@
-> +/*
-> + * SPI driver for hmc5983
-> + *
-> + * Copyright (C) Josef Gajdusek <atx@atx.name>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * */
-> +
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#include "hmc5843.h"
-> +
-> +static const struct regmap_range hmc5843_readable_ranges[] = {
-> +		regmap_reg_range(0, HMC5843_ID_END),
-> +};
-> +
-> +static struct regmap_access_table hmc5843_readable_table = {
-> +		.yes_ranges = hmc5843_readable_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_writable_ranges[] = {
-> +		regmap_reg_range(0, HMC5843_MODE_REG),
-> +};
-> +
-> +static struct regmap_access_table hmc5843_writable_table = {
-> +		.yes_ranges = hmc5843_writable_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range hmc5843_volatile_ranges[] = {
-> +		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-> +};
-> +
-> +static struct regmap_access_table hmc5843_volatile_table = {
-> +		.yes_ranges = hmc5843_volatile_ranges,
-> +		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-> +};
-> +
-> +static struct regmap_config hmc5843_spi_regmap_config = {
-> +		.reg_bits = 8,
-> +		.val_bits = 8,
-> +
-> +		.rd_table = &hmc5843_readable_table,
-> +		.wr_table = &hmc5843_writable_table,
-> +		.volatile_table = &hmc5843_volatile_table,
-> +
-> +		/* Autoincrement address pointer */
-> +		.read_flag_mask = 0xc0,
-> +
-> +		.cache_type = REGCACHE_RBTREE,
-> +};
-> +
-> +static int hmc5843_spi_probe(struct spi_device *spi)
-> +{
-> +	int ret;
-> +
-> +	spi->mode = SPI_MODE_3;
-> +	spi->max_speed_hz = 8000000;
-> +	spi->bits_per_word = 8;
-> +	ret = spi_setup(spi);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return hmc5843_common_probe(&spi->dev,
-> +			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
-> +			HMC5983_ID);
-> +}
-> +
-> +static int hmc5843_spi_remove(struct spi_device *spi)
-> +{
-> +	return hmc5843_common_remove(&spi->dev);
-> +}
-> +
-> +static const struct spi_device_id hmc5843_id[] = {
-> +	{ "hmc5983", HMC5983_ID },
-> +	{ }
-> +};
-> +
-> +static struct spi_driver hmc5843_driver = {
-> +		.driver = {
-> +				.name = "hmc5843",
-> +				.pm = HMC5843_PM_OPS,
-> +				.owner = THIS_MODULE,
-> +		},
-> +		.id_table = hmc5843_id,
-> +		.probe = hmc5843_spi_probe,
-> +		.remove = hmc5843_spi_remove,
-> +};
-> +
-> +module_spi_driver(hmc5843_driver);
-> +
-> +MODULE_AUTHOR("Josef Gajdusek <atx@atx.name>");
-> +MODULE_DESCRIPTION("HMC5983 SPI driver");
-> +MODULE_LICENSE("GPL");
->
+On 7/17/2014 5:05 PM, Arnd Bergmann wrote:
+> On Thursday 17 July 2014 16:41:14 Chris Metcalf wrote:
+>> On 7/17/2014 7:28 AM, Chen Gang wrote:
+>>> According to current source code, tile still has chance to choose
+>>> NO_IOMEM, for me, welcome the tile's maintainer's ideas or suggestions.
+>> I'm not really sure.  It's true that on tile, if you don't enable PCI
+>> support there's no other I/O memory (or I/O port) space you can use.
+>> We pretty much always enable PCI support in our kernel, though.  I'm
+>> kind of surprised that other architectures don't also have the model
+>> that IOMEM requires PCI, but perhaps most architectures just don't
+>> encode that in the Kconfig file?
+> Only s390 as far as I know. Most architectures have integrated
+> peripherals that use MMIO without PCI.
+
+Yes, and tilegx has these too (quite a few of them).  The memory-mapped
+devices are accessed by specifying a shim x,y coordinate in the high bits
+of the physical address, in conjunction with an MMIO type in the TLB entry.
+Various tilegx drivers set up these kinds of mappings in the page table.
+
+The issue with ioremap() is that it takes a generic resource_size_t
+"physical address", and we don't have any general-purpose layer that maps
+particular PAs to shim coordinates, other than for TRIO (our PCI peripheral).
+Right now we just check the PCI root complexes that we have configured in
+the kernel, and if the pseudo physical address requested is in a range that
+we're associating with one of the root complexes, we will use the appropriate
+mapping against the appropriate TRIO shim to set up its x,y coordinate in
+the page table.
+
+So it makes some kind of sense to condition HAS_IOMEM on PCI, even though
+naively it seems like it shouldn't be strictly related.
+
+-- 
+Chris Metcalf, Tilera Corp.
+http://www.tilera.com
 
