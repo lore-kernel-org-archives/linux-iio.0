@@ -1,27 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mta1.parkeon.com ([91.121.43.66]:36250 "EHLO mta1.parkeon.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753090AbaG2JBe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 29 Jul 2014 05:01:34 -0400
-Subject: [PATCH V2 0/8] iio: mma8452 enhancements
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Cc: pmeerw@pmeerw.net
-Date: Tue, 29 Jul 2014 11:01:29 +0200
-Message-ID: <20140729090128.4618.92936.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mopsfelder@gmail.com>
+From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+To: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	jic23@kernel.org,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Subject: [PATCH 1/8] staging: iio: accel: adis16203_core.c: fix coding style
+Date: Thu, 31 Jul 2014 19:34:51 -0300
+Message-Id: <1406846098-19866-2-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+References: <1406846098-19866-1-git-send-email-mopsfelder@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This series adds some additional features to the mma8452 accelerometer driver
-	* debugfs register access
-	* transient threshold events
-	* highpass filter
-	* interrupt driven sampling (trigger)
+This patch adds missing blank line after declarations.
 
-The highpass filter attributes are added to the core.
+Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+---
+ drivers/staging/iio/accel/adis16203_core.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-In addition a latent bug in the device initialisation is fixed.
-
-V2: Address review comments from Peter Meerwald
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index f472137..fbbe93f 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -37,6 +37,7 @@ static int adis16203_write_raw(struct iio_dev *indio_dev,
+ 	struct adis *st = iio_priv(indio_dev);
+ 	/* currently only one writable parameter which keeps this simple */
+ 	u8 addr = adis16203_addresses[chan->scan_index];
++
+ 	return adis_write_reg_16(st, addr, val & 0x3FFF);
+ }
+ 
+@@ -50,6 +51,7 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+ 	int bits;
+ 	u8 addr;
+ 	s16 val16;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		return adis_single_conversion(indio_dev, chan,
+-- 
+1.7.10.4
