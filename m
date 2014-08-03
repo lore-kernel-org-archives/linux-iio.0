@@ -1,90 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:33254 "EHLO
-	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754024AbaHEM7C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Aug 2014 08:59:02 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 4/6] iio:magnetometer: removed unnecessary parameter on common_probe function
-Date: Tue,  5 Aug 2014 14:58:44 +0200
-Message-Id: <1407243526-3645-4-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
-References: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
+Received: from top.free-electrons.com ([176.31.233.9]:49619 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752244AbaHCJ41 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 05:56:27 -0400
+Date: Sun, 3 Aug 2014 11:56:10 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: gmane@reliableembeddedsystems.com
+Cc: linux-iio@vger.kernel.org
+Subject: Re: iio A/D converter input to input event subsystem
+Message-ID: <20140803095610.GQ3214@piout.net>
+References: <b12ce7f23b622a613c07e9de19ece607@reliableembeddedsystems.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <b12ce7f23b622a613c07e9de19ece607@reliableembeddedsystems.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/magnetometer/st_magn.h      | 3 +--
- drivers/iio/magnetometer/st_magn_core.c | 5 ++---
- drivers/iio/magnetometer/st_magn_i2c.c  | 2 +-
- drivers/iio/magnetometer/st_magn_spi.c  | 2 +-
- 4 files changed, 5 insertions(+), 7 deletions(-)
+Hi Robert,
 
-diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-index 694e33e..7e81d00 100644
---- a/drivers/iio/magnetometer/st_magn.h
-+++ b/drivers/iio/magnetometer/st_magn.h
-@@ -18,8 +18,7 @@
- #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
- #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
- 
--int st_magn_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata);
-+int st_magn_common_probe(struct iio_dev *indio_dev);
- void st_magn_common_remove(struct iio_dev *indio_dev);
- 
- #ifdef CONFIG_IIO_BUFFER
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index b82216a..bd55f92 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -353,8 +353,7 @@ static const struct iio_info magn_info = {
- 	.write_raw = &st_magn_write_raw,
- };
- 
--int st_magn_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata)
-+int st_magn_common_probe(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 	int irq = mdata->get_irq_data_ready(indio_dev);
-@@ -379,7 +378,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev,
- 						&mdata->sensor->fs.fs_avl[0];
- 	mdata->odr = mdata->sensor->odr.odr_avl[0].hz;
- 
--	err = st_sensors_init_sensor(indio_dev, pdata);
-+	err = st_sensors_init_sensor(indio_dev, NULL);
- 	if (err < 0)
- 		return err;
- 
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-index 6892500..f8a6823 100644
---- a/drivers/iio/magnetometer/st_magn_i2c.c
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -56,7 +56,7 @@ static int st_magn_i2c_probe(struct i2c_client *client,
- 
- 	st_sensors_i2c_configure(indio_dev, client, mdata);
- 
--	err = st_magn_common_probe(indio_dev, NULL);
-+	err = st_magn_common_probe(indio_dev);
- 	if (err < 0)
- 		return err;
- 
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-index a6143ea..f642142 100644
---- a/drivers/iio/magnetometer/st_magn_spi.c
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -33,7 +33,7 @@ static int st_magn_spi_probe(struct spi_device *spi)
- 
- 	st_sensors_spi_configure(indio_dev, spi, mdata);
- 
--	err = st_magn_common_probe(indio_dev, NULL);
-+	err = st_magn_common_probe(indio_dev);
- 	if (err < 0)
- 		return err;
- 
+On 02/08/2014 at 13:14:30 -0500, gmane@reliableembeddedsystems.com wrote :
+> Hi,
+> 
+> I would like to use a couple of resistors and keys and one Analog
+> input[1], read the analogue voltage from a kernel driver, figure out
+> which key is pressed and pass this on to the Linux input subsystem.
+> (Am I really the only one with this use case?)
+> 
+> In my specific case it's about a beagle bone black, which means that
+> the A/D driver is an iio adc driver[2].
+> 
+> How would it be possible to reuse the iio A/D converter driver code
+> for my driver? Maybe it would even be possible to create something
+> more generic so iio A/D converter channels could be used as input
+> keys. Some sample code which would enable me to choose an analog
+> input and read from it from kernel space would help me to write some
+> basic sample driver, I guess.
+> 
+> The reason I would like to write a device driver instead of a user
+> space application is mainly the input subsystem. From the user space
+> application's point of view utilizing a device driver which feeds
+> the input subsystem would make it easy to exchange what's underneath
+> without user space even noticing. (keys to Input pins, a key matrix
+> to I/O pins, i2c input, A/D converter,...).
+> 
+
+Did you have a look at uinput? This would allow you to inject input
+events after processing the ADC values in userspace.
+
+Simple example: http://thiemonge.org/getting-started-with-uinput
+
 -- 
-1.9.1
-
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
