@@ -1,60 +1,65 @@
-Return-Path: <himangi774@gmail.com>
-Date: Sun, 3 Aug 2014 15:30:48 +0530
-From: Himangi Saraogi <himangi774@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54357 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751568AbaHCKXG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 06:23:06 -0400
+In-Reply-To: <20140803095658.GA6753@himangi-Dell>
+References: <20140803095658.GA6753@himangi-Dell>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] staging: iio: ad9832: Use devm_iio_device_register
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Sun, 03 Aug 2014 11:22:58 +0100
+To: Himangi Saraogi <himangi774@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Subject: [PATCH] staging: iio: ad9951: Use devm_iio_device_register
-Message-ID: <20140803100048.GA6936@himangi-Dell>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+CC: julia.lawall@lip6.fr
+Message-ID: <2af09d4e-10c7-4887-a29c-0d31b0ac6493@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch introduces the use of devm_iio_device_register and does away
-with the unregister in the remove function. The remove function is no
-longer required and is completely removed.
 
-Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-Acked-by: Julia Lawall <julia.lawall@lip6.fr>
----
- drivers/staging/iio/frequency/ad9951.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/frequency/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
-index 5e8990a..d465db0 100644
---- a/drivers/staging/iio/frequency/ad9951.c
-+++ b/drivers/staging/iio/frequency/ad9951.c
-@@ -175,7 +175,7 @@ static int ad9951_probe(struct spi_device *spi)
- 	idev->info = &ad9951_info;
- 	idev->modes = INDIO_DIRECT_MODE;
- 
--	ret = iio_device_register(idev);
-+	ret = devm_iio_device_register(&spi->dev, idev);
- 	if (ret)
- 		return ret;
- 	spi->max_speed_hz = 2000000;
-@@ -186,20 +186,12 @@ static int ad9951_probe(struct spi_device *spi)
- 	return 0;
- }
- 
--static int ad9951_remove(struct spi_device *spi)
--{
--	iio_device_unregister(spi_get_drvdata(spi));
--
--	return 0;
--}
--
- static struct spi_driver ad9951_driver = {
- 	.driver = {
- 		.name = DRV_NAME,
- 		.owner = THIS_MODULE,
- 	},
- 	.probe = ad9951_probe,
--	.remove = ad9951_remove,
- };
- module_spi_driver(ad9951_driver);
- 
+On August 3, 2014 10:56:58 AM GMT+01:00, Himangi Saraogi <himangi774@gmail.com> wrote:
+>This patch introduces the use of devm_iio_device_register and does away
+>with the unregister in the remove function.
+>
+And changes the resulting ordering so the regulator disable occurs before the user
+ space interface has been removed by the unregister. 
+
+Please be very wary of using devm_iio_register. It is only correct if the remove function does nothing else.
+
+Jonathan
+>Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+>Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+>---
+> drivers/staging/iio/frequency/ad9832.c | 3 +--
+> 1 file changed, 1 insertion(+), 2 deletions(-)
+>
+>diff --git a/drivers/staging/iio/frequency/ad9832.c
+>b/drivers/staging/iio/frequency/ad9832.c
+>index cf68159..8a72c78 100644
+>--- a/drivers/staging/iio/frequency/ad9832.c
+>+++ b/drivers/staging/iio/frequency/ad9832.c
+>@@ -304,7 +304,7 @@ static int ad9832_probe(struct spi_device *spi)
+> 	if (ret)
+> 		goto error_disable_reg;
+> 
+>-	ret = iio_device_register(indio_dev);
+>+	ret = devm_iio_device_register(&spi->dev, indio_dev);
+> 	if (ret)
+> 		goto error_disable_reg;
+> 
+>@@ -322,7 +322,6 @@ static int ad9832_remove(struct spi_device *spi)
+> 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> 	struct ad9832_state *st = iio_priv(indio_dev);
+> 
+>-	iio_device_unregister(indio_dev);
+> 	if (!IS_ERR(st->reg))
+> 		regulator_disable(st->reg);
+> 
+
 -- 
-1.9.1
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
