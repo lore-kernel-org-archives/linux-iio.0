@@ -1,73 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:3949 "EHLO
-	mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750746AbaHCKpE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 06:45:04 -0400
-Date: Sun, 3 Aug 2014 12:45:00 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Himangi Saraogi <himangi774@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad9832: Use devm_iio_device_register
-In-Reply-To: <2af09d4e-10c7-4887-a29c-0d31b0ac6493@email.android.com>
-Message-ID: <alpine.DEB.2.02.1408031243500.2000@localhost6.localdomain6>
-References: <20140803095658.GA6753@himangi-Dell> <2af09d4e-10c7-4887-a29c-0d31b0ac6493@email.android.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <53DDEEC6.2070300@metafoo.de>
+Date: Sun, 03 Aug 2014 10:11:50 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+ Aniroop Mathur <aniroop.mathur@gmail.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: IIO: Why cannot open two iio device node file descriptors simultaneously
+ ?
+References: <CADYu309fV8qNv0v03xr1T0eeLEV97YFPoAVkKdT8jZcom8uqGQ@mail.gmail.com>	<53DCCB4A.3020304@kernel.org> <CADYu30-9Y4rjf5kZZea32pL04BGe1y1E0wCNtcy4qAn1wO1gHQ@mail.gmail.com> <53DD1881.1020607@kernel.org>
+In-Reply-To: <53DD1881.1020607@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
+On 08/02/2014 06:57 PM, Jonathan Cameron wrote:
+[...]
+>> So, even after opening iio device node,
+>> can we write the data to IIO device node from user space ?
+>> (I do not see write function in below fileops)
+>
+> Indeed.  Lars was working on some buffered support for DACs but hasn't
+> yet submitted it for mainline inclusion.  Lars how is the buffered output
+> stuff coming along?
 
+I still need to do the re-write you wanted me to do, otherwise its working 
+fine ;)
 
-On Sun, 3 Aug 2014, Jonathan Cameron wrote:
-
-> 
-> 
-> On August 3, 2014 10:56:58 AM GMT+01:00, Himangi Saraogi <himangi774@gmail.com> wrote:
-> >This patch introduces the use of devm_iio_device_register and does away
-> >with the unregister in the remove function.
-> >
-> And changes the resulting ordering so the regulator disable occurs before the user
->  space interface has been removed by the unregister. 
-> 
-> Please be very wary of using devm_iio_register. It is only correct if the remove function does nothing else.
-
-I wonder if there could be a way to document these constraints?
-
-julia
-
-> Jonathan
-> >Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-> >Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-> >---
-> > drivers/staging/iio/frequency/ad9832.c | 3 +--
-> > 1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> >diff --git a/drivers/staging/iio/frequency/ad9832.c
-> >b/drivers/staging/iio/frequency/ad9832.c
-> >index cf68159..8a72c78 100644
-> >--- a/drivers/staging/iio/frequency/ad9832.c
-> >+++ b/drivers/staging/iio/frequency/ad9832.c
-> >@@ -304,7 +304,7 @@ static int ad9832_probe(struct spi_device *spi)
-> > 	if (ret)
-> > 		goto error_disable_reg;
-> > 
-> >-	ret = iio_device_register(indio_dev);
-> >+	ret = devm_iio_device_register(&spi->dev, indio_dev);
-> > 	if (ret)
-> > 		goto error_disable_reg;
-> > 
-> >@@ -322,7 +322,6 @@ static int ad9832_remove(struct spi_device *spi)
-> > 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> > 	struct ad9832_state *st = iio_priv(indio_dev);
-> > 
-> >-	iio_device_unregister(indio_dev);
-> > 	if (!IS_ERR(st->reg))
-> > 		regulator_disable(st->reg);
-> > 
-> 
-> -- 
-> Sent from my Android phone with K-9 Mail. Please excuse my brevity.
-> 
+- Lars
