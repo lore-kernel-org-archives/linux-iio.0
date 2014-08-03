@@ -1,48 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns1.siteground282.com ([184.154.233.8]:50708 "EHLO
+Received: from ns1.siteground282.com ([184.154.233.8]:42524 "EHLO
 	serv01.siteground282.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750959AbaHCQjZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 12:39:25 -0400
+	with ESMTP id S1752378AbaHCPIW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 11:08:22 -0400
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8;
  format=flowed
-Date: Sun, 03 Aug 2014 11:39:32 -0500
+Date: Sun, 03 Aug 2014 10:08:29 -0500
 From: gmane@reliableembeddedsystems.com
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-iio@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-iio@vger.kernel.org
 Subject: Re: iio A/D converter input to input event subsystem
-In-Reply-To: <53DE5898.1040806@kernel.org>
+In-Reply-To: <20140803095610.GQ3214@piout.net>
 References: <b12ce7f23b622a613c07e9de19ece607@reliableembeddedsystems.com>
  <20140803095610.GQ3214@piout.net>
- <33f1c38a7367710e30956080fa02da8a@reliableembeddedsystems.com>
- <53DE5898.1040806@kernel.org>
-Message-ID: <98e9b031c20c4e5f6d428768613e68f8@reliableembeddedsystems.com>
+Message-ID: <33f1c38a7367710e30956080fa02da8a@reliableembeddedsystems.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Hi,
 
-On 2014-08-03 10:43, Jonathan Cameron wrote:
+On 2014-08-03 04:56, Alexandre Belloni wrote:
+> Hi Robert,
+
 > 
-> http://www.spinics.net/lists/linux-iio/msg06881.html (latest version I 
-> think).
-> The infrastructure for this went in back then, but the input driver
-> never quite got the
-> attention it needed.
+> Did you have a look at uinput? This would allow you to inject input
+> events after processing the ADC values in userspace.
+> 
+> Simple example: http://thiemonge.org/getting-started-with-uinput
 
-Thanks!
-
-I'll try to have some hardware prototype by end of August and will see 
-if I can get my stuff to work as Alexandre suggested.
-
-Ideally I'll try to cook up something similar to your iio_input stuff.
-
-Which mainline kernel version would you suggest?
-3.14 or 3.16?
+Thanks this looks interesting. I had in the meantime a look at iio_hwmon 
+[1] which does something similar to what I want for the hwmon subsystem 
+instead of the input event subsystem.
 
 Regards,
 
 Robert
 
-
+[1] 
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/hwmon/iio_hwmon.c?id=refs/tags/v3.16-rc7
