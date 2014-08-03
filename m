@@ -1,51 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f178.google.com ([209.85.220.178]:35661 "EHLO
-	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753621AbaHEBsZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Aug 2014 21:48:25 -0400
-From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
-	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Subject: [PATCH v2 8/8] staging: iio: accel: sca3000_core.c: Add blank line between declarations and code
-Date: Mon,  4 Aug 2014 22:47:03 -0300
-Message-Id: <1407203223-9700-9-git-send-email-mopsfelder@gmail.com>
-In-Reply-To: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
-References: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56183 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751430AbaHCPnZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Aug 2014 11:43:25 -0400
+Message-ID: <53DE5898.1040806@kernel.org>
+Date: Sun, 03 Aug 2014 16:43:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: gmane@reliableembeddedsystems.com,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: iio A/D converter input to input event subsystem
+References: <b12ce7f23b622a613c07e9de19ece607@reliableembeddedsystems.com> <20140803095610.GQ3214@piout.net> <33f1c38a7367710e30956080fa02da8a@reliableembeddedsystems.com>
+In-Reply-To: <33f1c38a7367710e30956080fa02da8a@reliableembeddedsystems.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds missing blank line between declarations and code, and
-ajust code to fit 80-chars limit.
+On 03/08/14 16:08, gmane@reliableembeddedsystems.com wrote:
+> Hi,
+> 
+> On 2014-08-03 04:56, Alexandre Belloni wrote:
+>> Hi Robert,
+> 
+>>
+>> Did you have a look at uinput? This would allow you to inject input
+>> events after processing the ADC values in userspace.
+>>
+>> Simple example: http://thiemonge.org/getting-started-with-uinput
+> 
+> Thanks this looks interesting. I had in the meantime a look at iio_hwmon [1] which does something similar to what I want
+> for the hwmon subsystem instead of the input event subsystem.
 
-Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
----
- drivers/staging/iio/accel/sca3000_core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+There is a rather aged iio_input driver, that uses the buffered interface (not polled)
+and could probably be adapted to your usecase reasonably easily.  The case is different enough
+that I'd probably suggest a new driver for it though rather than trying to blugeon it into
+the existing driver.
 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index ed30e32..1ff299f 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -506,7 +506,8 @@ static int sca3000_read_raw(struct iio_dev *indio_dev,
- 				mutex_unlock(&st->lock);
- 				return ret;
- 			}
--			*val = ((st->rx[0] & 0x3F) << 3) | ((st->rx[1] & 0xE0) >> 5);
-+			*val = ((st->rx[0] & 0x3F) << 3)
-+				| ((st->rx[1] & 0xE0) >> 5);
- 		}
- 		mutex_unlock(&st->lock);
- 		return IIO_VAL_INT;
-@@ -713,6 +714,7 @@ static int sca3000_read_thresh(struct iio_dev *indio_dev,
- 	int ret, i;
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int num = chan->channel2;
-+
- 	mutex_lock(&st->lock);
- 	ret = sca3000_read_ctrl_reg(st, sca3000_addresses[num][1]);
- 	mutex_unlock(&st->lock);
--- 
-2.1.0.rc1.204.gae8bc8d
+http://www.spinics.net/lists/linux-iio/msg06881.html (latest version I think).
+The infrastructure for this went in back then, but the input driver never quite got the
+attention it needed.
 
+One big issue outstanding around this stuff is that no one likes the device
+tree bindings.  Probably doesn't matter for your project in the short term however!
+
+Jonathan
+> 
+> Regards,
+> 
+> Robert
+> 
+> [1] https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/hwmon/iio_hwmon.c?id=refs/tags/v3.16-rc7
+=
