@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:51949 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:51954 "EHLO
 	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754371AbaHEM7C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Aug 2014 08:59:02 -0400
+	by vger.kernel.org with ESMTP id S1754399AbaHEM7D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Aug 2014 08:59:03 -0400
 From: Denis CIOCCA <denis.ciocca@st.com>
 To: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de
 Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 2/6] iio:accel: removed unnecessary parameter on common_probe function
-Date: Tue,  5 Aug 2014 14:58:42 +0200
-Message-Id: <1407243526-3645-2-git-send-email-denis.ciocca@st.com>
+Subject: [PATCH 6/6] iio:common: set the device pointer into ST common sensors library
+Date: Tue,  5 Aug 2014 14:58:46 +0200
+Message-Id: <1407243526-3645-6-git-send-email-denis.ciocca@st.com>
 In-Reply-To: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
 References: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -16,80 +16,137 @@ List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/iio/accel/st_accel.h      | 3 +--
- drivers/iio/accel/st_accel_core.c | 9 ++++-----
- drivers/iio/accel/st_accel_i2c.c  | 2 +-
- drivers/iio/accel/st_accel_spi.c  | 2 +-
- 4 files changed, 7 insertions(+), 9 deletions(-)
+ drivers/iio/accel/st_accel_i2c.c               | 1 -
+ drivers/iio/accel/st_accel_spi.c               | 1 -
+ drivers/iio/common/st_sensors/st_sensors_i2c.c | 1 +
+ drivers/iio/common/st_sensors/st_sensors_spi.c | 1 +
+ drivers/iio/gyro/st_gyro_i2c.c                 | 1 -
+ drivers/iio/gyro/st_gyro_spi.c                 | 1 -
+ drivers/iio/magnetometer/st_magn_i2c.c         | 1 -
+ drivers/iio/magnetometer/st_magn_spi.c         | 1 -
+ drivers/iio/pressure/st_pressure_i2c.c         | 1 -
+ drivers/iio/pressure/st_pressure_spi.c         | 1 -
+ 10 files changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index c387763..fa96460 100644
---- a/drivers/iio/accel/st_accel.h
-+++ b/drivers/iio/accel/st_accel.h
-@@ -33,8 +33,7 @@ static const struct st_sensors_platform_data default_accel_pdata = {
- 	.drdy_int_pin = 1,
- };
- 
--int st_accel_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata);
-+int st_accel_common_probe(struct iio_dev *indio_dev);
- void st_accel_common_remove(struct iio_dev *indio_dev);
- 
- #ifdef CONFIG_IIO_BUFFER
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 8d0f880..ed4dac7 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -457,8 +457,7 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
- #define ST_ACCEL_TRIGGER_OPS NULL
- #endif
- 
--int st_accel_common_probe(struct iio_dev *indio_dev,
--				struct st_sensors_platform_data *plat_data)
-+int st_accel_common_probe(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
- 	int irq = adata->get_irq_data_ready(indio_dev);
-@@ -483,11 +482,11 @@ int st_accel_common_probe(struct iio_dev *indio_dev,
- 						&adata->sensor->fs.fs_avl[0];
- 	adata->odr = adata->sensor->odr.odr_avl[0].hz;
- 
--	if (!plat_data)
--		plat_data =
-+	if (!adata->dev->platform_data)
-+		adata->dev->platform_data =
- 			(struct st_sensors_platform_data *)&default_accel_pdata;
- 
--	err = st_sensors_init_sensor(indio_dev, plat_data);
-+	err = st_sensors_init_sensor(indio_dev, adata->dev->platform_data);
- 	if (err < 0)
- 		return err;
- 
 diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 7164aef..40adc7e 100644
+index 40adc7e..c7246bd 100644
 --- a/drivers/iio/accel/st_accel_i2c.c
 +++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -84,7 +84,7 @@ static int st_accel_i2c_probe(struct i2c_client *client,
+@@ -79,7 +79,6 @@ static int st_accel_i2c_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	adata = iio_priv(indio_dev);
+-	adata->dev = &client->dev;
+ 	st_sensors_of_i2c_probe(client, st_accel_of_match);
  
  	st_sensors_i2c_configure(indio_dev, client, adata);
- 
--	err = st_accel_common_probe(indio_dev, client->dev.platform_data);
-+	err = st_accel_common_probe(indio_dev);
- 	if (err < 0)
- 		return err;
- 
 diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 1956396..2090d80 100644
+index 2090d80..12ec293 100644
 --- a/drivers/iio/accel/st_accel_spi.c
 +++ b/drivers/iio/accel/st_accel_spi.c
-@@ -33,7 +33,7 @@ static int st_accel_spi_probe(struct spi_device *spi)
+@@ -29,7 +29,6 @@ static int st_accel_spi_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	adata = iio_priv(indio_dev);
+-	adata->dev = &spi->dev;
  
  	st_sensors_spi_configure(indio_dev, spi, adata);
  
--	err = st_accel_common_probe(indio_dev, spi->dev.platform_data);
-+	err = st_accel_common_probe(indio_dev);
- 	if (err < 0)
- 		return err;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+index bb6f308..98cfee29 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
++++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+@@ -72,6 +72,7 @@ void st_sensors_i2c_configure(struct iio_dev *indio_dev,
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = client->name;
+ 
++	sdata->dev = &client->dev;
+ 	sdata->tf = &st_sensors_tf_i2c;
+ 	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
+ }
+diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
+index 251baf6..78a6a1a 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_spi.c
++++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
+@@ -111,6 +111,7 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi->modalias;
+ 
++	sdata->dev = &spi->dev;
+ 	sdata->tf = &st_sensors_tf_spi;
+ 	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
+ }
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+index 94d01fb..64480b1 100644
+--- a/drivers/iio/gyro/st_gyro_i2c.c
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -67,7 +67,6 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	gdata = iio_priv(indio_dev);
+-	gdata->dev = &client->dev;
+ 	st_sensors_of_i2c_probe(client, st_gyro_of_match);
+ 
+ 	st_sensors_i2c_configure(indio_dev, client, gdata);
+diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+index 3e7a01a..e59bead 100644
+--- a/drivers/iio/gyro/st_gyro_spi.c
++++ b/drivers/iio/gyro/st_gyro_spi.c
+@@ -29,7 +29,6 @@ static int st_gyro_spi_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	gdata = iio_priv(indio_dev);
+-	gdata->dev = &spi->dev;
+ 
+ 	st_sensors_spi_configure(indio_dev, spi, gdata);
+ 
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index f8a6823..92e5c15 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -51,7 +51,6 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	mdata = iio_priv(indio_dev);
+-	mdata->dev = &client->dev;
+ 	st_sensors_of_i2c_probe(client, st_magn_of_match);
+ 
+ 	st_sensors_i2c_configure(indio_dev, client, mdata);
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index f642142..7adacf1 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -29,7 +29,6 @@ static int st_magn_spi_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	mdata = iio_priv(indio_dev);
+-	mdata->dev = &spi->dev;
+ 
+ 	st_sensors_spi_configure(indio_dev, spi, mdata);
+ 
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index dd73351..e5e19d3 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -51,7 +51,6 @@ static int st_press_i2c_probe(struct i2c_client *client,
+ 		return -ENOMEM;
+ 
+ 	pdata = iio_priv(indio_dev);
+-	pdata->dev = &client->dev;
+ 	st_sensors_of_i2c_probe(client, st_press_of_match);
+ 
+ 	st_sensors_i2c_configure(indio_dev, client, pdata);
+diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+index 98c3e8e..92a9614 100644
+--- a/drivers/iio/pressure/st_pressure_spi.c
++++ b/drivers/iio/pressure/st_pressure_spi.c
+@@ -29,7 +29,6 @@ static int st_press_spi_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	pdata = iio_priv(indio_dev);
+-	pdata->dev = &spi->dev;
+ 
+ 	st_sensors_spi_configure(indio_dev, spi, pdata);
  
 -- 
 1.9.1
