@@ -1,65 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46434 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750850AbaHBL4M (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 Aug 2014 07:56:12 -0400
-Message-ID: <53DCD1D7.9000206@kernel.org>
-Date: Sat, 02 Aug 2014 12:56:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Teodora Baluta <teodora.baluta@intel.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 1/5] staging: iio: ad7816: fix sparse warning cast to
- restricted __be16
-References: <1406546313-23031-1-git-send-email-teodora.baluta@intel.com> <1406546313-23031-2-git-send-email-teodora.baluta@intel.com>
-In-Reply-To: <1406546313-23031-2-git-send-email-teodora.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-vc0-f181.google.com ([209.85.220.181]:58635 "EHLO
+	mail-vc0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753441AbaHEBsJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Aug 2014 21:48:09 -0400
+From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Subject: [PATCH v2 3/8] staging: iio: accel: adis16204_core.c: Add blank line between declarations and code
+Date: Mon,  4 Aug 2014 22:46:58 -0300
+Message-Id: <1407203223-9700-4-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
+References: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/07/14 12:18, Teodora Baluta wrote:
-> Fix following sparse endianness problems:
-> 
->   CHECK   drivers/staging/iio/adc/ad7816.c
-> drivers/staging/iio/adc/ad7816.c:93:17: warning: cast to restricted
-> __be16
-> drivers/staging/iio/adc/ad7816.c:93:17: warning: cast to restricted
-> __be16
-> drivers/staging/iio/adc/ad7816.c:93:17: warning: cast to restricted
-> __be16
-> drivers/staging/iio/adc/ad7816.c:93:17: warning: cast to restricted
-> __be16
-> 
-> Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
-Hi Teodora,
+This patch adds missing blank line between declarations and code,
+satisfying checkpatch.pl.
 
-There's actually a nastier problem hiding in here.  SPI requires that
-the buffers passed to spi_read are in their own cache lines.
-Here they are on the stack and hence this is unlikely to be true.
-Cc'd Lars for info.
+Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+---
+ drivers/staging/iio/accel/adis16204_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Also, in cases like this I'd prefer to introduce a local __be16 to
-hold the value whilst it is big endian, rather than using it for both
-big endian and cpu endian in different places in the code.
+diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+index 19eaebc..4c8acbc 100644
+--- a/drivers/staging/iio/accel/adis16204_core.c
++++ b/drivers/staging/iio/accel/adis16204_core.c
+@@ -119,6 +119,7 @@ static int adis16204_write_raw(struct iio_dev *indio_dev,
+ 	int bits;
+ 	s16 val16;
+ 	u8 addr;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		switch (chan->type) {
+-- 
+2.1.0.rc1.204.gae8bc8d
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7816.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 158d770..6686eac 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -90,7 +90,7 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
->  		return ret;
->  	}
->  
-> -	*data = be16_to_cpu(*data);
-> +	be16_to_cpus(data);
->  
->  	return ret;
->  }
-> 
