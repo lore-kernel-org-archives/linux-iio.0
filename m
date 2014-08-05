@@ -1,153 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:51954 "EHLO
-	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754399AbaHEM7D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Aug 2014 08:59:03 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 6/6] iio:common: set the device pointer into ST common sensors library
-Date: Tue,  5 Aug 2014 14:58:46 +0200
-Message-Id: <1407243526-3645-6-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
-References: <1407243526-3645-1-git-send-email-denis.ciocca@st.com>
+Received: from mga09.intel.com ([134.134.136.24]:56169 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752261AbaHEVvI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 5 Aug 2014 17:51:08 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3 2/2] iio: accel: BMC150 accel documentation
+Date: Tue,  5 Aug 2014 14:57:05 -0700
+Message-Id: <1407275825-29035-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1407275825-29035-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1407275825-29035-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/accel/st_accel_i2c.c               | 1 -
- drivers/iio/accel/st_accel_spi.c               | 1 -
- drivers/iio/common/st_sensors/st_sensors_i2c.c | 1 +
- drivers/iio/common/st_sensors/st_sensors_spi.c | 1 +
- drivers/iio/gyro/st_gyro_i2c.c                 | 1 -
- drivers/iio/gyro/st_gyro_spi.c                 | 1 -
- drivers/iio/magnetometer/st_magn_i2c.c         | 1 -
- drivers/iio/magnetometer/st_magn_spi.c         | 1 -
- drivers/iio/pressure/st_pressure_i2c.c         | 1 -
- drivers/iio/pressure/st_pressure_spi.c         | 1 -
- 10 files changed, 2 insertions(+), 8 deletions(-)
+Added any-motion trigger documentation.
 
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 40adc7e..c7246bd 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -79,7 +79,6 @@ static int st_accel_i2c_probe(struct i2c_client *client,
- 		return -ENOMEM;
- 
- 	adata = iio_priv(indio_dev);
--	adata->dev = &client->dev;
- 	st_sensors_of_i2c_probe(client, st_accel_of_match);
- 
- 	st_sensors_i2c_configure(indio_dev, client, adata);
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index 2090d80..12ec293 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -29,7 +29,6 @@ static int st_accel_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	adata = iio_priv(indio_dev);
--	adata->dev = &spi->dev;
- 
- 	st_sensors_spi_configure(indio_dev, spi, adata);
- 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-index bb6f308..98cfee29 100644
---- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
-@@ -72,6 +72,7 @@ void st_sensors_i2c_configure(struct iio_dev *indio_dev,
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = client->name;
- 
-+	sdata->dev = &client->dev;
- 	sdata->tf = &st_sensors_tf_i2c;
- 	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
- }
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 251baf6..78a6a1a 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -111,6 +111,7 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi->modalias;
- 
-+	sdata->dev = &spi->dev;
- 	sdata->tf = &st_sensors_tf_spi;
- 	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
- }
-diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-index 94d01fb..64480b1 100644
---- a/drivers/iio/gyro/st_gyro_i2c.c
-+++ b/drivers/iio/gyro/st_gyro_i2c.c
-@@ -67,7 +67,6 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
- 		return -ENOMEM;
- 
- 	gdata = iio_priv(indio_dev);
--	gdata->dev = &client->dev;
- 	st_sensors_of_i2c_probe(client, st_gyro_of_match);
- 
- 	st_sensors_i2c_configure(indio_dev, client, gdata);
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-index 3e7a01a..e59bead 100644
---- a/drivers/iio/gyro/st_gyro_spi.c
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -29,7 +29,6 @@ static int st_gyro_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	gdata = iio_priv(indio_dev);
--	gdata->dev = &spi->dev;
- 
- 	st_sensors_spi_configure(indio_dev, spi, gdata);
- 
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-index f8a6823..92e5c15 100644
---- a/drivers/iio/magnetometer/st_magn_i2c.c
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -51,7 +51,6 @@ static int st_magn_i2c_probe(struct i2c_client *client,
- 		return -ENOMEM;
- 
- 	mdata = iio_priv(indio_dev);
--	mdata->dev = &client->dev;
- 	st_sensors_of_i2c_probe(client, st_magn_of_match);
- 
- 	st_sensors_i2c_configure(indio_dev, client, mdata);
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-index f642142..7adacf1 100644
---- a/drivers/iio/magnetometer/st_magn_spi.c
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -29,7 +29,6 @@ static int st_magn_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	mdata = iio_priv(indio_dev);
--	mdata->dev = &spi->dev;
- 
- 	st_sensors_spi_configure(indio_dev, spi, mdata);
- 
-diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-index dd73351..e5e19d3 100644
---- a/drivers/iio/pressure/st_pressure_i2c.c
-+++ b/drivers/iio/pressure/st_pressure_i2c.c
-@@ -51,7 +51,6 @@ static int st_press_i2c_probe(struct i2c_client *client,
- 		return -ENOMEM;
- 
- 	pdata = iio_priv(indio_dev);
--	pdata->dev = &client->dev;
- 	st_sensors_of_i2c_probe(client, st_press_of_match);
- 
- 	st_sensors_i2c_configure(indio_dev, client, pdata);
-diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
-index 98c3e8e..92a9614 100644
---- a/drivers/iio/pressure/st_pressure_spi.c
-+++ b/drivers/iio/pressure/st_pressure_spi.c
-@@ -29,7 +29,6 @@ static int st_press_spi_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 
- 	pdata = iio_priv(indio_dev);
--	pdata->dev = &spi->dev;
- 
- 	st_sensors_spi_configure(indio_dev, spi, pdata);
- 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150 | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150 b/Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150
+new file mode 100644
+index 0000000..99847a9
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-accel-bmc150
+@@ -0,0 +1,7 @@
++What:		/sys/bus/iio/devices/triggerX/name = "bmc150_accel-any-motion-devX"
++KernelVersion:	3.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The BMC150 accelerometer kernel module provides an additional trigger,
++		which sets driver in a mode, where data is pushed to the buffer
++		only when there is any motion.
 -- 
-1.9.1
+1.7.11.7
 
