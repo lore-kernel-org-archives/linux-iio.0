@@ -1,51 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-085.synserver.de ([212.40.185.85]:1030 "EHLO
-	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752331AbaHWHAX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Aug 2014 03:00:23 -0400
-Message-ID: <53F83C03.50202@metafoo.de>
-Date: Sat, 23 Aug 2014 09:00:19 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	jic23@kernel.org
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 8/8] iio: meter: ade7758: Fix indio_dev->trig assignment
-References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1408740516-31261-9-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1408740516-31261-9-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mopsfelder@gmail.com>
+From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+To: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	jic23@kernel.org,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Subject: [PATCH v2 7/8] staging: iio: accel: lis3l02dq_ring.c: Add blank line between declarations and code
+Date: Mon,  4 Aug 2014 22:47:02 -0300
+Message-Id: <1407203223-9700-8-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
+References: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/22/2014 10:48 PM, Srinivas Pandruvada wrote:
-> This can result in wrong reference count for trigger device, call
-> iio_trigger_get to increment reference.
-> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-> with Jonathan.
->
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+This patch adds missing blank line between declarations and code,
+satisfying checkpatch.pl.
 
+Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+---
+ drivers/staging/iio/accel/lis3l02dq_ring.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks.
-
-> ---
->   drivers/staging/iio/meter/ade7758_trigger.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-> index ea01b8f..6f45ce0 100644
-> --- a/drivers/staging/iio/meter/ade7758_trigger.c
-> +++ b/drivers/staging/iio/meter/ade7758_trigger.c
-> @@ -85,7 +85,7 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
->   	ret = iio_trigger_register(st->trig);
->
->   	/* select default trigger */
-> -	indio_dev->trig = st->trig;
-> +	indio_dev->trig = iio_trigger_get(st->trig);
->   	if (ret)
->   		goto error_free_irq;
->
->
-
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index bf33fde..1d934ee 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -19,6 +19,7 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
+ {
+ 	u16 _lower = lower;
+ 	u16 _upper = upper;
++
+ 	return _lower | (_upper << 8);
+ }
+ 
+-- 
+2.1.0.rc1.204.gae8bc8d
