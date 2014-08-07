@@ -1,407 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36402 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35829 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754191AbaHGKZ3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 06:25:29 -0400
-Message-ID: <53E35414.8050403@kernel.org>
-Date: Thu, 07 Aug 2014 11:25:24 +0100
+	with ESMTP id S1754949AbaHGJMT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 05:12:19 -0400
+Message-ID: <53E342EF.2010304@kernel.org>
+Date: Thu, 07 Aug 2014 10:12:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: accel: kxcjk-1013: support runtime pm
-References: <1407275881-29139-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1407275881-29139-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1407275881-29139-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Murilo Opsfelder Araujo <mopsfelder@gmail.com>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+CC: gregkh@linuxfoundation.org
+Subject: Re: [PATCH v3 1/2] staging: iio: accel: Add blank lines between declarations
+ and code
+References: <1407370929-26949-1-git-send-email-mopsfelder@gmail.com> <1407370929-26949-2-git-send-email-mopsfelder@gmail.com>
+In-Reply-To: <1407370929-26949-2-git-send-email-mopsfelder@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/08/14 22:58, Srinivas Pandruvada wrote:
-> In an effort to improve raw read performance and at the same time enter
-> low power state at every possible chance.
-> For raw reads, it will keep the system powered on for a default or user
-> specified time, via autosuspend_delay attribute of device power.
-> This will help read multiple samples without power on/off sequence.
-> For triggers it will keep the system on till, requested to be turned
-> off by trigger state by utilizing run time PM usage counters.
+On 07/08/14 01:22, Murilo Opsfelder Araujo wrote:
+> This patch adds missing blank lines between declarations and code and
+> fixes lines starting by spaces, satisfying checkpatch.pl.
 > 
-> When runtime pm is not enabled, then it keeps the chip in operation
-> mode always.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Looks good.
-
-Applied to the togreg branch of iio.git - initiallly pushed out as
-testing.  Thanks.
+> Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
+Applied to the togreg branch of iio.git.  Initially pushed out
+as testing for the autobuilders to play around with it.
 
 J
 > ---
->  drivers/iio/accel/kxcjk-1013.c | 206 +++++++++++++++++++++++++++++++----------
->  1 file changed, 156 insertions(+), 50 deletions(-)
+>  drivers/staging/iio/accel/adis16201_core.c | 5 +++--
+>  drivers/staging/iio/accel/adis16203_core.c | 2 ++
+>  drivers/staging/iio/accel/adis16204_core.c | 1 +
+>  drivers/staging/iio/accel/adis16209_core.c | 1 +
+>  drivers/staging/iio/accel/adis16240_core.c | 1 +
+>  drivers/staging/iio/accel/lis3l02dq_core.c | 4 ++++
+>  drivers/staging/iio/accel/lis3l02dq_ring.c | 1 +
+>  drivers/staging/iio/accel/sca3000_core.c   | 1 +
+>  8 files changed, 14 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 7941cf2..b32bdd1 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -21,6 +21,8 @@
->  #include <linux/string.h>
->  #include <linux/acpi.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/pm.h>
-> +#include <linux/pm_runtime.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
-> @@ -71,15 +73,17 @@
->  #define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
->  #define KXCJK1013_MAX_STARTUP_TIME_US	100000
->  
-> +#define KXCJK1013_SLEEP_DELAY_MS	2000
+> diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+> index 50ba1fa..7eae5fd 100644
+> --- a/drivers/staging/iio/accel/adis16201_core.c
+> +++ b/drivers/staging/iio/accel/adis16201_core.c
+> @@ -111,6 +111,7 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+>  	int bits;
+>  	s16 val16;
+>  	u8 addr;
 > +
->  struct kxcjk1013_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *trig;
->  	bool trig_mode;
->  	struct mutex mutex;
->  	s16 buffer[8];
-> -	int power_state;
->  	u8 odr_bits;
->  	bool active_high_intr;
-> +	bool trigger_on;
->  };
->  
->  enum kxcjk1013_axis {
-> @@ -138,6 +142,25 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
->  	return 0;
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		switch (chan->type) {
+> @@ -131,8 +132,8 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
 >  }
 >  
-> +static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
-> +			      enum kxcjk1013_mode *mode)
-> +{
-> +	int ret;
+>  static const struct iio_chan_spec adis16201_channels[] = {
+> -  ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
+> -  ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
+> +	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
+> +	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
+>  	ADIS_ACCEL_CHAN(X, ADIS16201_XACCL_OUT, ADIS16201_SCAN_ACC_X,
+>  		BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+>  	ADIS_ACCEL_CHAN(Y, ADIS16201_YACCL_OUT, ADIS16201_SCAN_ACC_Y,
+> diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+> index f472137..fbbe93f 100644
+> --- a/drivers/staging/iio/accel/adis16203_core.c
+> +++ b/drivers/staging/iio/accel/adis16203_core.c
+> @@ -37,6 +37,7 @@ static int adis16203_write_raw(struct iio_dev *indio_dev,
+>  	struct adis *st = iio_priv(indio_dev);
+>  	/* currently only one writable parameter which keeps this simple */
+>  	u8 addr = adis16203_addresses[chan->scan_index];
 > +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return ret;
-> +	}
+>  	return adis_write_reg_16(st, addr, val & 0x3FFF);
+>  }
+>  
+> @@ -50,6 +51,7 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+>  	int bits;
+>  	u8 addr;
+>  	s16 val16;
 > +
-> +	if (ret & KXCJK1013_REG_CTRL1_BIT_PC1)
-> +		*mode = OPERATION;
-> +	else
-> +		*mode = STANDBY;
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+>  		return adis_single_conversion(indio_dev, chan,
+> diff --git a/drivers/staging/iio/accel/adis16204_core.c b/drivers/staging/iio/accel/adis16204_core.c
+> index 19eaebc..4c8acbc 100644
+> --- a/drivers/staging/iio/accel/adis16204_core.c
+> +++ b/drivers/staging/iio/accel/adis16204_core.c
+> @@ -119,6 +119,7 @@ static int adis16204_write_raw(struct iio_dev *indio_dev,
+>  	int bits;
+>  	s16 val16;
+>  	u8 addr;
 > +
-> +	return 0;
-> +}
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		switch (chan->type) {
+> diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+> index 374dc6e..b2c7aed 100644
+> --- a/drivers/staging/iio/accel/adis16209_core.c
+> +++ b/drivers/staging/iio/accel/adis16209_core.c
+> @@ -44,6 +44,7 @@ static int adis16209_write_raw(struct iio_dev *indio_dev,
+>  	int bits;
+>  	s16 val16;
+>  	u8 addr;
 > +
->  static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		switch (chan->type) {
+> diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
+> index 74ace2a..205d6d0 100644
+> --- a/drivers/staging/iio/accel/adis16240_core.c
+> +++ b/drivers/staging/iio/accel/adis16240_core.c
+> @@ -163,6 +163,7 @@ static int adis16240_write_raw(struct iio_dev *indio_dev,
+>  	int bits = 10;
+>  	s16 val16;
+>  	u8 addr;
+> +
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		val16 = val & ((1 << bits) - 1);
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+> index 898653c..f5e145c 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_core.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_core.c
+> @@ -212,6 +212,7 @@ static int lis3l02dq_write_thresh(struct iio_dev *indio_dev,
+>  				  int val, int val2)
 >  {
+>  	u16 value = val;
+> +
+>  	return lis3l02dq_spi_write_reg_s16(indio_dev,
+>  					   LIS3L02DQ_REG_THS_L_ADDR,
+>  					   value);
+> @@ -226,6 +227,7 @@ static int lis3l02dq_write_raw(struct iio_dev *indio_dev,
+>  	int ret = -EINVAL, reg;
+>  	u8 uval;
+>  	s8 sval;
+> +
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		if (val > 255 || val < -256)
+> @@ -302,6 +304,7 @@ static ssize_t lis3l02dq_read_frequency(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	int ret, len = 0;
+>  	s8 t;
+> +
+>  	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+>  				       LIS3L02DQ_REG_CTRL_1_ADDR,
+>  				       (u8 *)&t);
+> @@ -565,6 +568,7 @@ static int lis3l02dq_read_event_config(struct iio_dev *indio_dev,
+>  	u8 val;
 >  	int ret;
-> @@ -201,6 +224,41 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->  		return ret;
->  	}
->  
-> +	ret = kxcjk1013_set_mode(data, OPERATION);
-> +	if (ret < 0)
-> +		return ret;
+>  	u8 mask = (1 << (chan->channel2*2 + (dir == IIO_EV_DIR_RISING)));
 > +
-> +	return 0;
-> +}
+>  	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+>  				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+>  				       &val);
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> index bf33fde..1d934ee 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> @@ -19,6 +19,7 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
+>  {
+>  	u16 _lower = lower;
+>  	u16 _upper = upper;
 > +
-> +static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(odr_start_up_times); ++i) {
-> +		if (odr_start_up_times[i].odr_bits == data->odr_bits)
-> +			return odr_start_up_times[i].usec;
-> +	}
-> +
-> +	return KXCJK1013_MAX_STARTUP_TIME_US;
-> +}
-> +
-> +static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
-> +{
-> +	int ret;
-> +
-> +	if (on)
-> +		ret = pm_runtime_get_sync(&data->client->dev);
-> +	else {
-> +		pm_runtime_mark_last_busy(&data->client->dev);
-> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> +	}
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"Failed: kxcjk1013_set_power_state for %d\n", on);
-> +		return ret;
-> +	}
-> +
->  	return 0;
+>  	return _lower | (_upper << 8);
 >  }
 >  
-> @@ -208,6 +266,11 @@ static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
->  					  bool status)
->  {
->  	int ret;
-> +	enum kxcjk1013_mode store_mode;
+> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+> index ed30e32..bc53fedb 100644
+> --- a/drivers/staging/iio/accel/sca3000_core.c
+> +++ b/drivers/staging/iio/accel/sca3000_core.c
+> @@ -713,6 +713,7 @@ static int sca3000_read_thresh(struct iio_dev *indio_dev,
+>  	int ret, i;
+>  	struct sca3000_state *st = iio_priv(indio_dev);
+>  	int num = chan->channel2;
 > +
-> +	ret = kxcjk1013_get_mode(data, &store_mode);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	/* This is requirement by spec to change state to STANDBY */
->  	ret = kxcjk1013_set_mode(data, STANDBY);
-> @@ -250,7 +313,13 @@ static int kxcjk1013_chip_setup_interrupt(struct kxcjk1013_data *data,
->  		return ret;
->  	}
->  
-> -	return ret;
-> +	if (store_mode == OPERATION) {
-> +		ret = kxcjk1013_set_mode(data, OPERATION);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
->  }
->  
->  static int kxcjk1013_convert_freq_to_bit(int val, int val2)
-> @@ -271,6 +340,11 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  {
->  	int ret;
->  	int odr_bits;
-> +	enum kxcjk1013_mode store_mode;
-> +
-> +	ret = kxcjk1013_get_mode(data, &store_mode);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2);
->  	if (odr_bits < 0)
-> @@ -290,9 +364,7 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  
->  	data->odr_bits = odr_bits;
->  
-> -	/* Check, if the ODR is changed after data enable */
-> -	if (data->power_state) {
-> -		/* Set the state back to operation */
-> +	if (store_mode == OPERATION) {
->  		ret = kxcjk1013_set_mode(data, OPERATION);
->  		if (ret < 0)
->  			return ret;
-> @@ -331,18 +403,6 @@ static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
->  	return ret;
->  }
->  
-> -static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
-> -{
-> -	int i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(odr_start_up_times); ++i) {
-> -		if (odr_start_up_times[i].odr_bits == data->odr_bits)
-> -			return odr_start_up_times[i].usec;
-> -	}
-> -
-> -	return KXCJK1013_MAX_STARTUP_TIME_US;
-> -}
-> -
->  static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
->  			      struct iio_chan_spec const *chan, int *val,
->  			      int *val2, long mask)
-> @@ -356,29 +416,25 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
->  		if (iio_buffer_enabled(indio_dev))
->  			ret = -EBUSY;
->  		else {
-> -			int sleep_val;
-> -
-> -			ret = kxcjk1013_set_mode(data, OPERATION);
-> +			ret = kxcjk1013_set_power_state(data, true);
->  			if (ret < 0) {
->  				mutex_unlock(&data->mutex);
->  				return ret;
->  			}
-> -			++data->power_state;
-> -			sleep_val = kxcjk1013_get_startup_times(data);
-> -			if (sleep_val < 20000)
-> -				usleep_range(sleep_val, 20000);
-> -			else
-> -				msleep_interruptible(sleep_val/1000);
->  			ret = kxcjk1013_get_acc_reg(data, chan->scan_index);
-> -			if (--data->power_state == 0)
-> -				kxcjk1013_set_mode(data, STANDBY);
-> +			if (ret < 0) {
-> +				kxcjk1013_set_power_state(data, false);
-> +				mutex_unlock(&data->mutex);
-> +				return ret;
-> +			}
-> +			*val = sign_extend32(ret >> 4, 11);
-> +			ret = kxcjk1013_set_power_state(data, false);
->  		}
->  		mutex_unlock(&data->mutex);
->  
->  		if (ret < 0)
->  			return ret;
->  
-> -		*val = sign_extend32(ret >> 4, 11);
->  		return IIO_VAL_INT;
->  
->  	case IIO_CHAN_INFO_SCALE:
-> @@ -520,20 +576,21 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (state && data->trigger_on)
-> +		return 0;
->  
->  	mutex_lock(&data->mutex);
-> -	if (state) {
-> -		kxcjk1013_chip_setup_interrupt(data, true);
-> -		kxcjk1013_set_mode(data, OPERATION);
-> -		++data->power_state;
-> -	} else {
-> -		if (--data->power_state) {
-> +	ret = kxcjk1013_chip_setup_interrupt(data, state);
-> +	if (!ret) {
-> +		ret = kxcjk1013_set_power_state(data, state);
-> +		if (ret < 0) {
->  			mutex_unlock(&data->mutex);
-> -			return 0;
-> +			return ret;
->  		}
-> -		kxcjk1013_chip_setup_interrupt(data, false);
-> -		kxcjk1013_set_mode(data, STANDBY);
->  	}
-> +	data->trigger_on = state;
->  	mutex_unlock(&data->mutex);
->  
->  	return 0;
-> @@ -661,14 +718,25 @@ static int kxcjk1013_probe(struct i2c_client *client,
->  		}
->  	}
->  
-> -	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	ret = iio_device_register(indio_dev);
->  	if (ret < 0) {
->  		dev_err(&client->dev, "unable to register iio device\n");
->  		goto err_buffer_cleanup;
->  	}
->  
-> +	ret = pm_runtime_set_active(&client->dev);
-> +	if (ret)
-> +		goto err_iio_unregister;
-> +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev,
-> +					 KXCJK1013_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
->  	return 0;
->  
-> +err_iio_unregister:
-> +	iio_device_unregister(indio_dev);
->  err_buffer_cleanup:
->  	if (data->trig_mode)
->  		iio_triggered_buffer_cleanup(indio_dev);
-> @@ -687,6 +755,12 @@ static int kxcjk1013_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
->  
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
-> +	pm_runtime_put_noidle(&client->dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
->  	if (data->trig_mode) {
->  		iio_triggered_buffer_cleanup(indio_dev);
->  		iio_trigger_unregister(data->trig);
-> @@ -705,35 +779,67 @@ static int kxcjk1013_suspend(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
->  
->  	mutex_lock(&data->mutex);
-> -	kxcjk1013_set_mode(data, STANDBY);
-> +	ret = kxcjk1013_set_mode(data, STANDBY);
->  	mutex_unlock(&data->mutex);
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  static int kxcjk1013_resume(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret = 0;
->  
->  	mutex_lock(&data->mutex);
-> +	/* Check, if the suspend occured while active */
-> +	if (data->trigger_on)
-> +		ret = kxcjk1013_set_mode(data, OPERATION);
-> +	mutex_unlock(&data->mutex);
->  
-> -	if (data->power_state)
-> -		kxcjk1013_set_mode(data, OPERATION);
-> +	return ret;
-> +}
-> +#endif
->  
-> -	mutex_unlock(&data->mutex);
-> +#ifdef CONFIG_PM_RUNTIME
-> +static int kxcjk1013_runtime_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
->  
-> -	return 0;
-> +	return kxcjk1013_set_mode(data, STANDBY);
->  }
->  
-> -static SIMPLE_DEV_PM_OPS(kxcjk1013_pm_ops, kxcjk1013_suspend, kxcjk1013_resume);
-> -#define KXCJK1013_PM_OPS (&kxcjk1013_pm_ops)
-> -#else
-> -#define KXCJK1013_PM_OPS NULL
-> +static int kxcjk1013_runtime_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	int sleep_val;
-> +
-> +	ret = kxcjk1013_set_mode(data, OPERATION);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	sleep_val = kxcjk1013_get_startup_times(data);
-> +	if (sleep_val < 20000)
-> +		usleep_range(sleep_val, 20000);
-> +	else
-> +		msleep_interruptible(sleep_val/1000);
-> +
-> +	return 0;
-> +}
->  #endif
->  
-> +static const struct dev_pm_ops kxcjk1013_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(kxcjk1013_suspend, kxcjk1013_resume)
-> +	SET_RUNTIME_PM_OPS(kxcjk1013_runtime_suspend,
-> +			   kxcjk1013_runtime_resume, NULL)
-> +};
-> +
->  static const struct acpi_device_id kx_acpi_match[] = {
->  	{"KXCJ1013", 0},
->  	{ },
-> @@ -751,7 +857,7 @@ static struct i2c_driver kxcjk1013_driver = {
->  	.driver = {
->  		.name	= KXCJK1013_DRV_NAME,
->  		.acpi_match_table = ACPI_PTR(kx_acpi_match),
-> -		.pm	= KXCJK1013_PM_OPS,
-> +		.pm	= &kxcjk1013_pm_ops,
->  	},
->  	.probe		= kxcjk1013_probe,
->  	.remove		= kxcjk1013_remove,
+>  	mutex_lock(&st->lock);
+>  	ret = sca3000_read_ctrl_reg(st, sca3000_addresses[num][1]);
+>  	mutex_unlock(&st->lock);
 > 
