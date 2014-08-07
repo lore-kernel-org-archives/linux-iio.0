@@ -1,321 +1,119 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39410 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932330AbaHGQvs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 12:51:48 -0400
-Message-ID: <53E3AEA1.7040604@kernel.org>
-Date: Thu, 07 Aug 2014 17:51:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <balbi@ti.com>
+Date: Thu, 7 Aug 2014 12:54:34 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <balbi@ti.com>, <linux-iio@vger.kernel.org>
+Subject: Re: [RFC/PATCH] iio: light: add support for TI's opt3001 ligth sensor
+Message-ID: <20140807175434.GA31933@saruman.home>
+Reply-To: <balbi@ti.com>
+References: <1407341409-30284-1-git-send-email-balbi@ti.com>
+ <53E34E60.80507@kernel.org>
+ <20140807142829.GA24581@saruman.home>
+ <53E3A8B4.70805@kernel.org>
+ <20140807163509.GA29964@saruman.home>
+ <53E3B051.4080705@kernel.org>
 MIME-Version: 1.0
-To: Chanwoo Choi <cw00.choi@samsung.com>
-CC: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
-	kyungmin.park@samsung.com, heiko@sntech.de, knaack.h@gmx.de,
-	t.figa@samsung.com, linux-iio@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCHv2 2/3] iio: adc: exynos_adc: Add support for s3c24xx ADC
-References: <1406551442-15186-1-git-send-email-cw00.choi@samsung.com> <1406551442-15186-3-git-send-email-cw00.choi@samsung.com>
-In-Reply-To: <1406551442-15186-3-git-send-email-cw00.choi@samsung.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
+In-Reply-To: <53E3B051.4080705@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 28/07/14 13:44, Chanwoo Choi wrote:
-> This patch add support for s3c2410/s3c2416/s3c2440/s3c2443 ADC. The s3c24xx
-> is alomost same as ADCv1. But, There are a little difference as following:
-> - ADCMUX register address
-> - ADCDAT mask (10 bit or 12 bit ADC resolution according to SoC version)
-> - s3c24xx/s3c64xx has not included ADC_PHY enable register
-> 
-> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-Applied - with a little bit of fuzz and pushed out as testing for the autobuilders
-to play with it.
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
+Hi,
 
-Jonathan
-> ---
->  .../devicetree/bindings/arm/samsung/exynos-adc.txt |  16 ++-
->  drivers/iio/adc/Kconfig                            |   2 +-
->  drivers/iio/adc/exynos_adc.c                       | 109 +++++++++++++++++++--
->  3 files changed, 114 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> index d3dad46..709efaa 100644
-> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-> @@ -11,15 +11,25 @@ New driver handles the following
->  
->  Required properties:
->  - compatible:		Must be "samsung,exynos-adc-v1"
-> -				for exynos4412/5250 controllers.
-> +				for exynos4412/5250 and s5pv210 controllers.
->  			Must be "samsung,exynos-adc-v2" for
->  				future controllers.
->  			Must be "samsung,exynos3250-adc" for
->  				controllers compatible with ADC of Exynos3250.
-> +			Must be "samsung,s3c2410-adc" for
-> +				the ADC in s3c2410 and compatibles
-> +			Must be "samsung,s3c2416-adc" for
-> +				the ADC in s3c2416 and compatibles
-> +			Must be "samsung,s3c2440-adc" for
-> +				the ADC in s3c2440 and compatibles
-> +			Must be "samsung,s3c2443-adc" for
-> +				the ADC in s3c2443 and compatibles
->  			Must be "samsung,s3c6410-adc" for
->  				the ADC in s3c6410 and compatibles
-> -- reg:			Contains ADC register address range (base address and
-> -			length) and the address of the phy enable register.
-> +- reg:			List of ADC register address range
-> +			- The base address and range of ADC register
-> +			- The base address and range of ADC_PHY register (every
-> +			  SoC except for s3c24xx/s3c64xx ADC)
->  - interrupts: 		Contains the interrupt information for the timer. The
->  			format is being dependent on which interrupt controller
->  			the Samsung device uses.
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a80d236..a247655 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -119,7 +119,7 @@ config AT91_ADC
->  
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
-> -	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-> +	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
->  	help
->  	  Core support for the ADC block found in the Samsung EXYNOS series
->  	  of SoCs for drivers such as the touchscreen and hwmon to use to share
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index ed9e4c8..3b17faa 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -47,6 +47,9 @@
->  #define ADC_V1_INTCLR(x)	((x) + 0x18)
->  #define ADC_V1_MUX(x)		((x) + 0x1c)
->  
-> +/* S3C2410 ADC registers definitions */
-> +#define ADC_S3C2410_MUX(x)	((x) + 0x18)
-> +
->  /* Future ADC_V2 registers definitions */
->  #define ADC_V2_CON1(x)		((x) + 0x00)
->  #define ADC_V2_CON2(x)		((x) + 0x04)
-> @@ -63,6 +66,8 @@
->  
->  /* Bit definitions for S3C2410 ADC */
->  #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) << 3)
-> +#define ADC_S3C2410_DATX_MASK	0x3FF
-> +#define ADC_S3C2416_CON_RES_SEL	(1u << 3)
->  
->  /* Bit definitions for ADC_V2 */
->  #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
-> @@ -80,6 +85,7 @@
->  
->  /* Bit definitions common for ADC_V1 and ADC_V2 */
->  #define ADC_CON_EN_START	(1u << 0)
-> +#define ADC_CON_EN_START_MASK	(0x3 << 0)
->  #define ADC_DATX_MASK		0xFFF
->  
->  #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
-> @@ -103,6 +109,8 @@ struct exynos_adc {
->  struct exynos_adc_data {
->  	int num_channels;
->  	bool needs_sclk;
-> +	bool needs_adc_phy;
-> +	u32 mask;
->  
->  	void (*init_hw)(struct exynos_adc *info);
->  	void (*exit_hw)(struct exynos_adc *info);
-> @@ -174,7 +182,8 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
->  {
->  	u32 con1;
->  
-> -	writel(1, info->enable_reg);
-> +	if (info->data->needs_adc_phy)
-> +		writel(1, info->enable_reg);
->  
->  	/* set default prescaler values and Enable prescaler */
->  	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
-> @@ -188,7 +197,8 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
->  {
->  	u32 con;
->  
-> -	writel(0, info->enable_reg);
-> +	if (info->data->needs_adc_phy)
-> +		writel(0, info->enable_reg);
->  
->  	con = readl(ADC_V1_CON(info->regs));
->  	con |= ADC_V1_CON_STANDBY;
-> @@ -213,6 +223,8 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
->  
->  static const struct exynos_adc_data const exynos_adc_v1_data = {
->  	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
-> +	.needs_adc_phy	= true,
->  
->  	.init_hw	= exynos_adc_v1_init_hw,
->  	.exit_hw	= exynos_adc_v1_exit_hw,
-> @@ -220,6 +232,53 @@ static const struct exynos_adc_data const exynos_adc_v1_data = {
->  	.start_conv	= exynos_adc_v1_start_conv,
->  };
->  
-> +static void exynos_adc_s3c2416_start_conv(struct exynos_adc *info,
-> +					  unsigned long addr)
-> +{
-> +	u32 con1;
-> +
-> +	/* Enable 12 bit ADC resolution */
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	con1 |= ADC_S3C2416_CON_RES_SEL;
-> +	writel(con1, ADC_V1_CON(info->regs));
-> +
-> +	/* Select channel for S3C2416 */
-> +	writel(addr, ADC_S3C2410_MUX(info->regs));
-> +
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static struct exynos_adc_data const exynos_adc_s3c2416_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.start_conv	= exynos_adc_s3c2416_start_conv,
-> +};
-> +
-> +static void exynos_adc_s3c2443_start_conv(struct exynos_adc *info,
-> +					  unsigned long addr)
-> +{
-> +	u32 con1;
-> +
-> +	/* Select channel for S3C2433 */
-> +	writel(addr, ADC_S3C2410_MUX(info->regs));
-> +
-> +	con1 = readl(ADC_V1_CON(info->regs));
-> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-> +}
-> +
-> +static struct exynos_adc_data const exynos_adc_s3c2443_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_S3C2410_DATX_MASK, /* 10 bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.start_conv	= exynos_adc_s3c2443_start_conv,
-> +};
-> +
->  static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
->  					  unsigned long addr)
->  {
-> @@ -231,8 +290,18 @@ static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
->  	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
->  }
->  
-> +static struct exynos_adc_data const exynos_adc_s3c24xx_data = {
-> +	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_S3C2410_DATX_MASK, /* 10 bit ADC resolution */
-> +
-> +	.init_hw	= exynos_adc_v1_init_hw,
-> +	.exit_hw	= exynos_adc_v1_exit_hw,
-> +	.start_conv	= exynos_adc_s3c64xx_start_conv,
-> +};
-> +
->  static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
->  	.num_channels	= MAX_ADC_V1_CHANNELS,
-> +	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
->  
->  	.init_hw	= exynos_adc_v1_init_hw,
->  	.exit_hw	= exynos_adc_v1_exit_hw,
-> @@ -244,7 +313,8 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
->  {
->  	u32 con1, con2;
->  
-> -	writel(1, info->enable_reg);
-> +	if (info->data->needs_adc_phy)
-> +		writel(1, info->enable_reg);
->  
->  	con1 = ADC_V2_CON1_SOFT_RESET;
->  	writel(con1, ADC_V2_CON1(info->regs));
-> @@ -261,7 +331,8 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
->  {
->  	u32 con;
->  
-> -	writel(0, info->enable_reg);
-> +	if (info->data->needs_adc_phy)
-> +		writel(0, info->enable_reg);
->  
->  	con = readl(ADC_V2_CON1(info->regs));
->  	con &= ~ADC_CON_EN_START;
-> @@ -289,6 +360,8 @@ static void exynos_adc_v2_start_conv(struct exynos_adc *info,
->  
->  static const struct exynos_adc_data const exynos_adc_v2_data = {
->  	.num_channels	= MAX_ADC_V2_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
-> +	.needs_adc_phy	= true,
->  
->  	.init_hw	= exynos_adc_v2_init_hw,
->  	.exit_hw	= exynos_adc_v2_exit_hw,
-> @@ -298,7 +371,9 @@ static const struct exynos_adc_data const exynos_adc_v2_data = {
->  
->  static const struct exynos_adc_data const exynos3250_adc_data = {
->  	.num_channels	= MAX_EXYNOS3250_ADC_CHANNELS,
-> +	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
->  	.needs_sclk	= true,
-> +	.needs_adc_phy	= true,
->  
->  	.init_hw	= exynos_adc_v2_init_hw,
->  	.exit_hw	= exynos_adc_v2_exit_hw,
-> @@ -308,6 +383,18 @@ static const struct exynos_adc_data const exynos3250_adc_data = {
->  
->  static const struct of_device_id exynos_adc_match[] = {
->  	{
-> +		.compatible = "samsung,s3c2410-adc",
-> +		.data = &exynos_adc_s3c24xx_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2416-adc",
-> +		.data = &exynos_adc_s3c2416_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2440-adc",
-> +		.data = &exynos_adc_s3c24xx_data,
-> +	}, {
-> +		.compatible = "samsung,s3c2443-adc",
-> +		.data = &exynos_adc_s3c2443_data,
-> +	}, {
->  		.compatible = "samsung,s3c6410-adc",
->  		.data = &exynos_adc_s3c64xx_data,
->  	}, {
-> @@ -373,9 +460,10 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
->  static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
->  {
->  	struct exynos_adc *info = (struct exynos_adc *)dev_id;
-> +	u32 mask = info->data->mask;
->  
->  	/* Read value */
-> -	info->value = readl(ADC_V1_DATX(info->regs)) & ADC_DATX_MASK;
-> +	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
->  
->  	/* clear irq */
->  	if (info->data->clear_irq)
-> @@ -468,10 +556,13 @@ static int exynos_adc_probe(struct platform_device *pdev)
->  	if (IS_ERR(info->regs))
->  		return PTR_ERR(info->regs);
->  
-> -	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> -	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
-> -	if (IS_ERR(info->enable_reg))
-> -		return PTR_ERR(info->enable_reg);
-> +
-> +	if (info->data->needs_adc_phy) {
-> +		mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +		info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
-> +		if (IS_ERR(info->enable_reg))
-> +			return PTR_ERR(info->enable_reg);
-> +	}
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0) {
-> 
+(your email setup is still messed up, I had to rewrap the whole email)
+
+On Thu, Aug 07, 2014 at 05:58:57PM +0100, Jonathan Cameron wrote:
+> >>> I can set low limit to 200 lux and high limit to 50 lux, then I'll
+> >>> get a rising edge IRQ when I have more than 50 lux and a falling
+> >>> edge when I get less than 200 lux.
+> >>>=20
+> >>> If Latch bit is set, however, then it's almost like it ignores
+> >>> low/high limit altogether and I get an IRQ ever $int_time ms or
+> >>> so.
+> >> That would be similar to the motion triggers we have for
+> >> accelerometers. They capture every sample as long as the threshold
+> >> is met (during motion). No idea why you'd really want to do that on
+> >> a light sensor though.  Perhaps not worth capturing light info if
+> >> the cover is closed on a phone?
+> >=20
+> > Yeah, but that's something else altogether. This device doesn't
+> > really care about a phone cover. Sounds like policy which should be
+> > in userland, or part of an iio_gpio_trigger...
+> Agreed.  Can you think of a use for the non latched version? :)
+
+Sure, you might just want a notification when illuminance reaches a
+certain level (rising) or drop below another (or the same) level
+(falling).
+
+> >>>>> +	ret =3D devm_iio_device_register(dev, iio);
+> >>>>> +	if (ret) {
+> >>>>> +		dev_err(dev, "failed to register IIO device\n");
+> >>>>> +		return ret;
+> >>>>> +	}
+> >>>>> +
+> >>>> Normally we'd expect the devm_iio_device_register (that provides
+> >>>> the userspace interfaces) to be after the irq request.
+> >>>=20
+> >>> that's wrong. By the time the IRQ is requested, an IRQ can
+> >>> actually fire and you better have a valid e.g.  iio_dev by then.
+> >> Its very unusual to bring up a device with the IRQ already in a
+> >> position to fire.  Normally that would require some enabling from
+> >> userspace after the driver is loaded?  How can it fire here before
+> >> that point?
+> >=20
+> > at the moment you call request_irq() (or any of its friends), that
+> > IRQ line is unmasked and ready to fire. Remember that IRQ lines can
+> > be shared and your IRQ handler will be called even if a separate
+> > device triggered the IRQ. Heck, if you have a bad board design, even
+> > noise can assert the IRQ line but let's not go there :-)
+> IIRC Sharing is only possible if the device driver explicitly allows
+> it?
+
+not, necessarily. It can be set by the arch support code.
+
+> Bad board design can get you in many many ways ;)
+> >=20
+> > In any case, you better have valid pointers around so that by the
+> > time your IRQ is triggered, you don't crash the kernel. Another way
+> > would be to mask the IRQ at your device level, but that still
+> > doesn't solve shared IRQs.
+> >=20
+> > I usually request the IRQ as the last step for that very reason.
+> Fair enough - easy way to be sure I guess.  Though by just before the
+> register of the device all relevant pointers should be available.  It
+> won't do anything particularly helpful but it should not crash. If it
+> does then we have a bug we should probably close.
+
+alright.
+
+--=20
+balbi
+
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJT471aAAoJEIaOsuA1yqRElhgP/2DglkX8vtpq+5av54/VORqd
+P9Y2Rvj77hKkCXj0hnoZMb+/2f3UX6VxzlIyow6J1/tlpl6dECt7I9Lp8RbU7tG7
+18+0uhP4myLtwqrJ9AxpqK3cBZfMEqDXH8ldf+ALk0WmP33795Cv1BoLTWEib/bt
+LICQb1/rphKOo9fGOmkz8YNok/lCfhHHx3mh7m5dk3boXSeekYw8Ufs+w8CIRdN+
+dxRsuVw4Rm5A5cvgbpogpCvD/Zby7UkXLmQ0RzGo1XSJWH1MtFBp8++kGui29ll8
+oDp6xaM0fpCJV7BaDqRbjuuPe7upMiemItavTCnN+t9IMQKxpWD10GEExpRefA4z
+GsCd9eQ+TzQHrl08I5mA0h5LDpK2s6p06+S0GfivwecBfC64yIQWmBgsfEHXnkyG
+TRsD17sNQ4JId0GYNZRJEBVhTDTfOc26l9lo7r0hL3vpvCDOWsbNYhl7u65Tse48
+ZS9wjCU7WT7Xd2kI2lXSQ2pLkSgdho/881OxLuvIDIEDmzDfjCqgWyBGqnHAY0jR
+yQh2HUkAHSuHNEpreOq/4l5DzidCvlb16uXcZoz86yoQHt23FdWqVNFu3/TfXNsv
+uPiCn0c9tY8a1k3LjCQjKG3nWtitXeKuWrxNQVvxXZ5RF6pqoAQy+xpELafqYb9K
+h6FF+6qMBPFuoMoSHlC1
+=XyAT
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
