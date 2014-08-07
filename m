@@ -1,49 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0220.hostedemail.com ([216.40.44.220]:41150 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753160AbaHECCX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Aug 2014 22:02:23 -0400
-Message-ID: <1407204139.16152.106.camel@joe-AO725>
-Subject: Re: [PATCH v2 8/8] staging: iio: accel: sca3000_core.c: Add blank
- line between declarations and code
-From: Joe Perches <joe@perches.com>
-To: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org
-Date: Mon, 04 Aug 2014 19:02:19 -0700
-In-Reply-To: <1407203223-9700-9-git-send-email-mopsfelder@gmail.com>
-References: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
-	 <1407203223-9700-9-git-send-email-mopsfelder@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37970 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757254AbaHGNqL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 09:46:11 -0400
+Message-ID: <53E38321.1000804@kernel.org>
+Date: Thu, 07 Aug 2014 14:46:09 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Himangi Saraogi <himangi774@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+CC: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH] staging: iio: ad9951: Use devm_iio_device_register
+References: <20140803100048.GA6936@himangi-Dell>
+In-Reply-To: <20140803100048.GA6936@himangi-Dell>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 2014-08-04 at 22:47 -0300, Murilo Opsfelder Araujo wrote:
-> This patch adds missing blank line between declarations and code, and
-> adjust code to fit 80-chars limit.
-[]
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-[]
-> @@ -506,7 +506,8 @@ static int sca3000_read_raw(struct iio_dev *indio_dev,
->  				mutex_unlock(&st->lock);
->  				return ret;
->  			}
-> -			*val = ((st->rx[0] & 0x3F) << 3) | ((st->rx[1] & 0xE0) >> 5);
-> +			*val = ((st->rx[0] & 0x3F) << 3)
-> +				| ((st->rx[1] & 0xE0) >> 5);
+On 03/08/14 11:00, Himangi Saraogi wrote:
+> This patch introduces the use of devm_iio_device_register and does away
+> with the unregister in the remove function. The remove function is no
+> longer required and is completely removed.
+> 
+> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
+> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
+Applied to the togreg branch of iio.git
 
-Please don't strain to fit 80 columns.
+Thanks,
 
-If this is done, please strive to make it
-quickly intelligible for humans.
-
-I think this would be better as:
-
-+			*val = ((st->rx[0] & 0x3F) << 3) |
-+			       ((st->rx[1] & 0xE0) >> 5);
-
-so that the mask and shift are aligned.
-
-
+J
+> ---
+>  drivers/staging/iio/frequency/ad9951.c | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
+> index 5e8990a..d465db0 100644
+> --- a/drivers/staging/iio/frequency/ad9951.c
+> +++ b/drivers/staging/iio/frequency/ad9951.c
+> @@ -175,7 +175,7 @@ static int ad9951_probe(struct spi_device *spi)
+>  	idev->info = &ad9951_info;
+>  	idev->modes = INDIO_DIRECT_MODE;
+>  
+> -	ret = iio_device_register(idev);
+> +	ret = devm_iio_device_register(&spi->dev, idev);
+>  	if (ret)
+>  		return ret;
+>  	spi->max_speed_hz = 2000000;
+> @@ -186,20 +186,12 @@ static int ad9951_probe(struct spi_device *spi)
+>  	return 0;
+>  }
+>  
+> -static int ad9951_remove(struct spi_device *spi)
+> -{
+> -	iio_device_unregister(spi_get_drvdata(spi));
+> -
+> -	return 0;
+> -}
+> -
+>  static struct spi_driver ad9951_driver = {
+>  	.driver = {
+>  		.name = DRV_NAME,
+>  		.owner = THIS_MODULE,
+>  	},
+>  	.probe = ad9951_probe,
+> -	.remove = ad9951_remove,
+>  };
+>  module_spi_driver(ad9951_driver);
+>  
+> 
