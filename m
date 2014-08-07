@@ -1,110 +1,154 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:56835 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757509AbaHGOkT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 Aug 2014 10:40:19 -0400
-Date: Thu, 7 Aug 2014 09:39:43 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <balbi@ti.com>, Peter Meerwald <pmeerw@pmeerw.net>,
-	<linux-iio@vger.kernel.org>
-Subject: Re: [RFC/PATCH] iio: light: add support for TI's opt3001 ligth sensor
-Message-ID: <20140807143943.GB24581@saruman.home>
-Reply-To: <balbi@ti.com>
-References: <1407341409-30284-1-git-send-email-balbi@ti.com>
- <alpine.DEB.2.01.1408061815140.29646@pmeerw.net>
- <20140806214222.GB3556@saruman.home>
- <53E35018.1000900@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38379 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757479AbaHGOlW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 10:41:22 -0400
+Message-ID: <53E39011.6060203@kernel.org>
+Date: Thu, 07 Aug 2014 15:41:21 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3uo+9/B/ebqu+fSQ"
-In-Reply-To: <53E35018.1000900@kernel.org>
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+CC: pmeerw@pmeerw.net
+Subject: Re: [PATCH V2 4/8] iio: mma8452: Add support for transient event
+ debouncing
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090137.4618.1472.stgit@localhost>
+In-Reply-To: <20140729090137.4618.1472.stgit@localhost>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---3uo+9/B/ebqu+fSQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Thu, Aug 07, 2014 at 11:08:24AM +0100, Jonathan Cameron wrote:
-> >>> +				OPT3001_CONFIGURATION); +		return ret; +	} + +	/* wait for conve=
-rsion and give it an extra 5ms */ +
-> >>> usleep_range(opt->int_time + 5000, opt->int_time + 10000); + +	ret =
-=3D opt3001_read(opt, OPT3001_CONFIGURATION);=20
-> >>> +	if (ret < 0) { +		dev_err(opt->dev, "failed to read register %02x\n=
-", +				OPT3001_CONFIGURATION); +		return
-> >>> ret; +	} + +	reg =3D ret; +	if (!(reg & OPT3001_CONFIGURATION_CRF)) +=
-		return -EPIPE; + +	ret =3D opt3001_read(opt,
-> >>> OPT3001_RESULT); +	if (ret < 0) { +		dev_err(opt->dev, "failed to rea=
-d register %02x\n", +				OPT3001_RESULT);=20
-> >>> +		return ret; +	} + +	exponent =3D OPT3001_REG_EXPONENT(ret); +	mant=
-issa =3D OPT3001_REG_MANTISSA(ret); + +
-> >>> opt3001_to_iio_ret(opt, exponent, mantissa, val, val2); + +	return II=
-O_VAL_INT_PLUS_MICRO; +} + +static int
-> >>> opt3001_get_scale(struct opt3001 *opt, int *val, int *val2) +{ +	int =
-ret; +	u8 exponent; +
-> >>=20
-> >> I guess OPT3001_RESULT is only valid AFTER performing opt3001_get_lux()
-> >=20
-> > right. I'm only interested in the exponent part. It'll latch the expone=
-nt from last conversion, 0 being default.
-> Given you unwind the scale anyway in your read raw, I'd not bother
-> having a scale interface at all (assuming I'm right in thinking your
-> read raw is returning the value in lux?)  Also as you are in lux, it
-> should be the processed form not the raw one to indicate the scale
-> does not need to be applied to the value to convert to lux.
-
-alright, I'll switch to processed and remove scale.
-
-> For a light sensor, the conversion here is actually fairly straight
-> forward. Almost all of them have to use the processed interface
-> as they are horribly non linear.
-
-:)
-
-> >=20
-> >>> + +	if (opt->mode =3D=3D OPT3001_CONFIGURATION_M_CONTINUOUS) +		retur=
-n -EBUSY; + +	if (chan->type !=3D IIO_LIGHT) +
-> >>> return -EINVAL; + +	mutex_lock(&opt->lock); + +	switch (mask) {
-> >>=20
-> >> is there no way to control the scale?
-> >=20
-> > yeah, but the HW does auto-scaling which works pretty well. Why would y=
-ou want to control the scale manually ?
-> On a slow device like this you probably wouldn't but for quicker devices
-> the overhead of converting into a standard form in kernel might be
-> excessive.
-
-hehe, even when you _do_ set the scale, you still have the top 4 bits as
-exponent, the difference is that you know what they are before the
-conversion is done :-)
-
---=20
-balbi
-
---3uo+9/B/ebqu+fSQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJT44+vAAoJEIaOsuA1yqREKjQP/3rYVGwo6BH8wxUg72tlLmPw
-MHgu/GMCaigxcl1sv1WevUOzIGbZf8dSIKzfYiaZJm3yaJXiwORCt4fniHBpnF9d
-mGNuDn/14tK19kpi8RWviwkOC5/8u3GneVaBmR3Ow8cBXE2MwQiH9RGaQd2lHqGF
-njAKqJlCf795esvH/XvRV+wCY5fd2CkV6nC5H90lP7zHRLR6Qf+jipK42NvRqSAO
-Fo64PcU3KjRm1J2J1tpE9XJWU2ItonVgPehQt2poe7BFkIYohxqOO3SDcL1pdEYp
-+1Fvqgn+boZDO57FNPNEGlWrgNIvBqNGDmqkiKOwY2T2nwWy5kKF4wSXzGd1FiFC
-LMxd0Asdd9ugqgiku53SaNSBYrN9atJpQHp0FLBey7yY6HQO0Bq9hBS7elRnTAZg
-X2CGPJuAiaMGNPVVtdEcIvt22boTaVVOVs2CnNsJ649yD1FexxVscj78LP4fqTiP
-s8PjcoIMLEQktp/u9F5tlYUbkoU22abxaMEOl/lBTAKTHFwT72a1krKS/vxAaDSm
-xyqWVSUGZ+5gF9V0dA2ew3u98ZgdizkTIUBMNSlFUNaJirnBIDRcyK+m2PKVKHE1
-dZWCTB3daxrAjXjUzte9nTxDpg7fw7TYHSMzd+gAKSraqkhdL+yjhQi9f0vmvCKe
-xo8heLgcEnxDDcy1EUj3
-=adpv
------END PGP SIGNATURE-----
-
---3uo+9/B/ebqu+fSQ--
+On 29/07/14 10:01, Martin Fuzzey wrote:
+> Allow the debouce counter for transient events to be configured
+> using the sysfs attribute events/in_accel_thresh_rising_period
+> 
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Once we have figured out how to describe this event this wants to be done
+via the IIO_EV_INFO_PERIOD approach rather than a custom attribute.
+> ---
+>  drivers/iio/accel/mma8452.c |   77 ++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 75 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 3415b36..1d1e41b 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -129,6 +129,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
+>  	return -EINVAL;
+>  }
+>  
+> +static int mma8452_get_odr_index(struct mma8452_data *data)
+> +{
+> +	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+> +			MMA8452_CTRL_DR_SHIFT;
+> +}
+> +
+>  static const int mma8452_samp_freq[8][2] = {
+>  	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
+>  	{6, 250000}, {1, 560000}
+> @@ -144,6 +150,18 @@ static const int mma8452_scales[3][2] = {
+>  	{0, 9577}, {0, 19154}, {0, 38307}
+>  };
+>  
+> +/* Datasheet table 35  (step time vs sample frequency) */
+> +static const int mma8452_transient_time_step_us[8] = {
+> +	1250,
+> +	2500,
+> +	5000,
+> +	10000,
+> +	20000,
+> +	20000,
+> +	20000,
+> +	20000
+> +};
+> +
+>  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+>  				struct device_attribute *attr, char *buf)
+>  {
+> @@ -203,8 +221,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+>  		*val2 = mma8452_scales[i][1];
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+> -			MMA8452_CTRL_DR_SHIFT;
+> +		i = mma8452_get_odr_index(data);
+>  		*val = mma8452_samp_freq[i][0];
+>  		*val2 = mma8452_samp_freq[i][1];
+>  		return IIO_VAL_INT_PLUS_MICRO;
+> @@ -356,6 +373,54 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>  	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
+>  }
+>  
+> +static ssize_t mma8452_query_transient_period(struct device *dev,
+> +						struct device_attribute *attr,
+> +						char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int us, steps;
+> +
+> +	steps = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_COUNT);
+> +	if (steps < 0)
+> +		return steps;
+> +
+> +	us = mma8452_transient_time_step_us[mma8452_get_odr_index(data)]
+> +								* steps;
+> +
+> +	return sprintf(buf, "%ld.%06ld\n",
+> +			us / USEC_PER_SEC, us % USEC_PER_SEC);
+> +}
+> +
+> +static ssize_t mma8452_set_transient_period(struct device *dev,
+> +						struct device_attribute *attr,
+> +						const char *buf,
+> +						size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int i, f, us, steps, ret;
+> +
+> +	ret = iio_str_to_fixpoint(buf, USEC_PER_SEC / 10, &i, &f);
+> +	if (ret)
+> +		return ret;
+> +	if (ret < 0)
+> +		return -EINVAL;
+> +
+> +	us = i * USEC_PER_SEC + f;
+> +	steps = us / mma8452_transient_time_step_us[
+> +				mma8452_get_odr_index(data)];
+> +
+> +	if (steps > 0xff)
+> +		return -EINVAL;
+> +
+> +	ret = mma8452_change_config(data, MMA8452_TRANSIENT_COUNT, steps);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+>  static void mma8452_push_transient_event(struct iio_dev *indio_dev,
+>  						int chan, u64 ts)
+>  {
+> @@ -462,8 +527,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
+>   */
+>  static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+>  
+> +static IIO_DEVICE_ATTR_NAMED(accel_transient_period,
+> +			     in_accel_thresh_rising_period,
+> +			     S_IRUGO | S_IWUSR,
+> +			     mma8452_query_transient_period,
+> +			     mma8452_set_transient_period,
+> +			     0);
+> +
+>  static struct attribute *mma8452_event_attributes[] = {
+>  	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+> +	&iio_dev_attr_accel_transient_period.dev_attr.attr,
+>  	NULL,
+>  };
+>  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
