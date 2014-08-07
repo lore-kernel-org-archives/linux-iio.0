@@ -1,71 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37980 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39400 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757254AbaHGNrE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 09:47:04 -0400
-Message-ID: <53E38356.5060800@kernel.org>
-Date: Thu, 07 Aug 2014 14:47:02 +0100
+	with ESMTP id S932330AbaHGQvV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 12:51:21 -0400
+Message-ID: <53E3AE7F.9070602@kernel.org>
+Date: Thu, 07 Aug 2014 17:51:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Himangi Saraogi <himangi774@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-CC: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH] staging:iio:ad9852: Use devm_iio_device_register
-References: <20140803095833.GA6807@himangi-Dell>
-In-Reply-To: <20140803095833.GA6807@himangi-Dell>
+To: Chanwoo Choi <cw00.choi@samsung.com>
+CC: ch.naveen@samsung.com, arnd@arndb.de, kgene.kim@samsung.com,
+	kyungmin.park@samsung.com, heiko@sntech.de, knaack.h@gmx.de,
+	t.figa@samsung.com, linux-iio@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCHv2 1/3] iio: adc: exynos_adc: add support for s3c64xx adc
+References: <1406551442-15186-1-git-send-email-cw00.choi@samsung.com> <1406551442-15186-2-git-send-email-cw00.choi@samsung.com>
+In-Reply-To: <1406551442-15186-2-git-send-email-cw00.choi@samsung.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/08/14 10:58, Himangi Saraogi wrote:
-> This patch introduces the use of devm_iio_device_register and does away
-> with the unregister in the remove function.
+On 28/07/14 13:44, Chanwoo Choi wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Signed-off-by: Himangi Saraogi <himangi774@gmail.com>
-> Acked-by: Julia Lawall <julia.lawall@lip6.fr>
-Applied to the togreg branch of iio.git
+> The ADC in s3c64xx is almost the same as exynosv1, but
+> has a different 'select' method. Adding this here will be
+> helpful to move over the existing s3c64xx platform from the
+> legacy plat-samsung/adc driver to the new exynos-adc.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Applied to the togreg branch of iio.git.  Initially pushed out as testing
+for the autobuilders to play.
 
 Thanks,
 
-J
 > ---
->  drivers/staging/iio/frequency/ad9852.c | 10 +---------
->  1 file changed, 1 insertion(+), 9 deletions(-)
+>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |  2 ++
+>  drivers/iio/adc/exynos_adc.c                       | 28 +++++++++++++++++++++-
+>  2 files changed, 29 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/frequency/ad9852.c b/drivers/staging/iio/frequency/ad9852.c
-> index 11e4367..af2f2cc 100644
-> --- a/drivers/staging/iio/frequency/ad9852.c
-> +++ b/drivers/staging/iio/frequency/ad9852.c
-> @@ -218,7 +218,7 @@ static int ad9852_probe(struct spi_device *spi)
->  	idev->info = &ad9852_info;
->  	idev->modes = INDIO_DIRECT_MODE;
+> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> index adc61b0..d3dad46 100644
+> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+> @@ -16,6 +16,8 @@ Required properties:
+>  				future controllers.
+>  			Must be "samsung,exynos3250-adc" for
+>  				controllers compatible with ADC of Exynos3250.
+> +			Must be "samsung,s3c6410-adc" for
+> +				the ADC in s3c6410 and compatibles
+>  - reg:			Contains ADC register address range (base address and
+>  			length) and the address of the phy enable register.
+>  - interrupts: 		Contains the interrupt information for the timer. The
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 87e0895..ed9e4c8 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -40,7 +40,7 @@
+>  #include <linux/iio/machine.h>
+>  #include <linux/iio/driver.h>
 >  
-> -	ret = iio_device_register(idev);
-> +	ret = devm_iio_device_register(&spi->dev, idev);
->  	if (ret)
->  		return ret;
->  	spi->max_speed_hz = 2000000;
-> @@ -230,20 +230,12 @@ static int ad9852_probe(struct spi_device *spi)
->  	return 0;
->  }
+> -/* EXYNOS4412/5250 ADC_V1 registers definitions */
+> +/* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
+>  #define ADC_V1_CON(x)		((x) + 0x00)
+>  #define ADC_V1_DLY(x)		((x) + 0x08)
+>  #define ADC_V1_DATX(x)		((x) + 0x0C)
+> @@ -61,6 +61,9 @@
+>  #define ADC_V1_CON_PRSCLV(x)	(((x) & 0xFF) << 6)
+>  #define ADC_V1_CON_STANDBY	(1u << 2)
 >  
-> -static int ad9852_remove(struct spi_device *spi)
-> -{
-> -	iio_device_unregister(spi_get_drvdata(spi));
-> -
-> -	return 0;
-> -}
-> -
->  static struct spi_driver ad9852_driver = {
->  	.driver = {
->  		.name = DRV_NAME,
->  		.owner = THIS_MODULE,
->  	},
->  	.probe = ad9852_probe,
-> -	.remove = ad9852_remove,
+> +/* Bit definitions for S3C2410 ADC */
+> +#define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) << 3)
+> +
+>  /* Bit definitions for ADC_V2 */
+>  #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
+>  
+> @@ -217,6 +220,26 @@ static const struct exynos_adc_data const exynos_adc_v1_data = {
+>  	.start_conv	= exynos_adc_v1_start_conv,
 >  };
->  module_spi_driver(ad9852_driver);
 >  
+> +static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
+> +					  unsigned long addr)
+> +{
+> +	u32 con1;
+> +
+> +	con1 = readl(ADC_V1_CON(info->regs));
+> +	con1 &= ~ADC_S3C2410_CON_SELMUX(0x7);
+> +	con1 |= ADC_S3C2410_CON_SELMUX(addr);
+> +	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
+> +}
+> +
+> +static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
+> +	.num_channels	= MAX_ADC_V1_CHANNELS,
+> +
+> +	.init_hw	= exynos_adc_v1_init_hw,
+> +	.exit_hw	= exynos_adc_v1_exit_hw,
+> +	.clear_irq	= exynos_adc_v1_clear_irq,
+> +	.start_conv	= exynos_adc_s3c64xx_start_conv,
+> +};
+> +
+>  static void exynos_adc_v2_init_hw(struct exynos_adc *info)
+>  {
+>  	u32 con1, con2;
+> @@ -285,6 +308,9 @@ static const struct exynos_adc_data const exynos3250_adc_data = {
+>  
+>  static const struct of_device_id exynos_adc_match[] = {
+>  	{
+> +		.compatible = "samsung,s3c6410-adc",
+> +		.data = &exynos_adc_s3c64xx_data,
+> +	}, {
+>  		.compatible = "samsung,exynos-adc-v1",
+>  		.data = &exynos_adc_v1_data,
+>  	}, {
 > 
