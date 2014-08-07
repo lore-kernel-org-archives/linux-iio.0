@@ -1,103 +1,348 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f181.google.com ([209.85.212.181]:38989 "EHLO
-	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757264AbaHGRVB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 13:21:01 -0400
-Received: by mail-wi0-f181.google.com with SMTP id bs8so5345888wib.8
-        for <linux-iio@vger.kernel.org>; Thu, 07 Aug 2014 10:21:00 -0700 (PDT)
-Message-ID: <53E3B57A.4030201@parkeon.com>
-Date: Thu, 07 Aug 2014 19:20:58 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38344 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757518AbaHGOhs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 10:37:48 -0400
+Message-ID: <53E38F39.20206@kernel.org>
+Date: Thu, 07 Aug 2014 15:37:45 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
-Subject: Re: [PATCH V2 8/8] iio: mma8452: Add support for interrupt driven
- triggers.
-References: <20140729090128.4618.92936.stgit@localhost> <20140729090145.4618.72768.stgit@localhost> <53E3AA82.5040004@kernel.org>
-In-Reply-To: <53E3AA82.5040004@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+CC: pmeerw@pmeerw.net
+Subject: Re: [PATCH V2 3/8] iio: mma8452: Basic support for transient events.
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090135.4618.83512.stgit@localhost>
+In-Reply-To: <20140729090135.4618.83512.stgit@localhost>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan and thanks for the review.
+On 29/07/14 10:01, Martin Fuzzey wrote:
+> The event is triggered when the highpass filtered absolute acceleration
+> exceeds the threshold.
+>
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+I am unsure of the best way to handle this high pass filtered threshold.
+Suggestions inline.  I'm not happy just throwing it through the
+current interface and ignoring the filter...
 
-I'll send my comments but I'll be on holiday from tomorrow evening until 
-beginning of september so won't be able to send a V3 until later.
-
-On 07/08/14 18:34, Jonathan Cameron wrote:
+J
 > ---
-> @@ -555,18 +557,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->   {
->   	struct iio_dev *indio_dev = p;
->   	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret = IRQ_NONE;
->   	int src;
+>  drivers/iio/accel/mma8452.c |  203 +++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 202 insertions(+), 1 deletion(-)
 >
->   	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
->   	if (src < 0)
->   		return IRQ_NONE;
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index c46df4e..3415b36 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -9,7 +9,7 @@
+>   *
+>   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+>   *
+> - * TODO: interrupt, thresholding, orientation / freefall events, autosleep
+> + * TODO: orientation / freefall events, autosleep
+>   */
 >
-> +	if (src & MMA8452_INT_DRDY) {
-> +		iio_trigger_poll_chained(indio_dev->trig, iio_get_time_ns());
-> +		ret = IRQ_HANDLED;
+>  #include <linux/module.h>
+> @@ -19,20 +19,33 @@
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/events.h>
+>  #include <linux/delay.h>
+>
+>  #define MMA8452_STATUS 0x00
+>  #define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
+>  #define MMA8452_OUT_Y 0x03
+>  #define MMA8452_OUT_Z 0x05
+> +#define MMA8452_INT_SRC 0x0c
+>  #define MMA8452_WHO_AM_I 0x0d
+>  #define MMA8452_DATA_CFG 0x0e
+> +#define MMA8452_TRANSIENT_CFG 0x1d
+> +#define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+> +#define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
+> +#define MMA8452_TRANSIENT_SRC 0x1e
+> +#define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+> +#define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+> +#define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+> +#define MMA8452_TRANSIENT_THS 0x1f
+> +#define MMA8452_TRANSIENT_COUNT 0x20
+>  #define MMA8452_OFF_X 0x2f
+>  #define MMA8452_OFF_Y 0x30
+>  #define MMA8452_OFF_Z 0x31
+>  #define MMA8452_CTRL_REG1 0x2a
+>  #define MMA8452_CTRL_REG2 0x2b
+>  #define MMA8452_CTRL_REG2_RST		BIT(6)
+> +#define MMA8452_CTRL_REG4 0x2d
+> +#define MMA8452_CTRL_REG5 0x2e
+>
+>  #define MMA8452_MAX_REG 0x31
+>
+> @@ -48,6 +61,13 @@
+>  #define MMA8452_DATA_CFG_FS_4G 1
+>  #define MMA8452_DATA_CFG_FS_8G 2
+>
+> +#define MMA8452_INT_DRDY	BIT(0)
+> +#define MMA8452_INT_FF_MT	BIT(2)
+> +#define MMA8452_INT_PULSE	BIT(3)
+> +#define MMA8452_INT_LNDPRT	BIT(4)
+> +#define MMA8452_INT_TRANS	BIT(5)
+> +#define MMA8452_INT_ASLP	BIT(7)
+> +
+>  #define MMA8452_DEVICE_ID 0x2a
+>
+>  struct mma8452_data {
+> @@ -274,6 +294,117 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  	}
+>  }
+>
+> +static int mma8452_read_thresh(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info, int *val,
+> +	int *val2)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*val = ret & 0x7f;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int mma8452_write_thresh(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info, int val,
+> +	int val2)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +
+> +	return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val & 0x7f);
+> +}
+> +
+> +static int mma8452_read_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return ret & MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index) ? 1 : 0;
+> +}
+> +
+> +static int mma8452_write_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, int state)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int val;
+> +
+> +	val = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+> +	if (val < 0)
+> +		return val;
+> +
+> +	if (state)
+> +		val |= MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
+> +	else
+> +		val &= ~MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
+> +
+> +	val |= MMA8452_TRANSIENT_CFG_ELE;
+> +
+> +	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
+> +}
+> +
+> +static void mma8452_push_transient_event(struct iio_dev *indio_dev,
+> +						int chan, u64 ts)
+> +{
+> +	iio_push_event(indio_dev,
+> +		IIO_UNMOD_EVENT_CODE(IIO_ACCEL,
+> +			chan,
+> +			IIO_EV_TYPE_THRESH,
+> +			IIO_EV_DIR_RISING),
+> +		ts);
+> +}
+I'd prefer it if you dropped the wrapper.  Makes it more obvious what
+is going on below.
+
+Also it should be IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X, IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING).
+> +
+> +static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+> +{
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	s64 ts = iio_get_time_ns();
+> +	int src;
+> +
+> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
+> +	if (src < 0)
+> +		return;
+> +
+> +	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
+> +		mma8452_push_transient_event(indio_dev, 0, ts);
+> +
+> +	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
+> +		mma8452_push_transient_event(indio_dev, 1, ts);
+> +
+> +	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
+> +		mma8452_push_transient_event(indio_dev, 2, ts);
+> +}
+> +
+> +static irqreturn_t mma8452_interrupt(int irq, void *p)
+> +{
+> +	struct iio_dev *indio_dev = p;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int src;
+> +
+> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+> +	if (src < 0)
+> +		return IRQ_NONE;
+> +
+> +	if (src & MMA8452_INT_TRANS) {
+> +		mma8452_transient_interrupt(indio_dev);
+> +		return IRQ_HANDLED;
 > +	}
 > +
->   	if (src & MMA8452_INT_TRANS) {
->   		mma8452_transient_interrupt(indio_dev);
-> -		return IRQ_HANDLED;
-> +		ret = IRQ_HANDLED;
->   	}
+> +	return IRQ_NONE;
+> +}
+> +
+>  static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> @@ -316,6 +447,31 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
 >
-> -	return IRQ_NONE;
-> Leave the returns as they were and just return from the new if statement...
-> It's neater and there is no reason to do a single point of exit if
-> there is no cleaning up to do.
+> +static const struct iio_event_spec mma8452_transient_event[] = {
+> +	{
+This is an interesting new event type - or at least it needs some
+indication that it is high pass filtered...
 
-The final return still has to be changed so that the function correctly 
-handles the case of both interrupt bits being set.
-The idea wasn't so much as to create a single point of return as to keep 
-the two handler statements symmetrical and not have the second one a 
-special case just because it's the last.
-The hardware supports other interrupts and there's a risk of someone 
-adding a third one later and forgetting to modify the second one.
+It is closer to a rate of change detector than a threshold, but
+not quite the same.
 
-But if you really insist I can do it that way.
->> +	return ret;
->>   }
+We could add an additional IIO_EV_INFO_HIGH_PASS_FILTER_3DB element
+to the event to indicate the event is based on high pass filtered data.
 
-+static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
-+{
-+	if (indio_dev->trig) {
-+		iio_trigger_unregister(indio_dev->trig);
+Things will get interesting if there is a second low pass filtered
+event of otherwise the same type. I guess we'll then just have to have
+indexed events (we have hardware that would allow these, but it has never
+made much sense to enable it).
 
-> Probably no reason not use devm_iio_trigger_alloc and avoid the frees.
-> Doesn't save much, but someone else will only propose a patch 10 minutes
-> after this goes in if you don't do it...
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
+> +	},
+> +};
+> +
+> +/**
+> + * Threshold is configured in fixed 8G/127 steps regardless of
+> + * currently selected scale for measurement.
+> + */
+> +static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+> +
+> +static struct attribute *mma8452_event_attributes[] = {
+> +	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+This needs documenting under Documentation/ABI/testing/
+> +	NULL,
+> +};
+> +
+> +static struct attribute_group mma8452_event_attribute_group = {
+> +	.attrs = mma8452_event_attributes,
+> +	.name = "events",
+> +};
+> +
+>  #define MMA8452_CHANNEL(axis, idx) { \
+>  	.type = IIO_ACCEL, \
+>  	.modified = 1, \
+> @@ -332,6 +488,8 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>  		.shift = 4, \
+>  		.endianness = IIO_BE, \
+>  	}, \
+> +	.event_spec = mma8452_transient_event, \
+> +	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+>  }
+>
+>  static const struct iio_chan_spec mma8452_channels[] = {
+> @@ -355,6 +513,11 @@ static const struct iio_info mma8452_info = {
+>  	.attrs = &mma8452_group,
+>  	.read_raw = &mma8452_read_raw,
+>  	.write_raw = &mma8452_write_raw,
+> +	.event_attrs = &mma8452_event_attribute_group,
+> +	.read_event_value = &mma8452_read_thresh,
+> +	.write_event_value = &mma8452_write_thresh,
+> +	.read_event_config = &mma8452_read_event_config,
+> +	.write_event_config = &mma8452_write_event_config,
+>  	.debugfs_reg_access = &mma8452_reg_access_dbg,
+>  	.driver_module = THIS_MODULE,
+>  };
+> @@ -425,6 +588,31 @@ static int mma8452_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>
+> +	/*
+> +	 * By default set transient threshold to max to avoid events if
+> +	 * enabling without configuring threshold
+> +	 */
+Why are we enabling it in the probe?  Would normally expect events to
+only be enabled from userspace once the device is up and running...
 
-Ok will do for V3
-
-  	if (client->irq) {
--		int supported_interrupts = MMA8452_INT_TRANS;
-+		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
-+		int enabled_interrupts = MMA8452_INT_TRANS;
-
-> Note again, I'm very much against coming up with any events enabled....
-> It's not what people expect so all sorts of messy things could occur.
-
-Yes, quite agree but actually they aren't enabled.
-
-The bit allowing any interrupts generated by the transient detection 
-module to be routed to the interrupt pin is enabled.
-The threshold is set to the maximum value (your remark on a previous patch).
-BUT the bit that actually enables the transient detection (and hence the 
-events) is not set until userspace asks for it (by 
-mma8452_write_event_config())
-
-The reason for setting the initial threshold is for the case where 
-userspace enables the event before writing the threshold value.
-It seemed safer to default to a high threshold than a low one.
-
-Regards,
-
-Martin
-
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS, 0x7f);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (client->irq) {
+> +		int supported_interrupts = MMA8452_INT_TRANS;
+> +
+> +		/* Assume wired to INT1 pin */
+> +		ret = i2c_smbus_write_byte_data(client,
+> +						MMA8452_CTRL_REG5,
+> +						supported_interrupts);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = i2c_smbus_write_byte_data(client,
+> +						MMA8452_CTRL_REG4,
+> +						supported_interrupts);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+>  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>  		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> @@ -440,8 +628,21 @@ static int mma8452_probe(struct i2c_client *client,
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0)
+>  		goto buffer_cleanup;
+We'd normally do this in the other order.  Hence have everything up
+and running before we expose the userspace interfaces in iio_device_register.
+> +
+> +	if (client->irq) {
+> +		ret = devm_request_threaded_irq(&client->dev,
+> +						client->irq,
+> +						NULL, mma8452_interrupt,
+> +						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+> +						client->name, indio_dev);
+> +		if (ret)
+> +			goto device_cleanup;
+> +	}
+>  	return 0;
+>
+> +device_cleanup:
+> +	iio_device_unregister(indio_dev);
+> +
+>  buffer_cleanup:
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  	return ret;
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
