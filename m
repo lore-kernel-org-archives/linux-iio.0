@@ -1,169 +1,246 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38448 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39197 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757479AbaHGOtP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 10:49:15 -0400
-Message-ID: <53E391E8.20809@kernel.org>
-Date: Thu, 07 Aug 2014 15:49:12 +0100
+	with ESMTP id S932082AbaHGQ0b (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 12:26:31 -0400
+Message-ID: <53E3A8B4.70805@kernel.org>
+Date: Thu, 07 Aug 2014 17:26:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
-CC: pmeerw@pmeerw.net
-Subject: Re: [PATCH V2 6/8] io: mma8452: Add highpass filter configuration.
-References: <20140729090128.4618.92936.stgit@localhost> <20140729090141.4618.89569.stgit@localhost>
-In-Reply-To: <20140729090141.4618.89569.stgit@localhost>
-Content-Type: text/plain; charset=utf-8
+To: balbi@ti.com
+CC: linux-iio@vger.kernel.org
+Subject: Re: [RFC/PATCH] iio: light: add support for TI's opt3001 ligth sensor
+References: <1407341409-30284-1-git-send-email-balbi@ti.com> <53E34E60.80507@kernel.org> <20140807142829.GA24581@saruman.home>
+In-Reply-To: <20140807142829.GA24581@saruman.home>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/07/14 10:01, Martin Fuzzey wrote:
-> Allow the cutoff frequency of the high pass filter to be configured.
-> 
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-Good - I'll take these once we've sorted the earlier patches.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> ---
->  drivers/iio/accel/mma8452.c |   65 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 63 insertions(+), 2 deletions(-)
+On 07/08/14 15:28, Felipe Balbi wrote:
+> Hi,
 > 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 1d1e41b..eb68f9a 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -29,6 +29,8 @@
->  #define MMA8452_INT_SRC 0x0c
->  #define MMA8452_WHO_AM_I 0x0d
->  #define MMA8452_DATA_CFG 0x0e
-> +#define MMA8452_HP_FILTER_CUTOFF 0x0f
-> +#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
->  #define MMA8452_TRANSIENT_CFG 0x1d
->  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
->  #define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
-> @@ -162,6 +164,18 @@ static const int mma8452_transient_time_step_us[8] = {
->  	20000
->  };
->  
-> +/* Datasheet table 18 (normal mode) */
-> +static const int mma8452_hp_filter_cutoff[8][4][2] = {
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
-> +	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
-> +	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
-> +};
-> +
->  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
->  				struct device_attribute *attr, char *buf)
->  {
-> @@ -176,9 +190,22 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
->  		ARRAY_SIZE(mma8452_scales));
->  }
->  
-> +static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int i = mma8452_get_odr_index(data);
-> +
-> +	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
-> +}
-> +
->  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
->  static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
->  	mma8452_show_scale_avail, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
-> +			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
->  
->  static int mma8452_get_samp_freq_index(struct mma8452_data *data,
->  	int val, int val2)
-> @@ -194,6 +221,15 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
->  		ARRAY_SIZE(mma8452_scales), val, val2);
->  }
->  
-> +static int mma8452_get_hp_filter_index(struct mma8452_data *data,
-> +	int val, int val2)
-> +{
-> +	int i = mma8452_get_odr_index(data);
-> +
-> +	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_scales[0]), val, val2);
-> +}
-> +
->  static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -232,6 +268,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			return ret;
->  		*val = sign_extend32(ret, 7);
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_HP_FILTER_CUTOFF);
-> +		if (ret < 0)
-> +			return ret;
-> +		i = mma8452_get_odr_index(data);
-> +		ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +		*val = mma8452_hp_filter_cutoff[i][ret][0];
-> +		*val2 = mma8452_hp_filter_cutoff[i][ret][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  	return -EINVAL;
->  }
-> @@ -278,7 +324,7 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			     int val, int val2, long mask)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int i;
-> +	int i, reg;
->  
->  	if (iio_buffer_enabled(indio_dev))
->  		return -EBUSY;
-> @@ -306,6 +352,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  		return mma8452_change_config(data, MMA8452_OFF_X +
->  			chan->scan_index, val);
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		i = mma8452_get_hp_filter_index(data, val, val2);
-> +		if (i < 0)
-> +			return -EINVAL;
-> +
-> +		reg = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_HP_FILTER_CUTOFF);
-> +		if (reg < 0)
-> +			return reg;
-> +		reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +		reg |= i;
-> +		return mma8452_change_config(data,
-> +				MMA8452_HP_FILTER_CUTOFF, reg);
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -552,7 +611,8 @@ static struct attribute_group mma8452_event_attribute_group = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> -		BIT(IIO_CHAN_INFO_SCALE), \
-> +		BIT(IIO_CHAN_INFO_SCALE) | \
-> +		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
->  	.scan_index = idx, \
->  	.scan_type = { \
->  		.sign = 's', \
-> @@ -575,6 +635,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
->  static struct attribute *mma8452_attributes[] = {
->  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
->  	NULL
->  };
->  
+> On Thu, Aug 07, 2014 at 11:01:04AM +0100, Jonathan Cameron wrote:
+>> On 06/08/14 17:10, Felipe Balbi wrote:
+>>> TI's opt3001 light sensor is a simple and yet powerful little device. The device provides 99% IR rejection, 
+>>> Automatic full-scale, very low power consumption and measurements from 0.01 to 83k lux.
+>>> 
+>>> This patch adds support for that device using the IIO framework.
+>>> 
+>>> Signed-off-by: Felipe Balbi <balbi@ti.com>
+>> I don't suppose there is a datasheet available?
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> There is a summary datasheet available. The device isn't released yet:
 > 
+> http://www.ti.com/product/OPT3001?keyMatch=opt3001&tisearch=Search-EN
+> 
+Ah well...  Not much on that ;)
+>> When in M_CONTINUOUS is it just providing event interrupts (threshold etc)?
+> 
+> It depends on the mode. If Latch bit is set, then it'll report event interrupts. Datasheet calls this a
+> "window-style comparison operation).
+> 
+> If Latch bit is cleared, then it'll continuously report the comparison result. Datasheet calls this a
+> "hysteresis-style comoparison operation).
+> 
+>>> Jonathan, I have a few doubts on how can I test buffered mode properly. I can see my IRQs triggering now
+>>> problem, but where is the data pushed ? Can it be read from sysfs or /dev somehwere ?
+>> As  I guess has become clear from your thread with Peter, what you have here in IIO terms are called events
+>> (separate form the buffer which is for the main data flow).
+>> 
+>> Anyhow, see drivers/staging/iio/Documentation/iio_event_monitor.c. Some trickery with an anonymous file
+>> descriptor is used to avoid using lots of chardevs for the same device.
+> 
+> ok, will look at it.
+> 
+>>> Also, there are a couple details about this device which I need to know if it looks for you:
+>>> 
+>>> This device has a single enable bit which will enable both rising and falling edge triggers, but the limits are
+>>> separate.
+>>> 
+>>> The same limits are also used for hysteresis-style capture and that's controlled by a single bit flip.
+>> With this on, it generates an event whenever the value changes by more than a certain amount?  If so this is
+>> better handled by providing a trigger and a buffer.  Note that the events path carries no data other than an
+>> event code.
+> 
+> It's still a bit weird to me. So, without Latch bit, then yeah, it'll be more of a trigger e.g:
+IIO triggers are actually more similar to those you find in video
+systems than the osciloscope type triggers you are perhaps thinking of.
+They cause a 'scan' of data to be captured every time the fire.
+
+A 'scope trigger would cause a set of data to be captured everytime it
+first (e.g. multiple scans of the available channels).  We have talked
+a few times about adding this option, but it hasn't happened yet...
+> 
+> I can set low limit to 200 lux and high limit to 50 lux, then I'll get a rising edge IRQ when I have more than 50
+> lux and a falling edge when I get less than 200 lux.
+> 
+> If Latch bit is set, however, then it's almost like it ignores low/high limit altogether and I get an IRQ ever
+> $int_time ms or so.
+That would be similar to the motion triggers we have for accelerometers.
+They capture every sample as long as the threshold is met (during motion).
+No idea why you'd really want to do that on a light sensor though.  Perhaps
+not worth capturing light info if the cover is closed on a phone?
+> 
+>>> How do you want this to look on sysfs ? Currently, enable/disabling any of rising/falling edges, will disable
+>>> both.
+>> That's pretty common.  The ABI basically allows for any setting to change any other (as there are much weirder
+>> connections than this in some devices).
+> 
+> ok, so it's alright to have two "enable" files and have they refer to the same bit ?
+Absolutely.  Depending on the combinations it is sometimes possible to
+construct an 'EITHER' enable file - for example
+driver/iio/adc/xilinix-xadc-core.c
+
+> 
+>>> +static int opt3001_read(const struct opt3001 *opt, u8 reg) +{ +	return
+>>> i2c_smbus_read_word_swapped(opt->client, reg); +}
+>> I'm very much against wrapper functions unless they add something. These really do not.
+> 
+> as I mentioned before, it helps a lot when using function tracer. I can just "echo opt3001* > set_trace_function".
+> But if you guys are so much against it, I'll remove it.
+> 
+>>> +static const struct iio_chan_spec opt3001_channels[] = { +	{ +		.type = IIO_LIGHT, +		.info_mask_separate =
+>>> BIT(IIO_CHAN_INFO_RAW) | +				BIT(IIO_CHAN_INFO_SCALE) | +				BIT(IIO_CHAN_INFO_INT_TIME), +		.channel = 0,
+>> 
+>> No buffering at the moment so can drop scan_type and scan_index.
+> 
+> will do
+> 
+>>> +static int opt3001_read_event_value(struct iio_dev *iio, +		const struct iio_chan_spec *chan, enum
+>>> iio_event_type type, +		enum iio_event_direction dir, enum iio_event_info info, +		int *val, int *val2) +{ +
+>>> struct opt3001 *opt = iio_priv(iio); +	int ret = IIO_VAL_INT_PLUS_MICRO; + +	mutex_lock(&opt->lock); +
+>> So these will return the same value whether the value attribute is read or the hysteresis one?
+> 
+> yeah, the comparison done is the same.
+> 
+>>> +static int opt3001_write_event_value(struct iio_dev *iio, +		const struct iio_chan_spec *chan, enum
+>>> iio_event_type type, +		enum iio_event_direction dir, enum iio_event_info info, +		int val, int val2) +{ +
+>>> struct opt3001 *opt = iio_priv(iio); +	int ret = 0; + +	u16 *thresh_mantissa; +	u16 mantissa; +	u16 value; +
+>>> u16 reg; + +	u8 *thresh_exp; + +	u8 exponent; + +	mutex_lock(&opt->lock); + +	ret = opt3001_read(opt,
+>>> OPT3001_CONFIGURATION); +	if (ret < 0) { +		dev_err(opt->dev, "failed to read register %02x\n", +
+>>> OPT3001_CONFIGURATION); +		goto err; +	} + +	reg = ret; +	if (info == IIO_EV_INFO_HYSTERESIS)
+>> Without a datasheet I'm not entirely sure how the hysteresis is applied here and what it's connection to the
+>> thresholds is...
+> 
+> yeah, that'll still take a while to be fully released.
+> 
+>> 
+>>> +		opt->hysteresis = true; +	else +		opt->hysteresis = false; + +	switch (dir) { +	case IIO_EV_DIR_RISING: +
+>>> reg = OPT3001_HIGH_LIMIT;
+>> Why bother with the indirection via a pointer. Just have a second switch statement at the end of the function
+>> that sets the right ones. Easier to follow than this.
+> 
+> sure
+> 
+>>> +		thresh_mantissa = &opt->high_thresh_mantissa; +		thresh_exp = &opt->high_thresh_exp; +		break; +	case
+>>> IIO_EV_DIR_FALLING: +		reg = OPT3001_LOW_LIMIT; +		thresh_mantissa = &opt->low_thresh_mantissa; +		thresh_exp =
+>>> &opt->low_thresh_exp; +		break; +	default: +		ret = -EINVAL; +		goto err; +	} + +	ret = opt3001_find_scale(opt,
+>>> val, val2, &exponent); +	if (ret < 0) { +		dev_err(opt->dev, "can't find scale for %d.%d\n", val, val2); +
+>>> goto err; +	} + +	mantissa = (((val * 1000) + (val2 / 1000)) / 10) >> exponent; +	value = exponent << 12 |
+>>> mantissa; +	ret = opt3001_write(opt, reg, value); +	if (ret < 0) { +		dev_err(opt->dev, "failed to read
+>>> register %02x\n", reg); +		goto err; +	} +
+>> As stated above an additional switch statement here with direct assignment of the relevant threshold values would
+>> be clearer.
+>>> +	*thresh_mantissa = mantissa; +	*thresh_exp = exponent; + +err: +	mutex_unlock(&opt->lock); + +	return ret; 
+>>> +} + +static int opt3001_read_event_config(struct iio_dev *iio, +		const struct iio_chan_spec *chan, enum
+>>> iio_event_type type, +		enum iio_event_direction dir) +{ +	struct opt3001 *opt = iio_priv(iio); + +	return
+>>> opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS; +} + +static int opt3001_write_event_config(struct iio_dev
+>>> *iio, +		const struct iio_chan_spec *chan, enum iio_event_type type, +		enum iio_event_direction dir, int
+>>> state) +{ +	struct opt3001 *opt = iio_priv(iio); +	int ret; +	u16 mode; +	u16 reg; + +	if (state && opt->mode
+>>> == OPT3001_CONFIGURATION_M_CONTINUOUS) +		return 0; + +	if (!state && opt->mode ==
+>>> OPT3001_CONFIGURATION_M_SHUTDOWN) +		return 0; + +	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS +		:
+>>> OPT3001_CONFIGURATION_M_SHUTDOWN; + +	ret = opt3001_read(opt, OPT3001_CONFIGURATION); +	if (ret < 0) { +
+>>> dev_err(opt->dev, "failed to read register %02x\n", +				OPT3001_CONFIGURATION); +		return ret; +	} + +	reg =
+>>> ret; +	opt3001_set_mode(opt, &reg, mode); + +	if (opt->hysteresis) +		reg |= OPT3001_CONFIGURATION_L; +	else +
+>>> reg &= ~OPT3001_CONFIGURATION_L; + +	ret = opt3001_write(opt, OPT3001_CONFIGURATION, reg); +	if (ret < 0) { +
+>>> dev_err(opt->dev, "failed to read register %02x\n", +				OPT3001_CONFIGURATION); +		return ret; +	} + +	/* wait
+>>> for mode change to go through */ +	usleep_range(opt->int_time + 5000, opt->int_time + 10000); + +	return 0; +} 
+>>> + +static const struct iio_info opt3001_info = { +	.driver_module = THIS_MODULE, +	.attrs =
+>>> &opt3001_attribute_group, +	.read_raw = opt3001_read_raw, +	.write_raw = opt3001_write_raw, +	.read_event_value
+>>> = opt3001_read_event_value, +	.write_event_value = opt3001_write_event_value, +	.read_event_config =
+>>> opt3001_read_event_config, +	.write_event_config = opt3001_write_event_config, +}; + +static int
+>>> opt3001_read_id(struct opt3001 *opt) +{ +	char manufacturer[2]; +	u16 device_id; +	int ret; + +	ret =
+>>> opt3001_read(opt, OPT3001_MANUFACTURER_ID); +	if (ret < 0) { +		dev_err(opt->dev, "failed to read register
+>>> %02x\n", +				OPT3001_MANUFACTURER_ID); +		return ret; +	} + +	manufacturer[0] = ret >> 8; +	manufacturer[1] =
+>>> ret & 0xff; + +	ret = opt3001_read(opt, OPT3001_DEVICE_ID); +	if (ret < 0) { +		dev_err(opt->dev, "failed to
+>>> read register %02x\n", +				OPT3001_DEVICE_ID); +		return ret; +	} + +	device_id = ret; + +	dev_info(opt->dev,
+>>> "Found %c%c OPT%04x\n", manufacturer[0], +			manufacturer[1], device_id); + +	return 0; +} + +static int
+>>> opt3001_configure(struct opt3001 *opt) +{ +	int ret; +	u16 reg; + +	ret = opt3001_read(opt,
+>>> OPT3001_CONFIGURATION); +	if (ret < 0) { +		dev_err(opt->dev, "failed to read register %02x\n", +
+>>> OPT3001_CONFIGURATION); +		return ret; +	} + +	reg = ret; + +	if (reg & OPT3001_CONFIGURATION_CT) +
+>>> opt->int_time = 800000; +	else +		opt->int_time = 100000; + +	reg &= ~OPT3001_CONFIGURATION_L; +	reg &=
+>>> ~OPT3001_CONFIGURATION_RN_MASK; +	reg |= OPT3001_CONFIGURATION_RN_AUTO; + +	ret = opt3001_write(opt,
+>>> OPT3001_CONFIGURATION, reg); +	if (ret < 0) { +		dev_err(opt->dev, "failed to write register %02x\n", +
+>>> OPT3001_CONFIGURATION); +		return ret; +	} + +	ret = opt3001_read(opt, OPT3001_LOW_LIMIT); +	if (ret < 0) { +
+>>> dev_err(opt->dev, "failed to read register %02x\n", +				OPT3001_LOW_LIMIT); +		return ret; +	} + +
+>>> opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret); +	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret); + +
+>>> ret = opt3001_read(opt, OPT3001_HIGH_LIMIT); +	if (ret < 0) { +		dev_err(opt->dev, "failed to read register
+>>> %02x\n", +				OPT3001_HIGH_LIMIT); +		return ret; +	} + +	opt->high_thresh_mantissa =
+>>> OPT3001_REG_MANTISSA(ret); +	opt->high_thresh_exp = OPT3001_REG_EXPONENT(ret); + +	return 0; +} + +static
+>>> irqreturn_t opt3001_irq(int irq, void *_opt) +{
+>> 
+>> Pass the iio_dev in to the irq setup instead of opt and you will then not need the opt reference to the struct
+>> iio_dev.
+> 
+> What's the difference ? When used this way we have:
+> 
+> struct opt3001 *opt = _opt; struct iio_dev *iio = opt->dev;
+> 
+> Done your way we will have:
+> 
+> struct iio_dev *iio = _iio; struct opt3001 *opt = iio_priv(iio);
+> 
+> I don't see the benefit of changing this as I'll access to both opt and iio.
+Because one way you get it from the IIO core support.  The other way around
+you have a local copy.  Basically it's better from a consistency point
+of view to have all drivers do it one way around than end up with a mixture
+of the two (which way around doesn't really matter - but rather late to
+change now!)
+> 
+>>> +static int opt3001_probe(struct i2c_client *client, +		const struct i2c_device_id *id) +{ +	struct device *dev
+>>> = &client->dev; + +	struct iio_dev *iio; +	struct opt3001 *opt; +	int irq = client->irq; +	int ret; + +	iio =
+>>> devm_iio_device_alloc(dev, sizeof(*opt)); +	if (!iio) +		return -ENOMEM; + +	opt = iio_priv(iio); +	opt->client
+>>> = client; +	opt->dev = dev;
+>> 
+>> This is very circular and it rarely makes sense to have the device private structure have a reference to the 
+>> iio_dev.  Here it is only used in the interrupt handler. Avoid that by making the private data passed to the
+>> interrupt handler the struct iio_dev instead of the struct opt3001.
+>> 
+>>> +	opt->iio = iio; + +	mutex_init(&opt->lock); +	i2c_set_clientdata(client, opt); + +	ret =
+>>> opt3001_read_id(opt); +	if (ret) +		return ret; + +	ret = opt3001_configure(opt); +	if (ret) +		return ret; + +
+>>> iio->name = client->name; +	iio->channels = opt3001_channels; +	iio->num_channels =
+>>> ARRAY_SIZE(opt3001_channels); +	iio->dev.parent = dev; +	iio->modes = INDIO_DIRECT_MODE; +	iio->info =
+>>> &opt3001_info; + +	ret = devm_iio_device_register(dev, iio); +	if (ret) { +		dev_err(dev, "failed to register
+>>> IIO device\n"); +		return ret; +	} +
+>> Normally we'd expect the devm_iio_device_register (that provides the userspace interfaces) to be after the irq
+>> request.
+> 
+> that's wrong. By the time the IRQ is requested, an IRQ can actually fire and you better have a valid e.g. iio_dev
+> by then.
+Its very unusual to bring up a device with the IRQ already in a position
+to fire.  Normally that would require some enabling from userspace after the
+driver is loaded?  How can it fire here before that point?
+
+Unless there is something odd going on, that would normally imply a bug.
+> 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iQIcBAEBAgAGBQJT46i0AAoJEFSFNJnE9BaIYr0P/3wOD4bRMtaG6EeegC/eqUdp
+cRQpNtJRgknKv/pJ7WRq+4p7JNVeTdfDIyNP2ITm+7BsO/Iy7EzfKjjzcOVEeku/
+mR0y0CXAos6wvbM2OXoX/XPBMn6LMzv33LS5sQRAig3PNDPDT4tZ/ibFitM/sGTO
+YnuxwX35xDnM8AVOEKjDlJWxVDWejyNjv6IC56FPCCls/mCoBLHg+aUn8vovqI/P
+2ymwtcHlSbMlgjAYE1Pn3qXpIdw7dmAlOKNAIsljMVC/bbqVcP/B8xWwlHTxOKr4
+qpJFXSEYT+7QR2PlHZLe/kHDztEuC24S8hGP/3ER8aKGfl9ze20slILTyzm84V6Y
+fEFIW8vopuiofaAyZPA8nrGgWmdgu7BpufYKKstjqHbbb6C6CQjrzBD+0ldl60Jl
+hBYpQRxiz0KbUu7RceL0ZPuSCF7aar7GVixDtCGVQLtDrey5UXqqb83EPmIm7co1
+4LoRpvK5D8J+2Vho4q3aKXOpTpyeAIcu/nwQm6O6SWYoqKbYIO7XjZtKwQB0VDGM
+YCHOdye+bOHj7TPtD6JtyZ+PZ+lpu3VPFZrY5Qh7kn420tJ6thJo+eEEnBfSus0Z
+2OOptXteAgbZ5V007oHKZiK4SRDtuvbaQV4AW2RsHF06PbrvbYkjT1ZJEmrasJfS
+Ng/WQOVl5zWSP9jYX1Z6
+=8Vup
+-----END PGP SIGNATURE-----
