@@ -1,41 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39478 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932538AbaHGRAi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 13:00:38 -0400
-Message-ID: <53E3B0B4.2090807@kernel.org>
-Date: Thu, 07 Aug 2014 18:00:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:38989 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757264AbaHGRVB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 13:21:01 -0400
+Received: by mail-wi0-f181.google.com with SMTP id bs8so5345888wib.8
+        for <linux-iio@vger.kernel.org>; Thu, 07 Aug 2014 10:21:00 -0700 (PDT)
+Message-ID: <53E3B57A.4030201@parkeon.com>
+Date: Thu, 07 Aug 2014 19:20:58 +0200
+From: Martin Fuzzey <mfuzzey@parkeon.com>
 MIME-Version: 1.0
-To: balbi@ti.com
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [RFC/PATCH] iio: light: add support for TI's opt3001 ligth sensor
-References: <1407341409-30284-1-git-send-email-balbi@ti.com> <alpine.DEB.2.01.1408061815140.29646@pmeerw.net> <20140806214222.GB3556@saruman.home> <53E35018.1000900@kernel.org> <20140807143943.GB24581@saruman.home> <53E3A90C.6080006@kernel.org> <20140807163632.GB29964@saruman.home>
-In-Reply-To: <20140807163632.GB29964@saruman.home>
-Content-Type: text/plain; charset=windows-1252
+To: Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
+Subject: Re: [PATCH V2 8/8] iio: mma8452: Add support for interrupt driven
+ triggers.
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090145.4618.72768.stgit@localhost> <53E3AA82.5040004@kernel.org>
+In-Reply-To: <53E3AA82.5040004@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/08/14 17:36, Felipe Balbi wrote:
-> Hi,
-> 
-> On Thu, Aug 07, 2014 at 05:27:56PM +0100, Jonathan Cameron wrote:
->>>>>>> + +	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS) +		return -EBUSY; + +	if (chan->type != IIO_LIGHT)
->>>>>>> + return -EINVAL; + +	mutex_lock(&opt->lock); + +	switch (mask) {
->>>>>>
->>>>>> is there no way to control the scale?
->>>>>
->>>>> yeah, but the HW does auto-scaling which works pretty well. Why would you want to control the scale manually ?
->>>> On a slow device like this you probably wouldn't but for quicker devices the overhead of converting into a
->>>> standard form in kernel might be excessive.
->>>
->>> hehe, even when you _do_ set the scale, you still have the top 4
->>> bits as exponent, the difference is that you know what they are
->>> before the conversion is done :-)
->> Then you can junk them and let userspace use the known value to deal
->> with the raw data.
-> 
-> alright, I'll leave that to a future patch then. Auto-ranging is so much
-> simpler.
-> 
-Agreed - it's just unusual for it to actually be present on the device.
+Hi Jonathan and thanks for the review.
+
+I'll send my comments but I'll be on holiday from tomorrow evening until 
+beginning of september so won't be able to send a V3 until later.
+
+On 07/08/14 18:34, Jonathan Cameron wrote:
+> ---
+> @@ -555,18 +557,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>   {
+>   	struct iio_dev *indio_dev = p;
+>   	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int ret = IRQ_NONE;
+>   	int src;
+>
+>   	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+>   	if (src < 0)
+>   		return IRQ_NONE;
+>
+> +	if (src & MMA8452_INT_DRDY) {
+> +		iio_trigger_poll_chained(indio_dev->trig, iio_get_time_ns());
+> +		ret = IRQ_HANDLED;
+> +	}
+> +
+>   	if (src & MMA8452_INT_TRANS) {
+>   		mma8452_transient_interrupt(indio_dev);
+> -		return IRQ_HANDLED;
+> +		ret = IRQ_HANDLED;
+>   	}
+>
+> -	return IRQ_NONE;
+> Leave the returns as they were and just return from the new if statement...
+> It's neater and there is no reason to do a single point of exit if
+> there is no cleaning up to do.
+
+The final return still has to be changed so that the function correctly 
+handles the case of both interrupt bits being set.
+The idea wasn't so much as to create a single point of return as to keep 
+the two handler statements symmetrical and not have the second one a 
+special case just because it's the last.
+The hardware supports other interrupts and there's a risk of someone 
+adding a third one later and forgetting to modify the second one.
+
+But if you really insist I can do it that way.
+>> +	return ret;
+>>   }
+
++static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
++{
++	if (indio_dev->trig) {
++		iio_trigger_unregister(indio_dev->trig);
+
+> Probably no reason not use devm_iio_trigger_alloc and avoid the frees.
+> Doesn't save much, but someone else will only propose a patch 10 minutes
+> after this goes in if you don't do it...
+
+Ok will do for V3
+
+  	if (client->irq) {
+-		int supported_interrupts = MMA8452_INT_TRANS;
++		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
++		int enabled_interrupts = MMA8452_INT_TRANS;
+
+> Note again, I'm very much against coming up with any events enabled....
+> It's not what people expect so all sorts of messy things could occur.
+
+Yes, quite agree but actually they aren't enabled.
+
+The bit allowing any interrupts generated by the transient detection 
+module to be routed to the interrupt pin is enabled.
+The threshold is set to the maximum value (your remark on a previous patch).
+BUT the bit that actually enables the transient detection (and hence the 
+events) is not set until userspace asks for it (by 
+mma8452_write_event_config())
+
+The reason for setting the initial threshold is for the case where 
+userspace enables the event before writing the threshold value.
+It seemed safer to default to a high threshold than a low one.
+
+Regards,
+
+Martin
+
