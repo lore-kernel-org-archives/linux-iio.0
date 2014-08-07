@@ -1,208 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36413 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38222 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754413AbaHGK1S (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 06:27:18 -0400
-Message-ID: <53E35484.90106@kernel.org>
-Date: Thu, 07 Aug 2014 11:27:16 +0100
+	with ESMTP id S932386AbaHGOVZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 10:21:25 -0400
+Message-ID: <53E38B62.8010208@kernel.org>
+Date: Thu, 07 Aug 2014 15:21:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: accel: kxcjk-1013: Set adjustable range
-References: <1407275881-29139-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1407275881-29139-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1407275881-29139-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+CC: pmeerw@pmeerw.net
+Subject: Re: [PATCH V2 1/8] iio: mma8452: Initialise before activating
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090131.4618.11083.stgit@localhost>
+In-Reply-To: <20140729090131.4618.11083.stgit@localhost>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/08/14 22:58, Srinivas Pandruvada wrote:
-> This chip can support 3 different ranges. Allowing range specification.
+On 29/07/14 10:01, Martin Fuzzey wrote:
+> Many of the hardware configuration registers may only be modified while the
+> device is inactive.
 >
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git.  Pushed out as testing etc...
+> Currently the probe code first activates the device and then modifies the
+> registers (eg to set the scale). This doesn't actually work but is not
+> noticed since the scale used is the default value.
+>
+> While at it also issue a hardware reset command at probe time.
+>
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Looks fine to me but I'd like an OK from Peter for this series.
 
-Thanks
-
-Jonathan
+J
 > ---
->  drivers/iio/accel/kxcjk-1013.c | 100 ++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 95 insertions(+), 5 deletions(-)
+>  drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 34 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index b32bdd1..57c515b 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -82,6 +82,7 @@ struct kxcjk1013_data {
->  	struct mutex mutex;
->  	s16 buffer[8];
->  	u8 odr_bits;
-> +	u8 range;
->  	bool active_high_intr;
->  	bool trigger_on;
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 3c12d49..04a4f34 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -32,6 +32,7 @@
+>  #define MMA8452_OFF_Z 0x31
+>  #define MMA8452_CTRL_REG1 0x2a
+>  #define MMA8452_CTRL_REG2 0x2b
+> +#define MMA8452_CTRL_REG2_RST		BIT(6)
+>
+>  #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+>
+> @@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
+>  	{6, 250000}, {1, 560000}
 >  };
-> @@ -97,6 +98,12 @@ enum kxcjk1013_mode {
->  	OPERATION,
->  };
 >
-> +enum kxcjk1013_range {
-> +	KXCJK1013_RANGE_2G,
-> +	KXCJK1013_RANGE_4G,
-> +	KXCJK1013_RANGE_8G,
-> +};
-> +
->  static const struct {
->  	int val;
->  	int val2;
-> @@ -116,6 +123,14 @@ static const struct {
->  			   {0x02, 21000}, {0x03, 11000}, {0x04, 6400},
->  			   {0x05, 3900}, {0x06, 2700}, {0x07, 2100} };
+> -/*
+> +/*
+This ought to be in a separate cleanup patch.  Just adds noise to the important
+stuff in here!  Not important though so don't bother rerolling the series for this.
+
+>   * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
+>   * The userspace interface uses m/s^2 and we declare micro units
+>   * So scale factor is given by:
+> @@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
 >
-> +static const struct {
-> +	u16 scale;
-> +	u8 gsel_0;
-> +	u8 gsel_1;
-> +} KXCJK1013_scale_table[] = { {9582, 0, 0},
-> +			      {19163, 1, 0},
-> +			      {38326, 0, 1} };
-> +
->  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
->  			      enum kxcjk1013_mode mode)
->  {
-> @@ -161,6 +176,32 @@ static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
->  	return 0;
->  }
+>  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
 >
-> +static int kxcjk1013_set_range(struct kxcjk1013_data *data, int range_index)
+> +static int mma8452_reset(struct i2c_client *client)
 > +{
+> +	int i;
 > +	int ret;
 > +
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+> +	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
+> +						MMA8452_CTRL_REG2_RST);
+> +	if (ret)
 > +		return ret;
+> +
+> +	for (i = 0; i < 10; i++) {
+> +		udelay(100);
+> +		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
+> +		if (ret == -EIO)
+> +			continue; /* I2C comm reset */
+> +		if (ret < 0)
+> +			return ret;
+> +		if (!(ret & MMA8452_CTRL_REG2_RST))
+> +			return 0;
 > +	}
 > +
-> +	ret |= (KXCJK1013_scale_table[range_index].gsel_0 << 3);
-> +	ret |= (KXCJK1013_scale_table[range_index].gsel_1 << 4);
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					KXCJK1013_REG_CTRL1,
-> +					ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
-> +		return ret;
-> +	}
-> +
-> +	data->range = range_index;
-> +
-> +	return 0;
+> +	return -ETIMEDOUT;
 > +}
 > +
->  static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+>  static int mma8452_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
 >  {
->  	int ret;
-> @@ -183,10 +224,6 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+> @@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
+>  	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
+>  	indio_dev->available_scan_masks = mma8452_scan_masks;
+>
+> -	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+> -		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+> -	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> -		data->ctrl_reg1);
+> +	ret = mma8452_reset(client);
+>  	if (ret < 0)
 >  		return ret;
->  	}
 >
-> -	/* Setting range to 4G */
-> -	ret |= KXCJK1013_REG_CTRL1_BIT_GSEL0;
-> -	ret &= ~KXCJK1013_REG_CTRL1_BIT_GSEL1;
-> -
->  	/* Set 12 bit mode */
->  	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
->
-> @@ -197,6 +234,14 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+> @@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
+>  	if (ret < 0)
 >  		return ret;
->  	}
 >
-> +	/* Setting range to 4G */
-> +	ret = kxcjk1013_set_range(data, KXCJK1013_RANGE_4G);
+> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> +		data->ctrl_reg1);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	data->range = KXCJK1013_RANGE_4G;
-> +
-> +
->  	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_DATA_CTRL);
->  	if (ret < 0) {
->  		dev_err(&data->client->dev, "Error reading reg_data_ctrl\n");
-> @@ -403,6 +448,40 @@ static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
->  	return ret;
->  }
+>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>  		mma8452_trigger_handler, NULL);
+>  	if (ret < 0)
 >
-> +static int kxcjk1013_set_scale(struct kxcjk1013_data *data, int val)
-> +{
-> +	int ret, i;
-> +	enum kxcjk1013_mode store_mode;
-> +
-> +
-> +	for (i = 0; i < ARRAY_SIZE(KXCJK1013_scale_table); ++i) {
-> +		if (KXCJK1013_scale_table[i].scale == val) {
-> +
-> +			ret = kxcjk1013_get_mode(data, &store_mode);
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			ret = kxcjk1013_set_mode(data, STANDBY);
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			ret = kxcjk1013_set_range(data, i);
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			if (store_mode == OPERATION) {
-> +				ret = kxcjk1013_set_mode(data, OPERATION);
-> +				if (ret)
-> +					return ret;
-> +			}
-> +
-> +			return 0;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
->  static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
->  			      struct iio_chan_spec const *chan, int *val,
->  			      int *val2, long mask)
-> @@ -439,7 +518,7 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
->
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 0;
-> -		*val2 = 19163; /* range +-4g (4/2047*9.806650) */
-> +		*val2 = KXCJK1013_scale_table[data->range].scale;
->  		return IIO_VAL_INT_PLUS_MICRO;
->
->  	case IIO_CHAN_INFO_SAMP_FREQ:
-> @@ -466,6 +545,14 @@ static int kxcjk1013_write_raw(struct iio_dev *indio_dev,
->  		ret = kxcjk1013_set_odr(data, val, val2);
->  		mutex_unlock(&data->mutex);
->  		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (val)
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&data->mutex);
-> +		ret = kxcjk1013_set_scale(data, val2);
-> +		mutex_unlock(&data->mutex);
-> +		break;
->  	default:
->  		ret = -EINVAL;
->  	}
-> @@ -487,8 +574,11 @@ static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
->  	"0.781000 1.563000 3.125000 6.250000 12.500000 25 50 100 200 400 800 1600");
->
-> +static IIO_CONST_ATTR(in_accel_scale_available, "0.009582 0.019163 0.038326");
-> +
->  static struct attribute *kxcjk1013_attributes[] = {
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
->  	NULL,
->  };
->
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
