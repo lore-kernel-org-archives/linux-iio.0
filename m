@@ -1,97 +1,565 @@
-Return-Path: <balbi@ti.com>
-Date: Mon, 11 Aug 2014 09:58:04 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Felipe Balbi <balbi@ti.com>, <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [RFC/PATCH v2] iio: light: add support for TI's opt3001 ligth
- sensor
-Message-ID: <20140811145804.GG20177@saruman.home>
-Reply-To: <balbi@ti.com>
-References: <1407341409-30284-1-git-send-email-balbi@ti.com>
- <1407767673-24635-1-git-send-email-balbi@ti.com>
- <alpine.DEB.2.01.1408111641170.1145@pmeerw.net>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="64j1qyTOoGvYcHb1"
-In-Reply-To: <alpine.DEB.2.01.1408111641170.1145@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:8967 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752643AbaHHRuO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 8 Aug 2014 13:50:14 -0400
+From: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v3 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
+Date: Fri,  8 Aug 2014 10:46:49 -0700
+Message-Id: <a884b9070b80e208e3d089d6f12693e478bc3049.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---64j1qyTOoGvYcHb1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch adds a new driver for solteam opto JSA1212 proximity and
+ambient light sensor.
 
-On Mon, Aug 11, 2014 at 04:46:07PM +0200, Peter Meerwald wrote:
->=20
-> > TI's opt3001 light sensor is a simple and yet powerful
-> > little device. The device provides 99% IR rejection,
-> > Automatic full-scale, very low power consumption and
-> > measurements from 0.01 to 83k lux.
-> >=20
-> > This patch adds support for that device using the IIO
-> > framework.
->=20
-> moving in the right direction, the driver got simpler :)
->=20
-> light is still misspelled in the subject, the Kconfig needs to be fixed,=
-=20
-> see below
+Basic details of the chip can be found here.
 
-hah! missed that. Fixed.
+http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
 
-> > Signed-off-by: Felipe Balbi <balbi@ti.com>
-> > ---
-> >  drivers/iio/light/Kconfig   |  12 +
-> >  drivers/iio/light/Makefile  |   1 +
-> >  drivers/iio/light/opt3001.c | 739 ++++++++++++++++++++++++++++++++++++=
-++++++++
-> >  3 files changed, 752 insertions(+)
-> >  create mode 100644 drivers/iio/light/opt3001.c
-> >=20
-> > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> > index bf05ca5..e4582d7 100644
-> > --- a/drivers/iio/light/Kconfig
-> > +++ b/drivers/iio/light/Kconfig
-> > @@ -128,6 +128,18 @@ config LTR501
-> >  	 This driver can also be built as a module.  If so, the module
-> >           will be called ltr501.
-> > =20
-> > +config OPT3001
-> > +	tristate "Texas Instruments OPT3001 Light Sensor"
-> > +	depends on I2C
-> > +	select IIO_BUFFER
-> > +	select IIO_TRIGGERED_BUFFER
->=20
-> IIO_BUFFER, IIO_TRIGGERED_BUFFER not needed since not supported by driver
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/light/Kconfig   |   10 +
+ drivers/iio/light/Makefile  |    1 +
+ drivers/iio/light/jsa1212.c |  487 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 498 insertions(+)
+ create mode 100644 drivers/iio/light/jsa1212.c
 
-fixed.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index c89740d..07d0a76 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -87,6 +87,16 @@ config HID_SENSOR_PROX
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called hid-sensor-prox.
+ 
++config JSA1212
++	tristate "JSA1212 ALS and proximity sensor driver"
++	depends on I2C
++	help
++	 Say Y here if you want to build a IIO driver for JSA1212
++	 proximity & ALS sensor device.
++
++	 To compile this driver as a module, choose M here:
++	 the module will be called jsa1212.
++
+ config SENSORS_LM3533
+ 	tristate "LM3533 ambient light sensor"
+ 	depends on MFD_LM3533
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 3eb36e5..ce85c86 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
+ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
++obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
+new file mode 100644
+index 0000000..71e1793
+--- /dev/null
++++ b/drivers/iio/light/jsa1212.c
+@@ -0,0 +1,487 @@
++/*
++ * JSA1212 Ambient Light & Proximity Sensor Driver
++ *
++ * Copyright (c) 2014, Intel Corporation.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/moduleparam.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
++
++/* JSA1212 reg address */
++#define JSA1212_CONF_REG		0x01
++#define JSA1212_INT_REG			0x02
++#define JSA1212_PXS_LT_REG		0x03
++#define JSA1212_PXS_HT_REG		0x04
++#define JSA1212_ALS_TH1_REG		0x05
++#define JSA1212_ALS_TH2_REG		0x06
++#define JSA1212_ALS_TH3_REG		0x07
++#define JSA1212_PXS_DATA_REG		0x08
++#define JSA1212_ALS_DT1_REG		0x09
++#define JSA1212_ALS_DT2_REG		0x0A
++#define JSA1212_ALS_RNG_REG		0x0B
++#define JSA1212_MAX_REG			0x0C
++
++/* JSA1212 reg defaults */
++#define JSA1212_CONF_REG_DEF		0x58
++#define JSA1212_INT_REG_DEF		0x02
++#define JSA1212_PXS_LT_REG_DEF		0x00
++#define JSA1212_PXS_HT_REG_DEF		0xFF
++#define JSA1212_ALS_TH1_REG_DEF		0x00
++#define JSA1212_ALS_TH2_REG_DEF		0xF0
++#define JSA1212_ALS_TH3_REG_DEF		0xFF
++#define JSA1212_ALS_RNG_REG_DEF		0x00
++
++/* JSA1212 reg masks */
++#define JSA1212_CONF_MASK		0xFF
++#define JSA1212_INT_MASK		0xFF
++#define JSA1212_PXS_LT_MASK		0xFF
++#define JSA1212_PXS_HT_MASK		0xFF
++#define JSA1212_ALS_TH1_MASK		0xFF
++#define JSA1212_ALS_TH2_LT_MASK		0x0F
++#define JSA1212_ALS_TH2_HT_MASK		0xF0
++#define JSA1212_ALS_TH3_MASK		0xFF
++#define JSA1212_PXS_DATA_MASK		0xFF
++#define JSA1212_ALS_DATA_MASK		0xFFF
++#define JSA1212_ALS_DT1_MASK		0xFF
++#define JSA1212_ALS_DT2_MASK		0x0F
++#define JSA1212_ALS_RNG_MASK		0x07
++#define JSA1212_REG_MASK		0xFF
++
++/* JSA1212 CONF REG bits */
++#define JSA1212_CONF_PXS_MASK		0x80
++#define JSA1212_CONF_PXS_ENABLE		0x80
++#define JSA1212_CONF_PXS_DISABLE	0x00
++#define JSA1212_CONF_ALS_MASK		0x04
++#define JSA1212_CONF_ALS_ENABLE		0x04
++#define JSA1212_CONF_ALS_DISABLE	0x00
++
++/* JSA1212 INT REG bits */
++#define JSA1212_INT_CTRL_MASK		0x01
++#define JSA1212_INT_CTRL_EITHER		0x00
++#define JSA1212_INT_CTRL_BOTH		0x01
++#define JSA1212_INT_ALS_PRST_MASK	0x06
++#define JSA1212_INT_ALS_PRST_1CONV	0x00
++#define JSA1212_INT_ALS_PRST_4CONV	0x02
++#define JSA1212_INT_ALS_PRST_8CONV	0x04
++#define JSA1212_INT_ALS_PRST_16CONV	0x06
++#define JSA1212_INT_ALS_FLAG_MASK	0x08
++#define JSA1212_INT_ALS_FLAG_CLR	0x00
++#define JSA1212_INT_PXS_PRST_MASK	0x60
++#define JSA1212_INT_PXS_PRST_1CONV	0x00
++#define JSA1212_INT_PXS_PRST_4CONV	0x20
++#define JSA1212_INT_PXS_PRST_8CONV	0x40
++#define JSA1212_INT_PXS_PRST_16CONV	0x60
++#define JSA1212_INT_PXS_FLAG_MASK	0x80
++#define JSA1212_INT_PXS_FLAG_CLR	0x00
++
++/* JSA1212 ALS RNG REG bits */
++#define JSA1212_ALS_RNG_0_2048		0x00
++#define JSA1212_ALS_RNG_0_1024		0x01
++#define JSA1212_ALS_RNG_0_512		0x02
++#define JSA1212_ALS_RNG_0_256		0x03
++#define JSA1212_ALS_RNG_0_128		0x04
++
++/* JSA1212 INT threshold range */
++#define JSA1212_ALS_TH_MIN	0x0000
++#define JSA1212_ALS_TH_MAX	0x0FFF
++#define JSA1212_PXS_TH_MIN	0x00
++#define JSA1212_PXS_TH_MAX	0xFF
++
++#define JSA1212_ALS_DELAY_MS	0xC8
++#define JSA1212_PXS_DELAY_MS	0x64
++
++#define JSA1212_DRIVER_NAME	"jsa1212"
++#define JSA1212_REGMAP_NAME	"jsa1212_regmap"
++
++enum jsa1212_op_mode {
++	JSA1212_OPMODE_ALS_EN,
++	JSA1212_OPMODE_PXS_EN,
++};
++
++struct jsa1212_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u8 als_rng_idx;
++	bool als_en; /* ALS enable status */
++	bool pxs_en; /* proximity enable status */
++	struct regmap *regmap;
++};
++
++/* ALS range idx to val mapping */
++static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
++						128, 128, 128};
++
++/* Enables or disables ALS function based on status */
++static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
++
++	data->als_en = status ? true : false;
++
++	return ret;
++}
++
++/* Enables or disables PXS function based on status */
++static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_PXS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
++
++	data->pxs_en = status ? true : false;
++
++	return ret;
++}
++
++static int jsa1212_read_als_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	u8 als_data[2];
++
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_ALS_DELAY_MS);
++
++	/* Read 12 bit data */
++	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, als_data, 2);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "als data read err\n");
++		return ret;
++	}
++
++	*val = als_data[1] << 8 | als_data[0];
++
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_pxs_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	unsigned int pxs_data;
++
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_PXS_DELAY_MS);
++
++	/* Read out all data */
++	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "pxs data read err\n");
++		return ret;
++	}
++
++	*val = pxs_data & JSA1212_PXS_DATA_MASK;
++
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	int ret;
++	struct jsa1212_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&data->lock);
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = jsa1212_read_als_data(data, val);
++			break;
++		case IIO_PROXIMITY:
++			ret = jsa1212_read_pxs_data(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		ret = ret < 0 ? ret : IIO_VAL_INT;
++		mutex_unlock(&data->lock);
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = jsa1212_als_range_val[data->als_rng_idx];
++			*val2 = BIT(12); /* Max 12 bit value */
++			ret = IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static const struct iio_chan_spec jsa1212_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	}
++};
++
++static const struct iio_info jsa1212_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= &jsa1212_read_raw,
++};
++
++static int jsa1212_chip_init(struct jsa1212_data *data)
++{
++	int ret;
++
++	ret = regmap_write(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_REG_DEF);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->regmap, JSA1212_INT_REG,
++				JSA1212_INT_REG_DEF);
++	if (ret < 0)
++		return ret;
++
++	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
++
++	return 0;
++}
++
++static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case JSA1212_PXS_DATA_REG:
++	case JSA1212_ALS_DT1_REG:
++	case JSA1212_ALS_DT2_REG:
++	case JSA1212_INT_REG:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static struct regmap_config jsa1212_regmap_config = {
++	.name =  JSA1212_REGMAP_NAME,
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = JSA1212_MAX_REG,
++	.cache_type = REGCACHE_RBTREE,
++	.volatile_reg = jsa1212_is_volatile_reg,
++};
++
++static int jsa1212_probe(struct i2c_client *client,
++			     const struct i2c_device_id *id)
++{
++	struct jsa1212_data *jsa1212_data;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Regmap initialization failed.\n");
++		return PTR_ERR(regmap);
++	}
++
++	jsa1212_data = iio_priv(indio_dev);
++
++	i2c_set_clientdata(client, indio_dev);
++	jsa1212_data->client = client;
++	jsa1212_data->regmap = regmap;
++
++	mutex_init(&jsa1212_data->lock);
++
++	ret = jsa1212_chip_init(jsa1212_data);
++	if (ret < 0)
++		return ret;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = jsa1212_channels;
++	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
++	indio_dev->name = JSA1212_DRIVER_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	indio_dev->info = &jsa1212_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "%s: register device failed\n", __func__);
++		return ret;
++	}
++
++	return 0;
++}
++
++ /* power off the device */
++static int jsa1212_power_off(struct jsa1212_data *data)
++{
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK |
++				JSA1212_CONF_PXS_MASK,
++				JSA1212_CONF_ALS_DISABLE |
++				JSA1212_CONF_PXS_DISABLE);
++
++	if (ret < 0)
++		dev_err(&data->client->dev, "power off cmd failed\n");
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++
++static int jsa1212_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct jsa1212_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = jsa1212_power_off(data);
++
++	iio_device_unregister(indio_dev);
++
++	return ret;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int jsa1212_suspend(struct device *dev)
++{
++	struct jsa1212_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	return jsa1212_power_off(data);
++}
++
++static int jsa1212_resume(struct device *dev)
++{
++	int ret = 0;
++	struct jsa1212_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	mutex_lock(&data->lock);
++
++	if (data->als_en) {
++		ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++		if (ret < 0) {
++			dev_err(dev, "als resume failed\n");
++			mutex_unlock(&data->lock);
++			return ret;
++		}
++	}
++
++	if (data->pxs_en) {
++		ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++		if (ret < 0)
++			dev_err(dev, "pxs resume failed\n");
++	}
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
++
++#define JSA1212_PM_OPS (&jsa1212_pm_ops)
++#else
++#define JSA1212_PM_OPS NULL
++#endif
++
++static const struct acpi_device_id jsa1212_acpi_match[] = {
++	{"JSA1212", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
++
++static const struct i2c_device_id jsa1212_id[] = {
++	{ JSA1212_DRIVER_NAME, 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, jsa1212_id);
++
++static struct i2c_driver jsa1212_driver = {
++	.driver = {
++		.name	= JSA1212_DRIVER_NAME,
++		.pm	= JSA1212_PM_OPS,
++		.owner	= THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
++	},
++	.probe		= jsa1212_probe,
++	.remove		= jsa1212_remove,
++	.id_table	= jsa1212_id,
++};
++module_i2c_driver(jsa1212_driver);
++
++MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
++MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.9.5
 
-both pushed to my branch at kernel.org
-
---=20
-balbi
-
---64j1qyTOoGvYcHb1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJT6Nn8AAoJEIaOsuA1yqREUNYQAI1ciS2JoUOdISD4hrwQM/ZY
-4tPZ9Xgvv2cUECHbdSUiGoK3Gwan+hzD/PkQohgvrOgirdYQPg+/Wa24sSHGaKjc
-m153bUNbtsTFkGOEqSmmwZ10GlHg+aBfY4U+Iu4fbGzQu2/w/8mwF15hIAMP/8h4
-KgVqpkwSbF6doDmku+bWiB3j6YlGysAvzf3dfnTwa0z1BcKmHNw3m0MSL8+1c5SZ
-5t8ilO24zgW3pBoNFMTLfjZzpRtheN++o7UMJgUqye/ItZ9p6Tlz+CRRZKD0Tuwo
-qP1b//V3NSYVYy9g9a5XF7DmrBJeAaZSe05M78UHVIGNKn2mprMW+9MtUca8J70/
-byWzSl/l2TORuOkd2Df3WVaTxOMw5QeXaQJr6sA1jx9MvEraoHbQRxqFAHLubFxJ
-Yr6woAi6y5axlhKYonWUZ8MscZGdzXs//P1P7Tx/ssszV8mFcsIyH4d+YFAH0GDg
-yWYan+Wr1nmkLEesa47oGAb9eKLkQo7OUDRU+ElvNueMityg70JD17dNcdBDIKy6
-8cE3GrdCqNn74E0+j86kRgCeiPzF1/MVZ5Rk8Q9ahT3iBaf1m5yVax1rE3TMi+iY
-xS5gkvfn5QjLXBGu121B2mlefeSO9ZwZj5VM0JFint+9RyHodBmZOTqrMmAQA8SZ
-6lCMT0tWLDZD8x2YSw93
-=xcFy
------END PGP SIGNATURE-----
-
---64j1qyTOoGvYcHb1--
