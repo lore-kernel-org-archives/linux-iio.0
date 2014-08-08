@@ -1,81 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38183 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932264AbaHGOPx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Aug 2014 10:15:53 -0400
-Message-ID: <53E38A18.5090203@kernel.org>
-Date: Thu, 07 Aug 2014 15:15:52 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko@sntech.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?UTF-8?B?ImVkZGllKOiUoeaeqyki?= <cf@rock-chips.com>,
-	huangtao@rock-chips.com
-Subject: Re: [PATCH v6 2/2] dt-bindings: document Rockchip saradc
-References: <1984475.34C1XMW1q3@diego> <8132020.MqcOnlblHg@diego>
-In-Reply-To: <8132020.MqcOnlblHg@diego>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <san@rosetechnology.dk>
+Message-ID: <1407488508.6599.8.camel@sanws1.rosetechnology.dk>
+Subject: [patch v2 3/3] dt-bindings Help for MCP ADCs
+From: =?ISO-8859-1?Q?S=F8ren?= Andersen <san@rosetechnology.dk>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Date: Fri, 08 Aug 2014 11:01:48 +0200
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/07/14 22:24, Heiko Stübner wrote:
-> This add the necessary binding documentation for the saradc found in all recent
-> processors from Rockchip.
-> 
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Applied to the togreg branch of iio.git.
-I have exercised a small amount of discretion wrt to the standard 3 weeks
-as there really is very little different in here from previous versions
-and no one has raised any comments on them.
+Signed-off-by: Soeren Andersen <san at rosetechnology.dk>
+---
+ Documentation/devicetree/bindings/iio/adc/mcp320x.txt | 30
+++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-It's nearly 3 weeks anyway!
-
-J
-> ---
-> changes since v5:
-> - remove clock-frquency property as described in patch 1/2
-> 
->  .../bindings/iio/adc/rockchip-saradc.txt           | 24 ++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> new file mode 100644
-> index 0000000..5d3ec1d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> @@ -0,0 +1,24 @@
-> +Rockchip Successive Approximation Register (SAR) A/D Converter bindings
-> +
-> +Required properties:
-> +- compatible: Should be "rockchip,saradc"
-> +- reg: physical base address of the controller and length of memory mapped
-> +       region.
-> +- interrupts: The interrupt number to the cpu. The interrupt specifier format
-> +              depends on the interrupt controller.
-> +- clocks: Must contain an entry for each entry in clock-names.
-> +- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk" for
-> +               the peripheral clock.
-> +- vref-supply: The regulator supply ADC reference voltage.
-> +- #io-channel-cells: Should be 1, see ../iio-bindings.txt
-> +
-> +Example:
-> +	saradc: saradc@2006c000 {
-> +		compatible = "rockchip,saradc";
-> +		reg = <0x2006c000 0x100>;
-> +		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-> +		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
-> +		clock-names = "saradc", "apb_pclk";
-> +		#io-channel-cells = <1>;
-> +		vref-supply = <&vcc18>;
-> +	};
-> 
+diff --git a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+new file mode 100644
+index 0000000..0ab577a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+@@ -0,0 +1,30 @@
++* Microchip Analog to Digital Converter (ADC)
++
++The node for this driver must be a child node of a SPI controller,
+hence
++all mandatory properties described in
++
++        Documentation/devicetree/bindings/spi/spi-bus.txt
++
++must be specified.
++
++Required properties:
++ 	- compatible:  	Must be one of the following, depending on the
++                 	model:
++				"mcp3001"
++				"mcp3002"
++				"mcp3004"
++				"mcp3008"
++				"mcp3201"
++				"mcp3202"
++				"mcp3204"
++				"mcp3208"
++
++
++Examples:
++spi_controller {
++	mcp3x0x@0 {
++		compatible = "mcp3002";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++	};
++};
