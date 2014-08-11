@@ -1,565 +1,492 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:8967 "EHLO mga02.intel.com"
+Received: from mout.gmx.net ([212.227.15.19]:52542 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752643AbaHHRuO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 8 Aug 2014 13:50:14 -0400
-From: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v3 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
-Date: Fri,  8 Aug 2014 10:46:49 -0700
-Message-Id: <a884b9070b80e208e3d089d6f12693e478bc3049.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	id S1751387AbaHKXAV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 11 Aug 2014 19:00:21 -0400
+Message-ID: <53E94B00.5030304@gmx.de>
+Date: Tue, 12 Aug 2014 01:00:16 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: =?UTF-8?B?U8O4cmVuIEFuZGVyc2Vu?= <san@rosetechnology.dk>,
+	jic23@kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [patch v2 2/3] iio: adc: mcp320x. Add support for more ADCs
+References: <1407488350.6599.6.camel@sanws1.rosetechnology.dk>
+In-Reply-To: <1407488350.6599.6.camel@sanws1.rosetechnology.dk>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds a new driver for solteam opto JSA1212 proximity and
-ambient light sensor.
-
-Basic details of the chip can be found here.
-
-http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/light/Kconfig   |   10 +
- drivers/iio/light/Makefile  |    1 +
- drivers/iio/light/jsa1212.c |  487 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 498 insertions(+)
- create mode 100644 drivers/iio/light/jsa1212.c
-
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index c89740d..07d0a76 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -87,6 +87,16 @@ config HID_SENSOR_PROX
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called hid-sensor-prox.
- 
-+config JSA1212
-+	tristate "JSA1212 ALS and proximity sensor driver"
-+	depends on I2C
-+	help
-+	 Say Y here if you want to build a IIO driver for JSA1212
-+	 proximity & ALS sensor device.
-+
-+	 To compile this driver as a module, choose M here:
-+	 the module will be called jsa1212.
-+
- config SENSORS_LM3533
- 	tristate "LM3533 ambient light sensor"
- 	depends on MFD_LM3533
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 3eb36e5..ce85c86 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
- obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
- obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
- obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-+obj-$(CONFIG_JSA1212)		+= jsa1212.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
-new file mode 100644
-index 0000000..71e1793
---- /dev/null
-+++ b/drivers/iio/light/jsa1212.c
-@@ -0,0 +1,487 @@
-+/*
-+ * JSA1212 Ambient Light & Proximity Sensor Driver
-+ *
-+ * Copyright (c) 2014, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/module.h>
-+#include <linux/moduleparam.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/mutex.h>
-+#include <linux/slab.h>
-+#include <linux/acpi.h>
-+#include <linux/regmap.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/events.h>
-+
-+/* JSA1212 reg address */
-+#define JSA1212_CONF_REG		0x01
-+#define JSA1212_INT_REG			0x02
-+#define JSA1212_PXS_LT_REG		0x03
-+#define JSA1212_PXS_HT_REG		0x04
-+#define JSA1212_ALS_TH1_REG		0x05
-+#define JSA1212_ALS_TH2_REG		0x06
-+#define JSA1212_ALS_TH3_REG		0x07
-+#define JSA1212_PXS_DATA_REG		0x08
-+#define JSA1212_ALS_DT1_REG		0x09
-+#define JSA1212_ALS_DT2_REG		0x0A
-+#define JSA1212_ALS_RNG_REG		0x0B
-+#define JSA1212_MAX_REG			0x0C
-+
-+/* JSA1212 reg defaults */
-+#define JSA1212_CONF_REG_DEF		0x58
-+#define JSA1212_INT_REG_DEF		0x02
-+#define JSA1212_PXS_LT_REG_DEF		0x00
-+#define JSA1212_PXS_HT_REG_DEF		0xFF
-+#define JSA1212_ALS_TH1_REG_DEF		0x00
-+#define JSA1212_ALS_TH2_REG_DEF		0xF0
-+#define JSA1212_ALS_TH3_REG_DEF		0xFF
-+#define JSA1212_ALS_RNG_REG_DEF		0x00
-+
-+/* JSA1212 reg masks */
-+#define JSA1212_CONF_MASK		0xFF
-+#define JSA1212_INT_MASK		0xFF
-+#define JSA1212_PXS_LT_MASK		0xFF
-+#define JSA1212_PXS_HT_MASK		0xFF
-+#define JSA1212_ALS_TH1_MASK		0xFF
-+#define JSA1212_ALS_TH2_LT_MASK		0x0F
-+#define JSA1212_ALS_TH2_HT_MASK		0xF0
-+#define JSA1212_ALS_TH3_MASK		0xFF
-+#define JSA1212_PXS_DATA_MASK		0xFF
-+#define JSA1212_ALS_DATA_MASK		0xFFF
-+#define JSA1212_ALS_DT1_MASK		0xFF
-+#define JSA1212_ALS_DT2_MASK		0x0F
-+#define JSA1212_ALS_RNG_MASK		0x07
-+#define JSA1212_REG_MASK		0xFF
-+
-+/* JSA1212 CONF REG bits */
-+#define JSA1212_CONF_PXS_MASK		0x80
-+#define JSA1212_CONF_PXS_ENABLE		0x80
-+#define JSA1212_CONF_PXS_DISABLE	0x00
-+#define JSA1212_CONF_ALS_MASK		0x04
-+#define JSA1212_CONF_ALS_ENABLE		0x04
-+#define JSA1212_CONF_ALS_DISABLE	0x00
-+
-+/* JSA1212 INT REG bits */
-+#define JSA1212_INT_CTRL_MASK		0x01
-+#define JSA1212_INT_CTRL_EITHER		0x00
-+#define JSA1212_INT_CTRL_BOTH		0x01
-+#define JSA1212_INT_ALS_PRST_MASK	0x06
-+#define JSA1212_INT_ALS_PRST_1CONV	0x00
-+#define JSA1212_INT_ALS_PRST_4CONV	0x02
-+#define JSA1212_INT_ALS_PRST_8CONV	0x04
-+#define JSA1212_INT_ALS_PRST_16CONV	0x06
-+#define JSA1212_INT_ALS_FLAG_MASK	0x08
-+#define JSA1212_INT_ALS_FLAG_CLR	0x00
-+#define JSA1212_INT_PXS_PRST_MASK	0x60
-+#define JSA1212_INT_PXS_PRST_1CONV	0x00
-+#define JSA1212_INT_PXS_PRST_4CONV	0x20
-+#define JSA1212_INT_PXS_PRST_8CONV	0x40
-+#define JSA1212_INT_PXS_PRST_16CONV	0x60
-+#define JSA1212_INT_PXS_FLAG_MASK	0x80
-+#define JSA1212_INT_PXS_FLAG_CLR	0x00
-+
-+/* JSA1212 ALS RNG REG bits */
-+#define JSA1212_ALS_RNG_0_2048		0x00
-+#define JSA1212_ALS_RNG_0_1024		0x01
-+#define JSA1212_ALS_RNG_0_512		0x02
-+#define JSA1212_ALS_RNG_0_256		0x03
-+#define JSA1212_ALS_RNG_0_128		0x04
-+
-+/* JSA1212 INT threshold range */
-+#define JSA1212_ALS_TH_MIN	0x0000
-+#define JSA1212_ALS_TH_MAX	0x0FFF
-+#define JSA1212_PXS_TH_MIN	0x00
-+#define JSA1212_PXS_TH_MAX	0xFF
-+
-+#define JSA1212_ALS_DELAY_MS	0xC8
-+#define JSA1212_PXS_DELAY_MS	0x64
-+
-+#define JSA1212_DRIVER_NAME	"jsa1212"
-+#define JSA1212_REGMAP_NAME	"jsa1212_regmap"
-+
-+enum jsa1212_op_mode {
-+	JSA1212_OPMODE_ALS_EN,
-+	JSA1212_OPMODE_PXS_EN,
-+};
-+
-+struct jsa1212_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	u8 als_rng_idx;
-+	bool als_en; /* ALS enable status */
-+	bool pxs_en; /* proximity enable status */
-+	struct regmap *regmap;
-+};
-+
-+/* ALS range idx to val mapping */
-+static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
-+						128, 128, 128};
-+
-+/* Enables or disables ALS function based on status */
-+static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-+				JSA1212_CONF_ALS_MASK,
-+				status);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->als_en = status ? true : false;
-+
-+	return ret;
-+}
-+
-+/* Enables or disables PXS function based on status */
-+static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-+				JSA1212_CONF_PXS_MASK,
-+				status);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->pxs_en = status ? true : false;
-+
-+	return ret;
-+}
-+
-+static int jsa1212_read_als_data(struct jsa1212_data *data,
-+				unsigned int *val)
-+{
-+	int ret;
-+	u8 als_data[2];
-+
-+	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Delay for data output */
-+	msleep(JSA1212_ALS_DELAY_MS);
-+
-+	/* Read 12 bit data */
-+	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, als_data, 2);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "als data read err\n");
-+		return ret;
-+	}
-+
-+	*val = als_data[1] << 8 | als_data[0];
-+
-+	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int jsa1212_read_pxs_data(struct jsa1212_data *data,
-+				unsigned int *val)
-+{
-+	int ret;
-+	unsigned int pxs_data;
-+
-+	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Delay for data output */
-+	msleep(JSA1212_PXS_DELAY_MS);
-+
-+	/* Read out all data */
-+	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "pxs data read err\n");
-+		return ret;
-+	}
-+
-+	*val = pxs_data & JSA1212_PXS_DATA_MASK;
-+
-+	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int jsa1212_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	int ret;
-+	struct jsa1212_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&data->lock);
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			ret = jsa1212_read_als_data(data, val);
-+			break;
-+		case IIO_PROXIMITY:
-+			ret = jsa1212_read_pxs_data(data, val);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		ret = ret < 0 ? ret : IIO_VAL_INT;
-+		mutex_unlock(&data->lock);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			*val = jsa1212_als_range_val[data->als_rng_idx];
-+			*val2 = BIT(12); /* Max 12 bit value */
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_chan_spec jsa1212_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+	{
-+		.type = IIO_PROXIMITY,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}
-+};
-+
-+static const struct iio_info jsa1212_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= &jsa1212_read_raw,
-+};
-+
-+static int jsa1212_chip_init(struct jsa1212_data *data)
-+{
-+	int ret;
-+
-+	ret = regmap_write(data->regmap, JSA1212_CONF_REG,
-+				JSA1212_CONF_REG_DEF);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(data->regmap, JSA1212_INT_REG,
-+				JSA1212_INT_REG_DEF);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
-+
-+	return 0;
-+}
-+
-+static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case JSA1212_PXS_DATA_REG:
-+	case JSA1212_ALS_DT1_REG:
-+	case JSA1212_ALS_DT2_REG:
-+	case JSA1212_INT_REG:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static struct regmap_config jsa1212_regmap_config = {
-+	.name =  JSA1212_REGMAP_NAME,
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = JSA1212_MAX_REG,
-+	.cache_type = REGCACHE_RBTREE,
-+	.volatile_reg = jsa1212_is_volatile_reg,
-+};
-+
-+static int jsa1212_probe(struct i2c_client *client,
-+			     const struct i2c_device_id *id)
-+{
-+	struct jsa1212_data *jsa1212_data;
-+	struct iio_dev *indio_dev;
-+	struct regmap *regmap;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
-+		return -ENODEV;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&client->dev, "Regmap initialization failed.\n");
-+		return PTR_ERR(regmap);
-+	}
-+
-+	jsa1212_data = iio_priv(indio_dev);
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	jsa1212_data->client = client;
-+	jsa1212_data->regmap = regmap;
-+
-+	mutex_init(&jsa1212_data->lock);
-+
-+	ret = jsa1212_chip_init(jsa1212_data);
-+	if (ret < 0)
-+		return ret;
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->channels = jsa1212_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
-+	indio_dev->name = JSA1212_DRIVER_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	indio_dev->info = &jsa1212_info;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "%s: register device failed\n", __func__);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+ /* power off the device */
-+static int jsa1212_power_off(struct jsa1212_data *data)
-+{
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+
-+	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-+				JSA1212_CONF_ALS_MASK |
-+				JSA1212_CONF_PXS_MASK,
-+				JSA1212_CONF_ALS_DISABLE |
-+				JSA1212_CONF_PXS_DISABLE);
-+
-+	if (ret < 0)
-+		dev_err(&data->client->dev, "power off cmd failed\n");
-+
-+	mutex_unlock(&data->lock);
-+
-+	return ret;
-+}
-+
-+
-+static int jsa1212_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct jsa1212_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = jsa1212_power_off(data);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return ret;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int jsa1212_suspend(struct device *dev)
-+{
-+	struct jsa1212_data *data;
-+
-+	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-+
-+	return jsa1212_power_off(data);
-+}
-+
-+static int jsa1212_resume(struct device *dev)
-+{
-+	int ret = 0;
-+	struct jsa1212_data *data;
-+
-+	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-+
-+	mutex_lock(&data->lock);
-+
-+	if (data->als_en) {
-+		ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
-+		if (ret < 0) {
-+			dev_err(dev, "als resume failed\n");
-+			mutex_unlock(&data->lock);
-+			return ret;
-+		}
-+	}
-+
-+	if (data->pxs_en) {
-+		ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
-+		if (ret < 0)
-+			dev_err(dev, "pxs resume failed\n");
-+	}
-+
-+	mutex_unlock(&data->lock);
-+
-+	return ret;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
-+
-+#define JSA1212_PM_OPS (&jsa1212_pm_ops)
-+#else
-+#define JSA1212_PM_OPS NULL
-+#endif
-+
-+static const struct acpi_device_id jsa1212_acpi_match[] = {
-+	{"JSA1212", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
-+
-+static const struct i2c_device_id jsa1212_id[] = {
-+	{ JSA1212_DRIVER_NAME, 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, jsa1212_id);
-+
-+static struct i2c_driver jsa1212_driver = {
-+	.driver = {
-+		.name	= JSA1212_DRIVER_NAME,
-+		.pm	= JSA1212_PM_OPS,
-+		.owner	= THIS_MODULE,
-+		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
-+	},
-+	.probe		= jsa1212_probe,
-+	.remove		= jsa1212_remove,
-+	.id_table	= jsa1212_id,
-+};
-+module_i2c_driver(jsa1212_driver);
-+
-+MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
-+MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.9.5
+Søren Andersen schrieb:
+> Signed-off-by: Soeren Andersen <san at rosetechnology.dk>
+Hi,
+the first patch of this series could have been merged in this one, as it depends on this patch. Therefore, the cleanup in this patch (which is not mentioned in the subject and giving git diff and the reviewer a harder time) would have better been in the first patch. Other comment in line.
+> ---
+>  drivers/iio/adc/mcp320x.c | 352
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------
+>  1 file changed, 267 insertions(+), 85 deletions(-)
+>
+> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> index 28a086e..2871777 100644
+> --- a/drivers/iio/adc/mcp320x.c
+> +++ b/drivers/iio/adc/mcp320x.c
+> @@ -1,9 +1,22 @@
+>  /*
+>   * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
+> + * Copyright (C) 2014 Allan Bendorff Jensen <abj@rosetechnology.dk>
+>   *
+> - * Driver for Microchip Technology's MCP3204 and MCP3208 ADC chips.
+> + * Driver for following ADC chips from Microchip Technology's:
+> + * 10 Bit converter
+> + * MCP3001
+> + * MCP3002
+> + * MCP3004
+> + * MCP3008
+> + * ------------
+> + * 12 bit converter
+> + * MCP3201
+> + * MCP3202
+> + * MCP3204
+> + * MCP3208
+> + * ------------
+>   * Datasheet can be found here:
+> - * http://ww1.microchip.com/downloads/en/devicedoc/21298c.pdf
+> + * http://www.microchip.com/
+I would prefer to have URLs provided for all datasheets here, instead of having to search through that website.
+>   *
+>   * This program is free software; you can redistribute it and/or modify
+>   * it under the terms of the GNU General Public License version 2 as
+> @@ -16,10 +29,17 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/regulator/consumer.h>
+>  
+> -#define MCP_SINGLE_ENDED	(1 << 3)
+> -#define MCP_START_BIT		(1 << 4)
+> +static int mcp320x_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *channel, int *val,
+> +			int *val2, long mask);
+Did I miss something, or is this function declaration unnecessary?
+>  
+>  enum {
+> +	mcp3001,
+> +	mcp3002,
+> +	mcp3004,
+> +	mcp3008,
+> +	mcp3201,
+> +	mcp3202,
+>  	mcp3204,
+>  	mcp3208,
+>  };
+> @@ -36,86 +56,37 @@ struct mcp320x {
+>  	struct mutex lock;
+>  };
+>  
+> -static int mcp320x_adc_conversion(struct mcp320x *adc, u8 msg)
+> -{
+> -	int ret;
+> -
+> -	adc->tx_buf = msg;
+> -	ret = spi_sync(adc->spi, &adc->msg);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	return ((adc->rx_buf[0] & 0x3f) << 6)  |
+> -		(adc->rx_buf[1] >> 2);
+> -}
+> -
+> -static int mcp320x_read_raw(struct iio_dev *indio_dev,
+> -			    struct iio_chan_spec const *channel, int *val,
+> -			    int *val2, long mask)
+> -{
+> -	struct mcp320x *adc = iio_priv(indio_dev);
+> -	int ret = -EINVAL;
+> -
+> -	mutex_lock(&adc->lock);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		if (channel->differential)
+> -			ret = mcp320x_adc_conversion(adc,
+> -				MCP_START_BIT | channel->address);
+> -		else
+> -			ret = mcp320x_adc_conversion(adc,
+> -				MCP_START_BIT | MCP_SINGLE_ENDED |
+> -				channel->address);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		*val = ret;
+> -		ret = IIO_VAL_INT;
+> -		break;
+> -
+> -	case IIO_CHAN_INFO_SCALE:
+> -		/* Digital output code = (4096 * Vin) / Vref */
+> -		ret = regulator_get_voltage(adc->reg);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		*val = ret / 1000;
+> -		*val2 = 12;
+> -		ret = IIO_VAL_FRACTIONAL_LOG2;
+> -		break;
+> -
+> -	default:
+> -		break;
+> +#define MCP320X_VOLTAGE_CHANNEL(num)					\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (num),					\
+> +		.address = (num),					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+>  	}
+>  
+> -out:
+> -	mutex_unlock(&adc->lock);
+> -
+> -	return ret;
+> -}
+> -
+> -#define MCP320X_VOLTAGE_CHANNEL(num)				\
+> -	{							\
+> -		.type = IIO_VOLTAGE,				\
+> -		.indexed = 1,					\
+> -		.channel = (num),				\
+> -		.address = (num),				\
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
+> +#define MCP320X_VOLTAGE_CHANNEL_DIFF(num)				\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (num * 2),					\
+> +		.channel2 = (num * 2 + 1),				\
+> +		.address = (num * 2),					\
+> +		.differential = 1,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+>  	}
+>  
+> -#define MCP320X_VOLTAGE_CHANNEL_DIFF(num)			\
+> -	{							\
+> -		.type = IIO_VOLTAGE,				\
+> -		.indexed = 1,					\
+> -		.channel = (num * 2),				\
+> -		.channel2 = (num * 2 + 1),			\
+> -		.address = (num * 2),				\
+> -		.differential = 1,				\
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
+> -	}
+These cleanups should have been separated.
+> +static const struct iio_chan_spec mcp3201_channels[] = {
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
+> +};
+> +
+> +static const struct iio_chan_spec mcp3202_channels[] = {
+> +	MCP320X_VOLTAGE_CHANNEL(0),
+> +	MCP320X_VOLTAGE_CHANNEL(1),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
+> +};
+>  
+>  static const struct iio_chan_spec mcp3204_channels[] = {
+>  	MCP320X_VOLTAGE_CHANNEL(0),
+> @@ -146,12 +117,37 @@ static const struct iio_info mcp320x_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> -struct mcp3208_chip_info {
+> +struct mcp320x_chip_info {
+>  	const struct iio_chan_spec *channels;
+>  	unsigned int num_channels;
+> +	unsigned int resolution;
+resolution is still unused, but would make a lot of sense to be used in mcp320x_read_raw.
+>  };
+>  
+> -static const struct mcp3208_chip_info mcp3208_chip_infos[] = {
+> +static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+> +	[mcp3001] = {
+> +		.channels = mcp3201_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3201_channels)
+> +	},
+> +	[mcp3002] = {
+> +		.channels = mcp3202_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3202_channels)
+> +	},
+> +	[mcp3004] = {
+> +		.channels = mcp3204_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3204_channels)
+> +	},
+> +	[mcp3008] = {
+> +		.channels = mcp3208_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3208_channels)
+> +	},
+> +	[mcp3201] = {
+> +		.channels = mcp3201_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3201_channels)
+> +	},
+> +	[mcp3202] = {
+> +		.channels = mcp3202_channels,
+> +		.num_channels = ARRAY_SIZE(mcp3202_channels)
+> +	},
+>  	[mcp3204] = {
+>  		.channels = mcp3204_channels,
+>  		.num_channels = ARRAY_SIZE(mcp3204_channels)
+> @@ -162,11 +158,159 @@ static const struct mcp3208_chip_info
+> mcp3208_chip_infos[] = {
+>  	},
+>  };
+>  
+> +static int channel_to_tx_data(const struct mcp320x_chip_info
+> *chip_info,
+> +			const unsigned int channel, bool differential)
+The function name should be prefixed with mcp320x_, also parameters should be indented with opening parenthesis.
+> +{
+> +	unsigned int tx_data = 0;
+> +
+> +	if (chip_info->num_channels - 1 == 2) {
+I think comparing with ARRAY_SIZE(mcp3202_channels) would be way easier to read/understand (similar below).
+> +		tx_data = 0x12 | (differential ? 0 << 3 : 1 << 3) |
+> +				((channel & 0x01) << 2);
+> +	} else if (chip_info->num_channels - 2 == 4) {
+> +		tx_data = 0x20 | (differential ? 0 << 4 : 1 << 4) |
+> +				((channel & 0x03) << 1);
+> +	} else if (chip_info->num_channels - 4 == 8) {
+> +		tx_data = 0x20 | (differential ? 0 << 4 : 1 << 4) |
+> +				((channel & 0x07) << 1);
+> +	}
+If you shift tx_data one bit to the left on devices with 4 or 8 channels here, you will get the same alignment of rx_buf as for the 2 channel devices. This way you would just have to distinguish in mcp320x_read_raw between 1 channel 10 bit, more channels 10 bit, 1 channel 12 bit and more channels 12 bit.
+> +
+> +	return tx_data;
+> +}
+> +
+> +static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+> +			bool differential, int device_index)
+Better indentation of the arguments^^
+> +{
+> +	int ret;
+> +	u16 adc_value;
+You can easily drop adc_value, see below.
+> +	__be16 buf;
+> +
+> +	const struct mcp320x_chip_info *chip_info = NULL;
+> +
+> +	if (device_index == -1)
+> +		return -1;
+Better return a valid error code, like -EINVAL?
+> +
+> +	chip_info = &mcp320x_chip_infos[device_index];
+> +	if (chip_info == NULL)
+> +		return -1;
+Also better error code?
+> +
+> +	adc->rx_buf[0] = 0;
+> +	adc->rx_buf[1] = 0;
+> +	adc->tx_buf = channel_to_tx_data(chip_info, channel, differential);
+> +
+> +	if (device_index != mcp3001 && device_index != mcp3201) {
+> +		ret = spi_sync(adc->spi, &adc->msg);
+> +		if (ret < 0)
+> +			return ret;
+> +	} else {
+> +		ret = spi_read(adc->spi, (u8 *)&buf, 2);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	switch (device_index) {
+> +	case mcp3001:
+> +		adc_value = (be16_to_cpu(buf) >> 3);
+According to the datasheet, the 2 MSBs are unspecified and should be masked out: & 0x3ff
+> +		break;
+> +	case mcp3002:
+When preparing the tx_buf like mentioned above, you could add mcp3004 and mcp3008 here, and drop the section below.
+> +		spi_sync(adc->spi, &adc->msg);
+I think this spi_sync is unnecessary.
+> +		adc_value = adc->rx_buf[0];
+> +		adc_value = ((adc_value << 2) |
+> +			((adc->rx_buf[1] & 0xC0) >> 6)) & 0x03ff;
+return (adc->rx_buf[0] << 2) | (adc->rx_buf[1] >> 6); should do the job.
+> +		break;
+> +	case mcp3004:
+> +	case mcp3008:
+> +		adc_value = adc->rx_buf[0] & 0x7f;
+> +		adc_value = ((adc_value << 3) |
+> +			((adc->rx_buf[1] & 0xe0) >> 5)) & 0x03ff;
+Same as above.
+> +		break;
+> +	case mcp3201:
+> +		adc_value = (be16_to_cpu(buf) >> 1);
+Same as above, mask with 0xfff.
+> +		break;
+> +	case mcp3202:
+> +		adc_value = adc->rx_buf[0];
+> +		adc_value = ((adc_value << 4) |
+> +			((adc->rx_buf[1] & 0xf0) >> 4)) & 0x0fff;
+Same as above, no masking necessary.
+> +		break;
+> +	case mcp3204:
+> +	case mcp3208:
+> +		adc_value = adc->rx_buf[0] & 0x7f;
+> +		adc_value = ((adc_value << 5) |
+> +			((adc->rx_buf[1] & 0xf8) >> 3)) & 0x0fff;
+Same here, as well.
+> +		break;
+> +	default:
+> +		adc_value = 0;
+> +		break;
+Just return an appropriate error code, like -EINVAL?
+> +	}
+> +
+> +	return adc_value;
+> +}
+> +
+> +static int mcp320x_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *channel, int *val,
+> +			int *val2, long mask)
+Should be better indented.
+> +{
+> +	struct mcp320x *adc = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +	int device_index = 0;
+> +
+> +	mutex_lock(&adc->lock);
+> +
+> +	device_index = spi_get_device_id(adc->spi)->driver_data;
+> +
+> +	if (device_index == -1)
+> +		goto out;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = mcp320x_adc_conversion(adc, channel->address,
+> +			channel->differential, device_index);
+Better indention here.
+> +
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		*val = ret;
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+This section contains quite verbose comments for very basic things - are they necessary?
+> +		/*
+> +		 * Digital output code = (resolution * Vin) / Vref
+> +		 * Get regulator output voltage in uV.
+> +		 */
+> +		ret = regulator_get_voltage(adc->reg);
+> +		if (ret < 0)
+> +			goto out;
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*val  = ret / 1000;
+> +		*val2 = -1;
+I don't see the need to set a value for *val2 here.
+> +		if (device_index == mcp3001 || device_index == mcp3002 ||
+> +			device_index == mcp3004 || device_index == mcp3008)
+> +			*val2 = 10;
+Actually, the resolution attribute from chip_info should be used here.
+> +		else if (device_index == mcp3201 || device_index == mcp3202 ||
+> +			device_index == mcp3204 || device_index == mcp3208)
+> +			*val2 = 12;
+> +		else
+> +			goto out;
+> +
+> +		ret = IIO_VAL_FRACTIONAL_LOG2;
+> +		break;
+This break is not really needed, as long as the default section doesn't contain operational code.
+> +
+> +	default:
+> +		break;
+> +	}
+> +
+> +out:
+> +	mutex_unlock(&adc->lock);
+> +
+> +	return ret;
+> +}
+> +
+>  static int mcp320x_probe(struct spi_device *spi)
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct mcp320x *adc;
+> -	const struct mcp3208_chip_info *chip_info;
+> +	const struct mcp320x_chip_info *chip_info;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> @@ -181,7 +325,7 @@ static int mcp320x_probe(struct spi_device *spi)
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &mcp320x_info;
+>  
+> -	chip_info = &mcp3208_chip_infos[spi_get_device_id(spi)->driver_data];
+> +	chip_info = &mcp320x_chip_infos[spi_get_device_id(spi)->driver_data];
+>  	indio_dev->channels = chip_info->channels;
+>  	indio_dev->num_channels = chip_info->num_channels;
+>  
+> @@ -226,7 +370,45 @@ static int mcp320x_remove(struct spi_device *spi)
+>  	return 0;
+>  }
+>  
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id mcp320x_dt_ids[] = {
+> +	{
+> +		.compatible = "mcp3001",
+> +		.data = &mcp320x_chip_infos[mcp3001],
+> +	}, {
+> +		.compatible = "mcp3002",
+> +		.data = &mcp320x_chip_infos[mcp3002],
+> +	}, {
+> +		.compatible = "mcp3004",
+> +		.data = &mcp320x_chip_infos[mcp3004],
+> +	}, {
+> +		.compatible = "mcp3008",
+> +		.data = &mcp320x_chip_infos[mcp3004],
+I think you meant mcp3008.
+> +	}, {
+> +		.compatible = "mcp3201",
+> +		.data = &mcp320x_chip_infos[mcp3201],
+> +	}, {
+> +		.compatible = "mcp3202",
+> +		.data = &mcp320x_chip_infos[mcp3202],
+> +	}, {
+> +		.compatible = "mcp3204",
+> +		.data = &mcp320x_chip_infos[mcp3204],
+> +	}, {
+> +		.compatible = "mcp3008",
+This should be mcp3208.
+> +		.data = &mcp320x_chip_infos[mcp3208],
+> +	}, {
+> +	}
+> +};
+> +MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
+> +#endif
+> +
+>  static const struct spi_device_id mcp320x_id[] = {
+> +	{ "mcp3001", mcp3001 },
+> +	{ "mcp3002", mcp3002 },
+> +	{ "mcp3004", mcp3004 },
+> +	{ "mcp3008", mcp3008 },
+> +	{ "mcp3201", mcp3201 },
+> +	{ "mcp3202", mcp3202 },
+>  	{ "mcp3204", mcp3204 },
+>  	{ "mcp3208", mcp3208 },
+>  	{ }
+> @@ -245,5 +427,5 @@ static struct spi_driver mcp320x_driver = {
+>  module_spi_driver(mcp320x_driver);
+>  
+>  MODULE_AUTHOR("Oskar Andero <oskar.andero@gmail.com>");
+> -MODULE_DESCRIPTION("Microchip Technology MCP3204/08");
+> +MODULE_DESCRIPTION("Microchip Technology MCP3x01/02/04/08");
+>  MODULE_LICENSE("GPL v2");
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
