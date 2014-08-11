@@ -1,42 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:8967 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751044AbaHHRuO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 8 Aug 2014 13:50:14 -0400
-From: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v3 0/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
-Date: Fri,  8 Aug 2014 10:46:48 -0700
-Message-Id: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Received: from mail-vc0-f180.google.com ([209.85.220.180]:58481 "EHLO
+	mail-vc0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751379AbaHKMQz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Aug 2014 08:16:55 -0400
+Received: by mail-vc0-f180.google.com with SMTP id ij19so11439159vcb.11
+        for <linux-iio@vger.kernel.org>; Mon, 11 Aug 2014 05:16:54 -0700 (PDT)
+MIME-Version: 1.0
+Date: Mon, 11 Aug 2014 15:16:54 +0300
+Message-ID: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+Subject: Resource Temporarily Unavailable error when trying to read from the
+ accelerator on a ThinkPad twist
+From: Elad Alfassa <elad@fedoraproject.org>
+To: linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Please let me know your review comments.
+Hi.
 
-PATCH v3 changes:
+I have a Thinkpad Twist, this is a Windows 8 certified machine from
+around 2012, and it has an accelerometer.
+Running kernel 3.16.0-1.fc22.x86_64, I'm getting "Resource Temporarily
+Unavailable" when trying to read from the accelerometer.
 
-1. Replaced status flags with bool values.
-2. Added regmap suppport to avoid adding custom i2c register update routine.
-3. Also addressed some minor comments from Jonathan Cameron
+Tiny bit more details:
+https://github.com/hadess/iio-sensor-proxy/issues/1
+https://sysdev.microsoft.com/en-us/hardware/LPL/ProductDetails.aspx?ProductID=98463&OrganizationID=4733
 
-PATCH v2 changes:
+Is this a known issue? Can I help debug this in any way?
 
-1. Combined ALS/PXS enable/disable functions into a single routine.
-2. Removed extra debug messages.
-3. Also addressed review comments from Peter Meerwald
 
-Kuppuswamy Sathyanarayanan (1):
-  iio: jsa1212: Add JSA1212 proximity/ALS sensor
-
- drivers/iio/light/Kconfig   |   10 +
- drivers/iio/light/Makefile  |    1 +
- drivers/iio/light/jsa1212.c |  487 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 498 insertions(+)
- create mode 100644 drivers/iio/light/jsa1212.c
+Thanks.
 
 -- 
-1.7.9.5
-
+-Elad Alfassa.
