@@ -1,39 +1,85 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] MAINTAINERS: Add designated reviewers for IIO subsystem
-Date: Mon, 18 Aug 2014 10:29:49 +0200
-Message-Id: <1408350589-22372-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-we0-f174.google.com ([74.125.82.174]:46364 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753213AbaHLQmd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Aug 2014 12:42:33 -0400
+Received: by mail-we0-f174.google.com with SMTP id x48so10275279wes.33
+        for <linux-iio@vger.kernel.org>; Tue, 12 Aug 2014 09:42:32 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+ <CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Tue, 12 Aug 2014 11:42:12 -0500
+Message-ID: <CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
+Subject: Re: Resource Temporarily Unavailable error when trying to read from
+ the accelerator on a ThinkPad twist
+To: Elad Alfassa <elad@fedoraproject.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add those persons who generally tend to review new IIO patches to the list of
-designated reviewers to make sure that they are Cc'ed on new patches.
+Hello Elad Alfassa,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-Hartmut, Peter if you are OK with this please ack the patch, otherwise I can
-respin it to remove you.
----
- MAINTAINERS | 3 +++
- 1 file changed, 3 insertions(+)
+I'm not too sure exactly what has caused such a regression but I will
+try and help. There was very little added to the accelerometer driver
+in between those releases only, some slight power modifications and
+raw read support.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index aefa948..3f77be0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4580,6 +4580,9 @@ F:	drivers/media/rc/iguanair.c
- 
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
-+R:	Hartmut Knaack <knaack.h@gmx.de>
-+R:	Lars-Peter Clausen <lars@metafoo.de>
-+R:	Peter Meerwald <pmeerw@pmeerw.net>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	drivers/iio/
--- 
-1.8.0
+Have you tried using the sysfs interface for the IIO accelerometer.
+Should be located in /sys/bus/iio/devices/iio:devicex/
+In that directory, on the newest kernel, there should be a
+in_accel_x_raw file, can you read new data from this?
+
+Can you provide more detail about the error. Turn on dynamic debugging
+for hid-sensor-hub  and hid-sensor-accel-3d modules. Then try enabling
+the scan elements and the buffer with the sysfs interface and post the
+full dmesg output. Also print the HID report description found on
+debugfs usually somewhere like
+(/sys/kernel/debug/hid/xxxx:xxxx:/rdesc) Maybe with this extra
+information the problem will be more clear.
+
+For a possible fix you can try adding the devices USB HID ID's, for
+the sensor hub, to the hid-sensor-hub driver hid_device_id struct.
+This will allow adding a quirk for your device and should setup the
+power state and enable the sensor hub correctly.
+
+Good luck,
+Reyad Attiyat
+
+On Mon, Aug 11, 2014 at 8:51 AM, Elad Alfassa <elad@fedoraproject.org> wrote:
+> On Mon, Aug 11, 2014 at 3:16 PM, Elad Alfassa <elad@fedoraproject.org> wrote:
+>> Hi.
+>>
+>> I have a Thinkpad Twist, this is a Windows 8 certified machine from
+>> around 2012, and it has an accelerometer.
+>> Running kernel 3.16.0-1.fc22.x86_64, I'm getting "Resource Temporarily
+>> Unavailable" when trying to read from the accelerometer.
+>>
+>> Tiny bit more details:
+>> https://github.com/hadess/iio-sensor-proxy/issues/1
+>> https://sysdev.microsoft.com/en-us/hardware/LPL/ProductDetails.aspx?ProductID=98463&OrganizationID=4733
+>>
+>> Is this a known issue? Can I help debug this in any way?
+>>
+>>
+>> Thanks.
+>>
+>> --
+>> -Elad Alfassa.
+>
+> Hi.
+> Turns out this is a regression - it works well with kernel
+> 3.15.8-200.fc20.x86_64
+> I tried reporting this in the kernel bugzilla, but I couldn't find the
+> right component for the bug, so I filed it in RHBZ for now.
+> https://bugzilla.redhat.com/show_bug.cgi?id=1128760
+>
+>
+> --
+> -Elad Alfassa.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
