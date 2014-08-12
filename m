@@ -1,493 +1,1302 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <53E9CF93.9040906@gmx.de>
-Date: Tue, 12 Aug 2014 10:25:55 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <53EA65B4.5010809@linux.intel.com>
+Date: Tue, 12 Aug 2014 12:06:28 -0700
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-To: =?UTF-8?B?U8O4cmVuIEFuZGVyc2Vu?= <san@rosetechnology.dk>,
- jic23@kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [patch v2 2/3] iio: adc: mcp320x. Add support for more ADCs
-References: <1407488350.6599.6.camel@sanws1.rosetechnology.dk> <53E94B00.5030304@gmx.de>
-In-Reply-To: <53E94B00.5030304@gmx.de>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v3 1/2] iio:gyro:bmg160 Gyro Sensor driver
+References: <1407275854-29083-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1407275854-29083-2-git-send-email-srinivas.pandruvada@linux.intel.com> <53E35750.8000603@kernel.org>
+In-Reply-To: <53E35750.8000603@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hartmut Knaack schrieb:
-> Søren Andersen schrieb:
->> Signed-off-by: Soeren Andersen <san at rosetechnology.dk>
-> Hi,
-> the first patch of this series could have been merged in this one, as it depends on this patch. Therefore, the cleanup in this patch (which is not mentioned in the subject and giving git diff and the reviewer a harder time) would have better been in the first patch. Other comment in line.
->> ---
->>  drivers/iio/adc/mcp320x.c | 352
->> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------
->>  1 file changed, 267 insertions(+), 85 deletions(-)
+On 08/07/2014 03:39 AM, Jonathan Cameron wrote:
+> On 05/08/14 22:57, Srinivas Pandruvada wrote:
+>> This change implements support for BMG160 Gyro sensor. Although chip
+>> has several advanced features, this change implements minimum set
+>> required for using gyro sensor.
 >>
->> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->> index 28a086e..2871777 100644
->> --- a/drivers/iio/adc/mcp320x.c
->> +++ b/drivers/iio/adc/mcp320x.c
->> @@ -1,9 +1,22 @@
->>  /*
->>   * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
->> + * Copyright (C) 2014 Allan Bendorff Jensen <abj@rosetechnology.dk>
->>   *
->> - * Driver for Microchip Technology's MCP3204 and MCP3208 ADC chips.
->> + * Driver for following ADC chips from Microchip Technology's:
->> + * 10 Bit converter
->> + * MCP3001
->> + * MCP3002
->> + * MCP3004
->> + * MCP3008
->> + * ------------
->> + * 12 bit converter
->> + * MCP3201
->> + * MCP3202
->> + * MCP3204
->> + * MCP3208
->> + * ------------
->>   * Datasheet can be found here:
->> - * http://ww1.microchip.com/downloads/en/devicedoc/21298c.pdf
->> + * http://www.microchip.com/
-> I would prefer to have URLs provided for all datasheets here, instead of having to search through that website.
->>   *
->>   * This program is free software; you can redistribute it and/or modify
->>   * it under the terms of the GNU General Public License version 2 as
->> @@ -16,10 +29,17 @@
->>  #include <linux/iio/iio.h>
->>  #include <linux/regulator/consumer.h>
->>  
->> -#define MCP_SINGLE_ENDED	(1 << 3)
->> -#define MCP_START_BIT		(1 << 4)
->> +static int mcp320x_read_raw(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *channel, int *val,
->> +			int *val2, long mask);
-> Did I miss something, or is this function declaration unnecessary?
->>  
->>  enum {
->> +	mcp3001,
->> +	mcp3002,
->> +	mcp3004,
->> +	mcp3008,
->> +	mcp3201,
->> +	mcp3202,
->>  	mcp3204,
->>  	mcp3208,
->>  };
->> @@ -36,86 +56,37 @@ struct mcp320x {
->>  	struct mutex lock;
->>  };
->>  
->> -static int mcp320x_adc_conversion(struct mcp320x *adc, u8 msg)
->> -{
->> -	int ret;
->> -
->> -	adc->tx_buf =sg;
->> -	ret =pi_sync(adc->spi, &adc->msg);
->> -	if (ret < 0)
->> -		return ret;
->> -
->> -	return ((adc->rx_buf[0] & 0x3f) << 6)  |
->> -		(adc->rx_buf[1] >> 2);
->> -}
->> -
->> -static int mcp320x_read_raw(struct iio_dev *indio_dev,
->> -			    struct iio_chan_spec const *channel, int *val,
->> -			    int *val2, long mask)
->> -{
->> -	struct mcp320x *adc =io_priv(indio_dev);
->> -	int ret =EINVAL;
->> -
->> -	mutex_lock(&adc->lock);
->> -
->> -	switch (mask) {
->> -	case IIO_CHAN_INFO_RAW:
->> -		if (channel->differential)
->> -			ret =cp320x_adc_conversion(adc,
->> -				MCP_START_BIT | channel->address);
->> -		else
->> -			ret =cp320x_adc_conversion(adc,
->> -				MCP_START_BIT | MCP_SINGLE_ENDED |
->> -				channel->address);
->> -		if (ret < 0)
->> -			goto out;
->> -
->> -		*val =et;
->> -		ret =IO_VAL_INT;
->> -		break;
->> -
->> -	case IIO_CHAN_INFO_SCALE:
->> -		/* Digital output code =4096 * Vin) / Vref */
->> -		ret =egulator_get_voltage(adc->reg);
->> -		if (ret < 0)
->> -			goto out;
->> -
->> -		*val =et / 1000;
->> -		*val2 =2;
->> -		ret =IO_VAL_FRACTIONAL_LOG2;
->> -		break;
->> -
->> -	default:
->> -		break;
->> +#define MCP320X_VOLTAGE_CHANNEL(num)					\
->> +	{								\
->> +		.type =IO_VOLTAGE,					\
->> +		.indexed =,						\
->> +		.channel =num),					\
->> +		.address =num),					\
->> +		.info_mask_separate =IT(IIO_CHAN_INFO_RAW),		\
->> +		.info_mask_shared_by_type =IT(IIO_CHAN_INFO_SCALE)	\
->>  	}
->>  
->> -out:
->> -	mutex_unlock(&adc->lock);
->> -
->> -	return ret;
->> -}
->> -
->> -#define MCP320X_VOLTAGE_CHANNEL(num)				\
->> -	{							\
->> -		.type =IO_VOLTAGE,				\
->> -		.indexed =,					\
->> -		.channel =num),				\
->> -		.address =num),				\
->> -		.info_mask_separate =IT(IIO_CHAN_INFO_RAW),	\
->> -		.info_mask_shared_by_type =IT(IIO_CHAN_INFO_SCALE) \
->> +#define MCP320X_VOLTAGE_CHANNEL_DIFF(num)				\
->> +	{								\
->> +		.type =IO_VOLTAGE,					\
->> +		.indexed =,						\
->> +		.channel =num * 2),					\
->> +		.channel2 =num * 2 + 1),				\
->> +		.address =num * 2),					\
->> +		.differential =,					\
->> +		.info_mask_separate =IT(IIO_CHAN_INFO_RAW),		\
->> +		.info_mask_shared_by_type =IT(IIO_CHAN_INFO_SCALE)	\
->>  	}
->>  
->> -#define MCP320X_VOLTAGE_CHANNEL_DIFF(num)			\
->> -	{							\
->> -		.type =IO_VOLTAGE,				\
->> -		.indexed =,					\
->> -		.channel =num * 2),				\
->> -		.channel2 =num * 2 + 1),			\
->> -		.address =num * 2),				\
->> -		.differential =,				\
->> -		.info_mask_separate =IT(IIO_CHAN_INFO_RAW),	\
->> -		.info_mask_shared_by_type =IT(IIO_CHAN_INFO_SCALE) \
->> -	}
-> These cleanups should have been separated.
->> +static const struct iio_chan_spec mcp3201_channels[] =
->> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
+>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> One more query.  In the write_raw function you always enable then suspend the
+> device.  The enable is safe, but if you have a write to the attributes
+> whilst operating in triggered / buffered mode will it not disable the
+> device?  It is perfectly permissible to ignore such a write (return -EBUSY)
+> but I don't think you are doing so.
+>
+
+I tested this. When trigger/events are active then first call to 
+bmg160_set_power_state will increment runtime pm refcount and also 
+execute runtime resume to change the mode to NORMAL.
+But when write_raw is called while the trigger/events are active the 
+runtime PM refcount is incremented since it was already more than 0, so 
+the resume is not actually called. When at the end of write_raw 
+bmg160_set_power_state to turn off, the ref count is simply decremented, 
+but since it is not zero, runtime suspend will not be called.
+
+Thanks,
+Srinivas
+
+> Otherwise, looks good to me.  Nice explanatory comments as well!
+>> ---
+>>   drivers/iio/gyro/Kconfig  |   11 +
+>>   drivers/iio/gyro/Makefile |    1 +
+>>   drivers/iio/gyro/bmg160.c | 1211 +++++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 1223 insertions(+)
+>>   create mode 100644 drivers/iio/gyro/bmg160.c
+>>
+>> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+>> index ac2d69e..d630ae9 100644
+>> --- a/drivers/iio/gyro/Kconfig
+>> +++ b/drivers/iio/gyro/Kconfig
+>> @@ -50,6 +50,17 @@ config ADXRS450
+>>   	  This driver can also be built as a module.  If so, the module
+>>   	  will be called adxrs450.
+>>
+>> +config BMG160
+>> +	tristate "BOSCH BMG160 Gyro Sensor"
+>> +	depends on I2C
+>> +	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
+>> +	help
+>> +	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
+>> +	  driver.
+>> +
+>> +	  This driver can also be built as a module.  If so, the module
+>> +	  will be called bmg160.
+>> +
+>>   config HID_SENSOR_GYRO_3D
+>>   	depends on HID_SENSOR_HUB
+>>   	select IIO_BUFFER
+>> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+>> index 2f2752a..36a3877 100644
+>> --- a/drivers/iio/gyro/Makefile
+>> +++ b/drivers/iio/gyro/Makefile
+>> @@ -8,6 +8,7 @@ obj-$(CONFIG_ADIS16130) += adis16130.o
+>>   obj-$(CONFIG_ADIS16136) += adis16136.o
+>>   obj-$(CONFIG_ADIS16260) += adis16260.o
+>>   obj-$(CONFIG_ADXRS450) += adxrs450.o
+>> +obj-$(CONFIG_BMG160) += bmg160.o
+>>
+>>   obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
+>>
+>> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+>> new file mode 100644
+>> index 0000000..80f92a6
+>> --- /dev/null
+>> +++ b/drivers/iio/gyro/bmg160.c
+>> @@ -0,0 +1,1211 @@
+>> +/*
+>> + * BMG160 Gyro Sensor driver
+>> + * Copyright (c) 2014, Intel Corporation.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify it
+>> + * under the terms and conditions of the GNU General Public License,
+>> + * version 2, as published by the Free Software Foundation.
+>> + *
+>> + * This program is distributed in the hope it will be useful, but WITHOUT
+>> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+>> + * more details.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/acpi.h>
+>> +#include <linux/gpio/consumer.h>
+>> +#include <linux/pm.h>
+>> +#include <linux/pm_runtime.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/events.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +
+>> +#define BMG160_DRV_NAME		"bmg160"
+>> +#define BMG160_IRQ_NAME		"bmg160_event"
+>> +#define BMG160_GPIO_NAME		"gpio_int"
+>> +
+>> +#define BMG160_REG_CHIP_ID		0x00
+>> +#define BMG160_CHIP_ID_VAL		0x0F
+>> +
+>> +#define BMG160_REG_PMU_LPW		0x11
+>> +#define BMG160_MODE_NORMAL		0x00
+>> +#define BMG160_MODE_DEEP_SUSPEND	0x20
+>> +#define BMG160_MODE_SUSPEND		0x80
+>> +
+>> +#define BMG160_REG_RANGE		0x0F
+>> +
+>> +#define BMG160_RANGE_2000DPS		0
+>> +#define BMG160_RANGE_1000DPS		1
+>> +#define BMG160_RANGE_500DPS		2
+>> +#define BMG160_RANGE_250DPS		3
+>> +#define BMG160_RANGE_125DPS		4
+>> +
+>> +#define BMG160_REG_PMU_BW		0x10
+>> +#define BMG160_NO_FILTER		0
+>> +#define BMG160_DEF_BW			100
+>> +
+>> +#define BMG160_REG_INT_MAP_0		0x17
+>> +#define BMG160_INT_MAP_0_BIT_ANY	BIT(1)
+>> +
+>> +#define BMG160_REG_INT_MAP_1		0x18
+>> +#define BMG160_INT_MAP_1_BIT_NEW_DATA	BIT(0)
+>> +
+>> +#define BMG160_REG_INT_RST_LATCH	0x21
+>> +#define BMG160_INT_MODE_LATCH_RESET	0x80
+>> +#define BMG160_INT_MODE_LATCH_INT	0x0F
+>> +#define BMG160_INT_MODE_NON_LATCH_INT	0x00
+>> +
+>> +#define BMG160_REG_INT_EN_0		0x15
+>> +#define BMG160_DATA_ENABLE_INT		BIT(7)
+>> +
+>> +#define BMG160_REG_XOUT_L		0x02
+>> +#define BMG160_AXIS_TO_REG(axis)	(BMG160_REG_XOUT_L + (axis * 2))
+>> +
+>> +#define BMG160_REG_SLOPE_THRES		0x1B
+>> +#define BMG160_SLOPE_THRES_MASK	0x0F
+>> +
+>> +#define BMG160_REG_MOTION_INTR		0x1C
+>> +#define BMG160_INT_MOTION_X		BIT(0)
+>> +#define BMG160_INT_MOTION_Y		BIT(1)
+>> +#define BMG160_INT_MOTION_Z		BIT(2)
+>> +#define BMG160_ANY_DUR_MASK		0x30
+>> +#define BMG160_ANY_DUR_SHIFT		4
+>> +
+>> +#define BMG160_REG_INT_STATUS_2	0x0B
+>> +#define BMG160_ANY_MOTION_MASK		0x07
+>> +
+>> +#define BMG160_REG_TEMP		0x08
+>> +#define BMG160_TEMP_CENTER_VAL		23
+>> +
+>> +#define BMG160_MAX_STARTUP_TIME_MS	80
+>> +
+>> +#define BMG160_AUTO_SUSPEND_DELAY_MS	2000
+>> +
+>> +struct bmg160_data {
+>> +	struct i2c_client *client;
+>> +	struct iio_trigger *dready_trig;
+>> +	struct iio_trigger *motion_trig;
+>> +	struct mutex mutex;
+>> +	s16 buffer[8];
+>> +	u8 bw_bits;
+>> +	u32 dps_range;
+>> +	int ev_enable_state;
+>> +	int slope_thres;
+>> +	bool dready_trigger_on;
+>> +	bool motion_trigger_on;
+>> +	int64_t timestamp;
 >> +};
 >> +
->> +static const struct iio_chan_spec mcp3202_channels[] =
->> +	MCP320X_VOLTAGE_CHANNEL(0),
->> +	MCP320X_VOLTAGE_CHANNEL(1),
->> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
+>> +enum bmg160_axis {
+>> +	AXIS_X,
+>> +	AXIS_Y,
+>> +	AXIS_Z,
 >> +};
->>  
->>  static const struct iio_chan_spec mcp3204_channels[] =
->>  	MCP320X_VOLTAGE_CHANNEL(0),
->> @@ -146,12 +117,37 @@ static const struct iio_info mcp320x_info =
->>  	.driver_module = HIS_MODULE,
->>  };
->>  
->> -struct mcp3208_chip_info {
->> +struct mcp320x_chip_info {
->>  	const struct iio_chan_spec *channels;
->>  	unsigned int num_channels;
->> +	unsigned int resolution;
-> resolution is still unused, but would make a lot of sense to be used in mcp320x_read_raw.
->>  };
->>  
->> -static const struct mcp3208_chip_info mcp3208_chip_infos[] =
->> +static const struct mcp320x_chip_info mcp320x_chip_infos[] = 
->> +	[mcp3001] = 
->> +		.channels = cp3201_channels,
->> +		.num_channels =RRAY_SIZE(mcp3201_channels)
->> +	},
->> +	[mcp3002] =
->> +		.channels = cp3202_channels,
->> +		.num_channels =RRAY_SIZE(mcp3202_channels)
->> +	},
->> +	[mcp3004] =
->> +		.channels = cp3204_channels,
->> +		.num_channels =RRAY_SIZE(mcp3204_channels)
->> +	},
->> +	[mcp3008] =
->> +		.channels = cp3208_channels,
->> +		.num_channels =RRAY_SIZE(mcp3208_channels)
->> +	},
->> +	[mcp3201] =
->> +		.channels = cp3201_channels,
->> +		.num_channels =RRAY_SIZE(mcp3201_channels)
->> +	},
->> +	[mcp3202] =
->> +		.channels = cp3202_channels,
->> +		.num_channels =RRAY_SIZE(mcp3202_channels)
->> +	},
->>  	[mcp3204] =
->>  		.channels = cp3204_channels,
->>  		.num_channels =RRAY_SIZE(mcp3204_channels)
->> @@ -162,11 +158,159 @@ static const struct mcp3208_chip_info
->> mcp3208_chip_infos[] =
->>  	},
->>  };
->>  
->> +static int channel_to_tx_data(const struct mcp320x_chip_info
->> *chip_info,
->> +			const unsigned int channel, bool differential)
-> The function name should be prefixed with mcp320x_, also parameters should be indented with opening parenthesis.
->> +{
->> +	unsigned int tx_data =;
 >> +
->> +	if (chip_info->num_channels - 1 =2) {
-> I think comparing with ARRAY_SIZE(mcp3202_channels) would be way easier to read/understand (similar below).
->> +		tx_data =x12 | (differential ? 0 << 3 : 1 << 3) |
->> +				((channel & 0x01) << 2);
->> +	} else if (chip_info->num_channels - 2 =4) {
->> +		tx_data =x20 | (differential ? 0 << 4 : 1 << 4) |
->> +				((channel & 0x03) << 1);
->> +	} else if (chip_info->num_channels - 4 =8) {
->> +		tx_data =x20 | (differential ? 0 << 4 : 1 << 4) |
->> +				((channel & 0x07) << 1);
->> +	}
-One more thing: since diffential is of type bool, you can just shift its value into the right position, like ... | (differential << 3) | ...
-> If you shift tx_data one bit to the left on devices with 4 or 8 channels here, you will get the same alignment of rx_buf as for the 2 channel devices. This way you would just have to distinguish in mcp320x_read_raw between 1 channel 10 bit, more channels 10 bit, 1 channel 12 bit and more channels 12 bit.
+>> +static const struct {
+>> +	int val;
+>> +	int bw_bits;
+>> +} bmg160_samp_freq_table[] = { {100, 0x07},
+>> +			       {200, 0x06},
+>> +			       {400, 0x03},
+>> +			       {1000, 0x02},
+>> +			       {2000, 0x01} };
 >> +
->> +	return tx_data;
->> +}
+>> +static const struct {
+>> +	int scale;
+>> +	int dps_range;
+>> +} bmg160_scale_table[] = { { 1065, BMG160_RANGE_2000DPS},
+>> +			   { 532, BMG160_RANGE_1000DPS},
+>> +			   { 266, BMG160_RANGE_500DPS},
+>> +			   { 133, BMG160_RANGE_250DPS},
+>> +			   { 66, BMG160_RANGE_125DPS} };
 >> +
->> +static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
->> +			bool differential, int device_index)
-> Better indentation of the arguments^^
+>> +static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
 >> +{
 >> +	int ret;
->> +	u16 adc_value;
-> You can easily drop adc_value, see below.
->> +	__be16 buf;
 >> +
->> +	const struct mcp320x_chip_info *chip_info =ULL;
->> +
->> +	if (device_index =-1)
->> +		return -1;
-> Better return a valid error code, like -EINVAL?
->> +
->> +	chip_info =mcp320x_chip_infos[device_index];
->> +	if (chip_info =NULL)
->> +		return -1;
-> Also better error code?
->> +
->> +	adc->rx_buf[0] =;
->> +	adc->rx_buf[1] =;
->> +	adc->tx_buf =hannel_to_tx_data(chip_info, channel, differential);
->> +
->> +	if (device_index !=cp3001 && device_index != mcp3201) {
->> +		ret =pi_sync(adc->spi, &adc->msg);
->> +		if (ret < 0)
->> +			return ret;
->> +	} else {
->> +		ret =pi_read(adc->spi, (u8 *)&buf, 2);
->> +		if (ret < 0)
->> +			return ret;
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_PMU_LPW, mode);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_pmu_lpw\n");
+>> +		return ret;
 >> +	}
 >> +
->> +	switch (device_index) {
->> +	case mcp3001:
->> +		adc_value =be16_to_cpu(buf) >> 3);
-> According to the datasheet, the 2 MSBs are unspecified and should be masked out: & 0x3ff
->> +		break;
->> +	case mcp3002:
-> When preparing the tx_buf like mentioned above, you could add mcp3004 and mcp3008 here, and drop the section below.
->> +		spi_sync(adc->spi, &adc->msg);
-> I think this spi_sync is unnecessary.
->> +		adc_value =dc->rx_buf[0];
->> +		adc_value =(adc_value << 2) |
->> +			((adc->rx_buf[1] & 0xC0) >> 6)) & 0x03ff;
-> return (adc->rx_buf[0] << 2) | (adc->rx_buf[1] >> 6); should do the job.
->> +		break;
->> +	case mcp3004:
->> +	case mcp3008:
->> +		adc_value =dc->rx_buf[0] & 0x7f;
->> +		adc_value =(adc_value << 3) |
->> +			((adc->rx_buf[1] & 0xe0) >> 5)) & 0x03ff;
-> Same as above.
->> +		break;
->> +	case mcp3201:
->> +		adc_value =be16_to_cpu(buf) >> 1);
-> Same as above, mask with 0xfff.
->> +		break;
->> +	case mcp3202:
->> +		adc_value =dc->rx_buf[0];
->> +		adc_value =(adc_value << 4) |
->> +			((adc->rx_buf[1] & 0xf0) >> 4)) & 0x0fff;
-> Same as above, no masking necessary.
->> +		break;
->> +	case mcp3204:
->> +	case mcp3208:
->> +		adc_value =dc->rx_buf[0] & 0x7f;
->> +		adc_value =(adc_value << 5) |
->> +			((adc->rx_buf[1] & 0xf8) >> 3)) & 0x0fff;
-> Same here, as well.
->> +		break;
->> +	default:
->> +		adc_value =;
->> +		break;
-> Just return an appropriate error code, like -EINVAL?
->> +	}
->> +
->> +	return adc_value;
+>> +	return 0;
 >> +}
 >> +
->> +static int mcp320x_read_raw(struct iio_dev *indio_dev,
->> +			struct iio_chan_spec const *channel, int *val,
->> +			int *val2, long mask)
-> Should be better indented.
+>> +static int bmg160_convert_freq_to_bit(int val)
 >> +{
->> +	struct mcp320x *adc =io_priv(indio_dev);
->> +	int ret =EINVAL;
->> +	int device_index =;
+>> +	int i;
 >> +
->> +	mutex_lock(&adc->lock);
+>> +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+>> +		if (bmg160_samp_freq_table[i].val == val)
+>> +			return bmg160_samp_freq_table[i].bw_bits;
+>> +	}
 >> +
->> +	device_index =pi_get_device_id(adc->spi)->driver_data;
+>> +	return -EINVAL;
+>> +}
 >> +
->> +	if (device_index =-1)
->> +		goto out;
+>> +static int bmg160_set_bw(struct bmg160_data *data, int val)
+>> +{
+>> +	int ret;
+>> +	int bw_bits;
+>> +
+>> +	bw_bits = bmg160_convert_freq_to_bit(val);
+>> +	if (bw_bits < 0)
+>> +		return bw_bits;
+>> +
+>> +	ret = i2c_smbus_write_byte_data(data->client, BMG160_REG_PMU_BW,
+>> +					bw_bits);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_pmu_bw\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	data->bw_bits = bw_bits;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_chip_init(struct bmg160_data *data)
+>> +{
+>> +	int ret;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_CHIP_ID);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_chip_id\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+>> +	if (ret != BMG160_CHIP_ID_VAL) {
+>> +		dev_err(&data->client->dev, "invalid chip %x\n", ret);
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	ret = bmg160_set_mode(data, BMG160_MODE_NORMAL);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	/* Wait upto 500 ms to be ready after changing mode */
+>> +	usleep_range(500, 1000);
+>> +
+>> +	/* Set Bandwidth */
+>> +	ret = bmg160_set_bw(data, BMG160_DEF_BW);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	/* Set Default Range */
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_RANGE,
+>> +					BMG160_RANGE_500DPS);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_range\n");
+>> +		return ret;
+>> +	}
+>> +	data->dps_range = BMG160_RANGE_500DPS;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_SLOPE_THRES);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_slope_thres\n");
+>> +		return ret;
+>> +	}
+>> +	data->slope_thres = ret;
+>> +
+>> +	/* Set default interrupt mode */
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_INT_RST_LATCH,
+>> +					BMG160_INT_MODE_LATCH_INT |
+>> +					BMG160_INT_MODE_LATCH_RESET);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev,
+>> +			"Error writing reg_motion_intr\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>> +{
+>> +	int ret;
+>> +
+>> +	if (on)
+>> +		ret = pm_runtime_get_sync(&data->client->dev);
+>> +	else {
+>> +		pm_runtime_mark_last_busy(&data->client->dev);
+>> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
+>> +	}
+>> +
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev,
+>> +			"Failed: bmg160_set_power_state for %d\n", on);
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>> +					     bool status)
+>> +{
+>> +	int ret;
+>> +
+>> +	/* Enable/Disable INT_MAP0 mapping */
+>> +	ret = i2c_smbus_read_byte_data(data->client,  BMG160_REG_INT_MAP_0);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_int_map0\n");
+>> +		return ret;
+>> +	}
+>> +	if (status)
+>> +		ret |= BMG160_INT_MAP_0_BIT_ANY;
+>> +	else
+>> +		ret &= ~BMG160_INT_MAP_0_BIT_ANY;
+>> +
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_INT_MAP_0,
+>> +					ret);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_int_map0\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	/* Enable/Disable slope interrupts */
+>> +	if (status) {
+>> +		/* Update slope thres */
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_SLOPE_THRES,
+>> +						data->slope_thres);
+>> +		if (ret < 0) {
+>> +			dev_err(&data->client->dev,
+>> +				"Error writing reg_slope_thres\n");
+>> +			return ret;
+>> +		}
+>> +
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_MOTION_INTR,
+>> +						BMG160_INT_MOTION_X |
+>> +						BMG160_INT_MOTION_Y |
+>> +						BMG160_INT_MOTION_Z);
+>> +		if (ret < 0) {
+>> +			dev_err(&data->client->dev,
+>> +				"Error writing reg_motion_intr\n");
+>> +			return ret;
+>> +		}
+>> +
+>> +		/*
+>> +		 * New data interrupt is always non-latched,
+>> +		 * which will have higher priority, so no need
+>> +		 * to set latched mode, we will be flooded anyway with INTR
+>> +		 */
+>> +		if (!data->dready_trigger_on) {
+>> +			ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_RST_LATCH,
+>> +						BMG160_INT_MODE_LATCH_INT |
+>> +						BMG160_INT_MODE_LATCH_RESET);
+>> +			if (ret < 0) {
+>> +				dev_err(&data->client->dev,
+>> +					"Error writing reg_rst_latch\n");
+>> +				return ret;
+>> +			}
+>> +		}
+>> +
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_EN_0,
+>> +						BMG160_DATA_ENABLE_INT);
+>> +
+>> +	} else
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_EN_0,
+>> +						0);
+>> +
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_int_en0\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>> +					   bool status)
+>> +{
+>> +	int ret;
+>> +
+>> +	/* Enable/Disable INT_MAP1 mapping */
+>> +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_MAP_1);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_int_map1\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	if (status)
+>> +		ret |= BMG160_INT_MAP_1_BIT_NEW_DATA;
+>> +	else
+>> +		ret &= ~BMG160_INT_MAP_1_BIT_NEW_DATA;
+>> +
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_INT_MAP_1,
+>> +					ret);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_int_map1\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	if (status) {
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_RST_LATCH,
+>> +						BMG160_INT_MODE_NON_LATCH_INT |
+>> +						BMG160_INT_MODE_LATCH_RESET);
+>> +		if (ret < 0) {
+>> +			dev_err(&data->client->dev,
+>> +				"Error writing reg_rst_latch\n");
+>> +				return ret;
+>> +		}
+>> +
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_EN_0,
+>> +						BMG160_DATA_ENABLE_INT);
+>> +
+>> +	} else {
+>> +		/* Restore interrupt mode */
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_RST_LATCH,
+>> +						BMG160_INT_MODE_LATCH_INT |
+>> +						BMG160_INT_MODE_LATCH_RESET);
+>> +		if (ret < 0) {
+>> +			dev_err(&data->client->dev,
+>> +				"Error writing reg_rst_latch\n");
+>> +				return ret;
+>> +		}
+>> +
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +						BMG160_REG_INT_EN_0,
+>> +						0);
+>> +	}
+>> +
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_int_en0\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_get_bw(struct bmg160_data *data, int *val)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
+>> +		if (bmg160_samp_freq_table[i].bw_bits == data->bw_bits) {
+>> +			*val = bmg160_samp_freq_table[i].val;
+>> +			return IIO_VAL_INT;
+>> +		}
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int bmg160_set_scale(struct bmg160_data *data, int val)
+>> +{
+>> +	int ret, i;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
+>> +		if (bmg160_scale_table[i].scale == val) {
+>> +			ret = i2c_smbus_write_byte_data(
+>> +					data->client,
+>> +					BMG160_REG_RANGE,
+>> +					bmg160_scale_table[i].dps_range);
+>> +			if (ret < 0) {
+>> +				dev_err(&data->client->dev,
+>> +					"Error writing reg_range\n");
+>> +				return ret;
+>> +			}
+>> +			data->dps_range = bmg160_scale_table[i].dps_range;
+>> +			return 0;
+>> +		}
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>> +{
+>> +	int ret;
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	ret = bmg160_set_power_state(data, true);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_TEMP);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_temp\n");
+>> +		bmg160_set_power_state(data, false);
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	*val = sign_extend32(ret, 7);
+>> +	ret = bmg160_set_power_state(data, false);
+>> +	mutex_unlock(&data->mutex);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>> +{
+>> +	int ret;
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	ret = bmg160_set_power_state(data, true);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = i2c_smbus_read_word_data(data->client, BMG160_AXIS_TO_REG(axis));
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading axis %d\n", axis);
+>> +		bmg160_set_power_state(data, false);
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	*val = sign_extend32(ret, 15);
+>> +	ret = bmg160_set_power_state(data, false);
+>> +	mutex_unlock(&data->mutex);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static int bmg160_read_raw(struct iio_dev *indio_dev,
+>> +			   struct iio_chan_spec const *chan,
+>> +			   int *val, int *val2, long mask)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
 >> +
 >> +	switch (mask) {
 >> +	case IIO_CHAN_INFO_RAW:
->> +		ret =cp320x_adc_conversion(adc, channel->address,
->> +			channel->differential, device_index);
-> Better indention here.
->> +
->> +		if (ret < 0)
->> +			goto out;
->> +
->> +		*val =et;
->> +		ret =IO_VAL_INT;
->> +		break;
->> +
+>> +		switch (chan->type) {
+>> +		case IIO_TEMP:
+>> +			return bmg160_get_temp(data, val);
+>> +		case IIO_ANGL_VEL:
+>> +			if (iio_buffer_enabled(indio_dev))
+>> +				return -EBUSY;
+>> +			else
+>> +				return bmg160_get_axis(data, chan->scan_index,
+>> +						       val);
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	case IIO_CHAN_INFO_OFFSET:
+>> +		if (chan->type == IIO_TEMP) {
+>> +			*val = BMG160_TEMP_CENTER_VAL;
+>> +			return IIO_VAL_INT;
+>> +		} else
+>> +			return -EINVAL;
 >> +	case IIO_CHAN_INFO_SCALE:
-> This section contains quite verbose comments for very basic things - are they necessary?
->> +		/*
->> +		 * Digital output code =resolution * Vin) / Vref
->> +		 * Get regulator output voltage in uV.
->> +		 */
->> +		ret =egulator_get_voltage(adc->reg);
->> +		if (ret < 0)
->> +			goto out;
+>> +		*val = 0;
+>> +		switch (chan->type) {
+>> +		case IIO_TEMP:
+>> +			*val2 = 500000;
+>> +			return IIO_VAL_INT_PLUS_MICRO;
+>> +		case IIO_ANGL_VEL:
+>> +		{
+>> +			int i;
 >> +
->> +		/* convert regulator output voltage to mV */
->> +		*val  =et / 1000;
->> +		*val2 =1;
-> I don't see the need to set a value for *val2 here.
->> +		if (device_index =mcp3001 || device_index == mcp3002 ||
->> +			device_index =mcp3004 || device_index == mcp3008)
->> +			*val2 =0;
-> Actually, the resolution attribute from chip_info should be used here.
->> +		else if (device_index =mcp3201 || device_index == mcp3202 ||
->> +			device_index =mcp3204 || device_index == mcp3208)
->> +			*val2 =2;
->> +		else
->> +			goto out;
->> +
->> +		ret =IO_VAL_FRACTIONAL_LOG2;
->> +		break;
-> This break is not really needed, as long as the default section doesn't contain operational code.
->> +
+>> +			for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
+>> +				if (bmg160_scale_table[i].dps_range ==
+>> +							data->dps_range) {
+>> +					*val2 = bmg160_scale_table[i].scale;
+>> +					return IIO_VAL_INT_PLUS_MICRO;
+>> +				}
+>> +			}
+>> +			return -EINVAL;
+>> +		}
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		*val2 = 0;
+>> +		mutex_lock(&data->mutex);
+>> +		ret = bmg160_get_bw(data, val);
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
 >> +	default:
->> +		break;
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static int bmg160_write_raw(struct iio_dev *indio_dev,
+>> +			    struct iio_chan_spec const *chan,
+>> +			    int val, int val2, long mask)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		mutex_lock(&data->mutex);
+>> +		/*
+>> +		 * Section 4.2 of spec
+>> +		 * In suspend mode, the only supported operations are reading
+>> +		 * registers as well as writing to the (0x14) softreset
+>> +		 * register. Since we will be in suspend mode by default, change
+>> +		 * mode to power on for other writes.
+>> +		 */
+>> +		ret = bmg160_set_power_state(data, true);
+>> +		if (ret < 0) {
+>> +			mutex_unlock(&data->mutex);
+>> +			return ret;
+>> +		}
+>> +		ret = bmg160_set_bw(data, val);
+>> +		if (ret < 0) {
+>> +			bmg160_set_power_state(data, false);
+>> +			mutex_unlock(&data->mutex);
+>> +			return ret;
+>> +		}
+>> +		ret = bmg160_set_power_state(data, false);
+> Could this end up disabling the part when in triggered mode?
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		if (val)
+>> +			return -EINVAL;
+>> +
+>> +		mutex_lock(&data->mutex);
+>> +		/* Refer to comments above for the suspend mode ops */
+>> +		ret = bmg160_set_power_state(data, true);
+>> +		if (ret < 0) {
+>> +			mutex_unlock(&data->mutex);
+>> +			return ret;
+>> +		}
+>> +		ret = bmg160_set_scale(data, val2);
+>> +		if (ret < 0) {
+>> +			bmg160_set_power_state(data, false);
+>> +			mutex_unlock(&data->mutex);
+>> +			return ret;
+>> +		}
+>> +		ret = bmg160_set_power_state(data, false);
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	default:
+>> +		return -EINVAL;
 >> +	}
 >> +
->> +out:
->> +	mutex_unlock(&adc->lock);
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int bmg160_read_event(struct iio_dev *indio_dev,
+>> +			     const struct iio_chan_spec *chan,
+>> +			     enum iio_event_type type,
+>> +			     enum iio_event_direction dir,
+>> +			     enum iio_event_info info,
+>> +			     int *val, int *val2)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	*val2 = 0;
+>> +	switch (info) {
+>> +	case IIO_EV_INFO_VALUE:
+>> +		*val = data->slope_thres & BMG160_SLOPE_THRES_MASK;
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static int bmg160_write_event(struct iio_dev *indio_dev,
+>> +			      const struct iio_chan_spec *chan,
+>> +			      enum iio_event_type type,
+>> +			      enum iio_event_direction dir,
+>> +			      enum iio_event_info info,
+>> +			      int val, int val2)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	switch (info) {
+>> +	case IIO_EV_INFO_VALUE:
+>> +		if (data->ev_enable_state)
+>> +			return -EBUSY;
+>> +		data->slope_thres &= ~BMG160_SLOPE_THRES_MASK;
+>> +		data->slope_thres |= (val & BMG160_SLOPE_THRES_MASK);
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_read_event_config(struct iio_dev *indio_dev,
+>> +				    const struct iio_chan_spec *chan,
+>> +				    enum iio_event_type type,
+>> +				    enum iio_event_direction dir)
+>> +{
+>> +
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	return data->ev_enable_state;
+>> +}
+>> +
+>> +static int bmg160_write_event_config(struct iio_dev *indio_dev,
+>> +				     const struct iio_chan_spec *chan,
+>> +				     enum iio_event_type type,
+>> +				     enum iio_event_direction dir,
+>> +				     int state)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	if (state && data->ev_enable_state)
+>> +		return 0;
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +
+>> +	if (!state && data->motion_trigger_on) {
+>> +		data->ev_enable_state = 0;
+>> +		mutex_unlock(&data->mutex);
+>> +		return 0;
+>> +	}
+>> +	/*
+>> +	 * We will expect the enable and disable to do operation in
+>> +	 * in reverse order. This will happen here anyway as our
+>> +	 * resume operation uses sync mode runtime pm calls, the
+>> +	 * suspend operation will be delayed by autosuspend delay
+>> +	 * So the disable operation will still happen in reverse of
+>> +	 * enable operation. When runtime pm is disabled the mode
+>> +	 * is always on so sequence doesn't matter
+>> +	 */
+> Thanks for the detailed comment!
+>> +	ret = bmg160_set_power_state(data, state);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret =  bmg160_setup_any_motion_interrupt(data, state);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +
+>> +	data->ev_enable_state = state;
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_validate_trigger(struct iio_dev *indio_dev,
+>> +				   struct iio_trigger *trig)
+>> +{
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	if (data->dready_trig != trig && data->motion_trig != trig)
+>> +		return -EINVAL;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 400 1000 2000");
+>> +
+>> +static IIO_CONST_ATTR(in_anglvel_scale_available,
+>> +		      "0.001065 0.000532 0.000266 0.000133 0.000066");
+>> +
+>> +static struct attribute *bmg160_attributes[] = {
+>> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>> +	&iio_const_attr_in_anglvel_scale_available.dev_attr.attr,
+>> +	NULL,
+>> +};
+>> +
+>> +static const struct attribute_group bmg160_attrs_group = {
+>> +	.attrs = bmg160_attributes,
+>> +};
+>> +
+>> +static const struct iio_event_spec bmg160_event = {
+>> +		.type = IIO_EV_TYPE_ROC,
+>> +		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
+>> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>> +				       BIT(IIO_EV_INFO_ENABLE)
+>> +};
+>> +
+>> +#define BMG160_CHANNEL(_axis) {					\
+>> +	.type = IIO_ANGL_VEL,						\
+>> +	.modified = 1,							\
+>> +	.channel2 = IIO_MOD_##_axis,					\
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+>> +				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+>> +	.scan_index = AXIS_##_axis,					\
+>> +	.scan_type = {							\
+>> +		.sign = 's',						\
+>> +		.realbits = 16,					\
+>> +		.storagebits = 16,					\
+>> +	},								\
+>> +	.event_spec = &bmg160_event,					\
+>> +	.num_event_specs = 1						\
+>> +}
+>> +
+>> +static const struct iio_chan_spec bmg160_channels[] = {
+>> +	{
+>> +		.type = IIO_TEMP,
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>> +				      BIT(IIO_CHAN_INFO_SCALE) |
+>> +				      BIT(IIO_CHAN_INFO_OFFSET),
+>> +		.scan_index = -1,
+>> +	},
+>> +	BMG160_CHANNEL(X),
+>> +	BMG160_CHANNEL(Y),
+>> +	BMG160_CHANNEL(Z),
+>> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>> +};
+>> +
+>> +static const struct iio_info bmg160_info = {
+>> +	.attrs			= &bmg160_attrs_group,
+>> +	.read_raw		= bmg160_read_raw,
+>> +	.write_raw		= bmg160_write_raw,
+>> +	.read_event_value	= bmg160_read_event,
+>> +	.write_event_value	= bmg160_write_event,
+>> +	.write_event_config	= bmg160_write_event_config,
+>> +	.read_event_config	= bmg160_read_event_config,
+>> +	.validate_trigger	= bmg160_validate_trigger,
+>> +	.driver_module		= THIS_MODULE,
+>> +};
+>> +
+>> +static irqreturn_t bmg160_trigger_handler(int irq, void *p)
+>> +{
+>> +	struct iio_poll_func *pf = p;
+>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int bit, ret, i = 0;
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
+>> +			 indio_dev->masklength) {
+>> +		ret = i2c_smbus_read_word_data(data->client,
+>> +					       BMG160_AXIS_TO_REG(bit));
+>> +		if (ret < 0) {
+>> +			mutex_unlock(&data->mutex);
+>> +			goto err;
+>> +		}
+>> +		data->buffer[i++] = ret;
+>> +	}
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>> +					   data->timestamp);
+>> +err:
+>> +	iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static int bmg160_trig_try_reen(struct iio_trigger *trig)
+>> +{
+>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	/* new data interrupts don't need ack */
+>> +	if (data->dready_trigger_on)
+>> +		return 0;
+>> +
+>> +	/* Set latched mode interrupt and clear any latched interrupt */
+>> +	ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_INT_RST_LATCH,
+>> +					BMG160_INT_MODE_LATCH_INT |
+>> +					BMG160_INT_MODE_LATCH_RESET);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error writing reg_rst_latch\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>> +					     bool state)
+>> +{
+>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +
+>> +	if (!state && data->ev_enable_state && data->motion_trigger_on) {
+>> +		data->motion_trigger_on = false;
+>> +		mutex_unlock(&data->mutex);
+>> +		return 0;
+>> +	}
+>> +
+>> +	/*
+>> +	 * Refer to comment in bmg160_write_event_config for
+>> +	 * enable/disable operation order
+>> +	 */
+>> +	ret = bmg160_set_power_state(data, state);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +	if (data->motion_trig == trig)
+>> +		ret =  bmg160_setup_any_motion_interrupt(data, state);
+>> +	else
+>> +		ret = bmg160_setup_new_data_interrupt(data, state);
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&data->mutex);
+>> +		return ret;
+>> +	}
+>> +	if (data->motion_trig == trig)
+>> +		data->motion_trigger_on = state;
+>> +	else
+>> +		data->dready_trigger_on = state;
+>> +
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct iio_trigger_ops bmg160_trigger_ops = {
+>> +	.set_trigger_state = bmg160_data_rdy_trigger_set_state,
+>> +	.try_reenable = bmg160_trig_try_reen,
+>> +	.owner = THIS_MODULE,
+>> +};
+>> +
+>> +static irqreturn_t bmg160_event_handler(int irq, void *private)
+>> +{
+>> +	struct iio_dev *indio_dev = private;
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +	int dir;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_STATUS_2);
+>> +	if (ret < 0) {
+>> +		dev_err(&data->client->dev, "Error reading reg_int_status2\n");
+>> +		goto ack_intr_status;
+>> +	}
+>> +
+>> +	if (ret & 0x08)
+>> +		dir = IIO_EV_DIR_RISING;
+>> +	else
+>> +		dir = IIO_EV_DIR_FALLING;
+>> +
+>> +	if (ret & BMG160_ANY_MOTION_MASK)
+>> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>> +							0,
+>> +							IIO_MOD_X_OR_Y_OR_Z,
+>> +							IIO_EV_TYPE_ROC,
+>> +							dir),
+>> +							data->timestamp);
+>> +
+>> +ack_intr_status:
+>> +	if (!data->dready_trigger_on) {
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>> +					BMG160_REG_INT_RST_LATCH,
+>> +					BMG160_INT_MODE_LATCH_INT |
+>> +					BMG160_INT_MODE_LATCH_RESET);
+>> +		if (ret < 0)
+>> +			dev_err(&data->client->dev,
+>> +				"Error writing reg_rst_latch\n");
+>> +	}
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
+>> +{
+>> +	struct iio_dev *indio_dev = private;
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	data->timestamp = iio_get_time_ns();
+>> +
+>> +	if (data->dready_trigger_on)
+>> +		iio_trigger_poll(data->dready_trig);
+>> +	else if (data->motion_trigger_on)
+>> +		iio_trigger_poll(data->motion_trig);
+>> +
+>> +	if (data->ev_enable_state)
+>> +		return IRQ_WAKE_THREAD;
+>> +	else
+>> +		return IRQ_HANDLED;
+>> +
+>> +}
+>> +
+>> +static int bmg160_acpi_gpio_probe(struct i2c_client *client,
+>> +				  struct bmg160_data *data)
+>> +{
+>> +	const struct acpi_device_id *id;
+>> +	struct device *dev;
+>> +	struct gpio_desc *gpio;
+>> +	int ret;
+>> +
+>> +	if (!client)
+>> +		return -EINVAL;
+>> +
+>> +	dev = &client->dev;
+>> +	if (!ACPI_HANDLE(dev))
+>> +		return -ENODEV;
+>> +
+>> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>> +	if (!id)
+>> +		return -ENODEV;
+>> +
+>> +	/* data ready gpio interrupt pin */
+>> +	gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0);
+>> +	if (IS_ERR(gpio)) {
+>> +		dev_err(dev, "acpi gpio get index failed\n");
+>> +		return PTR_ERR(gpio);
+>> +	}
+>> +
+>> +	ret = gpiod_direction_input(gpio);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = gpiod_to_irq(gpio);
+>> +
+>> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
 >> +
 >> +	return ret;
 >> +}
 >> +
->>  static int mcp320x_probe(struct spi_device *spi)
->>  {
->>  	struct iio_dev *indio_dev;
->>  	struct mcp320x *adc;
->> -	const struct mcp3208_chip_info *chip_info;
->> +	const struct mcp320x_chip_info *chip_info;
->>  	int ret;
->>  
->>  	indio_dev =evm_iio_device_alloc(&spi->dev, sizeof(*adc));
->> @@ -181,7 +325,7 @@ static int mcp320x_probe(struct spi_device *spi)
->>  	indio_dev->modes =NDIO_DIRECT_MODE;
->>  	indio_dev->info =mcp320x_info;
->>  
->> -	chip_info =mcp3208_chip_infos[spi_get_device_id(spi)->driver_data];
->> +	chip_info =mcp320x_chip_infos[spi_get_device_id(spi)->driver_data];
->>  	indio_dev->channels =hip_info->channels;
->>  	indio_dev->num_channels =hip_info->num_channels;
->>  
->> @@ -226,7 +370,45 @@ static int mcp320x_remove(struct spi_device *spi)
->>  	return 0;
->>  }
->>  
->> +#if defined(CONFIG_OF)
->> +static const struct of_device_id mcp320x_dt_ids[] =
->> +	{
->> +		.compatible =mcp3001",
->> +		.data =mcp320x_chip_infos[mcp3001],
->> +	}, {
->> +		.compatible =mcp3002",
->> +		.data =mcp320x_chip_infos[mcp3002],
->> +	}, {
->> +		.compatible =mcp3004",
->> +		.data =mcp320x_chip_infos[mcp3004],
->> +	}, {
->> +		.compatible =mcp3008",
->> +		.data =mcp320x_chip_infos[mcp3004],
-> I think you meant mcp3008.
->> +	}, {
->> +		.compatible =mcp3201",
->> +		.data =mcp320x_chip_infos[mcp3201],
->> +	}, {
->> +		.compatible =mcp3202",
->> +		.data =mcp320x_chip_infos[mcp3202],
->> +	}, {
->> +		.compatible =mcp3204",
->> +		.data =mcp320x_chip_infos[mcp3204],
->> +	}, {
->> +		.compatible =mcp3008",
-> This should be mcp3208.
->> +		.data =mcp320x_chip_infos[mcp3208],
->> +	}, {
+>> +static int bmg160_probe(struct i2c_client *client,
+>> +			const struct i2c_device_id *id)
+>> +{
+>> +	struct bmg160_data *data;
+>> +	struct iio_dev *indio_dev;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	data = iio_priv(indio_dev);
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +	data->client = client;
+>> +
+>> +	ret = bmg160_chip_init(data);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	mutex_init(&data->mutex);
+>> +
+>> +	indio_dev->dev.parent = &client->dev;
+>> +	indio_dev->channels = bmg160_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(bmg160_channels);
+>> +	indio_dev->name = BMG160_DRV_NAME;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->info = &bmg160_info;
+>> +
+>> +	if (client->irq <= 0)
+>> +		client->irq = bmg160_acpi_gpio_probe(client, data);
+>> +
+>> +	if (client->irq > 0) {
+>> +		ret = devm_request_threaded_irq(&client->dev,
+>> +						client->irq,
+>> +						bmg160_data_rdy_trig_poll,
+>> +						bmg160_event_handler,
+>> +						IRQF_TRIGGER_RISING,
+>> +						BMG160_IRQ_NAME,
+>> +						indio_dev);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+>> +							   "%s-dev%d",
+>> +							   indio_dev->name,
+>> +							   indio_dev->id);
+>> +		if (!data->dready_trig)
+>> +			return -ENOMEM;
+>> +
+>> +		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
+>> +							  "%s-any-motion-dev%d",
+>> +							  indio_dev->name,
+>> +							  indio_dev->id);
+>> +		if (!data->motion_trig)
+>> +			return -ENOMEM;
+>> +
+>> +		data->dready_trig->dev.parent = &client->dev;
+>> +		data->dready_trig->ops = &bmg160_trigger_ops;
+>> +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+>> +		ret = iio_trigger_register(data->dready_trig);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		data->motion_trig->dev.parent = &client->dev;
+>> +		data->motion_trig->ops = &bmg160_trigger_ops;
+>> +		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+>> +		ret = iio_trigger_register(data->motion_trig);
+>> +		if (ret) {
+>> +			data->motion_trig = NULL;
+>> +			goto err_trigger_unregister;
+>> +		}
+>> +
+>> +		ret = iio_triggered_buffer_setup(indio_dev,
+>> +						 NULL,
+>> +						 bmg160_trigger_handler,
+>> +						 NULL);
+>> +		if (ret < 0) {
+>> +			dev_err(&client->dev,
+>> +				"iio triggered buffer setup failed\n");
+>> +			goto err_trigger_unregister;
+>> +		}
 >> +	}
->> +};
->> +MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "unable to register iio device\n");
+>> +		goto err_buffer_cleanup;
+>> +	}
+>> +
+>> +	ret = pm_runtime_set_active(&client->dev);
+>> +	if (ret)
+>> +		goto err_iio_unregister;
+>> +
+>> +	pm_runtime_enable(&client->dev);
+>> +	pm_runtime_set_autosuspend_delay(&client->dev,
+>> +					 BMG160_AUTO_SUSPEND_DELAY_MS);
+>> +	pm_runtime_use_autosuspend(&client->dev);
+>> +
+>> +	return 0;
+>> +
+>> +err_iio_unregister:
+>> +	iio_device_unregister(indio_dev);
+>> +err_buffer_cleanup:
+>> +	if (data->dready_trig)
+>> +		iio_triggered_buffer_cleanup(indio_dev);
+>> +err_trigger_unregister:
+>> +	if (data->dready_trig)
+>> +		iio_trigger_unregister(data->dready_trig);
+>> +	if (data->motion_trig)
+>> +		iio_trigger_unregister(data->motion_trig);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int bmg160_remove(struct i2c_client *client)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	pm_runtime_disable(&client->dev);
+>> +	pm_runtime_set_suspended(&client->dev);
+>> +	pm_runtime_put_noidle(&client->dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+>> +	if (data->dready_trig) {
+>> +		iio_triggered_buffer_cleanup(indio_dev);
+>> +		iio_trigger_unregister(data->dready_trig);
+>> +		iio_trigger_unregister(data->motion_trig);
+>> +	}
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	bmg160_set_mode(data, BMG160_MODE_DEEP_SUSPEND);
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +#ifdef CONFIG_PM_SLEEP
+>> +static int bmg160_suspend(struct device *dev)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	bmg160_set_mode(data, BMG160_MODE_SUSPEND);
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int bmg160_resume(struct device *dev)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	mutex_lock(&data->mutex);
+>> +	if (data->dready_trigger_on || data->motion_trigger_on ||
+>> +							data->ev_enable_state)
+>> +		bmg160_set_mode(data, BMG160_MODE_NORMAL);
+>> +	mutex_unlock(&data->mutex);
+>> +
+>> +	return 0;
+>> +}
 >> +#endif
 >> +
->>  static const struct spi_device_id mcp320x_id[] =
->> +	{ "mcp3001", mcp3001 },
->> +	{ "mcp3002", mcp3002 },
->> +	{ "mcp3004", mcp3004 },
->> +	{ "mcp3008", mcp3008 },
->> +	{ "mcp3201", mcp3201 },
->> +	{ "mcp3202", mcp3202 },
->>  	{ "mcp3204", mcp3204 },
->>  	{ "mcp3208", mcp3208 },
->>  	{ }
->> @@ -245,5 +427,5 @@ static struct spi_driver mcp320x_driver =
->>  module_spi_driver(mcp320x_driver);
->>  
->>  MODULE_AUTHOR("Oskar Andero <oskar.andero@gmail.com>");
->> -MODULE_DESCRIPTION("Microchip Technology MCP3204/08");
->> +MODULE_DESCRIPTION("Microchip Technology MCP3x01/02/04/08");
->>  MODULE_LICENSE("GPL v2");
+>> +#ifdef CONFIG_PM_RUNTIME
+>> +static int bmg160_runtime_suspend(struct device *dev)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +
+>> +	return bmg160_set_mode(data, BMG160_MODE_SUSPEND);
+>> +}
+>> +
+>> +static int bmg160_runtime_resume(struct device *dev)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>> +	struct bmg160_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	ret = bmg160_set_mode(data, BMG160_MODE_NORMAL);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	msleep_interruptible(BMG160_MAX_STARTUP_TIME_MS);
+>> +
+>> +	return 0;
+>> +}
+>> +#endif
+>> +
+>> +static const struct dev_pm_ops bmg160_pm_ops = {
+>> +	SET_SYSTEM_SLEEP_PM_OPS(bmg160_suspend, bmg160_resume)
+>> +	SET_RUNTIME_PM_OPS(bmg160_runtime_suspend,
+>> +			   bmg160_runtime_resume, NULL)
+>> +};
+>> +
+>> +static const struct acpi_device_id bmg160_acpi_match[] = {
+>> +	{"BMG0160", 0},
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(acpi, bmg160_acpi_match);
+>> +
+>> +static const struct i2c_device_id bmg160_id[] = {
+>> +	{"bmg160", 0},
+>> +	{}
+>> +};
+>> +
+>> +MODULE_DEVICE_TABLE(i2c, bmg160_id);
+>> +
+>> +static struct i2c_driver bmg160_driver = {
+>> +	.driver = {
+>> +		.name	= BMG160_DRV_NAME,
+>> +		.acpi_match_table = ACPI_PTR(bmg160_acpi_match),
+>> +		.pm	= &bmg160_pm_ops,
+>> +	},
+>> +	.probe		= bmg160_probe,
+>> +	.remove		= bmg160_remove,
+>> +	.id_table	= bmg160_id,
+>> +};
+>> +module_i2c_driver(bmg160_driver);
+>> +
+>> +MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
+>> +MODULE_LICENSE("GPL v2");
+>> +MODULE_DESCRIPTION("BMG160 Gyro driver");
 >>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
