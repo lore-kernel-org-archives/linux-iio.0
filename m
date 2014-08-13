@@ -1,584 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37559 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751195AbaHNOWm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 10:22:42 -0400
-Message-ID: <53ECC62C.1010409@kernel.org>
-Date: Thu, 14 Aug 2014 15:22:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-102.synserver.de ([212.40.185.102]:1084 "EHLO
+	smtp-out-102.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750815AbaHMJIU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Aug 2014 05:08:20 -0400
+Message-ID: <53EB2AFE.10900@metafoo.de>
+Date: Wed, 13 Aug 2014 11:08:14 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Subject: Re: [PATCH v3 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
-References: <cover.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com> <a884b9070b80e208e3d089d6f12693e478bc3049.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <a884b9070b80e208e3d089d6f12693e478bc3049.1407516896.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: a.mathur@samsung.com, jic23@kernel.org
+CC: cpgs@samsung.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, aniroop.mathur@gmail.com,
+	p.shailesh@samsung.com, r.mahale@samsung.com,
+	vidushi.koul@samsung.com, narendra.m1@samsung.com
+Subject: Re: [PATCH 1/1] IIO: Added write function in iio_buffer_fileops
+References: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>
+In-Reply-To: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/08/14 18:46, Kuppuswamy Sathyanarayanan wrote:
-> This patch adds a new driver for solteam opto JSA1212 proximity and
-> ambient light sensor.
+On 08/13/2014 08:29 AM, a.mathur@samsung.com wrote:
+> From: Aniroop Mathur <a.mathur@samsung.com>
 >
-> Basic details of the chip can be found here.
+> Earlier, user space can only read from iio device node but cannot write to it.
+> This patch adds write function in iio buffer file operations,
+> which will allow user-space applications/HAL to write the data
+> to iio device node.
+> So now there will be two way communication between IIO subsystem
+> and user space. (userspace <--> kernel)
 >
-> http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
+> It can be used by HAL or any user-space application which wants to
+> write data to iio device node/buffer upon receiving some data from it.
+> As an example,
+> It is useful for iio device simulator application which need to record
+> the data by reading from iio device node and replay the recorded data
+> by writing back to iio device node.
 >
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Mostly looking good.  A few bits and bobs inline.
 
-J
+I'm not convinced that this is something that should be added to the kernel. 
+I'm wondering why can't this be done in userspace, e.g. by having a 
+simulator mode for the application or by using LD_PRELOAD. Having this in 
+userspace will be much more flexible and will be easier to implement 
+correctly and you'll most likely want to simulate more than just buffer 
+access, for example setting/getting properties of the device or channel. For 
+the libiio[1] we are planning to implement a test backend that when 
+activated will allow to simulate a whole device rather than just buffer support.
+
+[1] https://github.com/analogdevicesinc/libiio
+
+> Signed-off-by: Aniroop Mathur <a.mathur@samsung.com>
 > ---
->  drivers/iio/light/Kconfig   |   10 +
->  drivers/iio/light/Makefile  |    1 +
->  drivers/iio/light/jsa1212.c |  487 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 498 insertions(+)
->  create mode 100644 drivers/iio/light/jsa1212.c
+>   drivers/iio/iio_core.h            |    5 ++++-
+>   drivers/iio/industrialio-buffer.c |   34 ++++++++++++++++++++++++++++++++++
+>   drivers/iio/industrialio-core.c   |    1 +
+>   3 files changed, 39 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index c89740d..07d0a76 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -87,6 +87,16 @@ config HID_SENSOR_PROX
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called hid-sensor-prox.
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index 5f0ea77..ba3fe53 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -47,10 +47,12 @@ unsigned int iio_buffer_poll(struct file *filp,
+>   			     struct poll_table_struct *wait);
+>   ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>   				      size_t n, loff_t *f_ps);
+> -
+> +ssize_t iio_buffer_write_first_n_outer(struct file *filp,
+> +			     const char __user *buf, size_t n, loff_t *f_ps);
 >
-> +config JSA1212
-> +	tristate "JSA1212 ALS and proximity sensor driver"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a IIO driver for JSA1212
-> +	 proximity & ALS sensor device.
-> +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called jsa1212.
-> +
->  config SENSORS_LM3533
->  	tristate "LM3533 ambient light sensor"
->  	depends on MFD_LM3533
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 3eb36e5..ce85c86 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -10,6 +10,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-> +obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-> diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
-> new file mode 100644
-> index 0000000..71e1793
-> --- /dev/null
-> +++ b/drivers/iio/light/jsa1212.c
-> @@ -0,0 +1,487 @@
-> +/*
-> + * JSA1212 Ambient Light & Proximity Sensor Driver
-> + *
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
-> +#include <linux/module.h>
-> +#include <linux/moduleparam.h>
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/mutex.h>
-> +#include <linux/slab.h>
-> +#include <linux/acpi.h>
-> +#include <linux/regmap.h>
-> +#include <linux/gpio/consumer.h>
-Why gpio?
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/events.h>
-you don't have any events so don't need htis header...
-> +
-> +/* JSA1212 reg address */
-> +#define JSA1212_CONF_REG		0x01
-> +#define JSA1212_INT_REG			0x02
-> +#define JSA1212_PXS_LT_REG		0x03
-> +#define JSA1212_PXS_HT_REG		0x04
-> +#define JSA1212_ALS_TH1_REG		0x05
-> +#define JSA1212_ALS_TH2_REG		0x06
-> +#define JSA1212_ALS_TH3_REG		0x07
-> +#define JSA1212_PXS_DATA_REG		0x08
-> +#define JSA1212_ALS_DT1_REG		0x09
-> +#define JSA1212_ALS_DT2_REG		0x0A
-> +#define JSA1212_ALS_RNG_REG		0x0B
-> +#define JSA1212_MAX_REG			0x0C
-> +
-> +/* JSA1212 reg defaults */
-> +#define JSA1212_CONF_REG_DEF		0x58
-Interestingly this consists of exclusively bits not list below.
-If possible break it up into what it is actually doing...
+>   #define iio_buffer_poll_addr (&iio_buffer_poll)
+>   #define iio_buffer_read_first_n_outer_addr (&iio_buffer_read_first_n_outer)
+> +#define iio_buffer_write_first_n_outer_addr (&iio_buffer_write_first_n_outer)
+>
+>   void iio_disable_all_buffers(struct iio_dev *indio_dev);
+>   void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
+> @@ -59,6 +61,7 @@ void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
+>
+>   #define iio_buffer_poll_addr NULL
+>   #define iio_buffer_read_first_n_outer_addr NULL
+> +#define iio_buffer_write_first_n_outer_addr NULL
+>
+>   static inline void iio_disable_all_buffers(struct iio_dev *indio_dev) {}
+>   static inline void iio_buffer_wakeup_poll(struct iio_dev *indio_dev) {}
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 9f1a140..ef889af 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -21,6 +21,7 @@
+>   #include <linux/slab.h>
+>   #include <linux/poll.h>
+>   #include <linux/sched.h>
+> +#include <asm/uaccess.h>
 
-> +#define JSA1212_INT_REG_DEF		0x02
-This one looks like it can be given in terms of what it is doing
-using the definitions below.  Please do so.
+linux/uaccess.h
 
-> +#define JSA1212_PXS_LT_REG_DEF		0x00
-> +#define JSA1212_PXS_HT_REG_DEF		0xFF
-> +#define JSA1212_ALS_TH1_REG_DEF		0x00
-> +#define JSA1212_ALS_TH2_REG_DEF		0xF0
-> +#define JSA1212_ALS_TH3_REG_DEF		0xFF
-> +#define JSA1212_ALS_RNG_REG_DEF		0x00
-There are a fair number of defines here that are unused
-and don't add anything it terms of documentation etc...
-Perhaps prune them back somewhat?
-> +
-> +/* JSA1212 reg masks */
-> +#define JSA1212_CONF_MASK		0xFF
-> +#define JSA1212_INT_MASK		0xFF
-> +#define JSA1212_PXS_LT_MASK		0xFF
-> +#define JSA1212_PXS_HT_MASK		0xFF
-> +#define JSA1212_ALS_TH1_MASK		0xFF
-> +#define JSA1212_ALS_TH2_LT_MASK		0x0F
-> +#define JSA1212_ALS_TH2_HT_MASK		0xF0
-> +#define JSA1212_ALS_TH3_MASK		0xFF
-> +#define JSA1212_PXS_DATA_MASK		0xFF
-> +#define JSA1212_ALS_DATA_MASK		0xFFF
-> +#define JSA1212_ALS_DT1_MASK		0xFF
-> +#define JSA1212_ALS_DT2_MASK		0x0F
-> +#define JSA1212_ALS_RNG_MASK		0x07
-> +#define JSA1212_REG_MASK		0xFF
-> +
-> +/* JSA1212 CONF REG bits */
-> +#define JSA1212_CONF_PXS_MASK		0x80
-> +#define JSA1212_CONF_PXS_ENABLE		0x80
-> +#define JSA1212_CONF_PXS_DISABLE	0x00
-> +#define JSA1212_CONF_ALS_MASK		0x04
-> +#define JSA1212_CONF_ALS_ENABLE		0x04
-> +#define JSA1212_CONF_ALS_DISABLE	0x00
-> +
-> +/* JSA1212 INT REG bits */
-> +#define JSA1212_INT_CTRL_MASK		0x01
-> +#define JSA1212_INT_CTRL_EITHER		0x00
-> +#define JSA1212_INT_CTRL_BOTH		0x01
-> +#define JSA1212_INT_ALS_PRST_MASK	0x06
-> +#define JSA1212_INT_ALS_PRST_1CONV	0x00
-> +#define JSA1212_INT_ALS_PRST_4CONV	0x02
-> +#define JSA1212_INT_ALS_PRST_8CONV	0x04
-> +#define JSA1212_INT_ALS_PRST_16CONV	0x06
-> +#define JSA1212_INT_ALS_FLAG_MASK	0x08
-> +#define JSA1212_INT_ALS_FLAG_CLR	0x00
-> +#define JSA1212_INT_PXS_PRST_MASK	0x60
-> +#define JSA1212_INT_PXS_PRST_1CONV	0x00
-> +#define JSA1212_INT_PXS_PRST_4CONV	0x20
-> +#define JSA1212_INT_PXS_PRST_8CONV	0x40
-> +#define JSA1212_INT_PXS_PRST_16CONV	0x60
-> +#define JSA1212_INT_PXS_FLAG_MASK	0x80
-> +#define JSA1212_INT_PXS_FLAG_CLR	0x00
-> +
-> +/* JSA1212 ALS RNG REG bits */
-> +#define JSA1212_ALS_RNG_0_2048		0x00
-> +#define JSA1212_ALS_RNG_0_1024		0x01
-> +#define JSA1212_ALS_RNG_0_512		0x02
-> +#define JSA1212_ALS_RNG_0_256		0x03
-> +#define JSA1212_ALS_RNG_0_128		0x04
-> +
-> +/* JSA1212 INT threshold range */
-> +#define JSA1212_ALS_TH_MIN	0x0000
-> +#define JSA1212_ALS_TH_MAX	0x0FFF
-> +#define JSA1212_PXS_TH_MIN	0x00
-> +#define JSA1212_PXS_TH_MAX	0xFF
-> +
-> +#define JSA1212_ALS_DELAY_MS	0xC8
-> +#define JSA1212_PXS_DELAY_MS	0x64
-> +
-> +#define JSA1212_DRIVER_NAME	"jsa1212"
-> +#define JSA1212_REGMAP_NAME	"jsa1212_regmap"
-> +
-> +enum jsa1212_op_mode {
-> +	JSA1212_OPMODE_ALS_EN,
-> +	JSA1212_OPMODE_PXS_EN,
-> +};
-> +
-> +struct jsa1212_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	u8 als_rng_idx;
-> +	bool als_en; /* ALS enable status */
-> +	bool pxs_en; /* proximity enable status */
-> +	struct regmap *regmap;
-> +};
-> +
-> +/* ALS range idx to val mapping */
-> +static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
-> +						128, 128, 128};
-> +
-> +/* Enables or disables ALS function based on status */
-> +static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
+>
+>   #include <linux/iio/iio.h>
+>   #include "iio_core.h"
+> @@ -87,6 +88,39 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>   }
+>
+>   /**
+> + * iio_buffer_write_first_n_outer() - chrdev write to buffer
+> + *
+> + * This function pushes the user space data to kernel iio buffer
+> + **/
+> +ssize_t iio_buffer_write_first_n_outer(struct file *filp,
+> +				const char __user *buf, size_t n, loff_t *f_ps)
 > +{
-> +	int ret;
+> +	struct iio_dev *indio_dev = filp->private_data;
+> +	struct iio_buffer *rb = indio_dev->buffer;
+> +	int ret = -1;
+> +	unsigned char *data = NULL;
 > +
-> +	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-> +				JSA1212_CONF_ALS_MASK,
-> +				status);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->als_en = status ? true : false;
-> +
-> +	return ret;
-> +}
-> +
-> +/* Enables or disables PXS function based on status */
-> +static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-> +				JSA1212_CONF_PXS_MASK,
-> +				status);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->pxs_en = status ? true : false;
-> +
-> +	return ret;
-> +}
-> +
-> +static int jsa1212_read_als_data(struct jsa1212_data *data,
-> +				unsigned int *val)
-> +{
-> +	int ret;
-> +	u8 als_data[2];
-> +
-> +	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Delay for data output */
-> +	msleep(JSA1212_ALS_DELAY_MS);
-> +
-> +	/* Read 12 bit data */
-> +	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, als_data, 2);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "als data read err\n");
-> +		return ret;
-> +	}
-> +
-> +	*val = als_data[1] << 8 | als_data[0];
-This looks like an endian conversion.  If possible use one of the standard
-endian conversion functions.  That way it is free if one isn't needed.
-> +
-> +	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int jsa1212_read_pxs_data(struct jsa1212_data *data,
-> +				unsigned int *val)
-> +{
-> +	int ret;
-> +	unsigned int pxs_data;
-> +
-> +	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Delay for data output */
-> +	msleep(JSA1212_PXS_DELAY_MS);
-> +
-> +	/* Read out all data */
-> +	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "pxs data read err\n");
-> +		return ret;
-> +	}
-> +
-> +	*val = pxs_data & JSA1212_PXS_DATA_MASK;
-> +
-> +	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int jsa1212_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			ret = jsa1212_read_als_data(data, val);
-> +			break;
-> +		case IIO_PROXIMITY:
-> +			ret = jsa1212_read_pxs_data(data, val);
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +		ret = ret < 0 ? ret : IIO_VAL_INT;
-> +		mutex_unlock(&data->lock);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			*val = jsa1212_als_range_val[data->als_rng_idx];
-> +			*val2 = BIT(12); /* Max 12 bit value */
-> +			ret = IIO_VAL_FRACTIONAL;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_chan_spec jsa1212_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	}
-> +};
-> +
-> +static const struct iio_info jsa1212_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= &jsa1212_read_raw,
-> +};
-> +
-> +static int jsa1212_chip_init(struct jsa1212_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_write(data->regmap, JSA1212_CONF_REG,
-> +				JSA1212_CONF_REG_DEF);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_write(data->regmap, JSA1212_INT_REG,
-> +				JSA1212_INT_REG_DEF);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
-> +
-> +	return 0;
-> +}
-> +
-> +static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case JSA1212_PXS_DATA_REG:
-> +	case JSA1212_ALS_DT1_REG:
-> +	case JSA1212_ALS_DT2_REG:
-> +	case JSA1212_INT_REG:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static struct regmap_config jsa1212_regmap_config = {
-> +	.name =  JSA1212_REGMAP_NAME,
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = JSA1212_MAX_REG,
-> +	.cache_type = REGCACHE_RBTREE,
-> +	.volatile_reg = jsa1212_is_volatile_reg,
-> +};
-> +
-> +static int jsa1212_probe(struct i2c_client *client,
-> +			     const struct i2c_device_id *id)
-> +{
-> +	struct jsa1212_data *jsa1212_data;
-> +	struct iio_dev *indio_dev;
-> +	struct regmap *regmap;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+> +	if (!indio_dev->info)
 > +		return -ENODEV;
 > +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
-> +	if (!indio_dev)
+> +	if (n != 1)
+> +		return -EINVAL;
+> +
+> +	data = kzalloc(1, GFP_KERNEL);
+> +	if (!data)
 > +		return -ENOMEM;
 > +
-> +	regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "Regmap initialization failed.\n");
-> +		return PTR_ERR(regmap);
+> +	if (copy_from_user(data, buf, 1)) {
+> +		kfree(data);
+> +		return -EFAULT;
 > +	}
 > +
-> +	jsa1212_data = iio_priv(indio_dev);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	jsa1212_data->client = client;
-> +	jsa1212_data->regmap = regmap;
-> +
-> +	mutex_init(&jsa1212_data->lock);
-> +
-> +	ret = jsa1212_chip_init(jsa1212_data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->channels = jsa1212_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
-> +	indio_dev->name = JSA1212_DRIVER_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	indio_dev->info = &jsa1212_info;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "%s: register device failed\n", __func__);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> + /* power off the device */
-> +static int jsa1212_power_off(struct jsa1212_data *data)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
-> +				JSA1212_CONF_ALS_MASK |
-> +				JSA1212_CONF_PXS_MASK,
-> +				JSA1212_CONF_ALS_DISABLE |
-> +				JSA1212_CONF_PXS_DISABLE);
-> +
-> +	if (ret < 0)
-> +		dev_err(&data->client->dev, "power off cmd failed\n");
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +
-> +static int jsa1212_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct jsa1212_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = jsa1212_power_off(data);
-> +
-> +	iio_device_unregister(indio_dev);
-I'd definitely expect the userspace interfaces to be removed before
-the power off! Which is to say the two lines above are in the wrong order.
+> +	ret = iio_push_to_buffer(rb, data);
 
-> +
+Are you sure that this works? iio_push_to_buffer() expects a data buffer of 
+size rb->bytes_per_datum bytes. On the other hand rb->bytes_per_datum is 
+only valid when the buffer is enabled, so for this to work the buffer would 
+need to be enabled. Which means you'd inject the fake data in the middle of 
+the real data stream.
+
+> +	kfree(data);
 > +	return ret;
 > +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int jsa1212_suspend(struct device *dev)
-> +{
-> +	struct jsa1212_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return jsa1212_power_off(data);
-> +}
-> +
-> +static int jsa1212_resume(struct device *dev)
-> +{
-> +	int ret = 0;
-> +	struct jsa1212_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	if (data->als_en) {
-> +		ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
-> +		if (ret < 0) {
-> +			dev_err(dev, "als resume failed\n");
-When there is a mutex to unlock, it's often cleaner to have a single
-point of exit and use a goto.
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	if (data->pxs_en) {
-> +		ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
-> +		if (ret < 0)
-> +			dev_err(dev, "pxs resume failed\n");
-> +	}
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
-> +
-> +#define JSA1212_PM_OPS (&jsa1212_pm_ops)
-> +#else
-> +#define JSA1212_PM_OPS NULL
-> +#endif
-> +
-> +static const struct acpi_device_id jsa1212_acpi_match[] = {
-> +	{"JSA1212", 0},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
-> +
-> +static const struct i2c_device_id jsa1212_id[] = {
-> +	{ JSA1212_DRIVER_NAME, 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, jsa1212_id);
-> +
-> +static struct i2c_driver jsa1212_driver = {
-> +	.driver = {
-> +		.name	= JSA1212_DRIVER_NAME,
-> +		.pm	= JSA1212_PM_OPS,
-> +		.owner	= THIS_MODULE,
-> +		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
-> +	},
-> +	.probe		= jsa1212_probe,
-> +	.remove		= jsa1212_remove,
-> +	.id_table	= jsa1212_id,
-> +};
-> +module_i2c_driver(jsa1212_driver);
-> +
-> +MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
-> +MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
-> +MODULE_LICENSE("GPL v2");
->
+[...]
+
