@@ -1,93 +1,201 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:55987 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751245AbaHRQlg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 18 Aug 2014 12:41:36 -0400
-Date: Mon, 18 Aug 2014 11:41:29 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Felipe Balbi <balbi@ti.com>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-	<pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3] iio: ligth: add support for TI's opt3001 ligth sensor
-Message-ID: <20140818164129.GL9662@saruman.home>
-Reply-To: <balbi@ti.com>
-References: <1407940605-12270-1-git-send-email-balbi@ti.com>
- <53ECE90A.8010609@kernel.org>
- <20140814170530.GB1445@saruman.home>
- <53ECF070.5040304@kernel.org>
- <20140814201744.GA4929@saruman.home>
- <53ED1CE7.3070606@kernel.org>
- <20140814205605.GF4929@saruman.home>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37678 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752323AbaHNOi4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 10:38:56 -0400
+Message-ID: <53ECC9F9.1050105@kernel.org>
+Date: Thu, 14 Aug 2014 15:38:49 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/ZYM6PqDyfNytx60"
-In-Reply-To: <20140814205605.GF4929@saruman.home>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Aniroop Mathur <aniroop.mathur@gmail.com>
+CC: a.mathur@samsung.com, "cpgs ." <cpgs@samsung.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	p.shailesh@samsung.com, r.mahale@samsung.com,
+	vidushi.koul@samsung.com, narendra.m1@samsung.com
+Subject: Re: [PATCH 1/1] IIO: Added write function in iio_buffer_fileops
+References: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>	<53EB2AFE.10900@metafoo.de>	<CADYu309nTht96H077D6YGvhRYz6Xfux7Qri5Hi7dfgQMtOz-Pg@mail.gmail.com>	<53EB7AD9.9010602@metafoo.de> <CADYu30-RHmysR5vhvNLGXMBx2gnQ6rkdW-pPzyVY=E4KYg8g9w@mail.gmail.com> <53EC8463.2030802@metafoo.de>
+In-Reply-To: <53EC8463.2030802@metafoo.de>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---/ZYM6PqDyfNytx60
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 14/08/14 10:41, Lars-Peter Clausen wrote:
+> On 08/13/2014 06:33 PM, Aniroop Mathur wrote:
+>> On Wed, Aug 13, 2014 at 8:18 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> On 08/13/2014 03:42 PM, Aniroop Mathur wrote:
+>>>>
+>>>> On Wed, Aug 13, 2014 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de>
+>>>> wrote:
+>>>>>
+>>>>> On 08/13/2014 08:29 AM, a.mathur@samsung.com wrote:
+>>>>>>
+>>>>>>
+>>>>>> From: Aniroop Mathur <a.mathur@samsung.com>
+>>>>>>
+>>>>>> Earlier, user space can only read from iio device node but cannot write
+>>>>>> to
+>>>>>> it.
+>>>>>> This patch adds write function in iio buffer file operations,
+>>>>>> which will allow user-space applications/HAL to write the data
+>>>>>> to iio device node.
+>>>>>> So now there will be two way communication between IIO subsystem
+>>>>>> and user space. (userspace <--> kernel)
+>>>>>>
+>>>>>> It can be used by HAL or any user-space application which wants to
+>>>>>> write data to iio device node/buffer upon receiving some data from it.
+>>>>>> As an example,
+>>>>>> It is useful for iio device simulator application which need to record
+>>>>>> the data by reading from iio device node and replay the recorded data
+>>>>>> by writing back to iio device node.
+>>>>>>
+>>>>>
+>>>>> I'm not convinced that this is something that should be added to the
+>>>>> kernel.
+I'm inclined to agree with Lars.  As an additional point this will cause
+confusion when we have buffered writing for output devices (DACs).
 
-Hi,
 
-On Thu, Aug 14, 2014 at 03:56:05PM -0500, Felipe Balbi wrote:
-> +static int opt3001_write_raw(struct iio_dev *iio,
-> +		struct iio_chan_spec const *chan, int val, int val2,
-> +		long mask)
-> +{
-> +	struct opt3001 *opt =3D iio_priv(iio);
-> +	int ret =3D 0;
-> +
-> +	if (opt->mode =3D=3D OPT3001_CONFIGURATION_M_CONTINUOUS)
-> +		return -EBUSY;
-> +
-> +	if (chan->type !=3D IIO_LIGHT)
-> +		return -EINVAL;
-> +
-> +	if (mask !=3D IIO_CHAN_INFO_INT_TIME)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&opt->lock);
-> +	ret =3D opt3001_set_int_time(opt, val);
+>>>>> I'm wondering why can't this be done in userspace, e.g. by having a
+>>>>> simulator mode for the application or by using LD_PRELOAD. Having this in
+>>>>> userspace will be much more flexible and will be easier to implement
+>>>>> correctly and you'll most likely want to simulate more than just buffer
+>>>>> access, for example setting/getting properties of the device or channel.
+>>>>> For
+>>>>> the libiio[1] we are planning to implement a test backend that when
+>>>>> activated will allow to simulate a whole device rather than just buffer
+>>>>> support.
+>>>>>
+>>>>> [1] https://github.com/analogdevicesinc/libiio
+>>>>>
+>>>>>
+>>>>
+>>>> In normal Input Subsystem, there is two way communication between
+>>>> kernel and userpace. It has both read and write functionality. :)
+>>>> Why there is only one way communication in case of IIO ?
+Why should there be?
+>>>
+>>>
+>>> I've not seen a compelling reason yet why this must be implemented in kernel
+>>> space. In my opinion, as outlined above, userspace if both easier and more
+>>> flexible.
+>>>
+>>>
+>>>>
+>>>> For Input devices, I completed simulation just by reading and writing at
+>>>> input device node /dev/input/eventX.
+>>>> But for IIO devices, I am stuck as there is no write function available
+>>>> for iio device node /dev/iio:device0.
+>>>>
+>>>> As per my understanding, if we do the simulation in userspace
+>>>> then we need to create one more buffer in userpace. This will lead to
+>>>> extra memory usage. With write functionality in IIO just like
+>>>> in Input subsystem, we can avoid extra memory space. :)
+>>>
+>>>
+>>> No, you don't actually have to create a additional buffer. Just return the
+>>> data that you'd otherwise have passed to write().
+>>>
+>>>
+>>
+>> If there is no buffer, then there is clearly a chance of data loss/miss. :)
+>> Because if one application is reading the data with frequency 5 Hz
+>> and other application is writing the data at frequency 50 Hz (20 ms delay)
+>> so this reading application will miss reading a lot of data.
+>> Like in this case, after every 200 ms, 9 out of 10 data will be missed.
+> 
+> Not if implemented correctly. Even with the current kernel implementation you'll have this issues as the buffer will
+> simply overflow when you write faster than you read.
+> 
+> 
+> [...]
+If we have a usecase for playback functionality like this I would prefer it to
+be on a separate IIO device.  When Lars' DAC buffered code is ready it will
+be relatively easy to string together a fake DAC with a fake ADC to get
+this sort of functionality.   It will be rather more interesting to
+work out how to setup an arbitary device but it could be done,
+most likely using configfs.
 
-I just noticed (after further reading other drivers and testing more)
-that I'm passing the wrong argument to this function. I should be
-passing val2 instead.
+This would be more similar to uinput than the writing to the chardevs
+directly as you are suggesting here.
 
-In fact, I was complaining that the entire framework was in (in this
-case) lux but integration time was in ms rather than in s, turns out
-that was my issue. Do you want me to resend or can you fix this one line
-when applying ? I just checked that replacing val with val2 doesn't
-break anything and I can echo 0.1 or 0.8 to
-in_illuminance_integration_time
+>>>>> Are you sure that this works? iio_push_to_buffer() expects a data buffer
+>>>>> of
+>>>>> size rb->bytes_per_datum bytes. On the other hand rb->bytes_per_datum is
+>>>>> only valid when the buffer is enabled, so for this to work the buffer
+>>>>> would
+>>>>> need to be enabled. Which means you'd inject the fake data in the middle
+>>>>> of
+>>>>> the real data stream.
+>>>>>
+>>>>>
+>>>>
+>>>> Yes, It works :)
+>>>> In one patch, bytes_per_datum has been removed from kifo_in.
+>>>> Patch - iio:kfifo_buf Take advantage of the fixed record size used in IIO
+>>>> commit c559afbfb08c7eac215ba417251225d3a8e01062
+>>>> - ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
+>>>> + ret = kfifo_in(&kf->kf, data, 1);
+>>>> So, I think we can now write only one byte of data.
+>>>
+>>>
+>>> No, we need to write 1 record and the size of one record is bytes_per_datum.
+>>> If you only write one byte you'll cause a out of bounds access.
+>>>
+>>>
+>>
+>> This is the code flow below which I checked:
+>>
+>> kfifo_in(&kf->kf, data, 1);
+>> so len=1
+>> kfifo_copy_in(fifo, buf, len, fifo->in);
+>> l = min(len, size - off);
+>> memcpy(fifo->data + off, src, l);
+>>
+>> In memcpy, if l is 1, so it will copy one byte only.
+>> So, how it is writing one record and not one byte ?
+> You missed this part:
+> 
+>     if (esize != 1) {
+>         off *= esize;
+>         size *= esize;
+>         len *= esize;
+>     }
+> 
+> so len gets multiplied by the record size. len=1 means 1 record.
+> 
+>>
+>>>>
+>>>> Initially, I wrote the code for write functionality in kernel version 3.6
+>>>> using bytes_per_datum instead of fixed size of 1 byte.
+>>>> It worked fine. :)
+>>>> For this, we just need to replace size 1 by r->bytes_per_datum.
+>>>>
+>>>> We are not injecting data in middle of real data stream.
+>>>> When we inject the recorded data, we disabled the hardware chip,
+>>>> so no new/real data is pushed to the buffer during that time.
+>>>>
+>>>> To record, we enabled the buffer, read the real data and save it.
+>>>> To replay, we disabled the hardware chip and injected saved data by
+>>>> writing back to iio device node.
+>>>> So, Buffer is still enabled at time of writing to iio device node. :)
+>>>
+>>>
+>>> How do you disable the hardware without disabling the buffer?
+>>>
+>> I disabled the hardware by powering off the chip.
+>> And after writing is complete, chip is powered on again. :)
+> 
+> But how do you disable the device when the buffer is still active?
+> IIO expects the device to be active when the buffer is active.
+Agreed. This sounds like a pretty uggly hack.  I would not be happy with
+having this in any driver.
 
-cheers
-
---=20
-balbi
-
---/ZYM6PqDyfNytx60
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJT8iy5AAoJEIaOsuA1yqREUzIQAJFZH0kCUzlMYnJ4XDeaWaF1
-UqfY1IdkdhuqHAP2cm21LdD+dRc69gIqvmUmEZyr4Q4RzIZ2YDOWoBUUqOaE3r+U
-ZB/OlBJyxYQ1Eqi8A4mRftCilf1EUZrVKBvghA7D+eN/nWQNyBQCV4j2cZ3BMWzK
-VeQw92la2dsT2KxFmZSS88jOfPTOFtrbvRvmH+QhP1f6Nfc7KfuR7uVwwEDRHgvc
-8mYITzglmmWCWvsWj4aGuiGcU4uPEEdNvcq2x7uYb5bD1xMyUxL9/OGOQ5rXGriD
-dx4SNnTxuH0Z+K28S31rbiFKsEoecM9G9mfpybSbEJxjxqylxCmpb3l97TVGk0pF
-p+RhHYrVI1NnR4Cr2y/OGd1pMGeXOcVmRtVMecFEQtd8XdCEJB8OPu6YtFiWNBxc
-YkspwTdgFdJ8byCsYsLC7eSdeyXLU6fzILAnCPw+gFvCwL0ci37mlfcNO3mm8dIV
-B+S1YrfqGupLqaC3dahYKtV13R7PfVQKGkZ7VEQv4+PvBrJhwPBuLGHGriNeffDp
-IeZiUHmfnwbINiL6i6G3CVl/yRJumlDRng23ahqC3uAZ7tXYHuhipTyKBna00LKe
-1ZHKJDbpbtVlpcGR5DyifLNkmmTw6w/IZoECjBsD+48/X877eY9QwJGd9OJ1oiAI
-ohrqPdcpH8pBpnBSFjEW
-=B1XL
------END PGP SIGNATURE-----
-
---/ZYM6PqDyfNytx60--
+> 
+> - Lars
+> 
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
