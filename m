@@ -1,98 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37708 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38931 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751526AbaHNOmg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 10:42:36 -0400
-Message-ID: <53ECCADA.7000202@kernel.org>
-Date: Thu, 14 Aug 2014 15:42:34 +0100
+	with ESMTP id S932065AbaHNRaq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 13:30:46 -0400
+Message-ID: <53ECF244.5050905@kernel.org>
+Date: Thu, 14 Aug 2014 18:30:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Allow devices to specify that bits above the MSB
- are fully defined
-References: <1407919628-14409-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1407919628-14409-1-git-send-email-lars@metafoo.de>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V2 1/8] iio: mma8452: Initialise before activating
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090131.4618.11083.stgit@localhost> <53E38B62.8010208@kernel.org> <alpine.DEB.2.01.1408071936430.24683@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1408071936430.24683@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/08/14 09:47, Lars-Peter Clausen wrote:
-> Some devices which have less significant bits than the number of storage bits
-> (e.g. 14-bit data in a 16-bit word) still properly initialize the bits above the
-> MSB. For unsigned data this means the bits will be set to 0 and for signed data
-> the bits will be set to the extended sign bit. Having this information allows
-> userspace applications to skip the step of having to perform a manual sign
-> extension or masking of the upper bits. Especially when processing larger
-> quantities of data this can improve performance. This patch introduces two new
-> sign specifiers for the scan element type to allow drivers to describe this
-> behavior. A uppercase 'S' will be used for fully defined signed words and a
-> uppercase 'U' will be used for fully defined unsigned words.
->
-Hmm. From a purely interfacing point of view, the obvious thing to do would be to
-simply set realbits == storagebits.
-I guess the point here is that userspace might be infering more than simply how
-to grab the data when it reads the buffer description.  It would prevent userspace
-from performing minimal packing for example.
-
-I'm a little unsure of whether this extra interface is worthwhile...
-
-Will let this sit for a little while to gather more opinions...
-
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 38 ++++++++++++++++++---------------
->  1 file changed, 21 insertions(+), 17 deletions(-)
+On 07/08/14 18:47, Peter Meerwald wrote:
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d760b02..f104ef8 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -885,23 +885,27 @@ Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Description of the scan element data storage within the buffer
->  		and hence the form in which it is read from user-space.
-> -		Form is [be|le]:[s|u]bits/storagebits[>>shift].
-> -		be or le specifies big or little endian. s or u specifies if
-> -		signed (2's complement) or unsigned. bits is the number of bits
-> -		of data and storagebits is the space (after padding) that it
-> -		occupies in the buffer. shift if specified, is the shift that
-> -		needs to be applied prior to masking out unused bits. Some
-> -		devices put their data in the middle of the transferred elements
-> -		with additional information on both sides.  Note that some
-> -		devices will have additional information in the unused bits
-> -		so to get a clean value, the bits value must be used to mask
-> -		the buffer output value appropriately.  The storagebits value
-> -		also specifies the data alignment.  So s48/64>>2 will be a
-> -		signed 48 bit integer stored in a 64 bit location aligned to
-> -		a 64 bit boundary. To obtain the clean value, shift right 2
-> -		and apply a mask to zero the top 16 bits of the result.
-> -		For other storage combinations this attribute will be extended
-> -		appropriately.
-> +		Form is [be|le]:[s|S|u|U]bits/storagebits[>>shift].
-> +		be or le specifies big or little endian. s/S u/U specifies if
-> +		signed (2's complement) or unsigned. If the letter is lower case
-> +		(s or u) this means that the bits above the MSB in the word as
-> +		it is stored in memory are undefined and some devices may store
-> +		additional information in these bits. A application processing
-> +		such data should make sure to mask the upper bits out for
-> +		unsigned data and do proper sign extension for signed data. If
-> +		the letter is upper case (S or U) the bits above the MSB in the
-> +		word are fully defined. For unsigned data the upper bits are
-> +		guaranteed to be 0, for signed data they will contain the
-> +		extended sign bit. In both cases bits below the the LSB will be
-> +		undefined. bits is the number of bits of data and storagebits is
-> +		the space (after padding) that it occupies in the buffer. shift
-> +		if specified, is the shift that needs to be applied prior to
-> +		masking out unused bits. The storagebits value also specifies
-> +		the data alignment. So s48/64>>2 will be a signed 48 bit integer
-> +		stored in a 64 bit location aligned to a 64 bit boundary. To
-> +		obtain the clean value, shift right 2 and apply a mask to zero
-> +		the top 16 bits of the result. For other storage combinations
-> +		this attribute will be extended appropriately.
->  
->  What:		/sys/.../iio:deviceX/scan_elements/in_accel_type_available
->  KernelVersion:	2.6.37
+>>> Many of the hardware configuration registers may only be modified while the
+>>> device is inactive.
+>>>
+>>> Currently the probe code first activates the device and then modifies the
+>>> registers (eg to set the scale). This doesn't actually work but is not
+>>> noticed since the scale used is the default value.
+>>>
+>>> While at it also issue a hardware reset command at probe time.
+>>>
+>>> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+>> Looks fine to me but I'd like an OK from Peter for this series.
+> 
+> looks good, no objection, I haven't test yet however
+No rush given timing.  Just let me know if you aren't going
+to test them for a VERY long time ;)
+> 
+> patch 1/8 is a bug fix but not worth for -stable
+> 
+> in patch 2, the local variable ret could be dropped and replaced with 
+> returns
+> 
+> patch 3, what is the local variable supported_interrupts good for?
+> 
+> patch 6/8 still has wrong subject: io -> iio
+> 
+>>>  drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
+>>>  1 file changed, 34 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>>> index 3c12d49..04a4f34 100644
+>>> --- a/drivers/iio/accel/mma8452.c
+>>> +++ b/drivers/iio/accel/mma8452.c
+>>> @@ -32,6 +32,7 @@
+>>>  #define MMA8452_OFF_Z 0x31
+>>>  #define MMA8452_CTRL_REG1 0x2a
+>>>  #define MMA8452_CTRL_REG2 0x2b
+>>> +#define MMA8452_CTRL_REG2_RST		BIT(6)
+>>>
+>>>  #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+>>>
+>>> @@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
+>>>  	{6, 250000}, {1, 560000}
+>>>  };
+>>>
+>>> -/*
+>>> +/*
+>> This ought to be in a separate cleanup patch.  Just adds noise to the important
+>> stuff in here!  Not important though so don't bother rerolling the series for this.
+>>
+>>>   * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
+>>>   * The userspace interface uses m/s^2 and we declare micro units
+>>>   * So scale factor is given by:
+>>> @@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
+>>>
+>>>  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+>>>
+>>> +static int mma8452_reset(struct i2c_client *client)
+>>> +{
+>>> +	int i;
+>>> +	int ret;
+>>> +
+>>> +	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
+>>> +						MMA8452_CTRL_REG2_RST);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	for (i = 0; i < 10; i++) {
+>>> +		udelay(100);
+>>> +		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
+>>> +		if (ret == -EIO)
+>>> +			continue; /* I2C comm reset */
+>>> +		if (ret < 0)
+>>> +			return ret;
+>>> +		if (!(ret & MMA8452_CTRL_REG2_RST))
+>>> +			return 0;
+>>> +	}
+>>> +
+>>> +	return -ETIMEDOUT;
+>>> +}
+>>> +
+>>>  static int mma8452_probe(struct i2c_client *client,
+>>>  			 const struct i2c_device_id *id)
+>>>  {
+>>> @@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
+>>>  	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
+>>>  	indio_dev->available_scan_masks = mma8452_scan_masks;
+>>>
+>>> -	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>>> -		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>>> -	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+>>> -		data->ctrl_reg1);
+>>> +	ret = mma8452_reset(client);
+>>>  	if (ret < 0)
+>>>  		return ret;
+>>>
+>>> @@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
+>>>  	if (ret < 0)
+>>>  		return ret;
+>>>
+>>> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>>> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>>> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+>>> +		data->ctrl_reg1);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>>  		mma8452_trigger_handler, NULL);
+>>>  	if (ret < 0)
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
 > 
