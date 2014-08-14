@@ -1,179 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-215.synserver.de ([212.40.185.215]:1054 "EHLO
-	smtp-out-214.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754439AbaHNJmB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 05:42:01 -0400
-Message-ID: <53EC8463.2030802@metafoo.de>
-Date: Thu, 14 Aug 2014 11:41:55 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38799 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752351AbaHNRMa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 13:12:30 -0400
+Message-ID: <53ECEDFD.7090409@kernel.org>
+Date: Thu, 14 Aug 2014 18:12:29 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Aniroop Mathur <aniroop.mathur@gmail.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: a.mathur@samsung.com, "cpgs ." <cpgs@samsung.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	p.shailesh@samsung.com, r.mahale@samsung.com,
-	vidushi.koul@samsung.com, narendra.m1@samsung.com
-Subject: Re: [PATCH 1/1] IIO: Added write function in iio_buffer_fileops
-References: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>	<53EB2AFE.10900@metafoo.de>	<CADYu309nTht96H077D6YGvhRYz6Xfux7Qri5Hi7dfgQMtOz-Pg@mail.gmail.com>	<53EB7AD9.9010602@metafoo.de> <CADYu30-RHmysR5vhvNLGXMBx2gnQ6rkdW-pPzyVY=E4KYg8g9w@mail.gmail.com>
-In-Reply-To: <CADYu30-RHmysR5vhvNLGXMBx2gnQ6rkdW-pPzyVY=E4KYg8g9w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Martin Fuzzey <mfuzzey@parkeon.com>
+CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
+Subject: Re: [PATCH V2 8/8] iio: mma8452: Add support for interrupt driven
+ triggers.
+References: <20140729090128.4618.92936.stgit@localhost> <20140729090145.4618.72768.stgit@localhost> <53E3AA82.5040004@kernel.org> <53E3B57A.4030201@parkeon.com>
+In-Reply-To: <53E3B57A.4030201@parkeon.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/13/2014 06:33 PM, Aniroop Mathur wrote:
-> On Wed, Aug 13, 2014 at 8:18 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 08/13/2014 03:42 PM, Aniroop Mathur wrote:
->>>
->>> On Wed, Aug 13, 2014 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de>
->>> wrote:
->>>>
->>>> On 08/13/2014 08:29 AM, a.mathur@samsung.com wrote:
->>>>>
->>>>>
->>>>> From: Aniroop Mathur <a.mathur@samsung.com>
->>>>>
->>>>> Earlier, user space can only read from iio device node but cannot write
->>>>> to
->>>>> it.
->>>>> This patch adds write function in iio buffer file operations,
->>>>> which will allow user-space applications/HAL to write the data
->>>>> to iio device node.
->>>>> So now there will be two way communication between IIO subsystem
->>>>> and user space. (userspace <--> kernel)
->>>>>
->>>>> It can be used by HAL or any user-space application which wants to
->>>>> write data to iio device node/buffer upon receiving some data from it.
->>>>> As an example,
->>>>> It is useful for iio device simulator application which need to record
->>>>> the data by reading from iio device node and replay the recorded data
->>>>> by writing back to iio device node.
->>>>>
->>>>
->>>> I'm not convinced that this is something that should be added to the
->>>> kernel.
->>>> I'm wondering why can't this be done in userspace, e.g. by having a
->>>> simulator mode for the application or by using LD_PRELOAD. Having this in
->>>> userspace will be much more flexible and will be easier to implement
->>>> correctly and you'll most likely want to simulate more than just buffer
->>>> access, for example setting/getting properties of the device or channel.
->>>> For
->>>> the libiio[1] we are planning to implement a test backend that when
->>>> activated will allow to simulate a whole device rather than just buffer
->>>> support.
->>>>
->>>> [1] https://github.com/analogdevicesinc/libiio
->>>>
->>>>
->>>
->>> In normal Input Subsystem, there is two way communication between
->>> kernel and userpace. It has both read and write functionality. :)
->>> Why there is only one way communication in case of IIO ?
+On 07/08/14 18:20, Martin Fuzzey wrote:
+> Hi Jonathan and thanks for the review.
+> 
+> I'll send my comments but I'll be on holiday from tomorrow evening until beginning of september so won't be able to send
+> a V3 until later.
+> 
+Hope you had a good time!
+> On 07/08/14 18:34, Jonathan Cameron wrote:
+>> ---
+>> @@ -555,18 +557,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>>   {
+>>       struct iio_dev *indio_dev = p;
+>>       struct mma8452_data *data = iio_priv(indio_dev);
+>> +    int ret = IRQ_NONE;
+>>       int src;
 >>
+>>       src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+>>       if (src < 0)
+>>           return IRQ_NONE;
 >>
->> I've not seen a compelling reason yet why this must be implemented in kernel
->> space. In my opinion, as outlined above, userspace if both easier and more
->> flexible.
+>> +    if (src & MMA8452_INT_DRDY) {
+>> +        iio_trigger_poll_chained(indio_dev->trig, iio_get_time_ns());
+>> +        ret = IRQ_HANDLED;
+>> +    }
+>> +
+>>       if (src & MMA8452_INT_TRANS) {
+>>           mma8452_transient_interrupt(indio_dev);
+>> -        return IRQ_HANDLED;
+>> +        ret = IRQ_HANDLED;
+>>       }
 >>
->>
->>>
->>> For Input devices, I completed simulation just by reading and writing at
->>> input device node /dev/input/eventX.
->>> But for IIO devices, I am stuck as there is no write function available
->>> for iio device node /dev/iio:device0.
->>>
->>> As per my understanding, if we do the simulation in userspace
->>> then we need to create one more buffer in userpace. This will lead to
->>> extra memory usage. With write functionality in IIO just like
->>> in Input subsystem, we can avoid extra memory space. :)
->>
->>
->> No, you don't actually have to create a additional buffer. Just return the
->> data that you'd otherwise have passed to write().
->>
->>
->
-> If there is no buffer, then there is clearly a chance of data loss/miss. :)
-> Because if one application is reading the data with frequency 5 Hz
-> and other application is writing the data at frequency 50 Hz (20 ms delay)
-> so this reading application will miss reading a lot of data.
-> Like in this case, after every 200 ms, 9 out of 10 data will be missed.
+>> -    return IRQ_NONE;
+>> Leave the returns as they were and just return from the new if statement...
+>> It's neater and there is no reason to do a single point of exit if
+>> there is no cleaning up to do.
+> 
+> The final return still has to be changed so that the function correctly handles the case of both interrupt bits being set.
+> The idea wasn't so much as to create a single point of return as to keep the two handler statements symmetrical and not
+> have the second one a special case just because it's the last.
+> The hardware supports other interrupts and there's a risk of someone adding a third one later and forgetting to modify
+> the second one.
+> 
+> But if you really insist I can do it that way.
+Leave it be, I'd missed the possiblity of both.
+>>> +    return ret;
+>>>   }
+> 
+> +static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
+> +{
+> +    if (indio_dev->trig) {
+> +        iio_trigger_unregister(indio_dev->trig);
+> 
+>> Probably no reason not use devm_iio_trigger_alloc and avoid the frees.
+>> Doesn't save much, but someone else will only propose a patch 10 minutes
+>> after this goes in if you don't do it...
+> 
+> Ok will do for V3
+> 
+>      if (client->irq) {
+> -        int supported_interrupts = MMA8452_INT_TRANS;
+> +        int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
+> +        int enabled_interrupts = MMA8452_INT_TRANS;
+> 
+>> Note again, I'm very much against coming up with any events enabled....
+>> It's not what people expect so all sorts of messy things could occur.
+> 
+> Yes, quite agree but actually they aren't enabled.
+> 
+> The bit allowing any interrupts generated by the transient detection module to be routed to the interrupt pin is enabled.
+> The threshold is set to the maximum value (your remark on a previous patch).
+> BUT the bit that actually enables the transient detection (and hence the events) is not set until userspace asks for it
+> (by mma8452_write_event_config())
+Fair enough. Thanks for the explanation.
+> 
+> The reason for setting the initial threshold is for the case where userspace enables the event before writing the
+> threshold value.
+> It seemed safer to default to a high threshold than a low one.
+Hmm.. More fool them if they don't check ;)
 
-Not if implemented correctly. Even with the current kernel implementation 
-you'll have this issues as the buffer will simply overflow when you write 
-faster than you read.
-
-
-[...]
->>>> Are you sure that this works? iio_push_to_buffer() expects a data buffer
->>>> of
->>>> size rb->bytes_per_datum bytes. On the other hand rb->bytes_per_datum is
->>>> only valid when the buffer is enabled, so for this to work the buffer
->>>> would
->>>> need to be enabled. Which means you'd inject the fake data in the middle
->>>> of
->>>> the real data stream.
->>>>
->>>>
->>>
->>> Yes, It works :)
->>> In one patch, bytes_per_datum has been removed from kifo_in.
->>> Patch - iio:kfifo_buf Take advantage of the fixed record size used in IIO
->>> commit c559afbfb08c7eac215ba417251225d3a8e01062
->>> - ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
->>> + ret = kfifo_in(&kf->kf, data, 1);
->>> So, I think we can now write only one byte of data.
->>
->>
->> No, we need to write 1 record and the size of one record is bytes_per_datum.
->> If you only write one byte you'll cause a out of bounds access.
->>
->>
->
-> This is the code flow below which I checked:
->
-> kfifo_in(&kf->kf, data, 1);
-> so len=1
-> kfifo_copy_in(fifo, buf, len, fifo->in);
-> l = min(len, size - off);
-> memcpy(fifo->data + off, src, l);
->
-> In memcpy, if l is 1, so it will copy one byte only.
-> So, how it is writing one record and not one byte ?
-You missed this part:
-
-     if (esize != 1) {
-         off *= esize;
-         size *= esize;
-         len *= esize;
-     }
-
-so len gets multiplied by the record size. len=1 means 1 record.
-
->
->>>
->>> Initially, I wrote the code for write functionality in kernel version 3.6
->>> using bytes_per_datum instead of fixed size of 1 byte.
->>> It worked fine. :)
->>> For this, we just need to replace size 1 by r->bytes_per_datum.
->>>
->>> We are not injecting data in middle of real data stream.
->>> When we inject the recorded data, we disabled the hardware chip,
->>> so no new/real data is pushed to the buffer during that time.
->>>
->>> To record, we enabled the buffer, read the real data and save it.
->>> To replay, we disabled the hardware chip and injected saved data by
->>> writing back to iio device node.
->>> So, Buffer is still enabled at time of writing to iio device node. :)
->>
->>
->> How do you disable the hardware without disabling the buffer?
->>
-> I disabled the hardware by powering off the chip.
-> And after writing is complete, chip is powered on again. :)
-
-But how do you disable the device when the buffer is still active?
-IIO expects the device to be active when the buffer is active.
-
-- Lars
-
-
+J
+> 
+> Regards,
+> 
+> Martin
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
