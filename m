@@ -1,42 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44377 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752258AbaHHInY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Aug 2014 04:43:24 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from mout.gmx.net ([212.227.17.20]:60416 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751977AbaHRV6k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 Aug 2014 17:58:40 -0400
+Message-ID: <53F27709.9000901@gmx.de>
+Date: Mon, 18 Aug 2014 23:58:33 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio:buffer: Wrong sized allocation of demux table elements.
-Date: Fri,  8 Aug 2014 09:43:12 +0100
-Message-Id: <1407487392-1671-1-git-send-email-jic23@kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Add designated reviewers for IIO subsystem
+References: <1408350589-22372-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.01.1408181042300.4583@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1408181042300.4583@pmeerw.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The size of the allocation is currently set to the size of the pointer
-rather than the structure we should actually be allocating.
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-Reported-by: kbuild@01.org
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/industrialio-buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 84a952931f9f..ec82cb0bea38 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -951,7 +951,7 @@ static int iio_buffer_add_demux(struct iio_buffer *buffer,
- 		(*p)->to + (*p)->length == out_loc) {
- 		(*p)->length += length;
- 	} else {
--		*p = kmalloc(sizeof(*p), GFP_KERNEL);
-+		*p = kmalloc(sizeof(**p), GFP_KERNEL);
- 		if (*p == NULL)
- 			return -ENOMEM;
- 		(*p)->from = in_loc;
--- 
-2.0.3
+Peter Meerwald schrieb:
+> On Mon, 18 Aug 2014, Lars-Peter Clausen wrote:
+>
+>> Add those persons who generally tend to review new IIO patches to the list of
+>> designated reviewers to make sure that they are Cc'ed on new patches.
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> ---
+>> Hartmut, Peter if you are OK with this please ack the patch, otherwise I can
+>> respin it to remove you.
+> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+>
+>> ---
+>>  MAINTAINERS | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index aefa948..3f77be0 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -4580,6 +4580,9 @@ F:	drivers/media/rc/iguanair.c
+>>  
+>>  IIO SUBSYSTEM AND DRIVERS
+>>  M:	Jonathan Cameron <jic23@kernel.org>
+>> +R:	Hartmut Knaack <knaack.h@gmx.de>
+>> +R:	Lars-Peter Clausen <lars@metafoo.de>
+>> +R:	Peter Meerwald <pmeerw@pmeerw.net>
+>>  L:	linux-iio@vger.kernel.org
+>>  S:	Maintained
+>>  F:	drivers/iio/
+>>
 
