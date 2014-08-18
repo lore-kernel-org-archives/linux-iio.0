@@ -1,224 +1,1216 @@
-Return-Path: <zyf@rock-chips.com>
-Date: Fri, 29 Aug 2014 09:54:14 +0800
-From: =?utf-8?B?6LW15Luq5bOw?= <zyf@rock-chips.com>
-To: =?utf-8?B?SGVpa29TdMO8Ym5lcg==?= <heiko@sntech.de>,
-	"Eduardo Valentin" <edubezval@gmail.com>
-Cc: "Arnd Bergmann" <arnd@arndb.de>,
-	"Caesar Wang" <caesar.wang@rock-chips.com>,
-	rui.zhang <rui.zhang@intel.com>,
-	grant.likely <grant.likely@linaro.org>,
-	robh+dt <robh+dt@kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-pm <linux-pm@vger.kernel.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	devicetree <devicetree@vger.kernel.org>,
-	linux-doc <linux-doc@vger.kernel.org>,
-	=?utf-8?B?6buE5rab?= <huangtao@rock-chips.com>,
-	=?utf-8?B?6JSh5p6r?= <cf@rock-chips.com>,
-	dianders <dianders@chromium.org>,
-	dtor <dtor@chromium.org>,
-	=?utf-8?B?6ZKf5YuH5rGq?= <zyw@rock-chips.com>,
-	"addy.ke@rock-chips.com" <addy.ke@rock-chips.com>,
-	dmitry.torokhov <dmitry.torokhov@gmail.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	"Jonathan Cameron" <jic23@kernel.org>
-Subject: Re: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
-References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com>,
-	<2852853.mfRZfFVSev@wuerfel>,
-	<20140828143733.GA18084@developer>,
-	<3440260.edal29kzlR@diego>
-Mime-Version: 1.0
-Message-ID: <2014082909531345696848@rock-chips.com>
-Content-Type: multipart/alternative;
-	boundary="----=_001_NextPart620851250586_=----"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-240.synserver.de ([212.40.185.240]:1045 "EHLO
+	smtp-out-238.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750951AbaHRH5X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Aug 2014 03:57:23 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] staging:iio: Remove ad5930/ad9850/ad9852/ad9910/ad9951 dummy drivers
+Date: Mon, 18 Aug 2014 09:57:12 +0200
+Message-Id: <1408348632-21448-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is a multi-part message in MIME format.
+All what these 'drivers' do is expose a single (non standard ABI) sysfs
+attribute that when written to does a direct pass-through to spi_write(). This
+is rather ugly and does not justify the existence of a driver as the same can
+easily done by using the spidev interface.
 
-------=_001_NextPart620851250586_=----
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
+The drivers will eventually be rewritten as proper IIO ABI compliant drivers
+which do have the proper abstraction layers between userspace and the device.
+But in the meantime these driver do not add any extra value and just clutter up
+the staging area. So just remove them.
 
-SGkgSGVpa2/vvIwNCg0KICAgVGhlIFRTLUFEQyBvbiBSSzMyODggaGFzIHR3byBjb21wb25lbnQs
-IGEgdHNhZGMgYW5kIGEgdHNhZGMgY29udHJvbGxlci4gVGhlIHRzYWRjIGNvbnRyb2xsZXIgaXMg
-c2ltaWxhciBsaWtlIHRoZSB0aGVybWFsIG1hbmFnZXIgdW5pdCBvbiBvdGhlciBTT0NzLiBXZSBm
-b2xsb3dlZCB0aGUgbmFtaW5nIG9mIDMwNjYsIGJ1dCBub3QgbmFtZWQgYXMgdGhlIFRoZXJtYWwg
-TWFuYWdlci4gDQoNCiAgIE1vcmVvdmVyLHRoZXJlIGlzIG9ubHkgb25lIHNldCBvZiBhcGIgcmVn
-aXN0ZXJzIHRvIGFjY2VzcyB0aGUgdHNhZGMgY29udHJvbGxlcixhbmQgdGhlIHRzYWRjIGlzIGNv
-bnRyb2xsZWQgYnkgdGhlIHRzYWRjIGNvbnRyb2xsZXIsY291bGQgbm90IGFjY2VzcyBkaXJlY3Rs
-eS4gSWYgd2Ugd3JpdGUgYSBnZW5lcmFsIHRzYWRjIGRyaXZlciBieSBhY2Nlc3NlZCB0c2FkYyBj
-b250cm9sbGVyIHJlZ2lzdGVycywgYW5kIGl0IGhhcmRseSB0byB3cml0ZSBhIGRyaXZlciBmb3Ig
-dGhlIHRzYWRjIGNvbnRyb2xsZXIuIA0KDQogICBTbywgSSBkbyBub3QgYWdyZWUgdG8gd3JpdGUg
-YSBnZW5lcmljIGFkYyBkcml2ZXIgZm9yIHRoZSByazMyODgtdHNhZGMuDQoNCg0KDQpZaWZlbmcg
-Wmhhbw0KIA0K5Y+R5Lu25Lq677yaIEhlaWtvU3TDvGJuZXINCuWPkemAgeaXtumXtO+8miAyMDE0
-LTA4LTI5IDAwOjExDQrmlLbku7bkurrvvJogRWR1YXJkbyBWYWxlbnRpbg0K5oqE6YCB77yaIEFy
-bmQgQmVyZ21hbm47IENhZXNhciBXYW5nOyBydWkuemhhbmc7IGdyYW50Lmxpa2VseTsgcm9iaCtk
-dDsgbGludXgta2VybmVsOyBsaW51eC1wbTsgbGludXgtYXJtLWtlcm5lbDsgZGV2aWNldHJlZTsg
-bGludXgtZG9jOyBodWFuZ3RhbzsgY2Y7IGRpYW5kZXJzOyBkdG9yOyB6eXc7IGFkZHkua2U7IGRt
-aXRyeS50b3Jva2hvdjsgemhhb3lpZmVuZzsgbGludXgtaWlvOyBKb25hdGhhbiBDYW1lcm9uDQrk
-uLvpopjvvJogUmU6IFtQQVRDSCB2MyAxLzRdIHRoZXJtYWw6IHJvY2tjaGlwOiBhZGQgZHJpdmVy
-IGZvciB0aGVybWFsDQogDQpBbSBEb25uZXJzdGFnLCAyOC4gQXVndXN0IDIwMTQsIDEwOjM3OjM1
-IHNjaHJpZWIgRWR1YXJkbyBWYWxlbnRpbjoNCj4gQ2Vhc2FyIGFuZCBBcm5kLA0KPiANCj4gT24g
-VGh1LCBBdWcgMjgsIDIwMTQgYXQgMTA6NDg6MjNBTSArMDIwMCwgQXJuZCBCZXJnbWFubiB3cm90
-ZToNCj4gPiBPbiBUaHVyc2RheSAyOCBBdWd1c3QgMjAxNCAwODo1OToxOSBDYWVzYXIgV2FuZyB3
-cm90ZToNCj4gPiA+IFRoZXJtYWwgaXMgVFMtQURDIENvbnRyb2xsZXIgbW9kdWxlIHN1cHBvcnRz
-IHVzZXItZGVmaW5lZCBtb2RlIGFuZA0KPiA+ID4gYXV0b21hdGljIG1vZGUuDQo+ID4gPiANCj4g
-PiA+IFVzZXItZGVmaW5lZCBtb2RlIHJlZmVycyxUU0FEQyBhbGwgdGhlIGNvbnRyb2wgc2lnbmFs
-cyBlbnRpcmVseSBieQ0KPiA+ID4gc29mdHdhcmUNCj4gPiA+IHdyaXRpbmcgdG8gcmVnaXN0ZXIg
-Zm9yIGRpcmVjdCBjb250cm9sLg0KPiA+ID4gDQo+ID4gPiBBdXRvbWFpYyBtb2RlIHJlZmVycyB0
-byB0aGUgbW9kdWxlIGF1dG9tYXRpY2FsbHkgcG9sbCBUU0FEQyBvdXRwdXQsYW5kDQo+ID4gPiB0
-aGUgcmVzdWx0cyBXZXJlIGNoZWNrZWQuDQo+ID4gPiANCj4gPiA+IElmIHlvdSBmaW5kIHRoYXQg
-dGhlIHRlbXBlcmF0dXJlIEhpZ2ggaW4gYSBwZXJpb2Qgb2YgdGltZSwgYW4gaW50ZXJydXB0DQo+
-ID4gPiBpcyBnZW5lcmF0ZWQgdG8gdGhlIHByb2Nlc3NvciBkb3duLW1lYXN1cmVzIHRha2VuO2lm
-IHRoZSB0ZW1wZXJhdHVyZQ0KPiA+ID4gb3ZlciBhIHBlcmlvZCBvZiB0aW1lIEhpZ2gsIHRoZSBy
-ZXN1bHRpbmcgVFNIVVQgZ2F2ZSBDUlUgbW9kdWxlLGxldCBpdA0KPiA+ID4gcmVzZXQgdGhlIGVu
-dGlyZSBjaGlwLCBvciB2aWEgR1BJTyBnaXZlIFBNSUMuDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1v
-ZmYtYnk6IHpoYW95aWZlbmcgPHp5ZkByb2NrLWNoaXBzLmNvbT4NCj4gPiA+IFNpZ25lZC1vZmYt
-Ynk6IENhZXNhciBXYW5nIDxjYWVzYXIud2FuZ0Byb2NrLWNoaXBzLmNvbT4NCj4gPiANCj4gPiBI
-aSBDYWVzYXIsDQo+ID4gDQo+ID4gQWZ0ZXIgbG9va2luZyBhdCB0aGUgZHJpdmVyIChsYXN0IHRp
-bWUgSSBvbmx5IHJlY2VpdmVkIHRoZSBwYXRjaCBmb3INCj4gPiB0aGUgYmluZGluZyksIEkgaGF2
-ZSBhIG1vcmUgZ2VuZXJhbCBjb21tZW50Og0KPiA+IA0KPiA+IFRoaXMgbG9va3MgbGlrZSBhIGdl
-bmVyYWwtcHVycG9zZSBBREMgZGV2aWNlLCBub3QgYW4gSVAgYmxvY2sgdGhhdCBpcw0KPiA+IHNw
-ZWNpZmljIHRvIHRoZXJtYWwgbWFuYWdlbWVudC4gVGhlIGJpbmRpbmcgbG9va3Mgb2sgZm9yIHRo
-YXQgcHVycG9zZQ0KPiA+IGJ1dCBzaG91bGQgcHJvYmFibHkgYmUgbW92ZWQgaW50bw0KPiA+IERv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjLyBhcyBhIG1pbm9yIGNoYW5n
-ZS4NCj4gDQo+IEkgYWdyZWUgd2l0aCBBcm5kJ3MgcG9pbnQgaGVyZS4gSXQgbWFrZXMgc2Vuc2Ug
-dG8gbWUgdG8gaGF2ZSB0aGlzIGRyaXZlcg0KPiB1bmRlciB0aGUgSUlPIHVtYnJlbGxhLg0KIA0K
-aW50ZXJlc3Rpbmcgc3VnZ2VzdGlvbiA6LSkNCiANCkkndmUganVzdCB0YWtlbiBhbm90aGVyIGxv
-b2sgYXQgdGhlIHJlZ2lzdGVycyBvZiB0aGUgdHMtYWRjIG9uIHRoZSByazMwNjYgDQp3aGljaCBp
-cyBjb21wbGV0ZWx5IGRpZmZlcmVudCBmcm9tIHRoZSByazMyODggb25lLiBJbnRlcmVzdGluZ2x5
-IHRoZSByazMwNjYgb25lIA0KaXMgImp1c3QiIGFub3RoZXIgc2FyYWRjIElQLCBzbyBmb3IgdGhp
-cyBvbmUgaXQgd291bGQgcmVhbGx5IG1ha2Ugc2Vuc2UuDQogDQogDQo+ID4gT24gdGhlIGRyaXZl
-ciBzaWRlLCBJIGJlbGlldmUgdGhlIGNvcnJlY3Qgd2F5IHRvIGRlYWwgd2l0aCB0aGlzIHNldHVw
-DQo+ID4gaXMgdG8gc3BsaXQgeW91ciBkcml2ZXIgaW50byBhIGdlbmVyaWMgZHJpdmVycy9paW8v
-YWRjL3JvY2tjaGlwcy10c2FkYy5jDQo+ID4gZmlsZSwgYW5kIGEgc21hbGxlciB0aGVybWFsIGRy
-aXZlciB0aGF0IHVzZXMgdGhlIGlpbyBpbi1rZXJuZWwgaW50ZXJmYWNlcywNCj4gPiBpZGVhbGx5
-IG9uZSB0aGF0IGlzIGluZGVwZW5kZW50IG9mIHRoZSB1bmRlcmx5aW5nIGhhcmR3YXJlIGFuZCBj
-YW4NCj4gPiB3b3JrIG9uIGFueSBBREMgaW1wbGVtZW50YXRpb24uDQo+IA0KPiBBZ3JlZWQuIElm
-IHlvdSBjYW4gd3JpdGUgc3VjaCBpbnRlcmZhY2UgYW5kIG1ha2UgeW91ciBkcml2ZXIgdG8gd29y
-ayBpbg0KPiBzdWNoIHdheSwgdGhhdCB3b3VsZCBiZSBncmVhdC4NCiANCkJ1dCBJIGN1cnJlbnRs
-eSBkb24ndCBzZWUgaG93IHlvdSB3b3VsZCBtb2RlbCB0aGUgdGVtcGVyYXR1cmUgaGFuZGxpbmcg
-cGFydHMgDQpmcm9tIGEgZ2VuZXJpYyB0aGVybWFsIGRyaXZlciB0byBhIGdlbmVyaWMgYWRjIGRy
-aXZlciBmb3IgdGhlIHJrMzI4OC10c2FkYy4NCiANCkkgZ3Vlc3MgdGhlIGdlbmVyYWwgdGVtcGVy
-YXR1cmUgaXJxIGhhbmRsaW5nIHdvdWxkIHVzZSBpaW8tdHJpZ2dlcnM/IEJ1dCBob3cgDQpkb2Vz
-IHRoZSB0YXJnZXQgdGVtcGVyYXR1cmUgZ2V0IGludG8gdGhlIFRTQURDX0NPTVAxX0lOVCByZWdp
-c3Rlci4NCiANCkFsc28gd2hlbiBnZXR0aW5nIHRoZSB0ZW1wZXJhdHVyZSwgQ2Flc2FyJ3MgZHJp
-dmVyIGNvbXBhcmVzIGl0IHRvIGl0cyB0cmlwIA0KcG9pbnRzIGFuZCBzZXRzIHRoZSBuZXh0IHRy
-aXAgcG9pbnQgZGVwZW5kaW5nIG9uIHRoZSBjdXJyZW50IHRlbXBlcmF0dXJlIA0KKHBhc3NpdmUg
-PC0+IGNyaXRpY2FsKSBpbiByb2NrY2hpcF9nZXRfdGVtcC4NCiANCk1heWJlIHRoZXJlIGlzIHNv
-bWUgY29tcGxldGVseSBlYXN5IHdheSBmb3IgdGhpcywgYnV0IGN1cnJlbnRseSBJIGRvbid0IHNl
-ZSANCml0Lg0KIA0KIA0KSGVpa28NCiANCiANCg==
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/frequency/Kconfig  |  35 ----
+ drivers/staging/iio/frequency/Makefile |   5 -
+ drivers/staging/iio/frequency/ad5930.c | 140 -------------
+ drivers/staging/iio/frequency/ad9850.c | 120 -----------
+ drivers/staging/iio/frequency/ad9852.c | 245 ----------------------
+ drivers/staging/iio/frequency/ad9910.c | 371 ---------------------------------
+ drivers/staging/iio/frequency/ad9951.c | 201 ------------------
+ 7 files changed, 1117 deletions(-)
+ delete mode 100644 drivers/staging/iio/frequency/ad5930.c
+ delete mode 100644 drivers/staging/iio/frequency/ad9850.c
+ delete mode 100644 drivers/staging/iio/frequency/ad9852.c
+ delete mode 100644 drivers/staging/iio/frequency/ad9910.c
+ delete mode 100644 drivers/staging/iio/frequency/ad9951.c
 
-------=_001_NextPart620851250586_=----
-Content-Type: text/html;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/drivers/staging/iio/frequency/Kconfig b/drivers/staging/iio/frequency/Kconfig
+index 93b7141..fc726d3 100644
+--- a/drivers/staging/iio/frequency/Kconfig
++++ b/drivers/staging/iio/frequency/Kconfig
+@@ -3,13 +3,6 @@
+ #
+ menu "Direct Digital Synthesis"
+ 
+-config AD5930
+-	tristate "Analog Devices ad5930/5932 driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices DDS chip
+-	  ad5930/ad5932, provides direct access via sysfs.
+-
+ config AD9832
+ 	tristate "Analog Devices ad9832/5 driver"
+ 	depends on SPI
+@@ -30,32 +23,4 @@ config AD9834
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad9834.
+ 
+-config AD9850
+-	tristate "Analog Devices ad9850/1 driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices DDS chip
+-	  ad9850/1, provides direct access via sysfs.
+-
+-config AD9852
+-	tristate "Analog Devices ad9852/4 driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices DDS chip
+-	  ad9852/4, provides direct access via sysfs.
+-
+-config AD9910
+-	tristate "Analog Devices ad9910 driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices DDS chip
+-	  ad9910, provides direct access via sysfs.
+-
+-config AD9951
+-	tristate "Analog Devices ad9951 driver"
+-	depends on SPI
+-	help
+-	  Say yes here to build support for Analog Devices DDS chip
+-	  ad9951, provides direct access via sysfs.
+-
+ endmenu
+diff --git a/drivers/staging/iio/frequency/Makefile b/drivers/staging/iio/frequency/Makefile
+index 1477461..e5dbcfc 100644
+--- a/drivers/staging/iio/frequency/Makefile
++++ b/drivers/staging/iio/frequency/Makefile
+@@ -2,10 +2,5 @@
+ # Makefile for Direct Digital Synthesis drivers
+ #
+ 
+-obj-$(CONFIG_AD5930) += ad5930.o
+ obj-$(CONFIG_AD9832) += ad9832.o
+ obj-$(CONFIG_AD9834) += ad9834.o
+-obj-$(CONFIG_AD9850) += ad9850.o
+-obj-$(CONFIG_AD9852) += ad9852.o
+-obj-$(CONFIG_AD9910) += ad9910.o
+-obj-$(CONFIG_AD9951) += ad9951.o
+diff --git a/drivers/staging/iio/frequency/ad5930.c b/drivers/staging/iio/frequency/ad5930.c
+deleted file mode 100644
+index a4aeee6..0000000
+--- a/drivers/staging/iio/frequency/ad5930.c
++++ /dev/null
+@@ -1,140 +0,0 @@
+-/*
+- * Driver for ADI Direct Digital Synthesis ad5930
+- *
+- * Copyright (c) 2010-2010 Analog Devices Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- */
+-#include <linux/types.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-
+-#define DRV_NAME "ad5930"
+-
+-#define value_mask (u16)0xf000
+-#define addr_shift 12
+-
+-/* Register format: 4 bits addr + 12 bits value */
+-struct ad5903_config {
+-	u16 control;
+-	u16 incnum;
+-	u16 frqdelt[2];
+-	u16 incitvl;
+-	u16 buritvl;
+-	u16 strtfrq[2];
+-};
+-
+-struct ad5930_state {
+-	struct mutex lock;
+-	struct spi_device *sdev;
+-};
+-
+-static ssize_t ad5930_set_parameter(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	struct ad5903_config *config = (struct ad5903_config *)buf;
+-	struct iio_dev *idev = dev_to_iio_dev(dev);
+-	struct ad5930_state *st = iio_priv(idev);
+-
+-	config->control = (config->control & ~value_mask);
+-	config->incnum = (config->control & ~value_mask) | (1 << addr_shift);
+-	config->frqdelt[0] = (config->control & ~value_mask) | (2 << addr_shift);
+-	config->frqdelt[1] = (config->control & ~value_mask) | 3 << addr_shift;
+-	config->incitvl = (config->control & ~value_mask) | 4 << addr_shift;
+-	config->buritvl = (config->control & ~value_mask) | 8 << addr_shift;
+-	config->strtfrq[0] = (config->control & ~value_mask) | 0xc << addr_shift;
+-	config->strtfrq[1] = (config->control & ~value_mask) | 0xd << addr_shift;
+-
+-	xfer.len = len;
+-	xfer.tx_buf = config;
+-	mutex_lock(&st->lock);
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad5930_set_parameter, 0);
+-
+-static struct attribute *ad5930_attributes[] = {
+-	&iio_dev_attr_dds.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad5930_attribute_group = {
+-	.attrs = ad5930_attributes,
+-};
+-
+-static const struct iio_info ad5930_info = {
+-	.attrs = &ad5930_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static int ad5930_probe(struct spi_device *spi)
+-{
+-	struct ad5930_state *st;
+-	struct iio_dev *idev;
+-	int ret = 0;
+-
+-	idev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!idev)
+-		return -ENOMEM;
+-	spi_set_drvdata(spi, idev);
+-	st = iio_priv(idev);
+-
+-	mutex_init(&st->lock);
+-	st->sdev = spi;
+-	idev->dev.parent = &spi->dev;
+-	idev->info = &ad5930_info;
+-	idev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = iio_device_register(idev);
+-	if (ret)
+-		return ret;
+-	spi->max_speed_hz = 2000000;
+-	spi->mode = SPI_MODE_3;
+-	spi->bits_per_word = 16;
+-	spi_setup(spi);
+-
+-	return 0;
+-}
+-
+-static int ad5930_remove(struct spi_device *spi)
+-{
+-	iio_device_unregister(spi_get_drvdata(spi));
+-
+-	return 0;
+-}
+-
+-static struct spi_driver ad5930_driver = {
+-	.driver = {
+-		.name = DRV_NAME,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad5930_probe,
+-	.remove = ad5930_remove,
+-};
+-module_spi_driver(ad5930_driver);
+-
+-MODULE_AUTHOR("Cliff Cai");
+-MODULE_DESCRIPTION("Analog Devices ad5930 driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:" DRV_NAME);
+diff --git a/drivers/staging/iio/frequency/ad9850.c b/drivers/staging/iio/frequency/ad9850.c
+deleted file mode 100644
+index 8727933..0000000
+--- a/drivers/staging/iio/frequency/ad9850.c
++++ /dev/null
+@@ -1,120 +0,0 @@
+-/*
+- * Driver for ADI Direct Digital Synthesis ad9850
+- *
+- * Copyright (c) 2010-2010 Analog Devices Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- */
+-#include <linux/types.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-
+-#define DRV_NAME "ad9850"
+-
+-/* Register format: 4 bits addr + 12 bits value */
+-struct ad9850_config {
+-	u8 control[5];
+-};
+-
+-struct ad9850_state {
+-	struct mutex lock;
+-	struct spi_device *sdev;
+-};
+-
+-static ssize_t ad9850_set_parameter(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	struct ad9850_config *config = (struct ad9850_config *)buf;
+-	struct iio_dev *idev = dev_to_iio_dev(dev);
+-	struct ad9850_state *st = iio_priv(idev);
+-
+-	xfer.len = len;
+-	xfer.tx_buf = config;
+-	mutex_lock(&st->lock);
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	mutex_unlock(&st->lock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9850_set_parameter, 0);
+-
+-static struct attribute *ad9850_attributes[] = {
+-	&iio_dev_attr_dds.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad9850_attribute_group = {
+-	.attrs = ad9850_attributes,
+-};
+-
+-static const struct iio_info ad9850_info = {
+-	.attrs = &ad9850_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static int ad9850_probe(struct spi_device *spi)
+-{
+-	struct ad9850_state *st;
+-	struct iio_dev *idev;
+-	int ret = 0;
+-
+-	idev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!idev)
+-		return -ENOMEM;
+-	spi_set_drvdata(spi, idev);
+-	st = iio_priv(idev);
+-	mutex_init(&st->lock);
+-	st->sdev = spi;
+-
+-	idev->dev.parent = &spi->dev;
+-	idev->info = &ad9850_info;
+-	idev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = iio_device_register(idev);
+-	if (ret)
+-		return ret;
+-	spi->max_speed_hz = 2000000;
+-	spi->mode = SPI_MODE_3;
+-	spi->bits_per_word = 16;
+-	spi_setup(spi);
+-
+-	return 0;
+-}
+-
+-static int ad9850_remove(struct spi_device *spi)
+-{
+-	iio_device_unregister(spi_get_drvdata(spi));
+-
+-	return 0;
+-}
+-
+-static struct spi_driver ad9850_driver = {
+-	.driver = {
+-		.name = DRV_NAME,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad9850_probe,
+-	.remove = ad9850_remove,
+-};
+-module_spi_driver(ad9850_driver);
+-
+-MODULE_AUTHOR("Cliff Cai");
+-MODULE_DESCRIPTION("Analog Devices ad9850 driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:" DRV_NAME);
+diff --git a/drivers/staging/iio/frequency/ad9852.c b/drivers/staging/iio/frequency/ad9852.c
+deleted file mode 100644
+index af2f2cc..0000000
+--- a/drivers/staging/iio/frequency/ad9852.c
++++ /dev/null
+@@ -1,245 +0,0 @@
+-/*
+- * Driver for ADI Direct Digital Synthesis ad9852
+- *
+- * Copyright (c) 2010 Analog Devices Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- */
+-#include <linux/types.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-
+-#define DRV_NAME "ad9852"
+-
+-#define addr_phaad1 0x0
+-#define addr_phaad2 0x1
+-#define addr_fretu1 0x2
+-#define addr_fretu2 0x3
+-#define addr_delfre 0x4
+-#define addr_updclk 0x5
+-#define addr_ramclk 0x6
+-#define addr_contrl 0x7
+-#define addr_optskm 0x8
+-#define addr_optskr 0xa
+-#define addr_dacctl 0xb
+-
+-#define COMPPD		(1 << 4)
+-#define REFMULT2	(1 << 2)
+-#define BYPPLL		(1 << 5)
+-#define PLLRANG		(1 << 6)
+-#define IEUPCLK		(1)
+-#define OSKEN		(1 << 5)
+-
+-#define read_bit	(1 << 7)
+-
+-/* Register format: 1 byte addr + value */
+-struct ad9852_config {
+-	u8 phajst0[3];
+-	u8 phajst1[3];
+-	u8 fretun1[6];
+-	u8 fretun2[6];
+-	u8 dltafre[6];
+-	u8 updtclk[5];
+-	u8 ramprat[4];
+-	u8 control[5];
+-	u8 outpskm[3];
+-	u8 outpskr[2];
+-	u8 daccntl[3];
+-};
+-
+-struct ad9852_state {
+-	struct mutex lock;
+-	struct spi_device *sdev;
+-};
+-
+-static ssize_t ad9852_set_parameter(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	struct ad9852_config *config = (struct ad9852_config *)buf;
+-	struct iio_dev *idev = dev_to_iio_dev(dev);
+-	struct ad9852_state *st = iio_priv(idev);
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->phajst0[0];
+-	mutex_lock(&st->lock);
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->phajst1[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 6;
+-	xfer.tx_buf = &config->fretun1[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 6;
+-	xfer.tx_buf = &config->fretun2[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 6;
+-	xfer.tx_buf = &config->dltafre[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->updtclk[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 4;
+-	xfer.tx_buf = &config->ramprat[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->control[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->outpskm[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 2;
+-	xfer.tx_buf = &config->outpskr[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->daccntl[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9852_set_parameter, 0);
+-
+-static void ad9852_init(struct ad9852_state *st)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	u8 config[5];
+-
+-	config[0] = addr_contrl;
+-	config[1] = COMPPD;
+-	config[2] = REFMULT2 | BYPPLL | PLLRANG;
+-	config[3] = IEUPCLK;
+-	config[4] = OSKEN;
+-
+-	mutex_lock(&st->lock);
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-
+-
+-}
+-
+-static struct attribute *ad9852_attributes[] = {
+-	&iio_dev_attr_dds.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad9852_attribute_group = {
+-	.attrs = ad9852_attributes,
+-};
+-
+-static const struct iio_info ad9852_info = {
+-	.attrs = &ad9852_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static int ad9852_probe(struct spi_device *spi)
+-{
+-	struct ad9852_state *st;
+-	struct iio_dev *idev;
+-	int ret = 0;
+-
+-	idev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!idev)
+-		return -ENOMEM;
+-	st = iio_priv(idev);
+-	spi_set_drvdata(spi, idev);
+-	mutex_init(&st->lock);
+-	st->sdev = spi;
+-
+-	idev->dev.parent = &spi->dev;
+-	idev->info = &ad9852_info;
+-	idev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = devm_iio_device_register(&spi->dev, idev);
+-	if (ret)
+-		return ret;
+-	spi->max_speed_hz = 2000000;
+-	spi->mode = SPI_MODE_3;
+-	spi->bits_per_word = 8;
+-	spi_setup(spi);
+-	ad9852_init(st);
+-
+-	return 0;
+-}
+-
+-static struct spi_driver ad9852_driver = {
+-	.driver = {
+-		.name = DRV_NAME,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad9852_probe,
+-};
+-module_spi_driver(ad9852_driver);
+-
+-MODULE_AUTHOR("Cliff Cai");
+-MODULE_DESCRIPTION("Analog Devices ad9852 driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:" DRV_NAME);
+diff --git a/drivers/staging/iio/frequency/ad9910.c b/drivers/staging/iio/frequency/ad9910.c
+deleted file mode 100644
+index 755e048..0000000
+--- a/drivers/staging/iio/frequency/ad9910.c
++++ /dev/null
+@@ -1,371 +0,0 @@
+-/*
+- * Driver for ADI Direct Digital Synthesis ad9910
+- *
+- * Copyright (c) 2010 Analog Devices Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- */
+-#include <linux/types.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-
+-#define DRV_NAME "ad9910"
+-
+-#define CFR1 0x0
+-#define CFR2 0x1
+-#define CFR3 0x2
+-
+-#define AUXDAC 0x3
+-#define IOUPD 0x4
+-#define FTW 0x7
+-#define POW 0x8
+-#define ASF 0x9
+-#define MULTC 0x0A
+-#define DIG_RAMPL 0x0B
+-#define DIG_RAMPS 0x0C
+-#define DIG_RAMPR 0x0D
+-#define SIN_TONEP0 0x0E
+-#define SIN_TONEP1 0x0F
+-#define SIN_TONEP2 0x10
+-#define SIN_TONEP3 0x11
+-#define SIN_TONEP4 0x12
+-#define SIN_TONEP5 0x13
+-#define SIN_TONEP6 0x14
+-#define SIN_TONEP7 0x15
+-
+-#define RAM_ENABLE	(1 << 7)
+-
+-#define MANUAL_OSK	(1 << 7)
+-#define INVSIC		(1 << 6)
+-#define DDS_SINEOP	(1)
+-
+-#define AUTO_OSK	(1)
+-#define OSKEN		(1 << 1)
+-#define LOAD_ARR	(1 << 2)
+-#define CLR_PHA		(1 << 3)
+-#define CLR_DIG		(1 << 4)
+-#define ACLR_PHA	(1 << 5)
+-#define ACLR_DIG	(1 << 6)
+-#define LOAD_LRR	(1 << 7)
+-
+-#define LSB_FST		(1)
+-#define SDIO_IPT	(1 << 1)
+-#define EXT_PWD		(1 << 3)
+-#define ADAC_PWD	(1 << 4)
+-#define REFCLK_PWD	(1 << 5)
+-#define DAC_PWD		(1 << 6)
+-#define DIG_PWD		(1 << 7)
+-
+-#define ENA_AMP		(1)
+-#define READ_FTW	(1)
+-#define DIGR_LOW	(1 << 1)
+-#define DIGR_HIGH	(1 << 2)
+-#define DIGR_ENA	(1 << 3)
+-#define SYNCCLK_ENA	(1 << 6)
+-#define ITER_IOUPD	(1 << 7)
+-
+-#define TX_ENA		(1 << 1)
+-#define PDCLK_INV	(1 << 2)
+-#define PDCLK_ENB	(1 << 3)
+-
+-#define PARA_ENA	(1 << 4)
+-#define SYNC_DIS	(1 << 5)
+-#define DATA_ASS	(1 << 6)
+-#define MATCH_ENA	(1 << 7)
+-
+-#define PLL_ENA		(1)
+-#define PFD_RST		(1 << 2)
+-#define REFCLK_RST	(1 << 6)
+-#define REFCLK_BYP	(1 << 7)
+-
+-/* Register format: 1 byte addr + value */
+-struct ad9910_config {
+-	u8 auxdac[5];
+-	u8 ioupd[5];
+-	u8 ftw[5];
+-	u8 pow[3];
+-	u8 asf[5];
+-	u8 multc[5];
+-	u8 dig_rampl[9];
+-	u8 dig_ramps[9];
+-	u8 dig_rampr[5];
+-	u8 sin_tonep0[9];
+-	u8 sin_tonep1[9];
+-	u8 sin_tonep2[9];
+-	u8 sin_tonep3[9];
+-	u8 sin_tonep4[9];
+-	u8 sin_tonep5[9];
+-	u8 sin_tonep6[9];
+-	u8 sin_tonep7[9];
+-};
+-
+-struct ad9910_state {
+-	struct mutex lock;
+-	struct spi_device *sdev;
+-};
+-
+-static ssize_t ad9910_set_parameter(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	struct ad9910_config *config = (struct ad9910_config *)buf;
+-	struct iio_dev *idev = dev_to_iio_dev(dev);
+-	struct ad9910_state *st = iio_priv(idev);
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->auxdac[0];
+-	mutex_lock(&st->lock);
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->ioupd[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->ftw[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->pow[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->asf[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->multc[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->dig_rampl[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->dig_ramps[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->dig_rampr[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep0[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep1[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep2[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep3[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep4[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep5[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep6[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 9;
+-	xfer.tx_buf = &config->sin_tonep7[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9910_set_parameter, 0);
+-
+-static void ad9910_init(struct ad9910_state *st)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	u8 cfr[5];
+-
+-	cfr[0] = CFR1;
+-	cfr[1] = 0;
+-	cfr[2] = MANUAL_OSK | INVSIC | DDS_SINEOP;
+-	cfr[3] = AUTO_OSK | OSKEN | ACLR_PHA | ACLR_DIG | LOAD_LRR;
+-	cfr[4] = 0;
+-
+-	mutex_lock(&st->lock);
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &cfr;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	cfr[0] = CFR2;
+-	cfr[1] = ENA_AMP;
+-	cfr[2] = READ_FTW | DIGR_ENA | ITER_IOUPD;
+-	cfr[3] = TX_ENA | PDCLK_INV | PDCLK_ENB;
+-	cfr[4] = PARA_ENA;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &cfr;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	cfr[0] = CFR3;
+-	cfr[1] = PLL_ENA;
+-	cfr[2] = 0;
+-	cfr[3] = REFCLK_RST | REFCLK_BYP;
+-	cfr[4] = 0;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &cfr;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-
+-
+-}
+-
+-static struct attribute *ad9910_attributes[] = {
+-	&iio_dev_attr_dds.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad9910_attribute_group = {
+-	.attrs = ad9910_attributes,
+-};
+-
+-static const struct iio_info ad9910_info = {
+-	.attrs = &ad9910_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static int ad9910_probe(struct spi_device *spi)
+-{
+-	struct ad9910_state *st;
+-	struct iio_dev *idev;
+-	int ret = 0;
+-
+-	idev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!idev)
+-		return -ENOMEM;
+-	spi_set_drvdata(spi, idev);
+-	st = iio_priv(idev);
+-	mutex_init(&st->lock);
+-	st->sdev = spi;
+-
+-	idev->dev.parent = &spi->dev;
+-	idev->info = &ad9910_info;
+-	idev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = iio_device_register(idev);
+-	if (ret)
+-		return ret;
+-	spi->max_speed_hz = 2000000;
+-	spi->mode = SPI_MODE_3;
+-	spi->bits_per_word = 8;
+-	spi_setup(spi);
+-	ad9910_init(st);
+-	return 0;
+-}
+-
+-static int ad9910_remove(struct spi_device *spi)
+-{
+-	iio_device_unregister(spi_get_drvdata(spi));
+-
+-	return 0;
+-}
+-
+-static struct spi_driver ad9910_driver = {
+-	.driver = {
+-		.name = DRV_NAME,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad9910_probe,
+-	.remove = ad9910_remove,
+-};
+-module_spi_driver(ad9910_driver);
+-
+-MODULE_AUTHOR("Cliff Cai");
+-MODULE_DESCRIPTION("Analog Devices ad9910 driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:" DRV_NAME);
+diff --git a/drivers/staging/iio/frequency/ad9951.c b/drivers/staging/iio/frequency/ad9951.c
+deleted file mode 100644
+index d465db0..0000000
+--- a/drivers/staging/iio/frequency/ad9951.c
++++ /dev/null
+@@ -1,201 +0,0 @@
+-/*
+- * Driver for ADI Direct Digital Synthesis ad9951
+- *
+- * Copyright (c) 2010 Analog Devices Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- */
+-#include <linux/types.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-
+-#define DRV_NAME "ad9951"
+-
+-#define CFR1 0x0
+-#define CFR2 0x1
+-
+-#define AUTO_OSK	(1)
+-#define OSKEN		(1 << 1)
+-#define LOAD_ARR	(1 << 2)
+-
+-#define AUTO_SYNC	(1 << 7)
+-
+-#define LSB_FST		(1)
+-#define SDIO_IPT	(1 << 1)
+-#define CLR_PHA		(1 << 2)
+-#define SINE_OPT	(1 << 4)
+-#define ACLR_PHA	(1 << 5)
+-
+-#define VCO_RANGE	(1 << 2)
+-
+-#define CRS_OPT		(1 << 1)
+-#define HMANU_SYNC	(1 << 2)
+-#define HSPD_SYNC	(1 << 3)
+-
+-/* Register format: 1 byte addr + value */
+-struct ad9951_config {
+-	u8 asf[3];
+-	u8 arr[2];
+-	u8 ftw0[5];
+-	u8 ftw1[3];
+-};
+-
+-struct ad9951_state {
+-	struct mutex lock;
+-	struct spi_device *sdev;
+-};
+-
+-static ssize_t ad9951_set_parameter(struct device *dev,
+-					struct device_attribute *attr,
+-					const char *buf,
+-					size_t len)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	struct ad9951_config *config = (struct ad9951_config *)buf;
+-	struct iio_dev *idev = dev_to_iio_dev(dev);
+-	struct ad9951_state *st = iio_priv(idev);
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->asf[0];
+-	mutex_lock(&st->lock);
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 2;
+-	xfer.tx_buf = &config->arr[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &config->ftw0[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	xfer.len = 3;
+-	xfer.tx_buf = &config->ftw1[0];
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEVICE_ATTR(dds, S_IWUSR, NULL, ad9951_set_parameter, 0);
+-
+-static void ad9951_init(struct ad9951_state *st)
+-{
+-	struct spi_transfer xfer;
+-	int ret;
+-	u8 cfr[5];
+-
+-	cfr[0] = CFR1;
+-	cfr[1] = 0;
+-	cfr[2] = LSB_FST | CLR_PHA | SINE_OPT | ACLR_PHA;
+-	cfr[3] = AUTO_OSK | OSKEN | LOAD_ARR;
+-	cfr[4] = 0;
+-
+-	mutex_lock(&st->lock);
+-
+-	xfer.len = 5;
+-	xfer.tx_buf = &cfr;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-	cfr[0] = CFR2;
+-	cfr[1] = VCO_RANGE;
+-	cfr[2] = HSPD_SYNC;
+-	cfr[3] = 0;
+-
+-	xfer.len = 4;
+-	xfer.tx_buf = &cfr;
+-
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
+-	if (ret)
+-		goto error_ret;
+-
+-error_ret:
+-	mutex_unlock(&st->lock);
+-
+-
+-
+-}
+-
+-static struct attribute *ad9951_attributes[] = {
+-	&iio_dev_attr_dds.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ad9951_attribute_group = {
+-	.attrs = ad9951_attributes,
+-};
+-
+-static const struct iio_info ad9951_info = {
+-	.attrs = &ad9951_attribute_group,
+-	.driver_module = THIS_MODULE,
+-};
+-
+-static int ad9951_probe(struct spi_device *spi)
+-{
+-	struct ad9951_state *st;
+-	struct iio_dev *idev;
+-	int ret = 0;
+-
+-	idev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!idev)
+-		return -ENOMEM;
+-	spi_set_drvdata(spi, idev);
+-	st = iio_priv(idev);
+-	mutex_init(&st->lock);
+-	st->sdev = spi;
+-
+-	idev->dev.parent = &spi->dev;
+-
+-	idev->info = &ad9951_info;
+-	idev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = devm_iio_device_register(&spi->dev, idev);
+-	if (ret)
+-		return ret;
+-	spi->max_speed_hz = 2000000;
+-	spi->mode = SPI_MODE_3;
+-	spi->bits_per_word = 8;
+-	spi_setup(spi);
+-	ad9951_init(st);
+-	return 0;
+-}
+-
+-static struct spi_driver ad9951_driver = {
+-	.driver = {
+-		.name = DRV_NAME,
+-		.owner = THIS_MODULE,
+-	},
+-	.probe = ad9951_probe,
+-};
+-module_spi_driver(ad9951_driver);
+-
+-MODULE_AUTHOR("Cliff Cai");
+-MODULE_DESCRIPTION("Analog Devices ad9951 driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:" DRV_NAME);
+-- 
+1.8.0
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charse=
-t=3Dutf-8"><style>body { line-height: 1.5; }body { font-size: 10.5pt; font=
--family: =E5=BE=AE=E8=BD=AF=E9=9B=85=E9=BB=91; color: rgb(0, 0, 0); line-h=
-eight: 1.5; }body { font-size: 10.5pt; font-family: =E5=BE=AE=E8=BD=AF=E9=
-=9B=85=E9=BB=91; color: rgb(0, 0, 0); line-height: 1.5; }</style></head><b=
-ody>=0A<div>Hi&nbsp;<a href=3D"mailto:heiko@sntech.de">Heiko</a>=EF=BC=8C<=
-/div><div><br></div><div><span style=3D"background-color: rgba(0, 0, 0, 0)=
-;">&nbsp; &nbsp;The TS-ADC on RK3288 has two component, a tsadc and a tsad=
-c controller. The tsadc controller is similar like the thermal manager uni=
-t on other SOCs. We followed the naming of 3066, but not named as the Ther=
-mal Manager.&nbsp;</span></div><div><span style=3D"background-color: rgba(=
-0, 0, 0, 0);"><br>&nbsp; &nbsp;Moreover,there is only one set of apb regis=
-ters to access the tsadc controller,and the=0Atsadc is controlled by the t=
-sadc controller,could not access directly. If we write a general tsadc dri=
-ver  by accessed tsadc controller registers, and it hardly to write a driv=
-er for the tsadc controller.&nbsp;</span></div><div><br></div><div>&nbsp; =
-&nbsp;So,&nbsp;<span style=3D"background-color: rgba(0, 0, 0, 0); font-siz=
-e: 10.5pt; line-height: 1.5;">I do not agree to write a&nbsp;</span><span =
-style=3D"font-size: 10.5pt; line-height: 1.5; background-color: window;">g=
-eneric adc driver for the rk3288-tsadc.</span></div><div><br></div>=0A<hr =
-style=3D"WIDTH: 122px" align=3D"left" color=3D"#b5c4df" size=3D"1">=0A<div=
->=0A<div>Yifeng Zhao</div><div><span style=3D"font-size: 10.5pt; line-heig=
-ht: 1.5; background-color: window;">&nbsp;</span></div></div>=0A<div style=
-=3D"BORDER-TOP: #b5c4df 1pt solid; BORDER-RIGHT: medium none; BORDER-BOTTO=
-M: medium none; PADDING-BOTTOM: 0cm; PADDING-TOP: 3pt; PADDING-LEFT: 0cm; =
-BORDER-LEFT: medium none; PADDING-RIGHT: 0cm">=0A<div style=3D"FONT-SIZE: =
-12px; BACKGROUND: #efefef; COLOR: #000000; PADDING-BOTTOM: 8px; PADDING-TO=
-P: 8px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px">=0A<div><b>=E5=8F=91=E4=BB=
-=B6=E4=BA=BA=EF=BC=9A</b>&nbsp;<a href=3D"mailto:heiko@sntech.de">HeikoSt=
-=C3=BCbner</a></div>=0A<div><b>=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4=EF=BC=
-=9A</b>&nbsp;2014-08-29&nbsp;00:11</div>=0A<div><b>=E6=94=B6=E4=BB=B6=E4=
-=BA=BA=EF=BC=9A</b>&nbsp;<a href=3D"mailto:edubezval@gmail.com">Eduardo Va=
-lentin</a></div>=0A<div><b>=E6=8A=84=E9=80=81=EF=BC=9A</b>&nbsp;<a href=3D=
-"mailto:arnd@arndb.de">Arnd Bergmann</a>; <a href=3D"mailto:caesar.wang@ro=
-ck-chips.com">Caesar Wang</a>; <a href=3D"mailto:rui.zhang@intel.com">rui.=
-zhang</a>; <a href=3D"mailto:grant.likely@linaro.org">grant.likely</a>; <a=
- href=3D"mailto:robh+dt@kernel.org">robh+dt</a>; <a href=3D"mailto:linux-k=
-ernel@vger.kernel.org">linux-kernel</a>; <a href=3D"mailto:linux-pm@vger.k=
-ernel.org">linux-pm</a>; <a href=3D"mailto:linux-arm-kernel@lists.infradea=
-d.org">linux-arm-kernel</a>; <a href=3D"mailto:devicetree@vger.kernel.org"=
->devicetree</a>; <a href=3D"mailto:linux-doc@vger.kernel.org">linux-doc</a=
->; <a href=3D"mailto:huangtao@rock-chips.com">huangtao</a>; <a href=3D"mai=
-lto:cf@rock-chips.com">cf</a>; <a href=3D"mailto:dianders@chromium.org">di=
-anders</a>; <a href=3D"mailto:dtor@chromium.org">dtor</a>; <a href=3D"mail=
-to:zyw@rock-chips.com">zyw</a>; <a href=3D"mailto:addy.ke@rock-chips.com">=
-addy.ke</a>; <a href=3D"mailto:dmitry.torokhov@gmail.com">dmitry.torokhov<=
-/a>; <a href=3D"mailto:zyf@rock-chips.com">zhaoyifeng</a>; <a href=3D"mail=
-to:linux-iio@vger.kernel.org">linux-iio</a>; <a href=3D"mailto:jic23@kerne=
-l.org">Jonathan Cameron</a></div>=0A<div><b>=E4=B8=BB=E9=A2=98=EF=BC=9A</b=
->&nbsp;Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal</div><=
-/div></div>=0A<div>&nbsp;</div>=0A<div><div>Am Donnerstag, 28. August 2014=
-, 10:37:35 schrieb Eduardo Valentin:</div>=0A<div>&gt; Ceasar and Arnd,</d=
-iv>=0A<div>&gt; </div>=0A<div>&gt; On Thu, Aug 28, 2014 at 10:48:23AM +020=
-0, Arnd Bergmann wrote:</div>=0A<div>&gt; &gt; On Thursday 28 August 2014 =
-08:59:19 Caesar Wang wrote:</div>=0A<div>&gt; &gt; &gt; Thermal is TS-ADC =
-Controller module supports user-defined mode and</div>=0A<div>&gt; &gt; &g=
-t; automatic mode.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt=
-; User-defined mode refers,TSADC all the control signals entirely by</div>=
-=0A<div>&gt; &gt; &gt; software</div>=0A<div>&gt; &gt; &gt; writing to reg=
-ister for direct control.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &=
-gt; &gt; Automaic mode refers to the module automatically poll TSADC outpu=
-t,and</div>=0A<div>&gt; &gt; &gt; the results Were checked.</div>=0A<div>&=
-gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt; If you find that the temperatur=
-e High in a period of time, an interrupt</div>=0A<div>&gt; &gt; &gt; is ge=
-nerated to the processor down-measures taken;if the temperature</div>=0A<d=
-iv>&gt; &gt; &gt; over a period of time High, the resulting TSHUT gave CRU=
- module,let it</div>=0A<div>&gt; &gt; &gt; reset the entire chip, or via G=
-PIO give PMIC.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt; Si=
-gned-off-by: zhaoyifeng &lt;zyf@rock-chips.com&gt;</div>=0A<div>&gt; &gt; =
-&gt; Signed-off-by: Caesar Wang &lt;caesar.wang@rock-chips.com&gt;</div>=
-=0A<div>&gt; &gt; </div>=0A<div>&gt; &gt; Hi Caesar,</div>=0A<div>&gt; &gt=
-; </div>=0A<div>&gt; &gt; After looking at the driver (last time I only re=
-ceived the patch for</div>=0A<div>&gt; &gt; the binding), I have a more ge=
-neral comment:</div>=0A<div>&gt; &gt; </div>=0A<div>&gt; &gt; This looks l=
-ike a general-purpose ADC device, not an IP block that is</div>=0A<div>&gt=
-; &gt; specific to thermal management. The binding looks ok for that purpo=
-se</div>=0A<div>&gt; &gt; but should probably be moved into</div>=0A<div>&=
-gt; &gt; Documentation/devicetree/bindings/iio/adc/ as a minor change.</di=
-v>=0A<div>&gt; </div>=0A<div>&gt; I agree with Arnd's point here. It makes=
- sense to me to have this driver</div>=0A<div>&gt; under the IIO umbrella.=
-</div>=0A<div>&nbsp;</div>=0A<div>interesting suggestion :-)</div>=0A<div>=
-&nbsp;</div>=0A<div>I've just taken another look at the registers of the t=
-s-adc on the rk3066 </div>=0A<div>which is completely different from the r=
-k3288 one. Interestingly the rk3066 one </div>=0A<div>is "just" another sa=
-radc IP, so for this one it would really make sense.</div>=0A<div>&nbsp;</=
-div>=0A<div>&nbsp;</div>=0A<div>&gt; &gt; On the driver side, I believe th=
-e correct way to deal with this setup</div>=0A<div>&gt; &gt; is to split y=
-our driver into a generic drivers/iio/adc/rockchips-tsadc.c</div>=0A<div>&=
-gt; &gt; file, and a smaller thermal driver that uses the iio in-kernel in=
-terfaces,</div>=0A<div>&gt; &gt; ideally one that is independent of the un=
-derlying hardware and can</div>=0A<div>&gt; &gt; work on any ADC implement=
-ation.</div>=0A<div>&gt; </div>=0A<div>&gt; Agreed. If you can write such =
-interface and make your driver to work in</div>=0A<div>&gt; such way, that=
- would be great.</div>=0A<div>&nbsp;</div>=0A<div>But I currently don't se=
-e how you would model the temperature handling parts </div>=0A<div>from a =
-generic thermal driver to a generic adc driver for the rk3288-tsadc.</div>=
-=0A<div>&nbsp;</div>=0A<div>I guess the general temperature irq handling w=
-ould use iio-triggers? But how </div>=0A<div>does the target temperature g=
-et into the TSADC_COMP1_INT register.</div>=0A<div>&nbsp;</div>=0A<div>Als=
-o when getting the temperature, Caesar's driver compares it to its trip </=
-div>=0A<div>points and sets the next trip point depending on the current t=
-emperature </div>=0A<div>(passive &lt;-&gt; critical) in rockchip_get_temp=
-.</div>=0A<div>&nbsp;</div>=0A<div>Maybe there is some completely easy way=
- for this, but currently I don't see </div>=0A<div>it.</div>=0A<div>&nbsp;=
-</div>=0A<div>&nbsp;</div>=0A<div>Heiko</div>=0A<div>&nbsp;</div>=0A<div>&=
-nbsp;</div>=0A</div>=0A</body></html>
-------=_001_NextPart620851250586_=------
