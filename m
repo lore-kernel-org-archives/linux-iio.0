@@ -1,43 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:63374 "EHLO mga09.intel.com"
+Received: from ns.pmeerw.net ([87.118.82.44]:59554 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751988AbaHVUsL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 Aug 2014 16:48:11 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 7/8] iio: inv_mpu6050: Fix indio_dev->trig assignment
-Date: Fri, 22 Aug 2014 13:48:35 -0700
-Message-Id: <1408740516-31261-8-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	id S1751577AbaHSWnc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Aug 2014 18:43:32 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH v2 09/11] iio:bma180: Prepare for accelerometer channels with different resolutions
+Date: Wed, 20 Aug 2014 00:43:24 +0200
+Message-Id: <1408488206-2633-10-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This can result in wrong reference count for trigger device, call
-iio_trigger_get to increment reference.
-Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-with Jonathan.
+allow to specify channels resolution and compute shift assuming
+16-bit registers and MSB allocation
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/bma180.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-index 03b9372..926fcce 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-@@ -135,7 +135,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
- 	ret = iio_trigger_register(st->trig);
- 	if (ret)
- 		goto error_free_irq;
--	indio_dev->trig = st->trig;
-+	indio_dev->trig = iio_trigger_get(st->trig);
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index a25b060..6e940b0 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -474,7 +474,7 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ 	{ },
+ };
  
- 	return 0;
+-#define BMA180_ACC_CHANNEL(_axis) {					\
++#define BMA180_ACC_CHANNEL(_axis, _bits) {				\
+ 	.type = IIO_ACCEL,						\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##_axis,					\
+@@ -484,9 +484,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ 	.scan_index = AXIS_##_axis,					\
+ 	.scan_type = {							\
+ 		.sign = 's',						\
+-		.realbits = 14,						\
++		.realbits = _bits,					\
+ 		.storagebits = 16,					\
+-		.shift = 2,						\
++		.shift = 16 - _bits,					\
+ 	},								\
+ 	.ext_info = bma180_ext_info,					\
+ }
+@@ -504,9 +504,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ }
  
+ static const struct iio_chan_spec bma180_channels[] = {
+-	BMA180_ACC_CHANNEL(X),
+-	BMA180_ACC_CHANNEL(Y),
+-	BMA180_ACC_CHANNEL(Z),
++	BMA180_ACC_CHANNEL(X, 14),
++	BMA180_ACC_CHANNEL(Y, 14),
++	BMA180_ACC_CHANNEL(Z, 14),
+ 	BMA180_TEMP_CHANNEL,
+ 	IIO_CHAN_SOFT_TIMESTAMP(4),
+ };
 -- 
-1.9.3
+1.9.1
 
