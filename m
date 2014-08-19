@@ -1,43 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:42100 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755199AbaHUN0A (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Aug 2014 09:26:00 -0400
-Received: by mail-pa0-f44.google.com with SMTP id eu11so14601760pac.17
-        for <linux-iio@vger.kernel.org>; Thu, 21 Aug 2014 06:26:00 -0700 (PDT)
-Date: Thu, 21 Aug 2014 06:25:56 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Johannes Pointner <johannes.pointner@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	lm-sensors@lm-sensors.org
-Subject: Re: iio: iio_channel_get: ntc_thermistor isn't working since patch
- for of_iio_channel_get_by_name()
-Message-ID: <20140821132556.GA24224@roeck-us.net>
-References: <CAJKbBDBCEVfB-f6W1NbpPhuyduYB4KQMoT=9=wF4yny3a6weKA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAJKbBDBCEVfB-f6W1NbpPhuyduYB4KQMoT=9=wF4yny3a6weKA@mail.gmail.com>
+Received: from ns.pmeerw.net ([87.118.82.44]:59551 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751502AbaHSWnc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Aug 2014 18:43:32 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH v2 06/11] iio:bma180: Drop _update_scan_mode()
+Date: Wed, 20 Aug 2014 00:43:21 +0200
+Message-Id: <1408488206-2633-7-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 21, 2014 at 09:29:56AM +0200, Johannes Pointner wrote:
-> Hello,
-> 
-> I found out that since this patch https://lkml.org/lkml/2014/6/11/201,
-> which fixes the return values in this function, the ntc_thermistor
-> driver isn't working anymore for me.
-> The problem is that before the driver asked for probe deferral because
-> the adc driver isn't loaded at this point and now the probe fails in
-> the function iio_channel_get_sys and returns -ENODEV.
-> My question is: Who is in this case responsible to request a deferral?
-> The driver or the subsystem?
-> 
-Unless I am missing something, iio_get_channel() should request probe deferral.
-There is no other way for the driver to know that the adc driver is not loaded
-yet.
+statically allocate maximum size
 
-The problem here may be that the devicetree entry for the ntc_thermistor driver
-may not be correct. The above referenced patch fixes a bug in that area, and
-devicetree data is now better validated.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
 
-Guenter
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 91260a0..5838318 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -82,7 +82,7 @@ struct bma180_data {
+ 	int scale;
+ 	int bw;
+ 	bool pmode;
+-	char *buff;
++	u8 buff[16]; /* 3x 16-bit + 8-bit + padding + timestamp */
+ };
+ 
+ enum bma180_chan {
+@@ -408,26 +408,10 @@ static int bma180_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static int bma180_update_scan_mode(struct iio_dev *indio_dev,
+-		const unsigned long *scan_mask)
+-{
+-	struct bma180_data *data = iio_priv(indio_dev);
+-
+-	if (data->buff)
+-		devm_kfree(&indio_dev->dev, data->buff);
+-	data->buff = devm_kzalloc(&indio_dev->dev,
+-			indio_dev->scan_bytes, GFP_KERNEL);
+-	if (!data->buff)
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+ static const struct iio_info bma180_info = {
+ 	.attrs			= &bma180_attrs_group,
+ 	.read_raw		= bma180_read_raw,
+ 	.write_raw		= bma180_write_raw,
+-	.update_scan_mode	= bma180_update_scan_mode,
+ 	.driver_module		= THIS_MODULE,
+ };
+ 
+-- 
+1.9.1
+
