@@ -1,49 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-242.synserver.de ([212.40.185.242]:1052 "EHLO
-	smtp-out-238.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751479AbaHRIJH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Aug 2014 04:09:07 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] MAINTAINERS: Add entry for Analog Devices IIO drivers
-Date: Mon, 18 Aug 2014 10:08:59 +0200
-Message-Id: <1408349339-21757-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51678 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753556AbaHSTNr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Aug 2014 15:13:47 -0400
+Message-ID: <53F3A1E7.8070804@kernel.org>
+Date: Tue, 19 Aug 2014 20:13:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Add designated reviewers for IIO subsystem
+References: <1408350589-22372-1-git-send-email-lars@metafoo.de> <alpine.DEB.2.01.1408181042300.4583@pmeerw.net> <53F27709.9000901@gmx.de>
+In-Reply-To: <53F27709.9000901@gmx.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add Michael and myself as the maintainer for the Analog Devices IIO drivers.
-The entry matches on all files in drivers/staging/iio and drivers/iio/ starting
-with the 'ad' prefix, except for 'adjd' as that one is used by Avago
-Technologies.
+On 18/08/14 22:58, Hartmut Knaack wrote:
+> Peter Meerwald schrieb:
+>> On Mon, 18 Aug 2014, Lars-Peter Clausen wrote:
+>>
+>>> Add those persons who generally tend to review new IIO patches to the list of
+>>> designated reviewers to make sure that they are Cc'ed on new patches.
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>> ---
+>>> Hartmut, Peter if you are OK with this please ack the patch, otherwise I can
+>>> respin it to remove you.
+>> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Good idea!  Thanks to all 3 of you for the reviewing and it makes sense
+to make it apparent to non regular readers of linux-iio.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Applied to the togreg branch of iio.git
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6d2c52e..894756c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -667,6 +667,16 @@ W:	http://blackfin.uclinux.org/
- S:	Supported
- F:	sound/soc/blackfin/*
- 
-+ANALOG DEVICES INC IIO DRIVERS
-+M:	Lars-Peter Clausen <lars@metafoo.de>
-+M: Michael Hennerich <Michael.Hennerich@analog.com>
-+W:	http://wiki.analog.com/
-+W:	http://ez.analog.com/community/linux-device-drivers
-+S:	Supported
-+F:	drivers/iio/*/ad*
-+X:	drivers/iio/*/adjd*
-+F:	drivers/staging/iio/*/ad*
-+F:	staging/iio/trigger/iio-trig-bfin-timer.c
-+
- AOA (Apple Onboard Audio) ALSA DRIVER
- M:	Johannes Berg <johannes@sipsolutions.net>
- L:	linuxppc-dev@lists.ozlabs.org
--- 
-1.8.0
-
+J
+>>
+>>> ---
+>>>  MAINTAINERS | 3 +++
+>>>  1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>> index aefa948..3f77be0 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -4580,6 +4580,9 @@ F:	drivers/media/rc/iguanair.c
+>>>  
+>>>  IIO SUBSYSTEM AND DRIVERS
+>>>  M:	Jonathan Cameron <jic23@kernel.org>
+>>> +R:	Hartmut Knaack <knaack.h@gmx.de>
+>>> +R:	Lars-Peter Clausen <lars@metafoo.de>
+>>> +R:	Peter Meerwald <pmeerw@pmeerw.net>
+>>>  L:	linux-iio@vger.kernel.org
+>>>  S:	Maintained
+>>>  F:	drivers/iio/
+>>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
