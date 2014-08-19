@@ -1,82 +1,185 @@
-Return-Path: <sanjeevsharmaengg@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:59550 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751505AbaHSWnc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Aug 2014 18:43:32 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH v2 05/11] iio:bma180: Expose temperature channel
+Date: Wed, 20 Aug 2014 00:43:20 +0200
+Message-Id: <1408488206-2633-6-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
 MIME-Version: 1.0
-In-Reply-To: <53F4451B.3040209@metafoo.de>
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
-	<53F441FF.9090304@metafoo.de>
-	<CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
-	<53F4451B.3040209@metafoo.de>
-Date: Wed, 20 Aug 2014 12:32:52 +0530
-Message-ID: <CAGUYZuQwKMG0OFt_gJVPTj3EWin68Jg3jzD9T_Rje-UroOCf=g@mail.gmail.com>
-Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
-From: sanjeev sharma <sanjeevsharmaengg@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Sanjeev Sharma <sanjeev_sharma@mentor.com>, jic23@kernel.org,
-	gregkh <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devel <devel@driverdev.osuosl.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: multipart/alternative; boundary=089e015371c4512d6b05010a31f9
-List-ID: <linux-iio@vger.kernel.org>
-
---089e015371c4512d6b05010a31f9
 Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+8-bit signed; 0 LSB @ 24 °C, 0.5 °C per LSB
 
-I have only moved some header files because other header files are already
-present there and these are only pending files which is not moved outside
-the staging directory.
+Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+---
+ drivers/iio/accel/bma180.c | 80 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 59 insertions(+), 21 deletions(-)
 
-@Greg:What is your though on this ?
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index aa7566f..91260a0 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -29,6 +29,7 @@
+ /* Register set */
+ #define BMA180_CHIP_ID		0x00 /* Need to distinguish BMA180 from other */
+ #define BMA180_ACC_X_LSB	0x02 /* First of 6 registers of accel data */
++#define BMA180_TEMP		0x08
+ #define BMA180_CTRL_REG0	0x0d
+ #define BMA180_RESET		0x10
+ #define BMA180_BW_TCS		0x20
+@@ -84,27 +85,37 @@ struct bma180_data {
+ 	char *buff;
+ };
+ 
+-enum bma180_axis {
++enum bma180_chan {
+ 	AXIS_X,
+ 	AXIS_Y,
+ 	AXIS_Z,
++	TEMP
+ };
+ 
+ static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+ static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+ 
+-static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
++static int bma180_get_data_reg(struct bma180_data *data, enum bma180_chan chan)
+ {
+-	u8 reg = BMA180_ACC_X_LSB + axis * 2;
+ 	int ret;
+ 
+ 	if (data->sleep_state)
+ 		return -EBUSY;
+ 
+-	ret = i2c_smbus_read_word_data(data->client, reg);
+-	if (ret < 0)
+-		dev_err(&data->client->dev,
+-			"failed to read accel_%c register\n", 'x' + axis);
++	switch (chan) {
++	case TEMP:
++		ret = i2c_smbus_read_byte_data(data->client, BMA180_TEMP);
++		if (ret < 0)
++			dev_err(&data->client->dev, "failed to read temp register\n");
++		break;
++	default:
++		ret = i2c_smbus_read_word_data(data->client,
++			BMA180_ACC_X_LSB + chan * 2);
++		if (ret < 0)
++			dev_err(&data->client->dev,
++				"failed to read accel_%c register\n",
++				'x' + chan);
++	}
+ 
+ 	return ret;
+ }
+@@ -337,22 +348,35 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		mutex_lock(&data->mutex);
+-		if (iio_buffer_enabled(indio_dev))
+-			ret = -EBUSY;
+-		else
+-			ret = bma180_get_acc_reg(data, chan->scan_index);
++		if (iio_buffer_enabled(indio_dev)) {
++			mutex_unlock(&data->mutex);
++			return -EBUSY;
++		}
++		ret = bma180_get_data_reg(data, chan->scan_index);
+ 		mutex_unlock(&data->mutex);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = (s16)ret >> chan->scan_type.shift;
++		*val = sign_extend32(ret >> chan->scan_type.shift,
++			chan->scan_type.realbits - 1);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		*val = data->bw;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+-		*val2 = data->scale;
+-		return IIO_VAL_INT_PLUS_MICRO;
++		switch (chan->type) {
++		case IIO_ACCEL:
++			*val = 0;
++			*val2 = data->scale;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case IIO_TEMP:
++			*val = 500;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 48; /* 0 LSB @ 24 degree C */
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -443,7 +467,7 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ 	{ },
+ };
+ 
+-#define BMA180_CHANNEL(_axis) {					\
++#define BMA180_ACC_CHANNEL(_axis) {					\
+ 	.type = IIO_ACCEL,						\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##_axis,					\
+@@ -460,11 +484,24 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ 	.ext_info = bma180_ext_info,					\
+ }
+ 
++#define BMA180_TEMP_CHANNEL {						\
++	.type = IIO_TEMP,						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
++		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),	\
++	.scan_index = TEMP,						\
++	.scan_type = {							\
++		.sign = 's',						\
++		.realbits = 8,						\
++		.storagebits = 16,					\
++	},								\
++}
++
+ static const struct iio_chan_spec bma180_channels[] = {
+-	BMA180_CHANNEL(X),
+-	BMA180_CHANNEL(Y),
+-	BMA180_CHANNEL(Z),
+-	IIO_CHAN_SOFT_TIMESTAMP(3),
++	BMA180_ACC_CHANNEL(X),
++	BMA180_ACC_CHANNEL(Y),
++	BMA180_ACC_CHANNEL(Z),
++	BMA180_TEMP_CHANNEL,
++	IIO_CHAN_SOFT_TIMESTAMP(4),
+ };
+ 
+ static irqreturn_t bma180_trigger_handler(int irq, void *p)
+@@ -479,13 +516,14 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
+ 
+ 	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
+ 			 indio_dev->masklength) {
+-		ret = bma180_get_acc_reg(data, bit);
++		ret = bma180_get_data_reg(data, bit);
+ 		if (ret < 0) {
+ 			mutex_unlock(&data->mutex);
+ 			goto err;
+ 		}
+ 		((s16 *)data->buff)[i++] = ret;
+ 	}
++
+ 	mutex_unlock(&data->mutex);
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buff, time_ns);
+-- 
+1.9.1
 
-Regards
-Sanjeev Sharma
-
-
-On Wed, Aug 20, 2014 at 12:20 PM, Lars-Peter Clausen <lars@metafoo.de>
-wrote:
-
-> On 08/20/2014 08:44 AM, sanjeev sharma wrote:
->
->> Hi,
->>
->> This was the action item(TO-DO). IMO, it make sense to move into
->> include/linux/iio because IIO complete subsystem may take some time.
->>
->
-> The code that is in staging is not supposed to 'leak' outside of staging.
-> So either you move the driver as a whole out of staging or leave it there,
-> but do not move individual files of the driver out of staging. The action
-> item is for when the driver is moved out of staging.
->
-
---089e015371c4512d6b05010a31f9
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div>Hi,<br><br></div>I have only moved some header f=
-iles because other header files are already present there and these are onl=
-y pending files which is not moved outside the staging directory.<br><br></=
-div>
-<div>@Greg:What is your though on this ?<br><br></div><div>Regards<br>Sanje=
-ev Sharma<br></div></div><div class=3D"gmail_extra"><br><br><div class=3D"g=
-mail_quote">On Wed, Aug 20, 2014 at 12:20 PM, Lars-Peter Clausen <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:lars@metafoo.de" target=3D"_blank">lars@meta=
-foo.de</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex"><div class=3D"">On 08/20/2014 08:44 AM, sanj=
-eev sharma wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-Hi,<br>
-<br>
-This was the action item(TO-DO). IMO, it make sense to move into<br>
-include/linux/iio because IIO complete subsystem may take some time.<br>
-</blockquote>
-<br></div>
-The code that is in staging is not supposed to &#39;leak&#39; outside of st=
-aging. So either you move the driver as a whole out of staging or leave it =
-there, but do not move individual files of the driver out of staging. The a=
-ction item is for when the driver is moved out of staging.<br>
-
-</blockquote></div><br></div>
-
---089e015371c4512d6b05010a31f9--
