@@ -1,40 +1,44 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Wed, 20 Aug 2014 06:15:37 -0500
-From: gregkh <gregkh@linuxfoundation.org>
-To: sanjeev sharma <sanjeevsharmaengg@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>, jic23@kernel.org,
-	linux-iio@vger.kernel.org, devel <devel@driverdev.osuosl.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
-Message-ID: <20140820111537.GA12663@kroah.com>
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
- <53F441FF.9090304@metafoo.de>
- <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
- <53F4451B.3040209@metafoo.de>
- <CAGUYZuQwKMG0OFt_gJVPTj3EWin68Jg3jzD9T_Rje-UroOCf=g@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:59527 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751170AbaHSWnb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 19 Aug 2014 18:43:31 -0400
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH v2 00/11] iio:bma180: Add BMA250 support v2
+Date: Wed, 20 Aug 2014 00:43:15 +0200
+Message-Id: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAGUYZuQwKMG0OFt_gJVPTj3EWin68Jg3jzD9T_Rje-UroOCf=g@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+reposting patch series to add BMA250 support to the BMA180 IIO driver, see
+http://article.gmane.org/gmane.linux.kernel.iio/12970 (July 16, 2014)
 
-A: No.
-Q: Should I include quotations after my reply?
+no functional change, the first two patches (fixes) have been applied already
 
-http://daringfireball.net/2007/07/on_top
+v2 updates Kconfig in patch 11 to mention BMA250
 
-On Wed, Aug 20, 2014 at 12:32:52PM +0530, sanjeev sharma wrote:
-> Hi,
-> 
-> I have only moved some header files because other header files are already
-> present there and these are only pending files which is not moved outside the
-> staging directory.
-> 
-> @Greg:What is your though on this ?
+Peter Meerwald (11):
+  iio:bma180: Enable use of device without IRQ
+  iio:bma180: Prefix remaining tables and functions with bma18_
+  iio:bma180: Rename BMA_180 to BMA180_
+  iio:bma180: Use bool instead of int for state
+  iio:bma180: Expose temperature channel
+  iio:bma180: Drop _update_scan_mode()
+  iio:bma180: Introduce part_info to differentiate further chip variants
+  iio:bma180: Introduce part-specific _config() and disable() code
+  iio:bma180: Prepare for accelerometer channels with different
+    resolutions
+  iio:bma180: Implement _available sysfs attribute dynamically
+  iio:bma180: Add BMA250 chip support
 
-Lars-Peter is correct, don't "leak" files from staging.  Take the time
-to work on fixing up these drivers correctly so they can be moved out of
-staging instead of just doing simple file moves which do nothing.
+ drivers/iio/accel/Kconfig  |   6 +-
+ drivers/iio/accel/bma180.c | 475 +++++++++++++++++++++++++++++++--------------
+ 2 files changed, 330 insertions(+), 151 deletions(-)
 
-greg k-h
+-- 
+1.9.1
+
