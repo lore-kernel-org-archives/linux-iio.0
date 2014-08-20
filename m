@@ -1,59 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:33444 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S965645AbaH1JIT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Aug 2014 05:08:19 -0400
-From: Vignesh R <vigneshr@ti.com>
-To: Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: <nsekhar@ti.com>, Felipe Balbi <balbi@ti.com>,
-	<linux-iio@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
-Subject: [PATCH] iio: adc: ti_am335x_adc: Fix TSC operation after ADC continouous mode
-Date: Thu, 28 Aug 2014 14:37:00 +0530
-Message-ID: <1409216820-11506-1-git-send-email-vigneshr@ti.com>
+Received: from mail-wg0-f51.google.com ([74.125.82.51]:54494 "EHLO
+	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751842AbaHTI4Q convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Aug 2014 04:56:16 -0400
+Received: by mail-wg0-f51.google.com with SMTP id b13so7552156wgh.22
+        for <linux-iio@vger.kernel.org>; Wed, 20 Aug 2014 01:56:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1408488206-2633-6-git-send-email-pmeerw@pmeerw.net>
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+	<1408488206-2633-6-git-send-email-pmeerw@pmeerw.net>
+Date: Wed, 20 Aug 2014 11:56:14 +0300
+Message-ID: <CAEnQRZDOGWFXpQ2H-uU2CH_mG5PPzU+KTbBJOn72KvX5u9+Kvw@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] iio:bma180: Expose temperature channel
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-After enabling and disabling ADC continuous mode via sysfs, ts_print_raw
-fails to return any data. This is because when ADC is configured for
-continuous mode, it disables touch screen steps.These steps are not
-re-enabled when ADC continuous mode is disabled. Therefore existing values
-of REG_SE needs to be cached before enabling continuous mode and
-disabling touch screen steps and enabling ADC steps. The cached value
-are to be restored to REG_SE once ADC is disabled.
+On Wed, Aug 20, 2014 at 1:43 AM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+> 8-bit signed; 0 LSB @ 24 °C, 0.5 °C per LSB
+>
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+> ---
+>  drivers/iio/accel/bma180.c | 80 ++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 59 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index aa7566f..91260a0 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -29,6 +29,7 @@
+>  /* Register set */
+>  #define BMA180_CHIP_ID         0x00 /* Need to distinguish BMA180 from other */
+>  #define BMA180_ACC_X_LSB       0x02 /* First of 6 registers of accel data */
+> +#define BMA180_TEMP            0x08
+>  #define BMA180_CTRL_REG0       0x0d
+>  #define BMA180_RESET           0x10
+>  #define BMA180_BW_TCS          0x20
+> @@ -84,27 +85,37 @@ struct bma180_data {
+>         char *buff;
+>  };
+>
+> -enum bma180_axis {
+> +enum bma180_chan {
+>         AXIS_X,
+>         AXIS_Y,
+>         AXIS_Z,
+> +       TEMP
+>  };
 
-Fixes: 7ca6740cd1cd ("The continues-read mode remains unchanged")
+Nit: For future patches, add a semicolon after TEMP.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/mfd/ti_am335x_tscadc.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index d4e860413bb5..e3076afe6b3c 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -54,7 +54,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tsadc, u32 val)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&tsadc->reg_lock, flags);
--	tsadc->reg_se_cache = val;
-+	tsadc->reg_se_cache |= val;
- 	if (tsadc->adc_waiting)
- 		wake_up(&tsadc->reg_se_wait);
- 	else if (!tsadc->adc_in_use)
-@@ -97,6 +97,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
- void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
- {
- 	spin_lock_irq(&tsadc->reg_lock);
-+	tsadc->reg_se_cache |= val;
- 	am335x_tscadc_need_adc(tsadc);
- 
- 	tscadc_writel(tsadc, REG_SE, val);
--- 
-1.7.9.5
-
+Daniel.
