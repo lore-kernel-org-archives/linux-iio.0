@@ -1,196 +1,325 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45191 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754757AbaHYQTV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 12:19:21 -0400
-Message-ID: <53FB6205.5020704@kernel.org>
-Date: Mon, 25 Aug 2014 17:19:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga01.intel.com ([192.55.52.88]:5282 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752317AbaHUPZw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 21 Aug 2014 11:25:52 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org, pmeerw@pmeerw.net
+Cc: linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
+	Tsechih_Lin@asus.com
+Subject: [PATCH v2] iio: Add Dyna-Image AL3320A ambient light sensor driver
+Date: Thu, 21 Aug 2014 18:28:23 +0300
+Message-Id: <1408634903-4305-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/08/14 18:31, Linus Walleij wrote:
-> This adds support for the LIS3LV02 accelerometer found in the
-> ST Microelectronics Nomadik board series.
-> 
-> Cc: devicetree@vger.kernel.org
-> Cc: Denis CIOCCA <denis.ciocca@st.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-This is a little 'interesting', given the part is already supported by
-drivers/misc/lis3lv02d*.c and already has bindings under there.
-Documentation/devicetree/bindings/misc/lis302.txt
-(some of these are interesting).
+Minimal implementation. This driver provides raw illuminance readings.
 
-Do we think this is the right way to handle the alternative support
-here?
+This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+by Tsechih Lin <Tsechih_Lin@asus.com>
 
-Denis, if you have time, could you take a look at this addition to your
-driver.
+* https://android.googlesource.com/kernel/msm.git
 
-If anyone wants to look at what the misc driver supports that we still
-don't have in the IIO driver then that would be great!
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v1: (reported by Peter Meerwald)
+	* used u8 instead of int for passing gain and mean_time
+	* used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
+	* used devm_iio_device_register instead of iio_device_register
+	* small style fixes
 
-Jonathan
+ drivers/iio/light/Kconfig   |  10 ++
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/al3320a.c | 247 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 258 insertions(+)
+ create mode 100644 drivers/iio/light/al3320a.c
 
-> ---
->  .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->  drivers/iio/accel/st_accel.h                       |  1 +
->  drivers/iio/accel/st_accel_core.c                  | 81 ++++++++++++++++++++++
->  drivers/iio/accel/st_accel_i2c.c                   |  4 ++
->  4 files changed, 87 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index a7a0a15913ad..d2aaca974531 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -23,6 +23,7 @@ standard bindings from pinctrl/pinctrl-bindings.txt.
->  Valid compatible strings:
->  
->  Accelerometers:
-> +- st,lis3lv02dl-accel
->  - st,lsm303dlh-accel
->  - st,lsm303dlhc-accel
->  - st,lis3dh-accel
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index c3877630b2e4..38a0e9932549 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -14,6 +14,7 @@
->  #include <linux/types.h>
->  #include <linux/iio/common/st_sensors.h>
->  
-> +#define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl_accel"
->  #define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
->  #define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
->  #define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 087864854c61..d4dd05d0b24d 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -129,6 +129,30 @@
->  #define ST_ACCEL_3_IG1_EN_MASK			0x08
->  #define ST_ACCEL_3_MULTIREAD_BIT		false
->  
-> +/* CUSTOM VALUES FOR SENSOR 4 */
-I wish now we'd nipped this naming convention in the bud and insisted
-on naming after a relevant part. Oh well.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index bf05ca5..5bea821 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -17,6 +17,16 @@ config ADJD_S311
+ 	 This driver can also be built as a module.  If so, the module
+ 	 will be called adjd_s311.
+ 
++config AL3320A
++	tristate "AL3320A ambient light sensor"
++	depends on I2C
++	help
++	 Say Y here if you want to build a driver for the Dyna Image AL3320A
++	 ambient light sensor.
++
++	 To compile this driver as a module, choose M here: the
++	 module will be called al3320a.
++
+ config APDS9300
+ 	tristate "APDS9300 ambient light sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8b8c09f..47877a3 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -4,6 +4,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
++obj-$(CONFIG_AL3320A)		+= al3320a.o
+ obj-$(CONFIG_APDS9300)		+= apds9300.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
+diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
+new file mode 100644
+index 0000000..787ce2e
+--- /dev/null
++++ b/drivers/iio/light/al3320a.c
+@@ -0,0 +1,247 @@
++/*
++ * AL3320A - Dyna Image Ambient Light Sensor
++ *
++ * Copyright (c) 2014, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
++ *
++ * TODO: interrupt support
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++#include <linux/mutex.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define AL3320A_DRV_NAME "al3320a"
++
++#define AL3320A_REG_CONFIG		0x00
++#define AL3320A_REG_STATUS		0x01
++#define AL3320A_REG_INT			0x02
++#define AL3320A_REG_WAIT		0x06
++#define AL3320A_REG_CONFIG_RANGE	0x07
++#define AL3320A_REG_PERSIST		0x08
++#define AL3320A_REG_MEAN_TIME		0x09
++#define AL3320A_REG_ADUMMY		0x0A
++#define AL3320A_REG_DATA_LOW		0x22
++#define AL3320A_REG_DATA_HIGH		0x23
++
++#define AL3320A_REG_LOW_THRESH_LOW	0x30
++#define AL3320A_REG_LOW_THRESH_HIGH	0x31
++#define AL3320A_REG_HIGH_THRESH_LOW	0x32
++#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
++
++#define AL3320A_CONFIG_DISABLE		0x00
++#define AL3320A_CONFIG_ENABLE		BIT(0)
++#define AL3320A_CONFIG_SW_RESET		BIT(2)
++
++#define AL3320A_GAIN_SHIFT		1
++
++/* chip params default values */
++#define AL3320A_DEFAULT_MEAN_TIME	4
++#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
++
++enum al3320a_range {
++	AL3320A_RANGE_1, /* 33.28K lux */
++	AL3320A_RANGE_2, /* 8.32K lux  */
++	AL3320A_RANGE_3, /* 2.08K lux  */
++	AL3320A_RANGE_4  /* 0.65K lux  */
++};
++
++static const int al3320a_scales[][2] = {
++	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
++};
++
++struct al3320a_data {
++	struct i2c_client *client;
++	u8 range;
++};
++
++static const struct iio_chan_spec al3320a_channels[] = {
++	{
++		.type	= IIO_LIGHT,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	}
++};
++
++static int al3320a_enable(struct al3320a_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
++					 AL3320A_CONFIG_ENABLE);
++}
++
++static int al3320a_disable(struct al3320a_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
++					 AL3320A_CONFIG_DISABLE);
++}
++
++static int al3320a_set_config_range(struct al3320a_data *data, u8 gain)
++{
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
++					 gain << AL3320A_GAIN_SHIFT);
++	if (ret >= 0)
++		data->range = gain;
++	return ret;
++}
++
++static int al3320a_set_mean_time(struct al3320a_data *data, u8 mean_time)
++{
++	return i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
++					 mean_time);
++}
++
++static int al3320a_set_wait_time(struct al3320a_data *data, u8 wait_time)
++{
++	return i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
++					 wait_time);
++}
++
++static int al3320a_get_adc_value(struct al3320a_data *data)
++{
++	return i2c_smbus_read_word_swapped(data->client, AL3320A_REG_DATA_LOW);
++}
++
++static int al3320a_init(struct al3320a_data *data)
++{
++	int ret;
++
++	/* power on */
++	ret = al3320a_enable(data);
++	if (ret)
++		return ret;
++
++	ret = al3320a_set_config_range(data, AL3320A_RANGE_3);
++	if (ret)
++		return ret;
++
++	ret = al3320a_set_mean_time(data, AL3320A_DEFAULT_MEAN_TIME);
++	if (ret)
++		return ret;
++
++	ret = al3320a_set_wait_time(data, AL3320A_DEFAULT_WAIT_TIME);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int al3320a_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val,
++			    int *val2,
++			    long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = al3320a_get_adc_value(data);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = al3320a_scales[data->range][0];
++		*val2 = al3320a_scales[data->range][1];
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++static int al3320a_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
++			if (val == al3320a_scales[i][0] &&
++			    val2 == al3320a_scales[i][1])
++				return al3320a_set_config_range(data, i);
++		}
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info al3320a_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= al3320a_read_raw,
++	.write_raw	= al3320a_write_raw,
++};
++
++static int al3320a_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct al3320a_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &al3320a_info;
++	indio_dev->name = AL3320A_DRV_NAME;
++	indio_dev->channels = al3320a_channels;
++	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = al3320a_init(data);
++	if (ret) {
++		dev_err(&client->dev, "al3320a chip init failed\n");
++		return ret;
++	}
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int al3320a_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct al3320a_data *data = iio_priv(indio_dev);
++
++	return  al3320a_disable(data);
++}
++
++static const struct i2c_device_id al3320a_id[] = {
++	{"al3320a", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, al3320a_id);
++
++static struct i2c_driver al3320a_driver = {
++	.driver = {
++		.name = AL3320A_DRV_NAME,
++	},
++	.probe		= al3320a_probe,
++	.remove		= al3320a_remove,
++	.id_table	= al3320a_id,
++};
++
++module_i2c_driver(al3320a_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-> +#define ST_ACCEL_4_WAI_EXP			0x3a
-> +#define ST_ACCEL_4_ODR_ADDR			0x20
-> +#define ST_ACCEL_4_ODR_MASK			0x30 /* DF1 and DF0 */
-> +#define ST_ACCEL_4_ODR_AVL_40HZ_VAL		0x00
-> +#define ST_ACCEL_4_ODR_AVL_160HZ_VAL		0x01
-> +#define ST_ACCEL_4_ODR_AVL_640HZ_VAL		0x02
-> +#define ST_ACCEL_4_ODR_AVL_2560HZ_VAL		0x03
-> +#define ST_ACCEL_4_PW_ADDR			0x20
-> +#define ST_ACCEL_4_PW_MASK			0xc0
-> +#define ST_ACCEL_4_FS_ADDR			0x21
-> +#define ST_ACCEL_4_FS_MASK			0x80
-> +#define ST_ACCEL_4_FS_AVL_2_VAL			0X00
-> +#define ST_ACCEL_4_FS_AVL_6_VAL			0X01
-> +#define ST_ACCEL_4_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(1024)
-> +#define ST_ACCEL_4_FS_AVL_6_GAIN		IIO_G_TO_M_S_2(340)
-> +#define ST_ACCEL_4_BDU_ADDR			0x21
-> +#define ST_ACCEL_4_BDU_MASK			0x40
-> +#define ST_ACCEL_4_DRDY_IRQ_ADDR		0x21
-> +#define ST_ACCEL_4_DRDY_IRQ_INT1_MASK		0x04
-> +#define ST_ACCEL_4_IG1_EN_ADDR			0x21
-> +#define ST_ACCEL_4_IG1_EN_MASK			0x08
-> +#define ST_ACCEL_4_MULTIREAD_BIT		true
-> +
->  static const struct iio_chan_spec st_accel_12bit_channels[] = {
->  	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> @@ -373,6 +397,63 @@ static const struct st_sensors st_accel_sensors[] = {
->  		.multi_read_bit = ST_ACCEL_3_MULTIREAD_BIT,
->  		.bootime = 2,
->  	},
-> +	{
-> +		.wai = ST_ACCEL_4_WAI_EXP,
-> +		.sensors_supported = {
-> +			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
-> +		},
-> +		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-> +		.odr = {
-> +			.addr = ST_ACCEL_4_ODR_ADDR,
-> +			.mask = ST_ACCEL_4_ODR_MASK,
-> +			.odr_avl = {
-> +				{ 40, ST_ACCEL_4_ODR_AVL_40HZ_VAL },
-> +				{ 160, ST_ACCEL_4_ODR_AVL_160HZ_VAL, },
-> +				{ 640, ST_ACCEL_4_ODR_AVL_640HZ_VAL, },
-> +				{ 2560, ST_ACCEL_4_ODR_AVL_2560HZ_VAL, },
-> +			},
-> +		},
-> +		.pw = {
-> +			.addr = ST_ACCEL_4_PW_ADDR,
-> +			.mask = ST_ACCEL_4_PW_MASK,
-> +			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-> +		},
-> +		.enable_axis = {
-> +			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-> +			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-> +		},
-> +		.fs = {
-> +			.addr = ST_ACCEL_4_FS_ADDR,
-> +			.mask = ST_ACCEL_4_FS_MASK,
-> +			.fs_avl = {
-> +				[0] = {
-> +					.num = ST_ACCEL_FS_AVL_2G,
-> +					.value = ST_ACCEL_4_FS_AVL_2_VAL,
-> +					.gain = ST_ACCEL_4_FS_AVL_2_GAIN,
-> +				},
-> +				[1] = {
-> +					.num = ST_ACCEL_FS_AVL_6G,
-> +					.value = ST_ACCEL_4_FS_AVL_6_VAL,
-> +					.gain = ST_ACCEL_4_FS_AVL_6_GAIN,
-> +				},
-> +			},
-> +		},
-> +		.bdu = {
-> +			.addr = ST_ACCEL_4_BDU_ADDR,
-> +			.mask = ST_ACCEL_4_BDU_MASK,
-> +		},
-> +		.drdy_irq = {
-> +			.addr = ST_ACCEL_4_DRDY_IRQ_ADDR,
-> +			.mask_int1 = ST_ACCEL_4_DRDY_IRQ_INT1_MASK,
-> +			.ig1 = {
-> +				.en_addr = ST_ACCEL_4_IG1_EN_ADDR,
-> +				.en_mask = ST_ACCEL_4_IG1_EN_MASK,
-> +			},
-> +		},
-> +		.multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
-> +		.bootime = 2, /* guess */
-> +	},
->  };
->  
->  static int st_accel_read_raw(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 7164aeff3ab1..146ebce50509 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -21,6 +21,10 @@
->  #ifdef CONFIG_OF
->  static const struct of_device_id st_accel_of_match[] = {
->  	{
-> +		.compatible = "st,lis3lv02dl-accel",
-This one is going to be interesting... There are existing
-bindings fo rhte same part in drivers/misc/lis3lv02d_i2c.c
-
-
-> +		.data = LIS3LV02DL_ACCEL_DEV_NAME,
-> +	},
-> +	{
->  		.compatible = "st,lsm303dlh-accel",
->  		.data = LSM303DLH_ACCEL_DEV_NAME,
->  	},
-> 
