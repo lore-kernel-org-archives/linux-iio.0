@@ -1,405 +1,195 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f182.google.com ([74.125.82.182]:51200 "EHLO
-	mail-we0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751238AbaHUP3r (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Aug 2014 11:29:47 -0400
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:40757 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752192AbaHUS2T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Aug 2014 14:28:19 -0400
+Received: by mail-wi0-f177.google.com with SMTP id ho1so8862976wib.4
+        for <linux-iio@vger.kernel.org>; Thu, 21 Aug 2014 11:28:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.01.1408211456410.6001@pmeerw.net>
-References: <1408625760-22038-1-git-send-email-daniel.baluta@intel.com>
-	<alpine.DEB.2.01.1408211456410.6001@pmeerw.net>
-Date: Thu, 21 Aug 2014 18:29:45 +0300
-Message-ID: <CAEnQRZAPkpOpeBdf3OVXjMnTwFreYGJMFzjukpRgMbgHfmq73w@mail.gmail.com>
-Subject: Re: [PATCH] iio: Add Dyna-Image AL3320A ambient light sensor driver
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Tsechih_Lin@asus.com
+In-Reply-To: <CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
+References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+ <CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+ <CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com> <CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Thu, 21 Aug 2014 13:27:56 -0500
+Message-ID: <CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
+Subject: Re: Resource Temporarily Unavailable error when trying to read from
+ the accelerator on a ThinkPad twist
+To: Elad Alfassa <elad@fedoraproject.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Aug 21, 2014 at 4:04 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+Hello Elad,
+
+In order to confirm this is a bug against the newest kernel it is best
+to have steps to reproduce the issue. I understand that
+iio-sensor-proxy fails to read the iio accelerometer. This could be an
+issue with the kernel or with the application's uses of the
+sysfs/device driver interface.
+
+Documentation on the iio subsystem sysfs interface can be found here:
+https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-iio
+
+The basic idea is store an iio device driver interface in the folder
+/sys/bus/iio/devices Each device will have a folder iio:deviceX. In
+each iio device directory there should be a "name" file, and a
+"buffer" and "scanning_elements" folder. The "name" file is simply the
+device driver name, for the accelerometer it should be called
+"accel-3d".
+
+To Test this driver you must enable the scanning elements, in this
+cases the axises (x, y, z), and then enable the buffer. To enable the
+scanning x axis element just write "1" into the file "in_accel_x".
+Example:
+# echo -n 1 > /sys/.../iio:deviceX/scan_elements/in_accel_x_en
+# echo -n 1 > /sys/.../iio:deviceX/scan_elements/in_accel_y_en
+# echo -n 1 > /sys/.../iio:deviceX/scan_elements/in_accel_z_en
+
+Now that  we have setup the data we wish to read, we can enable the
+internal iio scan buffer. This is done in a similar way, the iio sysfs
+folder "buffer" contains a file "enable" that we set to 1. Example:
+# echo -n 1 > /sys/bus/iio/devices/iio:deviceX/buffer/enable
+
+To read data from the buffer you must read the character device found
+at /dev/iio:deviceX, where X matches the same number for the syfs
+folder we were modifying. Example:
+
+#cat /dev/iio:deviceX
+
+The above is how the iio-sensor-proxy reads data. You should be aware
+that the charecter device (/dev/iio:deviceX) can only be read once, if
+some other app is already reading from this device it will return
+busy/resource unavailable. Therefore you must ensure nothing is
+reading from it already and that iio-sensor-proxy is disabled. This
+can be checked with command lsof. Example:
+# lsof | grep /dev/iio:deviceX
+
+>From the steps above hopefully you can reproduce the same error, of
+not being able to read from the char device on the newest kernel. If
+the above commands all work correctly and data is returned it is
+mostly likely a bug in iio-sensor-proxy or some other part of the
+kernel that that application uses.
+
+To debug this iio device problem further it helps to enable extra
+debugging information. Dynamic debugging allows the user to enable
+switches to give extra information when the kernel prints debugging
+information. Documentation for dynamic debugging can be found here:
+
+https://www.kernel.org/doc/Documentation/dynamic-debug-howto.txt
+
+You can turn on dynamic debugging after boot by writing to the dynamic
+debugging file found in the debugfs interface. It is easier for me to
+enable the feature at boot. This is done by adding a line to the
+modprobe config. This can be found in /etc/modprobe.d/iio.conf. In
+this file add a line that enables dynamic debugging for modules
+hid-sensor-accel-3d and hid-sensor-hub. The lines should be:
+
+   options hid-sensor-accel-3d dyndbg=+pflt
+   options hid-sensor-hub dyndbg=+pflt
+
+This features needs debugging support in the kernel so it is best to
+build the newest kernel 3.17-rc1 with debugging to get the most output
+in dmesg.
+
+To access the devices usb hid report you can print this from the
+debugfs interface. You sent me "Bus 002 Device 003: ID 0483:91d1
+STMicroelectronics" from lsusb output. This means the usb device is
+found on bus 2 and is device 3. The usb hid id is 0483:91d1. The first
+half is the vendor id (STMicroelectronics) and the second half is the
+product id. The report information for this device will be found at:
+/sys/kernel/debug/hid/0483:91d1.X/rdesc
+
+Where X is the interface number if your device has more than one.
+
+I hope this information helps you and is all correct.
+If you need any more help please let me know,
+Reyad Attiyat
+
+On Tue, Aug 19, 2014 at 11:51 AM, Elad Alfassa <elad@fedoraproject.org> wrote:
+> Hey.
 >
->> Minimal implementation. This driver provides raw illuminance readings.
+> can you instruct me on:
+>
+> 1) how to turn on this dynamic debugging thing?
+> 2) How do I know which directory in /sys/kernel/debug/hid/ is the one
+> for the accelerometer?
+>
+> The USB device ID is Bus 002 Device 003: ID 0483:91d1 STMicroelectronics
+>
+> The weird thing is that after suspend & resume, iio-sensor-proxy can
+> suddenly read the values from the sensor, but it still doesn't rotate
+> the screen.
+>
+>
+>
+> On Tue, Aug 12, 2014 at 7:42 PM, Reyad Attiyat <reyad.attiyat@gmail.com> wrote:
+>> Hello Elad Alfassa,
 >>
->> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
->> by Tsechih Lin <Tsechih_Lin@asus.com>
+>> I'm not too sure exactly what has caused such a regression but I will
+>> try and help. There was very little added to the accelerometer driver
+>> in between those releases only, some slight power modifications and
+>> raw read support.
 >>
->> * https://android.googlesource.com/kernel/msm.git
+>> Have you tried using the sysfs interface for the IIO accelerometer.
+>> Should be located in /sys/bus/iio/devices/iio:devicex/
+>> In that directory, on the newest kernel, there should be a
+>> in_accel_x_raw file, can you read new data from this?
 >>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->
-> comments inline below
-
-I addressed most of your comments in v2. See below.
-
->
->> ---
->>  drivers/iio/light/Kconfig   |  10 ++
->>  drivers/iio/light/Makefile  |   1 +
->>  drivers/iio/light/al3320a.c | 261 ++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 272 insertions(+)
->>  create mode 100644 drivers/iio/light/al3320a.c
+>> Can you provide more detail about the error. Turn on dynamic debugging
+>> for hid-sensor-hub  and hid-sensor-accel-3d modules. Then try enabling
+>> the scan elements and the buffer with the sysfs interface and post the
+>> full dmesg output. Also print the HID report description found on
+>> debugfs usually somewhere like
+>> (/sys/kernel/debug/hid/xxxx:xxxx:/rdesc) Maybe with this extra
+>> information the problem will be more clear.
 >>
->> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->> index bf05ca5..5bea821 100644
->> --- a/drivers/iio/light/Kconfig
->> +++ b/drivers/iio/light/Kconfig
->> @@ -17,6 +17,16 @@ config ADJD_S311
->>        This driver can also be built as a module.  If so, the module
->>        will be called adjd_s311.
+>> For a possible fix you can try adding the devices USB HID ID's, for
+>> the sensor hub, to the hid-sensor-hub driver hid_device_id struct.
+>> This will allow adding a quirk for your device and should setup the
+>> power state and enable the sensor hub correctly.
 >>
->> +config AL3320A
->> +     tristate "AL3320A ambient light sensor"
->> +     depends on I2C
->> +     help
->> +      Say Y here if you want to build a driver for the Dyna Image AL3320A
->> +      ambient light sensor.
->> +
->> +      To compile this driver as a module, choose M here: the
->> +      module will be called al3320a.
->> +
->>  config APDS9300
->>       tristate "APDS9300 ambient light sensor"
->>       depends on I2C
->> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
->> index 8b8c09f..47877a3 100644
->> --- a/drivers/iio/light/Makefile
->> +++ b/drivers/iio/light/Makefile
->> @@ -4,6 +4,7 @@
+>> Good luck,
+>> Reyad Attiyat
 >>
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_ADJD_S311)              += adjd_s311.o
->> +obj-$(CONFIG_AL3320A)                += al3320a.o
->>  obj-$(CONFIG_APDS9300)               += apds9300.o
->>  obj-$(CONFIG_CM32181)                += cm32181.o
->>  obj-$(CONFIG_CM36651)                += cm36651.o
->> diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
->> new file mode 100644
->> index 0000000..06ab557
->> --- /dev/null
->> +++ b/drivers/iio/light/al3320a.c
->> @@ -0,0 +1,261 @@
->> +/*
->> + * AL3320A - Dyna Image Ambient Light Sensor
->> + *
->> + * Copyright (c) 2014, Intel Corporation.
->> + *
->> + * This file is subject to the terms and conditions of version 2 of
->> + * the GNU General Public License.  See the file COPYING in the main
->> + * directory of this archive for more details.
->> + *
->> + * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
->> + *
->> + * TODO: interrupt support
->> + *
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/init.h>
->> +#include <linux/i2c.h>
->> +#include <linux/mutex.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +#define AL3320A_DRV_NAME "al3320a"
->> +
->> +#define AL3320A_REG_CONFIG           0x00
->> +#define AL3320A_REG_STATUS           0x01
->> +#define AL3320A_REG_INT                      0x02
->> +#define AL3320A_REG_WAIT             0x06
->> +#define AL3320A_REG_CONFIG_RANGE     0x07
->> +#define AL3320A_REG_PERSIST          0x08
->> +#define AL3320A_REG_MEAN_TIME                0x09
->> +#define AL3320A_REG_ADUMMY           0x0A
->> +#define AL3320A_REG_DATA_LOW         0x22
->> +#define AL3320A_REG_DATA_HIGH                0x23
->> +
->> +#define AL3320A_REG_LOW_THRESH_LOW   0x30
->> +#define AL3320A_REG_LOW_THRESH_HIGH  0x31
->> +#define AL3320A_REG_HIGH_THRESH_LOW  0x32
->> +#define AL3320A_REG_HIGH_THRESH_HIGH 0x33
->> +
->> +#define AL3320A_CONFIG_DISABLE               0x00
->> +#define AL3320A_CONFIG_ENABLE                BIT(0)
->> +#define AL3320A_CONFIG_SW_RESET              BIT(2)
->> +
->> +#define AL3320A_GAIN_SHIFT           1
->> +
->> +/* chip params default values */
->> +#define AL3320A_DEFAULT_MEAN_TIME    4
->> +#define AL3320A_DEFAULT_WAIT_TIME    0 /* no waiting */
->> +
->> +enum al3320a_range {
->> +     AL3320A_RANGE_1, /* 33.28K lux */
->> +     AL3320A_RANGE_2, /* 8.32K lux  */
->> +     AL3320A_RANGE_3, /* 2.08K lux  */
->> +     AL3320A_RANGE_4  /* 0.65K lux  */
->> +};
->> +
->> +static const int al3320a_scales[][2] = {
->> +     {0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
->> +};
->> +
->> +struct al3320a_data {
->> +     struct i2c_client *client;
->> +     u8 range;
->> +};
->> +
->> +static const struct iio_chan_spec al3320a_channels[] = {
->> +     {
->> +             .type   = IIO_LIGHT,
->> +             .info_mask_separate =
->> +                     BIT(IIO_CHAN_INFO_RAW) |
->> +                     BIT(IIO_CHAN_INFO_SCALE),
->> +     }
->> +};
->> +
+>> On Mon, Aug 11, 2014 at 8:51 AM, Elad Alfassa <elad@fedoraproject.org> wrote:
+>>> On Mon, Aug 11, 2014 at 3:16 PM, Elad Alfassa <elad@fedoraproject.org> wrote:
+>>>> Hi.
+>>>>
+>>>> I have a Thinkpad Twist, this is a Windows 8 certified machine from
+>>>> around 2012, and it has an accelerometer.
+>>>> Running kernel 3.16.0-1.fc22.x86_64, I'm getting "Resource Temporarily
+>>>> Unavailable" when trying to read from the accelerometer.
+>>>>
+>>>> Tiny bit more details:
+>>>> https://github.com/hadess/iio-sensor-proxy/issues/1
+>>>> https://sysdev.microsoft.com/en-us/hardware/LPL/ProductDetails.aspx?ProductID=98463&OrganizationID=4733
+>>>>
+>>>> Is this a known issue? Can I help debug this in any way?
+>>>>
+>>>>
+>>>> Thanks.
+>>>>
+>>>> --
+>>>> -Elad Alfassa.
+>>>
+>>> Hi.
+>>> Turns out this is a regression - it works well with kernel
+>>> 3.15.8-200.fc20.x86_64
+>>> I tried reporting this in the kernel bugzilla, but I couldn't find the
+>>> right component for the bug, so I filed it in RHBZ for now.
+>>> https://bugzilla.redhat.com/show_bug.cgi?id=1128760
+>>>
+>>>
+>>> --
+>>> -Elad Alfassa.
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
-> not sure if the minimal function below add to clarity or not...
-
-For the moment I think its good to leave them like that.
-
-> the datatype for gain, mean_time, etc. could be u8
-Good point. Changed them in v2.
-
 >
->> +static int al3320a_enable(struct al3320a_data *data)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
->> +                                      AL3320A_CONFIG_ENABLE);
->> +}
->> +
->> +static int al3320a_disable(struct al3320a_data *data)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
->> +                                      AL3320A_CONFIG_DISABLE);
->> +}
->> +
->> +static int al3320a_set_config_range(struct al3320a_data *data, int gain)
->> +{
->> +     data->range = gain;
->> +
->> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
->> +                                      gain << AL3320A_GAIN_SHIFT);
->> +}
->> +
->> +static int al3320a_set_mean_time(struct al3320a_data *data, int mean_time)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
->> +                                      mean_time);
->> +}
->> +
->> +static int al3320a_set_wait_time(struct al3320a_data *data, int wait_time)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
->> +                                      wait_time);
->> +}
->> +
->> +static int al3320a_get_adc_value(struct al3320a_data *data)
->> +{
->> +     unsigned int low, high;
->> +
->
-> could use a single i2c_smbus_read_word_swapped() instead of this function
-
-I've changed this in v2 and it seems to be fine. My only concern is
-the following comment
-from datasheet:
-
-The upper byte data registers can be read after a read to the lower
-byte register. When the lower byte register is
-read, the upper byte is stored in a temporary register and read after
-the lower byte register. By storing the upper byte in
-the temporary register as the lower byte is read, the correct value
-will be read even if the data register has been updated
-to the next value.
-
->
->> +     high = i2c_smbus_read_byte_data(data->client, AL3320A_REG_DATA_HIGH);
->> +     if (high < 0)
->> +             return high;
->> +
->> +     low = i2c_smbus_read_byte_data(data->client, AL3320A_REG_DATA_LOW);
->> +     if (low < 0)
->> +             return low;
->> +     return (high << 8) | low;
->> +}
->> +
->> +static int al3320a_init(struct al3320a_data *data)
->> +{
->> +     int ret;
->> +
->> +     /*  power on */
->
-> extra space before power
-
-Fixed in v2.
-
->
->> +     ret = al3320a_enable(data);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = al3320a_set_config_range(data, AL3320A_RANGE_3);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = al3320a_set_mean_time(data, AL3320A_DEFAULT_MEAN_TIME);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = al3320a_set_wait_time(data, AL3320A_DEFAULT_WAIT_TIME);
->> +     if (ret)
->> +             return ret;
->> +
->> +     return 0;
->> +}
->> +
->> +static int al3320a_read_raw(struct iio_dev *indio_dev,
->> +                         struct iio_chan_spec const *chan,
->> +                         int *val,
->> +                         int *val2,
->> +                         long mask)
->> +{
->> +     struct al3320a_data *data = iio_priv(indio_dev);
->> +     int ret;
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW:
->> +             ret = al3320a_get_adc_value(data);
->> +             if (ret < 0)
->> +                     return ret;
->> +             *val = ret;
->> +             return IIO_VAL_INT;
->> +     case IIO_CHAN_INFO_SCALE:
->> +             *val = al3320a_scales[data->range][0];
->> +             *val2 = al3320a_scales[data->range][1];
->> +             return IIO_VAL_INT_PLUS_MICRO;
->> +     }
->> +     return -EINVAL;
->> +}
->> +
->> +static int al3320a_write_raw(struct iio_dev *indio_dev,
->> +                          struct iio_chan_spec const *chan,
->> +                          int val, int val2, long mask)
->> +{
->> +     struct al3320a_data *data = iio_priv(indio_dev);
->> +     int i;
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_SCALE:
->> +             for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
->> +                     if (val == al3320a_scales[i][0] &&
->> +                         val2 == al3320a_scales[i][1]) {
->> +                             data->range = i;
->
-> strictly, should try to write the range value and only on success update
-> data->range
->
-> data->range is also set in _set_config_range(), done twice!
-Correct. I removed the assignment above in v2.
->
->> +                             return al3320a_set_config_range(data, i);
->> +                     }
->> +             }
->> +     }
->> +     return -EINVAL;
->> +}
->> +
->> +static const struct iio_info al3320a_info = {
->> +     .driver_module  = THIS_MODULE,
->> +     .read_raw       = al3320a_read_raw,
->> +     .write_raw      = al3320a_write_raw,
->> +};
->> +
->> +static int al3320a_probe(struct i2c_client *client,
->> +                      const struct i2c_device_id *id)
->> +{
->> +     struct al3320a_data *data;
->> +     struct iio_dev *indio_dev;
->> +     int ret;
->> +
->> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +     if (!indio_dev)
->> +             return -ENOMEM;
->> +
->> +     data = iio_priv(indio_dev);
->> +     i2c_set_clientdata(client, indio_dev);
->> +     data->client = client;
->> +
->> +     indio_dev->dev.parent = &client->dev;
->> +     indio_dev->info = &al3320a_info;
->> +     indio_dev->name = AL3320A_DRV_NAME;
->> +     indio_dev->channels = al3320a_channels;
->> +     indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
->> +     indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +     ret = al3320a_init(data);
->> +
->
-> remove extra newline?
-ok. changed in v2.
->
->> +     if (ret < 0)
->
-> all the check in _init() are
-> if (ret) return ret;
-> but here you check ret < 0
->
->> +             return ret;
->> +
->> +     return iio_device_register(indio_dev);
->
-> devm_iio_device_register...?
-Yes. This also simplifies the .remove function.
->
->> +}
->> +
->> +static int al3320a_remove(struct i2c_client *client)
->> +{
->> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +     struct al3320a_data *data = iio_priv(indio_dev);
->> +     int ret;
->> +
->> +     iio_device_unregister(indio_dev);
->> +
->> +     ret = al3320a_disable(data);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct i2c_device_id al3320a_id[] = {
->> +     {"al3320a", 0},
->> +     {}
->> +};
->> +MODULE_DEVICE_TABLE(i2c, al3320a_id);
->> +
->> +static struct i2c_driver al3320a_driver = {
->> +     .driver = {
->> +             .name = AL3320A_DRV_NAME,
->> +     },
->> +     .probe          = al3320a_probe,
->> +     .remove         = al3320a_remove,
->> +     .id_table       = al3320a_id,
->> +};
->> +
->> +module_i2c_driver(al3320a_driver);
->> +
->> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
->> +MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
->> +MODULE_LICENSE("GPL v2");
->>
 >
 > --
->
-> Peter Meerwald
-
-Thanks for review Peter!
-
-Daniel.
+> -Elad Alfassa.
