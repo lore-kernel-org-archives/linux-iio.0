@@ -1,103 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:59555 "EHLO pmeerw.net"
+Received: from mga09.intel.com ([134.134.136.24]:63374 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751599AbaHSWnc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Aug 2014 18:43:32 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH v2 10/11] iio:bma180: Implement _available sysfs attribute dynamically
-Date: Wed, 20 Aug 2014 00:43:25 +0200
-Message-Id: <1408488206-2633-11-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+	id S1751988AbaHVUsK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Aug 2014 16:48:10 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 1/8] iio:trigger: modify return value for iio_trigger_get
+Date: Fri, 22 Aug 2014 13:48:29 -0700
+Message-Id: <1408740516-31261-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-makes it easier to add more chip variants and removes redundancy:
-scales and frequencies are now stated just once
+Instead of a void function, return the trigger pointer.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/accel/bma180.c | 54 ++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 11 deletions(-)
+ include/linux/iio/trigger.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index 6e940b0..9fbc81f 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -83,12 +83,6 @@ struct bma180_part_info {
- #define BMA180_DEF_BW		20
- #define BMA180_DEF_SCALE	2452
- 
--/* Available values for sysfs */
--#define BMA180_FLP_FREQ_AVAILABLE \
--	"10 20 40 75 150 300"
--#define BMA180_SCALE_AVAILABLE \
--	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
--
- struct bma180_data {
- 	struct i2c_client *client;
- 	struct iio_trigger *trig;
-@@ -347,13 +341,51 @@ err:
- 	dev_err(&data->client->dev, "failed to disable the chip\n");
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 4b79ffe..fa76c79 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -84,10 +84,12 @@ static inline void iio_trigger_put(struct iio_trigger *trig)
+ 	put_device(&trig->dev);
  }
  
--static IIO_CONST_ATTR(in_accel_filter_low_pass_3db_frequency_available,
--		BMA180_FLP_FREQ_AVAILABLE);
--static IIO_CONST_ATTR(in_accel_scale_available, BMA180_SCALE_AVAILABLE);
-+static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
-+				 bool micros)
-+{
-+	size_t len = 0;
-+	int i;
+-static inline void iio_trigger_get(struct iio_trigger *trig)
++static inline struct iio_trigger *iio_trigger_get(struct iio_trigger *trig)
+ {
+ 	get_device(&trig->dev);
+ 	__module_get(trig->ops->owner);
 +
-+	for (i = 0; i < n; i++) {
-+		if (!vals[i])
-+			continue;
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+			micros ? "0.%06d " : "%d ", vals[i]);
-+	}
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t bma180_show_filter_freq_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bma180_show_avail(buf, data->part_info->bw_table,
-+		data->part_info->num_bw, false);
-+}
-+
-+static ssize_t bma180_show_scale_avail(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-+
-+	return bma180_show_avail(buf, data->part_info->scale_table,
-+		data->part_info->num_scales, true);
-+}
-+
-+static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-+	S_IRUGO, bma180_show_filter_freq_avail, NULL, 0);
-+
-+static IIO_DEVICE_ATTR(in_accel_scale_available,
-+	S_IRUGO, bma180_show_scale_avail, NULL, 0);
++	return trig;
+ }
  
- static struct attribute *bma180_attributes[] = {
--	&iio_const_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
--	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.
-+		dev_attr.attr,
-+	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
+ /**
 -- 
-1.9.1
+1.9.3
 
