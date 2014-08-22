@@ -1,479 +1,373 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49907 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932410AbaHVS2Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Aug 2014 14:28:25 -0400
-Message-ID: <53F78BC2.5090804@kernel.org>
-Date: Fri, 22 Aug 2014 19:28:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wi0-f178.google.com ([209.85.212.178]:61864 "EHLO
+	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751725AbaHVJIt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Aug 2014 05:08:49 -0400
 MIME-Version: 1.0
-To: Aniroop Mathur <aniroop.mathur@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: a.mathur@samsung.com, "cpgs ." <cpgs@samsung.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	p.shailesh@samsung.com, r.mahale@samsung.com,
-	vidushi.koul@samsung.com, narendra.m1@samsung.com
-Subject: Re: [PATCH 1/1] IIO: Added write function in iio_buffer_fileops
-References: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>	<53EB2AFE.10900@metafoo.de>	<CADYu309nTht96H077D6YGvhRYz6Xfux7Qri5Hi7dfgQMtOz-Pg@mail.gmail.com>	<53EB7AD9.9010602@metafoo.de>	<CADYu30-RHmysR5vhvNLGXMBx2gnQ6rkdW-pPzyVY=E4KYg8g9w@mail.gmail.com>	<53EC8463.2030802@metafoo.de>	<53ECC9F9.1050105@kernel.org> <CADYu308GLWp1u4XUYTm+W5mF3bCdfq=km8VgYBMN5xc2P3GDdQ@mail.gmail.com>
-In-Reply-To: <CADYu308GLWp1u4XUYTm+W5mF3bCdfq=km8VgYBMN5xc2P3GDdQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <alpine.DEB.2.01.1408211725420.6001@pmeerw.net>
+References: <1408634903-4305-1-git-send-email-daniel.baluta@intel.com>
+	<alpine.DEB.2.01.1408211725420.6001@pmeerw.net>
+Date: Fri, 22 Aug 2014 12:08:48 +0300
+Message-ID: <CAEnQRZCm=sSj6xNWjPJOtPM4bz+wmjmKtsXD2kxb9xdVZzWn=g@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: Add Dyna-Image AL3320A ambient light sensor driver
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Tsechih_Lin@asus.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/08/14 15:44, Aniroop Mathur wrote:
-> 
-> 
-> 
-> On Thu, Aug 14, 2014 at 8:08 PM, Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>> wrote:
-> 
->     On 14/08/14 10:41, Lars-Peter Clausen wrote:
->     > On 08/13/2014 06:33 PM, Aniroop Mathur wrote:
->     >> On Wed, Aug 13, 2014 at 8:18 PM, Lars-Peter Clausen <lars@metafoo.de <mailto:lars@metafoo.de>> wrote:
->     >>> On 08/13/2014 03:42 PM, Aniroop Mathur wrote:
->     >>>>
->     >>>> On Wed, Aug 13, 2014 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de <mailto:lars@metafoo.de>>
->     >>>> wrote:
->     >>>>>
->     >>>>> On 08/13/2014 08:29 AM, a.mathur@samsung.com <mailto:a.mathur@samsung.com> wrote:
->     >>>>>>
->     >>>>>>
->     >>>>>> From: Aniroop Mathur <a.mathur@samsung.com <mailto:a.mathur@samsung.com>>
->     >>>>>>
->     >>>>>> Earlier, user space can only read from iio device node but cannot write
->     >>>>>> to
->     >>>>>> it.
->     >>>>>> This patch adds write function in iio buffer file operations,
->     >>>>>> which will allow user-space applications/HAL to write the data
->     >>>>>> to iio device node.
->     >>>>>> So now there will be two way communication between IIO subsystem
->     >>>>>> and user space. (userspace <--> kernel)
->     >>>>>>
->     >>>>>> It can be used by HAL or any user-space application which wants to
->     >>>>>> write data to iio device node/buffer upon receiving some data from it.
->     >>>>>> As an example,
->     >>>>>> It is useful for iio device simulator application which need to record
->     >>>>>> the data by reading from iio device node and replay the recorded data
->     >>>>>> by writing back to iio device node.
->     >>>>>>
->     >>>>>
->     >>>>> I'm not convinced that this is something that should be added to the
->     >>>>> kernel.
->     I'm inclined to agree with Lars.  As an additional point this will cause
->     confusion when we have buffered writing for output devices (DACs).
-> 
-> 
->     >>>>> I'm wondering why can't this be done in userspace, e.g. by having a
->     >>>>> simulator mode for the application or by using LD_PRELOAD. Having this in
->     >>>>> userspace will be much more flexible and will be easier to implement
->     >>>>> correctly and you'll most likely want to simulate more than just buffer
->     >>>>> access, for example setting/getting properties of the device or channel.
->     >>>>> For
->     >>>>> the libiio[1] we are planning to implement a test backend that when
->     >>>>> activated will allow to simulate a whole device rather than just buffer
->     >>>>> support.
->     >>>>>
->     >>>>> [1] https://github.com/analogdevicesinc/libiio
->     >>>>>
->     >>>>>
->     >>>>
->     >>>> In normal Input Subsystem, there is two way communication between
->     >>>> kernel and userpace. It has both read and write functionality. :)
->     >>>> Why there is only one way communication in case of IIO ?
->     Why should there be?
-> 
-> 
-> 
-> Below is the use case for which write function is required:
-> 
-> I am working on Sensor Simulator application for android phones.
-A worthy goal!
-> This android application will simulate the sensor values 
-> for any other already developed 3rd party/organization application/s 
-> and not for simulator application itself.
-> In other words, I need to check the working of other sensor applications by
-> using my simulator application and along with it, checking of HAL and 
-> Framework too.
-> 
-> For simulation, below is the data flow 
-> by using user-space libiio and by directly writing to iio buffer.
-> 
-> Hardware--Driver--IIO--General_IIO_HAL--Framework--Other_Sensor_Application/s
->   |
->   | --> libiio <--> Simulator_Sensor_Application
->   |
->                    | <--> Simulator_Sensor_Application
-> 
-> 
-> If we use libiio, 
-> Sensor_Simulator_Application will not be able to send sensor data to 
-> Other_Sensor_Application/s because it can only write and read data for itself.
-> Reading and writing data for itself is not what is required. There is a need
-> to send data to other application/s.
-> Also, we could not check HAL and Framework here.
-> 
-> If we directly write to iio buffer,
+On Thu, Aug 21, 2014 at 6:31 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+>
+>> Minimal implementation. This driver provides raw illuminance readings.
+>>
+>> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+>> by Tsechih Lin <Tsechih_Lin@asus.com>
+>>
+>> * https://android.googlesource.com/kernel/msm.git
+>
+> some more comments on minor things below...
+>
+>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> ---
+>> Changes since v1: (reported by Peter Meerwald)
+>>       * used u8 instead of int for passing gain and mean_time
+>>       * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
+>>       * used devm_iio_device_register instead of iio_device_register
+>>       * small style fixes
+>>
+>>  drivers/iio/light/Kconfig   |  10 ++
+>>  drivers/iio/light/Makefile  |   1 +
+>>  drivers/iio/light/al3320a.c | 247 ++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 258 insertions(+)
+>>  create mode 100644 drivers/iio/light/al3320a.c
+>>
+>> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+>> index bf05ca5..5bea821 100644
+>> --- a/drivers/iio/light/Kconfig
+>> +++ b/drivers/iio/light/Kconfig
+>> @@ -17,6 +17,16 @@ config ADJD_S311
+>>        This driver can also be built as a module.  If so, the module
+>>        will be called adjd_s311.
+>>
+>> +config AL3320A
+>> +     tristate "AL3320A ambient light sensor"
+>> +     depends on I2C
+>> +     help
+>> +      Say Y here if you want to build a driver for the Dyna Image AL3320A
+>> +      ambient light sensor.
+>> +
+>> +      To compile this driver as a module, choose M here: the
+>> +      module will be called al3320a.
+>> +
+>>  config APDS9300
+>>       tristate "APDS9300 ambient light sensor"
+>>       depends on I2C
+>> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+>> index 8b8c09f..47877a3 100644
+>> --- a/drivers/iio/light/Makefile
+>> +++ b/drivers/iio/light/Makefile
+>> @@ -4,6 +4,7 @@
+>>
+>>  # When adding new entries keep the list in alphabetical order
+>>  obj-$(CONFIG_ADJD_S311)              += adjd_s311.o
+>> +obj-$(CONFIG_AL3320A)                += al3320a.o
+>>  obj-$(CONFIG_APDS9300)               += apds9300.o
+>>  obj-$(CONFIG_CM32181)                += cm32181.o
+>>  obj-$(CONFIG_CM36651)                += cm36651.o
+>> diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
+>> new file mode 100644
+>> index 0000000..787ce2e
+>> --- /dev/null
+>> +++ b/drivers/iio/light/al3320a.c
+>> @@ -0,0 +1,247 @@
+>> +/*
+>> + * AL3320A - Dyna Image Ambient Light Sensor
+>> + *
+>> + * Copyright (c) 2014, Intel Corporation.
+>> + *
+>> + * This file is subject to the terms and conditions of version 2 of
+>> + * the GNU General Public License.  See the file COPYING in the main
+>> + * directory of this archive for more details.
+>> + *
+>> + * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
+>> + *
+>> + * TODO: interrupt support
+>> + *
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/mutex.h>
+>
+> mutex is not needed
 
-This is a non starter via the approach currently suggested.  Writing
-to an IIO buffer means writing to an output device (or will soon),
-not shoving fake data into a driver that has been artificially hacked
-to not send real data (that disabling the real device but keeping the
-buffer running is a bit I really do not like.)
-If you want to do this it should be via a 'fake' driver not a shim on
-a real one.  To do this in a safe way would mean adding additional
-locking into the fast data flow path for a fairly uncommon case.
+Correct. To be fixed in v3.
+>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>> +#define AL3320A_DRV_NAME "al3320a"
+>> +
+>> +#define AL3320A_REG_CONFIG           0x00
+>> +#define AL3320A_REG_STATUS           0x01
+>> +#define AL3320A_REG_INT                      0x02
+>> +#define AL3320A_REG_WAIT             0x06
+>> +#define AL3320A_REG_CONFIG_RANGE     0x07
+>> +#define AL3320A_REG_PERSIST          0x08
+>
+> PERSIST is not used, maybe add to TODO
+Hmm, I think PERSIST is an internal part of interrupt support which is
+already listed in TODO list.
+>
+>> +#define AL3320A_REG_MEAN_TIME                0x09
+>> +#define AL3320A_REG_ADUMMY           0x0A
+>> +#define AL3320A_REG_DATA_LOW         0x22
+>> +#define AL3320A_REG_DATA_HIGH                0x23
+>
+> DATA_HIGH became unused by read_word_swapped()
+Ok, removed in v3. I've seen that it is a common practice to define
+only used registers. Anyhow, I think that drivers would be easier to
+understand/maintain if all register definitions are listed from start.
 
-I would happily except such a fake driver as a useful addition for
-test purposes etc.  The trick here would be in developing a configuration
-interface that allows a new 'fake' driver to be brought up with whatever
-set of channels and interfaces is desired, along with the mechanisms for
-providing data to those channels.
+>
+>> +
+>> +#define AL3320A_REG_LOW_THRESH_LOW   0x30
+>> +#define AL3320A_REG_LOW_THRESH_HIGH  0x31
+>> +#define AL3320A_REG_HIGH_THRESH_LOW  0x32
+>> +#define AL3320A_REG_HIGH_THRESH_HIGH 0x33
+>
+> threshold are TODO
+ok.
+>
+>> +
+>> +#define AL3320A_CONFIG_DISABLE               0x00
+>> +#define AL3320A_CONFIG_ENABLE                BIT(0)
+>> +#define AL3320A_CONFIG_SW_RESET              BIT(2)
+>
+> SW_RESET is unused
+Removed in v3.
+>
+>> +
+>> +#define AL3320A_GAIN_SHIFT           1
+>> +
+>> +/* chip params default values */
+>> +#define AL3320A_DEFAULT_MEAN_TIME    4
+>> +#define AL3320A_DEFAULT_WAIT_TIME    0 /* no waiting */
+>> +
+>> +enum al3320a_range {
+>> +     AL3320A_RANGE_1, /* 33.28K lux */
+>> +     AL3320A_RANGE_2, /* 8.32K lux  */
+>> +     AL3320A_RANGE_3, /* 2.08K lux  */
+>> +     AL3320A_RANGE_4  /* 0.65K lux  */
+>> +};
+>> +
+>> +static const int al3320a_scales[][2] = {
+>> +     {0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
+>> +};
+>> +
+>> +struct al3320a_data {
+>> +     struct i2c_client *client;
+>> +     u8 range;
+>> +};
+>> +
+>> +static const struct iio_chan_spec al3320a_channels[] = {
+>> +     {
+>> +             .type   = IIO_LIGHT,
+>> +             .info_mask_separate =
+>> +                     BIT(IIO_CHAN_INFO_RAW) |
+>> +                     BIT(IIO_CHAN_INFO_SCALE),
+>> +     }
+>> +};
+>> +
+>> +static int al3320a_enable(struct al3320a_data *data)
+>> +{
+>> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
+>> +                                      AL3320A_CONFIG_ENABLE);
+>> +}
+>> +
+>> +static int al3320a_disable(struct al3320a_data *data)
+>> +{
+>> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
+>> +                                      AL3320A_CONFIG_DISABLE);
+>> +}
+>> +
+>> +static int al3320a_set_config_range(struct al3320a_data *data, u8 gain)
+>> +{
+>> +     int ret;
+>> +
+>> +     ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
+>> +                                      gain << AL3320A_GAIN_SHIFT);
+>> +     if (ret >= 0)
+>> +             data->range = gain;
+>> +     return ret;
+>> +}
+>> +
+>> +static int al3320a_set_mean_time(struct al3320a_data *data, u8 mean_time)
+>> +{
+>> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
+>> +                                      mean_time);
+>> +}
+>> +
+>> +static int al3320a_set_wait_time(struct al3320a_data *data, u8 wait_time)
+>> +{
+>> +     return i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
+>> +                                      wait_time);
+>> +}
+>> +
+>> +static int al3320a_get_adc_value(struct al3320a_data *data)
+>> +{
+>> +     return i2c_smbus_read_word_swapped(data->client, AL3320A_REG_DATA_LOW);
+>> +}
+>> +
+>> +static int al3320a_init(struct al3320a_data *data)
+>> +{
+>> +     int ret;
+>> +
+>> +     /* power on */
+>> +     ret = al3320a_enable(data);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     ret = al3320a_set_config_range(data, AL3320A_RANGE_3);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     ret = al3320a_set_mean_time(data, AL3320A_DEFAULT_MEAN_TIME);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     ret = al3320a_set_wait_time(data, AL3320A_DEFAULT_WAIT_TIME);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int al3320a_read_raw(struct iio_dev *indio_dev,
+>> +                         struct iio_chan_spec const *chan,
+>> +                         int *val,
+>> +                         int *val2,
+>> +                         long mask)
+>> +{
+>> +     struct al3320a_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_RAW:
+>> +             ret = al3320a_get_adc_value(data);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +             *val = ret;
+>> +             return IIO_VAL_INT;
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             *val = al3320a_scales[data->range][0];
+>> +             *val2 = al3320a_scales[data->range][1];
+>> +             return IIO_VAL_INT_PLUS_MICRO;
+>> +     }
+>> +     return -EINVAL;
+>> +}
+>> +
+>> +static int al3320a_write_raw(struct iio_dev *indio_dev,
+>> +                          struct iio_chan_spec const *chan,
+>> +                          int val, int val2, long mask)
+>> +{
+>> +     struct al3320a_data *data = iio_priv(indio_dev);
+>> +     int i;
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
+>> +                     if (val == al3320a_scales[i][0] &&
+>> +                         val2 == al3320a_scales[i][1])
+>> +                             return al3320a_set_config_range(data, i);
+>> +             }
+>
+> could add a break; here so it is not missed when handling more masks
+Fixed in v3.
+>
+>> +     }
+>> +     return -EINVAL;
+>> +}
+>> +
+>> +static const struct iio_info al3320a_info = {
+>> +     .driver_module  = THIS_MODULE,
+>> +     .read_raw       = al3320a_read_raw,
+>> +     .write_raw      = al3320a_write_raw,
+>> +};
+>> +
+>> +static int al3320a_probe(struct i2c_client *client,
+>> +                      const struct i2c_device_id *id)
+>> +{
+>> +     struct al3320a_data *data;
+>> +     struct iio_dev *indio_dev;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     data = iio_priv(indio_dev);
+>> +     i2c_set_clientdata(client, indio_dev);
+>> +     data->client = client;
+>> +
+>> +     indio_dev->dev.parent = &client->dev;
+>> +     indio_dev->info = &al3320a_info;
+>> +     indio_dev->name = AL3320A_DRV_NAME;
+>> +     indio_dev->channels = al3320a_channels;
+>> +     indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
+>> +     indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +     ret = al3320a_init(data);
+>> +     if (ret) {
+>> +             dev_err(&client->dev, "al3320a chip init failed\n");
+>> +             return ret;
+>> +     }
+>> +
+>> +     return devm_iio_device_register(&client->dev, indio_dev);
+>> +}
+>> +
+>> +static int al3320a_remove(struct i2c_client *client)
+>> +{
+>> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +     struct al3320a_data *data = iio_priv(indio_dev);
+>> +
+>> +     return  al3320a_disable(data);
+>
+> extra space before al3320a_disable()
+Good catch. Fixed in v3.
+>
+>> +}
+>> +
+>> +static const struct i2c_device_id al3320a_id[] = {
+>> +     {"al3320a", 0},
+>> +     {}
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, al3320a_id);
+>> +
+>> +static struct i2c_driver al3320a_driver = {
+>> +     .driver = {
+>> +             .name = AL3320A_DRV_NAME,
+>> +     },
+>> +     .probe          = al3320a_probe,
+>> +     .remove         = al3320a_remove,
+>> +     .id_table       = al3320a_id,
+>> +};
+>> +
+>> +module_i2c_driver(al3320a_driver);
+>> +
+>> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+>> +MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
+>> +MODULE_LICENSE("GPL v2");
+>>
+>
+> --
+>
+> Peter Meerwald
 
-> Sensor_Simulator_Application will be able to send sensor data to 
-> Other_Sensor_Application/s and this in turn will also check whether there
-> are any problems in hal and framework for Other_Application to work properly.
-> So, if some Other_Sensor_Application is behaving differently 
-> for same sensor data it means there is some problem in 
-> HAL/Framework/Application itself.
-Sure, I understand your point here, but I would still not do it via
-tricks on a normal driver.  These other programs will just as happily
-connect to a 'new' device driver that offers the right facilities.
-
-> 
-> Also importantly, we can change the recorded data and check Other_Application 
-> working with that new data.
-> As an example,
-> There is an application, which uses accel+gyro+pressure to calculate 
-> amount of calories burnt of an individual.
-> So once recorded the data physically by going in outside environment,
-> we can change just the pressure data and measure the amount of calories burnt
-> without actually physically going outside at new height for new pressure.
-
-I'd argue that this is a userspace application problem.  If the data is not
-available then userspace should cope with it, not play games with faking the
-data apparently coming from the hardware.
-
-A fake driver would work for this as well if people really want it!
-
-> 
-> Now to write directly to IIO buffer, there is a need of two things
-> that should be present in IIO subsystem:
-> 1. Write function in iio_buffer file_ops.
-
-Not on the main buffer.  That has a very specific meaning and it isn't this.
-The 'right' way to do this in my mind is to have a driver that can
-hook up an out buffer to an in buffer (with no real hardware associated).
-That would fit nicely into the interface for normal use of IIO and would be
-a very handy test tool in general as we could playback 'interesting' datasets
-and use it to test the various bridge drivers as well.
-
-The only challenge is in the configuration interface to bring up such a device
-with the right channels!
-
-> 2. Multiple file descriptor support for same device node.
->    because both Simulator_Sensor_Application and Other_Sensor_Application/s
->    need to open device node for their use.
-
-Firstly we can actually support multiple buffers just fine, but the target
-for these is not repeating the same userspace interface lots of times.
-
-Secondly, No they don't need to  This is best done in userspace as we have
-emphasised in a number of previous dicussions. The requirements are quite different from
-what is needed from Input and even there filtering input does adds latency to
-it's data flow (and a great deal of complexity).  Input is designed primarily
-for slow devices where inline meta data is reasonable.  IIO has to be designed
-to handle high speed devices where that just isn't feasible.  Try adding meta
-data to the multiple mega sample per second devices Lars has running.
-
-For IIO, multiple buffers each need their own configuration
-interfaces as there is no meta data in the data stream to allow idenficiation
-of what is coming out.
-
-Any change to the flow on any buffer can result in hardware changes effecting
-all other buffers (typically stopping the data flow, changing the channels
-being grabbed and bringing it back up again).  These changes might well slow
-down the rate data is provided to another driver as various tricks that apply
-with only one buffer stop working.
-
-Userspace can mediate between multiple devices and greatly reduce the flow
-of data across the kernel userspace boundary.
-
-Now we do have the facility to do this in kernel and may perhaps support
-IIO on IIO at some point (IIO drivers that are consumers of other IIO drivers)
-thus providing the 'ability' to do what you ask.  However the purpose behind
-this would be to allow the underlying devices userspace interface to be dropped
-if for example, the adc is just feeding an input subsystem bridge driver.
-We are working slowly towards this, but only to allow IIO to be stripped back
-to what is required rather than to allow more complex options.
-
-So long term, it will be possible to have multiple buffers available (and
-created on the fly) but there is a fair bit of work to be done first.
->    
-> Currently, both are not present in IIO subsystem.
-> So first, I am hoping to add write function and 
-> after that adding multiple fd support. 
-
-I am sorry to say that I'm far from convinced that either is a good idea if
-you aim to do it in a similar way to Input.
-
-The second has been proposed a number of times before.
-> 
-> In input subsystem, both facilities are available.
-
-Sorry to put it so bluntly, but IIO has some very different targets from input.
-It needs to be fast.  Input does not (although this is getting a little more
-interesting with mulit touch screens).  That is what IIO is fundamentally different
-from input.  Yes, there are devices in IIO that are slow where perhaps it might
-be nice to make userspaces job a little easier, but any changes have to take
-into account what problems they will cause for the fast end of things.
-
-Ultimately if it's really a problem, then work on the input bridge driver,
-(which has been languishing in the todo heap for a long time now).  If people
-want these facilities then they can use that to make any IIO device accessible
-through input.
-
-> 
-> How can we achieve this task without directly writing to iio buffer ?
-
-Fake device - your android kernel would then appear to have multiple similar
-devices, one of which is real and one of which appears to have a matched set
-of output and input channels.  This does give us the pleasing option of
-having interfaces for outputting pressure, acceleration and magnetic field :)
-
-The trick here is how to instantiate such a device.   Sounds like a job for configfs
-to me though will take a bit of thinking to get the interface correct.
-
-> How will user-space libiio help us for this task ?
-
-Clearly it will only work if it becomes the standard option on Android :)
-
-Note as well that a lot of IIO device drives are slow enough that the buffered
-interface will never make sense and so there will always need to be a means to
-simply read values from sysfs attributes.
-
->  
-> 
->     >>>
->     >>>
->     >>> I've not seen a compelling reason yet why this must be implemented in kernel
->     >>> space. In my opinion, as outlined above, userspace if both easier and more
->     >>> flexible.
->     >>>
->     >>>
->     >>>>
->     >>>> For Input devices, I completed simulation just by reading and writing at
->     >>>> input device node /dev/input/eventX.
->     >>>> But for IIO devices, I am stuck as there is no write function available
->     >>>> for iio device node /dev/iio:device0.
->     >>>>
->     >>>> As per my understanding, if we do the simulation in userspace
->     >>>> then we need to create one more buffer in userpace. This will lead to
->     >>>> extra memory usage. With write functionality in IIO just like
->     >>>> in Input subsystem, we can avoid extra memory space. :)
->     >>>
->     >>>
->     >>> No, you don't actually have to create a additional buffer. Just return the
->     >>> data that you'd otherwise have passed to write().
->     >>>
->     >>>
->     >>
->     >> If there is no buffer, then there is clearly a chance of data loss/miss. :)
->     >> Because if one application is reading the data with frequency 5 Hz
->     >> and other application is writing the data at frequency 50 Hz (20 ms delay)
->     >> so this reading application will miss reading a lot of data.
->     >> Like in this case, after every 200 ms, 9 out of 10 data will be missed.
->     >
->     > Not if implemented correctly. Even with the current kernel implementation you'll have this issues as the buffer will
->     > simply overflow when you write faster than you read.
->     >
-> 
-> 
-> 
-> Generally, there is less difference between read and write frequency.
-> But there is difference.
-> So, in case of a buffer, there is very very less chance of data loss.
-> But in case of no buffer, there will be data loss/miss.
-Clearly any such system will need a buffer of some sort to remain efficient.
-If done in userspace this could even be a file that is being read.
-> 
-> Generally, as you know, application requests for frequency at which
-> hardware should send data for their reading.
-> But driver frequency to write data in buffer 
-> and application frequency to read data does not match exactly.
-> So either fast or slow, we end with either data loss 
-> or same data being sent again to app.
-> 
-> Therefore, buffer is required to avoid such cases.
-> 
-> 
->  
-> 
->     >
->     > [...]
->     If we have a usecase for playback functionality like this I would prefer it to
->     be on a separate IIO device.  When Lars' DAC buffered code is ready it will
->     be relatively easy to string together a fake DAC with a fake ADC to get
->     this sort of functionality.   It will be rather more interesting to
->     work out how to setup an arbitary device but it could be done,
->     most likely using configfs.
-> 
->     This would be more similar to uinput than the writing to the chardevs
->     directly as you are suggesting here.
-> 
->     >>>>> Are you sure that this works? iio_push_to_buffer() expects a data buffer
->     >>>>> of
->     >>>>> size rb->bytes_per_datum bytes. On the other hand rb->bytes_per_datum is
->     >>>>> only valid when the buffer is enabled, so for this to work the buffer
->     >>>>> would
->     >>>>> need to be enabled. Which means you'd inject the fake data in the middle
->     >>>>> of
->     >>>>> the real data stream.
->     >>>>>
->     >>>>>
->     >>>>
->     >>>> Yes, It works :)
->     >>>> In one patch, bytes_per_datum has been removed from kifo_in.
->     >>>> Patch - iio:kfifo_buf Take advantage of the fixed record size used in IIO
->     >>>> commit c559afbfb08c7eac215ba417251225d3a8e01062
->     >>>> - ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
->     >>>> + ret = kfifo_in(&kf->kf, data, 1);
->     >>>> So, I think we can now write only one byte of data.
->     >>>
->     >>>
->     >>> No, we need to write 1 record and the size of one record is bytes_per_datum.
->     >>> If you only write one byte you'll cause a out of bounds access.
->     >>>
->     >>>
->     >>
->     >> This is the code flow below which I checked:
->     >>
->     >> kfifo_in(&kf->kf, data, 1);
->     >> so len=1
->     >> kfifo_copy_in(fifo, buf, len, fifo->in);
->     >> l = min(len, size - off);
->     >> memcpy(fifo->data + off, src, l);
->     >>
->     >> In memcpy, if l is 1, so it will copy one byte only.
->     >> So, how it is writing one record and not one byte ?
->     > You missed this part:
->     >
->     >     if (esize != 1) {
->     >         off *= esize;
->     >         size *= esize;
->     >         len *= esize;
->     >     }
->     >
->     > so len gets multiplied by the record size. len=1 means 1 record.
->     >
-> 
-> 
-> Oh, I really missed this part.
-> Thank you Mr. Lars for the correction.
-> 
-> So, in the write function, 
-> we can just replace 1 by rb->bytes_per_datum.
-> And add the check like below:
-> + if(!rb || rb->bytes_per_datum==0)
-> + return -1;
-> 
-> I initially write the code with bytes_per_datum only.
-> But changed to 1 after seeing the latest kernel and
-> got confused with "1" value.
-> 
-> Is there anything else need to be changed ?
-> 
->  
-> 
->     >>
->     >>>>
->     >>>> Initially, I wrote the code for write functionality in kernel version 3.6
->     >>>> using bytes_per_datum instead of fixed size of 1 byte.
->     >>>> It worked fine. :)
->     >>>> For this, we just need to replace size 1 by r->bytes_per_datum.
->     >>>>
->     >>>> We are not injecting data in middle of real data stream.
->     >>>> When we inject the recorded data, we disabled the hardware chip,
->     >>>> so no new/real data is pushed to the buffer during that time.
->     >>>>
->     >>>> To record, we enabled the buffer, read the real data and save it.
->     >>>> To replay, we disabled the hardware chip and injected saved data by
->     >>>> writing back to iio device node.
->     >>>> So, Buffer is still enabled at time of writing to iio device node. :)
->     >>>
->     >>>
->     >>> How do you disable the hardware without disabling the buffer?
->     >>>
->     >> I disabled the hardware by powering off the chip.
->     >> And after writing is complete, chip is powered on again. :)
->     >
->     > But how do you disable the device when the buffer is still active?
->     > IIO expects the device to be active when the buffer is active.
->     Agreed. This sounds like a pretty uggly hack.  I would not be happy with
->     having this in any driver.
-> 
-> 
-> Taking example of pressure sensor hardware chip,
-> 
-> Case1: Normal case,
-> 1. We enabled the iio software buffer.
-> 2. Pressure Hardware chip generates an interrupt.
-> 3. Driver receives the interrupt call and make
->    a call to push data to iio buffer
-> 
-> But if there is no change in pressure i.e. there is no new data
-> hardware chip will not generate any interrupt and hence
-> no data is pushed to iio software buffer.
-That's actually unusual for an IIO device.  Unlike input which won't kick
-out data if there is no change, IIO devices typically don't assess that at all
-and will push data based on timing.
-
-There are devices that do support hysteresis on their triggers (thus requiring
-a significant change in value) but they are pretty unusual.
-
-> And iio software buffer is still active and waiting if there is any data comes.
-> 
-> Case 2: My case,
-> 1. We enable the iio software buffer.
-> 2. We record the pressure real data if there is.
-> 3. We power off the pressure hardware chip 
->    or second way, we disable the irq only.
-
-Nasty and hacky.   Putting aside that I think this is generally a bad idea as
-explained above.  If you do this, you need to allow pushing of data with the interrupt
-still running with appropriate locking to prevent anything nasty occuring.
-Otherwise, you've just killed off the real reading.  The snag here is that you
-have no way of identifying the real reading from fake ones?  Which is right?
-
-I'm not going to be easily persuaded to take any driver that does this sort of
-faking without it being readily apparent to userspace that this is what is going
-on.
-
-> 
-> In this case too, there will be no interrupt call received by driver,
-> and hence no data is pushed to iio buffer.
-> And iio software buffer is still active and waiting if there is any data comes.
-> 
-> In both cases, from iio buffer perspective,
-> iio software buffer is active and waiting for some data.
-> 
-> I cannot see any difference for IIO buffer in both cases.
-> So, I am not able to understand the problem here with IIO buffer ?
-> 
-> Later in case 2, as buffer is active,
-> Sensor_Simulator_Application can write data to it
-> and Other_Sensor_Application/s can read data from it.
-> And after simulation is over,
-> we power on the hardware chip again or second way, enable the irq again,
-> everything gets back to normal as before.
-> 
-Of course you are welcome to do what you like, but I'm only going to be
-interested in a true 'fake' driver to provide this functionality without
-ever pretending to be real.  Such a driver should be easy to userspace
-to identify and elect to ignore if it wants to.
-
-Sorry it has taken me so long to get back - been a busy few weeks.
-Also if this appears overly negative, remember that with my maintainers
-hat on I have to look at every proposal to change the IIO core and consider
-how it effects all our current use cases.
-
-Jonathan
-
+Thanks again Peter.
