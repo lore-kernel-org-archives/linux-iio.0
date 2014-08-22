@@ -1,62 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:52101 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932699AbaH1Is6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 04:48:58 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Caesar Wang <caesar.wang@rock-chips.com>
-Cc: heiko@sntech.de, rui.zhang@intel.com, edubezval@gmail.com,
-	grant.likely@linaro.org, robh+dt@kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, huangtao@rock-chips.com,
-	cf@rock-chips.com, dianders@chromium.org, dtor@chromium.org,
-	zyw@rock-chips.com, addy.ke@rock-chips.com,
-	dmitry.torokhov@gmail.com, zhaoyifeng <zyf@rock-chips.com>,
-	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
-Date: Thu, 28 Aug 2014 10:48:23 +0200
-Message-ID: <2852853.mfRZfFVSev@wuerfel>
-In-Reply-To: <1409187562-12370-2-git-send-email-caesar.wang@rock-chips.com>
-References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com> <1409187562-12370-2-git-send-email-caesar.wang@rock-chips.com>
+Received: from mail-vc0-f169.google.com ([209.85.220.169]:46761 "EHLO
+	mail-vc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751738AbaHVVed (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Aug 2014 17:34:33 -0400
+Received: by mail-vc0-f169.google.com with SMTP id le20so13024629vcb.14
+        for <linux-iio@vger.kernel.org>; Fri, 22 Aug 2014 14:34:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
+References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+	<CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+	<CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
+	<CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
+	<CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
+	<CA+BWVUSvm54_xLeXGf0d5oo1-1DH_z=K1TFsrFLQHMBV_gA7gA@mail.gmail.com>
+	<CAN0s7yT017sCS9K4q5avRBz5JM+Oj4RM-M8oYVStbWEDx1yWXg@mail.gmail.com>
+	<CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
+Date: Sat, 23 Aug 2014 00:34:32 +0300
+Message-ID: <CAN0s7ySG9rbDXZ6XDtQmPWD5QGRdnHf7SwGxjh0er39EZFGO6w@mail.gmail.com>
+Subject: Re: Resource Temporarily Unavailable error when trying to read from
+ the accelerator on a ThinkPad twist
+From: Elad Alfassa <elad@fedoraproject.org>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>
+Cc: linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thursday 28 August 2014 08:59:19 Caesar Wang wrote:
-> Thermal is TS-ADC Controller module supports user-defined mode and automatic mode.
-> 
-> User-defined mode refers,TSADC all the control signals entirely by software
-> writing to register for direct control.
-> 
-> Automaic mode refers to the module automatically poll TSADC output,and the results
-> Were checked.
-> 
-> If you find that the temperature High in a period of time, an interrupt is generated
-> to the processor down-measures taken;if the temperature over a period of time High,
-> the resulting TSHUT gave CRU module,let it reset the entire chip, or via GPIO give PMIC.
-> 
-> Signed-off-by: zhaoyifeng <zyf@rock-chips.com>
-> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+Hey Reyad.
 
-Hi Caesar,
+Unfortunately, this patch does not fix the issue.
+The symptoms are exactly like before.
 
-After looking at the driver (last time I only received the patch for
-the binding), I have a more general comment:
-
-This looks like a general-purpose ADC device, not an IP block that is
-specific to thermal management. The binding looks ok for that purpose
-but should probably be moved into Documentation/devicetree/bindings/iio/adc/
-as a minor change.
-
-On the driver side, I believe the correct way to deal with this setup
-is to split your driver into a generic drivers/iio/adc/rockchips-tsadc.c
-file, and a smaller thermal driver that uses the iio in-kernel interfaces,
-ideally one that is independent of the underlying hardware and can
-work on any ADC implementation.
-
-I've put the IIO maintainer on Cc in this mail, maybe Jonathan or someone
-else on the linux-iio mailing list has some extra insight.
-
-	Arnd
+Thanks,
+-- 
+-Elad Alfassa.
