@@ -1,31 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-021.synserver.de ([212.40.185.21]:1064 "EHLO
-	smtp-out-021.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751170AbaHTGuG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Aug 2014 02:50:06 -0400
-Message-ID: <53F4451B.3040209@metafoo.de>
-Date: Wed, 20 Aug 2014 08:50:03 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: sanjeev sharma <sanjeevsharmaengg@gmail.com>
-CC: Sanjeev Sharma <sanjeev_sharma@mentor.com>, jic23@kernel.org,
-	gregkh <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devel <devel@driverdev.osuosl.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>	<53F441FF.9090304@metafoo.de> <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
-In-Reply-To: <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Received: from mga09.intel.com ([134.134.136.24]:63374 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751988AbaHVUsL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 Aug 2014 16:48:11 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 7/8] iio: inv_mpu6050: Fix indio_dev->trig assignment
+Date: Fri, 22 Aug 2014 13:48:35 -0700
+Message-Id: <1408740516-31261-8-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/20/2014 08:44 AM, sanjeev sharma wrote:
-> Hi,
->
-> This was the action item(TO-DO). IMO, it make sense to move into
-> include/linux/iio because IIO complete subsystem may take some time.
+This can result in wrong reference count for trigger device, call
+iio_trigger_get to increment reference.
+Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+with Jonathan.
 
-The code that is in staging is not supposed to 'leak' outside of staging. So 
-either you move the driver as a whole out of staging or leave it there, but 
-do not move individual files of the driver out of staging. The action item 
-is for when the driver is moved out of staging.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+index 03b9372..926fcce 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+@@ -135,7 +135,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
+ 	ret = iio_trigger_register(st->trig);
+ 	if (ret)
+ 		goto error_free_irq;
+-	indio_dev->trig = st->trig;
++	indio_dev->trig = iio_trigger_get(st->trig);
+ 
+ 	return 0;
+ 
+-- 
+1.9.3
+
