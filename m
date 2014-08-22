@@ -1,55 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-248.synserver.de ([212.40.185.248]:1097 "EHLO
-	smtp-out-247.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753774AbaHYIIw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 04:08:52 -0400
-Message-ID: <53FAEF10.7010001@metafoo.de>
-Date: Mon, 25 Aug 2014 10:08:48 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: "Sharma, Sanjeev" <Sanjeev_Sharma@mentor.com>,
-	sanjeev sharma <sanjeevsharmaengg@gmail.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>,
-	gregkh <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	devel <devel@driverdev.osuosl.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>	<53F441FF.9090304@metafoo.de> <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com> <53F4451B.3040209@metafoo.de> <FDC088D3B5555644AE135ED28A7ABDE94DF3CC4B@EU-MBX-04.mgc.mentorg.com>
-In-Reply-To: <FDC088D3B5555644AE135ED28A7ABDE94DF3CC4B@EU-MBX-04.mgc.mentorg.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 8/8] iio: meter: ade7758: Fix indio_dev->trig assignment
+Date: Fri, 22 Aug 2014 13:48:36 -0700
+Message-Id: <1408740516-31261-9-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/25/2014 09:17 AM, Sharma, Sanjeev wrote:
-> Hello Lars,
->
-> As per your suggestion Can I move complete Driver out of staging specially SPI ADC Driver.
+This can result in wrong reference count for trigger device, call
+iio_trigger_get to increment reference.
+Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
+with Jonathan.
 
-Only if they are cleaned up first. All of the drivers that are still in 
-staging do have issues, otherwise we'd already had moved them. A few of them 
-are OK codestyle wise, but do have ABI issues which need to be resolved 
-before they can be moved.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/staging/iio/meter/ade7758_trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- Lars
-
->
-> Regards
-> Sanjeev Sharma
->
-> -----Original Message-----
-> From: Lars-Peter Clausen [mailto:lars@metafoo.de]
-> Sent: Wednesday, August 20, 2014 12:20 PM
-> To: sanjeev sharma
-> Cc: Sharma, Sanjeev; jic23@kernel.org; gregkh; linux-iio@vger.kernel.org; devel; linux-kernel
-> Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
->
-> On 08/20/2014 08:44 AM, sanjeev sharma wrote:
->> Hi,
->>
->> This was the action item(TO-DO). IMO, it make sense to move into
->> include/linux/iio because IIO complete subsystem may take some time.
->
-> The code that is in staging is not supposed to 'leak' outside of staging. So either you move the driver as a whole out of staging or leave it there, but do not move individual files of the driver out of staging. The action item is for when the driver is moved out of staging.
->
-
+diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
+index ea01b8f..6f45ce0 100644
+--- a/drivers/staging/iio/meter/ade7758_trigger.c
++++ b/drivers/staging/iio/meter/ade7758_trigger.c
+@@ -85,7 +85,7 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
+ 	ret = iio_trigger_register(st->trig);
+ 
+ 	/* select default trigger */
+-	indio_dev->trig = st->trig;
++	indio_dev->trig = iio_trigger_get(st->trig);
+ 	if (ret)
+ 		goto error_free_irq;
+ 
+-- 
+1.9.3
