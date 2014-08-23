@@ -1,67 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:57561 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751194AbaH3Ktz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:49:55 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: handle -EPROBE_DEFER in of_iio_channel_get_by_name
-Date: Sat, 30 Aug 2014 12:51:55 +0200
-Message-ID: <1889900.9ty4gGSZCE@diego>
-In-Reply-To: <5401A770.3040204@kernel.org>
-References: <4420839.L1RSpT2Pjo@diego> <5401A770.3040204@kernel.org>
+Received: from mail-vc0-f172.google.com ([209.85.220.172]:44169 "EHLO
+	mail-vc0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750809AbaHWPT4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Aug 2014 11:19:56 -0400
+Received: by mail-vc0-f172.google.com with SMTP id im17so13555916vcb.17
+        for <linux-iio@vger.kernel.org>; Sat, 23 Aug 2014 08:19:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <CA+BWVUTraeqgTJqJndzpY6+_c+600q=MKChtA7OdG3uBG7+f6w@mail.gmail.com>
+References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+	<CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+	<CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
+	<CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
+	<CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
+	<CA+BWVUSvm54_xLeXGf0d5oo1-1DH_z=K1TFsrFLQHMBV_gA7gA@mail.gmail.com>
+	<CAN0s7yT017sCS9K4q5avRBz5JM+Oj4RM-M8oYVStbWEDx1yWXg@mail.gmail.com>
+	<CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
+	<CAN0s7ySG9rbDXZ6XDtQmPWD5QGRdnHf7SwGxjh0er39EZFGO6w@mail.gmail.com>
+	<CA+BWVUTraeqgTJqJndzpY6+_c+600q=MKChtA7OdG3uBG7+f6w@mail.gmail.com>
+Date: Sat, 23 Aug 2014 18:19:55 +0300
+Message-ID: <CAN0s7yQJfekw_iWhS5o6xArY91fwN6=o7mqyanmk_UCQL=y1HQ@mail.gmail.com>
+Subject: Re: Resource Temporarily Unavailable error when trying to read from
+ the accelerator on a ThinkPad twist
+From: Elad Alfassa <elad@fedoraproject.org>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>
+Cc: linux-iio <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Samstag, 30. August 2014, 11:29:04 schrieb Jonathan Cameron:
-> On 28/08/14 23:13, Heiko Stübner wrote:
-> > Till now of_iio_channel_get_by_name always tried to find the channel
-> > without evaluating the return code from of_iio_channel_get. This might
-> > include -EPROBE_DEFER in which case the channel is present but its driver
-> > simply not probed yet. Therefore simply return on -EPROBE_DEFER so that
-> > the driver requesting the channel can also defer.
-> > 
-> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> 
-> I already have a patch queued up for this change in the fixes-togreg branch
-> 
-> [PATCH] iio:inkern: fix overwritten -EPROBE_DEFER in
-> of_iio_channel_get_by_name by Johannes Pointner
-> 
-> I'm just being a little slow catching up with patches at the moment.
+Hey Reyad.
 
-no problem ... at least the issue got fixed :-)
+I don't see the
+hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
+0003:0483:91D1.0003: No Enum quirks
+line in my dmesg, so the patch did enable the enum quirk.
+However, the symptoms are still the same.
+
+Thanks for your help.
+
+On Sat, Aug 23, 2014 at 6:14 PM, Reyad Attiyat <reyad.attiyat@gmail.com> wrote:
+> Hey Elad,
+>
+> That is unfortunate that the patch doesn't work. If the patch did
+> enable the enum quirk you should no longer see this line in your dmesg
+> when hid-sensor-hub module is loaded:
+> hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
+> 0003:0483:91D1.0003: No Enum quirks
+>
+> I'll CC Srinivas for you to try and get additional help.
+>
+> Hey Srinivas,
+>
+> Elad has a hid sensor hub from STM that is failing to produce new
+> data, any ideas what might cause this. He is getting a resource
+> temporarily unavailable after only one value is read. I had thought it
+> might need the quirk to change logical minimum to 1 for the state
+> enums but it had no effect. Any other ideas?
+>
+> On Fri, Aug 22, 2014 at 4:34 PM, Elad Alfassa <elad@fedoraproject.org> wrote:
+>> Hey Reyad.
+>>
+>> Unfortunately, this patch does not fix the issue.
+>> The symptoms are exactly like before.
+>>
+>> Thanks,
+>> --
+>> -Elad Alfassa.
 
 
-> 
-> J
-> 
-> > ---
-> > 
-> >  drivers/iio/inkern.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > index c749700..f084610 100644
-> > --- a/drivers/iio/inkern.c
-> > +++ b/drivers/iio/inkern.c
-> > @@ -178,7 +178,7 @@ static struct iio_channel
-> > *of_iio_channel_get_by_name(struct device_node *np,> 
-> >  			index = of_property_match_string(np, "io-channel-names",
-> >  			
-> >  							 name);
-> >  		
-> >  		chan = of_iio_channel_get(np, index);
-> > 
-> > -		if (!IS_ERR(chan))
-> > +		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
-> > 
-> >  			break;
-> >  		
-> >  		else if (name && index >= 0) {
-> >  		
-> >  			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
 
+-- 
+-Elad Alfassa.
