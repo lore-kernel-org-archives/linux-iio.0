@@ -1,257 +1,174 @@
-Return-Path: <sanjeevs@inn.mentorg.com>
-From: Sanjeev Sharma <sanjeev_sharma@mentor.com>
-To: <jic23@kernel.org>, <kgene.kim@samsung.com>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devel@driverdev.osuosl.org>, Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Sanjeev Sharma <Sanjeev_Sharma@mentor.com>
-Subject: [PATCH] iio: remove .owner field for driver using module_platform_driver
-Date: Wed, 20 Aug 2014 15:02:37 +0530
-Message-ID: <1408527157-9318-1-git-send-email-sanjeev_sharma@mentor.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f47.google.com ([209.85.215.47]:63119 "EHLO
+	mail-la0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751199AbaHWRbM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Aug 2014 13:31:12 -0400
+Received: by mail-la0-f47.google.com with SMTP id mc6so11023836lab.6
+        for <linux-iio@vger.kernel.org>; Sat, 23 Aug 2014 10:31:10 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Denis CIOCCA <denis.ciocca@st.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
+Date: Sat, 23 Aug 2014 19:31:04 +0200
+Message-Id: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch removes the .owner field for drivers which use the
-platform_driver_register api because this is overriden in
-_platform_driver_register.
+This adds support for the LIS3LV02 accelerometer found in the
+ST Microelectronics Nomadik board series.
 
-Signed-off-by: Sanjeev Sharma <Sanjeev_Sharma@mentor.com>
+Cc: devicetree@vger.kernel.org
+Cc: Denis CIOCCA <denis.ciocca@st.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c       | 1 -
- drivers/iio/adc/exynos_adc.c                  | 1 -
- drivers/iio/adc/lp8788_adc.c                  | 1 -
- drivers/iio/adc/ti_am335x_adc.c               | 1 -
- drivers/iio/adc/twl4030-madc.c                | 1 -
- drivers/iio/adc/twl6030-gpadc.c               | 1 -
- drivers/iio/adc/vf610_adc.c                   | 1 -
- drivers/iio/adc/viperboard_adc.c              | 1 -
- drivers/iio/gyro/hid-sensor-gyro-3d.c         | 1 -
- drivers/iio/humidity/dht11.c                  | 1 -
- drivers/iio/light/hid-sensor-als.c            | 1 -
- drivers/iio/light/hid-sensor-prox.c           | 1 -
- drivers/iio/light/lm3533-als.c                | 1 -
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 1 -
- drivers/iio/orientation/hid-sensor-incl-3d.c  | 1 -
- drivers/iio/orientation/hid-sensor-rotation.c | 1 -
- drivers/iio/pressure/hid-sensor-press.c       | 1 -
- drivers/iio/trigger/iio-trig-interrupt.c      | 1 -
- 18 files changed, 18 deletions(-)
+ .../devicetree/bindings/iio/st-sensors.txt         |  1 +
+ drivers/iio/accel/st_accel.h                       |  1 +
+ drivers/iio/accel/st_accel_core.c                  | 81 ++++++++++++++++++++++
+ drivers/iio/accel/st_accel_i2c.c                   |  4 ++
+ 4 files changed, 87 insertions(+)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 54e464e..d5d9531 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -419,7 +419,6 @@ static struct platform_driver hid_accel_3d_platform_driver = {
- 	.id_table = hid_accel_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index a7a0a15913ad..d2aaca974531 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -23,6 +23,7 @@ standard bindings from pinctrl/pinctrl-bindings.txt.
+ Valid compatible strings:
+ 
+ Accelerometers:
++- st,lis3lv02dl-accel
+ - st,lsm303dlh-accel
+ - st,lsm303dlhc-accel
+ - st,lis3dh-accel
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index c3877630b2e4..38a0e9932549 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <linux/iio/common/st_sensors.h>
+ 
++#define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl_accel"
+ #define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
+ #define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
+ #define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 087864854c61..d4dd05d0b24d 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -129,6 +129,30 @@
+ #define ST_ACCEL_3_IG1_EN_MASK			0x08
+ #define ST_ACCEL_3_MULTIREAD_BIT		false
+ 
++/* CUSTOM VALUES FOR SENSOR 4 */
++#define ST_ACCEL_4_WAI_EXP			0x3a
++#define ST_ACCEL_4_ODR_ADDR			0x20
++#define ST_ACCEL_4_ODR_MASK			0x30 /* DF1 and DF0 */
++#define ST_ACCEL_4_ODR_AVL_40HZ_VAL		0x00
++#define ST_ACCEL_4_ODR_AVL_160HZ_VAL		0x01
++#define ST_ACCEL_4_ODR_AVL_640HZ_VAL		0x02
++#define ST_ACCEL_4_ODR_AVL_2560HZ_VAL		0x03
++#define ST_ACCEL_4_PW_ADDR			0x20
++#define ST_ACCEL_4_PW_MASK			0xc0
++#define ST_ACCEL_4_FS_ADDR			0x21
++#define ST_ACCEL_4_FS_MASK			0x80
++#define ST_ACCEL_4_FS_AVL_2_VAL			0X00
++#define ST_ACCEL_4_FS_AVL_6_VAL			0X01
++#define ST_ACCEL_4_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(1024)
++#define ST_ACCEL_4_FS_AVL_6_GAIN		IIO_G_TO_M_S_2(340)
++#define ST_ACCEL_4_BDU_ADDR			0x21
++#define ST_ACCEL_4_BDU_MASK			0x40
++#define ST_ACCEL_4_DRDY_IRQ_ADDR		0x21
++#define ST_ACCEL_4_DRDY_IRQ_INT1_MASK		0x04
++#define ST_ACCEL_4_IG1_EN_ADDR			0x21
++#define ST_ACCEL_4_IG1_EN_MASK			0x08
++#define ST_ACCEL_4_MULTIREAD_BIT		true
++
+ static const struct iio_chan_spec st_accel_12bit_channels[] = {
+ 	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+@@ -373,6 +397,63 @@ static const struct st_sensors st_accel_sensors[] = {
+ 		.multi_read_bit = ST_ACCEL_3_MULTIREAD_BIT,
+ 		.bootime = 2,
  	},
- 	.probe		= hid_accel_3d_probe,
- 	.remove		= hid_accel_3d_remove,
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index fc9dfc2..b4373f7 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -606,7 +606,6 @@ static struct platform_driver exynos_adc_driver = {
- 	.remove		= exynos_adc_remove,
- 	.driver		= {
- 		.name	= "exynos-adc",
--		.owner	= THIS_MODULE,
- 		.of_match_table = exynos_adc_match,
- 		.pm	= &exynos_adc_pm_ops,
- 	},
-diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-index 5c8c915..152cfc8 100644
---- a/drivers/iio/adc/lp8788_adc.c
-+++ b/drivers/iio/adc/lp8788_adc.c
-@@ -244,7 +244,6 @@ static struct platform_driver lp8788_adc_driver = {
- 	.remove = lp8788_adc_remove,
- 	.driver = {
- 		.name = LP8788_DEV_ADC,
--		.owner = THIS_MODULE,
- 	},
- };
- module_platform_driver(lp8788_adc_driver);
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index d5dc4c6..b730864 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -545,7 +545,6 @@ MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
- static struct platform_driver tiadc_driver = {
- 	.driver = {
- 		.name   = "TI-am335x-adc",
--		.owner	= THIS_MODULE,
- 		.pm	= TIADC_PM_OPS,
- 		.of_match_table = ti_adc_dt_ids,
- 	},
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index eb86786..94c5f05 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -883,7 +883,6 @@ static struct platform_driver twl4030_madc_driver = {
- 	.remove = twl4030_madc_remove,
- 	.driver = {
- 		   .name = "twl4030_madc",
--		   .owner = THIS_MODULE,
- 		   .of_match_table = of_match_ptr(twl_madc_of_match),
- 	},
- };
-diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-index 15282f1..89d8aa1 100644
---- a/drivers/iio/adc/twl6030-gpadc.c
-+++ b/drivers/iio/adc/twl6030-gpadc.c
-@@ -994,7 +994,6 @@ static struct platform_driver twl6030_gpadc_driver = {
- 	.remove		= twl6030_gpadc_remove,
- 	.driver		= {
- 		.name	= DRIVER_NAME,
--		.owner	= THIS_MODULE,
- 		.pm	= &twl6030_gpadc_pm_ops,
- 		.of_match_table = of_twl6030_match_tbl,
- 	},
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 44799eb5..4a10ae9 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -698,7 +698,6 @@ static struct platform_driver vf610_adc_driver = {
- 	.remove         = vf610_adc_remove,
- 	.driver         = {
- 		.name   = DRIVER_NAME,
--		.owner  = THIS_MODULE,
- 		.of_match_table = vf610_adc_match,
- 		.pm     = &vf610_adc_pm_ops,
- 	},
-diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
-index 9acf6b6..3be2e35 100644
---- a/drivers/iio/adc/viperboard_adc.c
-+++ b/drivers/iio/adc/viperboard_adc.c
-@@ -145,7 +145,6 @@ static int vprbrd_adc_probe(struct platform_device *pdev)
- static struct platform_driver vprbrd_adc_driver = {
- 	.driver = {
- 		.name	= "viperboard-adc",
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= vprbrd_adc_probe,
- };
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index fa034a3..a3ea1e8 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -416,7 +416,6 @@ static struct platform_driver hid_gyro_3d_platform_driver = {
- 	.id_table = hid_gyro_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_gyro_3d_probe,
- 	.remove		= hid_gyro_3d_remove,
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index d8771f5..623c145 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -281,7 +281,6 @@ static int dht11_probe(struct platform_device *pdev)
- static struct platform_driver dht11_driver = {
- 	.driver = {
- 		.name	= DRIVER_NAME,
--		.owner	= THIS_MODULE,
- 		.of_match_table = dht11_dt_ids,
- 	},
- 	.probe  = dht11_probe,
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 96e71e1..a5283d7 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -381,7 +381,6 @@ static struct platform_driver hid_als_platform_driver = {
- 	.id_table = hid_als_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_als_probe,
- 	.remove		= hid_als_remove,
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index 412bae8..f5a5146 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -373,7 +373,6 @@ static struct platform_driver hid_prox_platform_driver = {
- 	.id_table = hid_prox_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_prox_probe,
- 	.remove		= hid_prox_remove,
-diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-index c1aadc6..ae3c71b 100644
---- a/drivers/iio/light/lm3533-als.c
-+++ b/drivers/iio/light/lm3533-als.c
-@@ -915,7 +915,6 @@ static int lm3533_als_remove(struct platform_device *pdev)
- static struct platform_driver lm3533_als_driver = {
- 	.driver	= {
- 		.name	= "lm3533-als",
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= lm3533_als_probe,
- 	.remove		= lm3533_als_remove,
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 3ec777a..03a13d4 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -533,7 +533,6 @@ static struct platform_driver hid_magn_3d_platform_driver = {
- 	.id_table = hid_magn_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_magn_3d_probe,
- 	.remove		= hid_magn_3d_remove,
-diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-index 2478f6c..1ff181b 100644
---- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-+++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-@@ -437,7 +437,6 @@ static struct platform_driver hid_incl_3d_platform_driver = {
- 	.id_table = hid_incl_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_incl_3d_probe,
- 	.remove		= hid_incl_3d_remove,
-diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-index dccf848..4afb6c7 100644
---- a/drivers/iio/orientation/hid-sensor-rotation.c
-+++ b/drivers/iio/orientation/hid-sensor-rotation.c
-@@ -334,7 +334,6 @@ static struct platform_driver hid_dev_rot_platform_driver = {
- 	.id_table = hid_dev_rot_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_dev_rot_probe,
- 	.remove		= hid_dev_rot_remove,
-diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-index 2c0d2a4..7649286 100644
---- a/drivers/iio/pressure/hid-sensor-press.c
-+++ b/drivers/iio/pressure/hid-sensor-press.c
-@@ -382,7 +382,6 @@ static struct platform_driver hid_press_platform_driver = {
- 	.id_table = hid_press_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
--		.owner	= THIS_MODULE,
- 	},
- 	.probe		= hid_press_probe,
- 	.remove		= hid_press_remove,
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-index 7a149a7..572bc6f 100644
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ b/drivers/iio/trigger/iio-trig-interrupt.c
-@@ -109,7 +109,6 @@ static struct platform_driver iio_interrupt_trigger_driver = {
- 	.remove = iio_interrupt_trigger_remove,
- 	.driver = {
- 		.name = "iio_interrupt_trigger",
--		.owner = THIS_MODULE,
- 	},
++	{
++		.wai = ST_ACCEL_4_WAI_EXP,
++		.sensors_supported = {
++			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
++		.odr = {
++			.addr = ST_ACCEL_4_ODR_ADDR,
++			.mask = ST_ACCEL_4_ODR_MASK,
++			.odr_avl = {
++				{ 40, ST_ACCEL_4_ODR_AVL_40HZ_VAL },
++				{ 160, ST_ACCEL_4_ODR_AVL_160HZ_VAL, },
++				{ 640, ST_ACCEL_4_ODR_AVL_640HZ_VAL, },
++				{ 2560, ST_ACCEL_4_ODR_AVL_2560HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_ACCEL_4_PW_ADDR,
++			.mask = ST_ACCEL_4_PW_MASK,
++			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.enable_axis = {
++			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
++			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
++		},
++		.fs = {
++			.addr = ST_ACCEL_4_FS_ADDR,
++			.mask = ST_ACCEL_4_FS_MASK,
++			.fs_avl = {
++				[0] = {
++					.num = ST_ACCEL_FS_AVL_2G,
++					.value = ST_ACCEL_4_FS_AVL_2_VAL,
++					.gain = ST_ACCEL_4_FS_AVL_2_GAIN,
++				},
++				[1] = {
++					.num = ST_ACCEL_FS_AVL_6G,
++					.value = ST_ACCEL_4_FS_AVL_6_VAL,
++					.gain = ST_ACCEL_4_FS_AVL_6_GAIN,
++				},
++			},
++		},
++		.bdu = {
++			.addr = ST_ACCEL_4_BDU_ADDR,
++			.mask = ST_ACCEL_4_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = ST_ACCEL_4_DRDY_IRQ_ADDR,
++			.mask_int1 = ST_ACCEL_4_DRDY_IRQ_INT1_MASK,
++			.ig1 = {
++				.en_addr = ST_ACCEL_4_IG1_EN_ADDR,
++				.en_mask = ST_ACCEL_4_IG1_EN_MASK,
++			},
++		},
++		.multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
++		.bootime = 2, /* guess */
++	},
  };
  
+ static int st_accel_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 7164aeff3ab1..146ebce50509 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -21,6 +21,10 @@
+ #ifdef CONFIG_OF
+ static const struct of_device_id st_accel_of_match[] = {
+ 	{
++		.compatible = "st,lis3lv02dl-accel",
++		.data = LIS3LV02DL_ACCEL_DEV_NAME,
++	},
++	{
+ 		.compatible = "st,lsm303dlh-accel",
+ 		.data = LSM303DLH_ACCEL_DEV_NAME,
+ 	},
 -- 
-1.7.11.7
+1.9.3
+
