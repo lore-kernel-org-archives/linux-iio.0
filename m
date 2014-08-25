@@ -1,46 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46795 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933464AbaHYUp2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 16:45:28 -0400
-Message-ID: <53FBA067.5000506@kernel.org>
-Date: Mon, 25 Aug 2014 21:45:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-vc0-f175.google.com ([209.85.220.175]:33803 "EHLO
+	mail-vc0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754526AbaHYREm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 13:04:42 -0400
+Received: by mail-vc0-f175.google.com with SMTP id ik5so15538596vcb.34
+        for <linux-iio@vger.kernel.org>; Mon, 25 Aug 2014 10:04:38 -0700 (PDT)
 MIME-Version: 1.0
+In-Reply-To: <1408985781.21294.149.camel@spandruv-desktop.jf.intel.com>
+References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
+	<CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
+	<CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
+	<CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
+	<CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
+	<CA+BWVUSvm54_xLeXGf0d5oo1-1DH_z=K1TFsrFLQHMBV_gA7gA@mail.gmail.com>
+	<CAN0s7yT017sCS9K4q5avRBz5JM+Oj4RM-M8oYVStbWEDx1yWXg@mail.gmail.com>
+	<CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
+	<CAN0s7ySG9rbDXZ6XDtQmPWD5QGRdnHf7SwGxjh0er39EZFGO6w@mail.gmail.com>
+	<CA+BWVUTraeqgTJqJndzpY6+_c+600q=MKChtA7OdG3uBG7+f6w@mail.gmail.com>
+	<CAN0s7yQJfekw_iWhS5o6xArY91fwN6=o7mqyanmk_UCQL=y1HQ@mail.gmail.com>
+	<1408985781.21294.149.camel@spandruv-desktop.jf.intel.com>
+Date: Mon, 25 Aug 2014 20:04:37 +0300
+Message-ID: <CAN0s7yQAP9ZkPd+E3StKutM4YLE-xyOz8QRFBsh=vo3KfHNG6A@mail.gmail.com>
+Subject: Re: Resource Temporarily Unavailable error when trying to read from
+ the accelerator on a ThinkPad twist
+From: Elad Alfassa <elad@fedoraproject.org>
 To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 7/8] iio: inv_mpu6050: Fix indio_dev->trig assignment
-References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1408740516-31261-8-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1408740516-31261-8-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+Cc: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/08/14 21:48, Srinivas Pandruvada wrote:
-> This can result in wrong reference count for trigger device, call
-> iio_trigger_get to increment reference.
-> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-> with Jonathan.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the fixes-togreg branch of iio.igt
+Hi Srinivas.
 
-Thanks,
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> index 03b9372..926fcce 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> @@ -135,7 +135,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
->  	ret = iio_trigger_register(st->trig);
->  	if (ret)
->  		goto error_free_irq;
-> -	indio_dev->trig = st->trig;
-> +	indio_dev->trig = iio_trigger_get(st->trig);
->  
->  	return 0;
->  
-> 
+I sent this to Reyad previously:
+Here's the dmeg output: https://elad.fedorapeople.org/iio-debug/dmesg.txt
+and here's the rdesc file: https://elad.fedorapeople.org/iio-debug/rdesc.txt
+
+It's indeed a usb hub, Bus 002 Device 003: ID 0483:91d1 STMicroelectronics
+
+So what happens is that when I use iio-sensor-proxy
+(https://github.com/hadess/iio-sensor-proxy) it gets one read and gets
+EAGAIN for all next reads.
+So I kept it running, and while it was running I used cat on the raw
+values, which were read without error. And when I ran the cat I saw
+that iio-sensor-proxy managed to get another read,
+it happens every time I cat, ie. if I run cat in an endless loop while
+iio-sensor-proxy is running then all the reads it tries to do succeed.
+
+I'll send you acpidump later.
+
+On Mon, Aug 25, 2014 at 7:56 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> So I understand you are using buffered mode. When you get this error
+> what happens if you just cat raw values? Do you get the same error?
+>
+> Also kernel debug logs as suggested by Reyad will be helpful to debug.
+> Can you confirm that the sensor hub is an usb hub (with lsusb for
+> vendor/product id) not i2c.
+> Send me also output of acpidump (you can install acpidump in most of the
+> distros)
+>
+> Thanks,
+> Srinivas
+>
+> On Sat, 2014-08-23 at 18:19 +0300, Elad Alfassa wrote:
+>> Hey Reyad.
+>>
+>> I don't see the
+>> hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
+>> 0003:0483:91D1.0003: No Enum quirks
+>> line in my dmesg, so the patch did enable the enum quirk.
+>> However, the symptoms are still the same.
+>>
+>> Thanks for your help.
+>>
+>> On Sat, Aug 23, 2014 at 6:14 PM, Reyad Attiyat <reyad.attiyat@gmail.com> wrote:
+>> > Hey Elad,
+>> >
+>> > That is unfortunate that the patch doesn't work. If the patch did
+>> > enable the enum quirk you should no longer see this line in your dmesg
+>> > when hid-sensor-hub module is loaded:
+>> > hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
+>> > 0003:0483:91D1.0003: No Enum quirks
+>> >
+>> > I'll CC Srinivas for you to try and get additional help.
+>> >
+>> > Hey Srinivas,
+>> >
+>> > Elad has a hid sensor hub from STM that is failing to produce new
+>> > data, any ideas what might cause this. He is getting a resource
+>> > temporarily unavailable after only one value is read. I had thought it
+>> > might need the quirk to change logical minimum to 1 for the state
+>> > enums but it had no effect. Any other ideas?
+>> >
+>> > On Fri, Aug 22, 2014 at 4:34 PM, Elad Alfassa <elad@fedoraproject.org> wrote:
+>> >> Hey Reyad.
+>> >>
+>> >> Unfortunately, this patch does not fix the issue.
+>> >> The symptoms are exactly like before.
+>> >>
+>> >> Thanks,
+>> >> --
+>> >> -Elad Alfassa.
+>>
+>>
+>>
+>
+>
+
+
+
+-- 
+-Elad Alfassa.
