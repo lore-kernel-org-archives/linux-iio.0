@@ -1,86 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:31465 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756284AbaHYQ4X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 25 Aug 2014 12:56:23 -0400
-Message-ID: <1408985781.21294.149.camel@spandruv-desktop.jf.intel.com>
-Subject: Re: Resource Temporarily Unavailable error when trying to read from
- the accelerator on a ThinkPad twist
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Elad Alfassa <elad@fedoraproject.org>
-Cc: Reyad Attiyat <reyad.attiyat@gmail.com>,
-	linux-iio <linux-iio@vger.kernel.org>
-Date: Mon, 25 Aug 2014 09:56:21 -0700
-In-Reply-To: <CAN0s7yQJfekw_iWhS5o6xArY91fwN6=o7mqyanmk_UCQL=y1HQ@mail.gmail.com>
-References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
-	 <CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
-	 <CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
-	 <CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
-	 <CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
-	 <CA+BWVUSvm54_xLeXGf0d5oo1-1DH_z=K1TFsrFLQHMBV_gA7gA@mail.gmail.com>
-	 <CAN0s7yT017sCS9K4q5avRBz5JM+Oj4RM-M8oYVStbWEDx1yWXg@mail.gmail.com>
-	 <CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
-	 <CAN0s7ySG9rbDXZ6XDtQmPWD5QGRdnHf7SwGxjh0er39EZFGO6w@mail.gmail.com>
-	 <CA+BWVUTraeqgTJqJndzpY6+_c+600q=MKChtA7OdG3uBG7+f6w@mail.gmail.com>
-	 <CAN0s7yQJfekw_iWhS5o6xArY91fwN6=o7mqyanmk_UCQL=y1HQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail.linuxfoundation.org ([140.211.169.12]:60564 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752557AbaHYSLc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 14:11:32 -0400
+Date: Mon, 25 Aug 2014 11:10:47 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new drivers, features and cleanups for 3.18 - set 1
+Message-ID: <20140825181047.GA26333@kroah.com>
+References: <53F3B0D0.60003@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <53F3B0D0.60003@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-So I understand you are using buffered mode. When you get this error
-what happens if you just cat raw values? Do you get the same error? 
+On Tue, Aug 19, 2014 at 09:17:20PM +0100, Jonathan Cameron wrote:
+> The following changes since commit e010a2a04c3179c342e370e93ffb7d13eaf90dc4:
+> 
+>   staging: gdm724x: fix misplaced open braces (2014-07-26 19:26:46 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.18a
 
-Also kernel debug logs as suggested by Reyad will be helpful to debug.
-Can you confirm that the sensor hub is an usb hub (with lsusb for
-vendor/product id) not i2c.
-Send me also output of acpidump (you can install acpidump in most of the
-distros)
+Pulled and pushed out, thanks.
 
-Thanks,
-Srinivas
-
-On Sat, 2014-08-23 at 18:19 +0300, Elad Alfassa wrote:
-> Hey Reyad.
-> 
-> I don't see the
-> hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
-> 0003:0483:91D1.0003: No Enum quirks
-> line in my dmesg, so the patch did enable the enum quirk.
-> However, the symptoms are still the same.
-> 
-> Thanks for your help.
-> 
-> On Sat, Aug 23, 2014 at 6:14 PM, Reyad Attiyat <reyad.attiyat@gmail.com> wrote:
-> > Hey Elad,
-> >
-> > That is unfortunate that the patch doesn't work. If the patch did
-> > enable the enum quirk you should no longer see this line in your dmesg
-> > when hid-sensor-hub module is loaded:
-> > hid_sensor_hub:sensor_hub_report_fixup:540: hid-sensor-hub
-> > 0003:0483:91D1.0003: No Enum quirks
-> >
-> > I'll CC Srinivas for you to try and get additional help.
-> >
-> > Hey Srinivas,
-> >
-> > Elad has a hid sensor hub from STM that is failing to produce new
-> > data, any ideas what might cause this. He is getting a resource
-> > temporarily unavailable after only one value is read. I had thought it
-> > might need the quirk to change logical minimum to 1 for the state
-> > enums but it had no effect. Any other ideas?
-> >
-> > On Fri, Aug 22, 2014 at 4:34 PM, Elad Alfassa <elad@fedoraproject.org> wrote:
-> >> Hey Reyad.
-> >>
-> >> Unfortunately, this patch does not fix the issue.
-> >> The symptoms are exactly like before.
-> >>
-> >> Thanks,
-> >> --
-> >> -Elad Alfassa.
-> 
-> 
-> 
-
-
+greg k-h
