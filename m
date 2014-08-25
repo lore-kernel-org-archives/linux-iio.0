@@ -1,37 +1,106 @@
-Return-Path: <Sanjeev_Sharma@mentor.com>
-From: "Sharma, Sanjeev" <Sanjeev_Sharma@mentor.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, sanjeev sharma
-	<sanjeevsharmaengg@gmail.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>, gregkh
-	<gregkh@linuxfoundation.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, devel <devel@driverdev.osuosl.org>, linux-kernel
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] staging:iio: moved platform_data into include/linux/iio
-Date: Mon, 25 Aug 2014 07:17:33 +0000
-Message-ID: <FDC088D3B5555644AE135ED28A7ABDE94DF3CC4B@EU-MBX-04.mgc.mentorg.com>
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
-	<53F441FF.9090304@metafoo.de>
- <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
- <53F4451B.3040209@metafoo.de>
-In-Reply-To: <53F4451B.3040209@metafoo.de>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41743 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753774AbaHYHWR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 03:22:17 -0400
+In-Reply-To: <CABLc4a_SoUktjQ=27w3=z2p65rgdDY8EKD8mTKZvo7ub6165Cg@mail.gmail.com>
+References: <CABLc4a_SoUktjQ=27w3=z2p65rgdDY8EKD8mTKZvo7ub6165Cg@mail.gmail.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: help - pushing data to kernel buffers at unequal intervals for different ADC channels
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 25 Aug 2014 08:22:10 +0100
+To: Sricharan Chalasani <sricharan.chalasani@gmail.com>,
+	linux-iio@vger.kernel.org
+Message-ID: <0770b48e-d25e-4b48-90b1-bbe34f74f4f2@email.android.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGVsbG8gTGFycywNCg0KQXMgcGVyIHlvdXIgc3VnZ2VzdGlvbiBDYW4gSSBtb3ZlIGNvbXBsZXRl
-IERyaXZlciBvdXQgb2Ygc3RhZ2luZyBzcGVjaWFsbHkgU1BJIEFEQyBEcml2ZXIuDQoNClJlZ2Fy
-ZHMNClNhbmplZXYgU2hhcm1hDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBM
-YXJzLVBldGVyIENsYXVzZW4gW21haWx0bzpsYXJzQG1ldGFmb28uZGVdIA0KU2VudDogV2VkbmVz
-ZGF5LCBBdWd1c3QgMjAsIDIwMTQgMTI6MjAgUE0NClRvOiBzYW5qZWV2IHNoYXJtYQ0KQ2M6IFNo
-YXJtYSwgU2FuamVldjsgamljMjNAa2VybmVsLm9yZzsgZ3JlZ2toOyBsaW51eC1paW9Admdlci5r
-ZXJuZWwub3JnOyBkZXZlbDsgbGludXgta2VybmVsDQpTdWJqZWN0OiBSZTogW1BBVENIXSBzdGFn
-aW5nOmlpbzogbW92ZWQgcGxhdGZvcm1fZGF0YSBpbnRvIGluY2x1ZGUvbGludXgvaWlvDQoNCk9u
-IDA4LzIwLzIwMTQgMDg6NDQgQU0sIHNhbmplZXYgc2hhcm1hIHdyb3RlOg0KPiBIaSwNCj4NCj4g
-VGhpcyB3YXMgdGhlIGFjdGlvbiBpdGVtKFRPLURPKS4gSU1PLCBpdCBtYWtlIHNlbnNlIHRvIG1v
-dmUgaW50byANCj4gaW5jbHVkZS9saW51eC9paW8gYmVjYXVzZSBJSU8gY29tcGxldGUgc3Vic3lz
-dGVtIG1heSB0YWtlIHNvbWUgdGltZS4NCg0KVGhlIGNvZGUgdGhhdCBpcyBpbiBzdGFnaW5nIGlz
-IG5vdCBzdXBwb3NlZCB0byAnbGVhaycgb3V0c2lkZSBvZiBzdGFnaW5nLiBTbyBlaXRoZXIgeW91
-IG1vdmUgdGhlIGRyaXZlciBhcyBhIHdob2xlIG91dCBvZiBzdGFnaW5nIG9yIGxlYXZlIGl0IHRo
-ZXJlLCBidXQgZG8gbm90IG1vdmUgaW5kaXZpZHVhbCBmaWxlcyBvZiB0aGUgZHJpdmVyIG91dCBv
-ZiBzdGFnaW5nLiBUaGUgYWN0aW9uIGl0ZW0gaXMgZm9yIHdoZW4gdGhlIGRyaXZlciBpcyBtb3Zl
-ZCBvdXQgb2Ygc3RhZ2luZy4NCg==
+
+
+On August 25, 2014 5:06:18 AM GMT+01:00, Sricharan Chalasani <sricharan.chalasani@gmail.com> wrote:
+>Hi Jonathan and all,
+>
+>I have 4 channels on my Analog to digital converter. I like to enable
+>all the 4 channels with the following set of commands
+>
+>Setting up channels in use
+>
+># echo 1 >
+>/sys/bus/iio/devices/iio:device0/scan_elements/in_voltage0_en
+># echo 1 >
+>/sys/bus/iio/devices/iio:device0/scan_elements/in_voltage1_en
+># echo 1 >
+>/sys/bus/iio/devices/iio:device0/scan_elements/in_voltage2_en
+># echo 1 >
+>/sys/bus/iio/devices/iio:device0/scan_elements/in_voltage3_en
+>
+>
+>Setting up the trigger
+>
+># echo "my_periodic_timer_trigger" >
+>/sys/bus/iio/devices/iio:device0/trigger/current_trigger
+>
+>Setting up buffer length
+>
+># echo 100 > /sys/bus/iio/devices/iio:device0/buffer/length
+>
+>Enable the buffer
+>
+># echo 1 > /sys/bus/iio/devices/iio:device0/buffer/enable
+>
+>
+>Now in my IIO ADC driver data is available at unequal intervals
+>meaning that ... (assuming that my ADC trigger handler is called once
+>in every 1 milli second)
+>
+>1. After 1 milli seconds data is available on channel1 only ...
+>2. After 2 millli seconds new data is available on channel0 and
+>channel2
+>3. After 3 milli seconds new data is available on channel0, channel2
+>and channel3
+>4. After 4 milli seconds new data is available on channel 2 and channel
+>channel3
+>5. After 5 milli seconds new data is available on channel0. channel1,
+>chanel2, channel3
+>
+>and it goes on like this ..... and my IIO ADC driver knows that on
+>which channels data is available at any given point of time ....
+>
+>
+>The idea is to push data to IIO buffer as and when data is available
+>on one or more channels. But, I understand that, the following
+>function expects that data (second argument to the function) be
+>available on all the 4 enabled channels before the function is called.
+>
+>static inline int iio_push_to_buffers_with_timestamp(struct iio_dev
+>*indio_dev, void *data, int64_t timestamp)
+>
+>Assuming that all the 4 channels are enabled from the user space for
+>buffered capture:
+>
+>1. I understand that IIO supports pushing data to buffer if data is
+>available on all the enabled channels.
+>
+>2. Please let me know if it is possible for me to push data to buffer
+>from my IIO ADC driver whenever data is available on any of the
+>channels.
+
+Not really as we have no way to describe this flow to user space.  Would 4 separate single channel buffers work for your use case? 
+
+Note this boils down to 4 separate iio devices registered by the one driver.
+
+That is what we have suggested for other such complex capture timings.
+
+The only other option would be to pad with dummy data when a channel is not available but that is really ugly.
+
+J
+>
+>
+>
+>Thanks and regards,
+>Sricharan.
+
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
