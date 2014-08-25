@@ -1,37 +1,52 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 8/8] iio: meter: ade7758: Fix indio_dev->trig assignment
-Date: Fri, 22 Aug 2014 13:48:36 -0700
-Message-Id: <1408740516-31261-9-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <Sanjeev_Sharma@mentor.com>
+From: "Sharma, Sanjeev" <Sanjeev_Sharma@mentor.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, sanjeev sharma
+	<sanjeevsharmaengg@gmail.com>
+CC: "jic23@kernel.org" <jic23@kernel.org>, gregkh
+	<gregkh@linuxfoundation.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, devel <devel@driverdev.osuosl.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] staging:iio: moved platform_data into include/linux/iio
+Date: Mon, 25 Aug 2014 11:49:09 +0000
+Message-ID: <FDC088D3B5555644AE135ED28A7ABDE94DF3ECF2@EU-MBX-04.mgc.mentorg.com>
+References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
+	<53F441FF.9090304@metafoo.de>
+ <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
+ <53F4451B.3040209@metafoo.de>
+ <FDC088D3B5555644AE135ED28A7ABDE94DF3CC4B@EU-MBX-04.mgc.mentorg.com>
+ <53FAEF10.7010001@metafoo.de>
+In-Reply-To: <53FAEF10.7010001@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-This can result in wrong reference count for trigger device, call
-iio_trigger_get to increment reference.
-Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
-with Jonathan.
-
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/staging/iio/meter/ade7758_trigger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-index ea01b8f..6f45ce0 100644
---- a/drivers/staging/iio/meter/ade7758_trigger.c
-+++ b/drivers/staging/iio/meter/ade7758_trigger.c
-@@ -85,7 +85,7 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
- 	ret = iio_trigger_register(st->trig);
- 
- 	/* select default trigger */
--	indio_dev->trig = st->trig;
-+	indio_dev->trig = iio_trigger_get(st->trig);
- 	if (ret)
- 		goto error_free_irq;
- 
--- 
-1.9.3
+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IExhcnMtUGV0ZXIgQ2xhdXNlbiBbbWFp
+bHRvOmxhcnNAbWV0YWZvby5kZV0gDQpTZW50OiBNb25kYXksIEF1Z3VzdCAyNSwgMjAxNCAxOjM5
+IFBNDQpUbzogU2hhcm1hLCBTYW5qZWV2OyBzYW5qZWV2IHNoYXJtYQ0KQ2M6IGppYzIzQGtlcm5l
+bC5vcmc7IGdyZWdraDsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsgZGV2ZWw7IGxpbnV4LWtl
+cm5lbA0KU3ViamVjdDogUmU6IFtQQVRDSF0gc3RhZ2luZzppaW86IG1vdmVkIHBsYXRmb3JtX2Rh
+dGEgaW50byBpbmNsdWRlL2xpbnV4L2lpbw0KDQpPbiAwOC8yNS8yMDE0IDA5OjE3IEFNLCBTaGFy
+bWEsIFNhbmplZXYgd3JvdGU6DQo+IEhlbGxvIExhcnMsDQo+DQo+IEFzIHBlciB5b3VyIHN1Z2dl
+c3Rpb24gQ2FuIEkgbW92ZSBjb21wbGV0ZSBEcml2ZXIgb3V0IG9mIHN0YWdpbmcgc3BlY2lhbGx5
+IFNQSSBBREMgRHJpdmVyLg0KDQpPbmx5IGlmIHRoZXkgYXJlIGNsZWFuZWQgdXAgZmlyc3QuIEFs
+bCBvZiB0aGUgZHJpdmVycyB0aGF0IGFyZSBzdGlsbCBpbiBzdGFnaW5nIGRvIGhhdmUgaXNzdWVz
+LCBvdGhlcndpc2Ugd2UnZCBhbHJlYWR5IGhhZCBtb3ZlZCB0aGVtLiBBIGZldyBvZiB0aGVtIGFy
+ZSBPSyBjb2Rlc3R5bGUgd2lzZSwgYnV0IGRvIGhhdmUgQUJJIGlzc3VlcyB3aGljaCBuZWVkIHRv
+IGJlIHJlc29sdmVkIGJlZm9yZSB0aGV5IGNhbiBiZSBtb3ZlZC4NCg0KLSBMYXJzDQoNCldoZXJl
+IEkgY2FuIGZpbmQgQUJJIGlzc3VlcyB3aGljaCBuZWVkIHRvIGJlIHJlc29sdmVkIHNvIHRoYXQg
+dGhlc2UgY2FuIGJlIGxvb2tlZCB1cG9uLg0KDQotU2FuamVldiANCj4NCj4gUmVnYXJkcw0KPiBT
+YW5qZWV2IFNoYXJtYQ0KPg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBM
+YXJzLVBldGVyIENsYXVzZW4gW21haWx0bzpsYXJzQG1ldGFmb28uZGVdDQo+IFNlbnQ6IFdlZG5l
+c2RheSwgQXVndXN0IDIwLCAyMDE0IDEyOjIwIFBNDQo+IFRvOiBzYW5qZWV2IHNoYXJtYQ0KPiBD
+YzogU2hhcm1hLCBTYW5qZWV2OyBqaWMyM0BrZXJuZWwub3JnOyBncmVna2g7IA0KPiBsaW51eC1p
+aW9Admdlci5rZXJuZWwub3JnOyBkZXZlbDsgbGludXgta2VybmVsDQo+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0hdIHN0YWdpbmc6aWlvOiBtb3ZlZCBwbGF0Zm9ybV9kYXRhIGludG8gDQo+IGluY2x1ZGUv
+bGludXgvaWlvDQo+DQo+IE9uIDA4LzIwLzIwMTQgMDg6NDQgQU0sIHNhbmplZXYgc2hhcm1hIHdy
+b3RlOg0KPj4gSGksDQo+Pg0KPj4gVGhpcyB3YXMgdGhlIGFjdGlvbiBpdGVtKFRPLURPKS4gSU1P
+LCBpdCBtYWtlIHNlbnNlIHRvIG1vdmUgaW50byANCj4+IGluY2x1ZGUvbGludXgvaWlvIGJlY2F1
+c2UgSUlPIGNvbXBsZXRlIHN1YnN5c3RlbSBtYXkgdGFrZSBzb21lIHRpbWUuDQo+DQo+IFRoZSBj
+b2RlIHRoYXQgaXMgaW4gc3RhZ2luZyBpcyBub3Qgc3VwcG9zZWQgdG8gJ2xlYWsnIG91dHNpZGUg
+b2Ygc3RhZ2luZy4gU28gZWl0aGVyIHlvdSBtb3ZlIHRoZSBkcml2ZXIgYXMgYSB3aG9sZSBvdXQg
+b2Ygc3RhZ2luZyBvciBsZWF2ZSBpdCB0aGVyZSwgYnV0IGRvIG5vdCBtb3ZlIGluZGl2aWR1YWwg
+ZmlsZXMgb2YgdGhlIGRyaXZlciBvdXQgb2Ygc3RhZ2luZy4gVGhlIGFjdGlvbiBpdGVtIGlzIGZv
+ciB3aGVuIHRoZSBkcml2ZXIgaXMgbW92ZWQgb3V0IG9mIHN0YWdpbmcuDQo+DQoNCg==
