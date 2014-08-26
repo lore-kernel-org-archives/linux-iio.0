@@ -1,48 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:59536 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751317AbaHSWnb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Aug 2014 18:43:31 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH v2 03/11] iio:bma180: Rename BMA_180 to BMA180_
-Date: Wed, 20 Aug 2014 00:43:18 +0200
-Message-Id: <1408488206-2633-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Sanjeev_Sharma@mentor.com>
+From: "Sharma, Sanjeev" <Sanjeev_Sharma@mentor.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, sanjeev sharma
+	<sanjeevsharmaengg@gmail.com>
+CC: "jic23@kernel.org" <jic23@kernel.org>, gregkh
+	<gregkh@linuxfoundation.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, devel <devel@driverdev.osuosl.org>, linux-kernel
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] staging:iio: moved platform_data into include/linux/iio
+Date: Tue, 26 Aug 2014 11:33:43 +0000
+Message-ID: <FDC088D3B5555644AE135ED28A7ABDE94DF40824@EU-MBX-04.mgc.mentorg.com>
+References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
+	<53F441FF.9090304@metafoo.de>
+ <CAGUYZuSENkSjoA9U0E8MQKp0a1J3moE8p8NYAzfiZ+BpxND4Aw@mail.gmail.com>
+ <53F4451B.3040209@metafoo.de>
+ <FDC088D3B5555644AE135ED28A7ABDE94DF3CC4B@EU-MBX-04.mgc.mentorg.com>
+ <53FAEF10.7010001@metafoo.de>
+ <FDC088D3B5555644AE135ED28A7ABDE94DF3ECF2@EU-MBX-04.mgc.mentorg.com>
+ <53FB3AF3.6060808@metafoo.de>
+In-Reply-To: <53FB3AF3.6060808@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
----
- drivers/iio/accel/bma180.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index d7f34b4..284598d 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -56,7 +56,7 @@
- /* We have to write this value in reset register to do soft reset */
- #define BMA180_RESET_VAL	0xb6
- 
--#define BMA_180_ID_REG_VAL	0x03
-+#define BMA180_ID_REG_VAL	0x03
- 
- /* Chip power modes */
- #define BMA180_LOW_NOISE	0x00
-@@ -258,7 +258,7 @@ static int bma180_chip_init(struct bma180_data *data)
- 
- 	if (ret < 0)
- 		goto err;
--	if (ret != BMA_180_ID_REG_VAL) {
-+	if (ret != BMA180_ID_REG_VAL) {
- 		ret = -ENODEV;
- 		goto err;
- 	}
--- 
-1.9.1
-
+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IExhcnMtUGV0ZXIgQ2xhdXNlbiBbbWFp
+bHRvOmxhcnNAbWV0YWZvby5kZV0gDQpTZW50OiBNb25kYXksIEF1Z3VzdCAyNSwgMjAxNCA3OjAz
+IFBNDQpUbzogU2hhcm1hLCBTYW5qZWV2OyBzYW5qZWV2IHNoYXJtYQ0KQ2M6IGppYzIzQGtlcm5l
+bC5vcmc7IGdyZWdraDsgbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsgZGV2ZWw7IGxpbnV4LWtl
+cm5lbA0KU3ViamVjdDogUmU6IFtQQVRDSF0gc3RhZ2luZzppaW86IG1vdmVkIHBsYXRmb3JtX2Rh
+dGEgaW50byBpbmNsdWRlL2xpbnV4L2lpbw0KDQpPbiAwOC8yNS8yMDE0IDAxOjQ5IFBNLCBTaGFy
+bWEsIFNhbmplZXYgd3JvdGU6DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206
+IExhcnMtUGV0ZXIgQ2xhdXNlbiBbbWFpbHRvOmxhcnNAbWV0YWZvby5kZV0NCj4gU2VudDogTW9u
+ZGF5LCBBdWd1c3QgMjUsIDIwMTQgMTozOSBQTQ0KPiBUbzogU2hhcm1hLCBTYW5qZWV2OyBzYW5q
+ZWV2IHNoYXJtYQ0KPiBDYzogamljMjNAa2VybmVsLm9yZzsgZ3JlZ2toOyBsaW51eC1paW9Admdl
+ci5rZXJuZWwub3JnOyBkZXZlbDsgDQo+IGxpbnV4LWtlcm5lbA0KPiBTdWJqZWN0OiBSZTogW1BB
+VENIXSBzdGFnaW5nOmlpbzogbW92ZWQgcGxhdGZvcm1fZGF0YSBpbnRvIA0KPiBpbmNsdWRlL2xp
+bnV4L2lpbw0KPg0KPiBPbiAwOC8yNS8yMDE0IDA5OjE3IEFNLCBTaGFybWEsIFNhbmplZXYgd3Jv
+dGU6DQo+PiBIZWxsbyBMYXJzLA0KPj4NCj4+IEFzIHBlciB5b3VyIHN1Z2dlc3Rpb24gQ2FuIEkg
+bW92ZSBjb21wbGV0ZSBEcml2ZXIgb3V0IG9mIHN0YWdpbmcgc3BlY2lhbGx5IFNQSSBBREMgRHJp
+dmVyLg0KPg0KPiBPbmx5IGlmIHRoZXkgYXJlIGNsZWFuZWQgdXAgZmlyc3QuIEFsbCBvZiB0aGUg
+ZHJpdmVycyB0aGF0IGFyZSBzdGlsbCBpbiBzdGFnaW5nIGRvIGhhdmUgaXNzdWVzLCBvdGhlcndp
+c2Ugd2UnZCBhbHJlYWR5IGhhZCBtb3ZlZCB0aGVtLiBBIGZldyBvZiB0aGVtIGFyZSBPSyBjb2Rl
+c3R5bGUgd2lzZSwgYnV0IGRvIGhhdmUgQUJJIGlzc3VlcyB3aGljaCBuZWVkIHRvIGJlIHJlc29s
+dmVkIGJlZm9yZSB0aGV5IGNhbiBiZSBtb3ZlZC4NCj4NCj4gLSBMYXJzDQo+DQo+IFdoZXJlIEkg
+Y2FuIGZpbmQgQUJJIGlzc3VlcyB3aGljaCBuZWVkIHRvIGJlIHJlc29sdmVkIHNvIHRoYXQgdGhl
+c2UgY2FuIGJlIGxvb2tlZCB1cG9uLg0KDQpDb21wYXJlIHRoZSBzeXNmcyBmaWxlcyBhbmQgdGhl
+aXIgYmVoYXZpb3IgdGhhdCB0aGUgZHJpdmVyIHJlZ2lzdGVycyB3aXRoIHdoYXQgaXMgZG9jdW1l
+bnRlZCBpbiB0aGUgSUlPIEFCSSBzcGVjWzFdLiBJZiB5b3UgY2FuJ3QgZmluZCBpdCBpbiB0aGUg
+ZG9jdW1lbnRhdGlvbiBpdCBlaXRoZXIgbmVlZHMgdG8gYmUgZG9jdW1lbnRlZCBvciB1cGRhdGVk
+IHRvIHVzZSB0aGUgZXhpc3RpbmcgQUJJIGNvcnJlY3RseS4gTm90ZSB0aGF0IHRoaXMgaXMgbm90
+IG5lY2Vzc2FyaWx5IHRyaXZpYWwgYW5kIG1heSByZXF1aXJlIGluLWRlcHRoIGtub3dsZWRnZSBh
+bmQgdW5kZXJzdGFuZGluZyBvZiB0aGUgSUlPIEFCSS4NCg0KWW91IG1lYW4gdG8gc2F5IEkgc2hv
+dWxkbid0IHNwZW50IG11Y2ggdGltZSBoZXJlIGJlY2F1c2UgdGhpcyBpcyBub3QgbXVjaCBpbXBv
+cnRhbnQgYW5kIGlmIHRoaXMgaXMgdGhlIGNhc2UgdGhlbiBJIHRoaW5rIEkgc2hvdWxkIGxvb2sg
+aW50byBzb21lIGFyZWEgd2hpY2ggbWFrZSBtb3JlIHNlbnNlLg0KDQpUaGFua3MNClNhbmplZXYN
+Cg0KVGhhbmtzLA0KLSBMYXJzDQoNClsxXQ0KaHR0cDovL2dpdC5rZXJuZWwub3JnL2NnaXQvbGlu
+dXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9Eb2N1bWVudGF0aW9uL0FCSS90
+ZXN0aW5nL3N5c2ZzLWJ1cy1paW8NCg0KPg0KPiAtU2FuamVldg0KPj4NCj4+IFJlZ2FyZHMNCj4+
+IFNhbmplZXYgU2hhcm1hDQo+Pg0KPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+IEZy
+b206IExhcnMtUGV0ZXIgQ2xhdXNlbiBbbWFpbHRvOmxhcnNAbWV0YWZvby5kZV0NCj4+IFNlbnQ6
+IFdlZG5lc2RheSwgQXVndXN0IDIwLCAyMDE0IDEyOjIwIFBNDQo+PiBUbzogc2FuamVldiBzaGFy
+bWENCj4+IENjOiBTaGFybWEsIFNhbmplZXY7IGppYzIzQGtlcm5lbC5vcmc7IGdyZWdraDsgDQo+
+PiBsaW51eC1paW9Admdlci5rZXJuZWwub3JnOyBkZXZlbDsgbGludXgta2VybmVsDQo+PiBTdWJq
+ZWN0OiBSZTogW1BBVENIXSBzdGFnaW5nOmlpbzogbW92ZWQgcGxhdGZvcm1fZGF0YSBpbnRvIA0K
+Pj4gaW5jbHVkZS9saW51eC9paW8NCj4+DQo+PiBPbiAwOC8yMC8yMDE0IDA4OjQ0IEFNLCBzYW5q
+ZWV2IHNoYXJtYSB3cm90ZToNCj4+PiBIaSwNCj4+Pg0KPj4+IFRoaXMgd2FzIHRoZSBhY3Rpb24g
+aXRlbShUTy1ETykuIElNTywgaXQgbWFrZSBzZW5zZSB0byBtb3ZlIGludG8gDQo+Pj4gaW5jbHVk
+ZS9saW51eC9paW8gYmVjYXVzZSBJSU8gY29tcGxldGUgc3Vic3lzdGVtIG1heSB0YWtlIHNvbWUg
+dGltZS4NCj4+DQo+PiBUaGUgY29kZSB0aGF0IGlzIGluIHN0YWdpbmcgaXMgbm90IHN1cHBvc2Vk
+IHRvICdsZWFrJyBvdXRzaWRlIG9mIHN0YWdpbmcuIFNvIGVpdGhlciB5b3UgbW92ZSB0aGUgZHJp
+dmVyIGFzIGEgd2hvbGUgb3V0IG9mIHN0YWdpbmcgb3IgbGVhdmUgaXQgdGhlcmUsIGJ1dCBkbyBu
+b3QgbW92ZSBpbmRpdmlkdWFsIGZpbGVzIG9mIHRoZSBkcml2ZXIgb3V0IG9mIHN0YWdpbmcuIFRo
+ZSBhY3Rpb24gaXRlbSBpcyBmb3Igd2hlbiB0aGUgZHJpdmVyIGlzIG1vdmVkIG91dCBvZiBzdGFn
+aW5nLg0KPj4NCj4NCj4gTiAgICAgciAgeSAgIGIgWCAgx6d2IF4gKd66ey5uICsgICAgeyAgKiIg
+IF5uIHIgICB6IBogIGggICAgJiAgHiBHICAgaCADDQo+ICgg6ZqOIN2iaiIgIBogG20gICAgIHog
+3pYgICBmICAgaCAgIH4gbW1sPT0NCj4NCg0K
