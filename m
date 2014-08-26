@@ -1,140 +1,167 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40032 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753424AbaHNUco (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Aug 2014 16:32:44 -0400
-Message-ID: <53ED1CE7.3070606@kernel.org>
-Date: Thu, 14 Aug 2014 21:32:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: balbi@ti.com
-CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
-Subject: Re: [PATCH v3] iio: ligth: add support for TI's opt3001 ligth sensor
-References: <1407940605-12270-1-git-send-email-balbi@ti.com> <53ECE90A.8010609@kernel.org> <20140814170530.GB1445@saruman.home> <53ECF070.5040304@kernel.org> <20140814201744.GA4929@saruman.home>
-In-Reply-To: <20140814201744.GA4929@saruman.home>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1409039490.5256.75.camel@iivanov-dev>
+Subject: Re: [PATCH] iio: core: Propagate error codes from OF layer to
+ client drivers
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Adam.Thomson.Opensource@diasemi.com,  knaack.h@gmx.de, lars@metafoo.de,
+ pmeerw@pmeerw.net, linux-iio@vger.kernel.org,  linux-kernel@vger.kernel.org
+Date: Tue, 26 Aug 2014 10:51:30 +0300
+In-Reply-To: <20140825165430.GB14614@roeck-us.net>
+References: <1408971437-10751-1-git-send-email-iivanov@mm-sol.com>
+	 <53FB5FF7.8020504@kernel.org> <20140825165430.GB14614@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On 14/08/14 21:17, Felipe Balbi wrote:
-> Hi,
-> 
-> On Thu, Aug 14, 2014 at 06:22:56PM +0100, Jonathan Cameron wrote:
->> On 14/08/14 18:05, Felipe Balbi wrote:
->>> hi,
->>>
->>> On Thu, Aug 14, 2014 at 05:51:22PM +0100, Jonathan Cameron wrote:
->>>> On 13/08/14 15:36, Felipe Balbi wrote:
->>>>> TI's opt3001 light sensor is a simple and yet powerful
->>>>> little device. The device provides 99% IR rejection,
->>>>> Automatic full-scale, very low power consumption and
->>>>> measurements from 0.01 to 83k lux.
->>>>>
->>>>> This patch adds support for that device using the IIO
->>>>> framework.
->>>>>
->>>>> Signed-off-by: Felipe Balbi <balbi@ti.com>
->>>> Please fix your patch title spelling of light!
->>>
->>> alright done and sent another version too.
->>>
->>>> I'm not keen on the ordering during remove and
->>>> your use of hysteresis does not conform to the ABI so please
->>>> take a look at that and the other drivers that make use of it.
->>>
->>> see below
->>>
->>>> Hystersis is documented in Documentation/ABI/testing/sysfs-bus-iio
->>>>
->>>> Specifies the hysteresis of threshold that the device is comparing
->>>> 	against for the events enabled by
->>>> 	<type>Y[_name]_thresh[_(rising|falling)]_hysteresis.
->>>
->>> this is exactly what the driver is doing, read again
->> This is really hard without access to the datasheet.  It appeared you were
->> simply enabling hystersis on an event if the threshold was written to that.
->>
->> The threshold would be the one written by using the value attribute.
->>
->> So right now if you set hystersis to 10 then value will also be set to 10.
->>
->> Hence, if the value reaches 10 once.  An event is triggered.  After that
->> for another event the value will have to hit 10 - 10 = 0 before again
->> passing 10.
->>
->> Is this really what is happening?
-> 
-> yes it is. It's confusing because the same value register is used for
-> hysteresis and non-hysteresis modes.
-Seems decidely odd given that will mean that the hysterisis effectively means you
-always have to return to 0 before you get another event...
-> 
->>>>> +static int opt3001_read_id(struct opt3001 *opt)
->>>>> +{
->>>>> +	char manufacturer[2];
->>>>> +	u16 device_id;
->>>>> +	int ret;
->>>>> +
->>>>> +	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_MANUFACTURER_ID);
->>>>> +	if (ret < 0) {
->>>>> +		dev_err(opt->dev, "failed to read register %02x\n",
->>>>> +				OPT3001_MANUFACTURER_ID);
->>>>> +		return ret;
->>>>> +	}
->>>>> +
->>>>> +	manufacturer[0] = ret >> 8;
->>>>> +	manufacturer[1] = ret & 0xff;
->>>> I would be a little 'unusual' but you could use an endian conversion here :)
->>>> Perhaps better to have the clarity of the way you have done it!
->>>
->>> byte ordering is already handled by read_word_swapped, though.
->> Fair point.  Not an endian conversion, but rather an evil bit of type
->> casting that isn't worth bothering with.
-> 
-> right, so what you wanna do with this ?
-nope.  Realised I was being silly ;)
-> 
->>>>> +static int opt3001_remove(struct i2c_client *client)
->>>>> +{
->>>>> +	struct opt3001 *opt = i2c_get_clientdata(client);
->>>>> +	int ret;
->>>>> +	u16 reg;
->>>>> +
->>>>
->>>> So here you are shutting down the part before removing the userspace interfaces
->>>> (due to using the devm_iio_unregister).  I'm guessing this might create some
->>>> interesting race conditions.  Would prefer to see non devm versions of the
->>>> register and irq request to ensure the ordering is exactly what we would
->>>> expect.
->>>
->>> this will cause no problems whatsoever. The device is *always* shutdown
->>> unless I left a continuous transfer running. This is coping with that
->>> only situation.
->> Hmm. So shutdown in this case is fairly minor and doesn't effect register
->> reads for example.  Fair enough.
-> 
-> no, it doesn't.
-> 
->>> It's also unnecessary to check if we have a continuous
->>> transfer running because shutting down something which is already
->>> shutdown won't cause any problems with this device.
->>>
->>> Dropping devm_* would just add pointless complexity to the remove
->>> function.
->>
->> But make it obviously correct, which it isn't right now.  For the
->> cost of about 4 lines of code...
-> 
-> it's more than that since we'll have to add more lines of code to handle
-> error inside the probe() function. Frankly, it's pretty pointless to go
-> down that route; if that's really what you want, I'll do it. Coudln't
-> care less, really.
-> 
-I would prefer it or else I'll be wondering why it is like this when
-I next look at the driver a few years down the line!  Extensive commenting
-would work as well, but that's probably more complex that just making the
-code 'simple' from an is it right point of view!
+Hi,
 
-Thanks and sorry for being a bit of a pain on this!
+On Mon, 2014-08-25 at 09:54 -0700, Guenter Roeck wrote:
+> On Mon, Aug 25, 2014 at 05:10:31PM +0100, Jonathan Cameron wrote:
+> > On 25/08/14 13:57, Ivan T. Ivanov wrote:
+> > > Do not overwrite error codes returned from of_iio_channel_get().
+> > > Error codes are used to distinguish between "io-channel-names"
+> > > not present in DT bindings, property is optional, and IIO channel
+> > > provider driver still not being loaded, defer probe.
+> > > 
+> > > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> > Cc'd Guenter who often takes an interest in this code (and wrote it ;)
+> > 
+> > Mostly seems logical to me, though I don't like the change of
+> > priority in the last bit.  I've also just taken a fix for this
+> > code so there may be some fuzz from that once it's propogated
+> > through to mainline and back to the togreg tree of iio.git
 
-J
+It is propagated, but exactly this patch [1] is causing the troubles :-)
+
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> > > ---
+> > >  drivers/iio/inkern.c | 24 ++++++++++++------------
+> > >  1 file changed, 12 insertions(+), 12 deletions(-)
+> > > 
+> > > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > > index c749700..66a6cde 100644
+> > > --- a/drivers/iio/inkern.c
+> > > +++ b/drivers/iio/inkern.c
+> > > @@ -162,7 +162,7 @@ err_free_channel:
+> > >  static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> > >  						      const char *name)
+> > >  {
+> > > -	struct iio_channel *chan = NULL;
+> > > +	struct iio_channel *chan = ERR_PTR(-ENODEV);
+> > >  
+> > >  	/* Walk up the tree of devices looking for a matching iio channel */
+> > >  	while (np) {
+> > > @@ -183,7 +183,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> > >  		else if (name && index >= 0) {
+> > >  			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+> > >  				np->full_name, name ? name : "", index);
+> > > -			return NULL;
+> > > +			break;
+> > >  		}
+> > >  
+> > >  		/*
+> > > @@ -193,7 +193,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> > >  		 */
+> > >  		np = np->parent;
+> > >  		if (np && !of_get_property(np, "io-channel-ranges", NULL))
+> > > -			return NULL;
+> > > +			break;
+> > >  	}
+> > >  
+> > >  	return chan;
+> > > @@ -243,12 +243,12 @@ error_free_chans:
+> > >  static inline struct iio_channel *
+> > >  of_iio_channel_get_by_name(struct device_node *np, const char *name)
+> > >  {
+> > > -	return NULL;
+> > > +	return ERR_PTR(-ENODEV);
+> > >  }
+> > >  
+> > >  static inline struct iio_channel *of_iio_channel_get_all(struct device *dev)
+> > >  {
+> > > -	return NULL;
+> > > +	return ERR_PTR(-ENODEV);
+> > >  }
+> > >  
+> > >  #endif /* CONFIG_OF */
+> > > @@ -312,14 +312,14 @@ struct iio_channel *iio_channel_get(struct device *dev,
+> > >  	const char *name = dev ? dev_name(dev) : NULL;
+> > >  	struct iio_channel *channel;
+> > >  
+> > > -	if (dev) {
+> > > -		channel = of_iio_channel_get_by_name(dev->of_node,
+> > > -						     channel_name);
+> > > -		if (channel != NULL)
+> > > -			return channel;
+> > > -	}
+> > > +	channel = iio_channel_get_sys(name, channel_name);
+> > > +	if (!IS_ERR(channel))
+> > > +		return channel;
+> > > +
+> > > +	if (!dev)
+> > > +		return channel;
+> > >  
+> > > -	return iio_channel_get_sys(name, channel_name);
+> > > +	return of_iio_channel_get_by_name(dev->of_node, channel_name);
+> > >  }
+> > Why reorder the logic?   This makes this patch less obviously
+> > correct for limited obvious gain?
+
+I would like to avoid white listing EPROBE_DEFER error code on return of
+of_get() function.
+
+> > 
+> > Previously the priority was clearly given to device tree bindings
+> > wherease now it is given to board file provided map elements.  It
+> > would be interesting to see boards with both provided, but it is
+> > possible.
+
+I see.
+
+> 
+> I am not entirely sure I understand what problem this patch is supposed
+> to fix on top of the patch you just applied, 
+
+Patch [1], Guenter please fix you date, introduce regression. It
+breaks deferred probe mechanism.
+
+> and I am also a bit concerned
+> about reversing the logic. Also, iio_channel_get_sys can return -ENOMEM
+> and -EINVAL besides -ENODEV, all of which is now being ignored 
+
+Yes, and thats why we continue with trying to find channel using OF.
+
+> unless dev is set, and then it is returned unconditionally. 
+
+If dev is not valid there is no point to go and ask OF layer for
+channel, so jut go out with error code from get_sys()
+
+> So instead of ignoring error
+> codes from of_iio_channel_get_by_name, the code now ignores error codes
+> from iio_channel_get_sys under some circumstances (which, coincidentially,
+> does not return -EPROBE_DEFER), and in other circumstances may return an error
+> even if devicetree data exists. Why and how is that better than before ?
+> Seems to me it just introduces a whole number of new failure conditions.
+
+We should not mask error codes from OF layer. EPROBE_DEFER is one of
+them. So instead of checking for them explicitly on return from of_iio_get(),
+I decided that will be future proof if I just reverse the order of functions. 
+
+Another, less intrusive, solution will be if we revert last patch and explicitly
+check for EPROBE_DEFER on of_ by_name() return. How this sounds?
+
+Regards,
+Ivan
+
+
+[1] commit a2c12493ed7e63a18cef33a71686d12ffcd6600e
+Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date:   Thu Nov 6 12:11:00 2014 +0000
+
+    iio: of_iio_channel_get_by_name() returns non-null pointers for error legs
+ 
