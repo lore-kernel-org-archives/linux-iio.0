@@ -1,78 +1,107 @@
-Return-Path: <Adam.Thomson@diasemi.com>
-From: Adam Thomson <Adam.Thomson@diasemi.com>
-To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>, "Ivan
- T. Ivanov" <iivanov@mm-sol.com>, Guenter Roeck <linux@roeck-us.net>
-CC: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36444 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932511AbaH0RlX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Aug 2014 13:41:23 -0400
+Message-ID: <53FE183D.4020403@kernel.org>
+Date: Wed, 27 Aug 2014 18:41:17 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Adam Thomson <Adam.Thomson@diasemi.com>,
+	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Guenter Roeck <linux@roeck-us.net>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] iio: core: Propagate error codes from OF layer to
- client drivers
-Date: Wed, 27 Aug 2014 15:59:05 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB5113C5@SW-EX-MBX01.diasemi.com>
-References: <1408971437-10751-1-git-send-email-iivanov@mm-sol.com>
-		 <53FB5FF7.8020504@kernel.org> <20140825165430.GB14614@roeck-us.net>
-	 <1409039490.5256.75.camel@iivanov-dev> <53FC8AB3.2080603@roeck-us.net>
- <1409060908.5256.83.camel@iivanov-dev>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: core: Propagate error codes from OF layer to client
+ drivers
+References: <1408971437-10751-1-git-send-email-iivanov@mm-sol.com>		 <53FB5FF7.8020504@kernel.org> <20140825165430.GB14614@roeck-us.net>	 <1409039490.5256.75.camel@iivanov-dev> <53FC8AB3.2080603@roeck-us.net> <1409060908.5256.83.camel@iivanov-dev> <2E89032DDAA8B9408CB92943514A0337AB5113C5@SW-EX-MBX01.diasemi.com>
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB5113C5@SW-EX-MBX01.diasemi.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gQXVndXN0IDI2LCAyMDE0IDE1OjM2LCBBZGFtIFRob21zb24gd3JvdGU6DQoNCj4gT24gQXVn
-dXN0IDI2LCAyMDE0IDE0OjQ4LCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4NCj4gPiBPbiBUdWUs
-IDIwMTQtMDgtMjYgYXQgMDY6MjUgLTA3MDAsIEd1ZW50ZXIgUm9lY2sgd3JvdGU6DQo+ID4gPiBP
-biAwOC8yNi8yMDE0IDEyOjUxIEFNLCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4gPiA+ID4gSGks
-DQo+ID4gPiA+DQo+ID4gPiBbIC4uLiBdDQo+ID4gPiA+DQo+ID4gPiA+IEFub3RoZXIsIGxlc3Mg
-aW50cnVzaXZlLCBzb2x1dGlvbiB3aWxsIGJlIGlmIHdlIHJldmVydCBsYXN0IHBhdGNoIGFuZCBl
-eHBsaWNpdGx5DQo+ID4gPiA+IGNoZWNrIGZvciBFUFJPQkVfREVGRVIgb24gb2ZfIGJ5X25hbWUo
-KSByZXR1cm4uIEhvdyB0aGlzIHNvdW5kcz8NCj4gPiA+ID4NCj4gPiA+IEhvdyBpcyB0aGF0IGRp
-ZmZlcmVudCB0byB0aGUganVzdCBhY2NlcHRlZCBwYXRjaCA/DQo+ID4NCj4gPiBZb3UgbWVhbiB0
-aGlzIG9uZVsxXS4gSSBoYXZlIHByZXBhcmVkIGZpeCBsYXN0IEZyaWRheSBhbmQgZm9yZ2V0IHRv
-DQo+ID4gY2hlY2sgYWdhaW4gYmVmb3JlIHBvc3RpbmcgaXQsIHNvcnJ5LiBQbGVhc2UgaWdub3Jl
-IG15IHBhdGNoLg0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+IEl2YW4NCj4gPg0KPiA+IFsxXSBpaW86
-aW5rZXJuOiBmaXggb3ZlcndyaXR0ZW4gLUVQUk9CRV9ERUZFUiBpbiBvZl9paW9fY2hhbm5lbF9n
-ZXRfYnlfbmFtZQ0KPiA+DQo+DQo+IEFwb2xvZ2llcyBvbiBteSBwYXJ0IGZvciBmaXhpbmcgb25l
-IHByb2JsZW0gYW5kIGludHJvZHVjaW5nIGFub3RoZXIuIERpZG4ndCBzZWUNCj4gdGhhdCBpbiBt
-eSB0ZXN0aW5nLCBhbmQgbWlzc2VkIHRoYXQgcG90ZW50aWFsIHJldHVybiB2YWx1ZSB3aGVuIGV4
-YW1pbmluZyB0aGUNCj4gY29kZS4gQXQgdGhlIHRpbWUgSXQgbG9va2VkIGxpa2UgdGhlIHBhcmVu
-dCBmdW5jdGlvbiB3b3VsZCBvbmx5IGV4cGVjdCBOVUxMDQo+IHBvaW50ZXJzIGZvciBmYWlsdXJl
-LCBlc3BlY2lhbGx5IGdpdmVuIHRoZSBub24gQ09ORklHX09GIGRlZmluaXRpb25zIG9mIHRoZQ0K
-PiBmdW5jdGlvbnMuIFNob3VsZCd2ZSBkZWx2ZWQgZnVydGhlci4gOigNCg0KT24gQXVndXN0IDI2
-LCAyMDE0IDE1OjM2LCBBZGFtIFRob21zb24gd3JvdGU6DQoNCj4gT24gQXVndXN0IDI2LCAyMDE0
-IDE0OjQ4LCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4NCj4gPiBPbiBUdWUsIDIwMTQtMDgtMjYg
-YXQgMDY6MjUgLTA3MDAsIEd1ZW50ZXIgUm9lY2sgd3JvdGU6DQo+ID4gPiBPbiAwOC8yNi8yMDE0
-IDEyOjUxIEFNLCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4gPiA+ID4gSGksDQo+ID4gPiA+DQo+
-ID4gPiBbIC4uLiBdDQo+ID4gPiA+DQo+ID4gPiA+IEFub3RoZXIsIGxlc3MgaW50cnVzaXZlLCBz
-b2x1dGlvbiB3aWxsIGJlIGlmIHdlIHJldmVydCBsYXN0IHBhdGNoIGFuZCBleHBsaWNpdGx5DQo+
-ID4gPiA+IGNoZWNrIGZvciBFUFJPQkVfREVGRVIgb24gb2ZfIGJ5X25hbWUoKSByZXR1cm4uIEhv
-dyB0aGlzIHNvdW5kcz8NCj4gPiA+ID4NCj4gPiA+IEhvdyBpcyB0aGF0IGRpZmZlcmVudCB0byB0
-aGUganVzdCBhY2NlcHRlZCBwYXRjaCA/DQo+ID4NCj4gPiBZb3UgbWVhbiB0aGlzIG9uZVsxXS4g
-SSBoYXZlIHByZXBhcmVkIGZpeCBsYXN0IEZyaWRheSBhbmQgZm9yZ2V0IHRvDQo+ID4gY2hlY2sg
-YWdhaW4gYmVmb3JlIHBvc3RpbmcgaXQsIHNvcnJ5LiBQbGVhc2UgaWdub3JlIG15IHBhdGNoLg0K
-PiA+DQo+ID4gVGhhbmtzLA0KPiA+IEl2YW4NCj4gPg0KPiA+IFsxXSBpaW86aW5rZXJuOiBmaXgg
-b3ZlcndyaXR0ZW4gLUVQUk9CRV9ERUZFUiBpbiBvZl9paW9fY2hhbm5lbF9nZXRfYnlfbmFtZQ0K
-PiA+DQo+DQo+IEFwb2xvZ2llcyBvbiBteSBwYXJ0IGZvciBmaXhpbmcgb25lIHByb2JsZW0gYW5k
-IGludHJvZHVjaW5nIGFub3RoZXIuIERpZG4ndCBzZWUNCj4gdGhhdCBpbiBteSB0ZXN0aW5nLCBh
-bmQgbWlzc2VkIHRoYXQgcG90ZW50aWFsIHJldHVybiB2YWx1ZSB3aGVuIGV4YW1pbmluZyB0aGUN
-Cj4gY29kZS4gQXQgdGhlIHRpbWUgSXQgbG9va2VkIGxpa2UgdGhlIHBhcmVudCBmdW5jdGlvbiB3
-b3VsZCBvbmx5IGV4cGVjdCBOVUxMDQo+IHBvaW50ZXJzIGZvciBmYWlsdXJlLCBlc3BlY2lhbGx5
-IGdpdmVuIHRoZSBub24gQ09ORklHX09GIGRlZmluaXRpb25zIG9mIHRoZQ0KPiBmdW5jdGlvbnMu
-IFNob3VsZCd2ZSBkZWx2ZWQgZnVydGhlci4gOigNCg0KSW4gdGVzdGluZyBwYXRjaCBjb2RlIGZv
-ciBvbmUgb2Ygb3VyIGRldmljZXMsIEkndmUgdmVyaWZpZWQgd2hhdCBHdWVudGVyDQptZW50aW9u
-ZWQgcHJldmlvdXNseSBpbiB0aGlzIHRocmVhZCwgaW4gdGhhdCBpaW9fY2hhbm5lbF9nZXRfc3lz
-KCkgZG9lc24ndA0KcmV0dXJuIC1FUFJPQkVfREVGRVIuIFRoaXMgbWVhbnMgdGhhdCBkcml2ZXJz
-IHVzaW5nIHRoZSBkZWZhdWx0IG1hcCBhcHByb2FjaCBvZg0KYWNjZXNzaW5nIElJTyBjaGFubmVs
-cyB3aWxsIGZhaWwgdG8gaW5zdGFudGlhdGUgYXMgdGhleSBkbyBub3Qga25vdyB0aGV5DQpuZWVk
-IHRvIGRlZmVyIHRoZWlyIHByb2JlIChoYXZlIHNlZW4gdGhpcyB3aXRoIG15IGRyaXZlciB0b28p
-Lg0KDQpIYXZlbid0IGxvb2tlZCBpbiBkZXRhaWwgeWV0IGFzIHRvIGhvdywgYnV0IEkgZ3Vlc3Mg
-dGhpcyBpcyBzb21ldGhpbmcgdGhhdCB3aWxsDQphbHNvIG5lZWQgdG8gYmUgYWRkcmVzc2VkLg0K
-TGVnYWwgRGlzY2xhaW1lcjogVGhpcyBlLW1haWwgY29tbXVuaWNhdGlvbiAoYW5kIGFueSBhdHRh
-Y2htZW50L3MpIGlzIGNvbmZpZGVudGlhbCBhbmQgY29udGFpbnMgcHJvcHJpZXRhcnkgaW5mb3Jt
-YXRpb24sIHNvbWUgb3IgYWxsIG9mIHdoaWNoIG1heSBiZSBsZWdhbGx5IHByaXZpbGVnZWQuIEl0
-IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRp
-dHkgdG8gd2hpY2ggaXQgaXMgYWRkcmVzc2VkLiBBY2Nlc3MgdG8gdGhpcyBlbWFpbCBieSBhbnlv
-bmUgZWxzZSBpcyB1bmF1dGhvcml6ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNp
-cGllbnQsIGFueSBkaXNjbG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgYW55IGFjdGlv
-biB0YWtlbiBvciBvbWl0dGVkIHRvIGJlIHRha2VuIGluIHJlbGlhbmNlIG9uIGl0LCBpcyBwcm9o
-aWJpdGVkIGFuZCBtYXkgYmUgdW5sYXdmdWwuDQoNClBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJv
-bm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsDQoNCg0K
+On 27/08/14 16:59, Adam Thomson wrote:
+> On August 26, 2014 15:36, Adam Thomson wrote:
+> 
+>> On August 26, 2014 14:48, Ivan T. Ivanov wrote:
+>>
+>>> On Tue, 2014-08-26 at 06:25 -0700, Guenter Roeck wrote:
+>>>> On 08/26/2014 12:51 AM, Ivan T. Ivanov wrote:
+>>>>> Hi,
+>>>>>
+>>>> [ ... ]
+>>>>>
+>>>>> Another, less intrusive, solution will be if we revert last patch and explicitly
+>>>>> check for EPROBE_DEFER on of_ by_name() return. How this sounds?
+>>>>>
+>>>> How is that different to the just accepted patch ?
+>>>
+>>> You mean this one[1]. I have prepared fix last Friday and forget to
+>>> check again before posting it, sorry. Please ignore my patch.
+>>>
+>>> Thanks,
+>>> Ivan
+>>>
+>>> [1] iio:inkern: fix overwritten -EPROBE_DEFER in of_iio_channel_get_by_name
+>>>
+>>
+>> Apologies on my part for fixing one problem and introducing another. Didn't see
+>> that in my testing, and missed that potential return value when examining the
+>> code. At the time It looked like the parent function would only expect NULL
+>> pointers for failure, especially given the non CONFIG_OF definitions of the
+>> functions. Should've delved further. :(
+> 
+> On August 26, 2014 15:36, Adam Thomson wrote:
+> 
+>> On August 26, 2014 14:48, Ivan T. Ivanov wrote:
+>>
+>>> On Tue, 2014-08-26 at 06:25 -0700, Guenter Roeck wrote:
+>>>> On 08/26/2014 12:51 AM, Ivan T. Ivanov wrote:
+>>>>> Hi,
+>>>>>
+>>>> [ ... ]
+>>>>>
+>>>>> Another, less intrusive, solution will be if we revert last patch and explicitly
+>>>>> check for EPROBE_DEFER on of_ by_name() return. How this sounds?
+>>>>>
+>>>> How is that different to the just accepted patch ?
+>>>
+>>> You mean this one[1]. I have prepared fix last Friday and forget to
+>>> check again before posting it, sorry. Please ignore my patch.
+>>>
+>>> Thanks,
+>>> Ivan
+>>>
+>>> [1] iio:inkern: fix overwritten -EPROBE_DEFER in of_iio_channel_get_by_name
+>>>
+>>
+>> Apologies on my part for fixing one problem and introducing another. Didn't see
+>> that in my testing, and missed that potential return value when examining the
+>> code. At the time It looked like the parent function would only expect NULL
+>> pointers for failure, especially given the non CONFIG_OF definitions of the
+>> functions. Should've delved further. :(
+> 
+> In testing patch code for one of our devices, I've verified what Guenter
+> mentioned previously in this thread, in that iio_channel_get_sys() doesn't
+> return -EPROBE_DEFER. This means that drivers using the default map approach of
+> accessing IIO channels will fail to instantiate as they do not know they
+> need to defer their probe (have seen this with my driver too).
+> 
+> Haven't looked in detail yet as to how, but I guess this is something that will
+> also need to be addressed.
+Yes, that stuff (I think) predates deferred probing and no one has gotten around
+to bringing it up to date as yet.
+
+All contributions welcome!
+
+J
+
+> Legal Disclaimer: This e-mail communication (and any attachment/s) is confidential and contains proprietary information, some or all of which may be legally privileged. It is intended solely for the use of the individual or entity to which it is addressed. Access to this email by anyone else is unauthorized. If you are not the intended recipient, any disclosure, copying, distribution or any action taken or omitted to be taken in reliance on it, is prohibited and may be unlawful.
+> 
+> Please consider the environment before printing this e-mail
+> 
+> 
