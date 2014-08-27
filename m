@@ -1,37 +1,56 @@
-Return-Path: <mopsfelder@gmail.com>
-From: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-To: linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org,
-	jic23@kernel.org,
-	Murilo Opsfelder Araujo <mopsfelder@gmail.com>
-Subject: [PATCH v2 7/8] staging: iio: accel: lis3l02dq_ring.c: Add blank line between declarations and code
-Date: Mon,  4 Aug 2014 22:47:02 -0300
-Message-Id: <1407203223-9700-8-git-send-email-mopsfelder@gmail.com>
-In-Reply-To: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
-References: <1407203223-9700-1-git-send-email-mopsfelder@gmail.com>
+Return-Path: <linus.walleij@linaro.org>
+MIME-Version: 1.0
+In-Reply-To: <53FB6205.5020704@kernel.org>
+References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
+	<53FB6205.5020704@kernel.org>
+Date: Wed, 27 Aug 2014 15:38:37 +0200
+Message-ID: <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
+Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+	Eric Piel <eric.piel@tremplin-utc.net>, Yan Burman <burman.yan@gmail.com>,
+	Yan Burman <yanb@mellanox.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Denis CIOCCA <denis.ciocca@st.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds missing blank line between declarations and code,
-satisfying checkpatch.pl.
+On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 23/08/14 18:31, Linus Walleij wrote:
+>> This adds support for the LIS3LV02 accelerometer found in the
+>> ST Microelectronics Nomadik board series.
+>>
+>> Cc: devicetree@vger.kernel.org
+>> Cc: Denis CIOCCA <denis.ciocca@st.com>
+>> Cc: Lee Jones <lee.jones@linaro.org>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> This is a little 'interesting', given the part is already supported by
+> drivers/misc/lis3lv02d*.c and already has bindings under there.
+> Documentation/devicetree/bindings/misc/lis302.txt
+> (some of these are interesting).
 
-Signed-off-by: Murilo Opsfelder Araujo <mopsfelder@gmail.com>
----
- drivers/staging/iio/accel/lis3l02dq_ring.c | 1 +
- 1 file changed, 1 insertion(+)
+Grrr how come I missed this... It was originally merged as a
+hwmon driver.
 
-diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-index bf33fde..1d934ee 100644
---- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-+++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-@@ -19,6 +19,7 @@ static inline u16 combine_8_to_16(u8 lower, u8 upper)
- {
- 	u16 _lower = lower;
- 	u16 _upper = upper;
-+
- 	return _lower | (_upper << 8);
- }
- 
--- 
-2.1.0.rc1.204.gae8bc8d
+
+>> +/* CUSTOM VALUES FOR SENSOR 4 */
+>>
+> I wish now we'd nipped this naming convention in the bud and insisted
+> on naming after a relevant part. Oh well.
+
+Well we can always make an invasive patch fixing that. I can
+probably do it using sed or something.
+
+> Do we think this is the right way to handle the alternative support
+> here?
+
+Well this patch is a driver using the IIO framework and was written
+by ST, but the other driver support a few other interesting features
+and seems to be for the laptop usecase.
+
+Adding the other authors to the TO: line...
+
+Yours,
+Linus Walleij
