@@ -1,269 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55516 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753396AbaHZUL2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Aug 2014 16:11:28 -0400
-Message-ID: <53FCE9ED.1040505@kernel.org>
-Date: Tue, 26 Aug 2014 21:11:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <Adam.Thomson@diasemi.com>
+From: Adam Thomson <Adam.Thomson@diasemi.com>
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>, "Ivan
+ T. Ivanov" <iivanov@mm-sol.com>, Guenter Roeck <linux@roeck-us.net>
+CC: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iio: core: Propagate error codes from OF layer to
+ client drivers
+Date: Wed, 27 Aug 2014 15:59:05 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB5113C5@SW-EX-MBX01.diasemi.com>
+References: <1408971437-10751-1-git-send-email-iivanov@mm-sol.com>
+		 <53FB5FF7.8020504@kernel.org> <20140825165430.GB14614@roeck-us.net>
+	 <1409039490.5256.75.camel@iivanov-dev> <53FC8AB3.2080603@roeck-us.net>
+ <1409060908.5256.83.camel@iivanov-dev>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-To: Sanjeev Sharma <sanjeev_sharma@mentor.com>, kgene.kim@samsung.com
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org
-Subject: Re: [PATCH] iio: remove .owner field for driver using module_platform_driver
-References: <1408527157-9318-1-git-send-email-sanjeev_sharma@mentor.com>
-In-Reply-To: <1408527157-9318-1-git-send-email-sanjeev_sharma@mentor.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 20/08/14 10:32, Sanjeev Sharma wrote:
-> This patch removes the .owner field for drivers which use the
-> platform_driver_register api because this is overriden in
-> _platform_driver_register.
-> 
-> Signed-off-by: Sanjeev Sharma <Sanjeev_Sharma@mentor.com>
-Thanks for cleaning these up.
-
-Applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to do their stuff.
-
-Jonathan
-> ---
->  drivers/iio/accel/hid-sensor-accel-3d.c       | 1 -
->  drivers/iio/adc/exynos_adc.c                  | 1 -
->  drivers/iio/adc/lp8788_adc.c                  | 1 -
->  drivers/iio/adc/ti_am335x_adc.c               | 1 -
->  drivers/iio/adc/twl4030-madc.c                | 1 -
->  drivers/iio/adc/twl6030-gpadc.c               | 1 -
->  drivers/iio/adc/vf610_adc.c                   | 1 -
->  drivers/iio/adc/viperboard_adc.c              | 1 -
->  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 1 -
->  drivers/iio/humidity/dht11.c                  | 1 -
->  drivers/iio/light/hid-sensor-als.c            | 1 -
->  drivers/iio/light/hid-sensor-prox.c           | 1 -
->  drivers/iio/light/lm3533-als.c                | 1 -
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 1 -
->  drivers/iio/orientation/hid-sensor-incl-3d.c  | 1 -
->  drivers/iio/orientation/hid-sensor-rotation.c | 1 -
->  drivers/iio/pressure/hid-sensor-press.c       | 1 -
->  drivers/iio/trigger/iio-trig-interrupt.c      | 1 -
->  18 files changed, 18 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-> index 54e464e..d5d9531 100644
-> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
-> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-> @@ -419,7 +419,6 @@ static struct platform_driver hid_accel_3d_platform_driver = {
->  	.id_table = hid_accel_3d_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_accel_3d_probe,
->  	.remove		= hid_accel_3d_remove,
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index fc9dfc2..b4373f7 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -606,7 +606,6 @@ static struct platform_driver exynos_adc_driver = {
->  	.remove		= exynos_adc_remove,
->  	.driver		= {
->  		.name	= "exynos-adc",
-> -		.owner	= THIS_MODULE,
->  		.of_match_table = exynos_adc_match,
->  		.pm	= &exynos_adc_pm_ops,
->  	},
-> diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-> index 5c8c915..152cfc8 100644
-> --- a/drivers/iio/adc/lp8788_adc.c
-> +++ b/drivers/iio/adc/lp8788_adc.c
-> @@ -244,7 +244,6 @@ static struct platform_driver lp8788_adc_driver = {
->  	.remove = lp8788_adc_remove,
->  	.driver = {
->  		.name = LP8788_DEV_ADC,
-> -		.owner = THIS_MODULE,
->  	},
->  };
->  module_platform_driver(lp8788_adc_driver);
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index d5dc4c6..b730864 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -545,7 +545,6 @@ MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
->  static struct platform_driver tiadc_driver = {
->  	.driver = {
->  		.name   = "TI-am335x-adc",
-> -		.owner	= THIS_MODULE,
->  		.pm	= TIADC_PM_OPS,
->  		.of_match_table = ti_adc_dt_ids,
->  	},
-> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-> index eb86786..94c5f05 100644
-> --- a/drivers/iio/adc/twl4030-madc.c
-> +++ b/drivers/iio/adc/twl4030-madc.c
-> @@ -883,7 +883,6 @@ static struct platform_driver twl4030_madc_driver = {
->  	.remove = twl4030_madc_remove,
->  	.driver = {
->  		   .name = "twl4030_madc",
-> -		   .owner = THIS_MODULE,
->  		   .of_match_table = of_match_ptr(twl_madc_of_match),
->  	},
->  };
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-> index 15282f1..89d8aa1 100644
-> --- a/drivers/iio/adc/twl6030-gpadc.c
-> +++ b/drivers/iio/adc/twl6030-gpadc.c
-> @@ -994,7 +994,6 @@ static struct platform_driver twl6030_gpadc_driver = {
->  	.remove		= twl6030_gpadc_remove,
->  	.driver		= {
->  		.name	= DRIVER_NAME,
-> -		.owner	= THIS_MODULE,
->  		.pm	= &twl6030_gpadc_pm_ops,
->  		.of_match_table = of_twl6030_match_tbl,
->  	},
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 44799eb5..4a10ae9 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -698,7 +698,6 @@ static struct platform_driver vf610_adc_driver = {
->  	.remove         = vf610_adc_remove,
->  	.driver         = {
->  		.name   = DRIVER_NAME,
-> -		.owner  = THIS_MODULE,
->  		.of_match_table = vf610_adc_match,
->  		.pm     = &vf610_adc_pm_ops,
->  	},
-> diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
-> index 9acf6b6..3be2e35 100644
-> --- a/drivers/iio/adc/viperboard_adc.c
-> +++ b/drivers/iio/adc/viperboard_adc.c
-> @@ -145,7 +145,6 @@ static int vprbrd_adc_probe(struct platform_device *pdev)
->  static struct platform_driver vprbrd_adc_driver = {
->  	.driver = {
->  		.name	= "viperboard-adc",
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= vprbrd_adc_probe,
->  };
-> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> index fa034a3..a3ea1e8 100644
-> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-> @@ -416,7 +416,6 @@ static struct platform_driver hid_gyro_3d_platform_driver = {
->  	.id_table = hid_gyro_3d_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_gyro_3d_probe,
->  	.remove		= hid_gyro_3d_remove,
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index d8771f5..623c145 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -281,7 +281,6 @@ static int dht11_probe(struct platform_device *pdev)
->  static struct platform_driver dht11_driver = {
->  	.driver = {
->  		.name	= DRIVER_NAME,
-> -		.owner	= THIS_MODULE,
->  		.of_match_table = dht11_dt_ids,
->  	},
->  	.probe  = dht11_probe,
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index 96e71e1..a5283d7 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -381,7 +381,6 @@ static struct platform_driver hid_als_platform_driver = {
->  	.id_table = hid_als_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_als_probe,
->  	.remove		= hid_als_remove,
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index 412bae8..f5a5146 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -373,7 +373,6 @@ static struct platform_driver hid_prox_platform_driver = {
->  	.id_table = hid_prox_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_prox_probe,
->  	.remove		= hid_prox_remove,
-> diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-> index c1aadc6..ae3c71b 100644
-> --- a/drivers/iio/light/lm3533-als.c
-> +++ b/drivers/iio/light/lm3533-als.c
-> @@ -915,7 +915,6 @@ static int lm3533_als_remove(struct platform_device *pdev)
->  static struct platform_driver lm3533_als_driver = {
->  	.driver	= {
->  		.name	= "lm3533-als",
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= lm3533_als_probe,
->  	.remove		= lm3533_als_remove,
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index 3ec777a..03a13d4 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -533,7 +533,6 @@ static struct platform_driver hid_magn_3d_platform_driver = {
->  	.id_table = hid_magn_3d_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_magn_3d_probe,
->  	.remove		= hid_magn_3d_remove,
-> diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> index 2478f6c..1ff181b 100644
-> --- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-> +++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> @@ -437,7 +437,6 @@ static struct platform_driver hid_incl_3d_platform_driver = {
->  	.id_table = hid_incl_3d_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_incl_3d_probe,
->  	.remove		= hid_incl_3d_remove,
-> diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-> index dccf848..4afb6c7 100644
-> --- a/drivers/iio/orientation/hid-sensor-rotation.c
-> +++ b/drivers/iio/orientation/hid-sensor-rotation.c
-> @@ -334,7 +334,6 @@ static struct platform_driver hid_dev_rot_platform_driver = {
->  	.id_table = hid_dev_rot_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_dev_rot_probe,
->  	.remove		= hid_dev_rot_remove,
-> diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-> index 2c0d2a4..7649286 100644
-> --- a/drivers/iio/pressure/hid-sensor-press.c
-> +++ b/drivers/iio/pressure/hid-sensor-press.c
-> @@ -382,7 +382,6 @@ static struct platform_driver hid_press_platform_driver = {
->  	.id_table = hid_press_ids,
->  	.driver = {
->  		.name	= KBUILD_MODNAME,
-> -		.owner	= THIS_MODULE,
->  	},
->  	.probe		= hid_press_probe,
->  	.remove		= hid_press_remove,
-> diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-> index 7a149a7..572bc6f 100644
-> --- a/drivers/iio/trigger/iio-trig-interrupt.c
-> +++ b/drivers/iio/trigger/iio-trig-interrupt.c
-> @@ -109,7 +109,6 @@ static struct platform_driver iio_interrupt_trigger_driver = {
->  	.remove = iio_interrupt_trigger_remove,
->  	.driver = {
->  		.name = "iio_interrupt_trigger",
-> -		.owner = THIS_MODULE,
->  	},
->  };
->  
-> 
+T24gQXVndXN0IDI2LCAyMDE0IDE1OjM2LCBBZGFtIFRob21zb24gd3JvdGU6DQoNCj4gT24gQXVn
+dXN0IDI2LCAyMDE0IDE0OjQ4LCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4NCj4gPiBPbiBUdWUs
+IDIwMTQtMDgtMjYgYXQgMDY6MjUgLTA3MDAsIEd1ZW50ZXIgUm9lY2sgd3JvdGU6DQo+ID4gPiBP
+biAwOC8yNi8yMDE0IDEyOjUxIEFNLCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4gPiA+ID4gSGks
+DQo+ID4gPiA+DQo+ID4gPiBbIC4uLiBdDQo+ID4gPiA+DQo+ID4gPiA+IEFub3RoZXIsIGxlc3Mg
+aW50cnVzaXZlLCBzb2x1dGlvbiB3aWxsIGJlIGlmIHdlIHJldmVydCBsYXN0IHBhdGNoIGFuZCBl
+eHBsaWNpdGx5DQo+ID4gPiA+IGNoZWNrIGZvciBFUFJPQkVfREVGRVIgb24gb2ZfIGJ5X25hbWUo
+KSByZXR1cm4uIEhvdyB0aGlzIHNvdW5kcz8NCj4gPiA+ID4NCj4gPiA+IEhvdyBpcyB0aGF0IGRp
+ZmZlcmVudCB0byB0aGUganVzdCBhY2NlcHRlZCBwYXRjaCA/DQo+ID4NCj4gPiBZb3UgbWVhbiB0
+aGlzIG9uZVsxXS4gSSBoYXZlIHByZXBhcmVkIGZpeCBsYXN0IEZyaWRheSBhbmQgZm9yZ2V0IHRv
+DQo+ID4gY2hlY2sgYWdhaW4gYmVmb3JlIHBvc3RpbmcgaXQsIHNvcnJ5LiBQbGVhc2UgaWdub3Jl
+IG15IHBhdGNoLg0KPiA+DQo+ID4gVGhhbmtzLA0KPiA+IEl2YW4NCj4gPg0KPiA+IFsxXSBpaW86
+aW5rZXJuOiBmaXggb3ZlcndyaXR0ZW4gLUVQUk9CRV9ERUZFUiBpbiBvZl9paW9fY2hhbm5lbF9n
+ZXRfYnlfbmFtZQ0KPiA+DQo+DQo+IEFwb2xvZ2llcyBvbiBteSBwYXJ0IGZvciBmaXhpbmcgb25l
+IHByb2JsZW0gYW5kIGludHJvZHVjaW5nIGFub3RoZXIuIERpZG4ndCBzZWUNCj4gdGhhdCBpbiBt
+eSB0ZXN0aW5nLCBhbmQgbWlzc2VkIHRoYXQgcG90ZW50aWFsIHJldHVybiB2YWx1ZSB3aGVuIGV4
+YW1pbmluZyB0aGUNCj4gY29kZS4gQXQgdGhlIHRpbWUgSXQgbG9va2VkIGxpa2UgdGhlIHBhcmVu
+dCBmdW5jdGlvbiB3b3VsZCBvbmx5IGV4cGVjdCBOVUxMDQo+IHBvaW50ZXJzIGZvciBmYWlsdXJl
+LCBlc3BlY2lhbGx5IGdpdmVuIHRoZSBub24gQ09ORklHX09GIGRlZmluaXRpb25zIG9mIHRoZQ0K
+PiBmdW5jdGlvbnMuIFNob3VsZCd2ZSBkZWx2ZWQgZnVydGhlci4gOigNCg0KT24gQXVndXN0IDI2
+LCAyMDE0IDE1OjM2LCBBZGFtIFRob21zb24gd3JvdGU6DQoNCj4gT24gQXVndXN0IDI2LCAyMDE0
+IDE0OjQ4LCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4NCj4gPiBPbiBUdWUsIDIwMTQtMDgtMjYg
+YXQgMDY6MjUgLTA3MDAsIEd1ZW50ZXIgUm9lY2sgd3JvdGU6DQo+ID4gPiBPbiAwOC8yNi8yMDE0
+IDEyOjUxIEFNLCBJdmFuIFQuIEl2YW5vdiB3cm90ZToNCj4gPiA+ID4gSGksDQo+ID4gPiA+DQo+
+ID4gPiBbIC4uLiBdDQo+ID4gPiA+DQo+ID4gPiA+IEFub3RoZXIsIGxlc3MgaW50cnVzaXZlLCBz
+b2x1dGlvbiB3aWxsIGJlIGlmIHdlIHJldmVydCBsYXN0IHBhdGNoIGFuZCBleHBsaWNpdGx5DQo+
+ID4gPiA+IGNoZWNrIGZvciBFUFJPQkVfREVGRVIgb24gb2ZfIGJ5X25hbWUoKSByZXR1cm4uIEhv
+dyB0aGlzIHNvdW5kcz8NCj4gPiA+ID4NCj4gPiA+IEhvdyBpcyB0aGF0IGRpZmZlcmVudCB0byB0
+aGUganVzdCBhY2NlcHRlZCBwYXRjaCA/DQo+ID4NCj4gPiBZb3UgbWVhbiB0aGlzIG9uZVsxXS4g
+SSBoYXZlIHByZXBhcmVkIGZpeCBsYXN0IEZyaWRheSBhbmQgZm9yZ2V0IHRvDQo+ID4gY2hlY2sg
+YWdhaW4gYmVmb3JlIHBvc3RpbmcgaXQsIHNvcnJ5LiBQbGVhc2UgaWdub3JlIG15IHBhdGNoLg0K
+PiA+DQo+ID4gVGhhbmtzLA0KPiA+IEl2YW4NCj4gPg0KPiA+IFsxXSBpaW86aW5rZXJuOiBmaXgg
+b3ZlcndyaXR0ZW4gLUVQUk9CRV9ERUZFUiBpbiBvZl9paW9fY2hhbm5lbF9nZXRfYnlfbmFtZQ0K
+PiA+DQo+DQo+IEFwb2xvZ2llcyBvbiBteSBwYXJ0IGZvciBmaXhpbmcgb25lIHByb2JsZW0gYW5k
+IGludHJvZHVjaW5nIGFub3RoZXIuIERpZG4ndCBzZWUNCj4gdGhhdCBpbiBteSB0ZXN0aW5nLCBh
+bmQgbWlzc2VkIHRoYXQgcG90ZW50aWFsIHJldHVybiB2YWx1ZSB3aGVuIGV4YW1pbmluZyB0aGUN
+Cj4gY29kZS4gQXQgdGhlIHRpbWUgSXQgbG9va2VkIGxpa2UgdGhlIHBhcmVudCBmdW5jdGlvbiB3
+b3VsZCBvbmx5IGV4cGVjdCBOVUxMDQo+IHBvaW50ZXJzIGZvciBmYWlsdXJlLCBlc3BlY2lhbGx5
+IGdpdmVuIHRoZSBub24gQ09ORklHX09GIGRlZmluaXRpb25zIG9mIHRoZQ0KPiBmdW5jdGlvbnMu
+IFNob3VsZCd2ZSBkZWx2ZWQgZnVydGhlci4gOigNCg0KSW4gdGVzdGluZyBwYXRjaCBjb2RlIGZv
+ciBvbmUgb2Ygb3VyIGRldmljZXMsIEkndmUgdmVyaWZpZWQgd2hhdCBHdWVudGVyDQptZW50aW9u
+ZWQgcHJldmlvdXNseSBpbiB0aGlzIHRocmVhZCwgaW4gdGhhdCBpaW9fY2hhbm5lbF9nZXRfc3lz
+KCkgZG9lc24ndA0KcmV0dXJuIC1FUFJPQkVfREVGRVIuIFRoaXMgbWVhbnMgdGhhdCBkcml2ZXJz
+IHVzaW5nIHRoZSBkZWZhdWx0IG1hcCBhcHByb2FjaCBvZg0KYWNjZXNzaW5nIElJTyBjaGFubmVs
+cyB3aWxsIGZhaWwgdG8gaW5zdGFudGlhdGUgYXMgdGhleSBkbyBub3Qga25vdyB0aGV5DQpuZWVk
+IHRvIGRlZmVyIHRoZWlyIHByb2JlIChoYXZlIHNlZW4gdGhpcyB3aXRoIG15IGRyaXZlciB0b28p
+Lg0KDQpIYXZlbid0IGxvb2tlZCBpbiBkZXRhaWwgeWV0IGFzIHRvIGhvdywgYnV0IEkgZ3Vlc3Mg
+dGhpcyBpcyBzb21ldGhpbmcgdGhhdCB3aWxsDQphbHNvIG5lZWQgdG8gYmUgYWRkcmVzc2VkLg0K
+TGVnYWwgRGlzY2xhaW1lcjogVGhpcyBlLW1haWwgY29tbXVuaWNhdGlvbiAoYW5kIGFueSBhdHRh
+Y2htZW50L3MpIGlzIGNvbmZpZGVudGlhbCBhbmQgY29udGFpbnMgcHJvcHJpZXRhcnkgaW5mb3Jt
+YXRpb24sIHNvbWUgb3IgYWxsIG9mIHdoaWNoIG1heSBiZSBsZWdhbGx5IHByaXZpbGVnZWQuIEl0
+IGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRp
+dHkgdG8gd2hpY2ggaXQgaXMgYWRkcmVzc2VkLiBBY2Nlc3MgdG8gdGhpcyBlbWFpbCBieSBhbnlv
+bmUgZWxzZSBpcyB1bmF1dGhvcml6ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNp
+cGllbnQsIGFueSBkaXNjbG9zdXJlLCBjb3B5aW5nLCBkaXN0cmlidXRpb24gb3IgYW55IGFjdGlv
+biB0YWtlbiBvciBvbWl0dGVkIHRvIGJlIHRha2VuIGluIHJlbGlhbmNlIG9uIGl0LCBpcyBwcm9o
+aWJpdGVkIGFuZCBtYXkgYmUgdW5sYXdmdWwuDQoNClBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJv
+bm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsDQoNCg0K
