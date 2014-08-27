@@ -1,43 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:47302 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751316AbaHZWiV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 26 Aug 2014 18:38:21 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: adc: rockchip_saradc: remove unused variable in probe
-Date: Wed, 27 Aug 2014 00:40:16 +0200
-Message-ID: <2134722.Yfu4MZ4klm@diego>
+Received: from eusmtp01.atmel.com ([212.144.249.243]:1345 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751524AbaH0IgT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Aug 2014 04:36:19 -0400
+Message-ID: <53FD987B.50601@atmel.com>
+Date: Wed, 27 Aug 2014 10:36:11 +0200
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: Josh Wu <josh.wu@atmel.com>, <linux-kernel@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+	<maxime.ripard@free-electrons.com>
+CC: <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH] iio: adc: at91: make the function handle_adc_eoc_trigger()
+ static
+References: <1409128271-14856-1-git-send-email-josh.wu@atmel.com>
+In-Reply-To: <1409128271-14856-1-git-send-email-josh.wu@atmel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The rate variable in the probe function of the saradc is a remnant
-of a previous patch iteration. It is unused and thus produces a
-compile time warning. Therefore remove it.
+On 27/08/2014 10:31, Josh Wu :
+> The handle_adc_eoc_trigger() in only used in at91_adc.c. So make it
+> static.
+> 
+> Signed-off-by: Josh Wu <josh.wu@atmel.com>
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
- drivers/iio/adc/rockchip_saradc.c | 1 -
- 1 file changed, 1 deletion(-)
+Absolutely.
 
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index 1fad964..e074a0b 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -141,7 +141,6 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	struct resource	*mem;
- 	int ret;
- 	int irq;
--	u32 rate;
- 
- 	if (!np)
- 		return -ENODEV;
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+Thanks, bye.
+
+> ---
+>  drivers/iio/adc/at91_adc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 772e869..7807e0e 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -266,7 +266,7 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
+>  }
+>  
+>  /* Handler for classic adc channel eoc trigger */
+> -void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
+> +static void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
+>  {
+>  	struct at91_adc_state *st = iio_priv(idev);
+>  
+> 
+
+
 -- 
-2.0.1
-
-
+Nicolas Ferre
