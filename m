@@ -1,56 +1,92 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qg0-f54.google.com ([209.85.192.54]:36153 "EHLO
+	mail-qg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934305AbaH0N4m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Aug 2014 09:56:42 -0400
+Received: by mail-qg0-f54.google.com with SMTP id j5so254100qga.27
+        for <linux-iio@vger.kernel.org>; Wed, 27 Aug 2014 06:56:42 -0700 (PDT)
+Date: Wed, 27 Aug 2014 14:56:35 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
+ delay, averaging DT parameters
+Message-ID: <20140827135635.GH6364@lee--X1>
+References: <1409141990-29627-1-git-send-email-vigneshr@ti.com>
+ <1409141990-29627-2-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <53FB6205.5020704@kernel.org>
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
-	<53FB6205.5020704@kernel.org>
-Date: Wed, 27 Aug 2014 15:38:37 +0200
-Message-ID: <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-	Eric Piel <eric.piel@tremplin-utc.net>, Yan Burman <burman.yan@gmail.com>,
-	Yan Burman <yanb@mellanox.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1409141990-29627-2-git-send-email-vigneshr@ti.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 23/08/14 18:31, Linus Walleij wrote:
->> This adds support for the LIS3LV02 accelerometer found in the
->> ST Microelectronics Nomadik board series.
->>
->> Cc: devicetree@vger.kernel.org
->> Cc: Denis CIOCCA <denis.ciocca@st.com>
->> Cc: Lee Jones <lee.jones@linaro.org>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> This is a little 'interesting', given the part is already supported by
-> drivers/misc/lis3lv02d*.c and already has bindings under there.
-> Documentation/devicetree/bindings/misc/lis302.txt
-> (some of these are interesting).
+On Wed, 27 Aug 2014, Vignesh R wrote:
 
-Grrr how come I missed this... It was originally merged as a
-hwmon driver.
+> Number of averaging, open delay, sample delay are made DT parameters.
+> By decreasing averaging and delays more samples can be obtained per
+> second increasing performance of ADC. Previously the number of
+> averages per step was fixed to 16. Making these parameters
+> configurable will help in balancing speed vs accuracy.
+> For each ADC step provide DT based paramters to set open delay,
+> sample delay and number of averaging. One configurable step is
+> used per ADC channel. Since there can be atmost 8 ADC channels,
+> steps 16 to 8 are used for ADC.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+>  .../bindings/input/touchscreen/ti-tsc-adc.txt      |   18 +++++++
+>  drivers/iio/adc/ti_am335x_adc.c                    |   49 +++++++++++++++++---
+>  include/linux/mfd/ti_am335x_tscadc.h               |    3 ++
+>  3 files changed, 63 insertions(+), 7 deletions(-)
 
+[...]
 
->> +/* CUSTOM VALUES FOR SENSOR 4 */
->>
-> I wish now we'd nipped this naming convention in the bud and insisted
-> on naming after a relevant part. Oh well.
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index fb96c84..26d3e84 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -82,14 +82,17 @@
 
-Well we can always make an invasive patch fixing that. I can
-probably do it using sed or something.
+There are so many different formats at play here, it's difficult to
+see what's happening where!
 
-> Do we think this is the right way to handle the alternative support
-> here?
+>  #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+>  #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+>  #define STEPCONFIG_FIFO1	BIT(26)
+> +#define STEPCONFIG_AVG_MAX	16
+>  
+>  /* Delay register */
+>  #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
+>  #define STEPDELAY_OPEN(val)	((val) << 0)
 
-Well this patch is a driver using the IIO framework and was written
-by ST, but the other driver support a few other interesting features
-and seems to be for the laptop usecase.
+What's the point in shifting by zero?
 
-Adding the other authors to the TO: line...
+>  #define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
+> +#define STEPDELAY_OPEN_MAX	0x3FFFF
 
-Yours,
-Linus Walleij
+Put this up the top, then you can use it when defining
+STEPDELAY_OPEN_MASK.
+
+>  #define STEPDELAY_SAMPLE_MASK	(0xFF << 24)
+>  #define STEPDELAY_SAMPLE(val)	((val) << 24)
+>  #define STEPCONFIG_SAMPLEDLY	STEPDELAY_SAMPLE(0)
+> +#define STEPDELAY_SAMPLE_MAX	0xFF
+
+>  /* Charge Config */
+>  #define STEPCHARGE_RFP_MASK	(7 << 12)
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
