@@ -1,57 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:36765 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752727AbaH2O1a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 29 Aug 2014 10:27:30 -0400
-From: Laurentiu Palcu <laurentiu.palcu@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Laurentiu Palcu <laurentiu.palcu@intel.com>,
-	Derek Basehore <dbasehore@chromium.org>,
-	Teodora Baluta <teodora.baluta@intel.com>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Jingoo Han <jg1.han@samsung.com>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH 0/3] staging: iio: light: isl29018: add support for other chips
-Date: Fri, 29 Aug 2014 17:26:19 +0300
-Message-Id: <1409322382-30021-1-git-send-email-laurentiu.palcu@intel.com>
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.175]:42103 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S965765AbaH1Kzi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 06:55:38 -0400
+Message-ID: <09b13677b1e2d1cf02e4eb43e2777f8081ec9597.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Thu, 28 Aug 2014 11:49:19 +0100
+Subject: [PATCH v2 7/7] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
+ support list.
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-This patchset adds support for 2 similar ALS chips: ISL29023 and ISL29035.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index aefa948..6dc0aee 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2883,12 +2883,15 @@ S:	Supported
+ F:	Documentation/hwmon/da90??
+ F:	drivers/gpio/gpio-da90??.c
+ F:	drivers/hwmon/da90??-hwmon.c
++F:	drivers/iio/adc/da91??-*.c
+ F:	drivers/input/misc/da90??_onkey.c
+ F:	drivers/input/touchscreen/da9052_tsi.c
+ F:	drivers/leds/leds-da90??.c
+ F:	drivers/mfd/da903x.c
+ F:	drivers/mfd/da90??-*.c
++F:	drivers/mfd/da91??-*.c
+ F:	drivers/power/da9052-battery.c
++F:	drivers/power/da91??-*.c
+ F:	drivers/regulator/da903x.c
+ F:	drivers/regulator/da9???-regulator.[ch]
+ F:	drivers/rtc/rtc-da90??.c
+@@ -2898,6 +2901,7 @@ F:	include/linux/mfd/da903x.h
+ F:	include/linux/mfd/da9052/
+ F:	include/linux/mfd/da9055/
+ F:	include/linux/mfd/da9063/
++F:	include/linux/mfd/da9150/
+ F:	include/sound/da[79]*.h
+ F:	sound/soc/codecs/da[79]*.[ch]
 
-The chip I performed tests on was a ISL29035, since I didn't have eval boards, for the
-other 2 chips, handy.
-
-The registers tables for each chip can be found here:
-
-ISL29018: [1] - page 10
-ISL29023: [2] - page 8
-ISL29035: [3] - page 10
-
-[1] http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29018.pdf
-[2] http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29023.pdf
-[3] http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29035.pdf
-
-thanks,
-laurentiu
-
-Laurentiu Palcu (3):
-  staging: iio: light: isl29018: fix typo
-  staging: iio: light: isl29018: add support for isl29023 and isl29035
-  staging: iio: light: isl29018: add ACPI support
-
- drivers/staging/iio/light/isl29018.c | 205 ++++++++++++++++++++++++++++++-----
- 1 file changed, 179 insertions(+), 26 deletions(-)
-
--- 
-1.9.1
+--
+1.9.3
 
