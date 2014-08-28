@@ -1,45 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:14162 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S936274AbaH1IfM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Aug 2014 04:35:12 -0400
-From: Laurentiu Palcu <laurentiu.palcu@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, laurentiu.palcu@intel.com,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] iio: accel: BMC150: fix scale value for 16G
-Date: Thu, 28 Aug 2014 11:35:04 +0300
-Message-Id: <1409214906-27038-2-git-send-email-laurentiu.palcu@intel.com>
-In-Reply-To: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
-References: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+Message-ID: <39207063c9b1cf5c6355ea52419834507e5206f7.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Thu, 28 Aug 2014 11:49:02 +0100
+Subject: [PATCH v2 4/7] iio: da9150: Add DT binding documentation for GPADC
+To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Sebastian
+ Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>, <linux-pm@vger.kernel.org>, Rob
+ Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, <devicetree@vger.kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Joe Perches <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-According to documentation ([1] - page 27), the range for 16G is
-7.81mg/LSB. Converted to SI, this is:
-    7.81 * 10^-3 * 9.80665 m/s^2 / LSB = 0.0765899365 m/s^2 / LSB
-
-[1] http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf
-
-Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
 ---
- drivers/iio/accel/bmc150-accel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/iio/adc/da9150-gpadc.txt         | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 23ae334..ccb6cf8 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -173,7 +173,7 @@ static const struct {
- } bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
- 				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
- 				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
--				 {77057, BMC150_ACCEL_DEF_RANGE_16G} };
-+				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
- 
- static const struct {
- 	int sleep_dur;
--- 
-1.9.1
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+new file mode 100644
+index 0000000..c07228d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+@@ -0,0 +1,16 @@
++Dialog Semiconductor DA9150 IIO GPADC bindings
++
++Required properties:
++- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
++- #io-channel-cells: Should be set to <1>
++  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
++
++For further information on GPADC channels, see device datasheet.
++
++
++Example:
++
++	gpadc: da9150-gpadc {
++		compatible = "dlg,da9150-gpadc";
++		#io-channel-cells = <1>;
++	};
+--
+1.9.3
