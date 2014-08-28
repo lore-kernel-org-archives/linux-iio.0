@@ -1,484 +1,800 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:55941 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S936590AbaH1Kqs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Aug 2014 06:46:48 -0400
-Date: Thu, 28 Aug 2014 13:46:45 +0300
-From: Laurentiu Palcu <laurentiu.palcu@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
-	lars@metafoo.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: accel: BMC150: add support for other Bosch chips
-Message-ID: <20140828104644.GD3164@lpalcu-linux>
-References: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
- <1409214906-27038-4-git-send-email-laurentiu.palcu@intel.com>
- <alpine.DEB.2.01.1408281111250.3259@pmeerw.net>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.142]:30618 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S965688AbaH1KtQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 06:49:16 -0400
+Message-ID: <e00e05b6510adcba731c4e6e88fd7ec4de2b6383.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Thu, 28 Aug 2014 11:49:07 +0100
+Subject: [PATCH v2 5/7] power: Add support for DA9150 Charger
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.01.1408281111250.3259@pmeerw.net>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Peter,
+This patch adds support for DA9150 Charger & Fuel-Guage IC Charger.
 
-On Thu, Aug 28, 2014 at 11:26:19AM +0200, Peter Meerwald wrote:
-> 
-> > The following chips are either similar or have only the resolution
-> > different. Hence, change this driver to support these chips too:
-> > BMI055 - combo chip (accelerometer part is identical to BMC150's)
-> > BMA255 - identical to BMC150's accelerometer
-> > BMA222 - 8 bit resolution
-> > BMA250 - 10 bit resolution
-> > BMA280 - 14 bit resolution
-> 
-> I recently proposed to add BMA250 support to the BMA180 IIO driver; 
-> according to the datasheet, the chip ID value for the BMA180 and (!) 
-> BMA250 is 0x03, while your patch claims that it is 0xf9
-Actually, this driver is for BMA250E and BMA222E. I didn't even notice
-there are other versions of these chips... :/ That's why I ignored the
-'E' in the IDs. I will fix the comments and the other IDs in the next
-patchset version.
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ drivers/power/Kconfig          |  12 +
+ drivers/power/Makefile         |   1 +
+ drivers/power/da9150-charger.c | 715 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 728 insertions(+)
+ create mode 100644 drivers/power/da9150-charger.c
 
-I looked closer now, on the Bosch-Sensortec web page and, apparently,
-BMA222 and BMA250 are older versions, 'not recommended for new designs'.
-> 
-> see http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds002-05.pdf, 
-> page 37 (and it really is on my chip :)
-> 
-> the question is whether to add further Bosch accelerometer chips to the 
-> BMA180 driver or the BMC150 driver and what explains the different chip IDs
-Clearly, in terms of register compatibility, the chips I mentioned are
-completely compatible with BMC150 accelerometer, AFAICS, except for the
-data registers which have different resolutions. However, the 'non-E'
-versions are a little different and they seem to match BMA180.
+diff --git a/drivers/power/Kconfig b/drivers/power/Kconfig
+index 73cfcdf..622884d 100644
+--- a/drivers/power/Kconfig
++++ b/drivers/power/Kconfig
+@@ -192,6 +192,18 @@ config BATTERY_DA9052
+ 	  Say Y here to enable support for batteries charger integrated into
+ 	  DA9052 PMIC.
 
-laurentiu
-> 
-> need to check if these are really so similar and what driver provides /
-> exposes more features
-> 
-> p.
->  
-> > Additionally:
-> >  * add bmc150_accel_match_acpi_device() function to check that the device
-> >    has been enumerated through ACPI;
-> >  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
-> >    since the ACPI matching has been moved to the new function.  Also, this
-> >    will allow for the GPIO matching to be done against a device tree too, not only
-> >    ACPI tree;
-> > 
-> > Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
-> > ---
-> >  drivers/iio/accel/bmc150-accel.c | 231 ++++++++++++++++++++++++++++++---------
-> >  1 file changed, 177 insertions(+), 54 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> > index 0e6566a..07e10fc 100644
-> > --- a/drivers/iio/accel/bmc150-accel.c
-> > +++ b/drivers/iio/accel/bmc150-accel.c
-> > @@ -1,5 +1,12 @@
-> >  /*
-> > - * BMC150 3-axis accelerometer driver
-> > + * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
-> > + *  - BMC150
-> > + *  - BMI055
-> > + *  - BMA255
-> > + *  - BMA250
-> > + *  - BMA222
-> > + *  - BMA280
-> > + *
-> >   * Copyright (c) 2014, Intel Corporation.
-> >   *
-> >   * This program is free software; you can redistribute it and/or modify it
-> > @@ -35,6 +42,11 @@
-> >  
-> >  #define BMC150_ACCEL_REG_CHIP_ID		0x00
-> >  #define BMC150_ACCEL_CHIP_ID_VAL		0xFA
-> > +#define BMA255_ACCEL_CHIP_ID_VAL		0xFA
-> > +#define BMI055_ACCEL_CHIP_ID_VAL		0xFA
-> > +#define BMA222_ACCEL_CHIP_ID_VAL		0xF8
-> > +#define BMA250_ACCEL_CHIP_ID_VAL		0xF9
-> > +#define BMA280_ACCEL_CHIP_ID_VAL		0xFB
-> >  
-> >  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
-> >  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
-> > @@ -126,6 +138,18 @@ enum bmc150_power_modes {
-> >  	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
-> >  };
-> >  
-> > +struct bmc150_scale_info {
-> > +	int scale;
-> > +	int range;
-> > +};
-> > +
-> > +struct bmc150_accel_chip_info {
-> > +	u8 chip_id;
-> > +	const struct iio_chan_spec *channels;
-> > +	int num_channels;
-> > +	const struct bmc150_scale_info scale_table[4];
-> > +};
-> > +
-> >  struct bmc150_accel_data {
-> >  	struct i2c_client *client;
-> >  	struct iio_trigger *dready_trig;
-> > @@ -140,6 +164,7 @@ struct bmc150_accel_data {
-> >  	bool dready_trigger_on;
-> >  	bool motion_trigger_on;
-> >  	int64_t timestamp;
-> > +	const struct bmc150_accel_chip_info *chip_info;
-> >  };
-> >  
-> >  static const struct {
-> > @@ -168,14 +193,6 @@ static const struct {
-> >  				     {0x0F, 1} };
-> >  
-> >  static const struct {
-> > -	int scale;
-> > -	int range;
-> > -} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > -				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > -				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > -				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
-> > -
-> > -static const struct {
-> >  	int sleep_dur;
-> >  	int reg_value;
-> >  } bmc150_accel_sleep_value_table[] = { {0, 0},
-> > @@ -267,7 +284,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> >  	}
-> >  
-> >  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> > -	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
-> > +	if (ret != data->chip_info->chip_id) {
-> >  		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> >  		return -ENODEV;
-> >  	}
-> > @@ -541,19 +558,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
-> >  {
-> >  	int ret, i;
-> >  
-> > -	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
-> > -		if (bmc150_accel_scale_table[i].scale == val) {
-> > +	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
-> > +		if (data->chip_info->scale_table[i].scale == val) {
-> >  			ret = i2c_smbus_write_byte_data(
-> >  					data->client,
-> >  					BMC150_ACCEL_REG_PMU_RANGE,
-> > -					bmc150_accel_scale_table[i].range);
-> > +					data->chip_info->scale_table[i].range);
-> >  			if (ret < 0) {
-> >  				dev_err(&data->client->dev,
-> >  					"Error writing pmu_range\n");
-> >  				return ret;
-> >  			}
-> >  
-> > -			data->range = bmc150_accel_scale_table[i].range;
-> > +			data->range = data->chip_info->scale_table[i].range;
-> >  			return 0;
-> >  		}
-> >  	}
-> > @@ -580,10 +597,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
-> >  	return IIO_VAL_INT;
-> >  }
-> >  
-> > -static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
-> > +static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
-> > +				 struct iio_chan_spec const *chan,
-> >  				 int *val)
-> >  {
-> >  	int ret;
-> > +	int axis = chan->scan_index;
-> >  
-> >  	mutex_lock(&data->mutex);
-> >  	ret = bmc150_accel_set_power_state(data, true);
-> > @@ -600,7 +619,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
-> >  		mutex_unlock(&data->mutex);
-> >  		return ret;
-> >  	}
-> > -	*val = sign_extend32(ret >> 4, 11);
-> > +	*val = sign_extend32(ret >> chan->scan_type.shift,
-> > +			     chan->scan_type.realbits - 1);
-> >  	ret = bmc150_accel_set_power_state(data, false);
-> >  	mutex_unlock(&data->mutex);
-> >  	if (ret < 0)
-> > @@ -625,9 +645,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
-> >  			if (iio_buffer_enabled(indio_dev))
-> >  				return -EBUSY;
-> >  			else
-> > -				return bmc150_accel_get_axis(data,
-> > -							     chan->scan_index,
-> > -							     val);
-> > +				return bmc150_accel_get_axis(data, chan, val);
-> >  		default:
-> >  			return -EINVAL;
-> >  		}
-> > @@ -647,12 +665,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
-> >  		{
-> >  			int i;
-> >  
-> > -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
-> > -									 ++i) {
-> > -				if (bmc150_accel_scale_table[i].range ==
-> > +			for (i = 0;
-> > +			     i < ARRAY_SIZE(data->chip_info->scale_table);
-> > +			     ++i) {
-> > +				if (data->chip_info->scale_table[i].range ==
-> >  								data->range) {
-> >  					*val2 =
-> > -					bmc150_accel_scale_table[i].scale;
-> > +					data->chip_info->scale_table[i].scale;
-> >  					return IIO_VAL_INT_PLUS_MICRO;
-> >  				}
-> >  			}
-> > @@ -840,7 +859,7 @@ static const struct iio_event_spec bmc150_accel_event = {
-> >  				 BIT(IIO_EV_INFO_PERIOD)
-> >  };
-> >  
-> > -#define BMC150_ACCEL_CHANNEL(_axis) {					\
-> > +#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
-> >  	.type = IIO_ACCEL,						\
-> >  	.modified = 1,							\
-> >  	.channel2 = IIO_MOD_##_axis,					\
-> > @@ -850,28 +869,103 @@ static const struct iio_event_spec bmc150_accel_event = {
-> >  	.scan_index = AXIS_##_axis,					\
-> >  	.scan_type = {							\
-> >  		.sign = 's',						\
-> > -		.realbits = 12,					\
-> > +		.realbits = (bits),					\
-> >  		.storagebits = 16,					\
-> > -		.shift = 4,						\
-> > +		.shift = 16 - (bits),					\
-> >  	},								\
-> >  	.event_spec = &bmc150_accel_event,				\
-> >  	.num_event_specs = 1						\
-> >  }
-> >  
-> > -static const struct iio_chan_spec bmc150_accel_channels[] = {
-> > -	{
-> > -		.type = IIO_TEMP,
-> > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > -				      BIT(IIO_CHAN_INFO_SCALE) |
-> > -				      BIT(IIO_CHAN_INFO_OFFSET),
-> > -		.scan_index = -1,
-> > -	},
-> > -	BMC150_ACCEL_CHANNEL(X),
-> > -	BMC150_ACCEL_CHANNEL(Y),
-> > -	BMC150_ACCEL_CHANNEL(Z),
-> > -	IIO_CHAN_SOFT_TIMESTAMP(3),
-> > +#define BMC150_ACCEL_CHANNELS(bits) {					\
-> > +	{								\
-> > +		.type = IIO_TEMP,					\
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> > +				      BIT(IIO_CHAN_INFO_SCALE) |	\
-> > +				      BIT(IIO_CHAN_INFO_OFFSET),	\
-> > +		.scan_index = -1,					\
-> > +	},								\
-> > +	BMC150_ACCEL_CHANNEL(X, bits),					\
-> > +	BMC150_ACCEL_CHANNEL(Y, bits),					\
-> > +	BMC150_ACCEL_CHANNEL(Z, bits),					\
-> > +	IIO_CHAN_SOFT_TIMESTAMP(3),					\
-> > +}
-> > +
-> > +static const struct iio_chan_spec bma222_accel_channels[] =
-> > +	BMC150_ACCEL_CHANNELS(8);
-> > +static const struct iio_chan_spec bma250_accel_channels[] =
-> > +	BMC150_ACCEL_CHANNELS(10);
-> > +static const struct iio_chan_spec bmc150_accel_channels[] =
-> > +	BMC150_ACCEL_CHANNELS(12);
-> > +static const struct iio_chan_spec bma280_accel_channels[] =
-> > +	BMC150_ACCEL_CHANNELS(14);
-> > +
-> > +enum {
-> > +	bmc150,
-> > +	bmi055,
-> > +	bma255,
-> > +	bma250,
-> > +	bma222,
-> > +	bma280,
-> >  };
-> >  
-> > +static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
-> > +	[bmc150] = {
-> > +		.chip_id = BMC150_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bmc150_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {75590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +	[bmi055] = {
-> > +		.chip_id = BMI055_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bmc150_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {75590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +	[bma255] = {
-> > +		.chip_id = BMA255_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bmc150_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {75590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +	[bma250] = {
-> > +		.chip_id = BMA250_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bma250_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bma250_accel_channels),
-> > +		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {75590, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +	[bma222] = {
-> > +		.chip_id = BMA222_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bma222_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bma222_accel_channels),
-> > +		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +	[bma280] = {
-> > +		.chip_id = BMA280_ACCEL_CHIP_ID_VAL,
-> > +		.channels = bma280_accel_channels,
-> > +		.num_channels = ARRAY_SIZE(bma280_accel_channels),
-> > +		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
-> > +				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
-> > +				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
-> > +				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
-> > +	},
-> > +};
-> > +
-> >  static const struct iio_info bmc150_accel_info = {
-> >  	.attrs			= &bmc150_accel_attrs_group,
-> >  	.read_raw		= bmc150_accel_read_raw,
-> > @@ -1040,10 +1134,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
-> >  		return IRQ_HANDLED;
-> >  }
-> >  
-> > -static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
-> > -					struct bmc150_accel_data *data)
-> > +static char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
-> >  {
-> >  	const struct acpi_device_id *id;
-> > +
-> > +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > +
-> > +	if (!id)
-> > +		return NULL;
-> > +
-> > +	*data = (int) id->driver_data;
-> > +
-> > +	return (char *) dev_name(dev);
-> > +}
-> > +
-> > +static int bmc150_accel_gpio_probe(struct i2c_client *client,
-> > +					struct bmc150_accel_data *data)
-> > +{
-> >  	struct device *dev;
-> >  	struct gpio_desc *gpio;
-> >  	int ret;
-> > @@ -1052,17 +1159,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
-> >  		return -EINVAL;
-> >  
-> >  	dev = &client->dev;
-> > -	if (!ACPI_HANDLE(dev))
-> > -		return -ENODEV;
-> > -
-> > -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > -	if (!id)
-> > -		return -ENODEV;
-> >  
-> >  	/* data ready gpio interrupt pin */
-> >  	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
-> >  	if (IS_ERR(gpio)) {
-> > -		dev_err(dev, "Failed: acpi gpio get index\n");
-> > +		dev_err(dev, "Failed: gpio get index\n");
-> >  		return PTR_ERR(gpio);
-> >  	}
-> >  
-> > @@ -1083,6 +1184,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> >  	struct bmc150_accel_data *data;
-> >  	struct iio_dev *indio_dev;
-> >  	int ret;
-> > +	char *name = NULL;
-> > +	int chip_id = 0;
-> >  
-> >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> >  	if (!indio_dev)
-> > @@ -1092,6 +1195,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	data->client = client;
-> >  
-> > +	if (id) {
-> > +		name = (char *) id->name;
-> > +		chip_id = id->driver_data;
-> > +	}
-> > +
-> > +	if (ACPI_HANDLE(&client->dev))
-> > +		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
-> > +
-> > +	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
-> > +
-> >  	ret = bmc150_accel_chip_init(data);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -1099,14 +1212,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> >  	mutex_init(&data->mutex);
-> >  
-> >  	indio_dev->dev.parent = &client->dev;
-> > -	indio_dev->channels = bmc150_accel_channels;
-> > -	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
-> > -	indio_dev->name = BMC150_ACCEL_DRV_NAME;
-> > +	indio_dev->channels = data->chip_info->channels;
-> > +	indio_dev->num_channels = data->chip_info->num_channels;
-> > +	indio_dev->name = name;
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >  	indio_dev->info = &bmc150_accel_info;
-> >  
-> >  	if (client->irq < 0)
-> > -		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
-> > +		client->irq = bmc150_accel_gpio_probe(client, data);
-> >  
-> >  	if (client->irq >= 0) {
-> >  		ret = devm_request_threaded_irq(
-> > @@ -1284,14 +1397,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
-> >  };
-> >  
-> >  static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-> > -	{"BSBA0150", 0},
-> > -	{"BMC150A", 0},
-> > +	{"BSBA0150",	bmc150},
-> > +	{"BMC150A",	bmc150},
-> > +	{"BMI055A",	bmi055},
-> > +	{"BMA0255",	bma255},
-> > +	{"BMA0250",	bma250},
-> > +	{"BMA0222",	bma222},
-> > +	{"BMA0280",	bma280},
-> >  	{ },
-> >  };
-> >  MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
-> >  
-> >  static const struct i2c_device_id bmc150_accel_id[] = {
-> > -	{"bmc150_accel", 0},
-> > +	{"bmc150_accel",	bmc150},
-> > +	{"bmi055_accel",	bmi055},
-> > +	{"bma255",		bma255},
-> > +	{"bma250",		bma250},
-> > +	{"bma222",		bma222},
-> > +	{"bma280",		bma280},
-> >  	{}
-> >  };
-> >  
-> > 
-> 
-> -- 
-> 
-> Peter Meerwald
-> +43-664-2444418 (mobile)
++config CHARGER_DA9150
++	tristate "Dialog Semiconductor DA9150 Charger support"
++	depends on MFD_DA9150
++	depends on DA9150_GPADC
++	depends on IIO
++	help
++	  Say Y here to enable support for charger unit of the DA9150
++	  Integrated Charger & Fuel-Gauge IC.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called da9150-charger.
++
+ config BATTERY_MAX17040
+ 	tristate "Maxim MAX17040 Fuel Gauge"
+ 	depends on I2C
+diff --git a/drivers/power/Makefile b/drivers/power/Makefile
+index dfa8942..0c1896d 100644
+--- a/drivers/power/Makefile
++++ b/drivers/power/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
+ obj-$(CONFIG_BATTERY_BQ27x00)	+= bq27x00_battery.o
+ obj-$(CONFIG_BATTERY_DA9030)	+= da9030_battery.o
+ obj-$(CONFIG_BATTERY_DA9052)	+= da9052-battery.o
++obj-$(CONFIG_CHARGER_DA9150)	+= da9150-charger.o
+ obj-$(CONFIG_BATTERY_MAX17040)	+= max17040_battery.o
+ obj-$(CONFIG_BATTERY_MAX17042)	+= max17042_battery.o
+ obj-$(CONFIG_BATTERY_Z2)	+= z2_battery.o
+diff --git a/drivers/power/da9150-charger.c b/drivers/power/da9150-charger.c
+new file mode 100644
+index 0000000..391ad19c
+--- /dev/null
++++ b/drivers/power/da9150-charger.c
+@@ -0,0 +1,715 @@
++/*
++ * DA9150 Charger Driver
++ *
++ * Copyright (c) 2014 Dialog Semiconductor
++ *
++ * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/interrupt.h>
++#include <linux/timer.h>
++#include <linux/power_supply.h>
++#include <linux/notifier.h>
++#include <linux/usb/phy.h>
++#include <linux/iio/consumer.h>
++#include <linux/sysfs.h>
++
++#include <linux/mfd/da9150/core.h>
++#include <linux/mfd/da9150/pdata.h>
++#include <linux/mfd/da9150/registers.h>
++
++/* Private data */
++struct da9150_charger_attr_map {
++	struct device_attribute attr;
++	u16 reg;
++	u8 shift;
++	u8 mask;
++};
++
++struct da9150_charger {
++	struct da9150 *da9150;
++	struct device *dev;
++
++	struct power_supply usb;
++	struct power_supply battery;
++	struct power_supply *supply_online;
++
++	struct usb_phy *usb_phy;
++	struct notifier_block otg_nb;
++	struct work_struct otg_work;
++	unsigned long usb_event;
++
++	struct iio_channel *ibus_chan;
++	struct iio_channel *vbus_chan;
++	struct iio_channel *tjunc_chan;
++	struct iio_channel *vbat_chan;
++};
++
++static inline int da9150_charger_supply_online(struct da9150_charger *charger,
++					       struct power_supply *psy,
++					       union power_supply_propval *val)
++{
++	val->intval = (psy == charger->supply_online) ? 1 : 0;
++
++	return 0;
++}
++
++/* Charger Properties */
++static int da9150_charger_vbus_voltage_now(struct da9150_charger *charger,
++					   union power_supply_propval *val)
++{
++	struct iio_channel *chan = charger->vbus_chan;
++
++	if (!chan)
++		return -EINVAL;
++
++	/* Read processed value - uV units */
++	return iio_read_channel_processed(chan, &val->intval);
++}
++
++static int da9150_charger_ibus_current_avg(struct da9150_charger *charger,
++					   union power_supply_propval *val)
++{
++	struct iio_channel *chan = charger->ibus_chan;
++
++	if (!chan)
++		return -EINVAL;
++
++	/* Read processed value - uA degrees C units */
++	return iio_read_channel_processed(chan, &val->intval);
++}
++
++static int da9150_charger_tjunc_temp(struct da9150_charger *charger,
++				     union power_supply_propval *val)
++{
++	struct iio_channel *chan = charger->tjunc_chan;
++
++	if (!chan)
++		return -EINVAL;
++
++	/* Read processed value - 0.1 degrees C units */
++	return iio_read_channel_processed(chan, &val->intval);
++}
++
++static enum power_supply_property da9150_charger_props[] = {
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CURRENT_AVG,
++	POWER_SUPPLY_PROP_TEMP,
++};
++
++static int da9150_charger_get_prop(struct power_supply *psy,
++				   enum power_supply_property psp,
++				   union power_supply_propval *val)
++{
++	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
++	int ret;
++
++	switch (psp) {
++	case POWER_SUPPLY_PROP_ONLINE:
++		ret = da9150_charger_supply_online(charger, psy, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = da9150_charger_vbus_voltage_now(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CURRENT_AVG:
++		ret = da9150_charger_ibus_current_avg(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_TEMP:
++		ret = da9150_charger_tjunc_temp(charger, val);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++/* Battery Properties */
++static int da9150_charger_battery_status(struct da9150_charger *charger,
++					 union power_supply_propval *val)
++{
++	u8 reg;
++
++	/* Check to see if battery is discharging */
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
++
++	if (((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_OFF) ||
++	    ((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_WAIT)) {
++		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
++
++		return 0;
++	}
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	/* Now check for other states */
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++	case DA9150_CHG_STAT_CC:
++	case DA9150_CHG_STAT_CV:
++		val->intval = POWER_SUPPLY_STATUS_CHARGING;
++		break;
++	case DA9150_CHG_STAT_OFF:
++	case DA9150_CHG_STAT_SUSP:
++	case DA9150_CHG_STAT_TEMP:
++	case DA9150_CHG_STAT_TIME:
++	case DA9150_CHG_STAT_BAT:
++		val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
++		break;
++	case DA9150_CHG_STAT_FULL:
++		val->intval = POWER_SUPPLY_STATUS_FULL;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_health(struct da9150_charger *charger,
++					 union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	/* Check if temperature limit reached */
++	switch (reg & DA9150_CHG_TEMP_MASK) {
++	case DA9150_CHG_TEMP_UNDER:
++		val->intval = POWER_SUPPLY_HEALTH_COLD;
++		return 0;
++	case DA9150_CHG_TEMP_OVER:
++		val->intval = POWER_SUPPLY_HEALTH_OVERHEAT;
++		return 0;
++	default:
++		break;
++	}
++
++	/* Check for other health states */
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++		val->intval = POWER_SUPPLY_HEALTH_DEAD;
++		break;
++	case DA9150_CHG_STAT_TIME:
++		val->intval = POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_HEALTH_GOOD;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_present(struct da9150_charger *charger,
++					  union power_supply_propval *val)
++{
++	u8 reg;
++
++	/* Check if battery present or removed */
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++	if ((reg & DA9150_CHG_STAT_MASK) == DA9150_CHG_STAT_BAT)
++		val->intval = 0;
++	else
++		val->intval = 1;
++
++	return 0;
++}
++
++static int da9150_charger_battery_charge_type(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_CC:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
++		break;
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++	case DA9150_CHG_STAT_CV:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_min(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_C);
++
++	/* Value starts at 2500 mV, 50 mV increments, presented in uV */
++	val->intval = ((reg & DA9150_CHG_VFAULT_MASK) * 50000) + 2500000;
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_now(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	struct iio_channel *chan = charger->vbat_chan;
++
++	if (!chan)
++		return -EINVAL;
++
++	/* Read processed value - uV units */
++	return iio_read_channel_processed(chan, &val->intval);
++}
++
++static int da9150_charger_battery_current_max(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	int reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_D);
++
++	/* 25mA increments */
++	val->intval = reg * 25000;
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_max(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_B);
++
++	/* Value starts at 3650 mV, 25 mV increments, presented in uV */
++	val->intval = ((reg & DA9150_CHG_VBAT_MASK) * 25000) + 3650000;
++	return 0;
++}
++
++static enum power_supply_property da9150_charger_bat_props[] = {
++	POWER_SUPPLY_PROP_STATUS,
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_HEALTH,
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_CHARGE_TYPE,
++	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
++};
++
++static int da9150_charger_battery_get_prop(struct power_supply *psy,
++					   enum power_supply_property psp,
++					   union power_supply_propval *val)
++{
++	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
++	int ret;
++
++	switch (psp) {
++	case POWER_SUPPLY_PROP_STATUS:
++		ret = da9150_charger_battery_status(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_ONLINE:
++		ret = da9150_charger_supply_online(charger, psy, val);
++		break;
++	case POWER_SUPPLY_PROP_HEALTH:
++		ret = da9150_charger_battery_health(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_PRESENT:
++		ret = da9150_charger_battery_present(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CHARGE_TYPE:
++		ret = da9150_charger_battery_charge_type(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
++		ret = da9150_charger_battery_voltage_min(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = da9150_charger_battery_voltage_now(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
++		ret = da9150_charger_battery_current_max(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
++		ret = da9150_charger_battery_voltage_max(charger, val);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++/* Other properties */
++static ssize_t da9150_charger_attr_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf);
++
++#define DA9150_CHARGER_ATTR(_name, _reg, _shift, _mask)		\
++	{							\
++		.attr = __ATTR(_name, S_IRUGO,			\
++			       da9150_charger_attr_show,	\
++			       NULL),				\
++		.reg = _reg,					\
++		.shift = _shift,				\
++		.mask = _mask,					\
++	}
++
++static struct da9150_charger_attr_map da9150_charger_attrs[] = {
++	DA9150_CHARGER_ATTR(chg_en, DA9150_PPR_CHGCTRL_A,
++			    DA9150_CHG_EN_SHIFT, DA9150_CHG_EN_MASK),
++	DA9150_CHARGER_ATTR(chg_ipre, DA9150_PPR_CHGCTRL_C,
++			    DA9150_CHG_IPRE_SHIFT, DA9150_CHG_IPRE_MASK),
++	DA9150_CHARGER_ATTR(chg_iend, DA9150_PPR_CHGCTRL_E,
++			    DA9150_CHG_IEND_SHIFT, DA9150_CHG_IEND_MASK),
++	DA9150_CHARGER_ATTR(chg_temp, DA9150_STATUS_J,
++			    DA9150_CHG_TEMP_SHIFT, DA9150_CHG_TEMP_MASK),
++	DA9150_CHARGER_ATTR(chg_vdrop, DA9150_PPR_CHGCTRL_B,
++			    DA9150_CHG_VDROP_SHIFT, DA9150_CHG_VDROP_MASK),
++	DA9150_CHARGER_ATTR(tbat_upper, DA9150_PPR_THYST_E,
++			    DA9150_TBAT_T5_SHIFT, DA9150_TBAT_T5_MASK),
++	DA9150_CHARGER_ATTR(tbat_lower, DA9150_PPR_THYST_A,
++			    DA9150_TBAT_T1_SHIFT, DA9150_TBAT_T1_MASK),
++	DA9150_CHARGER_ATTR(vbus_mode, DA9150_PPR_BKCTRL_A,
++			    DA9150_VBUS_MODE_SHIFT, DA9150_VBUS_MODE_MASK),
++	DA9150_CHARGER_ATTR(vbus_tred, DA9150_STATUS_H,
++			    DA9150_VBUS_TRED_SHIFT, DA9150_VBUS_TRED_MASK),
++	DA9150_CHARGER_ATTR(vbus_drop_stat, DA9150_STATUS_H,
++			    DA9150_VBUS_DROP_STAT_SHIFT,
++			    DA9150_VBUS_DROP_STAT_MASK),
++};
++
++static ssize_t da9150_charger_attr_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct da9150_charger *charger = dev_get_drvdata(dev);
++	struct da9150_charger_attr_map *charger_attrs;
++	int i;
++
++	/* Find attribute, and print out register field contents. */
++	for (i = 0, charger_attrs = da9150_charger_attrs;
++	     i < ARRAY_SIZE(da9150_charger_attrs);
++	     ++i, ++charger_attrs) {
++		if (attr == &charger_attrs->attr) {
++			u8 val;
++
++			val = da9150_reg_read(charger->da9150,
++					      charger_attrs->reg);
++			val &= charger_attrs->mask;
++			val = val >> charger_attrs->shift;
++
++			return sprintf(buf, "0x%x\n", val);
++		}
++	}
++
++	return 0;
++}
++
++static irqreturn_t da9150_charger_chg_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_tjunc_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	/* Nothing we can really do except report this. */
++	dev_crit(charger->dev, "TJunc over temperature!!!\n");
++	power_supply_changed(&charger->usb);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_vfault_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	/* Nothing we can really do except report this. */
++	dev_crit(charger->dev, "VSYS under voltage!!!\n");
++	power_supply_changed(&charger->usb);
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_vbus_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
++
++	/* Charger plugged in or battery only */
++	switch (reg & DA9150_VBUS_STAT_MASK) {
++	case DA9150_VBUS_STAT_OFF:
++	case DA9150_VBUS_STAT_WAIT:
++		charger->supply_online = &charger->battery;
++		break;
++	case DA9150_VBUS_STAT_CHG:
++		charger->supply_online = &charger->usb;
++		break;
++	default:
++		dev_warn(charger->dev, "Unknown VBUS state - reg = 0x%x\n",
++			 reg);
++		charger->supply_online = NULL;
++		break;
++	}
++
++	power_supply_changed(&charger->usb);
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static void da9150_charger_otg_work(struct work_struct *data)
++{
++	struct da9150_charger *charger =
++		container_of(data, struct da9150_charger, otg_work);
++
++	switch (charger->usb_event) {
++	case USB_EVENT_ID:
++		/* Enable OTG Boost */
++		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
++				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_OTG);
++		break;
++	case USB_EVENT_NONE:
++		/* Revert to charge mode */
++		power_supply_changed(&charger->usb);
++		power_supply_changed(&charger->battery);
++		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
++				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_CHG);
++		break;
++	}
++}
++
++static int da9150_charger_otg_ncb(struct notifier_block *nb, unsigned long val,
++				  void *priv)
++{
++	struct da9150_charger *charger =
++		container_of(nb, struct da9150_charger, otg_nb);
++
++	dev_dbg(charger->dev, "DA9150 OTG notify %lu\n", val);
++
++	charger->usb_event = val;
++	schedule_work(&charger->otg_work);
++
++	return NOTIFY_OK;
++}
++
++static int da9150_charger_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
++	struct da9150_charger *charger;
++	struct power_supply *usb, *battery;
++	u8 reg;
++	int i, ret;
++
++	charger = devm_kzalloc(dev, sizeof(struct da9150_charger), GFP_KERNEL);
++	if (charger == NULL)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, charger);
++	charger->da9150 = da9150;
++	charger->dev = dev;
++
++	/* Acquire ADC channels */
++	charger->ibus_chan = iio_channel_get(dev, "CHAN_IBUS");
++	if (IS_ERR(charger->ibus_chan)) {
++		ret = PTR_ERR(charger->ibus_chan);
++		goto ibus_chan_fail;
++	}
++
++	charger->vbus_chan = iio_channel_get(dev, "CHAN_VBUS");
++	if (IS_ERR(charger->vbus_chan)) {
++		ret = PTR_ERR(charger->vbus_chan);
++		goto vbus_chan_fail;
++	}
++
++	charger->tjunc_chan = iio_channel_get(dev, "CHAN_TJUNC");
++	if (IS_ERR(charger->tjunc_chan)) {
++		ret = PTR_ERR(charger->tjunc_chan);
++		goto tjunc_chan_fail;
++	}
++
++	charger->vbat_chan = iio_channel_get(dev, "CHAN_VBAT");
++	if (IS_ERR(charger->vbat_chan)) {
++		ret = PTR_ERR(charger->vbat_chan);
++		goto vbat_chan_fail;
++	}
++
++	/* Register power supplies */
++	usb = &charger->usb;
++	battery = &charger->battery;
++
++	usb->name = "da9150-usb",
++	usb->type = POWER_SUPPLY_TYPE_USB;
++	usb->properties = da9150_charger_props;
++	usb->num_properties = ARRAY_SIZE(da9150_charger_props);
++	usb->get_property = da9150_charger_get_prop;
++	ret = power_supply_register(dev, usb);
++	if (ret)
++		goto usb_fail;
++
++	battery->name = "da9150-battery";
++	battery->type = POWER_SUPPLY_TYPE_BATTERY;
++	battery->properties = da9150_charger_bat_props;
++	battery->num_properties = ARRAY_SIZE(da9150_charger_bat_props);
++	battery->get_property = da9150_charger_battery_get_prop;
++	ret = power_supply_register(dev, battery);
++	if (ret)
++		goto battery_fail;
++
++	/* Create additional sysfs attributes */
++	for (i = 0; i < ARRAY_SIZE(da9150_charger_attrs); ++i) {
++		ret = device_create_file(dev, &da9150_charger_attrs[i].attr);
++		if (ret < 0)
++			goto sysfs_fail;
++	}
++
++	/* Get initial online supply */
++	reg = da9150_reg_read(da9150, DA9150_STATUS_H);
++
++	/* Charger plugged in or battery only */
++	switch (reg & DA9150_VBUS_STAT_MASK) {
++	case DA9150_VBUS_STAT_OFF:
++	case DA9150_VBUS_STAT_WAIT:
++		charger->supply_online = &charger->battery;
++		break;
++	case DA9150_VBUS_STAT_CHG:
++		charger->supply_online = &charger->usb;
++		break;
++	default:
++		dev_warn(dev, "Unknown VBUS state - reg = 0x%x\n", reg);
++		charger->supply_online = NULL;
++		break;
++	}
++
++	/* Setup OTG reporting & configuration */
++	charger->usb_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
++	if (!IS_ERR_OR_NULL(charger->usb_phy)) {
++		INIT_WORK(&charger->otg_work, da9150_charger_otg_work);
++		charger->otg_nb.notifier_call = da9150_charger_otg_ncb;
++		usb_register_notifier(charger->usb_phy, &charger->otg_nb);
++	}
++
++	/* Register IRQs */
++	ret = da9150_register_irq(pdev, charger, da9150_charger_chg_irq,
++				  "CHG_STATUS");
++	if (ret < 0)
++		goto irq_fail;
++
++	ret = da9150_register_irq(pdev, charger, da9150_charger_tjunc_irq,
++				  "CHG_TJUNC");
++	if (ret < 0)
++		goto irq_fail;
++
++	ret = da9150_register_irq(pdev, charger, da9150_charger_vfault_irq,
++				  "CHG_VFAULT");
++	if (ret < 0)
++		goto irq_fail;
++
++	ret = da9150_register_irq(pdev, charger, da9150_charger_vbus_irq,
++				  "CHG_VBUS");
++	if (ret < 0)
++		goto irq_fail;
++
++	return 0;
++
++irq_fail:
++	if (!IS_ERR_OR_NULL(charger->usb_phy))
++		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
++sysfs_fail:
++	while (--i >= 0)
++		device_remove_file(&pdev->dev, &da9150_charger_attrs[i].attr);
++	power_supply_unregister(battery);
++
++battery_fail:
++	power_supply_unregister(usb);
++
++usb_fail:
++	iio_channel_release(charger->vbat_chan);
++
++vbat_chan_fail:
++	iio_channel_release(charger->tjunc_chan);
++
++tjunc_chan_fail:
++	iio_channel_release(charger->vbus_chan);
++
++vbus_chan_fail:
++	iio_channel_release(charger->ibus_chan);
++
++ibus_chan_fail:
++	return ret;
++}
++
++static int da9150_charger_remove(struct platform_device *pdev)
++{
++	struct da9150_charger *charger = platform_get_drvdata(pdev);
++	int i;
++
++	/* Make sure IRQs are released before unregistering power supplies */
++	da9150_release_irq(pdev, charger, "CHG_VBUS");
++	da9150_release_irq(pdev, charger, "CHG_VFAULT");
++	da9150_release_irq(pdev, charger, "CHG_TJUNC");
++	da9150_release_irq(pdev, charger, "CHG_STATUS");
++
++	if (!IS_ERR_OR_NULL(charger->usb_phy))
++		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
++
++	power_supply_unregister(&charger->battery);
++	power_supply_unregister(&charger->usb);
++
++	for (i = 0; i < ARRAY_SIZE(da9150_charger_attrs); ++i)
++		device_remove_file(&pdev->dev, &da9150_charger_attrs[i].attr);
++
++	/* Release ADC channels */
++	iio_channel_release(charger->ibus_chan);
++	iio_channel_release(charger->vbus_chan);
++	iio_channel_release(charger->tjunc_chan);
++	iio_channel_release(charger->vbat_chan);
++
++	return 0;
++}
++
++static struct platform_driver da9150_charger_driver = {
++	.driver = {
++		.name = "da9150-charger",
++		.owner = THIS_MODULE,
++	},
++	.probe = da9150_charger_probe,
++	.remove = da9150_charger_remove,
++};
++
++module_platform_driver(da9150_charger_driver);
++
++MODULE_DESCRIPTION("Charger Driver for DA9150");
++MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com");
++MODULE_LICENSE("GPL");
+--
+1.9.3
+
