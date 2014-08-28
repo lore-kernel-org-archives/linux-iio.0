@@ -1,560 +1,121 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 28 Aug 2014 13:28:26 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-cc: Lee Jones <lee.jones@linaro.org>, Jonathan Cameron <jic23@kernel.org>,
-    linux-iio@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH v2 3/7] iio: Add support for DA9150 GPADC
-In-Reply-To: <619abd3b3123933487b3e8e9cdc7cdca70bbfd98.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-Message-ID: <alpine.DEB.2.01.1408281314570.5194@pmeerw.net>
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com> <619abd3b3123933487b3e8e9cdc7cdca70bbfd98.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:61923 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751537AbaH1LtT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 07:49:19 -0400
+Message-ID: <53FF16BC.9050701@gmail.com>
+Date: Thu, 28 Aug 2014 17:17:08 +0530
+From: Varka Bhadram <varkabhadram@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>
+CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
+Subject: Re: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
+ fuel-gauge device
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com> <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 08/28/2014 04:18 PM, Adam Thomson wrote:
 
-some minor comments inline
+(...)
 
-> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
-> 
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> ---
->  drivers/iio/adc/Kconfig        |   9 +
->  drivers/iio/adc/Makefile       |   1 +
->  drivers/iio/adc/da9150-gpadc.c | 430 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 440 insertions(+)
->  create mode 100644 drivers/iio/adc/da9150-gpadc.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 11b048a..8041347 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -127,6 +127,15 @@ config AT91_ADC
->  	help
->  	  Say yes here to build support for Atmel AT91 ADC.
-> 
-> +config DA9150_GPADC
-> +	tristate "Dialog DA9150 GPADC driver support"
-> +	depends on MFD_DA9150
-> +	help
-> +	  Say yes here to build support for Dialog DA9150 GPADC.
-> +
-> +	  This driver can also be built as a module. If chosen, the module name
-> +	  will be da9150-gpadc.
-> +
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
->  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index ad81b51..48413d2 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7887) += ad7887.o
->  obj-$(CONFIG_AD799X) += ad799x.o
->  obj-$(CONFIG_AT91_ADC) += at91_adc.o
-> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->  obj-$(CONFIG_MAX1027) += max1027.o
-> diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
-> new file mode 100644
-> index 0000000..21a21a9
-> --- /dev/null
-> +++ b/drivers/iio/adc/da9150-gpadc.c
-> @@ -0,0 +1,430 @@
-> +/*
-> + * DA9150 GPADC Driver
-> + *
-> + * Copyright (c) 2014 Dialog Semiconductor
-> + *
-> + * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> + *
-> + * This program is free software; you can redistribute  it and/or modify it
-> + * under  the terms of  the GNU General  Public License as published by the
-> + * Free Software Foundation;  either version 2 of the  License, or (at your
-> + * option) any later version.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/interrupt.h>
-> +
-> +#include <linux/mfd/da9150/core.h>
-> +#include <linux/mfd/da9150/pdata.h>
-> +#include <linux/mfd/da9150/registers.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
-> +
-> +
-> +/* Channels */
-> +enum da9150_gpadc_hw_channel {
-> +	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
-> +	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
-
-why the underscore_ notation? 
-couldn't you use e.g. DA9150_GPADC_HW_CHAN_GPIOB_2V = 2?
-
-> +	DA9150_GPADC_HW_CHAN_GPIOB_2V,
-> +	DA9150_GPADC_HW_CHAN_GPIOB_2V_,
-> +	DA9150_GPADC_HW_CHAN_GPIOC_2V,
-> +	DA9150_GPADC_HW_CHAN_GPIOC_2V_,
-> +	DA9150_GPADC_HW_CHAN_GPIOD_2V,
-> +	DA9150_GPADC_HW_CHAN_GPIOD_2V_,
-> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE,
-> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE_,
-> +	DA9150_GPADC_HW_CHAN_VBUS_DIV,
-> +	DA9150_GPADC_HW_CHAN_VBUS_DIV_,
-> +	DA9150_GPADC_HW_CHAN_ID,
-> +	DA9150_GPADC_HW_CHAN_ID_,
-> +	DA9150_GPADC_HW_CHAN_VSYS,
-> +	DA9150_GPADC_HW_CHAN_VSYS_,
-> +	DA9150_GPADC_HW_CHAN_GPIOA_5V,
-> +	DA9150_GPADC_HW_CHAN_GPIOA_5V_,
-> +	DA9150_GPADC_HW_CHAN_GPIOB_5V,
-> +	DA9150_GPADC_HW_CHAN_GPIOB_5V_,
-> +	DA9150_GPADC_HW_CHAN_GPIOC_5V,
-> +	DA9150_GPADC_HW_CHAN_GPIOC_5V_,
-> +	DA9150_GPADC_HW_CHAN_GPIOD_5V,
-> +	DA9150_GPADC_HW_CHAN_GPIOD_5V_,
-> +	DA9150_GPADC_HW_CHAN_VBAT,
-> +	DA9150_GPADC_HW_CHAN_VBAT_,
-> +	DA9150_GPADC_HW_CHAN_TBAT,
-> +	DA9150_GPADC_HW_CHAN_TBAT_,
-> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE,
-> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE_,
-> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP,
-> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP_,
-> +};
-> +
-> +enum da9150_gpadc_channel {
-> +	DA9150_GPADC_CHAN_GPIOA = 0,
-> +	DA9150_GPADC_CHAN_GPIOB,
-> +	DA9150_GPADC_CHAN_GPIOC,
-> +	DA9150_GPADC_CHAN_GPIOD,
-> +	DA9150_GPADC_CHAN_IBUS,
-> +	DA9150_GPADC_CHAN_VBUS,
-> +	DA9150_GPADC_CHAN_ID,
-> +	DA9150_GPADC_CHAN_VSYS,
-> +	DA9150_GPADC_CHAN_VBAT,
-> +	DA9150_GPADC_CHAN_TBAT,
-> +	DA9150_GPADC_CHAN_TJUNC_CORE,
-> +	DA9150_GPADC_CHAN_TJUNC_OVP,
-> +};
-> +
-> +/* Private data */
-> +struct da9150_gpadc {
+> +static int da9150_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
 > +	struct da9150 *da9150;
-> +	struct device *dev;
-> +
-> +	struct mutex lock;
-> +	struct completion complete;
-> +};
-> +
-> +
-> +static irqreturn_t da9150_gpadc_irq(int irq, void *data)
-> +{
-> +
-> +	struct da9150_gpadc *gpadc = data;
-> +
-> +	complete(&gpadc->complete);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
-
-static?
-
-> +{
-> +	u8 result_regs[2];
-> +	int result;
-> +
-> +	mutex_lock(&gpadc->lock);
-> +
-> +	/* Set channel & enable measurement */
-> +	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
-> +			 (DA9150_GPADC_EN_MASK |
-> +			  hw_chan << DA9150_GPADC_MUX_SHIFT));
-> +
-> +	/* Consume left-over completion from a previous timeout */
-> +	try_wait_for_completion(&gpadc->complete);
-> +
-> +	/* Check for actual completion */
-> +	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
-> +
-> +	/* Read result and status from device */
-> +	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
-> +
-> +	mutex_unlock(&gpadc->lock);
-> +
-> +	/* Check to make sure device really has completed reading */
-> +	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
-> +		dev_err(gpadc->dev, "Timeout on channel %d of GP-ADC\n",
-
-GPADC everywhere else
-
-> +			hw_chan);
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* LSBs - 2 bits */
-> +	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
-> +		 DA9150_GPADC_RES_L_SHIFT;
-> +	/* MSBs - 8 bits */
-> +	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
-
-can't the read be done with a 16bit read?
-
-> +
-> +	return result;
-> +}
-> +
-> +static inline int da9150_gpadc_gpio_5v_voltage_now(int raw_val)
-> +{
-> +	/* Convert to uV */
-> +	return (((6 * ((raw_val * 1000) + 500)) / 1024) * 1000);
-
-outer parenthesis not needed, here and below
-
-> +}
-> +
-> +static inline int da9150_gpadc_ibus_current_avg(int raw_val)
-> +{
-> +	/* Convert to uA */
-> +	return (((4 * ((raw_val * 1000) + 500)) / 2048) * 1000);
-> +}
-> +
-> +static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
-> +{
-> +	/* Convert to uV */
-> +	return (((21 * ((raw_val * 1000) + 500)) / 1024) * 1000);
-> +}
-> +
-> +static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
-> +{
-> +	/* Convert to uV */
-> +	return (((3 * ((raw_val * 1000) + 500)) / 512) * 1000);
-> +}
-> +
-> +static inline int da9150_gpadc_tjunc_temp(int raw_val)
-> +{
-> +	/* Convert to 0.1 degrees C */
-
-IIO wants mille degrees C
-
-> +	return (((879 - (1023 - raw_val)) * 10000) / 4420);
-> +}
-> +
-> +static inline int da9150_gpadc_vbat_voltage_now(int raw_val)
-> +{
-> +	/* Convert to uV */
-> +	return ((2932 * raw_val) + 1500000);
-> +}
-> +
-> +int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
-> +				int hw_chan)
-
-static?
-
-> +{
-> +	int raw_val, ret;
-> +
-> +	raw_val = da9150_gpadc_read_adc(gpadc, hw_chan);
-> +	if (raw_val < 0)
-> +		return raw_val;
-> +
-> +	switch (channel) {
-> +	case DA9150_GPADC_CHAN_GPIOA:
-> +	case DA9150_GPADC_CHAN_GPIOB:
-> +	case DA9150_GPADC_CHAN_GPIOC:
-> +	case DA9150_GPADC_CHAN_GPIOD:
-> +		ret = da9150_gpadc_gpio_5v_voltage_now(raw_val);
-
-could return directly ...
-
-> +		break;
-> +	case DA9150_GPADC_CHAN_IBUS:
-> +		ret = da9150_gpadc_ibus_current_avg(raw_val);
-> +		break;
-> +	case DA9150_GPADC_CHAN_VBUS:
-> +		ret = da9150_gpadc_vbus_21v_voltage_now(raw_val);
-> +		break;
-> +	case DA9150_GPADC_CHAN_VSYS:
-> +		ret = da9150_gpadc_vsys_6v_voltage_now(raw_val);
-> +		break;
-> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
-> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
-> +		ret = da9150_gpadc_tjunc_temp(raw_val);
-> +		break;
-> +	default:
-> +		/* No processing for other channels so return raw value */
-> +		ret = raw_val;
-> +		break;
-> +	}
-
-and save the final return
-> +
-> +	return ret;
-> +}
-> +
-> +int da9150_gpadc_read_scale(int channel)
-
-static?
-
-> +{
 > +	int ret;
 > +
-> +	switch (channel) {
-> +	case DA9150_GPADC_CHAN_VBAT:
-> +		ret = 2932;
-
-return directly?
-
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +int da9150_gpadc_read_offset(int channel)
-> +{
-> +	int ret;
-> +
-> +	switch (channel) {
-> +	case DA9150_GPADC_CHAN_VBAT:
-> +		ret = 1500000 / 2932;
-
-return directly?
-
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan,
-> +			  int *val, int *val2, long mask)
-
-static?
-
-> +{
-> +	struct da9150_gpadc *gpadc = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if ((chan->channel < DA9150_GPADC_CHAN_GPIOA) ||
-> +	    (chan->channel > DA9150_GPADC_CHAN_TJUNC_OVP))
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = da9150_gpadc_read_processed(gpadc, chan->channel,
-> +						  chan->address);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = da9150_gpadc_read_scale(chan->channel);
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		ret = da9150_gpadc_read_offset(chan->channel);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = ret;
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static const struct iio_info da9150_gpadc_info = {
-> +	.read_raw = &da9150_gpadc_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#define GPADC_CHANNEL(_id, _hw_id, _type, chan_info, _ext_name) {	\
-> +	.type = _type,							\
-> +	.indexed = 1,							\
-
-there is only one current channel, it should not be indexed
-
-> +	.channel = DA9150_GPADC_CHAN_##_id,				\
-> +	.address = DA9150_GPADC_HW_CHAN_##_hw_id,			\
-> +	.info_mask_separate = chan_info,				\
-> +	.extend_name = _ext_name,					\
-> +	.datasheet_name = #_id,						\
-> +}
-> +
-> +#define GPADC_CHANNEL_RAW(_id, _hw_id, _type, _ext_name)	\
-> +	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_RAW), _ext_name)
-> +
-> +#define GPADC_CHANNEL_SCALED(_id, _hw_id, _type, _ext_name)	\
-> +	GPADC_CHANNEL(_id, _hw_id, _type,			\
-> +		      BIT(IIO_CHAN_INFO_RAW) |			\
-> +		      BIT(IIO_CHAN_INFO_SCALE) |		\
-> +		      BIT(IIO_CHAN_INFO_OFFSET),		\
-> +		      _ext_name)
-> +
-> +#define GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)		\
-> +	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_PROCESSED),	\
-> +		      _ext_name)
-> +
-> +/* Supported channels */
-> +static const struct iio_chan_spec da9150_gpadc_channels[] = {
-> +	GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_5V, IIO_VOLTAGE, "GPIOA"),
-> +	GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_5V, IIO_VOLTAGE, "GPIOB"),
-> +	GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_5V, IIO_VOLTAGE, "GPIOC"),
-> +	GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_5V, IIO_VOLTAGE, "GPIOD"),
-> +	GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT, "IBUS"),
-> +	GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE, "VBUS"),
-> +	GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
-> +	GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
-> +	GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
-> +	GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
-> +	GPADC_CHANNEL_PROCESSED(TJUNC_CORE, TJUNC_CORE, IIO_TEMP, "TJUNC_CORE"),
-> +	GPADC_CHANNEL_PROCESSED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP, "TJUNC_OVP"),
-> +};
-> +
-> +/* Default maps used by da9150-charger */
-> +static struct iio_map da9150_gpadc_default_maps[] = {
-> +	{
-> +		.consumer_dev_name = "da9150-charger",
-> +		.consumer_channel = "CHAN_IBUS",
-> +		.adc_channel_label = "IBUS",
-> +	},
-> +	{
-> +		.consumer_dev_name = "da9150-charger",
-> +		.consumer_channel = "CHAN_VBUS",
-> +		.adc_channel_label = "VBUS",
-> +	},
-> +	{
-> +		.consumer_dev_name = "da9150-charger",
-> +		.consumer_channel = "CHAN_TJUNC",
-> +		.adc_channel_label = "TJUNC_CORE",
-> +	},
-> +	{
-> +		.consumer_dev_name = "da9150-charger",
-> +		.consumer_channel = "CHAN_VBAT",
-> +		.adc_channel_label = "VBAT",
-> +	},
-> +	{},
-> +};
-> +
-> +static int da9150_gpadc_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
-> +	struct da9150_gpadc *gpadc;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> +					  sizeof(struct da9150_gpadc));
-> +	if (!indio_dev) {
-> +		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
+> +	da9150 = devm_kzalloc(&client->dev, sizeof(struct da9150), GFP_KERNEL);
+> +	if (da9150 == NULL)
 > +		return -ENOMEM;
-> +	}
-> +	gpadc = iio_priv(indio_dev);
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	gpadc->da9150 = da9150;
-> +	gpadc->dev = dev;
-> +
-> +	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
-> +		goto iio_map_fail;
 
-just return here?
+da9150 = devm_kzalloc(&client->dev, sizeof(*da9150), GFP_KERNEL);
+if (!da9150)
+	return -ENOMEM;
 
-> +	}
+> +	da9150->dev = &client->dev;
+> +	da9150->irq = client->irq;
+> +	i2c_set_clientdata(client, da9150);
+> +	dev_set_drvdata(da9150->dev, da9150);
 > +
-> +	mutex_init(&gpadc->lock);
-> +	init_completion(&gpadc->complete);
-> +
-> +	/* Register IRQ */
-> +	ret = da9150_register_irq(pdev, gpadc, da9150_gpadc_irq, "GPADC");
-> +	if (ret < 0)
-> +		goto irq_fail;
-> +
-> +	indio_dev->name = dev_name(dev);
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->dev.of_node = pdev->dev.of_node;
-> +	indio_dev->info = &da9150_gpadc_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = da9150_gpadc_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to register IIO device: %d\n", ret);
-> +		goto iio_dev_fail;
+> +	da9150->regmap = devm_regmap_init_i2c(client, &da9150_regmap_config);
+> +	if (IS_ERR(da9150->regmap)) {
+> +		ret = PTR_ERR(da9150->regmap);
+> +		dev_err(da9150->dev, "Failed to allocate register map: %d\n",
+> +			ret);
+> +		return ret;
 > +	}
 > +
-> +	return ret;
-> +
-> +iio_dev_fail:
-> +irq_fail:
-
-why two labels?
-
-> +	iio_map_array_unregister(indio_dev);
-> +
-> +iio_map_fail:
-> +	return ret;
+> +	return da9150_device_init(da9150);
 > +}
 > +
-> +static int da9150_gpadc_remove(struct platform_device *pdev)
+> +static int da9150_remove(struct i2c_client *client)
 > +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct da9150 *da9150 = i2c_get_clientdata(client);
 > +
-> +	iio_map_array_unregister(indio_dev);
-
-unregister irq?
-
-> +	iio_device_unregister(indio_dev);
+> +	da9150_device_exit(da9150);
 > +
 > +	return 0;
 > +}
 > +
-> +static struct platform_driver da9150_gpadc_driver = {
-> +	.driver = {
-> +		.name = "da9150-gpadc",
-> +		.owner = THIS_MODULE,
-> +	},
-> +	.probe = da9150_gpadc_probe,
-> +	.remove = da9150_gpadc_remove,
+> +static void da9150_shutdown(struct i2c_client *client)
+> +{
+> +	struct da9150 *da9150 = i2c_get_clientdata(client);
+> +
+> +	da9150_device_shutdown(da9150);
+> +}
+> +
+> +static const struct i2c_device_id da9150_i2c_id[] = {
+> +	{ "da9150", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, da9150_i2c_id);
+> +
+> +static const struct of_device_id da9150_of_match[] = {
+> +	{ .compatible = "dlg,da9150", },
+> +	{ }
 > +};
 > +
-> +module_platform_driver(da9150_gpadc_driver);
+
+missed MODULE_DEVICE_TABLE(of, ...)   ?
+
+> +static struct i2c_driver da9150_driver = {
+> +	.driver	= {
+> +		.name	= "da9150",
+> +		.owner	= THIS_MODULE,
+
+No need to update this field...
+
+> +		.of_match_table = of_match_ptr(da9150_of_match),
+> +	},
+> +	.probe		= da9150_probe,
+> +	.remove		= da9150_remove,
+> +	.shutdown	= da9150_shutdown,
+> +	.id_table	= da9150_i2c_id,
+> +};
 > +
-> +MODULE_DESCRIPTION("GPADC Driver for DA9150");
+> +module_i2c_driver(da9150_driver);
+> +
+> +MODULE_DESCRIPTION("I2C Driver for DA9150");
 > +MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com");
 > +MODULE_LICENSE("GPL");
-> --
-> 1.9.3
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
-
+>
 -- 
+Regards,
+Varka Bhadram.
 
-Peter Meerwald
-+43-664-2444418 (mobile)
