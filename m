@@ -1,205 +1,59 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <53EB7AD9.9010602@metafoo.de>
-Date: Wed, 13 Aug 2014 16:48:57 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Aniroop Mathur <aniroop.mathur@gmail.com>,
- "jic23@kernel.org" <jic23@kernel.org>
-CC: a.mathur@samsung.com, "cpgs ." <cpgs@samsung.com>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- p.shailesh@samsung.com, r.mahale@samsung.com, vidushi.koul@samsung.com,
- narendra.m1@samsung.com
-Subject: Re: [PATCH 1/1] IIO: Added write function in iio_buffer_fileops
-References: <1407911391-26696-1-git-send-email-a.mathur@samsung.com>	<53EB2AFE.10900@metafoo.de> <CADYu309nTht96H077D6YGvhRYz6Xfux7Qri5Hi7dfgQMtOz-Pg@mail.gmail.com>
-In-Reply-To: <CADYu309nTht96H077D6YGvhRYz6Xfux7Qri5Hi7dfgQMtOz-Pg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:14162 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757226AbaH1IfO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Aug 2014 04:35:14 -0400
+From: Laurentiu Palcu <laurentiu.palcu@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, laurentiu.palcu@intel.com,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] iio: accel: BMC150: fix issues when CONFIG_PM_RUNTIME is not set
+Date: Thu, 28 Aug 2014 11:35:05 +0300
+Message-Id: <1409214906-27038-3-git-send-email-laurentiu.palcu@intel.com>
+In-Reply-To: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
+References: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/13/2014 03:42 PM, Aniroop Mathur wrote:
-> On Wed, Aug 13, 2014 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 08/13/2014 08:29 AM, a.mathur@samsung.com wrote:
->>>
->>> From: Aniroop Mathur <a.mathur@samsung.com>
->>>
->>> Earlier, user space can only read from iio device node but cannot write to
->>> it.
->>> This patch adds write function in iio buffer file operations,
->>> which will allow user-space applications/HAL to write the data
->>> to iio device node.
->>> So now there will be two way communication between IIO subsystem
->>> and user space. (userspace <--> kernel)
->>>
->>> It can be used by HAL or any user-space application which wants to
->>> write data to iio device node/buffer upon receiving some data from it.
->>> As an example,
->>> It is useful for iio device simulator application which need to record
->>> the data by reading from iio device node and replay the recorded data
->>> by writing back to iio device node.
->>>
->>
->> I'm not convinced that this is something that should be added to the kernel.
->> I'm wondering why can't this be done in userspace, e.g. by having a
->> simulator mode for the application or by using LD_PRELOAD. Having this in
->> userspace will be much more flexible and will be easier to implement
->> correctly and you'll most likely want to simulate more than just buffer
->> access, for example setting/getting properties of the device or channel. For
->> the libiio[1] we are planning to implement a test backend that when
->> activated will allow to simulate a whole device rather than just buffer
->> support.
->>
->> [1] https://github.com/analogdevicesinc/libiio
->>
->>
->
-> In normal Input Subsystem, there is two way communication between
-> kernel and userpace. It has both read and write functionality. :)
-> Why there is only one way communication in case of IIO ?
+When CONFIG_PM_RUNTIME is not set, the following issues are seen:
+ * warning message at compilation time:
+    warning: 'bmc150_accel_get_startup_times' defined but not used [-Wunused-function]
+ * bmc150_accel_set_power_state() will always fail and reading the
+   accelerometer data is impossible;
 
-I've not seen a compelling reason yet why this must be implemented in kernel 
-space. In my opinion, as outlined above, userspace if both easier and more 
-flexible.
+This commit fixes these.
 
->
-> For Input devices, I completed simulation just by reading and writing at
-> input device node /dev/input/eventX.
-> But for IIO devices, I am stuck as there is no write function available
-> for iio device node /dev/iio:device0.
->
-> As per my understanding, if we do the simulation in userspace
-> then we need to create one more buffer in userpace. This will lead to
-> extra memory usage. With write functionality in IIO just like
-> in Input subsystem, we can avoid extra memory space. :)
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-No, you don't actually have to create a additional buffer. Just return the 
-data that you'd otherwise have passed to write().
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index ccb6cf8..0e6566a 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -499,6 +499,7 @@ static int bmc150_accel_get_bw(struct bmc150_accel_data *data, int *val,
+ 	return -EINVAL;
+ }
+ 
++#ifdef CONFIG_PM_RUNTIME
+ static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
+ {
+ 	int i;
+@@ -529,6 +530,12 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
+ 
+ 	return 0;
+ }
++#else
++static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
++{
++	return 0;
++}
++#endif
+ 
+ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+ {
+-- 
+1.9.1
 
->
->>> Signed-off-by: Aniroop Mathur <a.mathur@samsung.com>
->>> ---
->>>    drivers/iio/iio_core.h            |    5 ++++-
->>>    drivers/iio/industrialio-buffer.c |   34
->>> ++++++++++++++++++++++++++++++++++
->>>    drivers/iio/industrialio-core.c   |    1 +
->>>    3 files changed, 39 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
->>> index 5f0ea77..ba3fe53 100644
->>> --- a/drivers/iio/iio_core.h
->>> +++ b/drivers/iio/iio_core.h
->>> @@ -47,10 +47,12 @@ unsigned int iio_buffer_poll(struct file *filp,
->>>                               struct poll_table_struct *wait);
->>>    ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user
->>> *buf,
->>>                                        size_t n, loff_t *f_ps);
->>> -
->>> +ssize_t iio_buffer_write_first_n_outer(struct file *filp,
->>> +                            const char __user *buf, size_t n, loff_t
->>> *f_ps);
->>>
->>>    #define iio_buffer_poll_addr (&iio_buffer_poll)
->>>    #define iio_buffer_read_first_n_outer_addr
->>> (&iio_buffer_read_first_n_outer)
->>> +#define iio_buffer_write_first_n_outer_addr
->>> (&iio_buffer_write_first_n_outer)
->>>
->>>    void iio_disable_all_buffers(struct iio_dev *indio_dev);
->>>    void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
->>> @@ -59,6 +61,7 @@ void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
->>>
->>>    #define iio_buffer_poll_addr NULL
->>>    #define iio_buffer_read_first_n_outer_addr NULL
->>> +#define iio_buffer_write_first_n_outer_addr NULL
->>>
->>>    static inline void iio_disable_all_buffers(struct iio_dev *indio_dev) {}
->>>    static inline void iio_buffer_wakeup_poll(struct iio_dev *indio_dev) {}
->>> diff --git a/drivers/iio/industrialio-buffer.c
->>> b/drivers/iio/industrialio-buffer.c
->>> index 9f1a140..ef889af 100644
->>> --- a/drivers/iio/industrialio-buffer.c
->>> +++ b/drivers/iio/industrialio-buffer.c
->>> @@ -21,6 +21,7 @@
->>>    #include <linux/slab.h>
->>>    #include <linux/poll.h>
->>>    #include <linux/sched.h>
->>> +#include <asm/uaccess.h>
->>
->>
->> linux/uaccess.h
->>
->>
->>>
->>>    #include <linux/iio/iio.h>
->>>    #include "iio_core.h"
->>> @@ -87,6 +88,39 @@ ssize_t iio_buffer_read_first_n_outer(struct file
->>> *filp, char __user *buf,
->>>    }
->>>
->>>    /**
->>> + * iio_buffer_write_first_n_outer() - chrdev write to buffer
->>> + *
->>> + * This function pushes the user space data to kernel iio buffer
->>> + **/
->>> +ssize_t iio_buffer_write_first_n_outer(struct file *filp,
->>> +                               const char __user *buf, size_t n, loff_t
->>> *f_ps)
->>> +{
->>> +       struct iio_dev *indio_dev = filp->private_data;
->>> +       struct iio_buffer *rb = indio_dev->buffer;
->>> +       int ret = -1;
->>> +       unsigned char *data = NULL;
->>> +
->>> +       if (!indio_dev->info)
->>> +               return -ENODEV;
->>> +
->>> +       if (n != 1)
->>> +               return -EINVAL;
->>> +
->>> +       data = kzalloc(1, GFP_KERNEL);
->>> +       if (!data)
->>> +               return -ENOMEM;
->>> +
->>> +       if (copy_from_user(data, buf, 1)) {
->>> +               kfree(data);
->>> +               return -EFAULT;
->>> +       }
->>> +
->>> +       ret = iio_push_to_buffer(rb, data);
->>
->>
->> Are you sure that this works? iio_push_to_buffer() expects a data buffer of
->> size rb->bytes_per_datum bytes. On the other hand rb->bytes_per_datum is
->> only valid when the buffer is enabled, so for this to work the buffer would
->> need to be enabled. Which means you'd inject the fake data in the middle of
->> the real data stream.
->>
->>
->
-> Yes, It works :)
-> In one patch, bytes_per_datum has been removed from kifo_in.
-> Patch - iio:kfifo_buf Take advantage of the fixed record size used in IIO
-> commit c559afbfb08c7eac215ba417251225d3a8e01062
-> - ret = kfifo_in(&kf->kf, data, r->bytes_per_datum);
-> + ret = kfifo_in(&kf->kf, data, 1);
-> So, I think we can now write only one byte of data.
-
-No, we need to write 1 record and the size of one record is bytes_per_datum. 
-If you only write one byte you'll cause a out of bounds access.
-
->
-> Initially, I wrote the code for write functionality in kernel version 3.6
-> using bytes_per_datum instead of fixed size of 1 byte.
-> It worked fine. :)
-> For this, we just need to replace size 1 by r->bytes_per_datum.
->
-> We are not injecting data in middle of real data stream.
-> When we inject the recorded data, we disabled the hardware chip,
-> so no new/real data is pushed to the buffer during that time.
->
-> To record, we enabled the buffer, read the real data and save it.
-> To replay, we disabled the hardware chip and injected saved data by
-> writing back to iio device node.
-> So, Buffer is still enabled at time of writing to iio device node. :)
-
-How do you disable the hardware without disabling the buffer?
-
-- Lars
