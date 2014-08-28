@@ -1,57 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46753 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754865AbaHYUl1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Aug 2014 16:41:27 -0400
-Message-ID: <53FB9F75.5090505@kernel.org>
-Date: Mon, 25 Aug 2014 21:41:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:33444 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S965645AbaH1JIT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Aug 2014 05:08:19 -0400
+From: Vignesh R <vigneshr@ti.com>
+To: Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: <nsekhar@ti.com>, Felipe Balbi <balbi@ti.com>,
+	<linux-iio@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
+Subject: [PATCH] iio: adc: ti_am335x_adc: Fix TSC operation after ADC continouous mode
+Date: Thu, 28 Aug 2014 14:37:00 +0530
+Message-ID: <1409216820-11506-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 3/8] iio: adc: ad_sigma_delta: Fix indio_dev->trig
- assignment
-References: <1408740516-31261-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1408740516-31261-4-git-send-email-srinivas.pandruvada@linux.intel.com> <53F83BF6.5080705@metafoo.de>
-In-Reply-To: <53F83BF6.5080705@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/08/14 08:00, Lars-Peter Clausen wrote:
-> On 08/22/2014 10:48 PM, Srinivas Pandruvada wrote:
->> This can result in wrong reference count for trigger device, call
->> iio_trigger_get to increment reference.
->> Refer to http://www.spinics.net/lists/linux-iio/msg13669.html for discussion
->> with Jonathan.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied
-> 
-> Thanks.
-> 
->> ---
->>   drivers/iio/adc/ad_sigma_delta.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
->> index c55b81f..d10bd0c 100644
->> --- a/drivers/iio/adc/ad_sigma_delta.c
->> +++ b/drivers/iio/adc/ad_sigma_delta.c
->> @@ -472,7 +472,7 @@ static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
->>           goto error_free_irq;
->>
->>       /* select default trigger */
->> -    indio_dev->trig = sigma_delta->trig;
->> +    indio_dev->trig = iio_trigger_get(sigma_delta->trig);
->>
->>       return 0;
->>
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+After enabling and disabling ADC continuous mode via sysfs, ts_print_raw
+fails to return any data. This is because when ADC is configured for
+continuous mode, it disables touch screen steps.These steps are not
+re-enabled when ADC continuous mode is disabled. Therefore existing values
+of REG_SE needs to be cached before enabling continuous mode and
+disabling touch screen steps and enabling ADC steps. The cached value
+are to be restored to REG_SE once ADC is disabled.
+
+Fixes: 7ca6740cd1cd ("The continues-read mode remains unchanged")
+
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ drivers/mfd/ti_am335x_tscadc.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index d4e860413bb5..e3076afe6b3c 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -54,7 +54,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tsadc, u32 val)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&tsadc->reg_lock, flags);
+-	tsadc->reg_se_cache = val;
++	tsadc->reg_se_cache |= val;
+ 	if (tsadc->adc_waiting)
+ 		wake_up(&tsadc->reg_se_wait);
+ 	else if (!tsadc->adc_in_use)
+@@ -97,6 +97,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+ void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
+ {
+ 	spin_lock_irq(&tsadc->reg_lock);
++	tsadc->reg_se_cache |= val;
+ 	am335x_tscadc_need_adc(tsadc);
+ 
+ 	tscadc_writel(tsadc, REG_SE, val);
+-- 
+1.7.9.5
+
