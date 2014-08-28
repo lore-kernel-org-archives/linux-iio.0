@@ -1,122 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([87.118.82.44]:59553 "EHLO pmeerw.net"
+Received: from gloria.sntech.de ([95.129.55.99]:42181 "EHLO gloria.sntech.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751506AbaHSWnc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Aug 2014 18:43:32 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
+	id S1751647AbaH1WLD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 28 Aug 2014 18:11:03 -0400
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: [PATCH v2 08/11] iio:bma180: Introduce part-specific _config() and disable() code
-Date: Wed, 20 Aug 2014 00:43:23 +0200
-Message-Id: <1408488206-2633-9-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: handle -EPROBE_DEFER in of_iio_channel_get_by_name
+Date: Fri, 29 Aug 2014 00:13 +0200
+Message-ID: <4420839.L1RSpT2Pjo@diego>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-move part of bma180_init() to bma180_config() (split initialization and
-configuration code); configuration is heavily chip-specific
+Till now of_iio_channel_get_by_name always tried to find the channel without
+evaluating the return code from of_iio_channel_get. This might include
+-EPROBE_DEFER in which case the channel is present but its driver simply not
+probed yet. Therefore simply return on -EPROBE_DEFER so that the driver
+requesting the channel can also defer.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- drivers/iio/accel/bma180.c | 31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+ drivers/iio/inkern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index fc7c7b8..a25b060 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -37,6 +37,8 @@ struct bma180_part_info {
- 	unsigned num_scales;
- 	const int *bw_table;
- 	unsigned num_bw;
-+	int (*chip_config)(struct bma180_data *data);
-+	void (*chip_disable)(struct bma180_data *data);
- };
- 
- /* Register set */
-@@ -279,21 +281,28 @@ static int bma180_chip_init(struct bma180_data *data)
- 	int ret = i2c_smbus_read_byte_data(data->client, BMA180_CHIP_ID);
- 
- 	if (ret < 0)
--		goto err;
--	if (ret != BMA180_ID_REG_VAL) {
--		ret = -ENODEV;
--		goto err;
--	}
-+		return ret;
-+	if (ret != BMA180_ID_REG_VAL)
-+		return -ENODEV;
- 
- 	ret = bma180_soft_reset(data);
- 	if (ret)
--		goto err;
-+		return ret;
- 	/*
- 	 * No serial transaction should occur within minimum 10 us
- 	 * after soft_reset command
- 	 */
- 	msleep(20);
- 
-+	return 0;
-+}
-+
-+static int bma180_chip_config(struct bma180_data *data)
-+{
-+	int ret = bma180_chip_init(data);
-+
-+	if (ret)
-+		goto err;
- 	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
- 	if (ret)
- 		goto err;
-@@ -319,7 +328,7 @@ static int bma180_chip_init(struct bma180_data *data)
- 	return 0;
- 
- err:
--	dev_err(&data->client->dev, "failed to init the chip\n");
-+	dev_err(&data->client->dev, "failed to config the chip\n");
- 	return ret;
- }
- 
-@@ -507,6 +516,8 @@ static const struct bma180_part_info bma180_part_info[] = {
- 		bma180_channels, ARRAY_SIZE(bma180_channels),
- 		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
- 		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
-+		bma180_chip_config,
-+		bma180_chip_disable,
- 	},
- };
- 
-@@ -578,7 +589,7 @@ static int bma180_probe(struct i2c_client *client,
- 	data->client = client;
- 	data->part_info = &bma180_part_info[id->driver_data];
- 
--	ret = bma180_chip_init(data);
-+	ret = data->part_info->chip_config(data);
- 	if (ret < 0)
- 		goto err_chip_disable;
- 
-@@ -640,7 +651,7 @@ err_trigger_unregister:
- err_trigger_free:
- 	iio_trigger_free(data->trig);
- err_chip_disable:
--	bma180_chip_disable(data);
-+	data->part_info->chip_disable(data);
- 
- 	return ret;
- }
-@@ -658,7 +669,7 @@ static int bma180_remove(struct i2c_client *client)
- 	}
- 
- 	mutex_lock(&data->mutex);
--	bma180_chip_disable(data);
-+	data->part_info->chip_disable(data);
- 	mutex_unlock(&data->mutex);
- 
- 	return 0;
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index c749700..f084610 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -178,7 +178,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+ 			index = of_property_match_string(np, "io-channel-names",
+ 							 name);
+ 		chan = of_iio_channel_get(np, index);
+-		if (!IS_ERR(chan))
++		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
+ 			break;
+ 		else if (name && index >= 0) {
+ 			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
 -- 
-1.9.1
+2.0.1
+
 
