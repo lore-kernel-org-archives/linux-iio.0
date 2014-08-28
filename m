@@ -1,20 +1,62 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <53F441FF.9090304@metafoo.de>
-Date: Wed, 20 Aug 2014 08:36:47 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.126.130]:52101 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932699AbaH1Is6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 04:48:58 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Caesar Wang <caesar.wang@rock-chips.com>
+Cc: heiko@sntech.de, rui.zhang@intel.com, edubezval@gmail.com,
+	grant.likely@linaro.org, robh+dt@kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, huangtao@rock-chips.com,
+	cf@rock-chips.com, dianders@chromium.org, dtor@chromium.org,
+	zyw@rock-chips.com, addy.ke@rock-chips.com,
+	dmitry.torokhov@gmail.com, zhaoyifeng <zyf@rock-chips.com>,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
+Date: Thu, 28 Aug 2014 10:48:23 +0200
+Message-ID: <2852853.mfRZfFVSev@wuerfel>
+In-Reply-To: <1409187562-12370-2-git-send-email-caesar.wang@rock-chips.com>
+References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com> <1409187562-12370-2-git-send-email-caesar.wang@rock-chips.com>
 MIME-Version: 1.0
-To: Sanjeev Sharma <sanjeev_sharma@mentor.com>, jic23@kernel.org,
- gregkh@linuxfoundation.org
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org
-Subject: Re: [PATCH] staging:iio: moved platform_data into include/linux/iio
-References: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
-In-Reply-To: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/20/2014 08:41 AM, Sanjeev Sharma wrote:
-> This is a patch to the iio which will move all platform_data
-> into include/linux/iio.
+On Thursday 28 August 2014 08:59:19 Caesar Wang wrote:
+> Thermal is TS-ADC Controller module supports user-defined mode and automatic mode.
+> 
+> User-defined mode refers,TSADC all the control signals entirely by software
+> writing to register for direct control.
+> 
+> Automaic mode refers to the module automatically poll TSADC output,and the results
+> Were checked.
+> 
+> If you find that the temperature High in a period of time, an interrupt is generated
+> to the processor down-measures taken;if the temperature over a period of time High,
+> the resulting TSHUT gave CRU module,let it reset the entire chip, or via GPIO give PMIC.
+> 
+> Signed-off-by: zhaoyifeng <zyf@rock-chips.com>
+> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
 
-It should be moved together with the driver.
+Hi Caesar,
+
+After looking at the driver (last time I only received the patch for
+the binding), I have a more general comment:
+
+This looks like a general-purpose ADC device, not an IP block that is
+specific to thermal management. The binding looks ok for that purpose
+but should probably be moved into Documentation/devicetree/bindings/iio/adc/
+as a minor change.
+
+On the driver side, I believe the correct way to deal with this setup
+is to split your driver into a generic drivers/iio/adc/rockchips-tsadc.c
+file, and a smaller thermal driver that uses the iio in-kernel interfaces,
+ideally one that is independent of the underlying hardware and can
+work on any ADC implementation.
+
+I've put the IIO maintainer on Cc in this mail, maybe Jonathan or someone
+else on the linux-iio mailing list has some extra insight.
+
+	Arnd
