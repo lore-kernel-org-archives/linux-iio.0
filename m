@@ -1,43 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:16670 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934704AbaH1JWA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 Aug 2014 05:22:00 -0400
-Date: Thu, 28 Aug 2014 12:21:55 +0300
-From: Laurentiu Palcu <laurentiu.palcu@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: accel: BMC150: add support for other Bosch chips
-Message-ID: <20140828092155.GC3164@lpalcu-linux>
-References: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com>
- <1409214906-27038-4-git-send-email-laurentiu.palcu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 28 Aug 2014 11:26:19 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Laurentiu Palcu <laurentiu.palcu@intel.com>
+cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+    srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de, lars@metafoo.de,
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
 In-Reply-To: <1409214906-27038-4-git-send-email-laurentiu.palcu@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <alpine.DEB.2.01.1408281111250.3259@pmeerw.net>
+References: <1409214906-27038-1-git-send-email-laurentiu.palcu@intel.com> <1409214906-27038-4-git-send-email-laurentiu.palcu@intel.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-Sorry for top-posting but it looks like I have to improve my copy-pasting
-techniques. :) The sensitivity value computed in the first patch, 76590, turned
-into 75590 in the last... :/
 
-Please, go ahead and review the patch and I'll fix this in a subsequent
-revision.
-
-thanks,
-laurentiu
-
-On Thu, Aug 28, 2014 at 11:35:06AM +0300, Laurentiu Palcu wrote:
 > The following chips are either similar or have only the resolution
 > different. Hence, change this driver to support these chips too:
-> 
 > BMI055 - combo chip (accelerometer part is identical to BMC150's)
 > BMA255 - identical to BMC150's accelerometer
 > BMA222 - 8 bit resolution
 > BMA250 - 10 bit resolution
 > BMA280 - 14 bit resolution
-> 
+
+I recently proposed to add BMA250 support to the BMA180 IIO driver; 
+according to the datasheet, the chip ID value for the BMA180 and (!) 
+BMA250 is 0x03, while your patch claims that it is 0xf9
+
+see http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds002-05.pdf, 
+page 37 (and it really is on my chip :)
+
+the question is whether to add further Bosch accelerometer chips to the 
+BMA180 driver or the BMC150 driver and what explains the different chip IDs
+
+need to check if these are really so similar and what driver provides /
+exposes more features
+
+p.
+ 
 > Additionally:
 >  * add bmc150_accel_match_acpi_device() function to check that the device
 >    has been enumerated through ACPI;
@@ -454,6 +454,9 @@ On Thu, Aug 28, 2014 at 11:35:06AM +0300, Laurentiu Palcu wrote:
 >  	{}
 >  };
 >  
-> -- 
-> 1.9.1
 > 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
