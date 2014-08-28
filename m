@@ -1,36 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f169.google.com ([209.85.220.169]:46761 "EHLO
-	mail-vc0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751738AbaHVVed (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Aug 2014 17:34:33 -0400
-Received: by mail-vc0-f169.google.com with SMTP id le20so13024629vcb.14
-        for <linux-iio@vger.kernel.org>; Fri, 22 Aug 2014 14:34:32 -0700 (PDT)
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.142]:7462 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S965688AbaH1KtW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 06:49:22 -0400
+Message-ID: <5b66745f0154bfa9b03664a473aa15672ebc5f8b.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Thu, 28 Aug 2014 11:49:13 +0100
+Subject: [PATCH v2 6/7] power: da9150: Add DT binding documentation for charger
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-In-Reply-To: <CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
-References: <CAN0s7yTK1_1u65nodysfiGxYbgKTeDS0Vf_+14KQJS92_Di1vg@mail.gmail.com>
-	<CAN0s7yRwXGgPLhyucnR+=EybQFjunt66MKYvQuZnR_PSdgjS1Q@mail.gmail.com>
-	<CA+BWVUSSO0kA1mW6BJ9F5VrZErK1D7YDOrA-gtuW5ZF3wNNZXA@mail.gmail.com>
-	<CAN0s7yTYwEsu2uJ3kUjW-SsvoyqSXebNT3=1D1oNfdJwi=Q5Qw@mail.gmail.com>
-	<CA+BWVUSZDb_+gtLY5JeryMMfYRrQCkdYBUfG9m3rzL1P9wawYg@mail.gmail.com>
-	<CA+BWVUSvm54_xLeXGf0d5oo1-1DH_z=K1TFsrFLQHMBV_gA7gA@mail.gmail.com>
-	<CAN0s7yT017sCS9K4q5avRBz5JM+Oj4RM-M8oYVStbWEDx1yWXg@mail.gmail.com>
-	<CA+BWVUSXXhFFTUg_NUu6KochOnpg7LF9L3Q8pZHe4Lt7JJrEXw@mail.gmail.com>
-Date: Sat, 23 Aug 2014 00:34:32 +0300
-Message-ID: <CAN0s7ySG9rbDXZ6XDtQmPWD5QGRdnHf7SwGxjh0er39EZFGO6w@mail.gmail.com>
-Subject: Re: Resource Temporarily Unavailable error when trying to read from
- the accelerator on a ThinkPad twist
-From: Elad Alfassa <elad@fedoraproject.org>
-To: Reyad Attiyat <reyad.attiyat@gmail.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hey Reyad.
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ .../devicetree/bindings/power/da9150-charger.txt   | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/da9150-charger.txt
 
-Unfortunately, this patch does not fix the issue.
-The symptoms are exactly like before.
+diff --git a/Documentation/devicetree/bindings/power/da9150-charger.txt b/Documentation/devicetree/bindings/power/da9150-charger.txt
+new file mode 100644
+index 0000000..f390666
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/da9150-charger.txt
+@@ -0,0 +1,26 @@
++Dialog Semiconductor DA9150 Charger Power Supply bindings
++
++Required properties:
++- compatible: "dlg,da9150-charger" for DA9150 Charger Power Supply
++
++Optional properties:
++- io-channels: List of phandle and IIO specifier pairs
++- io-channel-names: List of channel names used by charger
++      ["CHAN_IBUS", "CHAN_VBUS", "CHAN_TJUNC", "CHAN_VBAT"]
++  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
++
++
++Example:
++
++	da9150-charger {
++		compatible = "dlg,da9150-charger";
++
++		io-channels = <&gpadc 0>,
++			      <&gpadc 2>,
++			      <&gpadc 8>,
++			      <&gpadc 5>;
++		io-channel-names = "CHAN_IBUS",
++				   "CHAN_VBUS",
++				   "CHAN_TJUNC",
++				   "CHAN_VBAT";
++	};
+--
+1.9.3
 
-Thanks,
--- 
--Elad Alfassa.
