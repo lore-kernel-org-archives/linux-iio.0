@@ -1,49 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f174.google.com ([209.85.223.174]:41474 "EHLO
-	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751816AbaH1NOc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 09:14:32 -0400
-Received: by mail-ie0-f174.google.com with SMTP id at20so874816iec.5
-        for <linux-iio@vger.kernel.org>; Thu, 28 Aug 2014 06:14:31 -0700 (PDT)
-From: Lee Jones <lee.jones@linaro.org>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: Lee Jones <lee.jones@linaro.org>, jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 01/11] iio: sensors-core: st: Check st_sensors_set_drdy_int_pin()'s return value
-Date: Thu, 28 Aug 2014 14:14:07 +0100
-Message-Id: <1409231657-18294-1-git-send-email-lee.jones@linaro.org>
+Received: from mail-vc0-f177.google.com ([209.85.220.177]:54864 "EHLO
+	mail-vc0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752069AbaH1Ohr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 10:37:47 -0400
+Date: Thu, 28 Aug 2014 10:37:35 -0400
+From: Eduardo Valentin <edubezval@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Caesar Wang <caesar.wang@rock-chips.com>, heiko@sntech.de,
+	rui.zhang@intel.com, grant.likely@linaro.org, robh+dt@kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, huangtao@rock-chips.com,
+	cf@rock-chips.com, dianders@chromium.org, dtor@chromium.org,
+	zyw@rock-chips.com, addy.ke@rock-chips.com,
+	dmitry.torokhov@gmail.com, zhaoyifeng <zyf@rock-chips.com>,
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
+Message-ID: <20140828143733.GA18084@developer>
+References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com>
+ <1409187562-12370-2-git-send-email-caesar.wang@rock-chips.com>
+ <2852853.mfRZfFVSev@wuerfel>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <2852853.mfRZfFVSev@wuerfel>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Value from st_sensors_set_drdy_int_pin() is assigned to err here,
-but that stored value is not used before it is overwritten.  To fix
-this we're enforcing a check on st_sensors_set_drdy_int_pin()'s
-return value and if it's an error, we're returning right away.
 
-Cc: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Ceasar and Arnd,
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 8a4ec00..24cfe4e 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -306,8 +306,11 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	if (of_pdata)
- 		pdata = of_pdata;
- 
--	if (pdata)
-+	if (pdata) {
- 		err = st_sensors_set_drdy_int_pin(indio_dev, pdata);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	err = st_sensors_set_enable(indio_dev, false);
- 	if (err < 0)
--- 
-1.9.1
+On Thu, Aug 28, 2014 at 10:48:23AM +0200, Arnd Bergmann wrote:
+> On Thursday 28 August 2014 08:59:19 Caesar Wang wrote:
+> > Thermal is TS-ADC Controller module supports user-defined mode and automatic mode.
+> > 
+> > User-defined mode refers,TSADC all the control signals entirely by software
+> > writing to register for direct control.
+> > 
+> > Automaic mode refers to the module automatically poll TSADC output,and the results
+> > Were checked.
+> > 
+> > If you find that the temperature High in a period of time, an interrupt is generated
+> > to the processor down-measures taken;if the temperature over a period of time High,
+> > the resulting TSHUT gave CRU module,let it reset the entire chip, or via GPIO give PMIC.
+> > 
+> > Signed-off-by: zhaoyifeng <zyf@rock-chips.com>
+> > Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+> 
+> Hi Caesar,
+> 
+> After looking at the driver (last time I only received the patch for
+> the binding), I have a more general comment:
+> 
+> This looks like a general-purpose ADC device, not an IP block that is
+> specific to thermal management. The binding looks ok for that purpose
+> but should probably be moved into Documentation/devicetree/bindings/iio/adc/
+> as a minor change.
+> 
 
+I agree with Arnd's point here. It makes sense to me to have this driver
+under the IIO umbrella. 
+
+> On the driver side, I believe the correct way to deal with this setup
+> is to split your driver into a generic drivers/iio/adc/rockchips-tsadc.c
+> file, and a smaller thermal driver that uses the iio in-kernel interfaces,
+> ideally one that is independent of the underlying hardware and can
+> work on any ADC implementation.
+> 
+
+Agreed. If you can write such interface and make your driver to work in
+such way, that would be great.
+
+> I've put the IIO maintainer on Cc in this mail, maybe Jonathan or someone
+> else on the linux-iio mailing list has some extra insight.
+> 
+> 	Arnd
+
+
+Cheers,
+
+Eduardo
