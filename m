@@ -1,512 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.109]:31512 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S934503AbaH1Kza (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 06:55:30 -0400
-Message-ID: <619abd3b3123933487b3e8e9cdc7cdca70bbfd98.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Thu, 28 Aug 2014 11:48:57 +0100
-Subject: [PATCH v2 3/7] iio: Add support for DA9150 GPADC
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	<devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+Received: from mail-la0-f44.google.com ([209.85.215.44]:41764 "EHLO
+	mail-la0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752574AbaH2LjV convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Aug 2014 07:39:21 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <2014082909531345696848@rock-chips.com>
+References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com>
+	<2852853.mfRZfFVSev@wuerfel>
+	<20140828143733.GA18084@developer>
+	<3440260.edal29kzlR@diego>
+	<2014082909531345696848@rock-chips.com>
+Date: Fri, 29 Aug 2014 07:39:19 -0400
+Message-ID: <CAC-25o-winy6jVjh9_hQ-t2VO2UfxG67pW5DpOve8A2o39EJSw@mail.gmail.com>
+Subject: Re: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
+From: "edubezval@gmail.com" <edubezval@gmail.com>
+To: =?UTF-8?B?6LW15Luq5bOw?= <zyf@rock-chips.com>
+Cc: =?UTF-8?Q?HeikoSt=C3=BCbner?= <heiko@sntech.de>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Caesar Wang <caesar.wang@rock-chips.com>,
+	"rui.zhang" <rui.zhang@intel.com>,
+	"grant.likely" <grant.likely@linaro.org>,
+	"robh+dt" <robh+dt@kernel.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	linux-pm <linux-pm@vger.kernel.org>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	devicetree <devicetree@vger.kernel.org>,
+	linux-doc <linux-doc@vger.kernel.org>,
+	=?UTF-8?B?6buE5rab?= <huangtao@rock-chips.com>,
+	=?UTF-8?B?6JSh5p6r?= <cf@rock-chips.com>,
+	dianders <dianders@chromium.org>, dtor <dtor@chromium.org>,
+	=?UTF-8?B?6ZKf5YuH5rGq?= <zyw@rock-chips.com>,
+	"addy.ke@rock-chips.com" <addy.ke@rock-chips.com>,
+	"dmitry.torokhov" <dmitry.torokhov@gmail.com>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
+Hello Zhao,
 
-Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
----
- drivers/iio/adc/Kconfig        |   9 +
- drivers/iio/adc/Makefile       |   1 +
- drivers/iio/adc/da9150-gpadc.c | 430 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 440 insertions(+)
- create mode 100644 drivers/iio/adc/da9150-gpadc.c
+On Thu, Aug 28, 2014 at 9:54 PM, 赵仪峰 <zyf@rock-chips.com> wrote:
+> Hi Heiko，
+>
+>    The TS-ADC on RK3288 has two component, a tsadc and a tsadc controller.
+> The tsadc controller is similar like the thermal manager unit on other SOCs.
+> We followed the naming of 3066, but not named as the Thermal Manager.
+>
+>    Moreover,there is only one set of apb registers to access the tsadc
+> controller,and the tsadc is controlled by the tsadc controller,could not
+> access directly. If we write a general tsadc driver by accessed tsadc
+> controller registers, and it hardly to write a driver for the tsadc
+> controller.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 11b048a..8041347 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -127,6 +127,15 @@ config AT91_ADC
- 	help
- 	  Say yes here to build support for Atmel AT91 ADC.
+As suggested by Arnd, you can use the generic driver as interface
+between thermal framework and IIO layer. The driver you are going to
+write to your ADC is going to be in the IIO subsystem. The only
+difference is that the generic driver would work for any ADC driver in
+the IIO subsystem.
+https://lkml.org/lkml/2014/2/5/810
 
-+config DA9150_GPADC
-+	tristate "Dialog DA9150 GPADC driver support"
-+	depends on MFD_DA9150
-+	help
-+	  Say yes here to build support for Dialog DA9150 GPADC.
-+
-+	  This driver can also be built as a module. If chosen, the module name
-+	  will be da9150-gpadc.
-+
- config EXYNOS_ADC
- 	tristate "Exynos ADC driver support"
- 	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ad81b51..48413d2 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AD799X) += ad799x.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-+obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1027) += max1027.o
-diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
-new file mode 100644
-index 0000000..21a21a9
---- /dev/null
-+++ b/drivers/iio/adc/da9150-gpadc.c
-@@ -0,0 +1,430 @@
-+/*
-+ * DA9150 GPADC Driver
-+ *
-+ * Copyright (c) 2014 Dialog Semiconductor
-+ *
-+ * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-+ *
-+ * This program is free software; you can redistribute  it and/or modify it
-+ * under  the terms of  the GNU General  Public License as published by the
-+ * Free Software Foundation;  either version 2 of the  License, or (at your
-+ * option) any later version.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/interrupt.h>
-+
-+#include <linux/mfd/da9150/core.h>
-+#include <linux/mfd/da9150/pdata.h>
-+#include <linux/mfd/da9150/registers.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/machine.h>
-+#include <linux/iio/driver.h>
-+
-+
-+/* Channels */
-+enum da9150_gpadc_hw_channel {
-+	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
-+	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
-+	DA9150_GPADC_HW_CHAN_GPIOB_2V,
-+	DA9150_GPADC_HW_CHAN_GPIOB_2V_,
-+	DA9150_GPADC_HW_CHAN_GPIOC_2V,
-+	DA9150_GPADC_HW_CHAN_GPIOC_2V_,
-+	DA9150_GPADC_HW_CHAN_GPIOD_2V,
-+	DA9150_GPADC_HW_CHAN_GPIOD_2V_,
-+	DA9150_GPADC_HW_CHAN_IBUS_SENSE,
-+	DA9150_GPADC_HW_CHAN_IBUS_SENSE_,
-+	DA9150_GPADC_HW_CHAN_VBUS_DIV,
-+	DA9150_GPADC_HW_CHAN_VBUS_DIV_,
-+	DA9150_GPADC_HW_CHAN_ID,
-+	DA9150_GPADC_HW_CHAN_ID_,
-+	DA9150_GPADC_HW_CHAN_VSYS,
-+	DA9150_GPADC_HW_CHAN_VSYS_,
-+	DA9150_GPADC_HW_CHAN_GPIOA_5V,
-+	DA9150_GPADC_HW_CHAN_GPIOA_5V_,
-+	DA9150_GPADC_HW_CHAN_GPIOB_5V,
-+	DA9150_GPADC_HW_CHAN_GPIOB_5V_,
-+	DA9150_GPADC_HW_CHAN_GPIOC_5V,
-+	DA9150_GPADC_HW_CHAN_GPIOC_5V_,
-+	DA9150_GPADC_HW_CHAN_GPIOD_5V,
-+	DA9150_GPADC_HW_CHAN_GPIOD_5V_,
-+	DA9150_GPADC_HW_CHAN_VBAT,
-+	DA9150_GPADC_HW_CHAN_VBAT_,
-+	DA9150_GPADC_HW_CHAN_TBAT,
-+	DA9150_GPADC_HW_CHAN_TBAT_,
-+	DA9150_GPADC_HW_CHAN_TJUNC_CORE,
-+	DA9150_GPADC_HW_CHAN_TJUNC_CORE_,
-+	DA9150_GPADC_HW_CHAN_TJUNC_OVP,
-+	DA9150_GPADC_HW_CHAN_TJUNC_OVP_,
-+};
-+
-+enum da9150_gpadc_channel {
-+	DA9150_GPADC_CHAN_GPIOA = 0,
-+	DA9150_GPADC_CHAN_GPIOB,
-+	DA9150_GPADC_CHAN_GPIOC,
-+	DA9150_GPADC_CHAN_GPIOD,
-+	DA9150_GPADC_CHAN_IBUS,
-+	DA9150_GPADC_CHAN_VBUS,
-+	DA9150_GPADC_CHAN_ID,
-+	DA9150_GPADC_CHAN_VSYS,
-+	DA9150_GPADC_CHAN_VBAT,
-+	DA9150_GPADC_CHAN_TBAT,
-+	DA9150_GPADC_CHAN_TJUNC_CORE,
-+	DA9150_GPADC_CHAN_TJUNC_OVP,
-+};
-+
-+/* Private data */
-+struct da9150_gpadc {
-+	struct da9150 *da9150;
-+	struct device *dev;
-+
-+	struct mutex lock;
-+	struct completion complete;
-+};
-+
-+
-+static irqreturn_t da9150_gpadc_irq(int irq, void *data)
-+{
-+
-+	struct da9150_gpadc *gpadc = data;
-+
-+	complete(&gpadc->complete);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
-+{
-+	u8 result_regs[2];
-+	int result;
-+
-+	mutex_lock(&gpadc->lock);
-+
-+	/* Set channel & enable measurement */
-+	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
-+			 (DA9150_GPADC_EN_MASK |
-+			  hw_chan << DA9150_GPADC_MUX_SHIFT));
-+
-+	/* Consume left-over completion from a previous timeout */
-+	try_wait_for_completion(&gpadc->complete);
-+
-+	/* Check for actual completion */
-+	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
-+
-+	/* Read result and status from device */
-+	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
-+
-+	mutex_unlock(&gpadc->lock);
-+
-+	/* Check to make sure device really has completed reading */
-+	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
-+		dev_err(gpadc->dev, "Timeout on channel %d of GP-ADC\n",
-+			hw_chan);
-+		return -ETIMEDOUT;
-+	}
-+
-+	/* LSBs - 2 bits */
-+	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
-+		 DA9150_GPADC_RES_L_SHIFT;
-+	/* MSBs - 8 bits */
-+	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
-+
-+	return result;
-+}
-+
-+static inline int da9150_gpadc_gpio_5v_voltage_now(int raw_val)
-+{
-+	/* Convert to uV */
-+	return (((6 * ((raw_val * 1000) + 500)) / 1024) * 1000);
-+}
-+
-+static inline int da9150_gpadc_ibus_current_avg(int raw_val)
-+{
-+	/* Convert to uA */
-+	return (((4 * ((raw_val * 1000) + 500)) / 2048) * 1000);
-+}
-+
-+static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
-+{
-+	/* Convert to uV */
-+	return (((21 * ((raw_val * 1000) + 500)) / 1024) * 1000);
-+}
-+
-+static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
-+{
-+	/* Convert to uV */
-+	return (((3 * ((raw_val * 1000) + 500)) / 512) * 1000);
-+}
-+
-+static inline int da9150_gpadc_tjunc_temp(int raw_val)
-+{
-+	/* Convert to 0.1 degrees C */
-+	return (((879 - (1023 - raw_val)) * 10000) / 4420);
-+}
-+
-+static inline int da9150_gpadc_vbat_voltage_now(int raw_val)
-+{
-+	/* Convert to uV */
-+	return ((2932 * raw_val) + 1500000);
-+}
-+
-+int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
-+				int hw_chan)
-+{
-+	int raw_val, ret;
-+
-+	raw_val = da9150_gpadc_read_adc(gpadc, hw_chan);
-+	if (raw_val < 0)
-+		return raw_val;
-+
-+	switch (channel) {
-+	case DA9150_GPADC_CHAN_GPIOA:
-+	case DA9150_GPADC_CHAN_GPIOB:
-+	case DA9150_GPADC_CHAN_GPIOC:
-+	case DA9150_GPADC_CHAN_GPIOD:
-+		ret = da9150_gpadc_gpio_5v_voltage_now(raw_val);
-+		break;
-+	case DA9150_GPADC_CHAN_IBUS:
-+		ret = da9150_gpadc_ibus_current_avg(raw_val);
-+		break;
-+	case DA9150_GPADC_CHAN_VBUS:
-+		ret = da9150_gpadc_vbus_21v_voltage_now(raw_val);
-+		break;
-+	case DA9150_GPADC_CHAN_VSYS:
-+		ret = da9150_gpadc_vsys_6v_voltage_now(raw_val);
-+		break;
-+	case DA9150_GPADC_CHAN_TJUNC_CORE:
-+	case DA9150_GPADC_CHAN_TJUNC_OVP:
-+		ret = da9150_gpadc_tjunc_temp(raw_val);
-+		break;
-+	default:
-+		/* No processing for other channels so return raw value */
-+		ret = raw_val;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+int da9150_gpadc_read_scale(int channel)
-+{
-+	int ret;
-+
-+	switch (channel) {
-+	case DA9150_GPADC_CHAN_VBAT:
-+		ret = 2932;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+int da9150_gpadc_read_offset(int channel)
-+{
-+	int ret;
-+
-+	switch (channel) {
-+	case DA9150_GPADC_CHAN_VBAT:
-+		ret = 1500000 / 2932;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val, int *val2, long mask)
-+{
-+	struct da9150_gpadc *gpadc = iio_priv(indio_dev);
-+	int ret;
-+
-+	if ((chan->channel < DA9150_GPADC_CHAN_GPIOA) ||
-+	    (chan->channel > DA9150_GPADC_CHAN_TJUNC_OVP))
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = da9150_gpadc_read_processed(gpadc, chan->channel,
-+						  chan->address);
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = da9150_gpadc_read_scale(chan->channel);
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		ret = da9150_gpadc_read_offset(chan->channel);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = ret;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static const struct iio_info da9150_gpadc_info = {
-+	.read_raw = &da9150_gpadc_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define GPADC_CHANNEL(_id, _hw_id, _type, chan_info, _ext_name) {	\
-+	.type = _type,							\
-+	.indexed = 1,							\
-+	.channel = DA9150_GPADC_CHAN_##_id,				\
-+	.address = DA9150_GPADC_HW_CHAN_##_hw_id,			\
-+	.info_mask_separate = chan_info,				\
-+	.extend_name = _ext_name,					\
-+	.datasheet_name = #_id,						\
-+}
-+
-+#define GPADC_CHANNEL_RAW(_id, _hw_id, _type, _ext_name)	\
-+	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_RAW), _ext_name)
-+
-+#define GPADC_CHANNEL_SCALED(_id, _hw_id, _type, _ext_name)	\
-+	GPADC_CHANNEL(_id, _hw_id, _type,			\
-+		      BIT(IIO_CHAN_INFO_RAW) |			\
-+		      BIT(IIO_CHAN_INFO_SCALE) |		\
-+		      BIT(IIO_CHAN_INFO_OFFSET),		\
-+		      _ext_name)
-+
-+#define GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)		\
-+	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_PROCESSED),	\
-+		      _ext_name)
-+
-+/* Supported channels */
-+static const struct iio_chan_spec da9150_gpadc_channels[] = {
-+	GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_5V, IIO_VOLTAGE, "GPIOA"),
-+	GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_5V, IIO_VOLTAGE, "GPIOB"),
-+	GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_5V, IIO_VOLTAGE, "GPIOC"),
-+	GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_5V, IIO_VOLTAGE, "GPIOD"),
-+	GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT, "IBUS"),
-+	GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE, "VBUS"),
-+	GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
-+	GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
-+	GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
-+	GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
-+	GPADC_CHANNEL_PROCESSED(TJUNC_CORE, TJUNC_CORE, IIO_TEMP, "TJUNC_CORE"),
-+	GPADC_CHANNEL_PROCESSED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP, "TJUNC_OVP"),
-+};
-+
-+/* Default maps used by da9150-charger */
-+static struct iio_map da9150_gpadc_default_maps[] = {
-+	{
-+		.consumer_dev_name = "da9150-charger",
-+		.consumer_channel = "CHAN_IBUS",
-+		.adc_channel_label = "IBUS",
-+	},
-+	{
-+		.consumer_dev_name = "da9150-charger",
-+		.consumer_channel = "CHAN_VBUS",
-+		.adc_channel_label = "VBUS",
-+	},
-+	{
-+		.consumer_dev_name = "da9150-charger",
-+		.consumer_channel = "CHAN_TJUNC",
-+		.adc_channel_label = "TJUNC_CORE",
-+	},
-+	{
-+		.consumer_dev_name = "da9150-charger",
-+		.consumer_channel = "CHAN_VBAT",
-+		.adc_channel_label = "VBAT",
-+	},
-+	{},
-+};
-+
-+static int da9150_gpadc_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
-+	struct da9150_gpadc *gpadc;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev,
-+					  sizeof(struct da9150_gpadc));
-+	if (!indio_dev) {
-+		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
-+		return -ENOMEM;
-+	}
-+	gpadc = iio_priv(indio_dev);
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+	gpadc->da9150 = da9150;
-+	gpadc->dev = dev;
-+
-+	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
-+	if (ret) {
-+		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
-+		goto iio_map_fail;
-+	}
-+
-+	mutex_init(&gpadc->lock);
-+	init_completion(&gpadc->complete);
-+
-+	/* Register IRQ */
-+	ret = da9150_register_irq(pdev, gpadc, da9150_gpadc_irq, "GPADC");
-+	if (ret < 0)
-+		goto irq_fail;
-+
-+	indio_dev->name = dev_name(dev);
-+	indio_dev->dev.parent = dev;
-+	indio_dev->dev.of_node = pdev->dev.of_node;
-+	indio_dev->info = &da9150_gpadc_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = da9150_gpadc_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(dev, "Failed to register IIO device: %d\n", ret);
-+		goto iio_dev_fail;
-+	}
-+
-+	return ret;
-+
-+iio_dev_fail:
-+irq_fail:
-+	iio_map_array_unregister(indio_dev);
-+
-+iio_map_fail:
-+	return ret;
-+}
-+
-+static int da9150_gpadc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	iio_map_array_unregister(indio_dev);
-+	iio_device_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver da9150_gpadc_driver = {
-+	.driver = {
-+		.name = "da9150-gpadc",
-+		.owner = THIS_MODULE,
-+	},
-+	.probe = da9150_gpadc_probe,
-+	.remove = da9150_gpadc_remove,
-+};
-+
-+module_platform_driver(da9150_gpadc_driver);
-+
-+MODULE_DESCRIPTION("GPADC Driver for DA9150");
-+MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com");
-+MODULE_LICENSE("GPL");
---
-1.9.3
+In fact, there is already a generic driver. We just need to get it up
+to date.  I see some testing has been already done, and results sound
+promising.
 
+>
+>    So, I do not agree to write a generic adc driver for the rk3288-tsadc.
+>
+> ________________________________
+> Yifeng Zhao
+>
+> 发件人： HeikoStübner
+> 发送时间： 2014-08-29 00:11
+> 收件人： Eduardo Valentin
+> 抄送： Arnd Bergmann; Caesar Wang; rui.zhang; grant.likely; robh+dt;
+> linux-kernel; linux-pm; linux-arm-kernel; devicetree; linux-doc; huangtao;
+> cf; dianders; dtor; zyw; addy.ke; dmitry.torokhov; zhaoyifeng; linux-iio;
+> Jonathan Cameron
+> 主题： Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
+>
+> Am Donnerstag, 28. August 2014, 10:37:35 schrieb Eduardo Valentin:
+>> Ceasar and Arnd,
+>>
+>> On Thu, Aug 28, 2014 at 10:48:23AM +0200, Arnd Bergmann wrote:
+>> > On Thursday 28 August 2014 08:59:19 Caesar Wang wrote:
+>> > > Thermal is TS-ADC Controller module supports user-defined mode and
+>> > > automatic mode.
+>> > >
+>> > > User-defined mode refers,TSADC all the control signals entirely by
+>> > > software
+>> > > writing to register for direct control.
+>> > >
+>> > > Automaic mode refers to the module automatically poll TSADC output,and
+>> > > the results Were checked.
+>> > >
+>> > > If you find that the temperature High in a period of time, an
+>> > > interrupt
+>> > > is generated to the processor down-measures taken;if the temperature
+>> > > over a period of time High, the resulting TSHUT gave CRU module,let it
+>> > > reset the entire chip, or via GPIO give PMIC.
+>> > >
+>> > > Signed-off-by: zhaoyifeng <zyf@rock-chips.com>
+>> > > Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+>> >
+>> > Hi Caesar,
+>> >
+>> > After looking at the driver (last time I only received the patch for
+>> > the binding), I have a more general comment:
+>> >
+>> > This looks like a general-purpose ADC device, not an IP block that is
+>> > specific to thermal management. The binding looks ok for that purpose
+>> > but should probably be moved into
+>> > Documentation/devicetree/bindings/iio/adc/ as a minor change.
+>>
+>> I agree with Arnd's point here. It makes sense to me to have this driver
+>> under the IIO umbrella.
+>
+> interesting suggestion :-)
+>
+> I've just taken another look at the registers of the ts-adc on the rk3066
+> which is completely different from the rk3288 one. Interestingly the rk3066
+> one
+> is "just" another saradc IP, so for this one it would really make sense.
+>
+>
+>> > On the driver side, I believe the correct way to deal with this setup
+>> > is to split your driver into a generic drivers/iio/adc/rockchips-tsadc.c
+>> > file, and a smaller thermal driver that uses the iio in-kernel
+>> > interfaces,
+>> > ideally one that is independent of the underlying hardware and can
+>> > work on any ADC implementation.
+>>
+>> Agreed. If you can write such interface and make your driver to work in
+>> such way, that would be great.
+>
+> But I currently don't see how you would model the temperature handling parts
+> from a generic thermal driver to a generic adc driver for the rk3288-tsadc.
+>
+> I guess the general temperature irq handling would use iio-triggers? But how
+> does the target temperature get into the TSADC_COMP1_INT register.
+>
+> Also when getting the temperature, Caesar's driver compares it to its trip
+> points and sets the next trip point depending on the current temperature
+> (passive <-> critical) in rockchip_get_temp.
+>
+> Maybe there is some completely easy way for this, but currently I don't see
+> it.
+>
+>
+> Heiko
+>
+>
+
+
+
+-- 
+Eduardo Bezerra Valentin
