@@ -1,459 +1,224 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60945 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751152AbaH3KyL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:54:11 -0400
-Message-ID: <5401AD4D.3060607@kernel.org>
-Date: Sat, 30 Aug 2014 11:54:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Laurentiu Palcu <laurentiu.palcu@intel.com>,
-	linux-iio@vger.kernel.org
-CC: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: accel: BMC150: add support for other Bosch
- chips
-References: <1409301488-22166-1-git-send-email-laurentiu.palcu@intel.com> <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
-In-Reply-To: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <zyf@rock-chips.com>
+Date: Fri, 29 Aug 2014 09:54:14 +0800
+From: =?utf-8?B?6LW15Luq5bOw?= <zyf@rock-chips.com>
+To: =?utf-8?B?SGVpa29TdMO8Ym5lcg==?= <heiko@sntech.de>,
+	"Eduardo Valentin" <edubezval@gmail.com>
+Cc: "Arnd Bergmann" <arnd@arndb.de>,
+	"Caesar Wang" <caesar.wang@rock-chips.com>,
+	rui.zhang <rui.zhang@intel.com>,
+	grant.likely <grant.likely@linaro.org>,
+	robh+dt <robh+dt@kernel.org>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	linux-pm <linux-pm@vger.kernel.org>,
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+	devicetree <devicetree@vger.kernel.org>,
+	linux-doc <linux-doc@vger.kernel.org>,
+	=?utf-8?B?6buE5rab?= <huangtao@rock-chips.com>,
+	=?utf-8?B?6JSh5p6r?= <cf@rock-chips.com>,
+	dianders <dianders@chromium.org>,
+	dtor <dtor@chromium.org>,
+	=?utf-8?B?6ZKf5YuH5rGq?= <zyw@rock-chips.com>,
+	"addy.ke@rock-chips.com" <addy.ke@rock-chips.com>,
+	dmitry.torokhov <dmitry.torokhov@gmail.com>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	"Jonathan Cameron" <jic23@kernel.org>
+Subject: Re: Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal
+References: <1409187562-12370-1-git-send-email-caesar.wang@rock-chips.com>,
+	<2852853.mfRZfFVSev@wuerfel>,
+	<20140828143733.GA18084@developer>,
+	<3440260.edal29kzlR@diego>
+Mime-Version: 1.0
+Message-ID: <2014082909531345696848@rock-chips.com>
+Content-Type: multipart/alternative;
+	boundary="----=_001_NextPart620851250586_=----"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 29/08/14 09:38, Laurentiu Palcu wrote:
-> The following chips are either similar or have only the resolution
-> different. Hence, change this driver to support these chips too:
->
-> BMI055  - combo chip (accelerometer part is identical to BMC150's)
-> BMA255  - identical to BMC150's accelerometer
-> BMA222E - 8 bit resolution
-> BMA250E - 10 bit resolution
-> BMA280  - 14 bit resolution
->
-> Additionally:
->  * add bmc150_accel_match_acpi_device() function to check that the device
->    has been enumerated through ACPI;
->  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
->    since the ACPI matching has been moved to the new function.  Also, this
->    will allow for the GPIO matching to be done against a device tree too, not only
->    ACPI tree;
->
-A few minor bits and more const char * casting to char * and back again that
-needs looking at.  As it's Srinivas' driver, I'd like an ack from him if
-possible.
+This is a multi-part message in MIME format.
 
-I'm lazy so didn't actually check all those scale values etc :)
+------=_001_NextPart620851250586_=----
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Thanks,
+SGkgSGVpa2/vvIwNCg0KICAgVGhlIFRTLUFEQyBvbiBSSzMyODggaGFzIHR3byBjb21wb25lbnQs
+IGEgdHNhZGMgYW5kIGEgdHNhZGMgY29udHJvbGxlci4gVGhlIHRzYWRjIGNvbnRyb2xsZXIgaXMg
+c2ltaWxhciBsaWtlIHRoZSB0aGVybWFsIG1hbmFnZXIgdW5pdCBvbiBvdGhlciBTT0NzLiBXZSBm
+b2xsb3dlZCB0aGUgbmFtaW5nIG9mIDMwNjYsIGJ1dCBub3QgbmFtZWQgYXMgdGhlIFRoZXJtYWwg
+TWFuYWdlci4gDQoNCiAgIE1vcmVvdmVyLHRoZXJlIGlzIG9ubHkgb25lIHNldCBvZiBhcGIgcmVn
+aXN0ZXJzIHRvIGFjY2VzcyB0aGUgdHNhZGMgY29udHJvbGxlcixhbmQgdGhlIHRzYWRjIGlzIGNv
+bnRyb2xsZWQgYnkgdGhlIHRzYWRjIGNvbnRyb2xsZXIsY291bGQgbm90IGFjY2VzcyBkaXJlY3Rs
+eS4gSWYgd2Ugd3JpdGUgYSBnZW5lcmFsIHRzYWRjIGRyaXZlciBieSBhY2Nlc3NlZCB0c2FkYyBj
+b250cm9sbGVyIHJlZ2lzdGVycywgYW5kIGl0IGhhcmRseSB0byB3cml0ZSBhIGRyaXZlciBmb3Ig
+dGhlIHRzYWRjIGNvbnRyb2xsZXIuIA0KDQogICBTbywgSSBkbyBub3QgYWdyZWUgdG8gd3JpdGUg
+YSBnZW5lcmljIGFkYyBkcml2ZXIgZm9yIHRoZSByazMyODgtdHNhZGMuDQoNCg0KDQpZaWZlbmcg
+Wmhhbw0KIA0K5Y+R5Lu25Lq677yaIEhlaWtvU3TDvGJuZXINCuWPkemAgeaXtumXtO+8miAyMDE0
+LTA4LTI5IDAwOjExDQrmlLbku7bkurrvvJogRWR1YXJkbyBWYWxlbnRpbg0K5oqE6YCB77yaIEFy
+bmQgQmVyZ21hbm47IENhZXNhciBXYW5nOyBydWkuemhhbmc7IGdyYW50Lmxpa2VseTsgcm9iaCtk
+dDsgbGludXgta2VybmVsOyBsaW51eC1wbTsgbGludXgtYXJtLWtlcm5lbDsgZGV2aWNldHJlZTsg
+bGludXgtZG9jOyBodWFuZ3RhbzsgY2Y7IGRpYW5kZXJzOyBkdG9yOyB6eXc7IGFkZHkua2U7IGRt
+aXRyeS50b3Jva2hvdjsgemhhb3lpZmVuZzsgbGludXgtaWlvOyBKb25hdGhhbiBDYW1lcm9uDQrk
+uLvpopjvvJogUmU6IFtQQVRDSCB2MyAxLzRdIHRoZXJtYWw6IHJvY2tjaGlwOiBhZGQgZHJpdmVy
+IGZvciB0aGVybWFsDQogDQpBbSBEb25uZXJzdGFnLCAyOC4gQXVndXN0IDIwMTQsIDEwOjM3OjM1
+IHNjaHJpZWIgRWR1YXJkbyBWYWxlbnRpbjoNCj4gQ2Vhc2FyIGFuZCBBcm5kLA0KPiANCj4gT24g
+VGh1LCBBdWcgMjgsIDIwMTQgYXQgMTA6NDg6MjNBTSArMDIwMCwgQXJuZCBCZXJnbWFubiB3cm90
+ZToNCj4gPiBPbiBUaHVyc2RheSAyOCBBdWd1c3QgMjAxNCAwODo1OToxOSBDYWVzYXIgV2FuZyB3
+cm90ZToNCj4gPiA+IFRoZXJtYWwgaXMgVFMtQURDIENvbnRyb2xsZXIgbW9kdWxlIHN1cHBvcnRz
+IHVzZXItZGVmaW5lZCBtb2RlIGFuZA0KPiA+ID4gYXV0b21hdGljIG1vZGUuDQo+ID4gPiANCj4g
+PiA+IFVzZXItZGVmaW5lZCBtb2RlIHJlZmVycyxUU0FEQyBhbGwgdGhlIGNvbnRyb2wgc2lnbmFs
+cyBlbnRpcmVseSBieQ0KPiA+ID4gc29mdHdhcmUNCj4gPiA+IHdyaXRpbmcgdG8gcmVnaXN0ZXIg
+Zm9yIGRpcmVjdCBjb250cm9sLg0KPiA+ID4gDQo+ID4gPiBBdXRvbWFpYyBtb2RlIHJlZmVycyB0
+byB0aGUgbW9kdWxlIGF1dG9tYXRpY2FsbHkgcG9sbCBUU0FEQyBvdXRwdXQsYW5kDQo+ID4gPiB0
+aGUgcmVzdWx0cyBXZXJlIGNoZWNrZWQuDQo+ID4gPiANCj4gPiA+IElmIHlvdSBmaW5kIHRoYXQg
+dGhlIHRlbXBlcmF0dXJlIEhpZ2ggaW4gYSBwZXJpb2Qgb2YgdGltZSwgYW4gaW50ZXJydXB0DQo+
+ID4gPiBpcyBnZW5lcmF0ZWQgdG8gdGhlIHByb2Nlc3NvciBkb3duLW1lYXN1cmVzIHRha2VuO2lm
+IHRoZSB0ZW1wZXJhdHVyZQ0KPiA+ID4gb3ZlciBhIHBlcmlvZCBvZiB0aW1lIEhpZ2gsIHRoZSBy
+ZXN1bHRpbmcgVFNIVVQgZ2F2ZSBDUlUgbW9kdWxlLGxldCBpdA0KPiA+ID4gcmVzZXQgdGhlIGVu
+dGlyZSBjaGlwLCBvciB2aWEgR1BJTyBnaXZlIFBNSUMuDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1v
+ZmYtYnk6IHpoYW95aWZlbmcgPHp5ZkByb2NrLWNoaXBzLmNvbT4NCj4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IENhZXNhciBXYW5nIDxjYWVzYXIud2FuZ0Byb2NrLWNoaXBzLmNvbT4NCj4gPiANCj4gPiBI
+aSBDYWVzYXIsDQo+ID4gDQo+ID4gQWZ0ZXIgbG9va2luZyBhdCB0aGUgZHJpdmVyIChsYXN0IHRp
+bWUgSSBvbmx5IHJlY2VpdmVkIHRoZSBwYXRjaCBmb3INCj4gPiB0aGUgYmluZGluZyksIEkgaGF2
+ZSBhIG1vcmUgZ2VuZXJhbCBjb21tZW50Og0KPiA+IA0KPiA+IFRoaXMgbG9va3MgbGlrZSBhIGdl
+bmVyYWwtcHVycG9zZSBBREMgZGV2aWNlLCBub3QgYW4gSVAgYmxvY2sgdGhhdCBpcw0KPiA+IHNw
+ZWNpZmljIHRvIHRoZXJtYWwgbWFuYWdlbWVudC4gVGhlIGJpbmRpbmcgbG9va3Mgb2sgZm9yIHRo
+YXQgcHVycG9zZQ0KPiA+IGJ1dCBzaG91bGQgcHJvYmFibHkgYmUgbW92ZWQgaW50bw0KPiA+IERv
+Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjLyBhcyBhIG1pbm9yIGNoYW5n
+ZS4NCj4gDQo+IEkgYWdyZWUgd2l0aCBBcm5kJ3MgcG9pbnQgaGVyZS4gSXQgbWFrZXMgc2Vuc2Ug
+dG8gbWUgdG8gaGF2ZSB0aGlzIGRyaXZlcg0KPiB1bmRlciB0aGUgSUlPIHVtYnJlbGxhLg0KIA0K
+aW50ZXJlc3Rpbmcgc3VnZ2VzdGlvbiA6LSkNCiANCkkndmUganVzdCB0YWtlbiBhbm90aGVyIGxv
+b2sgYXQgdGhlIHJlZ2lzdGVycyBvZiB0aGUgdHMtYWRjIG9uIHRoZSByazMwNjYgDQp3aGljaCBp
+cyBjb21wbGV0ZWx5IGRpZmZlcmVudCBmcm9tIHRoZSByazMyODggb25lLiBJbnRlcmVzdGluZ2x5
+IHRoZSByazMwNjYgb25lIA0KaXMgImp1c3QiIGFub3RoZXIgc2FyYWRjIElQLCBzbyBmb3IgdGhp
+cyBvbmUgaXQgd291bGQgcmVhbGx5IG1ha2Ugc2Vuc2UuDQogDQogDQo+ID4gT24gdGhlIGRyaXZl
+ciBzaWRlLCBJIGJlbGlldmUgdGhlIGNvcnJlY3Qgd2F5IHRvIGRlYWwgd2l0aCB0aGlzIHNldHVw
+DQo+ID4gaXMgdG8gc3BsaXQgeW91ciBkcml2ZXIgaW50byBhIGdlbmVyaWMgZHJpdmVycy9paW8v
+YWRjL3JvY2tjaGlwcy10c2FkYy5jDQo+ID4gZmlsZSwgYW5kIGEgc21hbGxlciB0aGVybWFsIGRy
+aXZlciB0aGF0IHVzZXMgdGhlIGlpbyBpbi1rZXJuZWwgaW50ZXJmYWNlcywNCj4gPiBpZGVhbGx5
+IG9uZSB0aGF0IGlzIGluZGVwZW5kZW50IG9mIHRoZSB1bmRlcmx5aW5nIGhhcmR3YXJlIGFuZCBj
+YW4NCj4gPiB3b3JrIG9uIGFueSBBREMgaW1wbGVtZW50YXRpb24uDQo+IA0KPiBBZ3JlZWQuIElm
+IHlvdSBjYW4gd3JpdGUgc3VjaCBpbnRlcmZhY2UgYW5kIG1ha2UgeW91ciBkcml2ZXIgdG8gd29y
+ayBpbg0KPiBzdWNoIHdheSwgdGhhdCB3b3VsZCBiZSBncmVhdC4NCiANCkJ1dCBJIGN1cnJlbnRs
+eSBkb24ndCBzZWUgaG93IHlvdSB3b3VsZCBtb2RlbCB0aGUgdGVtcGVyYXR1cmUgaGFuZGxpbmcg
+cGFydHMgDQpmcm9tIGEgZ2VuZXJpYyB0aGVybWFsIGRyaXZlciB0byBhIGdlbmVyaWMgYWRjIGRy
+aXZlciBmb3IgdGhlIHJrMzI4OC10c2FkYy4NCiANCkkgZ3Vlc3MgdGhlIGdlbmVyYWwgdGVtcGVy
+YXR1cmUgaXJxIGhhbmRsaW5nIHdvdWxkIHVzZSBpaW8tdHJpZ2dlcnM/IEJ1dCBob3cgDQpkb2Vz
+IHRoZSB0YXJnZXQgdGVtcGVyYXR1cmUgZ2V0IGludG8gdGhlIFRTQURDX0NPTVAxX0lOVCByZWdp
+c3Rlci4NCiANCkFsc28gd2hlbiBnZXR0aW5nIHRoZSB0ZW1wZXJhdHVyZSwgQ2Flc2FyJ3MgZHJp
+dmVyIGNvbXBhcmVzIGl0IHRvIGl0cyB0cmlwIA0KcG9pbnRzIGFuZCBzZXRzIHRoZSBuZXh0IHRy
+aXAgcG9pbnQgZGVwZW5kaW5nIG9uIHRoZSBjdXJyZW50IHRlbXBlcmF0dXJlIA0KKHBhc3NpdmUg
+PC0+IGNyaXRpY2FsKSBpbiByb2NrY2hpcF9nZXRfdGVtcC4NCiANCk1heWJlIHRoZXJlIGlzIHNv
+bWUgY29tcGxldGVseSBlYXN5IHdheSBmb3IgdGhpcywgYnV0IGN1cnJlbnRseSBJIGRvbid0IHNl
+ZSANCml0Lg0KIA0KIA0KSGVpa28NCiANCiANCg==
 
-Jonathan
+------=_001_NextPart620851250586_=----
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-> Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
-> ---
->  drivers/iio/accel/bmc150-accel.c | 229 ++++++++++++++++++++++++++++++---------
->  1 file changed, 176 insertions(+), 53 deletions(-)
->
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index 0e6566a..ffe619c 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -1,5 +1,12 @@
->  /*
-> - * BMC150 3-axis accelerometer driver
-> + * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
-> + *  - BMC150
-> + *  - BMI055
-> + *  - BMA255
-> + *  - BMA250E
-> + *  - BMA222E
-> + *  - BMA280
-> + *
->   * Copyright (c) 2014, Intel Corporation.
->   *
->   * This program is free software; you can redistribute it and/or modify it
-> @@ -35,6 +42,11 @@
->
->  #define BMC150_ACCEL_REG_CHIP_ID		0x00
->  #define BMC150_ACCEL_CHIP_ID_VAL		0xFA
-> +#define BMA255_ACCEL_CHIP_ID_VAL		0xFA
-> +#define BMI055_ACCEL_CHIP_ID_VAL		0xFA
-> +#define BMA222E_ACCEL_CHIP_ID_VAL		0xF8
-> +#define BMA250E_ACCEL_CHIP_ID_VAL		0xF9
-> +#define BMA280_ACCEL_CHIP_ID_VAL		0xFB
-These only turn up in one place and it's obvious what their meaning
-is there, so why not just put the id's directly into that table?
->
->  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
->  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
-> @@ -126,6 +138,18 @@ enum bmc150_power_modes {
->  	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
->  };
->
-> +struct bmc150_scale_info {
-> +	int scale;
-> +	int range;
-> +};
-> +
-> +struct bmc150_accel_chip_info {
-> +	u8 chip_id;
-> +	const struct iio_chan_spec *channels;
-> +	int num_channels;
-> +	const struct bmc150_scale_info scale_table[4];
-> +};
-> +
->  struct bmc150_accel_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *dready_trig;
-> @@ -140,6 +164,7 @@ struct bmc150_accel_data {
->  	bool dready_trigger_on;
->  	bool motion_trigger_on;
->  	int64_t timestamp;
-> +	const struct bmc150_accel_chip_info *chip_info;
->  };
->
->  static const struct {
-> @@ -168,14 +193,6 @@ static const struct {
->  				     {0x0F, 1} };
->
->  static const struct {
-> -	int scale;
-> -	int range;
-> -} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> -				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> -				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> -				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
-> -
-> -static const struct {
->  	int sleep_dur;
->  	int reg_value;
->  } bmc150_accel_sleep_value_table[] = { {0, 0},
-> @@ -267,7 +284,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->  	}
->
->  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> -	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
-> +	if (ret != data->chip_info->chip_id) {
->  		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
->  		return -ENODEV;
->  	}
-> @@ -541,19 +558,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
->  {
->  	int ret, i;
->
-> -	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
-> -		if (bmc150_accel_scale_table[i].scale == val) {
-> +	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
-> +		if (data->chip_info->scale_table[i].scale == val) {
->  			ret = i2c_smbus_write_byte_data(
->  					data->client,
->  					BMC150_ACCEL_REG_PMU_RANGE,
-> -					bmc150_accel_scale_table[i].range);
-> +					data->chip_info->scale_table[i].range);
->  			if (ret < 0) {
->  				dev_err(&data->client->dev,
->  					"Error writing pmu_range\n");
->  				return ret;
->  			}
->
-> -			data->range = bmc150_accel_scale_table[i].range;
-> +			data->range = data->chip_info->scale_table[i].range;
->  			return 0;
->  		}
->  	}
-> @@ -580,10 +597,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
->  	return IIO_VAL_INT;
->  }
->
-> -static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
-> +static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
-> +				 struct iio_chan_spec const *chan,
->  				 int *val)
->  {
->  	int ret;
-> +	int axis = chan->scan_index;
->
->  	mutex_lock(&data->mutex);
->  	ret = bmc150_accel_set_power_state(data, true);
-> @@ -600,7 +619,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
->  		mutex_unlock(&data->mutex);
->  		return ret;
->  	}
-> -	*val = sign_extend32(ret >> 4, 11);
-> +	*val = sign_extend32(ret >> chan->scan_type.shift,
-> +			     chan->scan_type.realbits - 1);
->  	ret = bmc150_accel_set_power_state(data, false);
->  	mutex_unlock(&data->mutex);
->  	if (ret < 0)
-> @@ -625,9 +645,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
->  			if (iio_buffer_enabled(indio_dev))
->  				return -EBUSY;
->  			else
-> -				return bmc150_accel_get_axis(data,
-> -							     chan->scan_index,
-> -							     val);
-> +				return bmc150_accel_get_axis(data, chan, val);
->  		default:
->  			return -EINVAL;
->  		}
-> @@ -647,12 +665,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
->  		{
->  			int i;
->
-> -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
-> -									 ++i) {
-> -				if (bmc150_accel_scale_table[i].range ==
-> +			for (i = 0;
-> +			     i < ARRAY_SIZE(data->chip_info->scale_table);
-> +			     ++i) {
-> +				if (data->chip_info->scale_table[i].range ==
->  								data->range) {
->  					*val2 =
-> -					bmc150_accel_scale_table[i].scale;
-> +					data->chip_info->scale_table[i].scale;
->  					return IIO_VAL_INT_PLUS_MICRO;
->  				}
->  			}
-> @@ -840,7 +859,7 @@ static const struct iio_event_spec bmc150_accel_event = {
->  				 BIT(IIO_EV_INFO_PERIOD)
->  };
->
-> -#define BMC150_ACCEL_CHANNEL(_axis) {					\
-> +#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
->  	.type = IIO_ACCEL,						\
->  	.modified = 1,							\
->  	.channel2 = IIO_MOD_##_axis,					\
-> @@ -850,26 +869,101 @@ static const struct iio_event_spec bmc150_accel_event = {
->  	.scan_index = AXIS_##_axis,					\
->  	.scan_type = {							\
->  		.sign = 's',						\
-> -		.realbits = 12,					\
-> +		.realbits = (bits),					\
->  		.storagebits = 16,					\
-> -		.shift = 4,						\
-> +		.shift = 16 - (bits),					\
->  	},								\
->  	.event_spec = &bmc150_accel_event,				\
->  	.num_event_specs = 1						\
->  }
->
-> -static const struct iio_chan_spec bmc150_accel_channels[] = {
-> -	{
-> -		.type = IIO_TEMP,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE) |
-> -				      BIT(IIO_CHAN_INFO_OFFSET),
-> -		.scan_index = -1,
-> +#define BMC150_ACCEL_CHANNELS(bits) {					\
-> +	{								\
-> +		.type = IIO_TEMP,					\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> +				      BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				      BIT(IIO_CHAN_INFO_OFFSET),	\
-> +		.scan_index = -1,					\
-> +	},								\
-> +	BMC150_ACCEL_CHANNEL(X, bits),					\
-> +	BMC150_ACCEL_CHANNEL(Y, bits),					\
-> +	BMC150_ACCEL_CHANNEL(Z, bits),					\
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),					\
-> +}
-> +
-> +static const struct iio_chan_spec bma222e_accel_channels[] =
-> +	BMC150_ACCEL_CHANNELS(8);
-> +static const struct iio_chan_spec bma250e_accel_channels[] =
-> +	BMC150_ACCEL_CHANNELS(10);
-> +static const struct iio_chan_spec bmc150_accel_channels[] =
-> +	BMC150_ACCEL_CHANNELS(12);
-> +static const struct iio_chan_spec bma280_accel_channels[] =
-> +	BMC150_ACCEL_CHANNELS(14);
-> +
-> +enum {
-> +	bmc150,
-> +	bmi055,
-> +	bma255,
-> +	bma250e,
-> +	bma222e,
-> +	bma280,
-> +};
-> +
-> +static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
-> +	[bmc150] = {
-> +		.chip_id = BMC150_ACCEL_CHIP_ID_VAL,
-> +		.channels = bmc150_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> +	},
-> +	[bmi055] = {
-> +		.chip_id = BMI055_ACCEL_CHIP_ID_VAL,
-> +		.channels = bmc150_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> +	},
-> +	[bma255] = {
-> +		.chip_id = BMA255_ACCEL_CHIP_ID_VAL,
-> +		.channels = bmc150_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> +	},
-> +	[bma250e] = {
-> +		.chip_id = BMA250E_ACCEL_CHIP_ID_VAL,
-> +		.channels = bma250e_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
-> +		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
-> +	},
-> +	[bma222e] = {
-> +		.chip_id = BMA222E_ACCEL_CHIP_ID_VAL,
-> +		.channels = bma222e_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
-> +		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
-> +	},
-> +	[bma280] = {
-> +		.chip_id = BMA280_ACCEL_CHIP_ID_VAL,
-> +		.channels = bma280_accel_channels,
-> +		.num_channels = ARRAY_SIZE(bma280_accel_channels),
-> +		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
-> +				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
-> +				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
-> +				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
->  	},
-> -	BMC150_ACCEL_CHANNEL(X),
-> -	BMC150_ACCEL_CHANNEL(Y),
-> -	BMC150_ACCEL_CHANNEL(Z),
-> -	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->
->  static const struct iio_info bmc150_accel_info = {
-> @@ -1040,10 +1134,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
->  		return IRQ_HANDLED;
->  }
->
-> -static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
-> -					struct bmc150_accel_data *data)
-> +static char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
->  {
->  	const struct acpi_device_id *id;
-> +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +
-> +	if (!id)
-> +		return NULL;
-> +
-> +	*data = (int) id->driver_data;
-> +
-> +	return (char *) dev_name(dev);
-> +}
-> +
-> +static int bmc150_accel_gpio_probe(struct i2c_client *client,
-> +					struct bmc150_accel_data *data)
-> +{
->  	struct device *dev;
->  	struct gpio_desc *gpio;
->  	int ret;
-> @@ -1052,17 +1159,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
->  		return -EINVAL;
->
->  	dev = &client->dev;
-> -	if (!ACPI_HANDLE(dev))
-> -		return -ENODEV;
-> -
-> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> -	if (!id)
-> -		return -ENODEV;
->
->  	/* data ready gpio interrupt pin */
->  	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
->  	if (IS_ERR(gpio)) {
-> -		dev_err(dev, "Failed: acpi gpio get index\n");
-> +		dev_err(dev, "Failed: gpio get index\n");
->  		return PTR_ERR(gpio);
->  	}
->
-> @@ -1083,6 +1184,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
->  	struct bmc150_accel_data *data;
->  	struct iio_dev *indio_dev;
->  	int ret;
-> +	char *name = NULL;
-More fun with const char * vs char *.  Same question as in my earlier
-review.  Do we need it for some reason that I'm missing this morning?
-> +	int chip_id = 0;
->
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -1092,6 +1195,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
->  	i2c_set_clientdata(client, indio_dev);
->  	data->client = client;
->
-> +	if (id) {
-> +		name = (char *) id->name;
-> +		chip_id = id->driver_data;
-> +	}
-> +
-> +	if (ACPI_HANDLE(&client->dev))
-> +		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
-> +
-> +	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
-> +
->  	ret = bmc150_accel_chip_init(data);
->  	if (ret < 0)
->  		return ret;
-> @@ -1099,14 +1212,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
->  	mutex_init(&data->mutex);
->
->  	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->channels = bmc150_accel_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
-> -	indio_dev->name = BMC150_ACCEL_DRV_NAME;
-> +	indio_dev->channels = data->chip_info->channels;
-> +	indio_dev->num_channels = data->chip_info->num_channels;
-> +	indio_dev->name = name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &bmc150_accel_info;
->
->  	if (client->irq < 0)
-> -		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
-> +		client->irq = bmc150_accel_gpio_probe(client, data);
->
->  	if (client->irq >= 0) {
->  		ret = devm_request_threaded_irq(
-> @@ -1284,14 +1397,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
->  };
->
->  static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-> -	{"BSBA0150", 0},
-> -	{"BMC150A", 0},
-> +	{"BSBA0150",	bmc150},
-> +	{"BMC150A",	bmc150},
-> +	{"BMI055A",	bmi055},
-> +	{"BMA0255",	bma255},
-> +	{"BMA250E",	bma250e},
-> +	{"BMA222E",	bma222e},
-> +	{"BMA0280",	bma280},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
->
->  static const struct i2c_device_id bmc150_accel_id[] = {
-> -	{"bmc150_accel", 0},
-> +	{"bmc150_accel",	bmc150},
-> +	{"bmi055_accel",	bmi055},
-> +	{"bma255",		bma255},
-> +	{"bma250e",		bma250e},
-> +	{"bma222e",		bma222e},
-> +	{"bma280",		bma280},
->  	{}
->  };
->
->
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charse=
+t=3Dutf-8"><style>body { line-height: 1.5; }body { font-size: 10.5pt; font=
+-family: =E5=BE=AE=E8=BD=AF=E9=9B=85=E9=BB=91; color: rgb(0, 0, 0); line-h=
+eight: 1.5; }body { font-size: 10.5pt; font-family: =E5=BE=AE=E8=BD=AF=E9=
+=9B=85=E9=BB=91; color: rgb(0, 0, 0); line-height: 1.5; }</style></head><b=
+ody>=0A<div>Hi&nbsp;<a href=3D"mailto:heiko@sntech.de">Heiko</a>=EF=BC=8C<=
+/div><div><br></div><div><span style=3D"background-color: rgba(0, 0, 0, 0)=
+;">&nbsp; &nbsp;The TS-ADC on RK3288 has two component, a tsadc and a tsad=
+c controller. The tsadc controller is similar like the thermal manager uni=
+t on other SOCs. We followed the naming of 3066, but not named as the Ther=
+mal Manager.&nbsp;</span></div><div><span style=3D"background-color: rgba(=
+0, 0, 0, 0);"><br>&nbsp; &nbsp;Moreover,there is only one set of apb regis=
+ters to access the tsadc controller,and the=0Atsadc is controlled by the t=
+sadc controller,could not access directly. If we write a general tsadc dri=
+ver  by accessed tsadc controller registers, and it hardly to write a driv=
+er for the tsadc controller.&nbsp;</span></div><div><br></div><div>&nbsp; =
+&nbsp;So,&nbsp;<span style=3D"background-color: rgba(0, 0, 0, 0); font-siz=
+e: 10.5pt; line-height: 1.5;">I do not agree to write a&nbsp;</span><span =
+style=3D"font-size: 10.5pt; line-height: 1.5; background-color: window;">g=
+eneric adc driver for the rk3288-tsadc.</span></div><div><br></div>=0A<hr =
+style=3D"WIDTH: 122px" align=3D"left" color=3D"#b5c4df" size=3D"1">=0A<div=
+>=0A<div>Yifeng Zhao</div><div><span style=3D"font-size: 10.5pt; line-heig=
+ht: 1.5; background-color: window;">&nbsp;</span></div></div>=0A<div style=
+=3D"BORDER-TOP: #b5c4df 1pt solid; BORDER-RIGHT: medium none; BORDER-BOTTO=
+M: medium none; PADDING-BOTTOM: 0cm; PADDING-TOP: 3pt; PADDING-LEFT: 0cm; =
+BORDER-LEFT: medium none; PADDING-RIGHT: 0cm">=0A<div style=3D"FONT-SIZE: =
+12px; BACKGROUND: #efefef; COLOR: #000000; PADDING-BOTTOM: 8px; PADDING-TO=
+P: 8px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px">=0A<div><b>=E5=8F=91=E4=BB=
+=B6=E4=BA=BA=EF=BC=9A</b>&nbsp;<a href=3D"mailto:heiko@sntech.de">HeikoSt=
+=C3=BCbner</a></div>=0A<div><b>=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4=EF=BC=
+=9A</b>&nbsp;2014-08-29&nbsp;00:11</div>=0A<div><b>=E6=94=B6=E4=BB=B6=E4=
+=BA=BA=EF=BC=9A</b>&nbsp;<a href=3D"mailto:edubezval@gmail.com">Eduardo Va=
+lentin</a></div>=0A<div><b>=E6=8A=84=E9=80=81=EF=BC=9A</b>&nbsp;<a href=3D=
+"mailto:arnd@arndb.de">Arnd Bergmann</a>; <a href=3D"mailto:caesar.wang@ro=
+ck-chips.com">Caesar Wang</a>; <a href=3D"mailto:rui.zhang@intel.com">rui.=
+zhang</a>; <a href=3D"mailto:grant.likely@linaro.org">grant.likely</a>; <a=
+ href=3D"mailto:robh+dt@kernel.org">robh+dt</a>; <a href=3D"mailto:linux-k=
+ernel@vger.kernel.org">linux-kernel</a>; <a href=3D"mailto:linux-pm@vger.k=
+ernel.org">linux-pm</a>; <a href=3D"mailto:linux-arm-kernel@lists.infradea=
+d.org">linux-arm-kernel</a>; <a href=3D"mailto:devicetree@vger.kernel.org"=
+>devicetree</a>; <a href=3D"mailto:linux-doc@vger.kernel.org">linux-doc</a=
+>; <a href=3D"mailto:huangtao@rock-chips.com">huangtao</a>; <a href=3D"mai=
+lto:cf@rock-chips.com">cf</a>; <a href=3D"mailto:dianders@chromium.org">di=
+anders</a>; <a href=3D"mailto:dtor@chromium.org">dtor</a>; <a href=3D"mail=
+to:zyw@rock-chips.com">zyw</a>; <a href=3D"mailto:addy.ke@rock-chips.com">=
+addy.ke</a>; <a href=3D"mailto:dmitry.torokhov@gmail.com">dmitry.torokhov<=
+/a>; <a href=3D"mailto:zyf@rock-chips.com">zhaoyifeng</a>; <a href=3D"mail=
+to:linux-iio@vger.kernel.org">linux-iio</a>; <a href=3D"mailto:jic23@kerne=
+l.org">Jonathan Cameron</a></div>=0A<div><b>=E4=B8=BB=E9=A2=98=EF=BC=9A</b=
+>&nbsp;Re: [PATCH v3 1/4] thermal: rockchip: add driver for thermal</div><=
+/div></div>=0A<div>&nbsp;</div>=0A<div><div>Am Donnerstag, 28. August 2014=
+, 10:37:35 schrieb Eduardo Valentin:</div>=0A<div>&gt; Ceasar and Arnd,</d=
+iv>=0A<div>&gt; </div>=0A<div>&gt; On Thu, Aug 28, 2014 at 10:48:23AM +020=
+0, Arnd Bergmann wrote:</div>=0A<div>&gt; &gt; On Thursday 28 August 2014 =
+08:59:19 Caesar Wang wrote:</div>=0A<div>&gt; &gt; &gt; Thermal is TS-ADC =
+Controller module supports user-defined mode and</div>=0A<div>&gt; &gt; &g=
+t; automatic mode.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt=
+; User-defined mode refers,TSADC all the control signals entirely by</div>=
+=0A<div>&gt; &gt; &gt; software</div>=0A<div>&gt; &gt; &gt; writing to reg=
+ister for direct control.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &=
+gt; &gt; Automaic mode refers to the module automatically poll TSADC outpu=
+t,and</div>=0A<div>&gt; &gt; &gt; the results Were checked.</div>=0A<div>&=
+gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt; If you find that the temperatur=
+e High in a period of time, an interrupt</div>=0A<div>&gt; &gt; &gt; is ge=
+nerated to the processor down-measures taken;if the temperature</div>=0A<d=
+iv>&gt; &gt; &gt; over a period of time High, the resulting TSHUT gave CRU=
+ module,let it</div>=0A<div>&gt; &gt; &gt; reset the entire chip, or via G=
+PIO give PMIC.</div>=0A<div>&gt; &gt; &gt; </div>=0A<div>&gt; &gt; &gt; Si=
+gned-off-by: zhaoyifeng &lt;zyf@rock-chips.com&gt;</div>=0A<div>&gt; &gt; =
+&gt; Signed-off-by: Caesar Wang &lt;caesar.wang@rock-chips.com&gt;</div>=
+=0A<div>&gt; &gt; </div>=0A<div>&gt; &gt; Hi Caesar,</div>=0A<div>&gt; &gt=
+; </div>=0A<div>&gt; &gt; After looking at the driver (last time I only re=
+ceived the patch for</div>=0A<div>&gt; &gt; the binding), I have a more ge=
+neral comment:</div>=0A<div>&gt; &gt; </div>=0A<div>&gt; &gt; This looks l=
+ike a general-purpose ADC device, not an IP block that is</div>=0A<div>&gt=
+; &gt; specific to thermal management. The binding looks ok for that purpo=
+se</div>=0A<div>&gt; &gt; but should probably be moved into</div>=0A<div>&=
+gt; &gt; Documentation/devicetree/bindings/iio/adc/ as a minor change.</di=
+v>=0A<div>&gt; </div>=0A<div>&gt; I agree with Arnd's point here. It makes=
+ sense to me to have this driver</div>=0A<div>&gt; under the IIO umbrella.=
+</div>=0A<div>&nbsp;</div>=0A<div>interesting suggestion :-)</div>=0A<div>=
+&nbsp;</div>=0A<div>I've just taken another look at the registers of the t=
+s-adc on the rk3066 </div>=0A<div>which is completely different from the r=
+k3288 one. Interestingly the rk3066 one </div>=0A<div>is "just" another sa=
+radc IP, so for this one it would really make sense.</div>=0A<div>&nbsp;</=
+div>=0A<div>&nbsp;</div>=0A<div>&gt; &gt; On the driver side, I believe th=
+e correct way to deal with this setup</div>=0A<div>&gt; &gt; is to split y=
+our driver into a generic drivers/iio/adc/rockchips-tsadc.c</div>=0A<div>&=
+gt; &gt; file, and a smaller thermal driver that uses the iio in-kernel in=
+terfaces,</div>=0A<div>&gt; &gt; ideally one that is independent of the un=
+derlying hardware and can</div>=0A<div>&gt; &gt; work on any ADC implement=
+ation.</div>=0A<div>&gt; </div>=0A<div>&gt; Agreed. If you can write such =
+interface and make your driver to work in</div>=0A<div>&gt; such way, that=
+ would be great.</div>=0A<div>&nbsp;</div>=0A<div>But I currently don't se=
+e how you would model the temperature handling parts </div>=0A<div>from a =
+generic thermal driver to a generic adc driver for the rk3288-tsadc.</div>=
+=0A<div>&nbsp;</div>=0A<div>I guess the general temperature irq handling w=
+ould use iio-triggers? But how </div>=0A<div>does the target temperature g=
+et into the TSADC_COMP1_INT register.</div>=0A<div>&nbsp;</div>=0A<div>Als=
+o when getting the temperature, Caesar's driver compares it to its trip </=
+div>=0A<div>points and sets the next trip point depending on the current t=
+emperature </div>=0A<div>(passive &lt;-&gt; critical) in rockchip_get_temp=
+.</div>=0A<div>&nbsp;</div>=0A<div>Maybe there is some completely easy way=
+ for this, but currently I don't see </div>=0A<div>it.</div>=0A<div>&nbsp;=
+</div>=0A<div>&nbsp;</div>=0A<div>Heiko</div>=0A<div>&nbsp;</div>=0A<div>&=
+nbsp;</div>=0A</div>=0A</body></html>
+------=_001_NextPart620851250586_=------
