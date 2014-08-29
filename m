@@ -1,1312 +1,443 @@
-Return-Path: <sanjeevs@inn.mentorg.com>
-From: Sanjeev Sharma <sanjeev_sharma@mentor.com>
-To: <jic23@kernel.org>, <gregkh@linuxfoundation.org>
-CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<devel@driverdev.osuosl.org>, Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Sanjeev Sharma <Sanjeev_Sharma@mentor.com>
-Subject: [PATCH] staging:iio: moved platform_data into include/linux/iio
-Date: Wed, 20 Aug 2014 12:11:09 +0530
-Message-ID: <1408516869-6099-1-git-send-email-sanjeev_sharma@mentor.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:17723 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753664AbaH2IiT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Aug 2014 04:38:19 -0400
+From: Laurentiu Palcu <laurentiu.palcu@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, laurentiu.palcu@intel.com,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] iio: accel: BMC150: add support for other Bosch chips
+Date: Fri, 29 Aug 2014 11:38:08 +0300
+Message-Id: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
+In-Reply-To: <1409301488-22166-1-git-send-email-laurentiu.palcu@intel.com>
+References: <1409301488-22166-1-git-send-email-laurentiu.palcu@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is a patch to the iio which will move all platform_data
-into include/linux/iio.
+The following chips are either similar or have only the resolution
+different. Hence, change this driver to support these chips too:
 
-Signed-off-by: Sanjeev Sharma <Sanjeev_Sharma@mentor.com>
+BMI055  - combo chip (accelerometer part is identical to BMC150's)
+BMA255  - identical to BMC150's accelerometer
+BMA222E - 8 bit resolution
+BMA250E - 10 bit resolution
+BMA280  - 14 bit resolution
+
+Additionally:
+ * add bmc150_accel_match_acpi_device() function to check that the device
+   has been enumerated through ACPI;
+ * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+   since the ACPI matching has been moved to the new function.  Also, this
+   will allow for the GPIO matching to be done against a device tree too, not only
+   ACPI tree;
+
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
 ---
- drivers/staging/iio/adc/ad7192.c                |   3 +-
- drivers/staging/iio/adc/ad7192.h                |  47 ---------
- drivers/staging/iio/adc/ad7280a.c               |   3 +-
- drivers/staging/iio/adc/ad7280a.h               |  38 -------
- drivers/staging/iio/adc/ad7606.h                | 104 -------------------
- drivers/staging/iio/adc/ad7606_core.c           |   3 +-
- drivers/staging/iio/adc/ad7606_par.c            |   2 +-
- drivers/staging/iio/adc/ad7606_ring.c           |   3 +-
- drivers/staging/iio/adc/ad7606_spi.c            |   2 +-
- drivers/staging/iio/adc/ad7780.c                |   3 +-
- drivers/staging/iio/adc/ad7780.h                |  30 ------
- drivers/staging/iio/cdc/ad7746.c                |   3 +-
- drivers/staging/iio/cdc/ad7746.h                |  29 ------
- drivers/staging/iio/frequency/ad9832.c          |   3 +-
- drivers/staging/iio/frequency/ad9832.h          | 126 ------------------------
- drivers/staging/iio/frequency/ad9834.c          |   3 +-
- drivers/staging/iio/frequency/ad9834.h          | 112 ---------------------
- drivers/staging/iio/impedance-analyzer/ad5933.c |   3 +-
- drivers/staging/iio/impedance-analyzer/ad5933.h |  28 ------
- include/linux/iio/adc/ad7192.h                  |  43 ++++++++
- include/linux/iio/adc/ad7280a.h                 |  34 +++++++
- include/linux/iio/adc/ad7606.h                  | 100 +++++++++++++++++++
- include/linux/iio/adc/ad7780.h                  |  26 +++++
- include/linux/iio/cdc/ad7746.h                  |  25 +++++
- include/linux/iio/frequency/ad9832.h            | 122 +++++++++++++++++++++++
- include/linux/iio/frequency/ad9834.h            | 107 ++++++++++++++++++++
- include/linux/iio/impedance-analyzer/ad5933.h   |  28 ++++++
- 27 files changed, 496 insertions(+), 534 deletions(-)
- delete mode 100644 drivers/staging/iio/adc/ad7192.h
- delete mode 100644 drivers/staging/iio/adc/ad7280a.h
- delete mode 100644 drivers/staging/iio/adc/ad7606.h
- delete mode 100644 drivers/staging/iio/adc/ad7780.h
- delete mode 100644 drivers/staging/iio/cdc/ad7746.h
- delete mode 100644 drivers/staging/iio/frequency/ad9832.h
- delete mode 100644 drivers/staging/iio/frequency/ad9834.h
- delete mode 100644 drivers/staging/iio/impedance-analyzer/ad5933.h
- create mode 100644 include/linux/iio/adc/ad7192.h
- create mode 100644 include/linux/iio/adc/ad7280a.h
- create mode 100644 include/linux/iio/adc/ad7606.h
- create mode 100644 include/linux/iio/adc/ad7780.h
- create mode 100644 include/linux/iio/cdc/ad7746.h
- create mode 100644 include/linux/iio/frequency/ad9832.h
- create mode 100644 include/linux/iio/frequency/ad9834.h
- create mode 100644 include/linux/iio/impedance-analyzer/ad5933.h
+ drivers/iio/accel/bmc150-accel.c | 229 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 176 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 83bb44b..44216ce 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -24,8 +24,7 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/adc/ad_sigma_delta.h>
--
--#include "ad7192.h"
-+#include <linux/iio/adc/ad7192.h>
- 
- /* Registers */
- #define AD7192_REG_COMM		0 /* Communications Register (WO, 8-bit) */
-diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
-deleted file mode 100644
-index a0a5b61..0000000
---- a/drivers/staging/iio/adc/ad7192.h
-+++ /dev/null
-@@ -1,47 +0,0 @@
--/*
-- * AD7190 AD7192 AD7195 SPI ADC driver
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--#ifndef IIO_ADC_AD7192_H_
--#define IIO_ADC_AD7192_H_
--
--/*
-- * TODO: struct ad7192_platform_data needs to go into include/linux/iio
-- */
--
--/**
-- * struct ad7192_platform_data - platform/board specific information
-- * @vref_mv:		the external reference voltage in millivolt
-- * @clock_source_sel:	[0..3]
-- *			0 External 4.92 MHz clock connected from MCLK1 to MCLK2
-- *			1 External Clock applied to MCLK2
-- *			2 Internal 4.92 MHz Clock not available at the MCLK2 pin
-- *			3 Internal 4.92 MHz Clock available at the MCLK2 pin
-- * @ext_clk_Hz:		the external clock frequency in Hz, if not set
-- *			the driver uses the internal clock (16.776 MHz)
-- * @refin2_en:		REFIN1/REFIN2 Reference Select (AD7190/2 only)
-- * @rej60_en:		50/60Hz notch filter enable
-- * @sinc3_en:		SINC3 filter enable (default SINC4)
-- * @chop_en:		CHOP mode enable
-- * @buf_en:		buffered input mode enable
-- * @unipolar_en:	unipolar mode enable
-- * @burnout_curr_en:	constant current generators on AIN(+|-) enable
-- */
--
--struct ad7192_platform_data {
--	u16		vref_mv;
--	u8		clock_source_sel;
--	u32		ext_clk_Hz;
--	bool		refin2_en;
--	bool		rej60_en;
--	bool		sinc3_en;
--	bool		chop_en;
--	bool		buf_en;
--	bool		unipolar_en;
--	bool		burnout_curr_en;
--};
--
--#endif /* IIO_ADC_AD7192_H_ */
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index d215edf..0e0e4c3 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -19,8 +19,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/events.h>
--
--#include "ad7280a.h"
-+#include <linux/iio/adc/ad7280a.h>
- 
- /* Registers */
- #define AD7280A_CELL_VOLTAGE_1		0x0  /* D11 to D0, Read only */
-diff --git a/drivers/staging/iio/adc/ad7280a.h b/drivers/staging/iio/adc/ad7280a.h
-deleted file mode 100644
-index 20400b0..0000000
---- a/drivers/staging/iio/adc/ad7280a.h
-+++ /dev/null
-@@ -1,38 +0,0 @@
--/*
-- * AD7280A Lithium Ion Battery Monitoring System
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--
--#ifndef IIO_ADC_AD7280_H_
--#define IIO_ADC_AD7280_H_
--
--/*
-- * TODO: struct ad7280_platform_data needs to go into include/linux/iio
-- */
--
--#define AD7280A_ACQ_TIME_400ns			0
--#define AD7280A_ACQ_TIME_800ns			1
--#define AD7280A_ACQ_TIME_1200ns			2
--#define AD7280A_ACQ_TIME_1600ns			3
--
--#define AD7280A_CONV_AVG_DIS			0
--#define AD7280A_CONV_AVG_2			1
--#define AD7280A_CONV_AVG_4			2
--#define AD7280A_CONV_AVG_8			3
--
--#define AD7280A_ALERT_REMOVE_VIN5		(1 << 2)
--#define AD7280A_ALERT_REMOVE_VIN4_VIN5		(2 << 2)
--#define AD7280A_ALERT_REMOVE_AUX5		(1 << 0)
--#define AD7280A_ALERT_REMOVE_AUX4_AUX5		(2 << 0)
--
--struct ad7280_platform_data {
--	unsigned acquisition_time;
--	unsigned conversion_averaging;
--	unsigned chain_last_alert_ignore;
--	bool thermistor_term_en;
--};
--
--#endif /* IIO_ADC_AD7280_H_ */
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-deleted file mode 100644
-index ec89d05..0000000
---- a/drivers/staging/iio/adc/ad7606.h
-+++ /dev/null
-@@ -1,104 +0,0 @@
--/*
-- * AD7606 ADC driver
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--
--#ifndef IIO_ADC_AD7606_H_
--#define IIO_ADC_AD7606_H_
--
--/*
-- * TODO: struct ad7606_platform_data needs to go into include/linux/iio
-- */
--
--/**
-- * struct ad7606_platform_data - platform/board specific information
-- * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
-- * @default_range:	default range +/-{5000, 10000} mVolt
-- * @gpio_convst:	number of gpio connected to the CONVST pin
-- * @gpio_reset:		gpio connected to the RESET pin, if not used set to -1
-- * @gpio_range:		gpio connected to the RANGE pin, if not used set to -1
-- * @gpio_os0:		gpio connected to the OS0 pin, if not used set to -1
-- * @gpio_os1:		gpio connected to the OS1 pin, if not used set to -1
-- * @gpio_os2:		gpio connected to the OS2 pin, if not used set to -1
-- * @gpio_frstdata:	gpio connected to the FRSTDAT pin, if not used set to -1
-- * @gpio_stby:		gpio connected to the STBY pin, if not used set to -1
-- */
--
--struct ad7606_platform_data {
--	unsigned			default_os;
--	unsigned			default_range;
--	unsigned			gpio_convst;
--	unsigned			gpio_reset;
--	unsigned			gpio_range;
--	unsigned			gpio_os0;
--	unsigned			gpio_os1;
--	unsigned			gpio_os2;
--	unsigned			gpio_frstdata;
--	unsigned			gpio_stby;
--};
--
--/**
-- * struct ad7606_chip_info - chip specific information
-- * @name:		identification string for chip
-- * @int_vref_mv:	the internal reference voltage
-- * @channels:		channel specification
-- * @num_channels:	number of channels
-- */
--
--struct ad7606_chip_info {
--	const char			*name;
--	u16				int_vref_mv;
--	const struct iio_chan_spec	*channels;
--	unsigned			num_channels;
--};
--
--/**
-- * struct ad7606_state - driver instance specific data
-- */
--
--struct ad7606_state {
--	struct device			*dev;
--	const struct ad7606_chip_info	*chip_info;
--	struct ad7606_platform_data	*pdata;
--	struct regulator		*reg;
--	struct work_struct		poll_work;
--	wait_queue_head_t		wq_data_avail;
--	const struct ad7606_bus_ops	*bops;
--	unsigned			range;
--	unsigned			oversampling;
--	bool				done;
--	void __iomem			*base_address;
--
--	/*
--	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
--	 */
--
--	unsigned short			data[8] ____cacheline_aligned;
--};
--
--struct ad7606_bus_ops {
--	/* more methods added in future? */
--	int (*read_block)(struct device *, int, void *);
--};
--
--void ad7606_suspend(struct iio_dev *indio_dev);
--void ad7606_resume(struct iio_dev *indio_dev);
--struct iio_dev *ad7606_probe(struct device *dev, int irq,
--			      void __iomem *base_address, unsigned id,
--			      const struct ad7606_bus_ops *bops);
--int ad7606_remove(struct iio_dev *indio_dev, int irq);
--int ad7606_reset(struct ad7606_state *st);
--
--enum ad7606_supported_device_ids {
--	ID_AD7606_8,
--	ID_AD7606_6,
--	ID_AD7606_4
--};
--
--int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
--void ad7606_ring_cleanup(struct iio_dev *indio_dev);
--#endif /* IIO_ADC_AD7606_H_ */
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index f0f05f1..554381b 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -21,8 +21,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
--
--#include "ad7606.h"
-+#include <linux/iio/adc/ad7606.h>
- 
- int ad7606_reset(struct ad7606_state *st)
- {
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 7511839..ce76e85 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -13,7 +13,7 @@
- #include <linux/io.h>
- 
- #include <linux/iio/iio.h>
--#include "ad7606.h"
-+#include <linux/iio/adc/ad7606.h>
- 
- static int ad7606_par16_read_block(struct device *dev,
- 				 int count, void *buf)
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index 3bf174c..c058d2e 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -15,8 +15,7 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
--
--#include "ad7606.h"
-+#include <linux/iio/adc/ad7606.h>
- 
- /**
-  * ad7606_trigger_handler_th() th/bh of trigger launched polling to ring buffer
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index 6a8ecd7..229794f 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -12,7 +12,7 @@
- #include <linux/err.h>
- 
- #include <linux/iio/iio.h>
--#include "ad7606.h"
-+#include <linux/iio/adc/ad7606.h>
- 
- #define MAX_SPI_FREQ_HZ		23500000	/* VDRIVE above 4.75 V */
- 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 273add3..e6fbb44 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -21,8 +21,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/adc/ad_sigma_delta.h>
--
--#include "ad7780.h"
-+#include <linux/iio/adc/ad7780.h>
- 
- #define AD7780_RDY	(1 << 7)
- #define AD7780_FILTER	(1 << 6)
-diff --git a/drivers/staging/iio/adc/ad7780.h b/drivers/staging/iio/adc/ad7780.h
-deleted file mode 100644
-index 67e511c..0000000
---- a/drivers/staging/iio/adc/ad7780.h
-+++ /dev/null
-@@ -1,30 +0,0 @@
--/*
-- * AD7780/AD7781 SPI ADC driver
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--#ifndef IIO_ADC_AD7780_H_
--#define IIO_ADC_AD7780_H_
--
--/*
-- * TODO: struct ad7780_platform_data needs to go into include/linux/iio
-- */
--
--/* NOTE:
-- * The AD7780 doesn't feature a dedicated SPI chip select, in addition it
-- * features a dual use data out ready DOUT/RDY output.
-- * In order to avoid contentions on the SPI bus, it's therefore necessary
-- * to use spi bus locking combined with a dedicated GPIO to control the
-- * power down reset signal of the AD7780.
-- *
-- * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
-- */
--
--struct ad7780_platform_data {
--	u16				vref_mv;
--	int				gpio_pdrst;
--};
--
--#endif /* IIO_ADC_AD7780_H_ */
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index e6e9eaa..d1f6e65 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -18,8 +18,7 @@
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
--
--#include "ad7746.h"
-+#include <linux/iio/cdc/ad7746.h>
- 
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 0e6566a..ffe619c 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -1,5 +1,12 @@
  /*
-  * AD7746 Register Definition
-diff --git a/drivers/staging/iio/cdc/ad7746.h b/drivers/staging/iio/cdc/ad7746.h
-deleted file mode 100644
-index ea8572d..0000000
---- a/drivers/staging/iio/cdc/ad7746.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/*
-- * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--
--#ifndef IIO_CDC_AD7746_H_
--#define IIO_CDC_AD7746_H_
--
--/*
-- * TODO: struct ad7746_platform_data needs to go into include/linux/iio
-- */
--
--#define AD7466_EXCLVL_0		0 /* +-VDD/8 */
--#define AD7466_EXCLVL_1		1 /* +-VDD/4 */
--#define AD7466_EXCLVL_2		2 /* +-VDD * 3/8 */
--#define AD7466_EXCLVL_3		3 /* +-VDD/2 */
--
--struct ad7746_platform_data {
--	unsigned char exclvl;	/*Excitation Voltage Level */
--	bool exca_en;		/* enables EXCA pin as the excitation output */
--	bool exca_inv_en;	/* enables /EXCA pin as the excitation output */
--	bool excb_en;		/* enables EXCB pin as the excitation output */
--	bool excb_inv_en;	/* enables /EXCB pin as the excitation output */
--};
--
--#endif /* IIO_CDC_AD7746_H_ */
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index cf68159..7b23749 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -19,8 +19,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include "dds.h"
--
--#include "ad9832.h"
-+#include <linux/iio/frequency/ad9832.h>
+- * BMC150 3-axis accelerometer driver
++ * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
++ *  - BMC150
++ *  - BMI055
++ *  - BMA255
++ *  - BMA250E
++ *  - BMA222E
++ *  - BMA280
++ *
+  * Copyright (c) 2014, Intel Corporation.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+@@ -35,6 +42,11 @@
  
- static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
+ #define BMC150_ACCEL_REG_CHIP_ID		0x00
+ #define BMC150_ACCEL_CHIP_ID_VAL		0xFA
++#define BMA255_ACCEL_CHIP_ID_VAL		0xFA
++#define BMI055_ACCEL_CHIP_ID_VAL		0xFA
++#define BMA222E_ACCEL_CHIP_ID_VAL		0xF8
++#define BMA250E_ACCEL_CHIP_ID_VAL		0xF9
++#define BMA280_ACCEL_CHIP_ID_VAL		0xFB
+ 
+ #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+ #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
+@@ -126,6 +138,18 @@ enum bmc150_power_modes {
+ 	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
+ };
+ 
++struct bmc150_scale_info {
++	int scale;
++	int range;
++};
++
++struct bmc150_accel_chip_info {
++	u8 chip_id;
++	const struct iio_chan_spec *channels;
++	int num_channels;
++	const struct bmc150_scale_info scale_table[4];
++};
++
+ struct bmc150_accel_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *dready_trig;
+@@ -140,6 +164,7 @@ struct bmc150_accel_data {
+ 	bool dready_trigger_on;
+ 	bool motion_trigger_on;
+ 	int64_t timestamp;
++	const struct bmc150_accel_chip_info *chip_info;
+ };
+ 
+ static const struct {
+@@ -168,14 +193,6 @@ static const struct {
+ 				     {0x0F, 1} };
+ 
+ static const struct {
+-	int scale;
+-	int range;
+-} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+-				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+-				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+-				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
+-
+-static const struct {
+ 	int sleep_dur;
+ 	int reg_value;
+ } bmc150_accel_sleep_value_table[] = { {0, 0},
+@@ -267,7 +284,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 	}
+ 
+ 	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+-	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
++	if (ret != data->chip_info->chip_id) {
+ 		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
+ 		return -ENODEV;
+ 	}
+@@ -541,19 +558,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
  {
-diff --git a/drivers/staging/iio/frequency/ad9832.h b/drivers/staging/iio/frequency/ad9832.h
-deleted file mode 100644
-index 386f4dc..0000000
---- a/drivers/staging/iio/frequency/ad9832.h
-+++ /dev/null
-@@ -1,126 +0,0 @@
--/*
-- * AD9832 SPI DDS driver
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2 or later.
-- */
--#ifndef IIO_DDS_AD9832_H_
--#define IIO_DDS_AD9832_H_
--
--/* Registers */
--
--#define AD9832_FREQ0LL		0x0
--#define AD9832_FREQ0HL		0x1
--#define AD9832_FREQ0LM		0x2
--#define AD9832_FREQ0HM		0x3
--#define AD9832_FREQ1LL		0x4
--#define AD9832_FREQ1HL		0x5
--#define AD9832_FREQ1LM		0x6
--#define AD9832_FREQ1HM		0x7
--#define AD9832_PHASE0L		0x8
--#define AD9832_PHASE0H		0x9
--#define AD9832_PHASE1L		0xA
--#define AD9832_PHASE1H		0xB
--#define AD9832_PHASE2L		0xC
--#define AD9832_PHASE2H		0xD
--#define AD9832_PHASE3L		0xE
--#define AD9832_PHASE3H		0xF
--
--#define AD9832_PHASE_SYM	0x10
--#define AD9832_FREQ_SYM		0x11
--#define AD9832_PINCTRL_EN	0x12
--#define AD9832_OUTPUT_EN	0x13
--
--/* Command Control Bits */
--
--#define AD9832_CMD_PHA8BITSW	0x1
--#define AD9832_CMD_PHA16BITSW	0x0
--#define AD9832_CMD_FRE8BITSW	0x3
--#define AD9832_CMD_FRE16BITSW	0x2
--#define AD9832_CMD_FPSELECT	0x6
--#define AD9832_CMD_SYNCSELSRC	0x8
--#define AD9832_CMD_SLEEPRESCLR	0xC
--
--#define AD9832_FREQ		(1 << 11)
--#define AD9832_PHASE(x)		(((x) & 3) << 9)
--#define AD9832_SYNC		(1 << 13)
--#define AD9832_SELSRC		(1 << 12)
--#define AD9832_SLEEP		(1 << 13)
--#define AD9832_RESET		(1 << 12)
--#define AD9832_CLR		(1 << 11)
--#define CMD_SHIFT		12
--#define ADD_SHIFT		8
--#define AD9832_FREQ_BITS	32
--#define AD9832_PHASE_BITS	12
--#define RES_MASK(bits)		((1 << (bits)) - 1)
--
--/**
-- * struct ad9832_state - driver instance specific data
-- * @spi:		spi_device
-- * @reg:		supply regulator
-- * @mclk:		external master clock
-- * @ctrl_fp:		cached frequency/phase control word
-- * @ctrl_ss:		cached sync/selsrc control word
-- * @ctrl_src:		cached sleep/reset/clr word
-- * @xfer:		default spi transfer
-- * @msg:		default spi message
-- * @freq_xfer:		tuning word spi transfer
-- * @freq_msg:		tuning word spi message
-- * @phase_xfer:		tuning word spi transfer
-- * @phase_msg:		tuning word spi message
-- * @data:		spi transmit buffer
-- * @phase_data:		tuning word spi transmit buffer
-- * @freq_data:		tuning word spi transmit buffer
-- */
--
--struct ad9832_state {
--	struct spi_device		*spi;
--	struct regulator		*reg;
--	unsigned long			mclk;
--	unsigned short			ctrl_fp;
--	unsigned short			ctrl_ss;
--	unsigned short			ctrl_src;
--	struct spi_transfer		xfer;
--	struct spi_message		msg;
--	struct spi_transfer		freq_xfer[4];
--	struct spi_message		freq_msg;
--	struct spi_transfer		phase_xfer[2];
--	struct spi_message		phase_msg;
--	/*
--	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
--	 */
--	union {
--		__be16			freq_data[4]____cacheline_aligned;
--		__be16			phase_data[2];
--		__be16			data;
--	};
--};
--
--/*
-- * TODO: struct ad9832_platform_data needs to go into include/linux/iio
-- */
--
--/**
-- * struct ad9832_platform_data - platform specific information
-- * @mclk:		master clock in Hz
-- * @freq0:		power up freq0 tuning word in Hz
-- * @freq1:		power up freq1 tuning word in Hz
-- * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
-- * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
-- * @phase2:		power up phase2 value [0..4095] correlates with 0..2PI
-- * @phase3:		power up phase3 value [0..4095] correlates with 0..2PI
-- */
--
--struct ad9832_platform_data {
--	unsigned long		mclk;
--	unsigned long		freq0;
--	unsigned long		freq1;
--	unsigned short		phase0;
--	unsigned short		phase1;
--	unsigned short		phase2;
--	unsigned short		phase3;
--};
--
--#endif /* IIO_DDS_AD9832_H_ */
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 86cda61..151e093 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -22,8 +22,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include "dds.h"
--
--#include "ad9834.h"
-+#include <linux/iio/frequency/ad9834.h>
+ 	int ret, i;
  
- static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
+-	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
+-		if (bmc150_accel_scale_table[i].scale == val) {
++	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
++		if (data->chip_info->scale_table[i].scale == val) {
+ 			ret = i2c_smbus_write_byte_data(
+ 					data->client,
+ 					BMC150_ACCEL_REG_PMU_RANGE,
+-					bmc150_accel_scale_table[i].range);
++					data->chip_info->scale_table[i].range);
+ 			if (ret < 0) {
+ 				dev_err(&data->client->dev,
+ 					"Error writing pmu_range\n");
+ 				return ret;
+ 			}
+ 
+-			data->range = bmc150_accel_scale_table[i].range;
++			data->range = data->chip_info->scale_table[i].range;
+ 			return 0;
+ 		}
+ 	}
+@@ -580,10 +597,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+ 	return IIO_VAL_INT;
+ }
+ 
+-static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
++static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
++				 struct iio_chan_spec const *chan,
+ 				 int *val)
  {
-diff --git a/drivers/staging/iio/frequency/ad9834.h b/drivers/staging/iio/frequency/ad9834.h
-deleted file mode 100644
-index 8ca6e52..0000000
---- a/drivers/staging/iio/frequency/ad9834.h
-+++ /dev/null
-@@ -1,112 +0,0 @@
--/*
-- * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
-- *
-- * Copyright 2010-2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
--#ifndef IIO_DDS_AD9834_H_
--#define IIO_DDS_AD9834_H_
--
--/* Registers */
--
--#define AD9834_REG_CMD		(0 << 14)
--#define AD9834_REG_FREQ0	(1 << 14)
--#define AD9834_REG_FREQ1	(2 << 14)
--#define AD9834_REG_PHASE0	(6 << 13)
--#define AD9834_REG_PHASE1	(7 << 13)
--
--/* Command Control Bits */
--
--#define AD9834_B28		(1 << 13)
--#define AD9834_HLB		(1 << 12)
--#define AD9834_FSEL		(1 << 11)
--#define AD9834_PSEL		(1 << 10)
--#define AD9834_PIN_SW		(1 << 9)
--#define AD9834_RESET		(1 << 8)
--#define AD9834_SLEEP1		(1 << 7)
--#define AD9834_SLEEP12		(1 << 6)
--#define AD9834_OPBITEN		(1 << 5)
--#define AD9834_SIGN_PIB		(1 << 4)
--#define AD9834_DIV2		(1 << 3)
--#define AD9834_MODE		(1 << 1)
--
--#define AD9834_FREQ_BITS	28
--#define AD9834_PHASE_BITS	12
--
--#define RES_MASK(bits)	((1 << (bits)) - 1)
--
--/**
-- * struct ad9834_state - driver instance specific data
-- * @spi:		spi_device
-- * @reg:		supply regulator
-- * @mclk:		external master clock
-- * @control:		cached control word
-- * @xfer:		default spi transfer
-- * @msg:		default spi message
-- * @freq_xfer:		tuning word spi transfer
-- * @freq_msg:		tuning word spi message
-- * @data:		spi transmit buffer
-- * @freq_data:		tuning word spi transmit buffer
-- */
--
--struct ad9834_state {
--	struct spi_device		*spi;
--	struct regulator		*reg;
--	unsigned int			mclk;
--	unsigned short			control;
--	unsigned short			devid;
--	struct spi_transfer		xfer;
--	struct spi_message		msg;
--	struct spi_transfer		freq_xfer[2];
--	struct spi_message		freq_msg;
--
--	/*
--	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
--	 */
--	__be16				data ____cacheline_aligned;
--	__be16				freq_data[2];
--};
--
--
--/*
-- * TODO: struct ad7887_platform_data needs to go into include/linux/iio
-- */
--
--/**
-- * struct ad9834_platform_data - platform specific information
-- * @mclk:		master clock in Hz
-- * @freq0:		power up freq0 tuning word in Hz
-- * @freq1:		power up freq1 tuning word in Hz
-- * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
-- * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
-- * @en_div2:		digital output/2 is passed to the SIGN BIT OUT pin
-- * @en_signbit_msb_out:	the MSB (or MSB/2) of the DAC data is connected to the
-- *			SIGN BIT OUT pin. en_div2 controls whether it is the MSB
-- *			or MSB/2 that is output. if en_signbit_msb_out=false,
-- *			the on-board comparator is connected to SIGN BIT OUT
-- */
--
--struct ad9834_platform_data {
--	unsigned int		mclk;
--	unsigned int		freq0;
--	unsigned int		freq1;
--	unsigned short		phase0;
--	unsigned short		phase1;
--	bool			en_div2;
--	bool			en_signbit_msb_out;
--};
--
--/**
-- * ad9834_supported_device_ids:
-- */
--
--enum ad9834_supported_device_ids {
--	ID_AD9833,
--	ID_AD9834,
--	ID_AD9837,
--	ID_AD9838,
--};
--
--#endif /* IIO_DDS_AD9834_H_ */
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 2b96665..b88e0e5 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -23,8 +23,7 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/kfifo_buf.h>
--
--#include "ad5933.h"
-+#include <linux/iio/impedance-analyzer/ad5933.h>
+ 	int ret;
++	int axis = chan->scan_index;
  
- /* AD5933/AD5934 Registers */
- #define AD5933_REG_CONTROL_HB		0x80	/* R/W, 2 bytes */
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.h b/drivers/staging/iio/impedance-analyzer/ad5933.h
-deleted file mode 100644
-index b140e42..0000000
---- a/drivers/staging/iio/impedance-analyzer/ad5933.h
-+++ /dev/null
-@@ -1,28 +0,0 @@
--/*
-- * AD5933 AD5934 Impedance Converter, Network Analyzer
-- *
-- * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-- */
+ 	mutex_lock(&data->mutex);
+ 	ret = bmc150_accel_set_power_state(data, true);
+@@ -600,7 +619,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+-	*val = sign_extend32(ret >> 4, 11);
++	*val = sign_extend32(ret >> chan->scan_type.shift,
++			     chan->scan_type.realbits - 1);
+ 	ret = bmc150_accel_set_power_state(data, false);
+ 	mutex_unlock(&data->mutex);
+ 	if (ret < 0)
+@@ -625,9 +645,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+ 			if (iio_buffer_enabled(indio_dev))
+ 				return -EBUSY;
+ 			else
+-				return bmc150_accel_get_axis(data,
+-							     chan->scan_index,
+-							     val);
++				return bmc150_accel_get_axis(data, chan, val);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -647,12 +665,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+ 		{
+ 			int i;
+ 
+-			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+-									 ++i) {
+-				if (bmc150_accel_scale_table[i].range ==
++			for (i = 0;
++			     i < ARRAY_SIZE(data->chip_info->scale_table);
++			     ++i) {
++				if (data->chip_info->scale_table[i].range ==
+ 								data->range) {
+ 					*val2 =
+-					bmc150_accel_scale_table[i].scale;
++					data->chip_info->scale_table[i].scale;
+ 					return IIO_VAL_INT_PLUS_MICRO;
+ 				}
+ 			}
+@@ -840,7 +859,7 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 				 BIT(IIO_EV_INFO_PERIOD)
+ };
+ 
+-#define BMC150_ACCEL_CHANNEL(_axis) {					\
++#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
+ 	.type = IIO_ACCEL,						\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##_axis,					\
+@@ -850,26 +869,101 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 	.scan_index = AXIS_##_axis,					\
+ 	.scan_type = {							\
+ 		.sign = 's',						\
+-		.realbits = 12,					\
++		.realbits = (bits),					\
+ 		.storagebits = 16,					\
+-		.shift = 4,						\
++		.shift = 16 - (bits),					\
+ 	},								\
+ 	.event_spec = &bmc150_accel_event,				\
+ 	.num_event_specs = 1						\
+ }
+ 
+-static const struct iio_chan_spec bmc150_accel_channels[] = {
+-	{
+-		.type = IIO_TEMP,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE) |
+-				      BIT(IIO_CHAN_INFO_OFFSET),
+-		.scan_index = -1,
++#define BMC150_ACCEL_CHANNELS(bits) {					\
++	{								\
++		.type = IIO_TEMP,					\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				      BIT(IIO_CHAN_INFO_SCALE) |	\
++				      BIT(IIO_CHAN_INFO_OFFSET),	\
++		.scan_index = -1,					\
++	},								\
++	BMC150_ACCEL_CHANNEL(X, bits),					\
++	BMC150_ACCEL_CHANNEL(Y, bits),					\
++	BMC150_ACCEL_CHANNEL(Z, bits),					\
++	IIO_CHAN_SOFT_TIMESTAMP(3),					\
++}
++
++static const struct iio_chan_spec bma222e_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(8);
++static const struct iio_chan_spec bma250e_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(10);
++static const struct iio_chan_spec bmc150_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(12);
++static const struct iio_chan_spec bma280_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(14);
++
++enum {
++	bmc150,
++	bmi055,
++	bma255,
++	bma250e,
++	bma222e,
++	bma280,
++};
++
++static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
++	[bmc150] = {
++		.chip_id = BMC150_ACCEL_CHIP_ID_VAL,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bmi055] = {
++		.chip_id = BMI055_ACCEL_CHIP_ID_VAL,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma255] = {
++		.chip_id = BMA255_ACCEL_CHIP_ID_VAL,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma250e] = {
++		.chip_id = BMA250E_ACCEL_CHIP_ID_VAL,
++		.channels = bma250e_accel_channels,
++		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
++		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
++				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
++				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma222e] = {
++		.chip_id = BMA222E_ACCEL_CHIP_ID_VAL,
++		.channels = bma222e_accel_channels,
++		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
++		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
++				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
++				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
++				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma280] = {
++		.chip_id = BMA280_ACCEL_CHIP_ID_VAL,
++		.channels = bma280_accel_channels,
++		.num_channels = ARRAY_SIZE(bma280_accel_channels),
++		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
++				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
++				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
++				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
+ 	},
+-	BMC150_ACCEL_CHANNEL(X),
+-	BMC150_ACCEL_CHANNEL(Y),
+-	BMC150_ACCEL_CHANNEL(Z),
+-	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
+ static const struct iio_info bmc150_accel_info = {
+@@ -1040,10 +1134,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
+ 		return IRQ_HANDLED;
+ }
+ 
+-static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+-					struct bmc150_accel_data *data)
++static char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+ {
+ 	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++
++	if (!id)
++		return NULL;
++
++	*data = (int) id->driver_data;
++
++	return (char *) dev_name(dev);
++}
++
++static int bmc150_accel_gpio_probe(struct i2c_client *client,
++					struct bmc150_accel_data *data)
++{
+ 	struct device *dev;
+ 	struct gpio_desc *gpio;
+ 	int ret;
+@@ -1052,17 +1159,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 
+ 	dev = &client->dev;
+-	if (!ACPI_HANDLE(dev))
+-		return -ENODEV;
 -
--#ifndef IIO_ADC_AD5933_H_
--#define IIO_ADC_AD5933_H_
--
--/*
-- * TODO: struct ad5933_platform_data needs to go into include/linux/iio
-- */
--
--/**
-- * struct ad5933_platform_data - platform specific data
-- * @ext_clk_Hz:		the external clock frequency in Hz, if not set
-- *			the driver uses the internal clock (16.776 MHz)
-- * @vref_mv:		the external reference voltage in millivolt
-- */
--
--struct ad5933_platform_data {
--	unsigned long			ext_clk_Hz;
--	unsigned short			vref_mv;
--};
--
--#endif /* IIO_ADC_AD5933_H_ */
-diff --git a/include/linux/iio/adc/ad7192.h b/include/linux/iio/adc/ad7192.h
-new file mode 100644
-index 0000000..4ca7b9d
---- /dev/null
-+++ b/include/linux/iio/adc/ad7192.h
-@@ -0,0 +1,43 @@
-+/*
-+ * AD7190 AD7192 AD7195 SPI ADC driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+#ifndef IIO_ADC_AD7192_H_
-+#define IIO_ADC_AD7192_H_
+-	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+-	if (!id)
+-		return -ENODEV;
+ 
+ 	/* data ready gpio interrupt pin */
+ 	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
+ 	if (IS_ERR(gpio)) {
+-		dev_err(dev, "Failed: acpi gpio get index\n");
++		dev_err(dev, "Failed: gpio get index\n");
+ 		return PTR_ERR(gpio);
+ 	}
+ 
+@@ -1083,6 +1184,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	struct bmc150_accel_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
++	char *name = NULL;
++	int chip_id = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1092,6 +1195,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 
++	if (id) {
++		name = (char *) id->name;
++		chip_id = id->driver_data;
++	}
 +
-+/**
-+ * struct ad7192_platform_data - platform/board specific information
-+ * @vref_mv:		the external reference voltage in millivolt
-+ * @clock_source_sel:	[0..3]
-+ *			0 External 4.92 MHz clock connected from MCLK1 to MCLK2
-+ *			1 External Clock applied to MCLK2
-+ *			2 Internal 4.92 MHz Clock not available at the MCLK2 pin
-+ *			3 Internal 4.92 MHz Clock available at the MCLK2 pin
-+ * @ext_clk_Hz:		the external clock frequency in Hz, if not set
-+ *			the driver uses the internal clock (16.776 MHz)
-+ * @refin2_en:		REFIN1/REFIN2 Reference Select (AD7190/2 only)
-+ * @rej60_en:		50/60Hz notch filter enable
-+ * @sinc3_en:		SINC3 filter enable (default SINC4)
-+ * @chop_en:		CHOP mode enable
-+ * @buf_en:		buffered input mode enable
-+ * @unipolar_en:	unipolar mode enable
-+ * @burnout_curr_en:	constant current generators on AIN(+|-) enable
-+ */
++	if (ACPI_HANDLE(&client->dev))
++		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
 +
-+struct ad7192_platform_data {
-+	u16		vref_mv;
-+	u8		clock_source_sel;
-+	u32		ext_clk_Hz;
-+	bool		refin2_en;
-+	bool		rej60_en;
-+	bool		sinc3_en;
-+	bool		chop_en;
-+	bool		buf_en;
-+	bool		unipolar_en;
-+	bool		burnout_curr_en;
-+};
++	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
 +
-+#endif /* IIO_ADC_AD7192_H_ */
-diff --git a/include/linux/iio/adc/ad7280a.h b/include/linux/iio/adc/ad7280a.h
-new file mode 100644
-index 0000000..1d0bcbc
---- /dev/null
-+++ b/include/linux/iio/adc/ad7280a.h
-@@ -0,0 +1,34 @@
-+/*
-+ * AD7280A Lithium Ion Battery Monitoring System
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef IIO_ADC_AD7280_H_
-+#define IIO_ADC_AD7280_H_
-+
-+#define AD7280A_ACQ_TIME_400ns			0
-+#define AD7280A_ACQ_TIME_800ns			1
-+#define AD7280A_ACQ_TIME_1200ns			2
-+#define AD7280A_ACQ_TIME_1600ns			3
-+
-+#define AD7280A_CONV_AVG_DIS			0
-+#define AD7280A_CONV_AVG_2			1
-+#define AD7280A_CONV_AVG_4			2
-+#define AD7280A_CONV_AVG_8			3
-+
-+#define AD7280A_ALERT_REMOVE_VIN5		(1 << 2)
-+#define AD7280A_ALERT_REMOVE_VIN4_VIN5		(2 << 2)
-+#define AD7280A_ALERT_REMOVE_AUX5		(1 << 0)
-+#define AD7280A_ALERT_REMOVE_AUX4_AUX5		(2 << 0)
-+
-+struct ad7280_platform_data {
-+	unsigned acquisition_time;
-+	unsigned conversion_averaging;
-+	unsigned chain_last_alert_ignore;
-+	bool thermistor_term_en;
-+};
-+
-+#endif /* IIO_ADC_AD7280_H_ */
-diff --git a/include/linux/iio/adc/ad7606.h b/include/linux/iio/adc/ad7606.h
-new file mode 100644
-index 0000000..c38ff54
---- /dev/null
-+++ b/include/linux/iio/adc/ad7606.h
-@@ -0,0 +1,100 @@
-+/*
-+ * AD7606 ADC driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef IIO_ADC_AD7606_H_
-+#define IIO_ADC_AD7606_H_
-+
-+/**
-+ * struct ad7606_platform_data - platform/board specific information
-+ * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
-+ * @default_range:	default range +/-{5000, 10000} mVolt
-+ * @gpio_convst:	number of gpio connected to the CONVST pin
-+ * @gpio_reset:		gpio connected to the RESET pin, if not used set to -1
-+ * @gpio_range:		gpio connected to the RANGE pin, if not used set to -1
-+ * @gpio_os0:		gpio connected to the OS0 pin, if not used set to -1
-+ * @gpio_os1:		gpio connected to the OS1 pin, if not used set to -1
-+ * @gpio_os2:		gpio connected to the OS2 pin, if not used set to -1
-+ * @gpio_frstdata:	gpio connected to the FRSTDAT pin, if not used set to -1
-+ * @gpio_stby:		gpio connected to the STBY pin, if not used set to -1
-+ */
-+
-+struct ad7606_platform_data {
-+	unsigned			default_os;
-+	unsigned			default_range;
-+	unsigned			gpio_convst;
-+	unsigned			gpio_reset;
-+	unsigned			gpio_range;
-+	unsigned			gpio_os0;
-+	unsigned			gpio_os1;
-+	unsigned			gpio_os2;
-+	unsigned			gpio_frstdata;
-+	unsigned			gpio_stby;
-+};
-+
-+/**
-+ * struct ad7606_chip_info - chip specific information
-+ * @name:		identification string for chip
-+ * @int_vref_mv:	the internal reference voltage
-+ * @channels:		channel specification
-+ * @num_channels:	number of channels
-+ */
-+
-+struct ad7606_chip_info {
-+	const char			*name;
-+	u16				int_vref_mv;
-+	const struct iio_chan_spec	*channels;
-+	unsigned			num_channels;
-+};
-+
-+/**
-+ * struct ad7606_state - driver instance specific data
-+ */
-+
-+struct ad7606_state {
-+	struct device			*dev;
-+	const struct ad7606_chip_info	*chip_info;
-+	struct ad7606_platform_data	*pdata;
-+	struct regulator		*reg;
-+	struct work_struct		poll_work;
-+	wait_queue_head_t		wq_data_avail;
-+	const struct ad7606_bus_ops	*bops;
-+	unsigned			range;
-+	unsigned			oversampling;
-+	bool				done;
-+	void __iomem			*base_address;
-+
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+
-+	unsigned short			data[8] ____cacheline_aligned;
-+};
-+
-+struct ad7606_bus_ops {
-+	/* more methods added in future? */
-+	int (*read_block)(struct device *, int, void *);
-+};
-+
-+void ad7606_suspend(struct iio_dev *indio_dev);
-+void ad7606_resume(struct iio_dev *indio_dev);
-+struct iio_dev *ad7606_probe(struct device *dev, int irq,
-+			      void __iomem *base_address, unsigned id,
-+			      const struct ad7606_bus_ops *bops);
-+int ad7606_remove(struct iio_dev *indio_dev, int irq);
-+int ad7606_reset(struct ad7606_state *st);
-+
-+enum ad7606_supported_device_ids {
-+	ID_AD7606_8,
-+	ID_AD7606_6,
-+	ID_AD7606_4
-+};
-+
-+int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev);
-+void ad7606_ring_cleanup(struct iio_dev *indio_dev);
-+#endif /* IIO_ADC_AD7606_H_ */
-diff --git a/include/linux/iio/adc/ad7780.h b/include/linux/iio/adc/ad7780.h
-new file mode 100644
-index 0000000..eb23730
---- /dev/null
-+++ b/include/linux/iio/adc/ad7780.h
-@@ -0,0 +1,26 @@
-+/*
-+ * AD7780/AD7781 SPI ADC driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+#ifndef IIO_ADC_AD7780_H_
-+#define IIO_ADC_AD7780_H_
-+
-+/* NOTE:
-+ * The AD7780 doesn't feature a dedicated SPI chip select, in addition it
-+ * features a dual use data out ready DOUT/RDY output.
-+ * In order to avoid contentions on the SPI bus, it's therefore necessary
-+ * to use spi bus locking combined with a dedicated GPIO to control the
-+ * power down reset signal of the AD7780.
-+ *
-+ * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
-+ */
-+
-+struct ad7780_platform_data {
-+	u16				vref_mv;
-+	int				gpio_pdrst;
-+};
-+
-+#endif /* IIO_ADC_AD7780_H_ */
-diff --git a/include/linux/iio/cdc/ad7746.h b/include/linux/iio/cdc/ad7746.h
-new file mode 100644
-index 0000000..4560885
---- /dev/null
-+++ b/include/linux/iio/cdc/ad7746.h
-@@ -0,0 +1,25 @@
-+/*
-+ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef IIO_CDC_AD7746_H_
-+#define IIO_CDC_AD7746_H_
-+
-+#define AD7466_EXCLVL_0		0 /* +-VDD/8 */
-+#define AD7466_EXCLVL_1		1 /* +-VDD/4 */
-+#define AD7466_EXCLVL_2		2 /* +-VDD * 3/8 */
-+#define AD7466_EXCLVL_3		3 /* +-VDD/2 */
-+
-+struct ad7746_platform_data {
-+	unsigned char exclvl;	/*Excitation Voltage Level */
-+	bool exca_en;		/* enables EXCA pin as the excitation output */
-+	bool exca_inv_en;	/* enables /EXCA pin as the excitation output */
-+	bool excb_en;		/* enables EXCB pin as the excitation output */
-+	bool excb_inv_en;	/* enables /EXCB pin as the excitation output */
-+};
-+
-+#endif /* IIO_CDC_AD7746_H_ */
-diff --git a/include/linux/iio/frequency/ad9832.h b/include/linux/iio/frequency/ad9832.h
-new file mode 100644
-index 0000000..a1dbb65
---- /dev/null
-+++ b/include/linux/iio/frequency/ad9832.h
-@@ -0,0 +1,122 @@
-+/*
-+ * AD9832 SPI DDS driver
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2 or later.
-+ */
-+#ifndef IIO_DDS_AD9832_H_
-+#define IIO_DDS_AD9832_H_
-+
-+/* Registers */
-+
-+#define AD9832_FREQ0LL		0x0
-+#define AD9832_FREQ0HL		0x1
-+#define AD9832_FREQ0LM		0x2
-+#define AD9832_FREQ0HM		0x3
-+#define AD9832_FREQ1LL		0x4
-+#define AD9832_FREQ1HL		0x5
-+#define AD9832_FREQ1LM		0x6
-+#define AD9832_FREQ1HM		0x7
-+#define AD9832_PHASE0L		0x8
-+#define AD9832_PHASE0H		0x9
-+#define AD9832_PHASE1L		0xA
-+#define AD9832_PHASE1H		0xB
-+#define AD9832_PHASE2L		0xC
-+#define AD9832_PHASE2H		0xD
-+#define AD9832_PHASE3L		0xE
-+#define AD9832_PHASE3H		0xF
-+
-+#define AD9832_PHASE_SYM	0x10
-+#define AD9832_FREQ_SYM		0x11
-+#define AD9832_PINCTRL_EN	0x12
-+#define AD9832_OUTPUT_EN	0x13
-+
-+/* Command Control Bits */
-+
-+#define AD9832_CMD_PHA8BITSW	0x1
-+#define AD9832_CMD_PHA16BITSW	0x0
-+#define AD9832_CMD_FRE8BITSW	0x3
-+#define AD9832_CMD_FRE16BITSW	0x2
-+#define AD9832_CMD_FPSELECT	0x6
-+#define AD9832_CMD_SYNCSELSRC	0x8
-+#define AD9832_CMD_SLEEPRESCLR	0xC
-+
-+#define AD9832_FREQ		(1 << 11)
-+#define AD9832_PHASE(x)		(((x) & 3) << 9)
-+#define AD9832_SYNC		(1 << 13)
-+#define AD9832_SELSRC		(1 << 12)
-+#define AD9832_SLEEP		(1 << 13)
-+#define AD9832_RESET		(1 << 12)
-+#define AD9832_CLR		(1 << 11)
-+#define CMD_SHIFT		12
-+#define ADD_SHIFT		8
-+#define AD9832_FREQ_BITS	32
-+#define AD9832_PHASE_BITS	12
-+#define RES_MASK(bits)		((1 << (bits)) - 1)
-+
-+/**
-+ * struct ad9832_state - driver instance specific data
-+ * @spi:		spi_device
-+ * @reg:		supply regulator
-+ * @mclk:		external master clock
-+ * @ctrl_fp:		cached frequency/phase control word
-+ * @ctrl_ss:		cached sync/selsrc control word
-+ * @ctrl_src:		cached sleep/reset/clr word
-+ * @xfer:		default spi transfer
-+ * @msg:		default spi message
-+ * @freq_xfer:		tuning word spi transfer
-+ * @freq_msg:		tuning word spi message
-+ * @phase_xfer:		tuning word spi transfer
-+ * @phase_msg:		tuning word spi message
-+ * @data:		spi transmit buffer
-+ * @phase_data:		tuning word spi transmit buffer
-+ * @freq_data:		tuning word spi transmit buffer
-+ */
-+
-+struct ad9832_state {
-+	struct spi_device		*spi;
-+	struct regulator		*reg;
-+	unsigned long			mclk;
-+	unsigned short			ctrl_fp;
-+	unsigned short			ctrl_ss;
-+	unsigned short			ctrl_src;
-+	struct spi_transfer		xfer;
-+	struct spi_message		msg;
-+	struct spi_transfer		freq_xfer[4];
-+	struct spi_message		freq_msg;
-+	struct spi_transfer		phase_xfer[2];
-+	struct spi_message		phase_msg;
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	union {
-+		__be16			freq_data[4]____cacheline_aligned;
-+		__be16			phase_data[2];
-+		__be16			data;
-+	};
-+};
-+
-+/**
-+ * struct ad9832_platform_data - platform specific information
-+ * @mclk:		master clock in Hz
-+ * @freq0:		power up freq0 tuning word in Hz
-+ * @freq1:		power up freq1 tuning word in Hz
-+ * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
-+ * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
-+ * @phase2:		power up phase2 value [0..4095] correlates with 0..2PI
-+ * @phase3:		power up phase3 value [0..4095] correlates with 0..2PI
-+ */
-+
-+struct ad9832_platform_data {
-+	unsigned long		mclk;
-+	unsigned long		freq0;
-+	unsigned long		freq1;
-+	unsigned short		phase0;
-+	unsigned short		phase1;
-+	unsigned short		phase2;
-+	unsigned short		phase3;
-+};
-+
-+#endif /* IIO_DDS_AD9832_H_ */
-diff --git a/include/linux/iio/frequency/ad9834.h b/include/linux/iio/frequency/ad9834.h
-new file mode 100644
-index 0000000..eea59f2
---- /dev/null
-+++ b/include/linux/iio/frequency/ad9834.h
-@@ -0,0 +1,107 @@
-+/*
-+ * AD9833/AD9834/AD9837/AD9838 SPI DDS driver
-+ *
-+ * Copyright 2010-2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+#ifndef IIO_DDS_AD9834_H_
-+#define IIO_DDS_AD9834_H_
-+
-+/* Registers */
-+
-+#define AD9834_REG_CMD		(0 << 14)
-+#define AD9834_REG_FREQ0	(1 << 14)
-+#define AD9834_REG_FREQ1	(2 << 14)
-+#define AD9834_REG_PHASE0	(6 << 13)
-+#define AD9834_REG_PHASE1	(7 << 13)
-+
-+/* Command Control Bits */
-+
-+#define AD9834_B28		(1 << 13)
-+#define AD9834_HLB		(1 << 12)
-+#define AD9834_FSEL		(1 << 11)
-+#define AD9834_PSEL		(1 << 10)
-+#define AD9834_PIN_SW		(1 << 9)
-+#define AD9834_RESET		(1 << 8)
-+#define AD9834_SLEEP1		(1 << 7)
-+#define AD9834_SLEEP12		(1 << 6)
-+#define AD9834_OPBITEN		(1 << 5)
-+#define AD9834_SIGN_PIB		(1 << 4)
-+#define AD9834_DIV2		(1 << 3)
-+#define AD9834_MODE		(1 << 1)
-+
-+#define AD9834_FREQ_BITS	28
-+#define AD9834_PHASE_BITS	12
-+
-+#define RES_MASK(bits)	((1 << (bits)) - 1)
-+
-+/**
-+ * struct ad9834_state - driver instance specific data
-+ * @spi:		spi_device
-+ * @reg:		supply regulator
-+ * @mclk:		external master clock
-+ * @control:		cached control word
-+ * @xfer:		default spi transfer
-+ * @msg:		default spi message
-+ * @freq_xfer:		tuning word spi transfer
-+ * @freq_msg:		tuning word spi message
-+ * @data:		spi transmit buffer
-+ * @freq_data:		tuning word spi transmit buffer
-+ */
-+
-+struct ad9834_state {
-+	struct spi_device		*spi;
-+	struct regulator		*reg;
-+	unsigned int			mclk;
-+	unsigned short			control;
-+	unsigned short			devid;
-+	struct spi_transfer		xfer;
-+	struct spi_message		msg;
-+	struct spi_transfer		freq_xfer[2];
-+	struct spi_message		freq_msg;
-+
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	__be16				data ____cacheline_aligned;
-+	__be16				freq_data[2];
-+};
-+
-+/**
-+ * struct ad9834_platform_data - platform specific information
-+ * @mclk:		master clock in Hz
-+ * @freq0:		power up freq0 tuning word in Hz
-+ * @freq1:		power up freq1 tuning word in Hz
-+ * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
-+ * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
-+ * @en_div2:		digital output/2 is passed to the SIGN BIT OUT pin
-+ * @en_signbit_msb_out:	the MSB (or MSB/2) of the DAC data is connected to the
-+ *			SIGN BIT OUT pin. en_div2 controls whether it is the MSB
-+ *			or MSB/2 that is output. if en_signbit_msb_out=false,
-+ *			the on-board comparator is connected to SIGN BIT OUT
-+ */
-+
-+struct ad9834_platform_data {
-+	unsigned int		mclk;
-+	unsigned int		freq0;
-+	unsigned int		freq1;
-+	unsigned short		phase0;
-+	unsigned short		phase1;
-+	bool			en_div2;
-+	bool			en_signbit_msb_out;
-+};
-+
-+/**
-+ * ad9834_supported_device_ids:
-+ */
-+
-+enum ad9834_supported_device_ids {
-+	ID_AD9833,
-+	ID_AD9834,
-+	ID_AD9837,
-+	ID_AD9838,
-+};
-+
-+#endif /* IIO_DDS_AD9834_H_ */
-diff --git a/include/linux/iio/impedance-analyzer/ad5933.h b/include/linux/iio/impedance-analyzer/ad5933.h
-new file mode 100644
-index 0000000..b140e42
---- /dev/null
-+++ b/include/linux/iio/impedance-analyzer/ad5933.h
-@@ -0,0 +1,28 @@
-+/*
-+ * AD5933 AD5934 Impedance Converter, Network Analyzer
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#ifndef IIO_ADC_AD5933_H_
-+#define IIO_ADC_AD5933_H_
-+
-+/*
-+ * TODO: struct ad5933_platform_data needs to go into include/linux/iio
-+ */
-+
-+/**
-+ * struct ad5933_platform_data - platform specific data
-+ * @ext_clk_Hz:		the external clock frequency in Hz, if not set
-+ *			the driver uses the internal clock (16.776 MHz)
-+ * @vref_mv:		the external reference voltage in millivolt
-+ */
-+
-+struct ad5933_platform_data {
-+	unsigned long			ext_clk_Hz;
-+	unsigned short			vref_mv;
-+};
-+
-+#endif /* IIO_ADC_AD5933_H_ */
+ 	ret = bmc150_accel_chip_init(data);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1099,14 +1212,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	mutex_init(&data->mutex);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->channels = bmc150_accel_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
+-	indio_dev->name = BMC150_ACCEL_DRV_NAME;
++	indio_dev->channels = data->chip_info->channels;
++	indio_dev->num_channels = data->chip_info->num_channels;
++	indio_dev->name = name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmc150_accel_info;
+ 
+ 	if (client->irq < 0)
+-		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
++		client->irq = bmc150_accel_gpio_probe(client, data);
+ 
+ 	if (client->irq >= 0) {
+ 		ret = devm_request_threaded_irq(
+@@ -1284,14 +1397,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
+ };
+ 
+ static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+-	{"BSBA0150", 0},
+-	{"BMC150A", 0},
++	{"BSBA0150",	bmc150},
++	{"BMC150A",	bmc150},
++	{"BMI055A",	bmi055},
++	{"BMA0255",	bma255},
++	{"BMA250E",	bma250e},
++	{"BMA222E",	bma222e},
++	{"BMA0280",	bma280},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+ 
+ static const struct i2c_device_id bmc150_accel_id[] = {
+-	{"bmc150_accel", 0},
++	{"bmc150_accel",	bmc150},
++	{"bmi055_accel",	bmi055},
++	{"bma255",		bma255},
++	{"bma250e",		bma250e},
++	{"bma222e",		bma222e},
++	{"bma280",		bma280},
+ 	{}
+ };
+ 
 -- 
-1.7.11.7
+1.9.1
+
