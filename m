@@ -1,68 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta3.messagelabs.com ([195.245.230.175]:42103 "EHLO
-	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S965765AbaH1Kzi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Aug 2014 06:55:38 -0400
-Message-ID: <09b13677b1e2d1cf02e4eb43e2777f8081ec9597.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Thu, 28 Aug 2014 11:49:19 +0100
-Subject: [PATCH v2 7/7] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
- support list.
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	<devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mga01.intel.com ([192.55.52.88]:36792 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753733AbaH2O1l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 29 Aug 2014 10:27:41 -0400
+From: Laurentiu Palcu <laurentiu.palcu@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Laurentiu Palcu <laurentiu.palcu@intel.com>,
+	Derek Basehore <dbasehore@chromium.org>,
+	Teodora Baluta <teodora.baluta@intel.com>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Jingoo Han <jg1.han@samsung.com>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH 3/3] staging: iio: light: isl29018: add ACPI support
+Date: Fri, 29 Aug 2014 17:26:22 +0300
+Message-Id: <1409322382-30021-4-git-send-email-laurentiu.palcu@intel.com>
+In-Reply-To: <1409322382-30021-1-git-send-email-laurentiu.palcu@intel.com>
+References: <1409322382-30021-1-git-send-email-laurentiu.palcu@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Add support for enumerating the device through ACPI.
+
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
 ---
- MAINTAINERS | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/staging/iio/light/isl29018.c | 46 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 40 insertions(+), 6 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index aefa948..6dc0aee 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2883,12 +2883,15 @@ S:	Supported
- F:	Documentation/hwmon/da90??
- F:	drivers/gpio/gpio-da90??.c
- F:	drivers/hwmon/da90??-hwmon.c
-+F:	drivers/iio/adc/da91??-*.c
- F:	drivers/input/misc/da90??_onkey.c
- F:	drivers/input/touchscreen/da9052_tsi.c
- F:	drivers/leds/leds-da90??.c
- F:	drivers/mfd/da903x.c
- F:	drivers/mfd/da90??-*.c
-+F:	drivers/mfd/da91??-*.c
- F:	drivers/power/da9052-battery.c
-+F:	drivers/power/da91??-*.c
- F:	drivers/regulator/da903x.c
- F:	drivers/regulator/da9???-regulator.[ch]
- F:	drivers/rtc/rtc-da90??.c
-@@ -2898,6 +2901,7 @@ F:	include/linux/mfd/da903x.h
- F:	include/linux/mfd/da9052/
- F:	include/linux/mfd/da9055/
- F:	include/linux/mfd/da9063/
-+F:	include/linux/mfd/da9150/
- F:	include/sound/da[79]*.h
- F:	sound/soc/codecs/da[79]*.[ch]
-
---
-1.9.3
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index b50f126..c54c6ae 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -30,6 +30,7 @@
+ #include <linux/slab.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/acpi.h>
+ 
+ #define CONVERSION_TIME_MS		100
+ 
+@@ -656,12 +657,28 @@ static const struct chip_info chip_info_tbl[] = {
+ 	},
+ };
+ 
++static char *isl29018_match_acpi_device(struct device *dev, int *data)
++{
++	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++
++	if (!id)
++		return NULL;
++
++	*data = (int) id->driver_data;
++
++	return (char *) dev_name(dev);
++}
++
+ static int isl29018_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+ 	struct isl29018_chip *chip;
+ 	struct iio_dev *indio_dev;
+ 	int err;
++	char *name = NULL;
++	int dev_id = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+ 	if (indio_dev == NULL) {
+@@ -673,9 +690,17 @@ static int isl29018_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	chip->dev = &client->dev;
+ 
++	if (id) {
++		name = (char *) id->name;
++		dev_id = id->driver_data;
++	}
++
++	if (ACPI_HANDLE(&client->dev))
++		name = isl29018_match_acpi_device(&client->dev, &dev_id);
++
+ 	mutex_init(&chip->lock);
+ 
+-	chip->type = id->driver_data;
++	chip->type = dev_id;
+ 	chip->lux_scale = 1;
+ 	chip->lux_uscale = 0;
+ 	chip->range = 1000;
+@@ -683,7 +708,7 @@ static int isl29018_probe(struct i2c_client *client,
+ 	chip->suspended = false;
+ 
+ 	chip->regmap = devm_regmap_init_i2c(client,
+-				chip_info_tbl[id->driver_data].regmap_cfg);
++				chip_info_tbl[dev_id].regmap_cfg);
+ 	if (IS_ERR(chip->regmap)) {
+ 		err = PTR_ERR(chip->regmap);
+ 		dev_err(chip->dev, "regmap initialization failed: %d\n", err);
+@@ -694,10 +719,10 @@ static int isl29018_probe(struct i2c_client *client,
+ 	if (err)
+ 		return err;
+ 
+-	indio_dev->info = chip_info_tbl[id->driver_data].indio_info;
+-	indio_dev->channels = chip_info_tbl[id->driver_data].channels;
+-	indio_dev->num_channels = chip_info_tbl[id->driver_data].num_channels;
+-	indio_dev->name = id->name;
++	indio_dev->info = chip_info_tbl[dev_id].indio_info;
++	indio_dev->channels = chip_info_tbl[dev_id].channels;
++	indio_dev->num_channels = chip_info_tbl[dev_id].num_channels;
++	indio_dev->name = name;
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	err = devm_iio_device_register(&client->dev, indio_dev);
+@@ -747,6 +772,14 @@ static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
+ #define ISL29018_PM_OPS NULL
+ #endif
+ 
++static const struct acpi_device_id isl29018_acpi_match[] = {
++	{"ISL29018", isl29018},
++	{"ISL29023", isl29023},
++	{"ISL29035", isl29035},
++	{},
++};
++MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
++
+ static const struct i2c_device_id isl29018_id[] = {
+ 	{"isl29018", isl29018},
+ 	{"isl29023", isl29023},
+@@ -768,6 +801,7 @@ static struct i2c_driver isl29018_driver = {
+ 	.class	= I2C_CLASS_HWMON,
+ 	.driver	 = {
+ 			.name = "isl29018",
++			.acpi_match_table = ACPI_PTR(isl29018_acpi_match),
+ 			.pm = ISL29018_PM_OPS,
+ 			.owner = THIS_MODULE,
+ 			.of_match_table = isl29018_of_match,
+-- 
+1.9.1
 
