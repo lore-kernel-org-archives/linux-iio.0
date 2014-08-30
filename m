@@ -1,96 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:58031 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751007AbaH3Mjg convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 08:39:36 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	=?utf-8?B?ZWRkaWUo6JSh5p6rKQ==?= <cf@rock-chips.com>,
-	huangtao@rock-chips.com
-Subject: Re: [PATCH v6 2/2] dt-bindings: document Rockchip saradc
-Date: Sat, 30 Aug 2014 14:41:33 +0200
-Message-ID: <1737237.SiLPTrUivB@diego>
-In-Reply-To: <53E38A18.5090203@kernel.org>
-References: <1984475.34C1XMW1q3@diego> <8132020.MqcOnlblHg@diego> <53E38A18.5090203@kernel.org>
+Received: from mail-we0-f176.google.com ([74.125.82.176]:59466 "EHLO
+	mail-we0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751194AbaH3Kpc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:45:32 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <5401A0A6.9010200@kernel.org>
+References: <1408699042-17336-1-git-send-email-daniel.baluta@intel.com>
+	<53FD9B88.5070901@gmx.de>
+	<5401A0A6.9010200@kernel.org>
+Date: Sat, 30 Aug 2014 13:45:30 +0300
+Message-ID: <CAEnQRZAO1Zj5qX48A0ao_peiggE11WQJGYxcGmn6quZ-9O0P2w@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: Add Dyna-Image AL3320A ambient light sensor driver
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Tsechih_Lin@asus.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Donnerstag, 7. August 2014, 15:15:52 schrieb Jonathan Cameron:
-> On 23/07/14 22:24, Heiko Stübner wrote:
-> > This add the necessary binding documentation for the saradc found in all
-> > recent processors from Rockchip.
-> > 
-> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> 
-> Applied to the togreg branch of iio.git.
-> I have exercised a small amount of discretion wrt to the standard 3 weeks
-> as there really is very little different in here from previous versions
-> and no one has raised any comments on them.
+On Sat, Aug 30, 2014 at 1:00 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 27/08/14 09:49, Hartmut Knaack wrote:
+>> Daniel Baluta schrieb:
+>>> Minimal implementation. This driver provides raw illuminance readings.
+>>>
+>>> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+>>> by Tsechih Lin <Tsechih_Lin@asus.com>
+>>>
+>>> * https://android.googlesource.com/kernel/msm.git
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> Hi, I think you should protect your write_raw with a mutex.
+> Either that or drop the local store of the value and read it back from
+> the device (assuming you can!).  That way everything becomes nice an
+> atomic.  It's a rather narrow race, but Hartmut is correct in pointing it
+> out.
+>
+> Few comments inline, mostly about my pet peeve: wrapper functions that don't
+> do much.  Note I'm not that fussed if you really really want to keep them ;)
+>
+> Otherwise, looks good.
+>
 
-Did the binding patch make it into any tree? Because when I grep for saradc in 
-either linux-next or the iio tree I only get patch 1/2 (the driver itself) but 
-the binding document is somehow missing.
+Thanks a lot for review Hartmut, Jonathan!
 
+I will send v3 on Monday after I will re-test the changes.
 
-Thanks
-Heiko
-
-
-> 
-> It's nearly 3 weeks anyway!
-> 
-> J
-> 
-> > ---
-> > changes since v5:
-> > - remove clock-frquency property as described in patch 1/2
-> > 
-> >  .../bindings/iio/adc/rockchip-saradc.txt           | 24
-> >  ++++++++++++++++++++++ 1 file changed, 24 insertions(+)
-> >  create mode 100644
-> >  Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt> 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> > b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt new file
-> > mode 100644
-> > index 0000000..5d3ec1d
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> > @@ -0,0 +1,24 @@
-> > +Rockchip Successive Approximation Register (SAR) A/D Converter bindings
-> > +
-> > +Required properties:
-> > +- compatible: Should be "rockchip,saradc"
-> > +- reg: physical base address of the controller and length of memory
-> > mapped
-> > +       region.
-> > +- interrupts: The interrupt number to the cpu. The interrupt specifier
-> > format +              depends on the interrupt controller.
-> > +- clocks: Must contain an entry for each entry in clock-names.
-> > +- clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk"
-> > for +               the peripheral clock.
-> > +- vref-supply: The regulator supply ADC reference voltage.
-> > +- #io-channel-cells: Should be 1, see ../iio-bindings.txt
-> > +
-> > +Example:
-> > +	saradc: saradc@2006c000 {
-> > +		compatible = "rockchip,saradc";
-> > +		reg = <0x2006c000 0x100>;
-> > +		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-> > +		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
-> > +		clock-names = "saradc", "apb_pclk";
-> > +		#io-channel-cells = <1>;
-> > +		vref-supply = <&vcc18>;
-> > +	};
-
+Daniel.
