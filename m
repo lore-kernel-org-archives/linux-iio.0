@@ -1,70 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60894 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751194AbaH3Kpf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:45:35 -0400
-Message-ID: <5401AB4D.4000103@kernel.org>
-Date: Sat, 30 Aug 2014 11:45:33 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from gloria.sntech.de ([95.129.55.99]:57561 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751194AbaH3Ktz convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:49:55 -0400
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: handle -EPROBE_DEFER in of_iio_channel_get_by_name
+Date: Sat, 30 Aug 2014 12:51:55 +0200
+Message-ID: <1889900.9ty4gGSZCE@diego>
+In-Reply-To: <5401A770.3040204@kernel.org>
+References: <4420839.L1RSpT2Pjo@diego> <5401A770.3040204@kernel.org>
 MIME-Version: 1.0
-To: Laurentiu Palcu <laurentiu.palcu@intel.com>,
-	linux-iio@vger.kernel.org
-CC: srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: accel: BMC150: fix issues when CONFIG_PM_RUNTIME
- is not set
-References: <1409301488-22166-1-git-send-email-laurentiu.palcu@intel.com> <1409301488-22166-3-git-send-email-laurentiu.palcu@intel.com>
-In-Reply-To: <1409301488-22166-3-git-send-email-laurentiu.palcu@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/08/14 09:38, Laurentiu Palcu wrote:
-> When CONFIG_PM_RUNTIME is not set, the following issues are seen:
->  * warning message at compilation time:
->     warning: 'bmc150_accel_get_startup_times' defined but not used [-Wunused-function]
->  * bmc150_accel_set_power_state() will always fail and reading the
->    accelerometer data is impossible;
-Why? Would be good to have an explanation here...
+Am Samstag, 30. August 2014, 11:29:04 schrieb Jonathan Cameron:
+> On 28/08/14 23:13, Heiko Stübner wrote:
+> > Till now of_iio_channel_get_by_name always tried to find the channel
+> > without evaluating the return code from of_iio_channel_get. This might
+> > include -EPROBE_DEFER in which case the channel is present but its driver
+> > simply not probed yet. Therefore simply return on -EPROBE_DEFER so that
+> > the driver requesting the channel can also defer.
+> > 
+> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> 
+> I already have a patch queued up for this change in the fixes-togreg branch
+> 
+> [PATCH] iio:inkern: fix overwritten -EPROBE_DEFER in
+> of_iio_channel_get_by_name by Johannes Pointner
+> 
+> I'm just being a little slow catching up with patches at the moment.
 
-If on is true then it will call pm_runtime_get_sync which calls __pm_runtime_resume
-which when CONFIG_PM_RUNTIME is not defined returns 1 which is not an error.
+no problem ... at least the issue got fixed :-)
 
-In the on = false case it calls pm_runtime_put_autosuspend which calls __pm_runtime_suspend
-which returns -ENOSYS and gives our error.
 
-I'll add something to the patch description to this effect.
 > 
-> This commit fixes these.
+> J
 > 
-> Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
-> ---
->  drivers/iio/accel/bmc150-accel.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index ccb6cf8..0e6566a 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -499,6 +499,7 @@ static int bmc150_accel_get_bw(struct bmc150_accel_data *data, int *val,
->  	return -EINVAL;
->  }
->  
-> +#ifdef CONFIG_PM_RUNTIME
->  static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
->  {
->  	int i;
-> @@ -529,6 +530,12 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
->  
->  	return 0;
->  }
-> +#else
-> +static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
-> +{
-> +	return 0;
-> +}
-> +#endif
->  
->  static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
->  {
-> 
+> > ---
+> > 
+> >  drivers/iio/inkern.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > index c749700..f084610 100644
+> > --- a/drivers/iio/inkern.c
+> > +++ b/drivers/iio/inkern.c
+> > @@ -178,7 +178,7 @@ static struct iio_channel
+> > *of_iio_channel_get_by_name(struct device_node *np,> 
+> >  			index = of_property_match_string(np, "io-channel-names",
+> >  			
+> >  							 name);
+> >  		
+> >  		chan = of_iio_channel_get(np, index);
+> > 
+> > -		if (!IS_ERR(chan))
+> > +		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
+> > 
+> >  			break;
+> >  		
+> >  		else if (name && index >= 0) {
+> >  		
+> >  			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+
