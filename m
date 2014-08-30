@@ -1,205 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:58208 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751603AbaH3NFv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 30 Aug 2014 09:05:51 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH] iio: adc: rockchip_saradc: add support for rk3066-tsadc variant
-Date: Sat, 30 Aug 2014 15:07:49 +0200
-Message-ID: <1999284.oRCTeZRSv1@diego>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60775 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751152AbaH3K3I (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:29:08 -0400
+Message-ID: <5401A770.3040204@kernel.org>
+Date: Sat, 30 Aug 2014 11:29:04 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: =?windows-1252?Q?Heiko_St=FCbner?= <heiko@sntech.de>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: handle -EPROBE_DEFER in of_iio_channel_get_by_name
+References: <4420839.L1RSpT2Pjo@diego>
+In-Reply-To: <4420839.L1RSpT2Pjo@diego>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
-for temperature measurements. This so called tsadc does not contain any
-active parts like temperature interrupts and only supports polling the
-current temperature. The returned voltage can then be converted by a
-suitable thermal driver to and actual temperature and used for thermal
-handling.
+On 28/08/14 23:13, Heiko Stübner wrote:
+> Till now of_iio_channel_get_by_name always tried to find the channel without
+> evaluating the return code from of_iio_channel_get. This might include
+> -EPROBE_DEFER in which case the channel is present but its driver simply not
+> probed yet. Therefore simply return on -EPROBE_DEFER so that the driver
+> requesting the channel can also defer.
+> 
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+I already have a patch queued up for this change in the fixes-togreg branch
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
-This is a different IP than the rk3288-tsadc Ceasar provided a driver for.
-As the commit messages states, the one used on the rk3066 is just a saradc,
-while the new tsadc in the rk3288 contains active components for thermal
-handling.
+[PATCH] iio:inkern: fix overwritten -EPROBE_DEFER in of_iio_channel_get_by_name by Johannes Pointner
 
-A working example using the pending iio-thermal driver can found on
-https://github.com/mmind/linux-rockchip/commit/c07e02f069d9677d489f254176619fae36f2aad0
+I'm just being a little slow catching up with patches at the moment.
 
- .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
- drivers/iio/adc/rockchip_saradc.c                  | 62 +++++++++++++++++-----
- 2 files changed, 50 insertions(+), 14 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-index 5d3ec1d..a9a5fe1 100644
---- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -1,7 +1,7 @@
- Rockchip Successive Approximation Register (SAR) A/D Converter bindings
- 
- Required properties:
--- compatible: Should be "rockchip,saradc"
-+- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
- - reg: physical base address of the controller and length of memory mapped
-        region.
- - interrupts: The interrupt number to the cpu. The interrupt specifier format
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index e074a0b..7effada 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -18,13 +18,13 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/clk.h>
- #include <linux/completion.h>
- #include <linux/regulator/consumer.h>
- #include <linux/iio/iio.h>
- 
- #define SARADC_DATA			0x00
--#define SARADC_DATA_MASK		0x3ff
- 
- #define SARADC_STAS			0x04
- #define SARADC_STAS_BUSY		BIT(0)
-@@ -38,15 +38,22 @@
- #define SARADC_DLY_PU_SOC		0x0c
- #define SARADC_DLY_PU_SOC_MASK		0x3f
- 
--#define SARADC_BITS			10
- #define SARADC_TIMEOUT			msecs_to_jiffies(100)
- 
-+struct rockchip_saradc_data {
-+	int				num_bits;
-+	const struct iio_chan_spec	*channels;
-+	int				num_channels;
-+	unsigned long			clk_rate;
-+};
-+
- struct rockchip_saradc {
- 	void __iomem		*regs;
- 	struct clk		*pclk;
- 	struct clk		*clk;
- 	struct completion	completion;
- 	struct regulator	*vref;
-+	const struct rockchip_saradc_data *data;
- 	u16			last_val;
- };
- 
-@@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
- 		}
- 
- 		*val = ret / 1000;
--		*val2 = SARADC_BITS;
-+		*val2 = info->data->num_bits;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	default:
- 		return -EINVAL;
-@@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
- 
- 	/* Read value */
- 	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
--	info->last_val &= SARADC_DATA_MASK;
-+	info->last_val &= BIT(info->data->num_bits) - 1;
- 
- 	/* Clear irq & power down adc */
- 	writel_relaxed(0, info->regs + SARADC_CTRL);
-@@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
- 	ADC_CHANNEL(2, "adc2"),
- };
- 
-+static const struct rockchip_saradc_data saradc_data = {
-+	.num_bits = 10,
-+	.channels = rockchip_saradc_iio_channels,
-+	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
-+	.clk_rate = 1000000,
-+};
-+
-+static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
-+	ADC_CHANNEL(0, "adc0"),
-+	ADC_CHANNEL(1, "adc1"),
-+};
-+
-+static const struct rockchip_saradc_data rk3066_tsadc_data = {
-+	.num_bits = 12,
-+	.channels = rockchip_rk3066_tsadc_iio_channels,
-+	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
-+	.clk_rate = 50000,
-+};
-+
-+static const struct of_device_id rockchip_saradc_match[] = {
-+	{
-+		.compatible = "rockchip,saradc",
-+		.data = &saradc_data,
-+	}, {
-+		.compatible = "rockchip,rk3066-tsadc",
-+		.data = &rk3066_tsadc_data,
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-+
- static int rockchip_saradc_probe(struct platform_device *pdev)
- {
- 	struct rockchip_saradc *info = NULL;
- 	struct device_node *np = pdev->dev.of_node;
- 	struct iio_dev *indio_dev = NULL;
- 	struct resource	*mem;
-+	const struct of_device_id *match;
- 	int ret;
- 	int irq;
- 
-@@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	}
- 	info = iio_priv(indio_dev);
- 
-+	match = of_match_device(rockchip_saradc_match, &pdev->dev);
-+	info->data = match->data;
-+
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->regs = devm_ioremap_resource(&pdev->dev, mem);
- 	if (IS_ERR(info->regs))
-@@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	 * Use a default of 1MHz for the converter clock.
- 	 * This may become user-configurable in the future.
- 	 */
--	ret = clk_set_rate(info->clk, 1000000);
-+	ret = clk_set_rate(info->clk, info->data->clk_rate);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
- 		return ret;
-@@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	indio_dev->info = &rockchip_saradc_iio_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	indio_dev->channels = rockchip_saradc_iio_channels;
--	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
-+	indio_dev->channels = info->data->channels;
-+	indio_dev->num_channels = info->data->num_channels;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
-@@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
- static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
- 			 rockchip_saradc_suspend, rockchip_saradc_resume);
- 
--static const struct of_device_id rockchip_saradc_match[] = {
--	{ .compatible = "rockchip,saradc" },
--	{},
--};
--MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
--
- static struct platform_driver rockchip_saradc_driver = {
- 	.probe		= rockchip_saradc_probe,
- 	.remove		= rockchip_saradc_remove,
--- 
-2.0.1
-
-
+J
+> ---
+>  drivers/iio/inkern.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index c749700..f084610 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -178,7 +178,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+>  			index = of_property_match_string(np, "io-channel-names",
+>  							 name);
+>  		chan = of_iio_channel_get(np, index);
+> -		if (!IS_ERR(chan))
+> +		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
+>  			break;
+>  		else if (name && index >= 0) {
+>  			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+> 
