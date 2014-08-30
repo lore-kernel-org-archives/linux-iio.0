@@ -1,51 +1,135 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60775 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60383 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751152AbaH3K3I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 06:29:08 -0400
-Message-ID: <5401A770.3040204@kernel.org>
-Date: Sat, 30 Aug 2014 11:29:04 +0100
+	with ESMTP id S1751137AbaH3JeO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 30 Aug 2014 05:34:14 -0400
+Message-ID: <54019A92.9010907@kernel.org>
+Date: Sat, 30 Aug 2014 10:34:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: =?windows-1252?Q?Heiko_St=FCbner?= <heiko@sntech.de>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: handle -EPROBE_DEFER in of_iio_channel_get_by_name
-References: <4420839.L1RSpT2Pjo@diego>
-In-Reply-To: <4420839.L1RSpT2Pjo@diego>
-Content-Type: text/plain; charset=windows-1252
+To: Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
+ delay, averaging DT parameters
+References: <1409141990-29627-1-git-send-email-vigneshr@ti.com> <1409141990-29627-2-git-send-email-vigneshr@ti.com> <20140827135635.GH6364@lee--X1> <53FEBA43.2000607@ti.com> <20140828071123.GE24579@lee--X1>
+In-Reply-To: <20140828071123.GE24579@lee--X1>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/08/14 23:13, Heiko Stübner wrote:
-> Till now of_iio_channel_get_by_name always tried to find the channel without
-> evaluating the return code from of_iio_channel_get. This might include
-> -EPROBE_DEFER in which case the channel is present but its driver simply not
-> probed yet. Therefore simply return on -EPROBE_DEFER so that the driver
-> requesting the channel can also defer.
+On 28/08/14 08:11, Lee Jones wrote:
+> On Thu, 28 Aug 2014, Vignesh R wrote:
+>> On Wednesday 27 August 2014 07:26 PM, Lee Jones wrote:
+>>> On Wed, 27 Aug 2014, Vignesh R wrote:
+>>>
+>>>> Number of averaging, open delay, sample delay are made DT parameters.
+>>>> By decreasing averaging and delays more samples can be obtained per
+>>>> second increasing performance of ADC. Previously the number of
+>>>> averages per step was fixed to 16. Making these parameters
+>>>> configurable will help in balancing speed vs accuracy.
+>>>> For each ADC step provide DT based paramters to set open delay,
+>>>> sample delay and number of averaging. One configurable step is
+>>>> used per ADC channel. Since there can be atmost 8 ADC channels,
+>>>> steps 16 to 8 are used for ADC.
+>>>>
+>>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>>>> ---
+>>>>  .../bindings/input/touchscreen/ti-tsc-adc.txt      |   18 +++++++
+>>>>  drivers/iio/adc/ti_am335x_adc.c                    |   49 +++++++++++++++++---
+>>>>  include/linux/mfd/ti_am335x_tscadc.h               |    3 ++
+>>>>  3 files changed, 63 insertions(+), 7 deletions(-)
+>>>
+>>> [...]
+>>>
+>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>>>> index fb96c84..26d3e84 100644
+>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>>>> @@ -82,14 +82,17 @@
+>>>
+>>> There are so many different formats at play here, it's difficult to
+>>> see what's happening where!
+>>
+>> I did not understand "different formats". Please explain.
 > 
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-I already have a patch queued up for this change in the fixes-togreg branch
-
-[PATCH] iio:inkern: fix overwritten -EPROBE_DEFER in of_iio_channel_get_by_name by Johannes Pointner
-
-I'm just being a little slow catching up with patches at the moment.
-
-J
-> ---
->  drivers/iio/inkern.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> My complaint is with the existing layout, rather than your patch:
 > 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index c749700..f084610 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -178,7 +178,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
->  			index = of_property_match_string(np, "io-channel-names",
->  							 name);
->  		chan = of_iio_channel_get(np, index);
-> -		if (!IS_ERR(chan))
-> +		if (!IS_ERR(chan) || PTR_ERR(chan) == -EPROBE_DEFER)
->  			break;
->  		else if (name && index >= 0) {
->  			pr_err("ERROR: could not get IIO channel %s:%s(%i)\n",
+>> #define STEPCONFIG_INP_AN4     STEPCONFIG_INP(4)
+>> #define STEPCONFIG_INP_ADCREFM STEPCONFIG_INP(8)
+>> #define STEPCONFIG_FIFO1       BIT(26)
+> 
+> Base10 MACROS.
+> 
+> #define STEPCONFIG_AVG_MAX     16
+> 
+> Base10 int.
+> 
+>> /* Delay register */
+>> #define STEPDELAY_OPEN_MASK    (0x3FFFF << 0)
+> 
+> Base16 shift.
+> 
+>> #define STEPDELAY_OPEN(val)    ((val) << 0)
+> 
+> MACRO shift.
+> 
+>> #define STEPCONFIG_OPENDLY     STEPDELAY_OPEN(0x098)
+> 
+> Base16 MACRO.
+> 
+>> #define STEPDELAY_OPEN_MAX     0x3FFFF
+> 
+> Base16 int.
+> 
+>> #define STEPDELAY_SAMPLE_MASK  (0xFF << 24)
+> 
+> Base16 shift.
+> 
+>> #define STEPDELAY_SAMPLE(val)  ((val) << 24)
+> 
+> MACRO shift.
+> 
+>> #define STEPCONFIG_SAMPLEDLY   STEPDELAY_SAMPLE(0)
+> 
+> 24 shift of 0 (still zero?).
+> 
+>> #define STEPDELAY_SAMPLE_MAX   0xFF
+> 
+> Base16 int.
+> 
+> There is no consistency here, it's just a bunch of 'stuff', which
+> makes making sense of them all difficult.
+> 
+>>>>  #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+>>>>  #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+>>>>  #define STEPCONFIG_FIFO1	BIT(26)
+>>>> +#define STEPCONFIG_AVG_MAX	16
+>>>>  
+>>>>  /* Delay register */
+>>>>  #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
+>>>>  #define STEPDELAY_OPEN(val)	((val) << 0)
+>>>
+>>> What's the point in shifting by zero?
+>>
+>> I agree. But my patch did not add these lines. I can remove them. Do you
+>> want me to do this change as part of current patch or as a separate
+>> cleanup patch?
+> 
+> That's up to Jonathan.
+I'm always happy to take sane cleanups like this.  Separate cleanup patch please.
+That way it's easy to verify that there are no functional changes without it
+getting in the way of the 'interesting' patch.
+
+Thanks,
+
+Jonathan
 > 
