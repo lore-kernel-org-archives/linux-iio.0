@@ -1,53 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40501 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751024AbaHaKkS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 31 Aug 2014 06:40:18 -0400
-Message-ID: <5402FB8A.8010905@kernel.org>
-Date: Sun, 31 Aug 2014 11:40:10 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <Naidu.Tellapati@imgtec.com>
+From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Subject: pushing SOC specific Trigger provider driver to upstream kernel
+Date: Sun, 31 Aug 2014 14:50:17 +0000
+Message-ID: <27E62D98F903554192E3C13AFCC91C3C2B778F57@hbmail01.hb.imgtec.org>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-To: =?UTF-8?B?U8O2cmVuIEJyaW5rbWFubg==?= <soeren.brinkmann@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: ad7606_core: Fix checkpatch warning
-References: <1409468254-5312-1-git-send-email-soeren.brinkmann@gmail.com>
-In-Reply-To: <1409468254-5312-1-git-send-email-soeren.brinkmann@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 31/08/14 07:57, Sören Brinkmann wrote:
-> Fix the checkpatch complaint regarding unnecessary line continuation.
->   WARNING: Avoid unnecessary line continuations
->   #143: FILE: ad7606_core.c:143:
-> 
-> Signed-off-by: Sören Brinkmann <soeren.brinkmann@gmail.com>
-Applied to the togreg branch of iio.git.  Initially pushed out as testing for the
-autobuilders to play.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7606_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index f0f05f195d2c..bf2c8013134c 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -140,7 +140,7 @@ static ssize_t ad7606_store_range(struct device *dev,
->  	return count;
->  }
->  
-> -static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR, \
-> +static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
->  		       ad7606_show_range, ad7606_store_range, 0);
->  static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
->  
-> 
+Hi Mr. Jonathan and all,=0A=
+=0A=
+My name is Naidu Tellapati from India. I work for Imagination Technologies,=
+ India. Thanks in advance for your help in this regard.=0A=
+=0A=
+After going through some of the emails in the Linux-IIO email archive, we h=
+ave taken the following approach to implement our Linux IIO based ADC drive=
+r.=0A=
+=0A=
+We are planning to have two drivers as part of our implementation.=0A=
+=0A=
+1. Timer's Periodic Interrupt Trigger Provider IIO driver (This driver uses=
+ our SOC specific Timer's periodic interrupt)=0A=
+=0A=
+2. The generic IIO ADC driver (This ADC driver uses the periodic Timer Inte=
+rrupt Trigger provided by the above driver)=0A=
+=0A=
+The plan is to push both the drivers upstream to kernel.org. Now please sug=
+gest us, do you consider SOC specific Trigger Provider driver as well for p=
+ushing upstream to kernel.org ?=0A=
+=0A=
+=0A=
+Thanks in advance,=0A=
+=0A=
+Regards,=0A=
+Naidu.=0A=
+=0A=
+=0A=
+=0A=
