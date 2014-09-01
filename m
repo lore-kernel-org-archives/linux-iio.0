@@ -1,247 +1,451 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:38729 "EHLO arroyo.ext.ti.com"
+Received: from mga02.intel.com ([134.134.136.20]:33303 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752245AbaIAGlQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 1 Sep 2014 02:41:16 -0400
-Message-ID: <540414D0.3070709@ti.com>
-Date: Mon, 1 Sep 2014 12:10:16 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-CC: Randy Dunlap <rdunlap@infradead.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	<devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
- delay, averaging DT parameters
-References: <1409141990-29627-1-git-send-email-vigneshr@ti.com> <1409141990-29627-2-git-send-email-vigneshr@ti.com> <54019CDC.5060107@kernel.org>
-In-Reply-To: <54019CDC.5060107@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+	id S1752342AbaIAJMR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 1 Sep 2014 05:12:17 -0400
+From: Laurentiu Palcu <laurentiu.palcu@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Laurentiu Palcu <laurentiu.palcu@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch chips
+Date: Mon,  1 Sep 2014 12:11:38 +0300
+Message-Id: <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
+In-Reply-To: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
+References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+The following chips are either similar or have only the resolution
+different. Hence, change this driver to support these chips too:
 
-On Saturday 30 August 2014 03:13 PM, Jonathan Cameron wrote:
-> On 27/08/14 13:19, Vignesh R wrote:
->> Number of averaging, open delay, sample delay are made DT parameters.
->> By decreasing averaging and delays more samples can be obtained per
->> second increasing performance of ADC. Previously the number of
->> averages per step was fixed to 16. Making these parameters
->> configurable will help in balancing speed vs accuracy.
->> For each ADC step provide DT based paramters to set open delay,
->> sample delay and number of averaging. One configurable step is
->> used per ADC channel. Since there can be atmost 8 ADC channels,
->> steps 16 to 8 are used for ADC.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> 
-> My main question here is whether these make sense purely as DT parameters
-> or whether userspace control would be useful?  Still, even if we add that
-> later, there is nothing wrong with specifying an initial value in the DT.
-> 
+BMI055  - combo chip (accelerometer part is identical to BMC150's)
+BMA255  - identical to BMC150's accelerometer
+BMA222E - 8 bit resolution
+BMA250E - 10 bit resolution
+BMA280  - 14 bit resolution
 
-I agree. These value can act as initial hardware parameters. Will look
-at adding userspace control in another patch.
+Additionally:
+ * add bmc150_accel_match_acpi_device() function to check that the device
+   has been enumerated through ACPI;
+ * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+   since the ACPI matching has been moved to the new function.  Also, this
+   will allow for the GPIO matching to be done against a device tree too, not only
+   ACPI tree;
 
-> Average in particular strikes me as a straight forward parameter where userspace
-> control might make sense...
-> 
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
+---
 
-I looked at Documentation/ABI/testing/sysfs-bus-iio but could not find
-any framework support to make step-average a sysfs entry. Looks like I
-need to create a new (my hardware specific) sysfs entry?
+Changes in v3:
+ * remove the chip id macros since they were not used anywhere else and put the id
+   values directly in the chip info table;
+ * fix the unnecessary casting from const char * to char * and back;
 
-> Mostly fine, but I think your example has a stray F.
+Thank you Jonathan for the reviews,
+laurentiu
 
-Actually maximum value for step-opendelay is 0x3FFFF (18 bits). I will
-correct the documentation.
+ drivers/iio/accel/bmc150-accel.c | 225 +++++++++++++++++++++++++++++----------
+ 1 file changed, 171 insertions(+), 54 deletions(-)
 
-> 
-> J
->> ---
->>  .../bindings/input/touchscreen/ti-tsc-adc.txt      |   18 +++++++
->>  drivers/iio/adc/ti_am335x_adc.c                    |   49 +++++++++++++++++---
->>  include/linux/mfd/ti_am335x_tscadc.h               |    3 ++
->>  3 files changed, 63 insertions(+), 7 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> index 878549b..09ac097 100644
->> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> @@ -27,6 +27,21 @@ Required properties:
->>  - child "adc"
->>  	ti,adc-channels: List of analog inputs available for ADC.
->>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
->> +Optional properties:
->> +- child "adc"
->> +	ti,step-opendelay: List of open delays for each channel of ADC in the order
->> +			   of ti,adc-channels. This value is written to corresponding
->> +			   step-config register. Default value is 0x098.
->> +			   Maximum value is 0x3FFF.
-> 
-> Any chance of real numbers in here rather than magic constants? If they are real
-> numbers, then some explanation of how they relate to time would be good. 
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 0e6566a..72f4250 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -1,5 +1,12 @@
+ /*
+- * BMC150 3-axis accelerometer driver
++ * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
++ *  - BMC150
++ *  - BMI055
++ *  - BMA255
++ *  - BMA250E
++ *  - BMA222E
++ *  - BMA280
++ *
+  * Copyright (c) 2014, Intel Corporation.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+@@ -34,7 +41,6 @@
+ #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
+ 
+ #define BMC150_ACCEL_REG_CHIP_ID		0x00
+-#define BMC150_ACCEL_CHIP_ID_VAL		0xFA
+ 
+ #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+ #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
+@@ -126,6 +132,18 @@ enum bmc150_power_modes {
+ 	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
+ };
+ 
++struct bmc150_scale_info {
++	int scale;
++	int range;
++};
++
++struct bmc150_accel_chip_info {
++	u8 chip_id;
++	const struct iio_chan_spec *channels;
++	int num_channels;
++	const struct bmc150_scale_info scale_table[4];
++};
++
+ struct bmc150_accel_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *dready_trig;
+@@ -140,6 +158,7 @@ struct bmc150_accel_data {
+ 	bool dready_trigger_on;
+ 	bool motion_trigger_on;
+ 	int64_t timestamp;
++	const struct bmc150_accel_chip_info *chip_info;
+ };
+ 
+ static const struct {
+@@ -168,14 +187,6 @@ static const struct {
+ 				     {0x0F, 1} };
+ 
+ static const struct {
+-	int scale;
+-	int range;
+-} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+-				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+-				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+-				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
+-
+-static const struct {
+ 	int sleep_dur;
+ 	int reg_value;
+ } bmc150_accel_sleep_value_table[] = { {0, 0},
+@@ -267,7 +278,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 	}
+ 
+ 	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+-	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
++	if (ret != data->chip_info->chip_id) {
+ 		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
+ 		return -ENODEV;
+ 	}
+@@ -541,19 +552,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+ {
+ 	int ret, i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
+-		if (bmc150_accel_scale_table[i].scale == val) {
++	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
++		if (data->chip_info->scale_table[i].scale == val) {
+ 			ret = i2c_smbus_write_byte_data(
+ 					data->client,
+ 					BMC150_ACCEL_REG_PMU_RANGE,
+-					bmc150_accel_scale_table[i].range);
++					data->chip_info->scale_table[i].range);
+ 			if (ret < 0) {
+ 				dev_err(&data->client->dev,
+ 					"Error writing pmu_range\n");
+ 				return ret;
+ 			}
+ 
+-			data->range = bmc150_accel_scale_table[i].range;
++			data->range = data->chip_info->scale_table[i].range;
+ 			return 0;
+ 		}
+ 	}
+@@ -580,10 +591,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+ 	return IIO_VAL_INT;
+ }
+ 
+-static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
++static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
++				 struct iio_chan_spec const *chan,
+ 				 int *val)
+ {
+ 	int ret;
++	int axis = chan->scan_index;
+ 
+ 	mutex_lock(&data->mutex);
+ 	ret = bmc150_accel_set_power_state(data, true);
+@@ -600,7 +613,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+-	*val = sign_extend32(ret >> 4, 11);
++	*val = sign_extend32(ret >> chan->scan_type.shift,
++			     chan->scan_type.realbits - 1);
+ 	ret = bmc150_accel_set_power_state(data, false);
+ 	mutex_unlock(&data->mutex);
+ 	if (ret < 0)
+@@ -625,9 +639,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+ 			if (iio_buffer_enabled(indio_dev))
+ 				return -EBUSY;
+ 			else
+-				return bmc150_accel_get_axis(data,
+-							     chan->scan_index,
+-							     val);
++				return bmc150_accel_get_axis(data, chan, val);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+ 		{
+ 			int i;
+ 
+-			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+-									 ++i) {
+-				if (bmc150_accel_scale_table[i].range ==
++			for (i = 0;
++			     i < ARRAY_SIZE(data->chip_info->scale_table);
++			     ++i) {
++				if (data->chip_info->scale_table[i].range ==
+ 								data->range) {
+ 					*val2 =
+-					bmc150_accel_scale_table[i].scale;
++					data->chip_info->scale_table[i].scale;
+ 					return IIO_VAL_INT_PLUS_MICRO;
+ 				}
+ 			}
+@@ -840,7 +853,7 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 				 BIT(IIO_EV_INFO_PERIOD)
+ };
+ 
+-#define BMC150_ACCEL_CHANNEL(_axis) {					\
++#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
+ 	.type = IIO_ACCEL,						\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##_axis,					\
+@@ -850,26 +863,101 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 	.scan_index = AXIS_##_axis,					\
+ 	.scan_type = {							\
+ 		.sign = 's',						\
+-		.realbits = 12,					\
++		.realbits = (bits),					\
+ 		.storagebits = 16,					\
+-		.shift = 4,						\
++		.shift = 16 - (bits),					\
+ 	},								\
+ 	.event_spec = &bmc150_accel_event,				\
+ 	.num_event_specs = 1						\
+ }
+ 
+-static const struct iio_chan_spec bmc150_accel_channels[] = {
+-	{
+-		.type = IIO_TEMP,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_SCALE) |
+-				      BIT(IIO_CHAN_INFO_OFFSET),
+-		.scan_index = -1,
++#define BMC150_ACCEL_CHANNELS(bits) {					\
++	{								\
++		.type = IIO_TEMP,					\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++				      BIT(IIO_CHAN_INFO_SCALE) |	\
++				      BIT(IIO_CHAN_INFO_OFFSET),	\
++		.scan_index = -1,					\
++	},								\
++	BMC150_ACCEL_CHANNEL(X, bits),					\
++	BMC150_ACCEL_CHANNEL(Y, bits),					\
++	BMC150_ACCEL_CHANNEL(Z, bits),					\
++	IIO_CHAN_SOFT_TIMESTAMP(3),					\
++}
++
++static const struct iio_chan_spec bma222e_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(8);
++static const struct iio_chan_spec bma250e_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(10);
++static const struct iio_chan_spec bmc150_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(12);
++static const struct iio_chan_spec bma280_accel_channels[] =
++	BMC150_ACCEL_CHANNELS(14);
++
++enum {
++	bmc150,
++	bmi055,
++	bma255,
++	bma250e,
++	bma222e,
++	bma280,
++};
++
++static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
++	[bmc150] = {
++		.chip_id = 0xFA,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bmi055] = {
++		.chip_id = 0xFA,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma255] = {
++		.chip_id = 0xFA,
++		.channels = bmc150_accel_channels,
++		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
++		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
++				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
++				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma250e] = {
++		.chip_id = 0xF9,
++		.channels = bma250e_accel_channels,
++		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
++		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
++				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
++				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
++				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma222e] = {
++		.chip_id = 0xF8,
++		.channels = bma222e_accel_channels,
++		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
++		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
++				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
++				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
++				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
++	},
++	[bma280] = {
++		.chip_id = 0xFB,
++		.channels = bma280_accel_channels,
++		.num_channels = ARRAY_SIZE(bma280_accel_channels),
++		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
++				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
++				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
++				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
+ 	},
+-	BMC150_ACCEL_CHANNEL(X),
+-	BMC150_ACCEL_CHANNEL(Y),
+-	BMC150_ACCEL_CHANNEL(Z),
+-	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
+ static const struct iio_info bmc150_accel_info = {
+@@ -1040,10 +1128,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
+ 		return IRQ_HANDLED;
+ }
+ 
+-static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+-					struct bmc150_accel_data *data)
++static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+ {
+ 	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++
++	if (!id)
++		return NULL;
++
++	*data = (int) id->driver_data;
++
++	return dev_name(dev);
++}
++
++static int bmc150_accel_gpio_probe(struct i2c_client *client,
++					struct bmc150_accel_data *data)
++{
+ 	struct device *dev;
+ 	struct gpio_desc *gpio;
+ 	int ret;
+@@ -1052,17 +1153,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+ 		return -EINVAL;
+ 
+ 	dev = &client->dev;
+-	if (!ACPI_HANDLE(dev))
+-		return -ENODEV;
+-
+-	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+-	if (!id)
+-		return -ENODEV;
+ 
+ 	/* data ready gpio interrupt pin */
+ 	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
+ 	if (IS_ERR(gpio)) {
+-		dev_err(dev, "Failed: acpi gpio get index\n");
++		dev_err(dev, "Failed: gpio get index\n");
+ 		return PTR_ERR(gpio);
+ 	}
+ 
+@@ -1083,6 +1178,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	struct bmc150_accel_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
++	const char *name = NULL;
++	int chip_id = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1092,6 +1189,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 
++	if (id) {
++		name = id->name;
++		chip_id = id->driver_data;
++	}
++
++	if (ACPI_HANDLE(&client->dev))
++		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
++
++	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
++
+ 	ret = bmc150_accel_chip_init(data);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1099,14 +1206,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	mutex_init(&data->mutex);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->channels = bmc150_accel_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
+-	indio_dev->name = BMC150_ACCEL_DRV_NAME;
++	indio_dev->channels = data->chip_info->channels;
++	indio_dev->num_channels = data->chip_info->num_channels;
++	indio_dev->name = name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmc150_accel_info;
+ 
+ 	if (client->irq < 0)
+-		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
++		client->irq = bmc150_accel_gpio_probe(client, data);
+ 
+ 	if (client->irq >= 0) {
+ 		ret = devm_request_threaded_irq(
+@@ -1284,14 +1391,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
+ };
+ 
+ static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+-	{"BSBA0150", 0},
+-	{"BMC150A", 0},
++	{"BSBA0150",	bmc150},
++	{"BMC150A",	bmc150},
++	{"BMI055A",	bmi055},
++	{"BMA0255",	bma255},
++	{"BMA250E",	bma250e},
++	{"BMA222E",	bma222e},
++	{"BMA0280",	bma280},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+ 
+ static const struct i2c_device_id bmc150_accel_id[] = {
+-	{"bmc150_accel", 0},
++	{"bmc150_accel",	bmc150},
++	{"bmi055_accel",	bmi055},
++	{"bma255",		bma255},
++	{"bma250e",		bma250e},
++	{"bma222e",		bma222e},
++	{"bma280",		bma280},
+ 	{}
+ };
+ 
+-- 
+1.9.1
 
-The values correspond to number of ADC clock cycles. I will document the
-same. I will also drop the mention of "default value" - thats really a
-driver implementation detail and not a DT careabout.
-
->I also wonder if we need to name them after steps here, given they correspond directly to adc channels.
-
-These values are written to corresponding STEPDELAYX and STEPCONFIGX
-registers. The technical reference manual for am335x also says "number
-of averages per step". In order to maintain consistency with above
-naming conventions I have named these parameters after steps.
-
-I can make it ti,chan-step-average if that feels more right.
-
-> 
->> +	ti,step-sampledelay: List of sample delays for each channel of ADC in the order
->> +			     of ti,adc-channels. This value is written to corresponding
->> +			     step-config register. Default value is 0x0.
->> +			     Maximum value is 0xFF.
->> +	ti,step-average: Number of averages to be performed for each channel of ADC.
->> +			 If average is 16 then input is sampled 16 times and averaged to
->> +			 get more accurate value. This increases the time taken by ADC
->> +			 to generate a sample. Valid range is 0 average to 16 averages.
->> +			 Default value is 16. Maximum value is 16.
->>  
->>  Example:
->>  	tscadc: tscadc@44e0d000 {
->> @@ -40,5 +55,8 @@ Example:
->>  
->>  		adc {
->>  			ti,adc-channels = <4 5 6 7>;
->> +			ti,step-opendelay = <0x098 0x3FFFF 0x098 0x0>;
-> too many F's?
-> 
->> +			ti,step-sampledelay = <0xFF 0x0 0xF 0x0>;
->> +			ti,step-average = <16 2 4 8>;
->>  		};
->>  	}
->> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->> index dfb0db0..2b31ef2 100644
->> --- a/drivers/iio/adc/ti_am335x_adc.c
->> +++ b/drivers/iio/adc/ti_am335x_adc.c
->> @@ -37,6 +37,7 @@ struct tiadc_device {
->>  	u8 channel_line[8];
->>  	u8 channel_step[8];
->>  	int buffer_en_ch_steps;
->> +	u32 open_delay[8], sample_delay[8], step_avg[8];
->>  	u16 data[8];
->>  };
->>  
->> @@ -86,6 +87,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
->>  static void tiadc_step_config(struct iio_dev *indio_dev)
->>  {
->>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
->> +	struct device *dev = adc_dev->mfd_tscadc->dev;
->>  	unsigned int stepconfig;
->>  	int i, steps;
->>  
->> @@ -100,20 +102,41 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
->>  	 */
->>  
->>  	steps = TOTAL_STEPS - adc_dev->channels;
->> -	if (iio_buffer_enabled(indio_dev))
->> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
->> -					| STEPCONFIG_MODE_SWCNT;
->> -	else
->> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
->> -
->>  	for (i = 0; i < adc_dev->channels; i++) {
->>  		int chan;
->>  
->>  		chan = adc_dev->channel_line[i];
->> +
->> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_MAX) {
->> +			dev_warn(dev, "channel %d step average exceeds max value, truncating to %d\n",
->> +				 chan, STEPCONFIG_AVG_MAX);
->> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_MAX;
->> +		}
->> +
->> +		stepconfig = STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
->> +			     STEPCONFIG_FIFO1;
->> +
->> +		if (iio_buffer_enabled(indio_dev))
->> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
->> +
->>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
->>  				stepconfig | STEPCONFIG_INP(chan));
->> +
->> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MAX) {
->> +			dev_warn(dev, "channel %d step delay open exceeds max value, truncating to %d\n",
->> +				 chan, STEPDELAY_OPEN_MAX);
->> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MAX;
->> +		}
->> +
->> +		if (adc_dev->sample_delay[i] > STEPDELAY_SAMPLE_MAX) {
->> +			dev_warn(dev, "channel %d step delay sample max value, truncating to %d\n",
->> +				 chan, STEPDELAY_SAMPLE_MAX);
->> +			adc_dev->sample_delay[i] = STEPDELAY_SAMPLE_MAX;
->> +		}
->> +
->>  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
->> -				STEPCONFIG_OPENDLY);
->> +			     STEPDELAY_OPEN(adc_dev->open_delay[i]) |
->> +			     STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
->>  		adc_dev->channel_step[i] = steps;
->>  		steps++;
->>  	}
->> @@ -418,10 +441,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
->>  
->>  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
->>  		adc_dev->channel_line[channels] = val;
->> +
->> +		/* Set Default values for optional DT parameters */
->> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
->> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
->> +		adc_dev->step_avg[channels] = 16;
->>  		channels++;
->>  	}
->>  
->>  	adc_dev->channels = channels;
->> +	of_property_read_u32_array(node, "ti,step-average",
->> +				   adc_dev->step_avg, channels);
->> +	of_property_read_u32_array(node, "ti,step-opendelay",
->> +				   adc_dev->open_delay, channels);
->> +	of_property_read_u32_array(node, "ti,step-sampledelay",
->> +				   adc_dev->sample_delay, channels);
->> +
->>  	return 0;
->>  }
->>  
->> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
->> index fb96c84..26d3e84 100644
->> --- a/include/linux/mfd/ti_am335x_tscadc.h
->> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->> @@ -82,14 +82,17 @@
->>  #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
->>  #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
->>  #define STEPCONFIG_FIFO1	BIT(26)
->> +#define STEPCONFIG_AVG_MAX	16
->>  
->>  /* Delay register */
->>  #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
->>  #define STEPDELAY_OPEN(val)	((val) << 0)
->>  #define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
->> +#define STEPDELAY_OPEN_MAX	0x3FFFF
->>  #define STEPDELAY_SAMPLE_MASK	(0xFF << 24)
->>  #define STEPDELAY_SAMPLE(val)	((val) << 24)
->>  #define STEPCONFIG_SAMPLEDLY	STEPDELAY_SAMPLE(0)
->> +#define STEPDELAY_SAMPLE_MAX	0xFF
->>  
->>  /* Charge Config */
->>  #define STEPCHARGE_RFP_MASK	(7 << 12)
->>
-
-Regards
-Vignesh R
