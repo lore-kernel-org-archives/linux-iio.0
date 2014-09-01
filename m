@@ -1,76 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qg0-f41.google.com ([209.85.192.41]:56542 "EHLO
-	mail-qg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752536AbaIAHf1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Sep 2014 03:35:27 -0400
-Received: by mail-qg0-f41.google.com with SMTP id i50so4897856qgf.14
-        for <linux-iio@vger.kernel.org>; Mon, 01 Sep 2014 00:35:26 -0700 (PDT)
-Date: Mon, 1 Sep 2014 08:35:20 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+Received: from mga11.intel.com ([192.55.52.93]:24784 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754513AbaIAPyB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 1 Sep 2014 11:54:01 -0400
+Message-ID: <1409586696.3318.11.camel@spandruv-hsb-test>
+Subject: Re: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Joe Perches <joe@perches.com>
+Cc: Laurentiu Palcu <laurentiu.palcu@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Felipe Balbi <balbi@ti.com>, linux-iio@vger.kernel.org,
-	nsekhar@ti.com
-Subject: Re: [PATCH v2] mfd: ti_am335x_tscadc: Fix TSC operation after ADC
- continouous mode
-Message-ID: <20140901073520.GA6226@lee--X1>
-References: <1409553066-25000-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1409553066-25000-1-git-send-email-vigneshr@ti.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Date: Mon, 01 Sep 2014 08:51:36 -0700
+In-Reply-To: <1409585783.2664.18.camel@joe-AO725>
+References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
+	 <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
+	 <1409585783.2664.18.camel@joe-AO725>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 01 Sep 2014, Vignesh R wrote:
-
-> After enabling and disabling ADC continuous mode via sysfs, ts_print_raw
-> fails to return any data. This is because when ADC is configured for
-> continuous mode, it disables touch screen steps.These steps are not
-> re-enabled when ADC continuous mode is disabled. Therefore existing values
-> of REG_SE needs to be cached before enabling continuous mode and
-> disabling touch screen steps and enabling ADC steps. The cached value
-> are to be restored to REG_SE once ADC is disabled.
+On Mon, 2014-09-01 at 08:36 -0700, Joe Perches wrote:
+> On Mon, 2014-09-01 at 12:11 +0300, Laurentiu Palcu wrote:
+> > The following chips are either similar or have only the resolution
+> > different. Hence, change this driver to support these chips too:
+> > 
+> > BMI055  - combo chip (accelerometer part is identical to BMC150's)
+> > BMA255  - identical to BMC150's accelerometer
+> > BMA222E - 8 bit resolution
+> > BMA250E - 10 bit resolution
+> > BMA280  - 14 bit resolution
+> > 
+> > Additionally:
+> >  * add bmc150_accel_match_acpi_device() function to check that the device
+> >    has been enumerated through ACPI;
+> >  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+> >    since the ACPI matching has been moved to the new function.  Also, this
+> >    will allow for the GPIO matching to be done against a device tree too, not only
+> >    ACPI tree;
+> []
+> > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> []
+> > @@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+> >  		{
+> >  			int i;
+> >  
+> > -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+> > -									 ++i) {
+> > -				if (bmc150_accel_scale_table[i].range ==
+> > +			for (i = 0;
+> > +			     i < ARRAY_SIZE(data->chip_info->scale_table);
+> > +			     ++i) {
+> > +				if (data->chip_info->scale_table[i].range ==
+> >  								data->range) {
+> >  					*val2 =
+> > -					bmc150_accel_scale_table[i].scale;
+> > +					data->chip_info->scale_table[i].scale;
+> >  					return IIO_VAL_INT_PLUS_MICRO;
+> >  				}
+> >  			}
 > 
-> Fixes: 7ca6740cd1cd ("mfd: input: iio: ti_amm335x: Rework TSC/ADC synchronization")
+> This looks like it would read a lot better with
+> a temporary for data->chip_info->scale_table[i]
 > 
-> Cc: stable@vger.kernel.org # v3.13+
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
-> fixed $SUBJECT, added stable and ack from Lee Jones.
-> No code change.
+> so these could become:
 > 
->  drivers/mfd/ti_am335x_tscadc.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> 			for (i = 0; i < etc; i++) {
+> 				type *temp = &data->chip_info->scale_table[i];
+> 				if (temp->range == data->range) {
+> 					*val2 = temp->scale;
+> 					return IIO_VAL_INT_PLUS_MICRO;
+> 				}
+> 
+> Maybe all the bmc150_ variable names could be removed.
+> The prefixes don't seem to serve a purpose other than
+> to make the code longer.
+> 
+> The filename could be changed to be more generic.
+Then this will also require change in the CONFIG name to match. This
+will require all current users to change the config file once they
+update to new version of the driver, which they don't like to change
+once product config is finalized. Since the most of the chips will just
+differ by a number at the end and they may not be compatible to each
+other, finding a common name will be challenge.
+Instead the CONFIG description for this module should explicitly state
+the names of chips it is compatible to.
 
-Applied, thanks.
+Thanks,
+Srinivas
+> 
+> 
 
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index d4e860413bb5..e3076afe6b3c 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -54,7 +54,7 @@ void am335x_tsc_se_set_cache(struct ti_tscadc_dev *tsadc, u32 val)
->  	unsigned long flags;
->  
->  	spin_lock_irqsave(&tsadc->reg_lock, flags);
-> -	tsadc->reg_se_cache = val;
-> +	tsadc->reg_se_cache |= val;
->  	if (tsadc->adc_waiting)
->  		wake_up(&tsadc->reg_se_wait);
->  	else if (!tsadc->adc_in_use)
-> @@ -97,6 +97,7 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
->  {
->  	spin_lock_irq(&tsadc->reg_lock);
-> +	tsadc->reg_se_cache |= val;
->  	am335x_tscadc_need_adc(tsadc);
->  
->  	tscadc_writel(tsadc, REG_SE, val);
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
