@@ -1,147 +1,83 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtprelay0203.hostedemail.com ([216.40.44.203]:55587 "EHLO
+	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1754022AbaIAPg1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Sep 2014 11:36:27 -0400
+Message-ID: <1409585783.2664.18.camel@joe-AO725>
+Subject: Re: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
+From: Joe Perches <joe@perches.com>
+To: Laurentiu Palcu <laurentiu.palcu@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH] iio: gyro: bmi055 gyro sensor driver
-Date: Tue,  2 Sep 2014 13:59:57 +0300
-Message-Id: <1409655597-28781-1-git-send-email-irina.tirdea@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Mon, 01 Sep 2014 08:36:23 -0700
+In-Reply-To: <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
+References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
+	 <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for the BMI055 gyroscope sensor. BMI055 is a package
-consisting of an acceleration sensor and a gyroscope. This patch
-adds support for the gyroscope only.
+On Mon, 2014-09-01 at 12:11 +0300, Laurentiu Palcu wrote:
+> The following chips are either similar or have only the resolution
+> different. Hence, change this driver to support these chips too:
+> 
+> BMI055  - combo chip (accelerometer part is identical to BMC150's)
+> BMA255  - identical to BMC150's accelerometer
+> BMA222E - 8 bit resolution
+> BMA250E - 10 bit resolution
+> BMA280  - 14 bit resolution
+> 
+> Additionally:
+>  * add bmc150_accel_match_acpi_device() function to check that the device
+>    has been enumerated through ACPI;
+>  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+>    since the ACPI matching has been moved to the new function.  Also, this
+>    will allow for the GPIO matching to be done against a device tree too, not only
+>    ACPI tree;
+[]
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+[]
+> @@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+>  		{
+>  			int i;
+>  
+> -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+> -									 ++i) {
+> -				if (bmc150_accel_scale_table[i].range ==
+> +			for (i = 0;
+> +			     i < ARRAY_SIZE(data->chip_info->scale_table);
+> +			     ++i) {
+> +				if (data->chip_info->scale_table[i].range ==
+>  								data->range) {
+>  					*val2 =
+> -					bmc150_accel_scale_table[i].scale;
+> +					data->chip_info->scale_table[i].scale;
+>  					return IIO_VAL_INT_PLUS_MICRO;
+>  				}
+>  			}
 
-Spec downloaded from:
-http://ae-bst.resource.bosch.com/media/products/dokumente/bmi055/BST-BMI055-DS000-06.pdf
+This looks like it would read a lot better with
+a temporary for data->chip_info->scale_table[i]
 
-The BMI055 gyroscope uses the same register definition as BMG160,
-but does not specify a temp register. However, the temp register
-seems to be working in the same way as for BMG160, so this patch
-does not remove the temp channel for BMI055.
+so these could become:
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/gyro/Kconfig  |    2 +-
- drivers/iio/gyro/bmg160.c |   39 +++++++++++++++++++++++++++------------
- 2 files changed, 28 insertions(+), 13 deletions(-)
+			for (i = 0; i < etc; i++) {
+				type *temp = &data->chip_info->scale_table[i];
+				if (temp->range == data->range) {
+					*val2 = temp->scale;
+					return IIO_VAL_INT_PLUS_MICRO;
+				}
 
-diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-index d630ae9..b3d0e94 100644
---- a/drivers/iio/gyro/Kconfig
-+++ b/drivers/iio/gyro/Kconfig
-@@ -56,7 +56,7 @@ config BMG160
- 	select IIO_TRIGGERED_BUFFER if IIO_BUFFER
- 	help
- 	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
--	  driver.
-+	  driver. This driver also supports BMI055 gyroscope.
- 
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called bmg160.
-diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-index 80f92a6..7524698 100644
---- a/drivers/iio/gyro/bmg160.c
-+++ b/drivers/iio/gyro/bmg160.c
-@@ -947,10 +947,10 @@ static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
- 
- }
- 
--static int bmg160_acpi_gpio_probe(struct i2c_client *client,
--				  struct bmg160_data *data)
-+static int bmg160_gpio_probe(struct i2c_client *client,
-+			     struct bmg160_data *data)
-+
- {
--	const struct acpi_device_id *id;
- 	struct device *dev;
- 	struct gpio_desc *gpio;
- 	int ret;
-@@ -959,12 +959,6 @@ static int bmg160_acpi_gpio_probe(struct i2c_client *client,
- 		return -EINVAL;
- 
- 	dev = &client->dev;
--	if (!ACPI_HANDLE(dev))
--		return -ENODEV;
--
--	id = acpi_match_device(dev->driver->acpi_match_table, dev);
--	if (!id)
--		return -ENODEV;
- 
- 	/* data ready gpio interrupt pin */
- 	gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0);
-@@ -984,12 +978,24 @@ static int bmg160_acpi_gpio_probe(struct i2c_client *client,
- 	return ret;
- }
- 
-+static const char *bmg160_match_acpi_device(struct device *dev)
-+{
-+	const struct acpi_device_id *id;
-+
-+	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-+	if (!id)
-+		return NULL;
-+
-+	return dev_name(dev);
-+}
-+
- static int bmg160_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct bmg160_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
-+	const char *name = NULL;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1005,15 +1011,21 @@ static int bmg160_probe(struct i2c_client *client,
- 
- 	mutex_init(&data->mutex);
- 
-+	if (id)
-+		name = id->name;
-+
-+	if (ACPI_HANDLE(&client->dev))
-+		name = bmg160_match_acpi_device(&client->dev);
-+
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->channels = bmg160_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(bmg160_channels);
--	indio_dev->name = BMG160_DRV_NAME;
-+	indio_dev->name = name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &bmg160_info;
- 
- 	if (client->irq <= 0)
--		client->irq = bmg160_acpi_gpio_probe(client, data);
-+		client->irq = bmg160_gpio_probe(client, data);
- 
- 	if (client->irq > 0) {
- 		ret = devm_request_threaded_irq(&client->dev,
-@@ -1183,12 +1195,15 @@ static const struct dev_pm_ops bmg160_pm_ops = {
- 
- static const struct acpi_device_id bmg160_acpi_match[] = {
- 	{"BMG0160", 0},
--	{ },
-+	{"BMI055B", 0},
-+	{},
- };
-+
- MODULE_DEVICE_TABLE(acpi, bmg160_acpi_match);
- 
- static const struct i2c_device_id bmg160_id[] = {
- 	{"bmg160", 0},
-+	{"bmi055_gyro", 0},
- 	{}
- };
- 
--- 
-1.7.9.5
+Maybe all the bmc150_ variable names could be removed.
+The prefixes don't seem to serve a purpose other than
+to make the code longer.
+
+The filename could be changed to be more generic.
+
+
