@@ -1,330 +1,322 @@
-Return-Path: <san@rosetechnology.dk>
-Message-ID: <1409917484.12493.8.camel@sanws1.rosetechnology.dk>
-Subject: [patch v3 2/3] iio: adc: mcp320x. Add support for more ADCs
-From: =?ISO-8859-1?Q?S=F8ren?= Andersen <san@rosetechnology.dk>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org
-Date: Fri, 05 Sep 2014 13:44:44 +0200
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <daniel.baluta@gmail.com>
+Sender: Daniel Baluta <daniel.baluta@gmail.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	pmeerw@pmeerw.net
+Cc: knaack.h@gmx.de,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Tsechih_Lin@asus.com
+Subject: [PATCH v5] iio: Add Dyna-Image AL3320A ambient light sensor driver
+Date: Mon,  1 Sep 2014 21:24:03 +0300
+Message-Id: <1409595843-8118-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-v3:
-Functions moved around.
-Return values is simpler.
+Minimal implementation. This driver provides raw illuminance readings.
 
-Signed-off-by: Soeren Andersen <san at rosetechnology.dk>
+This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+by Tsechih Lin <Tsechih_Lin@asus.com>
+
+* https://android.googlesource.com/kernel/msm.git
+
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
-drivers/iio/adc/mcp320x.c | 201
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------------------
- 1 file changed, 172 insertions(+), 29 deletions(-)
+Changes since v4: (reported by Peter)
+	* no need to fix endianess when reading raw value
 
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 28a086e..77ee363 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -1,9 +1,20 @@
- /*
-  * Copyright (C) 2013 Oskar Andero <oskar.andero@gmail.com>
-+ * Copyright (C) 2014 Allan Bendorff Jensen <abj@rosetechnology.dk>
-  *
-- * Driver for Microchip Technology's MCP3204 and MCP3208 ADC chips.
-- * Datasheet can be found here:
-- * http://ww1.microchip.com/downloads/en/devicedoc/21298c.pdf
-+ * Driver for following ADC chips from Microchip Technology's:
-+ * 10 Bit converter
-+ * MCP3001
-+ * MCP3002
-+ * MCP3004
-+ * MCP3008
-+ * ------------
-+ * 12 bit converter
-+ * MCP3201
-+ * MCP3202
-+ * MCP3204
-+ * MCP3208
-+ * ------------
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 as
-@@ -16,10 +27,16 @@
- #include <linux/iio/iio.h>
- #include <linux/regulator/consumer.h>
+Changes since v3: (reported by Hartmut and Jonathan)
+        * dropped the local store for the range, instead read it when necessary
+        * removed wrapper functions
+        * added in_illuminance_scale_available attribute
+        * fix bug when reading raw value, use i2c_smbus_read_word instead of
+          i2c_smbus_read_word_swapped and fix the endianess after read.
+        * small coding style fixes
+
+Changes since v2: (reported by Peter Meerwald)
+        * removed definition of DATA_HIGH and SW_RESET as they are not used
+        * added a comment to al3320a_get_adc_value() function
+        * added thresholds on TODO list
+        * small style fixes
+
+Changes since v1: (reported by Peter Meerwald)
+        * used u8 instead of int for passing gain and mean_time
+        * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
+        * used devm_iio_device_register instead of iio_device_register
+        * small style fixes
+
+ drivers/iio/light/Kconfig   |   10 ++
+ drivers/iio/light/Makefile  |    1 +
+ drivers/iio/light/al3320a.c |  229 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 240 insertions(+)
+ create mode 100644 drivers/iio/light/al3320a.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index bf05ca5..5bea821 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -17,6 +17,16 @@ config ADJD_S311
+ 	 This driver can also be built as a module.  If so, the module
+ 	 will be called adjd_s311.
  
--#define MCP_SINGLE_ENDED	(1 << 3)
--#define MCP_START_BIT		(1 << 4)
-+static int mcp320x_channel_to_tx_data(int device_index,
-+				const unsigned int channel, bool differential);
- 
- enum {
-+	mcp3001,
-+	mcp3002,
-+	mcp3004,
-+	mcp3008,
-+	mcp3201,
-+	mcp3202,
- 	mcp3204,
- 	mcp3208,
- };
-@@ -36,17 +53,48 @@ struct mcp320x {
- 	struct mutex lock;
- };
- 
--static int mcp320x_adc_conversion(struct mcp320x *adc, u8 msg)
-+static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
-+					bool differential, int device_index)
- {
- 	int ret;
-+	__be16 buf;
- 
--	adc->tx_buf = msg;
--	ret = spi_sync(adc->spi, &adc->msg);
--	if (ret < 0)
--		return ret;
-+	adc->rx_buf[0] = 0;
-+	adc->rx_buf[1] = 0;
-+	adc->tx_buf = mcp320x_channel_to_tx_data(device_index,
-+						channel, differential);
++config AL3320A
++	tristate "AL3320A ambient light sensor"
++	depends on I2C
++	help
++	 Say Y here if you want to build a driver for the Dyna Image AL3320A
++	 ambient light sensor.
 +
-+	if (device_index != mcp3001 && device_index != mcp3201) {
-+		ret = spi_sync(adc->spi, &adc->msg);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		ret = spi_read(adc->spi, (u8 *)&buf, 2);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
--	return ((adc->rx_buf[0] & 0x3f) << 6)  |
--		(adc->rx_buf[1] >> 2);
-+	switch (device_index) {
-+	case mcp3001:
-+		return ((be16_to_cpu(buf) >> 3) & 0x03ff);
-+	case mcp3002:
-+		return (((adc->rx_buf[0] << 2) |
-+				((adc->rx_buf[1] & 0xC0) >> 6)) & 0x03ff);
-+	case mcp3004:
-+	case mcp3008:
-+		return ((((adc->rx_buf[0] & 0x7f) << 3) |
-+				((adc->rx_buf[1] & 0xe0) >> 5)) & 0x03ff);
-+	case mcp3201:
-+		return (be16_to_cpu(buf) >> 1);
-+	case mcp3202:
-+		return ((adc->rx_buf[0] << 4) | ((adc->rx_buf[1] & 0xf0) >> 4));
-+	case mcp3204:
-+	case mcp3208:
-+		return (((adc->rx_buf[0] & 0x7f) << 5) |
-+				((adc->rx_buf[1] & 0xf8) >> 3));
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int mcp320x_read_raw(struct iio_dev *indio_dev,
-@@ -55,18 +103,17 @@ static int mcp320x_read_raw(struct iio_dev
-*indio_dev,
- {
- 	struct mcp320x *adc = iio_priv(indio_dev);
- 	int ret = -EINVAL;
-+	int device_index = 0;
- 
- 	mutex_lock(&adc->lock);
- 
-+	device_index = spi_get_device_id(adc->spi)->driver_data;
++	 To compile this driver as a module, choose M here: the
++	 module will be called al3320a.
 +
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (channel->differential)
--			ret = mcp320x_adc_conversion(adc,
--				MCP_START_BIT | channel->address);
--		else
--			ret = mcp320x_adc_conversion(adc,
--				MCP_START_BIT | MCP_SINGLE_ENDED |
--				channel->address);
-+		ret = mcp320x_adc_conversion(adc, channel->address,
-+			channel->differential, device_index);
+ config APDS9300
+ 	tristate "APDS9300 ambient light sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8b8c09f..47877a3 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -4,6 +4,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
++obj-$(CONFIG_AL3320A)		+= al3320a.o
+ obj-$(CONFIG_APDS9300)		+= apds9300.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
+diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
+new file mode 100644
+index 0000000..760224c
+--- /dev/null
++++ b/drivers/iio/light/al3320a.c
+@@ -0,0 +1,229 @@
++/*
++ * AL3320A - Dyna Image Ambient Light Sensor
++ *
++ * Copyright (c) 2014, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
++ *
++ * TODO: interrupt support, thresholds
++ *
++ */
 +
- 		if (ret < 0)
- 			goto out;
- 
-@@ -75,17 +122,23 @@ static int mcp320x_read_raw(struct iio_dev
-*indio_dev,
- 		break;
- 
- 	case IIO_CHAN_INFO_SCALE:
--		/* Digital output code = (4096 * Vin) / Vref */
-+		/*
-+		 * Digital output code = (resolution * Vin) / Vref
-+		 * Get regulator output voltage in uV.
-+		 */
- 		ret = regulator_get_voltage(adc->reg);
- 		if (ret < 0)
- 			goto out;
- 
-+		/* convert regulator output voltage to mV */
- 		*val = ret / 1000;
--		*val2 = 12;
--		ret = IIO_VAL_FRACTIONAL_LOG2;
--		break;
-+		if (device_index == mcp3001 || device_index == mcp3002 ||
-+			device_index == mcp3004 || device_index == mcp3008)
-+			*val2 = 10;
-+		else
-+			*val2 = 12;
- 
--	default:
-+		ret = IIO_VAL_FRACTIONAL_LOG2;
- 		break;
- 	}
- 
-@@ -117,6 +170,16 @@ out:
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
- 	}
- 
-+static const struct iio_chan_spec mcp3201_channels[] = {
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define AL3320A_DRV_NAME "al3320a"
++
++#define AL3320A_REG_CONFIG		0x00
++#define AL3320A_REG_STATUS		0x01
++#define AL3320A_REG_INT			0x02
++#define AL3320A_REG_WAIT		0x06
++#define AL3320A_REG_CONFIG_RANGE	0x07
++#define AL3320A_REG_PERSIST		0x08
++#define AL3320A_REG_MEAN_TIME		0x09
++#define AL3320A_REG_ADUMMY		0x0A
++#define AL3320A_REG_DATA_LOW		0x22
++
++#define AL3320A_REG_LOW_THRESH_LOW	0x30
++#define AL3320A_REG_LOW_THRESH_HIGH	0x31
++#define AL3320A_REG_HIGH_THRESH_LOW	0x32
++#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
++
++#define AL3320A_CONFIG_DISABLE		0x00
++#define AL3320A_CONFIG_ENABLE		0x01
++
++#define AL3320A_GAIN_SHIFT		1
++
++/* chip params default values */
++#define AL3320A_DEFAULT_MEAN_TIME	4
++#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
++
++#define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
++
++enum al3320a_range {
++	AL3320A_RANGE_1, /* 33.28K lux */
++	AL3320A_RANGE_2, /* 8.32K lux  */
++	AL3320A_RANGE_3, /* 2.08K lux  */
++	AL3320A_RANGE_4  /* 0.65K lux  */
 +};
 +
-+static const struct iio_chan_spec mcp3202_channels[] = {
-+	MCP320X_VOLTAGE_CHANNEL(0),
-+	MCP320X_VOLTAGE_CHANNEL(1),
-+	MCP320X_VOLTAGE_CHANNEL_DIFF(0),
++static const int al3320a_scales[][2] = {
++	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
 +};
 +
- static const struct iio_chan_spec mcp3204_channels[] = {
- 	MCP320X_VOLTAGE_CHANNEL(0),
- 	MCP320X_VOLTAGE_CHANNEL(1),
-@@ -146,12 +209,36 @@ static const struct iio_info mcp320x_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--struct mcp3208_chip_info {
-+struct mcp320x_chip_info {
- 	const struct iio_chan_spec *channels;
- 	unsigned int num_channels;
- };
- 
--static const struct mcp3208_chip_info mcp3208_chip_infos[] = {
-+static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
-+	[mcp3001] = {
-+		.channels = mcp3201_channels,
-+		.num_channels = ARRAY_SIZE(mcp3201_channels)
-+	},
-+	[mcp3002] = {
-+		.channels = mcp3202_channels,
-+		.num_channels = ARRAY_SIZE(mcp3202_channels)
-+	},
-+	[mcp3004] = {
-+		.channels = mcp3204_channels,
-+		.num_channels = ARRAY_SIZE(mcp3204_channels)
-+	},
-+	[mcp3008] = {
-+		.channels = mcp3208_channels,
-+		.num_channels = ARRAY_SIZE(mcp3208_channels)
-+	},
-+	[mcp3201] = {
-+		.channels = mcp3201_channels,
-+		.num_channels = ARRAY_SIZE(mcp3201_channels)
-+	},
-+	[mcp3202] = {
-+		.channels = mcp3202_channels,
-+		.num_channels = ARRAY_SIZE(mcp3202_channels)
-+	},
- 	[mcp3204] = {
- 		.channels = mcp3204_channels,
- 		.num_channels = ARRAY_SIZE(mcp3204_channels)
-@@ -162,11 +249,29 @@ static const struct mcp3208_chip_info
-mcp3208_chip_infos[] = {
- 	},
- };
- 
-+static int mcp320x_channel_to_tx_data(int device_index,
-+				const unsigned int channel, bool differential)
++struct al3320a_data {
++	struct i2c_client *client;
++};
++
++static const struct iio_chan_spec al3320a_channels[] = {
++	{
++		.type	= IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	}
++};
++
++static IIO_CONST_ATTR(in_illuminance_scale_available, AL3320A_SCALE_AVAILABLE);
++
++static struct attribute *al3320a_attributes[] = {
++	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group al3320a_attribute_group = {
++	.attrs = al3320a_attributes,
++};
++
++static int al3320a_init(struct al3320a_data *data)
 +{
-+	switch (device_index) {
-+	case mcp3002:
-+	case mcp3202:
-+		return(0x12 | (!differential << 3) | ((channel & 0x01) << 2));
-+	case mcp3004:
-+	case mcp3204:
-+		return(0x20 | (!differential << 4) | ((channel & 0x03) << 1));
-+	case mcp3008:
-+	case mcp3208:
-+		return(0x20 | (!differential << 4) | ((channel & 0x07) << 1));
-+	default:
-+		return -EINVAL;
-+	}
++	int ret;
++
++	/* power on */
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
++					AL3320A_CONFIG_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
++					AL3320A_RANGE_3 << AL3320A_GAIN_SHIFT);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
++					AL3320A_DEFAULT_MEAN_TIME);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
++					AL3320A_DEFAULT_WAIT_TIME);
++	if (ret < 0)
++		return ret;
++
++	return 0;
 +}
 +
- static int mcp320x_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
- 	struct mcp320x *adc;
--	const struct mcp3208_chip_info *chip_info;
-+	const struct mcp320x_chip_info *chip_info;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
-@@ -181,7 +286,7 @@ static int mcp320x_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &mcp320x_info;
- 
--	chip_info = &mcp3208_chip_infos[spi_get_device_id(spi)->driver_data];
-+	chip_info = &mcp320x_chip_infos[spi_get_device_id(spi)->driver_data];
- 	indio_dev->channels = chip_info->channels;
- 	indio_dev->num_channels = chip_info->num_channels;
- 
-@@ -226,7 +331,45 @@ static int mcp320x_remove(struct spi_device *spi)
- 	return 0;
- }
- 
-+#if defined(CONFIG_OF)
-+static const struct of_device_id mcp320x_dt_ids[] = {
-+	{
-+		.compatible = "mcp3001",
-+		.data = &mcp320x_chip_infos[mcp3001],
-+	}, {
-+		.compatible = "mcp3002",
-+		.data = &mcp320x_chip_infos[mcp3002],
-+	}, {
-+		.compatible = "mcp3004",
-+		.data = &mcp320x_chip_infos[mcp3004],
-+	}, {
-+		.compatible = "mcp3008",
-+		.data = &mcp320x_chip_infos[mcp3004],
-+	}, {
-+		.compatible = "mcp3201",
-+		.data = &mcp320x_chip_infos[mcp3201],
-+	}, {
-+		.compatible = "mcp3202",
-+		.data = &mcp320x_chip_infos[mcp3202],
-+	}, {
-+		.compatible = "mcp3204",
-+		.data = &mcp320x_chip_infos[mcp3204],
-+	}, {
-+		.compatible = "mcp3008",
-+		.data = &mcp320x_chip_infos[mcp3208],
-+	}, {
-+	}
-+};
-+MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
-+#endif
++static int al3320a_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int *val,
++			    int *val2, long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int ret;
 +
- static const struct spi_device_id mcp320x_id[] = {
-+	{ "mcp3001", mcp3001 },
-+	{ "mcp3002", mcp3002 },
-+	{ "mcp3004", mcp3004 },
-+	{ "mcp3008", mcp3008 },
-+	{ "mcp3201", mcp3201 },
-+	{ "mcp3202", mcp3202 },
- 	{ "mcp3204", mcp3204 },
- 	{ "mcp3208", mcp3208 },
- 	{ }
-@@ -245,5 +388,5 @@ static struct spi_driver mcp320x_driver = {
- module_spi_driver(mcp320x_driver);
- 
- MODULE_AUTHOR("Oskar Andero <oskar.andero@gmail.com>");
--MODULE_DESCRIPTION("Microchip Technology MCP3204/08");
-+MODULE_DESCRIPTION("Microchip Technology MCP3x01/02/04/08");
- MODULE_LICENSE("GPL v2");
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * ALS ADC value is stored in two adjacent registers:
++		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
++		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
++		 */
++		ret = i2c_smbus_read_word_data(data->client,
++					       AL3320A_REG_DATA_LOW);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		ret = i2c_smbus_read_byte_data(data->client,
++					       AL3320A_REG_CONFIG_RANGE);
++		if (ret < 0)
++			return ret;
++		ret >>= AL3320A_GAIN_SHIFT;
++		*val = al3320a_scales[ret][0];
++		*val2 = al3320a_scales[ret][1];
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++static int al3320a_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int val,
++			     int val2, long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
++			if (val == al3320a_scales[i][0] &&
++			    val2 == al3320a_scales[i][1])
++				return i2c_smbus_write_byte_data(data->client,
++					AL3320A_REG_CONFIG_RANGE,
++					i << AL3320A_GAIN_SHIFT);
++		}
++		break;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info al3320a_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= al3320a_read_raw,
++	.write_raw	= al3320a_write_raw,
++	.attrs		= &al3320a_attribute_group,
++};
++
++static int al3320a_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct al3320a_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &al3320a_info;
++	indio_dev->name = AL3320A_DRV_NAME;
++	indio_dev->channels = al3320a_channels;
++	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = al3320a_init(data);
++	if (ret < 0) {
++		dev_err(&client->dev, "al3320a chip init failed\n");
++		return ret;
++	}
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int al3320a_remove(struct i2c_client *client)
++{
++	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
++					 AL3320A_CONFIG_DISABLE);
++}
++
++static const struct i2c_device_id al3320a_id[] = {
++	{"al3320a", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, al3320a_id);
++
++static struct i2c_driver al3320a_driver = {
++	.driver = {
++		.name = AL3320A_DRV_NAME,
++	},
++	.probe		= al3320a_probe,
++	.remove		= al3320a_remove,
++	.id_table	= al3320a_id,
++};
++
++module_i2c_driver(al3320a_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.10.4
