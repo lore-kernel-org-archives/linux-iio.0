@@ -1,128 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54641 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752534AbaINOR6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 10:17:58 -0400
-Message-ID: <5415A394.2050802@kernel.org>
-Date: Sun, 14 Sep 2014 15:17:56 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <laurentiu.palcu@intel.com>
+Date: Tue, 2 Sep 2014 13:30:11 +0300
+From: Laurentiu Palcu <laurentiu.palcu@intel.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Joe Perches <joe@perches.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
+Message-ID: <20140902103010.GF12606@lpalcu-linux>
+References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
+ <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
+ <1409585783.2664.18.camel@joe-AO725>
+ <1409586696.3318.11.camel@spandruv-hsb-test>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [RFC/PATCH 1/6] iio:sensorhub: Add sensorhub common library
-References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com> <1409756150-30889-2-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1409756150-30889-2-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1409586696.3318.11.camel@spandruv-hsb-test>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/09/14 15:55, Karol Wrona wrote:
-> This patch adds common sensorhub library for sensorhub driver and iio drivers
-> which uses sensorhub MCU to communicate with sensors.
-> 
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  include/linux/iio/common/ssp_sensors.h |   82 ++++++++++++++++++++++++++++++++
->  1 file changed, 82 insertions(+)
+On Mon, Sep 01, 2014 at 08:51:36AM -0700, Srinivas Pandruvada wrote:
+> On Mon, 2014-09-01 at 08:36 -0700, Joe Perches wrote:
+> > On Mon, 2014-09-01 at 12:11 +0300, Laurentiu Palcu wrote:
+> > > The following chips are either similar or have only the resolution
+> > > different. Hence, change this driver to support these chips too:
+> > > 
+> > > BMI055  - combo chip (accelerometer part is identical to BMC150's)
+> > > BMA255  - identical to BMC150's accelerometer
+> > > BMA222E - 8 bit resolution
+> > > BMA250E - 10 bit resolution
+> > > BMA280  - 14 bit resolution
+> > > 
+> > > Additionally:
+> > >  * add bmc150_accel_match_acpi_device() function to check that the device
+> > >    has been enumerated through ACPI;
+> > >  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+> > >    since the ACPI matching has been moved to the new function.  Also, this
+> > >    will allow for the GPIO matching to be done against a device tree too, not only
+> > >    ACPI tree;
+> > []
+> > > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> > []
+> > > @@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+> > >  		{
+> > >  			int i;
+> > >  
+> > > -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+> > > -									 ++i) {
+> > > -				if (bmc150_accel_scale_table[i].range ==
+> > > +			for (i = 0;
+> > > +			     i < ARRAY_SIZE(data->chip_info->scale_table);
+> > > +			     ++i) {
+> > > +				if (data->chip_info->scale_table[i].range ==
+> > >  								data->range) {
+> > >  					*val2 =
+> > > -					bmc150_accel_scale_table[i].scale;
+> > > +					data->chip_info->scale_table[i].scale;
+> > >  					return IIO_VAL_INT_PLUS_MICRO;
+> > >  				}
+> > >  			}
+> > 
+> > This looks like it would read a lot better with
+> > a temporary for data->chip_info->scale_table[i]
+> > 
+> > so these could become:
+> > 
+> > 			for (i = 0; i < etc; i++) {
+> > 				type *temp = &data->chip_info->scale_table[i];
+> > 				if (temp->range == data->range) {
+> > 					*val2 = temp->scale;
+> > 					return IIO_VAL_INT_PLUS_MICRO;
+> > 				}
+Rewrote this part in v5. Thanks for the suggestion.
 
-There is very little point in a separate patch to introduce a header, please combine this
-with the first patch to use it when you respin for V2.
+> > 
+> > Maybe all the bmc150_ variable names could be removed.
+> > The prefixes don't seem to serve a purpose other than
+> > to make the code longer.
+> > 
+> > The filename could be changed to be more generic.
+> Then this will also require change in the CONFIG name to match. This
+> will require all current users to change the config file once they
+> update to new version of the driver, which they don't like to change
+> once product config is finalized. Since the most of the chips will just
+> differ by a number at the end and they may not be compatible to each
+> other, finding a common name will be challenge.
+> Instead the CONFIG description for this module should explicitly state
+> the names of chips it is compatible to.
+v5 contains the changed CONFIG description that includes the new added chips.
 
-It can't be used on it's own or reviewed on it's own (except very superficially).
-
-
-
->  create mode 100644 include/linux/iio/common/ssp_sensors.h
-> 
-> diff --git a/include/linux/iio/common/ssp_sensors.h b/include/linux/iio/common/ssp_sensors.h
-> new file mode 100644
-> index 0000000..ca4bdc4
-> --- /dev/null
-> +++ b/include/linux/iio/common/ssp_sensors.h
-> @@ -0,0 +1,82 @@
-> +/*
-> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + *
-> + */
-> +#ifndef _SSP_SENSORS_H_
-> +#define _SSP_SENSORS_H_
-> +
-> +#define SSP_TIME_SIZE	4
-> +
-> +#define SSP_ACCELEROMETER_SIZE			6
-> +#define SSP_GYROSCOPE_SIZE			6
-> +#define	SSP_BIO_HRM_RAW_SIZE			8
-> +#define	SSP_BIO_HRM_RAW_FAC_SIZE		36
-> +#define	SSP_BIO_HRM_LIB_SIZE			8
-> +
-> +/**
-> + * enum ssp_sensor_tyoe - SSP sensor type
-> + */
-> +enum ssp_sensor_type {
-> +	SSP_ACCELEROMETER_SENSOR = 0,
-> +	SSP_GYROSCOPE_SENSOR,
-> +	SSP_GEOMAGNETIC_UNCALIB_SENSOR,
-> +	SSP_GEOMAGNETIC_RAW,
-> +	SSP_GEOMAGNETIC_SENSOR,
-> +	SSP_PRESSURE_SENSOR,
-> +	SSP_GESTURE_SENSOR,
-> +	SSP_PROXIMITY_SENSOR,
-> +	SSP_TEMPERATURE_HUMIDITY_SENSOR,
-> +	SSP_LIGHT_SENSOR,
-> +	SSP_PROXIMITY_RAW,
-> +	SSP_ORIENTATION_SENSOR,
-> +	SSP_STEP_DETECTOR,
-> +	SSP_SIG_MOTION_SENSOR,
-> +	SSP_GYRO_UNCALIB_SENSOR,
-> +	SSP_GAME_ROTATION_VECTOR,
-> +	SSP_ROTATION_VECTOR,
-> +	SSP_STEP_COUNTER,
-> +	SSP_BIO_HRM_RAW,
-> +	SSP_BIO_HRM_RAW_FAC,
-> +	SSP_BIO_HRM_LIB,
-> +	SSP_SENSOR_MAX,
-> +};
-> +
-> +struct ssp_data;
-> +
-> +/**
-> + * struct ssp_sensor_data - Sensor object
-> + * @process_data:	Callback to feed sensor data.
-> + * @destroy:		Callback to destroy and cleanup sensor object.
-> + * @prv_data:		Sensor private data.
-> + * @type:		Used sensor type.
-> + */
-> +struct ssp_sensor_data {
-> +	int (*process_data)(struct iio_dev *indio_dev, void *buf,
-> +			    s64 timestamp);
-> +	void *prv_data;
-> +	enum ssp_sensor_type type;
-> +};
-> +
-> +void ssp_register_consumer(struct iio_dev *indio_dev, enum ssp_sensor_type);
-> +
-> +int ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,
-> +		       u32 delay);
-> +
-> +int ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type);
-> +
-> +u32 ssp_get_sensor_delay(struct ssp_data *data, enum ssp_sensor_type);
-> +
-> +int ssp_change_delay(struct ssp_data *data, enum ssp_sensor_type type,
-> +		     u32 delay);
-> +
-> +#endif /* _SSP_SENSORS_H_ */
-> 
+thanks,
+laurentiu
