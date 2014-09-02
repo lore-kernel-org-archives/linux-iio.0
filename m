@@ -1,50 +1,204 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Jonathan
- Cameron" <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: RE: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIME
- is defined
-Date: Mon, 8 Sep 2014 13:50:01 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F199761AE@IRSMSX105.ger.corp.intel.com>
-References: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
- <540AFA13.6010207@gmx.de>
-In-Reply-To: <540AFA13.6010207@gmx.de>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <540642CA.9080007@gmx.de>
+Date: Wed, 03 Sep 2014 00:20:58 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
+To: =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: rockchip_saradc: add support for rk3066-tsadc
+ variant
+References: <1999284.oRCTeZRSv1@diego>
+In-Reply-To: <1999284.oRCTeZRSv1@diego>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-iio@vger.kernel.org>
 
-
-> -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel=
-.org] On Behalf Of Hartmut Knaack
-> Sent: 06 September, 2014 15:12
-> To: Tirdea, Irina; Jonathan Cameron; linux-iio@vger.kernel.org
-> Cc: Lars-Peter Clausen; Peter Meerwald; Srinivas Pandruvada; linux-kernel=
-@vger.kernel.org
-> Subject: Re: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIM=
-E is defined
->=20
-> Irina Tirdea schrieb:
-> > When CONFIG_PM_RUNTIME is not defined and bmg160 tries to power
-> > off the device, bmg160_set_power_state will call pm_runtime_put_autosus=
-pend,
-> > which is not implemented (wil return -ENOSYS).
-> >
-> > Only call bmg160_set_power_state when CONFIG_PM_RUNTIME is defined.
-> Unless there is anything more to come, what about putting the #ifdef into=
- first line inside bmg160_set_power_state() and just an
-> #endif before the return 0 at the end? Saves 5 lines.
-
-Thanks for the suggestion! Will fix it in v2.
-
-> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> > Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > ---
-
-
-Thanks,
-Irina
+Heiko Stübner schrieb:
+> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+> for temperature measurements. This so called tsadc does not contain any
+> active parts like temperature interrupts and only supports polling the
+> current temperature. The returned voltage can then be converted by a
+> suitable thermal driver to and actual temperature and used for thermal
+> handling.
+>
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> ---
+Looks mostly good to me, just some minor style issues inline.
+> This is a different IP than the rk3288-tsadc Ceasar provided a driver for.
+> As the commit messages states, the one used on the rk3066 is just a saradc,
+> while the new tsadc in the rk3288 contains active components for thermal
+> handling.
+>
+> A working example using the pending iio-thermal driver can found on
+> https://github.com/mmind/linux-rockchip/commit/c07e02f069d9677d489f254176619fae36f2aad0
+>
+>  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+>  drivers/iio/adc/rockchip_saradc.c                  | 62 +++++++++++++++++-----
+>  2 files changed, 50 insertions(+), 14 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> index 5d3ec1d..a9a5fe1 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> @@ -1,7 +1,7 @@
+>  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+>  
+>  Required properties:
+> -- compatible: Should be "rockchip,saradc"
+> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+>  - reg: physical base address of the controller and length of memory mapped
+>         region.
+>  - interrupts: The interrupt number to the cpu. The interrupt specifier format
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index e074a0b..7effada 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -18,13 +18,13 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/clk.h>
+>  #include <linux/completion.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/iio/iio.h>
+>  
+>  #define SARADC_DATA			0x00
+> -#define SARADC_DATA_MASK		0x3ff
+>  
+>  #define SARADC_STAS			0x04
+>  #define SARADC_STAS_BUSY		BIT(0)
+> @@ -38,15 +38,22 @@
+>  #define SARADC_DLY_PU_SOC		0x0c
+>  #define SARADC_DLY_PU_SOC_MASK		0x3f
+>  
+> -#define SARADC_BITS			10
+>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+>  
+> +struct rockchip_saradc_data {
+> +	int				num_bits;
+> +	const struct iio_chan_spec	*channels;
+> +	int				num_channels;
+> +	unsigned long			clk_rate;
+> +};
+> +
+>  struct rockchip_saradc {
+>  	void __iomem		*regs;
+>  	struct clk		*pclk;
+>  	struct clk		*clk;
+>  	struct completion	completion;
+>  	struct regulator	*vref;
+> +	const struct rockchip_saradc_data *data;
+>  	u16			last_val;
+>  };
+The alignment of the whole block should be adjusted to fit with the new element.
+>  
+> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  
+>  		*val = ret / 1000;
+> -		*val2 = SARADC_BITS;
+> +		*val2 = info->data->num_bits;
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  	default:
+>  		return -EINVAL;
+> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
+>  
+>  	/* Read value */
+>  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+> -	info->last_val &= SARADC_DATA_MASK;
+> +	info->last_val &= BIT(info->data->num_bits) - 1;
+I think using GENMASK would reflect the intention better, that you want to mask out your data.
+>  
+>  	/* Clear irq & power down adc */
+>  	writel_relaxed(0, info->regs + SARADC_CTRL);
+> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+>  	ADC_CHANNEL(2, "adc2"),
+>  };
+>  
+> +static const struct rockchip_saradc_data saradc_data = {
+> +	.num_bits = 10,
+> +	.channels = rockchip_saradc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
+> +	.clk_rate = 1000000,
+> +};
+> +
+> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +};
+> +
+> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
+> +	.num_bits = 12,
+> +	.channels = rockchip_rk3066_tsadc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
+> +	.clk_rate = 50000,
+> +};
+> +
+> +static const struct of_device_id rockchip_saradc_match[] = {
+> +	{
+> +		.compatible = "rockchip,saradc",
+> +		.data = &saradc_data,
+> +	}, {
+> +		.compatible = "rockchip,rk3066-tsadc",
+> +		.data = &rk3066_tsadc_data,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> +
+>  static int rockchip_saradc_probe(struct platform_device *pdev)
+>  {
+>  	struct rockchip_saradc *info = NULL;
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct iio_dev *indio_dev = NULL;
+>  	struct resource	*mem;
+> +	const struct of_device_id *match;
+>  	int ret;
+>  	int irq;
+>  
+> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	}
+>  	info = iio_priv(indio_dev);
+>  
+> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+> +	info->data = match->data;
+> +
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>  	if (IS_ERR(info->regs))
+> @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	 * Use a default of 1MHz for the converter clock.
+>  	 * This may become user-configurable in the future.
+>  	 */
+> -	ret = clk_set_rate(info->clk, 1000000);
+> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+>  		return ret;
+> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	indio_dev->info = &rockchip_saradc_iio_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	indio_dev->channels = rockchip_saradc_iio_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
+> +	indio_dev->channels = info->data->channels;
+> +	indio_dev->num_channels = info->data->num_channels;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+>  			 rockchip_saradc_suspend, rockchip_saradc_resume);
+>  
+> -static const struct of_device_id rockchip_saradc_match[] = {
+> -	{ .compatible = "rockchip,saradc" },
+> -	{},
+> -};
+> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> -
+>  static struct platform_driver rockchip_saradc_driver = {
+>  	.probe		= rockchip_saradc_probe,
+>  	.remove		= rockchip_saradc_remove,
