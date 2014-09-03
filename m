@@ -1,345 +1,279 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 1 Sep 2014 19:39:53 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Daniel Baluta <daniel.baluta@intel.com>
-cc: jic23@kernel.org, daniel.baluta@gmail.com, knaack.h@gmx.de,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-    Tsechih_Lin@asus.com
-Subject: Re: [PATCH v4] iio: Add Dyna-Image AL3320A ambient light sensor
- driver
-In-Reply-To: <1409588330-19188-1-git-send-email-daniel.baluta@intel.com>
-Message-ID: <alpine.DEB.2.01.1409011935270.24345@pmeerw.net>
-References: <1409588330-19188-1-git-send-email-daniel.baluta@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from gloria.sntech.de ([95.129.55.99]:59314 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755613AbaICKLq convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 06:11:46 -0400
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: rockchip_saradc: add support for rk3066-tsadc variant
+Date: Wed, 03 Sep 2014 12:13:48 +0200
+Message-ID: <38104193.mr2XbIjNkb@diego>
+In-Reply-To: <540642CA.9080007@gmx.de>
+References: <1999284.oRCTeZRSv1@diego> <540642CA.9080007@gmx.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Daniel,
-
-> Minimal implementation. This driver provides raw illuminance readings.
+Am Mittwoch, 3. September 2014, 00:20:58 schrieb Hartmut Knaack:
+> Heiko Stübner schrieb:
+> > Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+> > for temperature measurements. This so called tsadc does not contain any
+> > active parts like temperature interrupts and only supports polling the
+> > current temperature. The returned voltage can then be converted by a
+> > suitable thermal driver to and actual temperature and used for thermal
+> > handling.
+> > 
+> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> > ---
 > 
-> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
-> by Tsechih Lin <Tsechih_Lin@asus.com>
+> Looks mostly good to me, just some minor style issues inline.
 > 
-> * https://android.googlesource.com/kernel/msm.git
+> > This is a different IP than the rk3288-tsadc Ceasar provided a driver for.
+> > As the commit messages states, the one used on the rk3066 is just a
+> > saradc,
+> > while the new tsadc in the rk3288 contains active components for thermal
+> > handling.
+> > 
+> > A working example using the pending iio-thermal driver can found on
+> > https://github.com/mmind/linux-rockchip/commit/c07e02f069d9677d489f2541766
+> > 19fae36f2aad0> 
+> >  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+> >  drivers/iio/adc/rockchip_saradc.c                  | 62
+> >  +++++++++++++++++----- 2 files changed, 50 insertions(+), 14
+> >  deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> > b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt index
+> > 5d3ec1d..a9a5fe1 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> > +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> > @@ -1,7 +1,7 @@
+> > 
+> >  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+> > 
+> >  Required properties:
+> > -- compatible: Should be "rockchip,saradc"
+> > +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+> > 
+> >  - reg: physical base address of the controller and length of memory
+> >  mapped
+> >  
+> >         region.
+> >  
+> >  - interrupts: The interrupt number to the cpu. The interrupt specifier
+> >  format> 
+> > diff --git a/drivers/iio/adc/rockchip_saradc.c
+> > b/drivers/iio/adc/rockchip_saradc.c index e074a0b..7effada 100644
+> > --- a/drivers/iio/adc/rockchip_saradc.c
+> > +++ b/drivers/iio/adc/rockchip_saradc.c
+> > @@ -18,13 +18,13 @@
+> > 
+> >  #include <linux/interrupt.h>
+> >  #include <linux/io.h>
+> >  #include <linux/of.h>
+> > 
+> > +#include <linux/of_device.h>
+> > 
+> >  #include <linux/clk.h>
+> >  #include <linux/completion.h>
+> >  #include <linux/regulator/consumer.h>
+> >  #include <linux/iio/iio.h>
+> >  
+> >  #define SARADC_DATA			0x00
+> > 
+> > -#define SARADC_DATA_MASK		0x3ff
+> > 
+> >  #define SARADC_STAS			0x04
+> >  #define SARADC_STAS_BUSY		BIT(0)
+> > 
+> > @@ -38,15 +38,22 @@
+> > 
+> >  #define SARADC_DLY_PU_SOC		0x0c
+> >  #define SARADC_DLY_PU_SOC_MASK		0x3f
+> > 
+> > -#define SARADC_BITS			10
+> > 
+> >  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+> > 
+> > +struct rockchip_saradc_data {
+> > +	int				num_bits;
+> > +	const struct iio_chan_spec	*channels;
+> > +	int				num_channels;
+> > +	unsigned long			clk_rate;
+> > +};
+> > +
+> > 
+> >  struct rockchip_saradc {
+> >  
+> >  	void __iomem		*regs;
+> >  	struct clk		*pclk;
+> >  	struct clk		*clk;
+> >  	struct completion	completion;
+> >  	struct regulator	*vref;
+> > 
+> > +	const struct rockchip_saradc_data *data;
+> > 
+> >  	u16			last_val;
+> >  
+> >  };
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
-> Changes since v3: (reported by Hartmut and Jonathan)
-> 	* dropped the local store for the range, instead read it when necessary
-> 	* removed wrapper functions
-> 	* added in_illuminance_scale_available attribute
-> 	* fix bug when reading raw value, use i2c_smbus_read_word instead of
-> 	  i2c_smbus_read_word_swapped and fix the endianess after read.
+> The alignment of the whole block should be adjusted to fit with the new
+> element.
 
-no need to fix endianness
+Hmm, I'm not sure if this should be in this patch, as changing the indentation 
+is more or less an unrelated change which makes recognizing the actual change 
+of adding the data field harder to see. 
 
-> 	* small coding style fixes
+It could be a second patch on top to adapt the formating, but this also sounds 
+a bit like overkill.
+
+In any case I guess I'll wait for Jonathan to decide how he likes this to be 
+approached.
+
+
+> > @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev
+> > *indio_dev,> 
+> >  		}
+> >  		
+> >  		*val = ret / 1000;
+> > 
+> > -		*val2 = SARADC_BITS;
+> > +		*val2 = info->data->num_bits;
+> > 
+> >  		return IIO_VAL_FRACTIONAL_LOG2;
+> >  	
+> >  	default:
+> >  		return -EINVAL;
+> > 
+> > @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void
+> > *dev_id)> 
+> >  	/* Read value */
+> >  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+> > 
+> > -	info->last_val &= SARADC_DATA_MASK;
+> > +	info->last_val &= BIT(info->data->num_bits) - 1;
 > 
-> Changes since v2: (reported by Peter Meerwald)
->         * removed definition of DATA_HIGH and SW_RESET as they are not used
->         * added a comment to al3320a_get_adc_value() function
->         * added thresholds on TODO list
->         * small style fixes
-> 
-> Changes since v1: (reported by Peter Meerwald)
->         * used u8 instead of int for passing gain and mean_time
->         * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
->         * used devm_iio_device_register instead of iio_device_register
->         * small style fixes
-> 
-> 
->  drivers/iio/light/Kconfig   |  10 ++
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/al3320a.c | 229 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 240 insertions(+)
->  create mode 100644 drivers/iio/light/al3320a.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index bf05ca5..5bea821 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -17,6 +17,16 @@ config ADJD_S311
->  	 This driver can also be built as a module.  If so, the module
->  	 will be called adjd_s311.
->  
-> +config AL3320A
-> +	tristate "AL3320A ambient light sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Dyna Image AL3320A
-> +	 ambient light sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called al3320a.
-> +
->  config APDS9300
->  	tristate "APDS9300 ambient light sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 8b8c09f..47877a3 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -4,6 +4,7 @@
->  
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
-> +obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM36651)		+= cm36651.o
-> diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-> new file mode 100644
-> index 0000000..ad9135a
-> --- /dev/null
-> +++ b/drivers/iio/light/al3320a.c
-> @@ -0,0 +1,229 @@
-> +/*
-> + * AL3320A - Dyna Image Ambient Light Sensor
-> + *
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
-> + *
-> + * TODO: interrupt support, thresholds
-> + *
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define AL3320A_DRV_NAME "al3320a"
-> +
-> +#define AL3320A_REG_CONFIG		0x00
-> +#define AL3320A_REG_STATUS		0x01
-> +#define AL3320A_REG_INT			0x02
-> +#define AL3320A_REG_WAIT		0x06
-> +#define AL3320A_REG_CONFIG_RANGE	0x07
-> +#define AL3320A_REG_PERSIST		0x08
-> +#define AL3320A_REG_MEAN_TIME		0x09
-> +#define AL3320A_REG_ADUMMY		0x0A
-> +#define AL3320A_REG_DATA_LOW		0x22
-> +
-> +#define AL3320A_REG_LOW_THRESH_LOW	0x30
-> +#define AL3320A_REG_LOW_THRESH_HIGH	0x31
-> +#define AL3320A_REG_HIGH_THRESH_LOW	0x32
-> +#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
-> +
-> +#define AL3320A_CONFIG_DISABLE		0x00
-> +#define AL3320A_CONFIG_ENABLE		0x01
-> +
-> +#define AL3320A_GAIN_SHIFT		1
-> +
-> +/* chip params default values */
-> +#define AL3320A_DEFAULT_MEAN_TIME	4
-> +#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
-> +
-> +#define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
-> +
-> +enum al3320a_range {
-> +	AL3320A_RANGE_1, /* 33.28K lux */
-> +	AL3320A_RANGE_2, /* 8.32K lux  */
-> +	AL3320A_RANGE_3, /* 2.08K lux  */
-> +	AL3320A_RANGE_4  /* 0.65K lux  */
-> +};
-> +
-> +static const int al3320a_scales[][2] = {
-> +	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
-> +};
-> +
-> +struct al3320a_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static const struct iio_chan_spec al3320a_channels[] = {
-> +	{
-> +		.type	= IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	}
-> +};
-> +
-> +static IIO_CONST_ATTR(in_illuminance_scale_available, AL3320A_SCALE_AVAILABLE);
-> +
-> +static struct attribute *al3320a_attributes[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group al3320a_attribute_group = {
-> +	.attrs = al3320a_attributes,
-> +};
-> +
-> +static int al3320a_init(struct al3320a_data *data)
-> +{
-> +	int ret;
-> +
-> +	/* power on */
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
-> +					AL3320A_CONFIG_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
-> +					AL3320A_RANGE_3 << AL3320A_GAIN_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
-> +					AL3320A_DEFAULT_MEAN_TIME);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
-> +					AL3320A_DEFAULT_WAIT_TIME);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int al3320a_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct al3320a_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		/*
-> +		 * ALS ADC value is stored in two adjacent registers:
-> +		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
-> +		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
-> +		 */
-> +		ret = i2c_smbus_read_word_data(data->client,
-> +					       AL3320A_REG_DATA_LOW);
+> I think using GENMASK would reflect the intention better, that you want to
+> mask out your data.
 
-i2c_smbus_read_word_data() must be used if the data is in I2C byte order 
-(i.e. LSB first)
+I didn't know GENMASK before, so thanks for the pointer .. this looks quite 
+cool :-)
 
-i2c_smbus_read_word_swapped() must be used if the data is NOT in I2C byte 
-order (i.e. MSB first)
 
-this has nothing to do with CPU byteorder; i2c_smbus_read_word_xxx() will 
-take care to report the 16-bit value in native endianness
-
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = le16_to_cpu((__le16)ret);
-
-so it should be
-*val = ret;
-
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +					       AL3320A_REG_CONFIG_RANGE);
-> +		if (ret < 0)
-> +			return ret;
-> +		ret >>= AL3320A_GAIN_SHIFT;
-> +		*val = al3320a_scales[ret][0];
-> +		*val2 = al3320a_scales[ret][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int al3320a_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
-> +{
-> +	struct al3320a_data *data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
-> +			if (val == al3320a_scales[i][0] &&
-> +			    val2 == al3320a_scales[i][1])
-> +				return i2c_smbus_write_byte_data(data->client,
-> +					AL3320A_REG_CONFIG_RANGE,
-> +					i << AL3320A_GAIN_SHIFT);
-> +		}
-> +		break;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info al3320a_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= al3320a_read_raw,
-> +	.write_raw	= al3320a_write_raw,
-> +	.attrs		= &al3320a_attribute_group,
-> +};
-> +
-> +static int al3320a_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct al3320a_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &al3320a_info;
-> +	indio_dev->name = AL3320A_DRV_NAME;
-> +	indio_dev->channels = al3320a_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = al3320a_init(data);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "al3320a chip init failed\n");
-> +		return ret;
-> +	}
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static int al3320a_remove(struct i2c_client *client)
-> +{
-> +	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
-> +					 AL3320A_CONFIG_DISABLE);
-> +}
-> +
-> +static const struct i2c_device_id al3320a_id[] = {
-> +	{"al3320a", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, al3320a_id);
-> +
-> +static struct i2c_driver al3320a_driver = {
-> +	.driver = {
-> +		.name = AL3320A_DRV_NAME,
-> +	},
-> +	.probe		= al3320a_probe,
-> +	.remove		= al3320a_remove,
-> +	.id_table	= al3320a_id,
-> +};
-> +
-> +module_i2c_driver(al3320a_driver);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-> +MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
-> +MODULE_LICENSE("GPL v2");
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+> >  	/* Clear irq & power down adc */
+> >  	writel_relaxed(0, info->regs + SARADC_CTRL);
+> > 
+> > @@ -133,12 +140,44 @@ static const struct iio_chan_spec
+> > rockchip_saradc_iio_channels[] = {> 
+> >  	ADC_CHANNEL(2, "adc2"),
+> >  
+> >  };
+> > 
+> > +static const struct rockchip_saradc_data saradc_data = {
+> > +	.num_bits = 10,
+> > +	.channels = rockchip_saradc_iio_channels,
+> > +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
+> > +	.clk_rate = 1000000,
+> > +};
+> > +
+> > +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] =
+> > {
+> > +	ADC_CHANNEL(0, "adc0"),
+> > +	ADC_CHANNEL(1, "adc1"),
+> > +};
+> > +
+> > +static const struct rockchip_saradc_data rk3066_tsadc_data = {
+> > +	.num_bits = 12,
+> > +	.channels = rockchip_rk3066_tsadc_iio_channels,
+> > +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
+> > +	.clk_rate = 50000,
+> > +};
+> > +
+> > +static const struct of_device_id rockchip_saradc_match[] = {
+> > +	{
+> > +		.compatible = "rockchip,saradc",
+> > +		.data = &saradc_data,
+> > +	}, {
+> > +		.compatible = "rockchip,rk3066-tsadc",
+> > +		.data = &rk3066_tsadc_data,
+> > +	},
+> > +	{},
+> > +};
+> > +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> > +
+> > 
+> >  static int rockchip_saradc_probe(struct platform_device *pdev)
+> >  {
+> >  
+> >  	struct rockchip_saradc *info = NULL;
+> >  	struct device_node *np = pdev->dev.of_node;
+> >  	struct iio_dev *indio_dev = NULL;
+> >  	struct resource	*mem;
+> > 
+> > +	const struct of_device_id *match;
+> > 
+> >  	int ret;
+> >  	int irq;
+> > 
+> > @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct
+> > platform_device *pdev)> 
+> >  	}
+> >  	info = iio_priv(indio_dev);
+> > 
+> > +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+> > +	info->data = match->data;
+> > +
+> > 
+> >  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> >  	if (IS_ERR(info->regs))
+> > 
+> > @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct
+> > platform_device *pdev)> 
+> >  	 * Use a default of 1MHz for the converter clock.
+> >  	 * This may become user-configurable in the future.
+> >  	 */
+> > 
+> > -	ret = clk_set_rate(info->clk, 1000000);
+> > +	ret = clk_set_rate(info->clk, info->data->clk_rate);
+> > 
+> >  	if (ret < 0) {
+> >  	
+> >  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+> >  		return ret;
+> > 
+> > @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct
+> > platform_device *pdev)> 
+> >  	indio_dev->info = &rockchip_saradc_iio_info;
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> > 
+> > -	indio_dev->channels = rockchip_saradc_iio_channels;
+> > -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
+> > +	indio_dev->channels = info->data->channels;
+> > +	indio_dev->num_channels = info->data->num_channels;
+> > 
+> >  	ret = iio_device_register(indio_dev);
+> >  	if (ret)
+> > 
+> > @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+> > 
+> >  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+> >  
+> >  			 rockchip_saradc_suspend, rockchip_saradc_resume);
+> > 
+> > -static const struct of_device_id rockchip_saradc_match[] = {
+> > -	{ .compatible = "rockchip,saradc" },
+> > -	{},
+> > -};
+> > -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> > -
+> > 
+> >  static struct platform_driver rockchip_saradc_driver = {
+> >  
+> >  	.probe		= rockchip_saradc_probe,
+> >  	.remove		= rockchip_saradc_remove,
