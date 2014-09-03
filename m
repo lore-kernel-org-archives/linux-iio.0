@@ -1,21 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:24452 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752869AbaIHIkh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Sep 2014 04:40:37 -0400
+Return-Path: <ludovic.desroches@atmel.com>
 From: Ludovic Desroches <ludovic.desroches@atmel.com>
 To: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
 CC: <jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
 	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
-	<maxime.ripard@free-electrons.com>, <knaack.h@gmx.de>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>
-Subject: [PATCH v2] iio: adc: at91: don't use the last converted data register
-Date: Mon, 8 Sep 2014 10:40:31 +0200
-Message-ID: <1410165631-8688-1-git-send-email-ludovic.desroches@atmel.com>
+	<maxime.ripard@free-electrons.com>, Ludovic Desroches
+	<ludovic.desroches@atmel.com>
+Subject: [RESEND PATCH] iio: adc: at91: don't use the last converted data register
+Date: Wed, 3 Sep 2014 08:34:29 +0200
+Message-ID: <1409726069-13054-1-git-send-email-ludovic.desroches@atmel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 If touchscreen mode is enabled and a conversion is requested on another
 channel, the result in the last converted data register can be a
@@ -26,18 +21,16 @@ its content may be a touchscreen conversion.
 To remove this temporal constraint, the conversion value is taken from
 the channel data register.
 
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
 
-Changes from v1:
-- use GENMASK and BIT macros
+Sorry for the noise, there was a typo in the CC list.
 
- drivers/iio/adc/at91_adc.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/adc/at91_adc.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 3b5bacd..1812d12 100644
+index 3b5bacd..dde22cb 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
 @@ -196,6 +196,7 @@ struct at91_adc_state {
@@ -57,25 +50,35 @@ index 3b5bacd..1812d12 100644
  		st->done = true;
  		wake_up_interruptible(&st->wq_data_avail);
  	}
-@@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+@@ -348,10 +349,11 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+ 	struct iio_dev *idev = private;
+ 	struct at91_adc_state *st = iio_priv(idev);
+ 	u32 status = at91_adc_readl(st, st->registers->status_register);
++	const u32 eoc_mask = (1 << st->num_channels) - 1;
  	unsigned int reg;
  
  	status &= at91_adc_readl(st, AT91_ADC_IMR);
 -	if (status & st->registers->drdy_mask)
-+	if (status & GENMASK(st->num_channels, 0))
++	if (status & eoc_mask)
  		handle_adc_eoc_trigger(irq, idev);
  
  	if (status & AT91RL_ADC_IER_PEN) {
-@@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+@@ -413,12 +415,13 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+ 	struct iio_dev *idev = private;
+ 	struct at91_adc_state *st = iio_priv(idev);
+ 	u32 status = at91_adc_readl(st, st->registers->status_register);
++	const u32 eoc_mask = (1 << st->num_channels) - 1;
+ 	const uint32_t ts_data_irq_mask =
+ 		AT91_ADC_IER_XRDY |
  		AT91_ADC_IER_YRDY |
  		AT91_ADC_IER_PRDY;
  
 -	if (status & st->registers->drdy_mask)
-+	if (status & GENMASK(st->num_channels, 0))
++	if (status & eoc_mask)
  		handle_adc_eoc_trigger(irq, idev);
  
  	if (status & AT91_ADC_IER_PEN) {
-@@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+@@ -689,9 +692,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
  	case IIO_CHAN_INFO_RAW:
  		mutex_lock(&st->lock);
  
@@ -83,19 +86,18 @@ index 3b5bacd..1812d12 100644
  		at91_adc_writel(st, AT91_ADC_CHER,
  				AT91_ADC_CH(chan->channel));
 -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
++		at91_adc_writel(st, AT91_ADC_IER, 1 << chan->channel);
  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
  
  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-@@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+@@ -708,7 +712,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
  
  		at91_adc_writel(st, AT91_ADC_CHDR,
  				AT91_ADC_CH(chan->channel));
 -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
++		at91_adc_writel(st, AT91_ADC_IDR, 1 << chan->channel);
  
  		st->last_value = 0;
  		st->done = false;
 -- 
 1.7.9.5
-
