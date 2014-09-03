@@ -1,56 +1,107 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5408983D.30002@metafoo.de>
-Date: Thu, 04 Sep 2014 18:50:05 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: "open list:STAGING - INDUSTR..." <linux-iio@vger.kernel.org>,
- open list:STAGING SUBSYSTEM <devel@driverdev.osuosl.org>,
- open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: adc: mxs-lradc.c: sparse warning of incorrect
- type
-References: <1409849142-12185-1-git-send-email-sudipm.mukherjee@gmail.com>
-In-Reply-To: <1409849142-12185-1-git-send-email-sudipm.mukherjee@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:52616 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751180AbaICO4d (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 10:56:33 -0400
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [RFC/PATCH 0/6] iio: Add sensorhub driver
+Date: Wed, 03 Sep 2014 16:55:44 +0200
+Message-id: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09/04/2014 06:45 PM, Sudip Mukherjee wrote:
-> fixed sparse warning : incorrect type in argument 1
-> 		       (different address spaces)
->
-> Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
-> ---
->   drivers/staging/iio/adc/mxs-lradc.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 468327f..d8d1fe1 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -1545,9 +1545,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->   	/* Grab the memory area */
->   	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->   	lradc->dev = &pdev->dev;
-> -	lradc->base = devm_ioremap_resource(dev, iores);
-> -	if (IS_ERR(lradc->base))
-> -		return PTR_ERR(lradc->base);
-> +	void *tempptr;
-> +
-> +	tempptr = devm_ioremap_resource(dev, iores);
-> +	if (IS_ERR(tempptr))
-> +		return PTR_ERR(tempptr);
-> +	lradc->base = tempptr;
+Hello,
 
-This makes no sense at all... devm_ioremap_resource() returns a iomem 
-pointer lrdac->base is a iomem pointer.
+This patchset adds support for sensorhub. It is an external mcu which manages
+and collects data from several sensors i.e. on Galaxy Gear 2 watch.
 
-Please make sure that you have the latest version of sparse installed on 
-your system.
+It contains:
+- spi driver for sensorhub device
+- DT binding for the device
+- IIO common utils for ssp sensors, a trigger module
+- IIO accelerometer driver
+- IIO gyroscope driver
 
->
->   	lradc->clk = devm_clk_get(&pdev->dev, NULL);
->   	if (IS_ERR(lradc->clk)) {
->
+Generally this is an attempt to generalize sensors handling on some Samsung
+boards which have multiple sensors IC and also sensorhub does some data
+processing itself.
+
+I would like to get your opinion about such solution. The idea is that
+data communication layer gives control and data to proper IIO sensor devices.
+In this case I chose that sensor drivers are platform ones represented by
+child nodes of sensorhub in DT. These compatibles are used mainly to match
+sensor to driver. For example at this stage there is one accelerometer but on
+other board can have different one with changed data format etc. In this case
+ssp_accel_sensor driver could handle several physical devices of accel class.
+Unfortunately the firmware gives only an information about used sensor type,
+the driver can find out that there is an accelerometer on board but nothing
+specific about the sensor.
+
+Other question:
+The sensorhub can implement some devices which are non common for IIO and hard
+to standardise. These ones need two way communication (raw write will not be
+proper for that) and can produce data packets with flexible size to 2KB).
+I'm wondering if it is worth to look for solution in IIO and implement
+something like IIO_BULK sensor with no standard channel description
+or solve this problem using cdev. This is the reason why the part of the 
+patchset is intended to be placed in misc.
+
+Regards,
+Karol
+
+Karol Wrona (6):
+  iio:sensorhub: Add sensorhub common library
+  misc: sensorhub: Add sensorhub driver
+  sensorhub: Add sensorhub bindings
+  iio: sensorhub: Add sensorhub iio commons
+  iio: sensorhub: Add sensorhub accelerometer sensor
+  iio: sensorhub: Add sensorhub gyroscope sensor
+
+ .../devicetree/bindings/misc/sensorhub.txt         |   51 ++
+ drivers/iio/accel/Makefile                         |    2 +
+ drivers/iio/accel/ssp_accel_sensor.c               |  240 ++++++
+ drivers/iio/common/Kconfig                         |    1 +
+ drivers/iio/common/Makefile                        |    1 +
+ drivers/iio/common/ssp_sensors/Kconfig             |   15 +
+ drivers/iio/common/ssp_sensors/Makefile            |    6 +
+ .../iio/common/ssp_sensors/ssp-sensor-trigger.c    |   92 +++
+ drivers/iio/common/ssp_sensors/ssp_iio.c           |   35 +
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   62 ++
+ drivers/iio/gyro/Makefile                          |    2 +
+ drivers/iio/gyro/ssp_gyro_sensor.c                 |  225 ++++++
+ drivers/misc/Kconfig                               |    1 +
+ drivers/misc/Makefile                              |    1 +
+ drivers/misc/sensorhub/Kconfig                     |   13 +
+ drivers/misc/sensorhub/Makefile                    |    8 +
+ drivers/misc/sensorhub/ssp.h                       |  323 ++++++++
+ drivers/misc/sensorhub/ssp_data.c                  |   61 ++
+ drivers/misc/sensorhub/ssp_dev.c                   |  782 ++++++++++++++++++++
+ drivers/misc/sensorhub/ssp_firmware.c              |  571 ++++++++++++++
+ drivers/misc/sensorhub/ssp_spi.c                   |  700 ++++++++++++++++++
+ include/linux/iio/common/ssp_sensors.h             |   82 ++
+ 22 files changed, 3274 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
+ create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+ create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp-sensor-trigger.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+ create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+ create mode 100644 drivers/misc/sensorhub/Kconfig
+ create mode 100644 drivers/misc/sensorhub/Makefile
+ create mode 100644 drivers/misc/sensorhub/ssp.h
+ create mode 100644 drivers/misc/sensorhub/ssp_data.c
+ create mode 100644 drivers/misc/sensorhub/ssp_dev.c
+ create mode 100644 drivers/misc/sensorhub/ssp_firmware.c
+ create mode 100644 drivers/misc/sensorhub/ssp_spi.c
+ create mode 100644 include/linux/iio/common/ssp_sensors.h
+
+-- 
+1.7.9.5
+
