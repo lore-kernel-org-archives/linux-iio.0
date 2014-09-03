@@ -1,83 +1,134 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:58133 "EHLO
-	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751102AbaIJNgO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 09:36:14 -0400
-Date: Wed, 10 Sep 2014 15:36:07 +0200
-From: Pavel Machek <pavel@denx.de>
-To: Denis CIOCCA <denis.ciocca@st.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Eric Piel <eric.piel@tremplin-utc.net>,
-	Yan Burman <burman.yan@gmail.com>,
-	Yan Burman <yanb@mellanox.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-Message-ID: <20140910133607.GA13361@xo-6d-61-c0.localdomain>
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
- <53FB6205.5020704@kernel.org>
- <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
- <54104B26.5080707@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42187 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751543AbaICTwV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 15:52:21 -0400
+In-Reply-To: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
+References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <54104B26.5080707@st.com>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [RFC/PATCH 0/6] iio: Add sensorhub driver
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Wed, 03 Sep 2014 20:52:13 +0100
+To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Message-ID: <476dc5c4-557d-467c-9583-201b10b7e1df@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi!
 
-> I'm sorry but I was in business trip. I think that current lis3lv02d 
-> supports more things, I want to support everything in the current IIO 
-> drivers but always I have no time.
 
-Ok then, can you add hwmon interfaces from the other driver to your one? That way,
-we can deprecate one of them...
-
-									Pavel
-
-> 
-> BR,
-> Denis
-> 
-> 
-> On 08/27/14 15:38, Linus Walleij wrote:
-> > On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> >> On 23/08/14 18:31, Linus Walleij wrote:
-> >>> This adds support for the LIS3LV02 accelerometer found in the
-> >>> ST Microelectronics Nomadik board series.
-> >>>
-> >>> Cc: devicetree@vger.kernel.org
-> >>> Cc: Denis CIOCCA <denis.ciocca@st.com>
-> >>> Cc: Lee Jones <lee.jones@linaro.org>
-> >>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> >> This is a little 'interesting', given the part is already supported by
-> >> drivers/misc/lis3lv02d*.c and already has bindings under there.
-> >> Documentation/devicetree/bindings/misc/lis302.txt
-> >> (some of these are interesting).
-> > Grrr how come I missed this... It was originally merged as a
-> > hwmon driver.
-> >
-> >
-> >>> +/* CUSTOM VALUES FOR SENSOR 4 */
-> >>>
-> >> I wish now we'd nipped this naming convention in the bud and insisted
-> >> on naming after a relevant part. Oh well.
-> > Well we can always make an invasive patch fixing that. I can
-> > probably do it using sed or something.
-> >
-> >> Do we think this is the right way to handle the alternative support
-> >> here?
-> > Well this patch is a driver using the IIO framework and was written
-> > by ST, but the other driver support a few other interesting features
-> > and seems to be for the laptop usecase.
-> >
-> > Adding the other authors to the TO: line...
-> >
-> > Yours,
-> > Linus Walleij
+On September 3, 2014 3:55:44 PM GMT+01:00, Karol Wrona <k.wrona@samsung.com> wrote:
+>Hello,
+>
+>This patchset adds support for sensorhub. It is an external mcu which
+>manages
+>and collects data from several sensors i.e. on Galaxy Gear 2 watch.
+>
+>It contains:
+>- spi driver for sensorhub device
+>- DT binding for the device
+>- IIO common utils for ssp sensors, a trigger module
+>- IIO accelerometer driver
+>- IIO gyroscope driver
+>
+>Generally this is an attempt to generalize sensors handling on some
+>Samsung
+>boards which have multiple sensors IC and also sensorhub does some data
+>processing itself.
+>
+>I would like to get your opinion about such solution. The idea is that
+>data communication layer gives control and data to proper IIO sensor
+>devices.
+>In this case I chose that sensor drivers are platform ones represented
+>by
+>child nodes of sensorhub in DT. These compatibles are used mainly to
+>match
+>sensor to driver. For example at this stage there is one accelerometer
+>but on
+>other board can have different one with changed data format etc. In
+>this case
+>ssp_accel_sensor driver could handle several physical devices of accel
+>class.
+>Unfortunately the firmware gives only an information about used sensor
+>type,
+>the driver can find out that there is an accelerometer on board but
+>nothing
+>specific about the sensor.
+Will look at this later... In the meantime..
+>
+>Other question:
+>The sensorhub can implement some devices which are non common for IIO
+>and hard
+>to standardise. These ones need two way communication (raw write will
+>not be
+>proper for that) and can produce data packets with flexible size to
+>2KB).
+>I'm wondering if it is worth to look for solution in IIO and implement
+>something like IIO_BULK sensor with no standard channel description
+>or solve this problem using cdev. This is the reason why the part of
+>the 
+>patchset is intended to be placed in misc.
+Out of curiosity, what are these other sensors, roughly?  If they are popular I am
+ sure there will be more out there soon!  Ideally we would work out how to standardize these. So convince is it can't be
+ done! 
+>
+>Regards,
+>Karol
+>
+>Karol Wrona (6):
+>  iio:sensorhub: Add sensorhub common library
+>  misc: sensorhub: Add sensorhub driver
+>  sensorhub: Add sensorhub bindings
+>  iio: sensorhub: Add sensorhub iio commons
+>  iio: sensorhub: Add sensorhub accelerometer sensor
+>  iio: sensorhub: Add sensorhub gyroscope sensor
+>
+> .../devicetree/bindings/misc/sensorhub.txt         |   51 ++
+> drivers/iio/accel/Makefile                         |    2 +
+> drivers/iio/accel/ssp_accel_sensor.c               |  240 ++++++
+> drivers/iio/common/Kconfig                         |    1 +
+> drivers/iio/common/Makefile                        |    1 +
+> drivers/iio/common/ssp_sensors/Kconfig             |   15 +
+> drivers/iio/common/ssp_sensors/Makefile            |    6 +
+> .../iio/common/ssp_sensors/ssp-sensor-trigger.c    |   92 +++
+> drivers/iio/common/ssp_sensors/ssp_iio.c           |   35 +
+> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   62 ++
+> drivers/iio/gyro/Makefile                          |    2 +
+> drivers/iio/gyro/ssp_gyro_sensor.c                 |  225 ++++++
+> drivers/misc/Kconfig                               |    1 +
+> drivers/misc/Makefile                              |    1 +
+> drivers/misc/sensorhub/Kconfig                     |   13 +
+> drivers/misc/sensorhub/Makefile                    |    8 +
+> drivers/misc/sensorhub/ssp.h                       |  323 ++++++++
+> drivers/misc/sensorhub/ssp_data.c                  |   61 ++
+>drivers/misc/sensorhub/ssp_dev.c                   |  782
+>++++++++++++++++++++
+>drivers/misc/sensorhub/ssp_firmware.c              |  571
+>++++++++++++++
+>drivers/misc/sensorhub/ssp_spi.c                   |  700
+>++++++++++++++++++
+> include/linux/iio/common/ssp_sensors.h             |   82 ++
+> 22 files changed, 3274 insertions(+)
+>create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
+> create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+> create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+> create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+> create mode 100644 drivers/iio/common/ssp_sensors/ssp-sensor-trigger.c
+> create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+> create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+> create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+> create mode 100644 drivers/misc/sensorhub/Kconfig
+> create mode 100644 drivers/misc/sensorhub/Makefile
+> create mode 100644 drivers/misc/sensorhub/ssp.h
+> create mode 100644 drivers/misc/sensorhub/ssp_data.c
+> create mode 100644 drivers/misc/sensorhub/ssp_dev.c
+> create mode 100644 drivers/misc/sensorhub/ssp_firmware.c
+> create mode 100644 drivers/misc/sensorhub/ssp_spi.c
+> create mode 100644 include/linux/iio/common/ssp_sensors.h
 
 -- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
