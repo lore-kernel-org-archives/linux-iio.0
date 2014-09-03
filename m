@@ -1,279 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:59314 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755613AbaICKLq convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 06:11:46 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: rockchip_saradc: add support for rk3066-tsadc variant
-Date: Wed, 03 Sep 2014 12:13:48 +0200
-Message-ID: <38104193.mr2XbIjNkb@diego>
-In-Reply-To: <540642CA.9080007@gmx.de>
-References: <1999284.oRCTeZRSv1@diego> <540642CA.9080007@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:34092 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750967AbaICO4d (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 10:56:33 -0400
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [RFC/PATCH 1/6] iio:sensorhub: Add sensorhub common library
+Date: Wed, 03 Sep 2014 16:55:45 +0200
+Message-id: <1409756150-30889-2-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
+References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Mittwoch, 3. September 2014, 00:20:58 schrieb Hartmut Knaack:
-> Heiko Stübner schrieb:
-> > Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
-> > for temperature measurements. This so called tsadc does not contain any
-> > active parts like temperature interrupts and only supports polling the
-> > current temperature. The returned voltage can then be converted by a
-> > suitable thermal driver to and actual temperature and used for thermal
-> > handling.
-> > 
-> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> > ---
-> 
-> Looks mostly good to me, just some minor style issues inline.
-> 
-> > This is a different IP than the rk3288-tsadc Ceasar provided a driver for.
-> > As the commit messages states, the one used on the rk3066 is just a
-> > saradc,
-> > while the new tsadc in the rk3288 contains active components for thermal
-> > handling.
-> > 
-> > A working example using the pending iio-thermal driver can found on
-> > https://github.com/mmind/linux-rockchip/commit/c07e02f069d9677d489f2541766
-> > 19fae36f2aad0> 
-> >  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
-> >  drivers/iio/adc/rockchip_saradc.c                  | 62
-> >  +++++++++++++++++----- 2 files changed, 50 insertions(+), 14
-> >  deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> > b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt index
-> > 5d3ec1d..a9a5fe1 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> > +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> > @@ -1,7 +1,7 @@
-> > 
-> >  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
-> > 
-> >  Required properties:
-> > -- compatible: Should be "rockchip,saradc"
-> > +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
-> > 
-> >  - reg: physical base address of the controller and length of memory
-> >  mapped
-> >  
-> >         region.
-> >  
-> >  - interrupts: The interrupt number to the cpu. The interrupt specifier
-> >  format> 
-> > diff --git a/drivers/iio/adc/rockchip_saradc.c
-> > b/drivers/iio/adc/rockchip_saradc.c index e074a0b..7effada 100644
-> > --- a/drivers/iio/adc/rockchip_saradc.c
-> > +++ b/drivers/iio/adc/rockchip_saradc.c
-> > @@ -18,13 +18,13 @@
-> > 
-> >  #include <linux/interrupt.h>
-> >  #include <linux/io.h>
-> >  #include <linux/of.h>
-> > 
-> > +#include <linux/of_device.h>
-> > 
-> >  #include <linux/clk.h>
-> >  #include <linux/completion.h>
-> >  #include <linux/regulator/consumer.h>
-> >  #include <linux/iio/iio.h>
-> >  
-> >  #define SARADC_DATA			0x00
-> > 
-> > -#define SARADC_DATA_MASK		0x3ff
-> > 
-> >  #define SARADC_STAS			0x04
-> >  #define SARADC_STAS_BUSY		BIT(0)
-> > 
-> > @@ -38,15 +38,22 @@
-> > 
-> >  #define SARADC_DLY_PU_SOC		0x0c
-> >  #define SARADC_DLY_PU_SOC_MASK		0x3f
-> > 
-> > -#define SARADC_BITS			10
-> > 
-> >  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
-> > 
-> > +struct rockchip_saradc_data {
-> > +	int				num_bits;
-> > +	const struct iio_chan_spec	*channels;
-> > +	int				num_channels;
-> > +	unsigned long			clk_rate;
-> > +};
-> > +
-> > 
-> >  struct rockchip_saradc {
-> >  
-> >  	void __iomem		*regs;
-> >  	struct clk		*pclk;
-> >  	struct clk		*clk;
-> >  	struct completion	completion;
-> >  	struct regulator	*vref;
-> > 
-> > +	const struct rockchip_saradc_data *data;
-> > 
-> >  	u16			last_val;
-> >  
-> >  };
-> 
-> The alignment of the whole block should be adjusted to fit with the new
-> element.
+This patch adds common sensorhub library for sensorhub driver and iio drivers
+which uses sensorhub MCU to communicate with sensors.
 
-Hmm, I'm not sure if this should be in this patch, as changing the indentation 
-is more or less an unrelated change which makes recognizing the actual change 
-of adding the data field harder to see. 
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ include/linux/iio/common/ssp_sensors.h |   82 ++++++++++++++++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+ create mode 100644 include/linux/iio/common/ssp_sensors.h
 
-It could be a second patch on top to adapt the formating, but this also sounds 
-a bit like overkill.
+diff --git a/include/linux/iio/common/ssp_sensors.h b/include/linux/iio/common/ssp_sensors.h
+new file mode 100644
+index 0000000..ca4bdc4
+--- /dev/null
++++ b/include/linux/iio/common/ssp_sensors.h
+@@ -0,0 +1,82 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++#ifndef _SSP_SENSORS_H_
++#define _SSP_SENSORS_H_
++
++#define SSP_TIME_SIZE	4
++
++#define SSP_ACCELEROMETER_SIZE			6
++#define SSP_GYROSCOPE_SIZE			6
++#define	SSP_BIO_HRM_RAW_SIZE			8
++#define	SSP_BIO_HRM_RAW_FAC_SIZE		36
++#define	SSP_BIO_HRM_LIB_SIZE			8
++
++/**
++ * enum ssp_sensor_tyoe - SSP sensor type
++ */
++enum ssp_sensor_type {
++	SSP_ACCELEROMETER_SENSOR = 0,
++	SSP_GYROSCOPE_SENSOR,
++	SSP_GEOMAGNETIC_UNCALIB_SENSOR,
++	SSP_GEOMAGNETIC_RAW,
++	SSP_GEOMAGNETIC_SENSOR,
++	SSP_PRESSURE_SENSOR,
++	SSP_GESTURE_SENSOR,
++	SSP_PROXIMITY_SENSOR,
++	SSP_TEMPERATURE_HUMIDITY_SENSOR,
++	SSP_LIGHT_SENSOR,
++	SSP_PROXIMITY_RAW,
++	SSP_ORIENTATION_SENSOR,
++	SSP_STEP_DETECTOR,
++	SSP_SIG_MOTION_SENSOR,
++	SSP_GYRO_UNCALIB_SENSOR,
++	SSP_GAME_ROTATION_VECTOR,
++	SSP_ROTATION_VECTOR,
++	SSP_STEP_COUNTER,
++	SSP_BIO_HRM_RAW,
++	SSP_BIO_HRM_RAW_FAC,
++	SSP_BIO_HRM_LIB,
++	SSP_SENSOR_MAX,
++};
++
++struct ssp_data;
++
++/**
++ * struct ssp_sensor_data - Sensor object
++ * @process_data:	Callback to feed sensor data.
++ * @destroy:		Callback to destroy and cleanup sensor object.
++ * @prv_data:		Sensor private data.
++ * @type:		Used sensor type.
++ */
++struct ssp_sensor_data {
++	int (*process_data)(struct iio_dev *indio_dev, void *buf,
++			    s64 timestamp);
++	void *prv_data;
++	enum ssp_sensor_type type;
++};
++
++void ssp_register_consumer(struct iio_dev *indio_dev, enum ssp_sensor_type);
++
++int ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,
++		       u32 delay);
++
++int ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type);
++
++u32 ssp_get_sensor_delay(struct ssp_data *data, enum ssp_sensor_type);
++
++int ssp_change_delay(struct ssp_data *data, enum ssp_sensor_type type,
++		     u32 delay);
++
++#endif /* _SSP_SENSORS_H_ */
+-- 
+1.7.9.5
 
-In any case I guess I'll wait for Jonathan to decide how he likes this to be 
-approached.
-
-
-> > @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev
-> > *indio_dev,> 
-> >  		}
-> >  		
-> >  		*val = ret / 1000;
-> > 
-> > -		*val2 = SARADC_BITS;
-> > +		*val2 = info->data->num_bits;
-> > 
-> >  		return IIO_VAL_FRACTIONAL_LOG2;
-> >  	
-> >  	default:
-> >  		return -EINVAL;
-> > 
-> > @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void
-> > *dev_id)> 
-> >  	/* Read value */
-> >  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
-> > 
-> > -	info->last_val &= SARADC_DATA_MASK;
-> > +	info->last_val &= BIT(info->data->num_bits) - 1;
-> 
-> I think using GENMASK would reflect the intention better, that you want to
-> mask out your data.
-
-I didn't know GENMASK before, so thanks for the pointer .. this looks quite 
-cool :-)
-
-
-> >  	/* Clear irq & power down adc */
-> >  	writel_relaxed(0, info->regs + SARADC_CTRL);
-> > 
-> > @@ -133,12 +140,44 @@ static const struct iio_chan_spec
-> > rockchip_saradc_iio_channels[] = {> 
-> >  	ADC_CHANNEL(2, "adc2"),
-> >  
-> >  };
-> > 
-> > +static const struct rockchip_saradc_data saradc_data = {
-> > +	.num_bits = 10,
-> > +	.channels = rockchip_saradc_iio_channels,
-> > +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
-> > +	.clk_rate = 1000000,
-> > +};
-> > +
-> > +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] =
-> > {
-> > +	ADC_CHANNEL(0, "adc0"),
-> > +	ADC_CHANNEL(1, "adc1"),
-> > +};
-> > +
-> > +static const struct rockchip_saradc_data rk3066_tsadc_data = {
-> > +	.num_bits = 12,
-> > +	.channels = rockchip_rk3066_tsadc_iio_channels,
-> > +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
-> > +	.clk_rate = 50000,
-> > +};
-> > +
-> > +static const struct of_device_id rockchip_saradc_match[] = {
-> > +	{
-> > +		.compatible = "rockchip,saradc",
-> > +		.data = &saradc_data,
-> > +	}, {
-> > +		.compatible = "rockchip,rk3066-tsadc",
-> > +		.data = &rk3066_tsadc_data,
-> > +	},
-> > +	{},
-> > +};
-> > +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> > +
-> > 
-> >  static int rockchip_saradc_probe(struct platform_device *pdev)
-> >  {
-> >  
-> >  	struct rockchip_saradc *info = NULL;
-> >  	struct device_node *np = pdev->dev.of_node;
-> >  	struct iio_dev *indio_dev = NULL;
-> >  	struct resource	*mem;
-> > 
-> > +	const struct of_device_id *match;
-> > 
-> >  	int ret;
-> >  	int irq;
-> > 
-> > @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct
-> > platform_device *pdev)> 
-> >  	}
-> >  	info = iio_priv(indio_dev);
-> > 
-> > +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
-> > +	info->data = match->data;
-> > +
-> > 
-> >  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
-> >  	if (IS_ERR(info->regs))
-> > 
-> > @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct
-> > platform_device *pdev)> 
-> >  	 * Use a default of 1MHz for the converter clock.
-> >  	 * This may become user-configurable in the future.
-> >  	 */
-> > 
-> > -	ret = clk_set_rate(info->clk, 1000000);
-> > +	ret = clk_set_rate(info->clk, info->data->clk_rate);
-> > 
-> >  	if (ret < 0) {
-> >  	
-> >  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
-> >  		return ret;
-> > 
-> > @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct
-> > platform_device *pdev)> 
-> >  	indio_dev->info = &rockchip_saradc_iio_info;
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> > 
-> > -	indio_dev->channels = rockchip_saradc_iio_channels;
-> > -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
-> > +	indio_dev->channels = info->data->channels;
-> > +	indio_dev->num_channels = info->data->num_channels;
-> > 
-> >  	ret = iio_device_register(indio_dev);
-> >  	if (ret)
-> > 
-> > @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
-> > 
-> >  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
-> >  
-> >  			 rockchip_saradc_suspend, rockchip_saradc_resume);
-> > 
-> > -static const struct of_device_id rockchip_saradc_match[] = {
-> > -	{ .compatible = "rockchip,saradc" },
-> > -	{},
-> > -};
-> > -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> > -
-> > 
-> >  static struct platform_driver rockchip_saradc_driver = {
-> >  
-> >  	.probe		= rockchip_saradc_probe,
-> >  	.remove		= rockchip_saradc_remove,
