@@ -1,52 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:54189 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753004AbaICPMQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 3 Sep 2014 11:12:16 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: pmeerw@pmeerw.net, srinivas.pandruvada@linux.intel.com,
-	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: accel: kxcjk-1013: Fix defined but unused warning
-Date: Wed,  3 Sep 2014 18:13:12 +0300
-Message-Id: <1409757192-17546-1-git-send-email-daniel.baluta@intel.com>
+Return-Path: <sudipm.mukherjee@gmail.com>
+Date: Fri, 5 Sep 2014 12:09:03 +0530
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"open list:STAGING - INDUSTR..." <linux-iio@vger.kernel.org>,
+	open list:  STAGING SUBSYSTEM <devel@driverdev.osuosl.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] staging: iio: adc: mxs-lradc.c: sparse warning of
+ incorrect type
+Message-ID: <20140905063902.GA28555@sudip-PC>
+References: <1409849142-12185-1-git-send-email-sudipm.mukherjee@gmail.com>
+ <5408983D.30002@metafoo.de>
+ <20140904171228.GA2069@fool>
+ <54089E5B.8040804@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54089E5B.8040804@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Noticed when compiling with CONFIG_PM_RUNTIME not set:
-kxcjk-1013.c: warning: ‘kxcjk1013_get_startup_times’ defined but not used [-Wunused-function]
+On Thu, Sep 04, 2014 at 07:16:11PM +0200, Lars-Peter Clausen wrote:
+> On 09/04/2014 07:12 PM, Sudip Mukherjee wrote:
+> >On Thu, Sep 04, 2014 at 06:50:05PM +0200, Lars-Peter Clausen wrote:
+> >>On 09/04/2014 06:45 PM, Sudip Mukherjee wrote:
+> >>>fixed sparse warning : incorrect type in argument 1
+> >>>		       (different address spaces)
+> >>>
+> >>>Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+> >>>---
+> >>>  drivers/staging/iio/adc/mxs-lradc.c | 9 ++++++---
+> >>>  1 file changed, 6 insertions(+), 3 deletions(-)
+> >>>
+> >>>diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> >>>index 468327f..d8d1fe1 100644
+> >>>--- a/drivers/staging/iio/adc/mxs-lradc.c
+> >>>+++ b/drivers/staging/iio/adc/mxs-lradc.c
+> >>>@@ -1545,9 +1545,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+> >>>  	/* Grab the memory area */
+> >>>  	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >>>  	lradc->dev = &pdev->dev;
+> >>>-	lradc->base = devm_ioremap_resource(dev, iores);
+> >>>-	if (IS_ERR(lradc->base))
+> >>>-		return PTR_ERR(lradc->base);
+> >>>+	void *tempptr;
+> >>>+
+> >>>+	tempptr = devm_ioremap_resource(dev, iores);
+> >>>+	if (IS_ERR(tempptr))
+> >>>+		return PTR_ERR(tempptr);
+> >>>+	lradc->base = tempptr;
+> >>
+> >>This makes no sense at all... devm_ioremap_resource() returns a
+> >>iomem pointer lrdac->base is a iomem pointer.
+> >
+> >sparse is giving warning for argument 1 of IS_ERR.
+> 
+> Not if you update to the latest version of sparse.
+> 
+yes , looks like ubuntu repository is having version 0.4.3 , 
+whereas the latest version is 0.5.0. and with this one there no warning for iio.
+sorry for the noise.
 
-Introduced by commit 124e1b1d (iio: accel: kxcjk-1013: support runtime pm).
+thanks
+sudip
 
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/accel/kxcjk-1013.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 736231d..eb1b8b6 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -307,6 +307,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
- 	return 0;
- }
- 
-+#ifdef CONFIG_PM_RUNTIME
- static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
- {
- 	int i;
-@@ -318,6 +319,7 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
- 
- 	return KXCJK1013_MAX_STARTUP_TIME_US;
- }
-+#endif
- 
- static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- {
--- 
-1.9.1
-
+> >
+> >>
+> >>Please make sure that you have the latest version of sparse
+> >>installed on your system.
+> >>
+> >>>
+> >>>  	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> >>>  	if (IS_ERR(lradc->clk)) {
+> >>>
+> >>
+> >
+> >thanks
+> >sudip
+> >
+> 
