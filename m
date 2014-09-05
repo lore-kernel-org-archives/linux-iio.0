@@ -1,289 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:34092 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755598AbaICO4i (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Sep 2014 10:56:38 -0400
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <k.wrona@samsung.com>
-Subject: [RFC/PATCH 5/6] iio: sensorhub: Add sensorhub accelerometer sensor
-Date: Wed, 03 Sep 2014 16:55:49 +0200
-Message-id: <1409756150-30889-6-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
-References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
+Received: from mout.kundenserver.de ([212.227.17.24]:58534 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751676AbaIEM0X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Sep 2014 08:26:23 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+Date: Fri, 05 Sep 2014 14:26:14 +0200
+Message-ID: <3495079.hWGRuSPgx7@wuerfel>
+In-Reply-To: <1409919274-13419-2-git-send-email-svarbanov@mm-sol.com>
+References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com> <1409919274-13419-2-git-send-email-svarbanov@mm-sol.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds accelerometer iio driver which uses sensorhub as data
-provider.
+On Friday 05 September 2014 15:14:33 Stanimir Varbanov wrote:
+> +       VADC_CHAN(LR_MUX1_BAT_THERM, 0)                 /* 0x30 */
+> +       VADC_CHAN(LR_MUX2_BAT_ID, 0)
+> +       VADC_CHAN(LR_MUX3_XO_THERM, 0)
+> +       VADC_CHAN(LR_MUX4_AMUX_THM1, 0)
+> +       VADC_CHAN(LR_MUX5_AMUX_THM2, 0)
+> +       VADC_CHAN(LR_MUX6_AMUX_THM3, 0)
+> +       VADC_CHAN(LR_MUX7_HW_ID, 0)
+> +       VADC_CHAN(LR_MUX8_AMUX_THM4, 0)
+> +       VADC_CHAN(LR_MUX9_AMUX_THM5, 0)
+> +       VADC_CHAN(AMUX_PU1, 0)
+> +       VADC_CHAN(AMUX_PU2, 0)
+> +       VADC_CHAN(LR_MUX3_BUF_XO_THERM_BUF, 0)          /* 0x3c */
+> +
+> +       VADC_CHAN(LR_MUX1_PU1_BAT_THERM, 0)             /* 0x70 */
+> +       VADC_CHAN(LR_MUX2_PU1_BAT_ID, 0)
+> +       VADC_CHAN(LR_MUX3_PU1_XO_THERM, 0)
+> +       VADC_CHAN(LR_MUX4_PU1_AMUX_THM1, 0)
+> +       VADC_CHAN(LR_MUX5_PU1_AMUX_THM2, 0)
+> +       VADC_CHAN(LR_MUX6_PU1_AMUX_THM3, 0)
+> +       VADC_CHAN(LR_MUX7_PU1_AMUX_HW_ID, 0)
+> +       VADC_CHAN(LR_MUX8_PU1_AMUX_THM4, 0)
+> +       VADC_CHAN(LR_MUX9_PU1_AMUX_THM5, 0)
+> +       VADC_CHAN(LR_MUX10_PU1_AMUX_USB_ID, 0)          /* 0x79 */
+> +       VADC_CHAN(LR_MUX3_BUF_PU1_XO_THERM_BUF, 0)      /* 0x7c */
+> 
 
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- drivers/iio/accel/Makefile           |    2 +
- drivers/iio/accel/ssp_accel_sensor.c |  240 ++++++++++++++++++++++++++++++++++
- 2 files changed, 242 insertions(+)
- create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+These numbers all look hardware specific, so why put macros into the
+device tree rather than using them directly?
 
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index a593996..2ab1ca6 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -16,3 +16,5 @@ st_accel-$(CONFIG_IIO_BUFFER) += st_accel_buffer.o
- 
- obj-$(CONFIG_IIO_ST_ACCEL_I2C_3AXIS) += st_accel_i2c.o
- obj-$(CONFIG_IIO_ST_ACCEL_SPI_3AXIS) += st_accel_spi.o
-+
-+obj-$(CONFIG_SSP_SENSOR_IIO) += ssp_accel_sensor.o
-diff --git a/drivers/iio/accel/ssp_accel_sensor.c b/drivers/iio/accel/ssp_accel_sensor.c
-new file mode 100644
-index 0000000..5e7d3e0
---- /dev/null
-+++ b/drivers/iio/accel/ssp_accel_sensor.c
-@@ -0,0 +1,240 @@
-+/*
-+ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/stat.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/common/ssp_sensors.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/common/ssp_sensors.h>
-+#include "../common/ssp_sensors/ssp_iio_sensor.h"
-+
-+#define CHANNEL_COUNT 3
-+
-+#define SSP_ACCEL_NAME "ssp-accelrometer"
-+static const char ssp_accel_device_name[] = SSP_ACCEL_NAME;
-+
-+enum accel_3d_channel {
-+	CHANNEL_SCAN_INDEX_X,
-+	CHANNEL_SCAN_INDEX_Y,
-+	CHANNEL_SCAN_INDEX_Z,
-+	CHANNEL_SCAN_INDEX_TIME,
-+	ACCEL_3D_CHANNEL_MAX,
-+};
-+
-+struct ssp_accel_state {
-+	int accel_val;
-+	int accel_calibbias;
-+	struct ssp_data *data;
-+	short calibration_data[CHANNEL_COUNT];
-+};
-+
-+static struct ssp_accel_state accel_state;
-+
-+static int accel_read_raw(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val,
-+			  int *val2,
-+			  long mask)
-+{
-+	int ret;
-+	u32 t;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		t = ssp_get_sensor_delay(data, SSP_ACCELEROMETER_SENSOR);
-+		ssp_convert_to_freq(t, val, val2);
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static int accel_write_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int val,
-+			   int val2,
-+			   long mask)
-+{
-+	int ret, value;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		value = ssp_convert_to_time(val, val2);
-+		ret = ssp_change_delay(data, SSP_ACCELEROMETER_SENSOR, value);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "accel sensor enable fail\n");
-+			ret = -EINVAL;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static int accel_write_raw_get_fmt(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       long mask)
-+{
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static struct iio_info ssp_accel_iio_info = {
-+	.read_raw = &accel_read_raw,
-+	.write_raw = &accel_write_raw,
-+	.write_raw_get_fmt = &accel_write_raw_get_fmt,
-+};
-+
-+static const struct iio_chan_spec acc_channels[] = {
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_X, CHANNEL_SCAN_INDEX_X),
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Y, CHANNEL_SCAN_INDEX_Y),
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Z, CHANNEL_SCAN_INDEX_Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIME),
-+};
-+
-+int accel_open_calibration(struct ssp_data *data)
-+{
-+	return 0;
-+}
-+
-+static int process_accel_data(struct iio_dev *indio_dev, void *buf,
-+			      s64 timestamp)
-+{
-+	__le64 time = 0;
-+	u8 data[16] = {0};
-+	const int len = SSP_ACCELEROMETER_SIZE;
-+
-+	if (indio_dev->scan_bytes == 0)
-+		return indio_dev->scan_bytes;
-+
-+	memcpy(data, buf, SSP_ACCELEROMETER_SIZE);
-+
-+	if (indio_dev->scan_timestamp) {
-+		memcpy(&time, &((char *)(buf))[len], SSP_TIME_SIZE);
-+		*(s64 *)((u8 *)data +  ALIGN(len, sizeof(s64))) =
-+			timestamp + le64_to_cpu(time) * 1000000;
-+	}
-+
-+	iio_push_to_buffers(indio_dev, (u8 *)data);
-+
-+	return indio_dev->scan_bytes;
-+}
-+
-+static int ssp_accel_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	ssp_common_destroy_sensor(indio_dev);
-+
-+	return 0;
-+}
-+
-+static int ssp_accel_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+	struct iio_dev *indio_dev;
-+	struct ssp_sensor_data  *spd;
-+
-+	indio_dev = iio_device_alloc(sizeof(*spd));
-+	if (IS_ERR(indio_dev)) {
-+		dev_err(&pdev->dev, "device alloc fail\n");
-+		return PTR_ERR(indio_dev);
-+	}
-+
-+	spd = iio_priv(indio_dev);
-+
-+	spd->process_data = process_accel_data;
-+	spd->prv_data = &accel_state;
-+	spd->type = SSP_ACCELEROMETER_SENSOR;
-+
-+	indio_dev->name = ssp_accel_device_name;
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->dev.of_node = pdev->dev.of_node;
-+	indio_dev->info = &ssp_accel_iio_info;
-+
-+	if (indio_dev->info == NULL)
-+		goto err_iio_alloc;
-+
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = acc_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(acc_channels);
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+					 NULL, NULL);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Triggered buffer setup fail\n");
-+		goto err_iio_alloc;
-+	}
-+
-+	ret = ssp_sensor_setup_trigger(indio_dev, ssp_accel_device_name, spd);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Trigger setup fail\n");
-+		goto err_iio_tbuffer;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_ssp_trigger;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	ssp_register_consumer(indio_dev, SSP_ACCELEROMETER_SENSOR);
-+
-+	return 0;
-+
-+err_ssp_trigger:
-+	ssp_sensor_remove_trigger(indio_dev);
-+err_iio_tbuffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+err_iio_alloc:
-+	iio_device_free(indio_dev);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id ssp_accel_id_table[] = {
-+	{
-+		.compatible = "samsung,mpu6500-accel",
-+	},
-+	{},
-+};
-+
-+static struct platform_driver ssp_accel_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = SSP_ACCEL_NAME,
-+		.of_match_table = ssp_accel_id_table,
-+	},
-+	.probe = ssp_accel_probe,
-+	.remove =  ssp_accel_remove,
-+};
-+
-+module_platform_driver(ssp_accel_driver);
-+
-+MODULE_AUTHOR("Karol Wrona <k.wwrona@samsung.com>");
-+MODULE_DESCRIPTION("Samsung sensorhub accelerometers driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.7.9.5
+If you want to make up your own macro namespace, I would suggest
+using consecutive numbers and turning the above into
 
+	...
+	[LR_MUX3_BUF_XO_THERM_BUF] = VADC_CHAN(0x3c, 0),
+	[LR_MUX1_PU1_BAT_THERM]    = VADC_CHAN(0x70, 0),
+	[LR_MUX1_PU1_BAT_ID]       = VADC_CHAN(0x71, 0),
+	...
+
+but I don't see that really improving the DT, since you then
+need to look up the values in the header rather than the data sheet.
+
+	Arnd
