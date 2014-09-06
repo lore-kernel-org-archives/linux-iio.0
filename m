@@ -1,37 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:35238 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750712AbaIESXV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Sep 2014 14:23:21 -0400
-Date: Fri, 5 Sep 2014 15:22:03 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Subject: Re: IIO hrtimer trigger
-Message-ID: <20140905152203.42ff6868@arch>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <540AFA13.6010207@gmx.de>
+Date: Sat, 06 Sep 2014 14:12:03 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Irina Tirdea <irina.tirdea@intel.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIME
+ is defined
+References: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Lars,
-
-I'm picking this discussion, since we're also interested in using an hrtimer
-trigger.
-
-> On 10/06/2013 08:15 PM, Jonathan Cameron wrote:
->> We are pretty much stuck with that for the sysfs trigger already...
+Irina Tirdea schrieb:
+> When CONFIG_PM_RUNTIME is not defined and bmg160 tries to power
+> off the device, bmg160_set_power_state will call pm_runtime_put_autosuspend,
+> which is not implemented (wil return -ENOSYS).
 >
-> Unfortunately yes. I never liked its API and I still don't like it and we
-> have to live with it. But this doesn't mean we have to add more of the same.
-
-So the reason why the hrtimer trigger hasn't been merged in its current form is
-because we're still discussing the ABI, right?
-
-Can you elaborate on why you don't like the sysfs trigger API? If you can give
-me some hints I can try to cook a patch for the configfs hrtimer trigger.
-
-Thanks!
-Ezequiel
+> Only call bmg160_set_power_state when CONFIG_PM_RUNTIME is defined.
+Unless there is anything more to come, what about putting the #ifdef into first line inside bmg160_set_power_state() and just an #endif before the return 0 at the end? Saves 5 lines.
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>  drivers/iio/gyro/bmg160.c |    7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+> index 7524698..e41d6b5 100644
+> --- a/drivers/iio/gyro/bmg160.c
+> +++ b/drivers/iio/gyro/bmg160.c
+> @@ -235,6 +235,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  	return 0;
+>  }
+>  
+> +#ifdef CONFIG_PM_RUNTIME
+>  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  {
+>  	int ret;
+> @@ -254,6 +255,12 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  
+>  	return 0;
+>  }
+> +#else
+> +static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+> +{
+> +	return 0;
+> +}
+> +#endif
+>  
+>  static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  					     bool status)
