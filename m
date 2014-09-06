@@ -1,57 +1,73 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <540AFA13.6010207@gmx.de>
-Date: Sat, 06 Sep 2014 14:12:03 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.17.22]:57569 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750826AbaIFMYD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 6 Sep 2014 08:24:03 -0400
+Message-ID: <540AFCCA.7050104@gmx.de>
+Date: Sat, 06 Sep 2014 14:23:38 +0200
 From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
 To: Irina Tirdea <irina.tirdea@intel.com>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 CC: Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIME
- is defined
-References: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-kernel@vger.kernel.org, Beomho Seo <beomho.seo@samsung.com>
+Subject: Re: [PATCH] iio: magn: ak8975: fix unnecessary casting between char*
+ and const char*
+References: <1409655865-28912-1-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1409655865-28912-1-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Irina Tirdea schrieb:
-> When CONFIG_PM_RUNTIME is not defined and bmg160 tries to power
-> off the device, bmg160_set_power_state will call pm_runtime_put_autosuspend,
-> which is not implemented (wil return -ENOSYS).
+> Use const char* instead of casting const char* to char*.
 >
-> Only call bmg160_set_power_state when CONFIG_PM_RUNTIME is defined.
-Unless there is anything more to come, what about putting the #ifdef into first line inside bmg160_set_power_state() and just an #endif before the return 0 at the end? Saves 5 lines.
 > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 > ---
->  drivers/iio/gyro/bmg160.c |    7 +++++++
->  1 file changed, 7 insertions(+)
+>  drivers/iio/magnetometer/ak8975.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index 7524698..e41d6b5 100644
-> --- a/drivers/iio/gyro/bmg160.c
-> +++ b/drivers/iio/gyro/bmg160.c
-> @@ -235,6 +235,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
->  	return 0;
->  }
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index a235792..61edc66 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -477,7 +477,7 @@ static const struct acpi_device_id ak_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
 >  
-> +#ifdef CONFIG_PM_RUNTIME
->  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+> -static char *ak8975_match_acpi_device(struct device *dev,
+> +static const char *ak8975_match_acpi_device(struct device *dev,
+>  				enum asahi_compass_chipset *chipset)
+This second line should also be indented properly, it will exactly fit 80 characters.
 >  {
->  	int ret;
-> @@ -254,6 +255,12 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  	const struct acpi_device_id *id;
+> @@ -487,7 +487,7 @@ static char *ak8975_match_acpi_device(struct device *dev,
+>  		return NULL;
+>  	*chipset = (int)id->driver_data;
 >  
->  	return 0;
+> -	return (char *)dev_name(dev);
+> +	return dev_name(dev);
 >  }
-> +#else
-> +static int bmg160_set_power_state(struct bmg160_data *data, bool on)
-> +{
-> +	return 0;
-> +}
-> +#endif
 >  
->  static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
->  					     bool status)
+>  static int ak8975_probe(struct i2c_client *client,
+> @@ -497,7 +497,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	struct iio_dev *indio_dev;
+>  	int eoc_gpio;
+>  	int err;
+> -	char *name = NULL;
+> +	const char *name = NULL;
+>  
+>  	/* Grab and set up the supplied GPIO. */
+>  	if (client->dev.platform_data)
+> @@ -539,7 +539,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  	if (id) {
+>  		data->chipset =
+>  			(enum asahi_compass_chipset)(id->driver_data);
+> -		name = (char *) id->name;
+> +		name = id->name;
+>  	} else if (ACPI_HANDLE(&client->dev))
+>  		name = ak8975_match_acpi_device(&client->dev, &data->chipset);
+>  	else
+
